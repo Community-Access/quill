@@ -43,7 +43,7 @@ vibevoice = [
 # On-device AI for the Ask Quill chat. Windows/Linux use llama.cpp (CPU, GGUF);
 # a GGUF model (e.g. Phi-4-mini Q4) goes in <app data>/models or QUILL_LLAMA_MODEL.
 ai = ["llama-cpp-python>=0.3.23"]
-dictation = ["SpeechRecognition>=3.10.0"]
+dictation = ["SpeechRecognition>=3.16.1"]
 pages = ["keynote-parser>=1.0", "markitdown[all]>=0.1.0"]
 dev = [
   "pytest>=9.0.3",
