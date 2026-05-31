@@ -22,7 +22,7 @@ dependencies = ["regex>=2026.5.9"]
 
 [project.optional-dependencies]
 ui = [
-    "wxPython>=4.2.2",
+    "wxPython>=4.2.5",
     # Accessible wx.html2.WebView surfaces (chat, preview, dialogs) — extracted
     # from Quill and published so any wxPython app can reuse it.
     "wx-accessible-webview>=0.2.0",

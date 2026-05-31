@@ -2,7 +2,7 @@
 # (mirrors the optional-dependencies in pyproject.toml)
 
 # UI
-wxPython>=4.2.2
+wxPython>=4.2.5
 pyttsx3>=2.99
 
 # CA bundle for verified HTTPS (update checks) — Python on macOS otherwise has
