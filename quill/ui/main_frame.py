@@ -101,6 +101,18 @@ from quill.core.compliance import (
     render_dependency_notice_table,
     render_full_third_party_notices,
 )
+from quill.core.context_menu import (
+    CMD_COPY,
+    CMD_CUT,
+    CMD_LOOK_UP,
+    CMD_PASTE,
+    CMD_SPELL_ADD,
+    CMD_SPELL_IGNORE,
+    CMD_SPELL_SUGGESTION,
+    CMD_THESAURUS,
+    CursorContext,
+    build_context_menu,
+)
 from quill.core.contrast import render_contrast_report, validate_theme_contrast
 from quill.core.custom_profiles import (
     CustomProfile,
@@ -125,6 +137,12 @@ from quill.core.dictation import (
 )
 from quill.core.diffing import build_unified_diff
 from quill.core.document import Document
+from quill.core.external_change import (
+    ExternalChangeWatcher,
+    FileSnapshot,
+    ReloadAction,
+    decide_reload,
+)
 from quill.core.external_tools import (
     copyable_install_command,
     get_external_tool_status,
@@ -200,6 +218,11 @@ from quill.core.keymap import (
     load_keymap,
     reset_keymap,
     save_keymap,
+)
+from quill.core.lexical import (
+    build_lookup_items,
+    default_service,
+    render_lookup,
 )
 from quill.core.line_ops import (
     delete_line,
@@ -912,6 +935,9 @@ class MainFrame:
         self._announcement_error_reported = ""
         self._read_aloud = ReadAloudController()
         self._dictation = DictationController()
+        self._lexical_service = default_service(include_online=True)
+        self._external_change_watcher: ExternalChangeWatcher | None = None
+        self._external_change_timer: object | None = None
         self._watch_service = WatchService(
             data_dir=app_data_dir(),
             feature_enabled=self._feature_enabled,
@@ -6800,6 +6826,281 @@ class MainFrame:
         capped = max(0, min(position, len(self.editor.GetValue())))
         self.editor.SetInsertionPoint(capped)
         self.editor.SetSelection(capped, capped)
+
+    def _build_ctx1_menu_items(self) -> tuple[object, ...]:
+        """Build CTX-1 context menu items using the core builder (CTX-1 wiring).
+
+        Returns a tuple of wx menu item IDs and their handlers for the CTX-1
+        context menu model (spelling, lookup/thesaurus, cut/copy/paste).
+        The caller binds each (id, handler) to the menu.
+        """
+        wx = self._wx
+        text = self.editor.GetValue()
+        caret = self.editor.GetInsertionPoint()
+        sel_start, sel_end = self.editor.GetSelection()
+        selection_text = text[sel_start:sel_end] if sel_end > sel_start else ""
+
+        # Extract word at cursor for lookup/thesaurus.
+        word = ""
+        if caret <= len(text):
+            # Simple word extraction: find word boundaries around cursor.
+            start = caret
+            while start > 0 and text[start - 1].isalnum():
+                start -= 1
+            end = caret
+            while end < len(text) and text[end].isalnum():
+                end += 1
+            word = text[start:end] if start < end else ""
+
+        # Check spelling.
+        dictionary = self._spell_dictionary()
+        misspelling = misspelling_at_position(text, caret, dictionary)
+        is_misspelled = misspelling is not None
+        suggestions = suggest_words(misspelling.word, dictionary) if misspelling else ()
+
+        # Build the CTX-1 menu model.
+        context = CursorContext(
+            word=word,
+            selection=selection_text,
+            misspelled=is_misspelled,
+            suggestions=suggestions,
+            can_paste=True,  # wx clipboard state is optimistic here
+        )
+        items = build_context_menu(
+            context,
+            is_feature_enabled=self._feature_enabled,
+            max_suggestions=5,
+        )
+
+        # Convert model to wx menu items with handlers.
+        menu_items: list[tuple[object, Callable[[], None]]] = []
+        for item in items:
+            if item.is_separator:
+                # Separator marker; caller appends wx.Menu separator.
+                menu_items.append((wx.ID_SEPARATOR, lambda: None))
+                continue
+
+            item_id = wx.NewIdRef()
+            if item.command == CMD_SPELL_SUGGESTION:
+                # Apply the suggestion.
+                def handler(
+                    word_to_replace: str = misspelling.word if misspelling else "",
+                    start: int = misspelling.start if misspelling else 0,
+                    end: int = misspelling.end if misspelling else 0,
+                    replacement: str = item.value,
+                ) -> None:
+                    self.editor.Replace(start, end, replacement)
+                    self.document.set_text(self.editor.GetValue())
+                    self._set_status(f'Replaced "{word_to_replace}" with "{replacement}"')
+
+                menu_items.append((item_id, handler))
+            elif item.command == CMD_SPELL_ADD:
+                menu_items.append((
+                    item_id,
+                    lambda w=item.value: self._add_word_to_dictionary_scope(w, 0),
+                ))
+            elif item.command == CMD_SPELL_IGNORE:
+                menu_items.append((
+                    item_id,
+                    lambda w=item.value: self._add_word_to_dictionary_scope(w, 1),
+                ))
+            elif item.command == CMD_LOOK_UP:
+                menu_items.append((item_id, lambda w=item.value: self.show_lookup_dialog(w)))
+            elif item.command == CMD_THESAURUS:
+                menu_items.append((item_id, lambda w=item.value: self.show_thesaurus_or_lookup(w)))
+            elif item.command == CMD_CUT:
+                menu_items.append((item_id, lambda: self.editor.Cut()))
+            elif item.command == CMD_COPY:
+                menu_items.append((item_id, lambda: self.editor.Copy()))
+            elif item.command == CMD_PASTE:
+                menu_items.append((item_id, lambda: self.editor.Paste()))
+
+        return tuple(menu_items)
+
+    def show_lookup_dialog(self, word: str) -> None:
+        """Show the DICT-2 Look Up dialog for ``word``."""
+        wx = self._wx
+        if not self._feature_enabled("core.dictionary"):
+            self._set_status("Dictionary feature is disabled.")
+            return
+
+        # Query the lexical service (consent is per-feature, so online is enabled
+        # if the user has consented to network lookups).
+        online = self._feature_enabled("core.dictionary")
+        result = self._lexical_service.lookup(word, online=online)
+
+        # Render the result for screen-reader paging.
+        text = render_lookup(result)
+        items = build_lookup_items(result)
+
+        # Build a simple list dialog.
+        dialog = wx.Dialog(
+            self.frame, title=f"Look Up: {word}", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
+        )
+        panel = wx.Panel(dialog)
+        sizer = wx.BoxSizer(wx.VERTICAL)
+
+        # Read-only text control for the rendered lookup.
+        text_ctrl = wx.TextCtrl(
+            panel,
+            value=text,
+            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP,
+        )
+        text_ctrl.SetMinSize((500, 300))
+        sizer.Add(text_ctrl, 1, wx.EXPAND | wx.ALL, 8)
+
+        # List of insertable items.
+        if items:
+            list_label = wx.StaticText(panel, label="Select a word to insert:")
+            sizer.Add(list_label, 0, wx.LEFT | wx.RIGHT, 8)
+            list_box = wx.ListBox(panel, choices=[item.label for item in items])
+            list_box.SetMinSize((500, 150))
+            sizer.Add(list_box, 0, wx.EXPAND | wx.ALL, 8)
+
+            def on_insert(_event: object) -> None:
+                selection = list_box.GetSelection()
+                if selection != wx.NOT_FOUND and 0 <= selection < len(items):
+                    selected_item = items[selection]
+                    if selected_item.action == "insert":
+                        # Replace the word at the cursor with the selected value.
+                        caret = self.editor.GetInsertionPoint()
+                        text_val = self.editor.GetValue()
+                        # Find word boundaries around cursor.
+                        start = caret
+                        while start > 0 and text_val[start - 1].isalnum():
+                            start -= 1
+                        end = caret
+                        while end < len(text_val) and text_val[end].isalnum():
+                            end += 1
+                        self.editor.Replace(start, end, selected_item.value)
+                        self.document.set_text(self.editor.GetValue())
+                        self._set_status(f'Inserted "{selected_item.value}"')
+                        dialog.Close()
+
+            list_box.Bind(wx.EVT_LISTBOX_DCLICK, on_insert)
+
+            btn_sizer = wx.StdDialogButtonSizer()
+            insert_btn = wx.Button(panel, wx.ID_OK, "Insert")
+            insert_btn.Bind(wx.EVT_BUTTON, on_insert)
+            btn_sizer.AddButton(insert_btn)
+            close_btn = wx.Button(panel, wx.ID_CANCEL, "Close")
+            btn_sizer.AddButton(close_btn)
+            btn_sizer.Realize()
+            sizer.Add(btn_sizer, 0, wx.ALIGN_RIGHT | wx.ALL, 8)
+        else:
+            # No insertable items; just a Close button.
+            btn_sizer = wx.StdDialogButtonSizer()
+            close_btn = wx.Button(panel, wx.ID_CANCEL, "Close")
+            btn_sizer.AddButton(close_btn)
+            btn_sizer.Realize()
+            sizer.Add(btn_sizer, 0, wx.ALIGN_RIGHT | wx.ALL, 8)
+
+        panel.SetSizer(sizer)
+        dialog_sizer = wx.BoxSizer(wx.VERTICAL)
+        dialog_sizer.Add(panel, 1, wx.EXPAND)
+        dialog.SetSizer(dialog_sizer)
+        dialog.Fit()
+        dialog.CenterOnParent()
+        dialog.ShowModal()
+        dialog.Destroy()
+
+    def show_thesaurus_or_lookup(self, word: str) -> None:
+        """Show the thesaurus or Look Up dialog for ``word``.
+
+        If the offline thesaurus is available, use the existing thesaurus dialog.
+        Otherwise, fall back to the DICT-2 Look Up dialog.
+        """
+        if thesaurus_engine.is_available():
+            # Use the existing thesaurus implementation.
+            self.show_thesaurus()
+        else:
+            self.show_lookup_dialog(word)
+
+    def _start_external_change_watcher(self) -> None:
+        """Start the FEAT-19 external file-change watcher for the open document."""
+        wx = self._wx
+        if self._external_change_watcher is not None:
+            # Already watching.
+            return
+        if self.document.path is None:
+            # No file to watch.
+            return
+        if not getattr(self.settings, "external_change_watch_enabled", True):
+            # Watching is disabled.
+            return
+
+        self._external_change_watcher = ExternalChangeWatcher(self.document.path)
+        self._external_change_watcher.prime(FileSnapshot.of(self.document.path))
+
+        # Poll every N milliseconds (debounce interval from settings).
+        debounce_ms = int(getattr(self.settings, "external_change_debounce_ms", 1000))
+
+        def poll_external_change() -> None:
+            if self._external_change_watcher is None:
+                return
+            change = self._external_change_watcher.poll()
+            if change == "none":
+                return
+
+            # Decide what to do.
+            decision = decide_reload(
+                change,
+                buffer_dirty=self.document.modified,
+                watch_enabled=getattr(self.settings, "external_change_watch_enabled", True),
+                auto_reload_when_clean=getattr(
+                    self.settings, "external_change_auto_reload_when_clean", True
+                ),
+                prompt_on_conflict=getattr(
+                    self.settings, "external_change_prompt_on_conflict", True
+                ),
+                file_name=self.document.path.name if self.document.path else "",
+            )
+
+            if decision.action == ReloadAction.RELOAD:
+                # Reload in place, preserving cursor and scroll.
+                self._reload_from_disk_preserving_cursor()
+                self._announce(decision.announcement)
+            elif decision.needs_prompt:
+                # Show a prompt dialog.
+                self._announce(decision.announcement)
+                # TODO: implement the conflict dialog (needs wx.MessageDialog or custom).
+                # For now, just announce.
+
+        self._external_change_timer = wx.Timer(self.frame)
+        self.frame.Bind(
+            wx.EVT_TIMER, lambda _e: poll_external_change(), self._external_change_timer
+        )
+        self._external_change_timer.Start(debounce_ms)
+
+    def _stop_external_change_watcher(self) -> None:
+        """Stop the FEAT-19 external file-change watcher."""
+        if self._external_change_timer is not None:
+            self._external_change_timer.Stop()
+            self._external_change_timer = None
+        self._external_change_watcher = None
+
+    def _reload_from_disk_preserving_cursor(self) -> None:
+        """Reload the document from disk, preserving the cursor and scroll position (FEAT-19)."""
+        if self.document.path is None:
+            return
+        # Save cursor and scroll state.
+        caret = self.editor.GetInsertionPoint()
+        # Reload the document.
+        try:
+            reloaded_text = self.document.path.read_text(encoding="utf-8")
+        except (OSError, ValueError):
+            self._set_status("Failed to reload from disk.")
+            return
+        self.document.set_text(reloaded_text)
+        self.document.modified = False
+        self.editor.SetValue(reloaded_text)
+        # Restore cursor.
+        capped_caret = max(0, min(caret, len(reloaded_text)))
+        self.editor.SetInsertionPoint(capped_caret)
+        self.editor.SetSelection(capped_caret, capped_caret)
+        # Prime the watcher with the new snapshot.
+        if self._external_change_watcher is not None:
+            self._external_change_watcher.prime(FileSnapshot.of(self.document.path))
 
     def _on_editor_context_menu(self, event: object) -> None:
         wx = self._wx
