@@ -1,14 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>golden</title>
   <style>
-    /* Default styles provided by pandoc.
-    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-    */
     html {
       color: #1a1a1a;
       background-color: #fdfdfd;
@@ -63,10 +60,6 @@
     img {
       max-width: 100%;
     }
-    svg {
-      height: auto;
-      max-width: 100%;
-    }
     h1, h2, h3, h4, h5, h6 {
       margin-top: 1.4em;
     }
@@ -91,7 +84,6 @@
       color: #606060;
     }
     code {
-      white-space: pre-wrap;
       font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
       font-size: 85%;
       margin: 0;
@@ -111,8 +103,8 @@
      overflow: visible;
     }
     hr {
+      background-color: #1a1a1a;
       border: none;
-      border-top: 1px solid #1a1a1a;
       height: 1px;
       margin: 1em 0;
     }
@@ -155,6 +147,7 @@
     #TOC a:not(:hover) {
       text-decoration: none;
     }
+    code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
     div.columns{display: flex; gap: min(4vw, 1.5em);}
     div.column{flex: auto; overflow-x: auto;}
@@ -996,7 +989,7 @@ progresses. Status values: Todo, In progress, Blocked, Done.</p>
 <col style="width: 16%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>ID</th>
 <th>Item</th>
 <th>Area</th>
@@ -1006,7 +999,7 @@ progresses. Status values: Todo, In progress, Blocked, Done.</p>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>SEC-1</td>
 <td>Validate configured executable paths at load</td>
 <td>Security</td>
@@ -1015,7 +1008,7 @@ progresses. Status values: Todo, In progress, Blocked, Done.</p>
 <td>Tampered settings cannot launch arbitrary executables; unknown tool
 paths are rejected and announced; tests cover the reject path.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>SEC-2</td>
 <td>Path-escape guard for persistence writes</td>
 <td>Security</td>
@@ -1024,7 +1017,7 @@ paths are rejected and announced; tests cover the reject path.</td>
 <td>A shared helper blocks writes outside the app data base; used in
 storage writers; tests prove traversal is blocked.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>SEC-3</td>
 <td>Whitelist OCR language codes</td>
 <td>Security</td>
@@ -1037,7 +1030,7 @@ grammar (lowercase ISO segments with optional script suffix, joined by
 message before reaching the CLI; tests cover accepted and rejected
 shapes.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>SEC-5</td>
 <td>Explicit TLS verification on all network calls</td>
 <td>Security</td>
@@ -1050,7 +1043,7 @@ always pass it while local HTTP loopback does not; an audit test asserts
 no <code>_create_unverified_context</code> or <code>CERT_NONE</code> or
 disabled <code>check_hostname</code> anywhere in the package.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>SEC-6</td>
 <td>Verify checksums for downloaded binaries and models</td>
 <td>Security</td>
@@ -1059,7 +1052,7 @@ disabled <code>check_hostname</code> anywhere in the package.</td>
 <td>DECtalk runtime and GGUF downloads are checksum-verified before use;
 failure aborts with a clear message.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>SEC-8</td>
 <td>Gate plugin loading behind off-by-default experimental flag</td>
 <td>Security</td>
@@ -1068,7 +1061,7 @@ failure aborts with a clear message.</td>
 <td>No third-party plugin loads in a default build; flag is documented
 as experimental.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>SEC-9</td>
 <td>Resource limits for the Python sandbox</td>
 <td>Security</td>
@@ -1077,7 +1070,7 @@ as experimental.</td>
 <td>A wall-clock and memory limit terminate runaway transforms;
 termination is announced; test included.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>CQ-7</td>
 <td>Scoped strict mypy in CI on every pull request</td>
 <td>Code quality</td>
@@ -1089,7 +1082,7 @@ merge on any error; the scoped command is documented in CONTRIBUTING.
 The full TYPE backlog was cleared so the gate currently reports zero
 errors across 95 source files.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>PERF-8</td>
 <td>Document and enforce scoped type-check command</td>
 <td>Performance</td>
@@ -1099,7 +1092,7 @@ errors across 95 source files.</td>
 only recommended type-check command and explains why the whole-tree scan
 is excluded; no unscoped scan is recommended anywhere.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>A11Y-1</td>
 <td>Announcement style guide and audit</td>
 <td>Accessibility</td>
@@ -1118,7 +1111,7 @@ singular/plural units, verb-only and “Nothing to” forms). Migrating the
 remaining legacy status strings to the helpers is tracked as incremental
 follow-up.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>A11Y-4</td>
 <td>Dialog escape and default audit, enforced by a contract guard</td>
 <td>Accessibility</td>
@@ -1141,7 +1134,7 @@ dialogs to the approved helpers
 or the web <code>show_web_form</code>) so the bug class cannot recur.
 Pairs with the DLG cluster and GitHub issue #73.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>OPS-1</td>
 <td>Green main: required CI gates must pass</td>
 <td>Foundations</td>
@@ -1159,7 +1152,7 @@ gate measures first-party code regardless of optional extras. Verified:
 PR CI, Security CI, and Accessibility CI all conclude success on
 <code>main</code> (commit d62d3bd).</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>FLAG-1</td>
 <td>Feature-flag respect is a UI contract</td>
 <td>Foundations</td>
@@ -1174,7 +1167,7 @@ dependency is off. Contract tests cover the off-dependency case, command
 visibility filtering, and the all-dependencies-on case across
 representative features (dictation, BITS transcription, search).</td>
 </tr>
-<tr>
+<tr class="even">
 <td>FLAG-2</td>
 <td>Every new feature ships a FeatureDefinition</td>
 <td>Foundations</td>
@@ -1189,7 +1182,7 @@ palette/command filtering, this makes registering a
 maturity, privacy) the definition-of-done for a user-facing
 feature.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>FLAG-3</td>
 <td>Feature profiles and per-feature toggles UI</td>
 <td>Foundations</td>
@@ -1213,7 +1206,7 @@ helpers, which resolve the dependency cascade and return a screen-reader
 announcement; changes persist via the feature store and the menu
 rebuilds immediately.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>FLAG-4</td>
 <td>Export, import, and pre-configure feature flags</td>
 <td>Foundations</td>
@@ -1231,7 +1224,7 @@ Export/Import/Reset controls (<code>Ctrl+,</code> then General).
 Tolerant import ignores unknown profiles and locked features and
 announces the result. (Pairs with SET-7.)</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>QK-1</td>
 <td>Name and remappable QUILL key</td>
 <td>QUILL key</td>
@@ -1244,7 +1237,7 @@ announces the result. (Pairs with SET-7.)</td>
 Grave/backtick key; remapping to another chord (for example
 <code>Alt+M</code>) works and the old default no longer triggers.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>QK-3</td>
 <td>QUILL key mode status indicator</td>
 <td>QUILL key</td>
@@ -1254,7 +1247,7 @@ Grave/backtick key; remapping to another chord (for example
 Browse / Locked, appears automatically while the prefix is pending or a
 mode is active, and the prefix/enter/exit transitions announce.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>QK-4</td>
 <td>Configurable, announced QUILL key timeout</td>
 <td>QUILL key</td>
@@ -1266,7 +1259,7 @@ drives both the prefix and browse-mode expiry via
 announces and expiry announces “QUILL key timed out” / “QUILL browse
 mode timed out”.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>KEY-3</td>
 <td>Wire keymap conflict detection into UI and import</td>
 <td>Keymaps</td>
@@ -1275,7 +1268,7 @@ mode timed out”.</td>
 <td>Conflicts are detected on bind and import, announced, and
 resolvable.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>DOC-1</td>
 <td>QUILL key primer and quick reference</td>
 <td>Docs</td>
@@ -1284,7 +1277,7 @@ resolvable.</td>
 <td>User guide section plus standalone reference; ships as HTML and EPUB
 via the gate.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>DOC-5</td>
 <td>Document the docs-artifact gate for contributors</td>
 <td>Docs</td>
@@ -1306,7 +1299,7 @@ green.</td>
 <col style="width: 16%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>ID</th>
 <th>Item</th>
 <th>Area</th>
@@ -1316,7 +1309,7 @@ green.</td>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>CQ-1</td>
 <td>Decompose main_frame into cohesive modules</td>
 <td>Code quality</td>
@@ -1325,7 +1318,7 @@ green.</td>
 <td>main_frame is split into controllers or mixins with no behavior
 change; characterization tests pass before and after.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>CQ-16</td>
 <td>Characterization tests around main_frame</td>
 <td>Code quality</td>
@@ -1334,7 +1327,7 @@ change; characterization tests pass before and after.</td>
 <td>Behavior is pinned by tests prior to CQ-1; coverage includes menus,
 QUILL key, selection, file lifecycle.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>DLG-1</td>
 <td>Migrate hand-rolled submit-once form dialogs to the shared
 accessible helper</td>
@@ -1373,7 +1366,7 @@ reordering, and the YAML editor is a tree editor. These remain
 A11Y-4-compliant and are migrated only where a genuine submit-once shape
 exists, to avoid degrading working dialogs.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>QA-1</td>
 <td>Living dialog regression checklist</td>
 <td>Code quality</td>
@@ -1392,7 +1385,7 @@ whenever a dialog is added, removed, renamed, or rebound, so the map
 never drifts. This is the manual companion to the A11Y-4
 machine-enforced dialog-contract guard.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>CQ-8</td>
 <td>Degrade-and-log helper for broad excepts</td>
 <td>Code quality</td>
@@ -1401,7 +1394,7 @@ machine-enforced dialog-contract guard.</td>
 <td>A shared helper logs context; broad excepts in core use it; no
 silent failures remain in the listed files.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>DLG-2</td>
 <td>Convert interactive tool dialogs individually, screen-reader
 verified</td>
@@ -1420,7 +1413,7 @@ today and gated by the A11Y-4 contract guard. This is the
 structural-breadth half of the dialog work and sequences after Tier 2,
 alongside CQ-1.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>CQ-11</td>
 <td>Spell-check fallback and preload tests</td>
 <td>Code quality</td>
@@ -1434,7 +1427,7 @@ module caches and confirms <code>backend_info</code> and
 personal-dictionary override. The background-preload half stays open
 until a spell-check preload API exists (tracked by PERF-1).</td>
 </tr>
-<tr>
+<tr class="even">
 <td>CQ-13</td>
 <td>IO format coverage tests</td>
 <td>Code quality</td>
@@ -1447,7 +1440,7 @@ fixtures were added to <code>tests/unit/io/test_text.py</code>,
 confirming they open verbatim through the plain-text reader and
 round-trip through the writer.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>CQ-15</td>
 <td>Document cache locking and add concurrency tests</td>
 <td>Code quality</td>
@@ -1463,7 +1456,7 @@ thesaurus index and spell-check wordlist from sixteen threads against a
 cold cache, proving each expensive load runs at most once and every
 thread agrees on the published snapshot and active backend tier.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>PERF-1</td>
 <td>Background preload of spell-check wordlist</td>
 <td>Performance</td>
@@ -1472,7 +1465,7 @@ thread agrees on the published snapshot and active backend tier.</td>
 <td>First spell check does not stall; preload runs off the UI thread;
 perf test added.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>PERF-2</td>
 <td>Background preload of thesaurus</td>
 <td>Performance</td>
@@ -1480,7 +1473,7 @@ perf test added.</td>
 <td>Todo</td>
 <td>First lookup does not stall; perf test added.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>PERF-3</td>
 <td>Cache synthesized TTS audio</td>
 <td>Performance</td>
@@ -1489,7 +1482,7 @@ perf test added.</td>
 <td>Identical sentences are not re-rendered; measurable latency
 reduction; test or benchmark added.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>PERF-9</td>
 <td>Performance budget suite</td>
 <td>Performance</td>
@@ -1498,7 +1491,7 @@ reduction; test or benchmark added.</td>
 <td>Startup, first spell check, first thesaurus, and Quick Nav prewarm
 have budgets enforced in CI.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>NAV-1</td>
 <td>Unified Quick Nav panel</td>
 <td>Navigation</td>
@@ -1510,7 +1503,7 @@ with its live count, and the results list shows previews; fully keyboard
 and screen-reader operable. Built on the shared, fully unit-tested
 <code>quill/core/quick_nav.py</code> index.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>NAV-2</td>
 <td>Consistent directional and wrapping Quick Nav</td>
 <td>Navigation</td>
@@ -1519,7 +1512,7 @@ and screen-reader operable. Built on the shared, fully unit-tested
 <td>Every element type supports next and previous with announced
 wrap.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>NAV-4</td>
 <td>Go to anything jumper</td>
 <td>Navigation</td>
@@ -1532,7 +1525,7 @@ category narrowing, bound to the QUILL key plus G (and the
 it. Shares the <code>quill/core/quick_nav.py</code> index with
 NAV-1.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>NAV-5</td>
 <td>Heading level and position announcements</td>
 <td>Navigation</td>
@@ -1544,7 +1537,7 @@ ordinal, total count, and title by line match;
 <code>_navigate_heading</code> announces “Moved to next/previous
 heading, H<level>, <ordinal> of <total>: </td>
 </tr>
-<tr>
+<tr class="even">
 <td>SEL-1</td>
 <td>Bind and announce structural selections</td>
 <td>Selection</td>
@@ -1556,7 +1549,7 @@ shared announcement grammar (<code>Selected line, 3 words.</code>),
 pluralized correctly for the singular case. UI tests cover line,
 paragraph, and the singular-word path.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>SEL-2</td>
 <td>Expand and shrink selection by structure</td>
 <td>Selection</td>
@@ -1571,7 +1564,7 @@ walks back down a remembered stack. Core
 commands; core and UI tests cover strict growth, the document ceiling,
 and stack-based shrink.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>SEL-3</td>
 <td>Scope-aware selection actions surface</td>
 <td>Selection</td>
@@ -1590,7 +1583,7 @@ active. Covered by core scope tests and UI tests for the action list,
 the chosen-action dispatch, the no-selection message, and the
 prefix-then-<code>A</code> wiring.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>OCR-1</td>
 <td>Native Windows OCR backend (zero-install)</td>
 <td>Image to text</td>
@@ -1609,7 +1602,7 @@ per-line confidence parsing. Remaining: live WinRT recognition is
 unverifiable in this environment (winsdk not installed), so the
 native-backend happy path is not yet exercised end to end.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>OCR-2</td>
 <td>Tesseract opt-in backend via onboarding</td>
 <td>Image to text</td>
@@ -1626,7 +1619,7 @@ OCR setup rather than failing silently. Tests cover engine resolution,
 the fall-back order, explicit-engine honoring, and the unavailable
 message.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>OCR-3</td>
 <td>Capture sources: file, clipboard, screen region</td>
 <td>Image to text</td>
@@ -1640,7 +1633,7 @@ screen-region live capture require a real display/clipboard and a
 working OCR engine, neither verifiable in this environment, so those two
 capture paths stay open.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>OCR-4</td>
 <td>Accessible OCR review and insert surface</td>
 <td>Image to text</td>
@@ -1654,7 +1647,7 @@ low-confidence flag markers, and the text-only fallback. Remaining: the
 live stock read-only review dialog with insert/copy/discard action keys
 is not yet wired (runtime wx surface unverifiable here).</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>OCR-5</td>
 <td>OCR as a Watch Profile action</td>
 <td>Image to text</td>
@@ -1667,7 +1660,7 @@ recognized text to a sibling <code>.txt</code> file. Tests cover
 registration, the disabled-feature skip path, a happy-path conversion
 with an injected handler, and the no-engine failure path.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>QK-2</td>
 <td>QUILL key guided panel or overlay</td>
 <td>QUILL key</td>
@@ -1680,7 +1673,7 @@ accessible read-only dialog (outer sizer, EXPAND, default Close, Escape,
 focus returned to the editor). Shares one source of truth with
 QK-9.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>QK-9</td>
 <td>QUILL key plus question mark cheat sheet and per-mode help</td>
 <td>QUILL key</td>
@@ -1696,7 +1689,7 @@ as Shift+/. Core builder is UI-agnostic and fully unit-tested
 (<code>test_quill_key_help.py</code>); UI wiring is covered in
 <code>test_main_frame_quill_key.py</code>.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>QK-5</td>
 <td>Sticky QUILL browse mode</td>
 <td>QUILL key</td>
@@ -1707,7 +1700,7 @@ sticky browse mode (<code>_quill_key_mode_sticky</code>) that ignores
 the timeout until Escape; entry announces “QUILL browse mode locked” and
 the status cell shows Locked.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>KEY-1</td>
 <td>Vim, Emacs, and VS Code keyboard packs</td>
 <td>Keymaps</td>
@@ -1715,7 +1708,7 @@ the status cell shows Locked.</td>
 <td>Todo</td>
 <td>Three complete, documented, accessible packs are selectable.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>MENU-1</td>
 <td>Unified Preferences home</td>
 <td>Menus</td>
@@ -1725,7 +1718,7 @@ the status cell shows Locked.</td>
 then <code>General</code>) built from the shared settings registry;
 remaining scattered Tools-menu toggles still need to fold in.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>SET-1</td>
 <td>Per-feature settings groups</td>
 <td>Settings</td>
@@ -1745,7 +1738,7 @@ accessible manager dialog (Snippet Manager, Macro Recorder, Sticky Notes
 Vault, Status Bar Layout) by design, rather than as a registry
 control.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>SET-2</td>
 <td>Tunable timing and pacing</td>
 <td>Settings</td>
@@ -1775,7 +1768,7 @@ Win+H recognizer, which exposes no sensitivity control, so there is no
 consumer to wire until a sensitivity-aware capture engine (Whisper/Vosk
 live mic) lands.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>SET-3</td>
 <td>Tunable verbosity and announcements</td>
 <td>Settings</td>
@@ -1798,7 +1791,7 @@ live-misspelling hint. <strong>Deferred (honest):</strong>
 consumer yet — the Read Aloud engine takes no punctuation parameter — so
 this row stays In progress.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>SET-4</td>
 <td>Tunable behavior toggles</td>
 <td>Settings</td>
@@ -1824,7 +1817,7 @@ index through <code>include_nav_items</code>; and
 browse entry lock until Escape (covered by
 <code>test_prefix_then_n_honors_sticky_browse_default</code>).</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>SET-5</td>
 <td>Robust settings model with migration</td>
 <td>Settings</td>
@@ -1843,7 +1836,7 @@ Round-trip, migration, junk-recovery, and per-field corruption tests
 pass (<code>tests/unit/core/test_settings_migration.py</code>). (Pairs
 with CQ-4.)</td>
 </tr>
-<tr>
+<tr class="even">
 <td>SET-6</td>
 <td>Searchable settings with per-setting reset and descriptions</td>
 <td>Settings</td>
@@ -1862,7 +1855,7 @@ on OK with the rest of the form. Implemented in
 <code>_reset_one</code>/<code>_reset_button</code> helpers) covering
 bool, choice, int, float, text, and the preview-browser choice.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>SET-7</td>
 <td>Export, import, and pre-configure settings</td>
 <td>Settings</td>
@@ -1877,7 +1870,7 @@ pre-configure mechanism (ship a tuned file, users import it). The
 optional admin-facing schema reference write-up is tracked separately as
 DOC-7 in Tier 6 and is not part of this functional row.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>SHARE-1</td>
 <td>One Export and Back Up dialog with a shareable-profile mode</td>
 <td>Settings</td>
@@ -1905,7 +1898,7 @@ actually holds content, so the checklist reflects exactly what is
 present. Eleven logic tests cover offers, privacy, and round-trips
 (<code>tests/unit/ui/test_share_dialogs.py</code>).</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>SHARE-2</td>
 <td>One Import and Restore dialog with the same two modes</td>
 <td>Settings</td>
@@ -1936,7 +1929,7 @@ as “Enabled X to satisfy a feature dependency.” Covered by backup
 round-trip, profile-merge, and dependency-announcement tests in
 <code>tests/unit/ui/test_share_dialogs.py</code>.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>SHARE-3</td>
 <td>Portable, privacy-safe profile and backup package format</td>
 <td>Settings</td>
@@ -1960,7 +1953,7 @@ field provably cannot reach a profile) and file round-trip pass
 format behind SHARE-1/2 and the schemas FLAG-4 and SET-7
 reference.)</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>MENU-2</td>
 <td>Split the Tools menu and elevate Accessibility</td>
 <td>Menus</td>
@@ -1969,7 +1962,7 @@ reference.)</td>
 <td>Tools is smaller; Accessibility is easy to find; labels match
 announcement grammar.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>HELP-1</td>
 <td>Context-aware What Can I Do Here</td>
 <td>Help</td>
@@ -1978,7 +1971,7 @@ announcement grammar.</td>
 <td>The help lists commands relevant to the cursor context with
 keybindings, readable top to bottom.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>FEAT-2</td>
 <td>Spell-check usability polish</td>
 <td>Features</td>
@@ -1987,7 +1980,7 @@ keybindings, readable top to bottom.</td>
 <td>Add to document dictionary and ignore for session, with
 announcements.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>CTX-1</td>
 <td>Rich context and Application-key menu</td>
 <td>Features</td>
@@ -2020,7 +2013,7 @@ progress: the live <code>wx.Menu</code> construction and
 Application/Menu-key binding in <code>main_frame</code> are not yet
 wired.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>DICT-1</td>
 <td>Pluggable dictionary and thesaurus services (Free Dictionary,
 Datamuse)</td>
@@ -2042,7 +2035,7 @@ egress is registered in the GATE-9 audit. Tests cover provider
 normalization, the consent-off offline-only path, cache behavior, and
 error fallback.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>DICT-2</td>
 <td>Accessible Look Up and definitions surface</td>
 <td>Features</td>
@@ -2067,7 +2060,7 @@ rendering, the non-blank empty-result shape, and item insertability. In
 progress: the live <code>wx</code> Look Up dialog and its Tools-menu /
 QUILL-key entry points are not yet wired.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>FEAT-19</td>
 <td>External file-change watch and safe reload</td>
 <td>Features</td>
@@ -2097,7 +2090,7 @@ watcher settling, and every decide-reload branch. In progress: the
 off-UI-thread poller and the cursor/scroll-preserving reload + conflict
 dialog are not yet wired into <code>main_frame</code>.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>WATCH-1</td>
 <td>Multi-profile watch engine</td>
 <td>Features</td>
@@ -2120,7 +2113,7 @@ persists profiles as schema-validated JSON under
 recovery. Tests cover concurrent profiles, isolation, dedupe,
 persistence round-trip, and the feature-off path.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>WATCH-2</td>
 <td>Pluggable watch action registry</td>
 <td>Features</td>
@@ -2138,7 +2131,7 @@ gracefully with an announced reason rather than failing a profile. Tests
 cover registration, validation, the disabled-feature path, and the
 unavailable-action path.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>WATCH-3</td>
 <td>Durable, monitorable processing queue</td>
 <td>Features</td>
@@ -2153,7 +2146,7 @@ processed twice even across overlapping profiles. Tests cover lifecycle
 transitions, retry/backoff, pause/resume, dedupe under contention, and
 restart recovery.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>WATCH-4</td>
 <td>Watch Queue Monitor (accessible status surface)</td>
 <td>Features</td>
@@ -2172,7 +2165,7 @@ keyboard and screen-reader operable; tests verify item rendering, the
 announced phrasing, the action keys, and the feature-off path. Subsumes
 and extends FEAT-9.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>WATCH-5</td>
 <td>Per-profile configuration and Settings group</td>
 <td>Features</td>
@@ -2203,7 +2196,7 @@ quiet-hours). Tests cover create/edit/delete, validation, persistence,
 name-pattern matching, schedule activeness, and the UI surface
 contract.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>WATCH-6</td>
 <td>Watch safety, consent, and resource governance</td>
 <td>Features</td>
@@ -2231,7 +2224,7 @@ preview, invalid options, missing consent, unknown action), the
 resource-cap classifier and its distinct announcement, and the atomic
 claim.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>WATCH-7</td>
 <td>Built-in watch actions</td>
 <td>Features</td>
@@ -2258,7 +2251,7 @@ including the distinct resource-cap termination announcement. Tests
 cover each action’s happy and failure paths at the registry seam plus
 the UI handler wiring and behaviour.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>FEAT-16</td>
 <td>Document health dashboard</td>
 <td>Features</td>
@@ -2267,7 +2260,7 @@ the UI handler wiring and behaviour.</td>
 <td>One pane combines audit, contrast, link or alt-text inventory, and
 plain-language lint.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>AI-5</td>
 <td>Reaffirm no-silent-network and scope honesty in code and tests</td>
 <td>AI</td>
@@ -2276,7 +2269,7 @@ plain-language lint.</td>
 <td>A test asserts no network call without consent; provider, model, and
 scope are always shown.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>DOC-2</td>
 <td>Navigation and selection guide</td>
 <td>Docs</td>
@@ -2285,7 +2278,7 @@ scope are always shown.</td>
 <td>Worked examples for Quick Nav and structural selection ship in all
 formats.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>DOC-14</td>
 <td>Full docs folder audit and inventory</td>
 <td>Docs</td>
@@ -2294,7 +2287,7 @@ formats.</td>
 <td>Every file under docs is cataloged with status (current, stub,
 stale, duplicate); the inventory is recorded so nothing is missed.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>DOC-15</td>
 <td>Consolidate and structure the docs folder</td>
 <td>Docs</td>
@@ -2305,7 +2298,7 @@ reference, and engineering docs; overlapping and stub pages are merged;
 stale content is removed or marked; folder structure is
 predictable.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>DOC-16</td>
 <td>Raise every docs page to a consistent quality bar</td>
 <td>Docs</td>
@@ -2315,7 +2308,7 @@ predictable.</td>
 internal links, and a last-reviewed date; skeletal engineering docs are
 expanded.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>DOC-17</td>
 <td>Docs style guide and contributor checklist</td>
 <td>Docs</td>
@@ -2325,7 +2318,7 @@ expanded.</td>
 regenerate artifacts) keep the docs folder consolidated and high quality
 over time.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>DOC-6</td>
 <td>Profile-filtered keyboard reference</td>
 <td>Docs</td>
@@ -2334,7 +2327,7 @@ over time.</td>
 <td>Accessible HTML and EPUB cheat sheet filtered by active
 profile.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>POD-1</td>
 <td>Podcast transcript: Meet QUILL</td>
 <td>Docs</td>
@@ -2343,7 +2336,7 @@ profile.</td>
 <td>Clean Markdown transcript passes plain-language lint and ships as
 HTML and EPUB.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>POD-2</td>
 <td>Podcast transcript: The QUILL key</td>
 <td>Docs</td>
@@ -2351,7 +2344,7 @@ HTML and EPUB.</td>
 <td>Todo</td>
 <td>As above, focused on the QUILL key.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>TUT-1</td>
 <td>Tutorial: first session</td>
 <td>Docs</td>
@@ -2360,7 +2353,7 @@ HTML and EPUB.</td>
 <td>Numbered steps with keystrokes and expected spoken
 confirmations.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>TUT-2</td>
 <td>Tutorial: navigate with the QUILL key</td>
 <td>Docs</td>
@@ -2381,7 +2374,7 @@ confirmations.</td>
 <col style="width: 16%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>ID</th>
 <th>Item</th>
 <th>Area</th>
@@ -2391,7 +2384,7 @@ confirmations.</td>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>CQ-2</td>
 <td>Read Aloud engine package split</td>
 <td>Code quality</td>
@@ -2400,7 +2393,7 @@ confirmations.</td>
 <td>One module per engine behind a base; behavior unchanged; tests
 pass.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>CQ-3</td>
 <td>IO structured dispatch table</td>
 <td>Code quality</td>
@@ -2409,7 +2402,7 @@ pass.</td>
 <td>Format routing uses a table or per-format modules; complexity
 reduced; tests pass.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>CQ-4</td>
 <td>Settings nested schema and migration</td>
 <td>Code quality</td>
@@ -2418,7 +2411,7 @@ reduced; tests pass.</td>
 <td>Settings grouped into nested dataclasses with versioned migration;
 round-trip tests pass.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>CQ-5</td>
 <td>Typed storage helpers</td>
 <td>Code quality</td>
@@ -2426,7 +2419,7 @@ round-trip tests pass.</td>
 <td>Todo</td>
 <td>read_json and write helpers are typed; core stays strict.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>CQ-6</td>
 <td>Type the Foundation Models SDK handle</td>
 <td>Code quality</td>
@@ -2434,7 +2427,7 @@ round-trip tests pass.</td>
 <td>Todo</td>
 <td>A Protocol replaces Any; mypy strict passes.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>CQ-9</td>
 <td>Log underlying causes in IO fallbacks</td>
 <td>Code quality</td>
@@ -2443,7 +2436,7 @@ round-trip tests pass.</td>
 <td>Friendly messages remain; root causes are logged for
 diagnostics.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>CQ-10</td>
 <td>Add missing module and method docstrings</td>
 <td>Code quality</td>
@@ -2451,7 +2444,7 @@ diagnostics.</td>
 <td>Todo</td>
 <td>Listed public modules and methods are documented.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>CQ-12</td>
 <td>Undo and redo tests</td>
 <td>Code quality</td>
@@ -2465,7 +2458,7 @@ non-string and non-list payloads, the <code>limit</code> boundary
 list, multi-cycle accumulation, and per-path isolation so two documents
 never share a history.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>CQ-14</td>
 <td>Path-safety tests</td>
 <td>Code quality</td>
@@ -2474,7 +2467,7 @@ never share a history.</td>
 <td>Writes cannot escape app data; tests included. (Pairs with
 SEC-2.)</td>
 </tr>
-<tr>
+<tr class="even">
 <td>CQ-17</td>
 <td>Thread-safety invariants note</td>
 <td>Code quality</td>
@@ -2486,7 +2479,7 @@ documents the double-checked module-level cache pattern (spellcheck
 wordlist/enchant, thesaurus index) and the per-instance mutable-set
 pattern (watch-folder seen-set), plus the rule for new caches.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>PERF-4</td>
 <td>Replace OCR busy-wait</td>
 <td>Performance</td>
@@ -2494,7 +2487,7 @@ pattern (watch-folder seen-set), plus the rule for new caches.</td>
 <td>Todo</td>
 <td>OCR uses a proper wait; no fixed-interval polling.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>PERF-5</td>
 <td>Quick Nav cache invalidation correctness</td>
 <td>Performance</td>
@@ -2503,7 +2496,7 @@ pattern (watch-folder seen-set), plus the rule for new caches.</td>
 <td>Only changed regions invalidate; large-document perf test
 passes.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>PERF-6</td>
 <td>Off-thread or batched persistence</td>
 <td>Performance</td>
@@ -2512,7 +2505,7 @@ passes.</td>
 <td>Settings, palette, and recent writes do not stall the UI
 thread.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>PERF-7</td>
 <td>Cache markup and structure scans per revision</td>
 <td>Performance</td>
@@ -2521,7 +2514,7 @@ thread.</td>
 <td>Navigation reuses cached scans; measurable improvement on large
 files.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>NAV-3</td>
 <td>Uniform scope fallback model</td>
 <td>Navigation</td>
@@ -2530,7 +2523,7 @@ files.</td>
 <td>Selection, paragraph, document fallback is consistent and announced
 across actions.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>NAV-6</td>
 <td>Link navigation announces text, destination, alt state</td>
 <td>Navigation</td>
@@ -2538,7 +2531,7 @@ across actions.</td>
 <td>Todo</td>
 <td>Link browse announces details and alt-text presence.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>NAV-7</td>
 <td>Table review mode</td>
 <td>Navigation</td>
@@ -2546,7 +2539,7 @@ across actions.</td>
 <td>Todo</td>
 <td>Cell reading announces row and column position.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>NAV-8</td>
 <td>Misspellings and matches as Quick Nav types</td>
 <td>Navigation</td>
@@ -2554,7 +2547,7 @@ across actions.</td>
 <td>Todo</td>
 <td>Both are navigable element types with announcements.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>NAV-9</td>
 <td>Quick Nav prewarm race audit</td>
 <td>Navigation</td>
@@ -2563,7 +2556,7 @@ across actions.</td>
 <td>No race in cache rebuild; covered by a test. (Pairs with
 PERF-5.)</td>
 </tr>
-<tr>
+<tr class="even">
 <td>SEL-4</td>
 <td>Named marks and review buffer</td>
 <td>Selection</td>
@@ -2572,7 +2565,7 @@ PERF-5.)</td>
 <td>Marks can be named; a read-only review buffer pages a marked
 range.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>SEL-5</td>
 <td>Extend mode polish</td>
 <td>Selection</td>
@@ -2581,7 +2574,7 @@ range.</td>
 <td>Enter and exit announce; status shows state; committed scope
 confirms.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>QK-6</td>
 <td>Optional generalized earcons</td>
 <td>QUILL key</td>
@@ -2589,7 +2582,7 @@ confirms.</td>
 <td>Todo</td>
 <td>Distinct, opt-in sounds for mode enter, action done, not found.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>QK-7</td>
 <td>Unify QUILL key mental models</td>
 <td>QUILL key</td>
@@ -2598,7 +2591,7 @@ confirms.</td>
 <td>The two modes are clearly documented or unified into one panel; no
 ambiguity.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>QK-8</td>
 <td>Repeat last QUILL action</td>
 <td>QUILL key</td>
@@ -2606,7 +2599,7 @@ ambiguity.</td>
 <td>Todo</td>
 <td>A key repeats the last QUILL action with announcement.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>KEY-2</td>
 <td>Exportable keyboard reference</td>
 <td>Keymaps</td>
@@ -2615,7 +2608,7 @@ ambiguity.</td>
 <td>Reference exports as accessible HTML and EPUB. (Pairs with
 DOC-6.)</td>
 </tr>
-<tr>
+<tr class="even">
 <td>KEY-4</td>
 <td>Validate keybinding syntax on save</td>
 <td>Keymaps</td>
@@ -2624,7 +2617,7 @@ DOC-6.)</td>
 <td>Invalid bindings are rejected with a plain-language
 explanation.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>MENU-3</td>
 <td>Resolve menu redundancy</td>
 <td>Menus</td>
@@ -2633,7 +2626,7 @@ explanation.</td>
 <td>Insert Link duplication is rationalized: the Edit-menu alias was
 removed, leaving Insert as the single primary entry.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>MENU-4</td>
 <td>Labels match announcement grammar</td>
 <td>Menus</td>
@@ -2641,7 +2634,7 @@ removed, leaving Insert as the single primary entry.</td>
 <td>Todo</td>
 <td>Menu labels and announcements are consistent.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>MENU-5</td>
 <td>User-customizable menus and context menu (Menu Editor)</td>
 <td>Menus</td>
@@ -2663,7 +2656,7 @@ out untouched if any menu label is unrecognised). Remaining: the
 per-item and editor context-menu UI (the model already supports
 both).</td>
 </tr>
-<tr>
+<tr class="even">
 <td>FEAT-1</td>
 <td>Read Aloud read-from-cursor, read-selection, spell mode</td>
 <td>Features</td>
@@ -2672,7 +2665,7 @@ both).</td>
 <td>Three modes work and announce; audio caching applies. (Pairs with
 PERF-3.)</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>FEAT-3</td>
 <td>Thesaurus inline replacement</td>
 <td>Features</td>
@@ -2680,7 +2673,7 @@ PERF-3.)</td>
 <td>Todo</td>
 <td>Synonym replacement announces the substitution.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>FEAT-4</td>
 <td>Find and Replace ergonomics</td>
 <td>Features</td>
@@ -2689,7 +2682,7 @@ PERF-3.)</td>
 <td>Replace-and-find-next, named-group preview, recipe quick
 picker.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>FEAT-5</td>
 <td>Snippet tab-stops and picker</td>
 <td>Features</td>
@@ -2697,7 +2690,7 @@ picker.</td>
 <td>Todo</td>
 <td>Tab-stops announce placeholders; picker previews.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>FEAT-6</td>
 <td>Compare spoken summary</td>
 <td>Features</td>
@@ -2706,7 +2699,7 @@ picker.</td>
 <td>A spoken change summary and synchronized navigation
 announcements.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>FEAT-7</td>
 <td>Named macros with safe replay</td>
 <td>Features</td>
@@ -2715,7 +2708,7 @@ announcements.</td>
 <td>Named, described macros replay with per-step announcements; export
 and import.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>FEAT-8</td>
 <td>Calm Document Intake summary</td>
 <td>Features</td>
@@ -2723,7 +2716,7 @@ and import.</td>
 <td>Todo</td>
 <td>Skimmable intake with one-key path to cleanup.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>FEAT-9</td>
 <td>Watch Folder arrival announcements</td>
 <td>Features</td>
@@ -2732,7 +2725,7 @@ and import.</td>
 <td>Non-interrupting notification with one-key open. Delivered as part
 of the WATCH family (WATCH-4); retained for traceability.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>WATCH-8</td>
 <td>GLOW “audit and fix accessibility” watch action</td>
 <td>Features</td>
@@ -2746,7 +2739,7 @@ then the action advertises itself as unavailable with an announced
 reason. Tests cover registration and the unavailable-until-GLOW
 path.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>WATCH-9</td>
 <td>BITS Whisperer “transcribe” watch action</td>
 <td>Features</td>
@@ -2760,7 +2753,7 @@ loop. Becomes available once BITS Whisperer lands; until then it
 advertises itself as unavailable with an announced reason. Tests cover
 registration and the unavailable-until-BW path.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>FEAT-10</td>
 <td>Searchable Sticky Notes vault</td>
 <td>Features</td>
@@ -2768,7 +2761,7 @@ registration and the unavailable-until-BW path.</td>
 <td>Todo</td>
 <td>Vault is searchable and pageable; capture confirms.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>FEAT-11</td>
 <td>Status bar label and persistence polish</td>
 <td>Features</td>
@@ -2776,7 +2769,7 @@ registration and the unavailable-until-BW path.</td>
 <td>Todo</td>
 <td>Every cell announces; layout persists and announces.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>SEC-4</td>
 <td>Document cwd safety for safe_subprocess</td>
 <td>Security</td>
@@ -2787,7 +2780,7 @@ and tested. <code>run_subprocess_safely</code> documents the contract
 and validates <code>cwd</code> is an existing directory (with
 <code>args</code>/executable checks); covered with SEC-15.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>SEC-7</td>
 <td>Forget key command and shared-account note</td>
 <td>Security</td>
@@ -2796,7 +2789,7 @@ and validates <code>cwd</code> is an existing directory (with
 <td>A command clears both secret stores and announces; limitation
 documented.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>AI-1</td>
 <td>Streaming response UI</td>
 <td>AI</td>
@@ -2817,7 +2810,7 @@ being flooded), with a clean non-streaming fallback. Covered by
 <code>tests/unit/core/ai/test_streaming.py</code> and
 <code>test_streaming_backend.py</code>.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>POD-3</td>
 <td>Podcast transcript: Reading and reviewing</td>
 <td>Docs</td>
@@ -2825,7 +2818,7 @@ being flooded), with a clean non-streaming fallback. Covered by
 <td>Todo</td>
 <td>Transcript passes lint; ships in all formats.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>POD-4</td>
 <td>Podcast transcript: On-device AI</td>
 <td>Docs</td>
@@ -2833,7 +2826,7 @@ being flooded), with a clean non-streaming fallback. Covered by
 <td>Todo</td>
 <td>As above.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>POD-5</td>
 <td>Podcast transcript: Make documents accessible</td>
 <td>Docs</td>
@@ -2841,7 +2834,7 @@ being flooded), with a clean non-streaming fallback. Covered by
 <td>Todo</td>
 <td>As above.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>TUT-3</td>
 <td>Tutorial: select and transform by structure</td>
 <td>Docs</td>
@@ -2849,7 +2842,7 @@ being flooded), with a clean non-streaming fallback. Covered by
 <td>Todo</td>
 <td>Numbered steps with keystrokes and confirmations.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>TUT-4</td>
 <td>Tutorial: find and replace safely</td>
 <td>Docs</td>
@@ -2857,7 +2850,7 @@ being flooded), with a clean non-streaming fallback. Covered by
 <td>Todo</td>
 <td>As above.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>TUT-5</td>
 <td>Tutorial: private AI setup</td>
 <td>Docs</td>
@@ -2865,7 +2858,7 @@ being flooded), with a clean non-streaming fallback. Covered by
 <td>Todo</td>
 <td>As above.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>TUT-6</td>
 <td>Tutorial: convert and clean up documents</td>
 <td>Docs</td>
@@ -2873,7 +2866,7 @@ being flooded), with a clean non-streaming fallback. Covered by
 <td>Todo</td>
 <td>As above.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>TUT-7</td>
 <td>Tutorial: customize keymaps and profiles</td>
 <td>Docs</td>
@@ -2881,7 +2874,7 @@ being flooded), with a clean non-streaming fallback. Covered by
 <td>Todo</td>
 <td>As above.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>DOC-3</td>
 <td>Developer quickstart</td>
 <td>Docs</td>
@@ -2890,7 +2883,7 @@ being flooded), with a clean non-streaming fallback. Covered by
 <td>Environment, run, test, lint, type-check, build steps
 documented.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>DOC-4</td>
 <td>Generated API or module reference</td>
 <td>Docs</td>
@@ -2912,7 +2905,7 @@ formats.</td>
 <col style="width: 16%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>ID</th>
 <th>Item</th>
 <th>Area</th>
@@ -2922,7 +2915,7 @@ formats.</td>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>QK-6b</td>
 <td>Earcon sound design pass</td>
 <td>QUILL key</td>
@@ -2931,7 +2924,7 @@ formats.</td>
 <td>A small, tasteful sound set is designed and user-tested with
 screen-reader users.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>FEAT-12</td>
 <td>Named workspace restore polish</td>
 <td>Features</td>
@@ -2939,7 +2932,7 @@ screen-reader users.</td>
 <td>Todo</td>
 <td>Named workspaces reopen and announce what was restored.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>FEAT-13</td>
 <td>Screen-reader-tuned focus mode</td>
 <td>Features</td>
@@ -2948,7 +2941,7 @@ screen-reader users.</td>
 <td>Non-essential chatter is silenced; essential confirmations
 remain.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>FEAT-14</td>
 <td>Reading ruler and line focus</td>
 <td>Features</td>
@@ -2956,7 +2949,7 @@ remain.</td>
 <td>Todo</td>
 <td>Configurable, high-contrast, large line focus for low vision.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>FEAT-15</td>
 <td>One-key inline definition and lookup</td>
 <td>Features</td>
@@ -2965,7 +2958,7 @@ remain.</td>
 <td>Dictionary and thesaurus lookup on a single key with
 announcement.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>FEAT-17</td>
 <td>One-key export presets</td>
 <td>Features</td>
@@ -2973,7 +2966,7 @@ announcement.</td>
 <td>Todo</td>
 <td>Clean HTML, Word, and PDF export with announced results.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>FEAT-18</td>
 <td>Save and recovery transparency</td>
 <td>Features</td>
@@ -2981,7 +2974,7 @@ announcement.</td>
 <td>Todo</td>
 <td>Visible and spoken last-saved and recovered-from state.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>NAV-10</td>
 <td>Symbol navigation for source files</td>
 <td>Navigation</td>
@@ -2990,7 +2983,7 @@ announcement.</td>
 <td>Functions, classes, and headings index for code; type-ahead
 jump.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>AI-2</td>
 <td>Multi-modal image understanding</td>
 <td>AI</td>
@@ -2999,7 +2992,7 @@ jump.</td>
 <td>Optional, opt-in image analysis with consent and announced
 results.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>LINUX-1</td>
 <td>Linux platform layer exploration</td>
 <td>Platform</td>
@@ -3007,7 +3000,7 @@ results.</td>
 <td>Todo</td>
 <td>A spike assesses an accessible Linux path; decision recorded.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>LINUX-2</td>
 <td>Accessible Linux platform layer to product quality</td>
 <td>Platform</td>
@@ -3017,7 +3010,7 @@ results.</td>
 secret store, shell integration) ships at the same accessibility and
 stability bar as Windows and macOS, gated on the same checks.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>ECO-1</td>
 <td>Plugin capability, signing, and marketplace model</td>
 <td>Ecosystem</td>
@@ -3027,7 +3020,7 @@ stability bar as Windows and macOS, gated on the same checks.</td>
 plugins load safely off the experimental flag (builds on SEC-8), with a
 review process; no unsigned plugin runs by default.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>L10N-1</td>
 <td>Full localization of UI and documentation</td>
 <td>Localization</td>
@@ -3037,7 +3030,7 @@ review process; no unsigned plugin runs by default.</td>
 accessibility-reviewed for the committed launch languages, with a
 process to keep translations current.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>COLLAB-1</td>
 <td>Asynchronous review and sharing (scoped)</td>
 <td>Features</td>
@@ -3461,7 +3454,7 @@ scheme. The confirmed latent crashes are P0.</p>
 <col style="width: 16%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>ID</th>
 <th>Item</th>
 <th>Area</th>
@@ -3471,7 +3464,7 @@ scheme. The confirmed latent crashes are P0.</p>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>BUG-1</td>
 <td>Repair corrupted <code>_show_bw_onboarding</code></td>
 <td>UI correctness</td>
@@ -3481,7 +3474,7 @@ scheme. The confirmed latent crashes are P0.</p>
 onboarding presents the intended profile choice; a test exercises the
 path so it cannot regress.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>BUG-2</td>
 <td>Fix four bare <code>wx.</code> calls in heading-style prompts</td>
 <td>UI correctness</td>
@@ -3490,7 +3483,7 @@ path so it cannot regress.</td>
 <td>Lines 16983, 17015, 17022, 17042 use <code>self._wx</code>; a test
 invokes the heading-style flow without <code>NameError</code>.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>BUG-3</td>
 <td>Fix undefined <code>VoiceOption</code> annotations</td>
 <td>UI correctness</td>
@@ -3499,7 +3492,7 @@ invokes the heading-style flow without <code>NameError</code>.</td>
 <td>Lines 12503 and 12532 use the imported alias; ruff reports no F821
 for these.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>BUG-4</td>
 <td>Resolve <code>URLError</code> redefinition</td>
 <td>UI correctness</td>
@@ -3508,7 +3501,7 @@ for these.</td>
 <td>A single import source for <code>URLError</code>; ruff F811
 cleared.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>BUG-5</td>
 <td>Validate llama.cpp response shape</td>
 <td>AI correctness</td>
@@ -3517,7 +3510,7 @@ cleared.</td>
 <td>Malformed responses produce a friendly error, not
 <code>KeyError</code> or <code>IndexError</code>; test included.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>BUG-6</td>
 <td>Fix DOCX Element handling in structured reader</td>
 <td>IO correctness</td>
@@ -3526,7 +3519,7 @@ cleared.</td>
 <td>Lines 614 and 615 type-check and behave correctly on a fixture DOCX;
 mypy clean for that path.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>BUG-7</td>
 <td>Guard chunk splitting against non-positive size</td>
 <td>AI correctness</td>
@@ -3549,7 +3542,7 @@ refined)</h4>
 <col style="width: 16%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>ID</th>
 <th>Item</th>
 <th>Area</th>
@@ -3559,7 +3552,7 @@ refined)</h4>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>SEC-10</td>
 <td>Harden all untrusted XML parsing</td>
 <td>Security</td>
@@ -3569,7 +3562,7 @@ refined)</h4>
 expansion disabled; a billion-laughs fixture is rejected quickly; test
 included.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>SEC-11</td>
 <td>Decompression-bomb limits for ZIP formats</td>
 <td>Security</td>
@@ -3578,7 +3571,7 @@ included.</td>
 <td>A cumulative uncompressed-size cap aborts oversized archives with a
 clear message; test included.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>SEC-12</td>
 <td>Document and reduce PATH-hijack exposure for tool discovery</td>
 <td>Security</td>
@@ -3587,7 +3580,7 @@ clear message; test included.</td>
 <td>Bundled tool paths are preferred; the residual risk is
 documented.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>SEC-13</td>
 <td>Broaden diagnostics secret redaction</td>
 <td>Security</td>
@@ -3596,7 +3589,7 @@ documented.</td>
 <td>Redaction covers token, password, and NAME_KEY assignment patterns;
 test asserts no secret leaks.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>SEC-14</td>
 <td>Python sandbox memory and CPU limits</td>
 <td>Security</td>
@@ -3606,7 +3599,7 @@ test asserts no secret leaks.</td>
 payload is not exposed via the environment where avoidable; test
 included. (Extends SEC-9.)</td>
 </tr>
-<tr>
+<tr class="even">
 <td>SEC-15</td>
 <td>safe_subprocess validates cwd and wraps OSError</td>
 <td>Security</td>
@@ -3619,7 +3612,7 @@ raise <code>ValueError</code>; launch <code>OSError</code> is logged and
 re-raised with the tool name; five new tests in
 <code>tests/stability/test_stability.py</code>.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>SEC-16</td>
 <td>Validate credential and keychain inputs</td>
 <td>Security</td>
@@ -3633,7 +3626,7 @@ over-long, control-character, and leading-dash identifiers; wired into
 the Windows credential manager and the macOS keychain; six new unit
 tests.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>SEC-17</td>
 <td>Document or escape shell-integration command</td>
 <td>Security</td>
@@ -3656,7 +3649,7 @@ P2 quality, typing, performance, IO, docs, tests (new)</h4>
 <col style="width: 16%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>ID</th>
 <th>Item</th>
 <th>Area</th>
@@ -3666,7 +3659,7 @@ P2 quality, typing, performance, IO, docs, tests (new)</h4>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>CQ-18</td>
 <td>Resolve ruff debt across quill, tests, scripts</td>
 <td>Code quality</td>
@@ -3682,7 +3675,7 @@ cleared, so <code>ruff check .</code> runs with no
 <code>--ignore E501</code> in CI or pre-commit. Format, full lint, and
 scoped mypy are clean; full suite 739 passed.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>CQ-19</td>
 <td>Verify and harden atomic write on Windows</td>
 <td>Code quality</td>
@@ -3691,7 +3684,7 @@ scoped mypy are clean; full suite 739 passed.</td>
 <td>Writes use <code>os.replace</code> with retry on transient
 <code>PermissionError</code>; a test simulates contention.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>CQ-20</td>
 <td>Define version pre-release ordering</td>
 <td>Code quality</td>
@@ -3702,7 +3695,7 @@ covers it. <code>_version_tuple</code> now separates the pre-release
 suffix and ranks final &gt; rc &gt; beta &gt; alpha for the same x.y.z;
 <code>tests/unit/core/test_updates.py</code> covers it.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>CQ-21</td>
 <td>Guard TOML parsing in compliance</td>
 <td>Code quality</td>
@@ -3711,7 +3704,7 @@ suffix and ranks final &gt; rc &gt; beta &gt; alpha for the same x.y.z;
 <td>A corrupted <code>pyproject.toml</code> produces a clear error, not
 a silent abort.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>CQ-22</td>
 <td>Document credential empty-blob behavior</td>
 <td>Code quality</td>
@@ -3724,7 +3717,7 @@ the absent (<code>None</code>) versus empty-secret
 <code>tests/unit/platform/windows/test_credential_manager.py</code>
 asserts the distinction with a real round-trip on Windows.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>CQ-23</td>
 <td>Python sandbox policy and attack-surface tests</td>
 <td>Code quality</td>
@@ -3733,7 +3726,7 @@ asserts the distinction with a real round-trip on Windows.</td>
 <td>Tests cover allowed versus blocked modules, escape attempts, and
 resource limits.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>CQ-24</td>
 <td>Read Aloud backend fallback tests</td>
 <td>Code quality</td>
@@ -3741,7 +3734,7 @@ resource limits.</td>
 <td>Todo</td>
 <td>Each backend and the fallback order is tested with stubs.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>CQ-25</td>
 <td>Add dependency lockfile and CI timeouts</td>
 <td>Build</td>
@@ -3750,7 +3743,7 @@ resource limits.</td>
 <td>Dependencies are pinned for release runs; long commands have
 timeouts.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>CQ-26</td>
 <td>Make the embeddable Python hash configurable</td>
 <td>Build</td>
@@ -3759,7 +3752,7 @@ timeouts.</td>
 <td>The Windows build reads the expected hash from config, not a code
 constant.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>TYPE-1</td>
 <td>Type <code>ipc.py</code> handle and guard fcntl</td>
 <td>Typing</td>
@@ -3768,7 +3761,7 @@ constant.</td>
 <td><code>mypy quill/core/ipc.py</code> reports no issues in the strict
 zone (typed file-lock handles, fcntl attr guards from CQ-7).</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>TYPE-2</td>
 <td>Annotate <code>bw_speech.py</code></td>
 <td>Typing</td>
@@ -3777,7 +3770,7 @@ zone (typed file-lock handles, fcntl attr guards from CQ-7).</td>
 <td><code>mypy quill/core/bw_speech.py</code> reports no issues in the
 strict zone.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>TYPE-3</td>
 <td>Fix <code>read_aloud.py</code> kokoro ignore</td>
 <td>Typing</td>
@@ -3787,7 +3780,7 @@ strict zone.</td>
 kokoro import is covered by the <code>ignore_missing_imports</code>
 override.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>TYPE-4</td>
 <td>Annotate <code>dictation.py</code> recognizer</td>
 <td>Typing</td>
@@ -3796,7 +3789,7 @@ override.</td>
 <td><code>mypy quill/core/dictation.py</code> reports no issues in the
 strict zone.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>TYPE-5</td>
 <td>Annotate <code>io/pages.py</code></td>
 <td>Typing</td>
@@ -3805,7 +3798,7 @@ strict zone.</td>
 <td><code>mypy quill/io/pages.py</code> reports no issues in the strict
 zone.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>TYPE-6</td>
 <td>Annotate <code>io/structured.py</code> and add openpyxl stubs</td>
 <td>Typing</td>
@@ -3814,7 +3807,7 @@ zone.</td>
 <td><code>mypy quill/io/structured.py</code> reports no issues; openpyxl
 is covered by the <code>ignore_missing_imports</code> override.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>TYPE-7</td>
 <td>Type the llama.cpp backend handle</td>
 <td>Typing</td>
@@ -3823,7 +3816,7 @@ is covered by the <code>ignore_missing_imports</code> override.</td>
 <td><code>mypy quill/core/ai/llama_cpp_backend.py</code> reports no
 issues in the strict zone.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>TYPE-8</td>
 <td>Annotate <code>ai/assistant.py</code></td>
 <td>Typing</td>
@@ -3832,7 +3825,7 @@ issues in the strict zone.</td>
 <td><code>mypy quill/core/ai/assistant.py</code> reports no issues in
 the strict zone.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>PERF-10</td>
 <td>Stream and cache Read Aloud audio</td>
 <td>Performance</td>
@@ -3841,7 +3834,7 @@ the strict zone.</td>
 <td>Long-document synthesis does not spike memory; identical sentences
 are cached.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>PERF-11</td>
 <td>Cap or stream spreadsheet reads</td>
 <td>Performance</td>
@@ -3850,7 +3843,7 @@ are cached.</td>
 <td>Large sheets do not exhaust memory; a row cap or streaming
 applies.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>PERF-12</td>
 <td>Stream DOCX and PPTX off the UI thread</td>
 <td>Performance</td>
@@ -3858,7 +3851,7 @@ applies.</td>
 <td>Todo</td>
 <td>Large office files do not block the UI thread.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>PERF-13</td>
 <td>Page-stream large PDFs</td>
 <td>Performance</td>
@@ -3867,7 +3860,7 @@ applies.</td>
 <td>Very large PDFs extract without materializing all pages at
 once.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>PERF-14</td>
 <td>Chunk file search over large corpora</td>
 <td>Performance</td>
@@ -3875,7 +3868,7 @@ once.</td>
 <td>Todo</td>
 <td>Search streams large inputs without quadratic blowups.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>IO-1</td>
 <td>Add outline support for structured formats</td>
 <td>IO</td>
@@ -3884,7 +3877,7 @@ once.</td>
 <td>DOCX, PPTX, and XLSX provide an outline, or the contract is amended
 and documented.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>DOC-7</td>
 <td>Configuration schema reference</td>
 <td>Docs</td>
@@ -3893,7 +3886,7 @@ and documented.</td>
 <td>Settings, keymap, and data schemas are documented for
 pre-configuration.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>DOC-8</td>
 <td>Troubleshooting guide</td>
 <td>Docs</td>
@@ -3902,7 +3895,7 @@ pre-configuration.</td>
 <td>Common issues (key conflicts, PDF extraction, AI connection,
 autosave) are documented with fixes.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>DOC-9</td>
 <td>Replace or label the ACR template</td>
 <td>Docs</td>
@@ -3911,7 +3904,7 @@ autosave) are documented with fixes.</td>
 <td>The conformance report reflects a real 0.1.5 assessment or is
 clearly marked not yet assessed.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>DOC-10</td>
 <td>Clarify 1.0 versus 0.1.5 in the PRD header</td>
 <td>Docs</td>
@@ -3919,7 +3912,7 @@ clearly marked not yet assessed.</td>
 <td>Todo</td>
 <td>The PRD states its 1.0 scope and the 0.1.5 implemented subset.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>DOC-11</td>
 <td>Make the PRD and docs accessible</td>
 <td>Docs</td>
@@ -3928,7 +3921,7 @@ clearly marked not yet assessed.</td>
 <td>Emoji are replaced with text labels and em-dashes removed across
 docs source; artifacts regenerated and the docs gate passes.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>DOC-12</td>
 <td>Expand engineering docs</td>
 <td>Docs</td>
@@ -3937,7 +3930,7 @@ docs source; artifacts regenerated and the docs gate passes.</td>
 <td>Architecture, contracts, data layout, runtime model, diagnostics,
 and quality gates are filled out beyond stubs.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>DOC-13</td>
 <td>Fill user-guide gaps</td>
 <td>Docs</td>
@@ -4301,7 +4294,7 @@ P1)</h5>
 <col style="width: 16%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>ID</th>
 <th>Item</th>
 <th>Area</th>
@@ -4311,7 +4304,7 @@ P1)</h5>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>GATE-1</td>
 <td>Pre-commit hooks for format, lint, and quick checks</td>
 <td>Gates</td>
@@ -4322,7 +4315,7 @@ and <code>ruff check</code> (which includes the F821 undefined-name
 rule) on changed files, blocking failing commits locally; CONTRIBUTING
 documents one-time install.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>GATE-2</td>
 <td>Pull-request CI pipeline</td>
 <td>Gates</td>
@@ -4338,7 +4331,7 @@ Accessibility CI (the a11y suite, docs-artifact diff, and dialog
 regressions), every required job runs on push and pull_request. Branch
 protection should require these checks before merge.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>GATE-3</td>
 <td>Strict typing gate (scoped)</td>
 <td>Gates</td>
@@ -4350,7 +4343,7 @@ merge); third-party stub gaps are handled via
 <code>ignore_missing_imports</code> module overrides in pyproject; the
 whole-tree scan is never used.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>GATE-4</td>
 <td>Banned-pattern gate</td>
 <td>Gates</td>
@@ -4367,7 +4360,7 @@ and tests cover the checker. The <code>except Exception</code>
 logged-cause sub-rule is tracked under CQ (it needs handler-body
 refactors across 26 sites) and is not claimed here.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>GATE-5</td>
 <td>Test and coverage floor</td>
 <td>Gates</td>
@@ -4381,7 +4374,7 @@ and <code>quill.io</code> (current total 72.28%).
 that must rise, never fall, as coverage improves; raising it is the
 mechanism for ratcheting.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>GATE-6</td>
 <td>Characterization gate for main_frame</td>
 <td>Gates</td>
@@ -4398,7 +4391,7 @@ public method fails until the snapshot is regenerated deliberately with
 <code>python -m quill.tools.ui_surface --write</code>, keeping the
 planned decomposition behavior-preserving.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>GATE-7</td>
 <td>Accessibility gate on every PR</td>
 <td>Gates</td>
@@ -4414,7 +4407,7 @@ announcement-grammar conformance suite
 asserts the A11Y-1 grammar stays well-formed. Contrast handling is
 covered by the high-contrast platform tests.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>GATE-8</td>
 <td>Security scan gate</td>
 <td>Gates</td>
@@ -4434,7 +4427,7 @@ A full third-party static analyzer (bandit) sweep is intentionally not
 claimed yet because the tree has 52 unreviewed <code>S</code>-rule
 findings; adopting it is tracked under the remaining SEC items.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>GATE-9</td>
 <td>No-silent-network gate</td>
 <td>Gates</td>
@@ -4451,7 +4444,7 @@ runtime provider/model/scope-shown assertion is coupled to the AI
 provider wiring (AI-13) and is called out there rather than overclaimed
 here.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>GATE-10</td>
 <td>Performance budget gate</td>
 <td>Gates</td>
@@ -4461,7 +4454,7 @@ here.</td>
 Quick Nav, and Read Aloud start stay within published budgets;
 regressions fail the build.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>GATE-11</td>
 <td>Module-size budget gate</td>
 <td>Gates</td>
@@ -4470,7 +4463,7 @@ regressions fail the build.</td>
 <td>A ratcheting size budget prevents new growth in the largest files
 and decreases as extraction proceeds.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>GATE-12</td>
 <td>Strengthen AI assistant repository guidance</td>
 <td>Gates</td>
@@ -4480,7 +4473,7 @@ and decreases as extraction proceeds.</td>
 strict zone, scoped mypy, accessibility, no-silent-network, the audit
 footguns, and the definition of done; a check keeps them current.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>GATE-13</td>
 <td>Machine-checked definition of done</td>
 <td>Gates</td>
@@ -4490,7 +4483,7 @@ footguns, and the definition of done; a check keeps them current.</td>
 silent network, docs regenerated) is documented and mirrored by the
 gates.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>GATE-14</td>
 <td>CODEOWNERS and required review for high-risk areas</td>
 <td>Gates</td>
@@ -4512,7 +4505,7 @@ human review even when AI-authored.</td>
 <col style="width: 16%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>ID</th>
 <th>Item</th>
 <th>Area</th>
@@ -4522,7 +4515,7 @@ human review even when AI-authored.</td>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>AI-6</td>
 <td>Graceful AI degradation and clear status</td>
 <td>AI</td>
@@ -4540,7 +4533,7 @@ unavailable). Covered by
 switch, ready, reason passthrough, missing-key detection, feature-name
 weaving, never-blocks-editor).</td>
 </tr>
-<tr>
+<tr class="even">
 <td>AI-7</td>
 <td>Preview-and-apply AI diffs reviewable by ear</td>
 <td>AI</td>
@@ -4568,7 +4561,7 @@ apply, round-trip) and
 <code>tests/unit/ui/test_assistant_tools_dialog_callbacks.py</code>
 (apply-all, partial apply, reject-all).</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>AI-8</td>
 <td>Context-aware AI actions</td>
 <td>AI</td>
@@ -4577,7 +4570,7 @@ apply, round-trip) and
 <td>Offered actions adapt to cursor or selection context and document
 type and are reachable from the QUILL key.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>AI-9</td>
 <td>Prompt library and recipes</td>
 <td>AI</td>
@@ -4586,7 +4579,7 @@ type and are reachable from the QUILL key.</td>
 <td>Prompts and recipes can be saved, named, organized, shared, and
 picked with live preview.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>AI-10</td>
 <td>Style training and explainable edits</td>
 <td>AI</td>
@@ -4595,7 +4588,7 @@ picked with live preview.</td>
 <td>The assistant can match a user’s voice and explain why it made each
 change, consistently across a document.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>AI-11</td>
 <td>Local grounded answers over user content</td>
 <td>AI</td>
@@ -4605,7 +4598,7 @@ change, consistently across a document.</td>
 vault answers questions with citations and no network without
 consent.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>AI-12</td>
 <td>AI evaluation harness</td>
 <td>AI</td>
@@ -4614,7 +4607,7 @@ consent.</td>
 <td>A repeatable task set with quality checks measures AI and agent
 output and catches regressions before release.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>AGENT-1</td>
 <td>Accessibility agent (make this document accessible)</td>
 <td>AI</td>
@@ -4643,7 +4636,7 @@ advisory-only (flagged for human authoring, not auto-written) —
 AI-assisted alt-text/link-text authoring and richer structure repair are
 still to come, so this row stays In progress.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>AGENT-2</td>
 <td>Cleanup agent</td>
 <td>AI</td>
@@ -4652,7 +4645,7 @@ still to come, so this row stays In progress.</td>
 <td>A messy import is cleaned through announced, reversible recipes
 ending in well-structured text.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>AGENT-3</td>
 <td>Review agent</td>
 <td>AI</td>
@@ -4661,7 +4654,7 @@ ending in well-structured text.</td>
 <td>A spoken, skimmable review reports structure, readability,
 accessibility, and consistency with one-key jumps to issues.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>AGENT-4</td>
 <td>Safe local agent runtime</td>
 <td>AI</td>
@@ -4686,7 +4679,7 @@ review (from section 18.4 and 18.5)</h5>
 <col style="width: 16%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>ID</th>
 <th>Item</th>
 <th>Area</th>
@@ -4696,7 +4689,7 @@ review (from section 18.4 and 18.5)</h5>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>AI-13</td>
 <td>Wire configured providers to a real chat backend</td>
 <td>AI</td>
@@ -4714,7 +4707,7 @@ responds. Reuses the endpoint-security check, verified TLS,
 retry/backoff, and error taxonomy; new egress registered in the GATE-9
 audit. Verified by mocked-network tests.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>AI-14</td>
 <td>Streaming responses across providers</td>
 <td>AI</td>
@@ -4736,7 +4729,7 @@ fallback. Verified by mocked-network tests in
 <code>tests/unit/core/ai/test_streaming.py</code> and
 <code>test_streaming_backend.py</code>.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>AI-15</td>
 <td>Provider-specific correctness</td>
 <td>AI</td>
@@ -4750,7 +4743,7 @@ OpenRouter sends HTTP-Referer and X-Title attribution headers; Ollama
 chat uses /api/chat with stream=false. Each is covered by a contract
 test.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>AI-16</td>
 <td>Per-provider contract tests</td>
 <td>AI</td>
@@ -4761,7 +4754,7 @@ shape (endpoint, body, headers) and response parsing with mocked
 request/response and no live network; a provider schema change fails the
 build instead of silently breaking generation.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>AI-17</td>
 <td>Extend the error taxonomy to the chat path</td>
 <td>AI</td>
@@ -4775,7 +4768,7 @@ and cause-specific, screen-reader-friendly messages as model listing,
 with the same bounded warm-up retry; verified by 401/503/URLError
 tests.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>AI-18</td>
 <td>GitHub Copilot SDK as an optional post-1.0 provider</td>
 <td>AI</td>
@@ -4786,7 +4779,7 @@ the AIBackend boundary with an accessible OAuth device-flow sign-in,
 gated and never default; documented rationale (section 18.5) is honored.
 Not required for 1.0.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>AI-19</td>
 <td>Accessible subscription sign-in (no pasted API key)</td>
 <td>AI</td>
@@ -4825,7 +4818,7 @@ token storage, the consent surface, and the AIBackend (AI-13) wiring are
 not yet built, so no live subscription sign-in ships and this row stays
 In progress.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>AI-20</td>
 <td>Branchable, resumable AI writing sessions</td>
 <td>AI</td>
@@ -4867,7 +4860,7 @@ tested, but the accessible branch-browser/compare UI surface and the
 wiring that records the live assistant transcript into the tree are not
 yet built, so this row stays In progress.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>AI-21</td>
 <td>Durable per-document writing instructions the assistant cannot
 drop</td>
@@ -4892,7 +4885,7 @@ Writing Style: train the voice, pin the rules. Tested: path resolution,
 save/load per scope, live reload, preamble framing, and the
 instructions-then-style-then-prompt ordering.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>AI-22</td>
 <td>Mid-task model speed/cost tiers</td>
 <td>AI</td>
@@ -4935,7 +4928,7 @@ any registered model via <code>assign_model_to_tier</code>. The
 covered by a source-contract test (engine imports, tier section,
 announced switch, per-tier assignment). Done.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>AI-23</td>
 <td>Graceful context compaction for long sessions</td>
 <td>AI</td>
@@ -4955,7 +4948,7 @@ blank leaves the thread intact (never loses content). Tests cover the
 token heuristic, the over-budget compaction, recent-turn preservation,
 the too-few-turns and failed/blank-summary no-op paths.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>AI-24</td>
 <td>Language-agnostic stdio/JSON boundary for external engines</td>
 <td>AI</td>
@@ -5229,7 +5222,7 @@ keep both in step when any GLOW item changes scope or status.</p>
 <col style="width: 16%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>ID</th>
 <th>Item</th>
 <th>Area</th>
@@ -5239,7 +5232,7 @@ keep both in step when any GLOW item changes scope or status.</p>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>GLOW-1</td>
 <td>Adopt quill-glow-core as the shared engine</td>
 <td>Suite</td>
@@ -5265,7 +5258,7 @@ in-editor reports unchanged for users; tests cover both backend and
 fallback paths. Coordinate the three repos and keep the shared API
 stable. Ignore the stale <code>s:\code\glow-7.0.0</code> snapshot.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>GLOW-2</td>
 <td>Audit and fix structured formats in-editor</td>
 <td>Suite</td>
@@ -5274,7 +5267,7 @@ stable. Ignore the stale <code>s:\code\glow-7.0.0</code> snapshot.</td>
 <td>DOCX, PPTX, XLSX, PDF, and EPUB can be audited (and fixed where
 supported) in place through the shared core.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>GLOW-3</td>
 <td>Navigable in-editor accessibility report</td>
 <td>Suite</td>
@@ -5284,7 +5277,7 @@ supported) in place through the shared core.</td>
 one-key jump, plain-language explanation, and reviewable
 apply-and-undo.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>GLOW-4</td>
 <td>Standards profiles setting</td>
 <td>Suite</td>
@@ -5293,7 +5286,7 @@ apply-and-undo.</td>
 <td>ACB Baseline, APH Submission, and Combined Strict are selectable;
 the active profile shows in every report.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>GLOW-5</td>
 <td>Accessible publish via the GLOW conversion chain</td>
 <td>Suite</td>
@@ -5302,7 +5295,7 @@ the active profile shows in every report.</td>
 <td>One-key export to accessible Word, HTML, EPUB, and PDF using the
 shared conversion chain, with announced results.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>GLOW-6</td>
 <td>Show active accessibility engine and rule version</td>
 <td>Suite</td>
@@ -5312,7 +5305,7 @@ shared conversion chain, with announced results.</td>
 <code>get_component_versions</code> and startup telemetry, surfaced in
 <code>diagnostics.py</code> and the About dialog.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>GLOW-7</td>
 <td>Consent gate for GLOW optional AI and network features</td>
 <td>Suite</td>
@@ -5325,7 +5318,7 @@ with visible progress and outcome, honoring QUILL’s no-silent-network
 rule and the GATE-9 egress audit. A test asserts the defaults are off
 and no GLOW path performs a silent outbound call.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>BW-1</td>
 <td>Canonical transcript model and audio-to-document transcription</td>
 <td>Suite</td>
@@ -5340,7 +5333,7 @@ document from it, reusing BW’s <code>TranscriptionService</code> /
 faster-whisper model layer; on-device by default. The model is the
 keystone the rest of the tier depends on.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>BW-2</td>
 <td>Local-first transcription providers with consented cloud</td>
 <td>Suite</td>
@@ -5349,7 +5342,7 @@ keystone the rest of the tier depends on.</td>
 <td>On-device providers are default; cloud providers are opt-in and
 consented; no silent network calls.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>BW-3</td>
 <td>Live dictation into the editor</td>
 <td>Suite</td>
@@ -5358,7 +5351,7 @@ consented; no silent network calls.</td>
 <td>Live microphone transcription writes into the document with clear
 start, stop, and status announcements.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>BW-4</td>
 <td>Speaker-labeled, structured transcripts</td>
 <td>Suite</td>
@@ -5367,7 +5360,7 @@ start, stop, and status announcements.</td>
 <td>Diarization produces speaker-labeled structure that the Cleanup
 agent can refine.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>BW-5</td>
 <td>Translate and summarize transcripts via QUILL AI</td>
 <td>Suite</td>
@@ -5376,7 +5369,7 @@ agent can refine.</td>
 <td>Translation and summarization run through QUILL’s consented AI
 layer, not a parallel one.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>BW-6</td>
 <td>Watch-folder and batch transcription</td>
 <td>Suite</td>
@@ -5385,7 +5378,7 @@ layer, not a parallel one.</td>
 <td>Optional batch and watch-folder transcription reuses QUILL’s
 watch-folder pattern with non-intrusive announcements.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>BW-7</td>
 <td>Unified Provider and Model Center</td>
 <td>Suite</td>
@@ -5394,7 +5387,7 @@ watch-folder pattern with non-intrusive announcements.</td>
 <td>Writing AI, transcription providers, and speech models are managed
 in one accessible Settings home.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>BW-8</td>
 <td>Consume BITS Whisperer as a library, retire the duplicate shell</td>
 <td>Suite</td>
@@ -5404,7 +5397,7 @@ in one accessible Settings home.</td>
 plugins, and updates; BW ships as a consumed library, not a second
 app.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>BW-9</td>
 <td>Three-tier provider exposure via feature flags</td>
 <td>Suite</td>
@@ -5418,7 +5411,7 @@ cost estimation) -&gt; <code>core.bw_providers_enterprise</code> (all
 providers are opt-in per action with keys in the OS credential
 vault.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>BW-10</td>
 <td>Unify transcript export into QUILL presets</td>
 <td>Suite</td>
@@ -5808,7 +5801,7 @@ CQ-16) are counted once, in their primary tier.</p>
 <col style="width: 16%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Tier</th>
 <th>Scope</th>
 <th>Total items</th>
@@ -5818,7 +5811,7 @@ CQ-16) are counted once, in their primary tier.</p>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>Tier 1</td>
 <td>Protect users and unlock the team</td>
 <td>23</td>
@@ -5826,16 +5819,16 @@ CQ-16) are counted once, in their primary tier.</p>
 <td>0</td>
 <td>(complete)</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Tier 2</td>
 <td>Flagship experience</td>
-<td>58</td>
-<td>47</td>
-<td>11</td>
+<td>57</td>
+<td>43</td>
+<td>14</td>
 <td>OCR-1, OCR-3, OCR-4, AGENT-1, AI-19, SET-2, SET-3, CTX-1, DICT-2,
-FEAT-19, DLG-1</td>
+FEAT-19, DLG-1, MENU-1, MENU-5, A11Y-4</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Tier 4</td>
 <td>Structural health and performance</td>
 <td>30</td>
@@ -5844,7 +5837,7 @@ FEAT-19, DLG-1</td>
 <td>CQ-16, CQ-1, DLG-2, GATE-11, PERF-1..3, PERF-9..14, GATE-10, SEC-6,
 SEC-7, SEC-8, SEC-14, SEC-17</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Tier 6</td>
 <td>Documentation and learning surface</td>
 <td>33</td>
@@ -5853,15 +5846,15 @@ SEC-7, SEC-8, SEC-14, SEC-17</td>
 <td>DOC-14..17, DOC-11, DOC-12, DOC-1..8, POD-1..5, TUT-1..7, CQ-11,
 CQ-14, CQ-23, CQ-24, LINUX-2</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><strong>1.0 subtotal</strong></td>
 <td>Tiers 1, 2, 4, 6 (the QUILL 1.0 scope)</td>
-<td><strong>144</strong></td>
-<td><strong>81</strong></td>
+<td><strong>143</strong></td>
+<td><strong>80</strong></td>
 <td><strong>63</strong></td>
 <td></td>
 </tr>
-<tr>
+<tr class="even">
 <td>Tier 3 (2.0)</td>
 <td>GLOW accessibility engine — deferred to QUILL 2.0</td>
 <td>8</td>
@@ -5869,7 +5862,7 @@ CQ-14, CQ-23, CQ-24, LINUX-2</td>
 <td>8</td>
 <td>GLOW-1..7, WATCH-8</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Tier 5 (2.0)</td>
 <td>BITS Whisperer transcription — deferred to QUILL 2.0</td>
 <td>28</td>
@@ -5878,7 +5871,7 @@ CQ-14, CQ-23, CQ-24, LINUX-2</td>
 <td>BW-1..10, WATCH-9, NAV-10, AI-11, AI-12, AI-18, FEAT-12..18,
 LINUX-1, ECO-1, L10N-1, COLLAB-1</td>
 </tr>
-<tr>
+<tr class="even">
 <td>AX (2.0)</td>
 <td>Accessibility Agents / axe-core engine — deferred to QUILL 2.0</td>
 <td>6</td>
@@ -5886,7 +5879,7 @@ LINUX-1, ECO-1, L10N-1, COLLAB-1</td>
 <td>6</td>
 <td>AX-A..F</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><strong>2.0 subtotal</strong></td>
 <td>GLOW + BITS Whisperer + axe-core</td>
 <td><strong>42</strong></td>
@@ -5894,11 +5887,11 @@ LINUX-1, ECO-1, L10N-1, COLLAB-1</td>
 <td><strong>42</strong></td>
 <td></td>
 </tr>
-<tr>
+<tr class="even">
 <td><strong>Total</strong></td>
 <td>All tiers (1.0 + 2.0)</td>
-<td><strong>186</strong></td>
-<td><strong>81</strong></td>
+<td><strong>185</strong></td>
+<td><strong>80</strong></td>
 <td><strong>105</strong></td>
 <td></td>
 </tr>
@@ -5934,32 +5927,32 @@ the third table and are not part of either 1.0 list.</p>
 <col style="width: 33%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Tier</th>
 <th>Status</th>
 <th>Feature IDs</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>Tier 2 — Flagship</td>
 <td>In progress</td>
 <td>SET-2, SET-3, MENU-1, MENU-5, AGENT-1, OCR-1, OCR-3, OCR-4, CTX-1,
 DICT-2, FEAT-19, DLG-1, AI-19</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Tier 2 — Flagship</td>
 <td>Todo</td>
-<td>(none)</td>
+<td>A11Y-4</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Tier 4 — Structural health</td>
 <td>Todo</td>
 <td>CQ-1, CQ-16, DLG-2, GATE-10, GATE-11, PERF-1, PERF-2, PERF-3,
 PERF-9, PERF-10, PERF-11, PERF-12, PERF-13, PERF-14, SEC-6, SEC-7,
 SEC-8, SEC-14, SEC-17</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Tier 6 — Documentation</td>
 <td>Todo</td>
 <td>DOC-1, DOC-2, DOC-3, DOC-4, DOC-5, DOC-6, DOC-7, DOC-8, DOC-11,
@@ -5976,19 +5969,19 @@ CQ-24, LINUX-2</td>
 <col style="width: 50%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Tier</th>
 <th>Feature IDs</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>Tier 1 — Protect users</td>
 <td>BUG-1, BUG-2, BUG-3, BUG-4, BUG-5, BUG-6, BUG-7, SEC-1, SEC-10,
 SEC-11, SEC-13, GATE-1, GATE-2, GATE-3, GATE-4, GATE-5, GATE-6, GATE-7,
 GATE-8, GATE-9, FLAG-1, FLAG-2</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Tier 2 — Flagship</td>
 <td>QK-1, QK-2, QK-3, QK-4, QK-5, QK-9, NAV-1, NAV-4, NAV-5, SEL-1,
 SEL-2, SEL-3, AI-1, AI-6, AI-7, AI-13, AI-14, AI-15, AI-16, AI-17,
@@ -5996,7 +5989,7 @@ AI-21, AI-23, WATCH-1, WATCH-2, WATCH-3, WATCH-4, WATCH-5, WATCH-6,
 WATCH-7, SET-1, SET-4, SET-5, SET-6, SET-7, SHARE-1, SHARE-2, SHARE-3,
 FLAG-3, FLAG-4, MENU-3, DICT-1, OCR-2, OCR-5</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Tier 4 — Structural health</td>
 <td>CQ-7, CQ-12, CQ-13, CQ-14, CQ-15, CQ-17, CQ-18, CQ-19, CQ-20, CQ-21,
 CQ-22, PERF-8, SEC-4, SEC-15, SEC-16, TYPE-1, TYPE-2, TYPE-3, TYPE-4,
@@ -6012,33 +6005,33 @@ TYPE-5, TYPE-6, TYPE-7, TYPE-8</td>
 <col style="width: 33%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Workstream</th>
 <th>Feature IDs</th>
 <th>Why deferred</th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>GLOW accessibility engine (Tier 3)</td>
 <td>GLOW-1, GLOW-2, GLOW-3, GLOW-4, GLOW-5, GLOW-6, GLOW-7, WATCH-8</td>
 <td>Cross-repo engine integration; lands as a 2.0 headline once the
 shared <code>quill-glow-core</code> engine is green.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>BITS Whisperer transcription (Tier 5)</td>
 <td>BW-1, BW-2, BW-3, BW-4, BW-5, BW-6, BW-7, BW-8, BW-9, BW-10,
 WATCH-9</td>
 <td>The second distinctive engine; a clean 2.0 integration after the 1.0
 flagship ships.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Accessibility Agents / axe-core (AX)</td>
 <td>AX-A, AX-B, AX-C, AX-D, AX-E, AX-F</td>
 <td>Builds on the GLOW engine and report surface, so it follows GLOW
 into 2.0.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Tier 5 stretch explorations</td>
 <td>NAV-10, AI-11, AI-12, AI-18, FEAT-12, FEAT-13, FEAT-14, FEAT-15,
 FEAT-16, FEAT-17, FEAT-18, LINUX-1, ECO-1, L10N-1, COLLAB-1</td>
@@ -7118,7 +7111,7 @@ build on.</li>
 <col style="width: 25%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Dimension</th>
 <th>Baseline (0.1.5)</th>
 <th>Now (2026-06-01)</th>
@@ -7126,7 +7119,7 @@ build on.</li>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>Security and privacy</td>
 <td>Level 3</td>
 <td>Level 3 to 4</td>
@@ -7135,14 +7128,14 @@ validation close the worst input and supply-chain gaps; remaining items
 (network checksums, sandbox limits, gate enforcement) keep this short of
 Level 5.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Code quality and architecture</td>
 <td>Level 3</td>
 <td>Level 3 (cleaner)</td>
 <td>Seven latent crashes removed and pre-existing test rot fixed; the UI
 monolith and lint/typing debt remain, so the level holds.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>AI and agents</td>
 <td>Level 2</td>
 <td>Level 2 to 3</td>
@@ -7150,7 +7143,7 @@ monolith and lint/typing debt remain, so the level holds.</td>
 the headline gap (configured providers still fall back to local
 generation, AI-13) is not yet closed.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Test coverage</td>
 <td>Level 2 to 3</td>
 <td>Level 3</td>
@@ -7196,7 +7189,7 @@ included for contrast.</p>
 <col style="width: 25%" />
 </colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>Dimension</th>
 <th>Today (0.1.5 beta)</th>
 <th>After this plan</th>
@@ -7204,21 +7197,21 @@ included for contrast.</p>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>Accessibility</td>
 <td>Level 4: strong, screen-reader-first</td>
 <td>Level 5: category-defining</td>
 <td>Accessibility is gated on every change; the accessibility agent has
 no real peer.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Core writing and navigation</td>
 <td>Level 3 to 4</td>
 <td>Level 5</td>
 <td>QUILL key, Quick Nav, and structural selection become a cohesive,
 discoverable, tunable system.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>AI and agents</td>
 <td>Level 2: strong config, but providers do not yet generate</td>
 <td>Level 4 to 5</td>
@@ -7228,7 +7221,7 @@ to the local model (AI-13); after this plan, local-first, consented,
 reversible, fully accessible AI editing and a real accessibility agent,
 with the selected provider actually responding.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Code quality and architecture</td>
 <td>Level 3: well-structured but a monolith</td>
 <td>Level 5</td>
@@ -7236,7 +7229,7 @@ with the selected provider actually responding.</td>
 strict typing and lint are clean and enforced everywhere, not only in
 the core zone.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Security and privacy</td>
 <td>Level 3</td>
 <td>Level 5</td>
@@ -7244,35 +7237,35 @@ the core zone.</td>
 no-silent-network, and a documented plugin capability and signing model
 (ECO-1).</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Performance</td>
 <td>Level 3</td>
 <td>Level 5</td>
 <td>First-use stalls removed; budgets enforced by a gate; large-document
 and Read Aloud paths tuned to best-in-class responsiveness.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Documentation</td>
 <td>Level 3 to 4</td>
 <td>Level 5</td>
 <td>Consolidated, accessible, complete, with primers, references,
 podcasts, tutorials, and full localization (L10N-1).</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Combined suite (GLOW and transcription)</td>
 <td>Level 2: separate apps, partial bridges</td>
 <td>Level 5</td>
 <td>Write, transcribe, audit, fix, and publish in one accessible app on
 shared engines.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Engineering process and gates</td>
 <td>Level 2: tools exist, not enforced</td>
 <td>Level 5</td>
 <td>A full gate ladder makes quality objective and lets AI assistance
 accelerate safely.</td>
 </tr>
-<tr>
+<tr class="even">
 <td>Test coverage</td>
 <td>Level 2 to 3</td>
 <td>Level 5</td>
@@ -7280,7 +7273,7 @@ accelerate safely.</td>
 contract tests, and a performance budget close every major gap, with a
 ratcheting coverage floor.</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>Platform breadth</td>
 <td>Level 3: Windows and macOS</td>
 <td>Level 5</td>
