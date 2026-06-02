@@ -17860,82 +17860,62 @@ class MainFrame:
     def _prompt_search(
         self, title: str, replacement: bool = False
     ) -> tuple[str, str | None, SearchOptions] | None:
-        wx = self._wx
+        from quill.ui.web_form import show_web_form
+
         default_query = self._last_find_query or (
             self._search_history[0] if self._search_history else ""
         )
-        dialog = wx.Dialog(self.frame, title=title, size=(460, 0))
-        panel = wx.Panel(dialog)
-        root = wx.BoxSizer(wx.VERTICAL)
-        root.Add(wx.StaticText(panel, label="Find text:"), 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
-        query_ctrl = wx.TextCtrl(panel, value=default_query, style=wx.TE_PROCESS_ENTER)
-        root.Add(query_ctrl, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8)
-
-        replacement_ctrl = None
-        if replacement:
-            root.Add(wx.StaticText(panel, label="Replace with:"), 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
-            replacement_ctrl = wx.TextCtrl(panel, value="", style=wx.TE_PROCESS_ENTER)
-            root.Add(replacement_ctrl, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8)
-
         mode_labels = ["Plain text", "Whole word", "Regular expression", "Wildcard"]
-        root.Add(wx.StaticText(panel, label="Search mode:"), 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
-        mode_choice = wx.Choice(panel, choices=mode_labels)
-        mode_choice.SetSelection(0)
-        root.Add(mode_choice, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8)
-
-        case_sensitive = wx.CheckBox(panel, label="Case sensitive")
-        root.Add(case_sensitive, 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
-
-        buttons = dialog.CreateButtonSizer(wx.OK | wx.CANCEL)
-        if buttons is not None:
-            # FindWindowById is a Window method, not a sizer method (buttons are
-            # children of the dialog) — calling it on the sizer crashes on
-            # Windows with AttributeError.
-            ok_button = dialog.FindWindowById(wx.ID_OK)
-            if ok_button is not None:
-                ok_button.SetDefault()
-            root.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
-        apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
-
-        panel.SetSizer(root)
-        outer = wx.BoxSizer(wx.VERTICAL)
-        outer.Add(panel, 1, wx.EXPAND)
-        dialog.SetSizerAndFit(outer)
-
-        def submit(_event: object) -> None:
-            dialog.EndModal(wx.ID_OK)
-
-        query_ctrl.Bind(wx.EVT_TEXT_ENTER, submit)
-        if replacement_ctrl is not None:
-            replacement_ctrl.Bind(wx.EVT_TEXT_ENTER, submit)
-
-        def focus_query() -> None:
-            query_ctrl.SetFocus()
-            query_ctrl.SetSelection(0, len(default_query))
-
-        if hasattr(wx, "CallAfter"):
-            wx.CallAfter(focus_query)
-        else:
-            focus_query()
-        try:
-            if self._show_modal_dialog(dialog, title) != wx.ID_OK:
-                return None
-            query = query_ctrl.GetValue()
-            if not query:
-                return None
-            mode = mode_choice.GetStringSelection() or mode_labels[0]
-            options = SearchOptions(
-                case_sensitive=case_sensitive.GetValue(),
-                whole_word=mode == "Whole word",
-                use_regex=mode == "Regular expression",
-                wildcard=mode == "Wildcard",
-            )
-            replacement_value = (
-                replacement_ctrl.GetValue() if replacement_ctrl is not None else None
-            )
-            return query, replacement_value, options
-        finally:
-            dialog.Destroy()
+        fields = [
+            {
+                "name": "query",
+                "label": "Find text",
+                "type": "text",
+                "value": default_query,
+            },
+        ]
+        if replacement:
+            fields.append({
+                "name": "replacement",
+                "label": "Replace with",
+                "type": "text",
+                "value": "",
+            })
+        fields.extend([
+            {
+                "name": "mode",
+                "label": "Search mode",
+                "type": "select",
+                "value": "Plain text",
+                "options": [(label, label) for label in mode_labels],
+            },
+            {
+                "name": "case_sensitive",
+                "label": "Case sensitive",
+                "type": "checkbox",
+                "value": False,
+            },
+        ])
+        values = show_web_form(
+            self.frame,
+            self._wx,
+            title=title,
+            fields=fields,
+        )
+        if values is None:
+            return None
+        query = str(values.get("query", "")).strip()
+        if not query:
+            return None
+        mode = str(values.get("mode", "Plain text"))
+        options = SearchOptions(
+            case_sensitive=bool(values.get("case_sensitive", False)),
+            whole_word=mode == "Whole word",
+            use_regex=mode == "Regular expression",
+            wildcard=mode == "Wildcard",
+        )
+        replacement_value = str(values.get("replacement", "")) if replacement else None
+        return query, replacement_value, options
 
     def find_text(self) -> None:
         self._open_find_replace(replace=False)
