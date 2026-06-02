@@ -9768,25 +9768,32 @@ class MainFrame:
 
     def open_menu_editor(self) -> None:
         """Open the accessible Menu Editor for reordering, hiding, and renaming
-        top-level menus, with one Reset to Factory Defaults (MENU-5).
+        top-level menus and menu items, including the editor context menu (MENU-5).
 
         Edits are made on a working copy and only persisted when the person
         chooses Save, so Cancel always leaves the live menus untouched.
         """
+        from quill.core.menu_customization import CONTEXT_MENU_KEY
+
         wx = self._wx
         default_keys = [key for key, _ in _TOP_MENU_DEFS]
         default_labels = dict(_TOP_MENU_DEFS)
+
+        # Collect all known item keys from the command-to-menu-id map
+        command_map = self._command_to_menu_id_map()
+        all_item_keys = set(command_map.keys())
+
         current = self._ensure_menu_customization()
         working = MenuCustomization.from_dict(current.to_dict())
-        working.reconcile(set(default_keys), set())
+        working.reconcile(set(default_keys), all_item_keys)
 
-        with wx.Dialog(self.frame, title="Customize Menus") as dialog:
+        with wx.Dialog(self.frame, title="Customize Menus", size=(720, 560)) as dialog:
             outer = wx.BoxSizer(wx.VERTICAL)
             outer.Add(
                 wx.StaticText(
                     dialog,
                     label=(
-                        "Reorder, rename, or hide the top-level menus. "
+                        "Select a menu to customize its items, or edit top-level menu order. "
                         "Changes apply when you choose Save."
                     ),
                 ),
@@ -9795,68 +9802,186 @@ class MainFrame:
                 8,
             )
 
-            body = wx.BoxSizer(wx.HORIZONTAL)
-            menu_list = wx.ListBox(dialog, style=wx.LB_SINGLE)
-            menu_list.SetName("Top-level menus")
-            body.Add(menu_list, 1, wx.EXPAND | wx.RIGHT, 8)
+            # Two-pane layout: left pane shows menus, right pane shows items
+            panes = wx.BoxSizer(wx.HORIZONTAL)
 
-            button_col = wx.BoxSizer(wx.VERTICAL)
-            up_btn = wx.Button(dialog, label="Move &Up")
-            down_btn = wx.Button(dialog, label="Move &Down")
-            rename_btn = wx.Button(dialog, label="&Rename...")
-            hide_btn = wx.Button(dialog, label="&Show/Hide")
+            # Left pane: menu selection
+            left_box = wx.StaticBoxSizer(wx.VERTICAL, dialog, "Menu")
+            menu_list = wx.ListBox(dialog, style=wx.LB_SINGLE, size=(200, -1))
+            menu_list.SetName("Menu selection")
+            left_box.Add(menu_list, 1, wx.EXPAND | wx.ALL, 4)
+
+            menu_button_col = wx.BoxSizer(wx.VERTICAL)
+            menu_up_btn = wx.Button(dialog, label="Move Up")
+            menu_down_btn = wx.Button(dialog, label="Move Down")
+            menu_rename_btn = wx.Button(dialog, label="Rename...")
+            menu_hide_btn = wx.Button(dialog, label="Show/Hide")
+            for btn in (menu_up_btn, menu_down_btn, menu_rename_btn, menu_hide_btn):
+                menu_button_col.Add(btn, 0, wx.EXPAND | wx.BOTTOM, 4)
+            left_box.Add(menu_button_col, 0, wx.ALL, 4)
+            panes.Add(left_box, 0, wx.EXPAND | wx.RIGHT, 8)
+
+            # Right pane: item editor
+            right_box = wx.StaticBoxSizer(wx.VERTICAL, dialog, "Menu Items")
+            item_list = wx.ListBox(dialog, style=wx.LB_SINGLE)
+            item_list.SetName("Menu items")
+            right_box.Add(item_list, 1, wx.EXPAND | wx.ALL, 4)
+
+            item_button_col = wx.BoxSizer(wx.VERTICAL)
+            item_up_btn = wx.Button(dialog, label="Move Up")
+            item_down_btn = wx.Button(dialog, label="Move Down")
+            item_rename_btn = wx.Button(dialog, label="Rename...")
+            item_hide_btn = wx.Button(dialog, label="Show/Hide")
+            for btn in (item_up_btn, item_down_btn, item_rename_btn, item_hide_btn):
+                item_button_col.Add(btn, 0, wx.EXPAND | wx.BOTTOM, 4)
+            right_box.Add(item_button_col, 0, wx.ALL, 4)
+            panes.Add(right_box, 1, wx.EXPAND)
+
+            outer.Add(panes, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+
+            # Bottom: Reset button
+            reset_row = wx.BoxSizer(wx.HORIZONTAL)
             reset_btn = wx.Button(dialog, label="Reset to &Factory Defaults")
-            for btn in (up_btn, down_btn, rename_btn, hide_btn, reset_btn):
-                button_col.Add(btn, 0, wx.EXPAND | wx.BOTTOM, 6)
-            body.Add(button_col, 0)
-            outer.Add(body, 1, wx.EXPAND | wx.ALL, 8)
+            reset_row.Add(reset_btn, 0, wx.ALIGN_LEFT)
+            outer.Add(reset_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
-            def _ordered() -> list[str]:
+            # --- Menu list helpers ---
+            def _ordered_menus() -> list[str]:
                 return working.ordered_top_keys(default_keys)
 
-            def _entry_label(key: str) -> str:
+            def _menu_entry_label(key: str) -> str:
                 label = _normalize_menu_label(working.top_label(key, default_labels[key]))
                 if working.is_top_hidden(key):
                     return f"{label} (hidden)"
                 return label
 
-            def _refresh(select_key: str | None = None) -> None:
-                keys = _ordered()
-                menu_list.Set([_entry_label(key) for key in keys])
-                if not keys:
-                    return
-                target = select_key if select_key in keys else keys[0]
-                menu_list.SetSelection(keys.index(target))
+            def _context_menu_label() -> str:
+                return "Context Menu (editor right-click)"
 
-            def _selected_key() -> str | None:
+            def _refresh_menus(select_key: str | None = None) -> None:
+                keys = _ordered_menus()
+                labels = [_menu_entry_label(key) for key in keys]
+                labels.append(_context_menu_label())
+                menu_list.Set(labels)
+                if select_key == CONTEXT_MENU_KEY:
+                    menu_list.SetSelection(len(keys))
+                elif select_key and select_key in keys:
+                    menu_list.SetSelection(keys.index(select_key))
+                elif keys:
+                    menu_list.SetSelection(0)
+                _refresh_items()
+
+            def _selected_menu_key() -> str | None:
                 index = menu_list.GetSelection()
-                keys = _ordered()
-                if index is None or index < 0 or index >= len(keys):
+                if index is None or index < 0:
                     return None
-                return keys[index]
+                keys = _ordered_menus()
+                if index == len(keys):
+                    return CONTEXT_MENU_KEY
+                if index < len(keys):
+                    return keys[index]
+                return None
 
-            def _move(delta: int) -> None:
-                keys = _ordered()
-                key = _selected_key()
-                if key is None:
+            # --- Item list helpers ---
+            def _default_items_for_menu(menu_key: str) -> list[tuple[str, str]]:
+                """Return list of (item_key, default_label) for a menu."""
+                if menu_key == CONTEXT_MENU_KEY:
+                    # Context menu item keys - these are hardcoded based on the
+                    # context menu build in _on_editor_context_menu
+                    return [
+                        ("edit.undo", "Undo"),
+                        ("edit.redo", "Redo"),
+                        ("edit.cut", "Cut"),
+                        ("edit.copy", "Copy"),
+                        ("edit.copy_with_source", "Copy With Source"),
+                        ("edit.paste", "Paste"),
+                        ("edit.select_all", "Select All"),
+                        ("edit.select_line", "Select Line"),
+                        ("context.transform", "Transform (submenu)"),
+                        ("context.line", "Line (submenu)"),
+                        ("context.glow", "GLOW (submenu)"),
+                        ("tools.spell_check_dialog", "Spell Check..."),
+                        ("tools.next_misspelling", "Next Misspelling"),
+                        ("tools.thesaurus", "Look Up in Thesaurus"),
+                        ("navigate.go_to_line", "Go to Line..."),
+                        ("navigate.set_bookmark", "Set Bookmark Here..."),
+                        ("app.command_palette", "Command Palette..."),
+                    ]
+                # For menu bar items, collect from command map
+                items = []
+                for cmd_key in sorted(command_map.keys()):
+                    # Filter by menu prefix (e.g., "file.", "edit.")
+                    if cmd_key.startswith(f"{menu_key}."):
+                        # Extract label from menu build
+                        items.append((cmd_key, cmd_key))
+                return items
+
+            def _ordered_items() -> list[str]:
+                menu_key = _selected_menu_key()
+                if not menu_key:
+                    return []
+                default_items = _default_items_for_menu(menu_key)
+                default_keys_list = [k for k, _ in default_items]
+                return working.ordered_item_keys(menu_key, default_keys_list)
+
+            def _item_entry_label(item_key: str, default_label: str) -> str:
+                label = working.item_label(item_key, default_label)
+                if working.is_item_hidden(item_key):
+                    return f"{label} (hidden)"
+                return label
+
+            def _refresh_items(select_key: str | None = None) -> None:
+                menu_key = _selected_menu_key()
+                if not menu_key:
+                    item_list.Clear()
+                    return
+                default_items = _default_items_for_menu(menu_key)
+                default_dict = dict(default_items)
+                keys = _ordered_items()
+                labels = [_item_entry_label(k, default_dict.get(k, k)) for k in keys]
+                item_list.Set(labels)
+                if select_key and select_key in keys:
+                    item_list.SetSelection(keys.index(select_key))
+                elif keys:
+                    item_list.SetSelection(0)
+
+            def _selected_item_key() -> str | None:
+                index = item_list.GetSelection()
+                if index is None or index < 0:
+                    return None
+                keys = _ordered_items()
+                if index < len(keys):
+                    return keys[index]
+                return None
+
+            # --- Menu actions ---
+            def _on_menu_up(_event: object) -> None:
+                keys = _ordered_menus()
+                key = _selected_menu_key()
+                if key is None or key == CONTEXT_MENU_KEY:
                     return
                 index = keys.index(key)
-                new_index = index + delta
-                if new_index < 0 or new_index >= len(keys):
+                if index <= 0:
                     return
-                keys.insert(new_index, keys.pop(index))
+                keys.insert(index - 1, keys.pop(index))
                 working.set_top_order(keys)
-                _refresh(key)
+                _refresh_menus(key)
 
-            def _on_up(_event: object) -> None:
-                _move(-1)
+            def _on_menu_down(_event: object) -> None:
+                keys = _ordered_menus()
+                key = _selected_menu_key()
+                if key is None or key == CONTEXT_MENU_KEY:
+                    return
+                index = keys.index(key)
+                if index >= len(keys) - 1:
+                    return
+                keys.insert(index + 1, keys.pop(index))
+                working.set_top_order(keys)
+                _refresh_menus(key)
 
-            def _on_down(_event: object) -> None:
-                _move(1)
-
-            def _on_rename(_event: object) -> None:
-                key = _selected_key()
-                if key is None:
+            def _on_menu_rename(_event: object) -> None:
+                key = _selected_menu_key()
+                if key is None or key == CONTEXT_MENU_KEY:
                     return
                 current_label = _normalize_menu_label(working.top_label(key, default_labels[key]))
                 with wx.TextEntryDialog(
@@ -9871,24 +9996,96 @@ class MainFrame:
                 if not new_label:
                     return
                 working.rename_top(key, new_label)
-                _refresh(key)
+                _refresh_menus(key)
 
-            def _on_hide(_event: object) -> None:
-                key = _selected_key()
-                if key is None:
+            def _on_menu_hide(_event: object) -> None:
+                key = _selected_menu_key()
+                if key is None or key == CONTEXT_MENU_KEY:
                     return
                 working.set_top_hidden(key, not working.is_top_hidden(key))
-                _refresh(key)
+                _refresh_menus(key)
 
+            # --- Item actions ---
+            def _on_item_up(_event: object) -> None:
+                menu_key = _selected_menu_key()
+                if not menu_key:
+                    return
+                keys = _ordered_items()
+                item_key = _selected_item_key()
+                if item_key is None:
+                    return
+                index = keys.index(item_key)
+                if index <= 0:
+                    return
+                keys.insert(index - 1, keys.pop(index))
+                working.set_item_order(menu_key, keys)
+                _refresh_items(item_key)
+
+            def _on_item_down(_event: object) -> None:
+                menu_key = _selected_menu_key()
+                if not menu_key:
+                    return
+                keys = _ordered_items()
+                item_key = _selected_item_key()
+                if item_key is None:
+                    return
+                index = keys.index(item_key)
+                if index >= len(keys) - 1:
+                    return
+                keys.insert(index + 1, keys.pop(index))
+                working.set_item_order(menu_key, keys)
+                _refresh_items(item_key)
+
+            def _on_item_rename(_event: object) -> None:
+                menu_key = _selected_menu_key()
+                if not menu_key:
+                    return
+                item_key = _selected_item_key()
+                if item_key is None:
+                    return
+                default_items = _default_items_for_menu(menu_key)
+                default_dict = dict(default_items)
+                current_label = working.item_label(item_key, default_dict.get(item_key, item_key))
+                with wx.TextEntryDialog(
+                    dialog,
+                    "Item name (use & before a letter for the keyboard mnemonic):",
+                    "Rename Item",
+                    current_label,
+                ) as entry:
+                    if self._show_modal_dialog(entry, "Rename Item") != wx.ID_OK:
+                        return
+                    new_label = entry.GetValue().strip()
+                if not new_label:
+                    return
+                working.rename_item(item_key, new_label)
+                _refresh_items(item_key)
+
+            def _on_item_hide(_event: object) -> None:
+                item_key = _selected_item_key()
+                if item_key is None:
+                    return
+                working.set_item_hidden(item_key, not working.is_item_hidden(item_key))
+                _refresh_items(item_key)
+
+            # --- Global actions ---
             def _on_reset(_event: object) -> None:
                 working.reset()
-                _refresh()
+                _refresh_menus()
 
-            up_btn.Bind(wx.EVT_BUTTON, _on_up)
-            down_btn.Bind(wx.EVT_BUTTON, _on_down)
-            rename_btn.Bind(wx.EVT_BUTTON, _on_rename)
-            hide_btn.Bind(wx.EVT_BUTTON, _on_hide)
+            def _on_menu_select(_event: object) -> None:
+                _refresh_items()
+
+            # Bind events
+            menu_up_btn.Bind(wx.EVT_BUTTON, _on_menu_up)
+            menu_down_btn.Bind(wx.EVT_BUTTON, _on_menu_down)
+            menu_rename_btn.Bind(wx.EVT_BUTTON, _on_menu_rename)
+            menu_hide_btn.Bind(wx.EVT_BUTTON, _on_menu_hide)
+            item_up_btn.Bind(wx.EVT_BUTTON, _on_item_up)
+            item_down_btn.Bind(wx.EVT_BUTTON, _on_item_down)
+            item_rename_btn.Bind(wx.EVT_BUTTON, _on_item_rename)
+            item_hide_btn.Bind(wx.EVT_BUTTON, _on_item_hide)
             reset_btn.Bind(wx.EVT_BUTTON, _on_reset)
+            menu_list.Bind(wx.EVT_LISTBOX, _on_menu_select)
 
             buttons = dialog.CreateButtonSizer(wx.OK | wx.CANCEL)
             if buttons is not None:
@@ -9897,14 +10094,14 @@ class MainFrame:
             if ok_button is not None:
                 ok_button.SetLabel("&Save")
             apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
-            dialog.SetSizerAndFit(outer)
-            _refresh()
+            dialog.SetSizer(outer)
+            _refresh_menus()
 
             if self._show_modal_dialog(dialog, "Customize Menus") != wx.ID_OK:
                 self._set_status("Menu customization cancelled")
                 return
 
-        working.reconcile(set(default_keys), set())
+        working.reconcile(set(default_keys), all_item_keys)
         self._menu_customization = working
         try:
             save_menu_customization(working)

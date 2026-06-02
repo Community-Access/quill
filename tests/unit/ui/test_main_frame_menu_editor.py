@@ -118,3 +118,57 @@ def test_unrecognized_label_bails_out_without_changes() -> None:
 
     # The bail-out path leaves the (corrupted) bar in its original order.
     assert bar.keys() == [key for key, _ in _TOP_MENU_DEFS]
+
+
+def test_menu_editor_dialog_has_two_pane_structure() -> None:
+    """Source contract test: verify Menu Editor creates two-pane UI (MENU-5)."""
+    from pathlib import Path
+
+    source = Path(__file__).parent.parent.parent.parent / "quill" / "ui" / "main_frame.py"
+    code = source.read_text(encoding="utf-8")
+    method = 'def open_menu_editor(self) -> None:'
+
+    assert method in code, "open_menu_editor method must exist"
+
+    # Verify two-pane layout structure
+    assert 'left_box = wx.StaticBoxSizer(wx.VERTICAL, dialog, "Menu")' in code
+    assert 'right_box = wx.StaticBoxSizer(wx.VERTICAL, dialog, "Menu Items")' in code
+
+    # Verify menu list (left pane)
+    assert 'menu_list = wx.ListBox(dialog, style=wx.LB_SINGLE' in code
+    assert 'menu_list.SetName("Menu selection")' in code
+
+    # Verify item list (right pane)
+    assert 'item_list = wx.ListBox(dialog, style=wx.LB_SINGLE)' in code
+    assert 'item_list.SetName("Menu items")' in code
+
+    # Verify menu buttons
+    assert 'menu_up_btn = wx.Button(dialog, label="Move Up")' in code
+    assert 'menu_down_btn = wx.Button(dialog, label="Move Down")' in code
+    assert 'menu_rename_btn = wx.Button(dialog, label="Rename...")' in code
+    assert 'menu_hide_btn = wx.Button(dialog, label="Show/Hide")' in code
+
+    # Verify item buttons
+    assert 'item_up_btn = wx.Button(dialog, label="Move Up")' in code
+    assert 'item_down_btn = wx.Button(dialog, label="Move Down")' in code
+    assert 'item_rename_btn = wx.Button(dialog, label="Rename...")' in code
+    assert 'item_hide_btn = wx.Button(dialog, label="Show/Hide")' in code
+
+    # Verify reset button
+    assert 'reset_btn = wx.Button(dialog, label="Reset to &Factory Defaults")' in code
+
+    # Verify context menu support
+    assert 'from quill.core.menu_customization import CONTEXT_MENU_KEY' in code
+    assert 'if menu_key == CONTEXT_MENU_KEY:' in code
+    assert '"Context Menu (editor right-click)"' in code
+
+    # Verify item editing actions exist
+    assert 'def _on_item_up(_event: object) -> None:' in code
+    assert 'def _on_item_down(_event: object) -> None:' in code
+    assert 'def _on_item_rename(_event: object) -> None:' in code
+    assert 'def _on_item_hide(_event: object) -> None:' in code
+
+    # Verify menu selection triggers item refresh
+    assert 'def _on_menu_select(_event: object) -> None:' in code
+    assert 'menu_list.Bind(wx.EVT_LISTBOX, _on_menu_select)' in code
+
