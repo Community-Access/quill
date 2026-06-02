@@ -3404,13 +3404,12 @@ class MainFrame:
             current_backend == "status_only",
         )
         read_aloud_menu.AppendSubMenu(backend_menu, "Announcement Bac&kend")
-        read_aloud_menu.AppendCheckItem(
+        read_aloud_menu.Append(
             self._id_toggle_announcement_trace,
-            "Capture Announcement &Trace in Diagnostics",
-        )
-        read_aloud_menu.Check(
-            self._id_toggle_announcement_trace,
-            self.settings.announcement_trace_enabled,
+            self._menu_label(
+                "Announcement &Trace Settings...",
+                "tools.announcement_trace_toggle",
+            ),
         )
         tools_menu.AppendSubMenu(read_aloud_menu, "Read &Aloud")
 
@@ -3420,21 +3419,17 @@ class MainFrame:
             self._menu_label("&Dictation", "tools.dictation_toggle"),
             "Press to start dictation, press again to stop and insert",
         )
-        dictation_menu.AppendCheckItem(
+        dictation_menu.Append(
             self._id_dictation_voice_commands,
-            self._menu_label("&Hey QUILL Commands", "tools.dictation_voice_commands_toggle"),
-        )
-        dictation_menu.Check(
-            self._id_dictation_voice_commands, self.settings.voice_commands_enabled
+            self._menu_label(
+                "&Hey QUILL Commands Settings...",
+                "tools.dictation_voice_commands_toggle",
+            ),
         )
         dictation_menu.AppendSeparator()
-        dictation_menu.AppendCheckItem(
+        dictation_menu.Append(
             self._id_watch_folder_toggle,
-            self._menu_label("&Watch Folder Monitoring", "tools.watch_folder_toggle"),
-        )
-        dictation_menu.Check(
-            self._id_watch_folder_toggle,
-            self._watch_service.is_running,
+            self._menu_label("&Watch Folder Settings...", "tools.watch_folder_toggle"),
         )
         dictation_menu.Append(
             self._id_watch_folder_settings,
@@ -3499,8 +3494,10 @@ class MainFrame:
         ai_menu = wx.Menu()
         from quill.core.ai.model_manager import load_ai_enabled
 
-        ai_menu.AppendCheckItem(self._id_ai_enabled, "Use Artificial &Intelligence")
-        ai_menu.Check(self._id_ai_enabled, load_ai_enabled())
+        ai_menu.Append(
+            self._id_ai_enabled,
+            self._menu_label("AI &Settings...", "tools.ai_enabled_toggle"),
+        )
         ai_menu.AppendSeparator()
         ai_menu.Append(self._id_ai_status_badge, "AI Status: Not checked")
         ai_menu.Append(
@@ -3600,21 +3597,17 @@ class MainFrame:
             self._menu_label("&Dictation", "tools.dictation_toggle"),
             "Press to start dictation, press again to stop and insert",
         )
-        bw_dictation_menu.AppendCheckItem(
+        bw_dictation_menu.Append(
             self._id_dictation_voice_commands,
-            self._menu_label("&Hey QUILL Commands", "tools.dictation_voice_commands_toggle"),
-        )
-        bw_dictation_menu.Check(
-            self._id_dictation_voice_commands, self.settings.voice_commands_enabled
+            self._menu_label(
+                "&Hey QUILL Commands Settings...",
+                "tools.dictation_voice_commands_toggle",
+            ),
         )
         bw_dictation_menu.AppendSeparator()
-        bw_dictation_menu.AppendCheckItem(
+        bw_dictation_menu.Append(
             self._id_watch_folder_toggle,
-            self._menu_label("&Watch Folder Monitoring", "tools.watch_folder_toggle"),
-        )
-        bw_dictation_menu.Check(
-            self._id_watch_folder_toggle,
-            self._watch_service.is_running,
+            self._menu_label("&Watch Folder Settings...", "tools.watch_folder_toggle"),
         )
         bw_dictation_menu.Append(
             self._id_watch_folder_settings,
@@ -3640,13 +3633,9 @@ class MainFrame:
             self._id_bw_model_recommend,
             self._menu_label("Use &Recommended Model", "whisperer.model_recommend"),
         )
-        bw_models_menu.AppendCheckItem(
+        bw_models_menu.Append(
             self._id_bw_toggle_parakeet,
-            self._menu_label("Show &Parakeet Models", "whisperer.toggle_parakeet"),
-        )
-        bw_models_menu.Check(
-            self._id_bw_toggle_parakeet,
-            bool(getattr(self.settings, "bw_enable_parakeet_models", False)),
+            self._menu_label("&Parakeet Models Settings...", "whisperer.toggle_parakeet"),
         )
         bw_models_menu.AppendSeparator()
         bw_models_menu.Append(
@@ -10457,9 +10446,7 @@ class MainFrame:
         item = menu_bar.FindItemById(self._id_announcement_backend_status_only)
         if item is not None:
             item.Check(requested == "status_only")
-        item = menu_bar.FindItemById(self._id_toggle_announcement_trace)
-        if item is not None:
-            item.Check(self.settings.announcement_trace_enabled)
+        # announcement_trace_enabled toggle moved to Settings dialog (MENU-1)
 
     def set_announcement_backend(self, requested_backend: str) -> None:
         state = self._announcement_engine.configure(requested_backend)
@@ -10498,14 +10485,10 @@ class MainFrame:
         self.set_announcement_backend(backend_order[selected])
 
     def toggle_announcement_trace_capture(self) -> None:
-        self.settings.announcement_trace_enabled = not self.settings.announcement_trace_enabled
-        save_settings(self.settings)
-        self._apply_announcement_trace_setting()
-        self._sync_announcement_backend_menu_state()
-        if self.settings.announcement_trace_enabled:
-            self._set_status("Announcement trace capture enabled")
-            return
-        self._set_status("Announcement trace capture disabled")
+        """Open Settings dialog on the Accessibility page (announcement trace)."""
+        self.open_general_preferences()
+        # The registry will render the announcement_trace_enabled checkbox
+        # automatically on the Accessibility tab.
 
     def _set_keyboard_pack(self, pack_name: str) -> None:
         self.settings.keyboard_pack = pack_name
@@ -14950,21 +14933,10 @@ class MainFrame:
             self._set_status("Windows dictation started. Speak into the editor.")
 
     def toggle_dictation_voice_commands(self) -> None:
-        self.settings.voice_commands_enabled = not self.settings.voice_commands_enabled
-        save_settings(self.settings)
-        item = self.frame.GetMenuBar().FindItemById(self._id_dictation_voice_commands)
-        if item is not None:
-            item.Check(self.settings.voice_commands_enabled)
-        if self.settings.voice_commands_enabled and self._dictation.state == "listening":
-            self._voice_command_baseline_text = self.editor.GetValue()
-            self._schedule_voice_command_scan()
-            self._set_status('Hey QUILL commands enabled. Say "Hey QUILL" plus a command.')
-        elif self.settings.voice_commands_enabled:
-            self._set_status("Hey QUILL commands enabled. Start dictation to use them.")
-        else:
-            self._cancel_voice_command_scan()
-            self._voice_command_baseline_text = ""
-            self._set_status("Hey QUILL commands disabled")
+        """Open Settings dialog on the Transcription page (Hey QUILL commands)."""
+        self.open_general_preferences()
+        # The registry will render the voice_commands_enabled checkbox
+        # automatically on the Transcription tab.
 
     def _bw_include_parakeet_models(self) -> bool:
         if not self._feature_enabled("core.bw_parakeet"):
@@ -15004,15 +14976,10 @@ class MainFrame:
         self._set_status(f"Recommended mode active. Selected speech model: {model_id}")
 
     def toggle_bw_parakeet_visibility(self) -> None:
-        self.settings.bw_enable_parakeet_models = not bool(
-            getattr(self.settings, "bw_enable_parakeet_models", False)
-        )
-        save_settings(self.settings)
-        item = self.frame.GetMenuBar().FindItemById(self._id_bw_toggle_parakeet)
-        if item is not None:
-            item.Check(self.settings.bw_enable_parakeet_models)
-        state_text = "enabled" if self.settings.bw_enable_parakeet_models else "disabled"
-        self._set_status(f"Parakeet model visibility {state_text}")
+        """Open Settings dialog on the Transcription page (Parakeet models)."""
+        self.open_general_preferences()
+        # The registry will render the bw_enable_parakeet_models checkbox
+        # automatically on the Transcription tab.
 
     def check_bw_faster_whisper_engine(self) -> None:
         ok, detail = faster_whisper_status()
@@ -15639,16 +15606,10 @@ class MainFrame:
             self.show_bw_model_status()
 
     def _apply_watch_folder_menu_state(self) -> None:
-        if not self._menu_updates_allowed():
-            self._request_menu_refresh()
-            return
-        menu_bar = self.frame.GetMenuBar()
-        if menu_bar is None:
-            return
-        item = menu_bar.FindItemById(self._id_watch_folder_toggle)
-        if item is None:
-            return
-        item.Check(self._watch_service.is_running)
+        """No-op: watch_folder_enabled toggle moved to Settings dialog (MENU-1)."""
+        # The watch folder enabled checkbox is now controlled through the
+        # registry-driven Settings dialog on the Watch tab.
+        pass
 
     def _maybe_start_watch_folder(self) -> None:
         if not bool(getattr(self.settings, "watch_folder_enabled", False)):
@@ -15687,17 +15648,10 @@ class MainFrame:
             self._record_notification("Watch folder monitoring stopped", "speech")
 
     def toggle_watch_folder_monitoring(self) -> None:
-        if self._watch_service.is_running:
-            self.settings.watch_folder_enabled = False
-            save_settings(self.settings)
-            self._stop_watch_folder_monitoring()
-            return
-        if not self._watch_service.profiles():
-            self.open_watch_folder_settings()
-            if not self._watch_service.profiles():
-                self._apply_watch_folder_menu_state()
-                return
-        self._start_watch_folder_monitoring()
+        """Open Settings dialog on the Watch page (enable folder watching)."""
+        self.open_general_preferences()
+        # The registry will render the watch_folder_enabled checkbox
+        # automatically on the Watch tab.
 
     def show_watch_folder_status(self) -> None:
         """Open the accessible Watch Queue Monitor (WATCH-4)."""
@@ -18731,13 +18685,10 @@ class MainFrame:
         self._apply_style_to_assistant()
 
     def _on_toggle_ai_enabled(self, event: object) -> None:
-        from quill.core.ai.model_manager import save_ai_enabled
-
-        enabled = bool(event.IsChecked())
-        save_ai_enabled(enabled)
-        self._apply_ai_menu_enabled()
-        self._refresh_ai_status()
-        self._set_status("AI enabled" if enabled else "AI disabled")
+        """Open Settings dialog on the AI page (Use Artificial Intelligence)."""
+        self.open_general_preferences()
+        # The AI master toggle is already surfaced in the Settings dialog
+        # on the AI page via the special-cased ai_enabled_cb.
 
     def _refresh_ai_status(self) -> None:
         """Check the active AI backend and update the AI Status badge (off-thread)."""

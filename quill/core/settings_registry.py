@@ -731,6 +731,24 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         maximum=100,
         keywords=("dictation", "sensitivity", "microphone"),
     ),
+    SettingSpec(
+        "voice_commands_enabled",
+        "Hey QUILL voice commands",
+        "transcription",
+        "bool",
+        "Enable 'Hey QUILL' voice commands during dictation.",
+        feature_id="core.dictation",
+        keywords=("voice", "commands", "hey quill", "dictation"),
+    ),
+    SettingSpec(
+        "bw_enable_parakeet_models",
+        "Show Parakeet models",
+        "transcription",
+        "bool",
+        "Include Parakeet speech models in the model manager.",
+        feature_id="core.bw_transcription",
+        keywords=("parakeet", "models", "transcription", "bits"),
+    ),
     # --- Watch Folders -----------------------------------------------------
     SettingSpec(
         "watch_folder_enabled",
