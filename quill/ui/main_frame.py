@@ -14893,16 +14893,43 @@ class MainFrame:
                 self._set_status("OCR failed")
                 return
             progress.Update(90, "Opening OCR result")
-            self.new_file()
-            self._replace_document_text(ocr_result.text)
-            self.document.set_text(ocr_result.text)
-            self._refresh_title()
-            self._set_status(f"OCR completed with {ocr_result.engine}")
-            progress.Update(100, "Done")
         finally:
             cancel_requested.set()
             worker.join(timeout=0.5)
             progress.Destroy()
+
+        # Show the OCR review dialog with Insert/Copy/Discard actions
+        from quill.io.ocr import render_ocr_review
+        from quill.ui.ocr_review_dialog import OcrReviewDialog
+
+        rendered_text = render_ocr_review(ocr_result)
+        review_dialog = OcrReviewDialog(self.frame, "OCR Review", rendered_text)
+        choice = review_dialog.show_modal(
+            announce=self._announce,
+            enter_region=self._enter_region,
+            exit_region=self._exit_region,
+        )
+
+        if choice == OcrReviewDialog.ID_INSERT:
+            # Insert at current cursor position
+            pos = self.editor.GetInsertionPoint()
+            self.editor.WriteText(ocr_result.text)
+            self.editor.SetInsertionPoint(pos + len(ocr_result.text))
+            self._set_status(f"OCR text inserted ({ocr_result.engine})")
+        elif choice == OcrReviewDialog.ID_COPY:
+            # Copy to clipboard
+            if wx.TheClipboard.Open():
+                wx.TheClipboard.SetData(wx.TextDataObject(ocr_result.text))
+                wx.TheClipboard.Close()
+                self._set_status(f"OCR text copied to clipboard ({ocr_result.engine})")
+            else:
+                self._set_status("Failed to copy to clipboard")
+        else:
+            # Discard
+            self._set_status("OCR discarded")
+
+        # Return focus to the editor
+        self.editor.SetFocus()
 
     def _on_read_aloud_progress(self, start: int, end: int) -> None:
         self.editor.SetSelection(start, end)
