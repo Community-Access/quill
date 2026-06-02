@@ -57,11 +57,11 @@ or the command palette (`Ctrl+Shift+P`).
 
 ## C. Navigate
 
-- [ ] Go To Line: `Ctrl+G`
-- [ ] Go To Page: `Ctrl+Shift+G`
+- [ ] Go To Line: `Ctrl+G` (shared accessible web form: line or line,column)
+- [ ] Go To Page: `Ctrl+Shift+G` (shared accessible web form: page number)
 - [ ] Outline Navigator: `Ctrl+Shift+O`
 - [ ] Heading Organizer: QUILL key, then `O`
-- [ ] Set Bookmark: via Navigate menu
+- [ ] Set Bookmark: via Navigate menu (shared accessible web form: bookmark name)
 - [ ] Go To Bookmark: via Navigate menu
 - [ ] List Bookmarks: `Alt+Shift+B`
 
@@ -197,7 +197,7 @@ parent first.
 - [ ] Rename list item (from List Manager)
 - [ ] New list item (from List Manager)
 - [ ] Confirm list deletion (from List Manager)
-- [ ] New macro name (from Manage Macros)
+- [ ] New macro name (from Manage Macros, or via macro.start_recording command) (shared accessible web form: macro name)
 - [ ] Confirm profile option (from Profiles and Features)
 - [ ] Rename profile (from Profiles and Features)
 - [ ] Select profile template (from Profiles and Features)

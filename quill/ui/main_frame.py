@@ -12052,16 +12052,27 @@ class MainFrame:
         dialog.show_modal()
 
     def go_to_line(self) -> None:
-        wx = self._wx
-        with wx.TextEntryDialog(
+        from quill.ui.web_form import show_web_form
+
+        values = show_web_form(
             self.frame,
-            "Enter line or line,column:",
-            "Go To Line",
-            value="1",
-        ) as dialog:
-            if self._show_modal_dialog(dialog, "Go To Line") != wx.ID_OK:
-                return
-            raw_line = dialog.GetValue().strip()
+            self._wx,
+            title="Go To Line",
+            intro="Enter line or line,column:",
+            save_label="Go",
+            fields=[
+                {
+                    "name": "line_ref",
+                    "label": "Line or line,column",
+                    "type": "text",
+                    "value": "1",
+                },
+            ],
+        )
+        if values is None:
+            return
+
+        raw_line = str(values.get("line_ref", "")).strip()
 
         try:
             target_line, target_column = parse_line_column(raw_line)
@@ -12069,21 +12080,21 @@ class MainFrame:
             self._show_message_box(
                 "Use a line number or line,column (for example: 12 or 12,4).",
                 "Go To Line",
-                wx.ICON_ERROR | wx.OK,
+                self._wx.ICON_ERROR | self._wx.OK,
             )
             return
         if target_line < 1:
             self._show_message_box(
                 "Line number must be at least 1.",
                 "Go To Line",
-                wx.ICON_ERROR | wx.OK,
+                self._wx.ICON_ERROR | self._wx.OK,
             )
             return
         if target_column is not None and target_column < 1:
             self._show_message_box(
                 "Column number must be at least 1.",
                 "Go To Line",
-                wx.ICON_ERROR | wx.OK,
+                self._wx.ICON_ERROR | self._wx.OK,
             )
             return
 
@@ -12097,7 +12108,7 @@ class MainFrame:
             self._show_message_box(
                 f"Document has only {len(line_starts)} lines.",
                 "Go To Line",
-                wx.ICON_ERROR | wx.OK,
+                self._wx.ICON_ERROR | self._wx.OK,
             )
             return
 
@@ -12120,40 +12131,52 @@ class MainFrame:
             self._set_status(f"Moved to line {target_line}, column {target_column}")
 
     def go_to_page(self) -> None:
-        wx = self._wx
+        from quill.ui.web_form import show_web_form
+
         text = self.editor.GetValue()
         starts = page_starts(text)
-        with wx.TextEntryDialog(
+
+        values = show_web_form(
             self.frame,
-            f"Enter a page number (1-{len(starts)}):",
-            "Go To Page",
-            value="1",
-        ) as dialog:
-            if self._show_modal_dialog(dialog, "Go To Page") != wx.ID_OK:
-                return
-            raw_value = dialog.GetValue().strip()
+            self._wx,
+            title="Go To Page",
+            intro=f"Enter a page number (1-{len(starts)}):",
+            save_label="Go",
+            fields=[
+                {
+                    "name": "page_number",
+                    "label": "Page number",
+                    "type": "text",
+                    "value": "1",
+                },
+            ],
+        )
+        if values is None:
+            return
+
+        raw_value = str(values.get("page_number", "")).strip()
         try:
-            page_number = int(raw_value)
+            page_num = int(raw_value)
         except ValueError:
             self._show_message_box(
                 "Page number must be a number.",
                 "Go To Page",
-                wx.ICON_ERROR | wx.OK,
+                self._wx.ICON_ERROR | self._wx.OK,
             )
             return
-        target = page_start_for_number(text, page_number)
+        target = page_start_for_number(text, page_num)
         if target is None:
             self._show_message_box(
                 f"Document has only {len(starts)} page(s).",
                 "Go To Page",
-                wx.ICON_ERROR | wx.OK,
+                self._wx.ICON_ERROR | self._wx.OK,
             )
             return
         self._record_location_before_jump()
         self._move_point(target)
         self.editor.SetFocus()
         self._location_ring.record(target)
-        self._set_status(f"Moved to page {page_number}")
+        self._set_status(f"Moved to page {page_num}")
 
     def navigate_back_location(self) -> None:
         cursor = self.editor.GetInsertionPoint()
@@ -13228,17 +13251,28 @@ class MainFrame:
         self._location_ring.record(self.editor.GetInsertionPoint())
 
     def set_bookmark(self) -> None:
-        wx = self._wx
+        from quill.ui.web_form import show_web_form
+
         default_name = f"Bookmark {len(self._bookmarks) + 1}"
-        with wx.TextEntryDialog(
+        values = show_web_form(
             self.frame,
-            "Enter bookmark name (named jump point):",
-            "Set Bookmark",
-            value=default_name,
-        ) as dialog:
-            if self._show_modal_dialog(dialog, "Set Bookmark") != wx.ID_OK:
-                return
-            name = dialog.GetValue().strip()
+            self._wx,
+            title="Set Bookmark",
+            intro="Enter bookmark name (named jump point):",
+            save_label="Set",
+            fields=[
+                {
+                    "name": "name",
+                    "label": "Bookmark name",
+                    "type": "text",
+                    "value": default_name,
+                },
+            ],
+        )
+        if values is None:
+            return
+
+        name = str(values.get("name", "")).strip()
         if not name:
             self._set_status("Set bookmark cancelled")
             return
@@ -21240,20 +21274,32 @@ class MainFrame:
         macros.record(command_id)
 
     def start_macro_recording(self) -> None:
-        wx = self._wx
+        from quill.ui.web_form import show_web_form
+
         if self.macros.recording_name is not None:
             self._set_status(f"Already recording macro {self.macros.recording_name}")
             return
-        with wx.TextEntryDialog(
+
+        values = show_web_form(
             self.frame,
-            "Enter a name for the new macro:",
-            "Start Macro Recording",
-            value="My Macro",
-        ) as dialog:
-            if self._show_modal_dialog(dialog, "Start Macro Recording") != wx.ID_OK:
-                self._set_status("Macro recording cancelled")
-                return
-            name = dialog.GetValue().strip()
+            self._wx,
+            title="Start Macro Recording",
+            intro="Enter a name for the new macro:",
+            save_label="Start",
+            fields=[
+                {
+                    "name": "name",
+                    "label": "Macro name",
+                    "type": "text",
+                    "value": "My Macro",
+                },
+            ],
+        )
+        if values is None:
+            self._set_status("Macro recording cancelled")
+            return
+
+        name = str(values.get("name", "")).strip()
         if not name:
             self._set_status("Macro name cannot be empty")
             return
