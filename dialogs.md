@@ -90,6 +90,7 @@ or the command palette (`Ctrl+Shift+P`).
 - [ ] Read Aloud Settings: via Tools menu
 - [ ] Generate Speech Audio: via Tools menu
 - [ ] OCR Image: via Tools menu
+- [ ] OCR Review: nested after OCR Image completes (Insert/Copy/Discard)
 
 ## H. Tools: sticky notes
 

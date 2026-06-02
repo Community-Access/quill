@@ -14811,7 +14811,9 @@ class MainFrame:
             OcrFailedError,
             OcrUnavailableError,
             ocr_image,
+            render_ocr_review,
         )
+        from quill.ui.ocr_review_dialog import OcrReviewDialog
 
         with wx.FileDialog(
             self.frame,
@@ -14893,11 +14895,32 @@ class MainFrame:
                 self._set_status("OCR failed")
                 return
             progress.Update(90, "Opening OCR result")
-            self.new_file()
-            self._replace_document_text(ocr_result.text)
-            self.document.set_text(ocr_result.text)
-            self._refresh_title()
-            self._set_status(f"OCR completed with {ocr_result.engine}")
+
+            # Show the OCR review dialog (OCR-4)
+            review_text = render_ocr_review(ocr_result)
+            review_dialog = OcrReviewDialog(self.frame, review_text)
+            dialog_result = review_dialog.show_modal()
+
+            if dialog_result == wx.ID_OK:
+                # Insert into document
+                self.new_file()
+                self._replace_document_text(ocr_result.text)
+                self.document.set_text(ocr_result.text)
+                self._refresh_title()
+                self._set_status(f"OCR text inserted ({ocr_result.engine})")
+            elif dialog_result == wx.ID_COPY:
+                # Copy to clipboard
+                if wx.TheClipboard.Open():
+                    try:
+                        wx.TheClipboard.SetData(wx.TextDataObject(ocr_result.text))
+                        wx.TheClipboard.Flush()
+                    finally:
+                        wx.TheClipboard.Close()
+                self._set_status(f"OCR text copied to clipboard ({ocr_result.engine})")
+            else:
+                # Discard
+                self._set_status("OCR text discarded")
+
             progress.Update(100, "Done")
         finally:
             cancel_requested.set()
