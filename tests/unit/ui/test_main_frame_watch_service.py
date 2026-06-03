@@ -59,8 +59,10 @@ def test_watch_ai_handler_honors_ai_switch_and_consent_gate() -> None:
 
 def test_apply_watch_folder_menu_state_uses_service_running() -> None:
     # Method name preserved for accessibility tests that monkeypatch it.
+    # MENU-1: the watch-folder toggle moved into Settings, so this method no
+    # longer syncs a check item; it is a retained no-op for compatibility.
     assert "def _apply_watch_folder_menu_state(self) -> None:" in SOURCE
-    assert "item.Check(self._watch_service.is_running)" in SOURCE
+    assert "Watch folder toggle is now in Settings; no menu state to sync" in SOURCE
 
 
 def test_watch_profile_manager_dialog_is_accessible() -> None:

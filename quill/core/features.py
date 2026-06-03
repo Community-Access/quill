@@ -29,6 +29,7 @@ class FeatureDefinition:
     maturity: str = "stable"
     privacy: str = "local only"
     locked_on: bool = False
+    locked_off: bool = False
     category: str = ""
 
 
@@ -114,12 +115,24 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
         category="accessibility",
         dependencies=("core.dictation",),
     ),
+    "core.bw_whisperer": FeatureDefinition(
+        "core.bw_whisperer",
+        "BITS Whisperer",
+        description=(
+            "Master flag for the BITS Whisperer transcription suite. Disabled for "
+            "QUILL 1.0 (deferred to 2.0) until it reaches feature parity; gating "
+            "this off hides the entire BITS Whisperer menu and its sub-features."
+        ),
+        category="accessibility",
+        dependencies=("core.dictation",),
+        locked_off=True,
+    ),
     "core.bw_transcription": FeatureDefinition(
         "core.bw_transcription",
         "BITS Whisperer Transcription Rollout",
         description="Phased BITS Whisperer speech-model and dictation rollout surface.",
         category="accessibility",
-        dependencies=("core.dictation",),
+        dependencies=("core.dictation", "core.bw_whisperer"),
     ),
     "core.bw_parakeet": FeatureDefinition(
         "core.bw_parakeet",
@@ -812,6 +825,8 @@ class FeatureManager:
             return FEATURE_STATE_OFF
         if definition.locked_on:
             return FEATURE_STATE_ON
+        if definition.locked_off:
+            return FEATURE_STATE_OFF
         if feature_id in self.overrides:
             return self.overrides[feature_id]
         return self.active_profile.states.get(feature_id, FEATURE_STATE_ON)

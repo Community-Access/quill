@@ -3589,21 +3589,14 @@ class MainFrame:
             self._menu_label("&Dictation", "tools.dictation_toggle"),
             "Press to start dictation, press again to stop and insert",
         )
-        bw_dictation_menu.AppendCheckItem(
+        bw_dictation_menu.Append(
             self._id_dictation_voice_commands,
-            self._menu_label("&Hey QUILL Commands", "tools.dictation_voice_commands_toggle"),
-        )
-        bw_dictation_menu.Check(
-            self._id_dictation_voice_commands, self.settings.voice_commands_enabled
+            "Hey QUILL &Commands (in Settings)...",
         )
         bw_dictation_menu.AppendSeparator()
-        bw_dictation_menu.AppendCheckItem(
+        bw_dictation_menu.Append(
             self._id_watch_folder_toggle,
-            self._menu_label("&Watch Folder Monitoring", "tools.watch_folder_toggle"),
-        )
-        bw_dictation_menu.Check(
-            self._id_watch_folder_toggle,
-            self._watch_service.is_running,
+            "Watch Folder &Monitoring (in Settings)...",
         )
         bw_dictation_menu.Append(
             self._id_watch_folder_settings,
@@ -3679,7 +3672,12 @@ class MainFrame:
             self._menu_label("&Capability Matrix (HTML Preview)", "whisperer.capability_matrix"),
         )
         whisperer_menu.AppendSubMenu(bw_rollout_menu, "&Rollout")
-        menu_bar.Append(whisperer_menu, "&BITS Whisperer")
+        # BITS Whisperer is deferred to QUILL 2.0; the master `core.bw_whisperer`
+        # flag is locked off for 1.0, so the whole menu stays hidden until the
+        # suite reaches feature parity. Its commands are also feature-gated out of
+        # the palette via the bw_* feature dependencies on this master flag.
+        if self._feature_enabled("core.bw_whisperer"):
+            menu_bar.Append(whisperer_menu, "&BITS Whisperer")
         glow_menu = wx.Menu()
         glow_menu.Append(
             self._id_glow_audit_document,
