@@ -51,8 +51,11 @@ or the command palette (`Ctrl+Shift+P`).
 - [ ] Reset to Factory Defaults (button within Settings)
 - [ ] Export profile to `.qpf` (button within Settings)
 - [ ] Import profile from `.qpf` (button within Settings)
-- [ ] Customize Menus (Menu Editor): Edit > Customize Menus... (`app.menu_editor`)
-- [ ] Rename Menu (text entry, nested in Customize Menus): Rename... button within Customize Menus
+- [ ] Customize Menus (Menu Editor, three tabs): Edit > Customize Menus... (`app.menu_editor`)
+  - [ ] Top-Level Menus tab: reorder, rename, show/hide, and reset top-level menus
+  - [ ] Menu Items tab: select a menu, then reorder, rename, show/hide its items
+  - [ ] Context Menu tab: reorder, rename, show/hide context menu items
+  - [ ] Rename Menu/Item (text entry, nested): Rename... button within any tab
 - [ ] Command Palette: `Ctrl+Shift+P`
 
 ## C. Navigate
@@ -90,6 +93,7 @@ or the command palette (`Ctrl+Shift+P`).
 - [ ] Read Aloud Settings: via Tools menu
 - [ ] Generate Speech Audio: via Tools menu
 - [ ] OCR Image: via Tools menu
+- [ ] OCR Review (nested in OCR Image): appears after OCR completes
 
 ## H. Tools: sticky notes
 
