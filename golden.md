@@ -461,7 +461,7 @@ This table is the execution source of truth. Update Status as work progresses. S
 | QK-9 | QUILL key plus question mark cheat sheet and per-mode help | QUILL key | M | Done | QUILL key plus question mark shows the live cheat sheet of follow-on keys grouped by purpose, reflecting the active keymap (resolved through `_binding_for`) and live element counts from the browse navigation cache; pressing question mark while the prefix is pending shows the prefix keys, and inside browse mode shows the browse keys without leaving browse mode. `?` is recognized directly and as Shift+/. Core builder is UI-agnostic and fully unit-tested (`test_quill_key_help.py`); UI wiring is covered in `test_main_frame_quill_key.py`. |
 | QK-5 | Sticky QUILL browse mode | QUILL key | S | Done | A second press of the QUILL key while the prefix is pending locks a sticky browse mode (`_quill_key_mode_sticky`) that ignores the timeout until Escape; entry announces "QUILL browse mode locked" and the status cell shows Locked. |
 | KEY-1 | Vim, Emacs, and VS Code keyboard packs | Keymaps | L | Todo | Three complete, documented, accessible packs are selectable. |
-| MENU-1 | Unified Preferences home | Menus | M | In progress | Settings now open through one tabbed front door (`Ctrl+,` then `General`) built from the shared settings registry; remaining scattered Tools-menu toggles still need to fold in. |
+| MENU-1 | Unified Preferences home | Menus | M | Done | Settings open through one tabbed front door (`Ctrl+,` then `General`) built from the shared settings registry, and the scattered Tools-menu toggles (announcement-trace capture, Hey QUILL commands, watch-folder monitoring) now redirect into Settings instead of carrying their own check state. |
 | SET-1 | Per-feature settings groups | Settings | M | Done | The Settings dialog renders one accessible `wx.Notebook` page per registry group (general, editing, navigation, accessibility, read aloud, AI, transcription, watch folders, updates), each control generated from `quill/core/settings_registry.py` specs (bool, choice, int, float, text). Every scalar setting across these areas — including side preview, CSV/Word open mode, and snippet trigger expansion — is surfaced as a registry spec and auto-renders with per-setting reset and search. Collection-style customization that is not a single scalar value (snippet bodies, recorded macros, sticky-note content, and status-bar layout) is managed in its own dedicated accessible manager dialog (Snippet Manager, Macro Recorder, Sticky Notes Vault, Status Bar Layout) by design, rather than as a registry control. |
 | SET-2 | Tunable timing and pacing | Settings | M | In progress | QUILL key timeout, Quick Nav debounce and threshold, autosave interval, announcement throttle, Read Aloud rate, pitch, and sentence pause, and dictation sensitivity are now registry-backed `Settings` fields (clamped in `from_dict`) and auto-render in the tabbed dialog with per-setting reset. Live consumers now wired: Read Aloud rate/pitch drive the engine live; the **autosave interval** is consumed on startup and re-applied when the Settings dialog closes; the **announcement throttle** is enforced in `_set_status` (suppresses repeat status speech within the window); **Quick Nav debounce** (`quick_nav_debounce_ms`) defers type-ahead filtering via `wx.CallLater` and **Quick Nav minimum characters** (`quick_nav_min_chars`) hold off query matching until the field reaches the configured length; the **QUILL key timeout** is read by `_quill_key_timeout`; the **Read Aloud sentence pause** (`read_aloud_sentence_pause_ms`) inserts an interruptible gap between sentences across every TTS engine loop. **Remaining (honest):** the dictation sensitivity field is surfaced/stored but the current dictation backend launches the Windows Win+H recognizer, which exposes no sensitivity control, so there is no consumer to wire until a sensitivity-aware capture engine (Whisper/Vosk live mic) lands. |
 | SET-3 | Tunable verbosity and announcements | Settings | M | In progress | A global `announcement_verbosity` level (minimal/normal/verbose) plus per-event overrides (`announce_wrap`, `announce_counts`, `announce_mode_changes`, `announce_spelling`, `announce_punctuation_level`) are registry-backed and surface in the Accessibility tab. Live consumers now wired: `announce_wrap` gates the " (wrapped)" suffix on Find/Replace; `announce_counts` decides whether the word-count summary is spoken or set quietly; `announce_mode_changes` gates QUILL key/browse mode enter/exit speech in `_quill_feedback` (sound still plays); `announce_spelling` short-circuits the passive live-misspelling hint. **Deferred (honest):** `announce_punctuation_level` is stored/surfaced but has no consumer yet — the Read Aloud engine takes no punctuation parameter — so this row stays In progress. |
@@ -1157,15 +1157,15 @@ This table tracks how many of the backlog IDs each tier names are still open. It
 | Tier | Scope | Total items | Done | Remaining | Open item IDs |
 | --- | --- | --- | --- | --- | --- |
 | Tier 1 | Protect users and unlock the team | 23 | 23 | 0 | (complete) |
-| Tier 2 | Flagship experience | 57 | 44 | 13 | OCR-1, OCR-3, AGENT-1, AI-19, SET-2, SET-3, CTX-1, DICT-2, FEAT-19, DLG-1, MENU-1, MENU-5, A11Y-4 |
+| Tier 2 | Flagship experience | 57 | 45 | 12 | OCR-1, OCR-3, AGENT-1, AI-19, SET-2, SET-3, CTX-1, DICT-2, FEAT-19, DLG-1, MENU-5, A11Y-4 |
 | Tier 4 | Structural health and performance | 30 | 11 | 19 | CQ-16, CQ-1, DLG-2, GATE-11, PERF-1..3, PERF-9..14, GATE-10, SEC-6, SEC-7, SEC-8, SEC-14, SEC-17 |
 | Tier 6 | Documentation and learning surface | 33 | 3 | 30 | DOC-14..17, DOC-11, DOC-12, DOC-1..8, POD-1..5, TUT-1..7, CQ-11, CQ-14, CQ-23, CQ-24, LINUX-2 |
-| **1.0 subtotal** | Tiers 1, 2, 4, 6 (the QUILL 1.0 scope) | **143** | **81** | **62** | |
+| **1.0 subtotal** | Tiers 1, 2, 4, 6 (the QUILL 1.0 scope) | **143** | **82** | **61** | |
 | Tier 3 (2.0) | GLOW accessibility engine — deferred to QUILL 2.0 | 8 | 0 | 8 | GLOW-1..7, WATCH-8 |
 | Tier 5 (2.0) | BITS Whisperer transcription — deferred to QUILL 2.0 | 28 | 0 | 28 | BW-1..10, WATCH-9, NAV-10, AI-11, AI-12, AI-18, FEAT-12..18, LINUX-1, ECO-1, L10N-1, COLLAB-1 |
 | AX (2.0) | Accessibility Agents / axe-core engine — deferred to QUILL 2.0 | 6 | 0 | 6 | AX-A..F |
 | **2.0 subtotal** | GLOW + BITS Whisperer + axe-core | **42** | **0** | **42** | |
-| **Total** | All tiers (1.0 + 2.0) | **185** | **81** | **104** | |
+| **Total** | All tiers (1.0 + 2.0) | **185** | **82** | **103** | |
 
 > Deferral note (2026-06-02): per maintainer direction, the GLOW accessibility
 > engine (Tier 3, including the WATCH-8 GLOW watch action), the BITS Whisperer
@@ -1191,7 +1191,7 @@ list.
 
 | Tier | Status | Feature IDs |
 | --- | --- | --- |
-| Tier 2 — Flagship | In progress | SET-2, SET-3, MENU-1, MENU-5, AGENT-1, OCR-1, OCR-3, CTX-1, DICT-2, FEAT-19, DLG-1, AI-19 |
+| Tier 2 — Flagship | In progress | SET-2, SET-3, MENU-5, AGENT-1, OCR-1, OCR-3, CTX-1, DICT-2, FEAT-19, DLG-1, AI-19 |
 | Tier 2 — Flagship | Todo | A11Y-4 |
 | Tier 4 — Structural health | Todo | CQ-1, CQ-16, DLG-2, GATE-10, GATE-11, PERF-1, PERF-2, PERF-3, PERF-9, PERF-10, PERF-11, PERF-12, PERF-13, PERF-14, SEC-6, SEC-7, SEC-8, SEC-14, SEC-17 |
 | Tier 6 — Documentation | Todo | DOC-1, DOC-2, DOC-3, DOC-4, DOC-5, DOC-6, DOC-7, DOC-8, DOC-11, DOC-12, DOC-14, DOC-15, DOC-16, DOC-17, POD-1, POD-2, POD-3, POD-4, POD-5, TUT-1, TUT-2, TUT-3, TUT-4, TUT-5, TUT-6, TUT-7, CQ-11, CQ-23, CQ-24, LINUX-2 |
@@ -1201,7 +1201,7 @@ list.
 | Tier | Feature IDs |
 | --- | --- |
 | Tier 1 — Protect users | BUG-1, BUG-2, BUG-3, BUG-4, BUG-5, BUG-6, BUG-7, SEC-1, SEC-10, SEC-11, SEC-13, GATE-1, GATE-2, GATE-3, GATE-4, GATE-5, GATE-6, GATE-7, GATE-8, GATE-9, FLAG-1, FLAG-2 |
-| Tier 2 — Flagship | QK-1, QK-2, QK-3, QK-4, QK-5, QK-9, NAV-1, NAV-4, NAV-5, SEL-1, SEL-2, SEL-3, AI-1, AI-6, AI-7, AI-13, AI-14, AI-15, AI-16, AI-17, AI-21, AI-23, WATCH-1, WATCH-2, WATCH-3, WATCH-4, WATCH-5, WATCH-6, WATCH-7, SET-1, SET-4, SET-5, SET-6, SET-7, SHARE-1, SHARE-2, SHARE-3, FLAG-3, FLAG-4, MENU-3, DICT-1, OCR-2, OCR-4, OCR-5 |
+| Tier 2 — Flagship | QK-1, QK-2, QK-3, QK-4, QK-5, QK-9, NAV-1, NAV-4, NAV-5, SEL-1, SEL-2, SEL-3, AI-1, AI-6, AI-7, AI-13, AI-14, AI-15, AI-16, AI-17, AI-21, AI-23, WATCH-1, WATCH-2, WATCH-3, WATCH-4, WATCH-5, WATCH-6, WATCH-7, SET-1, SET-4, SET-5, SET-6, SET-7, SHARE-1, SHARE-2, SHARE-3, FLAG-3, FLAG-4, MENU-3, MENU-1, DICT-1, OCR-2, OCR-4, OCR-5 |
 | Tier 4 — Structural health | CQ-7, CQ-12, CQ-13, CQ-14, CQ-15, CQ-17, CQ-18, CQ-19, CQ-20, CQ-21, CQ-22, PERF-8, SEC-4, SEC-15, SEC-16, TYPE-1, TYPE-2, TYPE-3, TYPE-4, TYPE-5, TYPE-6, TYPE-7, TYPE-8 |
 
 **Deferred to QUILL 2.0 (not in the 1.0 lists)**
