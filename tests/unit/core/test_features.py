@@ -253,8 +253,25 @@ def test_visible_commands_hide_features_with_unmet_dependencies() -> None:
 def test_enabled_feature_with_all_dependencies_on_is_visible() -> None:
     manager = FeatureManager(active_profile_id=PROFILE_FULL_QUILL)
 
-    assert manager.is_enabled("core.bw_transcription") is True
-    assert manager.is_visible("core.bw_transcription") is True
+    assert manager.is_enabled("core.voice_commands") is True
+    assert manager.is_visible("core.voice_commands") is True
+
+
+def test_bits_whisperer_master_flag_is_locked_off() -> None:
+    # BITS Whisperer is deferred to QUILL 2.0; the master `core.bw_whisperer`
+    # flag is locked off for 1.0, which hard-disables it and every bw_* feature
+    # that depends on it, regardless of the active profile or any override.
+    manager = FeatureManager(active_profile_id=PROFILE_FULL_QUILL)
+
+    assert manager.state_for("core.bw_whisperer") == FEATURE_STATE_OFF
+    assert manager.is_enabled("core.bw_whisperer") is False
+    assert manager.is_enabled("core.bw_transcription") is False
+    assert manager.is_enabled("core.bw_parakeet") is False
+    assert manager.is_visible("core.bw_transcription") is False
+
+    # A locked-off flag cannot be turned on by a user override either.
+    manager.overrides["core.bw_whisperer"] = FEATURE_STATE_ON
+    assert manager.is_enabled("core.bw_whisperer") is False
 
 
 def test_every_feature_id_referenced_in_main_frame_is_defined() -> None:
