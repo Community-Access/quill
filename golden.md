@@ -455,7 +455,7 @@ This table is the execution source of truth. Update Status as work progresses. S
 | OCR-1 | Native Windows OCR backend (zero-install) | Image to text | M | In progress | `quill/io/ocr.py` is now backend-pluggable (`OcrBackend` Protocol, `WindowsOcrBackend`, `TesseractBackend`, shared `OcrResult`/`OcrLine` with per-line confidence) with `select_engine`/`available_engines` and a clean unavailable path; the WinRT backend lives in `quill/platform/windows/windows_ocr.py` (`Windows.Media.Ocr`, offline, no network). Tests cover backend selection, fall-back, the unavailable path, and Tesseract TSV per-line confidence parsing. Remaining: live WinRT recognition is unverifiable in this environment (winsdk not installed), so the native-backend happy path is not yet exercised end to end. |
 | OCR-2 | Tesseract opt-in backend via onboarding | Image to text | S | Done | A new `ocr_engine` setting (auto/windows/tesseract, validated in `Settings.from_dict`, surfaced in the settings registry under Accessibility, gated by `core.ocr`) drives backend selection; `auto` prefers the native Windows backend and falls back to Tesseract when present. `main_frame.ocr_image_file` passes the chosen engine through. When the chosen backend is unavailable the announced message points to OCR setup rather than failing silently. Tests cover engine resolution, the fall-back order, explicit-engine honoring, and the unavailable message. |
 | OCR-3 | Capture sources: file, clipboard, screen region | Image to text | M | In progress | OCR from an image file is wired (`main_frame.ocr_image_file`, QUILL key + Tools menu, shared progress/outcome grammar, cancel path); the engine layer is capture-source-agnostic. Remaining: clipboard-image and keyboard-driven screen-region live capture require a real display/clipboard and a working OCR engine, neither verifiable in this environment, so those two capture paths stay open. |
-| OCR-4 | Accessible OCR review and insert surface | Image to text | M | In progress | The wx-free review renderer (`render_ocr_review`) emits the engine/language/low-confidence header and flags low-confidence lines (`OcrResult.low_confidence_lines`, `OcrLine.is_low_confidence`); tests cover the header, the low-confidence flag markers, and the text-only fallback. Remaining: the live stock read-only review dialog with insert/copy/discard action keys is not yet wired (runtime wx surface unverifiable here). |
+| OCR-4 | Accessible OCR review and insert surface | Image to text | M | Done | The wx-free review renderer (`render_ocr_review`) emits the engine/language/low-confidence header and flags low-confidence lines (`OcrResult.low_confidence_lines`, `OcrLine.is_low_confidence`). The live review dialog (`OcrReviewDialog`, wired in `main_frame.ocr_image_file`) shows the recognized text in a stock `wx.TextCtrl(... TE_MULTILINE | TE_READONLY)` with Insert/Copy/Discard actions in a `wx.StdDialogButtonSizer` (buttons carry standard wx ids so they realize natively; Insert is the default, Discard is the escape id) and returns focus to the editor on close. Source-contract tests cover the readonly control, the three actions, the modal accessibility hooks, and the MainFrame wiring; the dialog is tracked in `dialogs.md`. |
 | OCR-5 | OCR as a Watch Profile action | Image to text | S | Done | `OcrAction` is registered in the `default_registry` action registry, gated by `core.ocr` and offline-by-default (no consent gate), writing recognized text to a sibling `.txt` file. Tests cover registration, the disabled-feature skip path, a happy-path conversion with an injected handler, and the no-engine failure path. |
 | QK-2 | QUILL key guided panel or overlay | QUILL key | L | Done | A screen-reader-friendly guide lists follow-on keys grouped by purpose, rendered from the shared `quill/core/quill_key_help.py` cheat-sheet builder into an accessible read-only dialog (outer sizer, EXPAND, default Close, Escape, focus returned to the editor). Shares one source of truth with QK-9. |
 | QK-9 | QUILL key plus question mark cheat sheet and per-mode help | QUILL key | M | Done | QUILL key plus question mark shows the live cheat sheet of follow-on keys grouped by purpose, reflecting the active keymap (resolved through `_binding_for`) and live element counts from the browse navigation cache; pressing question mark while the prefix is pending shows the prefix keys, and inside browse mode shows the browse keys without leaving browse mode. `?` is recognized directly and as Shift+/. Core builder is UI-agnostic and fully unit-tested (`test_quill_key_help.py`); UI wiring is covered in `test_main_frame_quill_key.py`. |
@@ -1157,15 +1157,15 @@ This table tracks how many of the backlog IDs each tier names are still open. It
 | Tier | Scope | Total items | Done | Remaining | Open item IDs |
 | --- | --- | --- | --- | --- | --- |
 | Tier 1 | Protect users and unlock the team | 23 | 23 | 0 | (complete) |
-| Tier 2 | Flagship experience | 57 | 43 | 14 | OCR-1, OCR-3, OCR-4, AGENT-1, AI-19, SET-2, SET-3, CTX-1, DICT-2, FEAT-19, DLG-1, MENU-1, MENU-5, A11Y-4 |
+| Tier 2 | Flagship experience | 57 | 44 | 13 | OCR-1, OCR-3, AGENT-1, AI-19, SET-2, SET-3, CTX-1, DICT-2, FEAT-19, DLG-1, MENU-1, MENU-5, A11Y-4 |
 | Tier 4 | Structural health and performance | 30 | 11 | 19 | CQ-16, CQ-1, DLG-2, GATE-11, PERF-1..3, PERF-9..14, GATE-10, SEC-6, SEC-7, SEC-8, SEC-14, SEC-17 |
 | Tier 6 | Documentation and learning surface | 33 | 3 | 30 | DOC-14..17, DOC-11, DOC-12, DOC-1..8, POD-1..5, TUT-1..7, CQ-11, CQ-14, CQ-23, CQ-24, LINUX-2 |
-| **1.0 subtotal** | Tiers 1, 2, 4, 6 (the QUILL 1.0 scope) | **143** | **80** | **63** | |
+| **1.0 subtotal** | Tiers 1, 2, 4, 6 (the QUILL 1.0 scope) | **143** | **81** | **62** | |
 | Tier 3 (2.0) | GLOW accessibility engine — deferred to QUILL 2.0 | 8 | 0 | 8 | GLOW-1..7, WATCH-8 |
 | Tier 5 (2.0) | BITS Whisperer transcription — deferred to QUILL 2.0 | 28 | 0 | 28 | BW-1..10, WATCH-9, NAV-10, AI-11, AI-12, AI-18, FEAT-12..18, LINUX-1, ECO-1, L10N-1, COLLAB-1 |
 | AX (2.0) | Accessibility Agents / axe-core engine — deferred to QUILL 2.0 | 6 | 0 | 6 | AX-A..F |
 | **2.0 subtotal** | GLOW + BITS Whisperer + axe-core | **42** | **0** | **42** | |
-| **Total** | All tiers (1.0 + 2.0) | **185** | **80** | **105** | |
+| **Total** | All tiers (1.0 + 2.0) | **185** | **81** | **104** | |
 
 > Deferral note (2026-06-02): per maintainer direction, the GLOW accessibility
 > engine (Tier 3, including the WATCH-8 GLOW watch action), the BITS Whisperer
@@ -1191,7 +1191,7 @@ list.
 
 | Tier | Status | Feature IDs |
 | --- | --- | --- |
-| Tier 2 — Flagship | In progress | SET-2, SET-3, MENU-1, MENU-5, AGENT-1, OCR-1, OCR-3, OCR-4, CTX-1, DICT-2, FEAT-19, DLG-1, AI-19 |
+| Tier 2 — Flagship | In progress | SET-2, SET-3, MENU-1, MENU-5, AGENT-1, OCR-1, OCR-3, CTX-1, DICT-2, FEAT-19, DLG-1, AI-19 |
 | Tier 2 — Flagship | Todo | A11Y-4 |
 | Tier 4 — Structural health | Todo | CQ-1, CQ-16, DLG-2, GATE-10, GATE-11, PERF-1, PERF-2, PERF-3, PERF-9, PERF-10, PERF-11, PERF-12, PERF-13, PERF-14, SEC-6, SEC-7, SEC-8, SEC-14, SEC-17 |
 | Tier 6 — Documentation | Todo | DOC-1, DOC-2, DOC-3, DOC-4, DOC-5, DOC-6, DOC-7, DOC-8, DOC-11, DOC-12, DOC-14, DOC-15, DOC-16, DOC-17, POD-1, POD-2, POD-3, POD-4, POD-5, TUT-1, TUT-2, TUT-3, TUT-4, TUT-5, TUT-6, TUT-7, CQ-11, CQ-23, CQ-24, LINUX-2 |
@@ -1201,7 +1201,7 @@ list.
 | Tier | Feature IDs |
 | --- | --- |
 | Tier 1 — Protect users | BUG-1, BUG-2, BUG-3, BUG-4, BUG-5, BUG-6, BUG-7, SEC-1, SEC-10, SEC-11, SEC-13, GATE-1, GATE-2, GATE-3, GATE-4, GATE-5, GATE-6, GATE-7, GATE-8, GATE-9, FLAG-1, FLAG-2 |
-| Tier 2 — Flagship | QK-1, QK-2, QK-3, QK-4, QK-5, QK-9, NAV-1, NAV-4, NAV-5, SEL-1, SEL-2, SEL-3, AI-1, AI-6, AI-7, AI-13, AI-14, AI-15, AI-16, AI-17, AI-21, AI-23, WATCH-1, WATCH-2, WATCH-3, WATCH-4, WATCH-5, WATCH-6, WATCH-7, SET-1, SET-4, SET-5, SET-6, SET-7, SHARE-1, SHARE-2, SHARE-3, FLAG-3, FLAG-4, MENU-3, DICT-1, OCR-2, OCR-5 |
+| Tier 2 — Flagship | QK-1, QK-2, QK-3, QK-4, QK-5, QK-9, NAV-1, NAV-4, NAV-5, SEL-1, SEL-2, SEL-3, AI-1, AI-6, AI-7, AI-13, AI-14, AI-15, AI-16, AI-17, AI-21, AI-23, WATCH-1, WATCH-2, WATCH-3, WATCH-4, WATCH-5, WATCH-6, WATCH-7, SET-1, SET-4, SET-5, SET-6, SET-7, SHARE-1, SHARE-2, SHARE-3, FLAG-3, FLAG-4, MENU-3, DICT-1, OCR-2, OCR-4, OCR-5 |
 | Tier 4 — Structural health | CQ-7, CQ-12, CQ-13, CQ-14, CQ-15, CQ-17, CQ-18, CQ-19, CQ-20, CQ-21, CQ-22, PERF-8, SEC-4, SEC-15, SEC-16, TYPE-1, TYPE-2, TYPE-3, TYPE-4, TYPE-5, TYPE-6, TYPE-7, TYPE-8 |
 
 **Deferred to QUILL 2.0 (not in the 1.0 lists)**
