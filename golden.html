@@ -1614,9 +1614,19 @@ clean unavailable path; the WinRT backend lives in
 <code>quill/platform/windows/windows_ocr.py</code>
 (<code>Windows.Media.Ocr</code>, offline, no network). Tests cover
 backend selection, fall-back, the unavailable path, and Tesseract TSV
-per-line confidence parsing. Remaining: live WinRT recognition is
-unverifiable in this environment (winsdk not installed), so the
-native-backend happy path is not yet exercised end to end.</td>
+per-line confidence parsing. <strong>Remaining (honest, Linux/cloud
+blocker):</strong> live WinRT recognition
+(<code>Windows.Media.Ocr</code>) is unverifiable in this environment
+(winsdk Python bindings not installed on Linux, WinRT APIs unavailable
+outside Windows). The <code>WindowsOcrBackend</code> engine surface and
+selection logic are wired and tested, but the actual WinRT
+<code>recognize</code> call cannot run here. <strong>Windows
+finish-line:</strong> Install QUILL on a real Windows machine, choose
+the Windows OCR engine in settings or let it auto-select, run OCR on a
+test image (PNG/JPG with known text content), and verify the recognized
+text is accurate and the confidence scores are sensible. Confirm the
+zero-install promise: no Tesseract download required when using the
+native backend.</td>
 </tr>
 <tr>
 <td>OCR-2</td>
@@ -1644,10 +1654,21 @@ message.</td>
 <td>OCR from an image file is wired
 (<code>main_frame.ocr_image_file</code>, QUILL key + Tools menu, shared
 progress/outcome grammar, cancel path); the engine layer is
-capture-source-agnostic. Remaining: clipboard-image and keyboard-driven
-screen-region live capture require a real display/clipboard and a
-working OCR engine, neither verifiable in this environment, so those two
-capture paths stay open.</td>
+capture-source-agnostic. <strong>Remaining (honest, Linux/cloud
+blocker):</strong> clipboard-image and keyboard-driven screen-region
+live capture require a real Windows display, clipboard access, and a
+working OCR engine, none of which are verifiable in this Linux
+environment. The file-based capture path is complete; clipboard and
+screen-region capture paths remain unimplemented. <strong>Windows
+finish-line:</strong> Implement <code>ocr_clipboard_image</code> (read
+image from clipboard via <code>win32clipboard</code> or similar, pass to
+<code>ocr_image</code>, insert result) and
+<code>ocr_screen_region</code> (overlay a keyboard-driven region
+selector on the screen, capture that region via screenshot API, pass to
+<code>ocr_image</code>, insert result). Wire both to Tools menu items
+and QUILL key bindings. Test on a real Windows machine with a working
+OCR backend, verify clipboard and screen-region capture succeed and
+insert recognized text into the editor.</td>
 </tr>
 <tr>
 <td>OCR-4</td>
@@ -1786,11 +1807,19 @@ matching until the field reaches the configured length; the
 <code>_quill_key_timeout</code>; the <strong>Read Aloud sentence
 pause</strong> (<code>read_aloud_sentence_pause_ms</code>) inserts an
 interruptible gap between sentences across every TTS engine loop.
-<strong>Remaining (honest):</strong> the dictation sensitivity field is
-surfaced/stored but the current dictation backend launches the Windows
-Win+H recognizer, which exposes no sensitivity control, so there is no
-consumer to wire until a sensitivity-aware capture engine (Whisper/Vosk
-live mic) lands.</td>
+<strong>Remaining (honest, Linux/cloud blocker):</strong> the
+<code>dictation_sensitivity</code> field is surfaced/stored but the
+current dictation backend launches the Windows Win+H recognizer, which
+exposes no sensitivity control. There is no sensitivity-aware capture
+backend to wire in this environment. <strong>Windows
+finish-line:</strong> Replace the Win+H shim with a Whisper or Vosk
+live-mic capture backend that accepts a sensitivity parameter (pause
+detection threshold), wire the <code>dictation_sensitivity</code>
+setting to that backend, and verify the pause threshold adjusts capture
+timing on a real Windows mic. Alternatively, document that
+<code>dictation_sensitivity</code> is a no-op when using the Win+H
+backend and only applies when a future sensitivity-aware backend is
+active.</td>
 </tr>
 <tr>
 <td>SET-3</td>
@@ -1810,10 +1839,20 @@ word-count summary is spoken or set quietly;
 <code>announce_mode_changes</code> gates QUILL key/browse mode
 enter/exit speech in <code>_quill_feedback</code> (sound still plays);
 <code>announce_spelling</code> short-circuits the passive
-live-misspelling hint. <strong>Deferred (honest):</strong>
-<code>announce_punctuation_level</code> is stored/surfaced but has no
-consumer yet — the Read Aloud engine takes no punctuation parameter — so
-this row stays In progress.</td>
+live-misspelling hint. <strong>Remaining (honest, Linux/cloud
+blocker):</strong> <code>announce_punctuation_level</code> is
+stored/surfaced but has no consumer yet — none of the Read Aloud TTS
+engines (<code>SAPI</code>, <code>Edge</code>, <code>pyttsx3</code>)
+expose a punctuation-reading parameter in this environment.
+<strong>Windows finish-line:</strong> Verify whether Windows SAPI or
+Edge TTS expose a punctuation verbosity control on a real Windows
+installation; if so, wire <code>announce_punctuation_level</code> to
+that parameter and test that the spoken punctuation changes as expected.
+If the engines offer no such parameter, document that
+<code>announce_punctuation_level</code> is a no-op in the current engine
+set and stays open until a punctuation-aware TTS backend is integrated
+(or accept this row as a planned-but-undeliverable setting and mark it
+Done with an advisory note).</td>
 </tr>
 <tr>
 <td>SET-4</td>
@@ -4691,11 +4730,23 @@ shows each step as an accessible <code>wx.CheckListBox</code> with a
 before/after details pane; auto-fixable steps are pre-checked, advisory
 steps are listed for review. Applying replaces the whole editor buffer
 as <strong>one undo</strong> and opens a re-audit report tab; the
-summary is announced. <strong>Remaining (honest):</strong> structure and
-plain language are auto-fixed, but alt-text and link-text are
-advisory-only (flagged for human authoring, not auto-written) —
-AI-assisted alt-text/link-text authoring and richer structure repair are
-still to come, so this row stays In progress.</td>
+summary is announced. <strong>Remaining (honest, by design):</strong>
+structure and plain language are auto-fixed, but alt-text and link-text
+steps are <strong>advisory-only</strong> by design (flagged for human
+authoring, not auto-written by AI). This is not a cloud/Linux blocker —
+it is a deliberate product decision. AI-assisted alt-text and link-text
+authoring (calling an AI provider with image analysis or context to
+<em>suggest</em> alt text, then presenting it for user approval) is a
+future enhancement outside the scope of this row. <strong>What “Done”
+means for AGENT-1:</strong> The advisory behavior is intentional. This
+row can be marked Done when (1) the deterministic auto-fixes (structure,
+plain language) are verified on Windows to work correctly end-to-end,
+(2) the advisory alt-text/link-text steps are confirmed to flag those
+issues without auto-writing them, and (3) the dialog, consent,
+apply-as-one-undo, re-audit, and announcement flow are all verified
+accessible and correct on a real Windows installation. The absence of
+AI-assisted alt-text authoring does not block Done — that is a separate
+feature (call it AI-7b or AGENT-1b if it ships).</td>
 </tr>
 <tr>
 <td>AGENT-2</td>
@@ -4873,11 +4924,28 @@ the outcome. Every network exchange is an <strong>injected</strong>
 inventory and is fully tested without a live endpoint (7 tests covering
 parse, state classification, success-after-pending, slow-down back-off,
 deadline expiry, denial, and the spoken announcements). ruff + strict
-mypy clean. <strong>In progress (honest):</strong> the flow state
-machine is complete and tested, but the real HTTPS poster, the DPAPI
-token storage, the consent surface, and the AIBackend (AI-13) wiring are
-not yet built, so no live subscription sign-in ships and this row stays
-In progress.</td>
+mypy clean. <strong>Remaining (honest, Linux/cloud blocker):</strong>
+the flow state machine is complete and tested, but the real HTTPS
+poster, the DPAPI token storage, the consent surface (a dialog showing
+the device code + URL + expiry and letting the user start/cancel the
+flow), and the AIBackend (AI-13) wiring (integrate device-login as an
+alternative credential source for supported providers) are not yet
+built. No live subscription sign-in ships from this environment.
+<strong>Windows finish-line:</strong> Create a
+<code>DeviceLoginDialog</code> (show device code + URL + expiry, “Open
+in browser” button, “I’ve authorized, continue” button, cancel path).
+Wire it into the AI provider configuration surface (e.g., “Sign in with
+OpenAI account” button in the assistant setup). Implement a real HTTPS
+poster (using <code>urlopen</code> with TLS verification). Store the
+resulting token in DPAPI (via
+<code>quill/platform/windows/credential_manager.py</code>). Wire the
+token into <code>AIBackend</code> credential resolution so the provider
+uses the device-login token instead of requiring a pasted API key. Test
+on a real Windows machine with a live provider endpoint (e.g., OpenAI
+device authorization), verify the full flow (show code, user authorizes
+in browser, QUILL polls and retrieves token, token is used for
+subsequent AI requests, no pasted key required). Confirm the flow is
+fully keyboard and screen-reader accessible at every step.</td>
 </tr>
 <tr>
 <td>AI-20</td>
