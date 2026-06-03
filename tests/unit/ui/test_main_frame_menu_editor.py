@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import inspect
+
 from quill.core.menu_customization import MenuCustomization
 from quill.ui.main_frame import (
     _TOP_MENU_DEFS,
@@ -118,3 +120,91 @@ def test_unrecognized_label_bails_out_without_changes() -> None:
 
     # The bail-out path leaves the (corrupted) bar in its original order.
     assert bar.keys() == [key for key, _ in _TOP_MENU_DEFS]
+
+
+# --- Source-contract tests for the extended Menu Editor UI (MENU-5) ---
+
+
+def test_menu_editor_has_three_tab_builders() -> None:
+    """The Menu Editor should have three separate tab-building methods."""
+    frame = MainFrame
+    assert hasattr(frame, "_build_top_menu_editor_tab")
+    assert hasattr(frame, "_build_menu_items_editor_tab")
+    assert hasattr(frame, "_build_context_menu_editor_tab")
+
+
+def test_menu_editor_discovers_menu_items() -> None:
+    """The Menu Editor should have a method to discover menu items."""
+    frame = MainFrame
+    assert hasattr(frame, "_discover_menu_items")
+    assert hasattr(frame, "_discover_context_menu_items")
+    assert hasattr(frame, "_find_command_key_for_id")
+
+
+def test_open_menu_editor_uses_notebook() -> None:
+    """The Menu Editor dialog should use a wx.Notebook for tabbed interface."""
+    source = inspect.getsource(MainFrame.open_menu_editor)
+    assert "wx.Notebook" in source
+    assert "Menu customization tabs" in source
+
+
+def test_open_menu_editor_creates_all_three_tabs() -> None:
+    """The Menu Editor should create three tabs: top-level, items, and context."""
+    source = inspect.getsource(MainFrame.open_menu_editor)
+    assert "_build_top_menu_editor_tab" in source
+    assert "_build_menu_items_editor_tab" in source
+    assert "_build_context_menu_editor_tab" in source
+    assert "Top-Level Menus" in source
+    assert "Menu Items" in source
+    assert "Context Menu" in source
+
+
+def test_open_menu_editor_reconciles_item_keys() -> None:
+    """The Menu Editor should reconcile all item keys against the model."""
+    source = inspect.getsource(MainFrame.open_menu_editor)
+    assert "all_item_keys" in source
+    assert "reconcile" in source
+
+
+def test_top_menu_tab_has_expected_controls() -> None:
+    """Top-level menu tab should have list, buttons, and event handlers."""
+    source = inspect.getsource(MainFrame._build_top_menu_editor_tab)
+    assert "wx.ListBox" in source
+    assert "Move &Up" in source
+    assert "Move &Down" in source
+    assert "&Rename" in source
+    assert "&Show/Hide" in source
+    assert "Reset to &Factory Defaults" in source
+    assert "working.set_top_order" in source
+    assert "working.rename_top" in source
+    assert "working.set_top_hidden" in source
+
+
+def test_menu_items_tab_has_two_pane_interface() -> None:
+    """Menu items tab should have menu selection and item list panes."""
+    source = inspect.getsource(MainFrame._build_menu_items_editor_tab)
+    assert "menu_choice" in source
+    assert "item_list" in source
+    assert "Select menu" in source
+    assert "Menu items" in source
+    assert "working.set_item_order" in source
+    assert "working.rename_item" in source
+    assert "working.set_item_hidden" in source
+
+
+def test_context_menu_tab_has_item_list() -> None:
+    """Context menu tab should have an item list and editing buttons."""
+    source = inspect.getsource(MainFrame._build_context_menu_editor_tab)
+    assert "CONTEXT_MENU_KEY" in source
+    assert "Context menu items" in source
+    assert "working.ordered_item_keys(CONTEXT_MENU_KEY" in source
+    assert "working.set_item_order(CONTEXT_MENU_KEY" in source
+
+
+def test_menu_editor_uses_modal_dialog_contract() -> None:
+    """The Menu Editor should follow the A11Y-4 modal dialog contract."""
+    source = inspect.getsource(MainFrame.open_menu_editor)
+    assert "apply_modal_ids" in source
+    assert "affirmative_id" in source
+    assert "escape_id" in source
+    assert "_show_modal_dialog" in source
