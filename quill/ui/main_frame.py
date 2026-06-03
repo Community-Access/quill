@@ -3404,13 +3404,9 @@ class MainFrame:
             current_backend == "status_only",
         )
         read_aloud_menu.AppendSubMenu(backend_menu, "Announcement Bac&kend")
-        read_aloud_menu.AppendCheckItem(
+        read_aloud_menu.Append(
             self._id_toggle_announcement_trace,
-            "Capture Announcement &Trace in Diagnostics",
-        )
-        read_aloud_menu.Check(
-            self._id_toggle_announcement_trace,
-            self.settings.announcement_trace_enabled,
+            "Announcement &Trace (in Settings)...",
         )
         tools_menu.AppendSubMenu(read_aloud_menu, "Read &Aloud")
 
@@ -3420,21 +3416,14 @@ class MainFrame:
             self._menu_label("&Dictation", "tools.dictation_toggle"),
             "Press to start dictation, press again to stop and insert",
         )
-        dictation_menu.AppendCheckItem(
+        dictation_menu.Append(
             self._id_dictation_voice_commands,
-            self._menu_label("&Hey QUILL Commands", "tools.dictation_voice_commands_toggle"),
-        )
-        dictation_menu.Check(
-            self._id_dictation_voice_commands, self.settings.voice_commands_enabled
+            "Hey QUILL &Commands (in Settings)...",
         )
         dictation_menu.AppendSeparator()
-        dictation_menu.AppendCheckItem(
+        dictation_menu.Append(
             self._id_watch_folder_toggle,
-            self._menu_label("&Watch Folder Monitoring", "tools.watch_folder_toggle"),
-        )
-        dictation_menu.Check(
-            self._id_watch_folder_toggle,
-            self._watch_service.is_running,
+            "Watch Folder &Monitoring (in Settings)...",
         )
         dictation_menu.Append(
             self._id_watch_folder_settings,
@@ -3600,21 +3589,14 @@ class MainFrame:
             self._menu_label("&Dictation", "tools.dictation_toggle"),
             "Press to start dictation, press again to stop and insert",
         )
-        bw_dictation_menu.AppendCheckItem(
+        bw_dictation_menu.Append(
             self._id_dictation_voice_commands,
-            self._menu_label("&Hey QUILL Commands", "tools.dictation_voice_commands_toggle"),
-        )
-        bw_dictation_menu.Check(
-            self._id_dictation_voice_commands, self.settings.voice_commands_enabled
+            "Hey QUILL &Commands (in Settings)...",
         )
         bw_dictation_menu.AppendSeparator()
-        bw_dictation_menu.AppendCheckItem(
+        bw_dictation_menu.Append(
             self._id_watch_folder_toggle,
-            self._menu_label("&Watch Folder Monitoring", "tools.watch_folder_toggle"),
-        )
-        bw_dictation_menu.Check(
-            self._id_watch_folder_toggle,
-            self._watch_service.is_running,
+            "Watch Folder &Monitoring (in Settings)...",
         )
         bw_dictation_menu.Append(
             self._id_watch_folder_settings,
@@ -3690,7 +3672,12 @@ class MainFrame:
             self._menu_label("&Capability Matrix (HTML Preview)", "whisperer.capability_matrix"),
         )
         whisperer_menu.AppendSubMenu(bw_rollout_menu, "&Rollout")
-        menu_bar.Append(whisperer_menu, "&BITS Whisperer")
+        # BITS Whisperer is deferred to QUILL 2.0; the master `core.bw_whisperer`
+        # flag is locked off for 1.0, so the whole menu stays hidden until the
+        # suite reaches feature parity. Its commands are also feature-gated out of
+        # the palette via the bw_* feature dependencies on this master flag.
+        if self._feature_enabled("core.bw_whisperer"):
+            menu_bar.Append(whisperer_menu, "&BITS Whisperer")
         glow_menu = wx.Menu()
         glow_menu.Append(
             self._id_glow_audit_document,
@@ -10898,9 +10885,6 @@ class MainFrame:
         item = menu_bar.FindItemById(self._id_announcement_backend_status_only)
         if item is not None:
             item.Check(requested == "status_only")
-        item = menu_bar.FindItemById(self._id_toggle_announcement_trace)
-        if item is not None:
-            item.Check(self.settings.announcement_trace_enabled)
 
     def set_announcement_backend(self, requested_backend: str) -> None:
         state = self._announcement_engine.configure(requested_backend)
@@ -10939,14 +10923,9 @@ class MainFrame:
         self.set_announcement_backend(backend_order[selected])
 
     def toggle_announcement_trace_capture(self) -> None:
-        self.settings.announcement_trace_enabled = not self.settings.announcement_trace_enabled
-        save_settings(self.settings)
-        self._apply_announcement_trace_setting()
-        self._sync_announcement_backend_menu_state()
-        if self.settings.announcement_trace_enabled:
-            self._set_status("Announcement trace capture enabled")
-            return
-        self._set_status("Announcement trace capture disabled")
+        """Open Settings at the Accessibility tab where announcement trace can be toggled."""
+        self.open_general_preferences()
+        self._set_status("Announcement trace setting is in Settings > Accessibility")
 
     def _set_keyboard_pack(self, pack_name: str) -> None:
         self.settings.keyboard_pack = pack_name
@@ -15334,16 +15313,43 @@ class MainFrame:
                 self._set_status("OCR failed")
                 return
             progress.Update(90, "Opening OCR result")
-            self.new_file()
-            self._replace_document_text(ocr_result.text)
-            self.document.set_text(ocr_result.text)
-            self._refresh_title()
-            self._set_status(f"OCR completed with {ocr_result.engine}")
-            progress.Update(100, "Done")
         finally:
             cancel_requested.set()
             worker.join(timeout=0.5)
             progress.Destroy()
+
+        # Show the OCR review dialog with Insert/Copy/Discard actions
+        from quill.io.ocr import render_ocr_review
+        from quill.ui.ocr_review_dialog import OcrReviewDialog
+
+        rendered_text = render_ocr_review(ocr_result)
+        review_dialog = OcrReviewDialog(self.frame, "OCR Review", rendered_text)
+        choice = review_dialog.show_modal(
+            announce=self._announce,
+            enter_region=self._enter_region,
+            exit_region=self._exit_region,
+        )
+
+        if choice == OcrReviewDialog.ID_INSERT:
+            # Insert at current cursor position
+            pos = self.editor.GetInsertionPoint()
+            self.editor.WriteText(ocr_result.text)
+            self.editor.SetInsertionPoint(pos + len(ocr_result.text))
+            self._set_status(f"OCR text inserted ({ocr_result.engine})")
+        elif choice == OcrReviewDialog.ID_COPY:
+            # Copy to clipboard
+            if wx.TheClipboard.Open():
+                wx.TheClipboard.SetData(wx.TextDataObject(ocr_result.text))
+                wx.TheClipboard.Close()
+                self._set_status(f"OCR text copied to clipboard ({ocr_result.engine})")
+            else:
+                self._set_status("Failed to copy to clipboard")
+        else:
+            # Discard
+            self._set_status("OCR discarded")
+
+        # Return focus to the editor
+        self.editor.SetFocus()
 
     def _on_read_aloud_progress(self, start: int, end: int) -> None:
         self.editor.SetSelection(start, end)
@@ -15391,21 +15397,9 @@ class MainFrame:
             self._set_status("Windows dictation started. Speak into the editor.")
 
     def toggle_dictation_voice_commands(self) -> None:
-        self.settings.voice_commands_enabled = not self.settings.voice_commands_enabled
-        save_settings(self.settings)
-        item = self.frame.GetMenuBar().FindItemById(self._id_dictation_voice_commands)
-        if item is not None:
-            item.Check(self.settings.voice_commands_enabled)
-        if self.settings.voice_commands_enabled and self._dictation.state == "listening":
-            self._voice_command_baseline_text = self.editor.GetValue()
-            self._schedule_voice_command_scan()
-            self._set_status('Hey QUILL commands enabled. Say "Hey QUILL" plus a command.')
-        elif self.settings.voice_commands_enabled:
-            self._set_status("Hey QUILL commands enabled. Start dictation to use them.")
-        else:
-            self._cancel_voice_command_scan()
-            self._voice_command_baseline_text = ""
-            self._set_status("Hey QUILL commands disabled")
+        """Open Settings at the Transcription tab where Hey QUILL commands can be toggled."""
+        self.open_general_preferences()
+        self._set_status("Hey QUILL commands setting is in Settings > Transcription")
 
     def _bw_include_parakeet_models(self) -> bool:
         if not self._feature_enabled("core.bw_parakeet"):
@@ -16080,16 +16074,8 @@ class MainFrame:
             self.show_bw_model_status()
 
     def _apply_watch_folder_menu_state(self) -> None:
-        if not self._menu_updates_allowed():
-            self._request_menu_refresh()
-            return
-        menu_bar = self.frame.GetMenuBar()
-        if menu_bar is None:
-            return
-        item = menu_bar.FindItemById(self._id_watch_folder_toggle)
-        if item is None:
-            return
-        item.Check(self._watch_service.is_running)
+        # Watch folder toggle is now in Settings; no menu state to sync
+        pass
 
     def _maybe_start_watch_folder(self) -> None:
         if not bool(getattr(self.settings, "watch_folder_enabled", False)):
@@ -16128,17 +16114,9 @@ class MainFrame:
             self._record_notification("Watch folder monitoring stopped", "speech")
 
     def toggle_watch_folder_monitoring(self) -> None:
-        if self._watch_service.is_running:
-            self.settings.watch_folder_enabled = False
-            save_settings(self.settings)
-            self._stop_watch_folder_monitoring()
-            return
-        if not self._watch_service.profiles():
-            self.open_watch_folder_settings()
-            if not self._watch_service.profiles():
-                self._apply_watch_folder_menu_state()
-                return
-        self._start_watch_folder_monitoring()
+        """Open Settings at the Watch Folders tab where monitoring can be toggled."""
+        self.open_general_preferences()
+        self._set_status("Watch folder monitoring setting is in Settings > Watch Folders")
 
     def show_watch_folder_status(self) -> None:
         """Open the accessible Watch Queue Monitor (WATCH-4)."""
