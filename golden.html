@@ -1638,18 +1638,14 @@ capture paths stay open.</td>
 <td>Accessible OCR review and insert surface</td>
 <td>Image to text</td>
 <td>M</td>
-<td>Done</td>
+<td>In progress</td>
 <td>The wx-free review renderer (<code>render_ocr_review</code>) emits
 the engine/language/low-confidence header and flags low-confidence lines
 (<code>OcrResult.low_confidence_lines</code>,
-<code>OcrLine.is_low_confidence</code>). The live review dialog
-(<code>OcrReviewDialog</code>, wired in
-<code>main_frame.ocr_image_file</code>) displays recognized text in a
-stock <code>wx.TextCtrl(... TE_MULTILINE | TE_READONLY)</code> with
-Insert/Copy/Discard actions; focus returns to the editor on close.
-Source-contract tests validate the wiring, the readonly text control,
-the three action buttons, and the modal accessibility hooks. The dialog
-is tracked in <code>dialogs.md</code>.</td>
+<code>OcrLine.is_low_confidence</code>); tests cover the header, the
+low-confidence flag markers, and the text-only fallback. Remaining: the
+live stock read-only review dialog with insert/copy/discard action keys
+is not yet wired (runtime wx surface unverifiable here).</td>
 </tr>
 <tr class="odd">
 <td>OCR-5</td>
@@ -5826,11 +5822,11 @@ CQ-16) are counted once, in their primary tier.</p>
 <tr class="even">
 <td>Tier 2</td>
 <td>Flagship experience</td>
-<td>58</td>
-<td>48</td>
-<td>10</td>
-<td>OCR-1, OCR-3, AGENT-1, AI-19, SET-2, SET-3, CTX-1, DICT-2, FEAT-19,
-DLG-1</td>
+<td>57</td>
+<td>43</td>
+<td>14</td>
+<td>OCR-1, OCR-3, OCR-4, AGENT-1, AI-19, SET-2, SET-3, CTX-1, DICT-2,
+FEAT-19, DLG-1, MENU-1, MENU-5, A11Y-4</td>
 </tr>
 <tr class="odd">
 <td>Tier 4</td>
@@ -5853,9 +5849,9 @@ CQ-14, CQ-23, CQ-24, LINUX-2</td>
 <tr class="odd">
 <td><strong>1.0 subtotal</strong></td>
 <td>Tiers 1, 2, 4, 6 (the QUILL 1.0 scope)</td>
-<td><strong>144</strong></td>
-<td><strong>82</strong></td>
-<td><strong>62</strong></td>
+<td><strong>143</strong></td>
+<td><strong>80</strong></td>
+<td><strong>63</strong></td>
 <td></td>
 </tr>
 <tr class="even">
@@ -5894,8 +5890,8 @@ LINUX-1, ECO-1, L10N-1, COLLAB-1</td>
 <tr class="even">
 <td><strong>Total</strong></td>
 <td>All tiers (1.0 + 2.0)</td>
-<td><strong>186</strong></td>
-<td><strong>81</strong></td>
+<td><strong>185</strong></td>
+<td><strong>80</strong></td>
 <td><strong>105</strong></td>
 <td></td>
 </tr>
@@ -5941,13 +5937,13 @@ the third table and are not part of either 1.0 list.</p>
 <tr class="odd">
 <td>Tier 2 — Flagship</td>
 <td>In progress</td>
-<td>SET-2, SET-3, MENU-1, MENU-5, AGENT-1, OCR-1, OCR-3, CTX-1, DICT-2,
-FEAT-19, DLG-1, AI-19</td>
+<td>SET-2, SET-3, MENU-1, MENU-5, AGENT-1, OCR-1, OCR-3, OCR-4, CTX-1,
+DICT-2, FEAT-19, DLG-1, AI-19</td>
 </tr>
 <tr class="even">
 <td>Tier 2 — Flagship</td>
 <td>Todo</td>
-<td>(none)</td>
+<td>A11Y-4</td>
 </tr>
 <tr class="odd">
 <td>Tier 4 — Structural health</td>
@@ -5991,7 +5987,7 @@ GATE-8, GATE-9, FLAG-1, FLAG-2</td>
 SEL-2, SEL-3, AI-1, AI-6, AI-7, AI-13, AI-14, AI-15, AI-16, AI-17,
 AI-21, AI-23, WATCH-1, WATCH-2, WATCH-3, WATCH-4, WATCH-5, WATCH-6,
 WATCH-7, SET-1, SET-4, SET-5, SET-6, SET-7, SHARE-1, SHARE-2, SHARE-3,
-FLAG-3, FLAG-4, MENU-3, DICT-1, OCR-2, OCR-4, OCR-5</td>
+FLAG-3, FLAG-4, MENU-3, DICT-1, OCR-2, OCR-5</td>
 </tr>
 <tr class="odd">
 <td>Tier 4 — Structural health</td>
