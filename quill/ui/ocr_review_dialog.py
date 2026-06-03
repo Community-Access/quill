@@ -27,10 +27,15 @@ class OcrReviewDialog:
     ``ID_COPY``, or ``ID_DISCARD`` depending on the user's choice.
     """
 
-    # Return codes for the three actions
-    ID_INSERT = 1
-    ID_COPY = 2
-    ID_DISCARD = 3
+    # Return codes for the three actions. These map to the stable wxWidgets
+    # standard control IDs (wxID_OK=5100, wxID_CANCEL=5101, wxID_APPLY=5102) so
+    # the buttons can be added to a wx.StdDialogButtonSizer and realized with
+    # native placement on Windows. wx.StdDialogButtonSizer.AddButton silently
+    # ignores buttons whose id is not one of the recognised standard ids, so a
+    # custom integer (1/2/3) would leave the buttons unrealized/invisible.
+    ID_INSERT = 5100  # wx.ID_OK (affirmative / default)
+    ID_DISCARD = 5101  # wx.ID_CANCEL (escape)
+    ID_COPY = 5102  # wx.ID_APPLY (middle action)
 
     def __init__(self, parent: object, title: str, text: str) -> None:
         """Create an OCR review dialog.
@@ -70,21 +75,25 @@ class OcrReviewDialog:
         self.text_ctrl.SetMinSize((760, 440))
         root.Add(self.text_ctrl, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
-        # Button row with Insert, Copy, Discard
-        button_row = wx.BoxSizer(wx.HORIZONTAL)
-        insert_btn = wx.Button(panel, label="Insert")
-        copy_btn = wx.Button(panel, label="Copy")
-        discard_btn = wx.Button(panel, label="Discard")
+        # Button row using a standard dialog button sizer for platform-native,
+        # screen-reader-friendly layout (A11Y-4). Buttons carry standard wx ids
+        # (matching the return codes above) so StdDialogButtonSizer.Realize()
+        # positions them correctly on Windows; the visible labels stay custom.
+        button_sizer = wx.StdDialogButtonSizer()
+        insert_btn = wx.Button(panel, id=self.ID_INSERT, label="Insert")
+        copy_btn = wx.Button(panel, id=self.ID_COPY, label="Copy")
+        discard_btn = wx.Button(panel, id=self.ID_DISCARD, label="Discard")
 
         insert_btn.Bind(wx.EVT_BUTTON, lambda _e: self._end(self.ID_INSERT))
         copy_btn.Bind(wx.EVT_BUTTON, lambda _e: self._end(self.ID_COPY))
         discard_btn.Bind(wx.EVT_BUTTON, lambda _e: self._end(self.ID_DISCARD))
 
-        button_row.Add(insert_btn, 0, wx.RIGHT, 8)
-        button_row.Add(copy_btn, 0, wx.RIGHT, 8)
-        button_row.AddStretchSpacer(1)
-        button_row.Add(discard_btn, 0)
-        root.Add(button_row, 0, wx.EXPAND | wx.ALL, 10)
+        button_sizer.AddButton(insert_btn)
+        button_sizer.AddButton(copy_btn)
+        button_sizer.AddButton(discard_btn)
+        button_sizer.Realize()
+        insert_btn.SetDefault()
+        root.Add(button_sizer, 0, wx.EXPAND | wx.ALL, 10)
 
         panel.SetSizer(root)
         outer = wx.BoxSizer(wx.VERTICAL)
