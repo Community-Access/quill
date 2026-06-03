@@ -2000,7 +2000,7 @@ announcements.</td>
 <td>Rich context and Application-key menu</td>
 <td>Features</td>
 <td>M</td>
-<td>In progress</td>
+<td>Done</td>
 <td>Right-click and the Application/Menu key open one rich, fully
 keyboard- and screen-reader-operable context menu built from the word
 and selection under the cursor, turning a plain editor menu into a
@@ -2023,10 +2023,12 @@ add-to-dictionary path, and feature-off filtering. Delivered: the pure,
 <code>MenuItem</code>s with single separators between non-empty groups)
 with a new <code>core.dictionary</code> feature gating Look
 Up/Thesaurus; tests cover the suggestion-led shape, add/ignore, lookup,
-selection clipboard, feature-off filtering, and separator placement. In
-progress: the live <code>wx.Menu</code> construction and
-Application/Menu-key binding in <code>main_frame</code> are not yet
-wired.</td>
+selection clipboard, feature-off filtering, and separator placement. The
+UI wiring is in <code>main_frame.py</code>:
+<code>_build_ctx1_menu_items()</code> converts the menu model to wx
+items with handlers for all commands (spelling suggestions, add/ignore,
+lookup, thesaurus, cut/copy/paste), validated by source-contract tests
+in <code>tests/unit/ui/test_main_frame_ctx1_wiring.py</code>.</td>
 </tr>
 <tr>
 <td>DICT-1</td>
@@ -2055,7 +2057,7 @@ error fallback.</td>
 <td>Accessible Look Up and definitions surface</td>
 <td>Features</td>
 <td>S</td>
-<td>In progress</td>
+<td>Done</td>
 <td>A screen-reader-pageable Look Up surface presents a word’s part of
 speech, definitions, and example sentences (Free Dictionary via DICT-1)
 alongside synonyms, antonyms, rhymes, and related words (Datamuse via
@@ -2071,16 +2073,44 @@ actions, and the offline-only shape. Delivered: the pure,
 part of speech and examples), synonyms, antonyms, related, and rhymes,
 and <code>build_lookup_items</code> flattens the result into selectable
 insert/context <code>LookupItem</code>s; tests cover the section
-rendering, the non-blank empty-result shape, and item insertability. In
-progress: the live <code>wx</code> Look Up dialog and its Tools-menu /
-QUILL-key entry points are not yet wired.</td>
+rendering, the non-blank empty-result shape, and item insertability. The
+UI wiring is in <code>main_frame.py</code>:
+<code>show_lookup_dialog(word)</code> queries
+<code>_lexical_service</code>, renders the result in a wx.TE_READONLY
+TextCtrl, presents insertable items in a ListBox with
+double-click/Insert actions, and honors the <code>core.dictionary</code>
+feature gate, validated by source-contract tests in
+<code>tests/unit/ui/test_main_frame_dict2_wiring.py</code>.</td>
+</tr>
+<tr>
+<td>DICT-3</td>
+<td>User-selectable source mode with merge-and-compare</td>
+<td>Features</td>
+<td>S</td>
+<td>Todo</td>
+<td>The user chooses, per lexical kind (spelling suggestions, synonyms,
+definitions), which source to trust: <strong>Offline only</strong>
+(fast, always available — the existing spell/thesaurus data),
+<strong>Online only</strong> (the DICT-1 providers, richer but slower
+and consent-gated), or <strong>Both, combined</strong>. In combined mode
+QUILL queries offline and online in parallel, then merges the result
+lists into one de-duplicated, ranked set that records each entry’s
+provenance ("offline", "Free Dictionary", "Datamuse", or "both"), so a
+word both sources agree on ranks first and the user can see where each
+suggestion came from. The merge is a pure, tested <code>core</code>
+function (offline list ∪ online list with case-fold de-dupe and a stable
+agreement-weighted ordering); the online half degrades gracefully so a
+slow or failed provider never blocks the offline answer. A setting (and
+the CTX-1 menu) exposes the mode; tests cover the union/de-dupe,
+agreement ranking, provenance labelling, and the offline-only fallback
+when consent is off or the network is down.</td>
 </tr>
 <tr>
 <td>FEAT-19</td>
 <td>External file-change watch and safe reload</td>
 <td>Features</td>
 <td>M</td>
-<td>In progress</td>
+<td>Done</td>
 <td>QUILL watches the open document for external modification (and
 deletion). When the file changes on disk and the buffer is unmodified,
 it reloads in place without moving the cursor or scroll position and
@@ -2101,9 +2131,14 @@ reporting each change once), and <code>decide_reload</code>
 (clean→reload, dirty→conflict prompt, deleted→keep-mine prompt, quiet
 when disabled), plus four FEAT-19 Settings fields surfaced in the
 registry; tests cover snapshotting, change/deletion classification,
-watcher settling, and every decide-reload branch. In progress: the
-off-UI-thread poller and the cursor/scroll-preserving reload + conflict
-dialog are not yet wired into <code>main_frame</code>.</td>
+watcher settling, and every decide-reload branch. The UI wiring is in
+<code>main_frame.py</code>:
+<code>_start_external_change_watcher()</code> creates a watcher with
+wx.Timer polling, <code>_stop_external_change_watcher()</code> cleans
+up, <code>_reload_from_disk_preserving_cursor()</code> reloads without
+moving the cursor, and <code>decide_reload()</code> is called with
+settings to decide the action, validated by source-contract tests in
+<code>tests/unit/ui/test_main_frame_feat19_wiring.py</code>.</td>
 </tr>
 <tr>
 <td>WATCH-1</td>
@@ -5840,10 +5875,9 @@ CQ-16) are counted once, in their primary tier.</p>
 <td>Tier 2</td>
 <td>Flagship experience</td>
 <td>57</td>
-<td>46</td>
-<td>11</td>
-<td>OCR-1, OCR-3, AGENT-1, AI-19, SET-2, SET-3, CTX-1, DICT-2, FEAT-19,
-DLG-1, A11Y-4</td>
+<td>49</td>
+<td>8</td>
+<td>OCR-1, OCR-3, AGENT-1, AI-19, SET-2, SET-3, DLG-1, A11Y-4</td>
 </tr>
 <tr>
 <td>Tier 4</td>
@@ -5867,8 +5901,8 @@ CQ-14, CQ-23, CQ-24, LINUX-2</td>
 <td><strong>1.0 subtotal</strong></td>
 <td>Tiers 1, 2, 4, 6 (the QUILL 1.0 scope)</td>
 <td><strong>143</strong></td>
-<td><strong>83</strong></td>
-<td><strong>60</strong></td>
+<td><strong>86</strong></td>
+<td><strong>57</strong></td>
 <td></td>
 </tr>
 <tr>
@@ -5908,8 +5942,8 @@ LINUX-1, ECO-1, L10N-1, COLLAB-1</td>
 <td><strong>Total</strong></td>
 <td>All tiers (1.0 + 2.0)</td>
 <td><strong>185</strong></td>
-<td><strong>83</strong></td>
-<td><strong>102</strong></td>
+<td><strong>86</strong></td>
+<td><strong>99</strong></td>
 <td></td>
 </tr>
 </tbody>
@@ -5954,8 +5988,7 @@ the third table and are not part of either 1.0 list.</p>
 <tr>
 <td>Tier 2 — Flagship</td>
 <td>In progress</td>
-<td>SET-2, SET-3, AGENT-1, OCR-1, OCR-3, CTX-1, DICT-2, FEAT-19, DLG-1,
-AI-19</td>
+<td>SET-2, SET-3, AGENT-1, OCR-1, OCR-3, DLG-1, AI-19</td>
 </tr>
 <tr>
 <td>Tier 2 — Flagship</td>
@@ -6004,7 +6037,8 @@ GATE-8, GATE-9, FLAG-1, FLAG-2</td>
 SEL-2, SEL-3, AI-1, AI-6, AI-7, AI-13, AI-14, AI-15, AI-16, AI-17,
 AI-21, AI-23, WATCH-1, WATCH-2, WATCH-3, WATCH-4, WATCH-5, WATCH-6,
 WATCH-7, SET-1, SET-4, SET-5, SET-6, SET-7, SHARE-1, SHARE-2, SHARE-3,
-FLAG-3, FLAG-4, MENU-3, MENU-1, MENU-5, DICT-1, OCR-2, OCR-4, OCR-5</td>
+FLAG-3, FLAG-4, MENU-3, MENU-1, MENU-5, DICT-1, CTX-1, DICT-2, FEAT-19,
+OCR-2, OCR-4, OCR-5</td>
 </tr>
 <tr>
 <td>Tier 4 — Structural health</td>
