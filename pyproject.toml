@@ -57,7 +57,7 @@ dictation = ["SpeechRecognition>=3.16.1"]
 # the zero-install Windows backend available; Tesseract (OCR-2) stays a separate
 # opt-in install for users who choose it.
 ocr = ["winsdk>=1.0.0b10; sys_platform == 'win32'"]
-pages = ["keynote-parser>=1.0", "markitdown[docx,pptx,xlsx,xls,pdf]>=0.1.0"]
+pages = ["keynote-parser>=1.0", "markitdown[docx,pptx,xlsx,xls,pdf]>=0.1.6"]
 # GLOW document accessibility engine (audit / fix / convert for docx, pptx,
 # xlsx, pdf, epub, md). quill-glow-core is the thin, stable service contract
 # Quill imports; its [glow] extra pulls in the acb-large-print backend. The
