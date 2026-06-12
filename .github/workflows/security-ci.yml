@@ -47,7 +47,7 @@ jobs:
       - name: Run gitleaks scan
         if: ${{ env.GITLEAKS_LICENSE != '' }}
         # gitleaks org scanning requires a license key in this repo.
-        uses: gitleaks/gitleaks-action@v2
+        uses: gitleaks/gitleaks-action@v3
         env:
           GITLEAKS_LICENSE: ${{ env.GITLEAKS_LICENSE }}
       - name: Skip gitleaks when license is unavailable
