@@ -73,7 +73,7 @@ glow = ["quill-glow-core[glow]>=0.1.1"]
 macos = [
     "py2app>=0.28",
     "setuptools<80",
-    "pyobjc>=10; sys_platform == 'darwin'",
+    "pyobjc>=12.2; sys_platform == 'darwin'",
     "apple-fm-sdk>=0.1; sys_platform == 'darwin'",
 ]
 dev = [
