@@ -71,7 +71,7 @@ glow = ["quill-glow-core[glow]>=0.1.1"]
 # pyobjc powers the macOS platform layer; apple-fm-sdk is the Foundation Models
 # backend used by Ask Quill on macOS.
 macos = [
-    "py2app>=0.28",
+    "py2app>=0.28.10",
     "setuptools<80",
     "pyobjc>=10; sys_platform == 'darwin'",
     "apple-fm-sdk>=0.1; sys_platform == 'darwin'",
