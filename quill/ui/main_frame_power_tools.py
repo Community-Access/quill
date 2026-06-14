@@ -750,6 +750,67 @@ class PowerToolsActionsMixin:
             _fmt.encode_html_entities, "Encoded HTML entities"
         )
 
+    # ----------------------------------------- #197 encoding tools
+    def show_non_ascii(self) -> None:
+        """Open a read-only report of every non-ASCII character (#197)."""
+        from quill.core import encoding_tools
+
+        report = encoding_tools.summarize_non_ascii(self.editor.GetValue())
+        self._power_tools_open_text_in_new_buffer(report, "Non-ASCII characters")
+
+    def encode_all_non_ascii(self) -> None:
+        """Replace every non-ASCII character with its HTML entity (#197)."""
+        from quill.core import encoding_tools
+
+        self._power_tools_transform_selection_or_document(
+            encoding_tools.encode_non_ascii_to_entities,
+            "Converted non-ASCII characters to HTML entities",
+        )
+
+    def reencode_file(self) -> None:
+        """Save a copy of the document in a chosen text encoding (#197)."""
+        from quill.core import encoding_tools
+
+        wx = self._wx
+        text = self.editor.GetValue()
+        labels = [label for _codec, label in encoding_tools.ENCODING_CHOICES]
+        with wx.SingleChoiceDialog(
+            self.frame,
+            "Choose the target encoding for the saved copy:",
+            "Re-encode As",
+            labels,
+        ) as chooser:
+            if self._show_modal_dialog(chooser, "Re-encode As") != wx.ID_OK:
+                self._set_status("Re-encode cancelled")
+                return
+            index = chooser.GetSelection()
+        if index == wx.NOT_FOUND:
+            self._set_status("Re-encode cancelled")
+            return
+        codec, label = encoding_tools.ENCODING_CHOICES[index]
+        data = encoding_tools.reencode_text(text, codec)
+
+        default_dir = ""
+        if hasattr(self, "_file_dialog_default_dir"):
+            default_dir = self._file_dialog_default_dir()
+        with wx.FileDialog(
+            self.frame,
+            f"Save re-encoded copy ({label})",
+            defaultDir=default_dir,
+            wildcard="All files (*.*)|*.*",
+            style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
+        ) as dialog:
+            if self._show_modal_dialog(dialog, "Save re-encoded copy") != wx.ID_OK:
+                self._set_status("Re-encode cancelled")
+                return
+            target = Path(dialog.GetPath())
+        try:
+            target.write_bytes(data)
+        except OSError as error:
+            self._set_status(f"Could not write file: {error}")
+            return
+        self._set_status(f"Saved re-encoded copy ({label}) to {target}")
+
     # -------------------------------------- EDS-22 line-level TextMonkey transforms
     def trim_blank_lines(self) -> None:
         self._power_tools_transform_selection_or_document(

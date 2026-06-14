@@ -140,9 +140,10 @@ def test_first_party_and_quillin_collide_through_one_registry() -> None:
 def test_power_tools_manifest_is_consumed_and_conflict_free() -> None:
     # 33 original + 10 TextMonkey/EdSharp-parity commands (§4.22/§4.23)
     # + 2 Copy Tray dialog-level commands (open + clear_all)
+    # + 3 encoding tools (#197: encode_all_non_ascii, show_non_ascii, reencode_file)
     registry = build_first_party_registry(POWER_TOOLS_COMMANDS)
-    assert len(POWER_TOOLS_COMMANDS) == 45
-    assert len(registry.commands) == 45
+    assert len(POWER_TOOLS_COMMANDS) == 48
+    assert len(registry.commands) == 48
     assert registry.conflicts == ()
     for menu in registry.menus:
         assert menu.parent in FIRST_PARTY_MENU_PARENTS

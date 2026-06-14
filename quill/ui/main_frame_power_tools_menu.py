@@ -257,6 +257,30 @@ def _build_power_tools_registrar() -> FirstPartyRegistrar:
         label="&Encode HTML Entities",
         separator_before=False,
     )
+    add(
+        id="power.encode_all_non_ascii",
+        title="Convert Non-ASCII to HTML Entities",
+        top_level="Format",
+        group="html_encoding",
+        label="Convert &Non-ASCII to HTML Entities",
+        separator_before=True,
+    )
+    add(
+        id="power.show_non_ascii",
+        title="Show Non-ASCII Characters",
+        top_level="Format",
+        group="html_encoding",
+        label="&Show Non-ASCII Characters...",
+        separator_before=False,
+    )
+    add(
+        id="power.reencode_file",
+        title="Re-encode As",
+        top_level="Format",
+        group="html_encoding",
+        label="&Re-encode As...",
+        separator_before=False,
+    )
 
     # Navigate menu ------------------------------------------------------
     add(

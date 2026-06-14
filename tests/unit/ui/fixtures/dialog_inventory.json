@@ -179,6 +179,8 @@
   "quill/ui/main_frame_power_tools.py::PowerToolsActionsMixin._power_tools_prompt_single::wx.TextEntryDialog": "native",
   "quill/ui/main_frame_power_tools.py::PowerToolsActionsMixin.calculate_and_insert_date::show_web_form": "web",
   "quill/ui/main_frame_power_tools.py::PowerToolsActionsMixin.insert_file_content::wx.FileDialog": "native",
+  "quill/ui/main_frame_power_tools.py::PowerToolsActionsMixin.reencode_file::wx.FileDialog": "native",
+  "quill/ui/main_frame_power_tools.py::PowerToolsActionsMixin.reencode_file::wx.SingleChoiceDialog": "native",
   "quill/ui/main_frame_quill_key.py::QuillKeyMixin._present_quill_key_help::wx.Dialog": "hardened_custom",
   "quill/ui/main_frame_quillins.py::QuillinsMenuMixin._quillin_consent::wx.MessageDialog": "native",
   "quill/ui/main_frame_quillins.py::QuillinsMenuMixin.open_quillins_manager.on_install::wx.DirDialog": "native",
