@@ -2099,6 +2099,28 @@ commands that make sense in context.</p>
 <p>The heading tools do more than insert decoration. They help you
 maintain usable structure. The list tools speed up common authoring
 patterns without forcing you into a separate composer.</p>
+<h3 id="citations-and-bibliographies">Citations and bibliographies</h3>
+<p>For research writing, <strong>Insert -&gt; Insert
+Citation...</strong> builds correctly formatted citations from details
+you type, so you do not have to wrestle with the punctuation and
+indentation rules by hand.</p>
+<ol type="1">
+<li>Choose the <strong>source type</strong>: Book, Journal article, or
+Website.</li>
+<li>Choose the <strong>style</strong>: MLA 9, Chicago 17 (author-date),
+or APA 7.</li>
+<li>Choose what to <strong>insert</strong>: the in-text citation, the
+full bibliography (Works Cited / References) entry, or both.</li>
+<li>Fill in the source details — author(s), title, year, and the fields
+relevant to the source type. Separate multiple authors with a semicolon
+(for example <code>Jane Smith; John Doe</code>).</li>
+<li>Choose <strong>Insert</strong>, and Quill places the correctly
+formatted citation at your cursor.</li>
+</ol>
+<p>Quill applies the per-style rules for you — author order and "et
+al.", initials, italics, and where each comma and period belongs — so
+what lands in your document is ready to use. You supply the facts; Quill
+handles the formatting.</p>
 <p>Markdown list editing now follows editor-standard behavior:
 <code>Enter</code> continues the current bullet/numbered/task item, and
 <code>Enter</code> on an empty list marker exits the list. When the
@@ -2549,6 +2571,15 @@ still switch modes inside the tab.</p>
 readable structure and linearized table narration (headers and rows) for
 screen readers. Normal text mode keeps full Quill editing behavior for
 direct edits.</p>
+<p><strong>Saving to Word.</strong> You can also save any document
+<em>as</em> Word. In <strong>File -&gt; Save As...</strong>, choose
+<strong>Word Document (*.docx)</strong> (or <strong>Rich Text Format
+(*.rtf)</strong>) from the file-type list, and Quill converts the
+current content to that format on save. Markdown and HTML structure —
+headings, lists, emphasis, links, simple tables — maps to real Word
+styles, so the result is navigable in Word, not just visually formatted.
+Saving plain text produces a correct but unformatted document, since
+plain text has no structure to carry.</p>
 <h3 id="epub">EPUB</h3>
 <p>EPUB gets navigator support and chapter-oriented reading.</p>
 <h3 id="powerpoint-pptx-and-ppt">PowerPoint (.pptx and .ppt)</h3>

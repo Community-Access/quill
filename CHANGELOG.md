@@ -4,6 +4,17 @@
 
 ### New features
 
+- **Save As Word (.docx).** `quill/io/export.py::write_document_as` now routes
+  `.docx` through Pandoc (`gfm -> docx`) via `pandoc.py::convert_file_with_pandoc`,
+  mapping Markdown headings to real Word styles for a navigable document. RTF
+  was already supported; the Save As dialog gains a "Word Document (*.docx)"
+  type (#204).
+- **Citation help (MLA, Chicago, APA).** New pure `quill/core/citations.py`
+  formats book / journal article / website sources in MLA 9, Chicago 17
+  (author-date), and APA 7 — both in-text and bibliography, with per-style
+  author handling (et al., initials, ampersand). **Insert -> Insert Citation...**
+  is an accessible form that inserts the in-text citation, the bibliography
+  entry, or both at the cursor (#203).
 - **QSP sound pack system.** A pluggable earcon engine: `quill/core/sound_pack.py`
   loads a sound pack (a directory or `.qsp` zip with a `manifest.json` mapping
   event IDs to WAV files), `quill/ui/sound_manager.py` plays them non-blocking,

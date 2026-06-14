@@ -1116,6 +1116,18 @@ Quill detects whether the current surface looks like Markdown, HTML, or plain te
 
 The heading tools do more than insert decoration. They help you maintain usable structure. The list tools speed up common authoring patterns without forcing you into a separate composer.
 
+### Citations and bibliographies
+
+For research writing, **Insert -> Insert Citation...** builds correctly formatted citations from details you type, so you do not have to wrestle with the punctuation and indentation rules by hand.
+
+1. Choose the **source type**: Book, Journal article, or Website.
+2. Choose the **style**: MLA 9, Chicago 17 (author-date), or APA 7.
+3. Choose what to **insert**: the in-text citation, the full bibliography (Works Cited / References) entry, or both.
+4. Fill in the source details — author(s), title, year, and the fields relevant to the source type. Separate multiple authors with a semicolon (for example `Jane Smith; John Doe`).
+5. Choose **Insert**, and Quill places the correctly formatted citation at your cursor.
+
+Quill applies the per-style rules for you — author order and "et al.", initials, italics, and where each comma and period belongs — so what lands in your document is ready to use. You supply the facts; Quill handles the formatting.
+
 Markdown list editing now follows editor-standard behavior: `Enter` continues the current bullet/numbered/task item, and `Enter` on an empty list marker exits the list. When the caret is on a list item, `Tab` nests it and `Shift+Tab` promotes it. For larger reorganizations, use **Format -> List -> List Manager...** (`Ctrl+Shift+Grave, L`) to move, promote/demote, add, edit, and delete list items from a tree view.
 
 For heading presentation control, open **Insert -> Heading -> Style Headings...**. You can style either all heading levels or the current heading level, then set font family, point size, and alignment. In Markdown documents, styled headings are written as HTML heading tags so the formatting is preserved.
@@ -1421,6 +1433,8 @@ CSV and TSV files open through a choice flow: special CSV grid mode or normal te
 Word documents open through a choice flow: structured Word view or normal text editor mode. You can remember your preferred default and still switch modes inside the tab.
 
 Structured Word view is optimized for accessibility: it prioritizes readable structure and linearized table narration (headers and rows) for screen readers. Normal text mode keeps full Quill editing behavior for direct edits.
+
+**Saving to Word.** You can also save any document *as* Word. In **File -> Save As...**, choose **Word Document (*.docx)** (or **Rich Text Format (*.rtf)**) from the file-type list, and Quill converts the current content to that format on save. Markdown and HTML structure — headings, lists, emphasis, links, simple tables — maps to real Word styles, so the result is navigable in Word, not just visually formatted. Saving plain text produces a correct but unformatted document, since plain text has no structure to carry.
 
 ### EPUB
 

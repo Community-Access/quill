@@ -43,6 +43,22 @@ If you have ever fought a file that was UTF-8 when the next tool wanted plain AS
 
 **Why it matters.** This turns a fiddly, error-prone command-line ritual into three clear, screen-reader-friendly menu commands — and the "nothing is lost" guarantee means you can convert with confidence.
 
+## New: hand it over in Word (or RTF)
+
+Sooner or later somebody asks for "the Word version." Now you can just give it to them. **File -> Save As...**, pick **Word Document (*.docx)** (or Rich Text) from the type list, and QUILL converts your document on the way out the door — no copy-paste-into-Word dance, no reformatting marathon.
+
+And because we hand the conversion to Pandoc with real Word styles, your headings come out as actual Word headings, not "bold text that looks like a heading." That means the file is navigable by the next person's screen reader too — accessibility doesn't stop at the export button.
+
+A word to the wise: Word keeps whatever structure your source had. Save a richly formatted Markdown or HTML document and it arrives dressed for the occasion; save a plain-text file and you get a tidy but unadorned document, because there was no structure to carry. QUILL will tell you so rather than quietly flattening your work.
+
+## New: citations without the tears
+
+Setting up MLA or Chicago citations has a special talent for going wrong at 2 a.m. the night before a paper is due — a comma in the wrong place, an italic that should not be there, a hanging indent that refuses to hang. QUILL now does the fussy part for you.
+
+**Insert -> Insert Citation...** opens a plain, labelled form: pick your source type (book, journal article, or website), pick your style (MLA 9, Chicago 17, or APA 7), type in what you know — author, title, year, the usual suspects — and choose whether you want the in-text citation, the full bibliography entry, or both. QUILL formats it correctly and drops it in at your cursor.
+
+You provide the facts; QUILL handles the punctuation gymnastics. The goal here is simple and, frankly, a little bit personal for an accessibility-first editor: a screen-reader user should never be at a disadvantage just because citation formatting is finicky visual busywork. Now you are on the same footing as everyone else in the seminar — and you got there without fighting a single hanging indent.
+
 ## Smaller additions worth knowing
 
 - **Speak where you are.** From the QUILL key, press **F** to speak the window title, **P** to speak the full file path, or **Q** to speak a short status summary — without leaving the editor.
