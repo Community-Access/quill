@@ -78,11 +78,12 @@
 
 ### Bug fixes and security
 
-- **Setup Wizard radio buttons wrap correctly.** On the Feature Profile page
-  (step 3 of 9), arrowing down past the last choice no longer escapes into the
-  Back/Next/Cancel buttons; the choices use a single `wx.RadioBox` so arrow
-  navigation wraps within the group and screen readers announce it as one
-  labelled group (#209).
+- **Setup Wizard accessibility fixes.** The "Play sounds for mode changes"
+  checkbox on step 2 now carries its label on the control, so screen readers
+  announce it instead of an unlabeled checkbox (#208). On step 3, the Feature
+  Profile choices use a single `wx.RadioBox` so arrowing past the last choice
+  wraps within the group instead of escaping into the Back/Next/Cancel buttons,
+  and the group is announced as one labelled control (#209).
 - **Quill exits reliably when run from source.** A modeless top-level window
   (such as the Ask Quill chat frame) could keep the wx main loop alive after
   the main window closed, leaving the process running. `_on_close` now destroys

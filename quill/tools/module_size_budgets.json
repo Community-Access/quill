@@ -52,7 +52,7 @@
     "quill/core/prompt_library.py": 364,
     "quill/ui/prompt_library_dialog.py": 488,
     "quill/ui/skill_library_dialog.py": 540,
-    "quill/ui/setup_wizard_pages.py": 637,
+    "quill/ui/setup_wizard_pages.py": 638,
     "quill/core/keymap.py": 442,
     "quill/core/keymap_packs.py": 285,
     "quill/tools/check_banned_patterns.py": 690,

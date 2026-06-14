@@ -117,12 +117,14 @@ class _KeyboardSoundPage(_WizardPage):
         grid.Add(pack_label, flag=wx.ALIGN_CENTER_VERTICAL)
         grid.Add(self._pack, flag=wx.EXPAND)
 
-        sound_label = wx.StaticText(
-            self, label="Play sounds for mode changes:", name="wizard.kb_sound_label"
+        # The label lives on the checkbox itself, not a separate StaticText, so
+        # screen readers announce it instead of reading an unlabeled control
+        # (#208). An empty cell keeps the two-column grid aligned.
+        self._sounds = wx.CheckBox(
+            self, label="Play sounds for mode changes", name="wizard.kb_sounds_check"
         )
-        self._sounds = wx.CheckBox(self, name="wizard.kb_sounds_check")
         self._sounds.SetValue(bool(settings.quill_key_sound_enter))
-        grid.Add(sound_label, flag=wx.ALIGN_CENTER_VERTICAL)
+        grid.Add(wx.StaticText(self, label=""), flag=wx.ALIGN_CENTER_VERTICAL)
         grid.Add(self._sounds)
 
         sizer.Add(grid, flag=wx.LEFT | wx.RIGHT | wx.BOTTOM, border=12)
