@@ -1,0 +1,26 @@
+{
+  "format": "qsp",
+  "version": "1",
+  "name": "Ink Whole-Tone Tones",
+  "author": "Jeff Bishop",
+  "description": "Indentation depth tones on a C5 whole-tone scale. Equal 200-cent interval between every level \u2014 going deeper always sounds brighter, dedenting always darker. Partial QSP: defines only indent_level events.",
+  "license": "CC0",
+  "events": {
+    "indent_level_0_up": "indent_whole_tone_0_up.wav",
+    "indent_level_0_down": "indent_whole_tone_0_down.wav",
+    "indent_level_1_up": "indent_whole_tone_1_up.wav",
+    "indent_level_1_down": "indent_whole_tone_1_down.wav",
+    "indent_level_2_up": "indent_whole_tone_2_up.wav",
+    "indent_level_2_down": "indent_whole_tone_2_down.wav",
+    "indent_level_3_up": "indent_whole_tone_3_up.wav",
+    "indent_level_3_down": "indent_whole_tone_3_down.wav",
+    "indent_level_4_up": "indent_whole_tone_4_up.wav",
+    "indent_level_4_down": "indent_whole_tone_4_down.wav",
+    "indent_level_5_up": "indent_whole_tone_5_up.wav",
+    "indent_level_5_down": "indent_whole_tone_5_down.wav",
+    "indent_level_6_up": "indent_whole_tone_6_up.wav",
+    "indent_level_6_down": "indent_whole_tone_6_down.wav",
+    "indent_level_7_up": "indent_whole_tone_7_up.wav",
+    "indent_level_7_down": "indent_whole_tone_7_down.wav"
+  }
+}

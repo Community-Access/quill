@@ -189,6 +189,10 @@ class Contributions:
     menus: tuple[MenuContribution, ...] = ()
     context_menu: tuple[ContextMenuContribution, ...] = ()
     hotkeys: tuple[HotkeyContribution, ...] = ()
+    # QSP: optional sound pack shipped inside the extension bundle.
+    # sound_pack is a relative directory path; sound_events maps event IDs to WAV filenames.
+    sound_pack: str = ""
+    sound_events: tuple[tuple[str, str], ...] = ()
 
 
 @dataclass(frozen=True, slots=True)

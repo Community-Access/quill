@@ -213,6 +213,12 @@ class StatusBarMixin:
                 return "Slots: ?/12"
             count = sum(1 for _, s in self._tray().all_slots() if not s.is_empty())
             return f"Slots: {count}/12"
+        if item == "language_profile":
+            tab = getattr(self, "_current_tab", None)
+            profile = getattr(tab, "_language_profile", None)
+            if profile is None:
+                return "Plain text"
+            return profile.name
         if item == "sr_name":
             # A11Y live indicator (§8.3): show the detected screen reader name.
             # Cache the result on the instance to avoid re-running tasklist on
@@ -301,6 +307,7 @@ class StatusBarMixin:
             "extend_mode": "Extend selection mode active. Press F7 to toggle.",
             "abbreviations": "Abbreviation expansion. Press Enter to toggle on/off.",
             "copy_tray_slots": "Copy tray slots in use. Press Enter to open Copy Tray.",
+            "language_profile": "Active language profile. Press Enter to change language.",
             "sr_name": "Detected screen reader. Press Enter to re-detect.",
             "suggestion": "Frequently used command. Press Enter to run it.",
         }
@@ -483,6 +490,9 @@ class StatusBarMixin:
             "search_term": self.find_text,
             "file_path": self.open_containing_folder,
         }
+        if item == "language_profile":
+            self.set_document_language()
+            return
         # §8.3: A11Y indicator re-detection.
         if item == "sr_name":
             if hasattr(self, "_sr_name_cache"):

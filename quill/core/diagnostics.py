@@ -182,6 +182,9 @@ def build_bug_report_payload(
     expected: str | None = None,
     steps: str | None = None,
     diagnostics_note: str | None = None,
+    screen_reader_name: str | None = None,
+    reporter_name: str | None = None,
+    reporter_email: str | None = None,
 ) -> dict[str, str]:
     metadata = collect_environment_info(extra_environment=extra_environment)
     document_label = "No document open"
@@ -199,6 +202,19 @@ def build_bug_report_payload(
     diagnostics_text = (diagnostics_note or "").strip() or (
         "If possible, attach a diagnostics bundle created from Help -> Save Diagnostics..."
     )
+    env_lines = [
+        f"- Quill version: {metadata['quill_version']}",
+        f"- Platform: {metadata['platform']}",
+        f"- Python: {metadata['python_version']}",
+        f"- Locale: {metadata['locale']}",
+        f"- Current document: {document_label}",
+    ]
+    if screen_reader_name:
+        env_lines.append(f"- Screen reader: {screen_reader_name}")
+    if reporter_name:
+        env_lines.append(f"- Reported by: {reporter_name}")
+    if reporter_email:
+        env_lines.append(f"- Contact email: {reporter_email}")
     details = [
         "Issue details:",
         happened_text,
@@ -210,11 +226,7 @@ def build_bug_report_payload(
         steps_text,
         "",
         "Environment summary:",
-        f"- Quill version: {metadata['quill_version']}",
-        f"- Platform: {metadata['platform']}",
-        f"- Python: {metadata['python_version']}",
-        f"- Locale: {metadata['locale']}",
-        f"- Current document: {document_label}",
+        *env_lines,
         "",
         diagnostics_text,
     ]

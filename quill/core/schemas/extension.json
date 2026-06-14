@@ -151,6 +151,16 @@
               }
             }
           }
+        },
+        "sound_pack": {
+          "type": "string",
+          "description": "Relative path to a QSP directory inside the extension bundle (e.g. 'sounds/'). Loaded by SoundManager and merged with the active pack; extension events take precedence.",
+          "pattern": "^[A-Za-z0-9_./-]+/?$"
+        },
+        "sound_events": {
+          "type": "object",
+          "description": "Additional event IDs contributed by this extension. Keys are event IDs (must include the extension id as a prefix, e.g. 'com.example.foo.fired'); values are WAV filenames relative to sound_pack.",
+          "additionalProperties": { "type": "string" }
         }
       }
     }

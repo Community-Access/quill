@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quill.app/schemas/sound-pack/1.json",
+  "title": "QUILL Sound Pack Manifest",
+  "description": "Describes a QSP (.qsp) sound pack: a ZIP archive or directory containing WAV earcon files and this manifest.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "version", "name", "events"],
+  "properties": {
+    "format": {
+      "const": "qsp",
+      "description": "Must be the literal string 'qsp'."
+    },
+    "version": {
+      "const": "1",
+      "description": "Manifest schema version. Currently must be '1'."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Human-readable pack name, e.g. 'Ink'."
+    },
+    "author": {
+      "type": "string",
+      "maxLength": 120
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 400
+    },
+    "license": {
+      "type": "string",
+      "maxLength": 64
+    },
+    "events": {
+      "type": "object",
+      "description": "Map of sound-event ID to relative WAV file path within the pack.",
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Relative path to a WAV file. Must not use '..' segments."
+      }
+    }
+  }
+}

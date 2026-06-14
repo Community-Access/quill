@@ -204,6 +204,15 @@ class QuillinsMenuMixin:
                     self._quillin_index[command.id] = (manifest, entry.directory)
                     if manifest.id in bundled_ids:
                         self._bundled_command_ids.add(command.id)
+                if manifest.contributes.sound_pack:
+                    from quill.ui import sound_manager
+
+                    sound_manager.register_quillin_sounds(
+                        manifest.id,
+                        entry.directory,
+                        manifest.contributes.sound_pack,
+                        manifest.contributes.sound_events,
+                    )
 
         for command_id, resolved in registry.commands.items():
             binding = next(

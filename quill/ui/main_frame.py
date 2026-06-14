@@ -225,6 +225,13 @@ from quill.core.keymap import (
     reset_keymap,
     save_keymap,
 )
+from quill.core.language_profile import (
+    PLAIN_PROFILE,
+    LanguageProfile,
+    all_profiles,
+    get_profile_by_name,
+    get_profile_for_path,
+)
 from quill.core.lexical import (
     build_lookup_items,
     default_service,
@@ -381,6 +388,7 @@ from quill.core.tagging import (
     search_html_tag_choices,
     search_markdown_tag_choices,
 )
+from quill.core.token_nav import classify_token, next_token_position, prev_token_position
 from quill.core.transforms import to_lower, to_sentence_case, to_title, to_toggle_case, to_upper
 from quill.core.trust import is_trusted_location, load_trusted_locations, save_trusted_locations
 from quill.core.undo_store import load_undo_history, save_undo_history
@@ -814,6 +822,7 @@ class MainFrame(
         "extend_mode": "Extend Mode",
         "abbreviations": "Abbreviations",
         "copy_tray_slots": "Copy Tray",
+        "language_profile": "Language",
         "sr_name": "Screen Reader",
         "suggestion": "Suggested Action",
         "notebook_goal": "Notebook Goal",
@@ -837,6 +846,7 @@ class MainFrame(
         "extend_mode": 110,
         "abbreviations": 120,
         "copy_tray_slots": 110,
+        "language_profile": 130,
         "sr_name": 160,
         "suggestion": 220,
         "notebook_goal": 200,
@@ -860,6 +870,7 @@ class MainFrame(
         "extend_mode": "core.edit",
         "abbreviations": "core.edit",
         "copy_tray_slots": "core.edit",
+        "language_profile": "core.navigate",
         "sr_name": "core.app",
         "suggestion": "core.app",
         "notebook_goal": "core.notebook",
@@ -1157,6 +1168,13 @@ class MainFrame(
             self._refresh_title()
         except Exception:
             self._report_startup_task_failure("startup finalization")
+        if not safe_mode:
+            try:
+                from quill.ui import sound_manager
+
+                sound_manager.init(self.settings)
+            except Exception:
+                self._report_startup_task_failure("sound manager init")
 
     @property
     def _help_frame(self) -> object:
@@ -1539,6 +1557,24 @@ class MainFrame(
             self._binding_for("window.previous_document"),
         )
         self.commands.register(
+            "navigate.speak_window_title",
+            "Speak Window Title",
+            self.speak_window_title,
+            self._binding_for("navigate.speak_window_title"),
+        )
+        self.commands.register(
+            "navigate.speak_full_path",
+            "Speak Full Path",
+            self.speak_full_path,
+            self._binding_for("navigate.speak_full_path"),
+        )
+        self.commands.register(
+            "navigate.speak_status_summary",
+            "Speak Status Summary",
+            self.speak_status_summary,
+            self._binding_for("navigate.speak_status_summary"),
+        )
+        self.commands.register(
             "view.send_to_tray",
             "Send to Tray",
             self.send_to_tray,
@@ -1797,6 +1833,24 @@ class MainFrame(
             self._binding_for("navigate.heading_organizer"),
         )
         self.commands.register(
+            "navigate.next_token",
+            "Next Token",
+            self.navigate_next_token,
+            self._binding_for("navigate.next_token"),
+        )
+        self.commands.register(
+            "navigate.previous_token",
+            "Previous Token",
+            self.navigate_previous_token,
+            self._binding_for("navigate.previous_token"),
+        )
+        self.commands.register(
+            "navigate.set_language",
+            "Set Document Language...",
+            self.set_document_language,
+            self._binding_for("navigate.set_language"),
+        )
+        self.commands.register(
             "navigate.match_bracket",
             "Match Bracket",
             self.match_bracket,
@@ -1963,6 +2017,18 @@ class MainFrame(
             "Toggle Announcement Trace Capture",
             self.toggle_announcement_trace_capture,
             None,
+        )
+        self.commands.register(
+            "tools.sound_toggle",
+            "Toggle Sound Notifications",
+            self.toggle_sound,
+            self._binding_for("tools.sound_toggle"),
+        )
+        self.commands.register(
+            "tools.sound_events",
+            "Manage Sound Events",
+            self.open_sound_events_dialog,
+            self._binding_for("tools.sound_events"),
         )
         self.commands.register(
             "tools.dictation_toggle",
@@ -2738,6 +2804,12 @@ class MainFrame(
             self._binding_for("format.toggle_block_comment"),
         )
         self.commands.register(
+            "format.auto_indent_newline",
+            "Auto-Indent Newline",
+            self.format_auto_indent_newline,
+            self._binding_for("format.auto_indent_newline"),
+        )
+        self.commands.register(
             "format.indent",
             "Indent",
             self.format_indent,
@@ -3222,6 +3294,9 @@ class MainFrame(
             "navigate.outline_navigator": self._id_outline_navigator,
             "navigate.heading_organizer": self._id_heading_organizer,
             "navigate.match_bracket": self._id_match_bracket,
+            "navigate.next_token": self._id_next_token,
+            "navigate.previous_token": self._id_previous_token,
+            "navigate.set_language": self._id_set_language,
             "navigate.next_structure": self._id_next_structure,
             "navigate.previous_structure": self._id_previous_structure,
             "navigate.next_region": self._id_next_region,
@@ -3237,6 +3312,8 @@ class MainFrame(
             "tools.dictionary_status": self._id_dictionary_status,
             "tools.announcement_backend": self._id_announcement_backend,
             "tools.announcement_trace_toggle": self._id_toggle_announcement_trace,
+            "tools.sound_toggle": self._id_toggle_sound,
+            "tools.sound_events": self._id_sound_events,
             "tools.watch_folder_toggle": self._id_watch_folder_toggle,
             "tools.watch_folder_settings": self._id_watch_folder_settings,
             "tools.watch_folder_status": self._id_watch_folder_status,
@@ -3779,6 +3856,9 @@ class MainFrame(
         self._browse_navigation_cache = None
         self.editor = tab.editor
         self.document = tab.document
+        tab._indent_tone_last_level = -1  # reset per-tab indent tone cache on switch
+        if not getattr(tab, "_language_profile_pinned", False):
+            tab._language_profile = get_profile_for_path(tab.document.path)
         self._schedule_browse_prewarm(force=True)
         if self.settings.persistent_undo:
             if self.document.path is not None:
@@ -3858,6 +3938,12 @@ class MainFrame(
             self.open_file(path, line=candidate.line, column=candidate.column)
             self.toggle_read_aloud()
             return
+        if action == "compare":
+            diff_with = getattr(candidate, "diff_with", None)
+            if diff_with is not None:
+                self.open_file(path)
+                self.compare_start_with_file(diff_with)
+                return
         self.open_file(path, line=candidate.line, column=candidate.column)
 
     def _on_text_changed(self, _event: object) -> None:
@@ -3953,6 +4039,7 @@ class MainFrame(
     def _on_editor_caret_activity(self, event: object) -> None:
         self._refresh_statusbar()
         self._maybe_announce_indent()
+        self._maybe_play_indent_tone()
         event.Skip()
 
     def _on_editor_key_up(self, event: object) -> None:
@@ -5178,6 +5265,12 @@ class MainFrame(
         save_settings(self.settings)
         self.flush_persistent_undo()
         mark_clean_exit(self.session_id)
+        try:
+            from quill.ui import sound_manager
+
+            sound_manager.shutdown()
+        except Exception:  # noqa: BLE001
+            pass
         event.Skip()
 
     def _on_iconize(self, event: object) -> None:
@@ -5995,10 +6088,12 @@ class MainFrame(
         return f" ({suffix})"
 
     def _title_subject(self) -> str:
-        if getattr(self.settings, "title_bar_path_mode", "name") == "full_path":
-            if self.document.path is not None:
-                return str(self.document.path)
-        return self.document.name
+        path = self.document.path
+        name = self.document.name
+        mode = getattr(self.settings, "title_bar_path_mode", "name")
+        if mode == "full_path" and path is not None:
+            return str(path)
+        return name
 
     def _dirty_title_suffix(self) -> str:
         if not self.document.modified:
@@ -6117,7 +6212,10 @@ class MainFrame(
     def _announce(self, message: str) -> None:
         self._status_message = message
         self._refresh_statusbar()
-        backend_error = self._announcement_engine.announce(message)
+        engine = getattr(self, "_announcement_engine", None)
+        if engine is None:
+            return
+        backend_error = engine.announce(message)
         if backend_error and backend_error != self._announcement_error_reported:
             self._announcement_error_reported = backend_error
             self._record_notification(backend_error, "accessibility")
@@ -6624,6 +6722,31 @@ class MainFrame(
         self._location_ring = LocationRing()
         self._location_ring.record(0)
         self._set_status("New document")
+        from quill.core.sound_events import SoundEvent
+        from quill.ui.sound_manager import post_sound
+
+        post_sound(SoundEvent.DOCUMENT_CREATED)
+
+    def _file_dialog_default_dir(self) -> str:
+        """Return the best initial directory for a file open/save dialog (#168).
+
+        Priority: session last-used dir → startup_folder setting → Documents → "".
+        startup_folder is the persistent user preference; _last_file_dir tracks the
+        most recent location within the current session and overrides it once set.
+        """
+        last = self._last_file_dir
+        if last and Path(last).is_dir():
+            return last
+        configured = getattr(self.settings, "startup_folder", "")
+        if configured and Path(configured).is_dir():
+            return configured
+        try:
+            docs = self._wx.StandardPaths.Get().GetDocumentsDir()
+            if docs and Path(docs).is_dir():
+                return docs
+        except Exception:
+            pass
+        return ""
 
     def _file_dialog_default_dir(self) -> str:
         """Return the best initial directory for a file open/save dialog (#168).
@@ -6663,12 +6786,29 @@ class MainFrame(
                 "Open text file",
                 defaultDir=self._file_dialog_default_dir(),
                 wildcard=(
-                    "Supported files (*.txt;*.md;*.html;*.htm;*.xhtml;*.json;*.yaml;*.yml;"
-                    "*.toml;*.xml;*.csv;*.tsv;*.ipynb;*.sqlite;*.db;*.doc;*.docx;*.ppt;*.pptx;*.epub;*.pages;*.pdf;*.odt;*.rtf)|"
-                    "*.txt;*.md;*.html;"
-                    "*.htm;*.xhtml;*.json;*.yaml;*.yml;*.toml;*.xml;*.csv;*.tsv;"
-                    "*.ipynb;*.sqlite;*.db;*.doc;*.docx;*.ppt;*.pptx;*.epub;*.pages;"
-                    "*.pdf;*.odt;*.rtf|All files (*.*)|*.*"
+                    "Supported files"
+                    " (*.txt;*.md;*.html;*.htm;*.xhtml;*.json;*.yaml;*.yml;"
+                    "*.toml;*.xml;*.csv;*.tsv;*.ipynb;*.sqlite;*.db;"
+                    "*.doc;*.docx;*.ppt;*.pptx;*.epub;*.pages;*.pdf;*.odt;*.rtf;"
+                    "*.py;*.js;*.jsx;*.ts;*.tsx;*.kt;*.kts;*.go;*.rs;*.c;*.cpp;"
+                    "*.h;*.hpp;*.java;*.swift;*.cs;*.rb;*.php;*.sh;*.ps1;*.lua;"
+                    "*.css;*.scss;*.less;*.sql;*.log;*.diff;*.patch;*.ini;*.cfg;*.conf;"
+                    "*.gradle;*.properties;*.gitignore;*.env)|"
+                    "*.txt;*.md;*.html;*.htm;*.xhtml;*.json;*.yaml;*.yml;"
+                    "*.toml;*.xml;*.csv;*.tsv;*.ipynb;*.sqlite;*.db;"
+                    "*.doc;*.docx;*.ppt;*.pptx;*.epub;*.pages;*.pdf;*.odt;*.rtf;"
+                    "*.py;*.js;*.jsx;*.ts;*.tsx;*.kt;*.kts;*.go;*.rs;*.c;*.cpp;"
+                    "*.h;*.hpp;*.java;*.swift;*.cs;*.rb;*.php;*.sh;*.ps1;*.lua;"
+                    "*.css;*.scss;*.less;*.sql;*.log;*.diff;*.patch;*.ini;*.cfg;*.conf;"
+                    "*.gradle;*.properties;*.gitignore;*.env|"
+                    "Documents (*.txt;*.md;*.html;*.htm;*.docx;*.odt;*.rtf;*.pdf;*.epub)|"
+                    "*.txt;*.md;*.html;*.htm;*.docx;*.odt;*.rtf;*.pdf;*.epub|"
+                    "Source code"
+                    " (*.py;*.js;*.jsx;*.ts;*.tsx;*.kt;*.kts;*.go;*.rs;*.c;*.cpp;"
+                    "*.h;*.hpp;*.java;*.swift;*.cs;*.rb;*.php;*.sh;*.ps1;*.lua)|"
+                    "*.py;*.js;*.jsx;*.ts;*.tsx;*.kt;*.kts;*.go;*.rs;*.c;*.cpp;"
+                    "*.h;*.hpp;*.java;*.swift;*.cs;*.rb;*.php;*.sh;*.ps1;*.lua|"
+                    "All files (*.*)|*.*"
                 ),
                 style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
             ) as dialog:
@@ -6780,6 +6920,12 @@ class MainFrame(
         # FEAT-19: (re)start the external change watcher for the freshly loaded document.
         self._stop_external_change_watcher()
         self._start_external_change_watcher()
+        # #187: SR users must not need Alt+Tab after open. Defer SetFocus so the
+        # sizer and notebook have finished layout before focus moves.
+        call_after = getattr(self._wx, "CallAfter", None)
+        if callable(call_after) and hasattr(self, "editor"):
+            call_after(self.editor.SetFocus)
+        self._announce(f"Opened {loaded.name or selected_path.name}")
 
     def _position_editor_at(self, line: int | None = None, column: int | None = None) -> None:
         if line is None and column is None:
@@ -7010,13 +7156,169 @@ class MainFrame(
 
     def _switch_document(self, reverse: bool) -> None:
         if len(self._document_tabs) < 2:
+            self._announce("Only one document open")
             self._set_status("No other open document to switch to")
             return
         current_index = self._current_tab_index()
         step = -1 if reverse else 1
         target_index = (current_index + step) % len(self._document_tabs)
         self._select_tab(target_index)
-        self._set_status(f"Switched to {self.document.name}")
+        name = self.document.name
+        self._announce(f"Switched to {name}")
+        self._set_status(f"Switched to {name}")
+
+    def speak_window_title(self) -> None:
+        title = self.frame.GetTitle()
+        self._announce(title)
+        self._set_status(title)
+
+    def speak_full_path(self) -> None:
+        path = self.document.path
+        if path is None:
+            msg = f"{self.document.name} — not saved to disk"
+        else:
+            msg = str(path)
+        self._announce(msg)
+        self._set_status(msg)
+
+    def speak_status_summary(self) -> None:
+        name = self.document.name
+        path = self.document.path
+        modified = "modified" if self.document.modified else "saved"
+        encoding = getattr(self.document, "encoding", None) or "UTF-8"
+        parts = [name]
+        if path:
+            parts.append(str(path))
+        parts.extend([modified, f"encoding {encoding}"])
+        msg = ". ".join(parts)
+        self._announce(msg)
+        self._set_status(msg)
+
+    # ------------------------------------------------------------------
+    # Compare mode (#193/#194) — Boxer-style keyboard-first diff navigation
+    # ------------------------------------------------------------------
+
+    def compare_start_with_file(self, path: object = None) -> None:
+        from quill.core.compare_service import CompareOptions, CompareService
+        from quill.ui.compare_dialog import CompareDialog
+
+        wx = self._wx
+        right_path: Path | None = path if isinstance(path, Path) else None
+        if right_path is None:
+            with wx.FileDialog(
+                self.frame,
+                "Compare with file",
+                wildcard="All files (*.*)|*.*",
+                style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
+            ) as dlg:
+                if self._show_modal_dialog(dlg, "Compare with file") != wx.ID_OK:
+                    return
+                right_path = Path(dlg.GetPath())
+        left_text = self.editor.GetValue()
+        try:
+            right_text = right_path.read_text(encoding="utf-8", errors="replace")
+        except OSError as exc:
+            self._set_status(f"Cannot read {right_path.name}: {exc}")
+            return
+        svc = CompareService()
+        opts = getattr(self, "_compare_options", CompareOptions())
+        left_label = self.document.name or "Left"
+        right_label = right_path.name
+        groups = svc.compare(
+            left_text,
+            right_text,
+            left_label=left_label,
+            right_label=right_label,
+            left_path=self.document.path,
+            right_path=right_path,
+            options=opts,
+        )
+        self._compare_service = svc
+        self._compare_left_text = left_text
+        self._compare_right_text = right_text
+        if not groups:
+            msg = "No differences found."
+            if opts.ignore_all_whitespace or opts.ignore_trailing_whitespace:
+                msg += " (whitespace ignored)"
+            self._announce(msg)
+            self._set_status(msg)
+            return
+        dlg = CompareDialog(self.frame, svc)
+        self._show_modal_dialog(dlg, "Compare")
+        dlg.Destroy()
+        self._compare_service = None
+
+    def compare_dialog_next(self) -> None:
+        svc = getattr(self, "_compare_service", None)
+        if svc is None:
+            self._announce("Not in compare mode")
+            return
+        g = svc.next()
+        if g is None:
+            self._announce("No differences")
+            return
+        self._announce(g.summary_verbose)
+        self._set_status(g.summary_short)
+
+    def compare_dialog_previous(self) -> None:
+        svc = getattr(self, "_compare_service", None)
+        if svc is None:
+            self._announce("Not in compare mode")
+            return
+        g = svc.previous()
+        if g is None:
+            self._announce("No differences")
+            return
+        self._announce(g.summary_verbose)
+        self._set_status(g.summary_short)
+
+    def compare_current_summary(self) -> None:
+        svc = getattr(self, "_compare_service", None)
+        if svc is None:
+            self._announce("Not in compare mode")
+            return
+        g = svc.current()
+        if g is None:
+            self._announce("No current difference — press F8 to navigate")
+            return
+        self._announce(g.summary_verbose)
+        self._set_status(g.summary_short)
+
+    def compare_toggle_ignore_whitespace(self) -> None:
+        from quill.core.compare_service import CompareOptions
+
+        opts = getattr(self, "_compare_options", CompareOptions())
+        if opts.ignore_all_whitespace:
+            self._compare_options = CompareOptions(ignore_all_whitespace=False)
+            msg = "Whitespace comparison: exact"
+        elif opts.ignore_trailing_whitespace:
+            self._compare_options = CompareOptions(ignore_all_whitespace=True)
+            msg = "Whitespace comparison: ignore all"
+        else:
+            self._compare_options = CompareOptions(ignore_trailing_whitespace=True)
+            msg = "Whitespace comparison: ignore trailing"
+        self._announce(msg)
+        self._set_status(msg)
+
+    def compare_generate_report(self) -> None:
+        svc = getattr(self, "_compare_service", None)
+        if svc is None:
+            self._set_status("No active comparison")
+            return
+        from quill.core.document import Document
+
+        lines: list[str] = [
+            f"# Compare Report: {svc.left_label} vs {svc.right_label}",
+            f"{svc.group_count} difference(s) found.",
+            "",
+        ]
+        for g in svc._groups:
+            lines.append(g.summary_verbose)
+            lines.append("")
+        text = "\n".join(lines)
+        doc = Document(name="Compare Report.md", text=text)
+        self._create_document_tab(doc, select=True)
+        self._set_status("Compare report opened in new tab")
 
     def send_to_tray(self) -> None:
         self._ensure_tray_icon()
@@ -7509,6 +7811,10 @@ class MainFrame(
         self.flush_persistent_undo()
         self._refresh_title()
         self._set_status(f"Saved {self.document.name}")
+        from quill.core.sound_events import SoundEvent
+        from quill.ui.sound_manager import post_sound
+
+        post_sound(SoundEvent.DOCUMENT_SAVED)
         # If this file was opened over SSH, upload it back to the remote host
         # with a tilde backup in its original newline style (#139).
         self.maybe_upload_remote_on_save()
@@ -8467,6 +8773,12 @@ class MainFrame(
         self._refresh_title()
         self._refresh_view_menu_checks()
         self._clear_navigation_issue_state()
+        try:
+            from quill.ui import sound_manager
+
+            sound_manager.on_settings_changed(self.settings)
+        except Exception:  # noqa: BLE001
+            pass
         self._set_status(status)
 
     def open_menu_editor(self) -> None:
@@ -9684,6 +9996,40 @@ class MainFrame(
         self.open_general_preferences()
         self._set_status("Announcement trace setting is in Settings > Accessibility")
 
+    def toggle_sound(self, enabled: bool | None = None) -> None:
+        from quill.core.settings import save_settings
+        from quill.core.sound_events import SoundEvent
+        from quill.ui import sound_manager
+
+        current = bool(getattr(self.settings, "sound_enabled", True))
+        if enabled is None:
+            enabled = not current
+        if not enabled:
+            sound_manager.post_sound(SoundEvent.SOUND_OFF)
+        self.settings.sound_enabled = enabled
+        save_settings(self.settings)
+        sound_manager.on_settings_changed(self.settings)
+        if enabled:
+            sound_manager.post_sound(SoundEvent.SOUND_ON)
+        state = "on" if enabled else "off"
+        self._announce(f"Sound notifications {state}")
+        self._set_status(f"Sound notifications {state}")
+
+    def open_sound_events_dialog(self) -> None:
+        from quill.core.settings import save_settings
+        from quill.ui import sound_manager
+        from quill.ui.sound_events_dialog import SoundEventsDialog
+
+        disabled_str = str(getattr(self.settings, "sound_events_disabled", ""))
+        disabled = frozenset(e.strip() for e in disabled_str.split(",") if e.strip())
+        loaded = sound_manager.get_loaded_events()
+        dialog = SoundEventsDialog(self.frame, disabled, loaded_events=loaded or None)
+        result = self._show_modal_dialog(dialog, "Sound Events")
+        if result == self._wx.ID_OK:
+            self.settings.sound_events_disabled = dialog.get_disabled()
+            save_settings(self.settings)
+            sound_manager.on_settings_changed(self.settings)
+
     def _set_keyboard_pack(self, pack_name: str) -> None:
         self.settings.keyboard_pack = pack_name
         save_settings(self.settings)
@@ -10495,6 +10841,8 @@ class MainFrame(
         def md_links(links: tuple[tuple[str, str], ...]) -> str:
             return "\n".join(f"- [{name}]({url})" for name, url in links)
 
+        from quill.core.contributors import contributor_bullet_list
+
         pyproject_path = self._pyproject_path()
         dependency_rows = build_dependency_notices(pyproject_path)
         bundled_rows = bundled_component_notices()
@@ -10522,7 +10870,11 @@ class MainFrame(
             "queue. Bundled Read Aloud voices (DECtalk and eSpeak NG) play immediately with "
             "no downloads; Piper and Kokoro models install through the Speech Center.\n\n"
             "## Links\n\n" + md_links(self._ABOUT_LINKS) + "\n\n"
-            "## Contributors on GitHub\n\n" + md_links(self._ABOUT_GITHUB_LINKS) + "\n\n"
+            "## Contributors\n\n"
+            "Everyone who has contributed to Quill on GitHub:\n\n"
+            + contributor_bullet_list()
+            + "\n\n"
+            "## Project on GitHub\n\n" + md_links(self._ABOUT_GITHUB_LINKS) + "\n\n"
             "## Dependencies and attributions\n\n"
             "The tables below are generated from declared project metadata and "
             "installed package metadata. "
@@ -11120,6 +11472,45 @@ class MainFrame(
             wx.ALL | wx.EXPAND,
             8,
         )
+        # Contact identity (pre-filled from settings, saved back after submit).
+        _sr_detection = detect_screen_reader()
+        _SR_CHOICES = [
+            "Not using a screen reader",
+            "JAWS",
+            "NVDA",
+            "Narrator",
+            "VoiceOver",
+            "Other",
+        ]
+        _detected_sr = _sr_detection.name if _sr_detection.detected else "Not using a screen reader"
+
+        name_row = wx.BoxSizer(wx.HORIZONTAL)
+        name_label = wx.StaticText(dialog, label="Your name (optional)")
+        name_field = wx.TextCtrl(dialog)
+        name_field.SetValue(getattr(self.settings, "bug_reporter_name", ""))
+        email_label = wx.StaticText(dialog, label="Contact email (optional)")
+        email_field = wx.TextCtrl(dialog)
+        email_field.SetValue(getattr(self.settings, "bug_reporter_email", ""))
+        name_row.Add(name_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
+        name_row.Add(name_field, 1, wx.RIGHT, 16)
+        name_row.Add(email_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
+        name_row.Add(email_field, 1)
+        root.Add(name_row, 0, wx.ALL | wx.EXPAND, 8)
+
+        sr_row = wx.BoxSizer(wx.HORIZONTAL)
+        sr_label = wx.StaticText(dialog, label="Screen reader")
+        sr_combo = wx.ComboBox(
+            dialog,
+            choices=_SR_CHOICES,
+            style=wx.CB_READONLY,
+        )
+        sr_combo.SetStringSelection(_detected_sr)
+        if sr_combo.GetSelection() == wx.NOT_FOUND:
+            sr_combo.SetSelection(0)
+        sr_row.Add(sr_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
+        sr_row.Add(sr_combo, 1)
+        root.Add(sr_row, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
+
         summary_label = wx.StaticText(dialog, label="Summary")
         summary_field = wx.TextCtrl(dialog)
         summary_field.SetValue(f"Bug report: {self.document.name}")
@@ -11169,10 +11560,11 @@ class MainFrame(
         def build_payload(
             diagnostics_note: str | None = None,
         ) -> tuple[dict[str, str], str]:
+            chosen_sr = sr_combo.GetStringSelection() or _detected_sr
             payload = build_bug_report_payload(
                 current_document=self.document,
                 extra_environment={
-                    "screen_reader": detect_screen_reader().name,
+                    "screen_reader": chosen_sr,
                     "wx_version": self._wx.version(),
                     **announcement_environment,
                 },
@@ -11181,6 +11573,9 @@ class MainFrame(
                 expected=expected_field.GetValue().strip(),
                 steps=steps_field.GetValue().strip(),
                 diagnostics_note=diagnostics_note,
+                screen_reader_name=chosen_sr,
+                reporter_name=name_field.GetValue().strip() or None,
+                reporter_email=email_field.GetValue().strip() or None,
             )
             issue_url = build_support_issue_url(
                 payload,
@@ -11277,6 +11672,9 @@ class MainFrame(
         happened_field.Bind(wx.EVT_TEXT, lambda _e: refresh_preview())
         expected_field.Bind(wx.EVT_TEXT, lambda _e: refresh_preview())
         steps_field.Bind(wx.EVT_TEXT, lambda _e: refresh_preview())
+        name_field.Bind(wx.EVT_TEXT, lambda _e: refresh_preview())
+        email_field.Bind(wx.EVT_TEXT, lambda _e: refresh_preview())
+        sr_combo.Bind(wx.EVT_COMBOBOX, lambda _e: refresh_preview())
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         buttons.Add(copy_button, 0, wx.RIGHT, 6)
         buttons.AddStretchSpacer(1)
@@ -11287,8 +11685,18 @@ class MainFrame(
         include_paths.Enable(include_diagnostics.GetValue())
         refresh_preview()
         apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
+        refresh_preview()
+        # #188: ensure SR focus lands on the Summary field, not the OK button.
+        self._wx.CallAfter(summary_field.SetFocus)
         if self._show_modal_dialog(dialog, "Review Bug Report") != wx.ID_OK:
             return None
+        # Persist name and email so the next report is pre-filled.
+        saved_name = name_field.GetValue().strip()
+        saved_email = email_field.GetValue().strip()
+        if hasattr(self.settings, "bug_reporter_name"):
+            self.settings.bug_reporter_name = saved_name
+        if hasattr(self.settings, "bug_reporter_email"):
+            self.settings.bug_reporter_email = saved_email
         payload = dialog_result.get("payload")
         issue_url = dialog_result.get("issue_url")
         diagnostics_path = dialog_result.get("diagnostics_path")
@@ -12072,6 +12480,106 @@ class MainFrame(
             self._set_status("YAML structure editor closed without changes")
             return
         self._apply_editor_text(updated_text, "Updated YAML structure")
+
+    def navigate_next_token(self) -> None:
+        text = self.editor.GetValue()
+        cursor = self.editor.GetInsertionPoint()
+        pos, token = next_token_position(text, cursor + 1)
+        if not token:
+            self._announce("End of document")
+            return
+        tab = getattr(self, "_current_tab", None)
+        profile = getattr(tab, "_language_profile", None)
+        keywords = profile.keywords if profile else ()
+        label = classify_token(token, keywords)
+        self._move_point(pos)
+        self.editor.SetFocus()
+        self._announce(label)
+        self._set_status(label)
+
+    def navigate_previous_token(self) -> None:
+        text = self.editor.GetValue()
+        cursor = self.editor.GetInsertionPoint()
+        pos, token = prev_token_position(text, cursor)
+        if not token:
+            self._announce("Beginning of document")
+            return
+        tab = getattr(self, "_current_tab", None)
+        profile = getattr(tab, "_language_profile", None)
+        keywords = profile.keywords if profile else ()
+        label = classify_token(token, keywords)
+        self._move_point(pos)
+        self.editor.SetFocus()
+        self._announce(label)
+        self._set_status(label)
+
+    def set_document_language(self, language: str | None = None) -> None:
+        """Set the active language profile for the current document tab."""
+        wx = self._wx
+        tab = getattr(self, "_current_tab", None)
+        if tab is None:
+            return
+        if language:
+            profile: LanguageProfile | None = get_profile_by_name(language)
+            if profile is None:
+                self._set_status(f"Unknown language: {language}")
+                return
+        else:
+            profiles = all_profiles()
+            names = [p.name for p in profiles] + ["Plain text"]
+            dlg = wx.SingleChoiceDialog(
+                self.frame,
+                "Select language profile for this document:",
+                "Set Document Language",
+                names,
+            )
+            current = getattr(tab, "_language_profile", None)
+            if current is not None:
+                try:
+                    idx = names.index(current.name)
+                    dlg.SetSelection(idx)
+                except ValueError:
+                    pass
+            if self._show_modal_dialog(dlg, "Set Document Language") != wx.ID_OK:
+                return
+            chosen = dlg.GetStringSelection()
+            profile = get_profile_by_name(chosen) if chosen != "Plain text" else PLAIN_PROFILE
+        tab._language_profile = profile
+        tab._language_profile_pinned = True
+        self._apply_statusbar_layout()
+        name = profile.name if profile else "Plain text"
+        self._set_status(f"Language set to {name}")
+        self._announce(f"Language: {name}")
+
+    def format_auto_indent_newline(self) -> None:
+        """Insert a newline with language-aware indentation."""
+        editor = getattr(self, "editor", None)
+        if editor is None:
+            return
+        if not hasattr(editor, "GetCurrentLine"):
+            if hasattr(editor, "WriteText"):
+                editor.WriteText("\n")
+            return
+        line = editor.GetCurrentLine()
+        line_text = editor.GetLine(line) if hasattr(editor, "GetLine") else ""
+        stripped = line_text.rstrip("\r\n")
+        leading = stripped[: len(stripped) - len(stripped.lstrip())]
+        tab = getattr(self, "_current_tab", None)
+        profile = getattr(tab, "_language_profile", None)
+        last_char = stripped.rstrip()[-1:] if stripped.rstrip() else ""
+        extra = ""
+        if last_char in (":", "{"):
+            unit = profile.indent_unit if profile else int(getattr(self.settings, "indent_size", 4))
+            if profile and profile.uses_tabs:
+                extra = "\t"
+            else:
+                extra = " " * unit
+        new_text = "\n" + leading + extra
+        if hasattr(editor, "ReplaceSelection"):
+            editor.ReplaceSelection(new_text)
+        elif hasattr(editor, "WriteText"):
+            editor.WriteText(new_text)
+        self._set_status("Auto-indent newline")
 
     def match_bracket(self) -> None:
         target = find_matching_bracket(self.editor.GetValue(), self.editor.GetInsertionPoint())
@@ -16880,6 +17388,12 @@ class MainFrame(
         if session is None or not session.groups:
             self._set_status("No active compare session")
             return
+        from quill.ui import sound_manager
+
+        if len(session.groups) < 2:
+            sound_manager.post_sound("compare_no_more_differences")
+        else:
+            sound_manager.post_sound("compare_next_difference")
         session.current_index = (session.current_index + 1) % len(session.groups)
         self.compare_announce_difference()
 
@@ -16888,6 +17402,12 @@ class MainFrame(
         if session is None or not session.groups:
             self._set_status("No active compare session")
             return
+        from quill.ui import sound_manager
+
+        if len(session.groups) < 2:
+            sound_manager.post_sound("compare_no_more_differences")
+        else:
+            sound_manager.post_sound("compare_previous_difference")
         session.current_index = (session.current_index - 1) % len(session.groups)
         self.compare_announce_difference()
 
@@ -16998,6 +17518,9 @@ class MainFrame(
             self._compare_session = None
             return False
         self._compare_session = _CompareSession(source_documents=source_documents, groups=groups)
+        from quill.ui import sound_manager
+
+        sound_manager.post_sound("compare_enter_mode")
         self._set_status(
             f"Compare session started. {len(source_documents)} documents. "
             f"{len(groups)} differing line groups found. "
@@ -17402,6 +17925,10 @@ class MainFrame(
             return
         if not matches:
             self._set_status("No matches found")
+            from quill.core.sound_events import SoundEvent
+            from quill.ui.sound_manager import post_sound
+
+            post_sound(SoundEvent.SEARCH_NOT_FOUND)
             return
 
         cursor = self.editor.GetInsertionPoint()
@@ -17430,6 +17957,10 @@ class MainFrame(
 
         if chosen is None:
             self._set_status("No matches found from the current position")
+            from quill.core.sound_events import SoundEvent
+            from quill.ui.sound_manager import post_sound
+
+            post_sound(SoundEvent.SEARCH_NOT_FOUND)
             return
 
         start, end = chosen
@@ -17446,6 +17977,10 @@ class MainFrame(
             " (wrapped)" if wrapped and getattr(self.settings, "announce_wrap", True) else ""
         )
         self._set_status(f"Found {direction} at position {start + 1}{wrap_suffix}")
+        from quill.core.sound_events import SoundEvent
+        from quill.ui.sound_manager import post_sound
+
+        post_sound(SoundEvent.SEARCH_WRAPPED if wrapped else SoundEvent.SEARCH_FOUND)
 
     def _ensure_extend_selection_anchor(self) -> None:
         if not self._extend_selection_mode or self._extend_selection_anchor is not None:

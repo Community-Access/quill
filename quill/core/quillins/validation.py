@@ -61,7 +61,14 @@ _TOP_LEVEL_KEYS = frozenset({
     "runtime",
     "contributes",
 })
-_CONTRIBUTES_KEYS = frozenset({"commands", "menus", "context_menu", "hotkeys"})
+_CONTRIBUTES_KEYS = frozenset({
+    "commands",
+    "menus",
+    "context_menu",
+    "hotkeys",
+    "sound_pack",
+    "sound_events",
+})
 _COMMAND_KEYS = frozenset({"id", "title", "run"})
 _MENU_KEYS = frozenset({"parent", "command"})
 _CONTEXT_KEYS = frozenset({"command", "when"})
@@ -252,12 +259,21 @@ def _validate_contributes(raw: object, errors: list[str]) -> tuple[Contributions
     menus = _validate_menus(raw.get("menus", []), errors)
     context_menu = _validate_context_menu(raw.get("context_menu", []), errors)
     hotkeys = _validate_hotkeys(raw.get("hotkeys", []), errors)
+    sound_pack = str(raw["sound_pack"]) if isinstance(raw.get("sound_pack"), str) else ""
+    raw_se = raw.get("sound_events")
+    sound_events: tuple[tuple[str, str], ...] = ()
+    if isinstance(raw_se, dict):
+        sound_events = tuple(
+            (str(k), str(v)) for k, v in raw_se.items() if isinstance(k, str) and isinstance(v, str)
+        )
 
     contributions = Contributions(
         commands=tuple(commands),
         menus=menus,
         context_menu=context_menu,
         hotkeys=hotkeys,
+        sound_pack=sound_pack,
+        sound_events=sound_events,
     )
     return contributions, contributed_ids, any_handler
 

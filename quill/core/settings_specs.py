@@ -308,6 +308,18 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("abbreviation", "sound", "wav", "audio"),
     ),
     SettingSpec(
+        "abbreviation_backspace_behavior",
+        "Backspace after expansion",
+        "editing",
+        "choice",
+        "What to do when you press Backspace immediately after an abbreviation expands.",
+        choices=(
+            ("delete", "Delete the expanded text"),
+            ("revert", "Revert to the typed abbreviation"),
+        ),
+        keywords=("abbreviation", "backspace", "undo", "delete", "revert"),
+    ),
+    SettingSpec(
         "persistent_undo",
         "Enable persistent undo",
         "editing",
@@ -615,6 +627,58 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         feature_id="core.accessibility",
         keywords=("trace", "diagnostics", "announcement"),
     ),
+    # --- Sound notifications (QSP) ----------------------------------------
+    SettingSpec(
+        "sound_enabled",
+        "Enable sound notifications",
+        "accessibility",
+        "bool",
+        "Play short earcon sounds for editing events (abbreviation expansion, save, search, etc.).",
+        keywords=("sound", "audio", "earcon", "notification", "beep"),
+    ),
+    SettingSpec(
+        "sound_pack_path",
+        "Sound pack path",
+        "accessibility",
+        "text",
+        "Path to a .qsp file or folder. Leave blank to use the bundled Ink pack.",
+        keywords=("sound", "pack", "qsp", "earcon", "theme"),
+    ),
+    SettingSpec(
+        "sound_volume",
+        "Sound notification volume",
+        "accessibility",
+        "int",
+        "Volume for earcon sounds (0 = silent, 100 = full).",
+        minimum=0,
+        maximum=100,
+        keywords=("sound", "volume", "audio", "earcon"),
+    ),
+    SettingSpec(
+        "sound_events_disabled",
+        "Silenced sound events",
+        "accessibility",
+        "text",
+        "Comma-separated list of sound event IDs to silence, e.g. transcription_word_inserted.",
+        keywords=("sound", "disable", "mute", "earcon", "events"),
+    ),
+    SettingSpec(
+        "indent_tone_scale",
+        "Indentation tones",
+        "accessibility",
+        "choice",
+        "Play a pitched tone as the caret moves across indent levels. The tone rises "
+        "as you go deeper and falls as you come back out. Choose the musical scale, or "
+        "Off to disable.",
+        choices=(
+            ("", "Off"),
+            ("pentatonic", "Pentatonic (no dissonance)"),
+            ("whole_tone", "Whole tone (even steps)"),
+            ("diatonic", "Diatonic C major (familiar)"),
+            ("chromatic", "Chromatic (one semitone per level)"),
+        ),
+        keywords=("sound", "indent", "indentation", "tone", "pitch", "code", "earcon"),
+    ),
     # --- Read Aloud --------------------------------------------------------
     SettingSpec(
         "announcement_verbosity",
@@ -813,6 +877,23 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Default model ID used when running prompt-library prompts."
         " Leave blank to fall back to the Ask AI default model.",
         keywords=("ai", "prompt", "model", "prompt library", "grammar"),
+    ),
+    # --- Bug reporting --------------------------------------------------------
+    SettingSpec(
+        "bug_reporter_name",
+        "Bug reporter name",
+        "general",
+        "text",
+        "Your name, pre-filled in the Report a Bug dialog for convenience.",
+        keywords=("name", "bug", "report", "contact"),
+    ),
+    SettingSpec(
+        "bug_reporter_email",
+        "Bug reporter email",
+        "general",
+        "text",
+        "Your contact email, pre-filled in the Report a Bug dialog for convenience.",
+        keywords=("email", "bug", "report", "contact"),
     ),
     # --- Transcription -----------------------------------------------------
     SettingSpec(
