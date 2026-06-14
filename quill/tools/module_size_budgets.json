@@ -29,7 +29,7 @@
     "quill/ui/main_frame_power_tools.py": 777,
     "quill/ui/main_frame_menu.py": 2850,
     "quill/core/read_aloud.py": 1244,
-    "quill/core/assistant_ai.py": 1264,
+    "quill/core/assistant_ai.py": 1300,
     "quill/core/features.py": 1029,
     "quill/ui/github_dialogs.py": 638,
     "quill/core/glow.py": 810,
@@ -84,5 +84,6 @@
   "_rebaseline_2026_06_13d": "assistant_tools.py 1813 -> 1866 for AI Hub consolidation in AssistantConnectionDialog: Test Chat button (+_on_test_chat/_finish_test_chat async probe) and a per-provider Forget-key button (_on_forget_provider_key), per-provider key+model load on provider switch, and set_active_provider() on save so each provider keeps its own key/model. Re-baselined to measured size.",
   "_rebaseline_2026_06_13e": "assistant_tools.py 1866 -> 1877: AI Hub now hosts an optional 'On-device model...' button (+_on_open_model_settings) so the merged AI Model/Connection entry reaches the on-device model dialog from one place. Re-baselined to measured size.",
   "_rebaseline_2026_06_13f": "features.py 1020 -> 1029 for the new locked-off core.glow feature (GLOW hidden for 0.5.0 pending completion; audit/fix/update commands gated by it). Re-baselined to measured size.",
-  "_rebaseline_2026_06_13g": "keymap.py 438 -> 439 for the edit.find legacy rebinding that restores Find to Ctrl+F. Re-baselined to measured size."
+  "_rebaseline_2026_06_13g": "keymap.py 438 -> 439 for the edit.find legacy rebinding that restores Find to Ctrl+F. Re-baselined to measured size.",
+  "_rebaseline_2026_06_14": "assistant_ai.py 1264 -> 1300 for feat(about) contributor-listing code (GitHub contributors API fetch, baked-in list). Budget missed the update when that commit merged to main; corrected here to restore a green gate."
 }
