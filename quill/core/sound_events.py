@@ -46,6 +46,29 @@ class SoundEvent(StrEnum):
     SSH_CONNECTED = "ssh_connected"
     SSH_DISCONNECTED = "ssh_disconnected"
 
+    # Indentation depth tones (issue #182)
+    # Each level has an _up variant (cursor moved to deeper indent) and a
+    # _down variant (cursor moved to shallower indent). Fired only when the
+    # indent level changes; blank lines are silent (previous level held).
+    # The active tone pack (pentatonic / whole_tone / diatonic / chromatic)
+    # maps these canonical IDs to its WAV files at load time.
+    INDENT_LEVEL_0_UP = "indent_level_0_up"
+    INDENT_LEVEL_0_DOWN = "indent_level_0_down"
+    INDENT_LEVEL_1_UP = "indent_level_1_up"
+    INDENT_LEVEL_1_DOWN = "indent_level_1_down"
+    INDENT_LEVEL_2_UP = "indent_level_2_up"
+    INDENT_LEVEL_2_DOWN = "indent_level_2_down"
+    INDENT_LEVEL_3_UP = "indent_level_3_up"
+    INDENT_LEVEL_3_DOWN = "indent_level_3_down"
+    INDENT_LEVEL_4_UP = "indent_level_4_up"
+    INDENT_LEVEL_4_DOWN = "indent_level_4_down"
+    INDENT_LEVEL_5_UP = "indent_level_5_up"
+    INDENT_LEVEL_5_DOWN = "indent_level_5_down"
+    INDENT_LEVEL_6_UP = "indent_level_6_up"
+    INDENT_LEVEL_6_DOWN = "indent_level_6_down"
+    INDENT_LEVEL_7_UP = "indent_level_7_up"
+    INDENT_LEVEL_7_DOWN = "indent_level_7_down"
+
     # System
     ERROR = "error"
     WARNING = "warning"

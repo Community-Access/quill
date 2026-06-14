@@ -283,6 +283,11 @@ class SoundPlayer:
 
         self._backend.play_wav(wav)
 
+    def loaded_event_ids(self) -> frozenset[str]:
+        """Return the set of event IDs currently loaded in the player."""
+        with self._lock:
+            return frozenset(self._events.keys())
+
     # ------------------------------------------------------------------
     # Lifecycle
     # ------------------------------------------------------------------

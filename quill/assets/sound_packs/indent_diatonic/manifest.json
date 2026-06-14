@@ -1,0 +1,26 @@
+{
+  "format": "qsp",
+  "version": "1",
+  "name": "Ink Diatonic Tones",
+  "author": "Jeff Bishop",
+  "description": "Indentation depth tones on C major (C5-C6). Familiar to most ears; semitone steps make adjacent levels clearly distinguishable at the cost of occasional mild tension. Partial QSP: defines only indent_level events.",
+  "license": "CC0",
+  "events": {
+    "indent_level_0_up": "indent_diatonic_0_up.wav",
+    "indent_level_0_down": "indent_diatonic_0_down.wav",
+    "indent_level_1_up": "indent_diatonic_1_up.wav",
+    "indent_level_1_down": "indent_diatonic_1_down.wav",
+    "indent_level_2_up": "indent_diatonic_2_up.wav",
+    "indent_level_2_down": "indent_diatonic_2_down.wav",
+    "indent_level_3_up": "indent_diatonic_3_up.wav",
+    "indent_level_3_down": "indent_diatonic_3_down.wav",
+    "indent_level_4_up": "indent_diatonic_4_up.wav",
+    "indent_level_4_down": "indent_diatonic_4_down.wav",
+    "indent_level_5_up": "indent_diatonic_5_up.wav",
+    "indent_level_5_down": "indent_diatonic_5_down.wav",
+    "indent_level_6_up": "indent_diatonic_6_up.wav",
+    "indent_level_6_down": "indent_diatonic_6_down.wav",
+    "indent_level_7_up": "indent_diatonic_7_up.wav",
+    "indent_level_7_down": "indent_diatonic_7_down.wav"
+  }
+}

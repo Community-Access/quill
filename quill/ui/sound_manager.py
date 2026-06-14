@@ -6,9 +6,25 @@ can use without importing wx or caring about the audio backend.
 
 Lifecycle (called by MainFrame)
 --------------------------------
-1. ``init(settings)``       — load pack and configure player at startup.
+1. ``init(settings)``            — load pack and configure player at startup.
 2. ``on_settings_changed(settings)`` — reload if pack path or enabled flag changed.
-3. ``shutdown()``           — drain and close the player at app exit.
+3. ``load_indent_tone_pack(scale)``  — overlay indent tone WAVs over the primary pack.
+4. ``shutdown()``                — drain and close the player at app exit.
+
+Partial pack / overlay design
+------------------------------
+The sound system supports TWO layers:
+
+* **Primary earcon pack** — the user's chosen QSP (default: bundled Ink pack).
+  Provides earcons for editing, navigation, AI, etc.
+* **Indent tone overlay** — one of four built-in partial packs
+  (indent_pentatonic / indent_whole_tone / indent_diatonic / indent_chromatic).
+  Provides ``indent_level_N_up`` and ``indent_level_N_down`` events.
+  Loaded on top of the earcon pack; absent by default.
+
+Because packs can be partial (they may define only a subset of known events),
+the Sound Events dialog reads :func:`get_loaded_events` to show only toggles
+for events that actually have a sound file in the loaded pack(s).
 
 Usage from any module
 ----------------------
@@ -18,6 +34,7 @@ Usage from any module
     from quill.ui.sound_manager import post_sound
 
     post_sound(SoundEvent.ABBREVIATION_EXPANDED)
+    post_sound("indent_level_3_up")  # fires only when indent tone pack loaded
 
 ``post_sound`` is a no-op when the manager is not yet initialised (e.g. in
 headless tests or before ``init()`` is called).
@@ -89,6 +106,29 @@ def is_active() -> bool:
     return _manager is not None and _manager.enabled
 
 
+def get_loaded_events() -> frozenset[str]:
+    """Return the set of event IDs currently loaded across all active packs.
+
+    Used by :class:`~quill.ui.sound_events_dialog.SoundEventsDialog` to show
+    only toggles for sounds that actually exist in the loaded pack(s). Returns
+    an empty frozenset when no manager is initialised.
+    """
+    if _manager is not None:
+        return _manager.get_loaded_events()
+    return frozenset()
+
+
+def load_indent_tone_pack(scale: str) -> None:
+    """Overlay the bundled indent tone pack for *scale* over the primary pack.
+
+    *scale* must be one of ``"pentatonic"``, ``"whole_tone"``, ``"diatonic"``,
+    ``"chromatic"``. Silently does nothing if the manager is not yet initialised
+    or the requested pack is not found.
+    """
+    if _manager is not None:
+        _manager.load_indent_tone_pack(scale)
+
+
 def register_quillin_sounds(
     quillin_id: str,
     directory: Path,
@@ -118,6 +158,10 @@ class _SoundManager:
         self.player = SoundPlayer()
         self.enabled: bool = False
         self._pack_path: str = ""
+        self._indent_scale: str = ""
+        # Tracks event IDs contributed by the indent tone overlay so they can
+        # be included in get_loaded_events() without re-reading disk.
+        self._indent_event_ids: frozenset[str] = frozenset()
         self.apply_settings(settings)
 
     def apply_settings(self, settings: Settings) -> None:
@@ -137,6 +181,9 @@ class _SoundManager:
         if new_pack_path != self._pack_path:
             self._pack_path = new_pack_path
             self._load_pack(new_pack_path, disabled)
+            # Re-apply indent overlay after primary pack reload.
+            if self._indent_scale:
+                self.load_indent_tone_pack(self._indent_scale)
         else:
             self.player.set_disabled(disabled)
 
@@ -203,6 +250,47 @@ class _SoundManager:
             except Exception as exc:  # noqa: BLE001
                 logger.debug("SoundManager: Quillin %s sound %s: %s", quillin_id, wav_name, exc)
 
+    def get_loaded_events(self) -> frozenset[str]:
+        """Return all event IDs present in the player (primary + overlay packs)."""
+        primary = frozenset(self.player.loaded_event_ids())
+        return primary | self._indent_event_ids
+
+    def load_indent_tone_pack(self, scale: str) -> None:
+        """Overlay the bundled indent tone pack for *scale* onto the player.
+
+        Registers each WAV in the pack as an individual event so the primary
+        pack's earcons are preserved. The old overlay events are not explicitly
+        removed — they are replaced if the same event IDs exist in the new pack.
+        Call again with a different scale to switch; call with ``""`` to clear.
+        """
+        from quill.core.sound_pack import SoundPackError, load_sound_pack
+
+        self._indent_scale = scale
+        if not scale:
+            self._indent_event_ids = frozenset()
+            return
+
+        pack_path = self._bundled_indent_path(scale)
+        if pack_path is None:
+            logger.debug("SoundManager: indent tone pack not found for scale %r", scale)
+            self._indent_event_ids = frozenset()
+            return
+        try:
+            pack = load_sound_pack(pack_path)
+        except SoundPackError as exc:
+            logger.warning("SoundManager: failed to load indent pack %s: %s", pack_path, exc)
+            self._indent_event_ids = frozenset()
+            return
+
+        self._indent_event_ids = frozenset(pack.events.keys())
+        for event_id, wav_bytes in pack.events.items():
+            self.player.register_event(event_id, wav_bytes)
+        logger.debug(
+            "SoundManager: indent tone overlay loaded (%s, %d events)",
+            scale,
+            len(pack.events),
+        )
+
     @staticmethod
     def _bundled_ink_path() -> Path | None:
         """Return the path to the bundled Ink pack, or None if not present."""
@@ -211,5 +299,19 @@ class _SoundManager:
 
             ink = Path(quill.__file__).parent / "assets" / "sound_packs" / "ink"
             return ink if ink.exists() else None
+        except Exception:  # noqa: BLE001
+            return None
+
+    @staticmethod
+    def _bundled_indent_path(scale: str) -> Path | None:
+        """Return the path to the bundled indent tone pack for *scale*."""
+        valid = {"pentatonic", "whole_tone", "diatonic", "chromatic"}
+        if scale not in valid:
+            return None
+        try:
+            import quill
+
+            pack = Path(quill.__file__).parent / "assets" / "sound_packs" / f"indent_{scale}"
+            return pack if pack.exists() else None
         except Exception:  # noqa: BLE001
             return None

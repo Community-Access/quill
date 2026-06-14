@@ -9493,7 +9493,8 @@ class MainFrame(
 
         disabled_str = str(getattr(self.settings, "sound_events_disabled", ""))
         disabled = frozenset(e.strip() for e in disabled_str.split(",") if e.strip())
-        dialog = SoundEventsDialog(self.frame, disabled)
+        loaded = sound_manager.get_loaded_events()
+        dialog = SoundEventsDialog(self.frame, disabled, loaded_events=loaded or None)
         result = self._show_modal_dialog(dialog, "Sound Events")
         if result == self._wx.ID_OK:
             self.settings.sound_events_disabled = dialog.get_disabled()

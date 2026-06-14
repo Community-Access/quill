@@ -1,16 +1,23 @@
 """Dialog for enabling and disabling individual sound events.
 
 Reads and writes ``settings.sound_events_disabled`` (comma-separated event IDs).
-All events from :class:`~quill.core.sound_events.SoundEvent` are listed as
-individual checkboxes inside a scrollable panel. Checked = sound plays;
-unchecked = silenced.
+
+**Partial pack support**: only events actually present in the loaded pack(s)
+are listed. If the active pack has no indent-level sounds (because no indent
+tone pack is loaded), those checkboxes are absent. This keeps the dialog
+focused: users only see toggles for sounds that will actually fire.
+
+Pass ``loaded_events`` (a frozenset of event IDs from the active pack) to
+``SoundEventsDialog.__init__`` so the dialog can filter accordingly.
 """
 
 from __future__ import annotations
 
 import wx
 
-_EVENT_ORDER = [
+# Canonical display order, grouped by category.
+# Events absent from the loaded pack are silently filtered out.
+_EARCON_ORDER: list[str] = [
     # Editing
     "abbreviation_expanded",
     "abbreviation_deleted",
@@ -48,7 +55,15 @@ _EVENT_ORDER = [
     "sound_off",
 ]
 
-_EVENT_LABELS: dict[str, str] = {
+# Indent level events — shown only when an indent tone pack is loaded.
+# Listed in ascending level order; each level has _up and _down variants.
+_INDENT_ORDER: list[str] = [
+    event
+    for level in range(8)
+    for event in (f"indent_level_{level}_up", f"indent_level_{level}_down")
+]
+
+_EARCON_LABELS: dict[str, str] = {
     "abbreviation_expanded": "Abbreviation expanded",
     "abbreviation_deleted": "Abbreviation deleted (backspace after expansion)",
     "snippet_inserted": "Snippet inserted",
@@ -79,34 +94,73 @@ _EVENT_LABELS: dict[str, str] = {
     "sound_off": "Sound notifications turned off",
 }
 
+# Auto-generate labels for all 16 indent events.
+_INDENT_LABELS: dict[str, str] = {
+    f"indent_level_{level}_up": f"Indentation level {level} — going deeper" for level in range(8)
+} | {f"indent_level_{level}_down": f"Indentation level {level} — dedenting" for level in range(8)}
+
+_ALL_LABELS: dict[str, str] = {**_EARCON_LABELS, **_INDENT_LABELS}
+
 
 class SoundEventsDialog(wx.Dialog):
-    def __init__(self, parent: wx.Window, disabled: frozenset[str]) -> None:
+    """Toggle individual sound events on or off.
+
+    Parameters
+    ----------
+    parent:
+        Parent window.
+    disabled:
+        Set of event IDs currently silenced (from ``settings.sound_events_disabled``).
+    loaded_events:
+        Event IDs present in the active pack(s).  Only events in this set are
+        shown.  Pass ``None`` to show all known events (legacy / no-pack mode).
+    """
+
+    def __init__(
+        self,
+        parent: wx.Window,
+        disabled: frozenset[str],
+        loaded_events: frozenset[str] | None = None,
+    ) -> None:
         super().__init__(
             parent,
             title="Sound Events",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
+        self.SetName("Sound Events")
 
-        instruction = wx.StaticText(
-            self,
-            label="Check events to enable their sound. Uncheck to silence individual events.",
-        )
+        # Filter earcon events to those present in the loaded pack.
+        earcon_events = [
+            eid for eid in _EARCON_ORDER if loaded_events is None or eid in loaded_events
+        ]
+        indent_events = [
+            eid for eid in _INDENT_ORDER if loaded_events is None or eid in loaded_events
+        ]
+        has_indent = bool(indent_events)
 
-        # Scrollable panel of individual CheckBox controls (A11Y-SR-1: screen
-        # readers announce checked state correctly for wx.CheckBox).
+        note = "Check events to enable their sound. Uncheck to silence individual events."
+        if loaded_events is not None:
+            shown = len(earcon_events) + len(indent_events)
+            total = len(loaded_events)
+            if shown < total:
+                note += f" Showing {shown} of {total} events from the loaded pack."
+
+        instruction = wx.StaticText(self, label=note)
+
         scroll = wx.ScrolledWindow(self, style=wx.VSCROLL | wx.BORDER_SIMPLE)
         scroll.SetScrollRate(0, 20)
-        scroll.SetMinSize(wx.Size(440, 320))
+        scroll.SetMinSize(wx.Size(460, 360))
 
         inner = wx.BoxSizer(wx.VERTICAL)
         self._checkboxes: list[tuple[str, wx.CheckBox]] = []
-        for eid in _EVENT_ORDER:
-            label = _EVENT_LABELS.get(eid, eid)
-            cb = wx.CheckBox(scroll, label=label)
-            cb.SetValue(eid not in disabled)
-            inner.Add(cb, 0, wx.LEFT | wx.TOP | wx.RIGHT, 6)
-            self._checkboxes.append((eid, cb))
+
+        if earcon_events:
+            self._add_section(scroll, inner, "Earcons", earcon_events, disabled)
+
+        if has_indent:
+            inner.AddSpacer(10)
+            self._add_section(scroll, inner, "Indentation tones", indent_events, disabled)
+
         inner.AddSpacer(6)
         scroll.SetSizer(inner)
 
@@ -135,6 +189,27 @@ class SoundEventsDialog(wx.Dialog):
 
         btn_enable.Bind(wx.EVT_BUTTON, self._on_enable_all)
         btn_disable.Bind(wx.EVT_BUTTON, self._on_disable_all)
+
+    def _add_section(
+        self,
+        parent: wx.ScrolledWindow,
+        sizer: wx.BoxSizer,
+        heading: str,
+        event_ids: list[str],
+        disabled: frozenset[str],
+    ) -> None:
+        lbl = wx.StaticText(parent, label=heading)
+        font = lbl.GetFont()
+        font.MakeBold()
+        lbl.SetFont(font)
+        sizer.Add(lbl, 0, wx.LEFT | wx.TOP, 8)
+
+        for eid in event_ids:
+            label = _ALL_LABELS.get(eid, eid)
+            cb = wx.CheckBox(parent, label=label)
+            cb.SetValue(eid not in disabled)
+            sizer.Add(cb, 0, wx.LEFT | wx.TOP | wx.RIGHT, 6)
+            self._checkboxes.append((eid, cb))
 
     def _on_enable_all(self, _event: wx.CommandEvent) -> None:
         for _eid, cb in self._checkboxes:
