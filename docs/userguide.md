@@ -162,6 +162,8 @@ Supported options:
 - `--dump-stacks`: write a thread-stack dump and exit.
 - `--line N`: 1-based line for the first startup file.
 - `--column M`: 1-based column for the first startup file.
+- `--goto FILE[:LINE[:COL]]`: open a file at an optional 1-based line and column in one argument. This is the compact form of `--line`/`--column`, handy when an external tool (a linter, a search result, a build error) hands you a `file:line:column` string. Example: `--goto main.kt:27:5`.
+- `--diff LEFT RIGHT`: open two files directly in compare mode, landing on the first difference without opening each file by hand.
 - `--new-window`: force a new process instead of forwarding to an existing instance.
 - `--wait`: when forwarding to an existing instance, wait for that instance to close.
 
@@ -169,6 +171,8 @@ Examples:
 
 - `python -m quill --version`
 - `python -m quill notes.md --line 40 --column 5`
+- `python -m quill --goto main.kt:27:5`
+- `python -m quill --diff old-draft.md new-draft.md`
 - `python -m quill --new-window notes.md`
 
 ## The Main Window
@@ -664,6 +668,10 @@ The key design choice is how GLOW feels inside Quill. Audit results open as read
 
 Quill's compare model is practical and local. It supports file-to-file review, multi-document review, summary generation, and synchronized movement through differences.
 
+When a comparison is open you can move through it from the keyboard: **F8** for the next difference, **Shift+F8** for the previous one, **Ctrl+F8** to re-announce the current difference, and **Alt+F8** to hear the inline changed words. The compare dialog is a Boxer-style list you can review with a screen reader, one difference at a time.
+
+If you use a sound pack, compare mode also plays short earcons: one when a comparison opens, one when it closes, distinct ticks for moving to the next or previous difference, and a soft "blocked" tone when you reach the first or last difference with nothing further to show. You can turn any of these on or off individually in **Tools → Reading & Dictation → Sound Events...** under the Compare section. See [Sound notifications and earcons](#sound-notifications-and-earcons).
+
 #### Power Tools
 
 Power Tools is the expanded home for automation utilities, developer tools, and editor-behavior power toggles.
@@ -764,13 +772,15 @@ Menu stability note: Quill now defers internal menu-state updates while native m
 
 Use this path when Quill is behaving unexpectedly or when you want to send the team a feature request.
 
-1. Open **Help -> Report a Bug...**.
-2. Read the in-app report summary Quill prepares for you.
-3. Choose whether to include diagnostics, and whether to include plain file paths.
-4. If diagnostics are included, save the diagnostics bundle to a location you can find again easily.
-5. Choose **Open Support Form**.
-6. When the Community Access support page opens, describe the problem, what you expected, and what actually happened.
-7. Attach the diagnostics zip if it is relevant to the issue.
+1. Open **Help -> Report a Bug...**. Focus lands on the Summary field, ready to type.
+2. Optionally fill in your name and contact email. Quill remembers these and pre-fills them next time, so you only enter them once.
+3. Pick your screen reader from the list (None, JAWS, NVDA, Narrator, VoiceOver, or Other). Quill pre-selects the one it detects. The choice is included in the report so the team can reproduce screen-reader-specific issues.
+4. Read the in-app report summary Quill prepares for you.
+5. Choose whether to include diagnostics, and whether to include plain file paths.
+6. If diagnostics are included, save the diagnostics bundle to a location you can find again easily.
+7. Choose **Open Support Form**.
+8. When the Community Access support page opens, describe the problem, what you expected, and what actually happened.
+9. Attach the diagnostics zip if it is relevant to the issue.
 
 This unified flow keeps support reporting in one place. If you only need diagnostics, **Help -> Save Diagnostics...** remains available as a standalone export command.
 
@@ -1010,6 +1020,14 @@ Quill is excellent for large documents because it supports:
 
 When you combine this with marks and compare sessions, long-form review starts to feel much less fragile.
 
+### Code-aware editing
+
+When you open a source file, Quill loads a **language profile** based on the file extension — Python, JavaScript and TypeScript, Kotlin, Shell, Markdown, JSON, TOML, and SQL are recognised, with a plain-text fallback for everything else. The profile tells Quill how that language is tokenised so movement and announcements make sense for code.
+
+- **Token navigation.** Move by code token rather than by word with **Next Token** and **Previous Token** in the Navigate menu. The caret lands on the next identifier, keyword, operator, or literal, which is far more predictable than character or word movement when you are reading code by ear.
+- **Set the language yourself.** Auto-detection follows the file extension, but you can override it for the current document with **Navigate → Set Document Language** — useful for an unsaved buffer, an unusual extension, or a snippet pasted into a plain file.
+- **Pairs with indentation tones.** Code-aware editing works well alongside the optional indentation tones described under [Sound notifications and earcons](#sound-notifications-and-earcons), so structure is carried by pitch while you move by token.
+
 ## QUILL Quick Nav Mode
 
 QUILL Quick Nav mode is a browse-style, cursor-only navigation layer for long documents. It is movement-only: it changes cursor location, never edits text.
@@ -1083,6 +1101,7 @@ Pressing the QUILL key (`Ctrl+Shift+Grave`) once arms a short prefix. Follow it 
   is treated as HTML. The active read-only guard is respected, so a read-only document is
   never modified.
 - `A` for selection actions when text is selected.
+- `F` to **speak the window title**, `P` to **speak the full file path** of the current document, and `Q` to **speak a short status summary**. These let you confirm where you are without leaving the editor, which is handy when several documents are open.
 - `?` to show the QUILL key cheat sheet, or `Esc` to cancel the prefix.
 
 ## Formatting and Markup Work
@@ -1110,6 +1129,14 @@ Quill includes guided insertion for tables, code blocks, HTML tags, and Markdown
 ### Cleanup and normalization
 
 The cleanup commands under **Tools → Convert** are ideal for pasted material, transcripts, exports, and migration work. Use them when you need to turn messy text into something more stable and readable.
+
+### Character encoding tools
+
+Under **Format → HTML & Encoding**, Quill includes three tools for the encoding friction that comes up when preparing text for the web, where one tool wants UTF-8 and the next insists on plain ASCII:
+
+- **Show Non-ASCII Characters** opens a read-only report listing every character above plain ASCII, with its line and column, codepoint, Unicode name, and whether it converts cleanly to Latin-1 and to Windows-1252 (MS-ANSI). Reviewing that report with a screen reader replaces the old command-line trick of running a file through `iconv` with a sentinel string and hunting for what failed to convert.
+- **Convert Non-ASCII to HTML Entities** rewrites every non-ASCII character as its HTML entity — a named entity such as `&eacute;` where one exists, or a numeric `&#233;` otherwise — while leaving ordinary ASCII (including `&` and `<`) untouched. This is the reliable way to feed text to a tool, such as Pandoc, that refuses to handle high characters. Note that the older **Encode HTML Entities** command only escapes the five markup characters (`<`, `>`, `&`, `"`, `'`); this new command is the one that handles accents and symbols.
+- **Re-encode As...** saves a copy of the document in a chosen encoding — UTF-8, UTF-8 with a byte-order mark, Latin-1, Windows-1252, or ASCII. Anything that does not fit a narrow target is written as a numeric HTML entity rather than a silent question mark, so the conversion is lossless and recoverable.
 
 ## Tools for Reading, Review, and Inspection
 
@@ -1179,6 +1206,18 @@ You can validate contrast, switch dark mode, and align with system behavior. Thi
 ### Status bar as an accessible control surface
 
 Quill's status bar is navigable and interactive. This is a subtle but important design decision. It keeps useful information close while still making it reachable from the keyboard.
+
+### Sound notifications and earcons
+
+Quill can play short, non-speech audio cues — earcons — at meaningful editing moments, so your screen reader stays free for the text while sound carries the "something happened" signal. This is entirely optional and off by default for most events; speech is never replaced.
+
+- **Sound packs (QSP).** A sound pack is a directory (or a `.qsp` zip) of WAV files with a `manifest.json` mapping event IDs to sounds. Quill ships the **Ink** pack of synthesised earcons. Choose a pack in **Preferences → Sound**, and set the volume there too.
+- **Per-event control.** Open **Tools → Reading & Dictation → Sound Events...** to turn individual events on or off. Events are grouped — Earcons, Compare, and (when an indent-tone pack is loaded) Indentation tones — so you can keep, say, save and search cues while silencing others.
+- **Indentation tones.** For code and other indented text, Quill can play a pitched tone as the caret crosses indent levels: the tone rises as you go deeper and falls as you come back out. Pick a musical scale (pentatonic, whole-tone, diatonic, or chromatic) under the **Indentation tones** setting, or leave it Off. Blank lines stay silent and hold the previous level.
+- **Compare cues.** When a sound pack is active, compare mode plays distinct cues for opening and closing a comparison, moving to the next or previous difference, and bumping against the first or last difference. See [Comparison](#comparison).
+- **Toggle everything.** **Toggle Sound Notifications** (in Reading & Dictation) turns all earcons on or off at once, and plays a short confirming "on" or "off" cue so you know which state you landed in.
+
+Every scripted earcon in the bundled pack is a distinct sound, so two different events never sound identical. Pack authors can map any event ID to any WAV file; the full event reference lives in `docs/sound-packs.md`.
 
 ## Quill on macOS
 
