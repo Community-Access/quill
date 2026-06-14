@@ -52,7 +52,38 @@ from quill.platform.windows.credential_store import (
 from quill.platform.windows.credential_store import (
     save_secret as _cs_save,
 )
-from quill.platform.windows.dpapi import protect_secret, unprotect_secret
+
+
+def protect_secret(secret: str) -> str:
+    """Encrypt ``secret`` using Windows DPAPI, falling back to the macOS Keychain.
+
+    The Windows path is primary; on macOS (or anywhere DPAPI is unavailable)
+    this falls through to the Keychain facade so saving an assistant API key no
+    longer crashes off Windows. Mirrors ``remote_sites.save_password`` (#160).
+    """
+
+    try:
+        from quill.platform.windows.dpapi import protect_secret as _win_protect
+
+        return _win_protect(secret)
+    except Exception:  # noqa: BLE001 - DPAPI unavailable off Windows
+        from quill.platform.macos.keychain import protect_secret as _mac_protect
+
+        return _mac_protect(secret)
+
+
+def unprotect_secret(encoded: str) -> str:
+    """Decrypt ``encoded`` using Windows DPAPI, falling back to the macOS Keychain."""
+
+    try:
+        from quill.platform.windows.dpapi import unprotect_secret as _win_unprotect
+
+        return _win_unprotect(encoded)
+    except Exception:  # noqa: BLE001 - DPAPI unavailable off Windows
+        from quill.platform.macos.keychain import unprotect_secret as _mac_unprotect
+
+        return _mac_unprotect(encoded)
+
 
 _ASSISTANT_CONNECTION_FILE = "assistant-connection.json"
 _ASSISTANT_SECRET_FILE = "assistant-secret.json"
@@ -774,9 +805,14 @@ def _save_api_key_with_credential_manager(api_key: str) -> bool:
         return False
     try:
         _cs_save(_ASSISTANT_CREDENTIAL_TARGET, secret)
-        return True
     except Exception:
         return False
+    # ``save_secret`` is a silent no-op on platforms without a Windows
+    # credential store (macOS/Linux): it returns without raising and without
+    # persisting anything. Confirm the secret is actually retrievable before
+    # reporting success; otherwise the caller falls through to the DPAPI /
+    # macOS Keychain file fallback so the key is not silently discarded (#160).
+    return _cs_load(_ASSISTANT_CREDENTIAL_TARGET).strip() == secret
 
 
 def _delete_api_key_from_credential_manager() -> None:

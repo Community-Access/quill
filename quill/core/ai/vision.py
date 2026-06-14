@@ -40,6 +40,26 @@ DEFAULT_IMAGE_DESCRIPTION_PROMPT = (
     "transcribe it verbatim. Be concise but complete."
 )
 
+
+def _heic_to_jpeg_bytes(path: Path) -> bytes:
+    """Convert a HEIC/HEIF file to JPEG bytes in memory (requires pillow-heif).
+
+    Raises ``ImportError`` if pillow-heif is not installed, ``OSError`` if the
+    file cannot be read, and ``Exception`` for any other conversion failure.
+    """
+    import io
+
+    import pillow_heif
+    from PIL import Image
+
+    pillow_heif.register_heif_opener()
+    with Image.open(path) as img:
+        rgb = img.convert("RGB")
+        buf = io.BytesIO()
+        rgb.save(buf, format="JPEG", quality=90)
+        return buf.getvalue()
+
+
 #: Image MIME types we are willing to send to a vision model.
 _IMAGE_MIME_BY_SUFFIX = {
     ".png": "image/png",
@@ -160,14 +180,28 @@ def describe_image(
     if policy_error:
         return None, policy_error
     model = (settings.model or "").strip() or default_model_for_provider(provider)
-    try:
-        raw = image_path.read_bytes()
-    except OSError as exc:
-        return None, f"Could not read the image: {exc.strerror or exc}"
+    if image_path.suffix.lower() in {".heic", ".heif"}:
+        try:
+            raw = _heic_to_jpeg_bytes(image_path)
+        except ImportError:
+            return None, (
+                "HEIC images require the pillow-heif package. "
+                "Install it with: pip install pillow-heif"
+            )
+        except OSError as exc:
+            return None, f"Could not read the image: {exc.strerror or exc}"
+        except Exception as exc:
+            return None, f"Could not convert HEIC image: {exc}"
+        mime_type = "image/jpeg"
+    else:
+        try:
+            raw = image_path.read_bytes()
+        except OSError as exc:
+            return None, f"Could not read the image: {exc.strerror or exc}"
+        mime_type = image_mime_for_path(image_path)
     if not raw:
         return None, "The image file is empty."
     image_b64 = base64.b64encode(raw).decode("ascii")
-    mime_type = image_mime_for_path(image_path)
     endpoint = chat_endpoint(provider, host, model)
     headers = build_chat_headers(provider, host, api_key)
     body = json.dumps(

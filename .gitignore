@@ -4,6 +4,7 @@ __pycache__/
 .ruff_cache/
 .venv/
 *.pyc
+build/
 dist/
 windows-distribution/
 release-artifacts/

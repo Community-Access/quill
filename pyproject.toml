@@ -39,6 +39,13 @@ ui = [
     # Prism screen-reader speech bridge (Windows) — routes announcements to
     # NVDA/JAWS/Narrator instead of speaking over them.
     "prismatoid>=0.16.5; sys_platform == 'win32'",
+    # Pillow: screen capture (PIL.ImageGrab) and clipboard image support.
+    # Also a transitive dependency of pillow-heif on platforms where that installs.
+    "Pillow>=11.0.0",
+    # HEIC/HEIF image support for AI image description (iPhone default format).
+    # Registers a PIL opener so HEIC files can be read and converted to JPEG
+    # in memory before being sent to the vision API.
+    "pillow-heif>=0.13.0",
     # HTML-to-text converter for intelligent paste cleaning (AccessibleApps, MIT).
     "html_to_text>=0.1.0",
 ]
@@ -203,5 +210,13 @@ module = [
     # Optional GitHub integration (quill[github]); imported lazily in github_provider.py.
     "github",
     "github.*",
+    # Optional HEIC/HEIF support; imported lazily in core/ai/vision.py behind
+    # a try/except so the strict gate passes without the [ui] extra installed.
+    "pillow_heif",
+    # PIL/Pillow: used by screen_capture (platform layer) and vision.py HEIC
+    # conversion. Pillow ships py.typed but is not in the dev extra, so mark
+    # it untyped here to keep the scoped gate clean.
+    "PIL",
+    "PIL.*",
 ]
 ignore_missing_imports = true
