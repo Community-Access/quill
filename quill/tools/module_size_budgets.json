@@ -26,9 +26,10 @@
   "_rebaseline_2026_06_13g": "main_frame.py +13 for first_run=True flag on run_startup_wizard and post-cancel disable prompt: when the user presses Escape on the first-run wizard, a MessageDialog asks whether to suppress the wizard on future startups.",
   "_rebaseline_2026_06_13f": "setup_wizard_pages.py given explicit budget entry at 635 (grew past default 600 cap). +15 for EVT_INIT_DIALOG focus fix and _focus_nav_button helper: SetDefaultItem(Next/Finish) so Enter triggers the correct navigation button, and EVT_INIT_DIALOG for initial focus surviving the Windows dialog-show sequence.",
   "_next_target_main_frame": 15000,
+  "_rebaseline_2026_06_13h": "main_frame.py +9 for #173 fix: open_user_guide() now renders to HTML via render_preview_html and opens in the system browser (atomic write to user-guide/userguide.html, webbrowser.open), removing the editable document tab. open_user_guide_section() passes section as start_anchor. main_frame.py +13 for #175 fix: _update_side_preview wraps tab.preview.update() in try/except; on WebView2 ERROR_INVALID_STATE the faulted control is discarded (splitter unsplit, tab.preview=None) and _show_side_preview_for is called via CallAfter to rebuild a fresh instance.",
   "_default_cap": 600,
   "budgets": {
-    "quill/ui/main_frame.py": 21673,
+    "quill/ui/main_frame.py": 21695,
     "quill/ui/assistant_tools.py": 1877,
     "quill/ui/assistant_panel.py": 725,
     "quill/ui/main_frame_power_tools.py": 777,

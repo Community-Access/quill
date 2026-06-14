@@ -334,6 +334,7 @@ Guidelines</a></li>
 Reporting</a></li>
 <li><a href="#a-fast-shortcut-tour">A Fast Shortcut Tour</a></li>
 <li><a href="#control-reference">Control Reference</a></li>
+<li><a href="#glossary-of-quill-terms">Glossary of QUILL Terms</a></li>
 </ul>
 <h2 id="start-here">Start Here</h2>
 <p>If you only have five minutes, do this:</p>
@@ -5827,5 +5828,165 @@ panels and return focus to the editor.</li>
 sensitive and can interfere with rapid typists. The patterns with the
 clearest benefit and the lowest collision risk are: Copy Tray peek and
 QUILL-key-double-press for the tray dialog.</p>
+<hr />
+<h2 id="glossary-of-quill-terms">Glossary of QUILL Terms</h2>
+<p>This glossary defines the jargon used throughout the QUILL interface,
+menus, and documentation. Terms appear roughly in order of how often you
+will encounter them as a new user.</p>
+<p><strong>Abbreviation</strong> A short trigger word or phrase that
+QUILL automatically expands into longer text as you type. For example,
+typing <code>brb</code> could expand to "be right back". Abbreviations
+are managed in the Abbreviation Manager
+(<code>Ctrl+Shift+Grave, Shift+A</code>). Unlike snippets, abbreviations
+expand automatically without a separate insertion step and do not
+support interactive placeholders.</p>
+<p><strong>Agent / Agent Center</strong> An AI-assisted workflow that
+generates a multi-step task plan based on a goal you describe. The Agent
+Center shows you each step before it runs so you can review and approve.
+Agents build on the Writing Assistant and Prompt Studio infrastructure
+and require an AI provider to be configured.</p>
+<p><strong>Browse Mode / Quick Nav Mode</strong> A temporary navigation
+state that makes the QUILL key prefix commands available one at a time.
+Press <code>Ctrl+Shift+Grave</code> once to arm Quick Nav for the next
+key you press. Press it twice to lock Browse Mode on until you press
+Escape. In Browse Mode, letter keys and arrow keys invoke navigation
+commands rather than inserting characters, similar to the virtual cursor
+mode in screen readers.</p>
+<p><strong>Command Palette</strong> A searchable pop-up listing every
+registered QUILL command with its current keyboard shortcut. Open with
+<code>Ctrl+Shift+P</code>. Type any part of a command name to filter the
+list, then press Enter to run it. The fastest way to reach any action
+without memorising menu paths or key bindings.</p>
+<p><strong>Copy Tray</strong> A multi-slot clipboard within QUILL that
+holds up to twelve named text snippets at once. Unlike the Windows
+clipboard (which holds only one item), the Copy Tray lets you copy
+different pieces of text to individual numbered slots
+(<code>Ctrl+Shift+Grave, Shift+1</code> through <code>Shift+9</code>,
+<code>Shift+0</code>, <code>Shift+-</code>, <code>Shift+=</code>) and
+paste from any slot. Open the Copy Tray dialog with
+<code>Ctrl+Shift+Grave, X</code> or <code>Win+V</code>-style double
+QUILL-key press.</p>
+<p><strong>Document Tab</strong> A single open file or generated
+artifact inside the QUILL editor area. QUILL is a tabbed editor; each
+file, compare summary, GLOW report, or AI output opens as its own
+document tab. Tabs are announced by name when you switch between them
+(<code>Ctrl+Tab</code>).</p>
+<p><strong>GLOW (Guided Layout and Output Workflow)</strong> QUILL's
+built-in text quality review system. GLOW audits a document for
+structural issues (heading hierarchy, list consistency, spacing,
+encoding artefacts) and offers deterministic fixes. Audit results open
+as readable QUILL tabs; fixing the document opens a named preview and
+starts a compare session. GLOW focuses on plain text, Markdown, and
+HTML.</p>
+<p><strong>Keymap / Keyboard Pack (.kqp)</strong> The mapping of
+keyboard shortcuts to QUILL commands. The keymap is fully editable in
+<strong>Preferences → Keyboard</strong>. You can export your keymap as a
+<code>.kqp</code> file (Keyboard Pack) to share it with others or import
+one provided by the community. Resetting the keymap restores factory
+defaults without affecting other preferences.</p>
+<p><strong>Macro</strong> A recorded sequence of QUILL actions that you
+can replay on demand. Record a macro from <strong>Tools → Macros → Start
+Recording</strong>, perform the steps you want to automate, then stop
+recording. Play it back later to repeat the sequence exactly. Macros are
+ideal for repetitive cleanup tasks.</p>
+<p><strong>Profile (Feature Profile)</strong> A named set of feature
+flags that controls which QUILL capabilities are visible and enabled.
+QUILL ships with profiles such as Writing, Developer, and Accessibility.
+Profiles hide features not relevant to a particular workflow, keeping
+menus and option dialogs focused. Switch profiles or edit them in
+<strong>Preferences → Profiles and Features</strong>.</p>
+<p><strong>Prompt Studio</strong> A built-in tool for creating and
+saving reusable AI prompt templates with named input variables. A Prompt
+Studio template might be "Rewrite for Plain Language: ${input:text}" —
+you fill in the variable each time you run the prompt. Prompts are
+stored as <code>.pqp</code> files and can be imported and exported.</p>
+<p><strong>Quillin (Extension)</strong> A sandboxed plug-in for QUILL,
+also called an extension. Quillins can add new commands, menu items,
+custom AI prompts, or automation scripts. Each Quillin has a
+<code>manifest.json</code> that describes its capabilities. QUILL ships
+with several bundled Quillins (word count, AI writing prompts) and
+supports user-installed ones. The Quillin Manager is in
+<strong>Preferences → Extensions</strong>.</p>
+<p><strong>Recovery / Session Recovery</strong> QUILL silently
+auto-saves your work at intervals. If QUILL closes unexpectedly (crash,
+power loss, accidental close), it detects the unsaved state on next
+launch and offers to restore the last known version. Recovery files are
+stored separately from your saved files so a corrupted recovery never
+overwrites your original. Manage recovery in <strong>File → Recover
+Document</strong>.</p>
+<p><strong>Remote Site</strong> A connection configuration for a server
+QUILL can connect to directly to open and save files. Supported
+protocols are FTP, SFTP, HTTPS (WebDAV), and S3-compatible object
+storage. Sites are named and saved in <strong>File → Remote Sites →
+Manage Remote Sites</strong> so you do not have to re-enter credentials
+each time. Each site stores host, port, protocol, credentials (encrypted
+on Windows via DPAPI), and a default path.</p>
+<p><strong>Safe Mode</strong> A startup mode that disables AI, Watch
+Folder, and Quillin extensions. Useful when a Quillin or AI provider is
+causing problems and you need a clean environment. Launch with
+<code>--safe-mode</code> on the command line or set
+<code>QUILL_SAFE_MODE=1</code> in the environment. In Safe Mode, a
+status bar indicator tells you which features are disabled.</p>
+<p><strong>Session (AI Session)</strong> A persistent conversation
+thread between you and an AI provider inside QUILL. Sessions have a
+name, a provider, a model, and a message history. You can have multiple
+named sessions and switch between them. Sessions are stored locally and
+can be exported. The Writing Assistant always runs inside a session.</p>
+<p><strong>Skill / Skill Library</strong> A named, reusable AI workflow
+defined as a series of steps (prompts, transforms, and conditions).
+Skills are more structured than single prompts: each step in the skill
+can feed its output into the next. The Skill Library
+(<code>Tools → AI → Skill Library</code>) lets you browse, run, and
+author skills. Skills are stored as <code>.json</code> files.</p>
+<p><strong>Snippet</strong> A reusable block of text with optional
+interactive placeholders that you insert manually at the cursor
+position. Snippets support variables such as <code>${input:name}</code>
+(a prompted text field), <code>${choice:a|b}</code> (a pick-list),
+<code>${date}</code>, <code>${time}</code>, and <code>${cursor}</code>
+(where the cursor lands after insertion). Insert with
+<code>Ctrl+Shift+Grave, S</code>; manage with
+<code>Ctrl+Shift+Grave, Shift+S</code>. Compare with abbreviations,
+which expand automatically.</p>
+<p><strong>Sound Pack</strong> A collection of audio files that QUILL
+uses for non-speech feedback: key sounds, navigation tones, alert
+chimes, and (optionally) indentation-level tones for coding. Sound Packs
+are loaded from a named directory and can be swapped in Preferences. The
+default pack uses synthesised bell tones; custom packs can use any WAV
+files following the naming convention.</p>
+<p><strong>Template</strong> A pre-written document structure that you
+can use as a starting point for new files. Templates are plain text or
+Markdown files stored in a designated folder. Opening a template creates
+a new untitled document pre-filled with the template content. Manage
+templates in <strong>File → New from Template</strong>.</p>
+<p><strong>Watch Folder</strong> A directory that QUILL monitors in the
+background. Any supported file dropped into the watch folder is
+automatically opened as a new document tab (or processed according to
+per-folder rules). Useful for transcription pipelines, dictation
+outputs, and batch review workflows. Configure in <strong>Tools → Watch
+Folder</strong>.</p>
+<p><strong>WebView / Side Preview</strong> The rendered HTML preview
+pane that appears alongside the editor when you press <code>F6</code>
+(or enable it via <strong>View → Side Preview</strong>). The preview is
+powered by Microsoft Edge WebView2 and renders Markdown, HTML, and plain
+text in real time as you type. The preview is read-only and does not
+affect the document.</p>
+<p><strong>Welcome Guide</strong> A lightweight, profile-aware
+getting-started document that opens inside QUILL as a document tab.
+Unlike the full User Guide (which opens in your browser), the Welcome
+Guide adapts its content to show only the features enabled in your
+current profile. Open it from <strong>Help → Open Welcome
+Guide</strong>.</p>
+<p><strong>Writing Assistant</strong> QUILL's AI writing panel. The
+Writing Assistant accepts a goal described in plain language and ranks
+relevant QUILL commands, offers preset
+rewrite/summarize/continue/grammar flows, and can execute a sandboxed
+Python transform against the current document. It runs inside an AI
+Session and requires an AI provider to be configured in Preferences.</p>
+<p><strong>QUILL Key</strong> The keyboard shortcut
+<code>Ctrl+Shift+Grave</code> (the backtick/grave key above Tab).
+Pressing it once arms a one-shot prefix; pressing it twice locks Quick
+Nav Mode on. The QUILL key is the entry point to most of QUILL's power
+features. Every chord is announced when pressed and is remappable in
+<strong>Preferences → Keyboard</strong>.</p>
 </body>
 </html>

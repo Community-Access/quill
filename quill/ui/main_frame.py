@@ -10400,8 +10400,8 @@ class MainFrame(
         else:
             self._set_status(f"Keyboard reference saved to {target_path}")
 
-    def open_user_guide(self) -> None:
-        """Open the bundled user guide as a new document tab.
+    def open_user_guide(self, *, start_anchor: str | None = None) -> None:
+        """Open the bundled user guide as rendered HTML in the system browser.
 
         Searches a small set of candidate locations so the command works in
         the dev tree, an installed package, and a packaged Windows build.
@@ -10431,14 +10431,23 @@ class MainFrame(
             self._set_status(f"Could not read user guide: {error}")
             self.open_welcome_guide()
             return
-        self._create_document_tab(
-            Document(text=text, path=None, modified=False),
-            select=True,
+        html_content = render_preview_html(
+            "Quill User Guide", text, "markdown", start_anchor=start_anchor
         )
-        self._location_ring = LocationRing()
-        self._location_ring.record(0)
-        self._refresh_title()
-        self._set_status("Opened user guide")
+        target_dir = app_data_dir() / "user-guide"
+        try:
+            target_dir.mkdir(parents=True, exist_ok=True)
+            target_path = target_dir / "userguide.html"
+            temp_path = target_path.with_suffix(".tmp")
+            temp_path.write_text(html_content, encoding="utf-8")
+            os.replace(temp_path, target_path)
+        except OSError as error:
+            self._set_status(f"Could not write user guide: {error}")
+            return
+        if webbrowser.open(target_path.as_uri()):
+            self._set_status("Opened user guide in browser")
+        else:
+            self._set_status(f"User guide saved to {target_path}")
 
     def open_third_party_notices(self) -> None:
         project_root = self._project_root_path()
@@ -17953,7 +17962,20 @@ class MainFrame(
     def _update_side_preview(self, tab) -> None:
         text = tab.editor.GetValue()
         kind = guess_preview_kind(tab.document.path, text)
-        tab.preview.update(render_preview_body(text, kind, dark=self._preview_is_dark()))
+        try:
+            tab.preview.update(render_preview_body(text, kind, dark=self._preview_is_dark()))
+        except Exception:
+            # WebView2 can enter ERROR_INVALID_STATE (0x8007139f) after a forced
+            # close or navigation error; JS/SetPage calls then raise. Discard the
+            # faulted control and let _show_side_preview_for rebuild it.
+            splitter = getattr(tab, "splitter", None)
+            if splitter is not None and splitter.IsSplit():
+                try:
+                    splitter.Unsplit()
+                except Exception:
+                    pass
+            tab.preview = None
+            self._wx.CallAfter(self._show_side_preview_for, tab)
 
     def _prewarm_webview_runtime(self) -> None:
         """Initialise the WebView2 subprocess early so preview opens are instant.
@@ -20860,7 +20882,7 @@ class MainFrame(
 
     def open_user_guide_section(self, section: str | None = None) -> None:
         """Open the user guide, optionally scrolling to *section*."""
-        self.open_user_guide()
+        self.open_user_guide(start_anchor=section)
 
     def run_startup_wizard(self, *, first_run: bool = False) -> None:
         from quill.core.settings import save_settings
