@@ -908,6 +908,26 @@ class MainFrame(
 
         self._wx = wx
         self._safe_mode = safe_mode
+        # Build a wx.Accessible subclass that replaces each layout container's
+        # built-in accessible so screen readers encounter a nameless
+        # ROLE_SYSTEM_WINDOW and skip it in the ancestor context chain (#170).
+        # wxSplitterWindow and wxPanel install their *own* wx.Accessible in
+        # their constructors, so SetName() alone cannot override what the SR
+        # reads.  SetAccessible() called after construction replaces theirs.
+        try:
+            _acc_ok = wx.ACC_OK
+            _role_win = wx.ROLE_SYSTEM_WINDOW
+
+            class _SilentLayout(wx.Accessible):  # type: ignore[misc]
+                def GetName(self, childId: int) -> tuple[int, str]:
+                    return _acc_ok, ""
+
+                def GetRole(self, childId: int) -> tuple[int, int]:
+                    return _acc_ok, _role_win
+
+            self._silent_layout_cls: type | None = _SilentLayout
+        except Exception:
+            self._silent_layout_cls = None
         self.document = Document()
         ensure_app_directories()
         self._first_run_profile_prompt = not safe_mode and not load_onboarding_complete()
@@ -1077,9 +1097,11 @@ class MainFrame(
         self._main_splitter = wx.SplitterWindow(self.frame, style=wx.SP_LIVE_UPDATE | wx.SP_3D)
         self._main_splitter.SetName("Document area")
         self._main_splitter.Bind(wx.EVT_SET_FOCUS, self._on_container_focus)
+        self._apply_silent_accessible(self._main_splitter)
         self._documents_panel = wx.Panel(self._main_splitter)
         self._documents_panel.SetName("Documents")
         self._documents_panel.Bind(wx.EVT_SET_FOCUS, self._on_container_focus)
+        self._apply_silent_accessible(self._documents_panel)
         self._documents_sizer = wx.BoxSizer(wx.VERTICAL)
         self._documents_panel.SetSizer(self._documents_sizer)
         self.notebook = self._create_tab_host(self._tab_control_visible)
@@ -1089,10 +1111,15 @@ class MainFrame(
         self._active_statusbar_cell_index = 0
         self._documents_sizer.Add(self.notebook, 1, wx.EXPAND)
         self._entries_panel = NotebookEntriesPanel(self._main_splitter, wx)
+        self._entries_panel.panel.Bind(wx.EVT_SET_FOCUS, self._on_container_focus)
+        self._apply_silent_accessible(self._entries_panel.panel)
         self._main_splitter.Initialize(self._documents_panel)
         layout = wx.BoxSizer(wx.VERTICAL)
         layout.Add(self._main_splitter, 1, wx.EXPAND)
         self.statusbar = wx.Panel(self.frame)
+        self.statusbar.SetName("Status bar")
+        self.statusbar.Bind(wx.EVT_SET_FOCUS, self._on_container_focus)
+        self._apply_silent_accessible(self.statusbar)
         self._statusbar_sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.statusbar.SetSizer(self._statusbar_sizer)
         layout.Add(self.statusbar, 0, wx.EXPAND)
@@ -3382,13 +3409,36 @@ class MainFrame(
         if callable(skip):
             skip()
 
+    def _apply_silent_accessible(self, widget: object) -> None:
+        """Replace a layout container's built-in accessible so screen readers
+        skip it in the ancestor context chain (#170)."""
+        cls = self._silent_layout_cls
+        if cls is not None:
+            try:
+                widget.SetAccessible(cls(widget))  # type: ignore[attr-defined]
+            except Exception:
+                pass
+
     def _on_container_focus(self, event: object) -> None:
         # Fires when focus lands directly on a layout container (splitter or
-        # panel).  Redirect immediately to the active editor so screen readers
+        # panel).  Redirect synchronously to the active editor so screen readers
         # announce the document rather than the container class (#170).
+        # Synchronous (not CallAfter) so the first container in the startup
+        # focus chain grabs the editor before subsequent containers even get
+        # focus -- CallAfter was too late and caused NVDA to announce all four.
+        if getattr(self, "_in_container_focus_redirect", False):
+            skip = getattr(event, "Skip", None)
+            if callable(skip):
+                skip()
+            return
         editor = getattr(self, "editor", None)
         if editor is not None:
-            self._wx.CallAfter(editor.SetFocus)
+            self._in_container_focus_redirect = True
+            try:
+                editor.SetFocus()
+            finally:
+                self._in_container_focus_redirect = False
+            return  # do not skip -- we redirected, container should not keep focus
         skip = getattr(event, "Skip", None)
         if callable(skip):
             skip()
@@ -3411,6 +3461,8 @@ class MainFrame(
         containers: set[object] = {
             getattr(self, "_main_splitter", None),
             getattr(self, "_documents_panel", None),
+            getattr(self, "statusbar", None),
+            getattr(getattr(self, "_entries_panel", None), "panel", None),
         }
         for tab in getattr(self, "_document_tabs", []):
             for attr in ("splitter", "panel"):
@@ -3493,11 +3545,13 @@ class MainFrame(
         panel = wx.Panel(self.notebook)
         panel.SetName("Editor panel")
         panel.Bind(wx.EVT_SET_FOCUS, self._on_container_focus)
+        self._apply_silent_accessible(panel)
         # The editor lives in a splitter so a live preview can be shown to its
         # right (View → Preview Side by Side). It starts unsplit (editor only).
         splitter = wx.SplitterWindow(panel, style=wx.SP_LIVE_UPDATE | wx.SP_3DSASH)
         splitter.SetName("Editor area")
         splitter.Bind(wx.EVT_SET_FOCUS, self._on_container_focus)
+        self._apply_silent_accessible(splitter)
         splitter.SetMinimumPaneSize(160)
         editor = wx.TextCtrl(
             splitter,

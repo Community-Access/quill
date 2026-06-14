@@ -15,6 +15,7 @@ class NotebookEntriesPanel:
     def __init__(self, parent: object, wx: object) -> None:
         self._wx = wx
         self.panel = wx.Panel(parent)
+        self.panel.SetName("Notebook entries")
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         self._name_label = wx.StaticText(self.panel, label="No notebook open")
