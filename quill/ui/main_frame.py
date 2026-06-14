@@ -1872,6 +1872,12 @@ class MainFrame(
             self._binding_for("tools.sound_toggle"),
         )
         self.commands.register(
+            "tools.sound_events",
+            "Manage Sound Events",
+            self.open_sound_events_dialog,
+            self._binding_for("tools.sound_events"),
+        )
+        self.commands.register(
             "tools.dictation_toggle",
             "Dictation",
             self.toggle_dictation,
@@ -3145,6 +3151,7 @@ class MainFrame(
             "tools.announcement_backend": self._id_announcement_backend,
             "tools.announcement_trace_toggle": self._id_toggle_announcement_trace,
             "tools.sound_toggle": self._id_toggle_sound,
+            "tools.sound_events": self._id_sound_events,
             "tools.watch_folder_toggle": self._id_watch_folder_toggle,
             "tools.watch_folder_settings": self._id_watch_folder_settings,
             "tools.watch_folder_status": self._id_watch_folder_status,
@@ -9462,17 +9469,36 @@ class MainFrame(
 
     def toggle_sound(self, enabled: bool | None = None) -> None:
         from quill.core.settings import save_settings
+        from quill.core.sound_events import SoundEvent
         from quill.ui import sound_manager
 
         current = bool(getattr(self.settings, "sound_enabled", True))
         if enabled is None:
             enabled = not current
+        if not enabled:
+            sound_manager.post_sound(SoundEvent.SOUND_OFF)
         self.settings.sound_enabled = enabled
         save_settings(self.settings)
         sound_manager.on_settings_changed(self.settings)
+        if enabled:
+            sound_manager.post_sound(SoundEvent.SOUND_ON)
         state = "on" if enabled else "off"
         self._announce(f"Sound notifications {state}")
         self._set_status(f"Sound notifications {state}")
+
+    def open_sound_events_dialog(self) -> None:
+        from quill.core.settings import save_settings
+        from quill.ui import sound_manager
+        from quill.ui.sound_events_dialog import SoundEventsDialog
+
+        disabled_str = str(getattr(self.settings, "sound_events_disabled", ""))
+        disabled = frozenset(e.strip() for e in disabled_str.split(",") if e.strip())
+        dialog = SoundEventsDialog(self.frame, disabled)
+        result = self._show_modal_dialog(dialog, "Sound Events")
+        if result == self._wx.ID_OK:
+            self.settings.sound_events_disabled = dialog.get_disabled()
+            save_settings(self.settings)
+            sound_manager.on_settings_changed(self.settings)
 
     def _set_keyboard_pack(self, pack_name: str) -> None:
         self.settings.keyboard_pack = pack_name

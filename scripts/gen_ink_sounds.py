@@ -383,6 +383,18 @@ def generate_all() -> None:
     # -- ssh_disconnected: exact time-reverse of connect ---------------------
     write_wav("disconnect.wav", list(reversed(connect_samples)), vol=0.70)
 
+    # -- sound_on: bright 3-note ascending "ta-da" (notifications enabled) --
+    arp3_env = _swell_env(3, 8, 0.45, 18)
+    sound_on_samples = _concat(
+        _tone(440, 35, sine_at, arp3_env),
+        _tone(660, 35, sine_at, arp3_env),
+        _tone(880, 50, sine_at, arp3_env),
+    )
+    write_wav("sound_on.wav", sound_on_samples, vol=0.70)
+
+    # -- sound_off: exact time-reverse of sound_on (notifications disabled) --
+    write_wav("sound_off.wav", list(reversed(sound_on_samples)), vol=0.70)
+
     print("Done.")
 
 

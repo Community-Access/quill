@@ -27,6 +27,8 @@
     "ssh_connected":          "connect.wav",
     "ssh_disconnected":       "disconnect.wav",
     "error":                  "error.wav",
-    "warning":                "warning.wav"
+    "warning":                "warning.wav",
+    "sound_on":               "sound_on.wav",
+    "sound_off":              "sound_off.wav"
   }
 }

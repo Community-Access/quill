@@ -49,3 +49,5 @@ class SoundEvent(StrEnum):
     # System
     ERROR = "error"
     WARNING = "warning"
+    SOUND_ON = "sound_on"
+    SOUND_OFF = "sound_off"

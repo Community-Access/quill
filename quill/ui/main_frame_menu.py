@@ -933,6 +933,7 @@ class MenuBuilderMixin:
         self._id_announcement_backend_status_only = wx.NewIdRef()
         self._id_toggle_announcement_trace = wx.NewIdRef()
         self._id_toggle_sound = wx.NewIdRef()
+        self._id_sound_events = wx.NewIdRef()
         self._id_dictation = wx.NewIdRef()
         self._id_dictation_voice_commands = wx.NewIdRef()
         self._id_bw_model_manager = wx.NewIdRef()
@@ -1157,6 +1158,10 @@ class MenuBuilderMixin:
         reading_menu.Append(
             self._id_toggle_sound,
             self._menu_label("Toggle &Sound Notifications", "tools.sound_toggle"),
+        )
+        reading_menu.Append(
+            self._id_sound_events,
+            self._menu_label("&Manage Sound Events...", "tools.sound_events"),
         )
         reading_menu.AppendSeparator()
         reading_menu.Append(
@@ -2434,6 +2439,11 @@ class MenuBuilderMixin:
             wx.EVT_MENU,
             lambda _e: self.toggle_sound(),
             id=self._id_toggle_sound,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.open_sound_events_dialog(),
+            id=self._id_sound_events,
         )
         self.frame.Bind(
             wx.EVT_MENU,
