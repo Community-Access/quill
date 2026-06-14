@@ -448,11 +448,10 @@ class QuillKeyMixin:
             size=(560, 560),
         )
         try:
-            panel = wx.Panel(dialog)
             inner = wx.BoxSizer(wx.VERTICAL)
             inner.Add(
                 wx.StaticText(
-                    panel,
+                    dialog,
                     label=(
                         "Follow-on keys for the QUILL key, grouped by purpose. "
                         "Counts show how many of each element are in this document."
@@ -463,20 +462,17 @@ class QuillKeyMixin:
                 8,
             )
             review = wx.TextCtrl(
-                panel,
+                dialog,
                 value=text,
                 style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP,
             )
             inner.Add(review, 1, wx.ALL | wx.EXPAND, 8)
-            close_button = wx.Button(panel, id=wx.ID_OK, label="Close")
+            close_button = wx.Button(dialog, id=wx.ID_OK, label="Close")
             buttons = wx.StdDialogButtonSizer()
             buttons.AddButton(close_button)
             buttons.Realize()
             inner.Add(buttons, 0, wx.ALL | wx.EXPAND, 8)
-            panel.SetSizer(inner)
-            outer = wx.BoxSizer(wx.VERTICAL)
-            outer.Add(panel, 1, wx.EXPAND)
-            dialog.SetSizer(outer)
+            dialog.SetSizer(inner)
             close_button.SetDefault()
             apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_OK)
             call_after = getattr(wx, "CallAfter", None)

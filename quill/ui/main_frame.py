@@ -4218,12 +4218,11 @@ class MainFrame(
         dialog = wx.Dialog(
             self.frame, title=f"Look Up: {word}", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        panel = wx.Panel(dialog)
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         # Read-only text control for the rendered lookup.
         text_ctrl = wx.TextCtrl(
-            panel,
+            dialog,
             value=text,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP,
         )
@@ -4232,9 +4231,9 @@ class MainFrame(
 
         # List of insertable items.
         if items:
-            list_label = wx.StaticText(panel, label="Select a word to insert:")
+            list_label = wx.StaticText(dialog, label="Select a word to insert:")
             sizer.Add(list_label, 0, wx.LEFT | wx.RIGHT, 8)
-            list_box = wx.ListBox(panel, choices=[item.label for item in items])
+            list_box = wx.ListBox(dialog, choices=[item.label for item in items])
             list_box.SetMinSize((500, 150))
             sizer.Add(list_box, 0, wx.EXPAND | wx.ALL, 8)
 
@@ -4268,17 +4267,17 @@ class MainFrame(
         # standard dialog buttons so the looked-up word can be added to the
         # personal dictionary directly from the results.
         action_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        add_dict_btn = wx.Button(panel, label="Add to &Dictionary")
+        add_dict_btn = wx.Button(dialog, label="Add to &Dictionary")
         add_dict_btn.Bind(wx.EVT_BUTTON, on_add_to_dictionary)
         action_sizer.Add(add_dict_btn, 0)
         sizer.Add(action_sizer, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         if items:
             btn_sizer = wx.StdDialogButtonSizer()
-            insert_btn = wx.Button(panel, wx.ID_OK, "Insert")
+            insert_btn = wx.Button(dialog, wx.ID_OK, "Insert")
             insert_btn.Bind(wx.EVT_BUTTON, on_insert)
             btn_sizer.AddButton(insert_btn)
-            close_btn = wx.Button(panel, wx.ID_CANCEL, "Close")
+            close_btn = wx.Button(dialog, wx.ID_CANCEL, "Close")
             btn_sizer.AddButton(close_btn)
             btn_sizer.Realize()
             insert_btn.SetDefault()
@@ -4286,16 +4285,13 @@ class MainFrame(
         else:
             # No insertable items; just a Close button.
             btn_sizer = wx.StdDialogButtonSizer()
-            close_btn = wx.Button(panel, wx.ID_CANCEL, "Close")
+            close_btn = wx.Button(dialog, wx.ID_CANCEL, "Close")
             btn_sizer.AddButton(close_btn)
             btn_sizer.Realize()
             close_btn.SetDefault()
             sizer.Add(btn_sizer, 0, wx.EXPAND | wx.ALL, 8)
 
-        panel.SetSizer(sizer)
-        dialog_sizer = wx.BoxSizer(wx.VERTICAL)
-        dialog_sizer.Add(panel, 1, wx.EXPAND)
-        dialog.SetSizer(dialog_sizer)
+        dialog.SetSizer(sizer)
         apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
         dialog.Fit()
         dialog.CenterOnParent()
@@ -5174,10 +5170,9 @@ class MainFrame(
             preview_text = "(Could not read snapshot preview)"
 
         dialog = wx.Dialog(self.frame, title="Crash Recovery", size=(780, 520))
-        panel = wx.Panel(dialog)
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
-            wx.StaticText(panel, label=intro),
+            wx.StaticText(dialog, label=intro),
             0,
             wx.ALL | wx.EXPAND,
             8,
@@ -5185,28 +5180,28 @@ class MainFrame(
 
         # §8.2: read-only snapshot preview so the user can decide before restoring.
         root.Add(
-            wx.StaticText(panel, label="Snapshot preview (first 30 lines):"),
+            wx.StaticText(dialog, label="Snapshot preview (first 30 lines):"),
             0,
             wx.LEFT | wx.RIGHT | wx.TOP,
             8,
         )
         preview_ctrl = wx.TextCtrl(
-            panel,
+            dialog,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP,
         )
         preview_ctrl.SetValue(preview_text)
         root.Add(preview_ctrl, 1, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
 
-        root.Add(wx.StaticText(panel, label="Logs folder"), 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
-        logs_field = wx.TextCtrl(panel, style=wx.TE_READONLY)
+        root.Add(wx.StaticText(dialog, label="Logs folder"), 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
+        logs_field = wx.TextCtrl(dialog, style=wx.TE_READONLY)
         logs_field.SetValue(str(logs_path))
         root.Add(logs_field, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
 
-        restore_button = wx.Button(panel, id=wx.ID_YES, label="Restore Latest Snapshot")
-        open_logs_button = wx.Button(panel, label="Open Logs Folder")
-        save_diagnostics_button = wx.Button(panel, label="Save Diagnostics...")
+        restore_button = wx.Button(dialog, id=wx.ID_YES, label="Restore Latest Snapshot")
+        open_logs_button = wx.Button(dialog, label="Open Logs Folder")
+        save_diagnostics_button = wx.Button(dialog, label="Save Diagnostics...")
         skip_label = "Discard and Continue" if offer.dismissal_count >= 3 else "Skip Recovery"
-        skip_button = wx.Button(panel, id=wx.ID_NO, label=skip_label)
+        skip_button = wx.Button(dialog, id=wx.ID_NO, label=skip_label)
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         buttons.Add(restore_button, 0, wx.RIGHT, 6)
         buttons.Add(open_logs_button, 0, wx.RIGHT, 6)
@@ -5214,10 +5209,7 @@ class MainFrame(
         buttons.AddStretchSpacer(1)
         buttons.Add(skip_button, 0)
         root.Add(buttons, 0, wx.ALL | wx.EXPAND, 8)
-        panel.SetSizer(root)
-        outer = wx.BoxSizer(wx.VERTICAL)
-        outer.Add(panel, 1, wx.EXPAND)
-        dialog.SetSizer(outer)
+        dialog.SetSizer(root)
 
         restore_button.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_YES))
         open_logs_button.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_APPLY))
@@ -5483,27 +5475,23 @@ class MainFrame(
         )
         dialog.SetSize((720, 560))
         root = wx.BoxSizer(wx.VERTICAL)
-        panel = wx.Panel(dialog)
 
-        search = wx.SearchCtrl(panel, style=wx.TE_PROCESS_ENTER)
+        search = wx.SearchCtrl(dialog, style=wx.TE_PROCESS_ENTER)
         search.SetDescriptiveText("Search by command name or key binding")
         root.Add(search, 0, wx.EXPAND | wx.ALL, 8)
 
         cheatsheet_ctrl = wx.TextCtrl(
-            panel,
+            dialog,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP,
         )
         root.Add(cheatsheet_ctrl, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
-        close_btn = wx.Button(panel, id=wx.ID_CANCEL, label="Close")
+        close_btn = wx.Button(dialog, id=wx.ID_CANCEL, label="Close")
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         btn_row.AddStretchSpacer()
         btn_row.Add(close_btn, 0)
         root.Add(btn_row, 0, wx.EXPAND | wx.ALL, 8)
-        panel.SetSizer(root)
-        outer = wx.BoxSizer(wx.VERTICAL)
-        outer.Add(panel, 1, wx.EXPAND)
-        dialog.SetSizer(outer)
+        dialog.SetSizer(root)
 
         all_bindings = self._build_cheatsheet_text("")
         cheatsheet_ctrl.SetValue(all_bindings)
@@ -5656,10 +5644,9 @@ class MainFrame(
         )
         dialog.SetSize((480, 280))
         root = wx.BoxSizer(wx.VERTICAL)
-        panel = wx.Panel(dialog)
 
         label_text = f"Clipboard contains {content_type}. How would you like to paste it?"
-        root.Add(wx.StaticText(panel, label=label_text), 0, wx.ALL | wx.EXPAND, 8)
+        root.Add(wx.StaticText(dialog, label=label_text), 0, wx.ALL | wx.EXPAND, 8)
 
         choices: list[tuple[str, str]] = [("Paste as plain text", "plain")]
         if content_type == "URL":
@@ -5673,7 +5660,7 @@ class MainFrame(
             choices.insert(0, ("Insert image reference", "image_ref"))
 
         choice_box = wx.RadioBox(
-            panel,
+            dialog,
             label="Paste mode",
             choices=[c[0] for c in choices],
             style=wx.RA_SPECIFY_ROWS,
@@ -5682,16 +5669,13 @@ class MainFrame(
         root.Add(choice_box, 1, wx.ALL | wx.EXPAND, 8)
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
-        ok_btn = wx.Button(panel, id=wx.ID_OK, label="Paste")
-        cancel_btn = wx.Button(panel, id=wx.ID_CANCEL, label="Cancel")
+        ok_btn = wx.Button(dialog, id=wx.ID_OK, label="Paste")
+        cancel_btn = wx.Button(dialog, id=wx.ID_CANCEL, label="Cancel")
         btn_row.AddStretchSpacer(1)
         btn_row.Add(ok_btn, 0, wx.RIGHT, 6)
         btn_row.Add(cancel_btn, 0)
         root.Add(btn_row, 0, wx.ALL | wx.EXPAND, 8)
-        panel.SetSizer(root)
-        outer = wx.BoxSizer(wx.VERTICAL)
-        outer.Add(panel, 1, wx.EXPAND)
-        dialog.SetSizer(outer)
+        dialog.SetSizer(root)
         apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
 
         try:
@@ -9913,11 +9897,10 @@ class MainFrame(
             self._set_status("Nothing available to export")
             return
         dialog = wx.Dialog(self.frame, title="Export and Back Up", size=(560, 460))
-        panel = wx.Panel(dialog)
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
             wx.StaticText(
-                panel,
+                dialog,
                 label=(
                     "Share a profile to give someone your setup without personal "
                     "paths or secrets, or back up everything for yourself."
@@ -9928,24 +9911,24 @@ class MainFrame(
             8,
         )
         kind_choice = wx.RadioBox(
-            panel,
+            dialog,
             label="What to create",
             choices=["Share a profile (privacy-clean)", "Back up everything"],
             majorDimension=1,
             style=wx.RA_SPECIFY_COLS,
         )
         root.Add(kind_choice, 0, wx.ALL | wx.EXPAND, 8)
-        root.Add(wx.StaticText(panel, label="&Name:"), 0, wx.LEFT | wx.RIGHT, 8)
-        name_field = wx.TextCtrl(panel, value="My QUILL setup")
+        root.Add(wx.StaticText(dialog, label="&Name:"), 0, wx.LEFT | wx.RIGHT, 8)
+        name_field = wx.TextCtrl(dialog, value="My QUILL setup")
         root.Add(name_field, 0, wx.ALL | wx.EXPAND, 8)
         root.Add(
-            wx.StaticText(panel, label="Include these sections:"),
+            wx.StaticText(dialog, label="Include these sections:"),
             0,
             wx.LEFT | wx.RIGHT,
             8,
         )
         chooser = wx.CheckListBox(  # A11Y-SR-1-OK: export picker; pending CheckBox conversion
-            panel,
+            dialog,
             choices=[f"{offer.title} - {offer.summary}" for offer in offers],
         )
         for index in range(len(offers)):
@@ -9956,17 +9939,10 @@ class MainFrame(
             ok_button = dialog.FindWindowById(wx.ID_OK)
             if ok_button is not None:
                 ok_button.SetDefault()
-        apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
-        panel.SetSizer(root)
-        # CreateButtonSizer's buttons are children of the dialog, so they must
-        # live in the dialog's own sizer (outer), not the inner panel's sizer
-        # (root). Adding them to root left them unrealized and broke Escape/
-        # Cancel dismissal (same class as #84/#119).
-        outer = wx.BoxSizer(wx.VERTICAL)
-        outer.Add(panel, 1, wx.EXPAND)
         if buttons is not None:
-            outer.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
-        dialog.SetSizerAndFit(outer)
+            root.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
+        apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
+        dialog.SetSizerAndFit(root)
 
         def sync_private(_event: object = None) -> None:
             profile_mode = kind_choice.GetSelection() == 0
@@ -10077,11 +10053,10 @@ class MainFrame(
             self._set_status("Nothing to import")
             return
         dialog = wx.Dialog(self.frame, title="Import and Restore", size=(580, 480))
-        panel = wx.Panel(dialog)
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
             wx.StaticText(
-                panel,
+                dialog,
                 label="Review what this file contains, then choose what to apply.",
             ),
             0,
@@ -10089,14 +10064,14 @@ class MainFrame(
             8,
         )
         preview = wx.TextCtrl(
-            panel,
+            dialog,
             value=package_summary(package),
             style=wx.TE_MULTILINE | wx.TE_READONLY,
         )
         root.Add(preview, 1, wx.ALL | wx.EXPAND, 8)
-        root.Add(wx.StaticText(panel, label="Apply these sections:"), 0, wx.LEFT | wx.RIGHT, 8)
+        root.Add(wx.StaticText(dialog, label="Apply these sections:"), 0, wx.LEFT | wx.RIGHT, 8)
         chooser = wx.CheckListBox(  # A11Y-SR-1-OK: import picker; pending CheckBox conversion
-            panel,
+            dialog,
             choices=[f"{title} - {summary}" for _id, title, summary in sections],
         )
         for index in range(len(sections)):
@@ -10107,17 +10082,10 @@ class MainFrame(
             ok_button = dialog.FindWindowById(wx.ID_OK)
             if ok_button is not None:
                 ok_button.SetDefault()
-        apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
-        panel.SetSizer(root)
-        # CreateButtonSizer's buttons are children of the dialog, so they must
-        # live in the dialog's own sizer (outer), not the inner panel's sizer
-        # (root). Adding them to root left them unrealized and broke Escape/
-        # Cancel dismissal (same class as #84/#119).
-        outer = wx.BoxSizer(wx.VERTICAL)
-        outer.Add(panel, 1, wx.EXPAND)
         if buttons is not None:
-            outer.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
-        dialog.SetSizerAndFit(outer)
+            root.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
+        apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
+        dialog.SetSizerAndFit(root)
         if self._show_modal_dialog(dialog, "Import and Restore") != wx.ID_OK:
             self._set_status("Import cancelled")
             return
@@ -10535,11 +10503,10 @@ class MainFrame(
             title="External Tools and Format Support",
             size=(860, 620),
         )
-        panel = wx.Panel(dialog)
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
             wx.StaticText(
-                panel,
+                dialog,
                 label=(
                     "Quill can grow with optional external tools. Each tool below explains what "
                     "it unlocks, how Quill uses it, and how to install it safely if you want it."
@@ -10550,13 +10517,13 @@ class MainFrame(
             8,
         )
         choices = [status.name for status in statuses]
-        chooser = wx.ListBox(panel, choices=choices)
+        chooser = wx.ListBox(dialog, choices=choices)
         chooser.SetSelection(0 if choices else wx.NOT_FOUND)
-        details = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY)
-        copy_button = wx.Button(panel, label="Copy Install Command")
-        website_button = wx.Button(panel, label="Open Website")
-        wizard_button = wx.Button(panel, label="Open Wizard")
-        close_button = wx.Button(panel, id=wx.ID_OK, label="Close")
+        details = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
+        copy_button = wx.Button(dialog, label="Copy Install Command")
+        website_button = wx.Button(dialog, label="Open Website")
+        wizard_button = wx.Button(dialog, label="Open Wizard")
+        close_button = wx.Button(dialog, id=wx.ID_OK, label="Close")
 
         touch_points = {
             "pandoc": (
@@ -10659,7 +10626,7 @@ class MainFrame(
         buttons.AddStretchSpacer(1)
         buttons.Add(close_button, 0)
         root.Add(buttons, 0, wx.ALL | wx.EXPAND, 8)
-        panel.SetSizer(root)
+        dialog.SetSizer(root)
         refresh_details()
         apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_OK)
         self._show_modal_dialog(dialog, "External Tools and Format Support")
@@ -10723,11 +10690,10 @@ class MainFrame(
             "All files (*.*)|*.*"
         )
         dialog = wx.Dialog(self.frame, title="Pandoc Conversion Wizard", size=(760, 360))
-        panel = wx.Panel(dialog)
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
             wx.StaticText(
-                panel,
+                dialog,
                 label=(
                     "Choose a source file and output format. Quill will convert it with Pandoc "
                     "and open the converted text in a new tab."
@@ -10738,18 +10704,18 @@ class MainFrame(
             8,
         )
         source_row = wx.BoxSizer(wx.HORIZONTAL)
-        source_label = wx.StaticText(panel, label="Source file")
-        source_field = wx.TextCtrl(panel)
-        browse_button = wx.Button(panel, label="Browse...")
+        source_label = wx.StaticText(dialog, label="Source file")
+        source_field = wx.TextCtrl(dialog)
+        browse_button = wx.Button(dialog, label="Browse...")
         source_row.Add(source_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
         source_row.Add(source_field, 1, wx.RIGHT | wx.EXPAND, 8)
         source_row.Add(browse_button, 0)
         root.Add(source_row, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
 
         format_row = wx.BoxSizer(wx.HORIZONTAL)
-        format_label = wx.StaticText(panel, label="Output format")
+        format_label = wx.StaticText(dialog, label="Output format")
         format_choice = wx.Choice(
-            panel,
+            dialog,
             choices=[
                 "Markdown (.md)",
                 "HTML (.html)",
@@ -10766,17 +10732,17 @@ class MainFrame(
         format_row.Add(format_choice, 1, wx.EXPAND)
         root.Add(format_row, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
 
-        validation_text = wx.StaticText(panel, label="")
+        validation_text = wx.StaticText(dialog, label="")
         root.Add(validation_text, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
-        convert_button = wx.Button(panel, id=wx.ID_OK, label="Convert and Open")
-        cancel_button = wx.Button(panel, id=wx.ID_CANCEL, label="Cancel")
+        convert_button = wx.Button(dialog, id=wx.ID_OK, label="Convert and Open")
+        cancel_button = wx.Button(dialog, id=wx.ID_CANCEL, label="Cancel")
         buttons.AddStretchSpacer(1)
         buttons.Add(convert_button, 0, wx.RIGHT, 6)
         buttons.Add(cancel_button, 0)
         root.Add(buttons, 0, wx.ALL | wx.EXPAND, 8)
-        panel.SetSizer(root)
+        dialog.SetSizer(root)
         dialog_result: dict[str, object] = {}
 
         def browse_source() -> None:
@@ -11609,11 +11575,10 @@ class MainFrame(
         )
         chosen: dict[str, NavItem | None] = {"item": None}
         try:
-            panel = wx.Panel(dialog)
             inner = wx.BoxSizer(wx.VERTICAL)
             inner.Add(
                 wx.StaticText(
-                    panel,
+                    dialog,
                     label=(
                         "Type to filter. Choose a category to narrow by type. "
                         "Enter jumps to the selected element."
@@ -11623,29 +11588,26 @@ class MainFrame(
                 wx.ALL | wx.EXPAND,
                 8,
             )
-            search = wx.TextCtrl(panel)
+            search = wx.TextCtrl(dialog)
             inner.Add(search, 0, wx.ALL | wx.EXPAND, 8)
             summary = nav_type_summary(items)
             category_labels = [f"All ({len(items)})"] + [
                 f"{name} ({count})" for name, count in summary
             ]
             category_values: list[str | None] = [None] + [name for name, _ in summary]
-            category_box = wx.ListBox(panel, choices=category_labels)
+            category_box = wx.ListBox(dialog, choices=category_labels)
             category_box.SetSelection(0)
             inner.Add(category_box, 0, wx.ALL | wx.EXPAND, 8)
-            results = wx.ListBox(panel)
+            results = wx.ListBox(dialog)
             inner.Add(results, 1, wx.ALL | wx.EXPAND, 8)
-            go_button = wx.Button(panel, id=wx.ID_OK, label="Go")
-            cancel_button = wx.Button(panel, id=wx.ID_CANCEL, label="Cancel")
+            go_button = wx.Button(dialog, id=wx.ID_OK, label="Go")
+            cancel_button = wx.Button(dialog, id=wx.ID_CANCEL, label="Cancel")
             buttons = wx.StdDialogButtonSizer()
             buttons.AddButton(go_button)
             buttons.AddButton(cancel_button)
             buttons.Realize()
             inner.Add(buttons, 0, wx.ALL | wx.EXPAND, 8)
-            panel.SetSizer(inner)
-            outer = wx.BoxSizer(wx.VERTICAL)
-            outer.Add(panel, 1, wx.EXPAND)
-            dialog.SetSizer(outer)
+            dialog.SetSizer(inner)
 
             filtered: list[NavItem] = []
             # SET-2: only start matching once the query reaches the configured
@@ -12744,11 +12706,10 @@ class MainFrame(
     ) -> int:
         wx = self._wx
         dialog = wx.Dialog(self.frame, title="Spell Check", size=(860, 520))
-        panel = wx.Panel(dialog)
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
             wx.StaticText(
-                panel,
+                dialog,
                 label=(
                     "Choose a misspelled word, then Show Corrections to see replacement "
                     "options. Tab to Context to read the nearby sentence; use Speak Word to "
@@ -12763,28 +12724,25 @@ class MainFrame(
         for item in misspellings:
             line, column = line_column_for_position(text, item.start)
             choices.append(f"{item.word} (Ln {line}, Col {column})")
-        chooser = wx.ListBox(panel, choices=choices)
+        chooser = wx.ListBox(dialog, choices=choices)
         chooser.SetSelection(0 if choices else wx.NOT_FOUND)
         root.Add(chooser, 1, wx.LEFT | wx.RIGHT | wx.EXPAND, 8)
-        root.Add(wx.StaticText(panel, label="Context"), 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
+        root.Add(wx.StaticText(dialog, label="Context"), 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
         context_field = wx.TextCtrl(
-            panel,
+            dialog,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP,
         )
         root.Add(context_field, 1, wx.ALL | wx.EXPAND, 8)
         buttons = wx.BoxSizer(wx.HORIZONTAL)
-        speak_button = wx.Button(panel, label="Speak Word")
-        review_button = wx.Button(panel, id=wx.ID_OK, label="Show Corrections...")
-        cancel_button = wx.Button(panel, id=wx.ID_CANCEL, label="Cancel")
+        speak_button = wx.Button(dialog, label="Speak Word")
+        review_button = wx.Button(dialog, id=wx.ID_OK, label="Show Corrections...")
+        cancel_button = wx.Button(dialog, id=wx.ID_CANCEL, label="Cancel")
         buttons.AddStretchSpacer(1)
         buttons.Add(speak_button, 0, wx.RIGHT, 8)
         buttons.Add(review_button, 0, wx.RIGHT, 8)
         buttons.Add(cancel_button, 0)
         root.Add(buttons, 0, wx.ALL | wx.EXPAND, 8)
-        panel.SetSizer(root)
-        outer = wx.BoxSizer(wx.VERTICAL)
-        outer.Add(panel, 1, wx.EXPAND)
-        dialog.SetSizerAndFit(outer)
+        dialog.SetSizerAndFit(root)
         review_button.SetDefault()
 
         def refresh_context() -> None:
@@ -13554,11 +13512,10 @@ class MainFrame(
             return
 
         dialog = wx.Dialog(self.frame, title="Read Aloud Voice", size=(640, 460))
-        panel = wx.Panel(dialog)
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
             wx.StaticText(
-                panel,
+                dialog,
                 label=f"Choose an English voice for {engine}. Use Preview before confirming.",
             ),
             0,
@@ -13566,24 +13523,21 @@ class MainFrame(
             8,
         )
         choices = [v.name for v in voices]
-        list_box = wx.ListBox(panel, choices=choices, style=wx.LB_SINGLE)
+        list_box = wx.ListBox(dialog, choices=choices, style=wx.LB_SINGLE)
         current_index = next((i for i, v in enumerate(voices) if v.id == current_voice_id), 0)
         if choices:
             list_box.SetSelection(current_index)
         root.Add(list_box, 1, wx.EXPAND | wx.ALL, 8)
         button_row = wx.BoxSizer(wx.HORIZONTAL)
-        preview_btn = wx.Button(panel, label="&Preview")
-        ok_btn = wx.Button(panel, id=wx.ID_OK)
-        cancel_btn = wx.Button(panel, id=wx.ID_CANCEL)
+        preview_btn = wx.Button(dialog, label="&Preview")
+        ok_btn = wx.Button(dialog, id=wx.ID_OK)
+        cancel_btn = wx.Button(dialog, id=wx.ID_CANCEL)
         button_row.AddStretchSpacer(1)
         button_row.Add(preview_btn, 0, wx.RIGHT, 8)
         button_row.Add(ok_btn, 0, wx.RIGHT, 8)
         button_row.Add(cancel_btn, 0)
         root.Add(button_row, 0, wx.ALL | wx.EXPAND, 8)
-        panel.SetSizer(root)
-        outer = wx.BoxSizer(wx.VERTICAL)
-        outer.Add(panel, 1, wx.EXPAND)
-        dialog.SetSizerAndFit(outer)
+        dialog.SetSizerAndFit(root)
 
         def _selected_index() -> int:
             return list_box.GetSelection()
@@ -14788,36 +14742,32 @@ class MainFrame(
             title="Watch Queue Monitor",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        panel = wx.Panel(dialog)
-        panel_sizer = wx.BoxSizer(wx.VERTICAL)
         root = wx.BoxSizer(wx.VERTICAL)
 
-        summary = wx.StaticText(panel, label="Watch queue")
+        summary = wx.StaticText(dialog, label="Watch queue")
         summary.SetName("Watch queue summary")
-        panel_sizer.Add(summary, 0, wx.ALL, 8)
+        root.Add(summary, 0, wx.ALL, 8)
 
-        listbox = wx.ListBox(panel, style=wx.LB_SINGLE)
+        listbox = wx.ListBox(dialog, style=wx.LB_SINGLE)
         listbox.SetName("Watch queue items")
-        panel_sizer.Add(listbox, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+        root.Add(listbox, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
         button_row = wx.BoxSizer(wx.HORIZONTAL)
-        pause_button = wx.Button(panel, label="&Pause")
+        pause_button = wx.Button(dialog, label="&Pause")
         pause_button.SetName("Pause or resume the watch queue")
-        retry_button = wx.Button(panel, label="&Retry")
+        retry_button = wx.Button(dialog, label="&Retry")
         retry_button.SetName("Retry selected item")
-        open_button = wx.Button(panel, label="&Open Result")
+        open_button = wx.Button(dialog, label="&Open Result")
         open_button.SetName("Open the result of the selected item")
-        clear_button = wx.Button(panel, label="&Clear Finished")
+        clear_button = wx.Button(dialog, label="&Clear Finished")
         clear_button.SetName("Clear finished items")
-        refresh_button = wx.Button(panel, label="Re&fresh")
+        refresh_button = wx.Button(dialog, label="Re&fresh")
         refresh_button.SetName("Refresh the watch queue")
         for button in (pause_button, retry_button, open_button, clear_button, refresh_button):
             button_row.Add(button, 0, wx.RIGHT, 6)
-        panel_sizer.Add(button_row, 0, wx.ALL, 8)
+        root.Add(button_row, 0, wx.ALL, 8)
 
-        panel.SetSizer(panel_sizer)
         buttons = dialog.CreateButtonSizer(wx.CLOSE)
-        root.Add(panel, 1, wx.EXPAND | wx.ALL, 4)
         if buttons is not None:
             root.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
         dialog.SetSizerAndFit(root)
@@ -14944,31 +14894,27 @@ class MainFrame(
             title="Watch Folder Profiles",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         ) as dialog:
-            panel = wx.Panel(dialog)
             root = wx.BoxSizer(wx.VERTICAL)
-            panel_sizer = wx.BoxSizer(wx.VERTICAL)
 
-            heading = wx.StaticText(panel, label="Watch folder profiles")
+            heading = wx.StaticText(dialog, label="Watch folder profiles")
             heading.SetName("Watch folder profiles")
-            panel_sizer.Add(heading, 0, wx.ALL, 8)
+            root.Add(heading, 0, wx.ALL, 8)
 
-            listbox = wx.ListBox(panel, style=wx.LB_SINGLE)
+            listbox = wx.ListBox(dialog, style=wx.LB_SINGLE)
             listbox.SetName("Watch folder profile list")
-            panel_sizer.Add(listbox, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+            root.Add(listbox, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
             button_row = wx.BoxSizer(wx.HORIZONTAL)
-            add_button = wx.Button(panel, label="&Add...")
-            edit_button = wx.Button(panel, label="&Edit...")
-            duplicate_button = wx.Button(panel, label="D&uplicate")
-            toggle_button = wx.Button(panel, label="Ena&ble/Disable")
-            delete_button = wx.Button(panel, label="De&lete")
+            add_button = wx.Button(dialog, label="&Add...")
+            edit_button = wx.Button(dialog, label="&Edit...")
+            duplicate_button = wx.Button(dialog, label="D&uplicate")
+            toggle_button = wx.Button(dialog, label="Ena&ble/Disable")
+            delete_button = wx.Button(dialog, label="De&lete")
             for button in (add_button, edit_button, duplicate_button, toggle_button, delete_button):
                 button_row.Add(button, 0, wx.RIGHT, 6)
-            panel_sizer.Add(button_row, 0, wx.ALL, 8)
+            root.Add(button_row, 0, wx.ALL, 8)
 
-            panel.SetSizer(panel_sizer)
             buttons = dialog.CreateButtonSizer(wx.CLOSE)
-            root.Add(panel, 1, wx.EXPAND | wx.ALL, 4)
             if buttons is not None:
                 root.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
             dialog.SetSizerAndFit(root)
@@ -15068,85 +15014,83 @@ class MainFrame(
         base = profile if profile is not None else WatchProfile()
         title = "Edit Watch Profile" if profile is not None else "Add Watch Profile"
         with wx.Dialog(self.frame, title=title) as dialog:
-            panel = wx.Panel(dialog)
             root = wx.BoxSizer(wx.VERTICAL)
-            panel_sizer = wx.BoxSizer(wx.VERTICAL)
 
             name_row = wx.BoxSizer(wx.HORIZONTAL)
-            name_label = wx.StaticText(panel, label="Profile name")
-            name_input = wx.TextCtrl(panel, value=base.name)
+            name_label = wx.StaticText(dialog, label="Profile name")
+            name_input = wx.TextCtrl(dialog, value=base.name)
             name_input.SetName("Profile name")
             name_row.Add(name_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
             name_row.Add(name_input, 1, wx.EXPAND)
-            panel_sizer.Add(name_row, 0, wx.EXPAND | wx.ALL, 8)
+            root.Add(name_row, 0, wx.EXPAND | wx.ALL, 8)
 
-            enabled = wx.CheckBox(panel, label="Profile enabled")
+            enabled = wx.CheckBox(dialog, label="Profile enabled")
             enabled.SetValue(base.enabled)
             enabled.SetName("Profile enabled")
-            panel_sizer.Add(enabled, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+            root.Add(enabled, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
             path_row = wx.BoxSizer(wx.HORIZONTAL)
-            path_label = wx.StaticText(panel, label="Watch folder")
-            path_input = wx.TextCtrl(panel, value=base.folder_path)
+            path_label = wx.StaticText(dialog, label="Watch folder")
+            path_input = wx.TextCtrl(dialog, value=base.folder_path)
             path_input.SetName("Watch folder path")
-            path_browse = wx.Button(panel, label="Bro&wse...")
+            path_browse = wx.Button(dialog, label="Bro&wse...")
             path_row.Add(path_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
             path_row.Add(path_input, 1, wx.EXPAND | wx.RIGHT, 8)
             path_row.Add(path_browse, 0)
-            panel_sizer.Add(path_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+            root.Add(path_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
-            include_subfolders = wx.CheckBox(panel, label="Include subfolders")
+            include_subfolders = wx.CheckBox(dialog, label="Include subfolders")
             include_subfolders.SetValue(base.include_subfolders)
             include_subfolders.SetName("Include subfolders")
-            panel_sizer.Add(include_subfolders, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+            root.Add(include_subfolders, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
-            process_existing = wx.CheckBox(panel, label="Process existing files on start")
+            process_existing = wx.CheckBox(dialog, label="Process existing files on start")
             process_existing.SetValue(base.process_existing)
             process_existing.SetName("Process existing files on start")
-            panel_sizer.Add(process_existing, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+            root.Add(process_existing, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
             # --- Filters (WATCH-5) ---
             suffix_row = wx.BoxSizer(wx.HORIZONTAL)
-            suffix_label = wx.StaticText(panel, label="File types (comma separated)")
-            suffix_input = wx.TextCtrl(panel, value=", ".join(base.suffixes))
+            suffix_label = wx.StaticText(dialog, label="File types (comma separated)")
+            suffix_input = wx.TextCtrl(dialog, value=", ".join(base.suffixes))
             suffix_input.SetName("File type suffixes, comma separated")
             suffix_row.Add(suffix_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
             suffix_row.Add(suffix_input, 1, wx.EXPAND)
-            panel_sizer.Add(suffix_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+            root.Add(suffix_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
             pattern_row = wx.BoxSizer(wx.HORIZONTAL)
-            pattern_label = wx.StaticText(panel, label="Name patterns (comma separated)")
-            pattern_input = wx.TextCtrl(panel, value=", ".join(base.name_patterns))
+            pattern_label = wx.StaticText(dialog, label="Name patterns (comma separated)")
+            pattern_input = wx.TextCtrl(dialog, value=", ".join(base.name_patterns))
             pattern_input.SetName("File name patterns, comma separated")
             pattern_row.Add(pattern_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
             pattern_row.Add(pattern_input, 1, wx.EXPAND)
-            panel_sizer.Add(pattern_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+            root.Add(pattern_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
             size_row = wx.BoxSizer(wx.HORIZONTAL)
-            size_label = wx.StaticText(panel, label="Minimum size (bytes)")
-            size_input = wx.SpinCtrl(panel, min=0, max=1_000_000_000, initial=base.min_size_bytes)
+            size_label = wx.StaticText(dialog, label="Minimum size (bytes)")
+            size_input = wx.SpinCtrl(dialog, min=0, max=1_000_000_000, initial=base.min_size_bytes)
             size_input.SetName("Minimum file size in bytes")
             size_row.Add(size_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
             size_row.Add(size_input, 0)
-            panel_sizer.Add(size_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+            root.Add(size_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
             age_row = wx.BoxSizer(wx.HORIZONTAL)
-            age_label = wx.StaticText(panel, label="Minimum age (seconds)")
+            age_label = wx.StaticText(dialog, label="Minimum age (seconds)")
             age_input = wx.SpinCtrlDouble(
-                panel, min=0.0, max=3600.0, inc=0.5, initial=base.min_age_seconds
+                dialog, min=0.0, max=3600.0, inc=0.5, initial=base.min_age_seconds
             )
             age_input.SetName("Minimum file age in seconds")
             age_row.Add(age_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
             age_row.Add(age_input, 0)
-            panel_sizer.Add(age_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+            root.Add(age_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
             interval_row = wx.BoxSizer(wx.HORIZONTAL)
-            interval_label = wx.StaticText(panel, label="Poll interval (seconds)")
-            interval_input = wx.SpinCtrl(panel, min=2, max=300, initial=base.poll_interval_seconds)
+            interval_label = wx.StaticText(dialog, label="Poll interval (seconds)")
+            interval_input = wx.SpinCtrl(dialog, min=2, max=300, initial=base.poll_interval_seconds)
             interval_input.SetName("Poll interval in seconds")
             interval_row.Add(interval_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
             interval_row.Add(interval_input, 0)
-            panel_sizer.Add(interval_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+            root.Add(interval_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
             # --- Schedule (WATCH-5) ---
             sched_modes = [SCHED_ALWAYS, SCHED_WINDOW, SCHED_QUIET]
@@ -15156,45 +15100,45 @@ class MainFrame(
                 "Active except during quiet hours",
             ]
             sched_row = wx.BoxSizer(wx.HORIZONTAL)
-            sched_label = wx.StaticText(panel, label="Schedule")
-            sched_choice = wx.Choice(panel, choices=sched_labels)
+            sched_label = wx.StaticText(dialog, label="Schedule")
+            sched_choice = wx.Choice(dialog, choices=sched_labels)
             sched_choice.SetName("Schedule mode")
             sched_choice.SetSelection(
                 sched_modes.index(base.schedule_mode) if base.schedule_mode in sched_modes else 0
             )
             sched_row.Add(sched_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
             sched_row.Add(sched_choice, 1, wx.EXPAND)
-            panel_sizer.Add(sched_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+            root.Add(sched_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
             start_h, start_m = divmod(base.schedule_start_minute, 60)
             end_h, end_m = divmod(base.schedule_end_minute, 60)
             time_row = wx.BoxSizer(wx.HORIZONTAL)
             time_row.Add(
-                wx.StaticText(panel, label="From"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4
+                wx.StaticText(dialog, label="From"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4
             )
-            start_hour = wx.SpinCtrl(panel, min=0, max=23, initial=start_h)
+            start_hour = wx.SpinCtrl(dialog, min=0, max=23, initial=start_h)
             start_hour.SetName("Schedule start hour")
-            start_minute = wx.SpinCtrl(panel, min=0, max=59, initial=start_m)
+            start_minute = wx.SpinCtrl(dialog, min=0, max=59, initial=start_m)
             start_minute.SetName("Schedule start minute")
             time_row.Add(start_hour, 0, wx.RIGHT, 2)
             time_row.Add(start_minute, 0, wx.RIGHT, 12)
             time_row.Add(
-                wx.StaticText(panel, label="to"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4
+                wx.StaticText(dialog, label="to"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4
             )
-            end_hour = wx.SpinCtrl(panel, min=0, max=23, initial=end_h)
+            end_hour = wx.SpinCtrl(dialog, min=0, max=23, initial=end_h)
             end_hour.SetName("Schedule end hour")
-            end_minute = wx.SpinCtrl(panel, min=0, max=59, initial=end_m)
+            end_minute = wx.SpinCtrl(dialog, min=0, max=59, initial=end_m)
             end_minute.SetName("Schedule end minute")
             time_row.Add(end_hour, 0, wx.RIGHT, 2)
             time_row.Add(end_minute, 0)
-            panel_sizer.Add(time_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+            root.Add(time_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
             available = list(self._watch_service.registry.available_actions())
             action_ids = [action.action_id for action in available]
             action_labels = [action.label for action in available]
             action_row = wx.BoxSizer(wx.HORIZONTAL)
-            action_label = wx.StaticText(panel, label="Action")
-            action_choice = wx.Choice(panel, choices=action_labels)
+            action_label = wx.StaticText(dialog, label="Action")
+            action_choice = wx.Choice(dialog, choices=action_labels)
             action_choice.SetName("Watch action")
             if base.action_id in action_ids:
                 action_choice.SetSelection(action_ids.index(base.action_id))
@@ -15202,90 +15146,90 @@ class MainFrame(
                 action_choice.SetSelection(0)
             action_row.Add(action_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
             action_row.Add(action_choice, 1, wx.EXPAND)
-            panel_sizer.Add(action_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+            root.Add(action_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
             action_dest_row = wx.BoxSizer(wx.HORIZONTAL)
-            action_dest_label = wx.StaticText(panel, label="Action destination")
+            action_dest_label = wx.StaticText(dialog, label="Action destination")
             action_dest_input = wx.TextCtrl(
-                panel, value=str(base.action_options.get("destination", ""))
+                dialog, value=str(base.action_options.get("destination", ""))
             )
             action_dest_input.SetName("Action destination folder")
-            action_dest_browse = wx.Button(panel, label="Brow&se...")
+            action_dest_browse = wx.Button(dialog, label="Brow&se...")
             action_dest_row.Add(action_dest_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
             action_dest_row.Add(action_dest_input, 1, wx.EXPAND | wx.RIGHT, 8)
             action_dest_row.Add(action_dest_browse, 0)
-            panel_sizer.Add(action_dest_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+            root.Add(action_dest_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
             # --- Per-action options (WATCH-7) ---
             convert_formats = ["markdown", "html", "plain"]
             convert_labels = ["Markdown", "HTML", "Plain text"]
             convert_row = wx.BoxSizer(wx.HORIZONTAL)
             convert_row.Add(
-                wx.StaticText(panel, label="Convert to"),
+                wx.StaticText(dialog, label="Convert to"),
                 0,
                 wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
                 8,
             )
-            convert_choice = wx.Choice(panel, choices=convert_labels)
+            convert_choice = wx.Choice(dialog, choices=convert_labels)
             convert_choice.SetName("Convert target format")
             current_fmt = str(base.action_options.get("target_format", "")).strip().lower()
             convert_choice.SetSelection(
                 convert_formats.index(current_fmt) if current_fmt in convert_formats else 0
             )
             convert_row.Add(convert_choice, 1, wx.EXPAND)
-            panel_sizer.Add(convert_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+            root.Add(convert_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
             macro_names = sorted(getattr(getattr(self, "macros", None), "macros", {}) or {})
             macro_row = wx.BoxSizer(wx.HORIZONTAL)
             macro_row.Add(
-                wx.StaticText(panel, label="Macro to run"),
+                wx.StaticText(dialog, label="Macro to run"),
                 0,
                 wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
                 8,
             )
             macro_input = wx.ComboBox(
-                panel,
+                dialog,
                 value=str(base.action_options.get("macro_name", "")),
                 choices=macro_names,
             )
             macro_input.SetName("Macro name to run")
             macro_row.Add(macro_input, 1, wx.EXPAND)
-            panel_sizer.Add(macro_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+            root.Add(macro_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
-            panel_sizer.Add(
-                wx.StaticText(panel, label="Python transform (sandboxed)"),
+            root.Add(
+                wx.StaticText(dialog, label="Python transform (sandboxed)"),
                 0,
                 wx.LEFT | wx.RIGHT,
                 8,
             )
             python_code = wx.TextCtrl(
-                panel,
+                dialog,
                 value=str(base.action_options.get("code", "")),
                 style=wx.TE_MULTILINE,
                 size=(-1, 80),
             )
             python_code.SetName("Python transform code")
-            panel_sizer.Add(python_code, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+            root.Add(python_code, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
             py_opts_row = wx.BoxSizer(wx.HORIZONTAL)
             py_opts_row.Add(
-                wx.StaticText(panel, label="Output suffix"),
+                wx.StaticText(dialog, label="Output suffix"),
                 0,
                 wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
                 4,
             )
             python_suffix = wx.TextCtrl(
-                panel, value=str(base.action_options.get("output_suffix", ""))
+                dialog, value=str(base.action_options.get("output_suffix", ""))
             )
             python_suffix.SetName("Python transform output suffix")
             py_opts_row.Add(python_suffix, 1, wx.EXPAND | wx.RIGHT, 12)
             py_opts_row.Add(
-                wx.StaticText(panel, label="Timeout (s)"),
+                wx.StaticText(dialog, label="Timeout (s)"),
                 0,
                 wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
                 4,
             )
             python_timeout = wx.SpinCtrlDouble(
-                panel,
+                dialog,
                 min=0.1,
                 max=60.0,
                 inc=0.5,
@@ -15293,62 +15237,62 @@ class MainFrame(
             )
             python_timeout.SetName("Python transform timeout in seconds")
             py_opts_row.Add(python_timeout, 0)
-            panel_sizer.Add(py_opts_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+            root.Add(py_opts_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
             ai_modes = ["summarize", "tag", "rewrite"]
             ai_labels = ["Summarize", "Tag", "Rewrite"]
             ai_row = wx.BoxSizer(wx.HORIZONTAL)
             ai_row.Add(
-                wx.StaticText(panel, label="AI action"),
+                wx.StaticText(dialog, label="AI action"),
                 0,
                 wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
                 8,
             )
-            ai_choice = wx.Choice(panel, choices=ai_labels)
+            ai_choice = wx.Choice(dialog, choices=ai_labels)
             ai_choice.SetName("AI action mode")
             current_ai = str(base.action_options.get("mode", "")).strip().lower()
             ai_choice.SetSelection(ai_modes.index(current_ai) if current_ai in ai_modes else 0)
             ai_row.Add(ai_choice, 1, wx.EXPAND)
-            panel_sizer.Add(ai_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+            root.Add(ai_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
             consent_detail = self._watch_ai_consent_detail()
             consent = wx.CheckBox(
-                panel,
+                dialog,
                 label="I consent to send this folder's files to the AI model",
             )
             consent.SetValue(bool(base.action_options.get("consent", False)))
             consent.SetName("AI consent for this profile")
-            panel_sizer.Add(consent, 0, wx.LEFT | wx.RIGHT, 8)
-            consent_text = wx.StaticText(panel, label=consent_detail)
+            root.Add(consent, 0, wx.LEFT | wx.RIGHT, 8)
+            consent_text = wx.StaticText(dialog, label=consent_detail)
             consent_text.SetName("AI consent details")
-            panel_sizer.Add(consent_text, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+            root.Add(consent_text, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
             post_choices = ["Leave file in place", "Move to folder", "Delete file"]
             post_values = [POST_LEAVE, POST_MOVE, POST_DELETE]
             post_row = wx.BoxSizer(wx.HORIZONTAL)
-            post_label = wx.StaticText(panel, label="After processing")
-            post_choice = wx.Choice(panel, choices=post_choices)
+            post_label = wx.StaticText(dialog, label="After processing")
+            post_choice = wx.Choice(dialog, choices=post_choices)
             post_choice.SetName("After processing")
             post_choice.SetSelection(
                 post_values.index(base.post_action) if base.post_action in post_values else 0
             )
             post_row.Add(post_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
             post_row.Add(post_choice, 1, wx.EXPAND)
-            panel_sizer.Add(post_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+            root.Add(post_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
             post_dest_row = wx.BoxSizer(wx.HORIZONTAL)
-            post_dest_label = wx.StaticText(panel, label="Move destination")
-            post_dest_input = wx.TextCtrl(panel, value=base.post_action_destination)
+            post_dest_label = wx.StaticText(dialog, label="Move destination")
+            post_dest_input = wx.TextCtrl(dialog, value=base.post_action_destination)
             post_dest_input.SetName("Post-action move destination")
-            post_dest_browse = wx.Button(panel, label="Brows&e...")
+            post_dest_browse = wx.Button(dialog, label="Brows&e...")
             post_dest_row.Add(post_dest_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
             post_dest_row.Add(post_dest_input, 1, wx.EXPAND | wx.RIGHT, 8)
             post_dest_row.Add(post_dest_browse, 0)
-            panel_sizer.Add(post_dest_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+            root.Add(post_dest_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
-            preview_button = wx.Button(panel, label="Pre&view (dry run)")
+            preview_button = wx.Button(dialog, label="Pre&view (dry run)")
             preview_button.SetName("Preview the action without changing files")
-            panel_sizer.Add(preview_button, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+            root.Add(preview_button, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
             def _pick_folder(target: object) -> None:
                 with wx.DirDialog(
@@ -15446,9 +15390,8 @@ class MainFrame(
             post_dest_browse.Bind(wx.EVT_BUTTON, lambda _event: _pick_folder(post_dest_input))
             preview_button.Bind(wx.EVT_BUTTON, _on_preview)
 
-            panel.SetSizer(panel_sizer)
             ok_cancel = dialog.CreateButtonSizer(wx.OK | wx.CANCEL)
-            root.Add(panel, 1, wx.EXPAND | wx.ALL, 8)
+            root.Add(dialog, 1, wx.EXPAND | wx.ALL, 8)
             if ok_cancel is not None:
                 root.Add(ok_cancel, 0, wx.EXPAND | wx.ALL, 8)
             dialog.SetSizerAndFit(root)
@@ -15818,11 +15761,10 @@ class MainFrame(
     def _show_notifications_dialog(self) -> int:
         wx = self._wx
         dialog = wx.Dialog(self.frame, title="Notifications", size=(900, 520))
-        panel = wx.Panel(dialog)
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
             wx.StaticText(
-                panel,
+                dialog,
                 label=(
                     "Quill notifications appear below. Selecting a row copies it to the clipboard, "
                     "or use Copy Selected."
@@ -15836,18 +15778,18 @@ class MainFrame(
             f"{entry.timestamp} [{entry.category}] {entry.message}"
             for entry in self._notifications[-200:]
         ]
-        chooser = wx.ListBox(panel, choices=lines)
+        chooser = wx.ListBox(dialog, choices=lines)
         root.Add(chooser, 1, wx.ALL | wx.EXPAND, 8)
         button_row = wx.BoxSizer(wx.HORIZONTAL)
-        copy_button = wx.Button(panel, label="Copy Selected")
-        clear_button = wx.Button(panel, id=wx.ID_CLEAR, label="Clear Notifications")
-        close_button = wx.Button(panel, id=wx.ID_CLOSE, label="Close")
+        copy_button = wx.Button(dialog, label="Copy Selected")
+        clear_button = wx.Button(dialog, id=wx.ID_CLEAR, label="Clear Notifications")
+        close_button = wx.Button(dialog, id=wx.ID_CLOSE, label="Close")
         button_row.Add(copy_button, 0, wx.RIGHT, 8)
         button_row.Add(clear_button, 0, wx.RIGHT, 8)
         button_row.AddStretchSpacer(1)
         button_row.Add(close_button, 0)
         root.Add(button_row, 0, wx.ALL | wx.EXPAND, 8)
-        panel.SetSizer(root)
+        dialog.SetSizer(root)
 
         if lines:
             chooser.SetSelection(len(lines) - 1)
@@ -17442,13 +17384,12 @@ class MainFrame(
             title=dialog_label,
             size=(700, 0),
         )
-        panel = wx.Panel(dialog)
         root = wx.BoxSizer(wx.VERTICAL)
         form = wx.FlexGridSizer(0, 3, 8, 8)
         form.AddGrowableCol(1, 1)
 
         def add_row(label: str, make_ctrl, button: object | None = None) -> object:
-            form.Add(wx.StaticText(panel, label=label), 0, wx.ALIGN_CENTER_VERTICAL)
+            form.Add(wx.StaticText(dialog, label=label), 0, wx.ALIGN_CENTER_VERTICAL)
             ctrl = make_ctrl()
             form.Add(ctrl, 1, wx.EXPAND)
             if button is None:
@@ -17458,30 +17399,30 @@ class MainFrame(
             return ctrl
 
         folder_picker = add_row(
-            "Starting folder", lambda: wx.DirPickerCtrl(panel, path=str(default_root))
+            "Starting folder", lambda: wx.DirPickerCtrl(dialog, path=str(default_root))
         )
-        file_pattern_ctrl = add_row("File pattern", lambda: wx.TextCtrl(panel, value="*"))
+        file_pattern_ctrl = add_row("File pattern", lambda: wx.TextCtrl(dialog, value="*"))
         query_ctrl = add_row(
-            "Search text", lambda: wx.TextCtrl(panel, value="", style=wx.TE_PROCESS_ENTER)
+            "Search text", lambda: wx.TextCtrl(dialog, value="", style=wx.TE_PROCESS_ENTER)
         )
 
         replacement_ctrl = None
         if replace:
             replacement_ctrl = add_row(
                 "Replacement",
-                lambda: wx.TextCtrl(panel, value="", style=wx.TE_PROCESS_ENTER),
+                lambda: wx.TextCtrl(dialog, value="", style=wx.TE_PROCESS_ENTER),
             )
 
         mode_choice = add_row(
             "Match mode",
-            lambda: wx.Choice(panel, choices=["Plain text", "Wildcard", "Regular expression"]),
+            lambda: wx.Choice(dialog, choices=["Plain text", "Wildcard", "Regular expression"]),
         )
         mode_choice.SetSelection(0)
 
         output_choice = add_row(
             "Output format",
             lambda: wx.Choice(
-                panel,
+                dialog,
                 choices=[
                     "Filenames only",
                     "Filenames with line numbers and counts",
@@ -17492,15 +17433,15 @@ class MainFrame(
         )
         output_choice.SetSelection(3)
 
-        case_sensitive = wx.CheckBox(panel, label="Case sensitive")
-        whole_word = wx.CheckBox(panel, label="Whole word")
+        case_sensitive = wx.CheckBox(dialog, label="Case sensitive")
+        whole_word = wx.CheckBox(dialog, label="Whole word")
         root.Add(form, 0, wx.ALL | wx.EXPAND, 8)
         root.Add(case_sensitive, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
         root.Add(whole_word, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         preview_before_replace = None
         if replace:
-            preview_before_replace = wx.CheckBox(panel, label="Preview before replacing")
+            preview_before_replace = wx.CheckBox(dialog, label="Preview before replacing")
             preview_before_replace.SetValue(True)
             root.Add(preview_before_replace, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
@@ -17515,17 +17456,10 @@ class MainFrame(
             ok_button = dialog.FindWindowById(wx.ID_OK)
             if ok_button is not None:
                 ok_button.SetDefault()
-        apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
-        panel.SetSizer(root)
-        # CreateButtonSizer's buttons are children of the dialog, so they belong
-        # in the dialog's own sizer (outer), not the inner panel's sizer (root).
-        # Adding them to root left them unrealized and broke Escape/Cancel
-        # dismissal (same class as #84/#119).
-        outer = wx.BoxSizer(wx.VERTICAL)
-        outer.Add(panel, 1, wx.EXPAND)
         if buttons is not None:
-            outer.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
-        dialog.SetSizerAndFit(outer)
+            root.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
+        apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
+        dialog.SetSizerAndFit(root)
 
         def submit(_event: object) -> None:
             dialog.EndModal(wx.ID_OK)
@@ -20057,11 +19991,10 @@ class MainFrame(
         )
         feature_ids = [feature_id for feature_id, _definition in toggleable]
         dialog = wx.Dialog(self.frame, title="Manage Individual Features", size=(700, 640))
-        panel = wx.Panel(dialog)
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
             wx.StaticText(
-                panel,
+                dialog,
                 label=(
                     "Turn individual features on or off on top of your profile. "
                     "Enabling a feature also enables what it needs; disabling one "
@@ -20077,7 +20010,7 @@ class MainFrame(
         # Scrolled panel of individual CheckBox controls — NVDA/JAWS announce
         # "checked" / "not checked" natively when focus moves between them,
         # unlike CheckListBox which only announces name without state.
-        scroll = wx.ScrolledWindow(panel, style=wx.VSCROLL)
+        scroll = wx.ScrolledWindow(dialog, style=wx.VSCROLL)
         scroll.SetScrollRate(0, 20)
         scroll_sizer = wx.BoxSizer(wx.VERTICAL)
         checkboxes: list[wx.CheckBox] = []
@@ -20088,7 +20021,7 @@ class MainFrame(
             scroll_sizer.Add(cb, 0, wx.ALL, 3)
         scroll.SetSizer(scroll_sizer)
 
-        detail = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY)
+        detail = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
         detail.SetValue("Tab to a feature checkbox to see details below.")
 
         def sync_checks() -> None:
@@ -20134,17 +20067,10 @@ class MainFrame(
             ok_button = dialog.FindWindowById(wx.ID_OK)
             if ok_button is not None:
                 ok_button.SetDefault()
-        apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_OK)
-        panel.SetSizer(root)
-        # CreateButtonSizer's buttons are children of the dialog, so they must
-        # live in the dialog's own sizer (outer), not the inner panel's sizer
-        # (root). Adding them to root left them unrealized and broke Escape/
-        # close dismissal (same class as #84/#119).
-        outer = wx.BoxSizer(wx.VERTICAL)
-        outer.Add(panel, 1, wx.EXPAND)
         if buttons is not None:
-            outer.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
-        dialog.SetSizerAndFit(outer)
+            root.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
+        apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_OK)
+        dialog.SetSizerAndFit(root)
         if checkboxes:
             wx.CallAfter(checkboxes[0].SetFocus)
         self._show_modal_dialog(dialog, "Manage Individual Features")
@@ -20204,17 +20130,16 @@ class MainFrame(
     def manage_macros(self) -> None:
         wx = self._wx
         dialog = wx.Dialog(self.frame, title="Manage Macros", size=(720, 420))
-        panel = wx.Panel(dialog)
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
-            wx.StaticText(panel, label="Recorded macros are reusable command sequences."),
+            wx.StaticText(dialog, label="Recorded macros are reusable command sequences."),
             0,
             wx.ALL | wx.EXPAND,
             8,
         )
         names = list(self.macros.macros)
-        chooser = wx.ListBox(panel, choices=names)
-        details = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY)
+        chooser = wx.ListBox(dialog, choices=names)
+        details = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
         if names:
             chooser.SetSelection(0)
 
@@ -20296,10 +20221,10 @@ class MainFrame(
             self._set_status(f"Deleted macro {name}")
 
         chooser.Bind(wx.EVT_LISTBOX, lambda _e: refresh_details())
-        play_button = wx.Button(panel, label="Play")
-        rename_button = wx.Button(panel, label="Rename")
-        delete_button = wx.Button(panel, label="Delete")
-        close_button = wx.Button(panel, id=wx.ID_OK, label="Close")
+        play_button = wx.Button(dialog, label="Play")
+        rename_button = wx.Button(dialog, label="Rename")
+        delete_button = wx.Button(dialog, label="Delete")
+        close_button = wx.Button(dialog, id=wx.ID_OK, label="Close")
         play_button.Bind(wx.EVT_BUTTON, lambda _e: play_selected())
         rename_button.Bind(wx.EVT_BUTTON, lambda _e: rename_selected())
         delete_button.Bind(wx.EVT_BUTTON, lambda _e: delete_selected())
@@ -20314,7 +20239,7 @@ class MainFrame(
         buttons.AddStretchSpacer(1)
         buttons.Add(close_button, 0)
         root.Add(buttons, 0, wx.ALL | wx.EXPAND, 8)
-        panel.SetSizer(root)
+        dialog.SetSizer(root)
         refresh_details()
         apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_OK)
         self._show_modal_dialog(dialog, "Manage Macros")
@@ -20322,11 +20247,10 @@ class MainFrame(
     def open_profiles_and_features_settings(self) -> None:
         wx = self._wx
         dialog = wx.Dialog(self.frame, title="Profiles and Features", size=(820, 700))
-        panel = wx.Panel(dialog)
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
             wx.StaticText(
-                panel,
+                dialog,
                 label=(
                     "Choose a feature profile, inspect what it changes, and import or export "
                     "profile data."
@@ -20336,17 +20260,17 @@ class MainFrame(
             wx.ALL | wx.EXPAND,
             8,
         )
-        chooser = wx.ListBox(panel, choices=[])
+        chooser = wx.ListBox(dialog, choices=[])
         entries: list[tuple[str, str, str]] = []
-        summary = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY)
+        summary = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
         keyboard_pack_choices = keyboard_pack_names(include_custom=True)
-        keyboard_pack_choice = wx.Choice(panel, choices=keyboard_pack_choices)
+        keyboard_pack_choice = wx.Choice(dialog, choices=keyboard_pack_choices)
         current_pack = self.settings.keyboard_pack
         if current_pack not in keyboard_pack_choices:
             current_pack = KEYBOARD_PACK_DEFAULT
         keyboard_pack_choice.SetStringSelection(current_pack)
         keyboard_preview = wx.TextCtrl(
-            panel,
+            dialog,
             style=wx.TE_MULTILINE | wx.TE_READONLY,
             size=(-1, 160),
         )
@@ -20635,19 +20559,19 @@ class MainFrame(
 
         chooser.Bind(wx.EVT_LISTBOX, lambda _e: refresh_summary())
         keyboard_pack_choice.Bind(wx.EVT_CHOICE, lambda _e: refresh_keyboard_preview())
-        switch_button = wx.Button(panel, label="Switch Profile")
-        compare_button = wx.Button(panel, label="Compare Profiles")
-        undo_button = wx.Button(panel, label="Undo Last Change")
-        reset_button = wx.Button(panel, label="Reset to Essential")
-        create_custom_button = wx.Button(panel, label="Create Custom...")
-        update_custom_button = wx.Button(panel, label="Update Custom from Current")
-        delete_custom_button = wx.Button(panel, label="Delete Custom")
-        export_button = wx.Button(panel, label="Export...")
-        import_button = wx.Button(panel, label="Import...")
-        apply_pack_button = wx.Button(panel, label="Apply Keyboard Pack")
-        reset_pack_button = wx.Button(panel, label="Reset Keyboard Pack")
-        customize_pack_button = wx.Button(panel, label="Customize Shortcuts...")
-        close_button = wx.Button(panel, id=wx.ID_OK, label="Close")
+        switch_button = wx.Button(dialog, label="Switch Profile")
+        compare_button = wx.Button(dialog, label="Compare Profiles")
+        undo_button = wx.Button(dialog, label="Undo Last Change")
+        reset_button = wx.Button(dialog, label="Reset to Essential")
+        create_custom_button = wx.Button(dialog, label="Create Custom...")
+        update_custom_button = wx.Button(dialog, label="Update Custom from Current")
+        delete_custom_button = wx.Button(dialog, label="Delete Custom")
+        export_button = wx.Button(dialog, label="Export...")
+        import_button = wx.Button(dialog, label="Import...")
+        apply_pack_button = wx.Button(dialog, label="Apply Keyboard Pack")
+        reset_pack_button = wx.Button(dialog, label="Reset Keyboard Pack")
+        customize_pack_button = wx.Button(dialog, label="Customize Shortcuts...")
+        close_button = wx.Button(dialog, id=wx.ID_OK, label="Close")
         switch_button.Bind(wx.EVT_BUTTON, lambda _e: switch_selected())
         compare_button.Bind(wx.EVT_BUTTON, lambda _e: compare_selected())
         undo_button.Bind(wx.EVT_BUTTON, lambda _e: undo_change())
@@ -20666,7 +20590,7 @@ class MainFrame(
         root.Add(summary, 1, wx.ALL | wx.EXPAND, 8)
         root.Add(
             wx.StaticText(
-                panel,
+                dialog,
                 label=(
                     "Keyboard experience: choose a golden pack inspired by familiar editors, "
                     "or keep a fully custom layout."
@@ -20694,7 +20618,7 @@ class MainFrame(
         buttons.Add(customize_pack_button, 0, wx.RIGHT, 6)
         buttons.Add(close_button, 0)
         root.Add(buttons, 0, wx.ALL | wx.EXPAND, 8)
-        panel.SetSizer(root)
+        dialog.SetSizer(root)
         refresh_profile_list()
         refresh_summary()
         refresh_keyboard_preview()
@@ -21346,11 +21270,10 @@ class MainFrame(
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
         dialog.SetSize((820, 640))
-        panel = wx.Panel(dialog)
         root = wx.BoxSizer(wx.VERTICAL)
 
         intro = wx.StaticText(
-            panel,
+            dialog,
             label=(
                 "Choose a recipe, review the pattern in plain language, then preview matches "
                 "against sample text before using it in Find/Replace."
@@ -21361,29 +21284,29 @@ class MainFrame(
         content = wx.BoxSizer(wx.HORIZONTAL)
 
         left = wx.BoxSizer(wx.VERTICAL)
-        left.Add(wx.StaticText(panel, label="Recipes"), 0, wx.BOTTOM, 6)
-        recipe_list = wx.ListBox(panel, choices=[item[0] for item in recipes])
+        left.Add(wx.StaticText(dialog, label="Recipes"), 0, wx.BOTTOM, 6)
+        recipe_list = wx.ListBox(dialog, choices=[item[0] for item in recipes])
         left.Add(recipe_list, 1, wx.EXPAND)
         content.Add(left, 0, wx.EXPAND | wx.ALL, 10)
 
         right = wx.BoxSizer(wx.VERTICAL)
-        right.Add(wx.StaticText(panel, label="Pattern"), 0, wx.BOTTOM, 4)
-        pattern_ctrl = wx.TextCtrl(panel, style=wx.TE_PROCESS_ENTER)
+        right.Add(wx.StaticText(dialog, label="Pattern"), 0, wx.BOTTOM, 4)
+        pattern_ctrl = wx.TextCtrl(dialog, style=wx.TE_PROCESS_ENTER)
         right.Add(pattern_ctrl, 0, wx.EXPAND | wx.BOTTOM, 8)
 
-        right.Add(wx.StaticText(panel, label="What this pattern means"), 0, wx.BOTTOM, 4)
-        explanation_ctrl = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY)
+        right.Add(wx.StaticText(dialog, label="What this pattern means"), 0, wx.BOTTOM, 4)
+        explanation_ctrl = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
         explanation_ctrl.SetMinSize((480, 80))
         right.Add(explanation_ctrl, 0, wx.EXPAND | wx.BOTTOM, 8)
 
-        right.Add(wx.StaticText(panel, label="Sample text"), 0, wx.BOTTOM, 4)
+        right.Add(wx.StaticText(dialog, label="Sample text"), 0, wx.BOTTOM, 4)
         default_sample = self.editor.GetStringSelection().strip() or self.editor.GetValue()[:1200]
-        sample_ctrl = wx.TextCtrl(panel, value=default_sample, style=wx.TE_MULTILINE)
+        sample_ctrl = wx.TextCtrl(dialog, value=default_sample, style=wx.TE_MULTILINE)
         sample_ctrl.SetMinSize((480, 170))
         right.Add(sample_ctrl, 1, wx.EXPAND | wx.BOTTOM, 8)
 
-        right.Add(wx.StaticText(panel, label="Preview results"), 0, wx.BOTTOM, 4)
-        results_ctrl = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY)
+        right.Add(wx.StaticText(dialog, label="Preview results"), 0, wx.BOTTOM, 4)
+        results_ctrl = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
         results_ctrl.SetMinSize((480, 170))
         right.Add(results_ctrl, 1, wx.EXPAND)
 
@@ -21391,19 +21314,16 @@ class MainFrame(
         root.Add(content, 1, wx.EXPAND)
 
         button_row = wx.BoxSizer(wx.HORIZONTAL)
-        preview_btn = wx.Button(panel, label="Preview")
-        copy_btn = wx.Button(panel, label="Copy Pattern")
-        close_btn = wx.Button(panel, id=wx.ID_CLOSE, label="Close")
+        preview_btn = wx.Button(dialog, label="Preview")
+        copy_btn = wx.Button(dialog, label="Copy Pattern")
+        close_btn = wx.Button(dialog, id=wx.ID_CLOSE, label="Close")
         button_row.Add(preview_btn, 0, wx.RIGHT, 8)
         button_row.Add(copy_btn, 0, wx.RIGHT, 8)
         button_row.AddStretchSpacer(1)
         button_row.Add(close_btn, 0)
         root.Add(button_row, 0, wx.EXPAND | wx.ALL, 10)
 
-        panel.SetSizer(root)
-        outer = wx.BoxSizer(wx.VERTICAL)
-        outer.Add(panel, 1, wx.EXPAND)
-        dialog.SetSizerAndFit(outer)
+        dialog.SetSizerAndFit(root)
         apply_modal_ids(dialog, affirmative_id=wx.ID_CLOSE, escape_id=wx.ID_CLOSE)
 
         def set_recipe(index: int) -> None:

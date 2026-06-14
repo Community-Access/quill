@@ -1,5 +1,26 @@
 """Dialog escape/affirmative button-wiring audit (A11Y-4 / DLG-3 reinforcement).
 
+NVDA focus rule (A11Y-SR-2 / #178):
+    All controls inside a ``wx.Dialog`` must be parented **directly on the
+    dialog**, never on an intermediate ``wx.Panel(dialog)``.  When controls are
+    parented on a panel that is itself a child of the dialog, NVDA places the
+    panel in the virtual buffer as a "group" node; keyboard users must navigate
+    *into* that group before reaching any interactive control.  The correct
+    pattern is::
+
+        dialog = wx.Dialog(parent, title="…")
+        root = wx.BoxSizer(wx.VERTICAL)
+        ctrl = wx.TextCtrl(dialog, …)      # parent = dialog, NOT a panel
+        root.Add(ctrl, …)
+        dialog.SetSizer(root)              # sizer on dialog directly
+
+    ``wx.Panel`` is still appropriate when it carries semantic structure that
+    NVDA should expose (e.g. a group of related radio buttons with a visible
+    label), but a bare layout-only panel wrapping the entire dialog body is
+    not.  Detected in code review for #178; all 22 instances in the UI layer
+    were fixed in one pass and this note records the ruling so future dialogs
+    follow the same pattern.
+
 The dialog inventory (``dialog_inventory.py``) proves every dialog *surface* is
 registered and classified, and the focus helpers in ``dialog_contract`` are unit
 tested in isolation. Neither, however, verifies that when a dialog declares its
