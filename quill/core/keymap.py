@@ -53,7 +53,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "window.previous_document": "Ctrl+Shift+Tab",
     "navigate.speak_window_title": "Ctrl+Shift+Grave, F",
     "navigate.speak_full_path": "Ctrl+Shift+Grave, P",
-    "navigate.speak_status_summary": "Ctrl+Shift+Grave, S",
+    "navigate.speak_status_summary": "Ctrl+Shift+Grave, Q",
     "view.send_to_tray": "Ctrl+Shift+Grave, T",
     "view.toggle_soft_wrap": "Alt+Z",
     "view.toggle_tab_control": "Ctrl+Shift+Grave, Shift+T",

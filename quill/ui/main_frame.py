@@ -5819,7 +5819,7 @@ class MainFrame(
         name = self.document.name
         mode = getattr(self.settings, "title_bar_path_mode", "name")
         if mode == "full_path" and path is not None:
-            return f"{name} — {path}"
+            return str(path)
         return name
 
     def _dirty_title_suffix(self) -> str:
@@ -5939,7 +5939,10 @@ class MainFrame(
     def _announce(self, message: str) -> None:
         self._status_message = message
         self._refresh_statusbar()
-        backend_error = self._announcement_engine.announce(message)
+        engine = getattr(self, "_announcement_engine", None)
+        if engine is None:
+            return
+        backend_error = engine.announce(message)
         if backend_error and backend_error != self._announcement_error_reported:
             self._announcement_error_reported = backend_error
             self._record_notification(backend_error, "accessibility")

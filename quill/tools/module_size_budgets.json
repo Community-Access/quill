@@ -23,7 +23,7 @@
   "_next_target_main_frame": 15000,
   "_default_cap": 600,
   "budgets": {
-    "quill/ui/main_frame.py": 21680,
+    "quill/ui/main_frame.py": 21682,
     "quill/ui/assistant_tools.py": 1877,
     "quill/ui/assistant_panel.py": 725,
     "quill/ui/main_frame_power_tools.py": 777,
@@ -87,5 +87,5 @@
   "_rebaseline_2026_06_13f": "features.py 1020 -> 1029 for the new locked-off core.glow feature (GLOW hidden for 0.5.0 pending completion; audit/fix/update commands gated by it). Re-baselined to measured size.",
   "_rebaseline_2026_06_13g": "keymap.py 438 -> 439 for the edit.find legacy rebinding that restores Find to Ctrl+F. Re-baselined to measured size.",
   "_rebaseline_2026_06_14": "assistant_ai.py 1264 -> 1300 for feat(about) contributor-listing code (GitHub contributors API fetch, baked-in list). Budget missed the update when that commit merged to main; corrected here to restore a green gate.",
-  "_rebaseline_2026_06_14k": "ken branch: main_frame_menu.py -> 2942, main_frame.py -> 21665, settings_specs.py -> 1082 for Navigate > Compare submenu (#187-#194), speak-status commands, Boxer compare dialog, bug-report dialog enhancements (screen reader ComboBox, name/email fields, settings persistence). compare_dialog.py new file capped at 210."
+  "_rebaseline_2026_06_14k": "ken branch: main_frame_menu.py -> 2942, main_frame.py -> 21682, settings_specs.py -> 1082 for Navigate > Compare submenu (#187-#194), speak-status commands, Boxer compare dialog, bug-report dialog enhancements (screen reader ComboBox, name/email fields, settings persistence). compare_dialog.py new file capped at 210. +2 from _announce guard (getattr pattern for test-harness safety)."
 }

@@ -105,6 +105,9 @@ class CompareDialog:
 
         wx.CallAfter(self._diff_list.SetFocus)
 
+    def ShowModal(self) -> int:
+        return self.dialog.ShowModal()
+
     def __enter__(self) -> CompareDialog:
         return self
 
