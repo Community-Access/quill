@@ -174,7 +174,7 @@ def test_read_only_state_refreshes_on_tab_switch() -> None:
 
 def test_read_only_state_refreshes_on_open() -> None:
     # Newly opened/selected tabs must re-apply a persisted read-only guard.
-    create_tab = _SOURCE[_SOURCE.index("def _create_document_tab") :][:1400]
+    create_tab = _SOURCE[_SOURCE.index("def _create_document_tab") :][:1700]
     assert "self._refresh_read_only_state()" in create_tab
 
 

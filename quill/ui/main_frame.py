@@ -1076,8 +1076,10 @@ class MainFrame(
         self._entries_panel_visible = False
         self._main_splitter = wx.SplitterWindow(self.frame, style=wx.SP_LIVE_UPDATE | wx.SP_3D)
         self._main_splitter.SetName("Document area")
+        self._main_splitter.Bind(wx.EVT_SET_FOCUS, self._on_container_focus)
         self._documents_panel = wx.Panel(self._main_splitter)
         self._documents_panel.SetName("Documents")
+        self._documents_panel.Bind(wx.EVT_SET_FOCUS, self._on_container_focus)
         self._documents_sizer = wx.BoxSizer(wx.VERTICAL)
         self._documents_panel.SetSizer(self._documents_sizer)
         self.notebook = self._create_tab_host(self._tab_control_visible)
@@ -3380,6 +3382,17 @@ class MainFrame(
         if callable(skip):
             skip()
 
+    def _on_container_focus(self, event: object) -> None:
+        # Fires when focus lands directly on a layout container (splitter or
+        # panel).  Redirect immediately to the active editor so screen readers
+        # announce the document rather than the container class (#170).
+        editor = getattr(self, "editor", None)
+        if editor is not None:
+            self._wx.CallAfter(editor.SetFocus)
+        skip = getattr(event, "Skip", None)
+        if callable(skip):
+            skip()
+
     def _return_focus_to_editor(self) -> None:
         """Redirect focus from layout containers to the editor (#170).
 
@@ -3400,9 +3413,10 @@ class MainFrame(
             getattr(self, "_documents_panel", None),
         }
         for tab in getattr(self, "_document_tabs", []):
-            splitter = getattr(tab, "splitter", None)
-            if splitter is not None:
-                containers.add(splitter)
+            for attr in ("splitter", "panel"):
+                obj = getattr(tab, attr, None)
+                if obj is not None:
+                    containers.add(obj)
         containers.discard(None)
         if focused in containers:
             editor.SetFocus()
@@ -3477,10 +3491,13 @@ class MainFrame(
     def _create_document_tab(self, document: Document, select: bool = True) -> int:
         wx = self._wx
         panel = wx.Panel(self.notebook)
+        panel.SetName("Editor panel")
+        panel.Bind(wx.EVT_SET_FOCUS, self._on_container_focus)
         # The editor lives in a splitter so a live preview can be shown to its
         # right (View → Preview Side by Side). It starts unsplit (editor only).
         splitter = wx.SplitterWindow(panel, style=wx.SP_LIVE_UPDATE | wx.SP_3DSASH)
         splitter.SetName("Editor area")
+        splitter.Bind(wx.EVT_SET_FOCUS, self._on_container_focus)
         splitter.SetMinimumPaneSize(160)
         editor = wx.TextCtrl(
             splitter,
