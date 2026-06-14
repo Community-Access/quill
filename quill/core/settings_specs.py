@@ -806,6 +806,23 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         " Leave blank to fall back to the Ask AI default model.",
         keywords=("ai", "prompt", "model", "prompt library", "grammar"),
     ),
+    # --- Bug reporting --------------------------------------------------------
+    SettingSpec(
+        "bug_reporter_name",
+        "Bug reporter name",
+        "general",
+        "text",
+        "Your name, pre-filled in the Report a Bug dialog for convenience.",
+        keywords=("name", "bug", "report", "contact"),
+    ),
+    SettingSpec(
+        "bug_reporter_email",
+        "Bug reporter email",
+        "general",
+        "text",
+        "Your contact email, pre-filled in the Report a Bug dialog for convenience.",
+        keywords=("email", "bug", "report", "contact"),
+    ),
     # --- Transcription -----------------------------------------------------
     SettingSpec(
         "bw_provider_mode",

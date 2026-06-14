@@ -1433,6 +1433,24 @@ class MainFrame(
             self._binding_for("window.previous_document"),
         )
         self.commands.register(
+            "navigate.speak_window_title",
+            "Speak Window Title",
+            self.speak_window_title,
+            self._binding_for("navigate.speak_window_title"),
+        )
+        self.commands.register(
+            "navigate.speak_full_path",
+            "Speak Full Path",
+            self.speak_full_path,
+            self._binding_for("navigate.speak_full_path"),
+        )
+        self.commands.register(
+            "navigate.speak_status_summary",
+            "Speak Status Summary",
+            self.speak_status_summary,
+            self._binding_for("navigate.speak_status_summary"),
+        )
+        self.commands.register(
             "view.send_to_tray",
             "Send to Tray",
             self.send_to_tray,
@@ -3650,6 +3668,12 @@ class MainFrame(
             self.open_file(path, line=candidate.line, column=candidate.column)
             self.toggle_read_aloud()
             return
+        if action == "compare":
+            diff_with = getattr(candidate, "diff_with", None)
+            if diff_with is not None:
+                self.open_file(path)
+                self.compare_start_with_file(diff_with)
+                return
         self.open_file(path, line=candidate.line, column=candidate.column)
 
     def _on_text_changed(self, _event: object) -> None:
@@ -5791,10 +5815,12 @@ class MainFrame(
         return f" ({suffix})"
 
     def _title_subject(self) -> str:
-        if getattr(self.settings, "title_bar_path_mode", "name") == "full_path":
-            if self.document.path is not None:
-                return str(self.document.path)
-        return self.document.name
+        path = self.document.path
+        name = self.document.name
+        mode = getattr(self.settings, "title_bar_path_mode", "name")
+        if mode == "full_path" and path is not None:
+            return f"{name} — {path}"
+        return name
 
     def _dirty_title_suffix(self) -> str:
         if not self.document.modified:
@@ -6437,12 +6463,29 @@ class MainFrame(
                 self.frame,
                 "Open text file",
                 wildcard=(
-                    "Supported files (*.txt;*.md;*.html;*.htm;*.xhtml;*.json;*.yaml;*.yml;"
-                    "*.toml;*.xml;*.csv;*.tsv;*.ipynb;*.sqlite;*.db;*.doc;*.docx;*.ppt;*.pptx;*.epub;*.pages;*.pdf;*.odt;*.rtf)|"
-                    "*.txt;*.md;*.html;"
-                    "*.htm;*.xhtml;*.json;*.yaml;*.yml;*.toml;*.xml;*.csv;*.tsv;"
-                    "*.ipynb;*.sqlite;*.db;*.doc;*.docx;*.ppt;*.pptx;*.epub;*.pages;"
-                    "*.pdf;*.odt;*.rtf|All files (*.*)|*.*"
+                    "Supported files"
+                    " (*.txt;*.md;*.html;*.htm;*.xhtml;*.json;*.yaml;*.yml;"
+                    "*.toml;*.xml;*.csv;*.tsv;*.ipynb;*.sqlite;*.db;"
+                    "*.doc;*.docx;*.ppt;*.pptx;*.epub;*.pages;*.pdf;*.odt;*.rtf;"
+                    "*.py;*.js;*.jsx;*.ts;*.tsx;*.kt;*.kts;*.go;*.rs;*.c;*.cpp;"
+                    "*.h;*.hpp;*.java;*.swift;*.cs;*.rb;*.php;*.sh;*.ps1;*.lua;"
+                    "*.css;*.scss;*.less;*.sql;*.log;*.diff;*.patch;*.ini;*.cfg;*.conf;"
+                    "*.gradle;*.properties;*.gitignore;*.env)|"
+                    "*.txt;*.md;*.html;*.htm;*.xhtml;*.json;*.yaml;*.yml;"
+                    "*.toml;*.xml;*.csv;*.tsv;*.ipynb;*.sqlite;*.db;"
+                    "*.doc;*.docx;*.ppt;*.pptx;*.epub;*.pages;*.pdf;*.odt;*.rtf;"
+                    "*.py;*.js;*.jsx;*.ts;*.tsx;*.kt;*.kts;*.go;*.rs;*.c;*.cpp;"
+                    "*.h;*.hpp;*.java;*.swift;*.cs;*.rb;*.php;*.sh;*.ps1;*.lua;"
+                    "*.css;*.scss;*.less;*.sql;*.log;*.diff;*.patch;*.ini;*.cfg;*.conf;"
+                    "*.gradle;*.properties;*.gitignore;*.env|"
+                    "Documents (*.txt;*.md;*.html;*.htm;*.docx;*.odt;*.rtf;*.pdf;*.epub)|"
+                    "*.txt;*.md;*.html;*.htm;*.docx;*.odt;*.rtf;*.pdf;*.epub|"
+                    "Source code"
+                    " (*.py;*.js;*.jsx;*.ts;*.tsx;*.kt;*.kts;*.go;*.rs;*.c;*.cpp;"
+                    "*.h;*.hpp;*.java;*.swift;*.cs;*.rb;*.php;*.sh;*.ps1;*.lua)|"
+                    "*.py;*.js;*.jsx;*.ts;*.tsx;*.kt;*.kts;*.go;*.rs;*.c;*.cpp;"
+                    "*.h;*.hpp;*.java;*.swift;*.cs;*.rb;*.php;*.sh;*.ps1;*.lua|"
+                    "All files (*.*)|*.*"
                 ),
                 style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
             ) as dialog:
@@ -6553,6 +6596,12 @@ class MainFrame(
         # FEAT-19: (re)start the external change watcher for the freshly loaded document.
         self._stop_external_change_watcher()
         self._start_external_change_watcher()
+        # #187: SR users must not need Alt+Tab after open. Defer SetFocus so the
+        # sizer and notebook have finished layout before focus moves.
+        call_after = getattr(self._wx, "CallAfter", None)
+        if callable(call_after) and hasattr(self, "editor"):
+            call_after(self.editor.SetFocus)
+        self._announce(f"Opened {loaded.name or selected_path.name}")
 
     def _position_editor_at(self, line: int | None = None, column: int | None = None) -> None:
         if line is None and column is None:
@@ -6783,13 +6832,169 @@ class MainFrame(
 
     def _switch_document(self, reverse: bool) -> None:
         if len(self._document_tabs) < 2:
+            self._announce("Only one document open")
             self._set_status("No other open document to switch to")
             return
         current_index = self._current_tab_index()
         step = -1 if reverse else 1
         target_index = (current_index + step) % len(self._document_tabs)
         self._select_tab(target_index)
-        self._set_status(f"Switched to {self.document.name}")
+        name = self.document.name
+        self._announce(f"Switched to {name}")
+        self._set_status(f"Switched to {name}")
+
+    def speak_window_title(self) -> None:
+        title = self.frame.GetTitle()
+        self._announce(title)
+        self._set_status(title)
+
+    def speak_full_path(self) -> None:
+        path = self.document.path
+        if path is None:
+            msg = f"{self.document.name} — not saved to disk"
+        else:
+            msg = str(path)
+        self._announce(msg)
+        self._set_status(msg)
+
+    def speak_status_summary(self) -> None:
+        name = self.document.name
+        path = self.document.path
+        modified = "modified" if self.document.modified else "saved"
+        encoding = getattr(self.document, "encoding", None) or "UTF-8"
+        parts = [name]
+        if path:
+            parts.append(str(path))
+        parts.extend([modified, f"encoding {encoding}"])
+        msg = ". ".join(parts)
+        self._announce(msg)
+        self._set_status(msg)
+
+    # ------------------------------------------------------------------
+    # Compare mode (#193/#194) — Boxer-style keyboard-first diff navigation
+    # ------------------------------------------------------------------
+
+    def compare_start_with_file(self, path: object = None) -> None:
+        from quill.core.compare_service import CompareOptions, CompareService
+        from quill.ui.compare_dialog import CompareDialog
+
+        wx = self._wx
+        right_path: Path | None = path if isinstance(path, Path) else None
+        if right_path is None:
+            with wx.FileDialog(
+                self.frame,
+                "Compare with file",
+                wildcard="All files (*.*)|*.*",
+                style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
+            ) as dlg:
+                if self._show_modal_dialog(dlg, "Compare with file") != wx.ID_OK:
+                    return
+                right_path = Path(dlg.GetPath())
+        left_text = self.editor.GetValue()
+        try:
+            right_text = right_path.read_text(encoding="utf-8", errors="replace")
+        except OSError as exc:
+            self._set_status(f"Cannot read {right_path.name}: {exc}")
+            return
+        svc = CompareService()
+        opts = getattr(self, "_compare_options", CompareOptions())
+        left_label = self.document.name or "Left"
+        right_label = right_path.name
+        groups = svc.compare(
+            left_text,
+            right_text,
+            left_label=left_label,
+            right_label=right_label,
+            left_path=self.document.path,
+            right_path=right_path,
+            options=opts,
+        )
+        self._compare_service = svc
+        self._compare_left_text = left_text
+        self._compare_right_text = right_text
+        if not groups:
+            msg = "No differences found."
+            if opts.ignore_all_whitespace or opts.ignore_trailing_whitespace:
+                msg += " (whitespace ignored)"
+            self._announce(msg)
+            self._set_status(msg)
+            return
+        dlg = CompareDialog(self.frame, svc)
+        self._show_modal_dialog(dlg, "Compare")
+        dlg.Destroy()
+        self._compare_service = None
+
+    def compare_dialog_next(self) -> None:
+        svc = getattr(self, "_compare_service", None)
+        if svc is None:
+            self._announce("Not in compare mode")
+            return
+        g = svc.next()
+        if g is None:
+            self._announce("No differences")
+            return
+        self._announce(g.summary_verbose)
+        self._set_status(g.summary_short)
+
+    def compare_dialog_previous(self) -> None:
+        svc = getattr(self, "_compare_service", None)
+        if svc is None:
+            self._announce("Not in compare mode")
+            return
+        g = svc.previous()
+        if g is None:
+            self._announce("No differences")
+            return
+        self._announce(g.summary_verbose)
+        self._set_status(g.summary_short)
+
+    def compare_current_summary(self) -> None:
+        svc = getattr(self, "_compare_service", None)
+        if svc is None:
+            self._announce("Not in compare mode")
+            return
+        g = svc.current()
+        if g is None:
+            self._announce("No current difference — press F8 to navigate")
+            return
+        self._announce(g.summary_verbose)
+        self._set_status(g.summary_short)
+
+    def compare_toggle_ignore_whitespace(self) -> None:
+        from quill.core.compare_service import CompareOptions
+
+        opts = getattr(self, "_compare_options", CompareOptions())
+        if opts.ignore_all_whitespace:
+            self._compare_options = CompareOptions(ignore_all_whitespace=False)
+            msg = "Whitespace comparison: exact"
+        elif opts.ignore_trailing_whitespace:
+            self._compare_options = CompareOptions(ignore_all_whitespace=True)
+            msg = "Whitespace comparison: ignore all"
+        else:
+            self._compare_options = CompareOptions(ignore_trailing_whitespace=True)
+            msg = "Whitespace comparison: ignore trailing"
+        self._announce(msg)
+        self._set_status(msg)
+
+    def compare_generate_report(self) -> None:
+        svc = getattr(self, "_compare_service", None)
+        if svc is None:
+            self._set_status("No active comparison")
+            return
+        from quill.core.document import Document
+
+        lines: list[str] = [
+            f"# Compare Report: {svc.left_label} vs {svc.right_label}",
+            f"{svc.group_count} difference(s) found.",
+            "",
+        ]
+        for g in svc._groups:
+            lines.append(g.summary_verbose)
+            lines.append("")
+        text = "\n".join(lines)
+        doc = Document(name="Compare Report.md", text=text)
+        self._create_document_tab(doc, select=True)
+        self._set_status("Compare report opened in new tab")
 
     def send_to_tray(self) -> None:
         self._ensure_tray_icon()
@@ -10878,6 +11083,45 @@ class MainFrame(
             wx.ALL | wx.EXPAND,
             8,
         )
+        # Contact identity (pre-filled from settings, saved back after submit).
+        _sr_detection = detect_screen_reader()
+        _SR_CHOICES = [
+            "Not using a screen reader",
+            "JAWS",
+            "NVDA",
+            "Narrator",
+            "VoiceOver",
+            "Other",
+        ]
+        _detected_sr = _sr_detection.name if _sr_detection.detected else "Not using a screen reader"
+
+        name_row = wx.BoxSizer(wx.HORIZONTAL)
+        name_label = wx.StaticText(panel, label="Your name (optional)")
+        name_field = wx.TextCtrl(panel)
+        name_field.SetValue(getattr(self.settings, "bug_reporter_name", ""))
+        email_label = wx.StaticText(panel, label="Contact email (optional)")
+        email_field = wx.TextCtrl(panel)
+        email_field.SetValue(getattr(self.settings, "bug_reporter_email", ""))
+        name_row.Add(name_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
+        name_row.Add(name_field, 1, wx.RIGHT, 16)
+        name_row.Add(email_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
+        name_row.Add(email_field, 1)
+        root.Add(name_row, 0, wx.ALL | wx.EXPAND, 8)
+
+        sr_row = wx.BoxSizer(wx.HORIZONTAL)
+        sr_label = wx.StaticText(panel, label="Screen reader")
+        sr_combo = wx.ComboBox(
+            panel,
+            choices=_SR_CHOICES,
+            style=wx.CB_READONLY,
+        )
+        sr_combo.SetStringSelection(_detected_sr)
+        if sr_combo.GetSelection() == wx.NOT_FOUND:
+            sr_combo.SetSelection(0)
+        sr_row.Add(sr_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
+        sr_row.Add(sr_combo, 1)
+        root.Add(sr_row, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
+
         summary_label = wx.StaticText(panel, label="Summary")
         summary_field = wx.TextCtrl(panel)
         summary_field.SetValue(f"Bug report: {self.document.name}")
@@ -10927,10 +11171,11 @@ class MainFrame(
         def build_payload(
             diagnostics_note: str | None = None,
         ) -> tuple[dict[str, str], str]:
+            chosen_sr = sr_combo.GetStringSelection() or _detected_sr
             payload = build_bug_report_payload(
                 current_document=self.document,
                 extra_environment={
-                    "screen_reader": detect_screen_reader().name,
+                    "screen_reader": chosen_sr,
                     "wx_version": self._wx.version(),
                     **announcement_environment,
                 },
@@ -10939,6 +11184,9 @@ class MainFrame(
                 expected=expected_field.GetValue().strip(),
                 steps=steps_field.GetValue().strip(),
                 diagnostics_note=diagnostics_note,
+                screen_reader_name=chosen_sr,
+                reporter_name=name_field.GetValue().strip() or None,
+                reporter_email=email_field.GetValue().strip() or None,
             )
             issue_url = build_support_issue_url(
                 payload,
@@ -11035,6 +11283,9 @@ class MainFrame(
         happened_field.Bind(wx.EVT_TEXT, lambda _e: refresh_preview())
         expected_field.Bind(wx.EVT_TEXT, lambda _e: refresh_preview())
         steps_field.Bind(wx.EVT_TEXT, lambda _e: refresh_preview())
+        name_field.Bind(wx.EVT_TEXT, lambda _e: refresh_preview())
+        email_field.Bind(wx.EVT_TEXT, lambda _e: refresh_preview())
+        sr_combo.Bind(wx.EVT_COMBOBOX, lambda _e: refresh_preview())
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         buttons.Add(copy_button, 0, wx.RIGHT, 6)
         buttons.AddStretchSpacer(1)
@@ -11045,8 +11296,18 @@ class MainFrame(
         include_paths.Enable(include_diagnostics.GetValue())
         refresh_preview()
         apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
+        refresh_preview()
+        # #188: ensure SR focus lands on the Summary field, not the OK button.
+        self._wx.CallAfter(summary_field.SetFocus)
         if self._show_modal_dialog(dialog, "Review Bug Report") != wx.ID_OK:
             return None
+        # Persist name and email so the next report is pre-filled.
+        saved_name = name_field.GetValue().strip()
+        saved_email = email_field.GetValue().strip()
+        if hasattr(self.settings, "bug_reporter_name"):
+            self.settings.bug_reporter_name = saved_name
+        if hasattr(self.settings, "bug_reporter_email"):
+            self.settings.bug_reporter_email = saved_email
         payload = dialog_result.get("payload")
         issue_url = dialog_result.get("issue_url")
         diagnostics_path = dialog_result.get("diagnostics_path")
