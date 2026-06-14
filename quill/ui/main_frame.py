@@ -6485,13 +6485,16 @@ class MainFrame(
     def _file_dialog_default_dir(self) -> str:
         """Return the best initial directory for a file open/save dialog (#168).
 
-        Uses the last-used directory when one is known and still exists.
-        Falls back to the user's Documents folder so the dialog never opens
-        inside the install tree on a fresh launch.
+        Priority: session last-used dir → startup_folder setting → Documents → "".
+        startup_folder is the persistent user preference; _last_file_dir tracks the
+        most recent location within the current session and overrides it once set.
         """
         last = self._last_file_dir
         if last and Path(last).is_dir():
             return last
+        configured = getattr(self.settings, "startup_folder", "")
+        if configured and Path(configured).is_dir():
+            return configured
         try:
             docs = self._wx.StandardPaths.Get().GetDocumentsDir()
             if docs and Path(docs).is_dir():
@@ -8996,6 +8999,35 @@ class MainFrame(
                         browser_choice_label_for_value(str(v))
                     )
                     control_index[spec.key] = (page_index, choice)
+                    return
+                if spec.key == "startup_folder":
+                    text = wx.TextCtrl(parent_panel)
+                    text.SetValue(str(current))
+                    text.SetName(spec.label)
+                    browse_btn = wx.Button(parent_panel, label="Browse...")
+                    browse_btn.SetName(f"Browse for {spec.label}")
+                    folder_row = wx.BoxSizer(wx.HORIZONTAL)
+                    folder_row.Add(text, 1, wx.EXPAND | wx.RIGHT, 8)
+                    folder_row.Add(browse_btn, 0, wx.ALIGN_CENTER_VERTICAL)
+
+                    def _on_browse_folder(_evt, _t=text, _pp=parent_panel) -> None:
+                        with wx.DirDialog(
+                            _pp,
+                            "Choose default file-open folder",
+                            defaultPath=_t.GetValue().strip(),
+                            style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST,
+                        ) as ddlg:
+                            if (
+                                self._show_modal_dialog(ddlg, "Default file-open folder")
+                                == wx.ID_OK
+                            ):
+                                _t.SetValue(ddlg.GetPath())
+
+                    browse_btn.Bind(wx.EVT_BUTTON, _on_browse_folder)
+                    _add_field_row(parent_panel, sizer, spec.label, folder_row, reset_btn)
+                    readers[spec.key] = lambda c=text: str(c.GetValue())
+                    writers[spec.key] = lambda v, c=text: c.SetValue(str(v))
+                    control_index[spec.key] = (page_index, text)
                     return
                 if spec.key in {
                     "quill_key_sound_enter",

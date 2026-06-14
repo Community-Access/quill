@@ -186,6 +186,14 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("confirm", "prompt", "destructive", "safety"),
     ),
     SettingSpec(
+        "startup_folder",
+        "Default file-open folder",
+        "general",
+        "text",
+        "Initial folder for Open and Save As dialogs. Leave blank to use the Documents folder.",
+        keywords=("startup folder", "default folder", "open folder", "file dialog", "start folder"),
+    ),
+    SettingSpec(
         "default_new_document_format",
         "Default new-document format",
         "general",

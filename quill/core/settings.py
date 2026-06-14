@@ -105,6 +105,7 @@ class Settings:
     voice_commands_enabled: bool = False
     watch_folder_enabled: bool = False
     watch_folder_path: str = ""
+    startup_folder: str = ""
     watch_folder_include_subfolders: bool = False
     watch_folder_process_existing: bool = False
     watch_folder_auto_start: bool = False
@@ -367,6 +368,7 @@ class Settings:
             status_page_refresh_announcement_cadence = "quiet"
         watch_folder_enabled = bool(data.get("watch_folder_enabled", False))
         watch_folder_path = str(data.get("watch_folder_path", "")).strip()
+        startup_folder = str(data.get("startup_folder", "")).strip()
         watch_folder_include_subfolders = bool(data.get("watch_folder_include_subfolders", False))
         watch_folder_process_existing = bool(data.get("watch_folder_process_existing", False))
         watch_folder_auto_start = bool(data.get("watch_folder_auto_start", False))
@@ -568,6 +570,7 @@ class Settings:
             voice_commands_enabled=voice_commands_enabled,
             watch_folder_enabled=watch_folder_enabled,
             watch_folder_path=watch_folder_path,
+            startup_folder=startup_folder,
             watch_folder_include_subfolders=watch_folder_include_subfolders,
             watch_folder_process_existing=watch_folder_process_existing,
             watch_folder_auto_start=watch_folder_auto_start,
