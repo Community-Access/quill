@@ -159,8 +159,7 @@ class _ProfilePage(_WizardPage):
         # also announce it as one labelled radio group.
         self._profiles: list[str] = list(PROFILE_DEFINITIONS.keys())
         choices = [
-            f"{profile.name}  -  {profile.description}"
-            for profile in PROFILE_DEFINITIONS.values()
+            f"{profile.name}  -  {profile.description}" for profile in PROFILE_DEFINITIONS.values()
         ]
         self._radio = wx.RadioBox(
             self,
