@@ -158,6 +158,12 @@ Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.gif\shell\Quill.oc
 Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webp\shell\Quill.ocr"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
 Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webp\shell\Quill.ocr"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill"; Tasks: shellverbs
 Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webp\shell\Quill.ocr\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" --action ocr ""%1"""; Tasks: shellverbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heic\shell\Quill.ocr"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heic\shell\Quill.ocr"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill"; Tasks: shellverbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heic\shell\Quill.ocr\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" --action ocr ""%1"""; Tasks: shellverbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heif\shell\Quill.ocr"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heif\shell\Quill.ocr"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill"; Tasks: shellverbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heif\shell\Quill.ocr\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" --action ocr ""%1"""; Tasks: shellverbs
 Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.pdf\shell\Quill.ocr"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill"; Flags: uninsdeletekey; Tasks: shellverbs
 Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.pdf\shell\Quill.ocr"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill"; Tasks: shellverbs
 Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.pdf\shell\Quill.ocr\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" --action ocr ""%1"""; Tasks: shellverbs
@@ -185,6 +191,12 @@ Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.gif\shell\Quill.oc
 Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webp\shell\Quill.ocr_structured"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill (structured Markdown)"; Flags: uninsdeletekey; Tasks: shellverbs
 Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webp\shell\Quill.ocr_structured"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill (structured Markdown)"; Tasks: shellverbs
 Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webp\shell\Quill.ocr_structured\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" --action ocr-structured ""%1"""; Tasks: shellverbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heic\shell\Quill.ocr_structured"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill (structured Markdown)"; Flags: uninsdeletekey; Tasks: shellverbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heic\shell\Quill.ocr_structured"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill (structured Markdown)"; Tasks: shellverbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heic\shell\Quill.ocr_structured\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" --action ocr-structured ""%1"""; Tasks: shellverbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heif\shell\Quill.ocr_structured"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill (structured Markdown)"; Flags: uninsdeletekey; Tasks: shellverbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heif\shell\Quill.ocr_structured"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill (structured Markdown)"; Tasks: shellverbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heif\shell\Quill.ocr_structured\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" --action ocr-structured ""%1"""; Tasks: shellverbs
 Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.pdf\shell\Quill.ocr_structured"; ValueType: string; ValueName: ""; ValueData: "OCR with Quill (structured Markdown)"; Flags: uninsdeletekey; Tasks: shellverbs
 Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.pdf\shell\Quill.ocr_structured"; ValueType: string; ValueName: "MUIVerb"; ValueData: "OCR with Quill (structured Markdown)"; Tasks: shellverbs
 Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.pdf\shell\Quill.ocr_structured\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" --action ocr-structured ""%1"""; Tasks: shellverbs
@@ -254,6 +266,12 @@ Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.gif\shell\Quill.re
 Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webp\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Tasks: shellverbs
 Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webp\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Tasks: shellverbs
 Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.webp\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" --action read ""%1"""; Tasks: shellverbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heic\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Tasks: shellverbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heic\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Tasks: shellverbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heic\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" --action read ""%1"""; Tasks: shellverbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heif\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Tasks: shellverbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heif\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Tasks: shellverbs
+Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.heif\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" --action read ""%1"""; Tasks: shellverbs
 Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.pdf\shell\Quill.read"; ValueType: string; ValueName: ""; ValueData: "Read aloud in Quill"; Flags: uninsdeletekey; Tasks: shellverbs
 Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.pdf\shell\Quill.read"; ValueType: string; ValueName: "MUIVerb"; ValueData: "Read aloud in Quill"; Tasks: shellverbs
 Root: HKCU; Subkey: "Software\Classes\SystemFileAssociations\.pdf\shell\Quill.read\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" --action read ""%1"""; Tasks: shellverbs
@@ -341,3 +359,4 @@ begin
     end;
   end;
 end;
+
