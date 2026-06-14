@@ -5278,6 +5278,21 @@ class MainFrame(
             sound_manager.shutdown()
         except Exception:  # noqa: BLE001
             pass
+        # #210: when run from source the process could refuse to exit because a
+        # modeless top-level window (for example the Ask Quill chat frame) was
+        # still alive, so wx kept the main loop running after the main frame
+        # closed. Destroy any stragglers here so closing the main window always
+        # ends the loop and the process exits.
+        wx = self._wx
+        get_tlws = getattr(wx, "GetTopLevelWindows", None)
+        if callable(get_tlws):
+            for window in list(get_tlws()):
+                if window is self.frame:
+                    continue
+                try:
+                    window.Destroy()
+                except Exception:  # noqa: BLE001
+                    pass
         event.Skip()
 
     def _on_iconize(self, event: object) -> None:
