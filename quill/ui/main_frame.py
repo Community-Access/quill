@@ -925,6 +925,10 @@ class MainFrame(
         self._first_run_watch_folder_prompt = (
             not safe_mode and not load_watch_folder_onboarding_complete()
         )
+        # Seed with Documents so the first-ever file dialog doesn't open in
+        # the install directory.  Updated to the last-used parent after each
+        # successful open or save-as (#168).
+        self._last_file_dir: str = ""
         if safe_mode:
             self.settings.theme = "system"
             self.settings.tray_enabled = False
@@ -6478,6 +6482,24 @@ class MainFrame(
         self._location_ring.record(0)
         self._set_status("New document")
 
+    def _file_dialog_default_dir(self) -> str:
+        """Return the best initial directory for a file open/save dialog (#168).
+
+        Uses the last-used directory when one is known and still exists.
+        Falls back to the user's Documents folder so the dialog never opens
+        inside the install tree on a fresh launch.
+        """
+        last = self._last_file_dir
+        if last and Path(last).is_dir():
+            return last
+        try:
+            docs = self._wx.StandardPaths.Get().GetDocumentsDir()
+            if docs and Path(docs).is_dir():
+                return docs
+        except Exception:
+            pass
+        return ""
+
     def open_file(
         self,
         path: Path | None = None,
@@ -6493,6 +6515,7 @@ class MainFrame(
             with wx.FileDialog(
                 self.frame,
                 "Open text file",
+                defaultDir=self._file_dialog_default_dir(),
                 wildcard=(
                     "Supported files (*.txt;*.md;*.html;*.htm;*.xhtml;*.json;*.yaml;*.yml;"
                     "*.toml;*.xml;*.csv;*.tsv;*.ipynb;*.sqlite;*.db;*.doc;*.docx;*.ppt;*.pptx;*.epub;*.pages;*.pdf;*.odt;*.rtf)|"
@@ -6506,6 +6529,7 @@ class MainFrame(
                 if self._show_modal_dialog(dialog, "Open text file") != wx.ID_OK:
                     return
                 selected_path = Path(dialog.GetPath())
+                self._last_file_dir = str(selected_path.parent)
         if selected_path is None:
             return
         existing_index = self._find_tab_index(selected_path)
@@ -7489,6 +7513,7 @@ class MainFrame(
         with wx.FileDialog(
             self.frame,
             "Save file as",
+            defaultDir=self._file_dialog_default_dir(),
             wildcard=(
                 "Text files (*.txt)|*.txt|Markdown files (*.md)|*.md|"
                 "HTML files (*.html;*.htm;*.xhtml)|*.html;*.htm;*.xhtml|"
@@ -7507,6 +7532,7 @@ class MainFrame(
             get_filter_index = getattr(dialog, "GetFilterIndex", None)
             chosen_filter = get_filter_index() if callable(get_filter_index) else -1
             target = self._resolve_save_target(Path(dialog.GetPath()), chosen_filter)
+            self._last_file_dir = str(target.parent)
 
         self.document.set_text(self.editor.GetValue())
         if self.document.modified and self.document.path is not None:
