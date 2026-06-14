@@ -225,6 +225,13 @@ from quill.core.keymap import (
     reset_keymap,
     save_keymap,
 )
+from quill.core.language_profile import (
+    PLAIN_PROFILE,
+    LanguageProfile,
+    all_profiles,
+    get_profile_by_name,
+    get_profile_for_path,
+)
 from quill.core.lexical import (
     build_lookup_items,
     default_service,
@@ -381,6 +388,7 @@ from quill.core.tagging import (
     search_html_tag_choices,
     search_markdown_tag_choices,
 )
+from quill.core.token_nav import classify_token, next_token_position, prev_token_position
 from quill.core.transforms import to_lower, to_sentence_case, to_title, to_toggle_case, to_upper
 from quill.core.trust import is_trusted_location, load_trusted_locations, save_trusted_locations
 from quill.core.undo_store import load_undo_history, save_undo_history
@@ -814,6 +822,7 @@ class MainFrame(
         "extend_mode": "Extend Mode",
         "abbreviations": "Abbreviations",
         "copy_tray_slots": "Copy Tray",
+        "language_profile": "Language",
         "sr_name": "Screen Reader",
         "suggestion": "Suggested Action",
         "notebook_goal": "Notebook Goal",
@@ -837,6 +846,7 @@ class MainFrame(
         "extend_mode": 110,
         "abbreviations": 120,
         "copy_tray_slots": 110,
+        "language_profile": 130,
         "sr_name": 160,
         "suggestion": 220,
         "notebook_goal": 200,
@@ -860,6 +870,7 @@ class MainFrame(
         "extend_mode": "core.edit",
         "abbreviations": "core.edit",
         "copy_tray_slots": "core.edit",
+        "language_profile": "core.navigate",
         "sr_name": "core.app",
         "suggestion": "core.app",
         "notebook_goal": "core.notebook",
@@ -1699,6 +1710,24 @@ class MainFrame(
             "Heading Organizer...",
             self.open_heading_organizer,
             self._binding_for("navigate.heading_organizer"),
+        )
+        self.commands.register(
+            "navigate.next_token",
+            "Next Token",
+            self.navigate_next_token,
+            self._binding_for("navigate.next_token"),
+        )
+        self.commands.register(
+            "navigate.previous_token",
+            "Previous Token",
+            self.navigate_previous_token,
+            self._binding_for("navigate.previous_token"),
+        )
+        self.commands.register(
+            "navigate.set_language",
+            "Set Document Language...",
+            self.set_document_language,
+            self._binding_for("navigate.set_language"),
         )
         self.commands.register(
             "navigate.match_bracket",
@@ -2654,6 +2683,12 @@ class MainFrame(
             self._binding_for("format.toggle_block_comment"),
         )
         self.commands.register(
+            "format.auto_indent_newline",
+            "Auto-Indent Newline",
+            self.format_auto_indent_newline,
+            self._binding_for("format.auto_indent_newline"),
+        )
+        self.commands.register(
             "format.indent",
             "Indent",
             self.format_indent,
@@ -3138,6 +3173,9 @@ class MainFrame(
             "navigate.outline_navigator": self._id_outline_navigator,
             "navigate.heading_organizer": self._id_heading_organizer,
             "navigate.match_bracket": self._id_match_bracket,
+            "navigate.next_token": self._id_next_token,
+            "navigate.previous_token": self._id_previous_token,
+            "navigate.set_language": self._id_set_language,
             "navigate.next_structure": self._id_next_structure,
             "navigate.previous_structure": self._id_previous_structure,
             "navigate.next_region": self._id_next_region,
@@ -3599,6 +3637,8 @@ class MainFrame(
         self.editor = tab.editor
         self.document = tab.document
         tab._indent_tone_last_level = -1  # reset per-tab indent tone cache on switch
+        if not getattr(tab, "_language_profile_pinned", False):
+            tab._language_profile = get_profile_for_path(tab.document.path)
         self._schedule_browse_prewarm(force=True)
         if self.settings.persistent_undo:
             if self.document.path is not None:
@@ -11953,6 +11993,106 @@ class MainFrame(
             self._set_status("YAML structure editor closed without changes")
             return
         self._apply_editor_text(updated_text, "Updated YAML structure")
+
+    def navigate_next_token(self) -> None:
+        text = self.editor.GetValue()
+        cursor = self.editor.GetInsertionPoint()
+        pos, token = next_token_position(text, cursor + 1)
+        if not token:
+            self._announce("End of document")
+            return
+        tab = getattr(self, "_current_tab", None)
+        profile = getattr(tab, "_language_profile", None)
+        keywords = profile.keywords if profile else ()
+        label = classify_token(token, keywords)
+        self._move_point(pos)
+        self.editor.SetFocus()
+        self._announce(label)
+        self._set_status(label)
+
+    def navigate_previous_token(self) -> None:
+        text = self.editor.GetValue()
+        cursor = self.editor.GetInsertionPoint()
+        pos, token = prev_token_position(text, cursor)
+        if not token:
+            self._announce("Beginning of document")
+            return
+        tab = getattr(self, "_current_tab", None)
+        profile = getattr(tab, "_language_profile", None)
+        keywords = profile.keywords if profile else ()
+        label = classify_token(token, keywords)
+        self._move_point(pos)
+        self.editor.SetFocus()
+        self._announce(label)
+        self._set_status(label)
+
+    def set_document_language(self, language: str | None = None) -> None:
+        """Set the active language profile for the current document tab."""
+        wx = self._wx
+        tab = getattr(self, "_current_tab", None)
+        if tab is None:
+            return
+        if language:
+            profile: LanguageProfile | None = get_profile_by_name(language)
+            if profile is None:
+                self._set_status(f"Unknown language: {language}")
+                return
+        else:
+            profiles = all_profiles()
+            names = [p.name for p in profiles] + ["Plain text"]
+            dlg = wx.SingleChoiceDialog(
+                self.frame,
+                "Select language profile for this document:",
+                "Set Document Language",
+                names,
+            )
+            current = getattr(tab, "_language_profile", None)
+            if current is not None:
+                try:
+                    idx = names.index(current.name)
+                    dlg.SetSelection(idx)
+                except ValueError:
+                    pass
+            if self._show_modal_dialog(dlg, "Set Document Language") != wx.ID_OK:
+                return
+            chosen = dlg.GetStringSelection()
+            profile = get_profile_by_name(chosen) if chosen != "Plain text" else PLAIN_PROFILE
+        tab._language_profile = profile
+        tab._language_profile_pinned = True
+        self._apply_statusbar_layout()
+        name = profile.name if profile else "Plain text"
+        self._set_status(f"Language set to {name}")
+        self._announce(f"Language: {name}")
+
+    def format_auto_indent_newline(self) -> None:
+        """Insert a newline with language-aware indentation."""
+        editor = getattr(self, "editor", None)
+        if editor is None:
+            return
+        if not hasattr(editor, "GetCurrentLine"):
+            if hasattr(editor, "WriteText"):
+                editor.WriteText("\n")
+            return
+        line = editor.GetCurrentLine()
+        line_text = editor.GetLine(line) if hasattr(editor, "GetLine") else ""
+        stripped = line_text.rstrip("\r\n")
+        leading = stripped[: len(stripped) - len(stripped.lstrip())]
+        tab = getattr(self, "_current_tab", None)
+        profile = getattr(tab, "_language_profile", None)
+        last_char = stripped.rstrip()[-1:] if stripped.rstrip() else ""
+        extra = ""
+        if last_char in (":", "{"):
+            unit = profile.indent_unit if profile else int(getattr(self.settings, "indent_size", 4))
+            if profile and profile.uses_tabs:
+                extra = "\t"
+            else:
+                extra = " " * unit
+        new_text = "\n" + leading + extra
+        if hasattr(editor, "ReplaceSelection"):
+            editor.ReplaceSelection(new_text)
+        elif hasattr(editor, "WriteText"):
+            editor.WriteText(new_text)
+        self._set_status("Auto-indent newline")
 
     def match_bracket(self) -> None:
         target = find_matching_bracket(self.editor.GetValue(), self.editor.GetInsertionPoint())

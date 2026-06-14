@@ -32,6 +32,8 @@ STATUS_BAR_ITEMS: tuple[str, ...] = (
     "abbreviations",
     # Copy Tray occupied-slot count.
     "copy_tray_slots",
+    # Active language profile for code-aware editing (#181).
+    "language_profile",
 )
 
 
@@ -56,6 +58,7 @@ def _default_status_bar_hidden() -> list[str]:
         "sr_name",
         "abbreviations",
         "copy_tray_slots",
+        "language_profile",
     ]
 
 

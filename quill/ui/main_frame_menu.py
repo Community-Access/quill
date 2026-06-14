@@ -488,6 +488,9 @@ class MenuBuilderMixin:
         self._id_outline_navigator = wx.NewIdRef()
         self._id_heading_organizer = wx.NewIdRef()
         self._id_match_bracket = wx.NewIdRef()
+        self._id_next_token = wx.NewIdRef()
+        self._id_previous_token = wx.NewIdRef()
+        self._id_set_language = wx.NewIdRef()
         self._id_next_structure = wx.NewIdRef()
         self._id_previous_structure = wx.NewIdRef()
         self._id_next_region = wx.NewIdRef()
@@ -547,6 +550,19 @@ class MenuBuilderMixin:
         navigate_menu.Append(
             self._id_match_bracket,
             self._menu_label("Match &Bracket", "navigate.match_bracket"),
+        )
+        navigate_menu.Append(
+            self._id_next_token,
+            self._menu_label("Next &Token", "navigate.next_token"),
+        )
+        navigate_menu.Append(
+            self._id_previous_token,
+            self._menu_label("P&revious Token", "navigate.previous_token"),
+        )
+        navigate_menu.AppendSeparator()
+        navigate_menu.Append(
+            self._id_set_language,
+            self._menu_label("Set Document &Language...", "navigate.set_language"),
         )
         navigate_menu.AppendSeparator()
         navigate_menu.Append(

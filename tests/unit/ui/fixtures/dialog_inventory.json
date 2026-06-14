@@ -144,6 +144,7 @@
   "quill/ui/main_frame.py::MainFrame.save_diagnostics_bundle::wx.FileDialog": "native",
   "quill/ui/main_frame.py::MainFrame.save_file_as::wx.FileDialog": "native",
   "quill/ui/main_frame.py::MainFrame.set_bookmark::wx.TextEntryDialog": "native",
+  "quill/ui/main_frame.py::MainFrame.set_document_language::wx.SingleChoiceDialog": "native",
   "quill/ui/main_frame.py::MainFrame.show_external_tools_dialog::wx.Dialog": "hardened_custom",
   "quill/ui/main_frame.py::MainFrame.show_feature_explanation::wx.TextEntryDialog": "native",
   "quill/ui/main_frame.py::MainFrame.show_lookup_dialog::wx.Dialog": "hardened_custom",
