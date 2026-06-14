@@ -78,6 +78,15 @@
 
 ### Bug fixes and security
 
+- **Setup Wizard radio buttons wrap correctly.** On the Feature Profile page
+  (step 3 of 9), arrowing down past the last choice no longer escapes into the
+  Back/Next/Cancel buttons; the choices use a single `wx.RadioBox` so arrow
+  navigation wraps within the group and screen readers announce it as one
+  labelled group (#209).
+- **Quill exits reliably when run from source.** A modeless top-level window
+  (such as the Ask Quill chat frame) could keep the wx main loop alive after
+  the main window closed, leaving the process running. `_on_close` now destroys
+  straggler top-level windows so the app always exits (#210).
 - **Report a Bug fields are now editable.** The form fields no longer reject
   keyboard input under NVDA; the dialog was rebuilt without the intermediate
   `wx.Panel` that broke editing, and moved from Tools to Help (#178). The bug
