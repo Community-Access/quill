@@ -104,7 +104,15 @@ class StatusBarMixin:
             and feature_manager is not None
             and not feature_manager.is_enabled(feature_id)
         ):
-            return "Unavailable in current profile"
+            # Return empty string rather than "Unavailable in current profile".
+            # _statusbar_items() already filters disabled-feature cells out of
+            # the layout, so this path is a defensive fallback. If a cell
+            # somehow escapes the filter, broadcasting "unavailable" in its
+            # button label causes JAWS and NVDA to read the word "unavailable"
+            # as part of the window announcement (#176). The help text (set by
+            # _statusbar_help_text) still carries the unavailable reason for
+            # sighted users who inspect the cell.
+            return ""
         read_aloud = getattr(self, "_read_aloud", None)
         read_aloud_state = getattr(read_aloud, "state", "idle")
         notifications = getattr(self, "_notifications", [])

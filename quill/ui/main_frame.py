@@ -1087,7 +1087,11 @@ class MainFrame(
         self._pending_menu_refresh = False
         self._recent_sessions = [] if safe_mode else load_recent_sessions()
 
-        self.frame = wx.Frame(None, title="Untitled - Quill", size=(1000, 700))
+        # Title starts as "Quill" (not "Untitled - Quill") so screen readers
+        # that see the Win32 HWND before Show() is called don't announce
+        # "Untitled" combined with any transient status-bar text. _refresh_title()
+        # sets the real document-name title as soon as the editor is ready.
+        self.frame = wx.Frame(None, title="Quill", size=(1000, 700))
         self._intellisense_popup = _IntellisensePopup(wx, self.frame)
         self._intellisense_popup.set_accept_callback(self._apply_intellisense_selection)
         self._intellisense_popup.set_dismiss_callback(self._dismiss_intellisense_popup)
@@ -1216,6 +1220,14 @@ class MainFrame(
         except Exception:
             self._report_startup_task_failure("trust-consent onboarding")
         for label, task in (
+            # Pre-warm the WebView2 subprocess before the user opens a preview
+            # or the AI chat pane.  The first WebView.New() call initialises the
+            # Edge WebView2 process and can block the UI thread for several
+            # seconds (sometimes minutes) on slower or first-time Windows
+            # installations.  Paying that cost here — once, in the deferred
+            # startup sequence — means subsequent preview opens (F6, auto-preview,
+            # AI panel) are near-instant.  Fixes #174 and reduces #177.
+            ("WebView2 warm-up", self._prewarm_webview_runtime),
             ("crash recovery", self._offer_crash_recovery),
             ("first-run onboarding", self._maybe_run_first_run_onboarding),
             ("startup profile prompt", self.run_startup_profile_prompt),
@@ -3663,6 +3675,21 @@ class MainFrame(
         ):
             self.insert_link()
             return
+        # Ctrl-W closes the side preview unconditionally — even when the WebView
+        # holds native focus.  WebView2 captures its own keyboard events and does
+        # not forward them to wx, so this must be handled at the frame level
+        # before the browser control can consume the keystroke.
+        if (
+            event.ControlDown()
+            and not event.AltDown()
+            and not event.ShiftDown()
+            and key_code in (ord("W"), ord("w"), 23)
+        ):
+            tab = self._active_tab()
+            splitter = getattr(tab, "splitter", None) if tab is not None else None
+            if splitter is not None and splitter.IsSplit():
+                self.toggle_side_preview()
+                return
         if not self._focus_is_in_document_surface():
             # Modal dialogs (including WebView-hosted HTML surfaces) should
             # receive keys directly. If browse mode was active in the editor,
@@ -17878,6 +17905,50 @@ class MainFrame(
         text = tab.editor.GetValue()
         kind = guess_preview_kind(tab.document.path, text)
         tab.preview.update(render_preview_body(text, kind, dark=self._preview_is_dark()))
+
+    def _prewarm_webview_runtime(self) -> None:
+        """Initialise the WebView2 subprocess early so preview opens are instant.
+
+        wx.html2.WebView.New() launches the Edge WebView2 process on the first
+        call. On Windows this can take several seconds — occasionally minutes —
+        the first time (COM init, Edge runtime discovery, subprocess spawn). All
+        subsequent calls reuse the same subprocess and are near-instant.
+
+        Creating and immediately destroying a 1×1 hidden WebView here (during
+        the deferred startup task list, after the main window is visible) pays
+        that one-time cost before the user presses F6 or the AI chat pane opens.
+        The visible startup delay (#177) and the F6 freeze (#174) both trace back
+        to this initialisation happening on the user's first interaction instead.
+
+        No-ops silently if wx.html2 is unavailable (Linux/macOS without WebKit,
+        or if the runtime was not installed).
+        """
+        try:
+            import wx.html2
+
+            sentinel = self._wx.Panel(self.frame, size=(1, 1))
+            sentinel.Hide()
+            # WebView.New() alone is enough to trigger WebView2 process
+            # initialisation — no page load required.  WebView2 fires
+            # EVT_WEBVIEW_LOADED for the implicit about:blank navigation; we
+            # destroy the sentinel then.  A 5-second fallback timer covers the
+            # case where the load event never arrives (e.g. no WebView2 runtime).
+            # No explicit page load needed — WebView2 navigates to about:blank on
+            # its own.  Explicit raw-HTML page calls are disallowed here by the
+            # web-surface governance gate (test_web_surface_governance.py).
+            wv = wx.html2.WebView.New(sentinel)
+
+            def _cleanup(_evt: object = None) -> None:
+                try:
+                    wv.Unbind(wx.html2.EVT_WEBVIEW_LOADED, handler=_cleanup)
+                    sentinel.Destroy()
+                except Exception:
+                    pass
+
+            wv.Bind(wx.html2.EVT_WEBVIEW_LOADED, _cleanup)
+            self._wx.CallLater(5000, _cleanup)
+        except Exception:
+            pass
 
     def _preview_is_dark(self) -> bool:
         """Whether preview surfaces should render with the dark theme (issue #83).
