@@ -183,6 +183,9 @@ class Settings:
     sound_pack_path: str = ""  # empty = bundled Ink pack
     sound_volume: int = 80  # 0-100; passed to sound_lib Output.set_volume()
     sound_events_disabled: str = ""  # comma-separated SoundEvent IDs to silence
+    # Indent tone overlay: "" = off, else one of pentatonic/whole_tone/diatonic/chromatic.
+    # When set, moving the caret across indent levels plays a pitched tone per level.
+    indent_tone_scale: str = ""
     # Abbreviation backspace: "delete" removes expansion, "revert" puts the original back.
     abbreviation_backspace_behavior: str = "delete"
 
@@ -498,6 +501,9 @@ class Settings:
             sound_volume = 80
         sound_volume = max(0, min(100, sound_volume))
         sound_events_disabled = str(data.get("sound_events_disabled", ""))
+        indent_tone_scale = str(data.get("indent_tone_scale", ""))
+        if indent_tone_scale not in ("", "pentatonic", "whole_tone", "diatonic", "chromatic"):
+            indent_tone_scale = ""
         abbreviation_backspace_behavior = str(data.get("abbreviation_backspace_behavior", "delete"))
         if abbreviation_backspace_behavior not in {"delete", "revert"}:
             abbreviation_backspace_behavior = "delete"
@@ -651,6 +657,7 @@ class Settings:
             sound_pack_path=sound_pack_path,
             sound_volume=sound_volume,
             sound_events_disabled=sound_events_disabled,
+            indent_tone_scale=indent_tone_scale,
             abbreviation_backspace_behavior=abbreviation_backspace_behavior,
         )
 
