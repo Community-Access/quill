@@ -206,24 +206,16 @@ def generate_all() -> None:
     print(f"Writing sounds to {OUT}")
 
     # -- abbreviation_expanded: soft noise click + rising chirp (unfolding) --
-    write_wav(
-        "expand.wav",
-        _concat(
-            _noise(6, _click_env),
-            _sweep(400, 1000, 75, sine_at, _swell_env(5, 20, 0.3, 25)),
-        ),
-        vol=0.70,
+    expand_samples = _concat(
+        _noise(6, _click_env),
+        _sweep(400, 1000, 75, sine_at, _swell_env(5, 20, 0.3, 25)),
     )
+    write_wav("expand.wav", expand_samples, vol=0.70)
 
-    # -- abbreviation_deleted: click + falling chirp (mirror of expand) ------
-    write_wav(
-        "delete.wav",
-        _concat(
-            _noise(6, _click_env),
-            _sweep(1000, 400, 75, sine_at, _swell_env(5, 15, 0.2, 30)),
-        ),
-        vol=0.70,
-    )
+    # -- abbreviation_deleted: exact time-reverse of expand (true mirror) -----
+    # Reversing the rising chirp gives a falling chirp, and the click moves to
+    # the tail, so "delete" is the unmistakable opposite of "expand".
+    write_wav("delete.wav", list(reversed(expand_samples)), vol=0.70)
 
     # -- snippet_inserted: double click + longer rising tone (more content) --
     write_wav(
@@ -325,19 +317,16 @@ def generate_all() -> None:
         vol=0.65,
     )
 
-    # -- browse_mode_on: thin high triangle tone with slow attack ("step back")
-    def browse_env(i: int, n: int) -> float:
-        r_in = ms(15)
-        r_out = ms(20)
-        return min(1.0, i / max(r_in, 1)) * min(1.0, (n - i) / max(r_out, 1))
-
+    # -- browse_mode_on: thin rising sweep ("stepping back/up into browse") ---
+    # A rising glide (not a steady tone) so the time-reversed browse_off is an
+    # audibly different falling glide rather than the same pitch backwards.
     browse_on_samples = _mix(
-        _tone(1760, 120, tri_at, browse_env),
-        _tone(880, 120, sine_at, lambda i, n: browse_env(i, n) * 0.2),
+        _sweep(880, 1760, 130, tri_at, _swell_env(8, 20, 0.5, 25)),
+        _sweep(440, 880, 130, sine_at, lambda i, n: _swell_env(8, 20, 0.5, 25)(i, n) * 0.2),
     )
     write_wav("browse_on.wav", browse_on_samples, vol=0.45)
 
-    # -- browse_mode_off: exact time-reverse of browse_on --------------------
+    # -- browse_mode_off: exact time-reverse of browse_on (clear falling glide)
     write_wav("browse_off.wav", list(reversed(browse_on_samples)), vol=0.45)
 
     # -- ai_thinking_started: four-note ascending arpeggio (shimmer) ---------

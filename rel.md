@@ -1,4 +1,4 @@
-# QUILL 0.6.0 release notes
+# QUILL 0.5.1 release notes
 
 This release is about feedback you can hear, comparisons you can move through by keyboard, smarter handling of code, and a set of practical encoding tools for anyone who prepares text for the web. Everything below is built screen-reader-first: sound is always optional and never replaces speech, and every new view is a real, navigable control rather than a visual-only flourish.
 
@@ -26,7 +26,7 @@ If you use a sound pack, compare mode also gives you distinct cues for opening a
 
 ## New: code-aware editing
 
-Open a source file and QUILL loads a *language profile* from the file extension — Python, JavaScript and TypeScript, Kotlin, Shell, Markdown, JSON, TOML, and SQL are recognised, with a sensible plain-text fallback.
+Open a source file and QUILL loads a *language profile* from the file extension — Python, JavaScript and TypeScript, Kotlin, Shell, Markdown, JSON, TOML, and SQL are recognized, with a sensible plain-text fallback.
 
 - **Move by token.** **Next Token** and **Previous Token** (in the Navigate menu) jump the caret to the next identifier, keyword, operator, or literal, which is far more predictable than word movement when you are reading code by ear.
 - **Set the language yourself.** **Navigate → Set Document Language** overrides the automatic choice — handy for an unsaved buffer, an unusual extension, or a snippet pasted into a plain file.

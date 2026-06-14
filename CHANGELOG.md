@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.6.0 — Sound Packs, Compare Mode, Code-Aware Editing, Encoding Tools (Unreleased)
+## 0.5.1 — Sound Packs, Compare Mode, Code-Aware Editing, Encoding Tools (2026-06-15)
 
 ### New features
 
@@ -17,7 +17,7 @@
   Generators: `scripts/gen_ink_sounds.py`, `scripts/gen_indent_tones.py`.
   Covered by `tests/unit/core/test_sound_pack.py`,
   `tests/unit/platform/test_sound_player.py` (#181/#182/#184).
-- **Boxer-style compare mode.** `quill/core/compare_service.py` (pure difflib
+- **Keyboard-first compare mode.** `quill/core/compare_service.py` (pure difflib
   engine) and `quill/ui/compare_dialog.py` (modal, screen-reader-first) add
   keyboard difference review: F8/Shift+F8 next/previous, Ctrl+F8 re-announce,
   Alt+F8 inline word changes, Ctrl+Shift+F8 whitespace toggle. Covered by

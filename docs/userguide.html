@@ -1250,8 +1250,8 @@ synchronized movement through differences.</p>
 <strong>F8</strong> for the next difference, <strong>Shift+F8</strong>
 for the previous one, <strong>Ctrl+F8</strong> to re-announce the
 current difference, and <strong>Alt+F8</strong> to hear the inline
-changed words. The compare dialog is a Boxer-style list you can review
-with a screen reader, one difference at a time.</p>
+changed words. The compare dialog is a keyboard-first list you can
+review with a screen reader, one difference at a time.</p>
 <p>If you use a sound pack, compare mode also plays short earcons: one
 when a comparison opens, one when it closes, distinct ticks for moving
 to the next or previous difference, and a soft "blocked" tone when you
@@ -1776,9 +1776,8 @@ a source reference that captures document context. If nothing is
 selected, Quill uses the current line. This is excellent for notes,
 review workflows, and evidence gathering.</p>
 <h3 id="selection-bindings">Selection bindings</h3>
-<p><strong>F8-based anchor selection (EdSharp model)</strong></p>
-<p>Quill uses an anchor-based selection model compatible with
-EdSharp:</p>
+<p><strong>F8-based anchor selection</strong></p>
+<p>Quill uses an anchor-based selection model:</p>
 <table>
 <thead>
 <tr>
@@ -5956,6 +5955,14 @@ panels and return focus to the editor.</li>
 sensitive and can interfere with rapid typists. The patterns with the
 clearest benefit and the lowest collision risk are: Copy Tray peek and
 QUILL-key-double-press for the tray dialog.</p>
+<hr />
+<h2 id="acknowledgments">Acknowledgments</h2>
+<p>QUILL's accessibility design draws on the work of earlier
+screen-reader-first editors. In particular, the keyboard-first compare
+workflow and the F8 anchor selection model were inspired by the
+approaches pioneered in EdSharp and Boxer. We are grateful to those
+projects and their authors for showing what accessible, keyboard-driven
+editing can be.</p>
 <hr />
 <h2 id="glossary-of-quill-terms">Glossary of QUILL Terms</h2>
 <p>This glossary defines the jargon used throughout the QUILL interface,

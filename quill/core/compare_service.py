@@ -1,4 +1,4 @@
-"""Boxer-style compare engine for QUILL (issues #193/#194).
+"""Keyboard-first compare engine for QUILL (issues #193/#194).
 
 Pure Python — no wx imports. Provides structured difference navigation
 and speech-ready summaries. The UI layer (compare_dialog.py) calls this;

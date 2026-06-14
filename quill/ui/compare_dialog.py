@@ -1,4 +1,4 @@
-"""Boxer-style compare mode dialog for QUILL (issues #193/#194).
+"""Keyboard-first compare mode dialog for QUILL (issues #193/#194).
 
 Provides a keyboard-first interface: F8/Shift+F8 navigate differences,
 Ctrl+F8 re-speaks the current one, Alt+F8 reads the inline changed text,

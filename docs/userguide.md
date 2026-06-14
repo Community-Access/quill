@@ -668,7 +668,7 @@ The key design choice is how GLOW feels inside Quill. Audit results open as read
 
 Quill's compare model is practical and local. It supports file-to-file review, multi-document review, summary generation, and synchronized movement through differences.
 
-When a comparison is open you can move through it from the keyboard: **F8** for the next difference, **Shift+F8** for the previous one, **Ctrl+F8** to re-announce the current difference, and **Alt+F8** to hear the inline changed words. The compare dialog is a Boxer-style list you can review with a screen reader, one difference at a time.
+When a comparison is open you can move through it from the keyboard: **F8** for the next difference, **Shift+F8** for the previous one, **Ctrl+F8** to re-announce the current difference, and **Alt+F8** to hear the inline changed words. The compare dialog is a keyboard-first list you can review with a screen reader, one difference at a time.
 
 If you use a sound pack, compare mode also plays short earcons: one when a comparison opens, one when it closes, distinct ticks for moving to the next or previous difference, and a soft "blocked" tone when you reach the first or last difference with nothing further to show. You can turn any of these on or off individually in **Tools → Reading & Dictation → Sound Events...** under the Compare section. See [Sound notifications and earcons](#sound-notifications-and-earcons).
 
@@ -938,9 +938,9 @@ The manager also has **Import** and **Export** buttons for JSON round-trips. Exp
 
 ### Selection bindings
 
-**F8-based anchor selection (EdSharp model)**
+**F8-based anchor selection**
 
-Quill uses an anchor-based selection model compatible with EdSharp:
+Quill uses an anchor-based selection model:
 
 | Key | Command | Purpose |
 | --- | --- | --- |
@@ -4234,6 +4234,16 @@ These should be evaluated selectively — double-tap timing is sensitive and can
 interfere with rapid typists. The patterns with the clearest benefit and the
 lowest collision risk are: Copy Tray peek and QUILL-key-double-press for the
 tray dialog.
+
+---
+
+## Acknowledgments
+
+QUILL's accessibility design draws on the work of earlier screen-reader-first
+editors. In particular, the keyboard-first compare workflow and the F8 anchor
+selection model were inspired by the approaches pioneered in EdSharp and Boxer.
+We are grateful to those projects and their authors for showing what
+accessible, keyboard-driven editing can be.
 
 ---
 

@@ -7195,7 +7195,7 @@ class MainFrame(
         self._set_status(msg)
 
     # ------------------------------------------------------------------
-    # Compare mode (#193/#194) — Boxer-style keyboard-first diff navigation
+    # Compare mode (#193/#194) — keyboard-first diff navigation
     # ------------------------------------------------------------------
 
     def compare_start_with_file(self, path: object = None) -> None:
