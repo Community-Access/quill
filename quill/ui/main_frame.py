@@ -1071,7 +1071,9 @@ class MainFrame(
         self._active_notebook = None  # type: ignore[assignment]  # Notebook | None
         self._entries_panel_visible = False
         self._main_splitter = wx.SplitterWindow(self.frame, style=wx.SP_LIVE_UPDATE | wx.SP_3D)
+        self._main_splitter.SetName("Document area")
         self._documents_panel = wx.Panel(self._main_splitter)
+        self._documents_panel.SetName("Documents")
         self._documents_sizer = wx.BoxSizer(wx.VERTICAL)
         self._documents_panel.SetSizer(self._documents_sizer)
         self.notebook = self._create_tab_host(self._tab_control_visible)
@@ -1127,6 +1129,16 @@ class MainFrame(
         self.frame.Show(True)
         # Bring the window to the front and focus the editor, so it doesn't open
         # behind the launching console (screen-reader users land in the editor).
+        # On Windows, Raise() is blocked by focus-stealing prevention when the
+        # launcher (e.g. a terminal) owns the foreground; use the
+        # AttachThreadInput technique to bypass it (#166).
+        if sys.platform == "win32":
+            try:
+                from quill.platform.windows.foreground import force_foreground_window
+
+                force_foreground_window(self.frame.GetHandle())
+            except Exception:
+                pass
         self.frame.Raise()
         self.frame.RequestUserAttention()
         if getattr(self, "editor", None) is not None:
@@ -3299,6 +3311,7 @@ class MainFrame(
         menu_close_event = getattr(wx, "EVT_MENU_CLOSE", None)
         if menu_close_event is not None:
             self.frame.Bind(menu_close_event, self._on_menu_close)
+        self.frame.Bind(wx.EVT_ACTIVATE, self._on_frame_activate)
         self.frame.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
         self.statusbar.Bind(wx.EVT_CONTEXT_MENU, self._on_statusbar_context_menu)
         self.frame.Bind(wx.EVT_CONTEXT_MENU, self._on_frame_context_menu)
@@ -3343,9 +3356,52 @@ class MainFrame(
         self._menu_open_depth = max(0, self._menu_open_depth - 1)
         if self._menu_open_depth == 0 and getattr(self, "_pending_menu_refresh", False):
             self._request_menu_refresh()
+        # After the menu closes, wx may return focus to the splitter or panel
+        # instead of the editor, causing JAWS to announce "splitter window" /
+        # "panel".  Redirect to the editor after the event loop has dispatched
+        # any command that the menu item triggered (#170).
+        if self._menu_open_depth == 0:
+            self._wx.CallAfter(self._return_focus_to_editor)
         skip = getattr(event, "Skip", None)
         if callable(skip):
             skip()
+
+    def _on_frame_activate(self, event: object) -> None:
+        # On first open or Alt-Tab, wx may land focus on the splitter or
+        # panel.  Redirect to the editor so JAWS announces the document (#170).
+        active = getattr(event, "GetActive", lambda: True)()
+        if active:
+            self._wx.CallAfter(self._return_focus_to_editor)
+        skip = getattr(event, "Skip", None)
+        if callable(skip):
+            skip()
+
+    def _return_focus_to_editor(self) -> None:
+        """Redirect focus from layout containers to the editor (#170).
+
+        SplitterWindow and Panel are not interactive; if wx routes focus to
+        them (after menu close or frame activation), JAWS announces the control
+        class instead of the document.  Only redirects when focus is on a known
+        layout container so command handlers that set their own focus target are
+        not disturbed.
+        """
+        editor = getattr(self, "editor", None)
+        if editor is None:
+            return
+        focused = self._wx.Window.FindFocus()
+        if focused is None:
+            return
+        containers: set[object] = {
+            getattr(self, "_main_splitter", None),
+            getattr(self, "_documents_panel", None),
+        }
+        for tab in getattr(self, "_document_tabs", []):
+            splitter = getattr(tab, "splitter", None)
+            if splitter is not None:
+                containers.add(splitter)
+        containers.discard(None)
+        if focused in containers:
+            editor.SetFocus()
 
     def _bind_editor_events(self, editor: object) -> None:
         binder = getattr(editor, "bind_editor_events", None)
@@ -3420,6 +3476,7 @@ class MainFrame(
         # The editor lives in a splitter so a live preview can be shown to its
         # right (View → Preview Side by Side). It starts unsplit (editor only).
         splitter = wx.SplitterWindow(panel, style=wx.SP_LIVE_UPDATE | wx.SP_3DSASH)
+        splitter.SetName("Editor area")
         splitter.SetMinimumPaneSize(160)
         editor = wx.TextCtrl(
             splitter,
@@ -20614,7 +20671,7 @@ class MainFrame(
         from quill.core.settings import save_settings
         from quill.ui.setup_wizard import run_setup_wizard
 
-        feature_manager: FeatureManager = self.feature_manager  # type: ignore[attr-defined]
+        feature_manager: FeatureManager = self.features
         changed = run_setup_wizard(
             self.frame, self.settings, feature_manager, show_modal_fn=self._show_modal_dialog
         )
