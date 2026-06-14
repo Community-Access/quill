@@ -1,5 +1,79 @@
 # Changelog
 
+## 0.6.0 — Sound Packs, Compare Mode, Code-Aware Editing, Encoding Tools (Unreleased)
+
+### New features
+
+- **QSP sound pack system.** A pluggable earcon engine: `quill/core/sound_pack.py`
+  loads a sound pack (a directory or `.qsp` zip with a `manifest.json` mapping
+  event IDs to WAV files), `quill/ui/sound_manager.py` plays them non-blocking,
+  and `quill/core/sound_events.py` is the canonical `SoundEvent` catalog. Ships
+  the synthesised **Ink** pack plus four **indentation-tone** packs (pentatonic,
+  whole-tone, diatonic, chromatic) that play a pitched tone as the caret crosses
+  indent levels. Partial packs and an overlay architecture let an indent-tone
+  pack layer over a primary pack. **Tools → Reading & Dictation → Sound Events...**
+  toggles individual events; **Toggle Sound Notifications** flips them all and
+  plays a confirming earcon. Quillins can contribute sounds via the host API.
+  Generators: `scripts/gen_ink_sounds.py`, `scripts/gen_indent_tones.py`.
+  Covered by `tests/unit/core/test_sound_pack.py`,
+  `tests/unit/platform/test_sound_player.py` (#181/#182/#184).
+- **Boxer-style compare mode.** `quill/core/compare_service.py` (pure difflib
+  engine) and `quill/ui/compare_dialog.py` (modal, screen-reader-first) add
+  keyboard difference review: F8/Shift+F8 next/previous, Ctrl+F8 re-announce,
+  Alt+F8 inline word changes, Ctrl+Shift+F8 whitespace toggle. Covered by
+  `tests/unit/core/test_compare_service.py` (#193/#194).
+- **Compare-mode sound events.** Five earcons — `compare_enter_mode`,
+  `compare_exit_mode`, `compare_next_difference`, `compare_previous_difference`,
+  `compare_no_more_differences` — fired across the compare dialog and the legacy
+  F8 session, with a Compare section in the Sound Events dialog. Covered by
+  `tests/unit/core/test_compare_sound_events.py` (#186).
+- **Code-aware editing.** `quill/core/language_profile.py` dispatches a language
+  profile by file extension (Python, JS/TS, Kotlin, Shell, Markdown, JSON, TOML,
+  SQL, plain fallback); `quill/core/token_nav.py` adds Next/Previous Token
+  navigation; **Navigate → Set Document Language** overrides detection. Covered
+  by `tests/unit/core/test_language_profile.py`, `test_token_nav.py` (#181).
+- **Text encoding tools.** `quill/core/encoding_tools.py` (wx-free) backs three
+  Format → HTML & Encoding commands: Show Non-ASCII Characters (review report
+  with Latin-1 / Windows-1252 convertibility), Convert Non-ASCII to HTML Entities
+  (named with numeric fallback), and Re-encode As (UTF-8 / UTF-8 BOM / Latin-1 /
+  Windows-1252 / ASCII, lossless via numeric-entity fallback). Covered by
+  `tests/unit/core/test_encoding_tools.py` (#197).
+- **Speak-status commands.** QUILL-key chords speak the window title
+  (`Ctrl+Shift+Grave, F`), the full file path (`, P`), and a status summary
+  (`, Q`) without leaving the editor (#189).
+- **CLI `--goto` and `--diff`.** `--goto FILE[:LINE[:COL]]` opens a file at a
+  position in one argument; `--diff LEFT RIGHT` opens two files straight into
+  compare mode. `_parse_goto` correctly handles Windows drive-letter paths (#192).
+- **Report a Bug enhancements.** The dialog opens focused on Summary and adds a
+  screen-reader picker (None / JAWS / NVDA / Narrator / VoiceOver / Other,
+  pre-selected from detection) plus remembered name and email fields, all sent
+  with the report (#188).
+- **Developer file extensions** added to the Open dialog wildcard (Kotlin, TS,
+  Go, Rust, and more) (#191); **file-open focus** now lands in the editor with a
+  screen-reader announcement (#187).
+- **HEIC/HEIF image support** for AI image description (#165).
+- **About screen** lists all GitHub contributors, fetched from the contributors
+  API with a baked-in offline fallback; Ken Perry and Kelly Ford added.
+
+### Bug fixes and security
+
+- **Describe Image** no longer fails silently — corrected an `AttributeError`
+  on the region-tracking call (#165).
+- **macOS: API keys and tokens persist via the login Keychain** instead of being
+  lost between sessions (#160).
+- **macOS notarized build** signs Pillow's bundled dylibs and uses
+  hardened-runtime entitlements, fixing notarization.
+- **Accessibility, user guide, WebView2 guard, and contributor credits** pass
+  (#183): WebView2 faults are caught and the preview control rebuilt rather than
+  crashing the side preview.
+- **Embedded Python build** bootstraps setuptools and fixes the LicenseFile path.
+- Internal sound-design notes moved out of the repo root (`x.md` → `docs/wsp.md`).
+
+### Governance
+
+- **Kelly Ford** added as a project owner (contributors list, CODEOWNERS, and
+  repo maintain access) alongside the existing maintainers.
+
 ## 0.5.0 — Developer Console, GitHub Integration, Keyboard Packs, Autoupdate (2026-06-12)
 
 ### New features
