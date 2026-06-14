@@ -17367,6 +17367,12 @@ class MainFrame(
         if session is None or not session.groups:
             self._set_status("No active compare session")
             return
+        from quill.ui import sound_manager
+
+        if len(session.groups) < 2:
+            sound_manager.post_sound("compare_no_more_differences")
+        else:
+            sound_manager.post_sound("compare_next_difference")
         session.current_index = (session.current_index + 1) % len(session.groups)
         self.compare_announce_difference()
 
@@ -17375,6 +17381,12 @@ class MainFrame(
         if session is None or not session.groups:
             self._set_status("No active compare session")
             return
+        from quill.ui import sound_manager
+
+        if len(session.groups) < 2:
+            sound_manager.post_sound("compare_no_more_differences")
+        else:
+            sound_manager.post_sound("compare_previous_difference")
         session.current_index = (session.current_index - 1) % len(session.groups)
         self.compare_announce_difference()
 
@@ -17485,6 +17497,9 @@ class MainFrame(
             self._compare_session = None
             return False
         self._compare_session = _CompareSession(source_documents=source_documents, groups=groups)
+        from quill.ui import sound_manager
+
+        sound_manager.post_sound("compare_enter_mode")
         self._set_status(
             f"Compare session started. {len(source_documents)} documents. "
             f"{len(groups)} differing line groups found. "

@@ -23,7 +23,7 @@
   "_next_target_main_frame": 15000,
   "_default_cap": 600,
   "budgets": {
-    "quill/ui/main_frame.py": 22195,
+    "quill/ui/main_frame.py": 22210,
     "quill/ui/assistant_tools.py": 1877,
     "quill/ui/assistant_panel.py": 725,
     "quill/ui/main_frame_power_tools.py": 802,
@@ -92,5 +92,6 @@
   "_rebaseline_2026_06_13j": "QSP completion: main_frame_quillins.py 610 -> 619 for register_quillin_sounds() call in _register_quillin_contributions (Quillin sound pack API). main_frame.py was 119 lines under its 21570 cap after this commit's additions; no rebaseline needed.",
   "_rebaseline_2026_06_13k": "Sound toggle + per-event dialog: main_frame_menu.py 2850 -> 2870 for _id_toggle_sound/_id_sound_events NewIdRefs, two menu items in Reading & Dictation, two EVT_MENU binds. toggle_sound() and open_sound_events_dialog() added to main_frame.py (still under budget). New file sound_events_dialog.py not tracked.",
   "_rebaseline_2026_06_13l": "Indent tone feedback (#182): settings.py 690 -> 693 for 4 new fields (indent_tone_enabled/mode/scale/direction_cue). settings_specs.py 1106 -> 1155 for 4 new SettingSpec entries with full choices lists. main_frame.py grows to 21549 (well under 21570 cap) for EVT_STC_UPDATEUI binding, _on_indent_tone_update and _indent_tones_active handlers, tab-switch level cache reset, and indent pack load/reload on settings change.",
-  "_rebaseline_2026_06_14_lang": "feat/indent-tones-and-code-nav (#185) merged with main: language profiles, token navigation, code-aware editing. Budgets re-measured to current sizes after integrating main (which advanced via #196 ken and #184 sound). Indent-tone settings consolidated to main's single indent_tone_scale model; #185's superseded indent_tone_enabled/mode/direction_cue dropped."
+  "_rebaseline_2026_06_14_lang": "feat/indent-tones-and-code-nav (#185) merged with main: language profiles, token navigation, code-aware editing. Budgets re-measured to current sizes after integrating main (which advanced via #196 ken and #184 sound). Indent-tone settings consolidated to main's single indent_tone_scale model; #185's superseded indent_tone_enabled/mode/direction_cue dropped.",
+  "_rebaseline_2026_06_14_compare_sound": "Compare-mode sound events (#186): 5 post_sound calls added to legacy compare session (_start_compare_session enter + next/prev) in main_frame.py. compare_dialog.py instrumented (enter/exit/next/prev/no-more). sound_events_dialog.py Compare section. main_frame.py 22195->22210."
 }

@@ -29,6 +29,11 @@
     "error":                  "error.wav",
     "warning":                "warning.wav",
     "sound_on":               "sound_on.wav",
-    "sound_off":              "sound_off.wav"
+    "sound_off":              "sound_off.wav",
+    "compare_enter_mode":         "compare_enter.wav",
+    "compare_exit_mode":          "compare_exit.wav",
+    "compare_next_difference":    "compare_next.wav",
+    "compare_previous_difference":"compare_prev.wav",
+    "compare_no_more_differences":"compare_none.wav"
   }
 }

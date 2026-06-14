@@ -103,10 +103,23 @@ class CompareDialog:
         if g0 is not None:
             self._show_group(g0)
 
+        self._post_sound("compare_enter_mode")
         wx.CallAfter(self._diff_list.SetFocus)
 
+    @staticmethod
+    def _post_sound(event_id: str) -> None:
+        """Post a compare earcon. Never raises; no-op if sound is off/uninit."""
+        try:
+            from quill.ui import sound_manager
+
+            sound_manager.post_sound(event_id)
+        except Exception:
+            pass
+
     def ShowModal(self) -> int:
-        return self.dialog.ShowModal()
+        result = self.dialog.ShowModal()
+        self._post_sound("compare_exit_mode")
+        return result
 
     def __enter__(self) -> CompareDialog:
         return self
@@ -123,9 +136,18 @@ class CompareDialog:
     # ------------------------------------------------------------------
 
     def _navigate(self, direction: int) -> None:
+        before = self._svc._cursor
         g = self._svc.next() if direction > 0 else self._svc.previous()
         if g is None:
+            self._post_sound("compare_no_more_differences")
             return
+        if self._svc._cursor == before:
+            # Cursor clamped at the first/last difference: nothing further this way.
+            self._post_sound("compare_no_more_differences")
+        else:
+            self._post_sound(
+                "compare_next_difference" if direction > 0 else "compare_previous_difference"
+            )
         self._show_group(g)
         # Sync the list selection.
         sel = g.index - 1

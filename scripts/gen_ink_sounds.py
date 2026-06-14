@@ -437,6 +437,48 @@ def generate_all() -> None:
     # -- sound_off: exact time-reverse of sound_on (notifications disabled) --
     write_wav("sound_off.wav", list(reversed(sound_on_samples)), vol=0.70)
 
+    # ------------------------------------------------------------------
+    # Compare mode (issue #186). Five distinct earcons; the enter/exit
+    # pair are time-reversals, next/previous are a high/low tick pair, and
+    # no-more is a soft low double-thud (a gentle "blocked" cue).
+    # ------------------------------------------------------------------
+
+    # -- compare_enter_mode: rising perfect fifth (opening a comparison) -----
+    compare_enter_samples = _concat(
+        _tone(523, 50, tri_at, _swell_env(4, 12, 0.4, 18)),
+        _silence(8),
+        _tone(784, 70, tri_at, _swell_env(4, 16, 0.35, 24)),
+    )
+    write_wav("compare_enter.wav", compare_enter_samples, vol=0.60)
+
+    # -- compare_exit_mode: exact time-reverse of enter (closing) ------------
+    write_wav("compare_exit.wav", list(reversed(compare_enter_samples)), vol=0.60)
+
+    # -- compare_next_difference: crisp high tick (move forward) -------------
+    write_wav(
+        "compare_next.wav",
+        _tone(740, 45, tri_at, _swell_env(2, 8, 0.3, 16)),
+        vol=0.55,
+    )
+
+    # -- compare_previous_difference: crisp low tick (move back) -------------
+    write_wav(
+        "compare_prev.wav",
+        _tone(523, 45, tri_at, _swell_env(2, 8, 0.3, 16)),
+        vol=0.55,
+    )
+
+    # -- compare_no_more_differences: soft low double-thud ("blocked") -------
+    def thud_env(i: int, n: int) -> float:
+        return exp_decay(i, 18) * edge(i, n, 3)
+
+    no_more_thud = _tone(196, 55, sine_at, thud_env)
+    write_wav(
+        "compare_none.wav",
+        _concat(no_more_thud, _silence(20), no_more_thud),
+        vol=0.55,
+    )
+
     print("Done.")
 
 

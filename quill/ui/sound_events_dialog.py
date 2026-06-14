@@ -55,6 +55,15 @@ _EARCON_ORDER: list[str] = [
     "sound_off",
 ]
 
+# Compare-mode events (issue #186) — shown only when the loaded pack maps them.
+_COMPARE_ORDER: list[str] = [
+    "compare_enter_mode",
+    "compare_exit_mode",
+    "compare_next_difference",
+    "compare_previous_difference",
+    "compare_no_more_differences",
+]
+
 # Indent level events — shown only when an indent tone pack is loaded.
 # Listed in ascending level order; each level has _up and _down variants.
 _INDENT_ORDER: list[str] = [
@@ -92,6 +101,11 @@ _EARCON_LABELS: dict[str, str] = {
     "warning": "Warning",
     "sound_on": "Sound notifications turned on",
     "sound_off": "Sound notifications turned off",
+    "compare_enter_mode": "Compare opened",
+    "compare_exit_mode": "Compare closed",
+    "compare_next_difference": "Compare: next difference",
+    "compare_previous_difference": "Compare: previous difference",
+    "compare_no_more_differences": "Compare: no more differences",
 }
 
 # Auto-generate labels for all 16 indent events.
@@ -133,6 +147,9 @@ class SoundEventsDialog(wx.Dialog):
         earcon_events = [
             eid for eid in _EARCON_ORDER if loaded_events is None or eid in loaded_events
         ]
+        compare_events = [
+            eid for eid in _COMPARE_ORDER if loaded_events is None or eid in loaded_events
+        ]
         indent_events = [
             eid for eid in _INDENT_ORDER if loaded_events is None or eid in loaded_events
         ]
@@ -140,7 +157,7 @@ class SoundEventsDialog(wx.Dialog):
 
         note = "Check events to enable their sound. Uncheck to silence individual events."
         if loaded_events is not None:
-            shown = len(earcon_events) + len(indent_events)
+            shown = len(earcon_events) + len(compare_events) + len(indent_events)
             total = len(loaded_events)
             if shown < total:
                 note += f" Showing {shown} of {total} events from the loaded pack."
@@ -156,6 +173,10 @@ class SoundEventsDialog(wx.Dialog):
 
         if earcon_events:
             self._add_section(scroll, inner, "Earcons", earcon_events, disabled)
+
+        if compare_events:
+            inner.AddSpacer(10)
+            self._add_section(scroll, inner, "Compare", compare_events, disabled)
 
         if has_indent:
             inner.AddSpacer(10)

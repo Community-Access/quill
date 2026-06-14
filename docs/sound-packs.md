@@ -149,6 +149,11 @@ parameters in the script.
 | `transcription_word_inserted` | Dictated word inserted |
 | `ssh_connected` | SSH connection established |
 | `ssh_disconnected` | SSH connection closed |
+| `compare_enter_mode` | A comparison is opened |
+| `compare_exit_mode` | A comparison is closed or dismissed |
+| `compare_next_difference` | Cursor moves to the next difference |
+| `compare_previous_difference` | Cursor moves to the previous difference |
+| `compare_no_more_differences` | Navigation reaches the first/last difference with no further to show |
 | `error` | Application error |
 | `warning` | Application warning |
 | `sound_on` | Sound notifications enabled |

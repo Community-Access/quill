@@ -69,6 +69,13 @@ class SoundEvent(StrEnum):
     INDENT_LEVEL_7_UP = "indent_level_7_up"
     INDENT_LEVEL_7_DOWN = "indent_level_7_down"
 
+    # Compare mode (issue #186)
+    COMPARE_ENTER_MODE = "compare_enter_mode"
+    COMPARE_EXIT_MODE = "compare_exit_mode"
+    COMPARE_NEXT_DIFFERENCE = "compare_next_difference"
+    COMPARE_PREVIOUS_DIFFERENCE = "compare_previous_difference"
+    COMPARE_NO_MORE_DIFFERENCES = "compare_no_more_differences"
+
     # System
     ERROR = "error"
     WARNING = "warning"
