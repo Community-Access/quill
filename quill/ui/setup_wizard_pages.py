@@ -517,6 +517,12 @@ class SetupWizardDialog(wx.Dialog):
         self.Fit()
         self.CentreOnParent()
         apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
+        # SetFocus() called during __init__ (before ShowModal) does not survive
+        # the Windows dialog-show sequence — the OS resets focus to the default
+        # button when the window becomes visible.  EVT_INIT_DIALOG fires after
+        # the window is fully initialised but just before it is shown, which is
+        # the correct point to direct initial focus.
+        self.Bind(wx.EVT_INIT_DIALOG, lambda _e: self._focus_nav_button())
 
     def _build_pages(self) -> list[wx.Panel]:
         return [
@@ -586,8 +592,18 @@ class SetupWizardDialog(wx.Dialog):
                 summary_page.update_summary(
                     self._settings, self._pending_overrides, self._feature_manager
                 )
+        self._focus_nav_button()
+
+    def _focus_nav_button(self) -> None:
+        # SetDefaultItem makes Enter trigger the active nav button regardless
+        # of which page control currently holds focus — without it, Windows
+        # picks Cancel as the default (because Next/Finish have no standard ID).
+        total = len(self._pages)
+        if self._current_page == total - 1:
+            self.SetDefaultItem(self._finish_btn)
             self._finish_btn.SetFocus()
         else:
+            self.SetDefaultItem(self._next_btn)
             self._next_btn.SetFocus()
 
     def _collect_current(self) -> None:

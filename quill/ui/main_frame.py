@@ -1190,20 +1190,49 @@ class MainFrame(
             self._wx.CallAfter(focus_target.SetFocus)
 
     def _run_deferred_startup_tasks(self) -> None:
+        _profile = os.environ.get("QUILL_PROFILE_STARTUP") == "1"
+        _times: list[tuple[str, float]] = []
+
         try:
             self._start_ipc_poll()
         except Exception:
             self._report_startup_task_failure("IPC poll")
-        try:
-            detection = detect_screen_reader()
-            if detection.detected:
-                self._set_status(
-                    f"Detected screen reader: {detection.name}. Adaptive hints enabled."
+        # detect_screen_reader() shells out to `tasklist`, which can take
+        # 400-600 ms on the UI thread.  Run it on a daemon thread and update
+        # the status bar via wx.CallAfter so the window is fully responsive
+        # while the subprocess runs.
+        _t = time.perf_counter()
+        _safe_mode_snap = self._safe_mode
+
+        def _sr_detect_worker() -> None:
+            t_worker = time.perf_counter()
+            try:
+                detection = detect_screen_reader()
+                if detection.detected:
+                    self._wx.CallAfter(
+                        self._set_status,
+                        f"Detected screen reader: {detection.name}. Adaptive hints enabled.",
+                    )
+                elif not _safe_mode_snap:
+                    self._wx.CallAfter(
+                        self._set_status,
+                        "Ready. Tip: press Ctrl+Shift+P for Command Palette.",
+                    )
+            except Exception:
+                pass
+            if _profile:
+                self._wx.CallAfter(
+                    _times.append,
+                    ("screen-reader detection (bg)", time.perf_counter() - t_worker),
                 )
-            elif not self._safe_mode:
-                self._set_status("Ready. Tip: press Ctrl+Shift+P for Command Palette.")
-        except Exception:
-            self._report_startup_task_failure("screen-reader detection")
+
+        import threading
+
+        threading.Thread(  # GATE-40-OK: one-shot tasklist probe; posts result via CallAfter.
+            target=_sr_detect_worker, daemon=True, name="sr-detect"
+        ).start()
+        if _profile:
+            _times.append(("screen-reader detection (dispatch)", time.perf_counter() - _t))
         # A first-run / onboarding step must NEVER take down the whole app on
         # launch. Previously an exception here propagated out of the wx CallAfter
         # handler and the app "crashed right away" after the startup tip, with
@@ -1236,10 +1265,14 @@ class MainFrame(
             # §8.2 TTS-FALLBACK-ANNOUNCE: show status prompt when TTS init failed.
             ("TTS fallback check", self._check_tts_fallback_on_startup),
         ):
+            _t = time.perf_counter() if _profile else 0.0
             try:
                 task()
             except Exception:
                 self._report_startup_task_failure(label)
+            if _profile:
+                _times.append((label, time.perf_counter() - _t))
+        _t = time.perf_counter() if _profile else 0.0
         if (
             getattr(self.settings, "auto_check_updates", False)
             and not self._safe_mode
@@ -1249,6 +1282,9 @@ class MainFrame(
                 self.check_for_updates(silent_no_update=True)
             except Exception:
                 self._report_startup_task_failure("update check")
+        if _profile:
+            _times.append(("update check", time.perf_counter() - _t))
+            self._write_startup_timing(_times)
 
     def _report_startup_task_failure(self, task_label: str) -> None:
         """Log a startup task's traceback to a findable file and keep going.
@@ -1276,6 +1312,19 @@ class MainFrame(
             f"Startup step '{task_label}' could not run; Quill is ready. "
             "See logs/startup-errors.log."
         )
+
+    def _write_startup_timing(self, times: list[tuple[str, float]]) -> None:
+        from quill.core.paths import app_data_dir
+
+        total = sum(e for _, e in times)
+        lines = [f"Startup task timing  (total {total * 1000:.0f} ms)\n", "=" * 50 + "\n"]
+        for label, elapsed in times:
+            pct = elapsed / total * 100 if total > 0 else 0
+            lines.append(f"  {label:<45} {elapsed * 1000:7.1f} ms  ({pct:.0f}%)\n")
+        out = app_data_dir() / "logs" / "startup_tasks.txt"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text("".join(lines), encoding="utf-8")
+        print(f"[profile] startup task timing -> {out}", flush=True)
 
     def _apply_startup_document_preference(self) -> None:
         if not self.settings.start_with_no_document_open:
@@ -17938,7 +17987,19 @@ class MainFrame(
             # web-surface governance gate (test_web_surface_governance.py).
             wv = wx.html2.WebView.New(sentinel)
 
+            # _alive guards both the EVT_WEBVIEW_LOADED callback and the
+            # 5-second fallback CallLater against calling methods on C++
+            # objects that have already been destroyed.  The parent frame
+            # may close (e.g. during startup profiling) before the fallback
+            # timer fires; EVT_WINDOW_DESTROY clears the flag so the
+            # CallLater becomes a no-op instead of an access violation.
+            _alive = [True]
+            sentinel.Bind(wx.EVT_WINDOW_DESTROY, lambda _e: _alive.__setitem__(0, False))
+
             def _cleanup(_evt: object = None) -> None:
+                if not _alive[0]:
+                    return
+                _alive[0] = False
                 try:
                     wv.Unbind(wx.html2.EVT_WEBVIEW_LOADED, handler=_cleanup)
                     sentinel.Destroy()
