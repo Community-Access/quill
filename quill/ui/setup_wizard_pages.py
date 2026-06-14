@@ -44,17 +44,11 @@ _log = logging.getLogger(__name__)
 
 
 class _WizardPage(wx.Panel):
-    """Base for all wizard page panels.
-
-    Sets the accessible name and binds EVT_SET_FOCUS to navigate forward,
-    preventing screen readers from announcing "panel" when Tab lands on the
-    container instead of one of its children.
-    """
+    """Base for all wizard page panels."""
 
     def __init__(self, parent: wx.Window, name: str) -> None:
         super().__init__(parent)
         self.SetName(name)
-        self.Bind(wx.EVT_SET_FOCUS, lambda e: wx.CallAfter(e.GetEventObject().Navigate))
 
 
 class _WelcomePage(_WizardPage):
@@ -517,12 +511,15 @@ class SetupWizardDialog(wx.Dialog):
         self.Fit()
         self.CentreOnParent()
         apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
-        # SetFocus() called during __init__ (before ShowModal) does not survive
-        # the Windows dialog-show sequence — the OS resets focus to the default
-        # button when the window becomes visible.  EVT_INIT_DIALOG fires after
-        # the window is fully initialised but just before it is shown, which is
-        # the correct point to direct initial focus.
-        self.Bind(wx.EVT_INIT_DIALOG, lambda _e: self._focus_nav_button())
+        # SetFocus() during __init__ doesn't survive the Windows dialog-show
+        # sequence.  EVT_INIT_DIALOG (WM_INITDIALOG) fires just before the
+        # window is shown, but Windows runs its own post-INITDIALOG focus reset
+        # afterward — overwriting our SetFocus call with the Cancel button.
+        # wx.CallAfter defers _focus_nav_button to the next event-loop tick,
+        # which runs AFTER Windows finishes its own initialisation, so our
+        # choice wins.  The Navigate() binding previously on _WizardPage panels
+        # was also removed: Navigate() without a focusable child calls wxBell().
+        self.Bind(wx.EVT_INIT_DIALOG, lambda _e: wx.CallAfter(self._focus_nav_button))
 
     def _build_pages(self) -> list[wx.Panel]:
         return [
