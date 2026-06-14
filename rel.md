@@ -46,17 +46,26 @@ If you have ever fought a file that was UTF-8 when the next tool wanted plain AS
 ## Smaller additions worth knowing
 
 - **Speak where you are.** From the QUILL key, press **F** to speak the window title, **P** to speak the full file path, or **Q** to speak a short status summary — without leaving the editor.
+- **Switch documents with Ctrl+Tab** (and Ctrl+Shift+Tab to go back), the shortcut your fingers already expect.
+- **Files open where you work.** Open and Save As now start in your Documents folder, and you can set your own default startup folder in Preferences — no more landing in the install directory.
 - **Launch straight to the spot.** `--goto FILE:LINE:COL` opens a file at a position in one argument (great when a linter or search result hands you a `file:line:column` string), and `--diff LEFT RIGHT` opens two files straight into compare mode.
 - **A friendlier bug report.** **Help → Report a Bug...** now opens focused on the Summary field, remembers your name and email so you only type them once, and asks which screen reader you use (pre-selected from what QUILL detects) so the team can reproduce reader-specific issues.
+- **Feature search finds more.** Searching the feature list now returns copy tray, macros, and abbreviations.
 - **More file types in Open**, including common developer extensions (Kotlin, TypeScript, Go, Rust, and more), and **HEIC/HEIF images** are now supported for AI image description.
 - **The About screen** now credits every GitHub contributor, including new project owner Kelly Ford and design contributor Ken Perry.
 
 ## Fixes that change the day-to-day
 
-- **Describe Image works again.** A small internal error was silently stopping the "Describe Image with AI" feature from running. It now completes as intended — the impact is that an accessibility feature blind users rely on is dependable again.
-- **macOS keeps your API keys.** On macOS, your AI provider keys and tokens are now stored in the login Keychain instead of being lost between sessions, so you set them up once. The broader impact is that on-device and cloud AI "just work" after the first setup.
-- **A steadier preview.** If the Windows WebView2 control faults, QUILL now catches the error and quietly rebuilds the preview instead of letting the side preview crash — so a flaky browser component no longer interrupts your writing.
-- **macOS builds install cleanly.** The notarized macOS build now signs its bundled image libraries and uses hardened-runtime entitlements, fixing notarization so the app installs without security warnings.
+This release also clears out a batch of accessibility and startup problems that got in the way day to day.
+
+- **Report a Bug actually accepts typing now.** Under NVDA, the bug-report fields were refusing keyboard input. The dialog has been rebuilt so every field is editable, and it moved to the Help menu where you would expect it. It also no longer freezes the app while it contacts the server — that work happens in the background with a timeout. The impact: reporting a problem is no longer itself a problem.
+- **JAWS stops saying "splitter window" and "panel."** Those stray announcements on menu close and when the app took focus are gone, because the invisible layout container is no longer exposed to your screen reader. Quieter focus changes mean less to wade through.
+- **Describe Image works again.** A small internal error was silently stopping the "Describe Image with AI" feature from running. It now completes as intended — an accessibility feature blind users rely on is dependable again.
+- **Faster, quieter startup.** Screen-reader detection now runs in the background instead of stalling the first window, a crash in the preview warm-up is fixed, and the title bar no longer flashes "untitled Quill unavailable" before the app is ready. The preview pane also no longer hangs for minutes with no way to close it.
+- **A reliable first run.** The first window now comes to the foreground so the trust and privacy dialog is reachable, and you can re-open the personalization wizard later if you skipped it. The wizard's startup beep and its Cancel-button focus are fixed too.
+- **The user guide opens the right way.** It now opens as a read-only page in your browser instead of as an editable Markdown document you could accidentally change — and a stray edit can no longer throw a `0x8007139f` browser error. A glossary of QUILL terms was added to the guide as well.
+- **macOS keeps your API keys.** Saving an Ask Quill API key on macOS used to crash; keys and tokens are now stored in the login Keychain, so you set them up once and on-device or cloud AI just works.
+- **macOS builds install cleanly.** The notarized macOS build now signs its bundled image libraries and uses hardened-runtime entitlements, so the app installs without security warnings.
 
 ## Things that work a little differently now
 

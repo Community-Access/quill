@@ -4619,29 +4619,131 @@ current selection without first opening the full-document dialog.</li>
 <code>Statistics — Selection</code>.</li>
 <li>Reassignable like any other binding.</li>
 </ul>
-<h3 id="570-audio-cue-catalogue-opt-in">5.70 Audio cue catalogue
-(opt-in)</h3>
+<h3 id="570-sound-notifications-and-qsp-sound-packs-opt-in">5.70 Sound
+notifications and QSP sound packs (opt-in)</h3>
+<p>QUILL plays short, screen-reader-respectful audio cues (earcons) at
+meaningful editing moments. The system is built around <strong>QSP
+(QUILL Sound Packs)</strong>: swappable bundles that map event IDs to
+audio files. Playback is non-blocking, fire-and-forget, and pre-buffered
+so there is no perceptible lag between event and sound. Earcons
+supplement speech; they never replace it. (This section absorbs the
+former <code>docs/wsp.md</code> sound-design notes and
+<code>docs/sound-packs.md</code> pack guide.)</p>
+<h4 id="5701-qsp-format">5.70.1 QSP format</h4>
+<p>A <code>.qsp</code> file is a ZIP archive whose root holds
+<code>manifest.json</code> and the referenced WAV files. During
+development a directory with the same layout is accepted; the loader
+treats a directory and a ZIP identically. The manifest is validated at
+load time against <code>quill/core/schemas/sound_pack.json</code>:</p>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;format&quot;</span><span class="fu">:</span> <span class="st">&quot;qsp&quot;</span><span class="fu">,</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;version&quot;</span><span class="fu">:</span> <span class="st">&quot;1&quot;</span><span class="fu">,</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;Ink&quot;</span><span class="fu">,</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;author&quot;</span><span class="fu">:</span> <span class="st">&quot;Jeff Bishop&quot;</span><span class="fu">,</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;description&quot;</span><span class="fu">:</span> <span class="st">&quot;Crisp synthesised earcons for focused writing.&quot;</span><span class="fu">,</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;license&quot;</span><span class="fu">:</span> <span class="st">&quot;CC0&quot;</span><span class="fu">,</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;events&quot;</span><span class="fu">:</span> <span class="fu">{</span> <span class="dt">&quot;abbreviation_expanded&quot;</span><span class="fu">:</span> <span class="st">&quot;expand.wav&quot;</span><span class="fu">,</span> <span class="dt">&quot;document_saved&quot;</span><span class="fu">:</span> <span class="st">&quot;save.wav&quot;</span> <span class="fu">}</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>Any event key absent from the manifest is silently skipped (no sound,
+no error), which allows minimal <strong>partial packs</strong> that
+cover only a subset of events. The QSP schema places no constraint on
+event-key names, so a Quillin can register additional event IDs and ship
+its own pack.</p>
+<h4 id="5702-event-taxonomy">5.70.2 Event taxonomy</h4>
+<p>Canonical event IDs are defined as a <code>StrEnum</code> in
+<code>quill/core/sound_events.py</code> (no <code>wx</code>, no platform
+code). Groups: <strong>Editing</strong>
+(<code>abbreviation_expanded</code>, <code>abbreviation_deleted</code>,
+<code>snippet_inserted</code>, <code>autocomplete_accepted</code>,
+<code>word_corrected</code>), <strong>Document lifecycle</strong>
+(<code>document_created/saved/closed</code>),
+<strong>Navigation</strong> (<code>heading_jumped</code>,
+<code>table_entered</code>, <code>list_entered</code>,
+<code>browse_mode_on/off</code>), <strong>Search</strong>
+(<code>search_found/not_found/wrapped</code>), <strong>AI and
+transcription</strong> (<code>ai_thinking_started</code>,
+<code>ai_response_received</code>, <code>ai_error</code>,
+<code>transcription_started/stopped/word_inserted</code>),
+<strong>Connectivity</strong> (<code>ssh_connected/disconnected</code>),
+<strong>Compare</strong> (<code>compare_enter_mode</code>,
+<code>compare_exit_mode</code>, <code>compare_next_difference</code>,
+<code>compare_previous_difference</code>,
+<code>compare_no_more_differences</code>), <strong>Indentation
+tones</strong> (<code>indent_level_0..7_up</code> / <code>_down</code>),
+and <strong>System</strong> (<code>error</code>, <code>warning</code>,
+<code>sound_on</code>, <code>sound_off</code>). The complete table with
+triggers is maintained in this section's source and surfaced to pack
+authors via the Sound Events dialog.</p>
+<h4 id="5703-audio-file-requirements">5.70.3 Audio file
+requirements</h4>
 <ul>
-<li>A small set of subtle, brief, screen-reader-respectful audio cues.
-Off by default; settings live in <code>Settings → Sounds</code>.</li>
-<li>Catalogue (v1.0):
-<ul>
-<li><strong>Save success</strong> — 80 ms soft click at 600 Hz.</li>
-<li><strong>Save failure</strong> — 120 ms low descending pair.</li>
-<li><strong>Find: no match</strong> — 100 ms muted tick at 400 Hz.</li>
-<li><strong>Autosave snapshot taken</strong> — 60 ms whisper at 800 Hz
-(the quietest cue).</li>
-<li><strong>Background task complete</strong> — 120 ms two-tone
-chime.</li>
-</ul></li>
-<li>All cues are ≤ 120 ms, share a single low-default volume slider, and
-<strong>duck</strong> automatically while a screen reader is speaking
-(detected via the SR detection layer, 10.1).</li>
-<li>Cues are PCM data bundled with the app, played via
-<code>winsound.PlaySound</code> with <code>SND_ASYNC | SND_MEMORY</code>
-so they never block.</li>
-<li>Per-cue on/off in Settings.</li>
+<li>Format: <strong>WAV</strong> (PCM, 16-bit, 44100 Hz, mono) — plays
+from memory with no decode step, the key to zero-lag earcons.</li>
+<li>Duration: earcons 50–150 ms; state-change sounds (browse mode, SSH)
+up to 300 ms; nothing longer.</li>
+<li>Headroom: normalize to about −6 dBFS so the volume control stays
+meaningful.</li>
+<li>OGG/MP3 are not accepted for core events because codec init adds
+20–80 ms of jitter on first play.</li>
+<li>Every scripted earcon in a bundled pack must be <strong>acoustically
+unique</strong> — no two events share an identical sound (audited
+byte-wise and by manifest mapping).</li>
 </ul>
+<h4 id="5704-cross-platform-backend">5.70.4 Cross-platform backend</h4>
+<p><code>quill/platform/sound_player.py</code> auto-detects the best
+backend at startup: (1) <code>_SoundLibBackend</code> (BASS via the
+MIT-licensed <code>accessibleapps/sound_lib</code>, all platforms,
+native mixing); (2) <code>_WinsoundBackend</code> (Windows stdlib,
+serialising queue); (3) <code>_NullBackend</code>.
+<code>sound_lib</code> is an optional extra
+(<code>pip install quill[audio]</code>); absent it, QUILL falls back to
+<code>winsound</code> on Windows or stays silent elsewhere. Any object
+satisfying the <code>_WavBackend</code> protocol
+(<code>play_wav(bytes)</code>, <code>shutdown(timeout)</code>) can be
+injected, which is how tests use a synchronous recording backend.</p>
+<h4 id="5705-module-layout-and-posting">5.70.5 Module layout and
+posting</h4>
+<p><code>sound_events.py</code> (enum) → <code>sound_pack.py</code> (QSP
+loader + validator; reads every WAV into bytes at load, zero disk I/O at
+play time) → <code>sound_player.py</code> (<code>SoundPlayer</code>: 80
+ms per-event cooldown, mute toggle, per-event disable list) →
+<code>quill/ui/sound_manager.py</code> (singleton wired to settings and
+a custom wx event). Any module posts a sound without importing
+<code>wx</code>:</p>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.sound_events <span class="im">import</span> SoundEvent</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.ui.sound_manager <span class="im">import</span> post_sound</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>post_sound(SoundEvent.ABBREVIATION_EXPANDED)   <span class="co"># thread-safe, &lt; 1 ms, no-op if disabled</span></span></code></pre></div>
+<h4 id="5706-indentation-tones-and-overlay-packs">5.70.6 Indentation
+tones and overlay packs</h4>
+<p>For code, an <strong>indent-tone pack</strong> maps the 16
+<code>indent_level_N_up/down</code> events to pitched tones so the caret
+crossing indent levels rises and falls in pitch. Four scales ship —
+pentatonic, whole-tone, diatonic, chromatic — generated by
+<code>scripts/gen_indent_tones.py</code>. An indent-tone pack
+<strong>overlays</strong> a primary earcon pack, so the user can
+combine, say, the Ink earcons with pentatonic indent tones. The
+<code>indent_tone_scale</code> setting (empty = off) selects the scale;
+blank lines stay silent and hold the previous level.</p>
+<h4 id="5707-settings-packs-and-quillins">5.70.7 Settings, packs, and
+Quillins</h4>
+<p>Settings (group <code>accessibility</code>):
+<code>sound_enabled</code> (bool), <code>sound_pack_path</code> (text;
+empty = bundled <strong>Ink</strong> pack), <code>sound_volume</code>
+(0–100), <code>sound_events_disabled</code> (comma-separated IDs),
+<code>indent_tone_scale</code> (choice). A global mute is bound to the
+<code>sound.toggle_mute</code> keymap action. The bundled
+<strong>Ink</strong> pack ships in the wheel at
+<code>quill/assets/sound_packs/ink/</code> (generated by
+<code>scripts/gen_ink_sounds.py</code>). A Quillin manifest may declare
+a <code>sound_pack</code> directory and <code>sound_events</code> map;
+the runner registers those IDs with <code>SoundManager</code> at load
+time, and the user can silence them individually via
+<code>sound_events_disabled</code>.</p>
+<h4 id="5708-safe-mode">5.70.8 Safe mode</h4>
+<p>When <code>QUILL_SAFE_MODE=1</code>, <code>SoundPlayer.play()</code>
+is a no-op, keeping safe mode strictly minimal-resource.</p>
 <h3 id="571-quiet-mode">5.71 Quiet mode</h3>
 <ul>
 <li><code>View → Quiet Mode</code> (<code>Ctrl+Alt+Q</code> by default)
@@ -5424,18 +5526,18 @@ Prompt Quill Pack (.pqp) — shareable prompt collections</h3>
 <p>A <code>.pqp</code> (Prompt Quill Pack) file is a JSON document that
 packages a named collection of prompts for sharing or backup.</p>
 <p><strong>File format.</strong></p>
-<div class="sourceCode" id="cb20"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;schema&quot;</span><span class="fu">:</span> <span class="st">&quot;quill.prompt-pack/1&quot;</span><span class="fu">,</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;My Writing Prompts&quot;</span><span class="fu">,</span></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;prompts&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;Make Punchy&quot;</span><span class="fu">,</span></span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;text&quot;</span><span class="fu">:</span> <span class="st">&quot;Rewrite this as a punchy one-liner: {selection}&quot;</span><span class="fu">,</span></span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;category&quot;</span><span class="fu">:</span> <span class="st">&quot;Editing&quot;</span></span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;schema&quot;</span><span class="fu">:</span> <span class="st">&quot;quill.prompt-pack/1&quot;</span><span class="fu">,</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;My Writing Prompts&quot;</span><span class="fu">,</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;prompts&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;Make Punchy&quot;</span><span class="fu">,</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;text&quot;</span><span class="fu">:</span> <span class="st">&quot;Rewrite this as a punchy one-liner: {selection}&quot;</span><span class="fu">,</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;category&quot;</span><span class="fu">:</span> <span class="st">&quot;Editing&quot;</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 <p><strong>Import.</strong> Via the Import .pqp button in the Prompt
 Library dialog. Prompts whose name already exists in the library are
 skipped; the count of newly added prompts is announced.</p>
@@ -5511,38 +5613,38 @@ the UI layer's responsibility.</li>
 predictable.</li>
 </ul>
 <p><strong>File format (<code>quill.skill/1</code>).</strong></p>
-<div class="sourceCode" id="cb21"><pre
-class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="an">schema:</span><span class="co"> quill.skill/1</span></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="an">name:</span><span class="co"> Research and Draft</span></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="an">description:</span><span class="co"> Extracts topic, gathers facts, drafts a paragraph.</span></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> QUILL Project</span></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="an">version:</span><span class="co"> 1.0.0</span></span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="an">parameters:</span></span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="co">  - name: tone</span></span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a><span class="co">    label: Tone</span></span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a><span class="co">    type: choice</span></span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a><span class="co">    choices: [formal, conversational, neutral]</span></span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a><span class="co">    default: neutral</span></span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 1: Extract topic</span></span>
-<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>Identify the main topic in: {selection}</span>
-<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 2: Research</span></span>
-<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>List five facts about &quot;{step1.output}&quot;.</span>
-<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 3: Draft</span></span>
-<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>Write a {parameters.tone} paragraph weaving in those facts.</span>
-<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>Facts: {step2.output}</span>
-<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a><span class="in">```output</span></span>
-<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a><span class="in">format: text</span></span>
-<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a><span class="in">label: Drafted paragraph</span></span>
-<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a><span class="in">accept_into: selection</span></span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="an">schema:</span><span class="co"> quill.skill/1</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="an">name:</span><span class="co"> Research and Draft</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="an">description:</span><span class="co"> Extracts topic, gathers facts, drafts a paragraph.</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> QUILL Project</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="an">version:</span><span class="co"> 1.0.0</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="an">parameters:</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="co">  - name: tone</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a><span class="co">    label: Tone</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a><span class="co">    type: choice</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a><span class="co">    choices: [formal, conversational, neutral]</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a><span class="co">    default: neutral</span></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 1: Extract topic</span></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>Identify the main topic in: {selection}</span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 2: Research</span></span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>List five facts about &quot;{step1.output}&quot;.</span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 3: Draft</span></span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>Write a {parameters.tone} paragraph weaving in those facts.</span>
+<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a>Facts: {step2.output}</span>
+<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a><span class="in">```output</span></span>
+<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a><span class="in">format: text</span></span>
+<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a><span class="in">label: Drafted paragraph</span></span>
+<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a><span class="in">accept_into: selection</span></span></code></pre></div>
 <pre><code>
 **Special blocks inside steps:**
 
@@ -5836,17 +5938,17 @@ off by default in the profile selector but available to install.</li>
 <h3 id="87-storage-format">8.7 Storage format</h3>
 <p><code>keymap.json</code> is plain JSON, human readable, version
 controlled friendly:</p>
-<div class="sourceCode" id="cb24"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;version&quot;</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;profile&quot;</span><span class="fu">:</span> <span class="st">&quot;System&quot;</span><span class="fu">,</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;bindings&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span> <span class="dt">&quot;command&quot;</span><span class="fu">:</span> <span class="st">&quot;quill.editor.save&quot;</span><span class="fu">,</span> <span class="dt">&quot;key&quot;</span><span class="fu">:</span> <span class="st">&quot;Ctrl+S&quot;</span><span class="fu">,</span> <span class="dt">&quot;when&quot;</span><span class="fu">:</span> <span class="st">&quot;editor&quot;</span> <span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span> <span class="dt">&quot;command&quot;</span><span class="fu">:</span> <span class="st">&quot;quill.palette.open&quot;</span><span class="fu">,</span> <span class="dt">&quot;key&quot;</span><span class="fu">:</span> <span class="st">&quot;Ctrl+Shift+P&quot;</span><span class="fu">,</span> <span class="dt">&quot;when&quot;</span><span class="fu">:</span> <span class="st">&quot;global&quot;</span> <span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span> <span class="dt">&quot;command&quot;</span><span class="fu">:</span> <span class="st">&quot;quill.spell.checkDocument&quot;</span><span class="fu">,</span> <span class="dt">&quot;key&quot;</span><span class="fu">:</span> <span class="st">&quot;F7&quot;</span><span class="fu">,</span> <span class="dt">&quot;when&quot;</span><span class="fu">:</span> <span class="st">&quot;editor&quot;</span> <span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span> <span class="dt">&quot;command&quot;</span><span class="fu">:</span> <span class="st">&quot;quill.editor.gotoLine&quot;</span><span class="fu">,</span> <span class="dt">&quot;key&quot;</span><span class="fu">:</span> <span class="st">&quot;Ctrl+G&quot;</span><span class="fu">,</span> <span class="dt">&quot;when&quot;</span><span class="fu">:</span> <span class="st">&quot;editor &amp;&amp; !format:pdf&quot;</span> <span class="fu">}</span></span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;version&quot;</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;profile&quot;</span><span class="fu">:</span> <span class="st">&quot;System&quot;</span><span class="fu">,</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;bindings&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span> <span class="dt">&quot;command&quot;</span><span class="fu">:</span> <span class="st">&quot;quill.editor.save&quot;</span><span class="fu">,</span> <span class="dt">&quot;key&quot;</span><span class="fu">:</span> <span class="st">&quot;Ctrl+S&quot;</span><span class="fu">,</span> <span class="dt">&quot;when&quot;</span><span class="fu">:</span> <span class="st">&quot;editor&quot;</span> <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span> <span class="dt">&quot;command&quot;</span><span class="fu">:</span> <span class="st">&quot;quill.palette.open&quot;</span><span class="fu">,</span> <span class="dt">&quot;key&quot;</span><span class="fu">:</span> <span class="st">&quot;Ctrl+Shift+P&quot;</span><span class="fu">,</span> <span class="dt">&quot;when&quot;</span><span class="fu">:</span> <span class="st">&quot;global&quot;</span> <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span> <span class="dt">&quot;command&quot;</span><span class="fu">:</span> <span class="st">&quot;quill.spell.checkDocument&quot;</span><span class="fu">,</span> <span class="dt">&quot;key&quot;</span><span class="fu">:</span> <span class="st">&quot;F7&quot;</span><span class="fu">,</span> <span class="dt">&quot;when&quot;</span><span class="fu">:</span> <span class="st">&quot;editor&quot;</span> <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span> <span class="dt">&quot;command&quot;</span><span class="fu">:</span> <span class="st">&quot;quill.editor.gotoLine&quot;</span><span class="fu">,</span> <span class="dt">&quot;key&quot;</span><span class="fu">:</span> <span class="st">&quot;Ctrl+G&quot;</span><span class="fu">,</span> <span class="dt">&quot;when&quot;</span><span class="fu">:</span> <span class="st">&quot;editor &amp;&amp; !format:pdf&quot;</span> <span class="fu">}</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 <h3 id="88-import-export-sync">8.8 Import, export, sync</h3>
 <ul>
 <li>Export the active keymap to a single JSON file.</li>
@@ -9664,17 +9766,17 @@ avoid accidental commits.</p>
 <h3 id="258-remote-origin-metadata">§25.8 Remote Origin Metadata</h3>
 <p>When a file is opened from GitHub, QUILL stores a
 <code>RemoteOrigin</code> dataclass keyed by the local temp path:</p>
-<div class="sourceCode" id="cb30"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>RemoteOrigin(</span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>    provider<span class="op">=</span><span class="st">&quot;github&quot;</span>,</span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    account_id<span class="op">=</span><span class="st">&quot;github:login&quot;</span>,</span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>    repository<span class="op">=</span><span class="st">&quot;owner/repo&quot;</span>,</span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>    ref<span class="op">=</span><span class="st">&quot;main&quot;</span>,</span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>    path<span class="op">=</span><span class="st">&quot;docs/example.md&quot;</span>,</span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>    sha<span class="op">=</span><span class="st">&quot;abc123...&quot;</span>,</span>
-<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>    url<span class="op">=</span><span class="st">&quot;https://github.com/owner/repo/blob/main/docs/example.md&quot;</span>,</span>
-<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>    opened_at<span class="op">=</span><span class="st">&quot;2026-06-12T...&quot;</span></span>
-<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>RemoteOrigin(</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>    provider<span class="op">=</span><span class="st">&quot;github&quot;</span>,</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    account_id<span class="op">=</span><span class="st">&quot;github:login&quot;</span>,</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    repository<span class="op">=</span><span class="st">&quot;owner/repo&quot;</span>,</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>    ref<span class="op">=</span><span class="st">&quot;main&quot;</span>,</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>    path<span class="op">=</span><span class="st">&quot;docs/example.md&quot;</span>,</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    sha<span class="op">=</span><span class="st">&quot;abc123...&quot;</span>,</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>    url<span class="op">=</span><span class="st">&quot;https://github.com/owner/repo/blob/main/docs/example.md&quot;</span>,</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>    opened_at<span class="op">=</span><span class="st">&quot;2026-06-12T...&quot;</span></span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 <p>The tab's <code>source_label</code> is set to
 <code>GitHub: owner/repo (branch)</code> and shown in the title bar.</p>
 <h3 id="259-security-properties">§25.9 Security Properties</h3>
@@ -9967,9 +10069,9 @@ in through a pull request.</li>
 <h3 id="regenerating-locally">Regenerating locally</h3>
 <p>When the workflow or the parity guard reports a stale artifact,
 regenerate it with the same Pandoc invocations CI uses:</p>
-<div class="sourceCode" id="cb31"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pandoc</span> <span class="op">&lt;</span>source<span class="op">&gt;</span>.md <span class="at">-f</span> gfm <span class="at">-t</span> html5 <span class="at">-s</span> <span class="at">-o</span> <span class="op">&lt;</span>source<span class="op">&gt;</span>.html</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pandoc</span> <span class="op">&lt;</span>source<span class="op">&gt;</span>.md <span class="at">-f</span> gfm <span class="at">-t</span> epub3      <span class="at">-o</span> <span class="op">&lt;</span>source<span class="op">&gt;</span>.epub</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pandoc</span> <span class="op">&lt;</span>source<span class="op">&gt;</span>.md <span class="at">-f</span> gfm <span class="at">-t</span> html5 <span class="at">-s</span> <span class="at">-o</span> <span class="op">&lt;</span>source<span class="op">&gt;</span>.html</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pandoc</span> <span class="op">&lt;</span>source<span class="op">&gt;</span>.md <span class="at">-f</span> gfm <span class="at">-t</span> epub3      <span class="at">-o</span> <span class="op">&lt;</span>source<span class="op">&gt;</span>.epub</span></code></pre></div>
 <p>Commit both artifacts with the source (through a pull request for
 <code>main</code>).</p>
 <h2 id="workflow-linting-workflow-lint">Workflow linting
@@ -10021,13 +10123,13 @@ certificate and a <code>notarytool</code> keychain profile
 (<code>xcrun notarytool store-credentials</code>).</li>
 </ul>
 <h2 id="build">Build</h2>
-<div class="sourceCode" id="cb32"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> scripts/setup_macos.py py2app   <span class="co"># -&gt; dist/Quill.app</span></span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> scripts/setup_macos.py py2app   <span class="co"># -&gt; dist/Quill.app</span></span></code></pre></div>
 <h2 id="sign-notarize-package">Sign, notarize, package</h2>
-<div class="sourceCode" id="cb33"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">IDENTITY</span><span class="op">=</span><span class="st">&quot;Developer ID Application: Your Name (TEAMID)&quot;</span></span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">NOTARY_PROFILE</span><span class="op">=</span><span class="st">&quot;quill-notary&quot;</span></span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./scripts/build_macos.sh</span>              <span class="co"># -&gt; dist/Quill.dmg (signed, notarized, stapled)</span></span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">IDENTITY</span><span class="op">=</span><span class="st">&quot;Developer ID Application: Your Name (TEAMID)&quot;</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">NOTARY_PROFILE</span><span class="op">=</span><span class="st">&quot;quill-notary&quot;</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./scripts/build_macos.sh</span>              <span class="co"># -&gt; dist/Quill.dmg (signed, notarized, stapled)</span></span></code></pre></div>
 <h2 id="platform-adapters-macos">Platform adapters (macOS)</h2>
 <ul>
 <li>App entry point: <code>quill/platform/macos/macos_app.py</code>
@@ -10503,15 +10605,15 @@ straight into the "Personalise QUILL" wizard with the user's detected
 screen reader.</li>
 </ul>
 <h2 id="build-and-verify">Build and verify</h2>
-<div class="sourceCode" id="cb34"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Regenerate the committed installer script after editing the generator:</span></span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>c <span class="st">&quot;from scripts.build_windows_distribution import build_inno_setup_script; from pathlib import Path; Path(&#39;installer/quill.iss&#39;).write_text(build_inno_setup_script(&#39;0.5.0&#39;), encoding=&#39;utf-8&#39;)&quot;</span></span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Full distribution build (bundled Python + optional tools), then compile:</span></span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>build_windows_distribution<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>bundle-python <span class="op">--</span>compile-installer</span>
-<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Guard tests:</span></span>
-<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m pytest tests<span class="op">/</span>unit<span class="op">/</span>scripts<span class="op">/</span>test_build_windows_distribution<span class="op">.</span><span class="fu">py</span> <span class="op">-</span>q</span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Regenerate the committed installer script after editing the generator:</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>c <span class="st">&quot;from scripts.build_windows_distribution import build_inno_setup_script; from pathlib import Path; Path(&#39;installer/quill.iss&#39;).write_text(build_inno_setup_script(&#39;0.5.0&#39;), encoding=&#39;utf-8&#39;)&quot;</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Full distribution build (bundled Python + optional tools), then compile:</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>build_windows_distribution<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>bundle-python <span class="op">--</span>compile-installer</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Guard tests:</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m pytest tests<span class="op">/</span>unit<span class="op">/</span>scripts<span class="op">/</span>test_build_windows_distribution<span class="op">.</span><span class="fu">py</span> <span class="op">-</span>q</span></code></pre></div>
 <hr />
 <!-- Source: docs/engineering/blocked-items-completion-guide.md -->
 
@@ -10908,28 +11010,28 @@ id="prerequisite-install-the-inno-setup-6-compiler-iscc">Prerequisite:
 install the Inno Setup 6 compiler (ISCC)</h4>
 <p>The build box does <strong>not</strong> currently have ISCC. Install
 it once:</p>
-<div class="sourceCode" id="cb35"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>winget install <span class="op">--</span>id JRSoftware<span class="op">.</span><span class="fu">InnoSetup</span> <span class="op">--</span>source winget</span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>winget install <span class="op">--</span>id JRSoftware<span class="op">.</span><span class="fu">InnoSetup</span> <span class="op">--</span>source winget</span></code></pre></div>
 <p>Confirm it resolves (either of these should print a path):</p>
-<div class="sourceCode" id="cb36"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Get-Command</span> ISCC<span class="op">.</span><span class="fu">exe</span> <span class="op">-</span>ErrorAction SilentlyContinue</span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="op">@(</span><span class="st">&quot;C:\Program Files (x86)\Inno Setup 6\ISCC.exe&quot;</span><span class="op">,</span></span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;C:\Program Files\Inno Setup 6\ISCC.exe&quot;</span><span class="op">)</span> <span class="op">|</span> <span class="fu">Where-Object</span> <span class="op">{</span> <span class="fu">Test-Path</span> <span class="va">$_</span> <span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Get-Command</span> ISCC<span class="op">.</span><span class="fu">exe</span> <span class="op">-</span>ErrorAction SilentlyContinue</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="op">@(</span><span class="st">&quot;C:\Program Files (x86)\Inno Setup 6\ISCC.exe&quot;</span><span class="op">,</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;C:\Program Files\Inno Setup 6\ISCC.exe&quot;</span><span class="op">)</span> <span class="op">|</span> <span class="fu">Where-Object</span> <span class="op">{</span> <span class="fu">Test-Path</span> <span class="va">$_</span> <span class="op">}</span></span></code></pre></div>
 <h4 id="step-1--build-the-portable-bundle--installer">Step 1 — Build the
 portable bundle + installer</h4>
 <p>From the repo root, with the venv active:</p>
-<div class="sourceCode" id="cb37"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Build the portable tree, regenerate installer/quill.iss, and compile the</span></span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="co"># installer in one pass. --bundle-python makes the result self-contained.</span></span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m scripts<span class="op">.</span><span class="fu">build_windows_distribution</span> <span class="op">--</span>bundle-python <span class="op">--</span>compile-installer</span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Build the portable tree, regenerate installer/quill.iss, and compile the</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="co"># installer in one pass. --bundle-python makes the result self-contained.</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m scripts<span class="op">.</span><span class="fu">build_windows_distribution</span> <span class="op">--</span>bundle-python <span class="op">--</span>compile-installer</span></code></pre></div>
 <p>Expected:
 <code>windows-distribution\installer\Quill-Setup-&lt;version&gt;.exe</code>
 (and/or <code>...\Output\Quill-Setup-&lt;version&gt;.exe</code>) is
 produced. If <code>--compile-installer</code> is not wired as a flag in
 your build, compile manually:</p>
-<div class="sourceCode" id="cb38"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="st">&quot;C:\Program Files (x86)\Inno Setup 6\ISCC.exe&quot;</span> `</span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  windows-distribution\installer\quill<span class="op">.</span><span class="fu">iss</span></span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="st">&quot;C:\Program Files (x86)\Inno Setup 6\ISCC.exe&quot;</span> `</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  windows-distribution\installer\quill<span class="op">.</span><span class="fu">iss</span></span></code></pre></div>
 <h4 id="step-2--install-with-the-send-to-quill-verbs-enabled">Step 2 —
 Install with the "Send to Quill" verbs enabled</h4>
 <ol type="1">
@@ -10987,10 +11089,10 @@ other user is affected.</p>
 </blockquote>
 <h4 id="step-4--confirm-the-registry-keys-exist-optional-precise">Step 4
 — Confirm the registry keys exist (optional, precise)</h4>
-<div class="sourceCode" id="cb39"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Should list a &quot;Quill.ocr&quot; subkey with a (default) value of &quot;OCR with Quill&quot;</span></span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>reg query <span class="st">&quot;HKCU\Software\Classes\SystemFileAssociations\.png\shell\Quill.ocr&quot;</span> <span class="op">/</span>ve</span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>reg query <span class="st">&quot;HKCU\Software\Classes\SystemFileAssociations\.png\shell\Quill.ocr\command&quot;</span> <span class="op">/</span>ve</span></code></pre></div>
+<div class="sourceCode" id="cb41"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Should list a &quot;Quill.ocr&quot; subkey with a (default) value of &quot;OCR with Quill&quot;</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>reg query <span class="st">&quot;HKCU\Software\Classes\SystemFileAssociations\.png\shell\Quill.ocr&quot;</span> <span class="op">/</span>ve</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>reg query <span class="st">&quot;HKCU\Software\Classes\SystemFileAssociations\.png\shell\Quill.ocr\command&quot;</span> <span class="op">/</span>ve</span></code></pre></div>
 <p>The <code>\command</code> default value should be:
 <code>"&lt;install&gt;\run-quill.cmd" --action ocr "%1"</code>.</p>
 <h4 id="step-5--uninstall-and-confirm-clean-removal">Step 5 — Uninstall
@@ -11933,9 +12035,9 @@ Mark betas as <code>prerelease: true</code> in the GitHub release
 <h2 id="building-a-windows-release">Building a Windows release</h2>
 <p>The build workflow (<code>windows-release.yml</code>) runs on
 <code>push</code> to a <code>v*</code> tag. To trigger it manually:</p>
-<div class="sourceCode" id="cb41"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>git tag v0<span class="op">.</span><span class="dv">5.0</span><span class="op">-</span>beta<span class="op">.</span><span class="dv">1</span></span>
-<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="dt">git</span> push origin v0<span class="op">.</span><span class="dv">5.0</span><span class="op">-</span>beta<span class="op">.</span><span class="dv">1</span></span></code></pre></div>
+<div class="sourceCode" id="cb43"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>git tag v0<span class="op">.</span><span class="dv">5.0</span><span class="op">-</span>beta<span class="op">.</span><span class="dv">1</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="dt">git</span> push origin v0<span class="op">.</span><span class="dv">5.0</span><span class="op">-</span>beta<span class="op">.</span><span class="dv">1</span></span></code></pre></div>
 <p>The workflow produces three artifacts:</p>
 <ul>
 <li><code>quill-installer</code> — Inno Setup <code>.exe</code>
@@ -11946,13 +12048,13 @@ required</li>
 stub</li>
 </ul>
 <p>To build locally (requires Inno Setup 6 and Python 3.12):</p>
-<div class="sourceCode" id="cb42"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>pip install <span class="op">-</span>e <span class="op">.[</span>ui<span class="op">,</span>spellcheck<span class="op">,</span>dev<span class="op">]</span></span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>build_windows_distribution<span class="op">.</span><span class="fu">py</span> `</span>
-<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>bundle-python `</span>
-<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>compile-installer `</span>
-<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>iscc-path <span class="st">&quot;C:\Program Files (x86)\Inno Setup 6\ISCC.exe&quot;</span> `</span>
-<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>output-dir windows-distribution</span></code></pre></div>
+<div class="sourceCode" id="cb44"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>pip install <span class="op">-</span>e <span class="op">.[</span>ui<span class="op">,</span>spellcheck<span class="op">,</span>dev<span class="op">]</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>build_windows_distribution<span class="op">.</span><span class="fu">py</span> `</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>bundle-python `</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>compile-installer `</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>iscc-path <span class="st">&quot;C:\Program Files (x86)\Inno Setup 6\ISCC.exe&quot;</span> `</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>output-dir windows-distribution</span></code></pre></div>
 <hr />
 <h2 id="update-mechanism-overview">Update mechanism overview</h2>
 <p>QUILL uses the AccessibleApps <code>autoupdate</code> library
@@ -11980,17 +12082,17 @@ NVDA/JAWS/Narrator hear every step without watching the UI.</p>
 <hr />
 <h2 id="update-feed-format">Update feed format</h2>
 <p>The feed is a single JSON file served over HTTPS. Example:</p>
-<div class="sourceCode" id="cb43"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;current_version&quot;</span><span class="fu">:</span> <span class="st">&quot;0.5.0&quot;</span><span class="fu">,</span></span>
-<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;description&quot;</span><span class="fu">:</span> <span class="st">&quot;Accessibility improvements and bug fixes. See the release notes for details.&quot;</span><span class="fu">,</span></span>
-<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;published_at&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-06-12T14:00:00Z&quot;</span><span class="fu">,</span></span>
-<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;downloads&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
-<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;Windows&quot;</span><span class="fu">:</span> <span class="st">&quot;https://releases.example.com/quill-0.5.0-windows.zip&quot;</span><span class="fu">,</span></span>
-<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;Darwin&quot;</span><span class="fu">:</span>  <span class="st">&quot;https://releases.example.com/quill-0.5.0-macos.zip&quot;</span><span class="fu">,</span></span>
-<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;Linux&quot;</span><span class="fu">:</span>   <span class="st">&quot;https://releases.example.com/quill-0.5.0-linux.zip&quot;</span></span>
-<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
-<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb45"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;current_version&quot;</span><span class="fu">:</span> <span class="st">&quot;0.5.0&quot;</span><span class="fu">,</span></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;description&quot;</span><span class="fu">:</span> <span class="st">&quot;Accessibility improvements and bug fixes. See the release notes for details.&quot;</span><span class="fu">,</span></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;published_at&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-06-12T14:00:00Z&quot;</span><span class="fu">,</span></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;downloads&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;Windows&quot;</span><span class="fu">:</span> <span class="st">&quot;https://releases.example.com/quill-0.5.0-windows.zip&quot;</span><span class="fu">,</span></span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;Darwin&quot;</span><span class="fu">:</span>  <span class="st">&quot;https://releases.example.com/quill-0.5.0-macos.zip&quot;</span><span class="fu">,</span></span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;Linux&quot;</span><span class="fu">:</span>   <span class="st">&quot;https://releases.example.com/quill-0.5.0-linux.zip&quot;</span></span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 <p>Field notes:</p>
 <ul>
 <li><code>current_version</code> — the version string clients compare
@@ -12005,14 +12107,14 @@ return value (<code>Windows</code>, <code>Darwin</code>,
 update silently.</li>
 </ul>
 <p>Generate the feed with the bundled script:</p>
-<div class="sourceCode" id="cb44"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>generate_app_updater_feed<span class="op">.</span><span class="fu">py</span> `</span>
-<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>version <span class="st">&quot;0.5.0&quot;</span> `</span>
-<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>windows-url <span class="st">&quot;https://github.com/Community-Access/quill/releases/download/v0.5.0/quill-0.5.0-windows.zip&quot;</span> `</span>
-<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>macos-url   <span class="st">&quot;https://github.com/Community-Access/quill/releases/download/v0.5.0/quill-0.5.0-macos.zip&quot;</span> `</span>
-<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>linux-url   <span class="st">&quot;https://github.com/Community-Access/quill/releases/download/v0.5.0/quill-0.5.0-linux.zip&quot;</span> `</span>
-<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>description <span class="st">&quot;Accessibility improvements and bug fixes.&quot;</span> `</span>
-<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>output docs<span class="op">/</span>site<span class="op">/</span>updates<span class="op">/.</span><span class="fu">quill</span><span class="op">-</span>app-updater-v1<span class="op">.</span><span class="fu">json</span></span></code></pre></div>
+<div class="sourceCode" id="cb46"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>generate_app_updater_feed<span class="op">.</span><span class="fu">py</span> `</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>version <span class="st">&quot;0.5.0&quot;</span> `</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>windows-url <span class="st">&quot;https://github.com/Community-Access/quill/releases/download/v0.5.0/quill-0.5.0-windows.zip&quot;</span> `</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>macos-url   <span class="st">&quot;https://github.com/Community-Access/quill/releases/download/v0.5.0/quill-0.5.0-macos.zip&quot;</span> `</span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>linux-url   <span class="st">&quot;https://github.com/Community-Access/quill/releases/download/v0.5.0/quill-0.5.0-linux.zip&quot;</span> `</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>description <span class="st">&quot;Accessibility improvements and bug fixes.&quot;</span> `</span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>output docs<span class="op">/</span>site<span class="op">/</span>updates<span class="op">/.</span><span class="fu">quill</span><span class="op">-</span>app-updater-v1<span class="op">.</span><span class="fu">json</span></span></code></pre></div>
 <p>Commit and push; the GitHub Pages workflow publishes it
 automatically.</p>
 <hr />
@@ -12044,8 +12146,8 @@ Linux) is built and maintained by the AccessibleApps project:</p>
 <pre><code>https://github.com/accessibleapps/app_updater</code></pre>
 <p>To obtain the binaries for a release build, use the bundled fetch
 script:</p>
-<div class="sourceCode" id="cb47"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>fetch_bootstrappers<span class="op">.</span><span class="fu">py</span></span></code></pre></div>
+<div class="sourceCode" id="cb49"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>fetch_bootstrappers<span class="op">.</span><span class="fu">py</span></span></code></pre></div>
 <p>This downloads all three bootstrappers from the upstream repo,
 verifies their SHA-256 hashes, and records checksums in
 <code>quill/_vendor/autoupdate/bootstrappers/checksums.sha256</code>.
@@ -12071,15 +12173,15 @@ and <code>bootstrap-mac.sh</code> from the AccessibleApps upstream repo
 and writes a <code>checksums.sha256</code> file for verification.
 Binaries land in <code>quill/_vendor/autoupdate/bootstrappers/</code>
 and are excluded from git.</p>
-<div class="sourceCode" id="cb48"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Download (idempotent — skips files whose SHA-256 matches the recorded checksum)</span></span>
-<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>fetch_bootstrappers<span class="op">.</span><span class="fu">py</span></span>
-<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Force re-download regardless of checksum</span></span>
-<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>fetch_bootstrappers<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>force</span>
-<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Verify existing files without downloading</span></span>
-<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>fetch_bootstrappers<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>verify-only</span></code></pre></div>
+<div class="sourceCode" id="cb50"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Download (idempotent — skips files whose SHA-256 matches the recorded checksum)</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>fetch_bootstrappers<span class="op">.</span><span class="fu">py</span></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Force re-download regardless of checksum</span></span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>fetch_bootstrappers<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>force</span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Verify existing files without downloading</span></span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>fetch_bootstrappers<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>verify-only</span></code></pre></div>
 <p>The CI <code>build</code> job runs this automatically before
 compiling the installer.</p>
 <h3
@@ -12088,12 +12190,12 @@ id="scriptsgenerate_file_manifestpy"><code>scripts/generate_file_manifest.py</co
 install path of every distributable file. Output is
 <code>docs/site/updates/manifests/manifest-{version}.json</code>. The
 manifest feeds <code>build_update_zip.py</code> to compute deltas.</p>
-<div class="sourceCode" id="cb49"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate manifest for the current source tree</span></span>
-<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>generate_file_manifest<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>version <span class="dv">0.5</span><span class="op">.</span><span class="dv">0</span></span>
-<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate and compare against a previous release</span></span>
-<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>generate_file_manifest<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>version <span class="dv">0.5</span><span class="op">.</span><span class="dv">0</span> <span class="op">--</span>compare-to <span class="dv">0.4</span><span class="op">.</span><span class="dv">9</span></span></code></pre></div>
+<div class="sourceCode" id="cb51"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate manifest for the current source tree</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>generate_file_manifest<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>version <span class="dv">0.5</span><span class="op">.</span><span class="dv">0</span></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate and compare against a previous release</span></span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>generate_file_manifest<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>version <span class="dv">0.5</span><span class="op">.</span><span class="dv">0</span> <span class="op">--</span>compare-to <span class="dv">0.4</span><span class="op">.</span><span class="dv">9</span></span></code></pre></div>
 <p>Excluded from the manifest: <code>quill/tools/</code>,
 <code>__pycache__/</code>, <code>*.pyc</code>, <code>*.pyo</code>. The
 <code>--compare-to</code> flag prints changed, added, and deleted file
@@ -12104,18 +12206,18 @@ id="scriptsbuild_update_zippy"><code>scripts/build_update_zip.py</code></h3>
 <p>Produces the update ZIP consumed by the autoupdate bootstrapper. By
 default it runs in delta mode: only files whose SHA-256 changed since
 the previous manifest are included, keeping update ZIPs lean.</p>
-<div class="sourceCode" id="cb50"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Delta update (auto-detects base version from available manifests)</span></span>
-<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>build_update_zip<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>version <span class="dv">0.5</span><span class="op">.</span><span class="dv">0</span></span>
-<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Force full update</span></span>
-<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>build_update_zip<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>version <span class="dv">0.5</span><span class="op">.</span><span class="dv">0</span> <span class="op">--</span>mode full</span>
-<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify base version explicitly</span></span>
-<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>build_update_zip<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>version <span class="dv">0.5</span><span class="op">.</span><span class="dv">0</span> <span class="op">--</span>mode delta <span class="op">--</span>base-version <span class="dv">0.4</span><span class="op">.</span><span class="dv">9</span></span>
-<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Target a non-Windows platform</span></span>
-<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>build_update_zip<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>version <span class="dv">0.5</span><span class="op">.</span><span class="dv">0</span> <span class="op">--</span>platform macos</span></code></pre></div>
+<div class="sourceCode" id="cb52"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Delta update (auto-detects base version from available manifests)</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>build_update_zip<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>version <span class="dv">0.5</span><span class="op">.</span><span class="dv">0</span></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Force full update</span></span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>build_update_zip<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>version <span class="dv">0.5</span><span class="op">.</span><span class="dv">0</span> <span class="op">--</span>mode full</span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify base version explicitly</span></span>
+<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>build_update_zip<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>version <span class="dv">0.5</span><span class="op">.</span><span class="dv">0</span> <span class="op">--</span>mode delta <span class="op">--</span>base-version <span class="dv">0.4</span><span class="op">.</span><span class="dv">9</span></span>
+<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-10"><a href="#cb52-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Target a non-Windows platform</span></span>
+<span id="cb52-11"><a href="#cb52-11" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>build_update_zip<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>version <span class="dv">0.5</span><span class="op">.</span><span class="dv">0</span> <span class="op">--</span>platform macos</span></code></pre></div>
 <p>The ZIP always contains:</p>
 <ul>
 <li><code>bootstrap.exe</code> (or platform equivalent) at the root</li>
@@ -12127,17 +12229,17 @@ were changed, added, or deleted</li>
 <p>If no previous manifest exists, the script falls back to full mode
 automatically.</p>
 <h3 id="running-the-full-pipeline">Running the full pipeline</h3>
-<div class="sourceCode" id="cb51"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Fetch bootstrappers (once per release machine)</span></span>
-<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>fetch_bootstrappers<span class="op">.</span><span class="fu">py</span></span>
-<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Generate the manifest for this version</span></span>
-<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>generate_file_manifest<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>version <span class="dv">0.5</span><span class="op">.</span><span class="dv">0</span></span>
-<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Build the delta update ZIP</span></span>
-<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>build_update_zip<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>version <span class="dv">0.5</span><span class="op">.</span><span class="dv">0</span></span>
-<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Output: release-artifacts/quill-0.5.0-update-windows.zip</span></span></code></pre></div>
+<div class="sourceCode" id="cb53"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Fetch bootstrappers (once per release machine)</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>fetch_bootstrappers<span class="op">.</span><span class="fu">py</span></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Generate the manifest for this version</span></span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>generate_file_manifest<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>version <span class="dv">0.5</span><span class="op">.</span><span class="dv">0</span></span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Build the delta update ZIP</span></span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>build_update_zip<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>version <span class="dv">0.5</span><span class="op">.</span><span class="dv">0</span></span>
+<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Output: release-artifacts/quill-0.5.0-update-windows.zip</span></span></code></pre></div>
 <p>The CI <code>build</code> job runs all three steps automatically on
 each <code>v*</code> tag push.</p>
 <hr />
@@ -12155,11 +12257,11 @@ configured) before the first beta that ships the update check.</p>
 <h3 id="keeping-the-feed-up-to-date">Keeping the feed up to date</h3>
 <p>Workflow: after every release, regenerate the feed, commit it, and
 push. The Pages deployment runs automatically:</p>
-<div class="sourceCode" id="cb54"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>generate_app_updater_feed<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>version <span class="st">&quot;0.5.1&quot;</span> <span class="op">...</span></span>
-<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>git add docs<span class="op">/</span>site<span class="op">/</span>updates<span class="op">/.</span><span class="fu">quill</span><span class="op">-</span>app-updater-v1<span class="op">.</span><span class="fu">json</span></span>
-<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>git commit <span class="op">-</span>m <span class="st">&quot;chore: update feed to 0.5.1&quot;</span></span>
-<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>git push</span></code></pre></div>
+<div class="sourceCode" id="cb56"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>generate_app_updater_feed<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>version <span class="st">&quot;0.5.1&quot;</span> <span class="op">...</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>git add docs<span class="op">/</span>site<span class="op">/</span>updates<span class="op">/.</span><span class="fu">quill</span><span class="op">-</span>app-updater-v1<span class="op">.</span><span class="fu">json</span></span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>git commit <span class="op">-</span>m <span class="st">&quot;chore: update feed to 0.5.1&quot;</span></span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>git push</span></code></pre></div>
 <p>Do not update the feed until all platform ZIPs are uploaded and their
 URLs are stable. Clients check the feed on startup; a partial update
 (feed updated before ZIPs are live) will offer a broken download to
@@ -12190,19 +12292,19 @@ root, re-upload as the final update ZIP to the GitHub release.</li>
 containing a <code>manifest.json</code> validated against
 <code>quill/core/schemas/extension.json</code>.</p>
 <h3 id="creating-a-pack">Creating a pack</h3>
-<div class="sourceCode" id="cb55"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Directory structure:</span></span>
-<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>my-pack<span class="op">/</span></span>
-<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  manifest<span class="op">.</span><span class="fu">json</span></span>
-<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  README<span class="op">.</span><span class="fu">md</span></span>
-<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>  LICENSE</span>
-<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>  <span class="op">&lt;</span>script-or-data files<span class="op">&gt;</span></span>
-<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Validate before distributing:</span></span>
-<span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m quill<span class="op">.</span><span class="fu">tools</span><span class="op">.</span><span class="fu">quillin_lint</span> my-pack <span class="op">--</span>strict</span>
-<span id="cb55-10"><a href="#cb55-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb55-11"><a href="#cb55-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Package:</span></span>
-<span id="cb55-12"><a href="#cb55-12" aria-hidden="true" tabindex="-1"></a>Compress-Archive <span class="op">-</span>Path my-pack <span class="op">-</span>DestinationPath my-pack-1<span class="op">.</span><span class="dv">0.</span><span class="dt">zip</span></span></code></pre></div>
+<div class="sourceCode" id="cb57"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Directory structure:</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>my-pack<span class="op">/</span></span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>  manifest<span class="op">.</span><span class="fu">json</span></span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>  README<span class="op">.</span><span class="fu">md</span></span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>  LICENSE</span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>  <span class="op">&lt;</span>script-or-data files<span class="op">&gt;</span></span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Validate before distributing:</span></span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m quill<span class="op">.</span><span class="fu">tools</span><span class="op">.</span><span class="fu">quillin_lint</span> my-pack <span class="op">--</span>strict</span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Package:</span></span>
+<span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a>Compress-Archive <span class="op">-</span>Path my-pack <span class="op">-</span>DestinationPath my-pack-1<span class="op">.</span><span class="dv">0.</span><span class="dt">zip</span></span></code></pre></div>
 <h3 id="distributing-a-pack">Distributing a pack</h3>
 <p>Packs can be distributed through any channel — GitHub Releases, a
 personal website, email. Users install them via Tools &gt; Quillin
@@ -12223,8 +12325,8 @@ newer <code>.zip</code> to upgrade.</p>
 vendored autoupdate library
 (<code>quill/_vendor/autoupdate/autoupdate.py</code>) compares versions
 with a tuple-based integer comparison:</p>
-<div class="sourceCode" id="cb56"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="bu">tuple</span>(<span class="bu">int</span>(x) <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">str</span>(v).split(<span class="st">&quot;.&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb58"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="bu">tuple</span>(<span class="bu">int</span>(x) <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">str</span>(v).split(<span class="st">&quot;.&quot;</span>))</span></code></pre></div>
 <p>This correctly orders <code>1.9</code> before <code>1.10</code>. The
 upstream library used a plain string comparison
 (<code>"1.9" &gt; "1.10"</code> evaluates True — wrong). The fix is in
@@ -12238,22 +12340,22 @@ if a PR is contributed.</p>
 release:</p>
 <ol type="1">
 <li><p>Start a local HTTP server:</p>
-<div class="sourceCode" id="cb57"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m http<span class="op">.</span><span class="fu">server</span> <span class="dv">8765</span> <span class="op">--</span>directory <span class="op">/</span>path<span class="op">/</span>to<span class="op">/</span>test-assets</span></code></pre></div></li>
+<div class="sourceCode" id="cb59"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m http<span class="op">.</span><span class="fu">server</span> <span class="dv">8765</span> <span class="op">--</span>directory <span class="op">/</span>path<span class="op">/</span>to<span class="op">/</span>test-assets</span></code></pre></div></li>
 <li><p>Create a test feed at
 <code>/path/to/test-assets/feed.json</code>:</p>
-<div class="sourceCode" id="cb58"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;current_version&quot;</span><span class="fu">:</span> <span class="st">&quot;99.0.0&quot;</span><span class="fu">,</span></span>
-<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;description&quot;</span><span class="fu">:</span> <span class="st">&quot;Local test update&quot;</span><span class="fu">,</span></span>
-<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;downloads&quot;</span><span class="fu">:</span> <span class="fu">{</span> <span class="dt">&quot;Windows&quot;</span><span class="fu">:</span> <span class="st">&quot;http://localhost:8765/test-update.zip&quot;</span> <span class="fu">}</span></span>
-<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div></li>
+<div class="sourceCode" id="cb60"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;current_version&quot;</span><span class="fu">:</span> <span class="st">&quot;99.0.0&quot;</span><span class="fu">,</span></span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;description&quot;</span><span class="fu">:</span> <span class="st">&quot;Local test update&quot;</span><span class="fu">,</span></span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;downloads&quot;</span><span class="fu">:</span> <span class="fu">{</span> <span class="dt">&quot;Windows&quot;</span><span class="fu">:</span> <span class="st">&quot;http://localhost:8765/test-update.zip&quot;</span> <span class="fu">}</span></span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div></li>
 <li><p>Create <code>test-update.zip</code> containing the app files and
 <code>bootstrap.exe</code>.</p></li>
 <li><p>Override the feed URL in a dev settings file (do not commit):</p>
-<div class="sourceCode" id="cb59"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="co"># quill/core/settings.py — temporary, revert before committing</span></span>
-<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>update_feed_endpoint <span class="op">=</span> <span class="st">&quot;http://localhost:8765/feed.json&quot;</span></span></code></pre></div></li>
+<div class="sourceCode" id="cb61"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="co"># quill/core/settings.py — temporary, revert before committing</span></span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>update_feed_endpoint <span class="op">=</span> <span class="st">&quot;http://localhost:8765/feed.json&quot;</span></span></code></pre></div></li>
 <li><p>Run QUILL and trigger Help &gt; Check for Updates.</p></li>
 </ol>
 <p>The screen reader should announce "Quill 99.0.0 is available", then
@@ -12267,10 +12369,10 @@ the bootstrapper execution step is always stubbed.</p>
 <p>To roll back to a previous version after a bad release:</p>
 <ol type="1">
 <li><p>Update the feed to point at the previous version's ZIP:</p>
-<div class="sourceCode" id="cb60"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>generate_app_updater_feed<span class="op">.</span><span class="fu">py</span> `</span>
-<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>version <span class="st">&quot;0.4.9&quot;</span> `</span>
-<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>windows-url <span class="st">&quot;https://.../quill-0.4.9-windows.zip&quot;</span> <span class="op">...</span></span></code></pre></div></li>
+<div class="sourceCode" id="cb62"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>generate_app_updater_feed<span class="op">.</span><span class="fu">py</span> `</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>version <span class="st">&quot;0.4.9&quot;</span> `</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>windows-url <span class="st">&quot;https://.../quill-0.4.9-windows.zip&quot;</span> <span class="op">...</span></span></code></pre></div></li>
 <li><p>Commit and push. Clients on 0.5.0 will be offered the 0.4.9
 update on their next startup check.</p>
 <p>Note: <code>"0.4.9" &gt; "0.5.0"</code> is false under string

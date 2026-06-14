@@ -48,24 +48,56 @@
   screen-reader picker (None / JAWS / NVDA / Narrator / VoiceOver / Other,
   pre-selected from detection) plus remembered name and email fields, all sent
   with the report (#188).
+- **Compare power features.** Character-level diff highlighting, word-level
+  speech of inline changes, and Compare Selection With Clipboard, alongside the
+  difference list, whitespace options, and accessible speech of the MVP
+  (#193/#194).
+- **Document switching with Ctrl+Tab / Ctrl+Shift+Tab** moves to the next or
+  previous open document (#190).
+- **Persistent startup folder.** A setting controls the initial folder for Open
+  and Save As; file dialogs now default to Documents instead of the install
+  directory (#168).
+- **Feature search** now finds copy tray, macros, and abbreviations (#171).
 - **Developer file extensions** added to the Open dialog wildcard (Kotlin, TS,
   Go, Rust, and more) (#191); **file-open focus** now lands in the editor with a
-  screen-reader announcement (#187).
-- **HEIC/HEIF image support** for AI image description (#165).
+  screen-reader announcement, removing the Alt+Tab workaround (#187).
+- **HEIC/HEIF image support** for AI image description (#164).
 - **About screen** lists all GitHub contributors, fetched from the contributors
   API with a baked-in offline fallback; Ken Perry and Kelly Ford added.
 
 ### Bug fixes and security
 
+- **Report a Bug fields are now editable.** The form fields no longer reject
+  keyboard input under NVDA; the dialog was rebuilt without the intermediate
+  `wx.Panel` that broke editing, and moved from Tools to Help (#178). The bug
+  report also no longer blocks the UI thread — the network call runs off-thread
+  with a timeout fallback (#188).
+- **Screen-reader chatter silenced.** JAWS no longer announces "splitter window"
+  and "panel" on menu close and app focus; the layout container is no longer
+  exposed in the accessibility tree (#170).
 - **Describe Image** no longer fails silently — corrected an `AttributeError`
   on the region-tracking call (#165).
-- **macOS: API keys and tokens persist via the login Keychain** instead of being
-  lost between sessions (#160).
+- **Startup is faster and quieter.** Screen-reader detection is offloaded to a
+  background thread, a WebView2 prewarm crash is fixed, and the title no longer
+  flashes "untitled Quill unavailable" before the app finishes loading
+  (#176/#177). The preview pane no longer hangs for minutes and is dismissable
+  (#174).
+- **First-run experience fixed.** The first window now gains foreground focus so
+  the trust/privacy dialog is reachable (#166); the personalization wizard can be
+  re-triggered after first run (#167); the wizard's startup beep and Cancel
+  focus are fixed.
+- **Crash-recovery snapshot preview** is no longer blank for screen readers
+  (#180).
+- **User guide opens correctly.** It opens as read-only HTML in the browser
+  instead of as an editable Markdown tab (#173), with a glossary of domain terms
+  (#172), and a WebView2 fault no longer throws a `0x8007139f` error — the
+  preview control is caught and rebuilt (#175/#183).
+- **macOS: API keys and tokens persist via the login Keychain** instead of
+  crashing on save when the Windows DPAPI import was unavailable (#160).
 - **macOS notarized build** signs Pillow's bundled dylibs and uses
   hardened-runtime entitlements, fixing notarization.
-- **Accessibility, user guide, WebView2 guard, and contributor credits** pass
-  (#183): WebView2 faults are caught and the preview control rebuilt rather than
-  crashing the side preview.
+- **Manage Features dialog** and the SSH Quick Connect / Site Manager dialogs
+  were clarified and corrected (#161/#162).
 - **Embedded Python build** bootstraps setuptools and fixes the LicenseFile path.
 - Internal sound-design notes moved out of the repo root (`x.md` → `docs/wsp.md`).
 

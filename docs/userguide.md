@@ -1217,7 +1217,7 @@ Quill can play short, non-speech audio cues — earcons — at meaningful editin
 - **Compare cues.** When a sound pack is active, compare mode plays distinct cues for opening and closing a comparison, moving to the next or previous difference, and bumping against the first or last difference. See [Comparison](#comparison).
 - **Toggle everything.** **Toggle Sound Notifications** (in Reading & Dictation) turns all earcons on or off at once, and plays a short confirming "on" or "off" cue so you know which state you landed in.
 
-Every scripted earcon in the bundled pack is a distinct sound, so two different events never sound identical. Pack authors can map any event ID to any WAV file; the full event reference lives in `docs/sound-packs.md`.
+Every scripted earcon in the bundled pack is a distinct sound, so two different events never sound identical. Pack authors can map any event ID to any WAV file; the full QSP format and event reference are documented in the product requirements document, under "Sound notifications and QSP sound packs."
 
 ## Quill on macOS
 

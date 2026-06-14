@@ -2418,18 +2418,65 @@ When Quill detects an autosave snapshot newer than the on-disk file on launch:
 - Same dialog as 5.19 but with the title prefixed `Statistics — Selection`.
 - Reassignable like any other binding.
 
-### 5.70 Audio cue catalogue (opt-in)
+### 5.70 Sound notifications and QSP sound packs (opt-in)
 
-- A small set of subtle, brief, screen-reader-respectful audio cues. Off by default; settings live in `Settings → Sounds`.
-- Catalogue (v1.0):
-  - **Save success** — 80 ms soft click at 600 Hz.
-  - **Save failure** — 120 ms low descending pair.
-  - **Find: no match** — 100 ms muted tick at 400 Hz.
-  - **Autosave snapshot taken** — 60 ms whisper at 800 Hz (the quietest cue).
-  - **Background task complete** — 120 ms two-tone chime.
-- All cues are ≤ 120 ms, share a single low-default volume slider, and **duck** automatically while a screen reader is speaking (detected via the SR detection layer, 10.1).
-- Cues are PCM data bundled with the app, played via `winsound.PlaySound` with `SND_ASYNC | SND_MEMORY` so they never block.
-- Per-cue on/off in Settings.
+QUILL plays short, screen-reader-respectful audio cues (earcons) at meaningful editing moments. The system is built around **QSP (QUILL Sound Packs)**: swappable bundles that map event IDs to audio files. Playback is non-blocking, fire-and-forget, and pre-buffered so there is no perceptible lag between event and sound. Earcons supplement speech; they never replace it. (This section absorbs the former `docs/wsp.md` sound-design notes and `docs/sound-packs.md` pack guide.)
+
+#### 5.70.1 QSP format
+
+A `.qsp` file is a ZIP archive whose root holds `manifest.json` and the referenced WAV files. During development a directory with the same layout is accepted; the loader treats a directory and a ZIP identically. The manifest is validated at load time against `quill/core/schemas/sound_pack.json`:
+
+```json
+{
+  "format": "qsp",
+  "version": "1",
+  "name": "Ink",
+  "author": "Jeff Bishop",
+  "description": "Crisp synthesised earcons for focused writing.",
+  "license": "CC0",
+  "events": { "abbreviation_expanded": "expand.wav", "document_saved": "save.wav" }
+}
+```
+
+Any event key absent from the manifest is silently skipped (no sound, no error), which allows minimal **partial packs** that cover only a subset of events. The QSP schema places no constraint on event-key names, so a Quillin can register additional event IDs and ship its own pack.
+
+#### 5.70.2 Event taxonomy
+
+Canonical event IDs are defined as a `StrEnum` in `quill/core/sound_events.py` (no `wx`, no platform code). Groups: **Editing** (`abbreviation_expanded`, `abbreviation_deleted`, `snippet_inserted`, `autocomplete_accepted`, `word_corrected`), **Document lifecycle** (`document_created/saved/closed`), **Navigation** (`heading_jumped`, `table_entered`, `list_entered`, `browse_mode_on/off`), **Search** (`search_found/not_found/wrapped`), **AI and transcription** (`ai_thinking_started`, `ai_response_received`, `ai_error`, `transcription_started/stopped/word_inserted`), **Connectivity** (`ssh_connected/disconnected`), **Compare** (`compare_enter_mode`, `compare_exit_mode`, `compare_next_difference`, `compare_previous_difference`, `compare_no_more_differences`), **Indentation tones** (`indent_level_0..7_up` / `_down`), and **System** (`error`, `warning`, `sound_on`, `sound_off`). The complete table with triggers is maintained in this section's source and surfaced to pack authors via the Sound Events dialog.
+
+#### 5.70.3 Audio file requirements
+
+- Format: **WAV** (PCM, 16-bit, 44100 Hz, mono) — plays from memory with no decode step, the key to zero-lag earcons.
+- Duration: earcons 50–150 ms; state-change sounds (browse mode, SSH) up to 300 ms; nothing longer.
+- Headroom: normalize to about −6 dBFS so the volume control stays meaningful.
+- OGG/MP3 are not accepted for core events because codec init adds 20–80 ms of jitter on first play.
+- Every scripted earcon in a bundled pack must be **acoustically unique** — no two events share an identical sound (audited byte-wise and by manifest mapping).
+
+#### 5.70.4 Cross-platform backend
+
+`quill/platform/sound_player.py` auto-detects the best backend at startup: (1) `_SoundLibBackend` (BASS via the MIT-licensed `accessibleapps/sound_lib`, all platforms, native mixing); (2) `_WinsoundBackend` (Windows stdlib, serialising queue); (3) `_NullBackend`. `sound_lib` is an optional extra (`pip install quill[audio]`); absent it, QUILL falls back to `winsound` on Windows or stays silent elsewhere. Any object satisfying the `_WavBackend` protocol (`play_wav(bytes)`, `shutdown(timeout)`) can be injected, which is how tests use a synchronous recording backend.
+
+#### 5.70.5 Module layout and posting
+
+`sound_events.py` (enum) → `sound_pack.py` (QSP loader + validator; reads every WAV into bytes at load, zero disk I/O at play time) → `sound_player.py` (`SoundPlayer`: 80 ms per-event cooldown, mute toggle, per-event disable list) → `quill/ui/sound_manager.py` (singleton wired to settings and a custom wx event). Any module posts a sound without importing `wx`:
+
+```python
+from quill.core.sound_events import SoundEvent
+from quill.ui.sound_manager import post_sound
+post_sound(SoundEvent.ABBREVIATION_EXPANDED)   # thread-safe, < 1 ms, no-op if disabled
+```
+
+#### 5.70.6 Indentation tones and overlay packs
+
+For code, an **indent-tone pack** maps the 16 `indent_level_N_up/down` events to pitched tones so the caret crossing indent levels rises and falls in pitch. Four scales ship — pentatonic, whole-tone, diatonic, chromatic — generated by `scripts/gen_indent_tones.py`. An indent-tone pack **overlays** a primary earcon pack, so the user can combine, say, the Ink earcons with pentatonic indent tones. The `indent_tone_scale` setting (empty = off) selects the scale; blank lines stay silent and hold the previous level.
+
+#### 5.70.7 Settings, packs, and Quillins
+
+Settings (group `accessibility`): `sound_enabled` (bool), `sound_pack_path` (text; empty = bundled **Ink** pack), `sound_volume` (0–100), `sound_events_disabled` (comma-separated IDs), `indent_tone_scale` (choice). A global mute is bound to the `sound.toggle_mute` keymap action. The bundled **Ink** pack ships in the wheel at `quill/assets/sound_packs/ink/` (generated by `scripts/gen_ink_sounds.py`). A Quillin manifest may declare a `sound_pack` directory and `sound_events` map; the runner registers those IDs with `SoundManager` at load time, and the user can silence them individually via `sound_events_disabled`.
+
+#### 5.70.8 Safe mode
+
+When `QUILL_SAFE_MODE=1`, `SoundPlayer.play()` is a no-op, keeping safe mode strictly minimal-resource.
 
 ### 5.71 Quiet mode
 
