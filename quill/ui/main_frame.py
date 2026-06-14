@@ -2666,6 +2666,12 @@ class MainFrame(
             self._binding_for("edit.insert_link"),
         )
         self.commands.register(
+            "edit.insert_citation",
+            "Insert Citation...",
+            self.insert_citation,
+            self._binding_for("edit.insert_citation"),
+        )
+        self.commands.register(
             "edit.follow_link",
             "Follow Link",
             self.follow_link,
@@ -3268,6 +3274,7 @@ class MainFrame(
             "edit.say_selected": self._id_say_selected,
             "edit.read_all": self._id_read_all,
             "edit.insert_link": self._id_insert_link,
+            "edit.insert_citation": self._id_insert_citation,
             "edit.follow_link": self._id_follow_link,
             "edit.find": self._id_find,
             "edit.find_next": self._id_find_next,
@@ -7785,9 +7792,9 @@ class MainFrame(
 
         The editor surface stores QUILL Markdown-style markup; Save As routes that
         markup through :func:`write_document_as`, which re-serializes it to RTF,
-        HTML, or stripped plain text for those extensions and writes it verbatim
-        (as Markdown) otherwise. The plain-text link style follows the setting so
-        URLs survive when the writer wants them to.
+        Word (.docx), HTML, or stripped plain text for those extensions and writes
+        it verbatim (as Markdown) otherwise. The plain-text link style follows the
+        setting so URLs survive when the writer wants them to.
         """
         link_style = str(
             getattr(getattr(self, "settings", None), "plain_text_link_style", "text_url")
@@ -7945,7 +7952,7 @@ class MainFrame(
         self._set_status("Printed document")
 
     # Save As wildcard filter index -> the extension that filter implies.
-    _SAVE_FILTER_EXTENSIONS = {0: ".txt", 1: ".md", 2: ".html", 3: ".rtf"}
+    _SAVE_FILTER_EXTENSIONS = {0: ".txt", 1: ".md", 2: ".html", 3: ".rtf", 4: ".docx"}
 
     def _resolve_save_target(self, target: Path, filter_index: int) -> Path:
         """Give ``target`` an extension from the chosen type filter when none typed.
@@ -7969,7 +7976,8 @@ class MainFrame(
             wildcard=(
                 "Text files (*.txt)|*.txt|Markdown files (*.md)|*.md|"
                 "HTML files (*.html;*.htm;*.xhtml)|*.html;*.htm;*.xhtml|"
-                "Rich Text Format (*.rtf)|*.rtf|All files (*.*)|*.*"
+                "Rich Text Format (*.rtf)|*.rtf|Word Document (*.docx)|*.docx|"
+                "All files (*.*)|*.*"
             ),
             style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
         ) as dialog:
@@ -18340,6 +18348,104 @@ class MainFrame(
         result = InsertionResult(inserted_text=snippet, caret_offset=len(snippet))
         self._apply_insertion_result(result)
         self._set_status(f"Inserted link ({markup_kind})")
+
+    def insert_citation(self) -> None:
+        """Build a formatted citation from typed fields and insert it (#203)."""
+        from quill.core.citations import (
+            CITATION_STYLES,
+            SOURCE_TYPES,
+            Source,
+            format_bibliography_entry,
+            format_in_text,
+        )
+        from quill.ui.web_form import show_web_form
+
+        values = show_web_form(
+            self.frame,
+            self._wx,
+            title="Insert Citation",
+            intro=(
+                "Enter the source details, choose a style, and pick what to insert. "
+                "Separate multiple authors with a semicolon (First Last; First Last)."
+            ),
+            save_label="Insert",
+            fields=[
+                {
+                    "name": "source_type",
+                    "label": "Source type",
+                    "type": "select",
+                    "value": "book",
+                    "options": list(SOURCE_TYPES),
+                },
+                {
+                    "name": "style",
+                    "label": "Citation style",
+                    "type": "select",
+                    "value": "mla",
+                    "options": list(CITATION_STYLES),
+                },
+                {
+                    "name": "insert",
+                    "label": "Insert",
+                    "type": "select",
+                    "value": "bibliography",
+                    "options": [
+                        ("bibliography", "Bibliography entry"),
+                        ("in_text", "In-text citation"),
+                        ("both", "Both"),
+                    ],
+                },
+                {"name": "authors", "label": "Author(s)", "type": "text", "value": ""},
+                {"name": "title", "label": "Title", "type": "text", "value": ""},
+                {
+                    "name": "container",
+                    "label": "Journal or website name",
+                    "type": "text",
+                    "value": "",
+                },
+                {"name": "publisher", "label": "Publisher (books)", "type": "text", "value": ""},
+                {"name": "year", "label": "Year", "type": "text", "value": ""},
+                {"name": "volume", "label": "Volume", "type": "text", "value": ""},
+                {"name": "issue", "label": "Issue", "type": "text", "value": ""},
+                {"name": "pages", "label": "Pages", "type": "text", "value": ""},
+                {"name": "url", "label": "URL", "type": "text", "value": ""},
+                {"name": "accessed", "label": "Accessed date", "type": "text", "value": ""},
+            ],
+        )
+        if values is None:
+            self._set_status("Insert citation cancelled")
+            return
+        authors = tuple(a.strip() for a in str(values.get("authors", "")).split(";") if a.strip())
+        source = Source(
+            source_type=str(values.get("source_type", "book")),
+            authors=authors,
+            title=str(values.get("title", "")).strip(),
+            container=str(values.get("container", "")).strip(),
+            publisher=str(values.get("publisher", "")).strip(),
+            year=str(values.get("year", "")).strip(),
+            volume=str(values.get("volume", "")).strip(),
+            issue=str(values.get("issue", "")).strip(),
+            pages=str(values.get("pages", "")).strip(),
+            url=str(values.get("url", "")).strip(),
+            accessed=str(values.get("accessed", "")).strip(),
+        )
+        style = str(values.get("style", "mla"))
+        try:
+            in_text = format_in_text(source, style)
+            entry = format_bibliography_entry(source, style)
+        except ValueError as error:
+            self._set_status(f"Could not format citation: {error}")
+            return
+        mode = str(values.get("insert", "bibliography"))
+        if mode == "in_text":
+            snippet = in_text
+        elif mode == "both":
+            snippet = f"{in_text}\n\n{entry}"
+        else:
+            snippet = entry
+        result = InsertionResult(inserted_text=snippet, caret_offset=len(snippet))
+        self._apply_insertion_result(result)
+        self._set_status(f"Inserted {style.upper()} citation")
 
     def follow_link(self) -> None:
         text = self.editor.GetValue()

@@ -37,9 +37,16 @@ def test_missing_extension_uses_rtf_filter() -> None:
     assert frame._resolve_save_target(Path("notes"), 3) == Path("notes.rtf")
 
 
+def test_missing_extension_uses_word_filter() -> None:
+    frame = _frame()
+    assert frame._resolve_save_target(Path("notes"), 4) == Path("notes.docx")
+
+
 def test_all_files_filter_defaults_to_markdown() -> None:
     frame = _frame()
-    assert frame._resolve_save_target(Path("notes"), 4) == Path("notes.md")
+    # "All files" is now filter index 5 (after Word at 4); unknown indices fall
+    # back to Markdown.
+    assert frame._resolve_save_target(Path("notes"), 5) == Path("notes.md")
     assert frame._resolve_save_target(Path("notes"), -1) == Path("notes.md")
 
 

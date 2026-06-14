@@ -246,3 +246,32 @@ def test_export_module_is_wx_free() -> None:
 
     source = Path(export_module.__file__).read_text(encoding="utf-8")
     assert "import wx" not in source
+
+
+# --------------------------------------------------------------------------- #
+# Word (.docx) export (#204)
+# --------------------------------------------------------------------------- #
+
+
+def test_format_label_for_docx_is_word() -> None:
+    assert format_label_for_path(Path("report.docx")) == "Word"
+
+
+def _pandoc_available() -> bool:
+    from quill.core.external_tools import get_external_tool_status
+
+    return get_external_tool_status("pandoc").installed
+
+
+@pytest.mark.skipif(not _pandoc_available(), reason="Pandoc not installed")
+def test_write_document_as_docx_produces_a_word_file(tmp_path: Path) -> None:
+    import zipfile
+
+    doc = Document(text="# Title\n\nSome **bold** text.\n\n- one\n- two\n")
+    target = tmp_path / "out.docx"
+    result = write_document_as(doc, target)
+    assert result == target
+    assert target.exists() and target.stat().st_size > 0
+    # A .docx is an OOXML zip; the body lives in word/document.xml.
+    with zipfile.ZipFile(target) as archive:
+        assert "word/document.xml" in archive.namelist()

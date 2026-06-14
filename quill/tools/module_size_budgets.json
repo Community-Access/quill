@@ -23,11 +23,11 @@
   "_next_target_main_frame": 15000,
   "_default_cap": 600,
   "budgets": {
-    "quill/ui/main_frame.py": 22231,
+    "quill/ui/main_frame.py": 22337,
     "quill/ui/assistant_tools.py": 1877,
     "quill/ui/assistant_panel.py": 725,
     "quill/ui/main_frame_power_tools.py": 863,
-    "quill/ui/main_frame_menu.py": 2993,
+    "quill/ui/main_frame_menu.py": 3001,
     "quill/core/read_aloud.py": 1244,
     "quill/core/assistant_ai.py": 1300,
     "quill/core/features.py": 1029,
@@ -95,5 +95,7 @@
   "_rebaseline_2026_06_14_lang": "feat/indent-tones-and-code-nav (#185) merged with main: language profiles, token navigation, code-aware editing. Budgets re-measured to current sizes after integrating main (which advanced via #196 ken and #184 sound). Indent-tone settings consolidated to main's single indent_tone_scale model; #185's superseded indent_tone_enabled/mode/direction_cue dropped.",
   "_rebaseline_2026_06_14_compare_sound": "Compare-mode sound events (#186): 5 post_sound calls added to legacy compare session (_start_compare_session enter + next/prev) in main_frame.py. compare_dialog.py instrumented (enter/exit/next/prev/no-more). sound_events_dialog.py Compare section. main_frame.py 22195->22210.",
   "_rebaseline_2026_06_14_encoding": "Encoding tools (#197): main_frame_power_tools.py 802->863 for show_non_ascii (review buffer), encode_all_non_ascii (transform), reencode_file (encoding+save dialog). New core module encoding_tools.py (pure). 3 commands in Format > HTML & Encoding.",
-  "_rebaseline_2026_06_14_bugs": "bugs branch (#165-#180) merged into main: a11y fixes (#166/#167/#170/#177/#178/#180), startup folder (#168), feature-search coverage (#171), glossary/guide-in-browser/WebView2 guard (#172/#173/#175), wizard UX (#177), Describe Image AttributeError (#165), Kelly Ford credits. Budgets re-measured after the merge."
+  "_rebaseline_2026_06_14_bugs": "bugs branch (#165-#180) merged into main: a11y fixes (#166/#167/#170/#177/#178/#180), startup folder (#168), feature-search coverage (#171), glossary/guide-in-browser/WebView2 guard (#172/#173/#175), wizard UX (#177), Describe Image AttributeError (#165), Kelly Ford credits. Budgets re-measured after the merge.",
+  "_rebaseline_2026_06_15_docx": "Save As Word/.docx (#204): main_frame.py 22231->22232 for docx wildcard + filter-extension map entry. export.py gains write_docx_document (Pandoc gfm->docx); pandoc.py gains convert_file_with_pandoc.",
+  "_rebaseline_2026_06_15_citations": "Citation help (#203): main_frame.py 22232->22320 for insert_citation (form-driven MLA/Chicago/APA builder) + command registration + command-map entry; main_frame_menu.py 2993->3001 for Insert > Insert Citation id/item/binding. New core module citations.py (pure)."
 }

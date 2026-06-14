@@ -65,3 +65,42 @@ def convert_document_with_pandoc(
         source_path=source_path,
         pandoc_path=str(status.path),
     )
+
+
+def convert_file_with_pandoc(
+    source_path: Path,
+    target_path: Path,
+    *,
+    from_format: str,
+    to_format: str,
+    tool_status: ExternalToolStatus | None = None,
+) -> Path:
+    """Convert ``source_path`` to ``target_path`` via Pandoc, writing to a file.
+
+    Used for binary outputs such as ``.docx`` where the result cannot be
+    captured as text. Pandoc maps Markdown headings to real Word heading
+    styles, so the produced document is navigable by a screen reader.
+    """
+    status = tool_status or get_external_tool_status("pandoc")
+    if not status.installed or not status.path:
+        raise PandocUnavailableError("Pandoc is not installed or bundled with Quill.")
+    command = [
+        str(status.path),
+        str(source_path),
+        "--from",
+        from_format,
+        "--to",
+        to_format,
+        "-o",
+        str(target_path),
+    ]
+    try:
+        subprocess.run(command, capture_output=True, check=True, text=True, timeout=120)
+    except OSError as error:
+        raise PandocUnavailableError(str(error)) from error
+    except subprocess.CalledProcessError as error:
+        details = error.stderr.strip() or error.stdout.strip() or str(error)
+        raise PandocConversionError(details) from error
+    except subprocess.TimeoutExpired as error:
+        raise PandocConversionError("Pandoc conversion timed out.") from error
+    return target_path

@@ -27,6 +27,7 @@ __all__ = [
     "markdown_to_html",
     "write_plain_text_document",
     "write_html_document",
+    "write_docx_document",
     "write_document_as",
     "format_label_for_path",
 ]
@@ -34,6 +35,7 @@ __all__ = [
 _HTML_SUFFIXES = {".html", ".htm", ".xhtml"}
 _PLAIN_SUFFIXES = {".txt", ".text"}
 _RTF_SUFFIXES = {".rtf"}
+_DOCX_SUFFIXES = {".docx"}
 
 _FENCE_RE = re.compile(r"^\s*(```|~~~)")
 _HEADING_RE = re.compile(r"^\s{0,3}(#{1,6})\s+(.*?)\s*#*\s*$")
@@ -212,15 +214,37 @@ def write_html_document(document: Document, path: Path | None = None) -> Path:
     return _write_utf8(document, target, markdown_to_html(document.text, title))
 
 
+def write_docx_document(document: Document, path: Path | None = None) -> Path:
+    """Write a document's Markdown markup out as a Word (.docx) file via Pandoc.
+
+    Pandoc maps Markdown headings, lists, emphasis, links, and simple tables to
+    real Word styles, so the result is a properly structured, screen-reader-
+    navigable document rather than flat text.
+    """
+    import tempfile
+
+    from quill.io.pandoc import convert_file_with_pandoc
+
+    target = path or document.path
+    if target is None:
+        raise ValueError("A path is required to save this document.")
+    with tempfile.TemporaryDirectory() as tmp:
+        source = Path(tmp) / "source.md"
+        source.write_text(document.text, encoding="utf-8", newline="\n")
+        convert_file_with_pandoc(source, Path(target), from_format="gfm", to_format="docx")
+    return Path(target)
+
+
 def write_document_as(
     document: Document, path: Path | None = None, *, plain_text_link_style: str = "text"
 ) -> Path:
     """Write ``document`` to ``path``, converting to the format of its extension.
 
-    ``.rtf`` re-serializes to RTF, ``.html``/``.htm``/``.xhtml`` render to HTML,
-    ``.txt``/``.text`` strip to plain text, and everything else (``.md`` and any
-    unknown extension) is written verbatim, since the canonical text already is
-    Markdown. ``plain_text_link_style`` controls how links survive the plain-text
+    ``.rtf`` re-serializes to RTF, ``.docx`` renders to Word via Pandoc,
+    ``.html``/``.htm``/``.xhtml`` render to HTML, ``.txt``/``.text`` strip to
+    plain text, and everything else (``.md`` and any unknown extension) is
+    written verbatim, since the canonical text already is Markdown.
+    ``plain_text_link_style`` controls how links survive the plain-text
     conversion (see :data:`LINK_STYLES`).
     """
     target = path or document.path
@@ -229,6 +253,8 @@ def write_document_as(
     suffix = Path(target).suffix.lower()
     if suffix in _RTF_SUFFIXES:
         return write_rtf_document(document, target)
+    if suffix in _DOCX_SUFFIXES:
+        return write_docx_document(document, target)
     if suffix in _HTML_SUFFIXES:
         return write_html_document(document, target)
     if suffix in _PLAIN_SUFFIXES:
@@ -241,6 +267,8 @@ def format_label_for_path(path: Path) -> str:
     suffix = Path(path).suffix.lower()
     if suffix in _RTF_SUFFIXES:
         return "rich text"
+    if suffix in _DOCX_SUFFIXES:
+        return "Word"
     if suffix in _HTML_SUFFIXES:
         return "HTML"
     if suffix in _PLAIN_SUFFIXES:

@@ -187,6 +187,7 @@ class MenuBuilderMixin:
         self._id_search_in_files = wx.NewIdRef()
         self._id_replace_in_files = wx.NewIdRef()
         self._id_insert_link = wx.NewIdRef()
+        self._id_insert_citation = wx.NewIdRef()
         self._id_follow_link = wx.NewIdRef()
         self._id_word_prediction = wx.NewIdRef()
         self._id_select_line = wx.NewIdRef()
@@ -890,6 +891,10 @@ class MenuBuilderMixin:
         insert_menu.Append(
             self._id_insert_link,
             self._menu_label("Insert &Link...", "edit.insert_link"),
+        )
+        insert_menu.Append(
+            self._id_insert_citation,
+            self._menu_label("Insert &Citation...", "edit.insert_citation"),
         )
         insert_menu.AppendSeparator()
         insert_menu.AppendSubMenu(heading_menu, "&Heading")
@@ -2060,6 +2065,7 @@ class MenuBuilderMixin:
             id=self._id_previous_document,
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.insert_link(), id=self._id_insert_link)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.insert_citation(), id=self._id_insert_citation)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.follow_link(), id=self._id_follow_link)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.start_selection(), id=self._id_start_selection)
         self.frame.Bind(

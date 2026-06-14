@@ -97,6 +97,7 @@
   "quill/ui/main_frame.py::MainFrame.go_to_page::wx.TextEntryDialog": "native",
   "quill/ui/main_frame.py::MainFrame.import_keyboard_pack_file::wx.FileDialog": "native",
   "quill/ui/main_frame.py::MainFrame.import_keymap_file::wx.FileDialog": "native",
+  "quill/ui/main_frame.py::MainFrame.insert_citation::show_web_form": "web",
   "quill/ui/main_frame.py::MainFrame.insert_html_tag::wx.TextEntryDialog": "native",
   "quill/ui/main_frame.py::MainFrame.insert_link::show_web_form": "web",
   "quill/ui/main_frame.py::MainFrame.insert_markdown_tag::wx.TextEntryDialog": "native",
