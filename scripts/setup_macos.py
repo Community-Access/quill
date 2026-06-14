@@ -50,7 +50,13 @@ APP = [str(_REPO_ROOT / "quill" / "platform" / "macos" / "macos_app.py")]
 
 OPTIONS = {
     "argv_emulation": False,
-    "packages": ["quill"],
+    # Packages listed here are copied into the bundle as real directory trees
+    # rather than packed into python311.zip. Pillow (PIL) ships native
+    # ``.dylibs`` (libjpeg, libfreetype, libwebp, ...); inside the zip those
+    # dylibs cannot be code-signed, which fails notarization. Keeping PIL
+    # unzipped puts them in ``PIL/.dylibs/`` where the inside-out signing pass
+    # in build_macos.sh reaches them.
+    "packages": ["quill", "PIL"],
     "includes": ["wx"],
     "plist": {
         "CFBundleName": APP_DISPLAY_NAME,

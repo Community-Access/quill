@@ -10318,6 +10318,8 @@ class MainFrame(
         def md_links(links: tuple[tuple[str, str], ...]) -> str:
             return "\n".join(f"- [{name}]({url})" for name, url in links)
 
+        from quill.core.contributors import contributor_bullet_list
+
         pyproject_path = self._pyproject_path()
         dependency_rows = build_dependency_notices(pyproject_path)
         bundled_rows = bundled_component_notices()
@@ -10345,7 +10347,11 @@ class MainFrame(
             "queue. Bundled Read Aloud voices (DECtalk and eSpeak NG) play immediately with "
             "no downloads; Piper and Kokoro models install through the Speech Center.\n\n"
             "## Links\n\n" + md_links(self._ABOUT_LINKS) + "\n\n"
-            "## Contributors on GitHub\n\n" + md_links(self._ABOUT_GITHUB_LINKS) + "\n\n"
+            "## Contributors\n\n"
+            "Everyone who has contributed to Quill on GitHub:\n\n"
+            + contributor_bullet_list()
+            + "\n\n"
+            "## Project on GitHub\n\n" + md_links(self._ABOUT_GITHUB_LINKS) + "\n\n"
             "## Dependencies and attributions\n\n"
             "The tables below are generated from declared project metadata and "
             "installed package metadata. "

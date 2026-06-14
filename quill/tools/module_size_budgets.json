@@ -29,7 +29,7 @@
         "quill/ui/main_frame_power_tools.py": 777,
         "quill/ui/main_frame_menu.py": 2870,
         "quill/core/read_aloud.py": 1244,
-        "quill/core/assistant_ai.py": 1264,
+        "quill/core/assistant_ai.py": 1300,
         "quill/core/features.py": 1029,
         "quill/ui/github_dialogs.py": 638,
         "quill/core/glow.py": 810,
@@ -88,5 +88,6 @@
     "_rebaseline_2026_06_13h": "QSP sound pack feature (feat/sound-notifications): settings_specs.py 1070 -> 1097 for 4 new specs (sound_enabled, sound_pack_path, sound_volume, sound_events_disabled); main_frame_abbreviations.py 147 -> 152 for updated _play_abbreviation_sound() that gates on is_active() before falling back to legacy winsound. Budget re-baselined to measured sizes.",
     "_rebaseline_2026_06_13i": "Backspace-after-expansion feature: settings_specs.py 1097 -> 1106 for abbreviation_backspace_behavior choice spec; main_frame_abbreviations.py 152 -> 202 for _pending_undo state, _try_undo_expansion() method (delete or revert), and ABBREVIATION_DELETED sound hook. Budget re-baselined to measured sizes.",
     "_rebaseline_2026_06_13j": "QSP completion: main_frame_quillins.py 610 -> 619 for register_quillin_sounds() call in _register_quillin_contributions (Quillin sound pack API). main_frame.py was 119 lines under its 21570 cap after this commit's additions; no rebaseline needed.",
-    "_rebaseline_2026_06_13k": "Sound toggle + per-event dialog: main_frame_menu.py 2850 -> 2870 for _id_toggle_sound/_id_sound_events NewIdRefs, two menu items in Reading & Dictation, two EVT_MENU binds. toggle_sound() and open_sound_events_dialog() added to main_frame.py (still under budget). New file sound_events_dialog.py not tracked."
+    "_rebaseline_2026_06_13k": "Sound toggle + per-event dialog: main_frame_menu.py 2850 -> 2870 for _id_toggle_sound/_id_sound_events NewIdRefs, two menu items in Reading & Dictation, two EVT_MENU binds. toggle_sound() and open_sound_events_dialog() added to main_frame.py (still under budget). New file sound_events_dialog.py not tracked.",
+    "_rebaseline_2026_06_14": "assistant_ai.py 1264 -> 1300 for feat(about) contributor-listing code (GitHub contributors API fetch, baked-in list). Budget missed the update when that commit merged to main; corrected here to restore a green gate."
 }

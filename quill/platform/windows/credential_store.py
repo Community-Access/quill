@@ -31,6 +31,7 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 _IS_WINDOWS = sys.platform == "win32"
+_IS_MACOS = sys.platform == "darwin"
 _PORTABLE_STORE_ENTROPY = b"quill-portable-keys-v1"
 
 
@@ -120,6 +121,15 @@ def load_secret(cred_name: str) -> str:
         return ""
 
     if not _IS_WINDOWS:
+        # macOS: the login Keychain is the real store (#160). Other platforms
+        # have no secure store, so a key simply isn't persisted there.
+        if _IS_MACOS:
+            try:
+                from quill.platform.macos.keychain import get_secret
+
+                return (get_secret(cred_name) or "").strip()
+            except Exception:  # noqa: BLE001 - keychain unavailable
+                return ""
         return ""
     try:
         from quill.platform.windows.credential_manager import (
@@ -155,6 +165,22 @@ def save_secret(cred_name: str, secret: str) -> None:
         return
 
     if not _IS_WINDOWS:
+        # macOS: persist to the login Keychain (#160). Empty secret clears it.
+        if _IS_MACOS:
+            try:
+                from quill.platform.macos.keychain import (
+                    delete_secret as _kc_delete,
+                )
+                from quill.platform.macos.keychain import (
+                    set_secret as _kc_set,
+                )
+
+                if secret:
+                    _kc_set(cred_name, secret)
+                else:
+                    _kc_delete(cred_name)
+            except Exception:  # noqa: BLE001 - keychain unavailable
+                pass
         return
     try:
         from quill.platform.windows.credential_manager import (
@@ -189,6 +215,21 @@ def delete_secret(cred_name: str) -> bool:
         return False
 
     if not _IS_WINDOWS:
+        # macOS: remove from the login Keychain, reporting whether it existed.
+        if _IS_MACOS:
+            try:
+                from quill.platform.macos.keychain import (
+                    delete_secret as _kc_delete,
+                )
+                from quill.platform.macos.keychain import (
+                    get_secret as _kc_get,
+                )
+
+                existed = _kc_get(cred_name) is not None
+                _kc_delete(cred_name)
+                return existed
+            except Exception:  # noqa: BLE001 - keychain unavailable
+                return False
         return False
     try:
         from quill.platform.windows.credential_manager import (
