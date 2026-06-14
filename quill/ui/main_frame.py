@@ -6748,6 +6748,27 @@ class MainFrame(
             pass
         return ""
 
+    def _file_dialog_default_dir(self) -> str:
+        """Return the best initial directory for a file open/save dialog (#168).
+
+        Priority: session last-used dir → startup_folder setting → Documents → "".
+        startup_folder is the persistent user preference; _last_file_dir tracks the
+        most recent location within the current session and overrides it once set.
+        """
+        last = self._last_file_dir
+        if last and Path(last).is_dir():
+            return last
+        configured = getattr(self.settings, "startup_folder", "")
+        if configured and Path(configured).is_dir():
+            return configured
+        try:
+            docs = self._wx.StandardPaths.Get().GetDocumentsDir()
+            if docs and Path(docs).is_dir():
+                return docs
+        except Exception:
+            pass
+        return ""
+
     def open_file(
         self,
         path: Path | None = None,
