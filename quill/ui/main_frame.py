@@ -5239,11 +5239,23 @@ class MainFrame(
             wx.LEFT | wx.RIGHT | wx.TOP,
             8,
         )
+        # TE_RICH2 is required for screen-reader accessibility on Windows. A plain
+        # ES_READONLY EDIT control (the default for TE_MULTILINE | TE_READONLY) does
+        # not expose its value through UIA or IA2 when read-only, so NVDA and JAWS
+        # announce the field but read no content. Switching to a RichEdit control via
+        # TE_RICH2 fixes this — the accessible value is correctly reported.
+        # SetName gives the control a programmatic accessible name; the preceding
+        # StaticText label is not automatically associated with the TextCtrl on Windows
+        # so without SetName screen readers announce "edit" with no context.
+        # If the snapshot file was empty (e.g. Quill crashed before writing any
+        # content), preview_text is "". An empty string is indistinguishable from a
+        # control that failed to populate, so we show a descriptive fallback instead.
         preview_ctrl = wx.TextCtrl(
             dialog,
-            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP,
+            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP | wx.TE_RICH2,
         )
-        preview_ctrl.SetValue(preview_text)
+        preview_ctrl.SetName("Snapshot preview")
+        preview_ctrl.SetValue(preview_text if preview_text else "(snapshot is empty)")
         root.Add(preview_ctrl, 1, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
 
         root.Add(wx.StaticText(dialog, label="Logs folder"), 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
