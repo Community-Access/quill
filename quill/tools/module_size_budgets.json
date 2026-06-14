@@ -23,11 +23,12 @@
   "_rebaseline_2026_06_13c": "main_frame.py +26 for QUILL_PROFILE_STARTUP=1 timing instrumentation: per-task wall-clock tracking in _run_deferred_startup_tasks and _write_startup_timing helper. Tooling-only addition; zero runtime cost when env var is unset.",
   "_rebaseline_2026_06_13d": "main_frame.py +12 for _prewarm_webview_runtime crash-safety: EVT_WINDOW_DESTROY guard (_alive flag) prevents CallLater(5000) from calling methods on already-destroyed C++ objects when the frame closes before the fallback timer fires.",
   "_rebaseline_2026_06_13e": "main_frame.py +21 for screen-reader detection offloaded to daemon thread (_sr_detect_worker). Profiling showed tasklist subprocess was blocking the UI thread for 400-600 ms on startup. Status bar update goes through wx.CallAfter so the window is fully responsive while the subprocess runs.",
+  "_rebaseline_2026_06_13g": "main_frame.py +13 for first_run=True flag on run_startup_wizard and post-cancel disable prompt: when the user presses Escape on the first-run wizard, a MessageDialog asks whether to suppress the wizard on future startups.",
   "_rebaseline_2026_06_13f": "setup_wizard_pages.py given explicit budget entry at 635 (grew past default 600 cap). +15 for EVT_INIT_DIALOG focus fix and _focus_nav_button helper: SetDefaultItem(Next/Finish) so Enter triggers the correct navigation button, and EVT_INIT_DIALOG for initial focus surviving the Windows dialog-show sequence.",
   "_next_target_main_frame": 15000,
   "_default_cap": 600,
   "budgets": {
-    "quill/ui/main_frame.py": 21660,
+    "quill/ui/main_frame.py": 21673,
     "quill/ui/assistant_tools.py": 1877,
     "quill/ui/assistant_panel.py": 725,
     "quill/ui/main_frame_power_tools.py": 777,

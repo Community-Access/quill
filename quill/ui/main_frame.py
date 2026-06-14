@@ -20862,7 +20862,7 @@ class MainFrame(
         """Open the user guide, optionally scrolling to *section*."""
         self.open_user_guide()
 
-    def run_startup_wizard(self) -> None:
+    def run_startup_wizard(self, *, first_run: bool = False) -> None:
         from quill.core.settings import save_settings
         from quill.ui.setup_wizard import run_setup_wizard
 
@@ -20875,6 +20875,19 @@ class MainFrame(
             feature_manager.save()
             self._apply_accelerators()
             self._set_status("Personalise QUILL completed")
+        elif first_run:
+            # User pressed Escape or Cancel on the first-run wizard.  Ask
+            # whether they want to stop seeing it on every launch.
+            with self._wx.MessageDialog(
+                self.frame,
+                "The setup wizard will appear again next time QUILL starts.\n\n"
+                "Do you want to disable it so it does not open automatically?",
+                "Setup Wizard",
+                self._wx.YES_NO | self._wx.NO_DEFAULT | self._wx.ICON_QUESTION,
+            ) as dlg:
+                if self._show_modal_dialog(dlg, "Setup Wizard") == self._wx.ID_YES:
+                    self.settings.setup_wizard_completed = True
+                    save_settings(self.settings)
 
     def run_profile_onboarding(self) -> None:
         # Backward-compatible alias for older command IDs and automation scripts.
@@ -20892,7 +20905,7 @@ class MainFrame(
         # they do not double-up on top of the new flow.
         if not getattr(self.settings, "setup_wizard_completed", True):
             try:
-                self.run_startup_wizard()
+                self.run_startup_wizard(first_run=True)
             except Exception:
                 self._report_startup_task_failure("first-run setup wizard")
             for _flag in (
