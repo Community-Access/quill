@@ -1607,17 +1607,13 @@ def test_show_notifications_dialog_uses_close_for_affirmative_and_escape() -> No
         def SetEscapeId(self, value: int) -> None:
             self.escape_id = value
 
+        def SetSizer(self, _sizer: object) -> None:
+            return
+
         def Destroy(self) -> None:
             return
 
         def EndModal(self, _result: int) -> None:
-            return
-
-    class _Panel:
-        def __init__(self, _parent: object) -> None:
-            return
-
-        def SetSizer(self, _sizer: object) -> None:
             return
 
     class _BoxSizer:
@@ -1671,7 +1667,6 @@ def test_show_notifications_dialog_uses_close_for_affirmative_and_escape() -> No
         (),
         {
             "Dialog": _Dialog,
-            "Panel": _Panel,
             "BoxSizer": _BoxSizer,
             "StaticText": _StaticText,
             "ListBox": _ListBox,

@@ -332,8 +332,6 @@ class QuillinsMenuMixin:
             title="Quillins Manager",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        panel = wx.Panel(dialog)
-        outer = wx.BoxSizer(wx.VERTICAL)
         body = wx.BoxSizer(wx.VERTICAL)
 
         if self._quillins_enabled():
@@ -347,28 +345,28 @@ class QuillinsMenuMixin:
                 "Quillins are disabled in this build and are listed for review "
                 "only. Choose a Quillin to read its details."
             )
-        body.Add(wx.StaticText(panel, label=intro_text), 0, wx.ALL | wx.EXPAND, 8)
+        body.Add(wx.StaticText(dialog, label=intro_text), 0, wx.ALL | wx.EXPAND, 8)
 
         labels = [self._quillin_list_label(item) for item in installed] or [
             "(no Quillins installed)"
         ]
-        chooser = wx.ListBox(panel, choices=labels)
+        chooser = wx.ListBox(dialog, choices=labels)
         chooser.SetName("Installed Quillins")
         if installed:
             chooser.SetSelection(0)
         body.Add(chooser, 1, wx.ALL | wx.EXPAND, 8)
 
-        body.Add(wx.StaticText(panel, label="&Details"), 0, wx.LEFT | wx.RIGHT, 8)
-        details = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY)
+        body.Add(wx.StaticText(dialog, label="&Details"), 0, wx.LEFT | wx.RIGHT, 8)
+        details = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
         details.SetName("Quillin details")
         body.Add(details, 1, wx.ALL | wx.EXPAND, 8)
 
-        enable_button = wx.Button(panel, label="&Enable")
-        disable_button = wx.Button(panel, label="&Disable")
-        reload_button = wx.Button(panel, label="&Reload")
-        remove_button = wx.Button(panel, label="Re&move...")
-        install_button = wx.Button(panel, label="&Install from Folder...")
-        close_button = wx.Button(panel, id=wx.ID_OK, label="&Close")
+        enable_button = wx.Button(dialog, label="&Enable")
+        disable_button = wx.Button(dialog, label="&Disable")
+        reload_button = wx.Button(dialog, label="&Reload")
+        remove_button = wx.Button(dialog, label="Re&move...")
+        install_button = wx.Button(dialog, label="&Install from Folder...")
+        close_button = wx.Button(dialog, id=wx.ID_OK, label="&Close")
 
         actions = wx.BoxSizer(wx.HORIZONTAL)
         for button in (enable_button, disable_button, reload_button, remove_button, install_button):
@@ -380,9 +378,7 @@ class QuillinsMenuMixin:
         button_sizer.Realize()
         body.Add(button_sizer, 0, wx.EXPAND | wx.ALL, 8)
 
-        panel.SetSizer(body)
-        outer.Add(panel, 1, wx.EXPAND)
-        dialog.SetSizerAndFit(outer)
+        dialog.SetSizerAndFit(body)
         dialog.SetSize((640, 560))
         if hasattr(dialog, "CentreOnParent"):
             dialog.CentreOnParent()

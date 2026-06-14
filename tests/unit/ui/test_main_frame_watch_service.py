@@ -68,7 +68,7 @@ def test_apply_watch_folder_menu_state_uses_service_running() -> None:
 def test_watch_profile_manager_dialog_is_accessible() -> None:
     assert "def open_watch_folder_settings(self) -> None:" in SOURCE
     assert 'title="Watch Folder Profiles"' in SOURCE
-    assert "panel = wx.Panel(dialog)" in SOURCE
+    assert "panel = wx.Panel(dialog)" not in SOURCE
     assert 'listbox.SetName("Watch folder profile list")' in SOURCE
     assert "def _edit_watch_profile(self, profile: WatchProfile | None)" in SOURCE
 
@@ -114,7 +114,7 @@ def test_watch_profile_editor_has_consent_and_dry_run_preview() -> None:
     # WATCH-6: per-profile AI consent control and a side-effect-free dry-run preview.
     assert 'consent.SetName("AI consent for this profile")' in SOURCE
     assert "def _watch_ai_consent_detail(self) -> str:" in SOURCE
-    assert 'preview_button = wx.Button(panel, label="Pre&view (dry run)")' in SOURCE
+    assert 'preview_button = wx.Button(dialog, label="Pre&view (dry run)")' in SOURCE
     assert "self._watch_service.registry.dry_run(" in SOURCE
     assert "def _watch_dry_run_sample(self, profile: WatchProfile) -> Path:" in SOURCE
 

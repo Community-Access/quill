@@ -134,14 +134,15 @@ def test_modal_ids_route_through_dialog_contract() -> None:
     assert "apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_OK)" in manager
 
 
-def test_panel_owns_its_control_tree() -> None:
-    # Controls are parented to a panel whose sizer is set, then the panel is added
-    # to the outer dialog sizer (consistent parent ownership rule).
+def test_controls_parented_directly_on_dialog() -> None:
+    # Controls must be parented directly on the dialog (not on an inner panel)
+    # so NVDA users do not have to navigate into a group before reaching controls.
     manager = _QUILLINS[_QUILLINS.index("def open_quillins_manager") :]
-    assert "panel = wx.Panel(dialog)" in manager
-    assert "panel.SetSizer(body)" in manager
-    assert "outer.Add(panel" in manager
-    assert "dialog.SetSizerAndFit(outer)" in manager
+    assert "panel = wx.Panel(dialog)" not in manager
+    assert "wx.StaticText(dialog," in manager
+    assert "wx.ListBox(dialog," in manager
+    assert "wx.Button(dialog," in manager
+    assert "dialog.SetSizerAndFit(body)" in manager
 
 
 def test_host_services_never_imports_wx_into_core() -> None:
