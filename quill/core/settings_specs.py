@@ -186,6 +186,14 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("confirm", "prompt", "destructive", "safety"),
     ),
     SettingSpec(
+        "startup_folder",
+        "Default file-open folder",
+        "general",
+        "text",
+        "Initial folder for Open and Save As dialogs. Leave blank to use the Documents folder.",
+        keywords=("startup folder", "default folder", "open folder", "file dialog", "start folder"),
+    ),
+    SettingSpec(
         "default_new_document_format",
         "Default new-document format",
         "general",
@@ -305,7 +313,10 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "editing",
         "choice",
         "What to do when you press Backspace immediately after an abbreviation expands.",
-        choices=("delete", "revert"),
+        choices=(
+            ("delete", "Delete the expanded text"),
+            ("revert", "Revert to the typed abbreviation"),
+        ),
         keywords=("abbreviation", "backspace", "undo", "delete", "revert"),
     ),
     SettingSpec(
@@ -651,54 +662,22 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Comma-separated list of sound event IDs to silence, e.g. transcription_word_inserted.",
         keywords=("sound", "disable", "mute", "earcon", "events"),
     ),
-    # --- Indentation tone feedback (#182) ------------------------------------
-    SettingSpec(
-        "indent_tone_enabled",
-        "Play indentation tones",
-        "accessibility",
-        "bool",
-        "Play a musical tone when the cursor moves to a line with a different indent level. "
-        "Requires the Ink earcon pack and an indent tone pack to be loaded.",
-        keywords=("indent", "tone", "pitch", "code", "depth", "sound"),
-    ),
-    SettingSpec(
-        "indent_tone_mode",
-        "Indentation feedback mode",
-        "accessibility",
-        "choice",
-        "Whether indentation changes produce a tone, a speech announcement, or both.",
-        choices=(
-            ("tone", "Tone only"),
-            ("speech", "Speech only (e.g. 'indent 3')"),
-            ("both", "Tone and speech"),
-        ),
-        keywords=("indent", "tone", "speech", "mode", "announce"),
-    ),
     SettingSpec(
         "indent_tone_scale",
-        "Indentation tone scale",
+        "Indentation tones",
         "accessibility",
         "choice",
-        "Musical scale used for indentation tones. "
-        "Pentatonic has no dissonance and suits most users. "
-        "Chromatic gives one semitone per level for deep nesting.",
+        "Play a pitched tone as the caret moves across indent levels. The tone rises "
+        "as you go deeper and falls as you come back out. Choose the musical scale, or "
+        "Off to disable.",
         choices=(
-            ("pentatonic", "Pentatonic (recommended, no dissonance)"),
-            ("whole_tone", "Whole-tone (equal brightness steps)"),
-            ("diatonic", "Diatonic major (familiar, C major)"),
-            ("chromatic", "Chromatic (maximum pitch resolution)"),
+            ("", "Off"),
+            ("pentatonic", "Pentatonic (no dissonance)"),
+            ("whole_tone", "Whole tone (even steps)"),
+            ("diatonic", "Diatonic C major (familiar)"),
+            ("chromatic", "Chromatic (one semitone per level)"),
         ),
-        keywords=("indent", "scale", "pentatonic", "chromatic", "pitch", "tone"),
-    ),
-    SettingSpec(
-        "indent_tone_direction_cue",
-        "Direction cue on indentation change",
-        "accessibility",
-        "bool",
-        "Add a brief spectral noise burst to each tone: high-frequency hiss when "
-        "going deeper, low-frequency thud when dedenting. Helps distinguish direction "
-        "without relying on pitch memory alone.",
-        keywords=("indent", "direction", "cue", "up", "down", "hiss", "thud"),
+        keywords=("sound", "indent", "indentation", "tone", "pitch", "code", "earcon"),
     ),
     # --- Read Aloud --------------------------------------------------------
     SettingSpec(
@@ -898,6 +877,23 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Default model ID used when running prompt-library prompts."
         " Leave blank to fall back to the Ask AI default model.",
         keywords=("ai", "prompt", "model", "prompt library", "grammar"),
+    ),
+    # --- Bug reporting --------------------------------------------------------
+    SettingSpec(
+        "bug_reporter_name",
+        "Bug reporter name",
+        "general",
+        "text",
+        "Your name, pre-filled in the Report a Bug dialog for convenience.",
+        keywords=("name", "bug", "report", "contact"),
+    ),
+    SettingSpec(
+        "bug_reporter_email",
+        "Bug reporter email",
+        "general",
+        "text",
+        "Your contact email, pre-filled in the Report a Bug dialog for convenience.",
+        keywords=("email", "bug", "report", "contact"),
     ),
     # --- Transcription -----------------------------------------------------
     SettingSpec(

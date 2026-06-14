@@ -585,6 +585,35 @@ class PowerToolsActionsMixin:
         if message is not None:
             self._announce(message)
 
+    def _maybe_play_indent_tone(self) -> None:
+        """Play a pitched tone when the caret moves to a new indent level.
+
+        Off unless the user picks a scale in Preferences (``indent_tone_scale``).
+        The level is ``indent columns // indent size`` clamped to 0-7, matching
+        the 8 levels the tone packs ship. Blank / whitespace-only lines hold the
+        previous level so cursoring through gaps stays silent.
+        """
+        scale = str(getattr(self.settings, "indent_tone_scale", "") or "")
+        if not scale:
+            return
+        text = self.editor.GetValue()
+        cursor = self.editor.GetInsertionPoint()
+        line_start = text.rfind("\n", 0, cursor) + 1
+        newline = text.find("\n", cursor)
+        line_end = len(text) if newline == -1 else newline
+        if not text[line_start:line_end].strip():
+            return
+        indent_size = int(getattr(self.settings, "indent_size", 4) or 4)
+        level = max(0, min(7, self._current_indent_columns() // max(1, indent_size)))
+        previous = getattr(self, "_indent_tone_last_level", None)
+        self._indent_tone_last_level = level
+        if previous is None or level == previous:
+            return
+        direction = "up" if level > previous else "down"
+        from quill.ui.sound_manager import post_sound
+
+        post_sound(f"indent_level_{level}_{direction}")
+
     def infer_indent(self) -> None:
         unit = infer_indent_unit(self.editor.GetValue())
         description = describe_indent_unit(unit)

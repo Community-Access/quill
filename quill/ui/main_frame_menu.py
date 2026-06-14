@@ -491,6 +491,15 @@ class MenuBuilderMixin:
         self._id_next_token = wx.NewIdRef()
         self._id_previous_token = wx.NewIdRef()
         self._id_set_language = wx.NewIdRef()
+        self._id_speak_window_title = wx.NewIdRef()
+        self._id_speak_full_path = wx.NewIdRef()
+        self._id_speak_status_summary = wx.NewIdRef()
+        self._id_compare_start_with_file = wx.NewIdRef()
+        self._id_compare_next = wx.NewIdRef()
+        self._id_compare_previous = wx.NewIdRef()
+        self._id_compare_current = wx.NewIdRef()
+        self._id_compare_toggle_whitespace = wx.NewIdRef()
+        self._id_compare_generate_report = wx.NewIdRef()
         self._id_next_structure = wx.NewIdRef()
         self._id_previous_structure = wx.NewIdRef()
         self._id_next_region = wx.NewIdRef()
@@ -564,6 +573,51 @@ class MenuBuilderMixin:
             self._id_set_language,
             self._menu_label("Set Document &Language...", "navigate.set_language"),
         )
+        navigate_menu.AppendSeparator()
+        navigate_menu.Append(
+            self._id_speak_window_title,
+            self._menu_label("Speak &Window Title", "navigate.speak_window_title"),
+        )
+        navigate_menu.Append(
+            self._id_speak_full_path,
+            self._menu_label("Speak &Full Path", "navigate.speak_full_path"),
+        )
+        navigate_menu.Append(
+            self._id_speak_status_summary,
+            self._menu_label("Speak &Status Summary", "navigate.speak_status_summary"),
+        )
+        navigate_menu.AppendSeparator()
+        compare_menu = wx.Menu()
+        compare_menu.Append(
+            self._id_compare_start_with_file,
+            self._menu_label("&Compare with File...", "compare.start_with_file"),
+        )
+        compare_menu.AppendSeparator()
+        compare_menu.Append(
+            self._id_compare_next,
+            self._menu_label("&Next Difference\tF8", "compare.next_difference"),
+        )
+        compare_menu.Append(
+            self._id_compare_previous,
+            self._menu_label("&Previous Difference\tShift+F8", "compare.previous_difference"),
+        )
+        compare_menu.Append(
+            self._id_compare_current,
+            self._menu_label(
+                "Read &Current Difference\tCtrl+F8",
+                "compare.current_difference_summary",
+            ),
+        )
+        compare_menu.AppendSeparator()
+        compare_menu.Append(
+            self._id_compare_toggle_whitespace,
+            self._menu_label("Toggle &Ignore Whitespace", "compare.toggle_ignore_whitespace"),
+        )
+        compare_menu.Append(
+            self._id_compare_generate_report,
+            self._menu_label("&Generate Accessible Report", "compare.generate_accessible_report"),
+        )
+        navigate_menu.AppendSubMenu(compare_menu, "&Compare")
         navigate_menu.AppendSeparator()
         navigate_menu.Append(
             self._id_outline_navigator,
@@ -1549,7 +1603,6 @@ class MenuBuilderMixin:
         customize_support_menu.Append(self._id_reset_keymap, "&Reset Keymap")
         customize_support_menu.AppendSeparator()
         customize_support_menu.Append(self._id_notifications, "Show &Notifications")
-        customize_support_menu.Append(self._id_report_bug, "&Report a Bug...")
         customize_support_menu.Append(self._id_save_diagnostics, "Save &Diagnostics...")
         customize_support_menu.Append(self._id_open_logs_folder, "Open &Logs Folder")
         customize_support_menu.Append(
@@ -2167,6 +2220,66 @@ class MenuBuilderMixin:
             wx.EVT_MENU,
             lambda _e: self.match_bracket(),
             id=self._id_match_bracket,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.navigate_next_token(),
+            id=self._id_next_token,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.navigate_previous_token(),
+            id=self._id_previous_token,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.set_document_language(),
+            id=self._id_set_language,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.speak_window_title(),
+            id=self._id_speak_window_title,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.speak_full_path(),
+            id=self._id_speak_full_path,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.speak_status_summary(),
+            id=self._id_speak_status_summary,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.compare_start_with_file(),
+            id=self._id_compare_start_with_file,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.compare_dialog_next(),
+            id=self._id_compare_next,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.compare_dialog_previous(),
+            id=self._id_compare_previous,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.compare_current_summary(),
+            id=self._id_compare_current,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.compare_toggle_ignore_whitespace(),
+            id=self._id_compare_toggle_whitespace,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.compare_generate_report(),
+            id=self._id_compare_generate_report,
         )
         self.frame.Bind(
             wx.EVT_MENU,

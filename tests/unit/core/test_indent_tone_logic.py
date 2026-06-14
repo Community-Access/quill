@@ -9,7 +9,7 @@ from __future__ import annotations
 import pytest
 
 # ---------------------------------------------------------------------------
-# Level calculation helpers (mirrors main_frame._on_indent_tone_update logic)
+# Level calculation helpers (mirror main_frame_power_tools._maybe_play_indent_tone)
 # ---------------------------------------------------------------------------
 
 

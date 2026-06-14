@@ -82,3 +82,87 @@ def test_main_version_prints_and_exits(
     captured = capsys.readouterr()
     assert result == 0
     assert captured.out.strip() == __version__
+
+
+# ---------------------------------------------------------------------------
+# --goto parsing (#192)
+# ---------------------------------------------------------------------------
+
+
+def test_parse_goto_path_only(tmp_path: Path) -> None:
+    f = tmp_path / "notes.txt"
+    f.write_text("hi", encoding="utf-8")
+    path, line, col = entry._parse_goto(str(f))
+    assert path == f
+    assert line is None
+    assert col is None
+
+
+def test_parse_goto_path_and_line(tmp_path: Path) -> None:
+    f = tmp_path / "main.kt"
+    f.write_text("fun main() {}", encoding="utf-8")
+    path, line, col = entry._parse_goto(f"{f}:42")
+    assert path == f
+    assert line == 42
+    assert col is None
+
+
+def test_parse_goto_path_line_and_col(tmp_path: Path) -> None:
+    f = tmp_path / "main.kt"
+    f.write_text("fun main() {}", encoding="utf-8")
+    path, line, col = entry._parse_goto(f"{f}:10:5")
+    assert path == f
+    assert line == 10
+    assert col == 5
+
+
+def test_parse_goto_nonexistent_file_returns_nones() -> None:
+    path, line, col = entry._parse_goto("/does/not/exist.txt:5:2")
+    assert path is None
+    assert line is None
+    assert col is None
+
+
+def test_launch_configuration_goto_builds_request(tmp_path: Path) -> None:
+    f = tmp_path / "main.go"
+    f.write_text("package main", encoding="utf-8")
+    parsed = entry._parse_cli_arguments(["--goto", f"{f}:7:3"])
+    requests, *_ = entry._launch_configuration(parsed)
+    assert len(requests) == 1
+    assert requests[0].path == f.resolve()
+    assert requests[0].line == 7
+    assert requests[0].column == 3
+    assert requests[0].action == "open"
+
+
+# ---------------------------------------------------------------------------
+# --diff parsing (#192)
+# ---------------------------------------------------------------------------
+
+
+def test_parse_cli_arguments_diff_flag_captured() -> None:
+    parsed = entry._parse_cli_arguments(["--diff", "old.kt", "new.kt"])
+    assert parsed.diff == ["old.kt", "new.kt"]
+
+
+def test_launch_configuration_diff_builds_compare_request(tmp_path: Path) -> None:
+    left = tmp_path / "old.kt"
+    right = tmp_path / "new.kt"
+    left.write_text("val x = 1", encoding="utf-8")
+    right.write_text("val x = 2", encoding="utf-8")
+    parsed = entry._parse_cli_arguments(["--diff", str(left), str(right)])
+    requests, *_ = entry._launch_configuration(parsed)
+    assert len(requests) == 1
+    req = requests[0]
+    assert req.path == left.resolve()
+    assert req.diff_with == right.resolve()
+    assert req.action == "compare"
+
+
+def test_launch_configuration_diff_missing_file_ignored(tmp_path: Path) -> None:
+    left = tmp_path / "old.kt"
+    left.write_text("val x = 1", encoding="utf-8")
+    missing = tmp_path / "missing.kt"
+    parsed = entry._parse_cli_arguments(["--diff", str(left), str(missing)])
+    requests, *_ = entry._launch_configuration(parsed)
+    assert len(requests) == 0

@@ -29,6 +29,8 @@ IMAGE_EXTENSIONS: tuple[str, ...] = (
     ".bmp",
     ".gif",
     ".webp",
+    ".heic",
+    ".heif",
 )
 PDF_EXTENSIONS: tuple[str, ...] = (".pdf",)
 TEXT_EXTENSIONS: tuple[str, ...] = (".txt",)

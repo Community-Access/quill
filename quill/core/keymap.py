@@ -49,8 +49,11 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "file.manage_remote_sites": "Ctrl+Shift+Grave, Shift+M",  # QUILL-key chord
     "file.close_document": "Ctrl+W",
     "file.print": "Ctrl+P",
-    "window.next_document": "Ctrl+Shift+Grave, Tab",
-    "window.previous_document": "Ctrl+Shift+Grave, Shift+Tab",
+    "window.next_document": "Ctrl+Tab",
+    "window.previous_document": "Ctrl+Shift+Tab",
+    "navigate.speak_window_title": "Ctrl+Shift+Grave, F",
+    "navigate.speak_full_path": "Ctrl+Shift+Grave, P",
+    "navigate.speak_status_summary": "Ctrl+Shift+Grave, Q",
     "view.send_to_tray": "Ctrl+Shift+Grave, T",
     "view.toggle_soft_wrap": "Alt+Z",
     "view.toggle_tab_control": "Ctrl+Shift+Grave, Shift+T",
@@ -291,8 +294,8 @@ def merge_keymaps(raw: object) -> dict[str, str]:
         # Find returns to the conventional Ctrl+F. It had briefly defaulted to the
         # QUILL-key prefix; rewrite that stale saved binding on load.
         "edit.find": ("CTRL+SHIFT+GRAVE, F", "Ctrl+F"),
-        "window.next_document": ("CTRL+TAB", "Ctrl+Shift+Grave, Tab"),
-        "window.previous_document": ("CTRL+SHIFT+TAB", "Ctrl+Shift+Grave, Shift+Tab"),
+        # window.next_document / previous_document: Ctrl+Tab restored as default
+        # in #190; no legacy rebinding needed.
         "view.send_to_tray": ("CTRL+ALT+T", "Ctrl+Shift+Grave, T"),
         "view.toggle_tab_control": ("CTRL+ALT+SHIFT+T", "Ctrl+Shift+Grave, Shift+T"),
         "navigate.heading_organizer": ("CTRL+ALT+SHIFT+H", "Ctrl+Shift+Grave, O"),

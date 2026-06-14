@@ -4,12 +4,24 @@ __pycache__/
 .ruff_cache/
 .venv/
 *.pyc
+build/
 dist/
 windows-distribution/
+windows-distribution-smoke/
 release-artifacts/
 release-dist-*/
 release-artifacts-*/
 installer-smoke*/
+
+# Local profiling / smoke-run artifacts (never committed)
+baseline_stdout.txt
+safemode_stdout.txt
+profile_stdout.txt
+profile_stderr.txt
+profile_run2.txt
+pyspy_run.txt
+startup_pyspy.svg
+x.html
 *.log
 .quill-reqs.sha256
 kokoro/_hf_cache/

@@ -43,9 +43,17 @@ _log = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 
-class _WelcomePage(wx.Panel):
-    def __init__(self, parent: wx.Window, settings: Settings) -> None:
+class _WizardPage(wx.Panel):
+    """Base for all wizard page panels."""
+
+    def __init__(self, parent: wx.Window, name: str) -> None:
         super().__init__(parent)
+        self.SetName(name)
+
+
+class _WelcomePage(_WizardPage):
+    def __init__(self, parent: wx.Window, settings: Settings) -> None:
+        super().__init__(parent, "Welcome")
         sizer = wx.BoxSizer(wx.VERTICAL)
         heading = wx.StaticText(
             self,
@@ -73,11 +81,9 @@ class _WelcomePage(wx.Panel):
         pass
 
 
-class _KeyboardSoundPage(wx.Panel):
-    """Page 1 - keyboard pack and earcon / sound preferences."""
-
+class _KeyboardSoundPage(_WizardPage):
     def __init__(self, parent: wx.Window, settings: Settings) -> None:
-        super().__init__(parent)
+        super().__init__(parent, "Keyboard and Sound")
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         heading = wx.StaticText(self, label="Keyboard and Sound", name="wizard.kb_heading")
@@ -126,11 +132,9 @@ class _KeyboardSoundPage(wx.Panel):
         settings.keyboard_pack = self._pack.GetStringSelection() or "QUILL Default"
 
 
-class _ProfilePage(wx.Panel):
-    """Page 2 - feature profile selection."""
-
+class _ProfilePage(_WizardPage):
     def __init__(self, parent: wx.Window, feature_manager: FeatureManager) -> None:
-        super().__init__(parent)
+        super().__init__(parent, "Feature Profile")
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         heading = wx.StaticText(self, label="Feature Profile", name="wizard.profile_heading")
@@ -176,11 +180,9 @@ class _ProfilePage(wx.Panel):
                 return
 
 
-class _RemoteAccessPage(wx.Panel):
-    """Page 3 - remote access on/off."""
-
+class _RemoteAccessPage(_WizardPage):
     def __init__(self, parent: wx.Window, feature_manager: FeatureManager) -> None:
-        super().__init__(parent)
+        super().__init__(parent, "Remote Access")
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         heading = wx.StaticText(self, label="Remote Access", name="wizard.remote_heading")
@@ -213,11 +215,9 @@ class _RemoteAccessPage(wx.Panel):
         overrides["core.remote"] = state
 
 
-class _AIPage(wx.Panel):
-    """Page 4 - AI assistance on/off."""
-
+class _AIPage(_WizardPage):
     def __init__(self, parent: wx.Window, feature_manager: FeatureManager) -> None:
-        super().__init__(parent)
+        super().__init__(parent, "AI Assistance")
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         heading = wx.StaticText(self, label="AI Assistance", name="wizard.ai_heading")
@@ -266,11 +266,9 @@ class _AIPage(wx.Panel):
         overrides["future.ai"] = state
 
 
-class _ReadingAccessibilityPage(wx.Panel):
-    """Page 5 - read aloud + accessibility announcements."""
-
+class _ReadingAccessibilityPage(_WizardPage):
     def __init__(self, parent: wx.Window, settings: Settings) -> None:
-        super().__init__(parent)
+        super().__init__(parent, "Reading and Accessibility")
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         heading = wx.StaticText(
@@ -324,11 +322,9 @@ class _ReadingAccessibilityPage(wx.Panel):
                 settings.announcement_verbosity = data
 
 
-class _WritingToolsPage(wx.Panel):
-    """Page 6 - spell check, word prediction, autocorrect."""
-
+class _WritingToolsPage(_WizardPage):
     def __init__(self, parent: wx.Window, settings: Settings) -> None:
-        super().__init__(parent)
+        super().__init__(parent, "Writing Tools")
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         heading = wx.StaticText(self, label="Writing Tools", name="wizard.writing_heading")
@@ -375,11 +371,9 @@ class _WritingToolsPage(wx.Panel):
         settings.autoformat_smart_quotes = self._smart_quotes.GetValue()
 
 
-class _StartupBehaviourPage(wx.Panel):
-    """Page 7 - startup and window behaviour."""
-
+class _StartupBehaviourPage(_WizardPage):
     def __init__(self, parent: wx.Window, settings: Settings) -> None:
-        super().__init__(parent)
+        super().__init__(parent, "Startup Behaviour")
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         heading = wx.StaticText(self, label="Startup Behaviour", name="wizard.startup_heading")
@@ -426,11 +420,9 @@ class _StartupBehaviourPage(wx.Panel):
         settings.tray_enabled = self._tray.GetValue()
 
 
-class _SummaryPage(wx.Panel):
-    """Page 8 - summary of what will be applied."""
-
+class _SummaryPage(_WizardPage):
     def __init__(self, parent: wx.Window) -> None:
-        super().__init__(parent)
+        super().__init__(parent, "Summary")
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         heading = wx.StaticText(self, label="You are all set!", name="wizard.summary_heading")
@@ -519,6 +511,15 @@ class SetupWizardDialog(wx.Dialog):
         self.Fit()
         self.CentreOnParent()
         apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
+        # SetFocus() during __init__ doesn't survive the Windows dialog-show
+        # sequence.  EVT_INIT_DIALOG (WM_INITDIALOG) fires just before the
+        # window is shown, but Windows runs its own post-INITDIALOG focus reset
+        # afterward — overwriting our SetFocus call with the Cancel button.
+        # wx.CallAfter defers _focus_nav_button to the next event-loop tick,
+        # which runs AFTER Windows finishes its own initialisation, so our
+        # choice wins.  The Navigate() binding previously on _WizardPage panels
+        # was also removed: Navigate() without a focusable child calls wxBell().
+        self.Bind(wx.EVT_INIT_DIALOG, lambda _e: wx.CallAfter(self._focus_nav_button))
 
     def _build_pages(self) -> list[wx.Panel]:
         return [
@@ -588,8 +589,18 @@ class SetupWizardDialog(wx.Dialog):
                 summary_page.update_summary(
                     self._settings, self._pending_overrides, self._feature_manager
                 )
+        self._focus_nav_button()
+
+    def _focus_nav_button(self) -> None:
+        # SetDefaultItem makes Enter trigger the active nav button regardless
+        # of which page control currently holds focus — without it, Windows
+        # picks Cancel as the default (because Next/Finish have no standard ID).
+        total = len(self._pages)
+        if self._current_page == total - 1:
+            self.SetDefaultItem(self._finish_btn)
             self._finish_btn.SetFocus()
         else:
+            self.SetDefaultItem(self._next_btn)
             self._next_btn.SetFocus()
 
     def _collect_current(self) -> None:

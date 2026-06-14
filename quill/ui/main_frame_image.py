@@ -5,7 +5,7 @@ module-size budget (the OCR-3 clipboard/screen capture work and the on-demand
 image-description feature live here). The methods reference ``self`` attributes
 and helpers that live on :class:`MainFrame` (``self._wx``, ``self.frame``,
 ``self.editor``, ``self.settings``, ``self._set_status``, ``self._announce``,
-``self._enter_region``, ``self._exit_region``, ``self._show_modal_dialog``,
+``self._region_tracker``, ``self._show_modal_dialog``,
 ``self._show_message_box``), so every call resolves identically through the
 method-resolution order. No behavior changed for the existing file-OCR and
 describe-image paths; OCR-3 adds clipboard and screen-capture OCR entry points
@@ -207,8 +207,8 @@ class ImageCaptureMixin:
         review_dialog = OcrReviewDialog(self.frame, review_title, rendered_text)
         choice = review_dialog.show_modal(
             announce=self._announce,
-            enter_region=self._enter_region,
-            exit_region=self._exit_region,
+            enter_region=self._region_tracker.enter,
+            exit_region=self._region_tracker.exit,
         )
 
         if choice == OcrReviewDialog.ID_INSERT:
@@ -299,8 +299,10 @@ class ImageCaptureMixin:
                 self.frame,
                 title,
                 wildcard=(
-                    "Image files (*.png;*.jpg;*.jpeg;*.tif;*.tiff;*.bmp;*.gif;*.webp)|"
-                    "*.png;*.jpg;*.jpeg;*.tif;*.tiff;*.bmp;*.gif;*.webp|All files (*.*)|*.*"
+                    "Image files (*.png;*.jpg;*.jpeg;*.tif;*.tiff;*.bmp;*.gif;*.webp;"
+                    "*.heic;*.heif)|"
+                    "*.png;*.jpg;*.jpeg;*.tif;*.tiff;*.bmp;*.gif;*.webp;*.heic;*.heif|"
+                    "All files (*.*)|*.*"
                 ),
                 style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
             ) as dialog:
@@ -431,8 +433,8 @@ class ImageCaptureMixin:
         review_dialog = OcrReviewDialog(self.frame, _TITLE, str(description))
         choice = review_dialog.show_modal(
             announce=self._announce,
-            enter_region=self._enter_region,
-            exit_region=self._exit_region,
+            enter_region=self._region_tracker.enter,
+            exit_region=self._region_tracker.exit,
         )
         if choice == OcrReviewDialog.ID_INSERT:
             pos = self.editor.GetInsertionPoint()

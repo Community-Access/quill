@@ -238,6 +238,19 @@ def generate_all() -> None:
         vol=0.75,
     )
 
+    # -- autocomplete_accepted: crisp double-tick snap (distinct from expand) -
+    # A bright two-step triangle "snap into place"; shorter and harder-edged
+    # than expand's soft noise+sine sweep so the two never sound alike.
+    write_wav(
+        "autocomplete.wav",
+        _concat(
+            _tone(880, 28, tri_at, _swell_env(2, 6, 0.3, 10)),
+            _silence(6),
+            _tone(1320, 42, tri_at, _swell_env(2, 8, 0.35, 16)),
+        ),
+        vol=0.55,
+    )
+
     # -- document_saved: very soft low tick with 2nd harmonic (settled) ------
     def save_env(i: int, n: int) -> float:
         return exp_decay(i, 30) * edge(i, n, 3)
@@ -339,6 +352,35 @@ def generate_all() -> None:
 
     # -- ai_response_received: exact time-reverse of ai_start ----------------
     write_wav("ai_done.wav", list(reversed(ai_start_samples)), vol=0.65)
+
+    # -- ai_error: descending AI arpeggio over a soft buzz (distinct) --------
+    # Ties to the AI sound family (arpeggio shape) but clearly negative: a
+    # minor descending three-note figure with a square-wave underlay, so it
+    # is never mistaken for ai_done (the bright reverse of ai_start) or for
+    # the generic error buzz.
+    def ai_err_env(i: int, n: int) -> float:
+        return adsr(i, n, ms(2), ms(8), 0.35, ms(14))
+
+    write_wav(
+        "ai_error.wav",
+        _concat(
+            _mix(
+                _tone(784, 55, sine_at, ai_err_env),
+                _tone(784, 55, sqr_at, lambda i, n: ai_err_env(i, n) * 0.18),
+            ),
+            _silence(8),
+            _mix(
+                _tone(523, 55, sine_at, ai_err_env),
+                _tone(523, 55, sqr_at, lambda i, n: ai_err_env(i, n) * 0.18),
+            ),
+            _silence(8),
+            _mix(
+                _tone(392, 80, sine_at, ai_err_env),
+                _tone(392, 80, sqr_at, lambda i, n: ai_err_env(i, n) * 0.22),
+            ),
+        ),
+        vol=0.60,
+    )
 
     # -- error: double square-wave buzz (intentionally harsh) ----------------
     def buzz_env(i: int, n: int) -> float:

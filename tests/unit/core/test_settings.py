@@ -284,6 +284,31 @@ def test_settings_glow_consent_round_trips(monkeypatch: pytest.MonkeyPatch, tmp_
     assert loaded.glow_language_processing_consent is True
 
 
+def test_settings_indent_tone_scale_round_trips(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    (tmp_path / "settings.json").write_text(
+        '{"indent_tone_scale":"pentatonic"}',
+        encoding="utf-8",
+    )
+    loaded = load_settings()
+    assert loaded.indent_tone_scale == "pentatonic"
+
+
+def test_settings_rejects_unknown_indent_tone_scale(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    (tmp_path / "settings.json").write_text(
+        '{"indent_tone_scale":"bogus"}',
+        encoding="utf-8",
+    )
+    loaded = load_settings()
+    # Unknown scales fall back to off rather than loading a missing pack.
+    assert loaded.indent_tone_scale == ""
+
+
 def test_settings_clamps_watch_folder_poll_interval(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:

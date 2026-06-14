@@ -170,6 +170,7 @@ class _SoundManager:
         volume = int(getattr(settings, "sound_volume", 80))
         events_disabled_raw = str(getattr(settings, "sound_events_disabled", ""))
         disabled = frozenset(e.strip() for e in events_disabled_raw.split(",") if e.strip())
+        new_indent_scale = str(getattr(settings, "indent_tone_scale", ""))
 
         if not self.enabled:
             self.player.set_muted(True)
@@ -182,10 +183,15 @@ class _SoundManager:
             self._pack_path = new_pack_path
             self._load_pack(new_pack_path, disabled)
             # Re-apply indent overlay after primary pack reload.
-            if self._indent_scale:
-                self.load_indent_tone_pack(self._indent_scale)
+            if new_indent_scale:
+                self.load_indent_tone_pack(new_indent_scale)
         else:
             self.player.set_disabled(disabled)
+
+        # Switch the indent tone overlay when the chosen scale changes (including
+        # turning it off, which clears the overlay).
+        if new_indent_scale != self._indent_scale:
+            self.load_indent_tone_pack(new_indent_scale)
 
         self._apply_volume(volume)
 
@@ -234,14 +240,38 @@ class _SoundManager:
         sound_events: tuple[tuple[str, str], ...],
     ) -> None:
         """Merge WAV bytes from a Quillin's sound_pack into the active player pack."""
-        pack_dir = directory / sound_pack
-        if not pack_dir.is_dir():
+        from quill.core.sound_pack import _path_is_unsafe
+
+        # A Quillin is sandboxed: every path it supplies must stay inside its own
+        # bundle. Reject traversal/absolute segments before touching the disk so a
+        # malicious manifest cannot point register_event() at a file outside the
+        # extension directory. (The .qsp loader already guards this; the Quillin
+        # API builds paths by hand, so it must guard too.)
+        bundle_root = directory.resolve()
+        if _path_is_unsafe(sound_pack):
+            logger.debug(
+                "SoundManager: Quillin %s sound_pack path rejected (unsafe): %s",
+                quillin_id,
+                sound_pack,
+            )
+            return
+        pack_dir = (directory / sound_pack).resolve()
+        if not pack_dir.is_dir() or bundle_root not in (pack_dir, *pack_dir.parents):
             logger.debug(
                 "SoundManager: Quillin %s sound_pack dir not found: %s", quillin_id, pack_dir
             )
             return
         for event_id, wav_name in sound_events:
-            wav_path = pack_dir / wav_name
+            if _path_is_unsafe(wav_name):
+                logger.debug(
+                    "SoundManager: Quillin %s WAV name rejected (unsafe): %s",
+                    quillin_id,
+                    wav_name,
+                )
+                continue
+            wav_path = (pack_dir / wav_name).resolve()
+            if bundle_root not in (wav_path, *wav_path.parents):
+                continue
             if not wav_path.is_file():
                 continue
             try:
