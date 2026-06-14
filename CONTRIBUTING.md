@@ -190,6 +190,17 @@ Localization contributors should follow:
 
 - `docs/translating.md`
 
+## Contributors
+
+The following people have contributed code, tests, accessibility feedback, or
+documentation to QUILL. Thank you.
+
+- Taylor Arndt ([@taylorarndt](https://github.com/taylorarndt))
+- Michael Doise ([@mikedoise](https://github.com/mikedoise))
+- Doug Langley ([@douglangley](https://github.com/douglangley))
+- Becky K ([@BeckyK102125](https://github.com/BeckyK102125))
+- Kelly Ford ([@kellylford](https://github.com/kellylford)) — HEIC/HEIF image support (#164, #165)
+
 ## License
 
 By contributing, you agree that your contributions are licensed under the

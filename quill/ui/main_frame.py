@@ -10478,6 +10478,7 @@ class MainFrame(
         ("Michael Doise on GitHub", "https://github.com/mikedoise"),
         ("Becky K on GitHub", "https://github.com/BeckyK102125"),
         ("Doug Langley on GitHub", "https://github.com/douglangley"),
+        ("Kelly Ford on GitHub", "https://github.com/kellylford"),
         (
             "wx-accessible-webview on GitHub",
             "https://github.com/Community-Access/wx-accessible-webview",
@@ -10512,7 +10513,7 @@ class MainFrame(
             "and Community Access.\n\n"
             "With sincere thanks to our contributors and beta testers: "
             "Techopolis, Taylor Arndt, Michael Doise, Kayla Bentas, "
-            "Shane Popplestone, Doug Langley, and Becky K.\n\n"
+            "Shane Popplestone, Doug Langley, Becky K, and Kelly Ford.\n\n"
             f"{glow_summary}\n\n"
             "## BITS Whisperer\n\n"
             "BITS Whisperer brings speech and dictation integration to Quill, arriving in "
