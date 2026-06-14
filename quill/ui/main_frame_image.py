@@ -299,8 +299,10 @@ class ImageCaptureMixin:
                 self.frame,
                 title,
                 wildcard=(
-                    "Image files (*.png;*.jpg;*.jpeg;*.tif;*.tiff;*.bmp;*.gif;*.webp)|"
-                    "*.png;*.jpg;*.jpeg;*.tif;*.tiff;*.bmp;*.gif;*.webp|All files (*.*)|*.*"
+                    "Image files (*.png;*.jpg;*.jpeg;*.tif;*.tiff;*.bmp;*.gif;*.webp;"
+                    "*.heic;*.heif)|"
+                    "*.png;*.jpg;*.jpeg;*.tif;*.tiff;*.bmp;*.gif;*.webp;*.heic;*.heif|"
+                    "All files (*.*)|*.*"
                 ),
                 style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
             ) as dialog:
