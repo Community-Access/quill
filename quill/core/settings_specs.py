@@ -662,6 +662,23 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Comma-separated list of sound event IDs to silence, e.g. transcription_word_inserted.",
         keywords=("sound", "disable", "mute", "earcon", "events"),
     ),
+    SettingSpec(
+        "indent_tone_scale",
+        "Indentation tones",
+        "accessibility",
+        "choice",
+        "Play a pitched tone as the caret moves across indent levels. The tone rises "
+        "as you go deeper and falls as you come back out. Choose the musical scale, or "
+        "Off to disable.",
+        choices=(
+            ("", "Off"),
+            ("pentatonic", "Pentatonic (no dissonance)"),
+            ("whole_tone", "Whole tone (even steps)"),
+            ("diatonic", "Diatonic C major (familiar)"),
+            ("chromatic", "Chromatic (one semitone per level)"),
+        ),
+        keywords=("sound", "indent", "indentation", "tone", "pitch", "code", "earcon"),
+    ),
     # --- Read Aloud --------------------------------------------------------
     SettingSpec(
         "announcement_verbosity",

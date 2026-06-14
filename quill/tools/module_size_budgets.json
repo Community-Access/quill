@@ -30,10 +30,10 @@
   "_rebaseline_2026_06_13h": "main_frame.py +9 for #173 fix: open_user_guide() now renders to HTML via render_preview_html and opens in the system browser (atomic write to user-guide/userguide.html, webbrowser.open), removing the editable document tab. open_user_guide_section() passes section as start_anchor. main_frame.py +13 for #175 fix: _update_side_preview wraps tab.preview.update() in try/except; on WebView2 ERROR_INVALID_STATE the faulted control is discarded (splitter unsplit, tab.preview=None) and _show_side_preview_for is called via CallAfter to rebuild a fresh instance.",
   "_default_cap": 600,
   "budgets": {
-    "quill/ui/main_frame.py": 22053,
+    "quill/ui/main_frame.py": 22054,
     "quill/ui/assistant_tools.py": 1877,
     "quill/ui/assistant_panel.py": 725,
-    "quill/ui/main_frame_power_tools.py": 777,
+    "quill/ui/main_frame_power_tools.py": 802,
     "quill/ui/main_frame_menu.py": 2962,
     "quill/core/read_aloud.py": 1244,
     "quill/core/assistant_ai.py": 1300,
@@ -41,10 +41,10 @@
     "quill/ui/github_dialogs.py": 638,
     "quill/core/glow.py": 810,
     "quill/core/settings_registry.py": 158,
-    "quill/core/settings_specs.py": 1134,
+    "quill/core/settings_specs.py": 1151,
     "quill/core/watch_actions.py": 700,
     "quill/io/structured.py": 664,
-    "quill/core/settings.py": 690,
+    "quill/core/settings.py": 693,
     "quill/core/copy_tray.py": 139,
     "quill/ui/main_frame_copy_tray.py": 332,
     "quill/ui/copy_tray_dialog.py": 267,
@@ -99,5 +99,6 @@
   "_rebaseline_2026_06_14": "assistant_ai.py 1264 -> 1300 for feat(about) contributor-listing code (GitHub contributors API fetch, baked-in list). Budget missed the update when that commit merged to main; corrected here to restore a green gate.",
   "_rebaseline_2026_06_14b": "main_frame.py 21696 -> 21702 (+6) when main was merged into the bugs branch: the dynamic GitHub Contributors section from feat(about) (contributor_bullet_list + '## Contributors' block) landed alongside the bug-fix work. Re-baselined to the merged measured size.",
   "_rebaseline_2026_06_14k": "ken branch merged with main: Navigate > Compare submenu (#187-#194), speak-status commands, Boxer compare dialog, bug-report dialog enhancements (screen reader ComboBox, name/email fields, settings persistence), Kelly Ford contributor/owner. compare_dialog.py new file capped at 210; keymap.py 445, keymap_packs.py 284. main_frame.py/menu re-measured after the merge.",
-  "_rebaseline_2026_06_14_sound": "feat/sound-notifications merged into main: QSP sound pack system (SoundManager, QSP player, Ink earcons, partial packs, overlay architecture), per-event toggle dialog, sound_on/off earcons, Quillin sound API, backspace-after-expansion. settings_specs.py 1087->1131 (sound + abbreviation specs), main_frame.py 21966->22053 (sound hooks + toggle/events dialog wiring), main_frame_abbreviations.py 147->202 (undo-expansion + sound), main_frame_menu.py 2942->2962 (toggle sound + events menu items), main_frame_quillins.py 610->615 (register_quillin_sounds). Re-measured after merge."
+  "_rebaseline_2026_06_14_sound": "feat/sound-notifications merged into main: QSP sound pack system (SoundManager, QSP player, Ink earcons, partial packs, overlay architecture), per-event toggle dialog, sound_on/off earcons, Quillin sound API, backspace-after-expansion. settings_specs.py 1087->1131 (sound + abbreviation specs), main_frame.py 21966->22053 (sound hooks + toggle/events dialog wiring), main_frame_abbreviations.py 147->202 (undo-expansion + sound), main_frame_menu.py 2942->2962 (toggle sound + events menu items), main_frame_quillins.py 610->615 (register_quillin_sounds). Re-measured after merge.",
+  "_rebaseline_2026_06_14_sound_e2e": "feat/sound-notifications end-to-end indent tones + Quillin sound hardening + macOS/vision merge: settings.py 690->693, settings_specs.py 1134->1151, main_frame.py 22053->22054, main_frame_power_tools.py 777->802. Re-measured after integrating the remote sound branch work."
 }

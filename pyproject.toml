@@ -127,7 +127,7 @@ packages = ["quill"]
 "quill/data/th_en_US_WordNet_LICENSE.txt" = "quill/data/th_en_US_WordNet_LICENSE.txt"
 "quill/core/schemas/extension.json" = "quill/core/schemas/extension.json"
 "quill/core/schemas/sound_pack.json" = "quill/core/schemas/sound_pack.json"
-"quill/assets/sound_packs/ink" = "quill/assets/sound_packs/ink"
+"quill/assets/sound_packs" = "quill/assets/sound_packs"
 "quill/quillins_bundled" = "quill/quillins_bundled"
 
 [tool.pytest.ini_options]
