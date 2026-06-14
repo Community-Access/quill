@@ -10910,13 +10910,12 @@ class MainFrame(
     def _review_diagnostics_export(self) -> bool | None:
         wx = self._wx
         dialog = wx.Dialog(self.frame, title="Review Diagnostics Export", size=(780, 560))
-        panel = wx.Panel(dialog)
         root = wx.BoxSizer(wx.VERTICAL)
-        include_paths = wx.CheckBox(panel, label="Include plain file paths in the bundle")
-        review = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY)
-        copy_button = wx.Button(panel, label="Copy Summary")
-        continue_button = wx.Button(panel, id=wx.ID_OK, label="Continue")
-        cancel_button = wx.Button(panel, id=wx.ID_CANCEL, label="Cancel")
+        include_paths = wx.CheckBox(dialog, label="Include plain file paths in the bundle")
+        review = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
+        copy_button = wx.Button(dialog, label="Copy Summary")
+        continue_button = wx.Button(dialog, id=wx.ID_OK, label="Continue")
+        cancel_button = wx.Button(dialog, id=wx.ID_CANCEL, label="Cancel")
 
         def refresh() -> None:
             detection = detect_screen_reader()
@@ -10945,7 +10944,7 @@ class MainFrame(
         cancel_button.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_CANCEL))
         root.Add(
             wx.StaticText(
-                panel,
+                dialog,
                 label=(
                     "Review what Quill will include before writing the diagnostics zip. "
                     "Nothing leaves your machine from this step."
@@ -10955,17 +10954,17 @@ class MainFrame(
             wx.ALL | wx.EXPAND,
             8,
         )
-        root.Add(wx.StaticText(panel, label="Logs folder"), 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
-        logs_field = wx.TextCtrl(panel, style=wx.TE_READONLY)
+        root.Add(wx.StaticText(dialog, label="Logs folder"), 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
+        logs_field = wx.TextCtrl(dialog, style=wx.TE_READONLY)
         logs_field.SetValue(str(app_data_dir() / "logs"))
         root.Add(logs_field, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
         root.Add(
-            wx.StaticText(panel, label="Diagnostics folder"),
+            wx.StaticText(dialog, label="Diagnostics folder"),
             0,
             wx.LEFT | wx.RIGHT | wx.TOP,
             8,
         )
-        diagnostics_field = wx.TextCtrl(panel, style=wx.TE_READONLY)
+        diagnostics_field = wx.TextCtrl(dialog, style=wx.TE_READONLY)
         diagnostics_field.SetValue(str(app_data_dir() / "diagnostics"))
         root.Add(diagnostics_field, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
         root.Add(include_paths, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
@@ -10976,7 +10975,7 @@ class MainFrame(
         buttons.Add(continue_button, 0, wx.RIGHT, 6)
         buttons.Add(cancel_button, 0)
         root.Add(buttons, 0, wx.ALL | wx.EXPAND, 8)
-        panel.SetSizer(root)
+        dialog.SetSizer(root)
         refresh()
         apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
         if self._show_modal_dialog(dialog, "Review Diagnostics Export") != wx.ID_OK:
@@ -10986,7 +10985,6 @@ class MainFrame(
     def _review_bug_report(self) -> tuple[dict[str, str], str] | None:
         wx = self._wx
         dialog = wx.Dialog(self.frame, title="Report a Bug", size=(860, 720))
-        panel = wx.Panel(dialog)
         root = wx.BoxSizer(wx.VERTICAL)
         announcement_engine = getattr(self, "_announcement_engine", None)
         announcement_environment = (
@@ -10994,7 +10992,7 @@ class MainFrame(
         )
         root.Add(
             wx.StaticText(
-                panel,
+                dialog,
                 label=(
                     "Describe the issue, then open the support form. Quill can create a "
                     "diagnostics bundle in this wizard so you can attach it to the issue."
@@ -11004,50 +11002,50 @@ class MainFrame(
             wx.ALL | wx.EXPAND,
             8,
         )
-        summary_label = wx.StaticText(panel, label="Summary")
-        summary_field = wx.TextCtrl(panel)
+        summary_label = wx.StaticText(dialog, label="Summary")
+        summary_field = wx.TextCtrl(dialog)
         summary_field.SetValue(f"Bug report: {self.document.name}")
         root.Add(summary_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
         root.Add(summary_field, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
 
-        happened_label = wx.StaticText(panel, label="What happened")
-        happened_field = wx.TextCtrl(panel, style=wx.TE_MULTILINE)
+        happened_label = wx.StaticText(dialog, label="What happened")
+        happened_field = wx.TextCtrl(dialog, style=wx.TE_MULTILINE)
         root.Add(happened_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
         root.Add(happened_field, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
 
-        expected_label = wx.StaticText(panel, label="What you expected")
-        expected_field = wx.TextCtrl(panel, style=wx.TE_MULTILINE)
+        expected_label = wx.StaticText(dialog, label="What you expected")
+        expected_field = wx.TextCtrl(dialog, style=wx.TE_MULTILINE)
         root.Add(expected_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
         root.Add(expected_field, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
 
-        steps_label = wx.StaticText(panel, label="Steps to reproduce")
-        steps_field = wx.TextCtrl(panel, style=wx.TE_MULTILINE)
+        steps_label = wx.StaticText(dialog, label="Steps to reproduce")
+        steps_field = wx.TextCtrl(dialog, style=wx.TE_MULTILINE)
         root.Add(steps_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
         root.Add(steps_field, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
 
         include_diagnostics = wx.CheckBox(
-            panel,
+            dialog,
             label="Create diagnostics bundle in this wizard",
         )
         include_diagnostics.SetValue(True)
-        include_paths = wx.CheckBox(panel, label="Include plain file paths in diagnostics")
+        include_paths = wx.CheckBox(dialog, label="Include plain file paths in diagnostics")
         include_paths.SetValue(False)
-        diagnostics_path_field = wx.TextCtrl(panel, style=wx.TE_READONLY)
+        diagnostics_path_field = wx.TextCtrl(dialog, style=wx.TE_READONLY)
         root.Add(include_diagnostics, 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
         root.Add(include_paths, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
-        root.Add(wx.StaticText(panel, label="Diagnostics bundle path"), 0, wx.LEFT | wx.RIGHT, 8)
+        root.Add(wx.StaticText(dialog, label="Diagnostics bundle path"), 0, wx.LEFT | wx.RIGHT, 8)
         root.Add(diagnostics_path_field, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
 
-        preview_label = wx.StaticText(panel, label="Report preview")
-        review = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY)
+        preview_label = wx.StaticText(dialog, label="Report preview")
+        review = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
         root.Add(preview_label, 0, wx.LEFT | wx.RIGHT, 8)
         root.Add(review, 1, wx.ALL | wx.EXPAND, 8)
-        validation_text = wx.StaticText(panel, label="")
+        validation_text = wx.StaticText(dialog, label="")
         root.Add(validation_text, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
 
-        copy_button = wx.Button(panel, label="Copy Preview")
-        open_button = wx.Button(panel, id=wx.ID_OK, label="Open Support Form")
-        cancel_button = wx.Button(panel, id=wx.ID_CANCEL, label="Cancel")
+        copy_button = wx.Button(dialog, label="Copy Preview")
+        open_button = wx.Button(dialog, id=wx.ID_OK, label="Open Support Form")
+        cancel_button = wx.Button(dialog, id=wx.ID_CANCEL, label="Cancel")
         dialog_result: dict[str, object] = {}
 
         def build_payload(
@@ -11167,7 +11165,7 @@ class MainFrame(
         buttons.Add(open_button, 0, wx.RIGHT, 6)
         buttons.Add(cancel_button, 0)
         root.Add(buttons, 0, wx.ALL | wx.EXPAND, 8)
-        panel.SetSizer(root)
+        dialog.SetSizer(root)
         include_paths.Enable(include_diagnostics.GetValue())
         refresh_preview()
         apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)

@@ -1522,7 +1522,6 @@ class MenuBuilderMixin:
         customize_support_menu.Append(self._id_reset_keymap, "&Reset Keymap")
         customize_support_menu.AppendSeparator()
         customize_support_menu.Append(self._id_notifications, "Show &Notifications")
-        customize_support_menu.Append(self._id_report_bug, "&Report a Bug...")
         customize_support_menu.Append(self._id_save_diagnostics, "Save &Diagnostics...")
         customize_support_menu.Append(self._id_open_logs_folder, "Open &Logs Folder")
         customize_support_menu.Append(
