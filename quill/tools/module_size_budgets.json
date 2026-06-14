@@ -55,8 +55,9 @@
     "quill/ui/setup_wizard_pages.py": 621,
     "quill/core/keymap.py": 439,
     "quill/core/keymap_packs.py": 279,
-    "quill/tools/check_banned_patterns.py": 650
+    "quill/tools/check_banned_patterns.py": 695
   },
+  "_rebaseline_2026_06_13i": "check_banned_patterns.py 650 -> 695 for BUG-REGION gate (item 6 in module docstring + _check_dead_region_attrs function + find_violations call): bans self._enter_region / self._exit_region in quill/ui, the nonexistent attributes that caused the image-description feature to fail silently (#165). Gate code is CI control, not feature code.",
   "_rebaseline_2026_06_12j": "check_banned_patterns.py grew to 650 lines after GATE-42 addition (_check_show_modal_wrapper AST walk + constant block). Budget added to acknowledge deliberate growth; gate itself is a CI control, not feature code.",
   "_rebaseline_2026_06_11c": "Phase 1+2 abbreviations and multi-press: main_frame.py +15 for AbbreviationsMixin MRO/init/hook; main_frame_menu.py +31 for abbreviation menu items; settings_specs.py +24 for 4 specs; settings.py +11 for 3 fields; main_frame_copy_tray.py +55 for MultiPressDispatcher (peek double, dialog triple); main_frame_statusbar.py +6 for abbreviations cell. New files: abbreviations.py (205), multi_press.py (59), main_frame_abbreviations.py (147), abbreviation_manager_dialog.py (250).",
   "_rebaseline_2026_06_11d": "Phase 1+2 gap closure: abbreviations.py +49 for AbbreviationLibrary class API (add/remove/enable/disable/update/all/enabled_only/find_by_trigger) and builtins update; copy_tray.py +28 for pinned field, pin/unpin methods, first_empty_slot, search_slots; main_frame_copy_tray.py +163 for copy_to_next_slot, search dialog, paste-label refresh, 12-slot binding fix; abbreviation_manager_dialog.py +152 for search field and Import/Export buttons; main_frame.py +66 for copy_tray_slots status bar, new commands, Command Palette multi-press dispatcher; main_frame_menu.py +21 for 10-12 slot bindings fix and new tray commands; settings.py +2 for multi_press_window_ms; settings_specs.py +12 for multi_press_window_ms spec; main_frame_statusbar.py +9 for copy_tray_slots cell.",
