@@ -34,10 +34,10 @@
         "quill/ui/github_dialogs.py": 638,
         "quill/core/glow.py": 810,
         "quill/core/settings_registry.py": 158,
-        "quill/core/settings_specs.py": 1106,
+        "quill/core/settings_specs.py": 1155,
         "quill/core/watch_actions.py": 700,
         "quill/io/structured.py": 664,
-        "quill/core/settings.py": 690,
+        "quill/core/settings.py": 693,
         "quill/core/copy_tray.py": 139,
         "quill/ui/main_frame_copy_tray.py": 332,
         "quill/ui/copy_tray_dialog.py": 267,
@@ -88,5 +88,6 @@
     "_rebaseline_2026_06_13h": "QSP sound pack feature (feat/sound-notifications): settings_specs.py 1070 -> 1097 for 4 new specs (sound_enabled, sound_pack_path, sound_volume, sound_events_disabled); main_frame_abbreviations.py 147 -> 152 for updated _play_abbreviation_sound() that gates on is_active() before falling back to legacy winsound. Budget re-baselined to measured sizes.",
     "_rebaseline_2026_06_13i": "Backspace-after-expansion feature: settings_specs.py 1097 -> 1106 for abbreviation_backspace_behavior choice spec; main_frame_abbreviations.py 152 -> 202 for _pending_undo state, _try_undo_expansion() method (delete or revert), and ABBREVIATION_DELETED sound hook. Budget re-baselined to measured sizes.",
     "_rebaseline_2026_06_13j": "QSP completion: main_frame_quillins.py 610 -> 619 for register_quillin_sounds() call in _register_quillin_contributions (Quillin sound pack API). main_frame.py was 119 lines under its 21570 cap after this commit's additions; no rebaseline needed.",
-    "_rebaseline_2026_06_13k": "Sound toggle + per-event dialog: main_frame_menu.py 2850 -> 2870 for _id_toggle_sound/_id_sound_events NewIdRefs, two menu items in Reading & Dictation, two EVT_MENU binds. toggle_sound() and open_sound_events_dialog() added to main_frame.py (still under budget). New file sound_events_dialog.py not tracked."
+    "_rebaseline_2026_06_13k": "Sound toggle + per-event dialog: main_frame_menu.py 2850 -> 2870 for _id_toggle_sound/_id_sound_events NewIdRefs, two menu items in Reading & Dictation, two EVT_MENU binds. toggle_sound() and open_sound_events_dialog() added to main_frame.py (still under budget). New file sound_events_dialog.py not tracked.",
+    "_rebaseline_2026_06_13l": "Indent tone feedback (#182): settings.py 690 -> 693 for 4 new fields (indent_tone_enabled/mode/scale/direction_cue). settings_specs.py 1106 -> 1155 for 4 new SettingSpec entries with full choices lists. main_frame.py grows to 21549 (well under 21570 cap) for EVT_STC_UPDATEUI binding, _on_indent_tone_update and _indent_tones_active handlers, tab-switch level cache reset, and indent pack load/reload on settings change."
 }

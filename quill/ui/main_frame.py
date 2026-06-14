@@ -1123,6 +1123,9 @@ class MainFrame(
                 from quill.ui import sound_manager
 
                 sound_manager.init(self.settings)
+                if getattr(self.settings, "indent_tone_enabled", False):
+                    scale = getattr(self.settings, "indent_tone_scale", "pentatonic")
+                    sound_manager.load_indent_tone_pack(scale)
             except Exception:
                 self._report_startup_task_failure("sound manager init")
 
@@ -3381,6 +3384,9 @@ class MainFrame(
         editor.Bind(wx.EVT_LEFT_UP, self._on_editor_caret_activity)
         editor.Bind(wx.EVT_SET_FOCUS, self._on_editor_caret_activity)
         editor.Bind(wx.EVT_CONTEXT_MENU, self._on_editor_context_menu)
+        import wx.stc as stc
+
+        editor.Bind(stc.EVT_STC_UPDATEUI, self._on_indent_tone_update)
 
     def _on_editor_char_hook(self, event: object) -> None:
         wx = self._wx
@@ -3592,6 +3598,7 @@ class MainFrame(
         self._browse_navigation_cache = None
         self.editor = tab.editor
         self.document = tab.document
+        tab._indent_tone_last_level = -1  # reset per-tab indent tone cache on switch
         self._schedule_browse_prewarm(force=True)
         if self.settings.persistent_undo:
             if self.document.path is not None:
@@ -3767,6 +3774,44 @@ class MainFrame(
         self._refresh_statusbar()
         self._maybe_announce_indent()
         event.Skip()
+
+    def _indent_tones_active(self) -> bool:
+        return bool(
+            getattr(self.settings, "indent_tone_enabled", False)
+            and getattr(self.settings, "indent_tone_mode", "tone") in ("tone", "both")
+        )
+
+    def _on_indent_tone_update(self, event: object) -> None:
+        event.Skip()
+        if not self._indent_tones_active():
+            return
+        tab = getattr(self, "_current_tab", None)
+        if tab is None:
+            return
+        editor = getattr(tab, "editor", None)
+        if editor is None:
+            return
+        line = editor.GetCurrentLine()
+        line_text = editor.GetLine(line) if hasattr(editor, "GetLine") else ""
+        if not line_text.strip():
+            return  # blank line: stay silent, hold previous level
+        has_indent_fn = hasattr(editor, "GetLineIndentation")
+        indent_cols = editor.GetLineIndentation(line) if has_indent_fn else 0
+        tab_width = max(editor.GetTabWidth() if hasattr(editor, "GetTabWidth") else 4, 1)
+        level = indent_cols // tab_width
+        prev_level = getattr(tab, "_indent_tone_last_level", -1)
+        if level == prev_level:
+            return  # no change — suppress redundant fire
+        tab._indent_tone_last_level = level
+        direction = "up" if level > prev_level else "down"
+        clamped = min(level, 7)
+        from quill.ui import sound_manager
+
+        sound_manager.post_sound(f"indent_level_{clamped}_{direction}")
+        mode = getattr(self.settings, "indent_tone_mode", "tone")
+        if mode in ("speech", "both"):
+            label = f"indent {level}" if level > 0 else "no indent"
+            self._announce(label)
 
     def _on_editor_key_up(self, event: object) -> None:
         wx = self._wx
@@ -8277,6 +8322,11 @@ class MainFrame(
             from quill.ui import sound_manager
 
             sound_manager.on_settings_changed(self.settings)
+            if getattr(self.settings, "indent_tone_enabled", False):
+                scale = getattr(self.settings, "indent_tone_scale", "pentatonic")
+                sound_manager.load_indent_tone_pack(scale)
+            else:
+                sound_manager.load_indent_tone_pack("")
         except Exception:  # noqa: BLE001
             pass
         self._set_status(status)

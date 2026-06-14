@@ -183,6 +183,11 @@ class Settings:
     sound_pack_path: str = ""  # empty = bundled Ink pack
     sound_volume: int = 80  # 0-100; passed to sound_lib Output.set_volume()
     sound_events_disabled: str = ""  # comma-separated SoundEvent IDs to silence
+    # Indentation tone feedback (issue #182).
+    indent_tone_enabled: bool = False
+    indent_tone_mode: str = "tone"  # "tone" | "speech" | "both"
+    indent_tone_scale: str = "pentatonic"  # "pentatonic" | "whole_tone" | "diatonic" | "chromatic"
+    indent_tone_direction_cue: bool = True
     # Abbreviation backspace: "delete" removes expansion, "revert" puts the original back.
     abbreviation_backspace_behavior: str = "delete"
 
@@ -498,6 +503,14 @@ class Settings:
             sound_volume = 80
         sound_volume = max(0, min(100, sound_volume))
         sound_events_disabled = str(data.get("sound_events_disabled", ""))
+        indent_tone_enabled = bool(data.get("indent_tone_enabled", False))
+        indent_tone_mode = str(data.get("indent_tone_mode", "tone"))
+        if indent_tone_mode not in {"tone", "speech", "both"}:
+            indent_tone_mode = "tone"
+        indent_tone_scale = str(data.get("indent_tone_scale", "pentatonic"))
+        if indent_tone_scale not in {"pentatonic", "whole_tone", "diatonic", "chromatic"}:
+            indent_tone_scale = "pentatonic"
+        indent_tone_direction_cue = bool(data.get("indent_tone_direction_cue", True))
         abbreviation_backspace_behavior = str(data.get("abbreviation_backspace_behavior", "delete"))
         if abbreviation_backspace_behavior not in {"delete", "revert"}:
             abbreviation_backspace_behavior = "delete"
@@ -651,6 +664,10 @@ class Settings:
             sound_pack_path=sound_pack_path,
             sound_volume=sound_volume,
             sound_events_disabled=sound_events_disabled,
+            indent_tone_enabled=indent_tone_enabled,
+            indent_tone_mode=indent_tone_mode,
+            indent_tone_scale=indent_tone_scale,
+            indent_tone_direction_cue=indent_tone_direction_cue,
             abbreviation_backspace_behavior=abbreviation_backspace_behavior,
         )
 

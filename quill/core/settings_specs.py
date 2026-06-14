@@ -651,6 +651,55 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Comma-separated list of sound event IDs to silence, e.g. transcription_word_inserted.",
         keywords=("sound", "disable", "mute", "earcon", "events"),
     ),
+    # --- Indentation tone feedback (#182) ------------------------------------
+    SettingSpec(
+        "indent_tone_enabled",
+        "Play indentation tones",
+        "accessibility",
+        "bool",
+        "Play a musical tone when the cursor moves to a line with a different indent level. "
+        "Requires the Ink earcon pack and an indent tone pack to be loaded.",
+        keywords=("indent", "tone", "pitch", "code", "depth", "sound"),
+    ),
+    SettingSpec(
+        "indent_tone_mode",
+        "Indentation feedback mode",
+        "accessibility",
+        "choice",
+        "Whether indentation changes produce a tone, a speech announcement, or both.",
+        choices=(
+            ("tone", "Tone only"),
+            ("speech", "Speech only (e.g. 'indent 3')"),
+            ("both", "Tone and speech"),
+        ),
+        keywords=("indent", "tone", "speech", "mode", "announce"),
+    ),
+    SettingSpec(
+        "indent_tone_scale",
+        "Indentation tone scale",
+        "accessibility",
+        "choice",
+        "Musical scale used for indentation tones. "
+        "Pentatonic has no dissonance and suits most users. "
+        "Chromatic gives one semitone per level for deep nesting.",
+        choices=(
+            ("pentatonic", "Pentatonic (recommended, no dissonance)"),
+            ("whole_tone", "Whole-tone (equal brightness steps)"),
+            ("diatonic", "Diatonic major (familiar, C major)"),
+            ("chromatic", "Chromatic (maximum pitch resolution)"),
+        ),
+        keywords=("indent", "scale", "pentatonic", "chromatic", "pitch", "tone"),
+    ),
+    SettingSpec(
+        "indent_tone_direction_cue",
+        "Direction cue on indentation change",
+        "accessibility",
+        "bool",
+        "Add a brief spectral noise burst to each tone: high-frequency hiss when "
+        "going deeper, low-frequency thud when dedenting. Helps distinguish direction "
+        "without relying on pitch memory alone.",
+        keywords=("indent", "direction", "cue", "up", "down", "hiss", "thud"),
+    ),
     # --- Read Aloud --------------------------------------------------------
     SettingSpec(
         "announcement_verbosity",
