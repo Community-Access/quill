@@ -127,6 +127,12 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "user changes the provider selector, to populate the model list. Same HTTPS "
         "guarantee as _post_json."
     ),
+    "core/contributors.py::fetch_contributors": (
+        "Developer tooling only — not called at runtime. The About screen uses the "
+        "baked-in CONTRIBUTORS tuple; this function is only invoked manually by a "
+        "developer running `python -m quill.core.contributors` to refresh that tuple. "
+        "There is no silent runtime path."
+    ),
 }
 
 

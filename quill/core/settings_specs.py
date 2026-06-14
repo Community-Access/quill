@@ -186,6 +186,14 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("confirm", "prompt", "destructive", "safety"),
     ),
     SettingSpec(
+        "startup_folder",
+        "Default file-open folder",
+        "general",
+        "text",
+        "Initial folder for Open and Save As dialogs. Leave blank to use the Documents folder.",
+        keywords=("startup folder", "default folder", "open folder", "file dialog", "start folder"),
+    ),
+    SettingSpec(
         "default_new_document_format",
         "Default new-document format",
         "general",
@@ -305,7 +313,10 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "editing",
         "choice",
         "What to do when you press Backspace immediately after an abbreviation expands.",
-        choices=("delete", "revert"),
+        choices=(
+            ("delete", "Delete the expanded text"),
+            ("revert", "Revert to the typed abbreviation"),
+        ),
         keywords=("abbreviation", "backspace", "undo", "delete", "revert"),
     ),
     SettingSpec(
@@ -849,6 +860,23 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Default model ID used when running prompt-library prompts."
         " Leave blank to fall back to the Ask AI default model.",
         keywords=("ai", "prompt", "model", "prompt library", "grammar"),
+    ),
+    # --- Bug reporting --------------------------------------------------------
+    SettingSpec(
+        "bug_reporter_name",
+        "Bug reporter name",
+        "general",
+        "text",
+        "Your name, pre-filled in the Report a Bug dialog for convenience.",
+        keywords=("name", "bug", "report", "contact"),
+    ),
+    SettingSpec(
+        "bug_reporter_email",
+        "Bug reporter email",
+        "general",
+        "text",
+        "Your contact email, pre-filled in the Report a Bug dialog for convenience.",
+        keywords=("email", "bug", "report", "contact"),
     ),
     # --- Transcription -----------------------------------------------------
     SettingSpec(

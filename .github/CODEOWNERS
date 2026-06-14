@@ -10,19 +10,19 @@
 * @Community-Access
 
 # Lead maintainer required for security-sensitive and gate-critical paths
-/quill/core/               @accesswatch @Community-Access
-/quill/io/                 @accesswatch @Community-Access
+/quill/core/               @accesswatch @kellylford @Community-Access
+/quill/io/                 @accesswatch @kellylford @Community-Access
 /quill/platform/windows/   @accesswatch @Community-Access
 /quill/stability/          @accesswatch @Community-Access
 /quill/core/settings.py    @accesswatch
 /quill/core/settings_specs.py @accesswatch
 /quill/tools/              @accesswatch @Community-Access
-/.github/                  @accesswatch @Community-Access
-/pyproject.toml            @accesswatch
+/.github/                  @accesswatch @kellylford @Community-Access
+/pyproject.toml            @accesswatch @kellylford
 
 # Accessibility-critical surfaces
-/quill/ui/                 @accesswatch @Community-Access
-/tests/accessibility/      @accesswatch @Community-Access
+/quill/ui/                 @accesswatch @kellylford @Community-Access
+/tests/accessibility/      @accesswatch @kellylford @Community-Access
 
 # Governance and process docs
 /CODE_OF_CONDUCT.md        @Community-Access

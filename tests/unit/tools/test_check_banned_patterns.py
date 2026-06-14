@@ -7,6 +7,7 @@ from quill.tools.check_banned_patterns import (
     _REPO_ROOT,
     _BareWxVisitor,
     _check_checklistbox,
+    _check_dead_region_attrs,
     _check_dialog_contract,
     _check_dialog_registry,
     _check_raw_xml,
@@ -229,3 +230,38 @@ def test_wx_message_box_ok_marker_exempts(tmp_path: Path) -> None:
     finally:
         module.unlink()
         target_dir.rmdir()
+
+
+def test_dead_region_attrs_enter_is_flagged(tmp_path: Path) -> None:
+    # BUG-REGION / #165: self._enter_region does not exist on MainFrame.
+    module = tmp_path / "mixin.py"
+    module.write_text(
+        "def show(self):\n    self._enter_region('dialog')\n",
+        encoding="utf-8",
+    )
+    violations = _check_dead_region_attrs([module])
+    assert len(violations) == 1
+    assert "BUG-REGION" in violations[0].message
+    assert "_region_tracker" in violations[0].message
+
+
+def test_dead_region_attrs_exit_is_flagged(tmp_path: Path) -> None:
+    module = tmp_path / "mixin.py"
+    module.write_text(
+        "def hide(self):\n    self._exit_region('dialog')\n",
+        encoding="utf-8",
+    )
+    violations = _check_dead_region_attrs([module])
+    assert len(violations) == 1
+    assert "BUG-REGION" in violations[0].message
+
+
+def test_dead_region_attrs_correct_form_is_clean(tmp_path: Path) -> None:
+    module = tmp_path / "mixin.py"
+    module.write_text(
+        "def show(self):\n"
+        "    self._region_tracker.enter('dialog')\n"
+        "    self._region_tracker.exit('dialog')\n",
+        encoding="utf-8",
+    )
+    assert _check_dead_region_attrs([module]) == []

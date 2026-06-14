@@ -43,7 +43,14 @@ caused real bugs in Quill:
    dialog can ship unregistered or unclassified (the "magical" gating from
    ``zfix.md``).
 
-6. ``wx.CheckListBox`` is banned in ``quill/ui`` (A11Y-SR-1 / issue #161).
+6. ``self._enter_region`` and ``self._exit_region`` are banned in ``quill/ui``
+   (BUG-REGION / issue #165). These attributes do not exist on ``MainFrame``; the
+   correct form is ``self._region_tracker.enter`` / ``self._region_tracker.exit``.
+   The nonexistent attributes caused ``main_frame_image.py`` to raise
+   ``AttributeError`` silently (wxPython swallows event-handler exceptions),
+   making the image-description feature silently non-functional for all users.
+
+7. ``wx.CheckListBox`` is banned in ``quill/ui`` (A11Y-SR-1 / issue #161).
    CheckListBox does not reliably announce checked/unchecked state to NVDA or
    JAWS when the user navigates with arrow keys — the screen reader hears only
    the item label, not its toggle state. Use individual ``wx.CheckBox`` controls
@@ -620,6 +627,38 @@ def _check_ruff_config() -> list[Violation]:
     return []
 
 
+def _check_dead_region_attrs(paths: Iterable[Path]) -> list[Violation]:
+    """Ban ``self._enter_region`` / ``self._exit_region`` in quill/ui.
+
+    These attributes do not exist on MainFrame.  The correct form is
+    ``self._region_tracker.enter`` / ``self._region_tracker.exit``.
+    The nonexistent attributes caused the image-description feature to fail
+    silently (#165) because wxPython swallows AttributeErrors raised in event
+    handlers.
+    """
+    violations: list[Violation] = []
+    for path in paths:
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        for node in ast.walk(tree):
+            if not (
+                isinstance(node, ast.Attribute)
+                and node.attr in ("_enter_region", "_exit_region")
+                and isinstance(node.value, ast.Name)
+                and node.value.id == "self"
+            ):
+                continue
+            violations.append(
+                Violation(
+                    path,
+                    node.lineno,
+                    f"self.{node.attr} does not exist on MainFrame; "
+                    "use self._region_tracker.enter / self._region_tracker.exit "
+                    "(BUG-REGION / #165)",
+                )
+            )
+    return violations
+
+
 def find_violations() -> list[Violation]:
     ui_files = sorted(_UI_ROOT.rglob("*.py"))
     violations: list[Violation] = []
@@ -627,6 +666,7 @@ def find_violations() -> list[Violation]:
     violations.extend(_check_raw_xml(sorted(_PACKAGE_ROOT.rglob("*.py"))))
     violations.extend(_check_dialog_contract(ui_files))
     violations.extend(_check_checklistbox(ui_files))
+    violations.extend(_check_dead_region_attrs(ui_files))
     violations.extend(_check_threading_thread(ui_files))
     violations.extend(_check_wx_message_box(sorted(_PACKAGE_ROOT.rglob("*.py"))))
     violations.extend(_check_show_modal_wrapper(ui_files))

@@ -105,6 +105,7 @@ class Settings:
     voice_commands_enabled: bool = False
     watch_folder_enabled: bool = False
     watch_folder_path: str = ""
+    startup_folder: str = ""
     watch_folder_include_subfolders: bool = False
     watch_folder_process_existing: bool = False
     watch_folder_auto_start: bool = False
@@ -170,6 +171,9 @@ class Settings:
     ollama_base_url: str = "http://localhost:11434"
     # AI prompts (Phase 3): separate default model for prompt-library runs.
     ai_prompt_default_model: str = ""
+    # Bug reporter identity: pre-fill the Report a Bug dialog for speed.
+    bug_reporter_name: str = ""
+    bug_reporter_email: str = ""
     # I18N: BCP 47 language tag for the UI; empty string means "use OS default".
     language: str = ""
     # WIZARD: True once the first-run setup wizard has completed.
@@ -374,6 +378,7 @@ class Settings:
             status_page_refresh_announcement_cadence = "quiet"
         watch_folder_enabled = bool(data.get("watch_folder_enabled", False))
         watch_folder_path = str(data.get("watch_folder_path", "")).strip()
+        startup_folder = str(data.get("startup_folder", "")).strip()
         watch_folder_include_subfolders = bool(data.get("watch_folder_include_subfolders", False))
         watch_folder_process_existing = bool(data.get("watch_folder_process_existing", False))
         watch_folder_auto_start = bool(data.get("watch_folder_auto_start", False))
@@ -476,6 +481,8 @@ class Settings:
             or "http://localhost:11434"
         )
         ai_prompt_default_model = str(data.get("ai_prompt_default_model", ""))
+        bug_reporter_name = str(data.get("bug_reporter_name", "")).strip()
+        bug_reporter_email = str(data.get("bug_reporter_email", "")).strip()
         language = str(data.get("language", "")).strip()
         setup_wizard_completed = bool(data.get("setup_wizard_completed", False))
         console_enabled = bool(data.get("console_enabled", True))
@@ -586,6 +593,7 @@ class Settings:
             voice_commands_enabled=voice_commands_enabled,
             watch_folder_enabled=watch_folder_enabled,
             watch_folder_path=watch_folder_path,
+            startup_folder=startup_folder,
             watch_folder_include_subfolders=watch_folder_include_subfolders,
             watch_folder_process_existing=watch_folder_process_existing,
             watch_folder_auto_start=watch_folder_auto_start,
@@ -638,6 +646,8 @@ class Settings:
             ai_chat_default_model=ai_chat_default_model,
             ollama_base_url=ollama_base_url,
             ai_prompt_default_model=ai_prompt_default_model,
+            bug_reporter_name=bug_reporter_name,
+            bug_reporter_email=bug_reporter_email,
             abbreviation_expansion=abbreviation_expansion,
             abbreviation_expansion_sound=abbreviation_expansion_sound,
             abbreviation_expansion_sound_file=abbreviation_expansion_sound_file,

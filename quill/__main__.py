@@ -21,6 +21,7 @@ class LaunchRequest:
     line: int | None = None
     column: int | None = None
     action: str = "open"
+    diff_with: Path | None = None  # set by --diff; second file for compare mode
 
 
 def main() -> int:
@@ -187,6 +188,19 @@ def _parse_cli_arguments(arguments: list[str]) -> Namespace:
             "open, ocr, ocr-structured, read. Defaults to open."
         ),
     )
+    parser.add_argument(
+        "--goto",
+        default=None,
+        metavar="FILE[:LINE[:COL]]",
+        help=("Open FILE at an optional 1-based LINE and COL. Example: --goto main.kt:27:5"),
+    )
+    parser.add_argument(
+        "--diff",
+        nargs=2,
+        metavar=("LEFT", "RIGHT"),
+        default=None,
+        help="Open two files in compare mode. Example: --diff old.kt new.kt",
+    )
     return parser.parse_args(arguments)
 
 
@@ -199,6 +213,35 @@ def _launch_configuration(
     action = raw_action if raw_action in {"open", *verb_actions()} else "open"
 
     requests: list[LaunchRequest] = []
+
+    # --diff LEFT RIGHT  →  single compare LaunchRequest
+    diff_pair = getattr(parsed, "diff", None)
+    if diff_pair:
+        left_path = Path(str(diff_pair[0])).expanduser()
+        right_path = Path(str(diff_pair[1])).expanduser()
+        if left_path.exists() and right_path.exists():
+            requests.append(
+                LaunchRequest(
+                    path=left_path.resolve(),
+                    action="compare",
+                    diff_with=right_path.resolve(),
+                )
+            )
+
+    # --goto FILE[:LINE[:COL]]
+    goto_arg = getattr(parsed, "goto", None)
+    if goto_arg:
+        goto_path, goto_line, goto_col = _parse_goto(goto_arg)
+        if goto_path is not None and goto_path.exists():
+            requests.append(
+                LaunchRequest(
+                    path=goto_path.resolve(),
+                    line=goto_line,
+                    column=goto_col,
+                    action="open",
+                )
+            )
+
     for index, raw_path in enumerate(parsed.paths):
         if not str(raw_path).strip():
             continue
@@ -224,6 +267,23 @@ def _launch_configuration(
         bool(parsed.new_window),
         bool(parsed.wait),
     )
+
+
+def _parse_goto(raw: str) -> tuple[Path | None, int | None, int | None]:
+    """Parse --goto FILE[:LINE[:COL]] into (path, line, col)."""
+    parts = raw.rsplit(":", 2)
+    # Collect up to 2 trailing integer segments (right-to-left, re-ordered).
+    numbers: list[int] = []
+    while len(parts) > 1 and parts[-1].isdigit() and len(numbers) < 2:
+        numbers.insert(0, int(parts.pop()))
+    # numbers is [] | [line] | [line, col]
+    line: int | None = numbers[0] if numbers else None
+    col: int | None = numbers[1] if len(numbers) > 1 else None
+    # Remaining parts rejoin to form the path.
+    candidate = Path(":".join(parts)).expanduser()
+    if not candidate.exists():
+        return None, None, None
+    return candidate, line, col
 
 
 def _launch_arguments(arguments: list[str]) -> tuple[list[Path], bool, bool]:

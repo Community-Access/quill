@@ -32,10 +32,10 @@ def _wizard_source() -> str:
 
 def test_wizard_pages_module_has_nine_page_classes() -> None:
     src = _wizard_pages_source()
-    # Count private page classes by their naming pattern _*Page(wx.Panel)
+    # Count private page classes: they inherit from _WizardPage (the base class)
     import re
 
-    pages = re.findall(r"^class _\w+Page\(wx\.Panel\)", src, re.MULTILINE)
+    pages = re.findall(r"^class _\w+Page\(_WizardPage\)", src, re.MULTILINE)
     assert len(pages) == 9, f"Expected 9 page classes, found {len(pages)}: {pages}"
 
 
