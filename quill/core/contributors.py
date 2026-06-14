@@ -25,6 +25,7 @@ CONTRIBUTORS: tuple[tuple[str, str], ...] = (
     ("taylorarndt", "https://github.com/taylorarndt"),
     ("mbabcock-acb", "https://github.com/mbabcock-acb"),
     ("krperry", "https://github.com/krperry"),
+    ("kellylford", "https://github.com/kellylford"),
 )
 
 
