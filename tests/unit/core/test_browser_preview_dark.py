@@ -34,3 +34,18 @@ def test_render_preview_html_adapts_links_for_dark_browsers() -> None:
     assert "@media (prefers-color-scheme: dark)" in page
     # A light-blue link colour, not the default #0000ee, on dark backgrounds.
     assert "a{color:#6cb6ff;}" in page
+
+
+def test_render_preview_html_includes_mathjax() -> None:
+    page = render_preview_html("Doc", "$E = mc^2$", "markdown")
+    assert "window.MathJax" in page
+    assert "tex-mml-chtml.js" in page
+    assert "inlineMath" in page
+
+
+def test_export_markdown_to_html_includes_mathjax() -> None:
+    from quill.io.export import markdown_to_html
+
+    html_doc = markdown_to_html("$E = mc^2$", "Math Doc")
+    assert "window.MathJax" in html_doc
+    assert "tex-mml-chtml.js" in html_doc

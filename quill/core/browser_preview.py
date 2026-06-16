@@ -187,6 +187,20 @@ def render_preview_html(title: str, text: str, kind: str, start_anchor: str | No
         "th,td{border-color:#555;}"
         "}"
         "</style>"
+        "<script>"
+        "window.MathJax = {"
+        "  tex: {"
+        "    inlineMath: [['$', '$'], ['\\\\(', '\\\\)']],"
+        "    displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']],"
+        "    processEscapes: true"
+        "  },"
+        "  options: {"
+        "    enableMenu: false"
+        "  }"
+        "};"
+        "</script>"
+        '<script type="text/javascript" id="MathJax-script" async '
+        'src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>'
         f"{anchor_script}</head><body>{body}</body></html>"
     )
 

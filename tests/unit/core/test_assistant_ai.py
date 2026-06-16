@@ -713,3 +713,23 @@ def test_save_provider_model_empty_clears(monkeypatch: pytest.MonkeyPatch, tmp_p
     assistant_ai.save_provider_model("openrouter", "openrouter/auto")
     assistant_ai.save_provider_model("openrouter", "  ")
     assert assistant_ai.load_provider_model("openrouter") == ""
+
+
+def test_environment_api_key_override(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+
+    monkeypatch.setenv("GEMINI_API_KEY", "env-gemini-key")
+    monkeypatch.setenv("OPENAI_API_KEY", "env-openai-key")
+    assert assistant_ai.load_provider_api_key("gemini") == "env-gemini-key"
+    assert assistant_ai.load_provider_api_key("google") == "env-gemini-key"
+    assert assistant_ai.load_provider_api_key("openai") == "env-openai-key"
+
+    # Test load_assistant_api_key
+    settings = assistant_ai.AssistantConnectionSettings(provider="gemini", model="gemini-1.5-flash")
+    assistant_ai.save_assistant_connection_settings(settings)
+    assert assistant_ai.load_assistant_api_key() == "env-gemini-key"
+
+    settings_openai = assistant_ai.AssistantConnectionSettings(provider="openai", model="gpt-4o")
+    assistant_ai.save_assistant_connection_settings(settings_openai)
+    assert assistant_ai.load_assistant_api_key() == "env-openai-key"
+

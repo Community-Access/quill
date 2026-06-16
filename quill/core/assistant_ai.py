@@ -616,6 +616,34 @@ def save_assistant_connection_settings(settings: AssistantConnectionSettings) ->
 
 
 def load_assistant_api_key() -> str:
+    # First check environment variables for the selected provider
+    try:
+        provider = load_assistant_connection_settings().provider.strip().lower()
+    except Exception:
+        provider = ""
+
+    if provider in ("gemini", "google"):
+        env_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+        if env_key:
+            return env_key
+    elif provider == "openai":
+        env_key = os.environ.get("OPENAI_API_KEY")
+        if env_key:
+            return env_key
+    elif provider in ("claude", "anthropic"):
+        env_key = os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("CLAUDE_API_KEY")
+        if env_key:
+            return env_key
+    elif provider == "openrouter":
+        env_key = os.environ.get("OPENROUTER_API_KEY")
+        if env_key:
+            return env_key
+
+    if provider:
+        env_key = os.environ.get(f"{provider.upper()}_API_KEY")
+        if env_key:
+            return env_key
+
     credential_secret = _load_api_key_from_credential_manager()
     if credential_secret:
         return credential_secret
@@ -705,6 +733,28 @@ def provider_credential_target(provider: str) -> str:
 
 def load_provider_api_key(provider: str) -> str:
     """Return the stored key for *provider*, or "" if none."""
+    norm = provider.strip().lower()
+    if norm in ("gemini", "google"):
+        env_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+        if env_key:
+            return env_key
+    elif norm == "openai":
+        env_key = os.environ.get("OPENAI_API_KEY")
+        if env_key:
+            return env_key
+    elif norm in ("claude", "anthropic"):
+        env_key = os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("CLAUDE_API_KEY")
+        if env_key:
+            return env_key
+    elif norm == "openrouter":
+        env_key = os.environ.get("OPENROUTER_API_KEY")
+        if env_key:
+            return env_key
+
+    env_key = os.environ.get(f"{norm.upper()}_API_KEY")
+    if env_key:
+        return env_key
+
     return _cs_load(provider_credential_target(provider)) or ""
 
 

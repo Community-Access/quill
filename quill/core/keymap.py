@@ -109,6 +109,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "tools.sticky_note_capture": "Ctrl+Shift+Grave, N",
     "edit.replace_all": "Ctrl+Shift+H",
     "edit.insert_link": "Ctrl+K",
+    "edit.insert_equation": "Ctrl+Shift+E",
     "edit.follow_link": "Ctrl+Enter",
     "edit.word_prediction": "Ctrl+.",  # freed Ctrl+Space for select_chunk (§4.22)
     "edit.select_chunk": "Ctrl+Space",  # §4.22 advanced-editor parity

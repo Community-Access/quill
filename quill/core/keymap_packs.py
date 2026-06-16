@@ -28,6 +28,7 @@ _PACK_LABELS: dict[str, str] = {
     "edit.find_all_matches": "Find All Matches",
     "edit.find_next": "Find Next",
     "edit.insert_link": "Insert Link",
+    "edit.insert_equation": "Insert Equation",
     "edit.redo": "Redo",
     "edit.replace": "Replace",
     "edit.replace_all": "Replace All",

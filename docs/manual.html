@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>manual</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1 id="quill-mathematics--scientific-equation-manual">Quill Mathematics
+&amp; Scientific Equation Manual</h1>
+<p>Quill provides first-class support for inserting, editing, and
+rendering mathematical and scientific equations. You can write equations
+using either <strong>LaTeX</strong> (a standard typesetting language for
+math) or <strong>MathML</strong> (an XML-based format that is highly
+accessible to screen readers).</p>
+<hr />
+<h2 id="1-how-to-insert-an-equation">1. How to Insert an Equation</h2>
+<p>There are two ways to open the <strong>Insert Equation</strong>
+dialog in Quill:</p>
+<ol type="1">
+<li><strong>Keyboard Shortcut</strong>: Press
+<code>Ctrl + Shift + E</code> inside the editor.</li>
+<li><strong>Menu Bar</strong>: Navigate to <strong>Insert</strong> &gt;
+<strong>Insert Equation...</strong></li>
+</ol>
+<h3 id="the-insert-equation-dialog">The Insert Equation Dialog</h3>
+<p>The dialog is built as an accessible HTML-based web form, fully
+optimized for keyboard navigation and screen readers:</p>
+<ul>
+<li><strong>Equation Field</strong>: A text area where you type or paste
+your LaTeX or MathML code.</li>
+<li><strong>Display Mode</strong>: A dropdown selection between:
+<ul>
+<li><strong>Inline</strong>: The equation will be embedded directly
+within the sentence (e.g., <code>$E = mc^2$</code>).</li>
+<li><strong>Block</strong>: The equation will be placed on its own line,
+centered, and given vertical spacing (e.g., inside
+<code>$$ ... $$</code> delimiters).</li>
+</ul></li>
+<li><strong>Automatic selection detection</strong>: If you select a
+formula in your editor text before pressing
+<code>Ctrl + Shift + E</code>, the formula will automatically
+pre-populate the dialog and strip existing delimiters (like
+<code>$</code> or <code>$$</code>), allowing you to edit it
+quickly.</li>
+</ul>
+<hr />
+<h2 id="2-latex-equation-examples">2. LaTeX Equation Examples</h2>
+<p>LaTeX is the most common way to write equations. Here are several
+examples you can copy and paste into the editor.</p>
+<h3 id="21-basic-operations--algebra">2.1 Basic Operations &amp;
+Algebra</h3>
+<ul>
+<li><strong>Inline Math</strong>: <code>$a^2 + b^2 = c^2$</code></li>
+<li><strong>Quadratic Formula (Block display)</strong>:
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode latex"><code class="sourceCode latex"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>x = <span class="fu">\frac</span>{-b <span class="fu">\pm</span> <span class="fu">\sqrt</span>{b^2 - 4ac}}{2a}</span></code></pre></div></li>
+<li><strong>Systems of Equations</strong>:
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode latex"><code class="sourceCode latex"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">\begin</span>{<span class="ex">cases</span>}</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ss">2x + 3y = 8 </span><span class="sc">\\</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ss">x - y = -1</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">\end</span>{<span class="ex">cases</span>}</span></code></pre></div></li>
+</ul>
+<h3 id="22-calculus">2.2 Calculus</h3>
+<ul>
+<li><strong>Limits</strong>:
+<code>$\lim_{x \to \infty} \frac{1}{x} = 0$</code></li>
+<li><strong>Derivatives</strong>:
+<code>$\frac{df}{dx} = \lim_{h \to 0} \frac{f(x+h) - f(x)}{h}$</code></li>
+<li><strong>Definite Integral (Block display)</strong>:
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode latex"><code class="sourceCode latex"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">\int</span>_{a}^{b} x^2 <span class="fu">\,</span> dx = <span class="fu">\left</span>[ <span class="fu">\frac</span>{x^3}{3} <span class="fu">\right</span>]_{a}^{b}</span></code></pre></div></li>
+</ul>
+<h3 id="23-linear-algebra--matrices">2.3 Linear Algebra &amp;
+Matrices</h3>
+<ul>
+<li><strong>Matrix (Block display)</strong>:
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode latex"><code class="sourceCode latex"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>A = <span class="kw">\begin</span>{<span class="ex">pmatrix</span>}</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ss">a &amp; b </span><span class="sc">\\</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ss">c &amp; d</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">\end</span>{<span class="ex">pmatrix</span>}</span></code></pre></div></li>
+<li><strong>Determinant</strong>:
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode latex"><code class="sourceCode latex"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>|A| = ad - bc</span></code></pre></div></li>
+</ul>
+<h3 id="24-statistics--probability">2.4 Statistics &amp;
+Probability</h3>
+<ul>
+<li><strong>Normal Distribution Formula (Block display)</strong>:
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode latex"><code class="sourceCode latex"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>f(x) = <span class="fu">\frac</span>{1}{<span class="fu">\sigma</span> <span class="fu">\sqrt</span>{2<span class="fu">\pi</span>}} e^{-<span class="fu">\frac</span>{1}{2} <span class="fu">\left</span>(<span class="fu">\frac</span>{x - <span class="fu">\mu</span>}{<span class="fu">\sigma</span>}<span class="fu">\right</span>)^2}</span></code></pre></div></li>
+</ul>
+<hr />
+<h2 id="3-mathml-equation-examples">3. MathML Equation Examples</h2>
+<p>MathML is raw XML. If your input starts with <code>&lt;math</code> or
+<code>&lt;</code>, Quill automatically recognizes it as MathML and
+inserts it directly into the document without adding LaTeX
+delimiters.</p>
+<ul>
+<li><strong>Fractions in MathML</strong>:
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode xml"><code class="sourceCode xml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">math</span> <span class="ot">xmlns=</span><span class="st">&quot;http://www.w3.org/1999/xhtml&quot;</span>&gt;</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">mfrac</span>&gt;</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">mi</span>&gt;x&lt;/<span class="kw">mi</span>&gt;</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">mi</span>&gt;y&lt;/<span class="kw">mi</span>&gt;</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">mfrac</span>&gt;</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">math</span>&gt;</span></code></pre></div></li>
+<li><strong>Super/Subscripts in MathML</strong>:
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode xml"><code class="sourceCode xml"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">math</span> <span class="ot">xmlns=</span><span class="st">&quot;http://www.w3.org/1999/xhtml&quot;</span>&gt;</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  &lt;<span class="kw">msubsup</span>&gt;</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">mi</span>&gt;x&lt;/<span class="kw">mi</span>&gt;</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">mn</span>&gt;2&lt;/<span class="kw">mn</span>&gt;</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">mn</span>&gt;3&lt;/<span class="kw">mn</span>&gt;</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  &lt;/<span class="kw">msubsup</span>&gt;</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">math</span>&gt;</span></code></pre></div></li>
+</ul>
+<hr />
+<h2 id="4-how-equations-are-rendered">4. How Equations are Rendered</h2>
+<p>Quill integrates <strong>MathJax 3</strong>
+(<code>tex-mml-chtml.js</code>) to render mathematical content
+beautifully.</p>
+<ul>
+<li><strong>Live Browser Preview (<code>Ctrl + Shift + V</code> / Split
+Preview)</strong>: When you view the browser preview of your document,
+all LaTeX (<code>$ ... $</code> and <code>$$ ... $$</code>) and MathML
+nodes are automatically compiled into high-resolution, accessible SVG
+math elements.</li>
+<li><strong>HTML Export</strong>: Saving the document as HTML
+(<strong>File</strong> &gt; <strong>Save As</strong> &gt;
+<strong>HTML</strong>) will embed the MathJax libraries directly into
+the output document so that it renders math in any standard
+browser.</li>
+</ul>
+<hr />
+<h2 id="5-screen-reader-accessibility-tips">5. Screen-Reader
+Accessibility Tips</h2>
+<p>Quill is designed screen-reader-first. Visually impaired users can
+utilize the following workflow to read math:</p>
+<ol type="1">
+<li><strong>Typing math</strong>: Standard screen readers (NVDA, JAWS,
+and Narrator) will echo characters and words as they are typed into the
+accessible input form.</li>
+<li><strong>Reviewing math</strong>: Open the HTML preview pane
+(<code>Ctrl + Shift + V</code>). When the preview gains focus, screen
+readers natively interact with MathML nodes:
+<ul>
+<li><strong>NVDA</strong> (with the MathPlayer plugin, or natively in
+Chromium) will speak the equation semantically (e.g., reading
+<code>\frac{1}{2}</code> as "one half" rather than "backslash frac left
+brace one right brace...").</li>
+<li><strong>JAWS</strong> handles MathML content inside the preview pane
+by allowing you to browse equations using standard reading
+commands.</li>
+</ul></li>
+<li><strong>Narration Feedback</strong>: Upon submitting the equation
+dialogue, the status bar announces <code>"Inserted math equation"</code>
+to confirm the insert.</li>
+</ol>
+<hr />
+<h2 id="6-ai-assisted-mathematics--equation-synthesis">6. AI-Assisted
+Mathematics &amp; Equation Synthesis</h2>
+<p>Users can leverage Quill's built-in <strong>AI Writing
+Assistant</strong> (<strong>AI</strong> &gt; <strong>Ask Quill
+Chat...</strong> or via the <strong>Prompt Library</strong>) to simplify
+the creation, description, and validation of mathematical equations:</p>
+<ul>
+<li><strong>Natural Language to LaTeX/MathML</strong>: If you do not
+know LaTeX syntax, open the AI chat and ask the assistant (e.g.,
+<em>"Write a LaTeX formula for the standard deviation of a
+sample"</em>). The assistant will generate the correct markup (e.g.,
+<code>$\sigma = \sqrt{\frac{1}{N-1} \sum_{i=1}^{N} (x_i - \bar{x})^2}$</code>)
+which you can easily copy or insert into your document.</li>
+<li><strong>Equation Verbalization</strong>: Screen-reader users can
+select a complex equation in the document and choose the <strong>Explain
+Math Formula</strong> prompt. The AI will explain the equation in clear,
+conversational English (e.g., <em>"A fraction with a numerator of
+negative b plus or minus the square root of..."</em>), making it easy to
+comprehend without parsing raw syntax characters.</li>
+<li><strong>Syntax Auditing</strong>: If an equation fails to render
+correctly in the live preview, ask the assistant to check it for syntax
+errors. The agent will analyze the formula and identify issues like
+mismatched braces <code>{}</code>, missing backslashes, or unclosed XML
+elements in MathML.</li>
+<li><strong>Format Conversion</strong>: The assistant can translate raw
+MathML code into clean LaTeX, or vice versa, ensuring consistent
+formatting styles across your documents.</li>
+</ul>
+</body>
+</html>

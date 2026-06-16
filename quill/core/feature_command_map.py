@@ -214,6 +214,7 @@ COMMAND_FEATURE_MAP: dict[str, str] = {
     "edit.replace": "core.search",
     "edit.replace_all": "core.search.regex",
     "edit.insert_link": "core.links",
+    "edit.insert_equation": "core.format",
     "edit.follow_link": "core.links",
     "edit.select_line": "core.edit",
     "edit.select_paragraph": "core.edit",

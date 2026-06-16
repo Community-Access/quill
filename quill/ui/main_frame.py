@@ -2693,6 +2693,12 @@ class MainFrame(
             self._binding_for("edit.insert_link"),
         )
         self.commands.register(
+            "edit.insert_equation",
+            "Insert Equation...",
+            self.insert_equation,
+            self._binding_for("edit.insert_equation"),
+        )
+        self.commands.register(
             "edit.insert_citation",
             "Insert Citation...",
             self.insert_citation,
@@ -3309,6 +3315,7 @@ class MainFrame(
             "edit.say_selected": self._id_say_selected,
             "edit.read_all": self._id_read_all,
             "edit.insert_link": self._id_insert_link,
+            "edit.insert_equation": self._id_insert_equation,
             "edit.insert_citation": self._id_insert_citation,
             "power.open_snippet_gallery": self._id_snippet_gallery,
             "edit.follow_link": self._id_follow_link,
@@ -3680,6 +3687,14 @@ class MainFrame(
         ):
             self.insert_link()
             return
+        if (
+            event.ControlDown()
+            and not event.AltDown()
+            and event.ShiftDown()
+            and event.GetKeyCode() in (ord("E"), ord("e"), 5)
+        ):
+            self.insert_equation()
+            return
         if event.GetKeyCode() == wx.WXK_ESCAPE and self._extend_selection_mode:
             event.Skip()
             return
@@ -3843,6 +3858,15 @@ class MainFrame(
             and self._active_tab() is not None
         ):
             self.insert_link()
+            return
+        if (
+            event.ControlDown()
+            and not event.AltDown()
+            and event.ShiftDown()
+            and key_code in (ord("E"), ord("e"), 5)
+            and self._active_tab() is not None
+        ):
+            self.insert_equation()
             return
         # Ctrl-W closes the side preview unconditionally — even when the WebView
         # holds native focus.  WebView2 captures its own keyboard events and does
@@ -4110,6 +4134,14 @@ class MainFrame(
             and event.GetKeyCode() in (ord("K"), ord("k"), 11)
         ):
             self.insert_link()
+            return
+        if (
+            event.ControlDown()
+            and not event.AltDown()
+            and event.ShiftDown()
+            and event.GetKeyCode() in (ord("E"), ord("e"), 5)
+        ):
+            self.insert_equation()
             return
         if event.ControlDown() and event.ShiftDown() and event.GetKeyCode() in (ord("O"), ord("o")):
             self.open_outline_navigator()
@@ -18803,6 +18835,71 @@ class MainFrame(
         result = InsertionResult(inserted_text=snippet, caret_offset=len(snippet))
         self._apply_insertion_result(result)
         self._set_status(f"Inserted link ({markup_kind})")
+
+    def insert_equation(self) -> None:
+        from quill.ui.web_form import show_web_form
+
+        selected_text = self.editor.GetStringSelection()
+        default_val = selected_text
+        default_type = "inline"
+        if selected_text.startswith("$$") and selected_text.endswith("$$"):
+            default_type = "block"
+            default_val = selected_text[2:-2].strip()
+        elif selected_text.startswith("$") and selected_text.endswith("$"):
+            default_type = "inline"
+            default_val = selected_text[1:-1].strip()
+
+        values = show_web_form(
+            self.frame,
+            self._wx,
+            title="Insert Equation",
+            intro=(
+                "Enter a LaTeX or MathML equation below. LaTeX will be wrapped "
+                "in $ for inline or $$ for block display. MathML (<math>...</math>) "
+                "will be inserted directly."
+            ),
+            save_label="Insert",
+            fields=[
+                {
+                    "name": "equation",
+                    "label": "Equation (LaTeX or MathML)",
+                    "type": "textarea",
+                    "value": default_val or "",
+                    "rows": 6,
+                },
+                {
+                    "name": "display_mode",
+                    "label": "Display Mode",
+                    "type": "select",
+                    "value": default_type,
+                    "options": [
+                        ("inline", "Inline ($equation$)"),
+                        ("block", "Block ($$\n...\n$$)"),
+                    ],
+                },
+            ],
+        )
+        if values is None:
+            self._set_status("Insert equation cancelled")
+            return
+
+        eq = str(values.get("equation", "")).strip()
+        if not eq:
+            self._set_status("Insert equation cancelled")
+            return
+
+        display_mode = str(values.get("display_mode", "inline"))
+        if eq.startswith("<math") or eq.startswith("<"):
+            snippet = eq
+        else:
+            if display_mode == "block":
+                snippet = f"\n$$\n{eq}\n$$\n"
+            else:
+                snippet = f"${eq}$"
+
+        result = InsertionResult(inserted_text=snippet, caret_offset=len(snippet))
+        self._apply_insertion_result(result)
+        self._set_status("Inserted math equation")
 
     def insert_citation(self) -> None:
         """Build a formatted citation from typed fields and insert it (#203)."""

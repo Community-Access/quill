@@ -179,6 +179,20 @@ def markdown_to_html(markdown: str, title: str) -> str:
         '<meta charset="utf-8">\n'
         '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
         f"<title>{html.escape(title)}</title>\n"
+        "<script>\n"
+        "window.MathJax = {\n"
+        "  tex: {\n"
+        "    inlineMath: [['$', '$'], ['\\\\(', '\\\\)']],\n"
+        "    displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']],\n"
+        "    processEscapes: true\n"
+        "  },\n"
+        "  options: {\n"
+        "    enableMenu: false\n"
+        "  }\n"
+        "};\n"
+        "</script>\n"
+        '<script type="text/javascript" id="MathJax-script" async '
+        'src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>\n'
         "</head>\n"
         f"<body>\n{body}\n</body>\n"
         "</html>\n"

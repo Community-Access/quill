@@ -57,6 +57,7 @@ docs/leasey.md
 examples/**/*.epub
 examples/**/*.html
 gen.ps1
+launch-quill.bat
 
 # liblouis build workspace (run scripts/build_braille_pack.py to regenerate)
 /liblouis/
