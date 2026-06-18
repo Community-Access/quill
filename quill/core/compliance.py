@@ -31,6 +31,7 @@ def _load_pyproject(path: Path) -> dict[str, object]:
 _DEPENDENCY_METADATA_OVERRIDES: dict[str, tuple[str, str]] = {
     "certifi": ("MPL-2.0", "https://github.com/certifi/python-certifi"),
     "hatchling": ("MIT", "https://github.com/pypa/hatch"),
+    "html_to_text": ("MIT", "https://github.com/accessibleapps/html_to_text"),
     "keynote-parser": ("MIT", "https://pypi.org/project/keynote-parser/"),
     "llama-cpp-python": ("MIT", "https://github.com/abetlen/llama-cpp-python"),
     "markitdown": ("MIT", "https://github.com/microsoft/markitdown"),
@@ -53,6 +54,10 @@ _DEPENDENCY_METADATA_OVERRIDES: dict[str, tuple[str, str]] = {
 _DEPENDENCY_USAGE_NOTES: dict[str, str] = {
     "certifi": "Trusted CA bundle for HTTPS verification.",
     "hatchling": "Build backend used for packaging metadata.",
+    "html_to_text": (
+        "Converts HTML from clipboard pastes to clean plain text"
+        " while preserving document structure (AccessibleApps, MIT)."
+    ),
     "keynote-parser": "Apple Keynote parsing for import workflows.",
     "llama-cpp-python": "Python bridge for on-device llama.cpp inference.",
     "markitdown": "Document conversion/import pipeline.",
@@ -144,6 +149,21 @@ _BUNDLED_COMPONENTS: tuple[dict[str, str], ...] = (
         "homepage": "https://developer.apple.com/documentation/foundationmodels",
         "source": "",
         "notes": "On-device AI backend on supported macOS systems.",
+    },
+    {
+        "name": "liblouis",
+        "scope": "optional-braille-pack",
+        "version": "3.38.0",
+        "license": "LGPL-2.1-or-later",
+        "homepage": "https://github.com/liblouis/liblouis",
+        "source": "",
+        "notes": (
+            "Open-source braille translation and back-translation library. "
+            "Powers the QUILL Braille Pack's UEB, Standard American English, "
+            "and international language profiles. "
+            "Present only when the optional Braille Pack component is installed. "
+            "Copyright (C) the liblouis project contributors."
+        ),
     },
 )
 

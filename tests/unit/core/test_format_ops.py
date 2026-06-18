@@ -2,24 +2,31 @@ import re
 from pathlib import Path
 
 from quill.core.format_ops import (
+    compute_line_statistics,
     continue_markdown_list,
     convert_indentation_to_spaces,
     convert_indentation_to_tabs,
+    count_occurrences,
     decode_html_entities,
     delete_lines_containing,
     delete_lines_not_containing,
     encode_html_entities,
+    hex_dump,
     indent_lines,
+    multi_replace,
     normalize_whitespace,
     outdent_lines,
     quote_lines,
     remove_duplicate_lines,
+    remove_email_quote_markers,
     reverse_lines,
     shuffle_lines,
     sort_lines,
     sort_lines_by_length,
     sort_lines_numeric,
+    strip_high_ascii,
     strip_html_tags,
+    strip_low_ascii,
     toggle_block_comment,
     toggle_line_comment,
     trim_blank_lines,
@@ -259,3 +266,86 @@ def test_delete_lines_not_containing_case_insensitive() -> None:
     result = delete_lines_not_containing("Alpha\nbeta", "alpha", case_sensitive=False)
     assert "Alpha" in result
     assert "beta" not in result
+
+
+def test_remove_email_quote_markers_strips_leading_chevrons() -> None:
+    text = "> quoted line\n>> double quoted\nplain line"
+    result = remove_email_quote_markers(text)
+    assert result == "quoted line\ndouble quoted\nplain line"
+
+
+def test_remove_email_quote_markers_strips_name_prefix() -> None:
+    text = "Joe> said hello"
+    assert remove_email_quote_markers(text) == "said hello"
+
+
+def test_strip_low_ascii_removes_control_chars_keeps_tab_and_newline() -> None:
+    text = "a\x07b\tc\nd"
+    assert strip_low_ascii(text) == "ab\tc\nd"
+
+
+def test_strip_high_ascii_keeps_plain_ascii_only() -> None:
+    assert strip_high_ascii("café 中 plain") == "caf  plain"
+
+
+def test_hex_dump_formats_offset_hex_and_ascii() -> None:
+    result = hex_dump("AB")
+    assert result.startswith("00000000  ")
+    assert "41 42" in result
+    assert result.endswith("AB")
+
+
+def test_hex_dump_wraps_at_bytes_per_line() -> None:
+    result = hex_dump("A" * 17)
+    lines = result.splitlines()
+    assert len(lines) == 2
+    assert lines[1].startswith("00000010")
+
+
+def test_multi_replace_applies_pairs_in_order() -> None:
+    result = multi_replace("a b c", [("a", "1"), ("b", "2"), ("c", "3")])
+    assert result == "1 2 3"
+
+
+def test_multi_replace_skips_empty_search() -> None:
+    assert multi_replace("hello world", [("", "x"), ("world", "there")]) == "hello there"
+
+
+def test_multi_replace_case_insensitive() -> None:
+    result = multi_replace("Hello HELLO", [("hello", "hi")], case_sensitive=False)
+    assert result == "hi hi"
+
+
+def test_multi_replace_case_sensitive_default() -> None:
+    result = multi_replace("Hello hello", [("hello", "hi")])
+    assert result == "Hello hi"
+
+
+def test_count_occurrences_basic() -> None:
+    assert count_occurrences("ababab", "ab") == 3
+
+
+def test_count_occurrences_empty_needle() -> None:
+    assert count_occurrences("text", "") == 0
+
+
+def test_count_occurrences_case_insensitive() -> None:
+    assert count_occurrences("Cat cat CAT", "cat", case_sensitive=False) == 3
+
+
+def test_compute_line_statistics_no_numbers() -> None:
+    assert compute_line_statistics("hello\nworld") == "No numeric lines were found."
+
+
+def test_compute_line_statistics_reports_values() -> None:
+    report = compute_line_statistics("1\n2\n3\n4\n5")
+    assert "Numeric lines: 5" in report
+    assert "Total: 15" in report
+    assert "Average: 3" in report
+    assert "Median: 3" in report
+    assert "Standard deviation" in report
+
+
+def test_compute_line_statistics_single_value_skips_stdev() -> None:
+    report = compute_line_statistics("42")
+    assert "Standard deviation: not enough data" in report

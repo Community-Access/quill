@@ -6,6 +6,7 @@
   "description": "Crisp synthesised earcons for focused writing. Placeholder tones — replace WAV files with recorded audio.",
   "license": "CC0",
   "events": {
+    "quill_key_pressed":      "quill_key.wav",
     "abbreviation_expanded":  "expand.wav",
     "abbreviation_deleted":   "delete.wav",
     "snippet_inserted":       "snippet.wav",

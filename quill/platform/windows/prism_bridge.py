@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import atexit
 import logging
+import queue as _queue
 import sys
 import threading
+import time as _time
 from dataclasses import dataclass, replace
 from importlib import import_module
 from typing import Any
@@ -18,18 +20,26 @@ except ImportError:  # pragma: no cover - optional runtime dependency
 _VALID_BACKENDS = {"auto", "prism", "status_only"}
 
 _sr_active_cache: bool | None = None
+_sr_cache_timestamp: float = 0.0
+_SR_CACHE_TTL = 30.0
 
 
 def _screen_reader_active() -> bool:
-    """Cached check for a running screen reader (so 'auto' TTS doesn't double-talk)."""
-    global _sr_active_cache
-    if _sr_active_cache is None:
+    """Cached check for a running screen reader (so 'auto' TTS doesn't double-talk).
+
+    Re-probes after _SR_CACHE_TTL seconds so that starting a screen reader while
+    QUILL is running stops self-voicing within the next announcement cycle.
+    """
+    global _sr_active_cache, _sr_cache_timestamp
+    now = _time.monotonic()
+    if _sr_active_cache is None or (now - _sr_cache_timestamp) > _SR_CACHE_TTL:
         try:
             from quill.platform.windows.sr_detect import detect_screen_reader
 
             _sr_active_cache = bool(detect_screen_reader().detected)
         except Exception:  # noqa: BLE001
             _sr_active_cache = False
+        _sr_cache_timestamp = now
     return _sr_active_cache
 
 
@@ -121,11 +131,54 @@ def retry_tts_init() -> bool:
 
 
 def reset_pyttsx3_engine_for_tests() -> None:
-    """Discard the cached engine. Test-only helper."""
+    """Discard the cached engine and SR cache. Test-only helper."""
     global _pyttsx3_engine, _pyttsx3_engine_failed, _tts_init_failed
+    global _sr_active_cache, _sr_cache_timestamp
     _shutdown_pyttsx3_engine()
     _pyttsx3_engine_failed = False
     _tts_init_failed = False
+    _sr_active_cache = None
+    _sr_cache_timestamp = 0.0
+
+
+def flush_tts_for_tests(timeout: float = 2.0) -> None:
+    """Block until the TTS worker has processed all queued messages. Test-only."""
+    _tts_queue.join()
+
+
+# ------------------------------------------------------------------
+# Non-blocking TTS worker (fix #52: runAndWait() must not block UI thread)
+# ------------------------------------------------------------------
+
+_tts_queue: _queue.Queue[str | None] = _queue.Queue()
+_tts_worker_started = False
+_tts_worker_lock = threading.Lock()
+
+
+def _ensure_tts_worker() -> None:
+    global _tts_worker_started
+    with _tts_worker_lock:
+        if _tts_worker_started:
+            return
+        _tts_worker_started = True
+        t = threading.Thread(target=_tts_worker_loop, daemon=True, name="quill-tts-worker")
+        t.start()
+
+
+def _tts_worker_loop() -> None:
+    while True:
+        msg = _tts_queue.get()
+        if msg is None:
+            _tts_queue.task_done()
+            break
+        engine = _get_pyttsx3_engine()
+        if engine is not None:
+            try:
+                engine.say(msg)
+                engine.runAndWait()
+            except Exception:  # noqa: BLE001
+                pass
+        _tts_queue.task_done()
 
 
 @dataclass(frozen=True, slots=True)
@@ -213,19 +266,15 @@ class AnnouncementEngine:
             ):
                 engine = _get_pyttsx3_engine()
                 if engine is not None:
-                    try:
-                        engine.say(message)
-                        engine.runAndWait()
-                        self._state = replace(
-                            self._state,
-                            active_backend="speech",
-                            backend_name="System Speech",
-                            last_error="",
-                        )
-                    except Exception as exc:  # noqa: BLE001
-                        error = f"System speech announcement failed: {exc}"
-                        self._state = replace(self._state, last_error=error)
-                        return error
+                    # Queue speech to a worker thread — never block the UI thread.
+                    _ensure_tts_worker()
+                    _tts_queue.put_nowait(message)
+                    self._state = replace(
+                        self._state,
+                        active_backend="speech",
+                        backend_name="System Speech",
+                        last_error="",
+                    )
             return None
         speak = getattr(self._runtime_backend, "speak", None)
         if not callable(speak):

@@ -1,0 +1,276 @@
+<h1 id="translating-quill">Translating QUILL</h1>
+<p>QUILL uses GNU gettext catalogs and a GitHub pull-request workflow
+for translations. You do not need a Crowdin account, special access, or
+programming knowledge — if you can edit a text file and open a pull
+request, you can contribute a translation.</p>
+<hr />
+<h2 id="quick-start">Quick start</h2>
+<ol type="1">
+<li>Fork the repository on GitHub.</li>
+<li>Copy <code>quill/locale/quill.pot</code> as your starting
+point.</li>
+<li>Create the file
+<code>quill/locale/{lang}/LC_MESSAGES/quill.po</code> (for example
+<code>quill/locale/fr/LC_MESSAGES/quill.po</code> for French).</li>
+<li>Fill in the <code>msgstr</code> values with your translations.</li>
+<li>Run the validator locally (see below).</li>
+<li>Open a pull request using the <strong>Translation PR
+template</strong>.</li>
+</ol>
+<p>That is the complete workflow. No accounts, no queues, no approvals
+before you can start.</p>
+<hr />
+<h2 id="step-by-step-guide">Step-by-step guide</h2>
+<h3 id="fork-and-clone">1. Fork and clone</h3>
+<pre><code>git clone https://github.com/&lt;your-username&gt;/quill.git
+cd quill
+pip install -e &quot;.[ui,dev]&quot;</code></pre>
+<h3 id="create-your-.po-file-from-the-template">2. Create your .po file
+from the template</h3>
+<pre><code>mkdir -p quill/locale/fr/LC_MESSAGES
+cp quill/locale/quill.pot quill/locale/fr/LC_MESSAGES/quill.po</code></pre>
+<p>Replace <code>fr</code> with your language code (POSIX locale tag:
+<code>de</code>, <code>es</code>, <code>pt_BR</code>,
+<code>zh_CN</code>, etc.).</p>
+<p>Edit the header block at the top of your <code>.po</code> file:</p>
+<pre class="po"><code>msgid &quot;&quot;
+msgstr &quot;&quot;
+&quot;Project-Id-Version: QUILL 0.6.0\n&quot;
+&quot;Language: fr\n&quot;
+&quot;Language-Team: French\n&quot;
+&quot;Last-Translator: Your Name &lt;email@example.com&gt;\n&quot;
+&quot;Plural-Forms: nplurals=2; plural=(n &gt; 1);\n&quot;
+&quot;Content-Type: text/plain; charset=UTF-8\n&quot;</code></pre>
+<p>Set <code>Plural-Forms</code> to match your language’s plural rules.
+See the reference at
+https://www.gnu.org/software/gettext/manual/html_node/Plural-forms.html.</p>
+<h3 id="translate">3. Translate</h3>
+<p>For each entry in the file, fill in the <code>msgstr</code>
+value:</p>
+<pre class="po"><code>#: quill/ui/main_frame_menu.py:42
+msgid &quot;&amp;File&quot;
+msgstr &quot;&amp;Fichier&quot;</code></pre>
+<p>Leave <code>msgstr ""</code> for strings you have not translated yet.
+Those strings will fall back to English at runtime. A partial
+translation that covers the menus and common dialogs is more useful than
+no translation at all.</p>
+<h3 id="validate-locally">4. Validate locally</h3>
+<pre><code>python -m quill.tools.check_translation</code></pre>
+<p>Fix any errors before opening your pull request. The CI gate runs the
+same check and will block merge if errors are present.</p>
+<h3 id="compile-and-test-in-the-running-app">5. Compile and test in the
+running app</h3>
+<pre><code>pybabel compile -d quill/locale -D quill
+python -m quill</code></pre>
+<p>Open QUILL Settings and set <strong>Language</strong> to your
+language code. Navigate the menus and dialogs to verify your
+translations appear and sound natural.</p>
+<p>Pay particular attention to: - Menu mnemonics (the underlined
+shortcut letters — check the <strong>Mnemonic
+<code>&amp;</code></strong> rules below). - Announcement strings — what
+your screen reader says during actions. - Plural forms — “1 word” vs “3
+words”.</p>
+<h3 id="regenerate-the-html-and-epub-artifacts">6. Regenerate the HTML
+and EPUB artifacts</h3>
+<p>If you modify <code>translating.md</code> itself as part of your
+contribution, regenerate the HTML and EPUB:</p>
+<pre><code>pandoc docs/translations/translating.md -o docs/translations/translating.html
+pandoc docs/translations/translating.md -o docs/translations/translating.epub</code></pre>
+<h3 id="open-a-pull-request">7. Open a pull request</h3>
+<p>Use the <strong>Translation</strong> PR template (select it in the
+GitHub PR creation interface). Add the label <code>translation</code> to
+your PR.</p>
+<hr />
+<h2 id="coverage-thresholds">Coverage thresholds</h2>
+<ul>
+<li><strong>90%</strong> for an established language (one that has
+shipped in a previous release).</li>
+<li><strong>70%</strong> for a new language in its first release.</li>
+</ul>
+<p>Languages below threshold are shown in the language selector with a
+warning rather than being hidden, so users who prefer even a partial
+translation can still choose it.</p>
+<p>If your language misses a release, it can catch up and ship in the
+next one.</p>
+<hr />
+<h2 id="keeping-your-translation-current">Keeping your translation
+current</h2>
+<p>When new strings are added to QUILL, the <code>.pot</code> file is
+regenerated. To merge new strings into your <code>.po</code> file
+without losing your existing work:</p>
+<pre><code>pybabel update -d quill/locale -D quill -i quill/locale/quill.pot</code></pre>
+<p>New strings appear with empty <code>msgstr ""</code>. Strings that
+were changed in English are marked <code>#, fuzzy</code> — review these
+and clear the <code>fuzzy</code> flag when done.</p>
+<hr />
+<h2 id="regenerating-the-.pot-template-maintainers">Regenerating the
+.pot template (maintainers)</h2>
+<p>When source strings change, regenerate the template and commit
+it:</p>
+<pre><code>pybabel extract \
+  -F babel.cfg \
+  -k _ \
+  -k &quot;ngettext:1,2&quot; \
+  -k lazy_gettext \
+  --project &quot;QUILL&quot; \
+  --version &quot;0.6.0&quot; \
+  --copyright-holder &quot;Blind Information Technology Solutions (BITS) and Community Access&quot; \
+  --msgid-bugs-address &quot;https://github.com/Community-Access/quill/issues&quot; \
+  -o quill/locale/quill.pot \
+  .</code></pre>
+<p>Commit <code>quill/locale/quill.pot</code> whenever source strings
+are added or changed. Translators update their <code>.po</code> files
+from the new <code>.pot</code> before the next release.</p>
+<hr />
+<h2 id="the-quill-product-glossary">The QUILL product glossary</h2>
+<p>The following terms are QUILL product names. Your language team
+decides whether to translate them or leave them in English. Record the
+decision in your <code>.po</code> file as a translator comment so future
+contributors apply it consistently.</p>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Copy Tray</td>
+<td>QUILL’s multi-slot clipboard feature</td>
+</tr>
+<tr>
+<td>Ask Quill</td>
+<td>The AI assistant dialog</td>
+</tr>
+<tr>
+<td>Quillin</td>
+<td>A QUILL extension</td>
+</tr>
+<tr>
+<td>Quick Nav</td>
+<td>The rapid in-document navigation mode</td>
+</tr>
+<tr>
+<td>Skill Library</td>
+<td>The library of AI-powered writing skill packs</td>
+</tr>
+<tr>
+<td>Prompt Library</td>
+<td>The library of saved AI prompts</td>
+</tr>
+<tr>
+<td>GLOW</td>
+<td>QUILL’s guided-learning workflow system</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="translator-credit">Translator credit</h2>
+<p>Translator names appear in the QUILL release notes for each release
+in which their work ships. If you would prefer to be listed by a
+username, set that in your PR description.</p>
+<hr />
+<h2 id="questions-and-help">Questions and help</h2>
+<p>Open a GitHub issue with the label <code>translation</code>. Aim to
+respond within three business days.</p>
+<hr />
+<h1 id="style-guide">Style guide</h1>
+<h2 id="tone-and-register">Tone and register</h2>
+<p>QUILL speaks to the user in the second person, directly. Use “your
+document”, “press this key”, not “the user’s document” or “one presses
+this key.”</p>
+<p>Match the register of the target language’s screen reader ecosystem:
+- French: use “vous” (formal) unless the French-language community
+explicitly votes for “tu”. Record the decision as a translator comment.
+- German: use “Sie” (formal) by default. - For other languages, follow
+the convention used by NVDA’s official translation into your
+language.</p>
+<h2 id="mnemonic-markers">Mnemonic markers (<code>&amp;</code>)</h2>
+<p>A mnemonic marker is the <code>&amp;</code> character before one
+letter in a menu item or button label. It creates a keyboard shortcut:
+Alt plus that letter activates the item. Screen reader users rely on
+mnemonics to navigate menus without arrow keys.</p>
+<p>Rules: 1. Every menu item and button label has exactly one
+<code>&amp;</code>. 2. Your translation must also contain exactly one
+<code>&amp;</code>. 3. Place the <code>&amp;</code> before a letter that
+is unique within the same menu or dialog. 4. The <code>&amp;</code>
+letter must appear in your translated word.</p>
+<p>The CI gate catches missing or extra <code>&amp;</code> markers
+automatically.</p>
+<h2 id="keyboard-shortcuts">Keyboard shortcuts</h2>
+<p>Modifier key names are not translated:</p>
+<ul>
+<li>Ctrl, Alt, Shift, Enter, Escape, Tab, F1–F12</li>
+</ul>
+<p>A string like <code>&amp;Open...\tCtrl+O</code> should become (in
+French) <code>&amp;Ouvrir...\tCtrl+O</code>. The <code>\t</code>
+accelerator keeps <code>Ctrl+O</code>; only the label’s
+<code>&amp;</code> mnemonic is yours to relocate.</p>
+<h2 id="announcement-strings-speech-strings">Announcement strings
+(speech strings)</h2>
+<p>Announcement strings are marked with a <code># SPEECH:</code> comment
+in the <code>.pot</code> file:</p>
+<pre class="po"><code>#. SPEECH: announced after copy-to-tray action
+msgid &quot;Copied to slot {n}&quot;</code></pre>
+<p>Rules for announcement strings: 1. Translate for natural speech, not
+literal label equivalence. 2. Do not abbreviate. Spell out acronyms
+unless they are universally known in your language’s technology
+community. 3. Add spoken context if the meaning would be lost without
+visual UI. 4. Test every announcement string with a screen reader set to
+your language.</p>
+<h2 id="plural-forms">Plural forms</h2>
+<p>Follow your language’s actual plural rules. Reference:
+https://www.gnu.org/software/gettext/manual/html_node/Plural-forms.html</p>
+<p>The <code>Plural-Forms</code> header in your <code>.po</code> file
+must match your language’s rules. The CI gate checks that every
+<code>msgstr[n]</code> entry exists.</p>
+<h2 id="placeholders">Placeholders</h2>
+<p>Placeholders are variable values QUILL inserts at runtime: -
+<code>{name}</code> — Python format string: <code>{count}</code>,
+<code>{filename}</code> - <code>%(name)s</code> — Old-style:
+<code>%(count)s</code>, <code>%(provider)s</code></p>
+<p>Rules: 1. Never translate a placeholder. <code>{n}</code> remains
+<code>{n}</code> in every language. 2. Never remove a placeholder. 3.
+You may reorder placeholders to match your language’s grammar.</p>
+<p>The CI gate checks placeholder preservation.</p>
+<h2 id="technical-identifiers-do-not-translate">Technical identifiers —
+do not translate</h2>
+<ul>
+<li>File extensions: <code>.qpf</code>, <code>.sqp</code>,
+<code>.po</code>, <code>.pot</code>, <code>.mo</code></li>
+<li>Setting key names: <code>language</code>,
+<code>setup_wizard_completed</code></li>
+<li>URL paths and domain names</li>
+<li>ARIA role names: <code>button</code>, <code>dialog</code>,
+<code>listbox</code>, <code>menu</code>, <code>menuitem</code></li>
+</ul>
+<hr />
+<h1 id="appendix-i18n-status-for-0.6.0">Appendix: i18n status for
+0.6.0</h1>
+<p><strong>What is complete:</strong> -
+<code>quill/locale/quill.pot</code> — extraction template, regenerated
+from source. - <code>quill/core/i18n.py</code> — runtime
+<code>_()</code> loader; falls back to the English string when no
+<code>.mo</code> is present, so the app runs without translations. - All
+user-facing strings in <code>quill/ui/</code> and key
+<code>quill/core/</code> modules are wrapped with <code>_()</code>,
+<code>ngettext()</code>, or <code>lazy_gettext()</code>. -
+<code>python -m quill.tools.check_translation</code> validates
+<code>.po</code> files on every PR. - Translation PR template in
+<code>.github/PULL_REQUEST_TEMPLATE/translation.md</code>.</p>
+<p><strong>What is not done yet:</strong> - No language-specific
+<code>.po</code> / <code>.mo</code> files ship with 0.6.0. The product
+ships English-only with the full translation infrastructure in place. -
+A few low-priority internal modules (diagnostic output, developer
+console strings) still have unwrapped strings. These are not user-facing
+in normal operation.</p>
+<p><strong>For the first translator:</strong> Start from
+<code>quill/locale/quill.pot</code>. Create
+<code>quill/locale/{lang}/LC_MESSAGES/quill.po</code> following the
+Quick start above. Open a pull request with the translation PR
+template.</p>
+<p><strong>Future: translation portal</strong> When translation volume
+grows, QUILL may add Weblate or Crowdin as a browser-based alternative
+while keeping gettext catalogs as the source format. The PR workflow
+remains available at all times.</p>

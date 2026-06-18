@@ -179,6 +179,8 @@ def markdown_to_html(markdown: str, title: str) -> str:
         '<meta charset="utf-8">\n'
         '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
         f"<title>{html.escape(title)}</title>\n"
+        '<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"'
+        " async></script>\n"
         "</head>\n"
         f"<body>\n{body}\n</body>\n"
         "</html>\n"

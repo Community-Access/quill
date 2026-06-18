@@ -20,9 +20,12 @@ Keyboard contract (§7.2):
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
+
+from quill.ui.dialog_contract import show_message_box
 
 if TYPE_CHECKING:
     pass
@@ -44,12 +47,21 @@ class ConsoleWindow:
     """
 
     def __init__(
-        self, wx: Any, parent: Any, on_execute_python: Any, on_execute_ts: Any, announce: Any = None
+        self,
+        wx: Any,
+        parent: Any,
+        on_execute_python: Any,
+        on_execute_ts: Any,
+        *,
+        announce_cb: Callable[[str], None] | None = None,
+        focus_editor_cb: Callable[[], None] | None = None,
     ) -> None:
         self._wx = wx
         self._parent = parent
         self._on_execute_python = on_execute_python
         self._on_execute_ts = on_execute_ts
+        self._announce = announce_cb or (lambda _: None)
+        self._focus_editor = focus_editor_cb
         self._frame: Any = None
         self._transcript: Any = None
         self._input: Any = None
@@ -58,7 +70,6 @@ class ConsoleWindow:
         self._history_cache: list[str] = []
         self._history_index: int = -1
         self._input_saved: str = ""
-        self._announce: Any = announce if announce is not None else (lambda _msg: None)
 
     # ------------------------------------------------------------------
     # Public interface
@@ -73,6 +84,7 @@ class ConsoleWindow:
     def close(self) -> None:
         if self._frame:
             self._frame.Hide()
+        self._return_focus()
 
     def is_shown(self) -> bool:
         return self._frame is not None and self._frame.IsShown()
@@ -83,9 +95,14 @@ class ConsoleWindow:
             return
         self._transcript.AppendText(text)
 
-    def set_status(self, text: str) -> None:
+    def _set_status(self, text: str) -> None:
         if self._status_lbl:
             self._status_lbl.SetLabel(text)
+        if text:
+            self._announce(text)
+
+    def set_status(self, text: str) -> None:
+        self._set_status(text)
 
     def set_language(self, lang: str) -> None:
         """Switch the active console language.  Called by open_python_console /
@@ -192,7 +209,8 @@ class ConsoleWindow:
         self._frame.Layout()
 
         # -- Event bindings --------------------------------------------------
-        self._input.Bind(wx.EVT_TEXT_ENTER, self._on_enter)
+        # Frame-level char hook so Esc/F1/Ctrl+L work regardless of focus widget.
+        self._frame.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
         self._input.Bind(wx.EVT_KEY_DOWN, self._on_key_down)
         run_btn.Bind(wx.EVT_BUTTON, lambda _e: self._run_input())
         clear_btn.Bind(wx.EVT_BUTTON, lambda _e: self._clear_transcript())
@@ -204,7 +222,34 @@ class ConsoleWindow:
         self._lang_choice.Bind(wx.EVT_CHOICE, self._on_lang_changed)
 
     # ------------------------------------------------------------------
-    # Keyboard handling
+    # Frame-level keyboard hook (Esc, F1, Ctrl+L, Ctrl+Shift+C, Ctrl+S)
+
+    def _on_char_hook(self, event: Any) -> None:
+        wx = self._wx
+        key = event.GetKeyCode()
+        ctrl = event.ControlDown()
+        shift = event.ShiftDown()
+
+        # Only handle frame-level shortcuts here; pass input-field keys to _on_key_down.
+        if key == wx.WXK_ESCAPE:
+            self.close()
+            return
+        if key == wx.WXK_F1:
+            self._show_help()
+            return
+        if ctrl and not shift and key == ord("L"):
+            self._clear_transcript()
+            return
+        if ctrl and shift and key == ord("C"):
+            self._copy_transcript()
+            return
+        if ctrl and not shift and key == ord("S"):
+            self._save_transcript()
+            return
+        event.Skip()
+
+    # ------------------------------------------------------------------
+    # Keyboard handling (input field)
 
     def _on_key_down(self, event: Any) -> None:
         wx = self._wx
@@ -225,17 +270,15 @@ class ConsoleWindow:
             self._run_input()
             return
         if key == wx.WXK_UP:
-            if not self._caret_on_first_line():
-                event.Skip()
+            # Only navigate history when caret is on the first line.
+            if self._caret_on_first_line():
+                self._history_up()
                 return
-            self._history_up()
-            return
         if key == wx.WXK_DOWN:
-            if not self._caret_on_last_line():
-                event.Skip()
+            # Only navigate history when caret is on the last line.
+            if self._caret_on_last_line():
+                self._history_down()
                 return
-            self._history_down()
-            return
         if key == wx.WXK_ESCAPE:
             self.close()
             if self._parent:
@@ -257,12 +300,6 @@ class ConsoleWindow:
             self._show_help()
             return
         event.Skip()
-
-    def _on_enter(self, event: Any) -> None:
-        if not self._wx.KeyboardState().ShiftDown():
-            self._run_input()
-        else:
-            event.Skip()
 
     # ------------------------------------------------------------------
     # Caret helpers (used by history navigation to avoid replacing text
@@ -317,19 +354,27 @@ class ConsoleWindow:
             self._history_index = len(self._history_cache) - 1
         elif self._history_index > 0:
             self._history_index -= 1
-        self._input.SetValue(self._history_cache[self._history_index])
+        entry = self._history_cache[self._history_index]
+        self._input.SetValue(entry)
         self._input.SetInsertionPointEnd()
+        n = len(self._history_cache)
+        self._announce(f"History {n - self._history_index} of {n}: {entry[:40]}")
 
     def _history_down(self) -> None:
         if self._history_index == -1:
             return
         if self._history_index < len(self._history_cache) - 1:
             self._history_index += 1
-            self._input.SetValue(self._history_cache[self._history_index])
+            entry = self._history_cache[self._history_index]
+            self._input.SetValue(entry)
+            self._input.SetInsertionPointEnd()
+            n = len(self._history_cache)
+            self._announce(f"History {n - self._history_index} of {n}: {entry[:40]}")
         else:
             self._history_index = -1
             self._input.SetValue(self._input_saved)
-        self._input.SetInsertionPointEnd()
+            self._input.SetInsertionPointEnd()
+            self._announce("End of history")
 
     # ------------------------------------------------------------------
     # Transcript operations
@@ -371,12 +416,12 @@ class ConsoleWindow:
                 try:
                     Path(path).write_text(text, encoding="utf-8")
                 except OSError as exc:
-                    from quill.ui.dialog_contract import show_message_box
-
                     show_message_box(
                         f"Could not save transcript:\n{exc}",
                         "Error",
                         self._wx.OK | self._wx.ICON_ERROR,
+                        self._frame,
+                        announce=self._announce,
                     )
 
     def _show_help(self) -> None:
@@ -386,7 +431,7 @@ class ConsoleWindow:
             "  Enter          Run command\n"
             "  Shift+Enter    Insert newline\n"
             "  Ctrl+Enter     Force run multi-line\n"
-            "  Up / Down      Navigate history\n"
+            "  Up / Down      Navigate history (at first/last line)\n"
             "  Ctrl+L         Clear transcript\n"
             "  Ctrl+Shift+C   Copy transcript\n"
             "  Ctrl+S         Save transcript\n"
@@ -400,12 +445,12 @@ class ConsoleWindow:
             "  const doc = await quill.activeDocument()\n"
             "  Requires Node.js on PATH."
         )
-        from quill.ui.dialog_contract import show_message_box
-
         show_message_box(
             help_text,
             "Developer Console Help",
             self._wx.OK | self._wx.ICON_INFORMATION,
+            self._frame,
+            announce=self._announce,
         )
 
     # ------------------------------------------------------------------
@@ -413,15 +458,26 @@ class ConsoleWindow:
 
     def _on_lang_changed(self, event: Any) -> None:
         lang = self._lang_choice.GetString(self._lang_choice.GetSelection())
-        self.set_status(f"Ready - {lang}")
+        self._set_status(f"Ready - {lang}")
+
+    # ------------------------------------------------------------------
+    # Focus helpers
+
+    def _return_focus(self) -> None:
+        if self._focus_editor is not None:
+            try:
+                self._focus_editor()
+            except Exception:  # noqa: BLE001
+                pass
+        elif self._parent:
+            try:
+                self._parent.SetFocus()
+            except Exception:  # noqa: BLE001
+                pass
 
     # ------------------------------------------------------------------
     # Close
 
     def _on_close(self, event: Any) -> None:
         self._frame.Hide()
-        if self._parent:
-            try:
-                self._parent.SetFocus()
-            except Exception:
-                pass
+        self._return_focus()

@@ -57,6 +57,13 @@ caused real bugs in Quill:
    inside a ``wx.ScrolledWindow`` instead; each checkbox announces its state
    natively on focus.
 
+8. ``AcceptsFocusFromKeyboard`` returning ``False`` is banned in ``quill/ui``
+   (A11Y-TAB-1). Overriding this method to return ``False`` on a ``wx.Panel``
+   subclass causes wxPython's ``wxControlContainer`` tab traversal to skip the
+   entire panel subtree — every child TextCtrl, ListBox, and CheckBox becomes
+   unreachable by keyboard. Inactive panels should be excluded from the tab
+   chain via ``Hide()`` + ``Disable()`` instead.
+
 Run directly (``python -m quill.tools.check_banned_patterns``) or via pytest
 (``tests/unit/tools/test_check_banned_patterns.py``). Exit code is non-zero when
 any violation is found.
@@ -81,6 +88,8 @@ _MAIN_FRAME = _REPO_ROOT / "quill" / "ui" / "main_frame.py"
 _SAFE_XML = _REPO_ROOT / "quill" / "core" / "safe_xml.py"
 _PACKAGE_ROOT = _REPO_ROOT / "quill"
 _UI_ROOT = _REPO_ROOT / "quill" / "ui"
+_DEVTOOLS_ROOT = _REPO_ROOT / "quill" / "devtools"
+_DIALOG_CONTRACT = _UI_ROOT / "dialog_contract.py"
 
 # Names that, when called as ``<name>.fromstring(...)``, indicate a raw stdlib
 # ElementTree parse instead of the hardened wrapper.
@@ -659,6 +668,137 @@ def _check_dead_region_attrs(paths: Iterable[Path]) -> list[Violation]:
     return violations
 
 
+def _check_non_daemon_thread(paths: Iterable[Path]) -> list[Violation]:
+    """Ban threading.Thread(...) without daemon=True in quill/ui (GATE-15).
+
+    All UI background threads must be daemon threads so they cannot prevent
+    process exit. Use ``daemon=True`` on every ``threading.Thread(...)`` call
+    in UI code, or use ``QuillTaskManager`` for cancellable operations.
+    """
+    violations: list[Violation] = []
+    for path in paths:
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        for node in ast.walk(tree):
+            if not (
+                isinstance(node, ast.Call)
+                and isinstance(node.func, ast.Attribute)
+                and node.func.attr == "Thread"
+                and isinstance(node.func.value, ast.Name)
+                and node.func.value.id == "threading"
+            ):
+                continue
+            has_daemon = any(
+                kw.arg == "daemon" and isinstance(kw.value, ast.Constant) and kw.value.value is True
+                for kw in node.keywords
+            )
+            if not has_daemon:
+                violations.append(
+                    Violation(
+                        path,
+                        node.lineno,
+                        "threading.Thread without daemon=True; all UI background threads must "
+                        "be daemon=True so they cannot prevent process exit (GATE-15). "
+                        "Use daemon=True or QuillTaskManager for cancellable work.",
+                    )
+                )
+    return violations
+
+
+def _check_wx_messagebox(paths: Iterable[Path]) -> list[Violation]:
+    """Ban raw .MessageBox() calls outside dialog_contract.py (GATE-16).
+
+    Raw ``wx.MessageBox`` / ``self._wx.MessageBox`` calls bypass the z-order
+    parent and screen reader announcement wrapper.  Use
+    ``self._show_message_box`` (MainFrame mixins) or ``show_message_box`` from
+    ``quill.ui.dialog_contract`` (standalone dialogs).
+
+    Existing allowed sites may be exempted with ``# MSGBOX-OK: <reason>`` on
+    the same source line.
+    """
+    violations: list[Violation] = []
+    for path in paths:
+        if path == _DIALOG_CONTRACT:
+            continue
+        source_lines = path.read_text(encoding="utf-8").splitlines()
+        tree = ast.parse("\n".join(source_lines), filename=str(path))
+        for node in ast.walk(tree):
+            if not (
+                isinstance(node, ast.Call)
+                and isinstance(node.func, ast.Attribute)
+                and node.func.attr == "MessageBox"
+            ):
+                continue
+            line_text = source_lines[node.lineno - 1] if node.lineno <= len(source_lines) else ""
+            if "# MSGBOX-OK:" in line_text:
+                continue
+            violations.append(
+                Violation(
+                    path,
+                    node.lineno,
+                    "raw .MessageBox() bypasses the z-order parent and SR announcement "
+                    "wrapper (GATE-16); use self._show_message_box (MainFrame mixins) or "
+                    "show_message_box from quill.ui.dialog_contract (standalone dialogs). "
+                    "Add '# MSGBOX-OK: <reason>' to exempt a reviewed site.",
+                )
+            )
+    return violations
+
+
+_GATE_A11Y_TAB_MARKER = "# A11Y-TAB-1-OK:"
+
+
+def _check_accept_focus_from_keyboard(paths: Iterable[Path]) -> list[Violation]:
+    """Ban ``AcceptsFocusFromKeyboard`` returning ``False`` in quill/ui (A11Y-TAB-1).
+
+    Overriding ``AcceptsFocusFromKeyboard() -> False`` on a ``wx.Panel``
+    subclass causes wxPython's ``wxControlContainer`` tab traversal to skip
+    the entire panel subtree, making every child control (TextCtrl, ListBox,
+    CheckBox, etc.) unreachable by keyboard.  This is the exact pattern that
+    broke tab access to all wizard page fields.
+
+    Hidden/inactive pages should be kept out of the tab chain via
+    ``Hide()`` + ``Disable()``, not by blocking focus on the panel itself.
+
+    Add ``# A11Y-TAB-1-OK: <reason>`` on the ``def`` line to exempt a genuine
+    use case (e.g. a read-only display panel that should never be a tab stop).
+    """
+    violations: list[Violation] = []
+    for path in paths:
+        source_lines = path.read_text(encoding="utf-8").splitlines()
+        tree = ast.parse("\n".join(source_lines), filename=str(path))
+        for node in ast.walk(tree):
+            if not (isinstance(node, ast.FunctionDef) and node.name == "AcceptsFocusFromKeyboard"):
+                continue
+            # Check whether the function body is a single ``return False``.
+            body = node.body
+            if len(body) != 1:
+                continue
+            stmt = body[0]
+            if not (
+                isinstance(stmt, ast.Return)
+                and isinstance(stmt.value, ast.Constant)
+                and stmt.value.value is False
+            ):
+                continue
+            # Allow an exemption marker on the def line.
+            def_line = source_lines[node.lineno - 1] if node.lineno <= len(source_lines) else ""
+            if _GATE_A11Y_TAB_MARKER in def_line:
+                continue
+            violations.append(
+                Violation(
+                    path,
+                    node.lineno,
+                    "AcceptsFocusFromKeyboard returning False on a Panel blocks "
+                    "wxPython tab traversal for the entire subtree, making child "
+                    "controls (TextCtrl, ListBox, CheckBox) unreachable by keyboard "
+                    "(A11Y-TAB-1). Use Hide()+Disable() to exclude inactive panels "
+                    "from the tab chain instead. "
+                    "Add '# A11Y-TAB-1-OK: <reason>' to exempt a genuine read-only surface.",
+                )
+            )
+    return violations
+
+
 def find_violations() -> list[Violation]:
     ui_files = sorted(_UI_ROOT.rglob("*.py"))
     violations: list[Violation] = []
@@ -667,9 +807,10 @@ def find_violations() -> list[Violation]:
     violations.extend(_check_dialog_contract(ui_files))
     violations.extend(_check_checklistbox(ui_files))
     violations.extend(_check_dead_region_attrs(ui_files))
-    violations.extend(_check_threading_thread(ui_files))
-    violations.extend(_check_wx_message_box(sorted(_PACKAGE_ROOT.rglob("*.py"))))
+    violations.extend(_check_non_daemon_thread(ui_files))
+    violations.extend(_check_wx_messagebox(sorted(_PACKAGE_ROOT.rglob("*.py"))))
     violations.extend(_check_show_modal_wrapper(ui_files))
+    violations.extend(_check_accept_focus_from_keyboard(ui_files))
     violations.extend(_check_dialog_registry())
     violations.extend(_check_ruff_config())
     return violations

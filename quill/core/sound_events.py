@@ -23,6 +23,7 @@ class SoundEvent(StrEnum):
     DOCUMENT_CLOSED = "document_closed"
 
     # Navigation
+    QUILL_KEY_PRESSED = "quill_key_pressed"
     HEADING_JUMPED = "heading_jumped"
     TABLE_ENTERED = "table_entered"
     LIST_ENTERED = "list_entered"

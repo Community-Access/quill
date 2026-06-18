@@ -17,7 +17,9 @@ from quill.core.line_ops import (
     move_lines_down,
     move_lines_up,
     number_lines,
+    number_lines_advanced,
     selected_line_bounds,
+    to_roman_numeral,
 )
 
 
@@ -225,3 +227,60 @@ def test_chunk_span_underscore_is_word_char() -> None:
     text = "my_var = 1"
     start, end = chunk_span(text, 3)
     assert text[start:end] == "my_var"
+
+
+# Advanced line numbering (TextMonkey-parity gap fill)
+
+
+def test_to_roman_numeral_basic_values() -> None:
+    assert to_roman_numeral(1) == "I"
+    assert to_roman_numeral(4) == "IV"
+    assert to_roman_numeral(9) == "IX"
+    assert to_roman_numeral(40) == "XL"
+    assert to_roman_numeral(90) == "XC"
+    assert to_roman_numeral(400) == "CD"
+    assert to_roman_numeral(1994) == "MCMXCIV"
+
+
+def test_to_roman_numeral_rejects_non_positive() -> None:
+    import pytest
+
+    with pytest.raises(ValueError):
+        to_roman_numeral(0)
+    with pytest.raises(ValueError):
+        to_roman_numeral(-5)
+
+
+def test_number_lines_advanced_increment() -> None:
+    result = number_lines_advanced("a\nb\nc", start=10, increment=5)
+    assert result == "10. a\n15. b\n20. c"
+
+
+def test_number_lines_advanced_roman_style() -> None:
+    # Numbers share a left-justified column width across the widest rendered
+    # numeral (III = 3 chars), so shorter numerals pick up trailing padding.
+    result = number_lines_advanced("a\nb\nc", start=1, style="roman")
+    assert result == "I  . a\nII . b\nIII. c"
+
+
+def test_number_lines_advanced_padding_zero_fills() -> None:
+    result = number_lines_advanced("a\nb\nc", start=8, pad_width=3)
+    assert result == "008. a\n009. b\n010. c"
+
+
+def test_number_lines_advanced_skips_blank_lines() -> None:
+    result = number_lines_advanced("a\n\nb", start=1)
+    assert result == "1. a\n\n2. b"
+
+
+def test_number_lines_advanced_custom_suffix() -> None:
+    result = number_lines_advanced("a\nb", start=1, suffix=") ")
+    assert result == "1) a\n2) b"
+
+
+def test_number_lines_advanced_right_align_pads_with_spaces() -> None:
+    result = number_lines_advanced("a\nb\nc", start=9, align="right")
+    lines = result.splitlines()
+    # Right-aligned numbers share a common column width across all rendered numbers.
+    widths = {len(line.split(".", 1)[0]) for line in lines}
+    assert len(widths) == 1

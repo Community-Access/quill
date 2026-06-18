@@ -28,12 +28,14 @@ editor effects on the UI thread per the host services contract.
 
 from __future__ import annotations
 
+import threading
 from pathlib import Path
 from typing import Any
 
 from quill.core.quillins import (
     ExtensionManifest,
     SnippetContext,
+    SnippetGalleryEntry,
     build_registry,
     expand_snippet,
 )
@@ -42,10 +44,12 @@ from quill.core.quillins.loader import (
     discover_bundled_extensions,
     discover_extensions,
     install_extension,
+    is_event_enabled,
     load_enabled_bundled_manifests,
     load_enabled_manifests,
     remove_extension,
     set_enabled,
+    set_event_enabled,
 )
 from quill.core.quillins.registry import ContributionRegistry
 from quill.plugins import THIRD_PARTY_PLUGINS_FEATURE
@@ -161,6 +165,12 @@ class QuillinsMenuMixin:
         self._quillin_index: dict[str, tuple[ExtensionManifest, Path]] = {}
         self._bundled_command_ids: set[str] = set()
         self._quillin_registry: ContributionRegistry | None = None
+        # quillin_id -> (manifest, directory) for Quillins with document_events.
+        self._quillin_event_index: dict[str, tuple[ExtensionManifest, Path]] = {}
+        # extension (".csv") -> [(manifest, directory, handler_name)] for file_types.
+        self._quillin_file_type_index: dict[str, list[tuple[ExtensionManifest, Path, str]]] = {}
+        # quillin_id -> list of live wx.Timer objects (Part 1 schedule).
+        self._quillin_timers: dict[str, list[Any]] = {}
         # H-SAFE-1: when Safe Mode is on, we register the *manager* and
         # *wizard* commands (the local surface) but skip the contribution
         # registration entirely. This is the load-bearing gate that makes
@@ -196,9 +206,17 @@ class QuillinsMenuMixin:
         shared registry so their ids collide-detect uniformly.
         """
 
+        # Stop any timers from a previous load before rebuilding the indices, so
+        # a reload/disable never leaves an orphaned wx.Timer firing.
+        for quillin_id in list(getattr(self, "_quillin_timers", {})):
+            self._stop_quillin_timers(quillin_id)
+
         self._quillin_index = {}
         self._bundled_command_ids = set()
         self._quillin_registry = None
+        self._quillin_event_index = {}
+        self._quillin_file_type_index = {}
+        self._quillin_timers = {}
 
         installed = {item.id: item for item in self._installed_quillins()}
         bundled_manifests = load_enabled_bundled_manifests(self.features)
@@ -227,6 +245,32 @@ class QuillinsMenuMixin:
                         manifest.contributes.sound_pack,
                         manifest.contributes.sound_events,
                     )
+                # Index document-event subscriptions for runtime dispatch.
+                if manifest.contributes.document_events:
+                    self._quillin_event_index[manifest.id] = (manifest, entry.directory)
+                # Index file-type handlers by extension for open-time dispatch.
+                for file_type in manifest.contributes.file_types:
+                    for extension in file_type.extensions:
+                        self._quillin_file_type_index.setdefault(extension, []).append((
+                            manifest,
+                            entry.directory,
+                            file_type.handler,
+                        ))
+                # Start background timers (skipped in Safe Mode).
+                if manifest.contributes.schedule and not self._safe_mode:
+                    self._start_quillin_timers(manifest, entry.directory)
+
+        # Fire quillin.enabled for any Quillin that subscribes to it, so live
+        # lifecycle events match the contract (Journal Stamp / Status Scribe).
+        for quillin_id, (manifest, directory) in self._quillin_event_index.items():
+            for entry_dict in manifest.contributes.document_events:
+                if not isinstance(entry_dict, dict):
+                    continue
+                if entry_dict.get("event") != "quillin.enabled":
+                    continue
+                self._fire_quillin_lifecycle_event(
+                    "quillin.enabled", quillin_id, manifest, directory
+                )
 
         for command_id, resolved in registry.commands.items():
             binding = next(
@@ -306,6 +350,161 @@ class QuillinsMenuMixin:
         finally:
             host.close()
 
+    # -- document/timer event dispatch (Part 0/1/2) --------------------------
+    def fire_quillin_event(self, event_name: str, context: dict) -> None:
+        """Fire ``event_name`` to all subscribed Quillins. Non-blocking.
+
+        Each matched handler runs in its own daemon thread so a slow or faulty
+        Quillin can never block the editor. Honours per-event enable state and
+        the optional ``filter_extensions`` guard.
+        """
+
+        index = getattr(self, "_quillin_event_index", None)
+        if not index:
+            return
+        for quillin_id, (manifest, directory) in list(index.items()):
+            for entry in manifest.contributes.document_events:
+                if not isinstance(entry, dict):
+                    continue
+                if entry.get("event") != event_name:
+                    continue
+                handler = entry.get("handler")
+                if not isinstance(handler, str) or not handler:
+                    continue
+                if not is_event_enabled(quillin_id, event_name):
+                    continue
+                filter_extensions = entry.get("filter_extensions")
+                if isinstance(filter_extensions, list) and filter_extensions:
+                    if context.get("extension", "") not in filter_extensions:
+                        continue
+                self._run_quillin_event_handler_async(manifest, directory, handler, context)
+
+    def _fire_quillin_lifecycle_event(
+        self,
+        event_name: str,
+        quillin_id: str,
+        manifest: ExtensionManifest,
+        directory: Path,
+    ) -> None:
+        """Fire a single Quillin-lifecycle event (e.g. quillin.enabled) to one Quillin."""
+
+        for entry in manifest.contributes.document_events:
+            if not isinstance(entry, dict):
+                continue
+            if entry.get("event") != event_name:
+                continue
+            handler = entry.get("handler")
+            if not isinstance(handler, str) or not handler:
+                continue
+            if not is_event_enabled(quillin_id, event_name):
+                continue
+            self._run_quillin_event_handler_async(manifest, directory, handler, {})
+
+    def _run_quillin_event_handler_async(
+        self, manifest: ExtensionManifest, directory: Path, handler_name: str, context: dict
+    ) -> None:
+        """Invoke a Quillin event handler in a daemon thread.
+
+        Storage is acquired before the thread starts (the dict is shared, but
+        the thread only reads/writes its own string-valued entries, which is
+        safe). Errors are marshalled back onto the UI thread.
+        """
+
+        if not hasattr(self, "_quillin_storage_data"):
+            self._quillin_storage_data = {}
+        storage = self._quillin_storage_data.setdefault(manifest.id, {})
+        wx = self._wx
+
+        def _worker() -> None:
+            services = _EditorHostServices(self)
+            host = ExtensionHost(
+                manifest, directory, services, consent=self._quillin_consent, storage=storage
+            )
+            try:
+                host.start()
+                host.load()
+                host.invoke_event(handler_name, dict(context))
+            except Exception as error:  # never crash; report on the UI thread
+                call_after = getattr(wx, "CallAfter", None)
+                if callable(call_after):
+                    call_after(self._set_status, f"Quillin event error: {error}")
+            finally:
+                host.close()
+
+        thread = threading.Thread(  # GATE-40-OK: ad-hoc one-shot Quillin event/timer dispatch
+            target=_worker, daemon=True
+        )
+        # A daemon thread is required so a slow out-of-process worker never blocks
+        # the UI; no cancellation is needed because the worker is killed when its
+        # ExtensionHost closes and the thread is daemonic (abandoned on shutdown).
+        thread.start()
+
+    def fire_quillin_file_type_event(self, path: Path) -> None:
+        """Fire registered file-type handlers for ``path`` (a specialized open)."""
+
+        index = getattr(self, "_quillin_file_type_index", None)
+        if not index:
+            return
+        extension = path.suffix.lower()
+        handlers = index.get(extension)
+        if not handlers:
+            return
+        context = {
+            "file_path": str(path),
+            "extension": extension,
+            "filename": path.name,
+        }
+        for manifest, directory, handler_name in list(handlers):
+            self._run_quillin_event_handler_async(manifest, directory, handler_name, context)
+
+    # -- background timers (Part 1) ------------------------------------------
+    def _start_quillin_timers(self, manifest: ExtensionManifest, directory: Path) -> None:
+        """Create and start one wx.Timer per schedule entry for this Quillin."""
+
+        wx = self._wx
+        timer_cls = getattr(wx, "Timer", None)
+        if timer_cls is None:
+            return
+        timers: list[Any] = []
+        for sched in manifest.contributes.schedule:
+            timer = timer_cls(self.frame)
+            self.frame.Bind(
+                wx.EVT_TIMER,
+                lambda _e, m=manifest, d=directory, s=sched: self._on_quillin_timer(m, d, s),
+                timer,
+            )
+            timer.Start(int(sched.interval_seconds) * 1000)
+            timers.append(timer)
+        if timers:
+            self._quillin_timers[manifest.id] = timers
+
+    def _stop_quillin_timers(self, quillin_id: str) -> None:
+        """Stop and forget all timers for a Quillin (disable/remove/reload)."""
+
+        timers = self._quillin_timers.pop(quillin_id, [])
+        for timer in timers:
+            stop = getattr(timer, "Stop", None)
+            if callable(stop):
+                stop()
+
+    def _on_quillin_timer(self, manifest: ExtensionManifest, directory: Path, sched: Any) -> None:
+        """A schedule timer fired: run its handler in a background thread."""
+
+        context = {"timer_id": sched.id, "interval_seconds": sched.interval_seconds}
+        self._run_quillin_event_handler_async(manifest, directory, sched.handler, context)
+
+    # -- snippet gallery (Part 3) --------------------------------------------
+    def collect_snippet_gallery(self) -> list[tuple[str, str, SnippetGalleryEntry]]:
+        """Return [(quillin_name, quillin_id, entry)] for all gallery snippets."""
+
+        result: list[tuple[str, str, SnippetGalleryEntry]] = []
+        bundled = load_enabled_bundled_manifests(self.features)
+        third_party = load_enabled_manifests(self.features)
+        for manifest in [*bundled, *third_party]:
+            for entry in manifest.contributes.snippet_gallery:
+                result.append((manifest.name, manifest.id, entry))
+        return result
+
     def _quillin_consent(self, capability: str, detail: str) -> bool:
         wx = self._wx
         from quill.ui.dialog_contract import apply_modal_ids  # local import to avoid cycles
@@ -330,6 +529,72 @@ class QuillinsMenuMixin:
             return bool(self._show_modal_dialog(dialog, "Quillin Permission Request") == wx.ID_YES)
         finally:
             dialog.Destroy()
+
+    # -- Intent profile Quillin configuration --------------------------------
+    def apply_intent_quillin_profile(
+        self,
+        intent_id: str,
+        *,
+        wants_ai: bool = False,
+        wants_braille: bool = False,
+        wants_automation: bool = False,
+    ) -> None:
+        """Enable/disable bundled Quillins to match the chosen intent profile.
+
+        Called by ``run_startup_wizard`` after the dialog closes so that the
+        full MainFrame context (quillin index, reload callback) is available.
+        """
+        from quill.core.onboarding_profiles import get_intent_profile
+
+        intent = get_intent_profile(intent_id)
+        quillins_on = set(intent.quillins_on)
+        quillins_off = set(intent.quillins_off)
+
+        # Apply extras that override the base profile
+        if wants_ai:
+            quillins_on.update({
+                "com.quill.bundled.ai-writing-prompts",
+                "com.quill.bundled.ai-writing-skills",
+            })
+            quillins_off.discard("com.quill.bundled.ai-writing-prompts")
+            quillins_off.discard("com.quill.bundled.ai-writing-skills")
+        if wants_automation:
+            quillins_on.add("com.quill.smartinsert")
+            quillins_off.discard("com.quill.smartinsert")
+        if wants_braille:
+            quillins_on.add("com.quill.brftools")
+            quillins_off.discard("com.quill.brftools")
+
+        for quillin_id in quillins_on:
+            try:
+                set_enabled(quillin_id, True)
+            except Exception:
+                pass
+        for quillin_id in quillins_off:
+            try:
+                set_enabled(quillin_id, False)
+            except Exception:
+                pass
+
+        # Reload contributions so menus and commands reflect new state
+        try:
+            self._register_quillin_contributions()
+        except Exception:
+            pass
+
+    # -- Quillin preferences -------------------------------------------------
+    def _pref_manifests(self) -> list[Any]:
+        """Return enabled manifests that declare ``contributes.preferences``."""
+        return [
+            item.manifest
+            for item in self._installed_quillins()
+            if item.manifest is not None and item.manifest.contributes.preferences
+        ]
+
+    def open_quillin_preferences(self, manifest: Any) -> None:
+        from quill.ui.quillin_prefs_dialog import build_quillin_pref_dialog
+
+        build_quillin_pref_dialog(self.frame, manifest, announce_fn=self._announce)
 
     # -- Quillin Wizard (in-app manifest builder) ----------------------------
     def open_quillin_wizard(self) -> None:
@@ -386,13 +651,21 @@ class QuillinsMenuMixin:
 
         enable_button = wx.Button(dialog, label="&Enable")
         disable_button = wx.Button(dialog, label="&Disable")
+        events_button = wx.Button(dialog, label="Configure &Events...")
         reload_button = wx.Button(dialog, label="&Reload")
         remove_button = wx.Button(dialog, label="Re&move...")
         install_button = wx.Button(dialog, label="&Install from Folder...")
         close_button = wx.Button(dialog, id=wx.ID_OK, label="&Close")
 
         actions = wx.BoxSizer(wx.HORIZONTAL)
-        for button in (enable_button, disable_button, reload_button, remove_button, install_button):
+        for button in (
+            enable_button,
+            disable_button,
+            events_button,
+            reload_button,
+            remove_button,
+            install_button,
+        ):
             actions.Add(button, 0, wx.RIGHT, 6)
         body.Add(actions, 0, wx.ALL, 8)
 
@@ -418,6 +691,13 @@ class QuillinsMenuMixin:
             has_item = item is not None
             enable_button.Enable(has_item and self._quillins_enabled())
             disable_button.Enable(has_item and self._quillins_enabled())
+            has_events = (
+                has_item
+                and item is not None
+                and item.manifest is not None
+                and bool(item.manifest.contributes.document_events)
+            )
+            events_button.Enable(has_events)
             reload_button.Enable(has_item)
             remove_button.Enable(has_item)
 
@@ -492,6 +772,8 @@ class QuillinsMenuMixin:
                 src_path = ddlg.GetPath()
             from pathlib import Path
 
+            from quill.ui.dialog_contract import show_message_box
+
             try:
                 ext_id = install_extension(Path(src_path))
                 self._register_quillin_contributions()
@@ -505,18 +787,28 @@ class QuillinsMenuMixin:
                 refresh_details()
                 self._announce(f"Installed {ext_id}.")
             except Exception as exc:
-                from quill.ui.dialog_contract import show_message_box
-
                 show_message_box(
                     f"Install failed: {exc}",
                     "Install Quillin",
                     wx.OK | wx.ICON_ERROR,
                     dialog,
+                    announce=self._announce,
                 )
+
+        def on_configure_events(_event: object) -> None:
+            item = selected_extension()
+            if item is None or item.manifest is None:
+                return
+            doc_events = item.manifest.contributes.document_events
+            if not doc_events:
+                return
+            self._open_event_toggle_dialog(dialog, item.id, doc_events)
+            refresh_details()
 
         chooser.Bind(wx.EVT_LISTBOX, on_select)
         enable_button.Bind(wx.EVT_BUTTON, on_enable)
         disable_button.Bind(wx.EVT_BUTTON, on_disable)
+        events_button.Bind(wx.EVT_BUTTON, on_configure_events)
         reload_button.Bind(wx.EVT_BUTTON, on_reload)
         remove_button.Bind(wx.EVT_BUTTON, on_remove)
         install_button.Bind(wx.EVT_BUTTON, on_install)
@@ -580,6 +872,70 @@ class QuillinsMenuMixin:
             state = "disabled"
         return f"{name} ({state})"
 
+    def _open_event_toggle_dialog(
+        self, parent: Any, extension_id: str, doc_events: tuple[object, ...]
+    ) -> None:
+        """Show a dialog listing each document event with an on/off checkbox."""
+
+        wx = self._wx
+        edlg = wx.Dialog(
+            parent,
+            title=f"Configure Events — {extension_id}",
+            style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
+        )
+        body = wx.BoxSizer(wx.VERTICAL)
+        body.Add(
+            wx.StaticText(
+                edlg,
+                label=(
+                    "Check events you want active for this Quillin. "
+                    "Uncheck to stop an event from firing."
+                ),
+            ),
+            0,
+            wx.ALL | wx.EXPAND,
+            8,
+        )
+
+        checks: list[tuple[str, Any]] = []
+        for entry in doc_events:
+            if not isinstance(entry, dict):
+                continue
+            event_name = str(entry.get("event", ""))
+            title = str(entry.get("title", event_name))
+            desc = str(entry.get("description", ""))
+            label = f"{title} ({event_name})"
+            if desc:
+                label += f"\n  {desc}"
+            cb = wx.CheckBox(edlg, label=label)
+            cb.SetName(f"event_{event_name}")
+            cb.SetValue(is_event_enabled(extension_id, event_name))
+            body.Add(cb, 0, wx.ALL | wx.EXPAND, 4)
+            checks.append((event_name, cb))
+
+        button_sizer = wx.StdDialogButtonSizer()
+        ok_button = wx.Button(edlg, id=wx.ID_OK, label="&Save")
+        cancel_button = wx.Button(edlg, id=wx.ID_CANCEL, label="&Cancel")
+        button_sizer.AddButton(ok_button)
+        button_sizer.AddButton(cancel_button)
+        button_sizer.Realize()
+        body.Add(button_sizer, 0, wx.EXPAND | wx.ALL, 8)
+
+        edlg.SetSizerAndFit(body)
+        if hasattr(edlg, "CentreOnParent"):
+            edlg.CentreOnParent()
+
+        from quill.ui.dialog_contract import apply_modal_ids
+
+        apply_modal_ids(edlg, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
+        try:
+            result = self._show_modal_dialog(edlg, f"Configure Events — {extension_id}")
+        finally:
+            if result == wx.ID_OK:
+                for event_name, cb in checks:
+                    set_event_enabled(extension_id, event_name, bool(cb.GetValue()))
+            edlg.Destroy()
+
     def _quillin_detail_text(self, item: Any) -> str:
         if item is None:
             return "No Quillin selected."
@@ -592,11 +948,27 @@ class QuillinsMenuMixin:
                 lines.append(f"Author: {manifest.author}")
             if manifest.description:
                 lines.append(f"Description: {manifest.description}")
+            if manifest.categories:
+                lines.append(f"Categories: {', '.join(manifest.categories)}")
+            if manifest.min_quill_version:
+                lines.append(f"Min QUILL version: {manifest.min_quill_version}")
             caps = ", ".join(manifest.capabilities) if manifest.capabilities else "(none)"
             lines.append(f"Capabilities: {caps}")
+            if manifest.net_allowed_hosts:
+                lines.append(f"Net allowed hosts: {', '.join(manifest.net_allowed_hosts)}")
             lines.append(f"Type: {'Python handler' if manifest.is_layer_two else 'snippet only'}")
             command_ids = ", ".join(c.id for c in manifest.contributes.commands) or "(none)"
             lines.append(f"Commands: {command_ids}")
+            doc_events = manifest.contributes.document_events
+            if doc_events:
+                lines.append("Events:")
+                for evt in doc_events:
+                    if not isinstance(evt, dict):
+                        continue
+                    event_name = str(evt.get("event", ""))
+                    title = str(evt.get("title", event_name))
+                    active = is_event_enabled(item.id, event_name)
+                    lines.append(f"  {title} ({event_name}): {'on' if active else 'off'}")
         lines.append(f"Enabled: {'yes' if item.enabled else 'no'}")
         if item.errors:
             lines.append("")

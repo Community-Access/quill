@@ -32,6 +32,18 @@ QUILL may create local settings and state files under your app data directory (f
 
 These files are local to your machine and are not uploaded by default.
 
+### Developer Console history
+
+If you use the QUILL Developer Console (QDC), each command you run is appended to a `history.jsonl` file in the app-data directory (up to 500 entries; oldest are removed first). Entries are passed through QUILL's redaction layer before being written, so API keys and tokens that match known patterns (GitHub PATs, OpenAI keys, AWS access keys, Slack tokens, and long alphanumeric tokens) are replaced with `[TOKEN]` in the history file.
+
+If you believe sensitive data was stored before the redaction layer was active, you can delete the `history.jsonl` file from the app-data directory manually.
+
+### GitHub temporary files
+
+When you open a file from a GitHub repository using **File > Open from Remote**, QUILL downloads the file into a `github-temp` subdirectory of the app-data folder. These files are not automatically deleted when you close the tab or exit QUILL.
+
+If you work with private repositories, review the `github-temp` directory periodically and delete files you no longer need. The directory is local to your machine and is not shared or uploaded.
+
 ## User responsibility
 
 You are responsible for reviewing AI-generated output before using, sharing, or publishing it. For sensitive content, use local models when possible and verify that cloud use meets your organization's security and compliance requirements.

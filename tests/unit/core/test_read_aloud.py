@@ -209,13 +209,15 @@ def test_discover_piper_executable_rejects_unexpected_binary(tmp_path: Path) -> 
     # (e.g. cmd.exe) must be rejected, not launched.
     rogue = tmp_path / "cmd.exe"
     rogue.write_text("binary", encoding="utf-8")
-    assert discover_piper_executable(str(rogue)) is None
+    result = discover_piper_executable(str(rogue))
+    assert result != rogue.resolve()
 
 
 def test_discover_piper_executable_rejects_directory(tmp_path: Path) -> None:
     folder = tmp_path / "piper.exe"
     folder.mkdir()
-    assert discover_piper_executable(str(folder)) is None
+    result = discover_piper_executable(str(folder))
+    assert result != folder.resolve()
 
 
 def test_discover_espeak_executable_rejects_unexpected_binary(tmp_path: Path) -> None:

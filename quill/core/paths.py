@@ -68,6 +68,37 @@ def app_data_dir() -> Path:
     return Path.home() / ".quill"
 
 
+def new_install_marker_path() -> Path | None:
+    """Return the path of the installer's new-install marker file, or None.
+
+    The installer writes quill-new-install.txt to {app} on every install
+    (including upgrades). Startup consumes it to reset setup_wizard_completed
+    so the first-run wizard re-runs after a reinstall, even when %APPDATA%
+    settings from a prior install say the wizard already completed.
+
+    Returns None when the install root cannot be determined (e.g., a dev run
+    without a bundled install directory) so the caller can safely skip the
+    check without touching anything.
+    """
+    import os
+
+    marker_name = "quill-new-install.txt"
+
+    # Primary: QUILL_APP_ROOT exported by run-quill.cmd.
+    app_root_env = os.environ.get("QUILL_APP_ROOT")
+    if app_root_env:
+        return Path(app_root_env) / marker_name
+
+    # Fallback: Start Menu shortcut calls pythonw.exe directly; pythonw.exe
+    # lives at {app}\python\, so the install root is one or two levels up.
+    exe = Path(sys.executable)
+    for candidate in (exe.parent, exe.parent.parent):
+        if (candidate / "run-quill.cmd").exists():
+            return candidate / marker_name
+
+    return None
+
+
 def ensure_app_directories() -> None:
     root = app_data_dir()
     for relative in ("", "logs", "diagnostics", "backups", "autosave", "sessions"):

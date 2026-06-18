@@ -4,9 +4,16 @@ from __future__ import annotations
 
 from quill.core.encoding_tools import (
     ENCODING_CHOICES,
+    ansi_to_oem,
+    can_encode,
+    convert_box_drawing_to_ascii,
+    describe_minimum_encoding,
     encode_non_ascii_to_entities,
     find_non_ascii,
+    minimum_encoding,
+    oem_to_ansi,
     reencode_text,
+    strip_box_drawing,
     summarize_non_ascii,
 )
 
@@ -87,3 +94,81 @@ def test_encoding_choices_are_well_formed() -> None:
         assert isinstance(label, str) and label
         # Every advertised codec must be usable by reencode_text.
         assert isinstance(reencode_text("test", codec), bytes)
+
+
+class TestCanEncode:
+    def test_ascii_text_fits_ascii(self) -> None:
+        assert can_encode("hello", "ascii") is True
+
+    def test_em_dash_does_not_fit_ascii(self) -> None:
+        assert can_encode("a—b", "ascii") is False
+
+
+class TestMinimumEncoding:
+    def test_pure_ascii_text(self) -> None:
+        assert minimum_encoding("hello world") == "ascii"
+
+    def test_latin1_required(self) -> None:
+        # 13.5: Renée requires Latin-1 (not representable in plain ASCII).
+        assert minimum_encoding("Renée") == "latin-1"
+
+    def test_windows_1252_required_for_smart_quotes_and_dash(self) -> None:
+        # 13.6: smart quotes + em dash are not in Latin-1 but are in cp1252.
+        assert minimum_encoding("“Hello”—said Renée.") == "cp1252"
+
+    def test_utf8_required_for_emoji(self) -> None:
+        # 13.7: emoji require UTF-8.
+        assert minimum_encoding("Hello \U0001f60a") == "utf-8"
+
+
+class TestOemAnsiConversion:
+    def test_ascii_text_is_unchanged_either_direction(self) -> None:
+        assert oem_to_ansi("hello world") == "hello world"
+        assert ansi_to_oem("hello world") == "hello world"
+
+    def test_oem_to_ansi_fixes_dos_mojibake(self) -> None:
+        # CP437 0x94 is 'o with diaeresis (o-umlaut); reinterpreted as text that
+        # was actually Windows-1252, it should read back as that glyph.
+        dos_bytes = b"Sch\x94n"
+        mis_decoded = dos_bytes.decode("cp437")
+        assert oem_to_ansi(mis_decoded) == dos_bytes.decode("cp1252")
+
+    def test_ansi_to_oem_is_inverse_of_oem_to_ansi(self) -> None:
+        original = "plain ascii text"
+        assert ansi_to_oem(oem_to_ansi(original)) == original
+
+
+class TestBoxDrawingConversion:
+    def test_convert_horizontal_and_vertical_lines(self) -> None:
+        assert convert_box_drawing_to_ascii("─│") == "-|"
+
+    def test_convert_junction_falls_back_to_plus(self) -> None:
+        assert convert_box_drawing_to_ascii("┌┐└┘") == "++++"
+
+    def test_convert_leaves_non_box_drawing_untouched(self) -> None:
+        assert convert_box_drawing_to_ascii("hello") == "hello"
+
+    def test_convert_mixed_text_and_box_drawing(self) -> None:
+        assert convert_box_drawing_to_ascii("a─b│c") == "a-b|c"
+
+    def test_strip_removes_box_drawing_chars(self) -> None:
+        assert strip_box_drawing("┌─┐\n│a│\n└─┘") == "\na\n"
+
+    def test_strip_leaves_plain_text_unchanged(self) -> None:
+        assert strip_box_drawing("plain text") == "plain text"
+
+
+class TestDescribeMinimumEncoding:
+    def test_no_current_encoding_given(self) -> None:
+        summary = describe_minimum_encoding("hello")
+        assert "Minimum required encoding: ASCII." == summary
+
+    def test_current_encoding_already_sufficient(self) -> None:
+        summary = describe_minimum_encoding("hello", "ascii")
+        assert "saved losslessly as ASCII" in summary
+
+    def test_current_encoding_insufficient_recommends_minimum(self) -> None:
+        # 13.9: ISO-8859-1 cannot hold an em dash; recommend the next encoding up.
+        summary = describe_minimum_encoding("a—b", "latin-1")
+        assert "cannot be saved as ISO-8859-1 / Latin-1" in summary
+        assert "Minimum required encoding: Windows-1252 / MS-ANSI." in summary

@@ -153,7 +153,11 @@ def latest_session_snapshot(session_id: str) -> Path | None:
     root = app_data_dir() / "autosave" / session_id
     if not root.exists():
         return None
-    snapshots = sorted(root.glob("*.snap"), key=lambda item: item.stat().st_mtime, reverse=True)
+    snapshots = sorted(
+        [s for s in root.glob("*.snap") if s.stat().st_size > 0],
+        key=lambda item: item.stat().st_mtime,
+        reverse=True,
+    )
     if not snapshots:
         return None
     return snapshots[0]

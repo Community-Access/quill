@@ -853,12 +853,18 @@ def build_chat_body(
     *,
     max_tokens: int = _DEFAULT_MAX_TOKENS,
     stream: bool = False,
+    system_prompt: str = "",
 ) -> dict[str, object]:
     """Return the JSON request body for a provider's chat API (pure).
 
     ``stream`` requests incremental token delivery (AI-14). Gemini carries the
     streaming choice in its URL rather than the body, so the flag is a no-op
     there; every other provider sets its own ``stream`` field.
+
+    ``system_prompt`` is sent as a dedicated system message so providers can
+    cache the stable instruction prefix separately from per-request user
+    content.  For Anthropic Claude the system field uses the structured block
+    format required for prompt caching (cache_control: ephemeral).
     """
     normalized = provider.strip().lower()
     user_message = {"role": "user", "content": prompt}
@@ -869,28 +875,68 @@ def build_chat_body(
             "max_tokens": max_tokens,
             "messages": [user_message],
         }
+        if system_prompt:
+            # Structured block format enables Anthropic prompt caching.
+            # Requires the anthropic-beta: prompt-caching-2024-07-31 header.
+            body["system"] = [
+                {
+                    "type": "text",
+                    "text": system_prompt,
+                    "cache_control": {"type": "ephemeral"},
+                }
+            ]
         if stream:
             body["stream"] = True
         return body
     if normalized == "gemini":
         # Gemini streams via the :streamGenerateContent?alt=sse endpoint, not a
         # body flag, so the request body is identical for both modes.
-        return {"contents": [{"role": "user", "parts": [{"text": prompt}]}]}
+        body_g: dict[str, object] = {"contents": [{"role": "user", "parts": [{"text": prompt}]}]}
+        if system_prompt:
+            body_g["systemInstruction"] = {"parts": [{"text": system_prompt}]}
+        return body_g
     if normalized == "ollama":
-        return {"model": model, "messages": [user_message], "stream": stream}
-    body = {"model": model, "messages": [user_message], "max_tokens": max_tokens}
+        messages: list[dict[str, str]] = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append(user_message)
+        return {"model": model, "messages": messages, "stream": stream}
+    # OpenAI-compatible: openai, openrouter, custom, ollama_cloud.
+    # OpenAI automatically caches prompt prefixes > 1024 tokens; sending the
+    # system prompt as a dedicated role="system" message keeps the cacheable
+    # prefix stable across requests.
+    messages_oa: list[dict[str, str]] = []
+    if system_prompt:
+        messages_oa.append({"role": "system", "content": system_prompt})
+    messages_oa.append(user_message)
+    body = {"model": model, "messages": messages_oa, "max_tokens": max_tokens}
     if stream:
         body["stream"] = True
     return body
 
 
-def build_chat_headers(provider: str, host: str, api_key: str) -> dict[str, str]:
-    """Return chat request headers, including OpenRouter attribution (pure)."""
+def build_chat_headers(
+    provider: str,
+    host: str,
+    api_key: str,
+    *,
+    cache_system_prompt: bool = False,
+) -> dict[str, str]:
+    """Return chat request headers, including OpenRouter attribution (pure).
+
+    When *cache_system_prompt* is True and the provider is Anthropic Claude,
+    the ``anthropic-beta: prompt-caching-2024-07-31`` header is added.  This
+    header is required for the structured ``cache_control`` block in the
+    request body to take effect.
+    """
     headers = _build_auth_headers(provider, host, api_key)
-    if provider.strip().lower() == "openrouter":
+    normalized = provider.strip().lower()
+    if normalized == "openrouter":
         # Optional attribution headers OpenRouter uses for app ranking.
         headers.setdefault("HTTP-Referer", "https://github.com/Community-Access/quill")
         headers.setdefault("X-Title", "QUILL")
+    if normalized == "claude" and cache_system_prompt:
+        headers["anthropic-beta"] = "prompt-caching-2024-07-31"
     return headers
 
 
@@ -991,12 +1037,25 @@ def generate_assistant_response(
     max_tokens: int = _DEFAULT_MAX_TOKENS,
     timeout_seconds: float = 60.0,
     max_attempts: int = 3,
+    system_prompt: str = "",
 ) -> tuple[str | None, str | None]:
     """Generate a chat response from the configured provider.
 
     Returns ``(text, error)``: on success ``text`` is the response and ``error``
     is ``None``; on failure ``text`` is ``None`` and ``error`` is a cause-specific
     message from the shared taxonomy.
+
+    ``system_prompt`` is the stable instruction text for this task (from
+    custom_instructions.split_instruction).  When provided it is sent as a
+    dedicated system message so providers can cache the prefix independently of
+    the per-request user content:
+
+    - Anthropic Claude: structured ``cache_control: ephemeral`` block with the
+      ``anthropic-beta: prompt-caching-2024-07-31`` header.  Cached for 5 min.
+    - OpenAI / OpenRouter / custom: ``role="system"`` message prepended to the
+      conversation.  OpenAI automatically caches prompt prefixes >= 1024 tokens.
+    - Ollama: ``role="system"`` message (model-dependent support).
+    - Gemini: ``systemInstruction`` field.
     """
     provider = settings.provider.strip().lower()
     if provider == "off":
@@ -1009,10 +1068,11 @@ def generate_assistant_response(
         return None, policy_error
     model = (settings.model or "").strip() or default_model_for_provider(provider)
     endpoint = chat_endpoint(provider, host, model)
-    headers = build_chat_headers(provider, host, api_key)
-    body = json.dumps(build_chat_body(provider, model, prompt, max_tokens=max_tokens)).encode(
-        "utf-8"
-    )
+    cache_active = bool(system_prompt)
+    headers = build_chat_headers(provider, host, api_key, cache_system_prompt=cache_active)
+    body = json.dumps(
+        build_chat_body(provider, model, prompt, max_tokens=max_tokens, system_prompt=system_prompt)
+    ).encode("utf-8")
 
     last_error: _FetchError | None = None
     attempts = max(1, max_attempts)

@@ -1,0 +1,30 @@
+{
+  "schema": "quill.extension/1",
+  "id": "com.quill.bundled.math-equations",
+  "name": "Math Equations",
+  "version": "1.0.0",
+  "author": "QUILL Project",
+  "description": "Bundled Quillin: insert LaTeX or MathML equations at the caret. Wraps LaTeX in $ or $$ delimiters; inserts MathML verbatim.",
+  "license": "MIT",
+  "min_quill_version": "1.0.0",
+  "capabilities": ["ui.prompt", "ui.choices", "ui.announce", "editor.read", "editor.write", "ui.command"],
+  "main": "extension.py",
+  "contributes": {
+    "commands": [
+      {
+        "id": "ext.math.insert_equation",
+        "title": "Insert Equation...",
+        "run": { "handler": "insert_equation" }
+      }
+    ],
+    "menus": [
+      { "parent": "Insert", "command": "ext.math.insert_equation" }
+    ],
+    "context_menu": [
+      { "command": "ext.math.insert_equation", "when": "always" }
+    ],
+    "hotkeys": [
+      { "command": "ext.math.insert_equation", "binding": "Ctrl+Shift+E" }
+    ]
+  }
+}

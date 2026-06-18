@@ -1,0 +1,233 @@
+{
+  "schema": "quill.extension/1",
+  "id": "com.quill.brftools",
+  "name": "BRF Tools",
+  "version": "1.0.0",
+  "author": "QUILL Project",
+  "description": "Bundled Quillin: user-configurable preferences for braille translation, page handling, and status bar display. Demonstrates multi-tab Quillin preferences. Requires the QUILL Braille Pack.",
+  "license": "MIT",
+  "min_quill_version": "0.6.0",
+  "categories": ["braille", "accessibility"],
+  "capabilities": [
+    "settings.own.read",
+    "settings.own.write",
+    "document.events",
+    "editor.read",
+    "ui.announce",
+    "ui.status"
+  ],
+  "main": "extension.py",
+  "contributes": {
+    "file_types": [
+      {
+        "extensions": [".brf", ".brl"],
+        "handler": "on_brf_opened",
+        "description": "Announce that a braille file opened and report its braille page count (form feeds)."
+      }
+    ],
+    "preferences": [
+      {
+        "id": "brftools",
+        "title": "BRF Tools",
+        "parent": "Tools",
+        "section": "Braille",
+        "placement": "page",
+        "description": "Configure braille translation profiles, page handling, and status display for the QUILL Braille Pack.",
+        "tabs": [
+          {
+            "id": "translation",
+            "title": "Translation",
+            "description": "Default translation profile and back-translation behavior.",
+            "order": 10,
+            "sections": [
+              {
+                "id": "default_profile",
+                "title": "Default Profile",
+                "settings": [
+                  {
+                    "key": "default_translation_profile",
+                    "label": "Default translation profile",
+                    "type": "choice",
+                    "default": "en-ueb-g2-brf",
+                    "description": "Profile used when no explicit profile is chosen. Must match a profile id in brf_profiles.json.",
+                    "choices": [
+                      { "value": "en-ueb-g2-brf", "label": "UEB Contracted (Grade 2)" },
+                      { "value": "en-ueb-g1-brf", "label": "UEB Uncontracted (Grade 1)" },
+                      { "value": "en-us-legacy-g2-brf", "label": "Standard American English Contracted (Legacy)" },
+                      { "value": "en-us-legacy-g1-brf", "label": "Standard American English Uncontracted (Legacy)" }
+                    ]
+                  },
+                  {
+                    "key": "back_translation_draft_label",
+                    "label": "Back-translation result label",
+                    "type": "string",
+                    "default": "DRAFT - Back-Translated",
+                    "description": "Prefix added to the tab name for every back-translation result to make clear it is not authoritative."
+                  }
+                ]
+              },
+              {
+                "id": "translation_behavior",
+                "title": "Translation Behavior",
+                "settings": [
+                  {
+                    "key": "open_result_in_new_tab",
+                    "label": "Open translation result in a new tab",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "When off, the result replaces the current document (not recommended)."
+                  },
+                  {
+                    "key": "announce_page_count",
+                    "label": "Announce braille page count after translation",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Speak how many braille pages the forward translation produced."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "page_handling",
+            "title": "Page Handling",
+            "description": "Cell width, line height, and page-break behavior.",
+            "order": 20,
+            "sections": [
+              {
+                "id": "page_dimensions",
+                "title": "Page Dimensions",
+                "settings": [
+                  {
+                    "key": "cells_per_line",
+                    "label": "Cells per line",
+                    "type": "integer",
+                    "default": 40,
+                    "minimum": 20,
+                    "maximum": 80,
+                    "description": "Standard BRF line width. 40 cells is the most common interpoint page; 32 is common for single-sided."
+                  },
+                  {
+                    "key": "lines_per_page",
+                    "label": "Lines per page",
+                    "type": "integer",
+                    "default": 25,
+                    "minimum": 10,
+                    "maximum": 60,
+                    "description": "Standard BRF page height. 25 lines is the most common interpoint page."
+                  }
+                ]
+              },
+              {
+                "id": "page_break_handling",
+                "title": "Page Break Handling",
+                "settings": [
+                  {
+                    "key": "warn_on_long_line",
+                    "label": "Warn when a line exceeds the cell width",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Announce when a BRF line is wider than the configured cells-per-line."
+                  },
+                  {
+                    "key": "normalize_line_endings_on_save",
+                    "label": "Normalize line endings to CRLF on save",
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Force Windows CRLF in BRF output. Leave off unless your embosser requires it."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "status_bar",
+            "title": "Status Bar",
+            "description": "What the braille status cell shows while a BRF document is open.",
+            "order": 30,
+            "sections": [
+              {
+                "id": "status_display",
+                "title": "Status Display",
+                "settings": [
+                  {
+                    "key": "show_braille_page",
+                    "label": "Show braille page number",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Include the current braille page in the status cell."
+                  },
+                  {
+                    "key": "show_line_in_page",
+                    "label": "Show line within braille page",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Include the current line within the page in the status cell."
+                  },
+                  {
+                    "key": "show_cell_in_line",
+                    "label": "Show cell position within line",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Include the cursor's cell position within the current line."
+                  },
+                  {
+                    "key": "show_print_page",
+                    "label": "Show estimated print page",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Include the estimated print page number when available."
+                  },
+                  {
+                    "key": "status_verbosity",
+                    "label": "Status verbosity",
+                    "type": "choice",
+                    "default": "normal",
+                    "description": "How much detail the Read Braille Status command speaks.",
+                    "choices": [
+                      { "value": "brief", "label": "Brief (page only)" },
+                      { "value": "normal", "label": "Normal (page, line, cell)" },
+                      { "value": "detailed", "label": "Detailed (all fields)" }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "advanced",
+            "title": "Advanced",
+            "description": "Developer and diagnostic options.",
+            "order": 40,
+            "sections": [
+              {
+                "id": "diagnostics",
+                "title": "Diagnostics",
+                "settings": [
+                  {
+                    "key": "log_translation_commands",
+                    "label": "Log translation commands to the QUILL log",
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Write each lou_translate invocation to the QUILL log file. Useful for diagnosing table problems.",
+                    "advanced": true
+                  },
+                  {
+                    "key": "translation_timeout_seconds",
+                    "label": "Translation timeout (seconds)",
+                    "type": "integer",
+                    "default": 30,
+                    "minimum": 5,
+                    "maximum": 300,
+                    "description": "Maximum time allowed for a single translation run before it is canceled.",
+                    "advanced": true
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

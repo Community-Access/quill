@@ -5,6 +5,11 @@ from html import escape
 
 from quill.core.commands import Command
 from quill.core.features import FeatureManager
+from quill.core.quill_key_help import (
+    MODE_BROWSE,
+    MODE_PREFIX,
+    build_cheat_sheet,
+)
 
 
 def build_welcome_guide(feature_manager: FeatureManager | None = None) -> str:
@@ -115,6 +120,33 @@ def build_keyboard_shortcut_html(
             )
         parts.append("</tbody>")
         parts.append("</table>")
+
+    # ----------------------------------------------------------------------
+    # QUILL Key Layered Shortcuts (Dynamic)
+    # ----------------------------------------------------------------------
+    def binding_lookup(cmd_id: str) -> str | None:
+        return next((c.keybinding for c in commands if c.id == cmd_id), None)
+
+    for mode, title in [(MODE_PREFIX, "QUILL Key Prefix"), (MODE_BROWSE, "QUILL Key Browse Mode")]:
+        groups = build_cheat_sheet(
+            mode=mode,
+            binding_lookup=binding_lookup,
+            counts={},  # Omit counts for static export
+            quill_key_label="QUILL key",
+        )
+        parts.append(f"<h2>{escape(title)}</h2>")
+        for group in groups:
+            parts.append(f"<h3>{escape(group.title)}</h3>")
+            parts.append("<table>")
+            parts.append(
+                "<thead><tr><th scope='col'>Key</th><th scope='col'>Description</th></tr></thead>"
+            )
+            parts.append("<tbody>")
+            for entry in group.entries:
+                key_text = f"<code>{escape(entry.key)}</code>" if entry.key else "<em>Unbound</em>"
+                parts.append(f"<tr><td>{key_text}</td><td>{escape(entry.description)}</td></tr>")
+            parts.append("</tbody></table>")
+
     parts.append("</body>")
     parts.append("</html>")
     return "\n".join(parts) + "\n"

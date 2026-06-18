@@ -35,13 +35,17 @@ def test_manager_command_is_registered() -> None:
 
 
 def test_quillins_submenu_is_attached_to_tools() -> None:
-    assert 'AppendSubMenu(self._build_quillins_menu(), "&Quillins")' in _MENU
+    # Accept both i18n-wrapped _("...") and bare string forms.
+    assert (
+        'AppendSubMenu(self._build_quillins_menu(), _("&Quillins"))' in _MENU
+        or 'AppendSubMenu(self._build_quillins_menu(), "&Quillins")' in _MENU
+    )
 
 
 def test_runtime_gates_bundled_and_third_party_separately() -> None:
     # Registration loads bundled (Tier C) behind core.bundled_quillins and
     # third-party behind the SEC-8 flag — they are merged into one registry.
-    reg = _QUILLINS[_QUILLINS.index("def _register_quillin_contributions") :][:900]
+    reg = _QUILLINS[_QUILLINS.index("def _register_quillin_contributions") :][:1600]
     assert "load_enabled_bundled_manifests(self.features)" in reg
     assert "load_enabled_manifests(self.features)" in reg
     enabled = _QUILLINS[_QUILLINS.index("def _quillins_enabled") :][:400]

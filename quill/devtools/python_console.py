@@ -22,24 +22,9 @@ class PythonConsole:
     def __init__(self, namespace: dict[str, Any]) -> None:
         self._ns = dict(namespace)
         self._ic = code.InteractiveConsole(self._ns)
-        self._buffer: list[str] = []
-        self._needs_more = False
 
     # ------------------------------------------------------------------
     # Public API
-
-    def push_line(self, line: str) -> tuple[bool, str]:
-        """Push one line; returns (needs_more_input, captured_output).
-
-        If *needs_more_input* is True the statement is incomplete (e.g.
-        inside a function body) and the caller should display ``...``
-        prompt and send more lines before executing.
-        """
-        buf = io.StringIO()
-        with redirect_stdout(buf), redirect_stderr(buf):
-            needs_more = self._ic.push(line)
-        self._needs_more = needs_more
-        return needs_more, buf.getvalue()
 
     def execute(self, source: str) -> ScriptResult:
         """Execute a complete source block and return a structured result.
@@ -94,8 +79,6 @@ class PythonConsole:
         self._ns.clear()
         self._ns.update(new_namespace)
         self._ic = code.InteractiveConsole(self._ns)
-        self._buffer = []
-        self._needs_more = False
 
     def update_namespace(self, updates: dict[str, Any]) -> None:
         """Merge *updates* into the current namespace without wiping it."""

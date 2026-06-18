@@ -142,7 +142,7 @@ class StatusBarMixin:
             stats = compute_document_stats(editor.GetValue())
             return f"{stats.words:,} words"
         if item == "mode":
-            return "OVR" if getattr(self, "_overwrite_mode", False) else "INS"
+            return "Overwrite" if getattr(self, "_overwrite_mode", False) else "Insert"
         if item == "selection":
             editor = getattr(self, "editor", None)
             if editor is not None and hasattr(editor, "GetSelection"):
@@ -329,6 +329,10 @@ class StatusBarMixin:
         label = self._STATUS_BAR_LABELS.get(item, item)
         value = self._statusbar_text_for_item(item)
         if item == "message":
+            return value or label
+        # These cells show only the value — the label is carried by SetName / announce,
+        # not repeated in the visible button text.
+        if item in {"line_column", "mode"}:
             return value or label
         if value:
             return f"{label}: {value}"

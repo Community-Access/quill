@@ -59,6 +59,9 @@ class AbbreviationsMixin:
         self._play_abbreviation_sound()
         preview = match.resolved_text[:40] + ("..." if len(match.resolved_text) > 40 else "")
         self._announce(f"Expanded: {preview}")
+        fire = getattr(self, "_fire_quillin_event", None)
+        if callable(fire):
+            fire("abbreviation.expanded", {"trigger": original_abbr})
         return True
 
     def _try_undo_expansion(self) -> bool:

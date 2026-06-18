@@ -7,6 +7,7 @@ and open/save side effects live in ``MainFrame`` (``SshEditingMixin``).
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 
 from quill.core.ssh.sites import (
@@ -87,10 +88,26 @@ class QuickConnectDialog:
             lambda: wx.TextCtrl(self.dialog, style=wx.TE_PASSWORD),
         )
         self.password.SetName("Password or key passphrase")
-        self.key_path = row(
-            "Private key file", lambda: wx.TextCtrl(self.dialog, value=site.key_path)
+        key_picker = wx.BoxSizer(wx.HORIZONTAL)
+        self.key_path = wx.TextCtrl(self.dialog, value=site.key_path)
+        self.key_path.SetName("Private key file path")
+        self.key_path.SetToolTip(
+            "Path to your SSH private key file on disk. OpenSSH, PEM, and PuTTY "
+            "(.ppk) formats are supported. The file itself is not opened until "
+            "you click Connect."
         )
-        self.key_path.SetName("Private key file")
+        key_picker.Add(self.key_path, 1, wx.ALIGN_CENTER_VERTICAL)
+        self.key_browse = wx.Button(self.dialog, label="Browse...")
+        self.key_browse.SetName("Browse for private key file")
+        self.key_browse.SetToolTip("Pick the SSH private key file on disk")
+        self.key_browse.Bind(wx.EVT_BUTTON, self._on_browse_key)
+        key_picker.Add(self.key_browse, 0, wx.LEFT, 6)
+        grid.Add(
+            wx.StaticText(self.dialog, label="Private key file (path on disk)"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL,
+        )
+        grid.Add(key_picker, 1, wx.EXPAND)
         self.default_dir = row(
             "Start directory",
             lambda: wx.TextCtrl(self.dialog, value=site.default_dir or "/"),
@@ -105,6 +122,23 @@ class QuickConnectDialog:
         buttons.Add(wx.Button(self.dialog, wx.ID_CANCEL, label="Cancel"), 0)
         root.Add(buttons, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 12)
         self.dialog.SetSizerAndFit(root)
+
+    def _on_browse_key(self, _event: object) -> None:
+        wx = self._wx
+        style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST
+        with wx.FileDialog(
+            self.dialog,
+            "Choose SSH private key file",
+            wildcard=(
+                "All private keys (*.ppk;*.pem;*.key;id_*)|*.ppk;*.pem;*.key;id_*|"
+                "PuTTY (*.ppk)|*.ppk|"
+                "OpenSSH / PEM (*.pem;*.key;id_*)|*.pem;*.key;id_*|"
+                "All files (*.*)|*.*"
+            ),
+            style=style,
+        ) as dialog:
+            if dialog.ShowModal() == wx.ID_OK:
+                self.key_path.SetValue(dialog.GetPath())
 
     def show(self) -> ConnectionRequest | None:
         wx = self._wx
@@ -167,26 +201,26 @@ class SiteEditDialog:
         )
         self.auth.SetName("Authentication")
         self.auth.SetSelection(_auth_index(site.auth))
-        key_picker = wx.BoxSizer(wx.HORIZONTAL)
+        self.key_path_picker = wx.BoxSizer(wx.HORIZONTAL)
         self.key_path = wx.TextCtrl(self.dialog, value=site.key_path)
         self.key_path.SetName("Private key file path")
         self.key_path.SetToolTip(
             "Path to your SSH private key file on disk. OpenSSH, PEM, and PuTTY "
             "(.ppk) formats are supported. The file itself is not opened until "
-            "you click Save and then Connect from the site manager."
+            "you click Connect from the site manager."
         )
-        key_picker.Add(self.key_path, 1, wx.ALIGN_CENTER_VERTICAL)
+        self.key_path_picker.Add(self.key_path, 1, wx.ALIGN_CENTER_VERTICAL)
         self.key_browse = wx.Button(self.dialog, label="Browse...")
         self.key_browse.SetName("Browse for private key file")
         self.key_browse.SetToolTip("Pick the SSH private key file on disk")
         self.key_browse.Bind(wx.EVT_BUTTON, self._on_browse_key)
-        key_picker.Add(self.key_browse, 0, wx.LEFT, 6)
+        self.key_path_picker.Add(self.key_browse, 0, wx.LEFT, 6)
         grid.Add(
             wx.StaticText(self.dialog, label="Private key file (path on disk)"),
             0,
             wx.ALIGN_CENTER_VERTICAL,
         )
-        grid.Add(key_picker, 1, wx.EXPAND)
+        grid.Add(self.key_path_picker, 1, wx.EXPAND)
         self.default_dir = row(
             "Default directory", lambda: wx.TextCtrl(self.dialog, value=site.default_dir)
         )
@@ -364,7 +398,14 @@ class RemoteBrowserDialog:
     ``name`` and ``is_dir``); the dialog keeps no SFTP knowledge of its own.
     """
 
-    def __init__(self, parent: object, *, list_dir, start_dir: str = "/") -> None:
+    def __init__(
+        self,
+        parent: object,
+        *,
+        list_dir,
+        start_dir: str = "/",
+        announce_cb: Callable[[str], None] | None = None,
+    ) -> None:
         import wx
 
         self._wx = wx
@@ -372,6 +413,7 @@ class RemoteBrowserDialog:
         self._cwd = start_dir or "/"
         self._rows: list[tuple[str, bool]] = []  # (path, is_dir); "" path == parent
         self.selected_path: str | None = None
+        self._announce = announce_cb or (lambda _: None)
 
         self.dialog = wx.Dialog(
             parent, title="Open Remote File", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
@@ -399,6 +441,7 @@ class RemoteBrowserDialog:
 
     def _populate(self) -> None:
         self.path_label.SetLabel(self._cwd)
+        self._announce(self._cwd)
         labels: list[str] = []
         self._rows = []
         if self._cwd not in ("", "/"):

@@ -26,9 +26,9 @@ from pathlib import Path
 # testing.  The committed ``checksums.sha256`` then pins the exact bytes.
 DEFAULT_BASE_URL = (
     "https://raw.githubusercontent.com/accessibleapps/app_updater/"
-    "<REPLACE_WITH_COMMIT_SHA>/autoupdate/bootstrappers/"
+    "664a3b69c4757d7cfcd47561df170565234b0106/autoupdate/bootstrappers/"
 )
-DEFAULT_BASE_SHA = "<REPLACE_WITH_COMMIT_SHA>"
+DEFAULT_BASE_SHA = "664a3b69c4757d7cfcd47561df170565234b0106"
 
 
 def _resolve_base_url(arg: str | None) -> str:

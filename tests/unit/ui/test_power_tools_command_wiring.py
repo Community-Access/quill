@@ -33,7 +33,11 @@ _MENU_SOURCE = Path(eds_menu_module.__file__).read_text(encoding="utf-8")
 _POWER_TOOLS_COMMAND_IDS = [
     "power.insert_special_character",
     "power.insert_file_content",
+    "power.insert_table_of_contents",
     "power.new_document_from_clipboard",
+    "power.expand_abbreviation",
+    "power.preview_abbreviation",
+    "power.explain_abbreviation",
     "power.paste_html_as_markdown",
     "power.number_lines",
     "power.hard_wrap_lines",
@@ -70,6 +74,26 @@ _POWER_TOOLS_COMMAND_IDS = [
     "power.encode_all_non_ascii",
     "power.show_non_ascii",
     "power.reencode_file",
+    "power.non_ascii_jump_to_source",
+    "power.non_ascii_jump_to_report",
+    "power.analyze_encoding_requirements",
+    "power.save_minimum_encoding",
+    "power.remove_email_quote_markers",
+    "power.strip_low_ascii",
+    "power.strip_high_ascii",
+    "power.hex_dump",
+    "power.convert_oem_to_ansi",
+    "power.convert_ansi_to_oem",
+    "power.convert_box_drawing_to_ascii",
+    "power.strip_box_drawing",
+    "power.number_lines_advanced",
+    "power.multi_replace",
+    "power.count_occurrences",
+    "power.compute_line_statistics",
+    "power.select_markdown_profile",
+    "power.toggle_preserve_line_breaks",
+    "power.read_markdown_status",
+    "power.select_citation_style",
     "power.shuffle_lines",
     "power.sort_lines_numeric",
     "power.sort_lines_by_length",
@@ -114,6 +138,7 @@ def test_every_command_is_menu_wired() -> None:
         "sort_filter",
         "trim_blank",
         "html_encoding",
+        "markdown_profiles",
         "navigate",
         "search",
         "accessibility",
@@ -130,7 +155,11 @@ def test_every_command_is_menu_wired() -> None:
     # The cohesive remainder ships as Tools > Advanced (expanded inline build
     # per §10.3; the power_tools group is still appended via the data-driven helper).
     assert '_append_power_tools_group(power_tools_menu, "power_tools")' in _SOURCE
-    assert 'tools_menu.AppendSubMenu(power_tools_menu, "&Advanced")' in _SOURCE
+    # Accept both i18n-wrapped _("...") and bare string forms.
+    assert (
+        'tools_menu.AppendSubMenu(power_tools_menu, _("&Advanced"))' in _SOURCE
+        or 'tools_menu.AppendSubMenu(power_tools_menu, "&Advanced")' in _SOURCE
+    )
     for helper in (
         "_append_power_tools_insert_items",
         "_append_power_tools_edit_items",
@@ -139,6 +168,7 @@ def test_every_command_is_menu_wired() -> None:
         "_append_power_tools_sort_filter_items",
         "_append_power_tools_trim_blank_items",
         "_append_power_tools_html_encoding_items",
+        "_append_power_tools_markdown_profiles_items",
         "_append_power_tools_navigate_items",
         "_append_power_tools_search_items",
         "_append_power_tools_accessibility_items",
@@ -227,10 +257,14 @@ def test_menu_recirculation_preserves_shipped_group_order() -> None:
         "insert": [
             "power.insert_special_character",
             "power.insert_file_content",
+            "power.insert_table_of_contents",
         ],
         "edit": [
             "power.paste_html_as_markdown",
             "power.new_document_from_clipboard",
+            "power.expand_abbreviation",
+            "power.preview_abbreviation",
+            "power.explain_abbreviation",
         ],
         "copy_tray": [
             "edit.open_copy_tray",
@@ -238,6 +272,7 @@ def test_menu_recirculation_preserves_shipped_group_order() -> None:
         ],
         "format_line": [
             "power.number_lines",
+            "power.number_lines_advanced",
             "power.hard_wrap_lines",
             "power.delete_paragraph",
             "power.delete_to_line_start",
@@ -263,6 +298,24 @@ def test_menu_recirculation_preserves_shipped_group_order() -> None:
             "power.encode_all_non_ascii",
             "power.show_non_ascii",
             "power.reencode_file",
+            "power.non_ascii_jump_to_source",
+            "power.non_ascii_jump_to_report",
+            "power.analyze_encoding_requirements",
+            "power.save_minimum_encoding",
+            "power.remove_email_quote_markers",
+            "power.strip_low_ascii",
+            "power.strip_high_ascii",
+            "power.hex_dump",
+            "power.convert_oem_to_ansi",
+            "power.convert_ansi_to_oem",
+            "power.convert_box_drawing_to_ascii",
+            "power.strip_box_drawing",
+        ],
+        "markdown_profiles": [
+            "power.select_markdown_profile",
+            "power.toggle_preserve_line_breaks",
+            "power.read_markdown_status",
+            "power.select_citation_style",
         ],
         "navigate": [
             "power.go_to_percent",
@@ -275,6 +328,8 @@ def test_menu_recirculation_preserves_shipped_group_order() -> None:
             "power.extract_regex_matches",
             "power.set_lines_first_not_second",
             "power.set_lines_common",
+            "power.multi_replace",
+            "power.count_occurrences",
         ],
         "power_tools": [
             "power.run_current_file",
@@ -284,6 +339,7 @@ def test_menu_recirculation_preserves_shipped_group_order() -> None:
             "power.toggle_key_describer",
             "power.toggle_indent_announce",
             "power.infer_indent",
+            "power.compute_line_statistics",
         ],
     }
     for group, ids in expected.items():

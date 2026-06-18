@@ -39,10 +39,27 @@ msg.txt
 
 # Working / scratch files (not part of the project)
 zfix*
+zkey*
+key.md
+key_fix_*.md
+key_troubleshoot*.md
+zquill_*.md
 /Status
 keys.txt
 /files/
 docs/leasey.md
+
+# Generated epub/html renders of root-level and .github markdown (local only)
+/*.epub
+/*.html
+.github/**/*.epub
+.github/**/*.html
+examples/**/*.epub
+examples/**/*.html
+gen.ps1
+
+# liblouis build workspace (run scripts/build_braille_pack.py to regenerate)
+/liblouis/
 
 # Claude Code local state (jobs, worktrees, memory)
 .claude/

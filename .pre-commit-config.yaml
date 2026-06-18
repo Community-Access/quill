@@ -63,6 +63,17 @@ repos:
         files: ^quill/.*\.py$
         require_serial: true
 
+      - id: announce-gap
+        name: announce-gap gate (GATE-12)
+        # GATE-12: every dialog with a status StaticText updated via SetLabel
+        # must also announce the change via _announce() / announce_cb. Prevents
+        # the silent-status regression (#43 from the 2026-06-12 review).
+        entry: python -m quill.tools.check_announce_gap
+        language: system
+        pass_filenames: false
+        files: ^quill/(ui|devtools)/.*\.py$
+        require_serial: true
+
       - id: docs-artifacts
         name: docs HTML/EPUB parity
         # Fail if a docs/**/*.md changed without its regenerated .html/.epub

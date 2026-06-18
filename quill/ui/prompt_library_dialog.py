@@ -11,6 +11,7 @@ with the response.
 from __future__ import annotations
 
 import threading
+from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 import wx
@@ -33,6 +34,8 @@ class PromptLibraryDialog:
         selection: str = "",
         document: str = "",
         title: str = "",
+        *,
+        announce_cb: Callable[[str], None] | None = None,
     ) -> None:
         self._lib = library
         self._settings = settings
@@ -40,6 +43,7 @@ class PromptLibraryDialog:
         self._document = document
         self._doc_title = title
         self._running = False
+        self._announce = announce_cb or (lambda _: None)
 
         self.dialog = wx.Dialog(
             parent,
@@ -142,6 +146,11 @@ class PromptLibraryDialog:
         self._search.SetFocus()
         self._check_ai_configured()
 
+    def _set_status(self, msg: str) -> None:
+        self._status.SetLabel(msg)
+        if msg:
+            self._announce(msg)
+
     def _check_ai_configured(self) -> None:
         model_id = (
             getattr(self._settings, "ai_prompt_default_model", "")
@@ -149,7 +158,7 @@ class PromptLibraryDialog:
             or ""
         )
         if not model_id:
-            self._status.SetLabel(
+            self._set_status(
                 "No AI model configured. Open Preferences > AI to set a provider and model."
             )
 
@@ -222,6 +231,7 @@ class PromptLibraryDialog:
                 "No Input Text",
                 wx.OK | wx.ICON_INFORMATION,
                 self.dialog,
+                announce=self._announce,
             )
             self._input.SetFocus()
             return
@@ -233,6 +243,7 @@ class PromptLibraryDialog:
                 "No Model",
                 wx.OK | wx.ICON_INFORMATION,
                 self.dialog,
+                announce=self._announce,
             )
             return
         prompt_text = (
@@ -243,7 +254,7 @@ class PromptLibraryDialog:
         )
         self._running = True
         self._update_buttons()
-        self._status.SetLabel(f"Sending to {model_id}...")
+        self._set_status(f"Sending to {model_id}...")
         self.dialog.Layout()
 
         def run() -> None:
@@ -263,7 +274,7 @@ class PromptLibraryDialog:
 
     def _on_result(self, result: str, model_id: str, provider_id: str) -> None:
         self._running = False
-        self._status.SetLabel("")
+        self._set_status("")
         self._update_buttons()
         from quill.ui.ai_chat_dialog import AIResponseDialog
 
@@ -273,13 +284,14 @@ class PromptLibraryDialog:
 
     def _on_run_error(self, message: str) -> None:
         self._running = False
-        self._status.SetLabel("")
+        self._set_status("")
         self._update_buttons()
         show_message_box(
             f"AI request failed: {message}",
             "Prompt Run Failed",
             wx.OK | wx.ICON_ERROR,
             self.dialog,
+            announce=self._announce,
         )
 
     def _on_new(self, _event: object) -> None:
@@ -357,12 +369,19 @@ class PromptLibraryDialog:
                 "Import Error",
                 wx.OK | wx.ICON_ERROR,
                 self.dialog,
+                announce=self._announce,
             )
             return
         self._rebuild_list()
         msg = f"Imported {len(added)} prompt(s)." if added else "No new prompts to import."
         self._listbox.SetName(f"Prompt list — {msg}")
-        show_message_box(msg, "Import Complete", wx.OK | wx.ICON_INFORMATION, self.dialog)
+        show_message_box(
+            msg,
+            "Import Complete",
+            wx.OK | wx.ICON_INFORMATION,
+            self.dialog,
+            announce=self._announce,
+        )
 
     def _on_export(self, _event: object) -> None:
         with wx.FileDialog(
@@ -385,6 +404,7 @@ class PromptLibraryDialog:
                 "Export Error",
                 wx.OK | wx.ICON_ERROR,
                 self.dialog,
+                announce=self._announce,
             )
             return
         show_message_box(
@@ -392,6 +412,7 @@ class PromptLibraryDialog:
             "Export Complete",
             wx.OK | wx.ICON_INFORMATION,
             self.dialog,
+            announce=self._announce,
         )
 
 

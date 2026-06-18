@@ -713,3 +713,74 @@ def test_save_provider_model_empty_clears(monkeypatch: pytest.MonkeyPatch, tmp_p
     assistant_ai.save_provider_model("openrouter", "openrouter/auto")
     assistant_ai.save_provider_model("openrouter", "  ")
     assert assistant_ai.load_provider_model("openrouter") == ""
+
+
+# ---------------------------------------------------------------------------
+# Prompt caching: build_chat_body and build_chat_headers
+# ---------------------------------------------------------------------------
+
+
+def test_build_chat_body_claude_without_system_prompt() -> None:
+    body = assistant_ai.build_chat_body("claude", "claude-3-5-sonnet-20241022", "Hello")
+    assert "system" not in body
+    assert body["messages"] == [{"role": "user", "content": "Hello"}]
+
+
+def test_build_chat_body_claude_with_system_prompt_adds_cache_control() -> None:
+    body = assistant_ai.build_chat_body(
+        "claude", "claude-3-5-sonnet-20241022", "Hello", system_prompt="Be concise."
+    )
+    system = body.get("system")
+    assert isinstance(system, list) and len(system) == 1
+    block = system[0]
+    assert block["type"] == "text"
+    assert block["text"] == "Be concise."
+    assert block["cache_control"] == {"type": "ephemeral"}
+    assert body["messages"] == [{"role": "user", "content": "Hello"}]
+
+
+def test_build_chat_body_openai_with_system_prompt_prepends_system_role() -> None:
+    body = assistant_ai.build_chat_body("openai", "gpt-4o", "Hello", system_prompt="Be helpful.")
+    messages = body["messages"]
+    assert messages[0] == {"role": "system", "content": "Be helpful."}
+    assert messages[1] == {"role": "user", "content": "Hello"}
+
+
+def test_build_chat_body_openai_without_system_prompt_no_system_role() -> None:
+    body = assistant_ai.build_chat_body("openai", "gpt-4o", "Hello")
+    roles = [m["role"] for m in body["messages"]]
+    assert "system" not in roles
+
+
+def test_build_chat_body_gemini_with_system_prompt() -> None:
+    body = assistant_ai.build_chat_body(
+        "gemini", "gemini-2.0-flash", "Hello", system_prompt="Be precise."
+    )
+    assert "systemInstruction" in body
+    assert body["systemInstruction"]["parts"][0]["text"] == "Be precise."
+
+
+def test_build_chat_body_ollama_with_system_prompt() -> None:
+    body = assistant_ai.build_chat_body("ollama", "llama3", "Hello", system_prompt="Be brief.")
+    messages = body["messages"]
+    assert messages[0] == {"role": "system", "content": "Be brief."}
+    assert messages[1] == {"role": "user", "content": "Hello"}
+
+
+def test_build_chat_headers_claude_no_cache_by_default() -> None:
+    headers = assistant_ai.build_chat_headers("claude", "https://api.anthropic.com", "key123")
+    assert "anthropic-beta" not in headers
+
+
+def test_build_chat_headers_claude_with_cache_adds_beta_header() -> None:
+    headers = assistant_ai.build_chat_headers(
+        "claude", "https://api.anthropic.com", "key123", cache_system_prompt=True
+    )
+    assert headers.get("anthropic-beta") == "prompt-caching-2024-07-31"
+
+
+def test_build_chat_headers_openai_does_not_get_anthropic_beta() -> None:
+    headers = assistant_ai.build_chat_headers(
+        "openai", "https://api.openai.com", "key123", cache_system_prompt=True
+    )
+    assert "anthropic-beta" not in headers

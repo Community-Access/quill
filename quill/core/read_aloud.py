@@ -45,6 +45,16 @@ DECTALK_VOICE_COMMANDS: dict[str, str] = {
     "kit": "[:nk]",
 }
 
+KOKORO_ONNX_MODEL_URL = (
+    "https://github.com/thewh1teagle/kokoro-onnx/releases/download"
+    "/model-files-v1.0/kokoro-v1.0.int8.onnx"
+)
+KOKORO_ONNX_VOICES_URL = (
+    "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin"
+)
+KOKORO_ONNX_MODEL_FILENAME = "kokoro-v1.0.int8.onnx"
+KOKORO_ONNX_VOICES_FILENAME = "voices-v1.0.bin"
+
 KOKORO_VOICES: list[tuple[str, str]] = [
     ("af_heart", "Heart (American Female, warm)"),
     ("af_bella", "Bella (American Female, expressive)"),
@@ -84,11 +94,63 @@ ESPEAK_ENGLISH_VOICES: list[tuple[str, str]] = [
     ("en-gb-x-rp", "English (RP variant)"),
 ]
 
-OPENVOICE_ENGLISH_VOICES: list[tuple[str, str]] = [
-    ("en-base", "OpenVoice Base (English)"),
-    ("en-bright", "OpenVoice Bright (English)"),
-    ("en-calm", "OpenVoice Calm (English)"),
+PIPER_ENGLISH_VOICES: list[tuple[str, str]] = [
+    # British English
+    ("en_GB-alan-medium", "Alan (British, medium)"),
+    ("en_GB-alba-medium", "Alba (British, medium)"),
+    ("en_GB-aru-medium", "Aru (British, medium)"),
+    ("en_GB-cori-high", "Cori (British, high)"),
+    ("en_GB-cori-medium", "Cori (British, medium)"),
+    ("en_GB-jenny_dioco-medium", "Jenny Dioco (British, medium)"),
+    ("en_GB-northern_english_male-medium", "Northern English Male (British, medium)"),
+    ("en_GB-semaine-medium", "Semaine (British, medium)"),
+    ("en_GB-southern_english_female-low", "Southern English Female (British, low)"),
+    ("en_GB-vctk-medium", "VCTK (British, medium)"),
+    # American English
+    ("en_US-amy-low", "Amy (US, low)"),
+    ("en_US-amy-medium", "Amy (US, medium)"),
+    ("en_US-arctic-medium", "Arctic (US, medium)"),
+    ("en_US-bryce-medium", "Bryce (US, medium)"),
+    ("en_US-danny-low", "Danny (US, low)"),
+    ("en_US-hfc_female-medium", "HFC Female (US, medium)"),
+    ("en_US-hfc_male-medium", "HFC Male (US, medium)"),
+    ("en_US-joe-medium", "Joe (US, medium)"),
+    ("en_US-john-medium", "John (US, medium)"),
+    ("en_US-kathleen-low", "Kathleen (US, low)"),
+    ("en_US-kristin-medium", "Kristin (US, medium)"),
+    ("en_US-kusal-medium", "Kusal (US, medium)"),
+    ("en_US-l2arctic-medium", "L2Arctic (US, medium)"),
+    ("en_US-lessac-high", "Lessac (US, high)"),
+    ("en_US-lessac-low", "Lessac (US, low)"),
+    ("en_US-lessac-medium", "Lessac (US, medium)"),
+    ("en_US-libritts-high", "LibriTTS (US, high)"),
+    ("en_US-libritts_r-medium", "LibriTTS R (US, medium)"),
+    ("en_US-ljspeech-high", "LJSpeech (US, high)"),
+    ("en_US-ljspeech-medium", "LJSpeech (US, medium)"),
+    ("en_US-norman-medium", "Norman (US, medium)"),
+    ("en_US-reza_ibrahim-medium", "Reza Ibrahim (US, medium)"),
+    ("en_US-ryan-high", "Ryan (US, high)"),
+    ("en_US-ryan-low", "Ryan (US, low)"),
+    ("en_US-ryan-medium", "Ryan (US, medium)"),
+    ("en_US-sam-medium", "Sam (US, medium)"),
 ]
+
+
+def default_piper_model_dir() -> Path:
+    from quill.core.paths import app_data_dir
+
+    return app_data_dir() / "piper-models"
+
+
+def list_piper_catalog_voices(model_dir: Path | None = None) -> list[VoiceOption]:
+    """Return all catalog Piper voices; name includes download status."""
+    d = model_dir if model_dir is not None else default_piper_model_dir()
+    result = []
+    for voice_id, display_name in PIPER_ENGLISH_VOICES:
+        downloaded = (d / f"{voice_id}.onnx").exists()
+        suffix = "" if downloaded else " [download first]"
+        result.append(VoiceOption(id=voice_id, name=f"{display_name}{suffix}"))
+    return result
 
 
 def _validate_configured_executable(
@@ -142,6 +204,9 @@ def discover_piper_executable(configured_path: str = "") -> Path | None:
             probe = bundled / relative
             if probe.exists():
                 return probe.resolve()
+    found = shutil.which("piper") or shutil.which("piper.exe")
+    if found:
+        return Path(found).resolve()
     return None
 
 
@@ -225,23 +290,6 @@ def discover_espeak_executable(configured_path: str = "") -> Path | None:
     return None
 
 
-def discover_openvoice_executable(configured_path: str = "") -> Path | None:
-    validated = _validate_configured_executable(configured_path, ("openvoice.exe", "openvoice"))
-    if validated is not None:
-        return validated
-    app_root = os.environ.get("QUILL_APP_ROOT", "").strip()
-    if app_root:
-        bundled = Path(app_root) / "tools" / "speech" / "openvoice"
-        for relative in ("openvoice.exe", "bin/openvoice.exe"):
-            probe = bundled / relative
-            if probe.exists():
-                return probe.resolve()
-    found = shutil.which("openvoice") or shutil.which("openvoice.exe")
-    if found:
-        return Path(found).resolve()
-    return None
-
-
 def list_kokoro_voices() -> list[VoiceOption]:
     return [VoiceOption(id=vid, name=name) for vid, name in KOKORO_VOICES]
 
@@ -263,8 +311,15 @@ def list_espeak_english_voices() -> list[VoiceOption]:
     return [VoiceOption(id=vid, name=name) for vid, name in ESPEAK_ENGLISH_VOICES]
 
 
-def list_openvoice_english_voices() -> list[VoiceOption]:
-    return [VoiceOption(id=vid, name=name) for vid, name in OPENVOICE_ENGLISH_VOICES]
+def default_kokoro_model_dir() -> Path:
+    from quill.core.paths import app_data_dir
+
+    return app_data_dir() / "kokoro-models"
+
+
+def kokoro_onnx_ready(model_dir: Path | None = None) -> bool:
+    d = model_dir or default_kokoro_model_dir()
+    return (d / KOKORO_ONNX_MODEL_FILENAME).exists() and (d / KOKORO_ONNX_VOICES_FILENAME).exists()
 
 
 def synthesize_with_kokoro(
@@ -276,11 +331,38 @@ def synthesize_with_kokoro(
 ) -> None:
     if not text.strip():
         raise ReadAloudUnavailableError("Cannot generate speech from empty text")
+
+    # Try kokoro-onnx first — no torch required, just onnxruntime (~20 MB).
+    # Uses the int8 quantized model downloaded to the default model directory.
+    model_dir = default_kokoro_model_dir()
+    if kokoro_onnx_ready(model_dir):
+        try:
+            import numpy as _np  # type: ignore[import]
+            import soundfile as _sf  # type: ignore[import]
+            from kokoro_onnx import (  # type: ignore[import-not-found,import-untyped]
+                Kokoro as _KokoroOnnx,
+            )
+
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            lang = "en-gb" if voice.startswith("b") else "en-us"
+            _k = _KokoroOnnx(
+                str(model_dir / KOKORO_ONNX_MODEL_FILENAME),
+                str(model_dir / KOKORO_ONNX_VOICES_FILENAME),
+            )
+            samples, sample_rate = _k.create(text, voice=voice, speed=float(speed), lang=lang)
+            _sf.write(str(output_path), _np.array(samples), sample_rate)
+            return
+        except (ImportError, Exception):
+            pass  # fall through to kokoro + torch
+
+    # Fall back to kokoro + torch.
     try:
         from kokoro import KPipeline  # type: ignore[attr-defined]
     except ImportError as exc:
         raise ReadAloudUnavailableError(
-            "Kokoro TTS requires the 'kokoro' package (pip install kokoro)"
+            "Kokoro TTS requires either:\n"
+            "  - kokoro-onnx models via Voice Picker > Download Kokoro (~114 MB)\n"
+            "  - the 'kokoro' package with torch (pip install kokoro, ~2 GB)"
         ) from exc
     try:
         import numpy as np  # type: ignore[import]
@@ -295,13 +377,13 @@ def synthesize_with_kokoro(
     output_path.parent.mkdir(parents=True, exist_ok=True)
     lang_code = "b" if voice.startswith("b") else "a"
     pipeline = KPipeline(lang_code=lang_code)
-    samples: list[np.ndarray] = []
+    samples_list: list[np.ndarray] = []
     for _g, _p, audio in pipeline(text, voice=voice, speed=float(speed)):
         if audio is not None and len(audio) > 0:
-            samples.append(audio)
-    if not samples:
+            samples_list.append(audio)
+    if not samples_list:
         raise ReadAloudUnavailableError("Kokoro produced no audio output")
-    sf.write(str(output_path), np.concatenate(samples), 24000)
+    sf.write(str(output_path), np.concatenate(samples_list), 24000)
 
 
 def synthesize_with_espeak(
@@ -341,59 +423,6 @@ def synthesize_with_espeak(
             if detail
             else f"eSpeak-NG exited with code {completed.returncode}."
         )
-
-
-def _synthesize_with_cli_engine(
-    text: str,
-    output_path: Path,
-    *,
-    executable_path: Path,
-    voice: str,
-    rate: int,
-    engine_label: str,
-) -> None:
-    if not text.strip():
-        raise ReadAloudUnavailableError("Cannot generate speech from empty text")
-    if not executable_path.exists():
-        raise ReadAloudUnavailableError(f"{engine_label} executable was not found")
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    command = [
-        str(executable_path),
-        "--text",
-        text,
-        "--output",
-        str(output_path),
-        "--voice",
-        voice,
-        "--rate",
-        str(max(80, min(450, int(rate)))),
-    ]
-    completed = subprocess.run(command, capture_output=True, text=True, check=False)
-    if completed.returncode != 0:
-        detail = (completed.stderr or completed.stdout or "").strip()
-        raise ReadAloudUnavailableError(
-            f"{engine_label} failed: {detail}"
-            if detail
-            else f"{engine_label} exited with code {completed.returncode}."
-        )
-
-
-def synthesize_with_openvoice(
-    text: str,
-    output_path: Path,
-    *,
-    executable_path: Path,
-    voice: str = "en-base",
-    rate: int = 180,
-) -> None:
-    _synthesize_with_cli_engine(
-        text,
-        output_path,
-        executable_path=executable_path,
-        voice=voice,
-        rate=rate,
-        engine_label="OpenVoice",
-    )
 
 
 def synthesize_to_file_with_pyttsx3(
@@ -554,10 +583,6 @@ class ReadAloudController:
         espeak_executable: str = "",
         espeak_voice: str = "en",
         espeak_rate: int = 175,
-        openvoice_executable: str = "",
-        openvoice_voice: str = "en-base",
-        openvoice_rate: int = 180,
-        openvoice_consent: bool = False,
         sentence_pause_ms: int = 0,
         punctuation_level: str = "some",
         end: int | None = None,
@@ -572,7 +597,6 @@ class ReadAloudController:
             "piper",
             "kokoro",
             "espeak",
-            "openvoice",
         }
         if normalized_engine == "pyttsx3" and pyttsx3 is None:
             raise ReadAloudUnavailableError("pyttsx3 is not available")
@@ -590,14 +614,6 @@ class ReadAloudController:
                 "eSpeak-NG executable was not found. "
                 "Install eSpeak-NG or configure the path in Read Aloud Settings."
             )
-        if normalized_engine == "openvoice":
-            if not openvoice_consent:
-                raise ReadAloudUnavailableError(
-                    "OpenVoice requires explicit consent before use. "
-                    "Enable consent in Speech settings."
-                )
-            if discover_openvoice_executable(openvoice_executable) is None:
-                raise ReadAloudUnavailableError("OpenVoice executable was not found")
         if normalized_engine not in _valid_engines:
             raise ReadAloudUnavailableError(f"Unsupported read-aloud engine: {normalized_engine}")
         self.stop()
@@ -665,16 +681,6 @@ class ReadAloudController:
                         or Path(espeak_executable).expanduser(),
                         voice=espeak_voice,
                         rate=espeak_rate,
-                        on_progress=on_progress,
-                    )
-                elif normalized_engine == "openvoice":
-                    self._run_openvoice_live(
-                        spans,
-                        text,
-                        executable=discover_openvoice_executable(openvoice_executable)
-                        or Path(openvoice_executable).expanduser(),
-                        voice=openvoice_voice,
-                        rate=openvoice_rate,
                         on_progress=on_progress,
                     )
             except Exception as exc:  # noqa: BLE001
@@ -1021,28 +1027,6 @@ class ReadAloudController:
                 raise ReadAloudUnavailableError(f"eSpeak-NG exited with code {exit_code}.")
             with self._lock:
                 self._cursor = span.end
-
-    def _run_openvoice_live(
-        self,
-        spans: list[SentenceSpan],
-        text: str,
-        *,
-        executable: Path,
-        voice: str,
-        rate: int,
-        on_progress: Callable[[int, int], None] | None,
-    ) -> None:
-        def gen(sentence: str, out: Path) -> None:
-            synthesize_with_openvoice(
-                sentence,
-                out,
-                executable_path=executable,
-                voice=voice,
-                rate=rate,
-            )
-
-        self._cache_seed = ("openvoice", str(executable), voice, rate)
-        self._run_wav_sentences(spans, text, on_progress=on_progress, generate_sentence_wav=gen)
 
     def pause(self) -> None:
         with self._lock:

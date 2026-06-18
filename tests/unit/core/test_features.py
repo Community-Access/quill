@@ -75,7 +75,7 @@ def test_feature_mapping_infers_command_groups() -> None:
 def test_feature_manager_respects_profile_state() -> None:
     manager = FeatureManager(active_profile_id=PROFILE_ESSENTIAL)
     assert manager.state_for("core.file") == FEATURE_STATE_ON
-    assert manager.state_for("core.search.regex") == FEATURE_STATE_QUIET
+    assert manager.state_for("core.search.regex") == FEATURE_STATE_OFF
     assert manager.state_for("future.ai") == FEATURE_STATE_QUIET
     assert manager.state_for("future.publishing") == FEATURE_STATE_QUIET
 

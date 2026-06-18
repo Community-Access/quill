@@ -1,5 +1,49 @@
 # Changelog
 
+## 0.6.0 — Insert Automation, Quillin Platform, Braille Mode, AI Writing Toolkit (2026-06-17)
+
+### Text hygiene
+
+- **Quill Eraser.** `Tools → Writing & Language → Quill Eraser...` / `Quill Eraser on Selection...`. Deterministic, rule-based text hygiene checker: seven rules covering multiple spaces, trailing whitespace, space before punctuation, excessive blank lines, missing space after sentence/comma/colon punctuation, and lowercase sentence starts. Findings are presented in a modeless, keyboard-navigable review dialog with Apply Fix, Ignore, Go to Issue, Previous/Next, and Rescan actions. All actions are screen-reader-announced. Code files receive a prompt before checking; only safe trailing-space checks run unless you opt in. URLs, emails, file paths, code spans, decimal numbers, times, and (in Markdown) code blocks, front matter, and link URLs are never flagged. Four new preference fields control confidence threshold, two-space-after-period exception, max blank lines, and per-rule disable list. New files: `quill/core/hygiene/` package (findings.py, ignored_ranges.py, rules.py, engine.py), `quill/ui/hygiene_dialog.py`, `quill/ui/main_frame_hygiene.py`. New feature `core.hygiene` in the feature catalog. 41 unit tests in `tests/unit/core/test_hygiene_rules.py`.
+
+## 0.6.0 — Insert Automation, Quillin Platform, Braille Mode, AI Writing Toolkit (2026-06-16)
+
+See `rel.md` for the full narrative release notes.
+
+### AI writing features
+
+- **AI Hub (5-tab settings dialog).** `quill/ui/ai_hub_dialog.py` replaces the single-screen AI Connection dialog with a tabbed hub: Provider (provider choice, API key, model, test connection), On-Device (Ollama URL and recommended models), Audio Services (Deepgram key, max speakers), Instructions (custom system prompts per task), and Advanced (consent text, reset, safe mode docs). `open_ai_hub()` in `main_frame.py` now opens this dialog.
+- **AI Thesaurus (Shift+F8).** `quill/core/ai/thesaurus.py` + `quill/ui/ai_thesaurus_dialog.py`. Sends the selected word and its surrounding context sentence to the configured AI provider and returns a list of synonyms with usage notes. Replace the word in-document from the dialog or double-click a synonym to apply immediately. Covered by `tests/unit/core/ai/test_ai_thesaurus.py` (16 tests).
+- **Agentic writing tasks.** `quill/core/ai/agent_session.py` + `quill/ui/ai_agent_result_dialog.py`. Four new commands: AI > Rewrite Selection, AI > Summarize Selection, AI > Expand Selection (new), AI > Generate Table of Contents (new). Each runs on a background thread with a cancellation stop event and presents results in a two-part dialog (step log + final output) with Insert, Replace, Copy, and Re-Run actions. Covered by `tests/unit/core/ai/test_agent_session.py` (23 tests).
+- **Custom Instructions.** `quill/core/ai/custom_instructions.py` provides per-task AI system prompts with user overrides. Twelve tasks ship with built-in defaults (chat, spell_check, grammar_check, rewrite, summarize, expand, toc, translate, thesaurus, document_qa, research, accessibility_agent). User overrides stored in `%APPDATA%\Quill\ai_custom_instructions.json` (only changed fields; defaults always from code). `apply_instruction(task_id, base_prompt)` is called by every AI module; it never raises — any failure returns the base prompt unchanged. Covered by `tests/unit/core/ai/test_custom_instructions.py` (22 tests).
+- **Custom Instructions wired to all AI modules.** `apply_instruction()` integrated into spell check, grammar check, translation, thesaurus, document Q&A, and all four agent tasks. Users can change tone, format, or language model behaviour for any task without touching code.
+- **Prompt caching.** `custom_instructions.py` gains `split_instruction(task_id, base_prompt) -> (str, str)` which returns the system prompt and user prompt as separate strings. `generate_assistant_response()` gains a `system_prompt` parameter; `build_chat_body()` and `build_chat_headers()` are extended to route the system prompt through each provider's caching path: Anthropic Claude uses `cache_control: ephemeral` blocks with the `anthropic-beta: prompt-caching-2024-07-31` header (5-minute cache, ~10% token cost); OpenAI/OpenRouter use a `role=system` message that qualifies for automatic prefix caching above 1024 tokens (~50% cost); Gemini uses `systemInstruction`; Ollama uses `role=system`. All six AI modules (spell_check, grammar_check, translation, thesaurus, document_qa, agent_session) updated from `apply_instruction` to `split_instruction`. 14 new tests in `test_assistant_ai.py` and `test_custom_instructions.py` lock in the caching contract per provider.
+- **Expand Selection and Generate TOC agent profiles.** `assistant_agents.py` gains `expand` and `toc` profiles with carefully written default prompts.
+- **Vision Prompt Library.** `quill/core/ai/vision_prompts.py` + `quill/ui/image_prompt_manager_dialog.py`. Twelve evaluated IDT-sourced image-description prompt styles, a management dialog, pre-describe picker, and "Try a different prompt" post-describe flow. Contributed by Kelly Ford. Settings sync bug fixed.
+- **Image style prompt editing.** Built-in image description prompt text is now editable. `ai_hub_dialog.py` gains an Image Styles sub-tab within the Instructions tab. Each of Kelly's twelve styles shows a read-only reference panel (the shipped default) alongside an override editor and a Reset to Default button. Enable/disable is also surfaced here. `vision_builtin_overrides: dict[str, str]` added to `Settings`; `resolve_prompt_text()` checks overrides before the built-in constant. Saves on AI Hub OK; applied immediately on every subsequent Describe Image call.
+- **Default AI writing prompts revised.** All twelve writing task default prompts in `custom_instructions.py` rewritten: tighter persona statements, explicit output rules (return only the text), screen-reader-aware guidance (prefer short sentences, direct language), and per-task specificity (accessibility agent now checks sentence length, jargon, passive voice, and link/image text; research assistant structures output into Claims, Key Points, Assumptions, Open Questions, Next Steps).
+- **AI Hub Instructions tab restructured.** `_build_instructions_tab()` now renders a sub-notebook with two pages: Writing Tasks (existing twelve writing prompts) and Image Styles (Kelly's twelve image description prompts), unified under the same list + editor + reset-to-default UX.
+
+### Accessibility fixes
+
+- **JAWS label-buddy Z-order (#249).** Tabbing through Preferences dialogs under JAWS now announces field labels correctly. The fix converts every pre-created labeled control in `open_general_preferences/_make_control`, `open_profiles_and_features_settings`, and `ai_model_panel._build_tier_section` to factory callables so `StaticText` labels are always created before their associated `wx.Choice`/`wx.SpinCtrl`/`wx.TextCtrl` in the Windows child list. `wx.CheckBox` and `wx.Button` are exempt (they carry their own label text). Six gating tests in `tests/unit/ui/test_dialog_label_ordering.py` lock in the correct creation order. The Quillin preferences renderer (`quillin_prefs_dialog.py`) enforces label-first order throughout by construction.
+
+### New features
+
+- **Math Equations Quillin (`com.quill.bundled.math-equations`).** `Insert → Insert Equation...` (`Ctrl+Shift+E`) inserts LaTeX or MathML at the caret via two sequential accessible dialogs: a prompt for the equation text (with selection pre-fill and delimiter stripping) and a display-mode choice (Inline `$...$` / Block `$$...$$`). MathML input (`<math ...>`) is detected automatically and inserted verbatim without a mode step. Browser Preview and HTML export now inject MathJax 3 (CDN) so equations render visually. Sample equations in `docs/math/latex_testing.md`. 14 unit tests in `tests/unit/core/test_quillins_bundled_math_equations.py`. Contribution by Robert Danaraj; redesigned as a sandboxed Quillin.
+
+- **Quillin preferences rendering.** All five bundled Quillins with `contributes.preferences` declarations now have live settings dialogs accessible from the Preferences hub. New `quill/ui/quillin_prefs_dialog.py` renders boolean (CheckBox), integer (SpinCtrl), string (TextCtrl), and choice (Choice) controls from the declarative manifest schema. Conditional `visible_when` and `enabled_when` rules are wired to wx change events so dependent controls update live. `main_frame_quillins.py` gains `_pref_manifests()` and `open_quillin_preferences()`. `open_preferences()` dynamically appends one hub entry per enabled Quillin with preferences.
+
+- **Non-AI table of contents and Markdown profiles (#257).** New `Insert → Table of Contents` builds a TOC directly from headings — deterministic, offline, no model in the loop — replacing a `[TOC]` marker or inserting after the first heading. `Format → Markdown` adds Select Markdown Profile (Standard, GitHub-Style, Documentation, Poetry and Lyrics, Accessible Publishing, Technical Writing, PRD and Release Notes, Custom), Preserve Single Line Breaks (`nl2br`), and Read Markdown Processing Status. New pure core modules `quill/core/markdown_extensions.py` (heading extraction, slug generation matching Browser Preview's anchors, TOC generation, heading-structure diagnostics, `nl2br`) and `quill/core/markdown_profiles.py` (friendly-name extension catalog and the eight profile presets). New feature `core.markdown_profiles` (category `"markdown"`) — kept as a sibling of, not a subset of, `future.ai`, so disabling AI never disables the table of contents. 24 new unit tests.
+
+- **Minimum required encoding (#256).** `quill/core/encoding_tools.py` gains `minimum_encoding`/`can_encode`/`describe_minimum_encoding`, picking the simplest lossless encoding in the order ASCII → Latin-1 → Windows-1252 → UTF-8. New `Format → HTML & Encoding → Analyze Encoding Requirements` and `Save Using Minimum Required Encoding...` commands. (Entity decoding itself — `&eacute;` → `é` — already shipped via `decode_html_entities`; this closes the remaining "don't force UTF-8 when a narrower legacy encoding still fits" half of the request.) New feature `core.text_encoding` (category `"text"`) now tags every entity/encoding command, replacing the generic always-on fallback they had before. Plus four small text-utility gaps closed alongside it: Remove Email Quote Markers, Strip Low ASCII Characters, Strip High ASCII Characters, and Convert to Hex Dump. 26 new/extended unit tests.
+
+- **Casual Writer and Author or Student profiles.** The **Writer** feature profile is renamed **Casual Writer** (id unchanged, so saved settings are unaffected) to make room for a new ninth persona, **Author or Student**: long-form writing with a table of contents, footnotes, and citations for papers, theses, and class assignments. It turns on the new Markdown profiles and encoding features by default. New `Format → Markdown → Select Citation Style...` command and `Settings.citation_style` field choose between Markdown footnotes (default) and full MLA/Chicago/APA bibliography entries via the existing `quill/core/citations.py` (#203) — no new dependency either way.
+
+- **More text-utility power tools.** Eight commands close the remaining text-utility gaps reported after the encoding-tools work above shipped: `Format → Line → Number Lines (Advanced)...` (start, increment, digit or Roman-numeral style, zero-padding, custom suffix, left/right alignment); `Format → HTML & Encoding → Convert OEM (DOS) to ANSI` / `Convert ANSI to OEM (DOS)` (CP437 ↔ Windows-1252 codepage-mismatch repair); `Convert Line-Drawing Characters to ASCII` / `Strip Line-Drawing Characters` (Unicode box-drawing U+2500–U+257F to `-`/`|`/`+`, or removed outright); `Search → Multi Replace...` (up to four search/replace pairs in one pass, optional case-insensitive); `Search → Count Occurrences...`; and `Tools → Line Statistics` (count, total, average, median, mode, standard deviation over one number per line). New pure functions in `quill/core/line_ops.py` (`to_roman_numeral`, `number_lines_advanced`), `quill/core/encoding_tools.py` (`oem_to_ansi`, `ansi_to_oem`, `convert_box_drawing_to_ascii`, `strip_box_drawing`), and `quill/core/format_ops.py` (`multi_replace`, `count_occurrences`, `compute_line_statistics`). Tagged `core.format`, `core.text_encoding`, `core.search`, and `core.analysis`. 27 new unit tests.
+
+- **Emmet-style abbreviation expansion (MVP).** Three new `Edit` menu commands expand compact markup abbreviations into full HTML or CSS. `Expand Abbreviation` replaces the selection (or the token immediately before the cursor) in place, as one atomic undo step. `Preview Abbreviation...` expands into a scratch buffer without touching the document. `Explain Abbreviation...` opens a plain-text breakdown of the parsed tree. New pure core module `quill/core/emmet.py`: a recursive-descent parser for the core Emmet grammar (child `>`, sibling `+`, climb-up `^`, grouping `()`, multiplication `*N`, numbering `$`/`$$`, ids, classes, attributes, text content), with numbering resolved against the nearest enclosing multiplier, implicit tags/attributes for common elements, void-tag rendering, a curated common-subset CSS abbreviation table, and canned accessibility snippets (`!`, `!a11y`, `skiplink`, `form:a11y`, `table:a11y`). Mode (HTML vs. CSS) follows the current file's extension. New feature `core.emmet` (category `"markup"`). Placeholder/tab-stop navigation, a snippet manager, Quillin extension points for custom expansion providers, a Markdown abbreviation pack, and a full fuzzy CSS abbreviation engine are explicitly out of scope for this MVP (see PRD §29.3). 53 new unit tests.
+
 ## 0.5.1 — Sound Packs, Compare Mode, Code-Aware Editing, Encoding Tools (2026-06-15)
 
 ### New features
@@ -159,6 +203,48 @@
 - **Per-provider model memory.** AI chat remembers the last selected model per
   provider and restores it on next open.
 
+### Accessibility and screen reader improvements
+
+- **QDC console keyboard control.** `EVT_CHAR_HOOK` at the frame level now handles
+  Esc (close), F1 (help), Ctrl+L (clear), Ctrl+Shift+C (copy transcript), Ctrl+S
+  (save transcript) from any focused element inside the console window.
+- **QDC console focus return.** Closing the console returns caret focus to the
+  document editor via `focus_editor_cb`, not just `parent.SetFocus()`.
+- **QDC history navigation announced.** Up/Down history recall announces
+  "History N of M: entry" so screen reader users hear what was recalled.
+- **QDC TypeScript worker start announced.** "Developer Console ready" is spoken
+  when the Node worker is available. Previously the status bar changed silently.
+- **QDC clipboard copy announced.** Copy-transcript announces success or failure.
+- **QDC TypeScript console opens in TypeScript mode** instead of Python.
+  `open_typescript_console()` calls `win.set_language("TypeScript")`.
+- **AI chat, Skill Library, Prompt Library status changes announced.** All three
+  dialogs now route status updates through `_set_status()` which calls both
+  `SetLabel` and `announce_cb`. 13 status sites in AI chat, 9 in Skill Library,
+  5 in Prompt Library were previously silent.
+- **Command Palette and Go-to-Anything status announced.** Search result counts
+  and unavailable-command messages are now spoken.
+- **GitHub browser status announced.** Loading states, errors, and directory
+  confirmations are spoken via `announce_cb`. Enter key works on the repository
+  name field (`TE_PROCESS_ENTER`). Backspace no longer hijacks while editing the
+  field. Focus moves to the first item after a directory loads.
+- **SSH remote browser path announced.** Directory changes are spoken after each
+  navigation step via `announce_cb` in `RemoteBrowserDialog`.
+- **Setup wizard page transitions announced.** Each of the nine pages announces
+  "Step N of 9: Title" and focus lands on page content rather than the Next button.
+- **All modal dialogs through z-order gate.** Setup wizard, devtools consent,
+  and GitHub URL/commit-message dialogs now route through `_show_modal_dialog` and
+  `_show_message_box`, eliminating the "dialog opens behind main window" class.
+- **Unhandled crash dialog readable by screen readers.** A Win32 `MessageBoxW`
+  (readable by Narrator/NVDA even with no wx running) now shows on any unhandled
+  exception, with the error message and crash report file path.
+- **TTS self-voicing non-blocking.** The pyttsx3 TTS worker now runs on a daemon
+  thread with a queue, so announcements for low-vision users no longer block the
+  UI thread. SR detection result is cached with a 30-second TTL so starting
+  NVDA mid-session stops double-talk within one announcement cycle.
+- **GATE-12 (announce-gap) added.** `check_announce_gap.py` is a pre-commit gate
+  that flags any dialog updating a status `StaticText` via `SetLabel` without an
+  announce call. Triggers on `quill/ui/` and `quill/devtools/` files.
+
 ### Bug fixes and security
 
 - Python console `compile()` now appends trailing `\n` before single-mode
@@ -166,6 +252,24 @@
 - Nuitka build dependency removed entirely (was unreliable; took 44+ min and
   stalled). Purged from `pyproject.toml`, CI, and scripts.
 - Stray `leasey.html` at repo root removed.
+- Safe Mode now gates the Developer Console in addition to AI and Quillins.
+- `write_json_atomic` now fsyncs before `os.replace` to survive power cuts.
+- CLI missing-file paths now print a warning instead of silently skipping.
+- `_screen_reader_active()` re-probes every 30 seconds (was cached forever).
+- `safe_subprocess` passes `CREATE_NO_WINDOW` on Windows to suppress console flash.
+- Redaction now covers GitHub PATs, OpenAI keys, AWS access keys, Slack tokens,
+  and long alphanumeric tokens in addition to the existing bearer/hex patterns.
+- GitHub URL parser rewrote using `urllib.parse` to handle query strings, anchors,
+  and percent-encoded paths.
+- Vendor autoupdate `_version_tuple` handles pre-release version segments.
+- TypeScript console host API calls (`documentText`, `replaceSelection`, etc.) are
+  now marshaled to the UI thread via `wx.CallAfter` + `threading.Event`. Previously
+  they ran on the Node reader thread, violating the wx threading invariant.
+- GitHub temp files now land in a content-addressed slot (`sha256(repo:ref:path)[:16]`)
+  instead of a flat basename. Eliminates wrong-repo commits when two files share a name.
+- GitHub `get_identity()` is no longer called on the UI thread. All three entry points
+  (`Open Repository`, `Open File URL`, `Manage Accounts`) now post it to a daemon thread
+  before showing any dialog, fulfilling the module docstring's threading promise.
 
 ## Security Hardening and UX Delight — 1.0 Release Pass (2026-05-01)
 

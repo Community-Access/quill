@@ -1,14 +1,15 @@
-# Translations template for PROJECT.
-# Copyright (C) 2026 ORGANIZATION
-# This file is distributed under the same license as the PROJECT project.
+# Translations template for QUILL.
+# Copyright (C) 2026 Blind Information Technology Solutions (BITS) and
+# Community Access
+# This file is distributed under the same license as the QUILL project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PROJECT VERSION\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-11 22:59-0700\n"
+"Project-Id-Version: QUILL 0.6.0\n"
+"Report-Msgid-Bugs-To: https://github.com/Community-Access/quill/issues\n"
+"POT-Creation-Date: 2026-06-16 12:55-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,4 +17,2239 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
+
+#: quill/core/features.py:36
+msgid "Essential"
+msgstr ""
+
+#: quill/core/features.py:37
+msgid "Core editing, file, and navigation features."
+msgstr ""
+
+#: quill/core/features.py:78
+msgid "Writer"
+msgstr ""
+
+#: quill/core/features.py:79
+msgid "Writing, formatting, and cleanup with guided power features."
+msgstr ""
+
+#: quill/core/features.py:100
+msgid "Reader and Student"
+msgstr ""
+
+#: quill/core/features.py:101
+msgid "Reading, highlights, references, and light writing workflows."
+msgstr ""
+
+#: quill/core/features.py:122
+msgid "Office and Admin"
+msgstr ""
+
+#: quill/core/features.py:123
+msgid "Reliable file work, sessions, cleanup, and printing."
+msgstr ""
+
+#: quill/core/features.py:144
+msgid "Developer and Power Text"
+msgstr ""
+
+#: quill/core/features.py:146
+msgid "Regular Expression, cleanup, inspection, and document analysis tools."
+msgstr ""
+
+#: quill/core/features.py:167
+msgid "Low Vision"
+msgstr ""
+
+#: quill/core/features.py:169
+msgid "Higher contrast, larger reading aids, and friendly inspection tools."
+msgstr ""
+
+#: quill/core/features.py:191
+msgid "Braille and Screen Reader Power User"
+msgstr ""
+
+#: quill/core/features.py:193
+msgid ""
+"Screen-reader-friendly navigation with advanced text tools surfaced "
+"calmly."
+msgstr ""
+
+#: quill/core/features.py:215
+msgid "Accessibility Professional"
+msgstr ""
+
+#: quill/core/features.py:216
+msgid "Reading, inspection, trust, and accessibility diagnostics."
+msgstr ""
+
+#: quill/core/features.py:237
+msgid "Full Quill"
+msgstr ""
+
+#: quill/core/features.py:238
+msgid "Everything visible, including advanced and experimental paths."
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:29
+msgid ""
+"OpenRouter gives access to many models with one key.\n"
+"Sign up at openrouter.ai, then paste your key above and click Save Key."
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:33
+msgid ""
+"OpenAI provides GPT-4o and other models.\n"
+"Get your key from platform.openai.com under API keys.\n"
+"Paste it above and click Save Key."
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:38
+msgid ""
+"Ollama runs models locally — no key required.\n"
+"Install from ollama.com and run: ollama serve\n"
+"Then pull a model, e.g.: ollama pull gemma3:4b"
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:43
+msgid ""
+"Ollama Cloud hosts large models remotely.\n"
+"Sign up at ollama.com, get your API key,\n"
+"then paste it above and click Save Key."
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:84
+msgid "Ask AI"
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:94
+msgid "&Provider:"
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:109
+msgid "A&PI Key:"
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:116 quill/ui/ai_chat_dialog.py:234
+msgid "Paste key here and click Save Key"
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:118
+msgid "Sa&ve Key"
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:131
+msgid "&Model:"
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:139
+msgid "Re&fresh"
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:140
+msgid "Reload model list from provider"
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:146
+msgid "Pro&mpt:"
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:166
+msgid "&Send"
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:167
+msgid "C&lear"
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:168
+msgid "C&lose"
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:181
+msgid "Send"
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:183
+msgid "Close"
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:232 quill/ui/ai_chat_dialog.py:324
+msgid "Key stored — paste new key to replace"
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:239
+msgid "Enter your API key above."
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:255
+msgid "Loading..."
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:258
+msgid "Fetching model list..."
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:287
+msgid "No models returned by provider."
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:288
+msgid "(no models available)"
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:290
+msgid "No models found."
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:293
+#, python-brace-format
+msgid "{detail}  See setup advice above."
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:314
+#, python-brace-format
+msgid "{n} model available"
+msgid_plural "{n} models available"
+msgstr[0] ""
+msgstr[1] ""
+
+#: quill/ui/ai_chat_dialog.py:328
+msgid "API key saved. Loading models..."
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:331
+msgid "Paste a key above before clicking Save Key."
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:345
+msgid "Enter a prompt before sending."
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:350
+msgid "Select a model first."
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:356
+msgid "Save an API key for this provider first."
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:363
+#, python-brace-format
+msgid "Sending to {model}..."
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:383
+msgid "Response received."
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:390
+msgid "Error — see details."
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:394
+#, python-brace-format
+msgid ""
+"AI request failed:\n"
+"\n"
+"{error}"
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:395
+msgid "Ask AI — Error"
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:426
+msgid "AI Response"
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:435
+#, python-brace-format
+msgid "Model: {model}  (via {provider})"
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:450
+msgid "&Copy to Clipboard"
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:451 quill/ui/ai_hub_dialog.py:163
+msgid "&OK"
+msgstr ""
+
+#: quill/ui/ai_chat_dialog.py:463 quill/ui/ai_chat_dialog.py:465
+msgid "OK"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:21
+msgid "Off (AI disabled)"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:22
+msgid "Ollama (local, free)"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:23
+msgid "OpenAI"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:24
+msgid "Anthropic Claude"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:25
+msgid "Google Gemini"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:26
+msgid "OpenRouter"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:27
+msgid "Ollama Cloud"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:28
+msgid "Custom (OpenAI-compatible)"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:139
+msgid "AI Hub"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:156
+msgid "Provider"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:157
+msgid "On-Device"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:158
+msgid "Audio Services"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:159
+msgid "Instructions"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:160
+msgid "Advanced"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:164 quill/ui/setup_wizard_pages.py:716
+msgid "Cancel"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:191
+msgid "AI provider:"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:204
+msgid "API key:"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:212 quill/ui/ai_hub_dialog.py:328
+#: quill/ui/ai_hub_dialog.py:739 quill/ui/ai_hub_dialog.py:748
+msgid "Show"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:219
+msgid "Host URL (Ollama/custom only):"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:226
+msgid "Model:"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:233
+msgid "Test &Connection"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:241
+msgid "Full Connection Settings..."
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:260
+msgid ""
+"QUILL supports on-device AI via Ollama. Ollama runs large language models"
+" locally on your machine — no API key or internet connection needed.\n"
+"\n"
+"Install Ollama from https://ollama.com, pull a model (e.g. 'ollama pull "
+"llama3.2:1b-instruct-q4_K_M'), then select 'Ollama (local)' on the "
+"Provider tab and set the host below."
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:270
+msgid "Ollama base URL:"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:283
+msgid ""
+"Recommended models (2025):\n"
+"  llama3.2:1b-instruct-q4_K_M  — fast, 1 GB\n"
+"  llama3.2:3b-instruct-q4_K_M  — better quality, 2 GB\n"
+"  mistral:7b-instruct-q4_K_M   — higher quality, 4 GB\n"
+"\n"
+"Vision models (for AI Image Description):\n"
+"  llava:7b-v1.6-mistral-q4_K_M"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:306
+msgid ""
+"Audio transcription uses OpenAI Whisper (configure your OpenAI API key on"
+" the Provider tab). Speaker diarization (identifying who said what) uses "
+"Deepgram Nova-3 and requires a separate Deepgram API key."
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:316
+msgid "Deepgram API key (for speaker diarization):"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:335
+msgid "Default maximum speakers (2-20):"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:352
+msgid ""
+"Privacy note: audio is sent to Deepgram's cloud for diarization. Set this"
+" to Off on the Provider tab to keep all processing local. Transcription "
+"(without diarization) stays within OpenAI."
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:374
+msgid "Writing Tasks"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:375
+msgid "Image Styles"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:391
+msgid "Task:"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:405
+msgid "Enable custom instructions for this task"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:413
+msgid "Instructions (prepended to every AI call for this task):"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:426
+msgid "Built-in default (shown when editor is empty):"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:437 quill/ui/ai_hub_dialog.py:527
+msgid "Reset to &Default"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:438 quill/ui/ai_hub_dialog.py:528
+msgid "Copy Default to &Editor"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:446
+msgid ""
+"Tip: leave the editor empty to use the built-in default. A * next to the "
+"task name means you have a custom override."
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:480
+msgid "Style:"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:496
+msgid "Include this style in the image style picker"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:503
+msgid "Override prompt text (leave empty to use the built-in default):"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:516
+msgid "Built-in default prompt:"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:536
+msgid ""
+"Tip: leave the editor empty to use the shipped prompt. A * means you have"
+" a custom override. Manage custom styles via Settings > AI > Image Prompt"
+" Styles."
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:690
+msgid ""
+"Data sent to cloud AI providers\n"
+"--------------------------------\n"
+"When cloud AI is enabled, QUILL sends your document text or selection to "
+"the provider you configured (e.g. OpenAI, Claude). The following "
+"operations send data:\n"
+"\n"
+"  - Ask Quill chat\n"
+"  - Rewrite, Summarize, Expand, Grammar check, Spell check\n"
+"  - AI Translate (when using AI provider, not LibreTranslate)\n"
+"  - AI Thesaurus\n"
+"  - Document Q&A\n"
+"  - TTS Read Aloud (text only, no document metadata)\n"
+"  - Transcribe / Translate Audio (audio file bytes)\n"
+"\n"
+"QUILL never sends your API key to any service other than the configured "
+"provider, never tracks usage, and never stores responses externally."
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:711
+msgid "&Reset AI Settings to Defaults"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:717
+msgid ""
+"Safe Mode: Launch with --safe-mode or set QUILL_SAFE_MODE=1 to disable "
+"all AI features and network calls at startup. This is useful for "
+"troubleshooting or privacy-sensitive environments."
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:736 quill/ui/ai_hub_dialog.py:745
+msgid "Hide"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:764
+msgid "Testing..."
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:785
+#, python-brace-format
+msgid "Failed: {error}"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:787
+msgid "Connection OK."
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:789
+#, python-brace-format
+msgid "Error: {exc}"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:802
+msgid ""
+"Reset all AI settings to defaults? This clears the provider, model, and "
+"host settings (but not stored API keys)."
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:805
+msgid "Reset AI Settings"
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:817
+msgid "AI settings reset to defaults."
+msgstr ""
+
+#: quill/ui/ai_hub_dialog.py:881
+msgid "AI Hub settings saved."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:69
+msgid "&New"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:70
+msgid "&Open..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:72
+msgid "Open &Recent"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:74
+msgid "Open from &URL..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:76
+msgid "&Quick Connect..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:77
+msgid "&Site Manager..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:78
+msgid "Open over SS&H"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:82
+msgid "&Open from Remote..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:86
+msgid "&Save to Remote"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:90
+msgid "Save &Copy to Remote..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:95
+msgid "&GitHub Repository..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:99
+msgid "GitHub File &URL..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:103
+msgid "&Save to GitHub..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:108
+msgid "&Manage Remote Sites..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:112
+msgid "Manage &GitHub Accounts..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:114
+msgid "Open from &Remote"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:115
+msgid "&Snapshots"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:118
+msgid "&Save"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:119
+msgid "Save &As..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:120
+msgid "Save A&ll"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:121
+msgid "Save As Plain &Text..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:124
+msgid "&Reload from Disk"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:125
+msgid "Check for E&xternal Changes..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:126
+msgid "Restore &Backup..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:135
+msgid "&New Notebook..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:139
+msgid "New from &Folder..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:143
+msgid "&Open Notebook..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:148
+msgid "&Save Snapshot..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:152
+msgid "Restore &Snapshot..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:156
+msgid "&Manage Snapshots..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:158
+msgid "&Notebook"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:161
+msgid "Pa&ge Setup..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:162
+msgid "&Print..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:167
+msgid "&Close Document"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:169
+msgid "E&xit"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:228
+msgid "&Undo"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:229
+msgid "&Redo"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:233
+msgid "Cu&t\tCtrl+X"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:234
+msgid "&Copy\tCtrl+C"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:235
+msgid "&Paste\tCtrl+V"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:245
+#, python-brace-format
+msgid "Copy to Slot &{n}"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:252
+#, python-brace-format
+msgid "Paste from Slot &{n}"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:258
+msgid "Copy to &Next Empty Slot"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:262
+msgid "&Search Tray Slots..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:266
+msgid "Copy &Tray"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:269
+msgid "Copy With &Attribution"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:272
+msgid "Select &All\tCtrl+A"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:277
+msgid "Fin&d..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:280
+msgid "Rep&lace..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:284
+msgid "Find &Next"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:288
+msgid "Find Pre&vious"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:292
+msgid "Find All &Matches"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:297
+msgid "&Word Prediction..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:304
+msgid "E&xtend Selection Mode"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:312
+msgid "&Start Selection"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:316
+msgid "&Complete Selection"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:320
+msgid "&Reselect"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:324
+msgid "&Go to Start of Selection"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:329
+msgid "Select &Line"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:333
+msgid "Select &Paragraph"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:337
+msgid "Select &Block"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:341 quill/ui/main_frame_menu.py:1426
+msgid "E&xpand Selection"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:345
+msgid "S&hrink Selection"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:350
+msgid "Select to End of &Line"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:355
+msgid "Select to Start of Li&ne"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:362
+msgid "Select to End of &Document"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:369
+msgid "Select to Start of D&ocument"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:376
+msgid "&Set Temporary Mark"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:380
+msgid "&Jump to Previous Mark"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:385
+msgid "&Swap Cursor and Mark"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:391
+msgid "&List Recent Marks"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:396
+msgid "&Set Named Mark..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:400
+msgid "&Jump to Named Mark..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:404
+msgid "&Review Buffer"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:406
+msgid "&Selection"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:416
+msgid "Search in &Files..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:420
+msgid "&Replace Across Files..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:455
+msgid "Toggle Soft &Wrap"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:458
+msgid "Show &Tab Control"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:463
+msgid "&Preview..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:467
+msgid "Preview &Side by Side"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:471
+msgid "&Focus Preview"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:475
+msgid "&Browser Preview..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:478
+msgid "&Auto Side-by-Side Preview"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:484
+msgid "Show &Entries Panel"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:519
+msgid "&Back Location"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:523
+msgid "&Forward Location"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:528
+msgid "&Go To Line..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:532
+msgid "Go To &Page..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:539
+msgid "Next &Heading"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:543
+msgid "Pre&vious Heading"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:547
+msgid "Next &Block"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:551
+msgid "Previous Bl&ock"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:555
+msgid "Next Str&ucture"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:559
+msgid "Previous Structu&re"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:563
+msgid "Next Re&gion"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:567
+msgid "Previous Regio&n"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:571
+msgid "Match &Bracket"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:575
+msgid "Next &Token"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:579
+msgid "P&revious Token"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:584
+msgid "Set Document &Language..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:589
+msgid "Speak &Window Title"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:593
+msgid "Speak &Full Path"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:597
+msgid "Speak &Status Summary"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:603
+msgid "&Compare with File..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:608
+msgid "&Next Difference\tF8"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:612
+msgid "&Previous Difference\tShift+F8"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:617
+msgid "Read &Current Difference\tCtrl+F8"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:624
+msgid "Toggle &Ignore Whitespace"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:629
+msgid "&Generate Accessible Report"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:632
+msgid "&Compare"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:636
+msgid "Outline &Navigator..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:640
+msgid "&Heading Organizer..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:645
+msgid "&Follow Link"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:650
+msgid "Set &Bookmark..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:654
+msgid "Go To &Bookmark..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:658
+msgid "List B&ookmarks..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:663
+msgid "Go to &Entry in Notebook..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:668
+msgid "Go to &Heading in Notebook..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:674
+msgid "Go to &Bookmark in Notebook..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:680
+msgid "Go to Sticky &Note in Notebook..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:727
+msgid "&Bold"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:728
+msgid "&Italic"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:734
+msgid "&Indent"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:738
+msgid "O&utdent"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:746
+msgid "&Upper Case"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:750
+msgid "&Lower Case"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:754
+msgid "&Title Case"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:758
+msgid "&Sentence Case"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:762
+msgid "To&ggle Case"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:764
+msgid "Change &Case"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:770
+msgid "Toggle Line &Comment"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:777
+msgid "Toggle &Block Comment"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:787
+msgid "Move Line &Up"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:791
+msgid "Move Line &Down"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:796
+msgid "D&uplicate Line"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:800
+msgid "De&lete Line"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:805
+msgid "&Join Lines"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:811
+msgid "&Quote Lines"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:814
+msgid "&Unquote Lines"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:816
+msgid "&Line"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:822
+msgid "Sort Lines &A to Z"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:826
+msgid "Sort Lines &Z to A"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:833
+msgid "&Reverse Lines"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:838
+msgid "Remove &Duplicate Lines"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:840
+msgid "Sort && &Filter"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:846
+msgid "Trim Trailing &Whitespace"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:852
+msgid "&Normalize Whitespace"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:858
+msgid "Convert Indentation to &Spaces"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:865
+msgid "Convert Indentation to &Tabs"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:869
+msgid "&Whitespace"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:874
+msgid "&HTML && Encoding"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:881
+msgid "Heading &1"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:884
+msgid "Heading &2"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:887
+msgid "Heading &3"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:890
+msgid "Heading &4"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:893
+msgid "Heading &5"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:896
+msgid "Heading &6"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:902
+msgid "Decrease Level"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:909
+msgid "Increase Level"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:916
+msgid "&Style Headings..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:920
+msgid "Insert &Link..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:924
+msgid "Insert &Citation..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:928
+msgid "Snippet &Gallery..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:931
+msgid "&Heading"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:935
+msgid "B&ullet"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:939
+msgid "&Numbered"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:943
+msgid "&Task"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:948
+msgid "List &Manager..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:950
+msgid "&List"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:953
+msgid "Insert Code &Block"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:957
+msgid "Insert &Footnote"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:961
+msgid "Insert &Table..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:966
+msgid "Insert &HTML Tag..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:970
+msgid "Insert &Markdown Tag..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:974
+msgid "Insert S&nippet..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:978
+msgid "Manage Snippets..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:984
+msgid "E&xpand Abbreviation"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:988
+msgid "Manage Abbrevi&ations..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:993
+msgid "&Toggle Abbreviation Expansion"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1014
+msgid "Date and &Time"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1021
+msgid "&Next Document"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1025
+msgid "&Previous Document"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1030
+msgid "Close &Other Documents\tCtrl+Shift+F4"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1036
+msgid "Send to S&ystem Tray"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1194
+msgid "&Command Palette..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1202
+msgid "&Word Count..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1206
+msgid "&Spell Check..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1210
+msgid "Previous Mi&sspelling"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1214
+msgid "Next &Misspelling"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1218
+msgid "&Misspelling List..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1223
+msgid "&Thesaurus..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1227
+msgid "Dictionary &Status..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1235
+msgid "GLOW &Audit Document"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1239
+msgid "GLOW Audit &Selection"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1244
+msgid "GLOW &Fix Document"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1248
+msgid "GLOW Fix &Selection"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1250
+msgid "&Writing && Language"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1256
+msgid "&Start / Pause"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1260
+msgid "&Voice..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1264
+msgid "Se&ttings..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1268
+msgid "Generate &Audio..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1272
+msgid "Announcement &Backend..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1276
+msgid "Announcement &Trace (in Settings)..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1279
+msgid "Read &Aloud"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1282
+msgid "&Stop Reading"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1286
+msgid "&Say Selected"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1290
+msgid "&Read All"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1296 quill/ui/main_frame_menu.py:1303
+#: quill/ui/main_frame_menu.py:1531
+msgid "&Dictation"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1297 quill/ui/main_frame_menu.py:1532
+msgid "Press to start dictation, press again to stop and insert"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1301 quill/ui/main_frame_menu.py:1536
+msgid "Hey QUILL &Commands (in Settings)..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1307
+msgid "Toggle &Sound Notifications"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1311
+msgid "&Manage Sound Events..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1316
+msgid "OCR &Image..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1320
+msgid "OCR &Clipboard Image"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1324
+msgid "OCR &Screen Capture..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1328
+msgid "&Describe Image..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1330
+msgid "R&eading && Dictation"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1334
+msgid "Compare with &File..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1335
+msgid "Compare &Open Documents..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1337
+msgid "&Next Difference"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1338
+msgid "&Previous Difference"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1339
+msgid "&Announce Current Difference"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1340
+msgid "Difference &List..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1341
+msgid "Toggle &Synchronized Navigation"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1342
+msgid "Compare O&ptions..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1344
+msgid "Create Difference &Summary"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1345
+msgid "Copy &Current Difference"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1346
+msgid "Copy A&ll Differences"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1347
+msgid "C&omparison"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1350
+msgid "&Braille"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1356 quill/ui/main_frame_menu.py:1541
+msgid "Watch Folder &Monitoring (in Settings)..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1360 quill/ui/main_frame_menu.py:1545
+msgid "Watch Folder &Profiles..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1364 quill/ui/main_frame_menu.py:1549
+msgid "Watch Folder &Queue..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1366
+msgid "&Watch Folder"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1372
+msgid "Use Artificial &Intelligence"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1377
+msgid "&Ask Quill..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1381
+msgid "&Prompt Library..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1385
+msgid "S&kill Library..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1390
+msgid "AI &Hub..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1396
+msgid "Session &Branches..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1401
+msgid "&Writing Assistant..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1405
+msgid "Prompt &Studio..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1409
+msgid "Agent &Center..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1413
+msgid "Accessibility &Tune-Up..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1418
+msgid "&Rewrite Selection"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1422
+msgid "&Summarize Selection"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1430
+msgid "Generate &Table of Contents"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1434
+msgid "&Continue Writing"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1438
+msgid "Fix &Grammar"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1442
+msgid "Check Grammar with &AI..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1447
+msgid "AI &Spell Check...\tF7"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1452
+msgid "AI Spell Check &Interactive...\tShift+F7"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1457
+msgid "AI &Grammar and Style Check...\tF8"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1463
+msgid "Translate &Selection...\tCtrl+Shift+T"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1468
+msgid "Translate &Document..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1473
+msgid "Transcri&be Audio File..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1477
+msgid "&Translate Audio File to English..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1482
+msgid "Read &Selection Aloud (AI Voice)"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1486
+msgid "Read &Document Aloud (AI Voice)"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1490
+msgid "Sto&p AI Reading"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1494
+msgid "E&xport Document as MP3..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1499
+msgid "Document &Q&&A..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1503
+msgid "AI &Thesaurus...\tShift+F8"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1508
+msgid "&Train Writing Style..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1512
+msgid "&Writing Instructions..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1519
+msgid "AI &Assistant"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1526
+msgid "&Startup Wizard..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1551
+msgid "&Dictation and Watch Folder"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1556
+msgid "&Model Manager..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1560
+msgid "Model &Status"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1564
+msgid "Use &Recommended Model"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1568
+msgid "Show &Parakeet Models"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1577
+msgid "Check &faster-whisper Engine"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1581
+msgid "Download &Queue..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1583
+msgid "Speech &Models"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1588
+msgid "&Provider Center..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1592
+msgid "Provider &Status"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1596
+msgid "Use Re&commended Provider"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1600
+msgid "&Select Provider..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1602
+msgid "&Providers"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1607
+msgid "&Readiness Check"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1611
+msgid "&Capability Matrix"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1613
+msgid "&Rollout"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1615
+msgid "&BITS Whisperer"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1621
+msgid "Sticky &Notes..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1625
+msgid "New Sticky &Note..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1636
+msgid "&Start Recording"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1640
+msgid "S&top Recording"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1644
+msgid "&Play Last Macro"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1648
+msgid "&Manage Macros..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1650
+msgid "&Macros"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1655
+msgid "Open &Python Console..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1659
+msgid "Open &TypeScript Console..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1664
+msgid "&Copy Diagnostic Summary"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1668
+msgid "&Restart TypeScript Worker"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1670
+msgid "&Developer Console"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1674
+msgid "Regular Expression &Helper..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1678
+msgid "Pandoc Conversion &Wizard..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1683
+msgid "External Tools and Format &Support..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1689
+msgid "&YAML Structure Editor..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1695
+msgid "&Document Intake Report..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1699
+msgid "&Review Extraction Quality..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1703
+msgid "R&eport Bad Extraction..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1705
+msgid "Document &Intake"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1709
+msgid "&Install Shell Integration..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1713
+msgid "&Remove Shell Integration"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1715
+msgid "&Advanced"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1718
+msgid "&Quillins"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1722
+msgid "Accessibility A&udit..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1725
+msgid "&Keyboard Trap && Tab-Order Snapshot..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1727
+msgid "&Validate Contrast..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1729
+msgid "Link Inventory && Alt-Text Catalo&g..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1732
+msgid "A&ccessibility"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1738
+msgid "Pre&ferences..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1742
+msgid "Customize &Menus..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1748
+msgid "&Profiles and Features..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1751
+msgid "&Status Bar Layout..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1753
+msgid "&Export and Back Up..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1754
+msgid "&Import or Restore..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1756
+msgid "&Keymap Editor..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1757
+msgid "&Export Keymap..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1758
+msgid "&Import Keymap..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1759
+msgid "&Reset Keymap"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1761
+msgid "Show &Notifications"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1762 quill/ui/main_frame_menu.py:1820
+msgid "Save &Diagnostics..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1763
+msgid "Open &Logs Folder"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1766
+msgid "Open &Diagnostics Folder"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1768
+msgid "Check for &Updates"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1769
+msgid "&Customize && Support"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1780
+msgid "Help on This &Control\tF1"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1784
+msgid "&What Can I Do Here?\tShift+F1"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1788
+msgid "Announce Mode &Shortcuts"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1792
+msgid "Status &Page"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1796
+msgid "&Why Don't I See a Feature?"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1801
+msgid "Open User &Guide\tCtrl+F1"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1804
+msgid "Open &Third-Party Notices"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1806
+msgid "Open &Welcome Guide"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1807
+msgid "Open Keyboard &Reference"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1810
+msgid "&Personalise QUILL..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1815
+msgid "Enable &Braille Mode..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1826
+msgid "&Switch Profile..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1831
+msgid "Profile &Health Check..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1838
+msgid "Manage &Individual Features..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1845
+msgid "&Undo Last Profile Change"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1849
+msgid "Reset to &Essential Profile"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1851
+msgid "Feature &Profiles"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1854
+msgid "Report a &Bug..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1858
+msgid "Check for &Updates..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1860
+msgid "Check for &GLOW Updates..."
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1861
+msgid "&About Quill"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1867
+msgid "&File"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1868
+msgid "&Edit"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1869
+msgid "&View"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1870
+msgid "&Insert"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1871
+msgid "F&ormat"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1872
+msgid "&Navigate"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1873
+msgid "&Search"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1874
+msgid "&Tools"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1876
+msgid "&AI"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1877
+msgid "&Window"
+msgstr ""
+
+#: quill/ui/main_frame_menu.py:1878
+msgid "&Help"
+msgstr ""
+
+#: quill/ui/setup_wizard.py:34 quill/ui/setup_wizard_pages.py:645
+msgid "Personalise QUILL"
+msgstr ""
+
+#: quill/ui/setup_wizard.py:63
+msgid "Setup Wizard"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:70
+msgid ""
+"QUILL is a screen-reader-friendly text editor built from the ground up\n"
+"for people who use NVDA, JAWS, Narrator, or braille displays.\n"
+"\n"
+"This short wizard asks you one question: what kind of writing do you do?\n"
+"Your answer sets a starting point. QUILL will show only what you need\n"
+"and keep everything else out of the way.\n"
+"\n"
+"Nothing here is permanent. You can change your profile any time from\n"
+"Help > Personalise QUILL. The whole wizard takes about two minutes.\n"
+"\n"
+"Press Next to begin."
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:87
+msgid "Welcome to QUILL"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:92
+msgid "About this wizard:"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:124
+msgid "What kind of writing do you do?"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:132
+msgid ""
+"Choose the option that best describes you. Arrow up and down to read "
+"about each one."
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:150
+msgid "About this choice:"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:208
+msgid "A few optional extras"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:215
+msgid "Add these to your starting profile. You can change them any time."
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:223
+msgid "Include AI writing assistance (Ask Quill, grammar check, prompts)"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:231
+msgid "Include Braille Mode (BRF and BRL files, braille status bar)"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:239
+msgid "Include typing automation (Smart Insert templates, abbreviations)"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:246
+msgid "What this adds:"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:289
+msgid "No extras selected.\n"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:292
+msgid ""
+"Press Next to continue. You can add any of these later\n"
+"from Help > Personalise QUILL."
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:297
+msgid "These extras will be added to your profile:\n"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:301
+msgid ""
+"AI Writing Assistance:\n"
+"  - Ask Quill assistant (Alt+Q)\n"
+"  - AI grammar check and rewrite\n"
+"  - Writing prompts and skills\n"
+"  - Prompt Library\n"
+"  (requires an API key from your AI provider)\n"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:312
+msgid ""
+"Braille Mode:\n"
+"  - Open and navigate BRF and BRL files\n"
+"  - Braille status bar cell\n"
+"  - Grade 1 and Grade 2 translation\n"
+"  - QUILL Braille Pack integration\n"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:322
+msgid ""
+"Typing Automation:\n"
+"  - Smart Insert triggers (=bug(), =meeting(), =journal())\n"
+"  - Abbreviation expansion (qbug, qmeet, qlog, qtodo)\n"
+"  - BRF test content trigger (=brftest())\n"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:362
+msgid "Set up your AI connection"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:370
+msgid ""
+"AI providers, API keys, and models are all managed in AI Hub. Open it now"
+" to choose your provider, enter your key, and verify the connection — or "
+"do it any time from Tools > AI Hub after setup."
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:379
+msgid "Open AI Hub..."
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:397 quill/ui/setup_wizard_pages.py:611
+msgid "Off"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:398
+msgid "Pentatonic (no dissonance)"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:399
+msgid "Whole tone (even steps)"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:400
+msgid "Diatonic C major (familiar)"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:401
+msgid "Chromatic (one semitone per level)"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:408
+msgid "Keyboard and Sound"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:415
+msgid ""
+"Choose a keyboard layout and whether QUILL plays sound. Sound is always "
+"optional and never replaces speech."
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:427
+msgid "Keyboard pack:"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:430
+msgid "QUILL Default"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:430
+msgid "JAWS Compatible"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:430
+msgid "NVDA Compatible"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:430
+msgid "Narrator Compatible"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:439
+msgid "Play sound notifications (earcons)"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:447
+msgid "Sound pack:"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:454
+msgid "Choose..."
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:463
+msgid "Indentation tones:"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:500
+msgid "Bundled Ink pack (default)"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:508
+msgid "Choose a sound pack (.qsp)"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:537
+msgid "You are all set!"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:542
+msgid "Your QUILL is ready:"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:557
+msgid ""
+"Press Finish to start writing. Change anything later from Help > "
+"Personalise QUILL."
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:575
+#, python-brace-format
+msgid "Profile: {name}"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:603
+msgid "Extras added:"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:607
+#, python-brace-format
+msgid "Keyboard pack: {pack}"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:610
+#, python-brace-format
+msgid "Sound notifications: {state}"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:611
+msgid "On"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:713
+msgid "< Back"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:714
+msgid "Next >"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:715
+msgid "Finish"
+msgstr ""
+
+#: quill/ui/setup_wizard_pages.py:745
+#, python-brace-format
+msgid "Step {step} of {total}"
+msgstr ""
 

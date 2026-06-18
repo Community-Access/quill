@@ -1,7 +1,7 @@
 {
-  "version": "0.1.1",
-  "download_url": "https://github.com/Community-Access/quill/releases/latest",
-  "published_at": "2026-05-30T00:00:00Z",
-  "notes": "Quill 0.1.1: guided installer handoff and update-path reliability improvements.",
-  "signature": "e8b9e9347bda9cdb3a810483ed0a1efac214b8147d410477161025dec9eb65f4"
+  "version": "0.6.0",
+  "download_url": "https://github.com/Community-Access/quill/releases/download/v0.6.0/Quill-Setup-0.6.0.exe",
+  "published_at": "2026-06-15T00:00:00Z",
+  "notes": "QUILL 0.6.0: Insert Automation, Quillin Extension Platform, Braille Mode, Vision Prompt Library (Kelly Ford), Compare Mode, Code-aware editing, Word/RTF export, citations, and major accessibility fixes including JAWS label announcements.",
+  "signature": "cf4b65f5a803463f759216b248aa1aa2c55da0c9366b4c7105b72dc5888fe977"
 }

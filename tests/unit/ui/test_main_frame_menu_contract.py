@@ -44,13 +44,23 @@ def test_top_level_menu_append_order_is_conventional() -> None:
     # in the conventional Windows order: File, Edit, View, Insert, Format,
     # Navigate, Search, (AI), Tools, Window, Help.
     source = _menu_source()
-    edit_index = source.index('menu_bar.Append(edit_menu, "&Edit")')
-    view_index = source.index('menu_bar.Append(view_menu, "&View")')
-    insert_index = source.index('menu_bar.Append(insert_menu, "&Insert")')
-    format_index = source.index('menu_bar.Append(format_menu, "F&ormat")')
-    navigate_index = source.index('menu_bar.Append(navigate_menu, "&Navigate")')
-    search_index = source.index('menu_bar.Append(search_menu, "&Search")')
-    tools_index = source.index('menu_bar.Append(tools_menu, "&Tools")')
+
+    # Accept both i18n-wrapped _("...") and bare string forms.
+    def _find_menu(name: str, label: str) -> int:
+        wrapped = f'menu_bar.Append({name}_menu, _("{label}"))'
+        bare = f'menu_bar.Append({name}_menu, "{label}")'
+        try:
+            return source.index(wrapped)
+        except ValueError:
+            return source.index(bare)
+
+    edit_index = _find_menu("edit", "&Edit")
+    view_index = _find_menu("view", "&View")
+    insert_index = _find_menu("insert", "&Insert")
+    format_index = _find_menu("format", "F&ormat")
+    navigate_index = _find_menu("navigate", "&Navigate")
+    search_index = _find_menu("search", "&Search")
+    tools_index = _find_menu("tools", "&Tools")
 
     assert (
         edit_index
@@ -66,18 +76,25 @@ def test_top_level_menu_append_order_is_conventional() -> None:
 def test_update_toggle_is_in_help_menu_not_view_menu() -> None:
     source = _menu_source()
     assert "view_menu.AppendCheckItem(self._id_toggle_auto_check_updates" not in source
-    support_marker = 'support_menu.Append(self._id_check_updates, "Check for &Updates")'
-    help_marker = 'help_menu.Append(self._id_check_updates, "Check for &Updates...")'
-    assert support_marker in source
-    assert help_marker in source
-    support_index = source.index(support_marker)
-    help_index = source.index(help_marker)
+    # Accept both i18n-wrapped _("...") and bare string forms.
+    support_marker = 'support_menu.Append(self._id_check_updates, _("Check for &Updates"))'
+    support_bare = 'support_menu.Append(self._id_check_updates, "Check for &Updates")'
+    help_marker = 'help_menu.Append(self._id_check_updates, _("Check for &Updates..."))'
+    help_bare = 'help_menu.Append(self._id_check_updates, "Check for &Updates...")'
+    assert support_marker in source or support_bare in source
+    assert help_marker in source or help_bare in source
+    support_index = source.index(support_marker if support_marker in source else support_bare)
+    help_index = source.index(help_marker if help_marker in source else help_bare)
     assert support_index < help_index
 
 
 def test_replace_menu_uses_interactive_replace_command() -> None:
     source = _menu_source()
-    assert '_menu_label("Rep&lace...", "edit.replace")' in source
+    # Accept both i18n-wrapped _("...") and bare string forms.
+    assert (
+        '_menu_label(_("Rep&lace..."), "edit.replace")' in source
+        or '_menu_label("Rep&lace...", "edit.replace")' in source
+    )
 
 
 def test_find_group_lives_in_edit_not_search() -> None:
@@ -111,7 +128,7 @@ def test_insert_link_is_not_duplicated_in_edit_menu() -> None:
 def test_publishing_actions_live_in_file_menu_not_top_level_publishing_menu() -> None:
     source = _menu_source()
     assert 'menu_bar.Append(publishing_menu, "P&ublishing")' not in source
-    assert 'file_menu.AppendSubMenu(self._publishing_file_menu, "P&ublish")' in source
+    assert 'file_menu.AppendSubMenu(self._publishing_file_menu, _("P&ublish"))' in source
     assert (
         'self._publishing_file_menu.Append(\n'
         '            self._id_publishing_connections,' in source

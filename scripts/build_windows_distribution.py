@@ -31,6 +31,14 @@ from pathlib import Path
 from quill.core.shell_verbs import ShellVerb, default_shell_verbs
 from quill.core.storage import write_json_atomic
 
+# Architecture note: all bundled binaries below are amd64/x86_64.  The Inno
+# Setup script uses ArchitecturesAllowed=x64compatible, which covers both
+# genuine x64 hardware and ARM64 Windows (Snapdragon / Surface Pro X), where
+# Windows runs x64 binaries under hardware emulation transparently.  Native
+# ARM64 builds are not produced because none of the three speech engines
+# (DECtalk, Piper, eSpeak-NG) ship ARM64 Windows binaries.  Revisit when any
+# of them do: Python (embed-arm64.zip), Pandoc, and Node all have arm64 assets.
+
 # Pinned Windows embeddable Python. Bumping these values is the only
 # thing needed to ship on a new Python point release.
 EMBEDDED_PYTHON_VERSION = "3.12.6"
@@ -47,12 +55,33 @@ DECTALK_RELEASE_ZIP_URL = (
 )
 DECTALK_RELEASE_ZIP_SHA256 = "4a778056c109b37f95ade4b3d3e308b9396b22a4b0629f9756ec0e5051b9636d"
 
+# Pinned Pandoc Windows release. _download_and_stage_pandoc() tries the
+# latest GitHub release first and falls back to these if the API is unreachable.
+PANDOC_PINNED_VERSION = "3.10"
+PANDOC_PINNED_URL = (
+    "https://github.com/jgm/pandoc/releases/download/3.10/pandoc-3.10-windows-x86_64.zip"
+)
+PANDOC_PINNED_SHA256 = "bb808d00fd58762299d64582a9b4c3e4b106cd929e62c5f19bcdcb496f1e54ae"
+
+# Pinned eSpeak-NG Windows release. _download_and_stage_espeak() tries the
+# latest GitHub release first and falls back to these if the API is unreachable.
+ESPEAK_PINNED_VERSION = "1.52.0"
+ESPEAK_PINNED_URL = "https://github.com/espeak-ng/espeak-ng/releases/download/1.52.0/espeak-ng.msi"
+ESPEAK_PINNED_SHA256 = "7f673c709ea5dd579d3b5ebb98688cc575328a6ab7438d2bc405b88cedaeafb9"
+
+# Pinned Piper TTS Windows release. _download_and_stage_piper() tries the
+# latest GitHub release first and falls back to these if the API is unreachable.
+PIPER_PINNED_URL = (
+    "https://github.com/rhasspy/piper/releases/download/2023.11.14-2/piper_windows_amd64.zip"
+)
+PIPER_PINNED_SHA256 = "f3c58906402b24f3a96d92145f58acba6d86c9b5db896d207f78dc80811efcea"
+
 # GLOW is hidden for 0.5.0 (the core.glow feature is locked off), so the heavy
 # `glow` extra (quill-glow-core[glow], not yet on a public index) is NOT bundled
 # in the shipping build. The vendored contract wheel (see _install_vendored_glow)
 # still installs the safe GLOW seam. Re-add "glow" here when GLOW is re-enabled
 # and its wheels are published.
-DEFAULT_BUNDLED_DEPENDENCY_GROUPS = ("ui", "spellcheck", "ocr")
+DEFAULT_BUNDLED_DEPENDENCY_GROUPS = ("ui", "spellcheck", "ocr", "kokoro")
 
 
 def main() -> int:
@@ -100,21 +129,15 @@ def main() -> int:
         help="Optional local Kokoro voices/models directory to bundle under portable\\tools\\speech\\kokoro.",
     )
     parser.add_argument(
-        "--piper-dir",
+        "--braille-pack-dir",
         type=Path,
         default=None,
-        help="Optional local Piper voices/models directory to bundle under portable\\tools\\speech\\piper.",
-    )
-    parser.add_argument(
-        "--openvoice-dir",
-        type=Path,
-        default=None,
-        help="Optional local OpenVoice voices/models directory to bundle under portable\\tools\\speech\\openvoice.",
-    )
-    parser.add_argument(
-        "--bundle-dectalk-release",
-        action="store_true",
-        help="Download the official dectalk/dectalk vs2022 release and bundle it under portable\\tools\\speech\\dectalk.",
+        help=(
+            "Local braille pack directory (containing lou_translate.exe, tables/, "
+            "brf_profiles.json) to bundle under portable\\vendor\\braille-pack. "
+            "Defaults to liblouis/vendor/braille/pack relative to the source root. "
+            "Run scripts/build_braille_pack.py first to generate the catalog and profiles."
+        ),
     )
     parser.add_argument(
         "--compile-installer",
@@ -134,7 +157,7 @@ def main() -> int:
         args.output_dir,
         bundle_python=args.bundle_python,
         source_root=args.source_root,
-        bundle_dectalk_release=args.bundle_dectalk_release,
+        braille_pack_dir=args.braille_pack_dir,
         bundled_tool_dirs={
             tool_id: path
             for tool_id, path in {
@@ -142,8 +165,6 @@ def main() -> int:
                 "speech/dectalk": args.dectalk_dir,
                 "speech/espeak-ng": args.espeak_dir,
                 "speech/kokoro": args.kokoro_dir,
-                "speech/piper": args.piper_dir,
-                "speech/openvoice": args.openvoice_dir,
             }.items()
             if path is not None
         },
@@ -165,7 +186,7 @@ def build_windows_distribution(
     bundle_python: bool = False,
     source_root: Path | None = None,
     bundled_tool_dirs: dict[str, Path] | None = None,
-    bundle_dectalk_release: bool = False,
+    braille_pack_dir: Path | None = None,
     compile_installer: bool = False,
     iscc_path: Path | None = None,
 ) -> dict[str, str]:
@@ -183,9 +204,19 @@ def build_windows_distribution(
 
     staged_docs = _stage_distribution_docs(portable_dir, resolved_source_root)
     effective_bundled_tools = dict(bundled_tool_dirs or {})
-    if bundle_dectalk_release and "speech/dectalk" not in effective_bundled_tools:
-        downloaded_dectalk_dir = _download_and_stage_dectalk_release(portable_dir)
-        effective_bundled_tools["speech/dectalk"] = downloaded_dectalk_dir
+    # Auto-download Pandoc, DECtalk, and eSpeak-NG unless the caller provided
+    # a local directory for them. Each function tries the latest GitHub release
+    # first and falls back to a pinned version; existing staged files are reused.
+    if "pandoc" not in effective_bundled_tools:
+        effective_bundled_tools["pandoc"] = _download_and_stage_pandoc(portable_dir)
+    if "speech/dectalk" not in effective_bundled_tools:
+        effective_bundled_tools["speech/dectalk"] = _download_and_stage_dectalk_release(
+            portable_dir
+        )
+    if "speech/espeak-ng" not in effective_bundled_tools:
+        effective_bundled_tools["speech/espeak-ng"] = _download_and_stage_espeak(portable_dir)
+    if "speech/piper" not in effective_bundled_tools:
+        effective_bundled_tools["speech/piper"] = _download_and_stage_piper(portable_dir)
     bundled_tools = _stage_bundled_tools(portable_dir, effective_bundled_tools)
 
     readme = portable_dir / "README.txt"
@@ -214,11 +245,23 @@ def build_windows_distribution(
     }
     write_json_atomic(manifest_path, manifest)
 
+    braille_pack_staged = _stage_braille_pack(
+        portable_dir, braille_pack_dir, source_root=resolved_source_root
+    )
+
     installer_script = installer_dir / "quill.iss"
     reference_installer_script = reference_installer_dir / "quill.iss"
-    installer_script_text = build_inno_setup_script(version=version)
+    installer_script_text = build_inno_setup_script(
+        version=version, bundle_braille_pack=braille_pack_staged
+    )
     installer_script.write_text(installer_script_text, encoding="utf-8")
     reference_installer_script.write_text(installer_script_text, encoding="utf-8")
+
+    installer_readme = build_installer_readme(version)
+    (installer_dir / "README-installer.txt").write_text(installer_readme, encoding="utf-8")
+    (reference_installer_dir / "README-installer.txt").write_text(
+        installer_readme, encoding="utf-8"
+    )
 
     # Copy LICENSE into the installer dir so ISCC can resolve "LicenseFile=LICENSE"
     # regardless of where output_dir sits relative to the repo root.
@@ -437,7 +480,45 @@ def build_shell_verb_registry_lines(
     return lines
 
 
-def build_inno_setup_script(version: str) -> str:
+def build_installer_readme(version: str) -> str:
+    """Return the post-install info page shown by the full installer.
+
+    Deliberately separate from portable\\README.txt which targets users
+    running Quill from a USB stick or without an installer.
+    """
+    return (
+        f"Quill {version} — Windows Installer\r\n"
+        "Publisher: Blind Information Technology Solutions (BITS) and Community Access\r\n"
+        "\r\n"
+        "Thank you for installing Quill.\r\n"
+        "\r\n"
+        "WHERE YOUR DATA LIVES\r\n"
+        "Quill stores settings, autosaves, dictionaries, and session data in:\r\n"
+        "  %APPDATA%\\Quill\r\n"
+        "\r\n"
+        "This folder is separate from the install directory. On uninstall you are\r\n"
+        "asked whether to remove it; upgrades never touch it automatically.\r\n"
+        "\r\n"
+        "GETTING STARTED\r\n"
+        "  * Launch Quill from the Start Menu or the Desktop shortcut (if you chose one).\r\n"
+        "  * Press F1 or open Help > User Guide for the full guided manual.\r\n"
+        "  * An onboarding flow runs on first launch to introduce key features.\r\n"
+        "\r\n"
+        "OPTIONAL TOOLS\r\n"
+        "Tools selected during setup (DECtalk, eSpeak-NG, Piper TTS, Pandoc, Braille Pack)\r\n"
+        "are bundled inside the install directory and require no separate installation.\r\n"
+        "To add or remove tools, re-run this installer and choose Modify.\r\n"
+        "\r\n"
+        "PORTABLE EDITION\r\n"
+        "A portable build (no installer, runs from a USB stick or managed machine) is\r\n"
+        "available from the Quill releases page on GitHub.\r\n"
+        "\r\n"
+        "SUPPORT\r\n"
+        "  https://github.com/Community-Access/quill\r\n"
+    )
+
+
+def build_inno_setup_script(version: str, bundle_braille_pack: bool = False) -> str:
     """Return a production-quality Inno Setup script for the portable bundle.
 
     The script is assembled line-by-line to avoid the f-string + triple-
@@ -500,7 +581,7 @@ def build_inno_setup_script(version: str) -> str:
         "; runtime is present (e.g. a dev build).",
         "UninstallDisplayIcon={app}\\python\\pythonw.exe",
         "LicenseFile=LICENSE",
-        "InfoAfterFile=..\\portable\\README.txt",
+        "InfoAfterFile=README-installer.txt",
         "SetupLogging=yes",
         "",
         "[Languages]",
@@ -516,82 +597,56 @@ def build_inno_setup_script(version: str) -> str:
         ' (OCR, Open, Read aloud) to the file right-click menu";'
         ' GroupDescription: "File associations:"; Flags: unchecked',
         "",
+        "[Types]",
+        "; Full installs everything and skips the component and voice pages.",
+        "; Full is the recommended choice for most users.",
+        'Name: "full"; Description: "Full installation (recommended)"',
+        'Name: "custom"; Description: "Custom installation"; Flags: iscustom',
+        "",
         "[Components]",
         "; Every component below gates real [Files] payload. The Writing",
         "; Assistant and the rest of Quill's core ship unconditionally with the",
         "; main bundle, so there is no separate AI component to toggle here.",
+        "; DECtalk voice selection is handled by a guided wizard page (see [Code]).",
         'Name: "pandoc"; Description: "Install bundled Pandoc for document conversion";'
         " Types: full custom; Flags: checkablealone",
         'Name: "speechdectalk"; Description: "Install bundled DECtalk runtime";'
         " Types: full custom; Flags: checkablealone",
-        'Name: "speechdectalk\\voices"; Description: "DECtalk voice selection";'
-        " Types: full custom; Flags: checkablealone",
-        'Name: "speechdectalk\\voices\\all_voices"; Description: "All DECtalk voices";'
-        " Types: full custom; Flags: checkablealone",
-        'Name: "speechdectalk\\voices\\paul"; Description: "Paul voice"; Types: full custom; Flags: checkablealone',
-        'Name: "speechdectalk\\voices\\harry"; Description: "Harry voice"; Types: full custom; Flags: checkablealone',
-        'Name: "speechdectalk\\voices\\dennis"; Description: "Dennis voice"; Types: full custom; Flags: checkablealone',
-        'Name: "speechdectalk\\voices\\frank"; Description: "Frank voice"; Types: full custom; Flags: checkablealone',
-        'Name: "speechdectalk\\voices\\betty"; Description: "Betty voice"; Types: full custom; Flags: checkablealone',
-        'Name: "speechdectalk\\voices\\ursula"; Description: "Ursula voice"; Types: full custom; Flags: checkablealone',
-        'Name: "speechdectalk\\voices\\rita"; Description: "Rita voice"; Types: full custom; Flags: checkablealone',
-        'Name: "speechdectalk\\voices\\wendy"; Description: "Wendy voice"; Types: full custom; Flags: checkablealone',
-        'Name: "speechdectalk\\voices\\kit"; Description: "Kit voice"; Types: full custom; Flags: checkablealone',
         'Name: "speechespeak"; Description: "Install bundled eSpeak-NG runtime";'
         " Types: full custom; Flags: checkablealone",
-        'Name: "speechkokoro"; Description: "Install bundled Kokoro voices/models";'
-        " Types: full custom; Flags: checkablealone",
-        'Name: "speechpiper"; Description: "Install bundled Piper voices/models";'
-        " Types: full custom; Flags: checkablealone",
-        'Name: "speechopenvoice"; Description: "Install bundled OpenVoice voices/models";'
+        'Name: "speechpiper"; Description: "Install bundled Piper neural TTS runtime";'
         " Types: full custom; Flags: checkablealone",
         'Name: "nodejs"; Description: "Install portable Node.js runtime for Node Quillins'
         " and the Developer Console TypeScript interface (~30 MB);"
         ' not required for Python Quillins";'
-        " Types: custom; Flags: checkablealone",
+        " Flags: checkablealone",
+        'Name: "braillepack"; Description: "Install QUILL Braille Pack'
+        " (liblouis translation engine, UEB, Standard American English,"
+        ' and international braille profiles, ~15 MB)";'
+        " Types: full custom; Flags: checkablealone",
         "",
         "[Files]",
         'Source: "..\\portable\\*"; DestDir: "{app}";'
         " Flags: ignoreversion recursesubdirs createallsubdirs;"
-        ' Excludes: "docs\\QUILL-PRD.md,tools\\pandoc\\*,tools\\speech\\dectalk\\*,tools\\speech\\espeak-ng\\*,tools\\speech\\kokoro\\*,tools\\speech\\piper\\*,tools\\speech\\openvoice\\*,tools\\nodejs\\*"',
+        ' Excludes: "docs\\QUILL-PRD.md,tools\\pandoc\\*,tools\\speech\\dectalk\\*,tools\\speech\\espeak-ng\\*,tools\\speech\\piper\\*,tools\\nodejs\\*,vendor\\braille-pack\\*,_tool-download\\*,_speech-download\\*"',
+        "; QUILL Braille Pack: liblouis runtime, translation tables, and BRF profiles.",
+        "; Installed to vendor\\braille-pack so QUILL detects it automatically via QUILL_APP_ROOT.",
+        'Source: "..\\portable\\vendor\\braille-pack\\*"; DestDir: "{app}\\vendor\\braille-pack";'
+        " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist;"
+        " Components: braillepack",
         'Source: "..\\portable\\tools\\pandoc\\*"; DestDir: "{app}\\tools\\pandoc";'
         " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist;"
         " Components: pandoc",
+        "; All DECtalk voices ship when the DECtalk component is selected.",
         'Source: "..\\portable\\tools\\speech\\dectalk\\*"; DestDir: "{app}\\tools\\speech\\dectalk";'
         " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist;"
-        ' Excludes: "voices\\*"; Components: speechdectalk',
-        'Source: "..\\portable\\tools\\speech\\dectalk\\voices\\*"; DestDir: "{app}\\tools\\speech\\dectalk\\voices";'
-        " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist; Components: speechdectalk\\voices\\all_voices",
-        'Source: "..\\portable\\tools\\speech\\dectalk\\voices\\paul\\*"; DestDir: "{app}\\tools\\speech\\dectalk\\voices\\paul";'
-        " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist; Components: speechdectalk\\voices\\paul; Check: not WizardIsComponentSelected('speechdectalk\\voices\\all_voices')",
-        'Source: "..\\portable\\tools\\speech\\dectalk\\voices\\harry\\*"; DestDir: "{app}\\tools\\speech\\dectalk\\voices\\harry";'
-        " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist; Components: speechdectalk\\voices\\harry; Check: not WizardIsComponentSelected('speechdectalk\\voices\\all_voices')",
-        'Source: "..\\portable\\tools\\speech\\dectalk\\voices\\dennis\\*"; DestDir: "{app}\\tools\\speech\\dectalk\\voices\\dennis";'
-        " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist; Components: speechdectalk\\voices\\dennis; Check: not WizardIsComponentSelected('speechdectalk\\voices\\all_voices')",
-        'Source: "..\\portable\\tools\\speech\\dectalk\\voices\\frank\\*"; DestDir: "{app}\\tools\\speech\\dectalk\\voices\\frank";'
-        " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist; Components: speechdectalk\\voices\\frank; Check: not WizardIsComponentSelected('speechdectalk\\voices\\all_voices')",
-        'Source: "..\\portable\\tools\\speech\\dectalk\\voices\\betty\\*"; DestDir: "{app}\\tools\\speech\\dectalk\\voices\\betty";'
-        " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist; Components: speechdectalk\\voices\\betty; Check: not WizardIsComponentSelected('speechdectalk\\voices\\all_voices')",
-        'Source: "..\\portable\\tools\\speech\\dectalk\\voices\\ursula\\*"; DestDir: "{app}\\tools\\speech\\dectalk\\voices\\ursula";'
-        " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist; Components: speechdectalk\\voices\\ursula; Check: not WizardIsComponentSelected('speechdectalk\\voices\\all_voices')",
-        'Source: "..\\portable\\tools\\speech\\dectalk\\voices\\rita\\*"; DestDir: "{app}\\tools\\speech\\dectalk\\voices\\rita";'
-        " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist; Components: speechdectalk\\voices\\rita; Check: not WizardIsComponentSelected('speechdectalk\\voices\\all_voices')",
-        'Source: "..\\portable\\tools\\speech\\dectalk\\voices\\wendy\\*"; DestDir: "{app}\\tools\\speech\\dectalk\\voices\\wendy";'
-        " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist; Components: speechdectalk\\voices\\wendy; Check: not WizardIsComponentSelected('speechdectalk\\voices\\all_voices')",
-        'Source: "..\\portable\\tools\\speech\\dectalk\\voices\\kit\\*"; DestDir: "{app}\\tools\\speech\\dectalk\\voices\\kit";'
-        " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist; Components: speechdectalk\\voices\\kit; Check: not WizardIsComponentSelected('speechdectalk\\voices\\all_voices')",
+        " Components: speechdectalk",
         'Source: "..\\portable\\tools\\speech\\espeak-ng\\*"; DestDir: "{app}\\tools\\speech\\espeak-ng";'
         " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist;"
         " Components: speechespeak",
-        'Source: "..\\portable\\tools\\speech\\kokoro\\*"; DestDir: "{app}\\tools\\speech\\kokoro";'
-        " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist;"
-        " Components: speechkokoro",
         'Source: "..\\portable\\tools\\speech\\piper\\*"; DestDir: "{app}\\tools\\speech\\piper";'
         " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist;"
         " Components: speechpiper",
-        'Source: "..\\portable\\tools\\speech\\openvoice\\*"; DestDir: "{app}\\tools\\speech\\openvoice";'
-        " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist;"
-        " Components: speechopenvoice",
         "; Node.js portable runtime (optional). The build script copies a portable",
         "; node.exe distribution into portable\\tools\\nodejs when building with",
         "; --bundle-nodejs. skipifsourcedoesntexist means a build without bundled",
@@ -655,14 +710,29 @@ def build_inno_setup_script(version: str) -> str:
         "; user's data in %APPDATA%\\Quill is decided by an explicit prompt in",
         "; [Code] below -- we never silently keep or wipe it.",
         'Type: filesandordirs; Name: "{app}\\__pycache__"',
-        'Type: filesandordirs; Name: "{app}\\python\\__pycache__"',
+        "; {app}\\python is the bundled embedded runtime: wholly owned by Quill,",
+        "; no user data lives there (that's %APPDATA%\\Quill). Python generates",
+        "; __pycache__ dirs across Lib\\site-packages on first run (the build",
+        "; uses --no-compile), and those nest arbitrarily deep, so the only",
+        "; reliable cleanup is removing the whole tree rather than chasing",
+        "; specific __pycache__ paths.",
+        'Type: filesandordirs; Name: "{app}\\python"',
         "",
         "[Code]",
-        "// After install: if the nodejs component was selected but the portable",
-        "// node.exe bundle was not included in this build (skipifsourcedoesntexist),",
-        "// offer to install Node.js LTS via Windows Package Manager (winget).",
-        "// winget is built into Windows 11 and available on Windows 10 21H2+.",
-        "// MsgBox and Exec are screen-reader accessible native dialogs.",
+        "// -- Skip component page for full installs ------------------------------------",
+        "// Full install: skip component selection (everything is pre-selected).",
+        "function ShouldSkipPage(PageID: Integer): Boolean;",
+        "begin",
+        "  Result := False;",
+        "  if PageID = wpSelectComponents then",
+        "    Result := (WizardSetupType(False) = 'full');",
+        "end;",
+        "",
+        "// -- Post-install: write new-install marker + optional Node.js bootstrap --",
+        "// The new-install marker tells the app to re-run the setup wizard on first",
+        "// launch even when %APPDATA% settings from a prior install say it completed.",
+        "// The Node.js check is opt-in (unchecked by default): fires only when the",
+        "// user explicitly selected it and the portable node.exe was not bundled.",
         "procedure CurStepChanged(CurStep: TSetupStep);",
         "var",
         "  NodePath: String;",
@@ -670,6 +740,7 @@ def build_inno_setup_script(version: str) -> str:
         "begin",
         "  if CurStep = ssPostInstall then",
         "  begin",
+        "    SaveStringToFile(ExpandConstant('{app}\\quill-new-install.txt'), 'new-install', False);",
         "    if WizardIsComponentSelected('nodejs') then",
         "    begin",
         "      NodePath := ExpandConstant('{app}\\tools\\nodejs\\node.exe');",
@@ -701,12 +772,7 @@ def build_inno_setup_script(version: str) -> str:
         "  end;",
         "end;",
         "",
-        "// Ask, on uninstall, whether to also remove personal data instead of",
-        "// assuming. 'Yes' wipes %APPDATA%\\Quill (settings, dictionaries,",
-        "// autosaves, backups, onboarding/first-run flags, and the IPC lock) so a",
-        "// later reinstall is a clean first run. 'No' keeps everything for a",
-        "// future reinstall. MsgBox is a native dialog, so it is screen-reader",
-        "// accessible.",
+        "// -- Uninstall: ask before wiping personal data ----------------------------",
         "procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);",
         "var",
         "  DataDir: String;",
@@ -875,9 +941,54 @@ def bundle_embedded_python(
     shutil.copytree(quill_source, site_packages / "quill", dirs_exist_ok=True)
 
     _install_vendored_glow(python_exe, source_root)
+    _prune_embedded_runtime(site_packages)
 
     archive.unlink(missing_ok=True)
     return target_dir
+
+
+def _prune_embedded_runtime(site_packages: Path) -> None:
+    """Remove packages that are only needed during the build, not at runtime.
+
+    pip and setuptools are bootstrapped to install dependencies, then stripped
+    so they don't bloat the installer.  The pywin32 extras (pythonwin, isapi,
+    adodbapi, PyWin32.chm) are also removed.
+
+    ``quill/devtools`` (the in-app Developer Console) and ``quill/tools``
+    (``kqp_validator`` backs the runtime "Import Keyboard Pack" command) are
+    imported by ``quill/ui`` and ``quill/core`` at runtime, so they must ship
+    even though most of ``quill/tools`` is otherwise CI-only.
+    """
+    removable = [
+        # Build tools - used during pip install, not at runtime (~155 MB)
+        "pip",
+        "pip-*",
+        "setuptools",
+        "setuptools-*",
+        "wheel",
+        "wheel-*",
+        "pkg_resources",
+        # pywin32 extras not used by Quill (~21 MB)
+        "pythonwin",
+        "PyWin32.chm",
+        "adodbapi",
+        "isapi",
+    ]
+    total_removed = 0
+    for pattern in removable:
+        for path in site_packages.glob(pattern):
+            size = (
+                sum(f.stat().st_size for f in path.rglob("*") if f.is_file())
+                if path.is_dir()
+                else path.stat().st_size
+            )
+            if path.is_dir():
+                shutil.rmtree(path)
+            else:
+                path.unlink()
+            total_removed += size
+    mb = total_removed / 1_048_576
+    print(f"Pruned {mb:.0f} MB of build-only packages from the runtime.")
 
 
 def _install_vendored_glow(python_exe: Path, source_root: Path) -> None:
@@ -958,7 +1069,7 @@ def _stage_distribution_docs(portable_dir: Path, source_root: Path) -> list[Path
     docs_dir = portable_dir / "docs"
     docs_dir.mkdir(parents=True, exist_ok=True)
     staged: list[Path] = []
-    for relative in (Path("docs") / "userguide.md",):
+    for relative in (Path("docs") / "user guide" / "userguide.md",):
         source = source_root / relative
         if not source.exists():
             continue
@@ -966,6 +1077,30 @@ def _stage_distribution_docs(portable_dir: Path, source_root: Path) -> list[Path
         shutil.copy2(source, target)
         staged.append(target)
     return staged
+
+
+def _stage_braille_pack(
+    portable_dir: Path,
+    braille_pack_dir: Path | None,
+    *,
+    source_root: Path | None = None,
+) -> bool:
+    """Copy the braille pack into portable/vendor/braille-pack/. Returns True if staged."""
+    if braille_pack_dir is None:
+        default = (source_root or Path(".")) / "liblouis" / "vendor" / "braille" / "pack"
+        if not default.is_dir():
+            print(
+                f"Warning: braille pack not found at {default}; skipping. "
+                "Run scripts/build_braille_pack.py first or pass --braille-pack-dir."
+            )
+            return False
+        braille_pack_dir = default
+    if not braille_pack_dir.is_dir():
+        raise RuntimeError(f"Braille pack directory not found: {braille_pack_dir}")
+    target = portable_dir / "vendor" / "braille-pack"
+    shutil.copytree(braille_pack_dir, target, dirs_exist_ok=True)
+    print(f"Staged braille pack from {braille_pack_dir} to {target}")
+    return True
 
 
 def _stage_bundled_tools(portable_dir: Path, bundled_tool_dirs: dict[str, Path]) -> list[str]:
@@ -1014,9 +1149,7 @@ def _speech_asset_manifest(
     engine_dirs = {
         "dectalk": "dectalk",
         "espeak": "espeak-ng",
-        "kokoro": "kokoro",
         "piper": "piper",
-        "openvoice": "openvoice",
     }
     for engine, dir_name in engine_dirs.items():
         engine_dir = speech_root / dir_name
@@ -1027,6 +1160,151 @@ def _speech_asset_manifest(
             "downloadable": True,
         }
     return manifest
+
+
+def _fetch_latest_github_asset_url(owner: str, repo: str, asset_suffix: str) -> str | None:
+    """Return the download URL for the first release asset whose name ends with asset_suffix.
+
+    Queries the GitHub releases API. Returns None on any network or parse error so
+    callers can fall back to pinned versions without aborting the build.
+    """
+    import json
+
+    api_url = f"https://api.github.com/repos/{owner}/{repo}/releases/latest"
+    try:
+        with urllib.request.urlopen(api_url, timeout=15) as resp:  # noqa: S310
+            release = json.loads(resp.read())
+        for asset in release.get("assets", []):
+            if asset.get("name", "").endswith(asset_suffix):
+                tag = release.get("tag_name", "unknown")
+                print(f"Found latest {owner}/{repo} release {tag}: {asset['name']}")
+                return asset["browser_download_url"]
+    except Exception as exc:
+        print(
+            f"Warning: could not fetch latest {owner}/{repo} release ({exc}); using pinned version."
+        )
+    return None
+
+
+def _download_and_stage_pandoc(portable_dir: Path) -> Path:
+    """Download Pandoc for Windows and return a staging directory for _stage_bundled_tools.
+
+    Tries the latest GitHub release first; falls back to the pinned version.
+    Stages to portable/_tool-download/pandoc/ so _stage_bundled_tools() copies
+    from there to tools/pandoc/. Re-uses a prior download to avoid redundant calls.
+    """
+    stage_dir = portable_dir / "_tool-download" / "pandoc"
+    stage_dir.mkdir(parents=True, exist_ok=True)
+    if (stage_dir / "pandoc.exe").exists():
+        print("Pandoc already downloaded; skipping.")
+        return stage_dir
+
+    url = (
+        _fetch_latest_github_asset_url("jgm", "pandoc", "-windows-x86_64.zip") or PANDOC_PINNED_URL
+    )
+    sha256 = PANDOC_PINNED_SHA256 if url == PANDOC_PINNED_URL else None
+
+    archive = stage_dir / "pandoc-windows-x86_64.zip"
+    print(f"Downloading Pandoc from {url}...")
+    _download_with_verification(url, archive, expected_sha256=sha256)
+
+    with zipfile.ZipFile(archive) as zf:
+        for member in zf.namelist():
+            if member.endswith("/pandoc.exe") or member == "pandoc.exe":
+                (stage_dir / "pandoc.exe").write_bytes(zf.read(member))
+                break
+    archive.unlink(missing_ok=True)
+    if not (stage_dir / "pandoc.exe").exists():
+        raise RuntimeError("Pandoc zip did not contain pandoc.exe")
+    print(f"Pandoc staged to {stage_dir}")
+    return stage_dir
+
+
+def _download_and_stage_espeak(portable_dir: Path) -> Path:
+    """Download eSpeak-NG for Windows and return a staging directory for _stage_bundled_tools.
+
+    Tries the latest GitHub release first; falls back to the pinned version.
+    Stages to portable/_tool-download/espeak/stage/ so _stage_bundled_tools()
+    copies from there to tools/speech/espeak-ng/. Re-uses a prior download.
+    Uses msiexec /a (administrative extract) to unpack the MSI without installing.
+    """
+    stage_dir = portable_dir / "_tool-download" / "espeak" / "stage"
+    if (stage_dir / "espeak-ng.exe").exists():
+        print("eSpeak-NG already downloaded; skipping.")
+        return stage_dir
+
+    url = _fetch_latest_github_asset_url("espeak-ng", "espeak-ng", ".msi") or ESPEAK_PINNED_URL
+    sha256 = ESPEAK_PINNED_SHA256 if url == ESPEAK_PINNED_URL else None
+
+    tmp_dir = portable_dir / "_tool-download" / "espeak"
+    tmp_dir.mkdir(parents=True, exist_ok=True)
+    archive = tmp_dir / "espeak-ng.msi"
+    print(f"Downloading eSpeak-NG from {url}...")
+    _download_with_verification(url, archive, expected_sha256=sha256)
+
+    extract_dir = tmp_dir / "extracted"
+    if extract_dir.exists():
+        shutil.rmtree(extract_dir)
+    extract_dir.mkdir(parents=True, exist_ok=True)
+    result = subprocess.run(
+        ["msiexec", "/a", str(archive.resolve()), "/qn", f"TARGETDIR={extract_dir.resolve()}"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(f"msiexec /a failed for eSpeak-NG MSI:\n{result.stderr}")
+
+    exe_candidates = list(extract_dir.rglob("espeak-ng.exe"))
+    if not exe_candidates:
+        raise RuntimeError("eSpeak-NG MSI did not extract espeak-ng.exe")
+    espeak_root = exe_candidates[0].parent
+    stage_dir.mkdir(parents=True, exist_ok=True)
+    shutil.copytree(espeak_root, stage_dir, dirs_exist_ok=True)
+    archive.unlink(missing_ok=True)
+    print(f"eSpeak-NG staged to {stage_dir}")
+    return stage_dir
+
+
+def _download_and_stage_piper(portable_dir: Path) -> Path:
+    """Download Piper TTS for Windows and return a staging directory for _stage_bundled_tools.
+
+    Tries the latest GitHub release first; falls back to the pinned version.
+    Stages to portable/_tool-download/piper/stage/ so _stage_bundled_tools()
+    copies from there to tools/speech/piper/. Re-uses a prior download.
+    """
+    stage_dir = portable_dir / "_tool-download" / "piper" / "stage"
+    if (stage_dir / "piper.exe").exists():
+        print("Piper already downloaded; skipping.")
+        return stage_dir
+
+    url = (
+        _fetch_latest_github_asset_url("rhasspy", "piper", "_windows_amd64.zip") or PIPER_PINNED_URL
+    )
+    sha256 = PIPER_PINNED_SHA256 if url == PIPER_PINNED_URL else None
+
+    tmp_dir = portable_dir / "_tool-download" / "piper"
+    tmp_dir.mkdir(parents=True, exist_ok=True)
+    archive = tmp_dir / "piper_windows_amd64.zip"
+    print(f"Downloading Piper from {url}...")
+    _download_with_verification(url, archive, expected_sha256=sha256)
+
+    extract_dir = tmp_dir / "extracted"
+    if extract_dir.exists():
+        shutil.rmtree(extract_dir)
+    extract_dir.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(archive) as zf:
+        zf.extractall(extract_dir)
+
+    exe_candidates = list(extract_dir.rglob("piper.exe"))
+    if not exe_candidates:
+        raise RuntimeError("Piper zip did not contain piper.exe")
+    piper_root = exe_candidates[0].parent
+    stage_dir.mkdir(parents=True, exist_ok=True)
+    shutil.copytree(piper_root, stage_dir, dirs_exist_ok=True)
+    archive.unlink(missing_ok=True)
+    print(f"Piper staged to {stage_dir}")
+    return stage_dir
 
 
 def _download_with_verification(

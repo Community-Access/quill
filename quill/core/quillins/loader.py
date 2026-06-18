@@ -25,7 +25,9 @@ This module imports no ``wx`` and no platform code.
 
 from __future__ import annotations
 
+import ast
 import json
+import re
 import shutil
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -38,6 +40,68 @@ from quill.core.quillins.model import (
 from quill.core.quillins.validation import parse_manifest
 from quill.core.storage import read_json, write_json_atomic
 from quill.plugins import third_party_plugins_enabled
+
+_SEMVER_RE = re.compile(r"^(\d+)\.(\d+)\.(\d+)")
+
+
+def _parse_semver(version: str) -> tuple[int, int, int] | None:
+    match = _SEMVER_RE.match(version.strip())
+    if not match:
+        return None
+    return (int(match.group(1)), int(match.group(2)), int(match.group(3)))
+
+
+def _running_quill_version() -> str:
+    try:
+        from quill import __version__  # noqa: PLC0415
+
+        return __version__ or "0.0.0"
+    except ImportError:
+        return "0.0.0"
+
+
+def _check_min_version_error(manifest: ExtensionManifest) -> str | None:
+    """Return an error string if the Quillin requires a newer QUILL version, else None."""
+    if not manifest.min_quill_version:
+        return None
+    required = _parse_semver(manifest.min_quill_version)
+    running = _parse_semver(_running_quill_version())
+    if required is None or running is None:
+        return None
+    if running < required:
+        return (
+            f"requires QUILL {manifest.min_quill_version} "
+            f"(running {_running_quill_version()}); update QUILL to enable this Quillin"
+        )
+    return None
+
+
+def _check_requires_errors(
+    manifest: ExtensionManifest,
+    available: dict[str, str],
+) -> tuple[str, ...]:
+    """Return error strings for unmet ``requires`` declarations.
+
+    ``available`` maps extension id -> version string for every manifest that
+    was successfully parsed in this discovery pass (whether enabled or not).
+    A dependency is satisfied when it is present and its version meets
+    ``min_version`` (if specified).
+    """
+    errors: list[str] = []
+    for dep in manifest.requires:
+        dep_version = available.get(dep.id)
+        if dep_version is None:
+            errors.append(f"requires Quillin '{dep.id}' which is not installed")
+            continue
+        if dep.min_version:
+            req = _parse_semver(dep.min_version)
+            have = _parse_semver(dep_version)
+            if req is not None and have is not None and have < req:
+                errors.append(
+                    f"requires Quillin '{dep.id}' >= {dep.min_version} (installed: {dep_version})"
+                )
+    return tuple(errors)
+
 
 STATE_SCHEMA_VERSION = 1
 _MANIFEST_FILENAME = "manifest.json"
@@ -68,6 +132,9 @@ class InstalledExtension:
 class _ExtensionStateEntry:
     enabled: bool = False
     granted_capabilities: tuple[str, ...] = ()
+    # Events the user has explicitly disabled for this Quillin. Checked
+    # at dispatch time; ``enabled_by_default: false`` starts events here.
+    disabled_events: frozenset[str] = field(default_factory=frozenset)
 
 
 @dataclass(slots=True)
@@ -86,6 +153,7 @@ class ExtensionState:
                 extension_id: {
                     "enabled": entry.enabled,
                     "granted_capabilities": list(entry.granted_capabilities),
+                    "disabled_events": sorted(entry.disabled_events),
                 }
                 for extension_id, entry in sorted(self.entries.items())
             },
@@ -123,8 +191,16 @@ def load_state(*, root: Path | None = None) -> ExtensionState:
             if isinstance(raw_caps, list)
             else ()
         )
+        raw_disabled = value.get("disabled_events", [])
+        disabled_events = (
+            frozenset(item for item in raw_disabled if isinstance(item, str))
+            if isinstance(raw_disabled, list)
+            else frozenset()
+        )
         state.entries[extension_id] = _ExtensionStateEntry(
-            enabled=enabled, granted_capabilities=caps
+            enabled=enabled,
+            granted_capabilities=caps,
+            disabled_events=disabled_events,
         )
     return state
 
@@ -134,6 +210,28 @@ def save_state(state: ExtensionState, *, root: Path | None = None) -> None:
 
     base = root if root is not None else app_data_dir()
     write_json_atomic(_state_path(root=root), state.to_dict(), base=base)
+
+
+def _check_main_has_register(directory: Path, manifest: ExtensionManifest) -> str | None:
+    """Return an error string if the main module lacks a top-level register() function.
+
+    Layer 1 Quillins (``main`` is ``None``) are exempt — they contribute only
+    static metadata and run no Python code.
+    """
+    if manifest.main is None:
+        return None
+    main_path = (directory / manifest.main).resolve()
+    if not main_path.exists():
+        return f"main module '{manifest.main}' not found"
+    try:
+        source = main_path.read_text(encoding="utf-8")
+        tree = ast.parse(source, filename=str(main_path))
+    except (OSError, SyntaxError) as error:
+        return f"cannot parse main module: {error}"
+    for node in ast.iter_child_nodes(tree):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == "register":
+            return None
+    return "main module defines no register(api) function"
 
 
 def _read_manifest(directory: Path) -> tuple[ExtensionManifest | None, tuple[str, ...]]:
@@ -151,6 +249,12 @@ def _read_manifest(directory: Path) -> tuple[ExtensionManifest | None, tuple[str
         if isinstance(errors, list):
             return None, tuple(str(item) for item in errors)
         return None, (str(error),)
+    version_error = _check_min_version_error(manifest)
+    if version_error:
+        return None, (version_error,)
+    register_error = _check_main_has_register(directory, manifest)
+    if register_error:
+        return manifest, (register_error,)
     return manifest, ()
 
 
@@ -187,7 +291,24 @@ def discover_extensions(features: object, *, root: Path | None = None) -> list[I
                 errors=errors,
             )
         )
-    return discovered
+
+    # Second pass: enforce ``requires`` declarations now that all manifests are known.
+    available = {
+        item.manifest.id: item.manifest.version for item in discovered if item.manifest is not None
+    }
+    return [
+        InstalledExtension(
+            id=item.id,
+            directory=item.directory,
+            manifest=item.manifest,
+            enabled=item.enabled,
+            granted_capabilities=item.granted_capabilities,
+            errors=item.errors + _check_requires_errors(item.manifest, available)
+            if item.manifest is not None
+            else item.errors,
+        )
+        for item in discovered
+    ]
 
 
 def load_enabled_manifests(
@@ -224,6 +345,35 @@ def grant_capabilities(
     state.entries[extension_id] = entry
     save_state(state, root=root)
     return state
+
+
+def set_event_enabled(
+    extension_id: str, event_name: str, enabled: bool, *, root: Path | None = None
+) -> ExtensionState:
+    """Enable or disable a single document event subscription for a Quillin.
+
+    When ``enabled`` is ``False``, the event name is added to
+    ``disabled_events`` and the host will skip the handler at dispatch time.
+    When ``True``, it is removed (restoring default behaviour).
+    """
+
+    state = load_state(root=root)
+    entry = state.entries.get(extension_id, _ExtensionStateEntry())
+    if enabled:
+        entry.disabled_events = entry.disabled_events - {event_name}
+    else:
+        entry.disabled_events = entry.disabled_events | {event_name}
+    state.entries[extension_id] = entry
+    save_state(state, root=root)
+    return state
+
+
+def is_event_enabled(extension_id: str, event_name: str, *, root: Path | None = None) -> bool:
+    """Return whether a document event subscription is active for a Quillin."""
+
+    state = load_state(root=root)
+    entry = state.entry(extension_id)
+    return event_name not in entry.disabled_events
 
 
 def remove_extension(extension_id: str, *, root: Path | None = None) -> bool:
@@ -370,7 +520,24 @@ def discover_bundled_extensions(
                 errors=errors,
             )
         )
-    return discovered
+
+    # Second pass: enforce ``requires`` declarations now that all manifests are known.
+    available = {
+        item.manifest.id: item.manifest.version for item in discovered if item.manifest is not None
+    }
+    return [
+        InstalledExtension(
+            id=item.id,
+            directory=item.directory,
+            manifest=item.manifest,
+            enabled=item.enabled,
+            granted_capabilities=item.granted_capabilities,
+            errors=item.errors + _check_requires_errors(item.manifest, available)
+            if item.manifest is not None
+            else item.errors,
+        )
+        for item in discovered
+    ]
 
 
 def load_enabled_bundled_manifests(

@@ -34,25 +34,6 @@ _MANIFEST_DIR = Path("docs/site/updates/manifests")
 
 
 def _find_latest_base_version(current_version: str, manifest_dir: Path) -> str | None:
-    """Return the highest version < current_version for which a manifest exists."""
-    from packaging.version import Version  # type: ignore[import-untyped]
-
-    available: list[str] = []
-    for p in manifest_dir.glob("manifest-*.json"):
-        stem = p.stem  # manifest-0.4.0
-        ver_str = stem[len("manifest-") :]
-        try:
-            v = Version(ver_str)
-            if v < Version(current_version):
-                available.append(ver_str)
-        except Exception:
-            continue
-    if not available:
-        return None
-    return str(max(available, key=lambda v: [int(x) for x in v.split(".")]))
-
-
-def _find_latest_base_version_simple(current_version: str, manifest_dir: Path) -> str | None:
     """Return highest version < current_version from available manifests (no packaging dep)."""
     current_parts = tuple(int(x) for x in current_version.split("."))
     best: tuple[int, ...] | None = None
@@ -100,7 +81,7 @@ def build_update_zip(
     # --- resolve base version for delta -----------------------------------------
     resolved_base: str | None = base_version
     if mode == "delta" and resolved_base is None:
-        resolved_base = _find_latest_base_version_simple(version, manifest_dir)
+        resolved_base = _find_latest_base_version(version, manifest_dir)
         if resolved_base is None:
             print("No previous manifest found; falling back to full mode.")
             mode = "full"
@@ -254,7 +235,7 @@ def main() -> int:
     # Determine mode: default to delta if a previous manifest can be found, else full
     mode = args.mode
     if mode is None:
-        probe = _find_latest_base_version_simple(version, manifest_dir)
+        probe = _find_latest_base_version(version, manifest_dir)
         mode = "delta" if probe is not None else "full"
 
     return build_update_zip(

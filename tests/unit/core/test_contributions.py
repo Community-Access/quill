@@ -141,12 +141,19 @@ def test_power_tools_manifest_is_consumed_and_conflict_free() -> None:
     # 33 original + 10 TextMonkey/EdSharp-parity commands (§4.22/§4.23)
     # + 2 Copy Tray dialog-level commands (open + clear_all)
     # + 3 encoding tools (#197: encode_all_non_ascii, show_non_ascii, reencode_file)
-    # The two ``insert_date_time`` and ``calculate_and_insert_date`` items were
-    # removed in the date/time consolidation (see rel.md "Things that work a
-    # little differently now") so the manifest drops from 48 to 46 entries.
+    # 0.6.0: +2 citation commands (insert_citation, open_citation_manager)
+    # 0.6.0: +11 for #256/#257 (table of contents, markdown profiles, line-break
+    # preservation, markdown status, citation style, analyze/save minimum
+    # encoding, and the email-quote/low-ASCII/high-ASCII/hex-dump text-utility
+    # gap fill)
+    # 0.6.0: +8 for the remaining text-utility parity gaps (advanced line
+    # numbering, OEM/ANSI conversion, line-drawing character conversion/strip,
+    # multi replace, count occurrences, line statistics)
+    # 0.6.0: +3 for Emmet-style abbreviation expansion (expand/preview/explain
+    # abbreviation)
     registry = build_first_party_registry(POWER_TOOLS_COMMANDS)
-    assert len(POWER_TOOLS_COMMANDS) == 46
-    assert len(registry.commands) == 46
+    assert len(POWER_TOOLS_COMMANDS) == 70
+    assert len(registry.commands) == 70
     assert registry.conflicts == ()
     for menu in registry.menus:
         assert menu.parent in FIRST_PARTY_MENU_PARENTS

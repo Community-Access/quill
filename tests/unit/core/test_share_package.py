@@ -28,7 +28,6 @@ from quill.core.share_package import (
 def _settings_payload() -> dict[str, object]:
     settings = Settings(
         theme="dark",
-        read_aloud_piper_executable=r"C:\Users\me\piper.exe",
         watch_folder_path=r"D:\watch",
         skipped_update_version="9.9.9",
     )
@@ -76,7 +75,6 @@ def test_profile_scrubs_private_settings_fields() -> None:
     inner = doc["sections"][SECTION_SETTINGS]["settings"]
     assert "theme" in inner  # shareable preference survives
     assert "watch_folder_path" not in inner
-    assert "read_aloud_piper_executable" not in inner
     assert "skipped_update_version" not in inner
     # The privacy guard finds nothing leaking.
     assert private_fields_present(doc) == []

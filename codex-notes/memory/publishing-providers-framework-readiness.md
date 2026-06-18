@@ -2,6 +2,16 @@
 
 Status: stable implementation checkpoint with current `origin/main` merged, focused validation green, and next work identified.
 
+## 2026-06-18 main merge refresh
+
+- `origin/main` advanced to `2a92c03` and has been merged into `features/publishing-providers-framework`
+- the integrated branch keeps publishing as a provider-aware content workflow under `File > Publish`
+- current main's adjacent work is also retained, including the new AI menu flag, 0.6.0/Quillin/power-tools/UI updates, stricter dialog/message-box gates, and regenerated UI snapshots
+- publishing dialogs now use the shared message-box wrapper instead of raw `wx.MessageBox`
+- focused publishing plus merge-sensitive validation is green:
+  - `124 passed in 55.82s`
+- no push has been performed for this checkpoint
+
 ## 2026-06-12 planning-language correction
 
 - updated the latest publishing planning note so it does not imply Quill is being designed only for blind users

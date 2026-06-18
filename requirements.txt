@@ -18,7 +18,7 @@ pyttsx3>=2.99
 
 # CA bundle for verified HTTPS (update checks) — Python on macOS otherwise has
 # no trusted roots wired into urllib (CERTIFICATE_VERIFY_FAILED).
-certifi>=2024.2.2
+certifi>=2026.5.20
 
 # Prism screen-reader speech bridge (Windows) — routes announcements to
 # NVDA / JAWS / Narrator instead of speaking over them.
@@ -37,7 +37,7 @@ pyenchant>=3.3.0
 # (e.g. Phi-4-mini Q4) into <app data>/models or set QUILL_LLAMA_MODEL.
 # Use llama-cpp-python CPU wheels to avoid source builds and Windows long-path failures.
 --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
-llama-cpp-python>=0.3.28
+llama-cpp-python>=0.3.30
 
 # Dictation / voice input (mic permission required).
 SpeechRecognition>=3.16.1

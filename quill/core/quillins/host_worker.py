@@ -19,6 +19,7 @@ debugging — it uses :meth:`QuillExtensionApi.log` instead.
 from __future__ import annotations
 
 import importlib.util
+import inspect
 import sys
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -194,6 +195,18 @@ class QuillExtensionApi:
 
         self._worker.call("delete_storage", [key])
 
+    # -- settings (settings.own.read / settings.own.write) --------------------
+    def get_setting(self, key: str, default: Any = None) -> Any:
+        """Read a Quillin preference by key; returns ``default`` when not stored."""
+
+        value = self._worker.call("get_setting", [key])
+        return value if value is not None else default
+
+    def set_setting(self, key: str, value: str) -> None:
+        """Persist a Quillin preference value under ``key``."""
+
+        self._worker.call("set_setting", [key, value])
+
     # -- diagnostics ----------------------------------------------------------
     def log(self, message: str) -> None:
         """Emit a diagnostic line to the host (never document content)."""
@@ -250,8 +263,16 @@ class _Worker:
         if handler is None:
             self.send(protocol.result_error(call_id, "QuillinError", f"no handler: {handler_name}"))
             return
+        raw_context = message.get("context")
+        context = raw_context if isinstance(raw_context, dict) else {}
         try:
-            handler(self._api)
+            # Command handlers take only ``(api)``; document-event and timer
+            # handlers take ``(api, event)``. Pass the context to handlers that
+            # accept a second positional parameter so both shapes work.
+            if _handler_takes_context(handler):
+                handler(self._api, context)  # type: ignore[call-arg]
+            else:
+                handler(self._api)
         except Exception as error:
             self.send(protocol.result_error(call_id, _error_kind(error), str(error)))
             return
@@ -306,6 +327,30 @@ def _error_kind(error: Exception) -> str:
     if isinstance(error, QuillinError):
         return type(error).__name__
     return "QuillinError"
+
+
+def _handler_takes_context(handler: Callable[..., Any]) -> bool:
+    """Return True when ``handler`` accepts a second positional ``event`` arg.
+
+    Command handlers are ``handler(api)``; document-event and timer handlers are
+    ``handler(api, event)``. A handler that uses ``*args`` is treated as accepting
+    the context too.
+    """
+
+    try:
+        signature = inspect.signature(handler)
+    except (TypeError, ValueError):
+        return False
+    positional = 0
+    for parameter in signature.parameters.values():
+        if parameter.kind is inspect.Parameter.VAR_POSITIONAL:
+            return True
+        if parameter.kind in (
+            inspect.Parameter.POSITIONAL_ONLY,
+            inspect.Parameter.POSITIONAL_OR_KEYWORD,
+        ):
+            positional += 1
+    return positional >= 2
 
 
 def main(argv: list[str] | None = None) -> int:

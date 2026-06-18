@@ -466,19 +466,6 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("quill key", "timeout", "prefix"),
     ),
     # --- Accessibility -----------------------------------------------------
-    SettingSpec(
-        "ocr_engine",
-        "OCR engine",
-        "accessibility",
-        "choice",
-        "Which engine recognizes text in images. Automatic uses the built-in Windows engine.",
-        choices=(
-            ("auto", "Automatic"),
-            ("windows", "Windows (built-in)"),
-        ),
-        feature_id="core.ocr",
-        keywords=("ocr", "image", "text", "windows", "recognition"),
-    ),
     # --- External file-change watch and safe reload (FEAT-19) --------------
     SettingSpec(
         "external_change_watch_enabled",
@@ -774,7 +761,6 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
             ("piper", "Piper"),
             ("kokoro", "Kokoro"),
             ("espeak", "eSpeak"),
-            ("openvoice", "OpenVoice"),
         ),
         feature_id="core.read_aloud",
         keywords=("read aloud", "tts", "voice", "engine"),
@@ -852,9 +838,17 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "ai_chat_default_provider",
         "Ask AI default provider",
         "ai",
-        "text",
-        "Default provider selected when the Ask AI dialog opens"
-        " (ollama, ollama_cloud, openai, claude, openrouter, gemini, custom).",
+        "choice",
+        "Default provider selected when the Ask AI dialog opens.",
+        choices=(
+            ("", "First available provider"),
+            ("ollama", "Ollama (local)"),
+            ("openai", "OpenAI"),
+            ("claude", "Claude (Anthropic)"),
+            ("openrouter", "OpenRouter"),
+            ("gemini", "Google Gemini"),
+            ("custom", "Custom endpoint"),
+        ),
         keywords=("ai", "chat", "provider", "ollama", "openai", "claude", "openrouter", "gemini"),
     ),
     SettingSpec(
@@ -882,6 +876,39 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Default model ID used when running prompt-library prompts."
         " Leave blank to fall back to the Ask AI default model.",
         keywords=("ai", "prompt", "model", "prompt library", "grammar"),
+    ),
+    SettingSpec(
+        "vision_default_prompt_style",
+        "Default image description style",
+        "ai",
+        "text",
+        "The prompt style used when describing images with AI. Defaults to 'accessibility'.",
+        keywords=("vision", "image", "description", "prompt", "style", "accessibility"),
+    ),
+    SettingSpec(
+        "vision_prompt_picker_enabled",
+        "Show style picker before image description",
+        "ai",
+        "bool",
+        "When enabled, a style picker appears before each image description"
+        " so you can choose a different prompt style each time.",
+        keywords=("vision", "image", "description", "picker", "style"),
+    ),
+    SettingSpec(
+        "vision_disabled_builtin_styles",
+        "Disabled built-in image prompt styles",
+        "ai",
+        "text",
+        "List of built-in style IDs to hide from the style picker.",
+        keywords=("vision", "image", "description", "disabled", "hidden"),
+    ),
+    SettingSpec(
+        "vision_custom_prompts",
+        "Custom image prompt styles",
+        "ai",
+        "text",
+        "User-defined image description prompt styles.",
+        keywords=("vision", "image", "description", "custom", "prompt"),
     ),
     # --- Bug reporting --------------------------------------------------------
     SettingSpec(

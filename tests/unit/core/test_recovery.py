@@ -84,6 +84,46 @@ def test_begin_session_skips_dismissed_offer_for_same_snapshot(
     assert offers == []
 
 
+def test_latest_session_snapshot_skips_empty_files(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    session = str(uuid4())
+    root = tmp_path / "autosave" / session
+    root.mkdir(parents=True)
+    empty = root / "empty.snap"
+    empty.write_bytes(b"")
+    nonempty = root / "real.snap"
+    nonempty.write_text("content", encoding="utf-8")
+    latest = latest_session_snapshot(session)
+    assert latest == nonempty
+
+
+def test_latest_session_snapshot_returns_none_when_all_files_empty(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    session = str(uuid4())
+    root = tmp_path / "autosave" / session
+    root.mkdir(parents=True)
+    (root / "empty.snap").write_bytes(b"")
+    assert latest_session_snapshot(session) is None
+
+
+def test_begin_session_does_not_offer_empty_snapshot(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    previous = str(uuid4())
+    current = str(uuid4())
+    session_root = tmp_path / "autosave" / previous
+    session_root.mkdir(parents=True)
+    (session_root / "doc.snap").write_bytes(b"")
+    begin_session(previous)
+    offers = begin_session(current)
+    assert offers == []
+
+
 def test_concurrent_begin_session_serialize_via_lock(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:

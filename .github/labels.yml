@@ -77,3 +77,7 @@
 - name: breaking-change
   color: "b60205"
   description: Backward-incompatible behavior or API changes.
+
+- name: translation
+  color: "0075ca"
+  description: Translation and localisation pull requests.

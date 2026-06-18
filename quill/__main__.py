@@ -15,6 +15,53 @@ from quill.stability.diagnostics import dump_all_thread_stacks, setup_fault_hand
 from quill.stability.logging_config import configure_logging
 
 
+def _install_excepthook() -> None:
+    """Install sys.excepthook so unhandled crashes show an accessible dialog.
+
+    Without this, a crash in the windowed build just silently closes QUILL —
+    a blank screen with no feedback for blind users (finding #51).
+    The handler uses ctypes MessageBoxW which Narrator/NVDA read even with
+    no wx active.
+    """
+    import ctypes
+    import datetime
+    import traceback
+    import types
+
+    def _handler(
+        exc_type: type[BaseException],
+        exc_value: BaseException,
+        exc_tb: types.TracebackType | None,
+    ) -> None:
+        crash_file: Path | None = None
+        try:
+            crash_dir = app_data_dir() / "crash-reports"
+            crash_dir.mkdir(parents=True, exist_ok=True)
+            ts = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+            crash_file = crash_dir / f"crash-{ts}.txt"
+            with crash_file.open("w", encoding="utf-8") as fh:
+                traceback.print_exception(exc_type, exc_value, exc_tb, file=fh)
+        except Exception:  # noqa: BLE001
+            crash_file = None
+
+        msg = "QUILL encountered an unexpected error and needs to close.\n\n"
+        msg += f"Error: {exc_type.__name__}: {exc_value}\n\n"
+        if crash_file:
+            msg += f"A crash report was saved to:\n{crash_file}"
+        else:
+            msg += "Could not save a crash report."
+
+        if sys.platform == "win32":
+            try:
+                ctypes.windll.user32.MessageBoxW(0, msg, "QUILL — Unexpected Error", 0x10)
+            except Exception:  # noqa: BLE001
+                pass
+
+        sys.__excepthook__(exc_type, exc_value, exc_tb)
+
+    sys.excepthook = _handler
+
+
 @dataclass(frozen=True, slots=True)
 class LaunchRequest:
     path: Path
@@ -33,6 +80,7 @@ def main() -> int:
     ensure_app_directories()
     log_listener = configure_logging(app_data_dir() / "logs")
     setup_fault_handler()
+    _install_excepthook()
     try:
         _bootstrap_storage_mode()
 
@@ -247,6 +295,7 @@ def _launch_configuration(
             continue
         candidate = Path(str(raw_path)).expanduser()
         if not candidate.exists():
+            print(f"Warning: could not open '{candidate.name}': file not found.", file=sys.stderr)
             continue
         request = LaunchRequest(
             path=candidate.resolve(),

@@ -54,7 +54,7 @@ from quill.core.assistant_prompts import (
 from quill.core.commands import CommandRegistry
 from quill.core.features import FeatureManager
 from quill.core.python_sandbox import PythonSandboxResult, run_python_sandbox
-from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.dialog_contract import apply_modal_ids, show_message_box, show_modal_dialog
 
 
 class RunPythonDialog:
@@ -88,7 +88,7 @@ class RunPythonDialog:
             wx.StaticText(
                 self.dialog,
                 label=(
-                    "Sandboxed Python can read document_text and selection_text. "
+                    "Restricted Python (allowlist + resource limits; not a security boundary). "
                     "Set result or print output, then apply the transformed text."
                 ),
             ),
@@ -1197,10 +1197,11 @@ class WritingAssistantDialog:
                 self._open_python_tool()
             return
         if tool.requires_confirmation:
-            answer = self._wx.MessageBox(
+            answer = show_message_box(
                 f"Run '{tool.title}' now?",
                 "Confirm Assistant Action",
-                style=self._wx.YES_NO | self._wx.ICON_WARNING,
+                self._wx.YES_NO | self._wx.ICON_WARNING,
+                self.dialog,
             )
             if answer != self._wx.YES:
                 return
@@ -1410,7 +1411,9 @@ class AIHubDialog:
         self._refresh_summary(verification=message)
         self._announce(message)
         icon = self._wx.ICON_INFORMATION if ok else self._wx.ICON_WARNING
-        self._wx.MessageBox(message, "AI Hub Verification", icon | self._wx.OK)
+        show_message_box(
+            message, "AI Hub Verification", icon | self._wx.OK, self.dialog, announce=self._announce
+        )
 
     def _on_list_models(self, _event: object) -> None:
         self._settings = load_assistant_connection_settings()
@@ -1418,12 +1421,24 @@ class AIHubDialog:
         models, error = list_assistant_models(self._settings, self._api_key)
         if error is not None:
             self.status.SetLabel(error)
-            self._wx.MessageBox(error, "AI Hub Models", self._wx.ICON_WARNING | self._wx.OK)
+            show_message_box(
+                error,
+                "AI Hub Models",
+                self._wx.ICON_WARNING | self._wx.OK,
+                self.dialog,
+                announce=self._announce,
+            )
             return
         if not models:
             message = "No models were returned by the endpoint."
             self.status.SetLabel(message)
-            self._wx.MessageBox(message, "AI Hub Models", self._wx.ICON_INFORMATION | self._wx.OK)
+            show_message_box(
+                message,
+                "AI Hub Models",
+                self._wx.ICON_INFORMATION | self._wx.OK,
+                self.dialog,
+                announce=self._announce,
+            )
             return
         picker = SearchableModelPickerDialog(self.dialog, models)
         selected = picker.show_modal_and_get_selection()
@@ -1483,7 +1498,12 @@ class AssistantConnectionDialog:
         self.dialog.SetSize((780, 520))
 
         self._settings = load_assistant_connection_settings()
-        self._api_key = load_assistant_api_key()
+        # Prefer the per-provider key for the initial provider so the field
+        # always matches what is selected, even when the legacy active-key store
+        # still holds a different provider's key from a previous session.
+        _initial_provider = self._settings.provider.strip().lower() or "ollama"
+        _per_provider_key = load_provider_api_key(_initial_provider)
+        self._api_key = _per_provider_key or load_assistant_api_key()
         self._api_key_revealed = False
         self.last_verification_ok: bool | None = None
         self.last_verification_message: str = "Not checked"
@@ -1575,6 +1595,11 @@ class AssistantConnectionDialog:
         if self._open_model_settings is not None:
             self.model_settings_button = wx.Button(panel, label="On-device model...")
             actions.Add(self.model_settings_button, 0)
+        # Vision prompt library: "Image Prompt Styles…" button
+        self.vision_prompt_styles_button = wx.Button(panel, label="Image Prompt Styles…")
+        self.vision_prompt_styles_button.SetName("Image Prompt Styles")
+        self.vision_prompt_styles_button.Bind(wx.EVT_BUTTON, self._on_vision_prompt_styles)
+        actions.Add(self.vision_prompt_styles_button, 0)
         panel_sizer.Add(actions, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         self.connection_status = wx.StaticText(
@@ -1584,6 +1609,54 @@ class AssistantConnectionDialog:
             ),
         )
         panel_sizer.Add(self.connection_status, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+
+        # --- Vision prompt library settings ---
+        from quill.core.settings import load_settings
+
+        _app_settings = load_settings()
+
+        # Picker toggle
+        self.vision_picker_enabled = wx.CheckBox(
+            panel, label="Show a style picker before each image description"
+        )
+        self.vision_picker_enabled.SetValue(
+            bool(getattr(_app_settings, "vision_prompt_picker_enabled", False))
+        )
+        self.vision_picker_enabled.SetName("Show style picker before image description")
+        panel_sizer.Add(self.vision_picker_enabled, 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
+
+        # Default style dropdown
+        from quill.core.ai.vision_prompts import enabled_style_choices
+
+        _style_choices = enabled_style_choices(
+            disabled_builtins=list(getattr(_app_settings, "vision_disabled_builtin_styles", [])),
+            custom_prompts=list(getattr(_app_settings, "vision_custom_prompts", [])),
+        )
+        _style_labels = [c["title"] for c in _style_choices]
+        _style_ids = [c["id"] for c in _style_choices]
+        _current_default = getattr(_app_settings, "vision_default_prompt_style", "accessibility")
+        _default_index = 0
+        try:
+            _default_index = _style_ids.index(_current_default)
+        except ValueError:
+            pass
+
+        default_style_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        default_style_sizer.Add(
+            wx.StaticText(panel, label="Default description style:"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
+            8,
+        )
+        self.vision_default_style = wx.Choice(panel, choices=_style_labels)
+        self.vision_default_style.SetName("Default image description style")
+        if _style_labels:
+            self.vision_default_style.SetSelection(_default_index)
+        default_style_sizer.Add(self.vision_default_style, 1, wx.EXPAND)
+        panel_sizer.Add(default_style_sizer, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+
+        # Store the style ID list for saving
+        self._vision_style_ids = _style_ids
 
         panel.SetSizer(panel_sizer)
         root.Add(panel, 1, wx.EXPAND | wx.ALL, 8)
@@ -1746,7 +1819,7 @@ class AssistantConnectionDialog:
             self.verify_button.Enable(True)
         self.connection_status.SetLabel(message)
         icon = self._wx.ICON_INFORMATION if ok else self._wx.ICON_WARNING
-        self._wx.MessageBox(message, "AI Connection Check", icon | self._wx.OK)
+        show_message_box(message, "AI Connection Check", icon | self._wx.OK, self.dialog)
 
     def _on_list_models(self, _event: object) -> None:
         settings = self._current_settings()
@@ -1756,17 +1829,23 @@ class AssistantConnectionDialog:
                 "Enter your key and try again."
             )
             self.connection_status.SetLabel(message)
-            self._wx.MessageBox(message, "Model Discovery", self._wx.ICON_WARNING | self._wx.OK)
+            show_message_box(
+                message, "Model Discovery", self._wx.ICON_WARNING | self._wx.OK, self.dialog
+            )
             return
         models, error = list_assistant_models(settings, self.api_key.GetValue())
         if error is not None:
             self.connection_status.SetLabel(error)
-            self._wx.MessageBox(error, "Model Discovery", self._wx.ICON_WARNING | self._wx.OK)
+            show_message_box(
+                error, "Model Discovery", self._wx.ICON_WARNING | self._wx.OK, self.dialog
+            )
             return
         if not models:
             message = "Connection succeeded, but the endpoint returned no models."
             self.connection_status.SetLabel(message)
-            self._wx.MessageBox(message, "Model Discovery", self._wx.ICON_INFORMATION | self._wx.OK)
+            show_message_box(
+                message, "Model Discovery", self._wx.ICON_INFORMATION | self._wx.OK, self.dialog
+            )
             return
 
         picker = SearchableModelPickerDialog(self.dialog, models)
@@ -1844,7 +1923,7 @@ class AssistantConnectionDialog:
             self.test_chat_button.Enable(True)
         self.connection_status.SetLabel(message)
         icon = self._wx.ICON_INFORMATION if ok else self._wx.ICON_WARNING
-        self._wx.MessageBox(message, "Test Chat", icon | self._wx.OK)
+        self._wx.MessageBox(message, "Test Chat", icon | self._wx.OK)  # MSGBOX-OK: standalone
 
     def _on_forget_provider_key(self, _event: object) -> None:
         provider = self._provider_value()
@@ -1857,6 +1936,47 @@ class AssistantConnectionDialog:
     def _on_open_model_settings(self, _event: object) -> None:
         if callable(self._open_model_settings):
             self._open_model_settings()
+
+    def _on_vision_prompt_styles(self, _event: object) -> None:
+        """Open the Manage Image Prompts dialog, then refresh the style dropdown."""
+        from quill.core.settings import load_settings
+        from quill.ui.vision_prompt_manager_dialog import VisionPromptManagerDialog
+
+        settings = load_settings()
+        dlg = VisionPromptManagerDialog(self.dialog, settings)
+        dlg.show_modal()
+        self._refresh_vision_style_dropdown()
+
+    def _refresh_vision_style_dropdown(self) -> None:
+        """Rebuild the default-style Choice control from the current saved settings.
+
+        Called after the Manage Image Prompts dialog closes so that any newly
+        added, removed, or disabled styles are reflected immediately without
+        requiring the AI Hub to be closed and reopened.
+        """
+        from quill.core.ai.vision_prompts import enabled_style_choices
+        from quill.core.settings import load_settings
+
+        app_settings = load_settings()
+        style_choices = enabled_style_choices(
+            disabled_builtins=list(app_settings.vision_disabled_builtin_styles),
+            custom_prompts=list(app_settings.vision_custom_prompts),
+        )
+        style_labels = [c["title"] for c in style_choices]
+        style_ids = [c["id"] for c in style_choices]
+        current_default = app_settings.vision_default_prompt_style
+        default_index = 0
+        try:
+            default_index = style_ids.index(current_default)
+        except ValueError:
+            pass
+
+        self.vision_default_style.Clear()
+        for label in style_labels:
+            self.vision_default_style.Append(label)
+        if style_labels:
+            self.vision_default_style.SetSelection(default_index)
+        self._vision_style_ids = style_ids
 
     def show_modal(self) -> bool:
         self.dialog.CentreOnParent()
@@ -1872,6 +1992,17 @@ class AssistantConnectionDialog:
             self.last_verification_ok = ok
             self.last_verification_message = message
             self.connection_status.SetLabel(message)
+
+            # Save vision prompt library settings
+            from quill.core.settings import load_settings, save_settings
+
+            app_settings = load_settings()
+            app_settings.vision_prompt_picker_enabled = bool(self.vision_picker_enabled.GetValue())
+            style_sel = self.vision_default_style.GetSelection()
+            if 0 <= style_sel < len(self._vision_style_ids):
+                app_settings.vision_default_prompt_style = self._vision_style_ids[style_sel]
+            save_settings(app_settings)
+
             return True
         finally:
             self.dialog.Destroy()

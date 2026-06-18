@@ -52,7 +52,7 @@ class ProfilePickerDialog:
             title="Choose a Profile",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize((620, 520))
+        self.dialog.SetSize((640, 600))
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
             wx.StaticText(self.dialog, label="Profile"),
@@ -61,23 +61,23 @@ class ProfilePickerDialog:
             10,
         )
         self.listbox = wx.ListBox(self.dialog, choices=[name for _k, _i, name, _d in entries])
-        self.listbox.SetName("Profile")
+        self.listbox.SetName("Profile — arrow up and down to read about each one")
         active_index = next(
             (index for index, entry in enumerate(entries) if entry[1] == active_profile_id),
             0,
         )
         if entries:
             self.listbox.SetSelection(active_index)
-        root.Add(self.listbox, 1, wx.EXPAND | wx.ALL, 10)
+        root.Add(self.listbox, 0, wx.EXPAND | wx.ALL, 10)
 
-        root.Add(wx.StaticText(self.dialog, label="Description"), 0, wx.LEFT | wx.RIGHT, 10)
+        root.Add(wx.StaticText(self.dialog, label="About this profile:"), 0, wx.LEFT | wx.RIGHT, 10)
         self.description = wx.TextCtrl(
             self.dialog,
-            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.BORDER_SIMPLE,
-            size=(-1, 120),
+            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP | wx.BORDER_SIMPLE,
+            size=(-1, 220),
         )
         self.description.SetName("Profile description")
-        root.Add(self.description, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+        root.Add(self.description, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         self.startup_check = wx.CheckBox(
             self.dialog, label="Ask me for a profile each time Quill starts"
@@ -109,6 +109,7 @@ class ProfilePickerDialog:
             self.description.SetValue("")
             return
         self.description.SetValue(self._entries[index][3])
+        self.description.SetInsertionPoint(0)
 
     def show(self) -> ProfilePickerResult | None:
         wx = self._wx

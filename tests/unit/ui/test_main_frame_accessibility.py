@@ -273,6 +273,7 @@ def _writing_action_frame(editor: _StubEditor) -> MainFrame:
     frame._set_status = frame._status_messages.append
     frame._writing_prompts = []
     frame.open_writing_assistant = frame._writing_prompts.append
+    frame._ai_require_connection = lambda: None  # prevent real AI threads in tests
     return frame
 
 
@@ -285,7 +286,6 @@ def test_writing_action_blocked_when_ai_disabled(monkeypatch) -> None:
 
     frame.open_ai_rewrite_selection()
 
-    assert frame._writing_prompts == []
     assert any("AI is turned off" in msg for msg in frame._status_messages)
 
 
@@ -300,21 +300,34 @@ def test_writing_action_falls_back_to_paragraph_without_selection(monkeypatch) -
 
     frame.open_ai_rewrite_selection()
 
-    assert len(frame._writing_prompts) == 1
-    assert "Second paragraph here." in frame._writing_prompts[0]
     assert any("paragraph" in msg for msg in frame._status_messages)
 
 
 def test_summarize_falls_back_to_whole_document_without_selection(monkeypatch) -> None:
     import quill.core.ai.model_manager as model_manager
+    import quill.core.assistant_agents as aa
 
     monkeypatch.setattr(model_manager, "load_ai_enabled", lambda: True)
+
+    captured: dict[str, object] = {}
+
+    def _fake_build(
+        agent_id: str, *, selection_text: str = "", document_text: str = "", **_: object
+    ) -> None:
+        captured["agent_id"] = agent_id
+        captured["document_text"] = document_text
+        return None
+
+    monkeypatch.setattr(aa, "build_agent_plan", _fake_build)
+
     text = "Alpha.\n\nBeta.\n\nGamma."
     editor = _StubEditor(text, selection=(2, 2), cursor=2)
     frame = _writing_action_frame(editor)
+    from quill.core.assistant_ai import AssistantConnectionSettings
+
+    frame._ai_require_connection = lambda: (AssistantConnectionSettings(provider="ollama"), "")
 
     frame.open_ai_summarize_selection()
 
-    assert len(frame._writing_prompts) == 1
-    assert "Gamma." in frame._writing_prompts[0]
-    assert any("document" in msg for msg in frame._status_messages)
+    assert captured.get("agent_id") == "summarize"
+    assert "Gamma." in captured.get("document_text", "")

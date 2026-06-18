@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import time
 from pathlib import Path
 from typing import Any
@@ -64,4 +65,6 @@ def write_json_atomic(path: Path, data: Any, *, base: Path | None = None) -> Non
     with temp_path.open("w", encoding="utf-8", newline="\n") as file_handle:
         json.dump(data, file_handle, indent=2, sort_keys=True, ensure_ascii=False)
         file_handle.write("\n")
+        file_handle.flush()
+        os.fsync(file_handle.fileno())
     _atomic_replace(temp_path, path)

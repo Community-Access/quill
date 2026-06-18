@@ -98,50 +98,45 @@ class QuillKeyMixin:
                     self._refresh_statusbar()
                     self.open_quick_nav()
                     return True
-                # §10.8.2: QUILL key, V = browser preview (Ctrl+Shift+Grave, V).
-                if (
-                    not event.ControlDown()
-                    and not event.AltDown()
-                    and not event.ShiftDown()
-                    and key_code in (ord("V"), ord("v"))
-                ):
+                # Data-driven chord dispatch: scan the keymap for any command
+                # whose binding matches "<prefix>, <second-key>". Mode gates
+                # (N, G, A+selection, QUILL+QUILL, Escape, ?) are handled
+                # above and are never reached here.
+                chord_command = self._chord_command_for_event(event)
+                if chord_command is not None:
                     self._quill_key_prefix_pending = False
                     self._quill_key_prefix_started_at = 0.0
                     self._refresh_statusbar()
-                    self._run_command("view.browser_preview")
+                    self._run_command(chord_command)
                     return True
-                # §10.8.2: QUILL key, M = paste HTML as Markdown (magic paste).
-                if (
-                    not event.ControlDown()
-                    and not event.AltDown()
-                    and not event.ShiftDown()
-                    and key_code in (ord("M"), ord("m"))
-                ):
-                    self._quill_key_prefix_pending = False
-                    self._quill_key_prefix_started_at = 0.0
-                    self._refresh_statusbar()
-                    self.paste_html_as_markdown()
-                    return True
+                # Unrecognized second key — consume the event so the character
+                # is never typed into the editor. Announce so the user knows
+                # why nothing happened.
                 self._quill_key_prefix_pending = False
                 self._quill_key_prefix_started_at = 0.0
                 self._refresh_statusbar()
-                return False
+                self._set_status_quiet("Unrecognized QUILL key chord. Press ? for help.")
+                self._announce("Unrecognized QUILL key chord")
+                return True
             if self._quill_key_prefix_matches(event):
                 self._quill_key_prefix_pending = True
                 self._quill_key_prefix_started_at = time.monotonic()
                 message = (
                     "QUILL key prefix active. N for browse mode, press QUILL key again for "
-                    "sticky mode, G for quick nav, M to paste HTML as Markdown, "
-                    "V to preview in browser, ? for help"
+                    "sticky mode, G for quick nav, then any configured chord key, ? for help"
                 )
                 if self._has_active_selection():
                     message = (
                         "QUILL key prefix active. N for browse mode, press QUILL key again for "
-                        "sticky mode, G for quick nav, M to paste HTML as Markdown, "
-                        "V to preview in browser, A for selection actions, ? for help"
+                        "sticky mode, G for quick nav, A for selection actions, "
+                        "then any configured chord key, ? for help"
                     )
                 self._set_status_quiet(message)
                 self._refresh_statusbar()
+                from quill.core.sound_events import SoundEvent
+                from quill.ui.sound_manager import post_sound
+
+                post_sound(SoundEvent.QUILL_KEY_PRESSED)
                 return True
             return False
 
@@ -282,12 +277,18 @@ class QuillKeyMixin:
         if parsed is None:
             return False
         need_ctrl, need_shift, need_alt, key_code = parsed
-        return (
-            bool(event.ControlDown()) == need_ctrl
-            and bool(event.ShiftDown()) == need_shift
-            and bool(event.AltDown()) == need_alt
-            and event.GetKeyCode() == key_code
-        )
+        if (
+            bool(event.ControlDown()) != need_ctrl
+            or bool(event.ShiftDown()) != need_shift
+            or bool(event.AltDown()) != need_alt
+        ):
+            return False
+        # For grave/backtick, wxPython on Windows often reports VK_OEM_3
+        # (0xC0 = 192) instead of ord("`") = 96.  Use multi-strategy detection
+        # so the key is found regardless of what the driver reports.
+        if key_code in (ord("`"), 0xC0):
+            return self._event_matches_grave_key(event)
+        return event.GetKeyCode() == key_code
 
     def _event_has_modifiers(self, event: object) -> bool:
         return bool(event.ControlDown() or event.AltDown() or event.ShiftDown())
@@ -403,6 +404,107 @@ class QuillKeyMixin:
             return True
         # '?' is Shift+'/' on most layouts; wx reports the '/' virtual key.
         return bool(event.ShiftDown()) and key_code == ord("/")
+
+    def _event_matches_grave_key(self, event: object) -> bool:
+        """Multi-strategy detection for the physical grave/backtick key.
+
+        wxPython on Windows commonly reports VK_OEM_3 (0xC0 = 192) rather than
+        ord("`") = 96 for Ctrl+Shift+`.  Three independent strategies are tried
+        so the key is recognised on any driver or keyboard layout:
+        1. wxPython key code or Unicode key == ord("`") or ord("~")
+        2. Windows virtual-key VK_OEM_3 via GetRawKeyCode()
+        3. Physical scan code 0x29 (the key below Esc / above Tab on PC
+           keyboards) via bits 16-23 of GetRawKeyFlags() — reliable on
+           international layouts that do not call this key a backtick.
+        """
+        kc = event.GetKeyCode()
+        if kc in (ord("`"), ord("~")):
+            return True
+        unicode_key_fn = getattr(event, "GetUnicodeKey", None)
+        if callable(unicode_key_fn) and int(unicode_key_fn()) in (ord("`"), ord("~")):
+            return True
+        VK_OEM_3 = 0xC0
+        raw_kc_fn = getattr(event, "GetRawKeyCode", None)
+        raw_kc = int(raw_kc_fn()) if callable(raw_kc_fn) else 0
+        if raw_kc == VK_OEM_3 or kc == VK_OEM_3:
+            return True
+        raw_flags_fn = getattr(event, "GetRawKeyFlags", None)
+        raw_flags = int(raw_flags_fn()) if callable(raw_flags_fn) else 0
+        if raw_flags and ((raw_flags >> 16) & 0xFF) == 0x29:
+            return True
+        return False
+
+    def _chord_command_for_event(self, event: object) -> str | None:
+        """Return the command_id for a chord that matches the current event.
+
+        Scans the live keymap for bindings of the form ``<prefix>, <second-key>``
+        and returns the first command_id whose second key matches the event.
+        Mode-gate keys (N, G, A+selection, QUILL+QUILL, Escape, ?) are consumed
+        before this is called and will never be returned here.
+        """
+        prefix = str(getattr(self.settings, "quill_key_binding", "Ctrl+Shift+Grave")).strip()
+        chord_prefix = prefix + ", "
+        for command_id, binding in (getattr(self, "keymap", None) or {}).items():
+            if not binding or not binding.startswith(chord_prefix):
+                continue
+            second_key = binding[len(chord_prefix) :].strip()
+            parsed = self._parse_chord_second_key(second_key)
+            if parsed is None:
+                continue
+            if self._second_key_matches_event(parsed, event):
+                return command_id
+        return None
+
+    def _parse_chord_second_key(self, second_key: str) -> tuple[bool, bool, bool, int] | None:
+        """Parse the second part of a chord binding into (ctrl, shift, alt, key_code).
+
+        Handles bare keys (``V``, ``1``), modifier combos (``Shift+O``), and
+        named keys (``Tab``, ``Enter``, ``F1``–``F12``).
+        """
+        wx = self._wx
+        parts = [p.strip() for p in second_key.split("+") if p.strip()]
+        if not parts:
+            return None
+        ctrl = shift = alt = False
+        for modifier in parts[:-1]:
+            lowered = modifier.lower()
+            if lowered == "ctrl":
+                ctrl = True
+            elif lowered == "shift":
+                shift = True
+            elif lowered == "alt":
+                alt = True
+            else:
+                return None
+        token = parts[-1].upper()
+        if len(token) == 1:
+            return ctrl, shift, alt, ord(token)
+        named: dict[str, int] = {
+            "ENTER": getattr(wx, "WXK_RETURN", 13),
+            "TAB": getattr(wx, "WXK_TAB", 9),
+            "SPACE": getattr(wx, "WXK_SPACE", 32),
+            "ESC": getattr(wx, "WXK_ESCAPE", 27),
+            "ESCAPE": getattr(wx, "WXK_ESCAPE", 27),
+            "DELETE": getattr(wx, "WXK_DELETE", 127),
+            "BACKSPACE": getattr(wx, "WXK_BACK", 8),
+            "HOME": getattr(wx, "WXK_HOME", 313),
+            "END": getattr(wx, "WXK_END", 312),
+            **{f"F{i}": getattr(wx, f"WXK_F{i}", 339 + i) for i in range(1, 13)},
+        }
+        if token in named:
+            return ctrl, shift, alt, named[token]
+        return None
+
+    def _second_key_matches_event(
+        self, parsed: tuple[bool, bool, bool, int], event: object
+    ) -> bool:
+        need_ctrl, need_shift, need_alt, key_code = parsed
+        return (
+            bool(event.ControlDown()) == need_ctrl
+            and bool(event.ShiftDown()) == need_shift
+            and bool(event.AltDown()) == need_alt
+            and event.GetKeyCode() == key_code
+        )
 
     def _quill_key_help_counts(self) -> dict[str, int]:
         """Build live element counts for the QUILL key cheat sheet."""

@@ -100,6 +100,9 @@ class _LazyString:
         return hash(str(self))
 
 
+LazyStr = _LazyString
+
+
 def lazy_gettext(message: str) -> _LazyString:
     """Return a proxy that translates *message* on first string conversion.
 

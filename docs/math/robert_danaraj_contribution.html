@@ -1,0 +1,33 @@
+<p>From: Rms Danaraj <a href="mailto:salorajan@gmail.com"
+class="email">salorajan@gmail.com</a> Sent: Tuesday, June 16, 2026 7:49
+AM To: Jeff Bishop <a href="mailto:jeff@jeffbishop.com"
+class="email">jeff@jeffbishop.com</a> Subject: Re: [BITS-Development]
+feedback heard and valued …</p>
+<p>Subject: Update: LaTeX/MathML Equation Support Integration in Quill
+&amp; Testing Request</p>
+<p>Hi Jeff and BITS Team,</p>
+<p>I’m pleased to report humbly that we have successfully integrated
+first-class mathematical equation typesetting and rendering support
+(LaTeX and MathML) into the Quill editor.</p>
+<p>Our new add-on enhances Quill with the following capabilities: 1.
+Accessible Input Dialog: A screen-reader friendly dialog form (triggered
+via Ctrl+Shift+E or the Insert menu) with automatic formula detection,
+stripping existing delimiters for quick editing. 2. High-Resolution
+rendering: Real-time math compiling using MathJax 3 in browser previews
+(Ctrl+Shift+V) and HTML document exports. 3. Native Integration: Secure
+keybindings, menu-bar actions, and comprehensive unit tests ensuring
+stability.</p>
+<p>Using Quill’s native Document IO pipeline, we programmatically
+generated a test suite named “latex_testing” in three formats to verify
+the outputs: * latex_testing.md (Markdown): Quill’s canonical editing
+format containing raw LaTeX blocks. * latex_testing.html (HTML Preview):
+Visual mathematical displays compiled via MathJax 3, fully readable by
+screen readers in any browser. * latex_testing.docx (Word Document):
+Formatted via Pandoc into native OMML equations, which open in Word or
+Google Docs as fully editable and accessible formulas.</p>
+<p>Please help us test this new feature, particularly regarding
+screen-reader navigation of the input forms and equations, and let us
+know if you have any guidance for further improvements. I am waiting for
+your answer to push my quill branch with math equations to GitHub.
+Actually I am critically testing.</p>
+<p>Best regards, Robert Danaraj</p>

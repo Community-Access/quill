@@ -294,6 +294,7 @@ class RemoteSitesDialog(wx.Dialog):
             f"Delete the saved site '{current.name}'?",
             "Delete remote site",
             wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
+            self,
         )
         if result == wx.YES:
             delete_site(current.id)
@@ -303,7 +304,7 @@ class RemoteSitesDialog(wx.Dialog):
         site = self._site_list.selected_site()
         if site is None:
             show_message_box(
-                "Choose a remote site first.", self.GetTitle(), wx.ICON_WARNING | wx.OK
+                "Choose a remote site first.", self.GetTitle(), wx.ICON_WARNING | wx.OK, self
             )
             return
         path = self._target_text.GetValue().strip()
@@ -312,6 +313,7 @@ class RemoteSitesDialog(wx.Dialog):
                 "Enter a remote file path or select an entry from the directory list.",
                 self.GetTitle(),
                 wx.ICON_WARNING | wx.OK,
+                self,
             )
             return
         self._result = RemoteSitesResult(site=site, path=path, mode=self._mode)
@@ -455,7 +457,7 @@ class _SiteEditorDialog(wx.Dialog):
             extra["webdav_base"] = extra_value
         if not name or not host:
             show_message_box(
-                "Name and host are required.", self.GetTitle(), wx.ICON_WARNING | wx.OK
+                "Name and host are required.", self.GetTitle(), wx.ICON_WARNING | wx.OK, self
             )
             return
         site_id = (self._site.id if self._site else name).strip() or name

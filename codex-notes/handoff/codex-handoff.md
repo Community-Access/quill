@@ -1,5 +1,39 @@
 # Codex Handoff
 
+## 2026-06-18 Main Merge Refresh
+
+- fetched latest `origin/main`, which advanced to `2a92c03`
+- merged `origin/main` into `features/publishing-providers-framework`
+- resolved conflicts by preserving current main behavior and reapplying publishing-owned surfaces:
+  - kept both `future.publishing` and main's new `future.ai_menu_top_level` feature definitions
+  - kept publishing under `File > Publish`, now using the same localized menu-label pattern as current main
+  - regenerated dialog inventory and MainFrame public-surface fixtures from the integrated tree
+  - refreshed module-size budgets for the integrated main-plus-publishing baseline
+  - replaced publishing dialog raw `wx.MessageBox` calls with the shared dialog-contract message wrapper required by the current GATE-16 checker
+
+## 2026-06-18 Latest Verification
+
+- focused publishing plus merge-sensitive verification passed
+- result: `124 passed in 55.82s`
+- verification set:
+  - `tests/unit/core/test_features.py`
+  - `tests/unit/core/test_publishing.py`
+  - `tests/unit/core/test_publishing_browse.py`
+  - `tests/unit/core/test_publishing_framework.py`
+  - `tests/unit/ui/test_main_frame.py`
+  - `tests/unit/ui/test_main_frame_menu_contract.py`
+  - `tests/unit/ui/test_publishing_connection_dialog_a11y.py`
+  - `tests/unit/ui/test_dialog_inventory.py`
+  - `tests/unit/ui/test_main_frame_characterization.py`
+  - `tests/unit/tools/test_module_size_budget.py`
+  - `tests/unit/tools/test_check_banned_patterns.py`
+  - `tests/unit/tools/test_network_egress_audit.py`
+  - `tests/unit/tools/test_dialog_button_contract.py`
+  - `tests/unit/ui/test_dialog_hardening_contract.py`
+- run detail:
+  - used workspace-local temp path:
+    - `--basetemp=.tmp/pytest-publishing-merge-20260618-final`
+
 ## 2026-06-14 16:21:11 -04:00 Broader Merge-Sensitive Verification
 
 - ran a broader merge-sensitive suite across the `main` shell surfaces that publishing extends:

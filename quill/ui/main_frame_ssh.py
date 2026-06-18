@@ -124,6 +124,7 @@ class SshEditingMixin:
             self.frame,
             list_dir=connection.service.list_dir,
             start_dir=request.default_dir,
+            announce_cb=self._announce,
         ).show()
         if remote_path is None:
             connection.close()

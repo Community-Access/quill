@@ -62,13 +62,16 @@ version = "2.4.6"
     )
     assert manifest["version"] == "2.4.6"
     assert manifest["bundledPython"] is False
-    assert manifest["bundledTools"] == []
+    assert sorted(manifest["bundledTools"]) == [
+        "pandoc",
+        "speech/dectalk",
+        "speech/espeak-ng",
+        "speech/piper",
+    ]
     assert manifest["docs"] == [r"docs\userguide.md"]
     assert manifest["speechAssets"]["dectalk"]["downloadable"] is True
     assert manifest["speechAssets"]["espeak"]["downloadable"] is True
-    assert manifest["speechAssets"]["kokoro"]["downloadable"] is True
     assert manifest["speechAssets"]["piper"]["downloadable"] is True
-    assert manifest["speechAssets"]["openvoice"]["downloadable"] is True
 
     assert installer_script.exists()
     assert bundle["installer_script"] == str(installer_script)
@@ -86,7 +89,8 @@ def test_build_inno_setup_script_mentions_portable_bundle() -> None:
     assert "PrivilegesRequired=lowest" in script
     assert "WizardStyle=modern" in script
     assert "DisableDirPage=no" in script
-    assert "InfoAfterFile=..\\portable\\README.txt" in script
+    # Installer-specific post-install info (not the portable README).
+    assert "InfoAfterFile=README-installer.txt" in script
     # The amd64 embedded-Python bundle must install 64-bit only, target
     # Windows 10+, and refresh Explorer associations for the assoc tasks.
     assert "ArchitecturesAllowed=x64compatible" in script
@@ -100,25 +104,18 @@ def test_build_inno_setup_script_mentions_portable_bundle() -> None:
         'Name: "pandoc"; Description: "Install bundled Pandoc for document conversion";' in script
     )
     assert 'Name: "speechdectalk"; Description: "Install bundled DECtalk runtime";' in script
-    assert 'Name: "speechdectalk\\voices"; Description: "DECtalk voice selection";' in script
-    assert 'Name: "speechdectalk\\voices\\all_voices"; Description: "All DECtalk voices";' in script
-    assert 'Name: "speechdectalk\\voices\\paul"; Description: "Paul voice";' in script
-    assert 'Name: "speechdectalk\\voices\\harry"; Description: "Harry voice";' in script
-    assert 'Name: "speechdectalk\\voices\\dennis"; Description: "Dennis voice";' in script
-    assert 'Name: "speechdectalk\\voices\\frank"; Description: "Frank voice";' in script
-    assert 'Name: "speechdectalk\\voices\\betty"; Description: "Betty voice";' in script
-    assert 'Name: "speechdectalk\\voices\\ursula"; Description: "Ursula voice";' in script
-    assert 'Name: "speechdectalk\\voices\\rita"; Description: "Rita voice";' in script
-    assert 'Name: "speechdectalk\\voices\\wendy"; Description: "Wendy voice";' in script
-    assert 'Name: "speechdectalk\\voices\\kit"; Description: "Kit voice";' in script
+    # All DECtalk voices ship together under a single component checkbox — no
+    # per-voice sub-components and no voice-selection wizard page.
+    assert 'Name: "speechdectalk\\voices"' not in script
+    assert "DecTalkVoicePage" not in script
+    assert "ShouldInstallAllVoices" not in script
+    assert "ShouldInstallPaulVoice" not in script
     assert 'Name: "speechespeak"; Description: "Install bundled eSpeak-NG runtime";' in script
-    assert 'Name: "speechkokoro"; Description: "Install bundled Kokoro voices/models";' in script
-    assert 'Name: "speechpiper"; Description: "Install bundled Piper voices/models";' in script
+    assert 'Name: "speechpiper"; Description: "Install bundled Piper neural TTS runtime";' in script
+    assert "speechkokoro" not in script
+    assert "speechopenvoice" not in script
     assert (
-        'Name: "speechopenvoice"; Description: "Install bundled OpenVoice voices/models";' in script
-    )
-    assert (
-        'Excludes: "docs\\QUILL-PRD.md,tools\\pandoc\\*,tools\\speech\\dectalk\\*,tools\\speech\\espeak-ng\\*,tools\\speech\\kokoro\\*,tools\\speech\\piper\\*,tools\\speech\\openvoice\\*,tools\\nodejs\\*"'
+        'Excludes: "docs\\QUILL-PRD.md,tools\\pandoc\\*,tools\\speech\\dectalk\\*,tools\\speech\\espeak-ng\\*,tools\\speech\\piper\\*,tools\\nodejs\\*,vendor\\braille-pack\\*,_tool-download\\*,_speech-download\\*"'
         in script
     )
     assert 'Source: "..\\portable\\tools\\pandoc\\*"; DestDir: "{app}\\tools\\pandoc";' in script
@@ -127,70 +124,22 @@ def test_build_inno_setup_script_mentions_portable_bundle() -> None:
         'Source: "..\\portable\\tools\\speech\\dectalk\\*"; DestDir: "{app}\\tools\\speech\\dectalk";'
         in script
     )
-    assert 'Excludes: "voices\\*"; Components: speechdectalk' in script
-    assert (
-        'Source: "..\\portable\\tools\\speech\\dectalk\\voices\\*"; DestDir: "{app}\\tools\\speech\\dectalk\\voices";'
-        in script
-    )
-    assert "Components: speechdectalk\\voices\\all_voices" in script
-    assert "Check: not WizardIsComponentSelected('speechdectalk\\voices\\all_voices')" in script
-    assert (
-        'Source: "..\\portable\\tools\\speech\\dectalk\\voices\\paul\\*"; DestDir: "{app}\\tools\\speech\\dectalk\\voices\\paul";'
-        in script
-    )
-    assert (
-        'Source: "..\\portable\\tools\\speech\\dectalk\\voices\\harry\\*"; DestDir: "{app}\\tools\\speech\\dectalk\\voices\\harry";'
-        in script
-    )
-    assert (
-        'Source: "..\\portable\\tools\\speech\\dectalk\\voices\\dennis\\*"; DestDir: "{app}\\tools\\speech\\dectalk\\voices\\dennis";'
-        in script
-    )
-    assert (
-        'Source: "..\\portable\\tools\\speech\\dectalk\\voices\\frank\\*"; DestDir: "{app}\\tools\\speech\\dectalk\\voices\\frank";'
-        in script
-    )
-    assert (
-        'Source: "..\\portable\\tools\\speech\\dectalk\\voices\\betty\\*"; DestDir: "{app}\\tools\\speech\\dectalk\\voices\\betty";'
-        in script
-    )
-    assert (
-        'Source: "..\\portable\\tools\\speech\\dectalk\\voices\\ursula\\*"; DestDir: "{app}\\tools\\speech\\dectalk\\voices\\ursula";'
-        in script
-    )
-    assert (
-        'Source: "..\\portable\\tools\\speech\\dectalk\\voices\\rita\\*"; DestDir: "{app}\\tools\\speech\\dectalk\\voices\\rita";'
-        in script
-    )
-    assert (
-        'Source: "..\\portable\\tools\\speech\\dectalk\\voices\\wendy\\*"; DestDir: "{app}\\tools\\speech\\dectalk\\voices\\wendy";'
-        in script
-    )
-    assert (
-        'Source: "..\\portable\\tools\\speech\\dectalk\\voices\\kit\\*"; DestDir: "{app}\\tools\\speech\\dectalk\\voices\\kit";'
-        in script
-    )
+    # Single DECtalk entry: no voices exclusion, no per-voice Check: functions.
+    assert 'Excludes: "voices\\*"' not in script
+    assert "Components: speechdectalk" in script
+    assert "Check: ShouldInstallAllVoices()" not in script
+    assert "Check: ShouldInstallPaulVoice()" not in script
     assert (
         'Source: "..\\portable\\tools\\speech\\espeak-ng\\*"; DestDir: "{app}\\tools\\speech\\espeak-ng";'
-        in script
-    )
-    assert (
-        'Source: "..\\portable\\tools\\speech\\kokoro\\*"; DestDir: "{app}\\tools\\speech\\kokoro";'
         in script
     )
     assert (
         'Source: "..\\portable\\tools\\speech\\piper\\*"; DestDir: "{app}\\tools\\speech\\piper";'
         in script
     )
-    assert (
-        'Source: "..\\portable\\tools\\speech\\openvoice\\*"; DestDir: "{app}\\tools\\speech\\openvoice";'
-        in script
-    )
     assert "Components: speechdectalk" in script
     assert "Components: speechespeak" in script
-    assert "Components: speechkokoro" in script
     assert "Components: speechpiper" in script
-    assert "Components: speechopenvoice" in script
     assert "User Guide" in script
     assert "userguide.html" in script
     assert "python\\pythonw.exe" in script
@@ -299,8 +248,9 @@ version = "3.0.0"
     manifest = json.loads(
         (tmp_path / "dist" / "portable" / "manifest.json").read_text(encoding="utf-8")
     )
-    assert manifest["bundledTools"] == ["pandoc"]
-    assert manifest["speechAssets"]["dectalk"]["bundled"] is False
+    assert "pandoc" in manifest["bundledTools"]
+    assert "speech/piper" in manifest["bundledTools"]
+    assert manifest["speechAssets"]["dectalk"]["bundled"] is True
     assert (tmp_path / "dist" / "portable" / "tools" / "pandoc" / "pandoc.exe").exists()
     assert bundle["portable_dir"] == str(tmp_path / "dist" / "portable")
 

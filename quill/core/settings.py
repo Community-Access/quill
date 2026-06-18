@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from quill.core.ai.vision_prompts import BUILTIN_STYLE_IDS
 from quill.core.paths import app_data_dir
 from quill.core.settings_normalizers import (
     STATUS_BAR_ITEMS,
@@ -67,7 +68,6 @@ class Settings:
     read_aloud_dectalk_voice: str = "paul"
     read_aloud_dectalk_rate: int = 180
     read_aloud_dectalk_dictionary: str = ""
-    read_aloud_piper_executable: str = ""
     read_aloud_piper_model: str = ""
     announcement_backend: str = "auto"
     read_aloud_piper_model_dir: str = ""
@@ -76,14 +76,12 @@ class Settings:
     read_aloud_espeak_executable: str = ""
     read_aloud_espeak_voice: str = "en"
     read_aloud_espeak_rate: int = 175
-    read_aloud_openvoice_executable: str = ""
-    read_aloud_openvoice_voice: str = "en-base"
-    read_aloud_openvoice_rate: int = 180
-    read_aloud_openvoice_consent: bool = False
     announcement_trace_enabled: bool = False
     assistant_enabled: bool = False
     assistant_prompt_style: str = "balanced"
     markdown_clipboard_format: str = "html"
+    markdown_profile_id: str = "standard"
+    citation_style: str = "footnotes"
     auto_clean_html_paste: bool = False
     abbreviation_expansion: bool = True
     abbreviation_expansion_sound: bool = False
@@ -166,7 +164,7 @@ class Settings:
     # time we see a key we silently cache it (paramiko.AutoAddPolicy).
     ssh_trust_first_use: bool = False
     # AI chat (Phase 2): Ask AI dialog provider/model defaults.
-    ai_chat_default_provider: str = "openrouter"
+    ai_chat_default_provider: str = ""
     ai_chat_default_model: str = ""
     ollama_base_url: str = "http://localhost:11434"
     # AI prompts (Phase 3): separate default model for prompt-library runs.
@@ -178,6 +176,8 @@ class Settings:
     language: str = ""
     # WIZARD: True once the first-run setup wizard has completed.
     setup_wizard_completed: bool = False
+    # UPGRADE: True once we have shown the post-upgrade braille-pack install prompt.
+    upgrade_prompt_braille_pack: bool = False
     # QDC: Developer Console settings.
     console_enabled: bool = True
     console_python_timeout: int = 30
@@ -208,6 +208,18 @@ class Settings:
     braille_include_proofing_status: bool = True
     braille_include_running_head: bool = False
     braille_include_continuation: bool = True
+    # Vision prompt library: image description style management.
+    vision_default_prompt_style: str = "accessibility"
+    vision_prompt_picker_enabled: bool = False
+    vision_disabled_builtin_styles: list[str] = field(default_factory=list)
+    vision_custom_prompts: list[dict[str, Any]] = field(default_factory=list)
+    vision_builtin_overrides: dict[str, str] = field(default_factory=dict)
+    dev_console_consent_accepted: bool = False
+    # ERASER: Quill Eraser text hygiene checker.
+    hygiene_min_confidence: str = "high"
+    hygiene_allow_double_space_after_period: bool = False
+    hygiene_max_blank_lines: int = 2
+    hygiene_rules_disabled: str = ""  # comma-separated rule IDs
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Settings:
@@ -285,7 +297,6 @@ class Settings:
             "piper",
             "kokoro",
             "espeak",
-            "openvoice",
         }
         if read_aloud_engine not in _valid_engines:
             read_aloud_engine = "pyttsx3"
@@ -315,7 +326,6 @@ class Settings:
         if read_aloud_dectalk_rate > 650:
             read_aloud_dectalk_rate = 650
         read_aloud_dectalk_dictionary = str(data.get("read_aloud_dectalk_dictionary", "")).strip()
-        read_aloud_piper_executable = str(data.get("read_aloud_piper_executable", "")).strip()
         read_aloud_piper_model = str(data.get("read_aloud_piper_model", "")).strip()
         announcement_backend = str(data.get("announcement_backend", "auto")).strip().lower()
         read_aloud_piper_model_dir = str(data.get("read_aloud_piper_model_dir", "")).strip()
@@ -335,18 +345,6 @@ class Settings:
             read_aloud_espeak_rate = 80
         if read_aloud_espeak_rate > 450:
             read_aloud_espeak_rate = 450
-        read_aloud_openvoice_executable = str(
-            data.get("read_aloud_openvoice_executable", "")
-        ).strip()
-        read_aloud_openvoice_voice = (
-            str(data.get("read_aloud_openvoice_voice", "en-base")).strip().lower() or "en-base"
-        )
-        read_aloud_openvoice_rate = int(data.get("read_aloud_openvoice_rate", 180))
-        if read_aloud_openvoice_rate < 80:
-            read_aloud_openvoice_rate = 80
-        if read_aloud_openvoice_rate > 450:
-            read_aloud_openvoice_rate = 450
-        read_aloud_openvoice_consent = bool(data.get("read_aloud_openvoice_consent", False))
         if announcement_backend not in {"auto", "prism", "status_only"}:
             announcement_backend = "auto"
         announcement_trace_enabled = bool(data.get("announcement_trace_enabled", False))
@@ -491,9 +489,7 @@ class Settings:
         glow_pii_redaction_consent = bool(data.get("glow_pii_redaction_consent", False))
         glow_language_processing_consent = bool(data.get("glow_language_processing_consent", False))
         ssh_trust_first_use = bool(data.get("ssh_trust_first_use", False))
-        ai_chat_default_provider = (
-            str(data.get("ai_chat_default_provider", "openrouter")).strip() or "openrouter"
-        )
+        ai_chat_default_provider = str(data.get("ai_chat_default_provider", "")).strip()
         ai_chat_default_model = str(data.get("ai_chat_default_model", ""))
         ollama_base_url = (
             str(data.get("ollama_base_url", "http://localhost:11434")).strip()
@@ -504,6 +500,7 @@ class Settings:
         bug_reporter_email = str(data.get("bug_reporter_email", "")).strip()
         language = str(data.get("language", "")).strip()
         setup_wizard_completed = bool(data.get("setup_wizard_completed", False))
+        upgrade_prompt_braille_pack = bool(data.get("upgrade_prompt_braille_pack", False))
         console_enabled = bool(data.get("console_enabled", True))
         try:
             console_python_timeout = int(data.get("console_python_timeout", 30))
@@ -513,6 +510,7 @@ class Settings:
             console_typescript_timeout = int(data.get("console_typescript_timeout", 30))
         except (TypeError, ValueError):
             console_typescript_timeout = 30
+        dev_console_consent_accepted = bool(data.get("dev_console_consent_accepted", False))
         abbreviation_expansion = bool(data.get("abbreviation_expansion", True))
         abbreviation_expansion_sound = bool(data.get("abbreviation_expansion_sound", False))
         abbreviation_expansion_sound_file = str(data.get("abbreviation_expansion_sound_file", ""))
@@ -559,8 +557,50 @@ class Settings:
         braille_include_proofing_status = bool(data.get("braille_include_proofing_status", True))
         braille_include_running_head = bool(data.get("braille_include_running_head", False))
         braille_include_continuation = bool(data.get("braille_include_continuation", True))
+        # Vision prompt library fields
+        vision_default_prompt_style = str(
+            data.get("vision_default_prompt_style", "accessibility")
+        ).strip()
+        vision_prompt_picker_enabled = bool(data.get("vision_prompt_picker_enabled", False))
+        vision_disabled_builtin_styles_raw = data.get("vision_disabled_builtin_styles")
+        vision_disabled_builtin_styles: list[str] = (
+            [str(s) for s in vision_disabled_builtin_styles_raw]
+            if isinstance(vision_disabled_builtin_styles_raw, list)
+            else []
+        )
+        vision_custom_prompts_raw = data.get("vision_custom_prompts")
+        vision_custom_prompts: list[dict[str, Any]] = (
+            [e for e in vision_custom_prompts_raw if isinstance(e, dict) and e.get("id")]
+            if isinstance(vision_custom_prompts_raw, list)
+            else []
+        )
+        vision_builtin_overrides_raw = data.get("vision_builtin_overrides")
+        vision_builtin_overrides: dict[str, str] = (
+            {
+                k: str(v)
+                for k, v in vision_builtin_overrides_raw.items()
+                if isinstance(k, str) and isinstance(v, str) and v.strip()
+            }
+            if isinstance(vision_builtin_overrides_raw, dict)
+            else {}
+        )
+        if vision_default_prompt_style not in BUILTIN_STYLE_IDS and not any(
+            e.get("id") == vision_default_prompt_style for e in vision_custom_prompts
+        ):
+            vision_default_prompt_style = "accessibility"
         raw_mp = int(data.get("multi_press_window_ms", 400))
         multi_press_window_ms = max(100, min(1000, raw_mp))
+        hygiene_min_confidence = str(data.get("hygiene_min_confidence", "high")).strip().lower()
+        if hygiene_min_confidence not in {"high", "medium", "low"}:
+            hygiene_min_confidence = "high"
+        hygiene_allow_double_space_after_period = bool(
+            data.get("hygiene_allow_double_space_after_period", False)
+        )
+        try:
+            hygiene_max_blank_lines = max(1, min(10, int(data.get("hygiene_max_blank_lines", 2))))
+        except (TypeError, ValueError):
+            hygiene_max_blank_lines = 2
+        hygiene_rules_disabled = str(data.get("hygiene_rules_disabled", "")).strip()
         if recent_files_limit < 1:
             recent_files_limit = 1
         if recent_files_limit > 50:
@@ -611,7 +651,6 @@ class Settings:
             read_aloud_dectalk_voice=read_aloud_dectalk_voice,
             read_aloud_dectalk_rate=read_aloud_dectalk_rate,
             read_aloud_dectalk_dictionary=read_aloud_dectalk_dictionary,
-            read_aloud_piper_executable=read_aloud_piper_executable,
             read_aloud_piper_model=read_aloud_piper_model,
             announcement_backend=announcement_backend,
             read_aloud_piper_model_dir=read_aloud_piper_model_dir,
@@ -620,10 +659,6 @@ class Settings:
             read_aloud_espeak_executable=read_aloud_espeak_executable,
             read_aloud_espeak_voice=read_aloud_espeak_voice,
             read_aloud_espeak_rate=read_aloud_espeak_rate,
-            read_aloud_openvoice_executable=read_aloud_openvoice_executable,
-            read_aloud_openvoice_voice=read_aloud_openvoice_voice,
-            read_aloud_openvoice_rate=read_aloud_openvoice_rate,
-            read_aloud_openvoice_consent=read_aloud_openvoice_consent,
             announcement_trace_enabled=announcement_trace_enabled,
             assistant_enabled=assistant_enabled,
             assistant_prompt_style=assistant_prompt_style,
@@ -705,6 +740,7 @@ class Settings:
             multi_press_window_ms=multi_press_window_ms,
             language=language,
             setup_wizard_completed=setup_wizard_completed,
+            upgrade_prompt_braille_pack=upgrade_prompt_braille_pack,
             console_enabled=console_enabled,
             console_python_timeout=console_python_timeout,
             console_typescript_timeout=console_typescript_timeout,
@@ -726,6 +762,16 @@ class Settings:
             braille_include_proofing_status=braille_include_proofing_status,
             braille_include_running_head=braille_include_running_head,
             braille_include_continuation=braille_include_continuation,
+            vision_default_prompt_style=vision_default_prompt_style,
+            vision_prompt_picker_enabled=vision_prompt_picker_enabled,
+            vision_disabled_builtin_styles=vision_disabled_builtin_styles,
+            vision_custom_prompts=vision_custom_prompts,
+            vision_builtin_overrides=vision_builtin_overrides,
+            dev_console_consent_accepted=dev_console_consent_accepted,
+            hygiene_min_confidence=hygiene_min_confidence,
+            hygiene_allow_double_space_after_period=hygiene_allow_double_space_after_period,
+            hygiene_max_blank_lines=hygiene_max_blank_lines,
+            hygiene_rules_disabled=hygiene_rules_disabled,
         )
 
 

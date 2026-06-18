@@ -9,7 +9,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from scripts.build_update_zip import (
-    _find_latest_base_version_simple,
+    _find_latest_base_version,
     build_update_zip,
 )
 
@@ -331,7 +331,7 @@ def test_deleted_files_recorded_in_update_manifest(tmp_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
-# _find_latest_base_version_simple
+# _find_latest_base_version
 # ---------------------------------------------------------------------------
 
 
@@ -340,7 +340,7 @@ def test_find_latest_base_version_picks_highest_below_current(tmp_path: Path) ->
     manifest_dir.mkdir()
     for v in ["0.3.0", "0.4.0", "0.4.1"]:
         (manifest_dir / f"manifest-{v}.json").write_text("{}", encoding="utf-8")
-    result = _find_latest_base_version_simple("0.5.0", manifest_dir)
+    result = _find_latest_base_version("0.5.0", manifest_dir)
     assert result == "0.4.1"
 
 
@@ -348,5 +348,5 @@ def test_find_latest_base_version_ignores_versions_above_current(tmp_path: Path)
     manifest_dir = tmp_path / "manifests"
     manifest_dir.mkdir()
     (manifest_dir / "manifest-0.6.0.json").write_text("{}", encoding="utf-8")
-    result = _find_latest_base_version_simple("0.5.0", manifest_dir)
+    result = _find_latest_base_version("0.5.0", manifest_dir)
     assert result is None

@@ -1,0 +1,169 @@
+{
+  "schema": "quill.extension/1",
+  "id": "com.quill.docguardian",
+  "name": "Document Guardian",
+  "version": "1.0.0",
+  "author": "QUILL Team",
+  "description": "Guards your work with smart pre-close and pre-save checks: warns before closing very short documents that look unfinished, and optionally stamps an 'Updated:' line before every save.",
+  "license": "MIT",
+  "min_quill_version": "0.6.0",
+  "categories": ["writing", "productivity"],
+  "capabilities": [
+    "document.events",
+    "editor.read",
+    "editor.write",
+    "ui.announce",
+    "settings.own.read",
+    "settings.own.write"
+  ],
+  "main": "extension.py",
+  "contributes": {
+    "document_events": [
+      {
+        "event": "document.before_close",
+        "handler": "on_before_close",
+        "title": "Warn before closing short documents",
+        "description": "If a document appears to be a work-in-progress (very few words, no file path yet, or contains a configurable TODO marker), speaks a warning before the tab closes. Does not block the close — just makes sure you heard it.",
+        "enabled_by_default": true
+      },
+      {
+        "event": "document.before_save",
+        "handler": "on_before_save",
+        "title": "Stamp last-updated line before save",
+        "description": "Finds a line beginning with 'Updated:' anywhere in the document and replaces it with the current date and time. If no such line exists, does nothing. Useful for keeping a visible modification date in plain-text notes.",
+        "enabled_by_default": false
+      },
+      {
+        "event": "document.after_save",
+        "handler": "on_after_save",
+        "title": "Confirm save with file size",
+        "description": "After every save, announces the file path and byte size so you know the save landed on the expected drive and that the file is not empty.",
+        "enabled_by_default": false
+      },
+      {
+        "event": "quillin.enabled",
+        "handler": "on_enabled",
+        "title": "Document Guardian enabled",
+        "description": "Announces activation so you always know Document Guardian is watching your documents.",
+        "enabled_by_default": true
+      },
+      {
+        "event": "quillin.disabled",
+        "handler": "on_disabled",
+        "title": "Document Guardian disabled",
+        "description": "Announces deactivation so you know close-guard and save-stamp are no longer running.",
+        "enabled_by_default": true
+      },
+      {
+        "event": "quill.shutdown",
+        "handler": "on_shutdown",
+        "title": "QUILL shutting down",
+        "description": "Performs any cleanup needed when QUILL exits while Document Guardian is active.",
+        "enabled_by_default": true
+      }
+    ],
+    "preferences": [
+      {
+        "id": "main",
+        "title": "Document Guardian",
+        "description": "Settings for the Document Guardian Quillin.",
+        "tabs": [
+          {
+            "id": "close_guard",
+            "title": "Close Guard",
+            "description": "Configure when and how Document Guardian warns before a tab closes.",
+            "order": 0,
+            "sections": [
+              {
+                "id": "thresholds",
+                "title": "Warning Thresholds",
+                "settings": [
+                  {
+                    "key": "close_guard_enabled",
+                    "label": "Warn before closing short documents",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Announce a warning when a document below the word threshold is about to close."
+                  },
+                  {
+                    "key": "min_words_threshold",
+                    "label": "Minimum word count to warn",
+                    "type": "integer",
+                    "default": 3,
+                    "description": "If the document has fewer than this many words and has never been saved, a close warning is spoken. Set to 0 to disable.",
+                    "minimum": 0,
+                    "maximum": 200,
+                    "enabled_when": { "setting": "close_guard_enabled", "equals": true }
+                  },
+                  {
+                    "key": "todo_marker",
+                    "label": "TODO marker text",
+                    "type": "string",
+                    "default": "TODO",
+                    "description": "If the document contains this text (case-insensitive), a close warning is spoken regardless of word count. Leave blank to disable this check.",
+                    "enabled_when": { "setting": "close_guard_enabled", "equals": true }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "save_stamp",
+            "title": "Save Stamp",
+            "description": "Optionally update a timestamp line in the document before each save.",
+            "order": 1,
+            "sections": [
+              {
+                "id": "stamp",
+                "title": "Updated Line",
+                "settings": [
+                  {
+                    "key": "save_stamp_enabled",
+                    "label": "Update timestamp line before save",
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Find a line beginning with 'Updated:' in the document and replace it with the current date and time."
+                  },
+                  {
+                    "key": "stamp_format",
+                    "label": "Timestamp format",
+                    "type": "choice",
+                    "default": "long",
+                    "description": "Format of the date and time written into the 'Updated:' line.",
+                    "choices": [
+                      { "value": "long", "label": "Long (e.g. Monday, 15 June 2026 at 14:30)" },
+                      { "value": "iso", "label": "ISO 8601 (e.g. 2026-06-15T14:30:00)" },
+                      { "value": "date_only", "label": "Date only (e.g. 2026-06-15)" }
+                    ],
+                    "enabled_when": { "setting": "save_stamp_enabled", "equals": true }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "save_confirm",
+            "title": "Save Confirmation",
+            "description": "Announce file path and size after every save.",
+            "order": 2,
+            "sections": [
+              {
+                "id": "confirm",
+                "title": "After-Save Announcement",
+                "settings": [
+                  {
+                    "key": "save_confirm_enabled",
+                    "label": "Confirm save with file path and size",
+                    "type": "boolean",
+                    "default": false,
+                    "description": "After every save, speak the file name and the byte count. Useful when saving to network or external drives where confirmation is reassuring."
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

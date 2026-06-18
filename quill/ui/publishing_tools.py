@@ -22,7 +22,7 @@ from quill.core.publishing_providers import (
     publishing_auth_method_name,
     publishing_provider_display_name,
 )
-from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.dialog_contract import apply_modal_ids, show_message_box, show_modal_dialog
 
 
 class EditPublishingConnectionDialog:
@@ -231,7 +231,7 @@ class EditPublishingConnectionDialog:
         self.last_verification_message = message
         self.connection_status.SetLabel(message)
         icon = self._wx.ICON_INFORMATION if ok else self._wx.ICON_WARNING
-        self._wx.MessageBox(message, "Publishing Connection Check", icon | self._wx.OK)
+        show_message_box(message, "Publishing Connection Check", icon | self._wx.OK, self.dialog)
 
     def show_modal(self) -> PublishingConnectionProfile | None:
         self.dialog.CentreOnParent()
@@ -422,7 +422,7 @@ class BrowsePublishingContentDialog:
         if ok and items:
             self._update_summary()
         icon = self._wx.ICON_INFORMATION if ok else self._wx.ICON_WARNING
-        self._wx.MessageBox(message, "Browse Published Content", icon | self._wx.OK)
+        show_message_box(message, "Browse Published Content", icon | self._wx.OK, self.dialog)
 
     def _on_selection_changed(self, _event: object) -> None:
         self._update_summary()
@@ -439,10 +439,11 @@ class BrowsePublishingContentDialog:
             remote_id=selected.remote_id,
         )
         if not ok or document is None:
-            self._wx.MessageBox(
+            show_message_box(
                 message,
                 "Browse Published Content",
                 self._wx.ICON_WARNING | self._wx.OK,
+                self.dialog,
             )
             self._update_summary(message)
             return
@@ -596,10 +597,11 @@ class PublishingConnectionsDialog:
         selected = self._selected_connection()
         if selected is None:
             return
-        answer = self._wx.MessageBox(
+        answer = show_message_box(
             f"Remove the publishing connection '{selected.label or selected.site_url}'?",
             "Remove Publishing Connection",
             self._wx.YES_NO | self._wx.ICON_WARNING,
+            self.dialog,
         )
         if answer != self._wx.YES:
             return
@@ -620,7 +622,7 @@ class PublishingConnectionsDialog:
         secret = load_publishing_secret(selected.id)
         ok, message = verify_publishing_connection(selected, secret)
         icon = self._wx.ICON_INFORMATION if ok else self._wx.ICON_WARNING
-        self._wx.MessageBox(message, "Publishing Connection Check", icon | self._wx.OK)
+        show_message_box(message, "Publishing Connection Check", icon | self._wx.OK, self.dialog)
         self.summary.SetValue(self.summary.GetValue() + f"\n\nLast check: {message}")
 
     def show_modal(self) -> bool:

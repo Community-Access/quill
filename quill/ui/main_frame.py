@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import html
 import json
 import os
 import re
@@ -293,21 +292,19 @@ from quill.core.quick_nav import (
 from quill.core.read_aloud import (
     ReadAloudController,
     ReadAloudUnavailableError,
+    default_piper_model_dir,
     discover_dectalk_executable,
     discover_espeak_executable,
-    discover_openvoice_executable,
     discover_piper_executable,
     list_dectalk_voices,
     list_espeak_english_voices,
     list_kokoro_voices,
-    list_openvoice_english_voices,
-    list_piper_voices,
+    list_piper_catalog_voices,
     list_voices,
     synthesize_to_file_with_dectalk,
     synthesize_to_file_with_pyttsx3,
     synthesize_with_espeak,
     synthesize_with_kokoro,
-    synthesize_with_openvoice,
     synthesize_with_piper,
 )
 from quill.core.read_aloud import (
@@ -492,6 +489,7 @@ from quill.ui.main_frame_browse import BrowseModeMixin
 from quill.ui.main_frame_copy_tray import CopyTrayMixin
 from quill.ui.main_frame_devtools import DevToolsMixin
 from quill.ui.main_frame_github import GitHubRemoteMixin
+from quill.ui.main_frame_hygiene import HygieneMixin
 from quill.ui.main_frame_image import ImageCaptureMixin
 from quill.ui.main_frame_intellisense import IntellisensePopupMixin
 from quill.ui.main_frame_line_commands import LineCommandsMixin
@@ -593,6 +591,7 @@ class _DocumentTab:
     preview: object = None
     source_label: str = ""
     read_only_remote: bool = False
+    _indent_tone_last_level: int = -1
 
 
 @dataclass(slots=True)
@@ -784,6 +783,7 @@ class MainFrame(
     AbbreviationsMixin,
     AiActionsMixin,
     BrailleCommandsMixin,
+    HygieneMixin,
     ImageCaptureMixin,
     BrowseModeMixin,
     MenuBuilderMixin,
@@ -811,9 +811,9 @@ class MainFrame(
     }
     _STATUS_BAR_LABELS: dict[str, str] = {
         "message": "Status Message",
-        "line_column": "Line / Column",
+        "line_column": "Position",
         "word_count": "Word Count",
-        "mode": "Insert / Overwrite",
+        "mode": "Keyboard Mode",
         "selection": "Selection Length",
         "encoding": "Encoding",
         "line_endings": "Line Endings",
@@ -1111,6 +1111,7 @@ class MainFrame(
         self._recent_menu_ids: dict[int, Path] = {}
         self._recent_session_menu_ids: dict[int, Path] = {}
         self._session_menu_ids: dict[int, int] = {}
+        self._window_doc_menu_ids: dict[int, int] = {}
         self._menu_open_depth = 0
         self._pending_menu_refresh = False
         self._recent_sessions = [] if safe_mode else load_recent_sessions()
@@ -1248,11 +1249,7 @@ class MainFrame(
                         self._set_status,
                         f"Detected screen reader: {detection.name}. Adaptive hints enabled.",
                     )
-                elif not _safe_mode_snap:
-                    self._wx.CallAfter(
-                        self._set_status,
-                        "Ready. Tip: press Ctrl+Shift+P for Command Palette.",
-                    )
+                # No-SR path: "Ready" was already announced in __init__; suppress the repeat.
             except Exception:
                 pass
             if _profile:
@@ -1294,6 +1291,7 @@ class MainFrame(
             ("WebView2 warm-up", self._prewarm_webview_runtime),
             ("crash recovery", self._offer_crash_recovery),
             ("first-run onboarding", self._maybe_run_first_run_onboarding),
+            ("braille pack prompt", self._maybe_prompt_braille_pack_install),
             ("startup profile prompt", self.run_startup_profile_prompt),
             ("watch-folder startup", self._maybe_start_watch_folder),
             ("lexical cache warm-up", start_lexical_preload),
@@ -1359,7 +1357,9 @@ class MainFrame(
         out = app_data_dir() / "logs" / "startup_tasks.txt"
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text("".join(lines), encoding="utf-8")
-        print(f"[profile] startup task timing -> {out}", flush=True)
+        import logging as _logging
+
+        _logging.getLogger(__name__).debug("startup task timing -> %s", out)
 
     def _apply_startup_document_preference(self) -> None:
         if not self.settings.start_with_no_document_open:
@@ -1572,6 +1572,12 @@ class MainFrame(
             "Previous Document",
             self.previous_document,
             self._binding_for("window.previous_document"),
+        )
+        self.commands.register(
+            "window.close_other_documents",
+            "Close Other Documents",
+            self.close_other_documents,
+            self._binding_for("window.close_other_documents"),
         )
         self.commands.register(
             "navigate.speak_window_title",
@@ -1793,6 +1799,24 @@ class MainFrame(
             "tools.ai_summarize_selection",
             "Summarize Selection",
             self.open_ai_summarize_selection,
+            None,
+        )
+        self.commands.register(
+            "tools.ai_expand_selection",
+            "Expand Selection",
+            self.open_ai_expand_selection,
+            None,
+        )
+        self.commands.register(
+            "tools.ai_generate_toc",
+            "Generate Table of Contents",
+            self.open_ai_toc,
+            None,
+        )
+        self.commands.register(
+            "tools.ai_thesaurus",
+            "AI Thesaurus",
+            self.open_ai_thesaurus,
             None,
         )
         self.commands.register(
@@ -2452,7 +2476,7 @@ class MainFrame(
             "tools.profiles_and_features_settings",
             "Profiles and Features...",
             self.open_profiles_and_features_settings,
-            None,
+            self._binding_for("tools.profiles_and_features_settings"),
         )
         self.commands.register(
             "help.undo_last_profile_change",
@@ -2470,6 +2494,12 @@ class MainFrame(
             "help.startup_wizard",
             "Startup Wizard...",
             self.run_startup_wizard,
+            None,
+        )
+        self.commands.register(
+            "help.enable_braille_mode",
+            "Enable Braille Mode...",
+            self.enable_braille_mode,
             None,
         )
         self.commands.register(
@@ -2549,6 +2579,7 @@ class MainFrame(
             "About BITS Whisperer",
             self.show_whisperer_about_page,
             None,
+            feature_id="core.bw_whisperer",
         )
         self.commands.register(
             "help.status_page",
@@ -2723,6 +2754,12 @@ class MainFrame(
             "Insert Citation...",
             self.insert_citation,
             self._binding_for("edit.insert_citation"),
+        )
+        self.commands.register(
+            "power.open_snippet_gallery",
+            "Snippet Gallery...",
+            self.open_snippet_gallery,
+            self._binding_for("power.open_snippet_gallery"),
         )
         self.commands.register(
             "edit.follow_link",
@@ -3286,6 +3323,7 @@ class MainFrame(
             "file.print": self._id_print,
             "window.next_document": self._id_next_document,
             "window.previous_document": self._id_previous_document,
+            "window.close_other_documents": self._id_close_other_documents,
             "view.send_to_tray": self._id_send_to_tray,
             "view.toggle_soft_wrap": self._id_toggle_soft_wrap,
             "view.toggle_find_wrap": self._id_toggle_find_wrap,
@@ -3329,6 +3367,7 @@ class MainFrame(
             "edit.read_all": self._id_read_all,
             "edit.insert_link": self._id_insert_link,
             "edit.insert_citation": self._id_insert_citation,
+            "power.open_snippet_gallery": self._id_snippet_gallery,
             "edit.follow_link": self._id_follow_link,
             "edit.find": self._id_find,
             "edit.find_next": self._id_find_next,
@@ -3934,6 +3973,15 @@ class MainFrame(
         self._refresh_read_only_state()
         self._maybe_auto_side_preview(tab)
         self._start_external_change_watcher()
+        doc_path = self.document.path
+        self._fire_quillin_event(
+            "document.activated",
+            {
+                "file_path": str(doc_path) if doc_path is not None else "",
+                "extension": doc_path.suffix.lower() if doc_path is not None else "",
+                "title": self.document.name,
+            },
+        )
 
     def _maybe_auto_side_preview(self, tab) -> None:
         """Auto-show the side-by-side preview for previewable (Markdown/HTML)
@@ -4095,6 +4143,7 @@ class MainFrame(
         self._refresh_title()
         self._refresh_contextual_menu_items()
         self._set_status(f'Expanded snippet trigger "{snippet.trigger}".')
+        self._fire_quillin_event("smart_trigger.entered", {"trigger": snippet.trigger})
         return True
 
     def _on_editor_caret_activity(self, event: object) -> None:
@@ -4144,6 +4193,28 @@ class MainFrame(
                 self.compare_previous_difference()
                 return
             self.compare_next_difference()
+            return
+        # Shift+F10 and the dedicated Menu/Apps key both request the context
+        # menu from the keyboard.  wx may not synthesise EVT_CONTEXT_MENU for
+        # these keys inside a TextCtrl, so intercept them here and invoke the
+        # handler directly with a fake event that positions the menu at the
+        # caret (DefaultPosition → wx pops it up near the caret automatically).
+        _f10 = getattr(wx, "WXK_F10", None)
+        _menu_key = getattr(wx, "WXK_WINDOWS_MENU", getattr(wx, "WXK_MENU", None))
+        _kc = event.GetKeyCode()
+        if (
+            _f10 is not None
+            and _kc == _f10
+            and event.ShiftDown()
+            and not event.ControlDown()
+            and not event.AltDown()
+        ) or (_menu_key is not None and _kc == _menu_key):
+
+            class _KeyboardContextEvent:  # noqa: N801
+                def GetPosition(self_inner):  # noqa: N805
+                    return wx.DefaultPosition
+
+            self._on_editor_context_menu(_KeyboardContextEvent())
             return
         if event.GetKeyCode() == wx.WXK_INSERT:
             if not self._insert_key_down:
@@ -4817,6 +4888,11 @@ class MainFrame(
     def _on_editor_context_menu(self, event: object) -> None:
         wx = self._wx
         menu = wx.Menu()
+        features = self.features
+        fmt_on = features.is_enabled("core.format")
+        glow_on = features.is_enabled("core.glow")
+        spell_on = features.is_enabled("core.spellcheck")
+        dict_on = features.is_enabled("core.dictionary")
 
         # Inspect current context so we can offer context-aware actions.
         text = self.editor.GetValue()
@@ -4843,6 +4919,7 @@ class MainFrame(
                 id=copy_link_id,
             )
 
+        # --- Basic editing (always available). ---
         undo_id = wx.NewIdRef()
         redo_id = wx.NewIdRef()
         cut_id = wx.NewIdRef()
@@ -4851,8 +4928,7 @@ class MainFrame(
         paste_id = wx.NewIdRef()
         select_all_id = wx.NewIdRef()
         select_line_id = wx.NewIdRef()
-        spell_id = wx.NewIdRef()
-        next_spell_id = wx.NewIdRef()
+        select_chunk_id = wx.NewIdRef()
 
         menu.Append(undo_id, self._menu_label("Undo", "edit.undo"))
         menu.Append(redo_id, self._menu_label("Redo", "edit.redo"))
@@ -4864,179 +4940,189 @@ class MainFrame(
         )
         menu.Append(paste_id, "Paste")
         menu.AppendSeparator()
-        select_chunk_id = wx.NewIdRef()
         menu.Append(select_all_id, "Select All")
         menu.Append(select_line_id, "Select Line")
-        menu.Append(
-            select_chunk_id,
-            self._menu_label("Select Chunk", "edit.select_chunk"),
-        )
+        menu.Append(select_chunk_id, self._menu_label("Select Chunk", "edit.select_chunk"))
 
-        # Disable selection-only actions when there is no selection.
         if not has_selection:
             cut_item.Enable(False)
             copy_item.Enable(False)
             copy_source_item.Enable(False)
 
-        # --- Transform submenu (case + lines). Always available; some items
-        #     are only meaningful with a selection but still safe to invoke. ---
-        transform_menu = wx.Menu()
-        upper_id = wx.NewIdRef()
-        lower_id = wx.NewIdRef()
-        title_id = wx.NewIdRef()
-        sentence_id = wx.NewIdRef()
-        toggle_case_id = wx.NewIdRef()
-        sort_asc_id = wx.NewIdRef()
-        sort_desc_id = wx.NewIdRef()
-        transform_menu.Append(upper_id, "UPPER CASE")
-        transform_menu.Append(lower_id, "lower case")
-        transform_menu.Append(title_id, "Title Case")
-        transform_menu.Append(sentence_id, "Sentence case")
-        transform_menu.Append(toggle_case_id, "Toggle Case")
-        transform_menu.AppendSeparator()
-        quote_id = wx.NewIdRef()
-        unquote_id = wx.NewIdRef()
-        dup_sel_id = wx.NewIdRef()
-        transform_menu.Append(sort_asc_id, "Sort Lines Ascending")
-        transform_menu.Append(sort_desc_id, "Sort Lines Descending")
-        transform_menu.AppendSeparator()
-        transform_menu.Append(quote_id, self._menu_label("Quote Lines", "edit.quote_lines"))
-        transform_menu.Append(unquote_id, self._menu_label("Unquote Lines", "edit.unquote_lines"))
-        transform_menu.AppendSeparator()
-        transform_menu.Append(
-            dup_sel_id, self._menu_label("Duplicate Selection", "edit.duplicate_selection")
-        )
-        transform_menu.Bind(wx.EVT_MENU, lambda _e: self.format_upper_case(), id=upper_id)
-        transform_menu.Bind(wx.EVT_MENU, lambda _e: self.format_lower_case(), id=lower_id)
-        transform_menu.Bind(wx.EVT_MENU, lambda _e: self.format_title_case(), id=title_id)
-        transform_menu.Bind(wx.EVT_MENU, lambda _e: self.format_sentence_case(), id=sentence_id)
-        transform_menu.Bind(wx.EVT_MENU, lambda _e: self.format_toggle_case(), id=toggle_case_id)
-        transform_menu.Bind(wx.EVT_MENU, lambda _e: self.sort_lines_ascending(), id=sort_asc_id)
-        transform_menu.Bind(wx.EVT_MENU, lambda _e: self.sort_lines_descending(), id=sort_desc_id)
-        transform_menu.Bind(wx.EVT_MENU, lambda _e: self.quote_lines(), id=quote_id)
-        transform_menu.Bind(wx.EVT_MENU, lambda _e: self.unquote_lines(), id=unquote_id)
-        transform_menu.Bind(wx.EVT_MENU, lambda _e: self.duplicate_selection(), id=dup_sel_id)
-        menu.AppendSubMenu(transform_menu, "Change &Case")
+        # --- Transform and line submenus (core.format). ---
+        if fmt_on:
+            transform_menu = wx.Menu()
+            upper_id = wx.NewIdRef()
+            lower_id = wx.NewIdRef()
+            title_id = wx.NewIdRef()
+            sentence_id = wx.NewIdRef()
+            toggle_case_id = wx.NewIdRef()
+            sort_asc_id = wx.NewIdRef()
+            sort_desc_id = wx.NewIdRef()
+            quote_id = wx.NewIdRef()
+            unquote_id = wx.NewIdRef()
+            dup_sel_id = wx.NewIdRef()
+            transform_menu.Append(upper_id, "UPPER CASE")
+            transform_menu.Append(lower_id, "lower case")
+            transform_menu.Append(title_id, "Title Case")
+            transform_menu.Append(sentence_id, "Sentence case")
+            transform_menu.Append(toggle_case_id, "Toggle Case")
+            transform_menu.AppendSeparator()
+            transform_menu.Append(sort_asc_id, "Sort Lines Ascending")
+            transform_menu.Append(sort_desc_id, "Sort Lines Descending")
+            transform_menu.AppendSeparator()
+            transform_menu.Append(quote_id, self._menu_label("Quote Lines", "edit.quote_lines"))
+            transform_menu.Append(
+                unquote_id, self._menu_label("Unquote Lines", "edit.unquote_lines")
+            )
+            transform_menu.AppendSeparator()
+            transform_menu.Append(
+                dup_sel_id, self._menu_label("Duplicate Selection", "edit.duplicate_selection")
+            )
+            transform_menu.Bind(wx.EVT_MENU, lambda _e: self.format_upper_case(), id=upper_id)
+            transform_menu.Bind(wx.EVT_MENU, lambda _e: self.format_lower_case(), id=lower_id)
+            transform_menu.Bind(wx.EVT_MENU, lambda _e: self.format_title_case(), id=title_id)
+            transform_menu.Bind(wx.EVT_MENU, lambda _e: self.format_sentence_case(), id=sentence_id)
+            transform_menu.Bind(
+                wx.EVT_MENU, lambda _e: self.format_toggle_case(), id=toggle_case_id
+            )
+            transform_menu.Bind(wx.EVT_MENU, lambda _e: self.sort_lines_ascending(), id=sort_asc_id)
+            transform_menu.Bind(
+                wx.EVT_MENU, lambda _e: self.sort_lines_descending(), id=sort_desc_id
+            )
+            transform_menu.Bind(wx.EVT_MENU, lambda _e: self.quote_lines(), id=quote_id)
+            transform_menu.Bind(wx.EVT_MENU, lambda _e: self.unquote_lines(), id=unquote_id)
+            transform_menu.Bind(wx.EVT_MENU, lambda _e: self.duplicate_selection(), id=dup_sel_id)
+            menu.AppendSubMenu(transform_menu, "Change &Case")
 
-        # --- Line submenu. ---
-        line_menu = wx.Menu()
-        dup_id = wx.NewIdRef()
-        del_id = wx.NewIdRef()
-        move_up_id = wx.NewIdRef()
-        move_down_id = wx.NewIdRef()
-        join_id = wx.NewIdRef()
-        line_menu.Append(dup_id, self._menu_label("Duplicate Line", "edit.duplicate_line"))
-        line_menu.Append(del_id, self._menu_label("Delete Line", "edit.delete_line"))
-        line_menu.Append(move_up_id, self._menu_label("Move Line Up", "edit.move_line_up"))
-        line_menu.Append(move_down_id, self._menu_label("Move Line Down", "edit.move_line_down"))
-        line_menu.Append(join_id, "Join With Next Line")
-        line_menu.Bind(wx.EVT_MENU, lambda _e: self.duplicate_line(), id=dup_id)
-        line_menu.Bind(wx.EVT_MENU, lambda _e: self.delete_line(), id=del_id)
-        line_menu.Bind(wx.EVT_MENU, lambda _e: self.move_line_up(), id=move_up_id)
-        line_menu.Bind(wx.EVT_MENU, lambda _e: self.move_line_down(), id=move_down_id)
-        line_menu.Bind(wx.EVT_MENU, lambda _e: self.join_lines(), id=join_id)
-        menu.AppendSubMenu(line_menu, "Line")
+            line_menu = wx.Menu()
+            dup_id = wx.NewIdRef()
+            del_id = wx.NewIdRef()
+            move_up_id = wx.NewIdRef()
+            move_down_id = wx.NewIdRef()
+            join_id = wx.NewIdRef()
+            line_menu.Append(dup_id, self._menu_label("Duplicate Line", "edit.duplicate_line"))
+            line_menu.Append(del_id, self._menu_label("Delete Line", "edit.delete_line"))
+            line_menu.Append(move_up_id, self._menu_label("Move Line Up", "edit.move_line_up"))
+            line_menu.Append(
+                move_down_id, self._menu_label("Move Line Down", "edit.move_line_down")
+            )
+            line_menu.Append(join_id, "Join With Next Line")
+            line_menu.Bind(wx.EVT_MENU, lambda _e: self.duplicate_line(), id=dup_id)
+            line_menu.Bind(wx.EVT_MENU, lambda _e: self.delete_line(), id=del_id)
+            line_menu.Bind(wx.EVT_MENU, lambda _e: self.move_line_up(), id=move_up_id)
+            line_menu.Bind(wx.EVT_MENU, lambda _e: self.move_line_down(), id=move_down_id)
+            line_menu.Bind(wx.EVT_MENU, lambda _e: self.join_lines(), id=join_id)
+            menu.AppendSubMenu(line_menu, "Line")
 
-        glow_menu = wx.Menu()
-        glow_audit_document_id = wx.NewIdRef()
-        glow_audit_selection_id = wx.NewIdRef()
-        glow_fix_document_id = wx.NewIdRef()
-        glow_fix_selection_id = wx.NewIdRef()
-        glow_menu.Append(glow_audit_document_id, "GLOW Audit Current Document")
-        glow_menu.Append(glow_audit_selection_id, "GLOW Audit Selection / Paragraph")
-        glow_menu.AppendSeparator()
-        glow_menu.Append(glow_fix_document_id, "GLOW Fix Current Document")
-        glow_menu.Append(glow_fix_selection_id, "GLOW Fix Selection / Paragraph")
-        glow_menu.Bind(
-            wx.EVT_MENU,
-            lambda _e: self.glow_audit_document(),
-            id=glow_audit_document_id,
-        )
-        glow_menu.Bind(
-            wx.EVT_MENU,
-            lambda _e: self.glow_audit_selection(),
-            id=glow_audit_selection_id,
-        )
-        glow_menu.Bind(
-            wx.EVT_MENU,
-            lambda _e: self.glow_fix_document(),
-            id=glow_fix_document_id,
-        )
-        glow_menu.Bind(
-            wx.EVT_MENU,
-            lambda _e: self.glow_fix_selection(),
-            id=glow_fix_selection_id,
-        )
-        menu.AppendSubMenu(glow_menu, "GLOW")
+        # --- GLOW submenu (core.glow). ---
+        if glow_on:
+            glow_menu = wx.Menu()
+            glow_audit_document_id = wx.NewIdRef()
+            glow_audit_selection_id = wx.NewIdRef()
+            glow_fix_document_id = wx.NewIdRef()
+            glow_fix_selection_id = wx.NewIdRef()
+            glow_menu.Append(glow_audit_document_id, "GLOW Audit Current Document")
+            glow_menu.Append(glow_audit_selection_id, "GLOW Audit Selection / Paragraph")
+            glow_menu.AppendSeparator()
+            glow_menu.Append(glow_fix_document_id, "GLOW Fix Current Document")
+            glow_menu.Append(glow_fix_selection_id, "GLOW Fix Selection / Paragraph")
+            glow_menu.Bind(
+                wx.EVT_MENU, lambda _e: self.glow_audit_document(), id=glow_audit_document_id
+            )
+            glow_menu.Bind(
+                wx.EVT_MENU, lambda _e: self.glow_audit_selection(), id=glow_audit_selection_id
+            )
+            glow_menu.Bind(
+                wx.EVT_MENU, lambda _e: self.glow_fix_document(), id=glow_fix_document_id
+            )
+            glow_menu.Bind(
+                wx.EVT_MENU, lambda _e: self.glow_fix_selection(), id=glow_fix_selection_id
+            )
+            menu.AppendSubMenu(glow_menu, "GLOW")
 
         menu.AppendSeparator()
-        menu.Append(spell_id, self._menu_label("Spell Check...", "tools.spell_check_dialog"))
-        menu.Append(next_spell_id, self._menu_label("Next Misspelling", "tools.next_misspelling"))
 
-        # --- Thesaurus lookup (when on/within a word). ---
-        if thesaurus_engine.is_available():
+        # --- Spell check (core.spellcheck): navigation + dialog + suggestions. ---
+        if spell_on:
+            spell_id = wx.NewIdRef()
+            next_spell_id = wx.NewIdRef()
+            prev_spell_id = wx.NewIdRef()
+            menu.Append(spell_id, self._menu_label("Spell Check...", "tools.spell_check_dialog"))
+            menu.Append(
+                next_spell_id,
+                self._menu_label("Next Misspelling\tAlt+F7", "tools.next_misspelling"),
+            )
+            menu.Append(
+                prev_spell_id,
+                self._menu_label(
+                    "Previous Misspelling\tShift+Alt+F7", "tools.previous_misspelling"
+                ),
+            )
+            menu.Bind(wx.EVT_MENU, lambda _e: self.open_spell_check_dialog(), id=spell_id)
+            menu.Bind(wx.EVT_MENU, lambda _e: self.next_misspelling(), id=next_spell_id)
+            menu.Bind(wx.EVT_MENU, lambda _e: self.previous_misspelling(), id=prev_spell_id)
+
+            dictionary = self._spell_dictionary()
+            misspelling = misspelling_at_position(text, caret, dictionary)
+            if misspelling is not None:
+                spelling_menu = wx.Menu()
+                suggestions = suggest_words(misspelling.word, dictionary)
+                if suggestions:
+                    for suggestion in suggestions:
+                        item_id = wx.NewIdRef()
+                        spelling_menu.Append(item_id, suggestion)
+
+                        def _apply_replacement(
+                            _event,
+                            replacement: str = suggestion,
+                            start: int = misspelling.start,
+                            end: int = misspelling.end,
+                            original: str = misspelling.word,
+                        ) -> None:
+                            self.editor.Replace(start, end, replacement)
+                            self.document.set_text(self.editor.GetValue())
+                            self._set_status(f'Replaced "{original}" with "{replacement}"')
+
+                        spelling_menu.Bind(wx.EVT_MENU, _apply_replacement, id=item_id)
+                else:
+                    empty_id = wx.NewIdRef()
+                    item = spelling_menu.Append(empty_id, "(No suggestions)")
+                    item.Enable(False)
+                spelling_menu.AppendSeparator()
+                add_menu = wx.Menu()
+                personal_id = wx.NewIdRef()
+                document_id = wx.NewIdRef()
+                project_id = wx.NewIdRef()
+                add_menu.Append(personal_id, "Personal dictionary")
+                add_menu.Append(document_id, "Document dictionary")
+                add_menu.Append(project_id, "Project dictionary")
+                add_menu.Bind(
+                    wx.EVT_MENU,
+                    lambda _e, word=misspelling.word: self._add_word_to_dictionary_scope(word, 0),
+                    id=personal_id,
+                )
+                add_menu.Bind(
+                    wx.EVT_MENU,
+                    lambda _e, word=misspelling.word: self._add_word_to_dictionary_scope(word, 1),
+                    id=document_id,
+                )
+                add_menu.Bind(
+                    wx.EVT_MENU,
+                    lambda _e, word=misspelling.word: self._add_word_to_dictionary_scope(word, 2),
+                    id=project_id,
+                )
+                spelling_menu.AppendSubMenu(add_menu, "Add to dictionary")
+                menu.AppendSubMenu(spelling_menu, "Spelling Suggestions")
+
+        # --- Thesaurus (core.dictionary). ---
+        if dict_on and thesaurus_engine.is_available():
             thes_id = wx.NewIdRef()
             menu.Append(thes_id, "Look Up in Thesaurus")
             menu.Bind(wx.EVT_MENU, lambda _e: self.show_thesaurus(), id=thes_id)
 
-        dictionary = self._spell_dictionary()
-        misspelling = misspelling_at_position(text, caret, dictionary)
-        if misspelling is not None:
-            spelling_menu = wx.Menu()
-            suggestions = suggest_words(misspelling.word, dictionary)
-            if suggestions:
-                for suggestion in suggestions:
-                    item_id = wx.NewIdRef()
-                    spelling_menu.Append(item_id, suggestion)
-
-                    def _apply_replacement(
-                        _event,
-                        replacement: str = suggestion,
-                        start: int = misspelling.start,
-                        end: int = misspelling.end,
-                        original: str = misspelling.word,
-                    ) -> None:
-                        self.editor.Replace(start, end, replacement)
-                        self.document.set_text(self.editor.GetValue())
-                        self._set_status(f'Replaced "{original}" with "{replacement}"')
-
-                    spelling_menu.Bind(
-                        wx.EVT_MENU,
-                        _apply_replacement,
-                        id=item_id,
-                    )
-            else:
-                empty_id = wx.NewIdRef()
-                item = spelling_menu.Append(empty_id, "(No suggestions)")
-                item.Enable(False)
-            spelling_menu.AppendSeparator()
-            add_menu = wx.Menu()
-            personal_id = wx.NewIdRef()
-            document_id = wx.NewIdRef()
-            project_id = wx.NewIdRef()
-            add_menu.Append(personal_id, "Personal dictionary")
-            add_menu.Append(document_id, "Document dictionary")
-            add_menu.Append(project_id, "Project dictionary")
-            add_menu.Bind(
-                wx.EVT_MENU,
-                lambda _e, word=misspelling.word: self._add_word_to_dictionary_scope(word, 0),
-                id=personal_id,
-            )
-            add_menu.Bind(
-                wx.EVT_MENU,
-                lambda _e, word=misspelling.word: self._add_word_to_dictionary_scope(word, 1),
-                id=document_id,
-            )
-            add_menu.Bind(
-                wx.EVT_MENU,
-                lambda _e, word=misspelling.word: self._add_word_to_dictionary_scope(word, 2),
-                id=project_id,
-            )
-            spelling_menu.AppendSubMenu(add_menu, "Add to dictionary")
-            menu.AppendSubMenu(spelling_menu, "Spelling Suggestions")
-
+        # --- Navigation (always available). ---
         menu.AppendSeparator()
-        # --- Navigation actions. ---
         go_line_id = wx.NewIdRef()
         bookmark_id = wx.NewIdRef()
         palette_id = wx.NewIdRef()
@@ -5057,8 +5143,6 @@ class MainFrame(
         )
         menu.Bind(wx.EVT_MENU, lambda _e: self.select_line(), id=select_line_id)
         menu.Bind(wx.EVT_MENU, lambda _e: self.select_chunk(), id=select_chunk_id)
-        menu.Bind(wx.EVT_MENU, lambda _e: self.open_spell_check_dialog(), id=spell_id)
-        menu.Bind(wx.EVT_MENU, lambda _e: self.next_misspelling(), id=next_spell_id)
         menu.Bind(wx.EVT_MENU, lambda _e: self.go_to_line(), id=go_line_id)
         menu.Bind(wx.EVT_MENU, lambda _e: self.set_bookmark(), id=bookmark_id)
         menu.Bind(wx.EVT_MENU, lambda _e: self.open_palette(), id=palette_id)
@@ -5340,6 +5424,10 @@ class MainFrame(
                 import logging
 
                 logging.getLogger(__name__).warning("Shutdown step failed: %s", step, exc_info=True)
+
+        # Quillin quill.shutdown event (best-effort; non-blocking). Fired before
+        # teardown so a Quillin can persist its own state on exit.
+        self._fire_quillin_event("quill.shutdown", {})
 
         def _shutdown_sound_manager() -> None:
             from quill.ui import sound_manager
@@ -6467,6 +6555,20 @@ class MainFrame(
             self._announcement_error_reported = backend_error
             self._record_notification(backend_error, "accessibility")
 
+    def _fire_quillin_event(self, event_name: str, context: dict) -> None:
+        """Dispatch a Quillin document-lifecycle event if the mixin is loaded.
+
+        Safe no-op when the Quillins mixin is absent (e.g. Safe Mode); the actual
+        dispatch is non-blocking (background threads inside the mixin).
+        """
+
+        fire = getattr(self, "fire_quillin_event", None)
+        if callable(fire):
+            try:
+                fire(event_name, context)
+            except Exception:  # noqa: BLE001 - a Quillin must never break the editor
+                pass
+
     def _show_modal_dialog(
         self, dialog: object, label: str, *, restore_editor_focus: bool = True
     ) -> int:
@@ -6499,7 +6601,9 @@ class MainFrame(
         self._region_tracker.enter(caption)
         announce(f"Entered {caption} dialog")
         try:
-            result = self._wx.MessageBox(message, caption, style)
+            result = self._wx.MessageBox(  # MSGBOX-OK: _show_message_box implementation
+                message, caption, style
+            )
         finally:
             announce(f"Exited {caption} dialog")
             self._region_tracker.exit(caption)
@@ -6860,21 +6964,11 @@ class MainFrame(
         self._status_page_last_announce_signature = signature
 
     def _refresh_help_status_tabs(self) -> None:
-        indexes = self._status_tab_indexes()
-        if not indexes:
+        dlg = getattr(self, "_help_status_dialog", None)
+        if dlg is not None and dlg.is_alive():
+            dlg.refresh(self._build_help_status_data())
+        else:
             self._set_status_page_live_updates(False)
-            return
-        report_html = self._build_help_status_html()
-        selected_index = self._current_tab_index()
-        for index in indexes:
-            if not (0 <= index < len(self._document_tabs)):
-                continue
-            tab = self._document_tabs[index]
-            tab.editor.ChangeValue(report_html)
-            tab.document.set_text(report_html)
-            tab.document.modified = False
-            if index == selected_index and self._browser_preview_session is not None:
-                self._show_side_preview_for(tab)
 
     def _maybe_refresh_live_status_tabs(self) -> None:
         if not self._status_page_live_updates:
@@ -6924,8 +7018,17 @@ class MainFrame(
     def _close_tab(self, index: int) -> None:
         if index < 0 or index >= len(self._document_tabs):
             return
+        closing_doc = self._document_tabs[index].document
+        closing_path = getattr(closing_doc, "path", None)
+        close_context = {
+            "file_path": str(closing_path) if closing_path is not None else "",
+            "extension": closing_path.suffix.lower() if closing_path is not None else "",
+            "title": getattr(closing_doc, "name", ""),
+        }
+        self._fire_quillin_event("document.before_close", close_context)
         self.notebook.DeletePage(index)
         del self._document_tabs[index]
+        self._fire_quillin_event("document.after_close", close_context)
         if not self._document_tabs:
             self._create_document_tab(Document(), select=True)
             self._refresh_sessions_menu()
@@ -6973,6 +7076,10 @@ class MainFrame(
         from quill.ui.sound_manager import post_sound
 
         post_sound(SoundEvent.DOCUMENT_CREATED)
+        self._fire_quillin_event(
+            "document.created",
+            {"file_path": "", "extension": "", "title": self.document.name},
+        )
 
     def _file_dialog_default_dir(self) -> str:
         """Return the best initial directory for a file open/save dialog (#168).
@@ -7173,6 +7280,19 @@ class MainFrame(
         if callable(call_after) and hasattr(self, "editor"):
             call_after(self.editor.SetFocus)
         self._announce(f"Opened {loaded.name or selected_path.name}")
+        # Quillin document.opened event, then any file-type handlers for this suffix.
+        open_context = {
+            "file_path": str(selected_path),
+            "extension": selected_path.suffix.lower(),
+            "title": loaded.name or selected_path.name,
+        }
+        self._fire_quillin_event("document.opened", open_context)
+        fire_file_type = getattr(self, "fire_quillin_file_type_event", None)
+        if callable(fire_file_type):
+            try:
+                fire_file_type(selected_path)
+            except Exception:  # noqa: BLE001 - a Quillin must never break open
+                pass
 
     def _position_editor_at(self, line: int | None = None, column: int | None = None) -> None:
         if line is None and column is None:
@@ -7392,6 +7512,9 @@ class MainFrame(
 
     def previous_document(self) -> None:
         self._switch_document(reverse=True)
+
+    def close_other_documents(self) -> None:
+        self._close_other_tabs(self._active_tab_index)
 
     def close_current_document(self) -> None:
         if not self._prompt_to_save_active_document("Close"):
@@ -7958,44 +8081,45 @@ class MainFrame(
             return
         menu = wx.Menu()
         show_id = wx.NewIdRef()
-        sticky_id = wx.NewIdRef()
-        new_sticky_id = wx.NewIdRef()
         exit_id = wx.NewIdRef()
         menu.Append(show_id, "Show Quill")
-        menu.AppendSeparator()
-        # Copy Tray submenu — list occupied slots for quick paste
-        ct_sub = wx.Menu()
-        tray = self._tray()
-        has_any = False
-        for n, slot in tray.all_slots():
-            if not slot.is_empty():
-                has_any = True
-                label_part = f" ({slot.label})" if slot.label else ""
-                item_label = f"&{n}.{label_part} {slot.preview(50)}"
-                slot_id = wx.NewIdRef()
-                ct_sub.Append(slot_id, item_label)
-                menu.Bind(
-                    wx.EVT_MENU,
-                    lambda _e, _n=n: self._tray_paste_slot(_n),
-                    id=slot_id,
-                )
-        if not has_any:
-            empty_id = wx.NewIdRef()
-            ct_sub.Append(empty_id, "(all slots empty)")
-            ct_sub.Enable(empty_id, False)
-        ct_sub.AppendSeparator()
-        open_tray_id = wx.NewIdRef()
-        ct_sub.Append(open_tray_id, "Open Copy Tray...")
-        menu.Bind(wx.EVT_MENU, lambda _e: self.open_copy_tray(), id=open_tray_id)
-        menu.AppendSubMenu(ct_sub, "Copy &Tray")
-        menu.AppendSeparator()
-        menu.Append(sticky_id, "Sticky Notes...")
-        menu.Append(new_sticky_id, "New Sticky Note...")
+        menu.Bind(wx.EVT_MENU, lambda _e: self._restore_from_tray(), id=show_id)
+        if self._feature_enabled("core.abbreviations"):
+            menu.AppendSeparator()
+            ct_sub = wx.Menu()
+            tray = self._tray()
+            has_any = False
+            for n, slot in tray.all_slots():
+                if not slot.is_empty():
+                    has_any = True
+                    label_part = f" ({slot.label})" if slot.label else ""
+                    item_label = f"&{n}.{label_part} {slot.preview(50)}"
+                    slot_id = wx.NewIdRef()
+                    ct_sub.Append(slot_id, item_label)
+                    menu.Bind(
+                        wx.EVT_MENU,
+                        lambda _e, _n=n: self._tray_paste_slot(_n),
+                        id=slot_id,
+                    )
+            if not has_any:
+                empty_id = wx.NewIdRef()
+                ct_sub.Append(empty_id, "(all slots empty)")
+                ct_sub.Enable(empty_id, False)
+            ct_sub.AppendSeparator()
+            open_tray_id = wx.NewIdRef()
+            ct_sub.Append(open_tray_id, "Open Copy Tray...")
+            menu.Bind(wx.EVT_MENU, lambda _e: self.open_copy_tray(), id=open_tray_id)
+            menu.AppendSubMenu(ct_sub, "Copy &Tray")
+        if self._feature_enabled("core.notes"):
+            sticky_id = wx.NewIdRef()
+            new_sticky_id = wx.NewIdRef()
+            menu.AppendSeparator()
+            menu.Append(sticky_id, "Sticky Notes...")
+            menu.Append(new_sticky_id, "New Sticky Note...")
+            menu.Bind(wx.EVT_MENU, lambda _e: self.manage_sticky_notes(), id=sticky_id)
+            menu.Bind(wx.EVT_MENU, lambda _e: self.create_sticky_note(), id=new_sticky_id)
         menu.AppendSeparator()
         menu.Append(exit_id, "Exit Quill")
-        menu.Bind(wx.EVT_MENU, lambda _e: self._restore_from_tray(), id=show_id)
-        menu.Bind(wx.EVT_MENU, lambda _e: self.manage_sticky_notes(), id=sticky_id)
-        menu.Bind(wx.EVT_MENU, lambda _e: self.create_sticky_note(), id=new_sticky_id)
         menu.Bind(wx.EVT_MENU, lambda _e: self._exit_from_tray(), id=exit_id)
         self._tray_icon.PopupMenu(menu)
         menu.Destroy()
@@ -8065,6 +8189,17 @@ class MainFrame(
         # If this file was opened over SSH, upload it back to the remote host
         # with a tilde backup in its original newline style (#139).
         self.maybe_upload_remote_on_save()
+        # Quillin document.after_save event (non-blocking; dispatched async).
+        path = self.document.path
+        if path is not None:
+            self._fire_quillin_event(
+                "document.after_save",
+                {
+                    "file_path": str(path),
+                    "extension": path.suffix.lower(),
+                    "title": self.document.name,
+                },
+            )
 
     def save_all_files(self) -> None:
         for index in range(len(self._document_tabs)):
@@ -8244,6 +8379,7 @@ class MainFrame(
         self._load_persistent_undo_state(target, self.document.text)
         self._record_recent(target)
         self._refresh_title()
+        self._refresh_sessions_menu()
         self._set_status(f"Saved as {target.name} ({format_label_for_path(target)})")
         self._maybe_reload_surface_after_save_as(target)
 
@@ -8776,6 +8912,12 @@ class MainFrame(
         except Exception:  # noqa: BLE001
             self._announce("Could not repeat last palette command")
 
+    def _run_command(self, command_id: str) -> None:
+        try:
+            self.commands.run(command_id)
+        except Exception:  # noqa: BLE001
+            self._set_status(f"Command failed: {command_id}")
+
     def create_sticky_note(self) -> None:
         if self._safe_mode:
             self._set_status("Sticky notes are unavailable in safe mode")
@@ -8810,50 +8952,75 @@ class MainFrame(
         explicit button.
         """
         wx = self._wx
-        # (label, description, handler) per settings area. The description is
-        # shown in the content pane so arrowing the selector previews each area.
-        areas: list[tuple[str, str, Callable[[], None]]] = [
+        # (label, description, handler, feature_gate | None) per settings area.
+        # Areas whose feature_gate is a disabled feature are hidden so the hub
+        # only shows what is actually available in the current profile.
+        _all_areas: list[tuple[str, str, Callable[[], None], str | None]] = [
             (
                 "General",
                 "Appearance, editing, autosave, updates, and the AI master switch.",
                 self.open_general_preferences,
+                None,
             ),
             (
                 "Profiles and Features",
                 "Turn optional features on or off and switch between feature profiles.",
                 self.open_profiles_and_features_settings,
+                None,
             ),
             (
                 "Status Bar Layout",
                 "Choose which fields appear in the status bar and their order.",
                 self.open_status_bar_settings,
+                None,
             ),
             (
                 "Keymap Editor",
                 "Review and change the keyboard shortcuts for every command.",
                 self.open_keymap_editor,
+                None,
             ),
             (
                 "AI Connection",
                 "Connect an AI provider, enter your key, and verify the connection.",
                 self.open_ai_preferences,
+                "future.ai",
             ),
             (
                 "Watch Folder Automation",
                 "Automate actions when files appear in a folder you watch.",
                 self.open_watch_folder_settings,
+                "core.watch_folder",
             ),
             (
                 "GLOW Accessibility",
                 "Quill's built-in accessibility engine and its optional network features.",
                 self.open_glow_settings,
+                "core.glow",
             ),
             (
                 "Install Starter Snippet Packs",
                 "Add a set of ready-made text snippets you can insert while writing.",
                 self.install_starter_snippet_packs,
+                "core.bundled_quillins",
             ),
         ]
+        areas = [
+            (label, desc, handler)
+            for label, desc, handler, gate in _all_areas
+            if gate is None or self._feature_enabled(gate)
+        ]
+        for _pref_m in self._pref_manifests():
+            _page = _pref_m.contributes.preferences[0]
+            if not isinstance(_page, dict):
+                continue
+            _title = _page.get("title") or _pref_m.name
+            _desc = _page.get("description") or f"Settings for {_pref_m.name}."
+            areas.append((
+                _title,
+                _desc,
+                lambda _m=_pref_m: self.open_quillin_preferences(_m),
+            ))
         # All platforms use a left-hand category list (wx.Listbook, Edge /
         # Windows Settings style). macOS deliberately does NOT use wx.Toolbook:
         # on Cocoa the Toolbook selector is a native wxToolBar that requires a
@@ -9637,16 +9804,13 @@ class MainFrame(
         # writers set a rendered control back to a given stored value; used by
         # the per-setting Reset buttons (SET-6) to restore a single default.
         writers: dict[str, Callable[[object], None]] = {}
+        _dirty: list[bool] = [False]  # mutable flag shared with _mark_dirty closure
         control_index: dict[str, tuple[int, object]] = {}
-        ai_enabled_cb = None  # special-cased: not a Settings field
-        ext_master_cb = None  # special-cased: external-engine master consent
-        ext_name_field = None
-        ext_command_field = None
-        ext_engine_enabled_cb = None
         collected: dict[str, object] = {}
         ai_value: bool | None = None
         ext_master_value: bool | None = None
         ext_engine_spec: tuple[str, str, bool] | None = None
+        ai_menu_top_level_value: bool | None = None
 
         with wx.Dialog(self.frame, title="Settings") as dialog:
             outer = wx.BoxSizer(wx.VERTICAL)
@@ -9671,33 +9835,22 @@ class MainFrame(
                 sizer.Add(row, 0, wx.EXPAND | wx.ALL, 6)
                 return ctrl
 
-            def _reset_one(key: str) -> None:
-                writer = writers.get(key)
-                if writer is None:
-                    return
-                writer(registry.default_value(key))
-                spec = registry.find_spec(key)
-                self._set_status(f"Reset {spec.label if spec else key} to default")
-
-            def _reset_button(parent_panel, spec):
-                button = wx.Button(parent_panel, label="Reset", style=wx.BU_EXACTFIT)
-                button.SetName(f"Reset {spec.label} to default")
-                button.Bind(wx.EVT_BUTTON, lambda _e, k=spec.key: _reset_one(k))
-                return button
-
             def _make_control(parent_panel, sizer, spec, page_index: int) -> None:
                 current = registry.get_value(self.settings, spec.key)
-                reset_btn = _reset_button(parent_panel, spec)
                 # preview_browser is stored as text but is best chosen from the
                 # list of installed browsers.
                 if spec.key == "preview_browser":
-                    choice = wx.Choice(
-                        parent_panel,
-                        choices=[opt.label for opt in available_browser_options()],
-                    )
-                    choice.SetName(spec.label)
-                    choice.SetStringSelection(browser_choice_label_for_value(str(current)))
-                    _add_field_row(parent_panel, sizer, spec.label, choice, reset_btn)
+
+                    def _make_browser_choice(_pp=parent_panel, _sl=spec.label, _cur=str(current)):
+                        c = wx.Choice(
+                            _pp,
+                            choices=[opt.label for opt in available_browser_options()],
+                        )
+                        c.SetName(_sl)
+                        c.SetStringSelection(browser_choice_label_for_value(_cur))
+                        return c
+
+                    choice = _add_field_row(parent_panel, sizer, spec.label, _make_browser_choice)
                     readers[spec.key] = lambda c=choice: browser_choice_value_for_label(
                         c.GetStringSelection() or "System default browser"
                     )
@@ -9705,35 +9858,50 @@ class MainFrame(
                         browser_choice_label_for_value(str(v))
                     )
                     control_index[spec.key] = (page_index, choice)
+                    choice.Bind(wx.EVT_CHOICE, _mark_dirty)
                     return
                 if spec.key == "startup_folder":
-                    text = wx.TextCtrl(parent_panel)
-                    text.SetValue(str(current))
-                    text.SetName(spec.label)
-                    browse_btn = wx.Button(parent_panel, label="Browse...")
-                    browse_btn.SetName(f"Browse for {spec.label}")
-                    folder_row = wx.BoxSizer(wx.HORIZONTAL)
-                    folder_row.Add(text, 1, wx.EXPAND | wx.RIGHT, 8)
-                    folder_row.Add(browse_btn, 0, wx.ALIGN_CENTER_VERTICAL)
+                    _folder_text_ref: list = []
 
-                    def _on_browse_folder(_evt, _t=text, _pp=parent_panel) -> None:
-                        with wx.DirDialog(
-                            _pp,
-                            "Choose default file-open folder",
-                            defaultPath=_t.GetValue().strip(),
-                            style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST,
-                        ) as ddlg:
-                            if (
-                                self._show_modal_dialog(ddlg, "Default file-open folder")
-                                == wx.ID_OK
-                            ):
-                                _t.SetValue(ddlg.GetPath())
+                    def _make_folder_row(
+                        _pp=parent_panel,
+                        _cur=str(current),
+                        _sl=spec.label,
+                        _ref=_folder_text_ref,
+                    ):
+                        _t = wx.TextCtrl(_pp)
+                        _t.SetValue(_cur)
+                        _t.SetName(_sl)
+                        _t.SetHint("e.g. C:\\Users\\YourName\\Documents (blank = last used)")
+                        _b = wx.Button(_pp, label="Choose Default Folder...")
+                        _b.SetName(f"Choose default folder for {_sl}")
 
-                    browse_btn.Bind(wx.EVT_BUTTON, _on_browse_folder)
-                    _add_field_row(parent_panel, sizer, spec.label, folder_row, reset_btn)
+                        def _on_browse(_evt, __t=_t, __pp=_pp) -> None:
+                            with wx.DirDialog(
+                                __pp,
+                                "Choose default file-open folder",
+                                defaultPath=__t.GetValue().strip(),
+                                style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST,
+                            ) as ddlg:
+                                if (
+                                    self._show_modal_dialog(ddlg, "Default file-open folder")
+                                    == wx.ID_OK
+                                ):
+                                    __t.SetValue(ddlg.GetPath())
+
+                        _b.Bind(wx.EVT_BUTTON, _on_browse)
+                        _row = wx.BoxSizer(wx.HORIZONTAL)
+                        _row.Add(_t, 1, wx.EXPAND | wx.RIGHT, 8)
+                        _row.Add(_b, 0, wx.ALIGN_CENTER_VERTICAL)
+                        _ref.append(_t)
+                        return _row
+
+                    _add_field_row(parent_panel, sizer, spec.label, _make_folder_row)
+                    text = _folder_text_ref[0]
                     readers[spec.key] = lambda c=text: str(c.GetValue())
                     writers[spec.key] = lambda v, c=text: c.SetValue(str(v))
                     control_index[spec.key] = (page_index, text)
+                    text.Bind(wx.EVT_TEXT, _mark_dirty)
                     return
                 if spec.key in {
                     "quill_key_sound_enter",
@@ -9741,43 +9909,177 @@ class MainFrame(
                     "quill_key_sound_move",
                     "quill_key_sound_error",
                 }:
-                    text = wx.TextCtrl(parent_panel)
-                    text.SetValue(str(current))
-                    text.SetName(spec.label)
-                    browse_btn = wx.Button(parent_panel, label="Browse...")
-                    browse_btn.SetName(f"Browse for {spec.label}")
-                    file_row = wx.BoxSizer(wx.HORIZONTAL)
-                    file_row.Add(text, 1, wx.EXPAND | wx.RIGHT, 8)
-                    file_row.Add(browse_btn, 0, wx.ALIGN_CENTER_VERTICAL)
+                    _sound_text_ref: list = []
 
-                    def _on_browse_sound(_evt, _t=text, _pp=parent_panel) -> None:
-                        with wx.FileDialog(
-                            _pp,
-                            "Choose a WAV file",
-                            wildcard="WAV files (*.wav)|*.wav",
-                            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
-                        ) as fdlg:
-                            if self._show_modal_dialog(fdlg, "Choose Keyboard Sound") == wx.ID_OK:
-                                _t.SetValue(fdlg.GetPath())
+                    def _make_sound_file_row(
+                        _pp=parent_panel,
+                        _cur=str(current),
+                        _sl=spec.label,
+                        _ref=_sound_text_ref,
+                    ):
+                        _t = wx.TextCtrl(_pp)
+                        _t.SetValue(_cur)
+                        _t.SetName(_sl)
+                        _t.SetHint("blank = default beep")
+                        _b = wx.Button(_pp, label="Choose WAV file...")
+                        _b.SetName(f"Choose WAV file for {_sl}")
+                        _p = wx.Button(_pp, label="Preview")
+                        _p.SetName(f"Preview {_sl}")
 
-                    browse_btn.Bind(wx.EVT_BUTTON, _on_browse_sound)
-                    _add_field_row(parent_panel, sizer, spec.label, file_row, reset_btn)
+                        def _on_browse(_evt, __t=_t, __pp=_pp) -> None:
+                            with wx.FileDialog(
+                                __pp,
+                                "Choose a WAV file",
+                                wildcard="WAV files (*.wav)|*.wav",
+                                style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
+                            ) as fdlg:
+                                if (
+                                    self._show_modal_dialog(fdlg, "Choose Browse Mode Sound")
+                                    == wx.ID_OK
+                                ):
+                                    __t.SetValue(fdlg.GetPath())
+
+                        def _on_preview(_evt, __t=_t) -> None:
+                            path = __t.GetValue().strip()
+                            if path:
+                                self._play_preview_asset(Path(path))
+
+                        _b.Bind(wx.EVT_BUTTON, _on_browse)
+                        _p.Bind(wx.EVT_BUTTON, _on_preview)
+                        _row = wx.BoxSizer(wx.HORIZONTAL)
+                        _row.Add(_t, 1, wx.EXPAND | wx.RIGHT, 4)
+                        _row.Add(_b, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
+                        _row.Add(_p, 0, wx.ALIGN_CENTER_VERTICAL)
+                        _ref.append(_t)
+                        return _row
+
+                    _add_field_row(parent_panel, sizer, spec.label, _make_sound_file_row)
+                    text = _sound_text_ref[0]
                     readers[spec.key] = lambda c=text: str(c.GetValue())
                     writers[spec.key] = lambda v, c=text: c.SetValue(str(v))
                     control_index[spec.key] = (page_index, text)
+                    text.Bind(wx.EVT_TEXT, _mark_dirty)
                     return
+                if spec.key == "language":
+
+                    def _make_lang_text(_pp=parent_panel, _cur=str(current), _sl=spec.label):
+                        t = wx.TextCtrl(_pp)
+                        t.SetValue(_cur)
+                        t.SetName(_sl)
+                        t.SetHint("e.g. en, fr, es (blank = OS language)")
+                        return t
+
+                    lang_ctrl = _add_field_row(parent_panel, sizer, spec.label, _make_lang_text)
+                    readers[spec.key] = lambda c=lang_ctrl: str(c.GetValue())
+                    writers[spec.key] = lambda v, c=lang_ctrl: c.SetValue(str(v))
+                    control_index[spec.key] = (page_index, lang_ctrl)
+                    lang_ctrl.Bind(wx.EVT_TEXT, _mark_dirty)
+                    return
+
+                if spec.key == "abbreviation_expansion_sound_file":
+                    _abbr_sound_ref: list = []
+
+                    def _make_abbr_sound_row(
+                        _pp=parent_panel,
+                        _cur=str(current),
+                        _sl=spec.label,
+                        _ref=_abbr_sound_ref,
+                    ):
+                        _t = wx.TextCtrl(_pp)
+                        _t.SetValue(_cur)
+                        _t.SetName(_sl)
+                        _t.SetHint("blank = default system sound")
+                        _b = wx.Button(_pp, label="Choose WAV file...")
+                        _b.SetName(f"Choose WAV file for {_sl}")
+                        _p = wx.Button(_pp, label="Preview")
+                        _p.SetName(f"Preview {_sl}")
+
+                        def _on_browse(_evt, __t=_t, __pp=_pp) -> None:
+                            with wx.FileDialog(
+                                __pp,
+                                "Choose abbreviation expansion sound",
+                                wildcard="WAV files (*.wav)|*.wav",
+                                style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
+                            ) as fdlg:
+                                if (
+                                    self._show_modal_dialog(fdlg, "Choose Abbreviation Sound")
+                                    == wx.ID_OK
+                                ):
+                                    __t.SetValue(fdlg.GetPath())
+
+                        def _on_preview(_evt, __t=_t) -> None:
+                            path = __t.GetValue().strip()
+                            if path:
+                                self._play_preview_asset(Path(path))
+
+                        _b.Bind(wx.EVT_BUTTON, _on_browse)
+                        _p.Bind(wx.EVT_BUTTON, _on_preview)
+                        _row = wx.BoxSizer(wx.HORIZONTAL)
+                        _row.Add(_t, 1, wx.EXPAND | wx.RIGHT, 4)
+                        _row.Add(_b, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
+                        _row.Add(_p, 0, wx.ALIGN_CENTER_VERTICAL)
+                        _ref.append(_t)
+                        return _row
+
+                    _add_field_row(parent_panel, sizer, spec.label, _make_abbr_sound_row)
+                    abbr_text = _abbr_sound_ref[0]
+                    readers[spec.key] = lambda c=abbr_text: str(c.GetValue())
+                    writers[spec.key] = lambda v, c=abbr_text: c.SetValue(str(v))
+                    control_index[spec.key] = (page_index, abbr_text)
+                    abbr_text.Bind(wx.EVT_TEXT, _mark_dirty)
+                    return
+
+                if spec.key == "sound_pack_path":
+                    _sp_ref: list = []
+
+                    def _make_sp_row(
+                        _pp=parent_panel,
+                        _cur=str(current),
+                        _sl=spec.label,
+                        _ref=_sp_ref,
+                    ):
+                        _t = wx.TextCtrl(_pp)
+                        _t.SetValue(_cur)
+                        _t.SetName(_sl)
+                        _t.SetHint("blank = bundled Ink pack")
+                        _b = wx.Button(_pp, label="Choose Sound Pack...")
+                        _b.SetName(f"Choose sound pack folder or file for {_sl}")
+
+                        def _on_browse(_evt, __t=_t, __pp=_pp) -> None:
+                            with wx.DirDialog(
+                                __pp,
+                                "Choose sound pack folder",
+                                defaultPath=__t.GetValue().strip(),
+                                style=wx.DD_DEFAULT_STYLE,
+                            ) as ddlg:
+                                if self._show_modal_dialog(ddlg, "Choose Sound Pack") == wx.ID_OK:
+                                    __t.SetValue(ddlg.GetPath())
+
+                        _b.Bind(wx.EVT_BUTTON, _on_browse)
+                        _row = wx.BoxSizer(wx.HORIZONTAL)
+                        _row.Add(_t, 1, wx.EXPAND | wx.RIGHT, 8)
+                        _row.Add(_b, 0, wx.ALIGN_CENTER_VERTICAL)
+                        _ref.append(_t)
+                        return _row
+
+                    _add_field_row(parent_panel, sizer, spec.label, _make_sp_row)
+                    sp_text = _sp_ref[0]
+                    readers[spec.key] = lambda c=sp_text: str(c.GetValue())
+                    writers[spec.key] = lambda v, c=sp_text: c.SetValue(str(v))
+                    control_index[spec.key] = (page_index, sp_text)
+                    sp_text.Bind(wx.EVT_TEXT, _mark_dirty)
+                    return
+
                 if spec.kind == "bool":
                     cb = wx.CheckBox(parent_panel, label=spec.label)
                     cb.SetValue(bool(current))
                     if spec.description:
                         cb.SetName(f"{spec.label}. {spec.description}")
-                    bool_row = wx.BoxSizer(wx.HORIZONTAL)
-                    bool_row.Add(cb, 1, wx.ALIGN_CENTER_VERTICAL)
-                    bool_row.Add(reset_btn, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 8)
-                    sizer.Add(bool_row, 0, wx.EXPAND | wx.ALL, 6)
+                    sizer.Add(cb, 0, wx.EXPAND | wx.ALL, 6)
                     readers[spec.key] = lambda c=cb: bool(c.GetValue())
                     writers[spec.key] = lambda v, c=cb: c.SetValue(bool(v))
                     control_index[spec.key] = (page_index, cb)
+                    cb.Bind(wx.EVT_CHECKBOX, _mark_dirty)
                     if spec.key == "beta_updates":
 
                         def _on_beta_toggle(_event: object, _cb=cb) -> None:
@@ -9790,10 +10092,20 @@ class MainFrame(
                     labels = [label for _value, label in spec.choices]
                     value_for_label = {label: value for value, label in spec.choices}
                     label_for_value = {value: label for value, label in spec.choices}
-                    choice = wx.Choice(parent_panel, choices=labels)
-                    choice.SetName(spec.label)
-                    choice.SetStringSelection(label_for_value.get(str(current), labels[0]))
-                    _add_field_row(parent_panel, sizer, spec.label, choice, reset_btn)
+
+                    def _make_choice(
+                        _pp=parent_panel,
+                        _ls=labels,
+                        _lv=label_for_value,
+                        _cv=str(current),
+                        _sl=spec.label,
+                    ):
+                        c = wx.Choice(_pp, choices=_ls)
+                        c.SetName(_sl)
+                        c.SetStringSelection(_lv.get(_cv, _ls[0]))
+                        return c
+
+                    choice = _add_field_row(parent_panel, sizer, spec.label, _make_choice)
                     readers[spec.key] = lambda c=choice, m=value_for_label, d=str(current): m.get(
                         c.GetStringSelection(), d
                     )
@@ -9801,127 +10113,194 @@ class MainFrame(
                         c.SetStringSelection(m.get(str(v), ls[0]))
                     )
                     control_index[spec.key] = (page_index, choice)
+                    choice.Bind(wx.EVT_CHOICE, _mark_dirty)
                     return
                 if spec.kind == "int":
-                    spin = wx.SpinCtrl(parent_panel)
-                    if spec.minimum is not None and spec.maximum is not None:
-                        spin.SetRange(int(spec.minimum), int(spec.maximum))
-                    spin.SetValue(int(current))
-                    spin.SetName(spec.label)
-                    _add_field_row(parent_panel, sizer, spec.label, spin, reset_btn)
+
+                    def _make_spin_int(_pp=parent_panel, _spec=spec, _cur=int(current)):
+                        s = wx.SpinCtrl(_pp)
+                        if _spec.minimum is not None and _spec.maximum is not None:
+                            s.SetRange(int(_spec.minimum), int(_spec.maximum))
+                        s.SetValue(_cur)
+                        s.SetName(_spec.label)
+                        return s
+
+                    spin = _add_field_row(parent_panel, sizer, spec.label, _make_spin_int)
                     readers[spec.key] = lambda c=spin: int(c.GetValue())
                     writers[spec.key] = lambda v, c=spin: c.SetValue(int(v))
                     control_index[spec.key] = (page_index, spin)
+                    spin.Bind(wx.EVT_SPINCTRL, _mark_dirty)
                     return
                 if spec.kind == "float":
-                    spin = wx.SpinCtrlDouble(parent_panel, inc=0.1)
-                    if spec.minimum is not None and spec.maximum is not None:
-                        spin.SetRange(float(spec.minimum), float(spec.maximum))
-                    spin.SetValue(float(current))
-                    spin.SetName(spec.label)
-                    _add_field_row(parent_panel, sizer, spec.label, spin, reset_btn)
+
+                    def _make_spin_float(_pp=parent_panel, _spec=spec, _cur=float(current)):
+                        s = wx.SpinCtrlDouble(_pp, inc=0.1)
+                        if _spec.minimum is not None and _spec.maximum is not None:
+                            s.SetRange(float(_spec.minimum), float(_spec.maximum))
+                        s.SetValue(_cur)
+                        s.SetName(_spec.label)
+                        for _child in s.GetChildren():
+                            if isinstance(_child, wx.TextCtrl):
+                                _child.SetName(_spec.label)
+                                break
+                        return s
+
+                    spin = _add_field_row(parent_panel, sizer, spec.label, _make_spin_float)
                     readers[spec.key] = lambda c=spin: float(c.GetValue())
                     writers[spec.key] = lambda v, c=spin: c.SetValue(float(v))
                     control_index[spec.key] = (page_index, spin)
+                    spin.Bind(wx.EVT_SPINCTRLDOUBLE, _mark_dirty)
                     return
+
                 # text
-                text = wx.TextCtrl(parent_panel)
-                text.SetValue(str(current))
-                text.SetName(spec.label)
-                _add_field_row(parent_panel, sizer, spec.label, text, reset_btn)
+                def _make_text(_pp=parent_panel, _cur=str(current), _sl=spec.label):
+                    t = wx.TextCtrl(_pp)
+                    t.SetValue(_cur)
+                    t.SetName(_sl)
+                    return t
+
+                text = _add_field_row(parent_panel, sizer, spec.label, _make_text)
                 readers[spec.key] = lambda c=text: str(c.GetValue())
                 writers[spec.key] = lambda v, c=text: c.SetValue(str(v))
                 control_index[spec.key] = (page_index, text)
+                text.Bind(wx.EVT_TEXT, _mark_dirty)
 
             page_index = 0
+            _page_build_fns: list[Callable[[], None]] = []
+            _built_pages: set[int] = set()
+            _ai_refs: dict[str, object] = {}
+
+            def _make_page_builder(
+                _p: object,
+                _ps: object,
+                _pi: int,
+                _sp: list,
+                _g: object,
+                _sa: bool,
+            ) -> Callable[[], None]:
+                def _build() -> None:
+                    if _g.description:
+                        _ps.Add(wx.StaticText(_p, label=_g.description), 0, wx.ALL, 6)
+                    if _sa:
+                        _ai_cb = wx.CheckBox(_p, label="Use Artificial Intelligence")
+                        _ai_cb.SetValue(load_ai_enabled())
+                        _ai_cb.SetName(
+                            "Use Artificial Intelligence. Master switch for all AI features."
+                        )
+                        _ps.Add(_ai_cb, 0, wx.ALL, 6)
+                        _ai_refs["ai_enabled_cb"] = _ai_cb
+                        _hub_btn = wx.Button(_p, label="Open AI Hub...")
+                        _hub_btn.SetName(
+                            "Open AI Hub to configure providers, models, and API connections"
+                        )
+                        _ps.Add(_hub_btn, 0, wx.LEFT | wx.BOTTOM, 6)
+
+                        def _on_hub(_evt: object) -> None:
+                            self.open_ai_hub()
+
+                        _hub_btn.Bind(wx.EVT_BUTTON, _on_hub)
+                        from quill.core.ai.external_engine import (
+                            external_engines_enabled,
+                            list_engine_ids,
+                            load_engine_config,
+                        )
+
+                        _ext_cb = wx.CheckBox(_p, label="Allow external engines")
+                        _ext_cb.SetValue(external_engines_enabled())
+                        _ext_cb.SetName(
+                            "Allow external engines. Off by default. Let QUILL drive a "
+                            "trusted helper program as a local subprocess."
+                        )
+                        _ps.Add(_ext_cb, 0, wx.ALL, 6)
+                        _ai_refs["ext_master_cb"] = _ext_cb
+                        _engine_ids = list_engine_ids()
+                        _first_engine = load_engine_config(_engine_ids[0]) if _engine_ids else None
+                        _nf = _add_field_row(
+                            _p, _ps, "External engine name", lambda pp=_p: wx.TextCtrl(pp)
+                        )
+                        _nf.SetName("External engine name")
+                        _nf.SetValue(_first_engine.engine_id if _first_engine else "")
+                        _ai_refs["ext_name_field"] = _nf
+                        _cf = _add_field_row(
+                            _p, _ps, "External engine command", lambda pp=_p: wx.TextCtrl(pp)
+                        )
+                        _cf.SetName("External engine command")
+                        _cf.SetValue(" ".join(_first_engine.command) if _first_engine else "")
+                        _ai_refs["ext_command_field"] = _cf
+                        _ef = wx.CheckBox(_p, label="Enable this external engine")
+                        _ef.SetValue(bool(_first_engine.enabled) if _first_engine else False)
+                        _ps.Add(_ef, 0, wx.ALL, 6)
+                        _ai_refs["ext_engine_enabled_cb"] = _ef
+                        _ps.Add(wx.StaticLine(_p), 0, wx.EXPAND | wx.TOP | wx.BOTTOM, 6)
+                        _tl_cb = wx.CheckBox(_p, label="Show AI as a top-level menu")
+                        _tl_cb.SetValue(self._feature_enabled("future.ai_menu_top_level"))
+                        _tl_cb.SetName(
+                            "Show AI as a top-level menu. "
+                            "Promotes AI Assistant from the Tools submenu to its own "
+                            "entry in the menu bar. Takes effect immediately."
+                        )
+                        _ps.Add(_tl_cb, 0, wx.ALL, 6)
+                        _ai_refs["ai_menu_top_level_cb"] = _tl_cb
+                        _ps.Add(
+                            wx.StaticText(
+                                _p,
+                                label="All other AI settings (providers, models, API keys) "
+                                "are managed in the AI Hub.",
+                            ),
+                            0,
+                            wx.ALL,
+                            6,
+                        )
+                        _p.Layout()
+                        return
+                    for spec in _sp:
+                        _make_control(_p, _ps, spec, _pi)
+                    _p.Layout()
+
+                return _build
+
             for group in registry.groups():
                 specs = [
                     spec
                     for spec in registry.specs_for_group(group.id)
                     if not spec.feature_id or self._feature_enabled(spec.feature_id)
                 ]
-                # Surface the AI master toggle on the AI page even though it is
-                # stored outside Settings.
                 show_ai_master = group.id == "ai"
                 if not specs and not show_ai_master:
                     continue
-                page = wx.Panel(notebook, style=wx.TAB_TRAVERSAL)
-                page_sizer = wx.BoxSizer(wx.VERTICAL)
-                if group.description:
-                    intro = wx.StaticText(page, label=group.description)
-                    page_sizer.Add(intro, 0, wx.ALL, 6)
-                if show_ai_master:
-                    ai_enabled_cb = wx.CheckBox(page, label="Use Artificial Intelligence")
-                    ai_enabled_cb.SetValue(load_ai_enabled())
-                    ai_enabled_cb.SetName(
-                        "Use Artificial Intelligence. Master switch for all AI features."
+                _pg = wx.Panel(notebook, style=wx.TAB_TRAVERSAL)
+                _pg.SetSizer(wx.BoxSizer(wx.VERTICAL))
+                notebook.AddPage(_pg, group.title)
+                _page_build_fns.append(
+                    _make_page_builder(
+                        _pg, _pg.GetSizer(), page_index, specs, group, show_ai_master
                     )
-                    page_sizer.Add(ai_enabled_cb, 0, wx.ALL, 6)
-                    # External engines (AI-24): consent + one engine's command,
-                    # folded into the Settings home rather than a separate dialog.
-                    from quill.core.ai.external_engine import (
-                        external_engines_enabled,
-                        list_engine_ids,
-                        load_engine_config,
-                    )
-
-                    ext_master_cb = wx.CheckBox(page, label="Allow external engines")
-                    ext_master_cb.SetValue(external_engines_enabled())
-                    ext_master_cb.SetName(
-                        "Allow external engines. Off by default. Let QUILL drive a "
-                        "trusted helper program as a local subprocess."
-                    )
-                    page_sizer.Add(ext_master_cb, 0, wx.ALL, 6)
-                    _engine_ids = list_engine_ids()
-                    _first_engine = load_engine_config(_engine_ids[0]) if _engine_ids else None
-                    ext_name_field = _add_field_row(
-                        page,
-                        page_sizer,
-                        "External engine name",
-                        lambda p=page: wx.TextCtrl(p),
-                    )
-                    ext_name_field.SetName("External engine name")
-                    ext_name_field.SetValue(_first_engine.engine_id if _first_engine else "")
-                    ext_command_field = _add_field_row(
-                        page,
-                        page_sizer,
-                        "External engine command",
-                        lambda p=page: wx.TextCtrl(p),
-                    )
-                    ext_command_field.SetName("External engine command")
-                    ext_command_field.SetValue(
-                        " ".join(_first_engine.command) if _first_engine else ""
-                    )
-                    ext_engine_enabled_cb = wx.CheckBox(page, label="Enable this external engine")
-                    ext_engine_enabled_cb.SetValue(
-                        bool(_first_engine.enabled) if _first_engine else False
-                    )
-                    page_sizer.Add(ext_engine_enabled_cb, 0, wx.ALL, 6)
-                for spec in specs:
-                    _make_control(page, page_sizer, spec, page_index)
-                page.SetSizer(page_sizer)
-                notebook.AddPage(page, group.title)
+                )
                 page_index += 1
 
+            # Settings Management tab: all Export / Import / Reset / Profile buttons
+            _mgmt_pg = wx.Panel(notebook, style=wx.TAB_TRAVERSAL)
+            _mgmt_sz = wx.BoxSizer(wx.VERTICAL)
+            _mgmt_sz.Add(
+                wx.StaticText(
+                    _mgmt_pg,
+                    label="Export, import, and reset your settings and feature profiles.",
+                ),
+                0,
+                wx.ALL,
+                6,
+            )
+            export_btn = wx.Button(_mgmt_pg, label="&Export settings...")
+            import_btn = wx.Button(_mgmt_pg, label="&Import settings...")
+            reset_btn = wx.Button(_mgmt_pg, label="&Reset to Factory Defaults")
+            export_profile_btn = wx.Button(_mgmt_pg, label="Export &profile...")
+            import_profile_btn = wx.Button(_mgmt_pg, label="Import pro&file...")
+            for _mb in [export_btn, import_btn, reset_btn, export_profile_btn, import_profile_btn]:
+                _mgmt_sz.Add(_mb, 0, wx.ALL, 4)
+            _mgmt_pg.SetSizer(_mgmt_sz)
+            notebook.AddPage(_mgmt_pg, "Settings Management")
+
             outer.Add(notebook, 1, wx.EXPAND | wx.ALL, 8)
-
-            # --- Maintenance buttons (SET-7): Export / Import / Reset ----------
-            maintenance = wx.BoxSizer(wx.HORIZONTAL)
-            export_btn = wx.Button(dialog, label="&Export settings...")
-            import_btn = wx.Button(dialog, label="&Import settings...")
-            reset_btn = wx.Button(dialog, label="&Reset to Factory Defaults")
-            maintenance.Add(export_btn, 0, wx.RIGHT, 8)
-            maintenance.Add(import_btn, 0, wx.RIGHT, 8)
-            maintenance.Add(reset_btn, 0)
-            outer.Add(maintenance, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
-
-            # --- Profile buttons (FLAG-4): export / import feature-flag state --
-            profile_row = wx.BoxSizer(wx.HORIZONTAL)
-            export_profile_btn = wx.Button(dialog, label="Export &profile...")
-            import_profile_btn = wx.Button(dialog, label="Import pro&file...")
-            profile_row.Add(export_profile_btn, 0, wx.RIGHT, 8)
-            profile_row.Add(import_profile_btn, 0)
-            outer.Add(profile_row, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
             # action carries the post-dialog instruction: "ok" | "cancel" |
             # "import" | "reset"; imported holds the Settings parsed from a file.
@@ -10023,28 +10402,106 @@ class MainFrame(
             export_profile_btn.Bind(wx.EVT_BUTTON, _on_export_profile)
             import_profile_btn.Bind(wx.EVT_BUTTON, _on_import_profile)
 
-            buttons = dialog.CreateButtonSizer(wx.OK | wx.CANCEL)
-            if buttons is not None:
-                outer.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
+            _ok_btn = wx.Button(dialog, id=wx.ID_OK)
+            _cancel_btn = wx.Button(dialog, id=wx.ID_CANCEL)
+            _apply_btn = wx.Button(dialog, label="&Apply")
+            _apply_btn.SetName("Apply settings without closing")
+            _btn_row = wx.BoxSizer(wx.HORIZONTAL)
+            _btn_row.AddStretchSpacer(1)
+            _btn_row.Add(_ok_btn, 0, wx.RIGHT, 8)
+            _btn_row.Add(_cancel_btn, 0, wx.RIGHT, 8)
+            _btn_row.Add(_apply_btn, 0)
+            outer.Add(_btn_row, 0, wx.EXPAND | wx.ALL, 8)
+
+            _apply_btn.Enable(False)
+
+            def _mark_dirty(_evt: object = None) -> None:
+                if not _dirty[0]:
+                    _dirty[0] = True
+                    _apply_btn.Enable(True)
+
+            def _do_apply() -> None:
+                _c = {k: r() for k, r in readers.items()}
+                upd = self.settings
+                for k, v in _c.items():
+                    upd = registry.set_value(upd, k, v)
+                self.settings = upd
+                _ai_cb2 = _ai_refs.get("ai_enabled_cb")
+                if _ai_cb2 is not None:
+                    save_ai_enabled(bool(_ai_cb2.GetValue()))
+                    self._sync_ai_enabled_menu(bool(_ai_cb2.GetValue()))
+                _ext_cb2 = _ai_refs.get("ext_master_cb")
+                if _ext_cb2 is not None:
+                    from quill.core.ai.external_engine import (
+                        configure_engine,
+                        set_external_engines_enabled,
+                    )
+
+                    set_external_engines_enabled(bool(_ext_cb2.GetValue()))
+                    _nf2 = _ai_refs.get("ext_name_field")
+                    _cf2 = _ai_refs.get("ext_command_field")
+                    _ef2 = _ai_refs.get("ext_engine_enabled_cb")
+                    if _nf2 is not None and _cf2 is not None and str(_nf2.GetValue()).strip():
+                        try:
+                            configure_engine(
+                                str(_nf2.GetValue()),
+                                str(_cf2.GetValue()),
+                                enabled=bool(_ef2.GetValue()) if _ef2 is not None else False,
+                            )
+                        except ValueError as _ve:
+                            self._set_status(str(_ve))
+                _tl_cb2 = _ai_refs.get("ai_menu_top_level_cb")
+                if _tl_cb2 is not None:
+                    self.features.set_feature_enabled(
+                        "future.ai_menu_top_level", bool(_tl_cb2.GetValue())
+                    )
+                self._settings_dialog_apply_refresh("Settings applied")
+                _dirty[0] = False
+                _apply_btn.Enable(False)
+
+            def _on_apply(_evt: object) -> None:
+                _do_apply()
+
+            _apply_btn.Bind(wx.EVT_BUTTON, _on_apply)
+
+            def _build_page(idx: int) -> None:
+                if idx in _built_pages or idx >= len(_page_build_fns):
+                    return
+                _built_pages.add(idx)
+                _page_build_fns[idx]()
+
+            if _page_build_fns:
+                _build_page(0)
+
+            def _on_page_changed(_evt: object) -> None:
+                _build_page(notebook.GetSelection())
+
+            notebook.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, _on_page_changed)
+
             apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
-            dialog.SetSizerAndFit(outer)
+            dialog.SetSize(wx.Size(720, 580))
+            dialog.Layout()
 
             result = self._show_modal_dialog(dialog, "Settings")
             if result == wx.ID_OK:
                 action["mode"] = "ok"
                 collected = {key: reader() for key, reader in readers.items()}
-                ai_value = bool(ai_enabled_cb.GetValue()) if ai_enabled_cb is not None else None
-                ext_master_value = (
-                    bool(ext_master_cb.GetValue()) if ext_master_cb is not None else None
-                )
-                if ext_name_field is not None and ext_command_field is not None:
+                _ai_cb = _ai_refs.get("ai_enabled_cb")
+                ai_value = bool(_ai_cb.GetValue()) if _ai_cb is not None else None
+                _ext_cb = _ai_refs.get("ext_master_cb")
+                ext_master_value = bool(_ext_cb.GetValue()) if _ext_cb is not None else None
+                _nf = _ai_refs.get("ext_name_field")
+                _cf = _ai_refs.get("ext_command_field")
+                _ef = _ai_refs.get("ext_engine_enabled_cb")
+                if _nf is not None and _cf is not None:
                     ext_engine_spec = (
-                        str(ext_name_field.GetValue()),
-                        str(ext_command_field.GetValue()),
-                        bool(ext_engine_enabled_cb.GetValue())
-                        if ext_engine_enabled_cb is not None
-                        else False,
+                        str(_nf.GetValue()),
+                        str(_cf.GetValue()),
+                        bool(_ef.GetValue()) if _ef is not None else False,
                     )
+                _tl_cb = _ai_refs.get("ai_menu_top_level_cb")
+                if _tl_cb is not None:
+                    ai_menu_top_level_value = bool(_tl_cb.GetValue())
 
         mode = action["mode"]
         if mode == "import":
@@ -10084,6 +10541,8 @@ class MainFrame(
                     )
                 except ValueError as error:
                     self._set_status(str(error))
+        if ai_menu_top_level_value is not None:
+            self.features.set_feature_enabled("future.ai_menu_top_level", ai_menu_top_level_value)
         self._settings_dialog_apply_refresh("Updated settings")
 
     def open_ai_preferences(self) -> None:
@@ -10669,7 +11128,21 @@ class MainFrame(
                 wx.ICON_ERROR | wx.OK,
             )
             return False
-        if self._parse_keybinding(new_binding) is None:
+        is_chord = ", " in new_binding
+        if is_chord:
+            prefix_part, _, second_part = new_binding.partition(", ")
+            second_valid = (
+                second_part.strip()
+                and self._parse_chord_second_key(second_part.strip()) is not None
+            )
+            if self._parse_keybinding(prefix_part) is None or not second_valid:
+                self._show_message_box(
+                    "Keybinding format is invalid. Chord format: Ctrl+Shift+Grave, Key",
+                    "Keymap Editor",
+                    wx.ICON_ERROR | wx.OK,
+                )
+                return False
+        elif self._parse_keybinding(new_binding) is None:
             self._show_message_box(
                 "Keybinding format is invalid.",
                 "Keymap Editor",
@@ -11245,6 +11718,7 @@ class MainFrame(
         be located on disk.
         """
         candidates = [
+            Path(__file__).resolve().parent.parent.parent / "docs" / "user guide" / "userguide.md",
             Path(__file__).resolve().parent.parent.parent / "docs" / "userguide.md",
             Path(__file__).resolve().parent.parent / "docs" / "userguide.md",
             Path.cwd() / "docs" / "userguide.md",
@@ -11288,7 +11762,12 @@ class MainFrame(
     def open_third_party_notices(self) -> None:
         project_root = self._project_root_path()
         pyproject_path = self._pyproject_path()
-        notices = render_full_third_party_notices(pyproject_path, project_root)
+        if not pyproject_path.exists():
+            notices = (
+                "# Third-Party Notices\n\nDependency metadata is not available in this build.\n"
+            )
+        else:
+            notices = render_full_third_party_notices(pyproject_path, project_root)
         self._create_document_tab(
             Document(text=notices, path=None, modified=False),
             select=True,
@@ -11304,6 +11783,7 @@ class MainFrame(
         ("Blind Information Technology Solutions (BITS)", "https://bits-acb.org"),
         ("Techopolis", "https://techopolis.app"),
         ("GLOW (Community Access)", "https://letitglow.app"),
+        ("AccessibleApps (Christopher Toth)", "https://github.com/accessibleapps"),
     )
 
     # Contributor / project profiles on GitHub.
@@ -11315,6 +11795,19 @@ class MainFrame(
         ("Becky K on GitHub", "https://github.com/BeckyK102125"),
         ("Doug Langley on GitHub", "https://github.com/douglangley"),
         ("Kelly Ford on GitHub", "https://github.com/kellylford"),
+        (
+            "Kelly Ford: Image Description Toolkit",
+            "https://github.com/kellylford/Image-Description-Toolkit",
+        ),
+        (
+            "Kelly Ford: QuickMail (accessible IMAP client)",
+            "https://github.com/kellylford/QuickMail",
+        ),
+        ("Kelly Ford: RSSQuick (accessible RSS reader)", "https://github.com/kellylford/rssquick"),
+        (
+            "Kelly Ford: ChatViewer (Copilot Chat viewer)",
+            "https://github.com/kellylford/ChatViewer",
+        ),
         (
             "wx-accessible-webview on GitHub",
             "https://github.com/Community-Access/wx-accessible-webview",
@@ -11334,9 +11827,12 @@ class MainFrame(
         from quill.core.contributors import contributor_bullet_list
 
         pyproject_path = self._pyproject_path()
-        dependency_rows = build_dependency_notices(pyproject_path)
         bundled_rows = bundled_component_notices()
-        dependency_table = render_dependency_notice_table(dependency_rows)
+        if pyproject_path.exists():
+            dependency_rows = build_dependency_notices(pyproject_path)
+            dependency_table = render_dependency_notice_table(dependency_rows)
+        else:
+            dependency_table = "_Dependency metadata is not available in this build._"
         bundled_table = render_bundled_component_table(bundled_rows)
         try:
             from quill.core.glow import glow_engine_version_summary
@@ -11352,6 +11848,20 @@ class MainFrame(
             "With sincere thanks to our contributors and beta testers: "
             "Techopolis, Taylor Arndt, Michael Doise, Kayla Bentas, "
             "Shane Popplestone, Doug Langley, Becky K, and Kelly Ford.\n\n"
+            "**Special thanks to Kelly Ford** ([@kellylford](https://github.com/kellylford)) "
+            "for contributing the Vision Prompt Library in QUILL 0.6.0 — 12 IDT-evaluated "
+            "image description styles, the retry-in-dialog workflow, and the Manage Image Prompts "
+            "dialog. Kelly is also the creator of the "
+            "[Image Description Toolkit](https://github.com/kellylford/Image-Description-Toolkit), "
+            "an independent project for accessible image interaction that everyone in the "
+            "accessibility space should know about. His other screen-reader-first tools "
+            "include [QuickMail](https://github.com/kellylford/QuickMail), "
+            "[RSSQuick](https://github.com/kellylford/rssquick), and "
+            "[ChatViewer](https://github.com/kellylford/ChatViewer).\n\n"
+            "Special thanks to **AccessibleApps** (Christopher Toth, "
+            "https://github.com/accessibleapps) for the open-source accessibility libraries "
+            "that QUILL builds on: `app_updater`, `smart_list`, `accessible_output2`, "
+            "`html_to_text`, `app_elements`, `platform_utils`, and `keyboard_handler`.\n\n"
             f"{glow_summary}\n\n"
             "## BITS Whisperer\n\n"
             "BITS Whisperer brings speech and dictation integration to Quill, arriving in "
@@ -11377,24 +11887,20 @@ class MainFrame(
         )
 
     def show_about_quill(self) -> None:
-        from quill.core.browser_preview import render_preview_body
-        from quill.ui.preview_dialog import MarkdownPreviewDialog
+        from quill.ui.info_pages import show_about_quill_native
 
-        body = render_preview_body(self._about_markdown(), "markdown")
-        MarkdownPreviewDialog(self.frame, "About Quill", body).show()
+        show_about_quill_native(
+            self.frame,
+            self._wx,
+            self._about_markdown(),
+            self.open_third_party_notices,
+            self._show_modal_dialog,
+        )
         self._set_status("Opened About Quill")
 
     def show_whisperer_about_page(self) -> None:
-        index = self._open_generated_tab(
-            "About BITS Whisperer",
-            self._build_whisperer_about_html(),
-        )
-        self._select_tab(index)
-        if 0 <= index < len(self._document_tabs):
-            self._show_side_preview_for(self._document_tabs[index])
-        self._set_status("Opened About BITS Whisperer")
+        from quill.ui.info_pages import show_whisperer_about_native
 
-    def _build_whisperer_about_html(self) -> str:
         roadmap_rows = [
             (
                 "Provider and feature-flag gating",
@@ -11427,18 +11933,6 @@ class MainFrame(
                 "Open controlled extension points in Quill once core stability is proven.",
             ),
         ]
-        roadmap_html = "".join(
-            (
-                "<tr>"
-                f"<td>{html.escape(capability)}</td>"
-                f"<td>{html.escape(from_bw)}</td>"
-                f"<td>{html.escape(phase)}</td>"
-                f"<td>{html.escape(notes)}</td>"
-                "</tr>"
-            )
-            for capability, from_bw, phase, notes in roadmap_rows
-        )
-
         principles_rows = [
             (
                 "Accessibility first",
@@ -11448,46 +11942,10 @@ class MainFrame(
             ("Safe rollout", "Feature flags and staged onboarding for predictable adoption."),
             ("Transparent status", "Status pages and notifications for every async operation."),
         ]
-        principles_html = "".join(
-            f"<tr><th scope='row'>{html.escape(name)}</th><td>{html.escape(detail)}</td></tr>"
-            for name, detail in principles_rows
+        show_whisperer_about_native(
+            self.frame, self._wx, roadmap_rows, principles_rows, self._show_modal_dialog
         )
-
-        return (
-            "<h1 id='whisperer-about'>BITS Whisperer and Quill</h1>"
-            "<p>The future is bright. BITS Whisperer patterns are being evaluated "
-            "for selective adoption "
-            "inside Quill to improve accessibility, reliability, and creative flow.</p>"
-            "<h2 id='what-is-coming'>What Is Coming</h2>"
-            "<p>Quill will progressively absorb proven ideas from BITS Whisperer "
-            "in focused phases, "
-            "while preserving Quill's writing-first experience.</p>"
-            "<h2 id='roadmap'>Integration Roadmap</h2>"
-            "<table>"
-            "<caption>Planned feature pull-through from BITS Whisperer into Quill</caption>"
-            "<thead><tr>"
-            "<th scope='col'>Capability</th>"
-            "<th scope='col'>Whisperer Source</th>"
-            "<th scope='col'>Phase</th>"
-            "<th scope='col'>Quill Plan</th>"
-            "</tr></thead>"
-            f"<tbody>{roadmap_html}</tbody>"
-            "</table>"
-            "<h2 id='experience-principles'>Experience Principles</h2>"
-            "<table>"
-            "<caption>User experience principles guiding the integration</caption>"
-            "<thead><tr><th scope='col'>Principle</th>"
-            "<th scope='col'>How it applies</th></tr></thead>"
-            f"<tbody>{principles_html}</tbody>"
-            "</table>"
-            "<h2 id='next-steps'>Next Steps</h2>"
-            "<ol>"
-            "<li>Use Startup Wizard to configure profile, AI, and speech foundation.</li>"
-            "<li>Use Status Page to check on downloads, speech, and what's turned on.</li>"
-            "<li>Iterate in small, accessible milestones with clear release notes.</li>"
-            "</ol>"
-            "<p>It all starts with a whisper that glows and writes with a magical Quill.</p>"
-        )
+        self._set_status("Opened About BITS Whisperer")
 
     def show_external_tools_dialog(self) -> None:
         wx = self._wx
@@ -14363,17 +14821,12 @@ class MainFrame(
                 dectalk_rate=self.settings.read_aloud_dectalk_rate,
                 dectalk_dictionary=self.settings.read_aloud_dectalk_dictionary,
                 end=end,
-                piper_executable=self.settings.read_aloud_piper_executable,
                 piper_model=self.settings.read_aloud_piper_model,
                 kokoro_voice=self.settings.read_aloud_kokoro_voice,
                 kokoro_speed=self.settings.read_aloud_kokoro_speed,
                 espeak_executable=self.settings.read_aloud_espeak_executable,
                 espeak_voice=self.settings.read_aloud_espeak_voice,
                 espeak_rate=self.settings.read_aloud_espeak_rate,
-                openvoice_executable=self.settings.read_aloud_openvoice_executable,
-                openvoice_voice=self.settings.read_aloud_openvoice_voice,
-                openvoice_rate=self.settings.read_aloud_openvoice_rate,
-                openvoice_consent=self.settings.read_aloud_openvoice_consent,
                 sentence_pause_ms=self.settings.read_aloud_sentence_pause_ms,
                 punctuation_level=self.settings.announce_punctuation_level,
                 on_progress=lambda progress_start, progress_end: self._wx.CallAfter(
@@ -14409,7 +14862,6 @@ class MainFrame(
             "dectalk",
             "kokoro",
             "espeak",
-            "openvoice",
         }:
             return True
 
@@ -14492,7 +14944,25 @@ class MainFrame(
         if suffix == ".wav" and _winsound is not None:
             _winsound.PlaySound(str(sample_path), _winsound.SND_FILENAME)
             return
-        raise ReadAloudUnavailableError("Preview sample playback supports WAV files.")
+        # MP3 and other formats: use Windows MCI for in-process synchronous playback.
+        # This avoids opening an external media player.
+        try:
+            import ctypes as _ct
+
+            _winmm = _ct.windll.winmm  # type: ignore[attr-defined]
+            _alias = "quill_preview"
+            _path = str(sample_path).replace('"', "")
+            _winmm.mciSendStringW(f'open "{_path}" type mpegvideo alias {_alias}', None, 0, None)
+            try:
+                _winmm.mciSendStringW(f"play {_alias} wait", None, 0, None)
+            finally:
+                _winmm.mciSendStringW(f"close {_alias}", None, 0, None)
+            return
+        except (AttributeError, OSError):
+            pass
+        import os as _os
+
+        _os.startfile(str(sample_path))
 
     def _preview_voice(self, engine: str, voice_id: str) -> None:
         """Play a short preview of *voice_id* through *engine* on a background thread."""
@@ -14557,21 +15027,6 @@ class MainFrame(
                         voice=voice_id,
                         rate=s.read_aloud_espeak_rate,
                     )
-                elif engine == "openvoice":
-                    if not s.read_aloud_openvoice_consent:
-                        raise ReadAloudUnavailableError(
-                            "OpenVoice requires explicit consent in Read Aloud Settings"
-                        )
-                    exe = discover_openvoice_executable(s.read_aloud_openvoice_executable)
-                    if exe is None:
-                        raise ReadAloudUnavailableError("OpenVoice executable not configured")
-                    synthesize_with_openvoice(
-                        sample,
-                        wav,
-                        executable_path=exe,
-                        voice=voice_id,
-                        rate=s.read_aloud_openvoice_rate,
-                    )
                 else:
                     raise ReadAloudUnavailableError(f"Unknown engine: {engine}")
                 # Play via the existing read-aloud controller so pause/stop work
@@ -14592,19 +15047,12 @@ class MainFrame(
                     dectalk_voice=voice_id if engine == "dectalk" else s.read_aloud_dectalk_voice,
                     dectalk_rate=s.read_aloud_dectalk_rate,
                     dectalk_dictionary=s.read_aloud_dectalk_dictionary,
-                    piper_executable=s.read_aloud_piper_executable,
                     piper_model=voice_id if engine == "piper" else s.read_aloud_piper_model,
                     kokoro_voice=voice_id if engine == "kokoro" else s.read_aloud_kokoro_voice,
                     kokoro_speed=s.read_aloud_kokoro_speed,
                     espeak_executable=s.read_aloud_espeak_executable,
                     espeak_voice=voice_id if engine == "espeak" else s.read_aloud_espeak_voice,
                     espeak_rate=s.read_aloud_espeak_rate,
-                    openvoice_executable=s.read_aloud_openvoice_executable,
-                    openvoice_voice=voice_id
-                    if engine == "openvoice"
-                    else s.read_aloud_openvoice_voice,
-                    openvoice_rate=s.read_aloud_openvoice_rate,
-                    openvoice_consent=s.read_aloud_openvoice_consent,
                     on_state_change=lambda st: done.set() if st in ("idle", "error") else None,
                 )
                 done.wait(timeout=15)
@@ -14621,321 +15069,389 @@ class MainFrame(
             lambda _r: self._set_status("Preview finished"),
         )
 
-    def choose_read_aloud_voice(self) -> None:  # noqa: PLR0912
+    def choose_read_aloud_configuration(self) -> None:  # noqa: PLR0912,PLR0915
+        """Unified Read Aloud dialog: engine selector, voice list, and per-engine settings."""
+        import re as _re
+        import urllib.request as _ureq
+        from pathlib import Path as _Path
+
         wx = self._wx
-        engine = self.settings.read_aloud_engine.strip().lower() or "pyttsx3"
+        _TITLE = "Read Aloud"
 
-        if (
-            engine == "dectalk"
-            and discover_dectalk_executable(self.settings.read_aloud_dectalk_executable) is None
-        ):
-            self._show_message_box(
-                "DECtalk is not installed/configured.",
-                "Read Aloud Voice",
-                wx.ICON_INFORMATION | wx.OK,
-            )
-            return
-        if (
-            engine == "espeak"
-            and discover_espeak_executable(self.settings.read_aloud_espeak_executable) is None
-        ):
-            self._show_message_box(
-                "eSpeak-NG is not installed/configured.",
-                "Read Aloud Voice",
-                wx.ICON_INFORMATION | wx.OK,
-            )
-            return
-
-        if engine == "dectalk":
-            voices = list_dectalk_voices()
-            current_voice_id = self.settings.read_aloud_dectalk_voice
-        elif engine == "piper":
-            voices = list_piper_voices(self.settings.read_aloud_piper_model_dir)
-            if not voices:
-                voices = [
-                    ReadAloudVoiceOption(id=voice_id, name=f"{voice_id} (preview sample)")
-                    for voice_id in self._voice_preview_voice_ids("piper")
-                ]
-            current_voice_id = self.settings.read_aloud_piper_model
-        elif engine == "kokoro":
-            voices = list_kokoro_voices()
-            current_voice_id = self.settings.read_aloud_kokoro_voice
-        elif engine == "espeak":
-            voices = list_espeak_english_voices()
-            current_voice_id = self.settings.read_aloud_espeak_voice
-        elif engine == "openvoice":
-            voices = list_openvoice_english_voices()
-            current_voice_id = self.settings.read_aloud_openvoice_voice
-        else:
-            voices = list_voices()
-            current_voice_id = self.settings.read_aloud_voice
-
-        voices = self._english_only_voices(engine, voices)
-
-        if not voices:
-            self._show_message_box(
-                "No English voices were found for this engine.",
-                "Read Aloud Voice",
-                wx.ICON_INFORMATION | wx.OK,
-            )
-            return
-
-        dialog = wx.Dialog(self.frame, title="Read Aloud Voice", size=(640, 460))
-        root = wx.BoxSizer(wx.VERTICAL)
-        root.Add(
-            wx.StaticText(
-                dialog,
-                label=f"Choose an English voice for {engine}. Use Preview before confirming.",
-            ),
-            0,
-            wx.LEFT | wx.RIGHT | wx.TOP,
-            8,
-        )
-        choices = [v.name for v in voices]
-        list_box = wx.ListBox(dialog, choices=choices, style=wx.LB_SINGLE)
-        current_index = next((i for i, v in enumerate(voices) if v.id == current_voice_id), 0)
-        if choices:
-            list_box.SetSelection(current_index)
-        root.Add(list_box, 1, wx.EXPAND | wx.ALL, 8)
-        button_row = wx.BoxSizer(wx.HORIZONTAL)
-        preview_btn = wx.Button(dialog, label="&Preview")
-        ok_btn = wx.Button(dialog, id=wx.ID_OK)
-        cancel_btn = wx.Button(dialog, id=wx.ID_CANCEL)
-        button_row.AddStretchSpacer(1)
-        button_row.Add(preview_btn, 0, wx.RIGHT, 8)
-        button_row.Add(ok_btn, 0, wx.RIGHT, 8)
-        button_row.Add(cancel_btn, 0)
-        root.Add(button_row, 0, wx.ALL | wx.EXPAND, 8)
-        dialog.SetSizerAndFit(root)
-
-        def _selected_index() -> int:
-            return list_box.GetSelection()
-
-        def _on_preview(_evt: wx.CommandEvent) -> None:
-            idx = _selected_index()
-            if 0 <= idx < len(voices):
-                self._preview_voice(engine, voices[idx].id)
-
-        preview_btn.Bind(wx.EVT_BUTTON, _on_preview)
-        try:
-            apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
-            if self._show_modal_dialog(dialog, "Read Aloud Voice") != wx.ID_OK:
-                self._set_status("Read aloud voice selection cancelled")
-                return
-            selected = _selected_index()
-        finally:
-            dialog.Destroy()
-
-        if selected < 0 or selected >= len(voices):
-            return
-        if engine == "dectalk":
-            self.settings.read_aloud_dectalk_voice = voices[selected].id
-        elif engine == "piper":
-            self.settings.read_aloud_piper_model = voices[selected].id
-        elif engine == "kokoro":
-            self.settings.read_aloud_kokoro_voice = voices[selected].id
-        elif engine == "espeak":
-            self.settings.read_aloud_espeak_voice = voices[selected].id
-        elif engine == "openvoice":
-            self.settings.read_aloud_openvoice_voice = voices[selected].id
-        else:
-            self.settings.read_aloud_voice = voices[selected].id
-        save_settings(self.settings)
-        self._set_status(f"Selected voice: {voices[selected].name}")
-
-    def choose_read_aloud_settings(self) -> None:  # noqa: PLR0912,PLR0915
-        wx = self._wx
-        _TITLE = "Read Aloud Settings"
         dectalk_available = (
             discover_dectalk_executable(self.settings.read_aloud_dectalk_executable) is not None
         )
         espeak_available = (
             discover_espeak_executable(self.settings.read_aloud_espeak_executable) is not None
         )
-        engine_options = [
-            ("Pyttsx3 (System TTS)", "pyttsx3"),
-            ("DECtalk", "dectalk"),
-            ("Piper (neural, offline)", "piper"),
-            ("Kokoro (neural, offline)", "kokoro"),
-            ("eSpeak-NG (English variants)", "espeak"),
-            ("OpenVoice (advanced style module)", "openvoice"),
-        ]
-        engine_options = [
-            option
-            for option in engine_options
-            if option[1] not in {"dectalk", "espeak"}
-            or (option[1] == "dectalk" and dectalk_available)
-            or (option[1] == "espeak" and espeak_available)
-        ]
-        engine_choices = [label for label, _ in engine_options]
-        engine_values = [value for _, value in engine_options]
-        with wx.SingleChoiceDialog(
-            self.frame,
-            "Choose read-aloud engine:",
-            _TITLE,
-            choices=engine_choices,
-        ) as engine_dialog:
-            current_engine = self.settings.read_aloud_engine.strip().lower() or "pyttsx3"
-            if current_engine not in engine_values:
-                current_engine = "pyttsx3"
-            current_index = (
-                engine_values.index(current_engine) if current_engine in engine_values else 0
-            )
-            engine_dialog.SetSelection(current_index)
-            if self._show_modal_dialog(engine_dialog, _TITLE) != wx.ID_OK:
-                self._set_status("Read aloud settings cancelled")
-                return
-            selected_engine = engine_values[engine_dialog.GetSelection()]
-        self.settings.read_aloud_engine = selected_engine
 
-        def _ask_text(prompt: str, current: str) -> str | None:
-            with wx.TextEntryDialog(self.frame, prompt, _TITLE, value=current) as d:
-                if self._show_modal_dialog(d, _TITLE) != wx.ID_OK:
+        engine_options: list[tuple[str, str]] = [("Pyttsx3 (System TTS)", "pyttsx3")]
+        if dectalk_available:
+            engine_options.append(("DECtalk", "dectalk"))
+        engine_options.append(("Piper (neural, offline)", "piper"))
+        engine_options.append(("Kokoro (neural, offline)", "kokoro"))
+        if espeak_available:
+            engine_options.append(("eSpeak-NG (English variants)", "espeak"))
+
+        engine_labels = [lbl for lbl, _ in engine_options]
+        engine_values = [val for _, val in engine_options]
+
+        current_engine = self.settings.read_aloud_engine.strip().lower() or "pyttsx3"
+        if current_engine not in engine_values:
+            current_engine = "pyttsx3"
+
+        _piper_model_dir = default_piper_model_dir()
+
+        def _voices_for_engine(eng: str) -> list[ReadAloudVoiceOption]:
+            if eng == "dectalk":
+                return list_dectalk_voices()
+            if eng == "piper":
+                return list_piper_catalog_voices(_piper_model_dir)
+            if eng == "kokoro":
+                return list_kokoro_voices()
+            if eng == "espeak":
+                return list_espeak_english_voices()
+            return self._english_only_voices("pyttsx3", list_voices())
+
+        def _current_voice_id(eng: str) -> str:
+            if eng == "dectalk":
+                return self.settings.read_aloud_dectalk_voice
+            if eng == "piper":
+                return (
+                    _Path(self.settings.read_aloud_piper_model).stem
+                    if self.settings.read_aloud_piper_model
+                    else ""
+                )
+            if eng == "kokoro":
+                return self.settings.read_aloud_kokoro_voice
+            if eng == "espeak":
+                return self.settings.read_aloud_espeak_voice
+            return self.settings.read_aloud_voice
+
+        dialog = wx.Dialog(self.frame, title=_TITLE, size=(740, 560))
+        outer = wx.BoxSizer(wx.VERTICAL)
+
+        engine_rb = wx.RadioBox(
+            dialog, label="Engine", choices=engine_labels, style=wx.RA_SPECIFY_ROWS
+        )
+        engine_rb.SetName("Engine")
+        engine_rb.SetSelection(
+            engine_values.index(current_engine) if current_engine in engine_values else 0
+        )
+        outer.Add(engine_rb, 0, wx.EXPAND | wx.ALL, 8)
+
+        outer.Add(wx.StaticText(dialog, label="Voice:"), 0, wx.LEFT | wx.RIGHT, 8)
+        voices: list[ReadAloudVoiceOption] = _voices_for_engine(current_engine)
+        voice_lb = wx.ListBox(dialog, choices=[v.name for v in voices], style=wx.LB_SINGLE)
+        voice_lb.SetName("Voice")
+        if voices:
+            cur_vid = _current_voice_id(current_engine)
+            voice_lb.SetSelection(next((i for i, v in enumerate(voices) if v.id == cur_vid), 0))
+        outer.Add(voice_lb, 1, wx.EXPAND | wx.ALL, 8)
+
+        settings_box = wx.StaticBoxSizer(wx.VERTICAL, dialog, "Settings")
+        settings_sb = settings_box.GetStaticBox()
+
+        rate_row = wx.BoxSizer(wx.HORIZONTAL)
+        rate_lbl = wx.StaticText(settings_sb, label="Rate:")
+        rate_spin = wx.SpinCtrl(settings_sb, min=80, max=450, initial=self.settings.read_aloud_rate)
+        rate_spin.SetName("Rate (words per minute)")
+        rate_row.Add(rate_lbl, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
+        rate_row.Add(rate_spin, 1, wx.EXPAND)
+        settings_box.Add(rate_row, 0, wx.EXPAND | wx.ALL, 4)
+
+        volume_row = wx.BoxSizer(wx.HORIZONTAL)
+        vol_lbl = wx.StaticText(settings_sb, label="Volume (0-100):")
+        vol_spin = wx.SpinCtrl(settings_sb, min=0, max=100, initial=self.settings.read_aloud_volume)
+        vol_spin.SetName("Volume")
+        volume_row.Add(vol_lbl, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
+        volume_row.Add(vol_spin, 1, wx.EXPAND)
+        settings_box.Add(volume_row, 0, wx.EXPAND | wx.ALL, 4)
+
+        pitch_row = wx.BoxSizer(wx.HORIZONTAL)
+        pitch_lbl = wx.StaticText(settings_sb, label="Pitch (0-100):")
+        pitch_spin = wx.SpinCtrl(
+            settings_sb, min=0, max=100, initial=self.settings.read_aloud_pitch
+        )
+        pitch_spin.SetName("Pitch")
+        pitch_row.Add(pitch_lbl, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
+        pitch_row.Add(pitch_spin, 1, wx.EXPAND)
+        settings_box.Add(pitch_row, 0, wx.EXPAND | wx.ALL, 4)
+
+        kokoro_row = wx.BoxSizer(wx.HORIZONTAL)
+        kok_lbl = wx.StaticText(settings_sb, label="Speed (0.5-2.0):")
+        kok_spin = wx.SpinCtrlDouble(
+            settings_sb, min=0.5, max=2.0, initial=self.settings.read_aloud_kokoro_speed, inc=0.1
+        )
+        kok_spin.SetName("Speed multiplier")
+        for _kok_child in kok_spin.GetChildren():
+            if isinstance(_kok_child, wx.TextCtrl):
+                _kok_child.SetName("Speed multiplier")
+                break
+        kokoro_row.Add(kok_lbl, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
+        kokoro_row.Add(kok_spin, 1, wx.EXPAND)
+        settings_box.Add(kokoro_row, 0, wx.EXPAND | wx.ALL, 4)
+
+        outer.Add(settings_box, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+
+        btn_row = wx.BoxSizer(wx.HORIZONTAL)
+        preview_btn = wx.Button(dialog, label="&Preview")
+        preview_btn.SetName("Preview selected voice")
+        download_btn = wx.Button(dialog, label="&Download voice...")
+        download_btn.SetName("Download selected voice model")
+        ok_btn = wx.Button(dialog, id=wx.ID_OK)
+        cancel_btn = wx.Button(dialog, id=wx.ID_CANCEL)
+        btn_row.Add(preview_btn, 0, wx.RIGHT, 8)
+        btn_row.Add(download_btn, 0, wx.RIGHT, 8)
+        btn_row.AddStretchSpacer(1)
+        btn_row.Add(ok_btn, 0, wx.RIGHT, 8)
+        btn_row.Add(cancel_btn, 0)
+        outer.Add(btn_row, 0, wx.EXPAND | wx.ALL, 8)
+        dialog.SetSizer(outer)
+
+        def _update_for_engine(eng: str) -> None:
+            nonlocal voices
+            voices = _voices_for_engine(eng)
+            voice_lb.Set([v.name for v in voices])
+            if voices:
+                vid = _current_voice_id(eng)
+                voice_lb.SetSelection(next((i for i, vv in enumerate(voices) if vv.id == vid), 0))
+            has_rate = eng in {"pyttsx3", "dectalk", "espeak"}
+            has_vol_pitch = eng == "pyttsx3"
+            has_kokoro = eng == "kokoro"
+            has_settings = has_rate or has_vol_pitch or has_kokoro
+            if eng == "pyttsx3":
+                rate_spin.SetRange(80, 450)
+                rate_spin.SetValue(self.settings.read_aloud_rate)
+            elif eng == "dectalk":
+                rate_spin.SetRange(75, 650)
+                rate_spin.SetValue(self.settings.read_aloud_dectalk_rate)
+            elif eng == "espeak":
+                rate_spin.SetRange(80, 450)
+                rate_spin.SetValue(self.settings.read_aloud_espeak_rate)
+            settings_box.Show(rate_row, has_rate, recursive=True)
+            settings_box.Show(volume_row, has_vol_pitch, recursive=True)
+            settings_box.Show(pitch_row, has_vol_pitch, recursive=True)
+            settings_box.Show(kokoro_row, has_kokoro, recursive=True)
+            settings_sb.Show(has_settings)
+            settings_box.ShowItems(has_settings)
+            show_dl = eng in {"piper", "kokoro"}
+            download_btn.Show(show_dl)
+            if eng == "piper":
+                download_btn.SetLabel("&Download Piper voice...")
+            elif eng == "kokoro":
+                download_btn.SetLabel("&Download Kokoro (~114 MB)...")
+            dialog.Layout()
+
+        _update_for_engine(current_engine)
+
+        def _on_engine_change(_evt: object) -> None:
+            sel = engine_rb.GetSelection()
+            if 0 <= sel < len(engine_values):
+                _update_for_engine(engine_values[sel])
+
+        engine_rb.Bind(wx.EVT_RADIOBOX, _on_engine_change)
+
+        def _on_preview(_evt: object) -> None:
+            eng = engine_values[engine_rb.GetSelection()]
+            idx = voice_lb.GetSelection()
+            if 0 <= idx < len(voices):
+                self._preview_voice(eng, voices[idx].id)
+
+        preview_btn.Bind(wx.EVT_BUTTON, _on_preview)
+
+        def _on_download(_evt: object) -> None:
+            eng = engine_values[engine_rb.GetSelection()]
+            if eng == "piper":
+                idx = voice_lb.GetSelection()
+                if idx < 0 or idx >= len(voices):
+                    return
+                voice_id = voices[idx].id
+                m = _re.match(r"^(en_[A-Z]+)-([^-]+)-(\w+)$", voice_id)
+                if m is None:
+                    self._show_message_box(
+                        f"Cannot determine download URL for: {voice_id}",
+                        _TITLE,
+                        wx.ICON_WARNING | wx.OK,
+                    )
+                    return
+                lang_code, voice_name, quality = m.group(1), m.group(2), m.group(3)
+                lang_family = lang_code.split("_")[0]
+                base = (
+                    "https://huggingface.co/rhasspy/piper-voices/resolve/main"
+                    f"/{lang_family}/{lang_code}/{voice_name}/{quality}"
+                )
+                onnx_url = f"{base}/{voice_id}.onnx"
+                json_url = f"{base}/{voice_id}.onnx.json"
+                onnx_path = _piper_model_dir / f"{voice_id}.onnx"
+                json_path = _piper_model_dir / f"{voice_id}.onnx.json"
+                if onnx_path.exists() and json_path.exists():
+                    self._set_status(f"Already downloaded: {voice_id}")
+                    return
+                _piper_model_dir.mkdir(parents=True, exist_ok=True)
+
+                def _dl_piper(
+                    _progress: Callable[[str, int, int], None],
+                    _ou: str = onnx_url,
+                    _ju: str = json_url,
+                    _op: _Path = onnx_path,
+                    _jp: _Path = json_path,
+                ) -> object:
+                    for url, path in [(_ou, _op), (_ju, _jp)]:
+                        _progress(f"Downloading {path.name}...", 0, 0)
+                        with _ureq.urlopen(url, timeout=120) as resp:  # noqa: S310
+                            total = int(resp.headers.get("Content-Length", 0))
+                            downloaded_bytes = 0
+                            chunks = []
+                            while True:
+                                chunk = resp.read(65536)
+                                if not chunk:
+                                    break
+                                chunks.append(chunk)
+                                downloaded_bytes += len(chunk)
+                                if total:
+                                    _progress(
+                                        f"Downloading {path.name}...",
+                                        downloaded_bytes,
+                                        total,
+                                    )
+                        path.write_bytes(b"".join(chunks))
                     return None
-                return d.GetValue().strip()
 
-        def _ask_int(prompt: str, current: int, lo: int, hi: int) -> int | None:
-            val = _ask_text(f"{prompt} ({lo}–{hi}):", str(current))
-            if val is None:
-                return None
-            try:
-                return max(lo, min(hi, int(val)))
-            except ValueError:
-                return current
+                def _on_piper_done(_result: object, _vid: str = voice_id) -> None:
+                    self._set_status(f"Piper voice {_vid} downloaded.")
+                    refreshed = list_piper_catalog_voices(_piper_model_dir)
+                    voice_lb.Set([v.name for v in refreshed])
+                    voices[:] = refreshed
+                    new_idx = next((i for i, vv in enumerate(refreshed) if vv.id == _vid), 0)
+                    if refreshed:
+                        voice_lb.SetSelection(new_idx)
 
-        def _ask_float(prompt: str, current: float, lo: float, hi: float) -> float | None:
-            val = _ask_text(f"{prompt} ({lo:.1f}–{hi:.1f}):", f"{current:.2f}")
-            if val is None:
-                return None
-            try:
-                return max(lo, min(hi, float(val)))
-            except ValueError:
-                return current
+                self._run_background_task(
+                    f"Downloading Piper voice {voice_id}", _dl_piper, _on_piper_done
+                )
 
-        # ---- per-engine settings ----
-        if selected_engine == "pyttsx3":
-            v = _ask_int("Speaking rate (words per minute)", self.settings.read_aloud_rate, 80, 450)
-            if v is None:
-                self._set_status("Read aloud settings cancelled")
-                return
-            self.settings.read_aloud_rate = v
-            v2 = _ask_int("Volume (0–100)", self.settings.read_aloud_volume, 0, 100)
-            if v2 is None:
-                self._set_status("Read aloud settings cancelled")
-                return
-            self.settings.read_aloud_volume = v2
-            v3 = _ask_int("Pitch (0–100)", self.settings.read_aloud_pitch, 0, 100)
-            if v3 is None:
-                self._set_status("Read aloud settings cancelled")
-                return
-            self.settings.read_aloud_pitch = v3
+            elif eng == "kokoro":
+                from quill.core.read_aloud import (
+                    KOKORO_ONNX_MODEL_FILENAME,
+                    KOKORO_ONNX_MODEL_URL,
+                    KOKORO_ONNX_VOICES_FILENAME,
+                    KOKORO_ONNX_VOICES_URL,
+                    default_kokoro_model_dir,
+                    kokoro_onnx_ready,
+                )
 
-        elif selected_engine == "dectalk":
-            exe = _ask_text(
-                "Path to DECtalk speak.exe:", self.settings.read_aloud_dectalk_executable
-            )
-            if exe is None:
-                self._set_status("Read aloud settings cancelled")
-                return
-            self.settings.read_aloud_dectalk_executable = exe
-            dic = _ask_text(
-                "Optional path to dtalk_us.dic (leave blank to auto-detect):",
-                self.settings.read_aloud_dectalk_dictionary,
-            )
-            if dic is None:
-                self._set_status("Read aloud settings cancelled")
-                return
-            self.settings.read_aloud_dectalk_dictionary = dic
-            v = _ask_int("Speaking rate", self.settings.read_aloud_dectalk_rate, 75, 650)
-            if v is None:
-                self._set_status("Read aloud settings cancelled")
-                return
-            self.settings.read_aloud_dectalk_rate = v
+                dest_dir = default_kokoro_model_dir()
+                dest_dir.mkdir(parents=True, exist_ok=True)
+                model_path = dest_dir / KOKORO_ONNX_MODEL_FILENAME
+                voices_path = dest_dir / KOKORO_ONNX_VOICES_FILENAME
 
-        elif selected_engine == "piper":
-            exe = _ask_text("Path to piper.exe:", self.settings.read_aloud_piper_executable)
-            if exe is None:
-                self._set_status("Read aloud settings cancelled")
-                return
-            self.settings.read_aloud_piper_executable = exe
-            model_dir = _ask_text(
-                "Directory containing Piper .onnx model files (for voice list):",
-                self.settings.read_aloud_piper_model_dir,
-            )
-            if model_dir is None:
-                self._set_status("Read aloud settings cancelled")
-                return
-            self.settings.read_aloud_piper_model_dir = model_dir
+                def _dl_kokoro(_progress: Callable[[str, int, int], None]) -> object:
+                    for url, path in [
+                        (KOKORO_ONNX_VOICES_URL, voices_path),
+                        (KOKORO_ONNX_MODEL_URL, model_path),
+                    ]:
+                        if path.exists():
+                            _progress(f"{path.name} already present; skipping.", 0, 0)
+                            continue
+                        _progress(f"Downloading {path.name}...", 0, 0)
+                        with _ureq.urlopen(url, timeout=300) as resp:  # noqa: S310
+                            total = int(resp.headers.get("Content-Length", 0))
+                            downloaded_bytes = 0
+                            chunks = []
+                            while True:
+                                chunk = resp.read(65536)
+                                if not chunk:
+                                    break
+                                chunks.append(chunk)
+                                downloaded_bytes += len(chunk)
+                                if total:
+                                    _progress(
+                                        f"Downloading {path.name}...", downloaded_bytes, total
+                                    )
+                        path.write_bytes(b"".join(chunks))
+                    return None
 
-        elif selected_engine == "kokoro":
-            v = _ask_float(
-                "Speaking speed multiplier", self.settings.read_aloud_kokoro_speed, 0.5, 2.0
-            )
-            if v is None:
-                self._set_status("Read aloud settings cancelled")
-                return
-            self.settings.read_aloud_kokoro_speed = v
+                def _on_kokoro_done(_result: object) -> None:
+                    if kokoro_onnx_ready():
+                        try:
+                            import kokoro_onnx  # noqa: F401
 
-        elif selected_engine == "espeak":
-            exe = _ask_text(
-                "Path to espeak-ng.exe (leave blank to use PATH):",
-                self.settings.read_aloud_espeak_executable,
-            )
-            if exe is None:
-                self._set_status("Read aloud settings cancelled")
-                return
-            self.settings.read_aloud_espeak_executable = exe
-            v = _ask_int(
-                "Speaking rate (words per minute)", self.settings.read_aloud_espeak_rate, 80, 450
-            )
-            if v is None:
-                self._set_status("Read aloud settings cancelled")
-                return
-            self.settings.read_aloud_espeak_rate = v
+                            self._set_status("Kokoro models ready. Select a voice and click OK.")
+                        except ImportError:
+                            self._set_status(
+                                "Models downloaded. Run 'pip install kokoro-onnx soundfile'"
+                                " to enable synthesis, then restart Quill."
+                            )
+                    else:
+                        self._set_status("Kokoro download failed; check your internet connection.")
 
-        elif selected_engine == "openvoice":
-            exe = _ask_text(
-                "Path to OpenVoice executable:", self.settings.read_aloud_openvoice_executable
-            )
-            if exe is None:
-                self._set_status("Read aloud settings cancelled")
-                return
-            self.settings.read_aloud_openvoice_executable = exe
-            v = _ask_int("Speaking rate", self.settings.read_aloud_openvoice_rate, 80, 450)
-            if v is None:
-                self._set_status("Read aloud settings cancelled")
-                return
-            self.settings.read_aloud_openvoice_rate = v
-            consent = self._show_message_box(
-                "OpenVoice can apply advanced voice style transforms. "
-                "Enable this only if you consent\n"
-                "to advanced style processing workflows for this machine.",
-                _TITLE,
-                wx.YES_NO | wx.ICON_QUESTION,
-            )
-            self.settings.read_aloud_openvoice_consent = consent == wx.YES
+                self._run_background_task("Downloading Kokoro models", _dl_kokoro, _on_kokoro_done)
 
-        # Always offer a preview of the current voice with new settings
-        current_voice = {
-            "pyttsx3": self.settings.read_aloud_voice,
-            "dectalk": self.settings.read_aloud_dectalk_voice,
-            "piper": self.settings.read_aloud_piper_model,
-            "kokoro": self.settings.read_aloud_kokoro_voice,
-            "espeak": self.settings.read_aloud_espeak_voice,
-            "openvoice": self.settings.read_aloud_openvoice_voice,
-        }.get(selected_engine, "")
-        with wx.MessageDialog(
-            self.frame,
-            f"Settings saved for {engine_choices[engine_values.index(selected_engine)]}.\n\n"
-            "Would you like to hear a preview with the current voice?",
-            _TITLE,
-            wx.YES_NO | wx.ICON_QUESTION,
-        ) as confirm:
-            save_settings(self.settings)
-            if self._show_modal_dialog(confirm, _TITLE) == wx.ID_YES:
-                self._preview_voice(selected_engine, current_voice)
-        engine_label = engine_choices[engine_values.index(selected_engine)]
-        self._set_status(f"Read aloud engine set to {engine_label}")
+        download_btn.Bind(wx.EVT_BUTTON, _on_download)
+
+        sel_engine: list[str] = [current_engine]
+        sel_voice_idx: list[int] = [-1]
+
+        apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
+        try:
+            result = self._show_modal_dialog(dialog, _TITLE)
+            if result == wx.ID_OK:
+                sel_engine[0] = engine_values[engine_rb.GetSelection()]
+                sel_voice_idx[0] = voice_lb.GetSelection()
+        finally:
+            dialog.Destroy()
+
+        if result != wx.ID_OK:
+            self._set_status("Read aloud configuration cancelled")
+            return
+
+        eng = sel_engine[0]
+        idx = sel_voice_idx[0]
+        self.settings.read_aloud_engine = eng
+
+        if 0 <= idx < len(voices):
+            if eng == "dectalk":
+                self.settings.read_aloud_dectalk_voice = voices[idx].id
+            elif eng == "piper":
+                onnx_path = _piper_model_dir / f"{voices[idx].id}.onnx"
+                if onnx_path.exists():
+                    self.settings.read_aloud_piper_model = str(onnx_path)
+                else:
+                    self._show_message_box(
+                        f"'{voices[idx].name.split(' [')[0]}' is not downloaded yet.\n"
+                        "Use the Download button to fetch it first.",
+                        _TITLE,
+                        wx.ICON_INFORMATION | wx.OK,
+                    )
+                    self.settings.read_aloud_engine = current_engine
+                    return
+            elif eng == "kokoro":
+                self.settings.read_aloud_kokoro_voice = voices[idx].id
+            elif eng == "espeak":
+                self.settings.read_aloud_espeak_voice = voices[idx].id
+            else:
+                self.settings.read_aloud_voice = voices[idx].id
+
+        if eng == "pyttsx3":
+            self.settings.read_aloud_rate = rate_spin.GetValue()
+            self.settings.read_aloud_volume = vol_spin.GetValue()
+            self.settings.read_aloud_pitch = pitch_spin.GetValue()
+        elif eng == "dectalk":
+            self.settings.read_aloud_dectalk_rate = rate_spin.GetValue()
+        elif eng == "espeak":
+            self.settings.read_aloud_espeak_rate = rate_spin.GetValue()
+        elif eng == "kokoro":
+            self.settings.read_aloud_kokoro_speed = kok_spin.GetValue()
+
+        save_settings(self.settings)
+        self._set_status(f"Read aloud configured: {engine_labels[engine_values.index(eng)]}")
+
+    def choose_read_aloud_voice(self) -> None:
+        self.choose_read_aloud_configuration()
+
+    def choose_read_aloud_settings(self) -> None:
+        self.choose_read_aloud_configuration()
 
     def generate_speech_audio(self) -> None:  # noqa: PLR0912,PLR0915
         wx = self._wx
@@ -14966,22 +15482,16 @@ class MainFrame(
 
         # Resolve / prompt for engine-specific paths before background work
         if engine == "piper":
-            exe = discover_piper_executable(s.read_aloud_piper_executable)
+            exe = discover_piper_executable()
             if exe is None:
-                with wx.TextEntryDialog(
-                    self.frame, "Path to piper.exe:", _TITLE, value=s.read_aloud_piper_executable
-                ) as d:
-                    if self._show_modal_dialog(d, _TITLE) != wx.ID_OK:
-                        self._set_status("Speech generation cancelled")
-                        return
-                    exe = discover_piper_executable(d.GetValue().strip())
-                if exe is None:
-                    self._show_message_box(
-                        "Piper executable not found.", _TITLE, wx.ICON_ERROR | wx.OK
-                    )
-                    self._set_status("Speech generation cancelled")
-                    return
-                s.read_aloud_piper_executable = str(exe)
+                self._show_message_box(
+                    "Piper executable was not found. "
+                    "Re-run the Quill installer and select the Piper component.",
+                    _TITLE,
+                    wx.ICON_ERROR | wx.OK,
+                )
+                self._set_status("Speech generation cancelled")
+                return
             model = Path(s.read_aloud_piper_model).expanduser()
             if not s.read_aloud_piper_model or not model.exists():
                 with wx.FileDialog(
@@ -15022,26 +15532,6 @@ class MainFrame(
                 return
             espeak_exe_snap = exe
 
-        elif engine == "openvoice":
-            if not s.read_aloud_openvoice_consent:
-                self._show_message_box(
-                    "OpenVoice requires explicit consent in Read Aloud Settings.",
-                    _TITLE,
-                    wx.ICON_ERROR | wx.OK,
-                )
-                self._set_status("Speech generation cancelled")
-                return
-            exe = discover_openvoice_executable(s.read_aloud_openvoice_executable)
-            if exe is None:
-                self._show_message_box(
-                    "OpenVoice executable not found. Configure it in Read Aloud Settings.",
-                    _TITLE,
-                    wx.ICON_ERROR | wx.OK,
-                )
-                self._set_status("Speech generation cancelled")
-                return
-            openvoice_exe_snap = exe
-
         save_settings(s)
         task_label = f"Generating speech audio ({output_path.name}) via {engine}"
 
@@ -15056,8 +15546,6 @@ class MainFrame(
         _kokoro_speed = s.read_aloud_kokoro_speed
         _espeak_voice = s.read_aloud_espeak_voice
         _espeak_rate = s.read_aloud_espeak_rate
-        _openvoice_voice = s.read_aloud_openvoice_voice
-        _openvoice_rate = s.read_aloud_openvoice_rate
         _out = output_path
 
         def work(progress: Callable[[str, int, int], None]) -> object:
@@ -15090,14 +15578,6 @@ class MainFrame(
                     executable_path=espeak_exe_snap,
                     voice=_espeak_voice,
                     rate=_espeak_rate,
-                )
-            elif _engine == "openvoice":
-                synthesize_with_openvoice(
-                    _out_text,
-                    _out,
-                    executable_path=openvoice_exe_snap,
-                    voice=_openvoice_voice,
-                    rate=_openvoice_rate,
                 )
             progress("Finalizing output", 1, 1)
             return str(_out)
@@ -15452,7 +15932,9 @@ class MainFrame(
         self._show_message_box("\n".join(lines), "BITS Whisperer Readiness", self._wx.OK)
         self._set_status("BITS Whisperer readiness check complete")
 
-    def _build_bw_capability_matrix_html(self) -> str:
+    def show_bw_capability_matrix_page(self) -> None:
+        from quill.ui.info_pages import show_bw_capability_matrix_native
+
         snapshot = self._bw_readiness_snapshot()
         rows = [
             (
@@ -15488,47 +15970,9 @@ class MainFrame(
                 "Cloud and advanced routing behavior is delayed until validation is complete.",
             ),
         ]
-        rows_html = "".join(
-            (
-                "<tr>"
-                f"<th scope='row'>{html.escape(name)}</th>"
-                f"<td>{html.escape(phase)}</td>"
-                f"<td>{html.escape(status)}</td>"
-                f"<td>{html.escape(notes)}</td>"
-                "</tr>"
-            )
-            for name, phase, status, notes in rows
+        show_bw_capability_matrix_native(
+            self.frame, self._wx, rows, snapshot, self._show_modal_dialog
         )
-        return (
-            "<h1 id='bw-capability-matrix'>BITS Whisperer Capability Matrix</h1>"
-            "<p>This matrix shows rollout-safe capabilities currently staged in Quill.</p>"
-            "<table>"
-            "<caption>Capability status by rollout phase</caption>"
-            "<thead><tr>"
-            "<th scope='col'>Capability</th><th scope='col'>Phase</th>"
-            "<th scope='col'>Status</th><th scope='col'>Notes</th>"
-            "</tr></thead>"
-            f"<tbody>{rows_html}</tbody>"
-            "</table>"
-            "<h2 id='current-snapshot'>Current Snapshot</h2>"
-            "<ul>"
-            f"<li>Provider mode: {html.escape(str(snapshot['provider_mode']))}</li>"
-            f"<li>Configured provider: {html.escape(str(snapshot['provider_name']))}</li>"
-            f"<li>Speech model mode: {html.escape(str(snapshot['speech_model_mode']))}</li>"
-            f"<li>Configured speech model: {html.escape(str(snapshot['speech_model_id']))}</li>"
-            f"<li>Downloaded whisper models: {snapshot['downloaded_model_count']} "
-            f"of {snapshot['available_model_count']}</li>"
-            "</ul>"
-        )
-
-    def show_bw_capability_matrix_page(self) -> None:
-        index = self._open_generated_tab(
-            "BITS Whisperer Capability Matrix",
-            self._build_bw_capability_matrix_html(),
-        )
-        self._select_tab(index)
-        if 0 <= index < len(self._document_tabs):
-            self._show_side_preview_for(self._document_tabs[index])
         self._set_status("Opened BITS Whisperer capability matrix")
 
     def _start_bw_model_download(self, spec: object) -> None:
@@ -16995,207 +17439,131 @@ class MainFrame(
             dialog.Destroy()
 
     def show_help_status_page(self) -> None:
+        from quill.ui.status_dialog import HelpStatusDialog
+
         self._ensure_status_page_timer()
-        indexes = self._status_tab_indexes()
-        if indexes:
-            index = indexes[0]
-            self._select_tab(index)
-            self._refresh_help_status_tabs()
+        dlg = getattr(self, "_help_status_dialog", None)
+        if dlg is not None and dlg.is_alive():
+            dlg.refresh(self._build_help_status_data())
+            dlg.show()
         else:
-            report_html = self._build_help_status_html()
-            index = self._open_generated_tab("Application Status", report_html)
-            self._select_tab(index)
-            if 0 <= index < len(self._document_tabs):
-                self._show_side_preview_for(self._document_tabs[index])
-        self._set_status_page_live_updates(True)
-        self._set_status("Opened application status page in HTML preview with live updates")
-
-    def _build_help_status_html(self) -> str:
-        feature_rows: list[str] = []
-        for feature_id, definition in sorted(FEATURE_DEFINITIONS.items()):
-            state = self.features.state_for(feature_id)
-            state_label = {
-                "on": "Enabled",
-                "quiet": "Quiet",
-                "off": "Disabled",
-            }.get(state, state)
-            feature_rows.append(
-                "<tr>"
-                f"<td>{html.escape(feature_id)}</td>"
-                f"<td>{html.escape(definition.name)}</td>"
-                f"<td>{html.escape(definition.category)}</td>"
-                f"<td>{html.escape(state_label)}</td>"
-                "</tr>"
+            self._help_status_dialog = HelpStatusDialog(
+                self.frame, self._wx, self._build_help_status_data()
             )
+            self._help_status_dialog.set_refresh_callback(
+                lambda: self._help_status_dialog.refresh(self._build_help_status_data())
+            )
+            self._help_status_dialog.show()
+        self._set_status_page_live_updates(True)
+        self._set_status("Opened application status page")
 
+    def _build_help_status_data(self) -> dict:
+        """Collect runtime status into a structured dict for HelpStatusDialog."""
         settings = self.settings
-        speech_rows = [
+        notification_count = len(getattr(self, "_notifications", []))
+        active_tasks = int(getattr(self, "_background_task_count", 0))
+        profile_name = self.features.active_profile.name
+
+        status_rows: list[tuple[str, str, str]] = [
+            ("Overview", "Version", __version__),
+            ("Overview", "Active profile", profile_name),
+            ("Overview", "Background tasks running", str(active_tasks)),
+            ("Overview", "Notifications queued", str(notification_count)),
+        ]
+
+        if self.features.is_enabled("core.bw_whisperer"):
+            bw_mode = str(getattr(settings, "bw_provider_mode", "local_first"))
+            bw_local_first = bw_mode == "local_first"
+            bw_provider_id = str(getattr(settings, "bw_provider_id", "local_whisper"))
+            bw_provider = bw_get_provider(bw_provider_id, include_cloud=True)
+            bw_recommended_provider = bw_recommended_provider_id(local_first=bw_local_first)
+            bw_recommended_provider_spec = bw_get_provider(
+                bw_recommended_provider, include_cloud=True
+            )
+            bw_ready = bw_provider_readiness(bw_provider_id, local_first=bw_local_first)
+            bw_models = bw_list_models(include_parakeet=False)
+            bw_downloaded = bw_downloaded_model_ids(include_parakeet=False)
+            bw_engine_ok, bw_engine_status = faster_whisper_status()
+            for name, value in [
+                ("Provider mode", "Local-first" if bw_local_first else "Cloud-first"),
+                ("Configured provider", bw_provider.name if bw_provider else bw_provider_id),
+                (
+                    "Recommended provider",
+                    bw_recommended_provider_spec.name
+                    if bw_recommended_provider_spec
+                    else bw_recommended_provider,
+                ),
+                ("Provider readiness", "Ready" if bw_ready.ready else "Needs setup"),
+                ("Model mode", str(getattr(settings, "bw_speech_selection_mode", "recommended"))),
+                (
+                    "Configured speech model",
+                    str(getattr(settings, "bw_speech_model_id", "whisper-base")),
+                ),
+                ("Whisper models downloaded", f"{len(bw_downloaded)} of {len(bw_models)}"),
+                ("faster-whisper engine", "Ready" if bw_engine_ok else "Not installed"),
+                ("Engine detail", bw_engine_status),
+                ("Last refresh", datetime.now(UTC).isoformat()),
+            ]:
+                status_rows.append(("BITS Whisperer", name, str(value)))
+
+        for name, value in [
             ("Engine", settings.read_aloud_engine),
             ("Voice (pyttsx3)", settings.read_aloud_voice or "(default system)"),
             ("DECtalk executable", settings.read_aloud_dectalk_executable or "Not configured"),
             ("DECtalk voice", settings.read_aloud_dectalk_voice),
-            ("Piper executable", settings.read_aloud_piper_executable or "Not configured"),
             ("Piper model", settings.read_aloud_piper_model or "Not configured"),
             ("Kokoro voice", settings.read_aloud_kokoro_voice),
             ("eSpeak executable", settings.read_aloud_espeak_executable or "PATH lookup"),
             ("eSpeak English voice", settings.read_aloud_espeak_voice),
-            ("OpenVoice executable", settings.read_aloud_openvoice_executable or "Not configured"),
-            ("OpenVoice voice", settings.read_aloud_openvoice_voice),
-            (
-                "OpenVoice consent",
-                "Enabled" if settings.read_aloud_openvoice_consent else "Disabled",
-            ),
-        ]
-        speech_table_rows = "".join(
-            f"<tr><th scope='row'>{html.escape(name)}</th><td>{html.escape(str(value))}</td></tr>"
-            for name, value in speech_rows
-        )
+        ]:
+            status_rows.append(("Speech", name, str(value)))
 
-        bw_mode = str(getattr(settings, "bw_provider_mode", "local_first"))
-        bw_local_first = bw_mode == "local_first"
-        bw_provider_id = str(getattr(settings, "bw_provider_id", "local_whisper"))
-        bw_provider = bw_get_provider(bw_provider_id, include_cloud=True)
-        bw_recommended_provider = bw_recommended_provider_id(local_first=bw_local_first)
-        bw_recommended_provider_spec = bw_get_provider(bw_recommended_provider, include_cloud=True)
-        bw_ready = bw_provider_readiness(bw_provider_id, local_first=bw_local_first)
-        bw_models = bw_list_models(include_parakeet=False)
-        bw_downloaded = bw_downloaded_model_ids(include_parakeet=False)
-        bw_engine_ok, bw_engine_status = faster_whisper_status()
-        bw_rows = [
-            ("Provider mode", "Local-first" if bw_local_first else "Cloud-first"),
-            ("Configured provider", bw_provider.name if bw_provider else bw_provider_id),
-            (
-                "Recommended provider",
-                bw_recommended_provider_spec.name
-                if bw_recommended_provider_spec
-                else bw_recommended_provider,
-            ),
-            ("Provider readiness", "Ready" if bw_ready.ready else "Needs setup"),
-            ("Model mode", str(getattr(settings, "bw_speech_selection_mode", "recommended"))),
-            (
-                "Configured speech model",
-                str(getattr(settings, "bw_speech_model_id", "whisper-base")),
-            ),
-            ("Whisper models downloaded", f"{len(bw_downloaded)} of {len(bw_models)}"),
-            ("faster-whisper engine", "Ready" if bw_engine_ok else "Not installed"),
-            ("Engine detail", bw_engine_status),
-            ("Last refresh", datetime.now(UTC).isoformat()),
-        ]
-        bw_table_rows = "".join(
-            f"<tr><th scope='row'>{html.escape(name)}</th><td>{html.escape(str(value))}</td></tr>"
-            for name, value in bw_rows
-        )
-
-        bw_download_rows: list[str] = []
+        task_rows: list[tuple[str, str, str, str, str]] = []
         for entry in sorted(
             self._bw_download_status.values(),
             key=lambda item: str(item.get("started_at", "")),
             reverse=True,
         ):
-            bw_download_rows.append(
-                "<tr>"
-                f"<td>{html.escape(str(entry.get('model', '')))}</td>"
-                f"<td>{html.escape(str(entry.get('status', '')))}</td>"
-                f"<td>{html.escape(str(entry.get('progress', '')))}</td>"
-                f"<td>{html.escape(str(entry.get('started_at', '')))}</td>"
-                f"<td>{html.escape(str(entry.get('finished_at', 'Running')))}</td>"
-                "</tr>"
-            )
-        if not bw_download_rows:
-            bw_download_rows.append(
-                "<tr><td colspan='5'>No BITS Whisperer model downloads "
-                "have run in this session.</td></tr>"
-            )
-
-        task_rows: list[str] = []
+            task_rows.append((
+                str(entry.get("model", "")),
+                str(entry.get("status", "")),
+                str(entry.get("progress", "")),
+                str(entry.get("started_at", "")),
+                str(entry.get("finished_at", "Running")),
+            ))
         for task in reversed(getattr(self, "_background_tasks", [])[-50:]):
-            label = str(task.get("label", ""))
-            status = str(task.get("status", ""))
-            progress = str(task.get("progress", ""))
-            started_at = str(task.get("started_at", ""))
-            finished_at = str(task.get("finished_at", ""))
-            task_rows.append(
-                "<tr>"
-                f"<td>{html.escape(label)}</td>"
-                f"<td>{html.escape(status.title())}</td>"
-                f"<td>{html.escape(progress)}</td>"
-                f"<td>{html.escape(started_at)}</td>"
-                f"<td>{html.escape(finished_at or 'Running')}</td>"
-                "</tr>"
-            )
-        if not task_rows:
-            task_rows.append(
-                "<tr><td colspan='5'>No background tasks have run in this session.</td></tr>"
-            )
+            task_rows.append((
+                str(task.get("label", "")),
+                str(task.get("status", "")).title(),
+                str(task.get("progress", "")),
+                str(task.get("started_at", "")),
+                str(task.get("finished_at", "") or "Running"),
+            ))
 
-        notification_count = len(getattr(self, "_notifications", []))
-        active_tasks = int(getattr(self, "_background_task_count", 0))
-        profile_name = self.features.active_profile.name
+        feature_rows: list[tuple[str, str, str, str]] = []
+        for feature_id, definition in sorted(FEATURE_DEFINITIONS.items()):
+            state = self.features.state_for(feature_id)
+            state_label = {"on": "Enabled", "quiet": "Quiet", "off": "Disabled"}.get(state, state)
+            feature_rows.append((feature_id, definition.name, definition.category, state_label))
 
-        return (
-            "<h1 id='status-page'>Quill Application Status</h1>"
-            "<p>This page reports current runtime status for features, speech setup, "
-            "and background downloads/tasks.</p>"
-            "<h2 id='runtime-overview'>Runtime Overview</h2>"
-            "<table>"
-            "<caption>Current runtime summary</caption>"
-            "<thead><tr><th scope='col'>Item</th><th scope='col'>Value</th></tr></thead>"
-            "<tbody>"
-            f"<tr><th scope='row'>Version</th><td>{html.escape(__version__)}</td></tr>"
-            f"<tr><th scope='row'>Active profile</th><td>{html.escape(profile_name)}</td></tr>"
-            f"<tr><th scope='row'>Background tasks running</th><td>{active_tasks}</td></tr>"
-            f"<tr><th scope='row'>Notifications queued</th><td>{notification_count}</td></tr>"
-            "</tbody></table>"
-            "<h2 id='bw-rollout-status'>BITS Whisperer Rollout Status</h2>"
-            "<table>"
-            "<caption>Provider and model rollout readiness</caption>"
-            "<thead><tr><th scope='col'>Item</th><th scope='col'>Value</th></tr></thead>"
-            f"<tbody>{bw_table_rows}</tbody></table>"
-            "<h2 id='speech-status'>Speech Status</h2>"
-            "<table>"
-            "<caption>Speech engine configuration and downloads</caption>"
-            "<thead><tr><th scope='col'>Setting</th><th scope='col'>Value</th></tr></thead>"
-            f"<tbody>{speech_table_rows}</tbody></table>"
-            "<h2 id='bw-downloads'>BITS Whisperer Model Downloads</h2>"
-            "<table>"
-            "<caption>Asynchronous model acquisition jobs</caption>"
-            "<thead><tr>"
-            "<th scope='col'>Model</th><th scope='col'>Status</th><th scope='col'>Progress</th>"
-            "<th scope='col'>Started</th><th scope='col'>Finished</th>"
-            "</tr></thead>"
-            f"<tbody>{''.join(bw_download_rows)}</tbody></table>"
-            "<h2 id='background-tasks'>Background Tasks and Downloads</h2>"
-            "<table>"
-            "<caption>Recent asynchronous jobs (downloads, generation, indexing)</caption>"
-            "<thead><tr>"
-            "<th scope='col'>Task</th><th scope='col'>Status</th><th scope='col'>Progress</th>"
-            "<th scope='col'>Started</th><th scope='col'>Finished</th>"
-            "</tr></thead>"
-            f"<tbody>{''.join(task_rows)}</tbody></table>"
-            "<h2 id='features'>Feature Status</h2>"
-            "<table>"
-            "<caption>Enabled, quiet, and disabled features</caption>"
-            "<thead><tr>"
-            "<th scope='col'>Feature ID</th>"
-            "<th scope='col'>Feature Name</th>"
-            "<th scope='col'>Category</th>"
-            "<th scope='col'>Status</th>"
-            "</tr></thead>"
-            f"<tbody>{''.join(feature_rows)}</tbody></table>"
-            "<h2 id='recommended-actions'>Recommended Actions</h2>"
-            "<ul>"
-            "<li>Open BITS Whisperer &gt; Providers &gt; Provider Center "
-            "for staged onboarding guidance.</li>"
-            "<li>Open BITS Whisperer &gt; Speech Models to choose "
-            "recommended or manual model setup.</li>"
-            "<li>Open AI &gt; Speech &gt; Settings to configure engine-specific paths.</li>"
-            "<li>Open AI &gt; Speech &gt; Voice to preview voices and variants.</li>"
-            "<li>Open AI &gt; Speech &gt; Generate Audio to run "
-            "asynchronous speech output jobs.</li>"
-            "<li>Open Tools &gt; Support &gt; Show Notifications for "
-            "detailed alerts and outcomes.</li>"
-            "</ul>"
-        )
+        actions = []
+        if self.features.is_enabled("core.bw_whisperer"):
+            actions += [
+                "Open BITS Whisperer > Providers > Provider Center for staged onboarding guidance.",
+                "Open BITS Whisperer > Speech Models to choose recommended or manual model setup.",
+            ]
+        actions += [
+            "Open AI > Speech > Settings to configure engine-specific paths.",
+            "Open AI > Speech > Voice to preview voices and variants.",
+            "Open AI > Speech > Generate Audio to run asynchronous speech output jobs.",
+            "Open Tools > Support > Show Notifications for detailed alerts and outcomes.",
+        ]
+        return {
+            "status_rows": status_rows,
+            "task_rows": task_rows,
+            "feature_rows": feature_rows,
+            "actions": actions,
+        }
 
     def _update_check_due(self, interval_hours: int = 24) -> bool:
         """True when enough time has passed since the last startup update check.
@@ -17529,12 +17897,17 @@ class MainFrame(
             self._record_notification(f"GLOW update failed: {result.message}", "update")
 
     def _html_info(self, title: str, markdown_text: str) -> None:
-        """Show an informational message in the WebView dialog (with an OK button)."""
-        from quill.ui.preview_dialog import HtmlMessageDialog
+        """Show a plain-text informational message with an OK button."""
+        from quill.ui.info_pages import _md_to_plain
 
-        HtmlMessageDialog(
-            self.frame, title, self._render_html(markdown_text), [("OK", self._wx.ID_OK)]
-        ).show_modal()
+        wx = self._wx
+        dialog = wx.MessageDialog(
+            self.frame, _md_to_plain(markdown_text), title, wx.OK | wx.ICON_INFORMATION
+        )
+        try:
+            self._show_modal_dialog(dialog, title)
+        finally:
+            dialog.Destroy()
 
     def _show_update_available_dialog(self, current_version: str, release: GitHubRelease) -> str:
         """Present an available update. Returns one of ``"download"``,
@@ -17582,27 +17955,27 @@ class MainFrame(
     def _offer_beta_switch(
         self, current_version: str, stable_release: GitHubRelease | None
     ) -> None:
-        from quill.ui.preview_dialog import HtmlMessageDialog
-
         wx = self._wx
         stable_line = (
             f"the latest stable release is {stable_release.version}"
             if stable_release is not None
             else "no stable release is published yet"
         )
-        body = self._render_html(
-            "# You're up to date\n\n"
-            f"You're on the **stable** channel (current version {current_version}; "
+        plain = (
+            f"You're on the stable channel (current version {current_version}; "
             f"{stable_line}).\n\n"
-            "Want earlier features sooner? The **beta** channel delivers prerelease "
-            "builds as soon as they're published.\n"
+            "Want earlier features sooner? The beta channel delivers prerelease "
+            "builds as soon as they're published."
         )
-        result = HtmlMessageDialog(
-            self.frame,
-            "Check for Updates",
-            body,
-            [("Stay on stable", wx.ID_CANCEL), ("Switch to beta...", wx.ID_YES)],
-        ).show_modal()
+        dialog = wx.MessageDialog(
+            self.frame, plain, "Check for Updates", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_INFORMATION
+        )
+        if hasattr(dialog, "SetYesNoLabels"):
+            dialog.SetYesNoLabels("Switch to beta...", "Stay on stable")
+        try:
+            result = self._show_modal_dialog(dialog, "Check for Updates")
+        finally:
+            dialog.Destroy()
         if result == wx.ID_YES and self._confirm_beta_channel():
             self.settings.beta_updates = True
             save_settings(self.settings)
@@ -17634,30 +18007,30 @@ class MainFrame(
             self._skip_update_version(release.version)
 
     def _confirm_beta_channel(self, release: GitHubRelease | None = None) -> bool:
-        """HTML consent gate the user must agree to before beta updates turn on."""
-        from quill.ui.preview_dialog import HtmlMessageDialog
-
+        """Consent gate the user must agree to before beta updates turn on."""
         wx = self._wx
         detected = (
-            f"A beta build (**{release.version}**) is available.\n\n" if release is not None else ""
+            f"A beta build ({release.version}) is available.\n\n" if release is not None else ""
         )
-        body = self._render_html(
-            "# Enable beta updates?\n\n"
+        plain = (
             f"{detected}"
-            "Beta updates are **prerelease** builds. They get new features and fixes "
-            "first, but they **may be unstable** — expect rough edges, and occasional "
+            "Beta updates are prerelease builds. They get new features and fixes "
+            "first, but they may be unstable - expect rough edges, and occasional "
             "bugs that could affect your documents.\n\n"
             "- Beta builds are published as GitHub prereleases.\n"
             "- You can switch back to stable anytime in Settings.\n"
             "- Keep backups of important documents.\n\n"
             "Do you understand and want to receive beta updates?"
         )
-        result = HtmlMessageDialog(
-            self.frame,
-            "Beta updates",
-            body,
-            [("Cancel", wx.ID_CANCEL), ("I understand, enable beta", wx.ID_YES)],
-        ).show_modal()
+        dialog = wx.MessageDialog(
+            self.frame, plain, "Beta updates", wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING
+        )
+        if hasattr(dialog, "SetYesNoLabels"):
+            dialog.SetYesNoLabels("I understand, enable beta", "Cancel")
+        try:
+            result = self._show_modal_dialog(dialog, "Beta updates")
+        finally:
+            dialog.Destroy()
         return result == wx.ID_YES
 
     def _download_update_release(self, release: GitHubRelease) -> None:
@@ -17724,22 +18097,54 @@ class MainFrame(
     def _offer_post_download_actions(self, release: GitHubRelease, target: Path) -> None:
         """After a successful download, let the user install it now or reveal it
         in the folder. Installer launch is offered only for runnable assets."""
-        from quill.ui.preview_dialog import HtmlMessageDialog
+        from quill.ui.dialog_contract import apply_modal_ids
 
         wx = self._wx
         runnable = target.suffix.lower() in {".exe", ".msi"} and sys.platform.startswith("win")
-        buttons = [("Close", wx.ID_CANCEL), ("Open folder", wx.ID_OPEN)]
-        if runnable:
-            buttons.append(("Install now…", wx.ID_OK))
         install_line = (
-            "Select **Install now** to close Quill and run the installer, or " if runnable else ""
+            "Select 'Install now' to close Quill and run the installer, or " if runnable else ""
         )
-        body = self._render_html(
-            f"# Update {release.version} downloaded\n\n"
-            f"Saved to:\n\n`{target}`\n\n"
-            f"{install_line}**Open folder** to find it yourself.\n"
+        plain = (
+            f"Update {release.version} downloaded.\n\n"
+            f"Saved to: {target}\n\n"
+            f"{install_line}Select 'Open folder' to find it."
         )
-        result = HtmlMessageDialog(self.frame, "Update downloaded", body, buttons).show_modal()
+        dialog = wx.Dialog(
+            self.frame, title="Update downloaded", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
+        )
+        dialog.SetSize((500, 260))
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        body = wx.TextCtrl(
+            dialog,
+            value=plain,
+            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_AUTO_URL | wx.TE_RICH2,
+            name="update_body",
+        )
+        sizer.Add(body, 1, wx.EXPAND | wx.ALL, 12)
+        btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        btn_sizer.AddStretchSpacer()
+        close_btn = wx.Button(dialog, wx.ID_CANCEL, label="Close")
+        folder_btn = wx.Button(dialog, wx.ID_OPEN, label="Open folder")
+        close_btn.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_CANCEL))
+        folder_btn.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_OPEN))
+        btn_sizer.Add(close_btn, 0, wx.RIGHT, 6)
+        btn_sizer.Add(folder_btn, 0, wx.RIGHT, 6)
+        if runnable:
+            install_btn = wx.Button(dialog, wx.ID_OK, label="Install now...")
+            install_btn.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_OK))
+            install_btn.SetDefault()
+            btn_sizer.Add(install_btn, 0)
+        else:
+            close_btn.SetDefault()
+        sizer.Add(btn_sizer, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 12)
+        dialog.SetSizer(sizer)
+        affirmative = wx.ID_OK if runnable else wx.ID_OPEN
+        apply_modal_ids(dialog, affirmative_id=affirmative, escape_id=wx.ID_CANCEL)
+        wx.CallAfter(body.SetFocus)
+        try:
+            result = self._show_modal_dialog(dialog, "Update downloaded")
+        finally:
+            dialog.Destroy()
         if result == wx.ID_OPEN:
             self._reveal_in_folder(target)
         elif result == wx.ID_OK and runnable:
@@ -18948,6 +19353,133 @@ class MainFrame(
         self._apply_insertion_result(result)
         self._set_status(f"Inserted {style.upper()} citation")
 
+    def open_snippet_gallery(self) -> None:
+        """Browse and insert Quillin-contributed gallery snippets (Part 3)."""
+        wx = self._wx
+        collect = getattr(self, "collect_snippet_gallery", None)
+        entries = collect() if callable(collect) else []
+        if not entries:
+            self._set_status("No gallery snippets are available.")
+            self._announce("No gallery snippets are available.")
+            return
+
+        from quill.ui.dialog_contract import apply_modal_ids
+
+        dialog = wx.Dialog(
+            self.frame,
+            title="Snippet Gallery",
+            style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
+        )
+        body = wx.BoxSizer(wx.VERTICAL)
+        body.Add(
+            wx.StaticText(
+                dialog,
+                label="Choose a snippet, review its preview, then Insert.",
+            ),
+            0,
+            wx.ALL | wx.EXPAND,
+            8,
+        )
+
+        labels = [
+            f"Snippet: {entry.name} ({quillin_name})" for quillin_name, _qid, entry in entries
+        ]
+        chooser = wx.ListBox(dialog, choices=labels)
+        chooser.SetName("Gallery snippets")
+        chooser.SetSelection(0)
+        body.Add(chooser, 1, wx.ALL | wx.EXPAND, 8)
+
+        body.Add(wx.StaticText(dialog, label="&Preview"), 0, wx.LEFT | wx.RIGHT, 8)
+        preview = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
+        preview.SetName("Snippet preview")
+        body.Add(preview, 1, wx.ALL | wx.EXPAND, 8)
+
+        insert_button = wx.Button(dialog, id=wx.ID_OK, label="&Insert")
+        cancel_button = wx.Button(dialog, id=wx.ID_CANCEL, label="&Cancel")
+        button_sizer = wx.StdDialogButtonSizer()
+        button_sizer.AddButton(insert_button)
+        button_sizer.AddButton(cancel_button)
+        button_sizer.Realize()
+        body.Add(button_sizer, 0, wx.EXPAND | wx.ALL, 8)
+
+        dialog.SetSizerAndFit(body)
+        dialog.SetSize((600, 520))
+        if hasattr(dialog, "CentreOnParent"):
+            dialog.CentreOnParent()
+
+        def selected_entry() -> object | None:
+            index = chooser.GetSelection()
+            if index < 0 or index >= len(entries):
+                return None
+            return entries[index]
+
+        def refresh_preview() -> None:
+            chosen = selected_entry()
+            if chosen is None:
+                preview.SetValue("")
+                return
+            quillin_name, _qid, entry = chosen
+            preview.SetValue(entry.body)
+            self._announce(f"{entry.name} from {quillin_name}")
+
+        chooser.Bind(wx.EVT_LISTBOX, lambda _e: refresh_preview())
+        insert_button.SetDefault()
+        apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
+        refresh_preview()
+
+        call_after = getattr(wx, "CallAfter", None)
+        if callable(call_after):
+            call_after(chooser.SetFocus)
+        else:
+            chooser.SetFocus()
+
+        try:
+            if self._show_modal_dialog(dialog, "Snippet Gallery") != wx.ID_OK:
+                return
+            chosen = selected_entry()
+        finally:
+            dialog.Destroy()
+        if chosen is None:
+            return
+        _quillin_name, _qid, entry = chosen
+        if entry.params:
+            text = self._prompt_snippet_params(entry)
+            if text is None:
+                self._set_status("Snippet insertion cancelled")
+                return
+        else:
+            text = entry.body
+        self._insert_gallery_snippet_text(text)
+        self._set_status(f"Inserted snippet {entry.name}")
+
+    def _prompt_snippet_params(self, entry: object) -> str | None:
+        """Prompt for each gallery-snippet param and return the expanded body.
+
+        Returns ``None`` if the user cancels any prompt. Each prompt routes
+        through the shared single-line dialog so it keeps the keyboard/screen
+        reader contract and can be cancelled cleanly (unlike GetTextFromUser,
+        which cannot distinguish Cancel from an empty answer).
+        """
+        values: dict[str, str] = {}
+        for param in entry.params:  # type: ignore[attr-defined]
+            answer = self._power_tools_prompt_single("Snippet Gallery", param.label, param.default)
+            if answer is None:
+                return None
+            values[param.name] = answer
+        body: str = entry.body  # type: ignore[attr-defined]
+        for name, value in values.items():
+            body = body.replace("{" + name + "}", value)
+        return body
+
+    def _insert_gallery_snippet_text(self, text: str) -> None:
+        """Insert gallery text at the cursor (or replace the selection)."""
+        editor = self.editor
+        start, end = editor.GetSelection()
+        if start == end:
+            editor.WriteText(text)
+        else:
+            editor.Replace(start, end, text)
+
     def follow_link(self) -> None:
         text = self.editor.GetValue()
         cursor = self.editor.GetInsertionPoint()
@@ -19359,6 +19891,9 @@ class MainFrame(
             self._id_ai_agent_center,
             self._id_ai_rewrite_selection,
             self._id_ai_summarize_selection,
+            self._id_ai_expand_selection,
+            self._id_ai_generate_toc,
+            self._id_ai_thesaurus,
             self._id_ai_continue_writing,
             self._id_ai_fix_grammar,
             self._id_train_style,
@@ -19400,6 +19935,8 @@ class MainFrame(
             get_selection=lambda: self.editor.GetStringSelection(),
             insert_text=self._ai_insert_text,
             replace_selection=self._ai_replace_selection,
+            set_text=self._ai_set_document_text,
+            open_new_document=self._ai_open_new_document,
             run_command=self._ai_run_command,
             tool_catalog=tool_catalog,
             announce=self._set_status,
@@ -19410,7 +19947,7 @@ class MainFrame(
     def open_ask_ai(self) -> None:
         from quill.ui.ai_chat_dialog import AskAIDialog
 
-        dlg = AskAIDialog(self.frame, self.settings)
+        dlg = AskAIDialog(self.frame, self.settings, announce_cb=self._announce)
         dlg.show()
         dlg.close()
 
@@ -19425,6 +19962,7 @@ class MainFrame(
             selection=str(self.editor.GetStringSelection()),
             document=str(self.editor.GetValue()),
             title=self._current_document_title(),
+            announce_cb=self._announce,
         )
         self._show_modal_dialog(dlg.dialog, "Prompt Library")
         dlg.close()
@@ -19440,6 +19978,7 @@ class MainFrame(
             document=str(self.editor.GetValue()),
             title_text=self._current_document_title(),
             on_insert=self._ai_insert_text,
+            announce_cb=self._announce,
         )
         dlg.dialog.CenterOnParent()
         self._show_modal_dialog(dlg.dialog, "Skill Library")
@@ -19533,6 +20072,419 @@ class MainFrame(
         )
         dialog.show_modal()
 
+    # ------------------------------------------------------------------
+    # AI language tools: spell check, grammar, translation, transcription
+    # ------------------------------------------------------------------
+
+    def _ai_require_connection(self) -> tuple[object, str] | None:
+        """Return (connection, api_key) or announce an error and return None."""
+        from quill.core.assistant_ai import (
+            load_assistant_api_key,
+            load_assistant_connection_settings,
+        )
+
+        conn = load_assistant_connection_settings()
+        if conn.provider == "off" or not conn.provider:
+            self._set_status("AI is not configured. Open AI Hub (AI menu) to set up a provider.")
+            return None
+        api_key = load_assistant_api_key() or ""
+        return conn, api_key
+
+    def ai_spell_check(self) -> None:
+        result = self._ai_require_connection()
+        if result is None:
+            return
+        conn, api_key = result
+        text = str(self.editor.GetValue())
+        if not text.strip():
+            self._set_status("Document is empty.")
+            return
+
+        self._set_status("AI spell check running...")
+
+        import threading
+
+        def _run() -> None:
+            import wx as _wx
+
+            try:
+                from quill.core.ai.spell_check import ai_spell_check
+
+                corrections = ai_spell_check(text, conn, api_key)
+            except Exception as exc:  # noqa: BLE001
+                _wx.CallAfter(self._set_status, f"AI spell check failed: {exc}")
+                return
+            _wx.CallAfter(self._show_ai_spell_check_dialog, text, corrections)
+
+        threading.Thread(target=_run, daemon=True).start()  # GATE-40-OK: AI bg thread
+
+    def _show_ai_spell_check_dialog(self, text: str, corrections: list) -> None:
+        if not corrections:
+            self._set_status("AI spell check: no issues found.")
+            return
+        from quill.ui.ai_spell_check_dialog import AISpellCheckDialog
+
+        dlg = AISpellCheckDialog(self.frame, text, corrections, self._show_modal_dialog)
+        new_text, count = dlg.show()
+        if count > 0:
+            self.editor.SetValue(new_text)
+            self._set_status(f"AI spell check: {count} correction(s) applied.")
+        else:
+            self._set_status("AI spell check: no corrections applied.")
+
+    def ai_spell_check_interactive(self) -> None:
+        result = self._ai_require_connection()
+        if result is None:
+            return
+        conn, api_key = result
+        text = str(self.editor.GetValue())
+        if not text.strip():
+            self._set_status("Document is empty.")
+            return
+        paragraphs = [p for p in text.split("\n\n") if p.strip()]
+        if not paragraphs:
+            paragraphs = [text]
+        from quill.core.ai.spell_check import apply_corrections
+        from quill.ui.ai_spell_check_dialog import AISpellCheckInteractiveDialog
+
+        def _apply_accepted(accepted_corrections: list) -> None:
+            current = str(self.editor.GetValue())
+            new_text, count = apply_corrections(current, accepted_corrections)
+            if count > 0:
+                self.editor.SetValue(new_text)
+                self._set_status(f"AI spell check: {count} correction(s) applied.")
+
+        dlg = AISpellCheckInteractiveDialog(
+            self.frame, paragraphs, conn, api_key, self._show_modal_dialog, _apply_accepted
+        )
+        dlg.run()
+
+    def ai_grammar_style_check(self) -> None:
+        result = self._ai_require_connection()
+        if result is None:
+            return
+        conn, api_key = result
+        text = str(self.editor.GetValue())
+        if not text.strip():
+            self._set_status("Document is empty.")
+            return
+
+        self._set_status("AI grammar check running...")
+
+        import threading
+
+        def _run() -> None:
+            import wx as _wx
+
+            try:
+                from quill.core.ai.grammar_check import ai_grammar_check
+
+                issues = ai_grammar_check(text, conn, api_key)
+            except Exception as exc:  # noqa: BLE001
+                _wx.CallAfter(self._set_status, f"AI grammar check failed: {exc}")
+                return
+            _wx.CallAfter(self._show_ai_grammar_dialog, text, issues)
+
+        threading.Thread(target=_run, daemon=True).start()  # GATE-40-OK: AI bg thread
+
+    def _show_ai_grammar_dialog(self, text: str, issues: list) -> None:
+        if not issues:
+            self._set_status("AI grammar check: no issues found.")
+            return
+        from quill.ui.ai_grammar_check_dialog import AIGrammarCheckDialog
+
+        dlg = AIGrammarCheckDialog(self.frame, text, issues, self._show_modal_dialog)
+        new_text, count = dlg.show()
+        if count > 0:
+            self.editor.SetValue(new_text)
+            self._set_status(f"AI grammar check: {count} fix(es) applied.")
+        else:
+            self._set_status("AI grammar check: no fixes applied.")
+
+    def ai_translate_selection(self) -> None:
+        self._ai_translate(selection_only=True)
+
+    def ai_translate_document(self) -> None:
+        self._ai_translate(selection_only=False)
+
+    def _ai_translate(self, selection_only: bool) -> None:
+        result = self._ai_require_connection()
+        if result is None:
+            return
+        conn, api_key = result
+        if selection_only:
+            text = str(self.editor.GetStringSelection())
+            desc = "selection"
+        else:
+            text = str(self.editor.GetValue())
+            desc = "document"
+        if not text.strip():
+            self._set_status(f"No {desc} text to translate.")
+            return
+
+        from quill.core.ai.translation import translate_text
+
+        def _on_translate(t: str, lang: str, provider: str, lt_url: str) -> tuple[str, str]:
+            return translate_text(t, lang, conn, api_key, provider, lt_url)
+
+        def _on_replace(new_text: str) -> None:
+            if selection_only:
+                start, end = self.editor.GetSelection()
+                if start != end:
+                    self.editor.Replace(start, end, new_text)
+            else:
+                self.editor.SetValue(new_text)
+            self._set_status("Translation applied.")
+
+        def _on_new_doc(new_text: str, lang_name: str) -> None:
+            self.new_document(content=new_text, title=f"Translation ({lang_name})")
+
+        from quill.ui.ai_translation_dialog import AITranslationDialog
+
+        dlg = AITranslationDialog(
+            self.frame,
+            text,
+            desc,
+            self._show_modal_dialog,
+            _on_translate,
+            _on_replace,
+            _on_new_doc,
+        )
+        dlg.show()
+
+    def ai_transcribe_audio_file(self) -> None:
+        self._ai_open_transcribe_dialog(translate_to_english=False)
+
+    def ai_translate_audio_file(self) -> None:
+        self._ai_open_transcribe_dialog(translate_to_english=True)
+
+    def _ai_open_transcribe_dialog(self, translate_to_english: bool = False) -> None:
+        import threading
+
+        from quill.ui.ai_transcribe_dialog import (
+            AIProgressDialog,
+            AITranscribeDialog,
+        )
+
+        openai_key = self._get_openai_api_key()
+        if not openai_key:
+            self._set_status("OpenAI API key not configured. Open AI Hub to add your key.")
+            return
+
+        def _on_transcribe(path, lang_code, diarize, max_speakers):
+            progress = AIProgressDialog(
+                self.frame,
+                "Transcribing Audio",
+                f"Transcribing {path.name}...",
+            )
+            progress.show()
+
+            def _run():
+                import wx as _wx
+
+                try:
+                    if diarize:
+                        from quill.core.ai.diarization import diarize_file, format_diarization
+
+                        dr = diarize_file(path, "deepgram", openai_key, max_speakers)
+                        transcript = format_diarization(dr)
+                    elif translate_to_english:
+                        from quill.core.ai.transcription import translate_file
+
+                        transcript = translate_file(path, openai_key)
+                    else:
+                        from quill.core.ai.transcription import transcribe_file
+
+                        transcript = transcribe_file(path, openai_key, language=lang_code)
+                except Exception as exc:  # noqa: BLE001
+                    _wx.CallAfter(progress.close)
+                    _wx.CallAfter(self._set_status, f"Transcription failed: {exc}")
+                    return
+                _wx.CallAfter(progress.close)
+                _wx.CallAfter(self._show_transcription_result, transcript, path.name)
+
+            threading.Thread(target=_run, daemon=True).start()  # GATE-40-OK: AI bg thread
+
+        dlg = AITranscribeDialog(self.frame, self._show_modal_dialog, _on_transcribe)
+        if translate_to_english:
+            dlg._translate_cb.SetValue(True)
+        dlg.show()
+
+    def _show_transcription_result(self, transcript: str, file_name: str) -> None:
+        from quill.ui.ai_transcribe_dialog import AITranscriptionResultDialog
+
+        def _on_insert(text: str) -> None:
+            self.editor.WriteText(text)
+
+        def _on_new_doc(text: str) -> None:
+            self.new_document(content=text, title=f"Transcript - {file_name}")
+
+        dlg = AITranscriptionResultDialog(
+            self.frame,
+            transcript,
+            file_name,
+            self._show_modal_dialog,
+            _on_insert,
+            _on_new_doc,
+        )
+        dlg.show()
+
+    def _get_openai_api_key(self) -> str:
+        """Return the first OpenAI-compatible API key from the credential store."""
+        try:
+            from quill.core.assistant_ai import load_assistant_api_key
+
+            return load_assistant_api_key() or ""
+        except Exception:  # noqa: BLE001
+            return ""
+
+    # ------------------------------------------------------------------
+    # AI TTS: Read Aloud via OpenAI TTS provider
+    # ------------------------------------------------------------------
+
+    def ai_tts_read_selection(self) -> None:
+        text = str(self.editor.GetStringSelection()).strip()
+        if not text:
+            self._set_status("No text selected. Select text first, then use Read Selection Aloud.")
+            return
+        self._ai_tts_speak(text, source="selection")
+
+    def ai_tts_read_document(self) -> None:
+        text = str(self.editor.GetValue()).strip()
+        if not text:
+            self._set_status("Document is empty.")
+            return
+        self._ai_tts_speak(text, source="document")
+
+    def ai_tts_stop(self) -> None:
+        stop_evt = getattr(self, "_ai_tts_stop_event", None)
+        if stop_evt is not None:
+            stop_evt.set()
+        self._set_status("AI reading stopped.")
+
+    def _ai_tts_speak(self, text: str, source: str) -> None:
+        import threading
+
+        api_key = self._get_openai_api_key()
+        if not api_key:
+            self._set_status(
+                "OpenAI API key not configured. Open AI Hub to add your key before using AI voice."
+            )
+            return
+
+        # Cancel any in-progress TTS
+        old_stop = getattr(self, "_ai_tts_stop_event", None)
+        if old_stop is not None:
+            old_stop.set()
+
+        stop_event = threading.Event()
+        self._ai_tts_stop_event = stop_event
+
+        from quill.core.ai.tts import DEFAULT_MODEL, DEFAULT_VOICE, TTSError, speak_text
+
+        word_count = len(text.split())
+        self._set_status(f"AI reading {source} ({word_count} words)...")
+
+        def _run() -> None:
+            import wx as _wx
+
+            try:
+                speak_text(
+                    text,
+                    api_key=api_key,
+                    model=DEFAULT_MODEL,
+                    voice=DEFAULT_VOICE,
+                    speed=1.0,
+                    on_chunk_complete=None,
+                    stop_event=stop_event,
+                )
+                if not stop_event.is_set():
+                    _wx.CallAfter(self._set_status, "AI reading complete.")
+            except TTSError as exc:
+                _wx.CallAfter(self._set_status, f"AI reading failed: {exc}")
+
+        threading.Thread(target=_run, daemon=True).start()  # GATE-40-OK: AI bg thread
+
+    def ai_tts_export_mp3(self) -> None:
+        import wx
+
+        api_key = self._get_openai_api_key()
+        if not api_key:
+            self._set_status("OpenAI API key not configured. Open AI Hub to add your key.")
+            return
+
+        text = str(self.editor.GetValue()).strip()
+        if not text:
+            self._set_status("Document is empty.")
+            return
+
+        with wx.FileDialog(
+            self.frame,
+            message="Save audio as MP3",
+            wildcard="MP3 files (*.mp3)|*.mp3",
+            style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
+            defaultFile="document.mp3",
+        ) as dlg:
+            if dlg.ShowModal() != wx.ID_OK:  # GATE-42-OK: wx.FileDialog, not a custom dialog
+                return
+            output_path = dlg.GetPath()
+
+        import threading
+        from pathlib import Path
+
+        from quill.core.ai.tts import DEFAULT_MODEL, DEFAULT_VOICE, TTSError, export_to_mp3
+
+        cancel_event = threading.Event()
+        word_count = len(text.split())
+        self._set_status(f"Exporting {word_count} words to MP3...")
+
+        def _run() -> None:
+            import wx as _wx
+
+            try:
+                export_to_mp3(
+                    text,
+                    output_path=Path(output_path),
+                    api_key=api_key,
+                    model=DEFAULT_MODEL,
+                    voice=DEFAULT_VOICE,
+                    speed=1.0,
+                    cancel_event=cancel_event,
+                    on_progress=None,
+                )
+                _wx.CallAfter(
+                    self._set_status,
+                    f"MP3 exported: {output_path}",
+                )
+            except TTSError as exc:
+                _wx.CallAfter(self._set_status, f"MP3 export failed: {exc}")
+
+        threading.Thread(target=_run, daemon=True).start()  # GATE-40-OK: AI bg thread
+
+    # ------------------------------------------------------------------
+    # AI Document Q&A
+    # ------------------------------------------------------------------
+
+    def open_ai_document_qa(self) -> None:
+        result = self._ai_require_connection()
+        if result is None:
+            return
+        conn, api_key = result
+        text = str(self.editor.GetValue())
+        title = getattr(self.document, "title", None) or "Current Document"
+        from quill.ui.ai_document_qa_dialog import AIDocumentQADialog
+
+        dlg = AIDocumentQADialog(
+            self.frame,
+            initial_document_text=text,
+            document_title=str(title),
+            show_modal_dialog=self._show_modal_dialog,
+            connection=conn,
+            api_key=api_key,
+            on_insert_text=self._ai_insert_text,
+        )
+        dlg.show()
+
     def _ai_replace_selection(self, text: str) -> None:
         start, end = self.editor.GetSelection()
         if start != end:
@@ -19541,8 +20493,181 @@ class MainFrame(
         else:
             self.editor.WriteText(text)
 
+    def _ai_set_document_text(self, text: str) -> None:
+        self._replace_document_text(text)
+        self.document.set_text(text)
+
+    def _ai_open_new_document(self, text: str) -> None:
+        self._power_tools_open_text_in_new_buffer(text, "Opened AI response in new document")
+
     def _ai_run_command(self, command_id: str) -> None:
         self.commands.run(command_id)
+
+    # ------------------------------------------------------------------
+    # AI Agentic Tasks: Rewrite, Summarize, Expand, Table of Contents
+    # ------------------------------------------------------------------
+
+    def _paragraph_at_cursor(self) -> str:
+        """Return the paragraph surrounding the insertion point."""
+        text = str(self.editor.GetValue())
+        cursor = self.editor.GetInsertionPoint()
+        start = text.rfind("\n\n", 0, cursor)
+        start = 0 if start < 0 else start + 2
+        end = text.find("\n\n", cursor)
+        end = len(text) if end < 0 else end
+        return text[start:end].strip()
+
+    def _run_agent_task(
+        self,
+        agent_id: str,
+        *,
+        selection_only: bool = False,
+        use_selection_as_source: bool = True,
+    ) -> None:
+        """Run an agent task for the given agent_id and show the result dialog."""
+        import threading
+
+        from quill.core.ai.model_manager import load_ai_enabled
+
+        if not load_ai_enabled():
+            self._set_status(
+                "AI is turned off. Enable 'Use Artificial Intelligence' in Tools > AI Assistant."
+            )
+            return
+
+        selection_text = self._selected_text() if use_selection_as_source else ""
+        document_text = str(self.editor.GetValue()) if not selection_only else ""
+
+        if selection_only and not selection_text:
+            selection_text = self._paragraph_at_cursor()
+            if selection_text:
+                self._set_status("No selection — using current paragraph.")
+            else:
+                self._set_status("Select text first.")
+                return
+        if not selection_text and not document_text.strip():
+            self._set_status("Document is empty.")
+            return
+
+        result = self._ai_require_connection()
+        if result is None:
+            return
+        conn, api_key = result
+
+        from quill.core.assistant_agents import build_agent_plan
+
+        plan = build_agent_plan(
+            agent_id,
+            selection_text=selection_text,
+            document_text=document_text,
+        )
+        if plan is None:
+            self._set_status(f"Unknown agent: {agent_id}")
+            return
+
+        from quill.core.ai.agent_session import AgentContext
+
+        stop_event = __import__("threading").Event()
+        self._ai_agent_stop_event = stop_event
+
+        ctx = AgentContext(
+            plan=plan,
+            connection=conn,
+            api_key=api_key,
+            stop_event=stop_event,
+        )
+
+        profile_title = plan.profile.title
+        self._set_status(f"{profile_title}: generating...")
+
+        def _run() -> None:
+            import wx as _wx
+
+            from quill.core.ai.agent_session import AgentSessionError, run_agent
+
+            try:
+                agent_result = run_agent(ctx)
+            except AgentSessionError as exc:
+                _wx.CallAfter(self._set_status, f"{profile_title} failed: {exc}")
+                return
+            except Exception as exc:  # noqa: BLE001
+                _wx.CallAfter(self._set_status, f"{profile_title} error: {exc}")
+                return
+            _wx.CallAfter(self._show_agent_result, agent_result, profile_title)
+
+        threading.Thread(target=_run, daemon=True).start()  # GATE-40-OK: AI bg thread
+
+    def _show_agent_result(self, agent_result: object, title: str) -> None:
+        if agent_result.cancelled:
+            self._set_status(f"{title}: cancelled.")
+            return
+        if not agent_result.succeeded:
+            self._set_status(f"{title}: no output returned.")
+            return
+
+        from quill.ui.ai_agent_result_dialog import AIAgentResultDialog
+
+        dlg = AIAgentResultDialog(
+            self.frame,
+            result=agent_result,
+            title=f"{title} Result",
+            show_modal_dialog=self._show_modal_dialog,
+            on_insert_text=self._ai_insert_text,
+            on_replace_selection=self._ai_replace_selection,
+        )
+        dlg.show()
+        self._set_status(f"{title}: done.")
+
+    def open_ai_rewrite_selection(self) -> None:
+        self._run_agent_task("rewrite", selection_only=True)
+
+    def open_ai_summarize_selection(self) -> None:
+        self._run_agent_task("summarize", use_selection_as_source=True, selection_only=False)
+
+    def open_ai_expand_selection(self) -> None:
+        self._run_agent_task("expand", selection_only=True)
+
+    def open_ai_toc(self) -> None:
+        self._run_agent_task("toc", selection_only=False, use_selection_as_source=False)
+
+    # ------------------------------------------------------------------
+    # AI Thesaurus
+    # ------------------------------------------------------------------
+
+    def open_ai_thesaurus(self) -> None:
+        result = self._ai_require_connection()
+        if result is None:
+            return
+        conn, api_key = result
+
+        # Use selected word; if multi-word or empty, still pass through
+        selection = self._selected_text().strip()
+        # Grab context sentence: the line containing the selection
+        full_text = str(self.editor.GetValue())
+        context_sentence = ""
+        if selection and full_text:
+            pos = full_text.find(selection)
+            if pos >= 0:
+                start = full_text.rfind("\n", 0, pos) + 1
+                end_nl = full_text.find("\n", pos)
+                end = end_nl if end_nl >= 0 else len(full_text)
+                context_sentence = full_text[start:end].strip()
+
+        from quill.core.ai.thesaurus import get_synonyms
+        from quill.ui.ai_thesaurus_dialog import AIThesaurusDialog
+
+        def _lookup(word: str, ctx: str) -> list:
+            return get_synonyms(word, conn, api_key, context_sentence=ctx)
+
+        dlg = AIThesaurusDialog(
+            self.frame,
+            initial_word=selection,
+            context_sentence=context_sentence,
+            show_modal_dialog=self._show_modal_dialog,
+            on_lookup=_lookup,
+            on_replace=self._ai_replace_selection,
+        )
+        dlg.show()
 
     def open_ai_model_settings(self) -> None:
         # Combined AI Model & Connection — the model dialog hosts a button to the
@@ -19598,27 +20723,16 @@ class MainFrame(
         ).show()
 
     def open_ai_hub(self) -> None:
-        # The AI Hub is the single place to configure every provider (key, model,
-        # Test Chat, per-provider Forget) plus on-device model settings. It
-        # absorbed the former "AI Model and Connection" and "AI Connection"
-        # entries (AICONS-1).
-        dialog = AssistantConnectionDialog(
+        from quill.ui.ai_hub_dialog import AIHubDialog
+
+        dlg = AIHubDialog(
             self.frame,
-            open_model_settings=self.open_ai_model_settings,
+            show_modal_dialog=self._show_modal_dialog,
+            announce=self._set_status,
+            open_advanced_connection=self.open_ai_preferences,
         )
-        if dialog.show_modal():
-            self._set_ai_menu_status_badge(
-                dialog.last_verification_ok,
-                dialog.last_verification_message,
-            )
-            detail = self._compact_ai_status_detail(
-                self._plain_language_ai_status_detail(dialog.last_verification_message)
-            )
-            state = "Ready" if dialog.last_verification_ok else "Needs attention"
-            self._set_status(f"Updated AI Hub settings. {state}. {detail}")
-            self._request_menu_refresh()
-        else:
-            self._set_status("AI Hub closed")
+        dlg.show()
+        self._request_menu_refresh()
 
     def open_writing_assistant(self, initial_prompt: str = "") -> None:
         # H-SAFE-1: refuse to even open the AI dialog in safe mode. The
@@ -21378,8 +22492,13 @@ class MainFrame(
         locked-off features are omitted because neither is user-toggleable.
         Individual wx.CheckBox controls are used instead of CheckListBox so
         screen readers (NVDA/JAWS) announce checked state on navigation.
+
+        A RadioBox lets the user filter to disabled-only features so they can
+        quickly scan what is available to turn on without wading through the
+        full list.
         """
         wx = self._wx
+        features = self.features
         toggleable = sorted(
             (
                 (feature_id, definition)
@@ -21388,8 +22507,8 @@ class MainFrame(
             ),
             key=lambda item: (item[1].category, item[1].name),
         )
-        feature_ids = [feature_id for feature_id, _definition in toggleable]
-        dialog = wx.Dialog(self.frame, title="Manage Individual Features", size=(700, 640))
+
+        dialog = wx.Dialog(self.frame, title="Manage Individual Features", size=(700, 680))
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
             wx.StaticText(
@@ -21406,61 +22525,112 @@ class MainFrame(
             8,
         )
 
+        # RadioBox filter — wx.RadioBox announces selection and group label to
+        # all major screen readers without any extra ARIA plumbing.
+        filter_box = wx.RadioBox(
+            dialog,
+            label="Show",
+            choices=["All features", "Disabled features only"],
+            style=wx.RA_SPECIFY_ROWS,
+            name="features.filter",
+        )
+        filter_box.SetSelection(0)
+        root.Add(filter_box, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
+
         # Scrolled panel of individual CheckBox controls — NVDA/JAWS announce
         # "checked" / "not checked" natively when focus moves between them,
         # unlike CheckListBox which only announces name without state.
         scroll = wx.ScrolledWindow(dialog, style=wx.VSCROLL)
         scroll.SetScrollRate(0, 20)
         scroll_sizer = wx.BoxSizer(wx.VERTICAL)
-        checkboxes: list[wx.CheckBox] = []
-        for feature_id, definition in toggleable:
-            cb = wx.CheckBox(scroll, label=definition.name)
-            cb.SetValue(self.features.is_enabled(feature_id))
-            checkboxes.append(cb)
-            scroll_sizer.Add(cb, 0, wx.ALL, 3)
         scroll.SetSizer(scroll_sizer)
 
-        detail = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
-        detail.SetValue("Tab to a feature checkbox to see details below.")
+        detail = wx.TextCtrl(
+            dialog,
+            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2,
+            name="features.detail",
+        )
+        detail.SetValue("Arrow to a feature checkbox to read its description here.")
 
-        def sync_checks() -> None:
-            for index, feature_id in enumerate(feature_ids):
-                if index < len(checkboxes):
-                    checkboxes[index].SetValue(self.features.is_enabled(feature_id))
+        # Mutable list tracking the currently visible (feature_id, checkbox) pairs.
+        current_items: list[tuple[str, object]] = []
 
-        def refresh_detail(index: int) -> None:
-            if 0 <= index < len(feature_ids):
-                detail.SetValue(self.features.describe_feature(feature_ids[index]))
-
-        def make_focus_handler(index: int):
+        def make_focus_handler(feature_id: str):
             def _on_focus(_event: object) -> None:
-                refresh_detail(index)
+                detail.SetValue(features.describe_feature(feature_id))
 
             return _on_focus
 
-        def make_toggle_handler(index: int):
+        def make_toggle_handler(feature_id: str):
             def _on_toggle(_event: object) -> None:
-                if index < 0 or index >= len(feature_ids):
+                cb = next((c for fid, c in current_items if fid == feature_id), None)
+                if cb is None:
                     return
-                feature_id = feature_ids[index]
-                enabled = checkboxes[index].GetValue()
-                affected = self.features.set_feature_enabled(feature_id, enabled)
-                announcement = self.features.describe_feature_toggle(feature_id, enabled, affected)
-                sync_checks()
-                refresh_detail(index)
+                enabled = cb.GetValue()  # type: ignore[union-attr]
+                affected = features.set_feature_enabled(feature_id, enabled)
+                announcement = features.describe_feature_toggle(feature_id, enabled, affected)
+                for fid, c2 in current_items:
+                    c2.SetValue(features.is_enabled(fid))  # type: ignore[union-attr]
+                if filter_box.GetSelection() == 1 and enabled:
+                    # Feature just enabled: remove from disabled-only list.
+                    rebuild_list(focus_first=True)
+                else:
+                    detail.SetValue(features.describe_feature(feature_id))
                 self._build_menu()
                 self._apply_accelerators()
                 self._set_status(announcement)
 
             return _on_toggle
 
-        for i, cb in enumerate(checkboxes):
-            cb.Bind(wx.EVT_CHECKBOX, make_toggle_handler(i))
-            cb.Bind(wx.EVT_SET_FOCUS, make_focus_handler(i))
+        def rebuild_list(focus_first: bool = True) -> None:
+            to_destroy = [
+                item.GetWindow()
+                for item in scroll_sizer.GetChildren()
+                if item.GetWindow() is not None
+            ]
+            scroll_sizer.Clear()
+            for win in to_destroy:
+                win.Destroy()
+            current_items.clear()
+
+            show_disabled_only = filter_box.GetSelection() == 1
+            for feature_id, definition in toggleable:
+                if show_disabled_only and features.is_enabled(feature_id):
+                    continue
+                cb = wx.CheckBox(
+                    scroll,
+                    label=definition.name,
+                    name=f"features.cb.{feature_id}",
+                )
+                cb.SetValue(features.is_enabled(feature_id))
+                current_items.append((feature_id, cb))
+                cb.Bind(wx.EVT_CHECKBOX, make_toggle_handler(feature_id))
+                cb.Bind(wx.EVT_SET_FOCUS, make_focus_handler(feature_id))
+                scroll_sizer.Add(cb, 0, wx.ALL, 3)
+
+            scroll_sizer.Layout()
+            scroll.FitInside()
+            dialog.Layout()
+
+            if not current_items:
+                detail.SetValue(
+                    "No disabled features found."
+                    if show_disabled_only
+                    else "No user-toggleable features available."
+                )
+            elif focus_first:
+                wx.CallAfter(current_items[0][1].SetFocus)  # type: ignore[union-attr]
+                detail.SetValue("Arrow to a feature checkbox to read its description here.")
+
+        rebuild_list()
+        filter_box.Bind(wx.EVT_RADIOBOX, lambda _evt: rebuild_list())
 
         root.Add(scroll, 1, wx.ALL | wx.EXPAND, 8)
-        root.Add(detail, 0, wx.ALL | wx.EXPAND, 8)
-        root.SetItemMinSize(detail, (-1, 80))
+        root.Add(
+            wx.StaticText(dialog, label="Feature description:"), 0, wx.LEFT | wx.RIGHT | wx.TOP, 8
+        )
+        root.Add(detail, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
+        root.SetItemMinSize(detail, (-1, 90))
         buttons = dialog.CreateButtonSizer(wx.OK)
         if buttons is not None:
             ok_button = dialog.FindWindowById(wx.ID_OK)
@@ -21470,8 +22640,6 @@ class MainFrame(
             root.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
         apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_OK)
         dialog.SetSizerAndFit(root)
-        if checkboxes:
-            wx.CallAfter(checkboxes[0].SetFocus)
         self._show_modal_dialog(dialog, "Manage Individual Features")
         self._refresh_title()
 
@@ -21662,17 +22830,9 @@ class MainFrame(
         chooser = wx.ListBox(dialog, choices=[])
         entries: list[tuple[str, str, str]] = []
         summary = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
-        keyboard_pack_choices = keyboard_pack_names(include_custom=True)
-        keyboard_pack_choice = wx.Choice(dialog, choices=keyboard_pack_choices)
-        current_pack = self.settings.keyboard_pack
-        if current_pack not in keyboard_pack_choices:
-            current_pack = KEYBOARD_PACK_DEFAULT
-        keyboard_pack_choice.SetStringSelection(current_pack)
-        keyboard_preview = wx.TextCtrl(
-            dialog,
-            style=wx.TE_MULTILINE | wx.TE_READONLY,
-            size=(-1, 160),
-        )
+        # keyboard_pack_choices, keyboard_pack_choice, and keyboard_preview are
+        # created in the layout section below so their StaticText labels are
+        # created first in Z-order (required for JAWS label-buddy association).
 
         def refresh_profile_list(preferred_id: str | None = None) -> None:
             nonlocal entries
@@ -21698,19 +22858,37 @@ class MainFrame(
             return entries[selection]
 
         def refresh_summary() -> None:
+            from quill.core.onboarding_profiles import list_intent_profiles
+
             entry = selected_entry()
             if entry is None:
                 summary.SetValue(self.features.profile_summary())
                 return
             kind, profile_id, _name = entry
             if kind == "built_in":
-                summary.SetValue(self.features.change_profile_preview(profile_id))
+                # Show the intent-profile preview text when one maps to this
+                # technical profile -- same rich "what you get" description as
+                # the wizard, not a dry feature diff.
+                intent_matches = [
+                    ip for ip in list_intent_profiles() if ip.technical_profile == profile_id
+                ]
+                if intent_matches:
+                    lines: list[str] = []
+                    for ip in intent_matches:
+                        lines.append(ip.preview_text)
+                        if len(intent_matches) > 1:
+                            lines.append("\n" + "-" * 40 + "\n")
+                    summary.SetValue("\n".join(lines).strip())
+                else:
+                    summary.SetValue(self.features.change_profile_preview(profile_id))
+                summary.SetInsertionPoint(0)
                 return
             custom_profile = self._load_custom_profiles().get(profile_id)
             if custom_profile is None:
                 summary.SetValue("Custom profile is no longer available.")
                 return
             summary.SetValue(self._custom_profile_summary(custom_profile))
+            summary.SetInsertionPoint(0)
 
         def refresh_keyboard_preview() -> None:
             pack_name = keyboard_pack_choice.GetStringSelection() or KEYBOARD_PACK_DEFAULT
@@ -21787,15 +22965,43 @@ class MainFrame(
             if not name:
                 self._set_status("Custom profile name cannot be empty")
                 return
-            with wx.TextEntryDialog(
+            # Multi-line description so users can write the same "what you get"
+            # style description shown for built-in intent profiles.
+            with wx.Dialog(
                 dialog,
-                "Optional description:",
-                "Create Custom Profile",
-                value="",
-            ) as description_dialog:
-                if self._show_modal_dialog(description_dialog, "Create Custom Profile") != wx.ID_OK:
+                title="Create Custom Profile - Description",
+                style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
+                size=(520, 360),
+            ) as desc_dlg:
+                desc_root = wx.BoxSizer(wx.VERTICAL)
+                desc_root.Add(
+                    wx.StaticText(
+                        desc_dlg,
+                        label=(
+                            "Write a description for your profile.\n"
+                            "Describe what it is for and what features it includes.\n"
+                            "This text will be shown in the profile chooser."
+                        ),
+                    ),
+                    0,
+                    wx.ALL,
+                    8,
+                )
+                desc_ctrl = wx.TextCtrl(
+                    desc_dlg,
+                    style=wx.TE_MULTILINE | wx.TE_WORDWRAP,
+                    size=(-1, 180),
+                )
+                desc_ctrl.SetName("Profile description")
+                desc_root.Add(desc_ctrl, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+                btn_row = desc_dlg.CreateButtonSizer(wx.OK | wx.CANCEL)
+                if btn_row:
+                    desc_root.Add(btn_row, 0, wx.EXPAND | wx.ALL, 8)
+                desc_dlg.SetSizer(desc_root)
+                apply_modal_ids(desc_dlg, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
+                if self._show_modal_dialog(desc_dlg, "Create Custom Profile") != wx.ID_OK:
                     return
-                description = description_dialog.GetValue().strip()
+                description = desc_ctrl.GetValue().strip()
             built_in_profiles = list(PROFILE_DEFINITIONS.values())
             parent_labels = [self._profile_choice_label(profile) for profile in built_in_profiles]
             with wx.SingleChoiceDialog(
@@ -21957,7 +23163,6 @@ class MainFrame(
             self._refresh_title()
 
         chooser.Bind(wx.EVT_LISTBOX, lambda _e: refresh_summary())
-        keyboard_pack_choice.Bind(wx.EVT_CHOICE, lambda _e: refresh_keyboard_preview())
         switch_button = wx.Button(dialog, label="Switch Profile")
         compare_button = wx.Button(dialog, label="Compare Profiles")
         undo_button = wx.Button(dialog, label="Undo Last Change")
@@ -21999,7 +23204,21 @@ class MainFrame(
             wx.LEFT | wx.RIGHT | wx.TOP | wx.EXPAND,
             8,
         )
+        # Label created before Choice so JAWS finds the right buddy.
+        root.Add(wx.StaticText(dialog, label="Keyboard pack:"), 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
+        keyboard_pack_choices = keyboard_pack_names(include_custom=True)
+        keyboard_pack_choice = wx.Choice(dialog, choices=keyboard_pack_choices)
+        current_pack = self.settings.keyboard_pack
+        if current_pack not in keyboard_pack_choices:
+            current_pack = KEYBOARD_PACK_DEFAULT
+        keyboard_pack_choice.SetStringSelection(current_pack)
+        keyboard_pack_choice.Bind(wx.EVT_CHOICE, lambda _e: refresh_keyboard_preview())
         root.Add(keyboard_pack_choice, 0, wx.ALL | wx.EXPAND, 8)
+        keyboard_preview = wx.TextCtrl(
+            dialog,
+            style=wx.TE_MULTILINE | wx.TE_READONLY,
+            size=(-1, 160),
+        )
         root.Add(keyboard_preview, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         buttons.Add(switch_button, 0, wx.RIGHT, 6)
@@ -22064,37 +23283,85 @@ class MainFrame(
         self.open_user_guide(start_anchor=section)
 
     def run_startup_wizard(self, *, first_run: bool = False) -> None:
+        from quill.core.onboarding_profiles import DEFAULT_INTENT_ID, get_intent_profile
         from quill.core.settings import save_settings
         from quill.ui.setup_wizard import run_setup_wizard
 
         feature_manager: FeatureManager = self.features
-        changed = run_setup_wizard(
-            self.frame, self.settings, feature_manager, show_modal_fn=self._show_modal_dialog
+        changed, aborted = run_setup_wizard(
+            self.frame,
+            self.settings,
+            feature_manager,
+            announce_cb=self._announce,
+            show_modal_fn=self._show_modal_dialog,
+            open_ai_hub=self.open_ai_hub,
         )
         if changed:
+            # Apply Quillin profile from wizard intent choice
+            intent_id = getattr(self.settings, "setup_wizard_intent", DEFAULT_INTENT_ID)
+            wants_ai = bool(getattr(self.settings, "setup_wizard_wants_ai", False))
+            wants_braille = bool(getattr(self.settings, "setup_wizard_wants_braille", False))
+            wants_auto = bool(getattr(self.settings, "setup_wizard_wants_automation", False))
+            self.apply_intent_quillin_profile(
+                intent_id,
+                wants_ai=wants_ai,
+                wants_braille=wants_braille,
+                wants_automation=wants_auto,
+            )
             save_settings(self.settings)
             feature_manager.save()
             self._apply_accelerators()
             self._set_status("Personalise QUILL completed")
-        elif first_run:
-            # User pressed Escape or Cancel on the first-run wizard.  Ask
-            # whether they want to stop seeing it on every launch.
-            with self._wx.MessageDialog(
-                self.frame,
-                "The setup wizard will appear again next time QUILL starts.\n\n"
-                "Do you want to disable it so it does not open automatically?",
-                "Setup Wizard",
-                self._wx.YES_NO | self._wx.NO_DEFAULT | self._wx.ICON_QUESTION,
-            ) as dlg:
-                if self._show_modal_dialog(dlg, "Setup Wizard") == self._wx.ID_YES:
-                    self.settings.setup_wizard_completed = True
-                    save_settings(self.settings)
+            self._announce(
+                f"Profile set to {get_intent_profile(intent_id).name}. "
+                "QUILL is ready. You can personalise further any time from Help."
+            )
+        elif first_run and aborted:
+            # User cancelled on first run: apply minimal text_editor profile
+            # so they start with a clean, quiet editor rather than the raw defaults.
+            from quill.core.feature_catalog import FEATURE_DEFINITIONS
+
+            text_editor = get_intent_profile("text_editor")
+            feature_manager.switch_profile(text_editor.technical_profile)
+            for feature_id, state in text_editor.feature_overrides.items():
+                if feature_id not in FEATURE_DEFINITIONS:
+                    continue
+                try:
+                    feature_manager.set_feature_enabled(feature_id, state == "on")
+                except Exception:
+                    pass
+            self.apply_intent_quillin_profile("text_editor")
+            feature_manager.save()
+            self.settings.setup_wizard_completed = True
+            save_settings(self.settings)
+            self._apply_accelerators()
+            self._announce(
+                "Starting with a clean text editor. "
+                "Add features any time from Help > Personalise QUILL."
+            )
 
     def run_profile_onboarding(self) -> None:
         # Backward-compatible alias for older command IDs and automation scripts.
         self.run_startup_wizard()
 
     def _maybe_run_first_run_onboarding(self) -> None:
+        from quill.core.paths import new_install_marker_path
+        from quill.core.settings import save_settings as _save_settings
+
+        # Consume the new-install marker dropped by the installer.  The marker
+        # is written to {app} on every install (including upgrades) so that
+        # setup_wizard_completed in %APPDATA% — which survives reinstalls — does
+        # not silently suppress the first-run wizard after a fresh install.
+        marker = new_install_marker_path()
+        if marker is not None and marker.exists():
+            try:
+                marker.unlink()
+            except OSError:
+                pass
+            if getattr(self.settings, "setup_wizard_completed", False):
+                self.settings.setup_wizard_completed = False
+                _save_settings(self.settings)
+
         def _focus_editor() -> None:
             editor = getattr(self, "editor", None)
             if editor is not None and hasattr(editor, "SetFocus"):
@@ -22157,6 +23424,124 @@ class MainFrame(
             self._first_run_watch_folder_prompt = False
         _focus_editor()
 
+    def enable_braille_mode(self) -> None:
+        """Enable Braille Mode from Help > Enable Braille Mode or the command palette.
+
+        If braille is already active this is a no-op with an announcement. Otherwise
+        it shows a brief description, enables the feature, rebuilds the menu, and
+        optionally triggers the Braille Pack install prompt.
+        """
+        if self._feature_enabled("core.braille"):
+            self._announce(
+                "Braille Mode is already active. Use the Braille menu to access braille tools."
+            )
+            return
+        wx = self._wx
+        msg = (
+            "Braille Mode adds BRF and BRL file support, Grade 1 and Grade 2 "
+            "braille translation, a braille status bar cell, and the Braille "
+            "menu with page navigation and translation commands.\n\n"
+            "The QUILL Braille Pack is a separate optional component that adds "
+            "the translation engine. You can install it after enabling the mode.\n\n"
+            "Enable Braille Mode now?"
+        )
+        with wx.MessageDialog(
+            self.frame,
+            msg,
+            "Enable Braille Mode",
+            wx.YES_NO | wx.YES_DEFAULT | wx.ICON_INFORMATION,
+        ) as dlg:
+            if hasattr(dlg, "SetYesNoLabels"):
+                dlg.SetYesNoLabels("Enable Braille Mode", "Not Now")
+            apply_modal_ids(dlg, affirmative_id=wx.ID_YES, escape_id=wx.ID_NO)
+            result = self._show_modal_dialog(dlg, "Enable Braille Mode")
+        if result != wx.ID_YES:
+            return
+        self.features.set_feature_enabled("core.braille", True)
+        self.features.save()
+        self._build_menu()
+        self._announce("Braille Mode is now active. The Braille menu has been added.")
+        self._set_status("Braille Mode enabled")
+        self._maybe_prompt_braille_pack_install()
+
+    def _maybe_prompt_braille_pack_install(self) -> None:
+        """One-time post-upgrade prompt when the Braille Pack is absent.
+
+        Runs only in a real (non-dev) install, only once per user, only when
+        the pack is actually missing and Braille Mode is enabled. Offers to
+        re-run the cached installer so the user can add the braillepack
+        component without re-downloading. Choosing 'Disable Braille Mode'
+        turns the feature off so the prompt never fires again.
+        """
+        from quill.core.braille_pack import is_braille_pack_installed
+        from quill.core.paths import _DEV_BUILD
+
+        if not self._feature_enabled("core.braille"):
+            return
+        if _DEV_BUILD:
+            return
+        if is_braille_pack_installed():
+            return
+        if getattr(self.settings, "upgrade_prompt_braille_pack", False):
+            return
+
+        # Mark shown first so a crash during the dialog doesn't re-show.
+        self.settings.upgrade_prompt_braille_pack = True
+        save_settings(self.settings)
+
+        wx = self._wx
+        msg = (
+            "QUILL Braille Pack is not installed.\n\n"
+            "The Braille Pack adds braille translation, BRF/BRL file export, "
+            "and braille display support. It is an optional component included "
+            "in the installer.\n\n"
+            "Choose 'Install Braille Pack' to run the installer and add it now "
+            "(QUILL will close). Choose 'Not Now' to skip; you can install it "
+            "later by re-running the QUILL installer or from Help > Enable "
+            "Braille Mode. Choose 'Disable Braille Mode' if you do not need "
+            "braille tools."
+        )
+        with wx.MessageDialog(
+            self.frame,
+            msg,
+            "QUILL Braille Pack",
+            wx.YES_NO | wx.CANCEL | wx.NO_DEFAULT | wx.ICON_INFORMATION,
+        ) as dlg:
+            if hasattr(dlg, "SetYesNoCancelLabels"):
+                dlg.SetYesNoCancelLabels("Install Braille Pack", "Not Now", "Disable Braille Mode")
+            apply_modal_ids(dlg, affirmative_id=wx.ID_YES, escape_id=wx.ID_NO)
+            result = self._show_modal_dialog(dlg, "QUILL Braille Pack")
+
+        if result == wx.ID_CANCEL:
+            self.features.set_feature_enabled("core.braille", False)
+            self.features.save()
+            self._build_menu()
+            self._set_status("Braille Mode disabled. Use Help > Enable Braille Mode to re-enable.")
+            return
+        if result != wx.ID_YES:
+            self._set_status(
+                "Braille Pack install skipped. Use Help > Enable Braille Mode to install later."
+            )
+            return
+
+        # Look for a cached copy of the installer left in the updates folder.
+        cached = self._find_cached_quill_installer()
+        if cached is not None:
+            self._launch_installer(cached)
+        else:
+            # No cached installer: trigger a fresh download via check-for-updates.
+            self._set_status("Downloading installer to add Braille Pack...")
+            self.check_for_updates(silent_no_update=False)
+
+    def _find_cached_quill_installer(self):
+        """Return the Path of a cached Quill-Setup-*.exe in the updates folder, or None."""
+        try:
+            updates_dir = app_data_dir() / "updates"
+            candidates = sorted(updates_dir.glob("Quill-Setup-*.exe"), reverse=True)
+            return candidates[0] if candidates else None
+        except Exception:  # noqa: BLE001
+            return None
+
     def _show_startup_wizard_first_run_prompt(self) -> bool:
         wx = self._wx
         dialog = wx.RichMessageDialog(
@@ -22183,13 +23568,51 @@ class MainFrame(
         return result == wx.ID_YES
 
     def show_startup_wizard_page(self) -> None:
-        from quill.ui.preview_dialog import MarkdownPreviewDialog
+        from quill.ui.info_pages import show_startup_wizard_page_native
 
-        MarkdownPreviewDialog(
-            self.frame,
-            "Startup Wizard",
-            self._build_startup_wizard_html(),
-        ).show()
+        done = "Done"
+        todo = "Not set up yet"
+        steps = [
+            (
+                "A quick word on privacy",
+                done if load_trust_consent_complete() else todo,
+                "How Quill looks after your writing and uses AI, in plain terms.",
+            ),
+            (
+                "How Quill starts",
+                done if load_onboarding_complete() else todo,
+                "Pick a starting setup that matches how you like to work.",
+            ),
+            (
+                "Writing help",
+                done if load_assistant_onboarding_complete() else todo,
+                "Turn on optional AI writing help and choose its style.",
+            ),
+            (
+                "Accessibility engine (GLOW)",
+                done if load_glow_onboarding_complete() else todo,
+                "GLOW is on by default; optional network features stay off until you turn them on.",
+            ),
+            (
+                "Speech and voices",
+                done if load_speech_onboarding_complete() else todo,
+                "Choose voices and download optional speech only if you want it.",
+            ),
+            (
+                "Speech model preferences",
+                done
+                if bool(getattr(self.settings, "bw_provider_id", ""))
+                and bool(getattr(self.settings, "bw_speech_model_id", ""))
+                else todo,
+                "Pick your preferred speech provider and voice model.",
+            ),
+            (
+                "Open a folder automatically",
+                done if load_watch_folder_onboarding_complete() else todo,
+                "Let Quill open files you drop into one folder for you.",
+            ),
+        ]
+        show_startup_wizard_page_native(self.frame, self._wx, steps, self._show_modal_dialog)
         self._set_status("Opened Startup Wizard overview")
 
     def _show_trust_consent_onboarding(self, force: bool) -> bool:
@@ -22219,83 +23642,6 @@ class MainFrame(
             mark_trust_consent_complete()
             return True
         return False
-
-    def _build_startup_wizard_html(self) -> str:
-        done = "Done"
-        todo = "Not set up yet"
-        setup_steps = [
-            (
-                "A quick word on privacy",
-                done if load_trust_consent_complete() else todo,
-                "How Quill looks after your writing and uses AI, in plain terms.",
-            ),
-            (
-                "How Quill starts",
-                done if load_onboarding_complete() else todo,
-                "Pick a starting setup that matches how you like to work.",
-            ),
-            (
-                "Writing help",
-                done if load_assistant_onboarding_complete() else todo,
-                "Turn on optional AI writing help and choose its style.",
-            ),
-            (
-                "Accessibility engine (GLOW)",
-                done if load_glow_onboarding_complete() else todo,
-                "GLOW is on by default and runs on your computer; optional network "
-                "features stay off until you turn them on.",
-            ),
-            (
-                "Speech and voices",
-                done if load_speech_onboarding_complete() else todo,
-                "Choose voices and download optional speech only if you want it.",
-            ),
-            (
-                "Speech model preferences",
-                (
-                    done
-                    if bool(getattr(self.settings, "bw_provider_id", ""))
-                    and bool(getattr(self.settings, "bw_speech_model_id", ""))
-                    else todo
-                ),
-                "Pick your preferred speech provider and voice model.",
-            ),
-            (
-                "Open a folder automatically",
-                done if load_watch_folder_onboarding_complete() else todo,
-                "Let Quill open files you drop into one folder for you.",
-            ),
-        ]
-        steps_html = "".join(
-            (
-                "<li>"
-                f"<strong>{html.escape(step)}</strong> &mdash; {html.escape(state)}. "
-                f"{html.escape(detail)}"
-                "</li>"
-            )
-            for step, state, detail in setup_steps
-        )
-
-        return (
-            "<h1 id='startup-wizard'>Startup Wizard</h1>"
-            "<p>Welcome to Quill &mdash; a fast, friendly writing app built to work "
-            "beautifully with your screen reader. This short setup gets things ready "
-            "the way you like. You can stop any time and come back later.</p>"
-            "<h2 id='what-youll-set-up'>What you'll set up</h2>"
-            "<p>Each step is optional and takes a moment. Here's what it gives you "
-            "and what you've finished so far:</p>"
-            f"<ul>{steps_html}</ul>"
-            "<h2 id='good-to-know'>Good to know</h2>"
-            "<ul>"
-            "<li>Everything works from the keyboard, and Quill tells you what just happened.</li>"
-            "<li>You can skip a step now and set it up later.</li>"
-            "<li>Nothing is downloaded until you say yes.</li>"
-            "<li>To start over, open Startup Wizard again from the Help menu.</li>"
-            "</ul>"
-            "<h2 id='where-next'>You're all set</h2>"
-            "<p>That's it &mdash; you're ready to write. To check on downloads, "
-            "speech, and what's turned on, open Help &gt; Status Page.</p>"
-        )
 
     def _show_bw_onboarding(self, force: bool) -> None:
         wx = self._wx
@@ -22488,8 +23834,7 @@ class MainFrame(
         wx = self._wx
         start_setup = self._show_message_box(
             "Set up speech engines now?\n\n"
-            "You can download/configure DECtalk, eSpeak-NG, Piper, Kokoro, "
-            "and OpenVoice.\n"
+            "You can download/configure DECtalk, eSpeak-NG, Piper, and Kokoro.\n"
             "You can always change these later in AI > Speech > Settings.",
             "Speech Setup",
             wx.ICON_QUESTION | wx.YES_NO,
@@ -22503,9 +23848,8 @@ class MainFrame(
         choices = [
             "Download and configure DECtalk runtime (recommended)",
             "Configure eSpeak-NG path and English variant",
-            "Configure Piper executable and English model folder",
+            "Browse and download Piper voices",
             "Configure Kokoro English voice defaults",
-            "Configure OpenVoice executable, English voice, and consent",
             "Open speech setup docs",
         ]
         with wx.MultiChoiceDialog(
@@ -22572,15 +23916,7 @@ class MainFrame(
                             self.settings.read_aloud_espeak_voice = voices[idx].id
 
         if 2 in selected:
-            exe = _ask_text("Path to piper.exe:", self.settings.read_aloud_piper_executable)
-            if exe is not None:
-                self.settings.read_aloud_piper_executable = exe
-            model_dir = _ask_text(
-                "Folder containing English Piper .onnx models:",
-                self.settings.read_aloud_piper_model_dir,
-            )
-            if model_dir is not None:
-                self.settings.read_aloud_piper_model_dir = model_dir
+            self.choose_read_aloud_configuration()
 
         if 3 in selected:
             voices = list_kokoro_voices()
@@ -22597,32 +23933,6 @@ class MainFrame(
                             self.settings.read_aloud_kokoro_voice = voices[idx].id
 
         if 4 in selected:
-            exe = _ask_text(
-                "Path to OpenVoice executable:", self.settings.read_aloud_openvoice_executable
-            )
-            if exe is not None:
-                self.settings.read_aloud_openvoice_executable = exe
-            voices = list_openvoice_english_voices()
-            if voices:
-                with wx.SingleChoiceDialog(
-                    self.frame,
-                    "Choose default OpenVoice English voice:",
-                    "Speech Setup",
-                    choices=[voice.name for voice in voices],
-                ) as voice_dialog:
-                    if self._show_modal_dialog(voice_dialog, "Speech Setup") == wx.ID_OK:
-                        idx = voice_dialog.GetSelection()
-                        if 0 <= idx < len(voices):
-                            self.settings.read_aloud_openvoice_voice = voices[idx].id
-            consent = self._show_message_box(
-                "Enable OpenVoice advanced style module on this machine?\n\n"
-                "This feature is optional and remains disabled unless you explicitly consent.",
-                "Speech Setup",
-                wx.YES_NO | wx.ICON_QUESTION,
-            )
-            self.settings.read_aloud_openvoice_consent = consent == wx.YES
-
-        if 5 in selected:
             docs_path = app_data_dir().parent / "Quill" / "docs" / "userguide.md"
             webbrowser.open(str(docs_path))
 

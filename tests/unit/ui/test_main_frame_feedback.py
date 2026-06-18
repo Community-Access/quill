@@ -350,7 +350,7 @@ def test_skip_update_version_records_choice(monkeypatch) -> None:
 def test_check_for_updates_silent_honors_skipped_version(monkeypatch) -> None:
     frame = _build_frame()
     frame.settings.beta_updates = False
-    frame.settings.skipped_update_version = "0.6.0"
+    frame.settings.skipped_update_version = "0.7.0"
     frame.settings.last_update_check = ""
     monkeypatch.setattr(main_frame_module, "save_settings", lambda _settings: None)
     monkeypatch.setattr(
@@ -359,7 +359,7 @@ def test_check_for_updates_silent_honors_skipped_version(monkeypatch) -> None:
         lambda _url: (_ for _ in ()).throw(main_frame_module.URLError("offline")),
     )
     release = GitHubRelease(
-        version="0.6.0",
+        version="0.7.0",
         download_url="https://github.com/releases/download/x/Quill.exe",
         published_at="2026-06-01",
         notes="New",
@@ -372,4 +372,4 @@ def test_check_for_updates_silent_honors_skipped_version(monkeypatch) -> None:
 
     frame.check_for_updates(silent_no_update=True)
 
-    assert frame._notification == ("Update 0.6.0 available (skipped by you)", "update")
+    assert frame._notification == ("Update 0.7.0 available (skipped by you)", "update")

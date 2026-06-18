@@ -53,10 +53,34 @@ _EMAIL_RE = re.compile(r"\b[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}\b")
 # Hex / base64-looking long tokens (>=32 chars of [0-9a-fA-F-_]).
 _TOKEN_RE = re.compile(r"\b[A-Fa-f0-9_\-]{32,}\b")
 
+# Modern API key prefixes that contain non-hex characters and would escape
+# _TOKEN_RE: GitHub PATs (ghp_/gho_/github_pat_), OpenAI (sk-),
+# AWS access keys (AKIA), Slack (xoxb-/xoxp-), generic long alphanumeric keys.
+_PREFIXED_KEY_RE = re.compile(
+    r"(?:ghp_|gho_|github_pat_|sk-|AKIA)[A-Za-z0-9_\-]{16,}"
+    r"|"
+    r"xox[bp]-[A-Za-z0-9_\-]{20,}"
+    r"|"
+    r"\b[A-Za-z0-9_\-]{36,}\b"
+)
+
 # Microsoft-style account tokens (TDI / refresh / eyJ… JWT).
 _JWT_RE = re.compile(r"\beyJ[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,}\b")
 
 _MAX_LINE_BYTES = 4096
+
+
+def redact_source_tokens(text: str) -> str:
+    """Replace known API key patterns in *text* with ``[TOKEN]``.
+
+    Lighter than :func:`redact_text_for_bundle`: only tokens are
+    replaced, paths and emails are preserved. Used for console history
+    so code structure is readable but accidental key pastes are masked.
+    """
+    text = _TOKEN_RE.sub("[TOKEN]", text)
+    text = _JWT_RE.sub("[JWT]", text)
+    text = _PREFIXED_KEY_RE.sub("[TOKEN]", text)
+    return text
 
 
 def redact_command_arg(arg: str) -> str:
@@ -75,9 +99,10 @@ def redact_command_arg(arg: str) -> str:
     if _SECRET_NAME_RE.search(arg):
         return "[REDACTED]"
     # Drop the JWT / long token first to avoid double work.
-    if _JWT_RE.search(arg) or _TOKEN_RE.search(arg):
+    if _JWT_RE.search(arg) or _TOKEN_RE.search(arg) or _PREFIXED_KEY_RE.search(arg):
         arg = _TOKEN_RE.sub("[TOKEN]", arg)
         arg = _JWT_RE.sub("[JWT]", arg)
+        arg = _PREFIXED_KEY_RE.sub("[TOKEN]", arg)
     arg = _WINDOWS_PATH_RE.sub("[PATH]", arg)
     arg = _POSIX_PATH_RE.sub("[PATH]", arg)
     arg = _MACOS_PATH_RE.sub("[PATH]", arg)

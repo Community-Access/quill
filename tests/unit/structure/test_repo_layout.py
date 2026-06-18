@@ -34,11 +34,14 @@ _SANCTIONED_ROOT_MARKDOWN = frozenset({
     "RESPONSIBLE_AI_USE.md",
     "SECURITY.md",
     "THIRD_PARTY_NOTICES.md",
+    "ai.md",
     "dialogs.md",
     "issues.md",
     "menus.md",
     "rel.md",
+    "report.md",
     "x2.md",
+    "x3.md",
 })
 
 
@@ -61,31 +64,23 @@ def test_repository_root_markdown_is_limited_to_sanctioned_files() -> None:
     )
 
 
-def test_consolidated_docs_live_at_docs_root() -> None:
-    # The former docs/planning, docs/accessibility, docs/features,
-    # docs/engineering, and docs/qa folders were each rolled up into a single
-    # root-level document under docs/ to reduce file sprawl. Guard that the
-    # consolidated documents exist and that the old sub-folders did not creep
-    # back.
+def test_docs_are_in_their_expected_homes() -> None:
+    # Core docs are organized into topic subdirectories. Guard that the key
+    # files exist in their canonical locations and that old standalone files
+    # that were folded into larger documents have not crept back.
     docs = _REPO_ROOT / "docs"
-    # Documentation was aggressively consolidated into a handful of root docs:
-    # user-facing material (incl. the developer console, skills tutorial, and
-    # feature notes) lives in userguide.md; spec/design/ops material (engineering,
-    # QA, deployment, AccessibleApps, RTF design) folded into QUILL-PRD.md; the
-    # Quillin docs + scripting contract into quillins.md.
-    for name in (
-        "planning.md",
-        "quillins.md",
-        "userguide.md",
-        "QUILL-PRD.md",
-        "braille.md",
-    ):
-        assert (docs / name).is_file(), f"missing consolidated docs/{name}"
-    for folder in ("planning", "accessibility", "features", "engineering", "qa"):
-        assert not (docs / folder).is_dir(), (
-            f"docs/{folder}/ should have been consolidated into a root doc"
-        )
-    # These standalone docs were folded into userguide.md / QUILL-PRD.md.
+    # Quillin scripting contract lives under docs/quillins/ alongside generated epub/html.
+    assert (docs / "quillins" / "quillins.md").is_file(), "missing docs/quillins/quillins.md"
+    # Planning roadmap and braille docs live under docs/planning/
+    assert (docs / "planning" / "planning.md").is_file(), "missing docs/planning/planning.md"
+    assert (docs / "planning" / "braille.md").is_file(), "missing docs/planning/braille.md"
+    # User guide lives under docs/user guide/
+    assert (docs / "user guide" / "userguide.md").is_file(), "missing docs/user guide/userguide.md"
+    # PRD lives under docs/Product Requirement Documents and Specifications/
+    prd_dir = docs / "Product Requirement Documents and Specifications"
+    assert (prd_dir / "QUILL-PRD.md").is_file(), "missing QUILL-PRD.md in PRD dir"
+    # These old standalone docs were folded into userguide.md / QUILL-PRD.md
+    # and must not reappear at the docs root.
     for gone in (
         "engineering.md",
         "qa.md",

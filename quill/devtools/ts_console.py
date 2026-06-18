@@ -14,12 +14,14 @@ Threading model:
 
 from __future__ import annotations
 
+import os
 import queue
 import shutil
 import subprocess
 import threading
 import time
 import uuid
+from collections.abc import Callable
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -40,9 +42,15 @@ class TypeScriptConsoleError(RuntimeError):
 class TypeScriptConsole:
     """Manages the Node worker subprocess and executes TypeScript code."""
 
-    def __init__(self, host: ConsoleHost, timeout: float = _DEFAULT_TIMEOUT) -> None:
+    def __init__(
+        self,
+        host: ConsoleHost,
+        timeout: float = _DEFAULT_TIMEOUT,
+        ui_call: Callable[[Callable[[], Any]], Any] | None = None,
+    ) -> None:
         self._host = host
         self._timeout = timeout
+        self._ui_call = ui_call
         self._proc: subprocess.Popen[str] | None = None
         self._reader: threading.Thread | None = None
         # per-request: req_id -> (event, result_holder)
@@ -72,13 +80,17 @@ class TypeScriptConsole:
             )
         self._stopped = False
         self._ready.clear()
+        extra: dict = {}
+        if os.name == "nt":
+            extra["creationflags"] = subprocess.CREATE_NO_WINDOW
         self._proc = subprocess.Popen(
             [node, str(_WORKER_JS)],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
             text=True,
             bufsize=1,
+            **extra,
         )
         self._reader = threading.Thread(target=self._reader_loop, daemon=True)
         self._reader.start()
@@ -153,17 +165,6 @@ class TypeScriptConsole:
             self._pending.pop(req_id, None)
         return holder[0] if holder else ScriptError(message="No result received.")
 
-    def drain_output(self) -> list[tuple[str, str]]:
-        """Return and clear pending (stream, text) console output pairs."""
-        items: list[tuple[str, str]] = []
-        while True:
-            try:
-                _req_id, stream, text = self._output_queue.get_nowait()
-                items.append((stream, text))
-            except queue.Empty:
-                break
-        return items
-
     # ------------------------------------------------------------------
     # Background reader
 
@@ -203,7 +204,10 @@ class TypeScriptConsole:
             call_id = str(msg.get("call", ""))
             method = str(msg.get("method", ""))
             args = msg.get("args", [])
-            result = self._handle_invoke(method, args)
+            if self._ui_call is not None:
+                result = self._ui_call(lambda: self._handle_invoke(method, args))
+            else:
+                result = self._handle_invoke(method, args)
             ret_msg: ReturnMsg
             if isinstance(result, ScriptError):
                 ret_msg = ReturnMsg(req_id=req_id, call_id=call_id, error=result.message)
@@ -229,8 +233,10 @@ class TypeScriptConsole:
                 holder.append(ScriptSuccess(value=val, output=output))
             else:
                 stack = str(msg.get("stack", ""))
+                pre_output = str(msg.get("output", ""))
+                detail = (pre_output + "\n" + stack).lstrip("\n") if pre_output else stack
                 holder.append(
-                    ScriptError(message=str(msg.get("message", "Unknown error")), detail=stack)
+                    ScriptError(message=str(msg.get("message", "Unknown error")), detail=detail)
                 )
             evt.set()
 

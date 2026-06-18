@@ -6,6 +6,7 @@ from pathlib import Path
 from quill.tools.check_banned_patterns import (
     _REPO_ROOT,
     _BareWxVisitor,
+    _check_accept_focus_from_keyboard,
     _check_checklistbox,
     _check_dead_region_attrs,
     _check_dialog_contract,
@@ -265,3 +266,46 @@ def test_dead_region_attrs_correct_form_is_clean(tmp_path: Path) -> None:
         encoding="utf-8",
     )
     assert _check_dead_region_attrs([module]) == []
+
+
+def test_accept_focus_from_keyboard_returning_false_is_flagged(tmp_path: Path) -> None:
+    # A11Y-TAB-1: overriding AcceptsFocusFromKeyboard to return False on a
+    # wx.Panel subclass causes wxPython tab traversal to skip the entire
+    # subtree, making all child controls (TextCtrl, ListBox, CheckBox)
+    # unreachable by keyboard.
+    module = tmp_path / "pages.py"
+    module.write_text(
+        "import wx\n\n\n"
+        "class _MyPage(wx.Panel):\n"
+        "    def AcceptsFocusFromKeyboard(self) -> bool:\n"
+        "        return False\n",
+        encoding="utf-8",
+    )
+    violations = _check_accept_focus_from_keyboard([module])
+    assert len(violations) == 1
+    assert "A11Y-TAB-1" in violations[0].message
+    assert "Hide()+Disable()" in violations[0].message
+
+
+def test_accept_focus_from_keyboard_returning_true_is_allowed(tmp_path: Path) -> None:
+    module = tmp_path / "pages.py"
+    module.write_text(
+        "import wx\n\n\n"
+        "class _MyPage(wx.Panel):\n"
+        "    def AcceptsFocusFromKeyboard(self) -> bool:\n"
+        "        return True\n",
+        encoding="utf-8",
+    )
+    assert _check_accept_focus_from_keyboard([module]) == []
+
+
+def test_accept_focus_from_keyboard_ok_marker_exempts(tmp_path: Path) -> None:
+    module = tmp_path / "pages.py"
+    module.write_text(
+        "import wx\n\n\n"
+        "class _ReadOnlyDisplay(wx.Panel):\n"
+        "    def AcceptsFocusFromKeyboard(self) -> bool:  # A11Y-TAB-1-OK: display-only\n"
+        "        return False\n",
+        encoding="utf-8",
+    )
+    assert _check_accept_focus_from_keyboard([module]) == []

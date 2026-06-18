@@ -51,6 +51,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "file.print": "Ctrl+P",
     "window.next_document": "Ctrl+Tab",
     "window.previous_document": "Ctrl+Shift+Tab",
+    "window.close_other_documents": "Ctrl+Shift+F4",
     "navigate.speak_window_title": "Ctrl+Shift+Grave, F",
     "navigate.speak_full_path": "Ctrl+Shift+Grave, P",
     "navigate.speak_status_summary": "Ctrl+Shift+Grave, Q",
@@ -151,7 +152,11 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "format.decrease_heading_level": "Alt+Shift+Left",
     "format.increase_heading_level": "Alt+Shift+Right",
     "format.insert_html_tag": "Ctrl+Shift+Grave, H",
-    "format.insert_markdown_tag": "Ctrl+Shift+Grave, M",
+    "format.insert_markdown_tag": "",  # M is reserved for paste-HTML-as-Markdown
+    "power.paste_html_as_markdown": "Ctrl+Shift+Grave, M",
+    "power.non_ascii_jump_to_source": "",  # assign via Keymap Editor; use from Non-ASCII report
+    "power.non_ascii_jump_to_report": "",  # assign via Keymap Editor; jump back to report
+    "power.open_snippet_gallery": "Ctrl+Shift+Grave, Shift+G",
     "format.insert_snippet": "Ctrl+Shift+Grave, S",
     "format.manage_snippets": "Ctrl+Shift+Grave, Shift+S",
     "format.expand_abbreviation": "Ctrl+Shift+Grave, A",

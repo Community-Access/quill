@@ -2,6 +2,7 @@
 
 Entry point: open_skill_library() in MainFrame (Tools > AI Assistant > Skill Library...).
 A11Y-4 hardened: apply_modal_ids, public show()/close().
+Status changes are announced via announce_cb (finding #43).
 """
 
 from __future__ import annotations
@@ -46,6 +47,7 @@ class SkillLibraryDialog:
         title_text: str = "",
         clipboard: str = "",
         on_insert: Callable[[str], None] | None = None,
+        announce_cb: Callable[[str], None] | None = None,
     ) -> None:
         self._settings = settings
         self._skill_files = list(skill_files)
@@ -57,6 +59,7 @@ class SkillLibraryDialog:
             "clipboard": clipboard,
         }
         self._on_insert = on_insert
+        self._announce = announce_cb or (lambda _: None)
         self._running = False
         self._cancel_event = threading.Event()
 
@@ -114,6 +117,11 @@ class SkillLibraryDialog:
     # Populate + configuration check
     # ------------------------------------------------------------------
 
+    def _set_status(self, msg: str) -> None:
+        self._status.SetLabel(msg)
+        if msg:
+            self._announce(msg)
+
     def _populate(self) -> None:
         self._packs.clear()
         self._list.Clear()
@@ -135,7 +143,7 @@ class SkillLibraryDialog:
             or ""
         )
         if not model_id:
-            self._status.SetLabel(
+            self._set_status(
                 "No AI model configured. Open Preferences > AI to set a provider and model."
             )
 
@@ -171,7 +179,7 @@ class SkillLibraryDialog:
         if self._running:
             self._cancel_event.set()
             self._run_btn.Disable()
-            self._status.SetLabel("Cancelling after current step completes...")
+            self._set_status("Cancelling after current step completes...")
             return
 
         idx = self._list.GetSelection()
@@ -206,6 +214,7 @@ class SkillLibraryDialog:
                 "No Model",
                 wx.OK | wx.ICON_INFORMATION,
                 self.dialog,
+                announce=self._announce,
             )
             return
 
@@ -218,8 +227,8 @@ class SkillLibraryDialog:
         self._running = True
         self._run_btn.SetLabel("&Cancel")
 
-        def _set_status(msg: str) -> None:
-            self._status.SetLabel(msg)
+        def _update_step_status(msg: str) -> None:
+            self._set_status(msg)
             self.dialog.Layout()
 
         def worker() -> None:
@@ -232,7 +241,7 @@ class SkillLibraryDialog:
                 status = f"Running step {n} of {total}"
                 if heading:
                     status += f": {heading}"
-                wx.CallAfter(_set_status, status + "...")
+                wx.CallAfter(_update_step_status, status + "...")
                 if self._cancel_event.is_set():
                     raise _SkillCancelled()
                 return send_prompt(
@@ -261,16 +270,17 @@ class SkillLibraryDialog:
 
         active = [r for r in results if not r.skipped]
         if not active:
-            self._status.SetLabel("")
+            self._set_status("")
             show_message_box(
                 "The skill ran but produced no output.",
                 "Skill result",
                 wx.OK | wx.ICON_INFORMATION,
                 self.dialog,
+                announce=self._announce,
             )
             return
 
-        self._status.SetLabel("")
+        self._set_status("")
 
         last_step = pack.steps[-1]
         accept_into = "none"
@@ -302,7 +312,7 @@ class SkillLibraryDialog:
 
     def _on_cancelled(self) -> None:
         self._reset_run_button()
-        self._status.SetLabel("Skill cancelled.")
+        self._set_status("Skill cancelled.")
 
     def _on_error(self, msg: str) -> None:
         self._reset_run_button()
@@ -312,6 +322,7 @@ class SkillLibraryDialog:
             "Skill error",
             wx.OK | wx.ICON_ERROR,
             self.dialog,
+            announce=self._announce,
         )
 
     # ------------------------------------------------------------------
@@ -338,10 +349,17 @@ class SkillLibraryDialog:
                 "Invalid skill",
                 wx.OK | wx.ICON_ERROR,
                 self.dialog,
+                announce=self._announce,
             )
             return
         except Exception as exc:
-            show_message_box(str(exc), "Import failed", wx.OK | wx.ICON_ERROR, self.dialog)
+            show_message_box(
+                str(exc),
+                "Import failed",
+                wx.OK | wx.ICON_ERROR,
+                self.dialog,
+                announce=self._announce,
+            )
             return
         if errors:
             show_message_box(
@@ -349,6 +367,7 @@ class SkillLibraryDialog:
                 "Invalid skill",
                 wx.OK | wx.ICON_ERROR,
                 self.dialog,
+                announce=self._announce,
             )
             return
         self._skill_files.append(path)
@@ -362,6 +381,7 @@ class SkillLibraryDialog:
             "Skill imported",
             wx.OK | wx.ICON_INFORMATION,
             self.dialog,
+            announce=self._announce,
         )
 
     # ------------------------------------------------------------------

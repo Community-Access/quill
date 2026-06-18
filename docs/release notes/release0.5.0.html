@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>announcement</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="introducing-quill-050-beta">Introducing QUILL 0.5.0 Beta</h1>
+<h2 id="a-screen-reader-first-writing-environment-built-for-real-work">A
+screen-reader-first writing environment built for real work</h2>
+<p>QUILL 0.5.0 Beta is now available, and it represents a major step
+forward in accessible writing, editing, reviewing, and document-centered
+productivity on Windows.</p>
+<p>QUILL stands for <strong>Quality, Usable, Inclusive, Lightweight, and
+Literate</strong>.</p>
+<p>It is built for people who live in text: blind writers, screen-reader
+users, keyboard users, students, researchers, accessibility
+professionals, developers, and anyone who wants to focus on their words
+instead of fighting their editor.</p>
+<p>QUILL is not a traditional editor with accessibility added at the
+end. QUILL begins with accessibility as a design requirement, a
+development standard, and a promise to the community.</p>
+<h2 id="why-quill-matters">Why QUILL matters</h2>
+<p>Most writing tools ask blind and keyboard-only users to adapt to the
+software.</p>
+<p>QUILL is different.</p>
+<p>QUILL is designed around the way people actually work with screen
+readers, structured documents, long-form writing, keyboard navigation,
+document review, automation, and assistive technology. It aims to be
+calm, predictable, powerful, and respectful of the user’s time and
+attention.</p>
+<p>This beta is already capable enough for serious daily work, while
+still being honest about its beta status. Some areas will continue to
+grow, but the foundation is here: a complete writing environment shaped
+by accessibility from the first line of code.</p>
+<h2 id="download-quill-050-beta">Download QUILL 0.5.0 Beta</h2>
+<p>QUILL 0.5.0 Beta is available now for Windows.</p>
+<ul>
+<li><a
+href="https://github.com/Community-Access/quill/releases/download/v0.5.0/Quill-Setup-0.5.0.exe">Download
+the QUILL 0.5.0 Installer (Windows)</a> — Full installer, approximately
+70 MB. Includes embedded Python runtime and all dependencies. No
+separate Python installation required.</li>
+<li><a
+href="https://github.com/Community-Access/quill/releases/tag/v0.5.0">View
+the full release on GitHub</a> — Release notes, source code, and all
+release assets.</li>
+</ul>
+<p>The installer requires Windows 10 or later, 64-bit. Run the installer
+and follow the prompts. QUILL will be available in your Start menu when
+complete.</p>
+<h2 id="what-is-new-in-quill-050-beta">What is new in QUILL 0.5.0
+Beta</h2>
+<p>QUILL 0.5.0 Beta brings together a broad set of features into one
+accessible writing environment.</p>
+<h3 id="a-complete-multi-document-workspace">A complete multi-document
+workspace</h3>
+<p>QUILL includes a full editing shell with tabbed documents, recent
+files, save and save-all workflows, backup recovery, page setup,
+printing, URL opening with safety checks, session restore patterns, and
+workspace snapshots.</p>
+<p>The workspace is designed to support quick notes, daily writing,
+long-form projects, structured markup, technical authoring, research,
+document review, and revision-heavy editing.</p>
+<h3 id="a-familiar-and-discoverable-menu-system">A familiar and
+discoverable menu system</h3>
+<p>The menu bar follows a familiar Windows and Office-style structure:
+File, Edit, View, Insert, Format, Navigate, Search, Tools, Window, and
+Help.</p>
+<p>If QUILL can do something, the goal is for that feature to have a
+clear and discoverable home.</p>
+<p>Menus are not decorative. They are part of the accessibility model.
+Commands are organized, discoverable, and explainable so users do not
+have to memorize hidden behavior to be productive.</p>
+<h3 id="a-powerful-command-palette">A powerful command palette</h3>
+<p>QUILL includes a command palette for quickly finding and running
+commands, opening settings, accessing help topics, and discovering
+features.</p>
+<p>The command palette is designed for speed, but also for learning. It
+helps users find what QUILL can do without forcing them to remember
+where every command lives.</p>
+<h3 id="an-interactive-status-bar">An interactive status bar</h3>
+<p>The status bar in QUILL is an action hub, not just a line of
+information.</p>
+<p>It can show document status, word count, selection details, file
+information, spelling state, autosave state, background tasks,
+notifications, read-aloud status, copy tray information, and the
+detected screen reader.</p>
+<p>Many status bar items can also be activated directly, giving users
+fast access to related tools and settings without disrupting their
+workflow.</p>
+<h3
+id="customization-for-different-users-and-skill-levels">Customization
+for different users and skill levels</h3>
+<p>QUILL is not one-size-fits-all.</p>
+<p>Users can choose feature profiles such as Essential, Writer,
+Developer and Power Text, Accessibility Professional, and Full QUILL.
+These profiles help shape the editor around the user’s needs.</p>
+<p>Someone who wants a clean writing experience can keep QUILL simple.
+Someone who wants automation, scripting, advanced navigation, AI, remote
+files, and extension support can turn those capabilities on.</p>
+<p>Customization also includes keyboard management, menu customization,
+status bar layout control, feature toggles, and profile-aware behavior
+throughout the application.</p>
+<h2 id="designed-for-screen-reader-productivity">Designed for
+screen-reader productivity</h2>
+<p>Accessibility in QUILL is not limited to whether a screen reader can
+technically read the interface. QUILL is built to support productive,
+efficient, real-world screen-reader use.</p>
+<h3 id="predictable-focus-and-announcements">Predictable focus and
+announcements</h3>
+<p>QUILL is designed to reduce noise, avoid duplicate announcements,
+expose meaningful control names and roles, and provide clear feedback
+when something changes.</p>
+<p>The goal is not simply to make the interface speak. The goal is to
+make it understandable.</p>
+<h3 id="selection-workflows-that-make-sense">Selection workflows that
+make sense</h3>
+<p>QUILL includes structured selection tools designed for screen-reader
+users who need confidence when selecting text.</p>
+<p>Users can start a selection, extend it, complete it, return to the
+start, reselect previous text, and expand or shrink selections by
+meaningful units such as word, sentence, line, paragraph, or block.</p>
+<p>This makes selection more deliberate, reviewable, and less dependent
+on visual feedback.</p>
+<h3 id="long-document-navigation">Long-document navigation</h3>
+<p>QUILL includes document navigation tools for headings, paragraphs,
+blocks, links, lists, tables, bookmarks, code blocks, search results,
+and other structure.</p>
+<p>The Outline Navigator gives users a clear view of the current
+document’s structure, including headings, bookmarks, sticky notes, and
+search matches.</p>
+<p>For long documents, this is essential. Users should be able to
+understand where they are, move efficiently, and review structure
+without rereading the entire file.</p>
+<h2 id="writing-and-editing-tools">Writing and editing tools</h2>
+<p>QUILL includes the expected everyday editing features: undo, redo,
+cut, copy, paste, select all, insert and overwrite modes, bookmarks,
+line operations, indentation, commenting, cleanup tools, and structured
+editing commands.</p>
+<p>It also includes authoring support for plain text, Markdown, HTML,
+headings, lists, links, tables, code blocks, case conversion, tag
+assistance, and heading organization.</p>
+<p>QUILL is built for practical writing, but it is also built for
+structured writing.</p>
+<h2 id="reusable-content-and-writing-acceleration">Reusable content and
+writing acceleration</h2>
+<p>QUILL is designed to help users write faster, more consistently, and
+with less repetitive effort.</p>
+<h3 id="snippets-and-prediction">Snippets and prediction</h3>
+<p>QUILL includes word prediction, tag assistance, and a snippet system
+for reusable text.</p>
+<p>Snippets can include placeholders, choices, date and time values,
+cursor placement, and trigger-word expansion. Users can create, edit,
+import, export, and organize snippet packs for writing, coding,
+accessibility notes, documentation, and other recurring workflows.</p>
+<p>This gives users a way to build their own writing toolkit directly
+into the editor.</p>
+<h3
+id="abbreviations-that-turn-short-text-into-serious-productivity">Abbreviations
+that turn short text into serious productivity</h3>
+<p>QUILL includes a powerful abbreviation system for users who
+repeatedly type the same words, phrases, signatures, code patterns,
+accessibility notes, document structures, or standard responses.</p>
+<p>Abbreviations let users define short triggers that expand into longer
+text. This can save time, reduce typing fatigue, improve consistency,
+and make repetitive writing much faster.</p>
+<p>The feature is especially useful for:</p>
+<ul>
+<li>Common phrases and boilerplate text</li>
+<li>Email responses and signatures</li>
+<li>Accessibility review notes</li>
+<li>Technical documentation patterns</li>
+<li>Markdown and HTML structures</li>
+<li>Frequently used names, links, and organizational language</li>
+<li>Personal writing shortcuts</li>
+</ul>
+<p>Abbreviation expansion can be turned on or off, managed from within
+QUILL, and used alongside snippets, the Copy Tray, and the command
+palette. This gives users both quick automatic expansion and more
+deliberate reusable-content workflows.</p>
+<p>For screen-reader users and keyboard-first writers, abbreviations are
+more than a convenience. They are a speed, consistency, and
+energy-saving tool that helps QUILL adapt to the way each person
+writes.</p>
+<h2 id="search-replace-and-review">Search, replace, and review</h2>
+<p>QUILL includes simple and advanced search workflows, including find,
+replace, wildcard search, regular expression search, search history, and
+find-all reporting.</p>
+<p>The Regular Expression Helper is designed to make advanced search
+more approachable, with presets, plain-language explanations, sample
+text preview, and copy-ready patterns.</p>
+<p>QUILL also includes compare tools for reviewing a document against
+another file or against clipboard content. Difference review is designed
+to be keyboard-friendly, screen-reader-friendly, and practical for
+editing and quality assurance.</p>
+<h2 id="reading-preview-and-document-review">Reading, preview, and
+document review</h2>
+<p>QUILL includes in-app preview, side-by-side preview, and focused
+preview workflows using an accessible preview surface.</p>
+<p>Read Aloud is integrated into the editor so users can review content
+through spoken playback without leaving their writing environment.</p>
+<p>QUILL also supports EPUB navigation and rendering, plus an in-editor
+thesaurus when thesaurus data is available.</p>
+<h2 id="ai-assistance-that-keeps-the-user-in-control">AI assistance that
+keeps the user in control</h2>
+<p>AI in QUILL is optional.</p>
+<p>If AI is turned off, AI features are hidden or disabled. If AI is
+turned on, QUILL supports local and cloud-based providers, including
+local model workflows, Ollama, Ollama Cloud, OpenAI, Claude, OpenRouter,
+Google Gemini, and custom OpenAI-compatible endpoints.</p>
+<h3 id="ask-quill">Ask Quill</h3>
+<p>Ask Quill is the conversational AI surface inside the editor.</p>
+<p>Users can ask for help writing, editing, summarizing, restructuring,
+or working with selected text. When an AI operation would change the
+document, QUILL uses a review-first model. The proposed change is shown
+to the user and must be approved before it is applied.</p>
+<p>QUILL’s AI design is based on trust:</p>
+<ul>
+<li>No silent document changes</li>
+<li>No hidden automation</li>
+<li>No surprise network behavior</li>
+<li>Clear provider and model information</li>
+<li>User approval before edits are applied</li>
+</ul>
+<p>AI should support the writer, not take control away from the
+writer.</p>
+<h2 id="tools-for-capturing-organizing-and-returning-to-work">Tools for
+capturing, organizing, and returning to work</h2>
+<p>QUILL includes several features designed for real writing sessions,
+not just quick editing.</p>
+<h3 id="sticky-notes">Sticky Notes</h3>
+<p>Sticky Notes let users capture thoughts without losing their place.
+Notes are timestamped, searchable, and exportable through the Note
+Vault.</p>
+<h3 id="notebooks">Notebooks</h3>
+<p>Notebooks support long-form projects by organizing a folder of files
+into a single working environment with entries, headings, bookmarks,
+sticky notes, snapshots, and optional writing goals.</p>
+<h3 id="macros">Macros</h3>
+<p>Macros let users record repeated command sequences and replay them
+later. They are useful for repetitive editing, formatting, cleanup, and
+workflow automation.</p>
+<h3 id="workspace-snapshots">Workspace Snapshots</h3>
+<p>Workspace Snapshots let users save the current editing environment
+and return to it later. Open documents, tabs, notebooks, and session
+state can be restored as a working set.</p>
+<p>For long-form writing and multi-document projects, this turns QUILL
+into a dependable workspace, not just a file editor.</p>
+<h2 id="remote-files-and-document-intake">Remote files and document
+intake</h2>
+<p>QUILL can optionally support remote open and save workflows for
+services such as FTP, SFTP, WebDAV, S3, HTTPS, and GitHub.</p>
+<p>These features can be enabled or disabled depending on the user’s
+needs, keeping the interface simpler for users who do not work with
+remote files.</p>
+<p>QUILL also supports a broad range of document intake and review
+workflows, including plain text, Markdown, HTML, CSV and TSV, Word
+documents, EPUB, PowerPoint files, spreadsheets, PDF, OCR-assisted
+paths, and Pages extraction where available.</p>
+<p>Pandoc integration can support broader conversion workflows when
+available, and document intake reporting helps users understand the
+confidence and quality of complex extractions.</p>
+<h2 id="quillins-extending-quill-safely">Quillins: extending QUILL
+safely</h2>
+<p>Quillins are QUILL extensions.</p>
+<p>They can add commands, snippets, menu entries, workflow helpers, and
+other capabilities. Quillins follow a capability-and-consent model. Each
+Quillin declares what it needs, such as reading text, writing text,
+using the clipboard, or fetching a URL.</p>
+<p>QUILL uses those declarations to enforce boundaries.</p>
+<p>Some Quillins are declarative and contain no code. Others can run
+Python or Node.js handlers out of process behind a capability gate.</p>
+<p>Third-party Quillins are disabled by default, and users can review,
+enable, disable, reload, or remove them through the Quillins
+Manager.</p>
+<p>The goal is to make QUILL extensible without making it unsafe or
+unpredictable.</p>
+<h2 id="developer-and-power-user-tools">Developer and power-user
+tools</h2>
+<p>For developers, accessibility professionals, and advanced users,
+QUILL includes an optional Developer Console for inspecting and
+automating the running editor.</p>
+<p>These tools are profile-gated, so users who want a simpler writing
+environment do not have to see developer-focused features unless they
+choose to enable them.</p>
+<h2 id="reliability-is-a-feature">Reliability is a feature</h2>
+<p>QUILL is designed around a simple principle:</p>
+<p><strong>Your work should never be silently lost.</strong></p>
+<p>QUILL 0.5.0 Beta includes autosave, backup recovery, persistent undo,
+workspace snapshots, safe mode, diagnostics, and crash report bundle
+creation.</p>
+<p>Crash report bundles are designed to include useful diagnostic
+information such as logs, redacted settings, environment information,
+and related technical details without including document content.</p>
+<p>For QUILL, reliability is not just engineering infrastructure. It is
+part of accessibility. Users need to trust that the editor will protect
+their work.</p>
+<h2 id="what-is-still-beta">What is still beta</h2>
+<p>QUILL 0.5.0 is a beta release.</p>
+<p>That means some workflows are more complete than others. Some
+integrations depend on optional local tools. Some behavior will continue
+to be refined based on real-world use with screen readers, different
+document types, and different writing workflows.</p>
+<p>The QUILL team is especially interested in feedback on:</p>
+<ul>
+<li>Screen-reader behavior</li>
+<li>Navigation and document structure</li>
+<li>Long-form writing workflows</li>
+<li>Document intake and extraction quality</li>
+<li>AI setup and review-first editing</li>
+<li>Customization and feature profiles</li>
+<li>Quillins and extension ideas</li>
+<li>Anything that feels confusing, noisy, incomplete, or harder than it
+should be</li>
+</ul>
+<p>The path to version 1.0 depends on real-world use and honest
+feedback.</p>
+<h2 id="how-to-provide-feedback">How to provide feedback</h2>
+<p>All feedback, bug reports, and rough-edge reports should be submitted
+from within QUILL by using the <strong>Help, Report a Bug</strong>
+dialog.</p>
+<p>This is the best way to make sure the team receives the details
+needed to reproduce, understand, and prioritize issues.</p>
+<p>Please use this path for bugs, accessibility issues, confusing
+workflows, feature requests, screen-reader behavior reports, and general
+feedback.</p>
+<h2 id="quill-office-hours">QUILL Office Hours</h2>
+<p>QUILL Office Hours will be held on <strong>Saturday, June 20, 2026,
+from 1:00 PM to 3:00 PM Eastern</strong>.</p>
+<p>This live Q&amp;A session is open to new users, experienced users,
+accessibility advocates, developers, power users, and anyone curious
+about QUILL.</p>
+<p>Office Hours will be a chance to:</p>
+<ul>
+<li>Meet the QUILL team</li>
+<li>See the product in action</li>
+<li>Ask questions</li>
+<li>Discuss workflows</li>
+<li>Share feedback</li>
+<li>Learn what is coming next</li>
+<li>Help shape the road to QUILL 1.0</li>
+</ul>
+<p><a
+href="https://us06web.zoom.us/meeting/register/m7oKZPRKSD-0SBWsHd0YRA">Register
+for QUILL Office Hours on Zoom</a></p>
+<p>Registration is free. A confirmation with the meeting link will be
+sent to your email after you register.</p>
+<h2 id="a-community-built-editor-for-the-road-ahead">A community-built
+editor for the road ahead</h2>
+<p>QUILL 0.5.0 Beta is already a serious writing environment.</p>
+<p>It is also a promise: that blind users, screen-reader users, keyboard
+users, developers, writers, students, researchers, and accessibility
+professionals deserve software that begins with them in mind.</p>
+<p>QUILL is community-built and community-shaped.</p>
+<p>The fastest way to influence QUILL 1.0 is to use QUILL 0.5.0 Beta for
+real work. Write with it. Review with it. Customize it. Push it. Try it
+in your daily workflow.</p>
+<p>Then tell us what works, what breaks, and what needs to be better by
+using <strong>Help, Report a Bug</strong>.</p>
+<p>QUILL is not just another editor.</p>
+<p>It is an accessible writing environment built around the people who
+have too often been treated as an afterthought.</p>
+<p>With QUILL, accessibility is not the finish line.</p>
+<p>Accessibility is where we begin.</p>
+</body>
+</html>

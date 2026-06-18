@@ -149,12 +149,16 @@ hotkeys to QUILL. Contributing one has its own dedicated path:
 
 Quill is built on open-source foundations and integrates best practices from the accessibility community:
 
-- **AccessibleApps** (https://github.com/accessibleapps/) contributes several libraries that enhance Quill's accessibility and cross-platform reliability:
-  - `app_updater` (MIT) — cross-platform incremental update delivery and automatic installer bootstrapper.
+- **AccessibleApps** — Christopher Toth and contributors (https://github.com/accessibleapps/) contribute several libraries that are essential to Quill's accessibility and cross-platform reliability:
+  - `app_updater` (MIT) — cross-platform incremental update delivery and automatic installer bootstrapper. Vendored at `quill/_vendor/autoupdate/`.
   - `smart_list` (MIT) — accessible, model-based list view for large outlines and datasets.
   - `accessible_output2` (MIT) — optional fallback for speech and braille output when Prism is unavailable.
-  - `html_to_text` (MIT) — convert HTML from web pastes to clean plain text while preserving structure.
-  - `app_elements`, `platform_utils`, `keyboard_handler` — small utilities for dialogs, clipboard, and hotkeys.
+  - `html_to_text` (MIT) — converts HTML from clipboard pastes to clean, structured plain text. Used in `quill/ui/html_paste_cleaner.py`.
+  - `app_elements`, `platform_utils`, `keyboard_handler` — small cross-platform utilities for dialogs, clipboard, and hotkeys.
+
+  Full license text is reproduced in `THIRD_PARTY_NOTICES.md`.
+
+- **liblouis 3.38.0** (https://github.com/liblouis/liblouis, LGPL-2.1-or-later) — open-source braille translation and back-translation library that powers the QUILL Braille Pack. Provides UEB Grade 1 and Grade 2, Standard American English, and dozens of international language tables through its `lou_translate` runtime. The Braille Pack is an optional installer component; liblouis is only present when it is selected. Full license text is shipped alongside the pack as `COPYING` and `COPYING.LESSER`.
 
 - **Prism** (NVIDIA) — modern screen-reader backend for announcements and accessibility bridging.
 
@@ -199,7 +203,31 @@ documentation to QUILL. Thank you.
 - Michael Doise ([@mikedoise](https://github.com/mikedoise))
 - Doug Langley ([@douglangley](https://github.com/douglangley))
 - Becky K ([@BeckyK102125](https://github.com/BeckyK102125))
-- Kelly Ford ([@kellylford](https://github.com/kellylford)) — HEIC/HEIF image support (#164, #165)
+- Kelly Ford ([@kellylford](https://github.com/kellylford)) — Vision Prompt Library (#195, #248): 12 IDT-evaluated image description styles, pre-describe picker, retry-in-dialog, VisionPromptManagerDialog, and AI Hub integration; HEIC/HEIF image support (#164, #165). Kelly is also the author of the [Image Description Toolkit](https://github.com/kellylford/Image-Description-Toolkit), a set of experimental tools for accessible image interaction that informed the prompt styles shipped here. His other accessibility-first projects include [QuickMail](https://github.com/kellylford/QuickMail) (accessible IMAP client), [RSSQuick](https://github.com/kellylford/rssquick) (accessible WPF RSS reader), and [ChatViewer](https://github.com/kellylford/ChatViewer) (GitHub Copilot Chat viewer).
+
+## Release process
+
+Releases are cut from `main`. Hotfixes may use short-lived `release/x.y.z` branches when needed.
+
+Before tagging a release:
+
+1. `ruff check .`
+2. `pytest -q`
+3. `python scripts/check_docs_artifacts.py`
+4. Windows packaging workflow readiness (`.github/workflows/windows-release.yml`)
+
+Release notes are prepared in `rel.md` at the repo root and converted to `rel.html` and `rel.epub`
+by Pandoc. `CHANGELOG.md` carries the same content in abbreviated form. All three files should be
+updated and committed before tagging.
+
+Versioning follows semantic intent for user-visible behavior:
+- **Patch**: bug fixes and low-risk changes
+- **Minor**: additive features and workflow improvements
+- **Major**: breaking changes or large platform shifts
+
+`main` is branch-protected with required checks and pull-request reviews. Admin bypass remains
+enabled for emergency direct commits; these must be followed by a post-merge explanation and
+follow-up remediation if needed.
 
 ## License
 

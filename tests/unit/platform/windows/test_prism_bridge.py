@@ -100,6 +100,7 @@ def test_announcement_engine_uses_system_speech_when_prism_is_missing(monkeypatc
     engine = AnnouncementEngine("auto")
     assert engine.announce("hello") is None
     assert engine.announce("world") is None
+    prism_bridge.flush_tts_for_tests()
     assert speech_engine.messages == ["hello", "world"]
     assert speech_engine.init_calls == 1
     assert engine.state().active_backend == "speech"

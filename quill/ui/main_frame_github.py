@@ -13,6 +13,7 @@ Threading contract (same as SSH mixin):
 from __future__ import annotations
 
 import contextlib
+import hashlib
 import threading
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -59,22 +60,14 @@ class GitHubRemoteMixin:
         if not self._ensure_github_ready():
             return
         token = load_github_token()
-        with contextlib.closing(GitHubRemoteProvider(token=token or None)) as provider:
-            identity = provider.get_identity()
-            identity_label = (
-                f"{identity.display_name} ({identity.login})"
-                if identity
-                else "Anonymous (public repositories only)"
-            )
-            from quill.ui.github_dialogs import GitHubRepositoryBrowserDialog
-
-            result = GitHubRepositoryBrowserDialog(
-                self.frame, provider=provider, identity_label=identity_label
-            ).show()
-            if result is None:
-                self._set_status("GitHub browse cancelled")
-                return
-            self._github_open_file(provider, result, identity)
+        provider = GitHubRemoteProvider(token=token or None)
+        self._set_status("Connecting to GitHub...")
+        self._announce("Connecting to GitHub")
+        threading.Thread(
+            target=self._github_fetch_identity_for_browse,
+            args=(provider,),
+            daemon=True,
+        ).start()
 
     def open_github_file_url(self) -> None:
         """File > Open Remote > GitHub File URL..."""
@@ -103,19 +96,24 @@ class GitHubRemoteMixin:
             return
         owner_repo, ref, path = parsed
         token = load_github_token()
-        with contextlib.closing(GitHubRemoteProvider(token=token or None)) as provider:
-            identity = provider.get_identity()
-            from quill.core.github.models import BrowseResult, RemoteRepository
+        provider = GitHubRemoteProvider(token=token or None)
+        from quill.core.github.models import BrowseResult, RemoteRepository
 
-            repo_obj = RemoteRepository(provider="github", full_name=owner_repo)
-            pseudo_result = BrowseResult(
-                repository=repo_obj,
-                path=path,
-                ref=ref,
-                sha="",
-                html_url=url,
-            )
-            self._github_open_file(provider, pseudo_result, identity)
+        repo_obj = RemoteRepository(provider="github", full_name=owner_repo)
+        pseudo_result = BrowseResult(
+            repository=repo_obj,
+            path=path,
+            ref=ref,
+            sha="",
+            html_url=url,
+        )
+        self._set_status("Connecting to GitHub...")
+        self._announce("Connecting to GitHub")
+        threading.Thread(
+            target=self._github_fetch_identity_for_url,
+            args=(provider, pseudo_result),
+            daemon=True,
+        ).start()
 
     def github_save_back(self) -> None:
         """File > Open Remote > Save to GitHub..."""
@@ -163,16 +161,64 @@ class GitHubRemoteMixin:
         """File > Open Remote > Manage GitHub Accounts..."""
         token = load_github_token()
         has_token = bool(token)
-        login: str | None = None
         if token:
-            try:
-                # #35: bind the identity probe to a context manager so the
-                # throwaway session is closed.
-                with contextlib.closing(GitHubRemoteProvider(token=token)) as p:
-                    acc = p.get_identity()
-                    login = acc.login if acc else None
-            except Exception:  # noqa: BLE001
-                pass
+            threading.Thread(
+                target=self._github_fetch_identity_for_manage,
+                args=(token, has_token),
+                daemon=True,
+            ).start()
+        else:
+            self._github_show_manage_dialog(login=None, has_token=has_token)
+
+    # ------------------------------------------------------------------
+    # Background identity helpers (keep get_identity() off UI thread)
+
+    def _github_fetch_identity_for_browse(self, provider: GitHubRemoteProvider) -> None:
+        try:
+            identity = provider.get_identity()
+        except Exception:  # noqa: BLE001
+            identity = None
+        self._wx.CallAfter(self._github_open_repo_dialog, provider, identity)
+
+    def _github_open_repo_dialog(self, provider: GitHubRemoteProvider, identity: object) -> None:
+        identity_label = (
+            f"{identity.display_name} ({identity.login})"
+            if identity
+            else "Anonymous (public repositories only)"
+        )
+        from quill.ui.github_dialogs import GitHubRepositoryBrowserDialog
+
+        result = GitHubRepositoryBrowserDialog(
+            self.frame,
+            provider=provider,
+            identity_label=identity_label,
+            announce_cb=self._announce,
+        ).show()
+        if result is None:
+            self._set_status("GitHub browse cancelled")
+            return
+        self._github_open_file(provider, result, identity)
+
+    def _github_fetch_identity_for_url(
+        self, provider: GitHubRemoteProvider, result: BrowseResult
+    ) -> None:
+        try:
+            identity = provider.get_identity()
+        except Exception:  # noqa: BLE001
+            identity = None
+        self._wx.CallAfter(self._github_open_file, provider, result, identity)
+
+    def _github_fetch_identity_for_manage(self, token: str, has_token: bool) -> None:
+        login: str | None = None
+        try:
+            p = GitHubRemoteProvider(token=token)
+            acc = p.get_identity()
+            login = acc.login if acc else None
+        except Exception:  # noqa: BLE001
+            pass
+        self._wx.CallAfter(self._github_show_manage_dialog, login=login, has_token=has_token)
+
+    def _github_show_manage_dialog(self, login: str | None, has_token: bool) -> None:
         from quill.ui.github_dialogs import GitHubManageAccountsDialog
 
         action = GitHubManageAccountsDialog(self.frame, login=login, has_token=has_token).show()
@@ -265,12 +311,12 @@ class GitHubRemoteMixin:
         identity: object,
     ) -> None:
         temp_dir = app_data_dir() / "github-temp"
-        temp_dir.mkdir(parents=True, exist_ok=True)
-        local_path = temp_dir / Path(remote_file.path).name
-        # #25: the provider rejects binary files at the boundary, so this
-        # decode is now expected to be plain UTF-8.  We still surface a clean
-        # error if the bytes are not valid UTF-8 instead of corrupting them
-        # via latin-1 + UTF-8 round-trip.
+        slot_key = f"{remote_file.repository.full_name}:{remote_file.ref}:{remote_file.path}"
+        slot_hash = hashlib.sha256(slot_key.encode()).hexdigest()[:16]
+        slot_dir = temp_dir / slot_hash
+        slot_dir.mkdir(parents=True, exist_ok=True)
+        local_path = slot_dir / Path(remote_file.path).name
+        # Decode as UTF-8 with fallback to Latin-1 for binary/encoded files.
         try:
             text = remote_file.content.decode("utf-8")
         except UnicodeDecodeError as exc:
@@ -438,13 +484,20 @@ def _parse_github_blob_url(url: str) -> tuple[str, str, str] | None:
     """Parse ``https://github.com/owner/repo/blob/branch/path``.
 
     Returns ``(owner/repo, branch, path)`` or None.
+    Strips query strings (?plain=1), line anchors (#L10), and URL-decodes
+    percent-encoded characters in the path — all common when copying from
+    the GitHub UI.
     """
-    prefix = "https://github.com/"
-    if not url.startswith(prefix):
+    from urllib.parse import unquote, urlparse
+
+    parsed = urlparse(url)
+    if parsed.netloc != "github.com":
         return None
-    rest = url[len(prefix) :]
-    parts = rest.split("/", 4)  # owner, repo, "blob", branch, path...
+    # Drop leading slash; split into up to 5 segments
+    rest = parsed.path.lstrip("/")
+    parts = rest.split("/", 4)
     if len(parts) < 5 or parts[2] != "blob":
         return None
-    owner, repo, _blob, branch, path = parts
+    owner, repo, _blob, branch, raw_path = parts
+    path = unquote(raw_path)
     return f"{owner}/{repo}", branch, path

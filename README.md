@@ -35,7 +35,7 @@ Highlights in 0.5.0 include:
 - Release-safety default: Word and CSV open in the normal plain-text editor surface.
 - Structured Word view and CSV grid code paths remain in-repo behind an internal gate for continued verification.
 - Expanded structured intake for `.doc`/`.docx`, `.ppt`/`.pptx`, `.xlsx`/`.xls`, `.pages`, and low-confidence PDF fallback via MarkItDown when available.
-- Writing Assistant shell with prompt presets, generated tool suggestions, and a sandboxed Python runner.
+- Writing Assistant shell with prompt presets, generated tool suggestions, and a restricted Python runner (import allowlist, resource limits, confirmation required — not a security boundary; see the user guide).
 - AI Connection workflow from both Preferences and the AI menu, with provider-aware host defaults.
 - Verify Connection, List Models, and Recommend Model actions in AI Connection settings.
 - AI menu status line with plain-language detail (`Ready` or `Needs attention`) and immediate accessible feedback.

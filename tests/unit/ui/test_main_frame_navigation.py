@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sys
 import types
 from pathlib import Path
 
@@ -407,7 +406,7 @@ def test_statusbar_shows_line_and_column() -> None:
     frame._apply_statusbar_layout()
     assert frame.statusbar.fields_count == 6
     assert frame.statusbar.status[1] == "Ln 2, Col 2"
-    assert frame.statusbar.status[2] == "INS"
+    assert frame.statusbar.status[2] == "Insert"
 
 
 def test_statusbar_respects_order_and_hidden_items() -> None:
@@ -417,7 +416,7 @@ def test_statusbar_respects_order_and_hidden_items() -> None:
     frame._apply_statusbar_layout()
     assert frame.statusbar.fields_count == 5
     assert frame.statusbar.status[0] == "Ln 1, Col 2"
-    assert frame.statusbar.status[1] == "INS"
+    assert frame.statusbar.status[1] == "Insert"
 
 
 def test_refresh_title_uses_full_path_when_enabled() -> None:
@@ -588,37 +587,32 @@ def test_confirm_discard_changes_accepts_reload_only() -> None:
     assert frame._confirm_discard_changes() is True
 
 
-def test_show_startup_wizard_page_uses_rendered_html_preview(
+def test_show_startup_wizard_page_uses_native_dialog(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     frame = MainFrame.__new__(MainFrame)
     frame.frame = _Frame()
     frame.settings = type("Settings", (), {"bw_provider_id": "", "bw_speech_model_id": ""})()
+    frame._wx = None  # not used when show_startup_wizard_page_native is monkeypatched
+    frame._show_modal_dialog = lambda *_a, **_kw: None  # type: ignore[method-assign]
     statuses: list[str] = []
     frame._set_status = statuses.append  # type: ignore[method-assign]
 
-    captured: dict[str, object] = {}
+    calls: list[tuple] = []
+    import quill.ui.info_pages as info_pages_module
 
-    class _PreviewDialog:
-        def __init__(self, parent: object, title: str, body_html: str) -> None:
-            captured["parent"] = parent
-            captured["title"] = title
-            captured["body_html"] = body_html
-
-        def show(self) -> None:
-            captured["shown"] = True
-
-    preview_module = types.ModuleType("quill.ui.preview_dialog")
-    preview_module.MarkdownPreviewDialog = _PreviewDialog
-    monkeypatch.setitem(sys.modules, "quill.ui.preview_dialog", preview_module)
+    monkeypatch.setattr(
+        info_pages_module,
+        "show_startup_wizard_page_native",
+        lambda parent, wx, steps, show_modal_dialog: calls.append((parent, steps)),
+    )
 
     frame.show_startup_wizard_page()
 
-    assert captured["parent"] is frame.frame
-    assert captured["title"] == "Startup Wizard"
-    assert "<!doctype html>" not in str(captured["body_html"])
-    assert "<h1 id='startup-wizard'>Startup Wizard</h1>" in str(captured["body_html"])
-    assert captured["shown"] is True
+    assert len(calls) == 1
+    assert calls[0][0] is frame.frame
+    # Steps list should contain 7 entries (one per wizard section).
+    assert len(calls[0][1]) == 7
     assert statuses == ["Opened Startup Wizard overview"]
 
 
@@ -665,7 +659,7 @@ def test_insert_key_toggles_overwrite_mode_status() -> None:
     event = _KeyEvent(45)
     frame._wx = type("WX", (), {"WXK_INSERT": 45})()
     frame._on_editor_key_down(event)
-    assert frame.statusbar.status[2] == "OVR"
+    assert frame.statusbar.status[2] == "Overwrite"
 
 
 def test_ctrl_shift_o_opens_outline_navigator_from_editor() -> None:
@@ -1235,7 +1229,7 @@ def test_profile_choice_label_includes_description() -> None:
     label = frame._profile_choice_label(profile)
 
     assert label.startswith("Essential — ")
-    assert profile.description in label
+    assert str(profile.description) in label
 
 
 def test_print_document_cancel_reports_cancelled() -> None:

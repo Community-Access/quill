@@ -57,6 +57,8 @@ class AskQuillChatDialog:
         get_selection,
         insert_text,
         replace_selection,
+        set_text=None,
+        open_new_document=None,
         run_command,
         tool_catalog: list[tuple[str, str]],
         announce=None,
@@ -70,6 +72,8 @@ class AskQuillChatDialog:
         self._get_selection = get_selection
         self._insert_text = insert_text
         self._replace_selection = replace_selection
+        self._set_text = set_text or (lambda _t: None)
+        self._open_new_document = open_new_document or (lambda _t: None)
         self._run_command = run_command
         self._review_changes = review_changes
         self._tool_titles = dict(tool_catalog)
@@ -165,6 +169,32 @@ class AskQuillChatDialog:
         insert_row.Add(self._insert_button, 0)
         outer.Add(insert_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 14)
 
+        # Direct text-action row — apply the last response without going through
+        # the approval flow. Replace checks for an active selection at click time.
+        text_action_row = wx.BoxSizer(wx.HORIZONTAL)
+        text_action_row.Add(
+            wx.StaticText(self.dialog, label="Text actions:"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
+            6,
+        )
+        self._action_insert_btn = wx.Button(self.dialog, label="Insert at Cursor")
+        self._action_insert_btn.SetName("Insert last response at cursor")
+        self._action_insert_btn.Enable(False)
+        text_action_row.Add(self._action_insert_btn, 0, wx.RIGHT, 6)
+        self._action_replace_btn = wx.Button(self.dialog, label="Replace")
+        self._action_replace_btn.SetName(
+            "Replace selection with last response,"
+            " or replace all document text if nothing is selected"
+        )
+        self._action_replace_btn.Enable(False)
+        text_action_row.Add(self._action_replace_btn, 0, wx.RIGHT, 6)
+        self._action_new_doc_btn = wx.Button(self.dialog, label="Open as New Document")
+        self._action_new_doc_btn.SetName("Open last response as a new document")
+        self._action_new_doc_btn.Enable(False)
+        text_action_row.Add(self._action_new_doc_btn, 0)
+        outer.Add(text_action_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 14)
+
         footer = wx.BoxSizer(wx.HORIZONTAL)
         self.copy_button = wx.Button(self.dialog, label="Copy Last Response")
         self.copy_button.Enable(False)
@@ -178,6 +208,9 @@ class AskQuillChatDialog:
         self.discard_button.Bind(wx.EVT_BUTTON, self._on_discard)
         self.copy_button.Bind(wx.EVT_BUTTON, self._on_copy)
         self._insert_button.Bind(wx.EVT_BUTTON, self._on_insert_into_document)
+        self._action_insert_btn.Bind(wx.EVT_BUTTON, self._on_action_insert)
+        self._action_replace_btn.Bind(wx.EVT_BUTTON, self._on_action_replace)
+        self._action_new_doc_btn.Bind(wx.EVT_BUTTON, self._on_action_open_new_doc)
         self._change_provider_btn.Bind(wx.EVT_BUTTON, self._on_change_provider)
         self.dialog.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
         self._refresh_active_status()
@@ -582,6 +615,9 @@ class AskQuillChatDialog:
                 self._announce_incoming(text or "No response")
             self._record_session_exchange(text)
         self.copy_button.Enable(bool(self._last_response))
+        self._action_insert_btn.Enable(bool(self._last_response))
+        self._action_replace_btn.Enable(bool(self._last_response))
+        self._action_new_doc_btn.Enable(bool(self._last_response))
         self._set_busy(False)
         if self._webview is not None:
             self._webview.set_status("Quill responded")
@@ -690,6 +726,42 @@ class AskQuillChatDialog:
             return
         self._insert_text(content)
         self._announce(f"Inserted {what} into the document as {fmt}.")
+
+    # -- Direct text actions (bypass approval flow) ---------------------------
+
+    def _on_action_insert(self, _event: object) -> None:
+        if not self._last_response:
+            return
+        try:
+            self._insert_text(self._last_response)
+        except Exception as exc:  # noqa: BLE001
+            self._append("Quill", f"Couldn't insert: {exc}")
+            return
+        self._announce("Inserted last response at cursor")
+
+    def _on_action_replace(self, _event: object) -> None:
+        if not self._last_response:
+            return
+        try:
+            selection = self._get_selection()
+            if selection:
+                self._replace_selection(self._last_response)
+                self._announce("Replaced selection with last response")
+            else:
+                self._set_text(self._last_response)
+                self._announce("Replaced all document text with last response")
+        except Exception as exc:  # noqa: BLE001
+            self._append("Quill", f"Couldn't replace: {exc}")
+
+    def _on_action_open_new_doc(self, _event: object) -> None:
+        if not self._last_response:
+            return
+        try:
+            self._open_new_document(self._last_response)
+        except Exception as exc:  # noqa: BLE001
+            self._append("Quill", f"Couldn't open new document: {exc}")
+            return
+        self._announce("Opened last response as a new document")
 
     def _on_change_provider(self, _event: object) -> None:
         self._show_setup("Switch provider or model, then click Save to set it as the default.")

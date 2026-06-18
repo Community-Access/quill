@@ -42,6 +42,17 @@ CAP_CLIPBOARD_WRITE = "clipboard.write"
 CAP_UI_STATUS = "ui.status"
 CAP_UI_CHOICES = "ui.choices"
 CAP_STORAGE = "storage"
+CAP_SETTINGS_OWN_READ = "settings.own.read"
+CAP_SETTINGS_OWN_WRITE = "settings.own.write"
+CAP_SETTINGS_CORE_READ = "settings.core.read"
+CAP_SETTINGS_CORE_WRITE = "settings.core.write"
+CAP_DOCUMENT_DIRECTIVES = "document.directives"
+CAP_DOCUMENT_EVENTS = "document.events"
+# schedule lets a Quillin run a handler on a fixed background timer (Part 1).
+CAP_SCHEDULE = "schedule"
+# ui.log routes api.log() calls to the Developer Console (QUILL_DEV_BUILD or
+# via Tools > Developer Console). No user-visible side-effect; no consent gate.
+CAP_UI_LOG = "ui.log"
 
 CAPABILITIES: frozenset[str] = frozenset({
     CAP_EDITOR_READ,
@@ -57,6 +68,14 @@ CAPABILITIES: frozenset[str] = frozenset({
     CAP_UI_STATUS,
     CAP_UI_CHOICES,
     CAP_STORAGE,
+    CAP_SETTINGS_OWN_READ,
+    CAP_SETTINGS_OWN_WRITE,
+    CAP_SETTINGS_CORE_READ,
+    CAP_SETTINGS_CORE_WRITE,
+    CAP_DOCUMENT_DIRECTIVES,
+    CAP_DOCUMENT_EVENTS,
+    CAP_SCHEDULE,
+    CAP_UI_LOG,
 })
 
 # Capabilities whose every use must additionally pass QUILL's per-action consent
@@ -66,6 +85,9 @@ CONSENT_GATED_CAPABILITIES: frozenset[str] = frozenset({
     CAP_FS_READ,
     CAP_FS_WRITE,
     CAP_NET,
+    # Changing a QUILL core setting requires explicit user confirmation per
+    # change, making it as privileged as file/network access.
+    CAP_SETTINGS_CORE_WRITE,
 })
 
 # The fixed set of menu parents an extension may attach a command under.
@@ -99,6 +121,55 @@ CONTEXT_WHEN_VALUES: tuple[str, ...] = (
     "editor.hasText",
     "editor.empty",
 )
+
+# Document lifecycle events a Quillin may subscribe to (docs/quillins.md).
+# These are the only events available in version 1. High-frequency events
+# (text.changed, cursor.moved, key.pressed) are deliberately excluded; they
+# would let Quillins observe keystrokes and hurt screen-reader predictability.
+DOCUMENT_EVENTS: frozenset[str] = frozenset({
+    # Document lifecycle
+    "document.opened",
+    "document.activated",
+    "document.before_save",
+    "document.after_save",
+    "document.before_close",
+    "document.after_close",
+    "document.created",
+    "document.loaded_from_session",
+    # Insert automation
+    "smart_trigger.entered",
+    "abbreviation.expanded",
+    # Quillin lifecycle — fired by the host when this Quillin is toggled or QUILL exits.
+    "quillin.enabled",
+    "quillin.disabled",
+    "quill.shutdown",
+    # Settings — fired when any setting this Quillin owns changes.
+    "settings.changed",
+})
+
+# Valid taxonomy labels an extension may self-classify under (``categories`` field).
+# Used for filtering in the Quillins Manager. Extensions may declare zero or more.
+QUILLIN_CATEGORIES: frozenset[str] = frozenset({
+    "writing",
+    "accessibility",
+    "braille",
+    "productivity",
+    "developer",
+    "formatting",
+    "navigation",
+    "ai",
+    "integration",
+    "education",
+    "utilities",
+})
+
+# Priority levels for ``api.announce()``. The host maps these to the screen
+# reader's urgency channel (SSML priority, NVDA speak flags, etc.).
+ANNOUNCEMENT_PRIORITIES: frozenset[str] = frozenset({
+    "quiet",
+    "normal",
+    "urgent",
+})
 
 # Contributed command ids must be namespaced under ``ext.`` so they can never
 # collide with a built-in QUILL command id.
@@ -155,6 +226,7 @@ class ExtensionCommand:
 
     id: str
     title: str
+    description: str = ""
     snippet: str | None = None
     handler: str | None = None
 
@@ -192,6 +264,79 @@ class HotkeyContribution:
 
 
 @dataclass(frozen=True, slots=True)
+class StatusBarContribution:
+    """A cell contributed to the QUILL status bar (requires ui.status capability).
+
+    ``id`` must be unique within the Quillin. ``label`` is the static visible text
+    when the Quillin has not yet pushed a value. ``handler`` is the function the
+    host calls (no args) to refresh the cell on demand; it must return a ``str``.
+    ``tooltip`` is an optional description read to screen-reader users on focus.
+    ``width`` is a suggested character width hint (1-40); the host may ignore it.
+    """
+
+    id: str
+    label: str
+    handler: str
+    tooltip: str = ""
+    width: int = 10
+
+
+@dataclass(frozen=True, slots=True)
+class ScheduleContribution:
+    """A background timer contribution (requires the schedule capability + main).
+
+    ``id`` must be unique within the Quillin. ``interval_seconds`` is the timer
+    period (60-86400). ``handler`` is the function the host invokes on each tick
+    with a context of ``{"timer_id", "interval_seconds"}``.
+    """
+
+    id: str
+    interval_seconds: int
+    handler: str
+    description: str = ""
+
+
+@dataclass(frozen=True, slots=True)
+class FileTypeContribution:
+    """A file-type handler fired when a matching document opens.
+
+    ``extensions`` are lowercase, dot-prefixed suffixes (e.g. ``.csv``). When a
+    file with a matching suffix opens, ``handler`` runs with a context of
+    ``{"file_path", "extension", "filename"}``. A specialized document.opened, so
+    it reuses the document.events capability.
+    """
+
+    extensions: tuple[str, ...]
+    handler: str
+    description: str = ""
+
+
+@dataclass(frozen=True, slots=True)
+class SnippetParam:
+    """A single fill-in field prompted before a gallery snippet is inserted."""
+
+    name: str
+    label: str
+    default: str = ""
+
+
+@dataclass(frozen=True, slots=True)
+class SnippetGalleryEntry:
+    """A named, optionally parameterized template shown in the Snippet Gallery.
+
+    ``body`` may contain ``{param_name}`` placeholders; each ``params`` name must
+    appear in ``body``. No code runs — this is pure text expansion.
+    """
+
+    id: str
+    name: str
+    body: str
+    description: str = ""
+    category: str = ""
+    params: tuple[SnippetParam, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
 class Contributions:
     """Everything a manifest contributes to the host's accessible surfaces."""
 
@@ -203,6 +348,36 @@ class Contributions:
     # sound_pack is a relative directory path; sound_events maps event IDs to WAV filenames.
     sound_pack: str = ""
     sound_events: tuple[tuple[str, str], ...] = ()
+    # Insert Automation: abbreviation expansions and = -prefixed smart triggers.
+    # Stored as raw dicts; deep structure validated in quillins/validation.py.
+    abbreviations: tuple[object, ...] = ()
+    smart_triggers: tuple[object, ...] = ()
+    # Quillin Preferences: declarative settings pages rendered by the host.
+    preferences: tuple[object, ...] = ()
+    # Document event subscriptions. Each entry is a dict with event/handler/title/description.
+    document_events: tuple[object, ...] = ()
+    # Status bar cells. Each entry is a StatusBarContribution.
+    status_bar: tuple[StatusBarContribution, ...] = ()
+    # Background timers. Each entry is a ScheduleContribution (Part 1).
+    schedule: tuple[ScheduleContribution, ...] = ()
+    # File-type handlers. Each entry is a FileTypeContribution (Part 2).
+    file_types: tuple[FileTypeContribution, ...] = ()
+    # Snippet gallery templates. Each entry is a SnippetGalleryEntry (Part 3).
+    snippet_gallery: tuple[SnippetGalleryEntry, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
+class RequiresDependency:
+    """A declared Quillin dependency (``requires`` array in the manifest).
+
+    ``id`` is the fully-qualified Quillin ID (e.g. ``com.quill.journalstamp``).
+    ``min_version`` is a semver string; empty string means any version accepted.
+    The host checks that the dependency is installed and enabled before loading
+    this Quillin.
+    """
+
+    id: str
+    min_version: str = ""
 
 
 @dataclass(frozen=True, slots=True)
@@ -220,6 +395,13 @@ class ExtensionManifest:
     main: str | None = None
     runtime: str = RUNTIME_PYTHON
     contributes: Contributions = field(default_factory=Contributions)
+    # Optional taxonomy labels (from QUILLIN_CATEGORIES) for the Quillins Manager filter.
+    categories: tuple[str, ...] = ()
+    # Inter-Quillin dependency declarations. The host verifies each before loading.
+    requires: tuple[RequiresDependency, ...] = ()
+    # Restricts net capability to a declared allowlist of hostnames/IP-prefix strings.
+    # When empty and net is declared, all outbound hosts are permitted (with consent).
+    net_allowed_hosts: tuple[str, ...] = ()
 
     @property
     def is_layer_two(self) -> bool:

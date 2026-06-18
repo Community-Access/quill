@@ -15,6 +15,7 @@ Threading contract:
 from __future__ import annotations
 
 import threading
+from collections.abc import Callable
 from typing import Any
 
 from quill.core.scripting import QuillScriptAPI
@@ -23,15 +24,16 @@ from quill.devtools.console_window import ConsoleWindow
 from quill.devtools.python_console import PythonConsole
 from quill.devtools.ts_console import TypeScriptConsole, TypeScriptConsoleError
 
-_CONSENT_KEY = "console_consent_shown"
 _CONSENT_TEXT = (
     "Developer Console\n\n"
     "This console can run code inside QUILL and may change the current document.\n"
     "Only run commands you understand or received from a trusted source.\n\n"
+    "Note: Python commands execute synchronously. A loop with no exit condition\n"
+    "will freeze QUILL until it completes. Save your document before running\n"
+    "document-wide commands.\n\n"
     "Recommended:\n"
     "- Use q.run_command(...) or documented q methods.\n"
-    "- Do not paste code from unknown sources.\n"
-    "- Save your document before running document-wide commands."
+    "- Do not paste code from unknown sources."
 )
 
 
@@ -48,7 +50,10 @@ class DevToolsMixin:
 
     def _dt_ts_console(self) -> TypeScriptConsole:
         if not hasattr(self, "_dev_ts_console"):
-            self._dev_ts_console = TypeScriptConsole(host=self)
+            timeout = float(getattr(self.settings, "console_typescript_timeout", 30))
+            self._dev_ts_console = TypeScriptConsole(
+                host=self, timeout=timeout, ui_call=self._dt_marshal_to_ui
+            )
         return self._dev_ts_console
 
     def _dt_window(self) -> ConsoleWindow:
@@ -58,9 +63,16 @@ class DevToolsMixin:
                 parent=self.frame,
                 on_execute_python=self._dt_on_execute_python,
                 on_execute_ts=self._dt_on_execute_ts,
-                announce=self._announce,
+                announce_cb=self._announce,
+                focus_editor_cb=self._dt_focus_editor,
             )
         return self._dev_console_window
+
+    def _dt_focus_editor(self) -> None:
+        try:
+            self.editor.SetFocus()
+        except Exception:
+            pass
 
     # ------------------------------------------------------------------
     # ConsoleHost protocol implementation
@@ -247,33 +259,56 @@ class DevToolsMixin:
 
     def open_python_console(self) -> None:
         """Tools > Advanced > Developer Console > Open Python Console"""
+        import os
+
+        if os.environ.get("QUILL_SAFE_MODE") == "1":
+            self._set_status("Developer Console is disabled in Safe Mode.")
+            self._announce("Developer Console is disabled in Safe Mode.")
+            return
+        if not getattr(self.settings, "console_enabled", True):
+            self._set_status("Developer Console is disabled in settings.")
+            self._announce("Developer Console is disabled in settings.")
+            return
         if not self._dt_consent_check():
             return
         win = self._dt_window()
         win.set_language("Python")
         py = self._dt_python_console()
         py.update_namespace(self._dt_snapshot_vars())
-        entries = [e.source for e in _history.load(50)]
+        entries = [e.source for e in _history.load(50, language="python")]
         win.load_history(entries)
         win.set_status(f"Ready - Python | {self.console_get_document_name() or 'no document'}")
         # #47: the TypeScript worker announces when it finishes starting; the
         # Python console had the same silence gap on first open.  Announce a
         # brief ready cue so screen-reader users hear that the window is
         # live before they type.
-        first_open = not getattr(self, "_dev_python_console_announced", False)
+        first_open = not getattr(self, "_dt_python_opened", False)
+        self._dt_python_opened = True
         win.show()
         if first_open:
-            self._dev_python_console_announced = True
-            self._announce("Python console ready. Press F6 to focus the editor.")
+            self._wx.CallAfter(
+                self._announce,
+                "Python console ready. Type q.help() for the scripting API reference.",
+            )
 
     def open_typescript_console(self) -> None:
         """Tools > Advanced > Developer Console > Open TypeScript Console"""
+        import os
+
+        if os.environ.get("QUILL_SAFE_MODE") == "1":
+            self._set_status("Developer Console is disabled in Safe Mode.")
+            self._announce("Developer Console is disabled in Safe Mode.")
+            return
+        if not getattr(self.settings, "console_enabled", True):
+            self._set_status("Developer Console is disabled in settings.")
+            self._announce("Developer Console is disabled in settings.")
+            return
         if not self._dt_consent_check():
             return
         win = self._dt_window()
-        win.set_language("TypeScript")
-        entries = [e.source for e in _history.load(50) if e.language == "typescript"]
+        entries = [e.source for e in _history.load(50, language="typescript")]
         win.load_history(entries)
+        win.set_language("TypeScript")
         win.set_status(f"Ready - TypeScript | {self.console_get_document_name() or 'no document'}")
         win.show()
         ts = self._dt_ts_console()
@@ -297,6 +332,10 @@ class DevToolsMixin:
             self._announce("Could not open clipboard.")
 
     def restart_typescript_worker(self) -> None:
+        if not hasattr(self, "_dev_console_window"):
+            self._set_status("Open the TypeScript console first, then restart the worker.")
+            self._announce("Open the TypeScript console first, then restart the worker.")
+            return
         self._dt_ts_console()  # ensure created before thread starts
         threading.Thread(  # GATE-40-OK: TS worker restart.
             target=self._dt_restart_ts_worker, daemon=True
@@ -375,19 +414,18 @@ class DevToolsMixin:
 
     def _dt_consent_check(self) -> bool:
         """Show first-run safety warning; return True if user accepted."""
-        if getattr(self, "_dev_console_consent_shown", False):
-            return True
-        wx = self._wx
-        from quill.ui.dialog_contract import show_message_box
+        from quill.core.settings import save_settings
 
-        result = show_message_box(
+        if getattr(self.settings, "dev_console_consent_accepted", False):
+            return True
+        result = self._show_message_box(
             _CONSENT_TEXT,
             "Developer Console",
-            wx.OK | wx.CANCEL | wx.ICON_INFORMATION,
-            self.frame,
+            self._wx.OK | self._wx.CANCEL | self._wx.ICON_INFORMATION,
         )
-        if result == wx.OK:
-            self._dev_console_consent_shown = True
+        if result == self._wx.OK:
+            self.settings.dev_console_consent_accepted = True
+            save_settings(self.settings)
             return True
         return False
 
@@ -424,6 +462,7 @@ class DevToolsMixin:
                 self._dt_window().set_status,
                 f"Ready - TypeScript | {self.console_get_document_name() or 'no document'}",
             )
+            self._wx.CallAfter(self._announce, "Developer Console ready.")
         except TypeScriptConsoleError as exc:
             self._wx.CallAfter(
                 self._dt_window().append_transcript,
@@ -468,6 +507,31 @@ class DevToolsMixin:
             lambda _e: self.restart_typescript_worker(),
             id=self._id_dev_restart_ts_worker,
         )
+
+    def _dt_marshal_to_ui(self, fn: Callable[[], Any]) -> Any:
+        """Run *fn* on the UI thread and return its result; blocks the calling thread.
+
+        Used by TypeScriptConsole to marshal invoke calls (host API calls) from
+        the Node reader thread to the UI thread, satisfying the wx threading
+        invariant that all widget access happens on the UI thread.
+        """
+        event = threading.Event()
+        result_box: list[Any] = []
+        error_box: list[BaseException] = []
+
+        def wrapper() -> None:
+            try:
+                result_box.append(fn())
+            except BaseException as exc:
+                error_box.append(exc)
+            finally:
+                event.set()
+
+        self._wx.CallAfter(wrapper)
+        event.wait()
+        if error_box:
+            raise error_box[0]
+        return result_box[0] if result_box else None
 
     def _dt_announce_output(self, output: str) -> None:
         """Announce stdout/stderr output from a console command.

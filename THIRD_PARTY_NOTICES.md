@@ -36,6 +36,38 @@ SOFTWARE.
 
 ---
 
+## html_to_text (AccessibleApps)
+
+- **Source:** installed as `html_to_text` package dependency
+- **Upstream:** https://github.com/accessibleapps/html_to_text
+- **Author:** AccessibleApps contributors (Christopher Toth and community)
+- **License:** MIT
+- **Used for:** Detecting HTML content on the clipboard and converting it to clean, structured plain text. Powers the intelligent HTML paste feature (`quill/ui/html_paste_cleaner.py`).
+
+```
+Copyright (c) AccessibleApps contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+---
+
 ## words_alpha.txt
 
 - **Source:** quill/data/words_alpha.txt

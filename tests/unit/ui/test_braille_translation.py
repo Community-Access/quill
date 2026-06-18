@@ -38,10 +38,12 @@ def test_translation_items_shown_when_pack_present(monkeypatch) -> None:
     monkeypatch.setattr(pack, "is_braille_pack_installed", lambda: True)
     items = _frame()._braille_translation_items()
     assert [command_id for _label, command_id in items] == [
-        "braille.translate_ueb_g1",
         "braille.translate_ueb_g2",
+        "braille.translate_ueb_g1",
         "braille.translate_selection",
         "braille.back_translate",
+        "braille.translate_standard_g2",
+        "braille.translate_standard_g1",
     ]
 
 

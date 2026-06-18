@@ -75,6 +75,7 @@ class SessionsMixin:
             "Open &Documents in Current Workspace",
         )
         self._refresh_recent_sessions_menu()
+        self._refresh_window_docs_menu()
         if not self._document_tabs:
             item = self._open_documents_menu.Append(
                 self._wx.ID_ANY, "(No open documents in workspace)"
@@ -88,6 +89,40 @@ class SessionsMixin:
                 label = f"{label} (active)"
             self._open_documents_menu.Append(menu_id, label)
             self._session_menu_ids[int(menu_id)] = index
+
+    def _refresh_window_docs_menu(self) -> None:
+        window_menu = getattr(self, "_window_menu", None)
+        if window_menu is None or not hasattr(self, "_wx"):
+            return
+        ids = getattr(self, "_window_doc_menu_ids", {})
+        try:
+            for menu_id in list(ids.keys()):
+                item = window_menu.FindItemById(menu_id)
+                if item is not None:
+                    window_menu.DestroyItem(item)
+        except RuntimeError:
+            return
+        ids.clear()
+        tabs = getattr(self, "_document_tabs", None)
+        if not tabs:
+            return
+        active = getattr(self, "_active_tab_index", -1)
+        for i, tab in enumerate(tabs):
+            doc_id = self._wx.NewIdRef()
+            name = getattr(tab.document, "name", f"Document {i + 1}")
+            suffix = " (active)" if i == active else ""
+            window_menu.Append(doc_id, f"&{i + 1}: {name}{suffix}")
+            ids[int(doc_id)] = i
+        self._window_doc_menu_ids = ids
+
+    def _on_window_doc_menu(self, event: object) -> None:
+        menu_id = event.GetId()
+        ids = getattr(self, "_window_doc_menu_ids", {})
+        index = ids.get(menu_id)
+        if index is None:
+            event.Skip()
+            return
+        self._select_tab(index)
 
     def _refresh_recent_sessions_menu(self) -> None:
         if not hasattr(self, "_recent_sessions_menu") or not hasattr(self, "_wx"):
@@ -184,6 +219,19 @@ class SessionsMixin:
         self._location_ring.record(0)
         self._refresh_title()
         self._refresh_sessions_menu()
+        # Quillin document.loaded_from_session event (one per restored document).
+        fire = getattr(self, "_fire_quillin_event", None)
+        if callable(fire):
+            for tab in self._document_tabs:
+                doc_path = getattr(tab.document, "path", None)
+                fire(
+                    "document.loaded_from_session",
+                    {
+                        "file_path": str(doc_path) if doc_path is not None else "",
+                        "extension": doc_path.suffix.lower() if doc_path is not None else "",
+                        "title": getattr(tab.document, "name", ""),
+                    },
+                )
 
     def save_session(self, path: Path | None = None) -> None:
         wx = self._wx
