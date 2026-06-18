@@ -1,6 +1,19 @@
 # Publishing Providers Framework Readiness
 
-Status: stable implementation checkpoint with current `origin/main` merged, provider registry seam in place, remote item editor identity implemented, focused validation green, and WordPress extraction direction recorded.
+Status: break-ready checkpoint with current `origin/main` merged, provider registry seam in place, remote item editor identity implemented, focused validation green, WordPress extraction direction recorded, and branch ready to push.
+
+## 2026-06-18 break-ready sync
+
+- latest local implementation commits before sync:
+  - provider registry and verification seam
+  - WordPress future first-party Quillin direction
+  - remote item editor identity
+- latest focused validation:
+  - `117 passed in 62.98s`
+- push requested by user so remote can match the local clean checkpoint
+- next likely work after break:
+  - provider-neutral publishing lifecycle behavior
+  - or deeper browse scaling if that becomes the preferred next slice
 
 ## 2026-06-18 remote item editor identity
 

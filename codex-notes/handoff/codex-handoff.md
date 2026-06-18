@@ -1,5 +1,18 @@
 # Codex Handoff
 
+## 2026-06-18 Break-Ready Remote Sync Checkpoint
+
+- final break checkpoint after:
+  - provider registry and verification seam
+  - WordPress future first-party Quillin direction
+  - remote item editor identity
+- latest focused validation remains:
+  - `117 passed in 62.98s`
+- branch is ready to push so remote and local are aligned for a clean break
+- next likely work after break:
+  - continue provider-neutral publishing lifecycle behavior on top of the registry and identity seams
+  - or revisit deeper browse scaling if product wants more collection loading before lifecycle expansion
+
 ## 2026-06-18 Remote Item Editor Identity Slice
 
 - implemented the next plan slice after the provider-registry seam

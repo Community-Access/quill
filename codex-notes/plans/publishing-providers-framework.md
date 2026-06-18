@@ -1,5 +1,21 @@
 # Publishing Providers Framework Plan
 
+## 2026-06-18 break-ready implementation status
+
+Current branch state is ready for remote sync after the latest publishing framework slices:
+
+- provider registry and verification seam is implemented
+- unknown providers no longer fall back to WordPress
+- WordPress remains the in-tree reference provider for now, with a future first-party bundled Quillin extraction direction recorded
+- remote item editor identity is implemented with metadata-backed display names and no fake local file path
+- latest focused publishing/governance validation passed:
+  - `117 passed in 62.98s`
+
+Next implementation direction after the break:
+
+- continue provider-neutral publishing lifecycle behavior on top of the registry and identity seams
+- revisit deeper browse scaling only if product wants more collection-loading refinement before lifecycle expansion
+
 ## 2026-06-18 WordPress provider packaging direction
 
 Decision note after provider-registry review:
