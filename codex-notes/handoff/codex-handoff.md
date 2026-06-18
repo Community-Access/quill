@@ -1,5 +1,29 @@
 # Codex Handoff
 
+## 2026-06-18 Provider-Neutral Publishing Copy Slice
+
+- performed the provider-boundary cleanup requested after the audit
+- renamed browse UI/menu/status copy from published-only wording to publishing-content wording:
+  - `Browse Publishing Content...`
+  - `Publishing content`
+  - `Selected publishing content details`
+- added provider-owned content-kind labels in `publishing_providers.py`
+  - WordPress still exposes `Post`/`Page`
+  - the browse dialog now builds its content-scope choices from provider content kinds rather than fixed `Posts and pages` strings
+- updated core/provider-client messages from `published content` to `publishing content` where drafts may be included
+- accessibility/product alignment:
+  - no new dialog surface
+  - visible labels and accessible names remain matched
+  - browse copy now matches the draft-inclusive status scope
+- verification:
+  - first focused run passed behavior/dialog checks but failed module-size ratchet after provider-label growth
+  - budget note was updated for:
+    - `quill/ui/publishing_tools.py` `699 -> 715`
+    - `quill/core/publishing.py` `676 -> 677`
+  - rerun passed:
+    - `111 passed in 32.46s`
+- branch remains `features/publishing-providers-framework`; no push was performed
+
 ## 2026-06-18 Browse Partial Results Slice
 
 - continued the next `Browse Remote Content Scaling` work after the confirmation model slice

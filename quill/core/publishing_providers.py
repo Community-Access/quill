@@ -29,6 +29,8 @@ class PublishingProviderDefinition:
     implemented_auth_methods: tuple[str, ...]
     supported_content_kinds: tuple[str, ...]
     implemented_content_kinds: tuple[str, ...]
+    content_kind_labels: dict[str, str]
+    content_kind_plural_labels: dict[str, str]
 
 
 AUTH_METHOD_DEFINITIONS: dict[str, PublishingAuthMethodDefinition] = {
@@ -73,6 +75,8 @@ PROVIDER_DEFINITIONS: dict[str, PublishingProviderDefinition] = {
         implemented_auth_methods=(AUTH_METHOD_APP_PASSWORD,),
         supported_content_kinds=("post", "page"),
         implemented_content_kinds=("post", "page"),
+        content_kind_labels={"post": "Post", "page": "Page"},
+        content_kind_plural_labels={"post": "Posts", "page": "Pages"},
     ),
 }
 
@@ -127,3 +131,17 @@ def provider_content_kinds(provider_id: str) -> tuple[str, ...]:
 
 def provider_supported_content_kinds(provider_id: str) -> tuple[str, ...]:
     return publishing_provider_definition(provider_id).supported_content_kinds
+
+
+def provider_content_kind_label(
+    provider_id: str,
+    content_kind: str,
+    *,
+    plural: bool = False,
+) -> str:
+    definition = publishing_provider_definition(provider_id)
+    normalized = content_kind.strip().lower()
+    if plural:
+        singular = definition.content_kind_labels.get(normalized, normalized.title())
+        return definition.content_kind_plural_labels.get(normalized, singular + "s")
+    return definition.content_kind_labels.get(normalized, normalized.replace("_", " ").title())

@@ -71,7 +71,7 @@ def test_browse_publishing_content_returns_posts_and_pages(
     ok, message, items = publishing.browse_publishing_content(profile, "secret")
 
     assert ok is True
-    assert message == "Loaded published content from example.com."
+    assert message == "Loaded publishing content from example.com."
     assert [item.content_kind for item in items] == ["page", "post"]
     assert items[0].title == "About page"
     assert items[1].remote_url == "https://example.com/posts/hello"
@@ -155,7 +155,7 @@ def test_browse_publishing_content_returns_partial_results_when_one_kind_times_o
     assert ok is True
     assert [item.title for item in items] == ["Hello post"]
     assert message == (
-        "Loaded partial published content from example.com. "
+        "Loaded partial publishing content from example.com. "
         "Some content could not be loaded: "
         "Pages: Connection timed out. Check the site URL and try again. "
         "Try again with a narrower content scope."
@@ -194,7 +194,7 @@ def test_load_publishing_remote_item_returns_remote_document(monkeypatch) -> Non
     )
 
     assert ok is True
-    assert message == "Opened published content from example.com."
+    assert message == "Opened publishing content from example.com."
     assert document is not None
     assert document.title == "About page"
     assert document.content_kind == "page"
@@ -321,7 +321,7 @@ def test_wordpress_update_remote_item_posts_json_payload(monkeypatch) -> None:
     )
 
     assert ok is True
-    assert message == "Updated published content on example.com."
+    assert message == "Updated publishing content on example.com."
     assert document is not None
     assert request_details["method"] == "POST"
     assert request_details["url"] == "https://example.com/wp-json/wp/v2/pages/22?context=edit&_fields=id%2Clink%2Ctitle%2Cstatus%2Cmodified_gmt%2Ctype%2Ccontent"
@@ -371,7 +371,7 @@ def test_wordpress_create_remote_item_posts_json_payload(monkeypatch) -> None:
     )
 
     assert ok is True
-    assert message == "Created published content on example.com."
+    assert message == "Created publishing content on example.com."
     assert document is not None
     assert request_details["method"] == "POST"
     assert request_details["url"] == "https://example.com/wp-json/wp/v2/posts?context=edit&_fields=id%2Clink%2Ctitle%2Cstatus%2Cmodified_gmt%2Ctype%2Ccontent"
@@ -481,7 +481,7 @@ def test_update_publishing_remote_item_converts_markdown_tabs_to_html_body(monke
         captured["profile"] = profile
         captured["secret"] = secret
         captured.update(kwargs)
-        return True, "Updated published content on example.com.", None
+        return True, "Updated publishing content on example.com.", None
 
     profile = PublishingConnectionProfile(
         id="pub-one",
@@ -506,7 +506,7 @@ def test_update_publishing_remote_item_converts_markdown_tabs_to_html_body(monke
     )
 
     assert ok is True
-    assert message == "Updated published content on example.com."
+    assert message == "Updated publishing content on example.com."
     assert document is None
     assert captured["content_kind"] == "post"
     assert captured["remote_id"] == "22"
@@ -519,7 +519,7 @@ def test_update_publishing_remote_item_preserves_html_tabs(monkeypatch) -> None:
 
     def _update_remote_item(profile, secret, **kwargs):
         captured.update(kwargs)
-        return True, "Updated published content on example.com.", None
+        return True, "Updated publishing content on example.com.", None
 
     profile = PublishingConnectionProfile(
         id="pub-one",
@@ -554,7 +554,7 @@ def test_create_publishing_remote_item_converts_markdown_tabs_to_html_body(monke
         captured["profile"] = profile
         captured["secret"] = secret
         captured.update(kwargs)
-        return True, "Created published content on example.com.", None
+        return True, "Created publishing content on example.com.", None
 
     profile = PublishingConnectionProfile(
         id="pub-one",
@@ -579,7 +579,7 @@ def test_create_publishing_remote_item_converts_markdown_tabs_to_html_body(monke
     )
 
     assert ok is True
-    assert message == "Created published content on example.com."
+    assert message == "Created publishing content on example.com."
     assert document is None
     assert captured["content_kind"] == "post"
     assert captured["title"] == "Hello"

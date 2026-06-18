@@ -133,7 +133,7 @@ class MenuBuilderMixin:
         )
         self._publishing_file_menu.Append(
             self._id_publishing_browse_content,
-            self._menu_label("&Browse Published Content...", "publishing.browse_content"),
+            self._menu_label("&Browse Publishing Content...", "publishing.browse_content"),
         )
         self._publishing_file_menu.Append(
             self._id_publishing_create_draft,

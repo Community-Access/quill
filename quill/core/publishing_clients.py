@@ -12,7 +12,7 @@ from urllib.parse import urlencode, urlparse
 from urllib.request import Request, urlopen
 
 from quill.core.net import verified_ssl_context
-from quill.core.publishing_providers import WORDPRESS_PROVIDER_ID
+from quill.core.publishing_providers import WORDPRESS_PROVIDER_ID, provider_content_kind_label
 
 _HTML_ENTITY_PATTERN = re.compile(r"&(?:#\d+|#[xX][0-9A-Fa-f]+|[A-Za-z][A-Za-z0-9]+);")
 _PRESERVE_HTML_ESCAPES = {"<", ">", "&"}
@@ -105,10 +105,11 @@ class WordPressPublishingClient:
     ) -> tuple[bool, str, list[PublishingRemoteItemSummary]]:
         account_identifier = str(getattr(profile, "account_identifier", "")).strip()
         site_url = str(getattr(profile, "site_url", "")).strip()
+        provider_id = str(getattr(profile, "provider_id", WORDPRESS_PROVIDER_ID)).strip()
         if not account_identifier:
-            return False, "Enter a username or email before browsing published content.", []
+            return False, "Enter a username or email before browsing publishing content.", []
         if not secret.strip():
-            return False, "Enter an application password before browsing published content.", []
+            return False, "Enter an application password before browsing publishing content.", []
         results: list[PublishingRemoteItemSummary] = []
         failures: list[str] = []
         requested_statuses = _normalized_statuses(statuses)
@@ -127,11 +128,11 @@ class WordPressPublishingClient:
                 )
             except _PublishingRequestError as exc:
                 failures.append(
-                    f"{_content_kind_label(content_kind)}: {exc.message.rstrip('.')}"
+                    f"{_content_kind_label(provider_id, content_kind)}: {exc.message.rstrip('.')}"
                 )
                 continue
             if not isinstance(payload, list):
-                failures.append(f"{_content_kind_label(content_kind)}: invalid response")
+                failures.append(f"{_content_kind_label(provider_id, content_kind)}: invalid response")
                 continue
             for item in payload:
                 summary = _wordpress_summary_from_payload(site_url, content_kind, item)
@@ -146,13 +147,13 @@ class WordPressPublishingClient:
             return (
                 True,
                 (
-                    f"Loaded partial published content from {host}. "
+                    f"Loaded partial publishing content from {host}. "
                     f"Some content could not be loaded: {failed_scopes}. "
                     "Try again with a narrower content scope."
                 ),
                 results,
             )
-        return True, f"Loaded published content from {host}.", results
+        return True, f"Loaded publishing content from {host}.", results
 
     def load_remote_item(
         self,
@@ -166,9 +167,9 @@ class WordPressPublishingClient:
         account_identifier = str(getattr(profile, "account_identifier", "")).strip()
         site_url = str(getattr(profile, "site_url", "")).strip()
         if not account_identifier:
-            return False, "Enter a username or email before opening published content.", None
+            return False, "Enter a username or email before opening publishing content.", None
         if not secret.strip():
-            return False, "Enter an application password before opening published content.", None
+            return False, "Enter an application password before opening publishing content.", None
         endpoint = _wordpress_item_endpoint(site_url, content_kind, remote_id)
         try:
             payload = _request_json(
@@ -185,7 +186,7 @@ class WordPressPublishingClient:
         if document is None:
             return False, "The publishing site returned an invalid response.", None
         host = _display_host(site_url)
-        return True, f"Opened published content from {host}.", document
+        return True, f"Opened publishing content from {host}.", document
 
     def update_remote_item(
         self,
@@ -201,9 +202,9 @@ class WordPressPublishingClient:
         account_identifier = str(getattr(profile, "account_identifier", "")).strip()
         site_url = str(getattr(profile, "site_url", "")).strip()
         if not account_identifier:
-            return False, "Enter a username or email before updating published content.", None
+            return False, "Enter a username or email before updating publishing content.", None
         if not secret.strip():
-            return False, "Enter an application password before updating published content.", None
+            return False, "Enter an application password before updating publishing content.", None
         endpoint = _wordpress_item_endpoint(site_url, content_kind, remote_id)
         payload = {
             "title": title,
@@ -226,7 +227,7 @@ class WordPressPublishingClient:
         if document is None:
             return False, "The publishing site returned an invalid response.", None
         host = _display_host(site_url)
-        return True, f"Updated published content on {host}.", document
+        return True, f"Updated publishing content on {host}.", document
 
     def create_remote_item(
         self,
@@ -242,11 +243,11 @@ class WordPressPublishingClient:
         account_identifier = str(getattr(profile, "account_identifier", "")).strip()
         site_url = str(getattr(profile, "site_url", "")).strip()
         if not account_identifier:
-            return False, "Enter a username or email before creating published content.", None
+            return False, "Enter a username or email before creating publishing content.", None
         if not secret.strip():
             return (
                 False,
-                "Enter an application password before creating published content.",
+                "Enter an application password before creating publishing content.",
                 None,
             )
         endpoint = _wordpress_collection_write_endpoint(site_url, content_kind)
@@ -272,7 +273,7 @@ class WordPressPublishingClient:
         if document is None:
             return False, "The publishing site returned an invalid response.", None
         host = _display_host(site_url)
-        return True, f"Created published content on {host}.", document
+        return True, f"Created publishing content on {host}.", document
 
 
 _BUILTIN_PUBLISHING_CLIENTS: dict[str, PublishingProviderClient] = {
@@ -326,7 +327,7 @@ def _request_json(
             ) from exc
         if exc.code == 404:
             raise _PublishingRequestError(
-                "The requested published content could not be found."
+                "The requested publishing content could not be found."
             ) from exc
         if exc.code == 400 and method != "GET":
             raise _PublishingRequestError(
@@ -499,8 +500,8 @@ def _display_host(site_url: str) -> str:
     return (urlparse(site_url).netloc or site_url.strip()).strip().rstrip("/")
 
 
-def _content_kind_label(content_kind: str) -> str:
-    return "Pages" if content_kind == "page" else "Posts"
+def _content_kind_label(provider_id: str, content_kind: str) -> str:
+    return provider_content_kind_label(provider_id, content_kind, plural=True)
 
 
 def _basic_auth_header(identifier: str, secret: str) -> str:

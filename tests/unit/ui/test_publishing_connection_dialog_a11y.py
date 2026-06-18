@@ -42,11 +42,11 @@ def test_manager_dialog_names_the_connections_list() -> None:
 
 def test_browse_dialog_names_the_content_list() -> None:
     source = _publishing_tools_source()
-    assert 'title="Browse Published Content"' in source
-    assert 'wx.StaticText(self.dialog, label="Published content")' in source
-    assert 'self.content_list.SetName("Published content")' in source
-    assert 'wx.StaticText(self.dialog, label="Selected published content details")' in source
-    assert 'self.summary.SetName("Selected published content details")' in source
+    assert 'title="Browse Publishing Content"' in source
+    assert 'wx.StaticText(self.dialog, label="Publishing content")' in source
+    assert 'self.content_list.SetName("Publishing content")' in source
+    assert 'wx.StaticText(self.dialog, label="Selected publishing content details")' in source
+    assert 'self.summary.SetName("Selected publishing content details")' in source
     assert 'self.content_scope.SetName("Content to browse")' in source
     assert 'self.status_scope.SetName("Status to browse")' in source
     assert 'self.open_as.SetName("Open in Quill as")' in source
@@ -83,7 +83,7 @@ def test_publishing_dialogs_keep_plain_language_status_copy() -> None:
     source = _publishing_tools_source()
     assert "Create or edit a publishing connection." in source
     assert "Save and verify this connection before publishing." in source
-    assert "Browse posts and pages from the current publishing connection" in source
+    assert "Browse publishing content from the current publishing connection" in source
     assert "Manage your saved publishing connections here." not in source
 
 

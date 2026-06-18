@@ -37,7 +37,7 @@
     "quill/core/emmet.py": 634,
     "quill/ui/main_frame_menu.py": 3344,
     "quill/ui/main_frame_power_tools_menu.py": 792,
-    "quill/ui/publishing_tools.py": 699,
+    "quill/ui/publishing_tools.py": 715,
     "quill/core/read_aloud.py": 1244,
     "quill/core/assistant_ai.py": 1362,
     "quill/core/features.py": 1029,
@@ -53,7 +53,7 @@
     "quill/ui/main_frame_copy_tray.py": 332,
     "quill/ui/copy_tray_dialog.py": 267,
     "quill/ui/main_frame_statusbar.py": 620,
-    "quill/core/publishing.py": 676,
+    "quill/core/publishing.py": 677,
     "quill/core/abbreviations.py": 266,
     "quill/core/multi_press.py": 59,
     "quill/ui/main_frame_abbreviations.py": 205,
@@ -162,5 +162,6 @@
   "_rebaseline_2026_06_17_shift_f10": "main_frame.py 23893->23910 (+17): intercept Shift+F10 and the Windows Menu key in _on_editor_key_down to call _on_editor_context_menu directly, since wx does not reliably synthesize EVT_CONTEXT_MENU for those keys inside a TextCtrl. Positions the menu at DefaultPosition so wx places it near the caret.",
   "_rebaseline_2026_06_18_publishing_main_merge": "Publishing branch reintegrated with origin/main at 2a92c03. Budget entries re-measured after combining main's 0.6.0/UI/power-tools work with the existing File > Publish workflow: main_frame.py 24194, main_frame_menu.py 3344, main_frame_power_tools_menu.py 792. Publishing dialogs now use the shared message-box wrapper required by GATE-16, moving publishing_tools.py to 633. Publishing module entries remain explicit.",
   "_rebaseline_2026_06_18_publishing_browse_status": "Publishing browse status-scope slice: core publishing browse accepts provider-neutral status filters and defaults to published plus drafts (publishing.py 651). BrowsePublishingContentDialog adds the accessible 'Status to browse' Choice and GATE-12 announce_cb plumbing for publishing dialog status updates (publishing_tools.py 699).",
-  "_rebaseline_2026_06_18_publishing_confirmation": "Publishing confirmation model slice: main_frame.py 24194->24205 threads explicit post-send result copy into create/update dialogs while keeping status-bar text concise. publishing.py 651->676 adds the shared publishing_result_message formatter for target site, content kind, title, resulting state, and returned URL."
+  "_rebaseline_2026_06_18_publishing_confirmation": "Publishing confirmation model slice: main_frame.py 24194->24205 threads explicit post-send result copy into create/update dialogs while keeping status-bar text concise. publishing.py 651->676 adds the shared publishing_result_message formatter for target site, content kind, title, resulting state, and returned URL.",
+  "_rebaseline_2026_06_18_publishing_provider_neutral_copy": "Provider-boundary cleanup after audit: publishing_tools.py 699->715 changes browse dialog/menu wording from published-only to publishing-content language and derives content-kind labels from provider metadata. publishing.py 676->677 uses provider content-kind labels in result copy."
 }

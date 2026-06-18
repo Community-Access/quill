@@ -12,6 +12,7 @@ from quill.core.publishing_providers import (
     AUTH_METHOD_APP_PASSWORD,
     AUTH_METHOD_BROWSER_SESSION,
     AUTH_METHOD_EMAIL_LINK,
+    provider_content_kind_label,
     provider_auth_methods,
     provider_supported_auth_methods,
     publishing_auth_method_name,
@@ -231,3 +232,10 @@ def test_provider_metadata_keeps_ui_honest_about_implemented_auth_methods() -> N
     assert AUTH_METHOD_EMAIL_LINK not in supported
     assert publishing_auth_method_name(AUTH_METHOD_EMAIL_LINK) == "Email sign-in link"
     assert "WordPress.com" in publishing_provider_help_text("wordpress")
+
+
+def test_provider_metadata_supplies_content_kind_labels() -> None:
+    assert provider_content_kind_label("wordpress", "post") == "Post"
+    assert provider_content_kind_label("wordpress", "page") == "Page"
+    assert provider_content_kind_label("wordpress", "post", plural=True) == "Posts"
+    assert provider_content_kind_label("wordpress", "page", plural=True) == "Pages"

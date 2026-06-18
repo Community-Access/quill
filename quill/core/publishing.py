@@ -22,6 +22,7 @@ from quill.core.publishing_clients import (
 from quill.core.publishing_providers import (
     AUTH_METHOD_APP_PASSWORD,
     default_content_format_for_provider,
+    provider_content_kind_label,
     provider_content_kinds,
     provider_implemented_auth_methods,
     provider_supported_auth_methods,
@@ -288,7 +289,7 @@ def browse_publishing_content(
 ) -> tuple[bool, str, list[PublishingRemoteItemSummary]]:
     normalized = _normalized_profile(profile)
     if not normalized.site_url:
-        return False, "Enter a site URL before browsing published content.", []
+        return False, "Enter a site URL before browsing publishing content.", []
     policy_error = _validate_endpoint_security(normalized.site_url)
     if policy_error:
         return False, policy_error, []
@@ -334,7 +335,7 @@ def load_publishing_remote_item(
 ) -> tuple[bool, str, PublishingRemoteDocument | None]:
     normalized = _normalized_profile(profile)
     if not normalized.site_url:
-        return False, "Enter a site URL before opening published content.", None
+        return False, "Enter a site URL before opening publishing content.", None
     policy_error = _validate_endpoint_security(normalized.site_url)
     if policy_error:
         return False, policy_error, None
@@ -359,7 +360,7 @@ def load_publishing_remote_item(
     if content_kind not in provider_content_kinds(normalized.provider_id):
         return False, "That publishing content type is not supported for this provider.", None
     if not remote_id.strip():
-        return False, "Select published content before opening it.", None
+        return False, "Select publishing content before opening it.", None
     return client.load_remote_item(
         normalized,
         secret,
@@ -382,7 +383,7 @@ def update_publishing_remote_item(
 ) -> tuple[bool, str, PublishingRemoteDocument | None]:
     normalized = _normalized_profile(profile)
     if not normalized.site_url:
-        return False, "Enter a site URL before updating published content.", None
+        return False, "Enter a site URL before updating publishing content.", None
     policy_error = _validate_endpoint_security(normalized.site_url)
     if policy_error:
         return False, policy_error, None
@@ -403,7 +404,7 @@ def update_publishing_remote_item(
     if content_kind not in provider_content_kinds(normalized.provider_id):
         return False, "That publishing content type is not supported for this provider.", None
     if not remote_id.strip():
-        return False, "Open a published item before updating remote content.", None
+        return False, "Open a publishing item before updating remote content.", None
     clean_title = title.strip() or "(untitled)"
     body_html = _publishing_update_body_html(document_text, authoring_surface)
     return client.update_remote_item(
@@ -430,7 +431,7 @@ def create_publishing_remote_item(
 ) -> tuple[bool, str, PublishingRemoteDocument | None]:
     normalized = _normalized_profile(profile)
     if not normalized.site_url:
-        return False, "Enter a site URL before creating published content.", None
+        return False, "Enter a site URL before creating publishing content.", None
     policy_error = _validate_endpoint_security(normalized.site_url)
     if policy_error:
         return False, policy_error, None
@@ -497,7 +498,7 @@ def prepare_publishing_remote_content(
 
 def publishing_result_message(action: str, document: PublishingRemoteDocument) -> str:
     verb = "Updated" if action.strip().lower() == "updated" else "Created"
-    content_kind = "page" if document.content_kind == "page" else "post"
+    content_kind = provider_content_kind_label(document.provider_id, document.content_kind).lower()
     title = document.title.strip() or "(untitled)"
     status = _display_status(document.status)
     lines = [

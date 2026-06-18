@@ -2,6 +2,19 @@
 
 Status: stable implementation checkpoint with current `origin/main` merged, focused validation green, and next work identified.
 
+## 2026-06-18 provider-neutral publishing copy
+
+- cleaned up the provider-boundary audit findings
+- browse surface now uses `Browse Publishing Content` / `Publishing content` wording instead of `Published content`
+- provider metadata now owns content-kind display labels and plural labels
+- browse content-scope choices are generated from provider-supported content kinds
+- core/provider-client messages now say `publishing content` where drafts can be included
+- focused publishing/governance verification passed after documenting measured module-budget growth:
+  - `111 passed in 32.46s`
+- next likely plan work:
+  - `Remote Item Editor Identity` for clearer tab/title identity on opened remote items
+  - or deeper progressive browse loading beyond partial-result wording
+
 ## 2026-06-18 browse partial results
 
 - continued `Browse Remote Content Scaling`

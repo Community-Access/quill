@@ -1768,7 +1768,7 @@ class MainFrame(
         )
         self.commands.register(
             "publishing.browse_content",
-            "Browse Published Content...",
+            "Browse Publishing Content...",
             self._browse_publishing_content,
             None,
         )
@@ -10596,7 +10596,7 @@ class MainFrame(
         dialog = BrowsePublishingContentDialog(self.frame, announce_cb=self._announce)
         remote_document = dialog.show_modal()
         if remote_document is None:
-            self._set_status("Browse published content cancelled")
+            self._set_status("Browse publishing content cancelled")
             return
         prepared_content = prepare_publishing_remote_content(
             remote_document.body,
@@ -10633,7 +10633,7 @@ class MainFrame(
 
         metadata = self.document.source_metadata
         if metadata.get("source_kind") != "publishing_remote":
-            message = "Open a published post or page before updating remote content."
+            message = "Open remote publishing content before updating remote content."
             self._show_message_box(
                 message,
                 "Update Remote Content",

@@ -1,5 +1,50 @@
 # Codex Review Log
 
+## 2026-06-18 12:55:14 -04:00
+
+Implementation checkpoint:
+
+- user asked to clean up the provider-boundary audit findings
+- scope chosen:
+  - published-only browse wording cleanup
+  - provider-owned content-kind labels
+  - keep the framework from hard-coding Post/Page labels in the browse shell
+
+Changes made:
+
+- renamed browse labels and menu/command text to publishing-content wording:
+  - `Browse Publishing Content...`
+  - `Publishing content`
+  - `Selected publishing content details`
+- added `content_kind_labels` and `content_kind_plural_labels` to provider metadata
+- added `provider_content_kind_label(...)`
+- changed the browse dialog content-scope choices to derive from provider content kinds:
+  - `All content types`
+  - `{Provider label} only`
+- changed core and provider-client messages from `published content` to `publishing content` where drafts can be included
+- updated focused tests for:
+  - provider content-kind labels
+  - browse dialog accessible labels
+  - browse/open/update/create message copy
+
+Verification:
+
+- first focused verification run:
+  - behavior, menu, dialog, a11y, and governance tests passed
+  - module-size budget failed from deliberate provider-label/browse-shell growth
+- updated module-size budget documentation:
+  - `quill/ui/publishing_tools.py` `699 -> 715`
+  - `quill/core/publishing.py` `676 -> 677`
+- rerun:
+  - `pytest tests/unit/core/test_publishing.py tests/unit/core/test_publishing_browse.py tests/unit/core/test_publishing_framework.py tests/unit/ui/test_main_frame.py tests/unit/ui/test_main_frame_menu_contract.py tests/unit/ui/test_publishing_connection_dialog_a11y.py tests/unit/ui/test_dialog_inventory.py tests/unit/ui/test_main_frame_characterization.py tests/unit/tools/test_module_size_budget.py tests/unit/tools/test_check_banned_patterns.py tests/unit/tools/test_announce_gap.py tests/unit/tools/test_network_egress_audit.py tests/unit/tools/test_dialog_button_contract.py tests/unit/ui/test_dialog_hardening_contract.py -q --basetemp=.tmp\pytest-publishing-neutral-copy`
+  - result: `111 passed in 32.46s`
+
+Next read:
+
+- provider endpoint logic remains contained in provider/client code
+- browse shell copy is now status-neutral and less WordPress-shaped
+- next likely plan work is `Remote Item Editor Identity` unless product wants deeper progressive browse UI first
+
 ## 2026-06-18 12:46:43 -04:00
 
 Implementation checkpoint:

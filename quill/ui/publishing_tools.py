@@ -19,6 +19,7 @@ from quill.core.publishing_clients import PublishingRemoteDocument, PublishingRe
 from quill.core.publishing_providers import (
     auth_method_definition,
     available_publishing_providers,
+    provider_content_kind_label,
     provider_auth_methods,
     provider_content_kinds,
     publishing_auth_method_name,
@@ -300,7 +301,7 @@ class BrowsePublishingContentDialog:
 
         self.dialog = wx.Dialog(
             parent,
-            title="Browse Published Content",
+            title="Browse Publishing Content",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
         self.dialog.SetSize((860, 620))
@@ -310,7 +311,7 @@ class BrowsePublishingContentDialog:
             wx.StaticText(
                 self.dialog,
                 label=(
-                    "Browse posts and pages from the current publishing connection, "
+                    "Browse publishing content from the current publishing connection, "
                     "then open one in Quill."
                 ),
             ),
@@ -324,7 +325,7 @@ class BrowsePublishingContentDialog:
         filters.Add(self.content_scope_caption, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
         self.content_scope = wx.Choice(
             self.dialog,
-            choices=["Posts and pages", "Posts only", "Pages only"],
+            choices=self._content_scope_choices(),
         )
         self.content_scope.SetName("Content to browse")
         self.content_scope.SetSelection(0)
@@ -355,17 +356,17 @@ class BrowsePublishingContentDialog:
         root.Add(self.load_button, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         root.Add(
-            wx.StaticText(self.dialog, label="Published content"),
+            wx.StaticText(self.dialog, label="Publishing content"),
             0,
             wx.LEFT | wx.RIGHT,
             8,
         )
         self.content_list = wx.ListBox(self.dialog)
-        self.content_list.SetName("Published content")
+        self.content_list.SetName("Publishing content")
         root.Add(self.content_list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         root.Add(
-            wx.StaticText(self.dialog, label="Selected published content details"),
+            wx.StaticText(self.dialog, label="Selected publishing content details"),
             0,
             wx.LEFT | wx.RIGHT,
             8,
@@ -375,7 +376,7 @@ class BrowsePublishingContentDialog:
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.BORDER_SIMPLE,
             size=(-1, 140),
         )
-        self.summary.SetName("Selected published content details")
+        self.summary.SetName("Selected publishing content details")
         root.Add(self.summary, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
@@ -391,18 +392,33 @@ class BrowsePublishingContentDialog:
         self.content_list.Bind(wx.EVT_LISTBOX, self._on_selection_changed)
         self.content_list.Bind(wx.EVT_LISTBOX_DCLICK, self._on_open)
         self.open_button.Bind(wx.EVT_BUTTON, self._on_open)
-        self._update_summary("Choose Load Content to browse published content.")
+        self._update_summary("Choose Load Content to browse publishing content.")
         self.content_scope.SetFocus()
 
-    def _scope_kinds(self) -> tuple[str, ...]:
+    def _content_scope_choices(self) -> list[str]:
+        kinds = self._available_kinds()
+        if len(kinds) < 2:
+            return [f"{self._content_kind_label(kinds[0])} only"] if kinds else ["Content"]
+        choices = ["All content types"]
+        choices.extend(f"{self._content_kind_label(kind)} only" for kind in kinds)
+        return choices
+
+    def _available_kinds(self) -> tuple[str, ...]:
         if self._profile is None:
             return ("post", "page")
-        available = provider_content_kinds(self._profile.provider_id)
+        return provider_content_kinds(self._profile.provider_id)
+
+    def _content_kind_label(self, content_kind: str) -> str:
+        provider_id = self._profile.provider_id if self._profile is not None else "wordpress"
+        return provider_content_kind_label(provider_id, content_kind)
+
+    def _scope_kinds(self) -> tuple[str, ...]:
+        available = self._available_kinds()
         selection = self.content_scope.GetSelection()
-        if selection == 1:
-            return tuple(kind for kind in available if kind == "post")
-        if selection == 2:
-            return tuple(kind for kind in available if kind == "page")
+        if selection > 0:
+            index = selection - 1
+            if index < len(available):
+                return (available[index],)
         return available
 
     def _scope_statuses(self) -> tuple[str, ...]:
@@ -427,18 +443,18 @@ class BrowsePublishingContentDialog:
         return self._items[selection]
 
     def _item_label(self, item: PublishingRemoteItemSummary) -> str:
-        kind = "Post" if item.content_kind == "post" else "Page"
+        kind = self._content_kind_label(item.content_kind)
         status = item.status or "unknown"
         return f"{kind}: {item.title} ({status})"
 
     def _update_summary(self, fallback: str | None = None) -> None:
         selected = self._selected_item()
         if selected is None:
-            self.summary.SetValue(fallback or "No published content selected.")
+            self.summary.SetValue(fallback or "No publishing content selected.")
             return
         lines = [
             f"Title: {selected.title}",
-            f"Type: {'Post' if selected.content_kind == 'post' else 'Page'}",
+            f"Type: {self._content_kind_label(selected.content_kind)}",
             f"Status: {selected.status or 'unknown'}",
             f"Updated: {selected.updated_at or '(unknown)'}",
             f"Link: {selected.remote_url or '(not available)'}",
@@ -465,7 +481,7 @@ class BrowsePublishingContentDialog:
         icon = self._wx.ICON_INFORMATION if ok else self._wx.ICON_WARNING
         show_message_box(
             message,
-            "Browse Published Content",
+            "Browse Publishing Content",
             icon | self._wx.OK,
             self.dialog,
             announce=self._announce,
@@ -477,7 +493,7 @@ class BrowsePublishingContentDialog:
     def _on_open(self, _event: object) -> None:
         selected = self._selected_item()
         if selected is None or self._profile is None:
-            self._update_summary("Select published content before opening it.")
+            self._update_summary("Select publishing content before opening it.")
             return
         ok, message, document = load_publishing_remote_item(
             self._profile,
@@ -488,7 +504,7 @@ class BrowsePublishingContentDialog:
         if not ok or document is None:
             show_message_box(
                 message,
-                "Browse Published Content",
+                "Browse Publishing Content",
                 self._wx.ICON_WARNING | self._wx.OK,
                 self.dialog,
                 announce=self._announce,
@@ -502,7 +518,7 @@ class BrowsePublishingContentDialog:
     def show_modal(self) -> PublishingRemoteDocument | None:
         self.dialog.CentreOnParent()
         try:
-            if show_modal_dialog(self.dialog, "Browse Published Content") != self._wx.ID_OK:
+            if show_modal_dialog(self.dialog, "Browse Publishing Content") != self._wx.ID_OK:
                 return None
             return self._selected_document
         finally:
