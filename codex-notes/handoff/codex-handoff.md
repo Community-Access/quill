@@ -1,5 +1,20 @@
 # Codex Handoff
 
+## 2026-06-18 Fork Push and Upstream PR Checkpoint
+
+- pushed `features/publishing-providers-framework` to the fork remote:
+  - `https://github.com/stickbear2015/quill.git`
+- created upstream pull request with GitHub CLI:
+  - `https://github.com/Community-Access/quill/pull/268`
+- source branch:
+  - `stickbear2015:features/publishing-providers-framework`
+- target branch:
+  - `Community-Access/quill:main`
+- user clarified that future upstream-repo branch updates should wait until they are given access
+- current instruction for this checkpoint:
+  - push documentation/log updates to the fork remote only
+  - do not push directly to `Community-Access/quill`
+
 ## 2026-06-18 Provider Operation Capability Slice
 
 - implemented explicit provider operation capability metadata

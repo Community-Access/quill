@@ -1,5 +1,21 @@
 # Publishing Providers Framework Plan
 
+## 2026-06-18 fork PR checkpoint
+
+The publishing framework branch has been pushed to the fork and opened as an upstream PR.
+
+- fork branch:
+  - `stickbear2015:features/publishing-providers-framework`
+- upstream PR:
+  - `https://github.com/Community-Access/quill/pull/268`
+- target:
+  - `Community-Access/quill:main`
+
+Repository handling note:
+
+- continue pushing branch/log/doc updates to the fork remote only
+- do not push directly to `Community-Access/quill` until the user has been given that access
+
 ## 2026-06-18 provider operation capability implementation note
 
 The next provider-extraction preparation slice is implemented.

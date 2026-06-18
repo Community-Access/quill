@@ -1,5 +1,25 @@
 # Codex Review Log
 
+## 2026-06-18 18:19:27 -04:00
+
+Repository sync / PR checkpoint:
+
+- pushed local publishing branch updates to the fork remote:
+  - `features/publishing-providers-framework`
+  - `https://github.com/stickbear2015/quill.git`
+- created upstream pull request using GitHub CLI:
+  - `https://github.com/Community-Access/quill/pull/268`
+- PR source:
+  - `stickbear2015:features/publishing-providers-framework`
+- PR target:
+  - `Community-Access/quill:main`
+
+Current repository handling instruction:
+
+- push this documentation checkpoint to the fork/origin repository only
+- do not push directly to the upstream `Community-Access/quill` repository
+- upstream repo updates will wait until the user has been given the needed access
+
 ## 2026-06-18 16:52:14 -04:00
 
 Implementation result:

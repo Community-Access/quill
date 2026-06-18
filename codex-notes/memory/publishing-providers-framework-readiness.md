@@ -1,6 +1,18 @@
 # Publishing Providers Framework Readiness
 
-Status: active implementation checkpoint with current `origin/main` merged, provider registry seam in place, operation capability metadata added, remote item editor identity implemented, publish-now and open-remote publish lifecycle actions added, focused validation green, and WordPress extraction direction recorded.
+Status: active implementation checkpoint with current `origin/main` merged, provider registry seam in place, operation capability metadata added, remote item editor identity implemented, publish-now and open-remote publish lifecycle actions added, focused validation green, fork branch pushed, upstream PR #268 created, and WordPress extraction direction recorded.
+
+## 2026-06-18 fork push and upstream PR
+
+- fork branch pushed:
+  - `stickbear2015:features/publishing-providers-framework`
+- upstream pull request created:
+  - `https://github.com/Community-Access/quill/pull/268`
+- target:
+  - `Community-Access/quill:main`
+- current sync instruction:
+  - push notes/log updates to the fork remote only
+  - do not push directly to upstream until the user has the needed access
 
 ## 2026-06-18 provider operation capabilities
 
