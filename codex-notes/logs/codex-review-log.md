@@ -1,5 +1,36 @@
 # Codex Review Log
 
+## 2026-06-18 13:10:29 -04:00
+
+Planning checkpoint:
+
+- user asked whether WordPress should become a Quillin so the framework remains clean
+- decision recorded:
+  - yes as a likely end-state
+  - not immediately, because moving it now would mix framework contract work, provider behavior, and Quillin loading/runtime boundaries
+
+Recorded direction:
+
+- keep WordPress in-tree as the reference provider while publishing contracts are still being proven
+- keep all new framework work provider-neutral and extraction-friendly
+- target WordPress as a trusted first-party bundled Quillin or equivalent built-in extension package after:
+  - provider registry is stable
+  - provider client contract is stable
+  - consent/security/network behavior is stable
+  - publishing lifecycle behavior is stable
+- future Quillin-contributed providers should use the same provider/client registration seam rather than a separate publishing extension model
+
+Files updated:
+
+- `codex-notes/plans/publishing-providers-framework.md`
+- `codex-notes/handoff/codex-handoff.md`
+- `codex-notes/memory/publishing-providers-framework-readiness.md`
+- `codex-notes/logs/codex-review-log.md`
+
+Next read:
+
+- proceed with `Remote Item Editor Identity`
+
 ## 2026-06-18 13:06:24 -04:00
 
 Implementation checkpoint:

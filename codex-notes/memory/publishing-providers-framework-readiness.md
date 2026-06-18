@@ -1,6 +1,19 @@
 # Publishing Providers Framework Readiness
 
-Status: stable implementation checkpoint with current `origin/main` merged, provider registry seam in place, focused validation green, and next work identified.
+Status: stable implementation checkpoint with current `origin/main` merged, provider registry seam in place, focused validation green, WordPress extraction direction recorded, and next work identified.
+
+## 2026-06-18 WordPress first-party Quillin direction
+
+- architecture note recorded in the active publishing plan
+- current implementation should keep WordPress in-tree as the reference provider while the framework contract is still being proven
+- desired extraction destination:
+  - WordPress becomes a trusted first-party bundled Quillin or equivalent built-in extension package
+  - it registers through the same provider/client seam as future providers
+- immediate implementation rule:
+  - do not move WordPress yet
+  - do keep all shell, dialogs, and publishing actions provider-neutral
+  - keep WordPress-specific endpoint/auth behavior inside provider metadata/client code
+- next implementation slice remains `Remote Item Editor Identity`
 
 ## 2026-06-18 provider registry and verification seam
 

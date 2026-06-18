@@ -1,5 +1,21 @@
 # Publishing Providers Framework Plan
 
+## 2026-06-18 WordPress provider packaging direction
+
+Decision note after provider-registry review:
+
+- WordPress should remain the in-tree reference provider while the publishing framework contracts are still being proven.
+- The desired end-state is for WordPress to be extractable into a trusted first-party bundled Quillin once the provider registry, client contract, consent/security checks, and publishing lifecycle behavior are stable.
+- The framework should therefore continue to be developed as provider-neutral core infrastructure plus one reference provider, not as WordPress-specific publishing with extension points added later.
+- New implementation slices must keep WordPress details inside provider metadata/client code and must avoid shell assumptions that would make WordPress special.
+- Future Quillin provider loading should use the same provider/client registration seam now present in core, but the current publishing implementation must not depend on live third-party Quillin provider loading before the runtime and policy are ready.
+
+Practical staging:
+
+- short term: keep WordPress bundled in core as a reference implementation and regression anchor
+- medium term: formalize the provider capability/registration contract enough that bundled providers and Quillin-contributed providers can share it
+- later: extract WordPress into a first-party bundled Quillin or equivalent built-in extension package without changing shell workflows
+
 ## 2026-06-12 browse, confirmation, and remote-identity planning addendum
 
 This addendum records a planning-only review after the first browse/open/update/create-draft publishing slices were integrated.
@@ -154,6 +170,7 @@ These decisions are now the recommended baseline for future implementation unles
 - publishing ships behind a dedicated gated feature id
 - the first implementation adds no publishing status-bar cell
 - the first implementation does not depend on Quillins or any third-party plugin runtime
+- WordPress can become a first-party bundled Quillin later, but that is an extraction destination after the framework seam is stable, not a prerequisite for the current slices
 - publishing must support multiple saved publishing connections, not a single global site
 - publishing connection UX must stay provider-agnostic until a provider is explicitly chosen
 - publishing authentication cannot assume application passwords are the only realistic user credential path

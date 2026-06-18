@@ -1,5 +1,15 @@
 # Codex Handoff
 
+## 2026-06-18 WordPress as Future Bundled Quillin Direction
+
+- recorded the architecture decision prompted by the provider-registry seam:
+  - keep WordPress in-tree as the reference provider while framework contracts are still being proven
+  - continue building provider-neutral core seams so WordPress remains extractable
+  - treat WordPress-as-first-party-bundled-Quillin as the likely end-state after provider loading policy and lifecycle contracts are stable
+- no runtime behavior changed in this documentation checkpoint
+- next implementation work remains `Remote Item Editor Identity`
+- branch remains `features/publishing-providers-framework`; no push was performed
+
 ## 2026-06-18 Provider Registry and Verification Seam Slice
 
 - implemented the highest-risk framework-neutrality cleanup requested after the audit
