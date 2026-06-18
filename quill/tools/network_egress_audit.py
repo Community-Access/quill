@@ -78,7 +78,7 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "and Datamuse). Only runs when the user enables online lexical lookups; "
         "HTTPS with a verified TLS context, no API key, graceful offline fallback."
     ),
-    "core/publishing.py::_verify_wordpress_app_password": (
+    "core/publishing_clients.py::verify_connection": (
         "User-initiated publishing connection verification from the Publishing "
         "Connections dialog. Runs only when the user explicitly verifies a saved "
         "connection; remote endpoints are HTTPS-enforced and HTTPS uses a verified "

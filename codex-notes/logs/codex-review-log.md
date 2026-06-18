@@ -1,5 +1,43 @@
 # Codex Review Log
 
+## 2026-06-18 13:06:24 -04:00
+
+Implementation checkpoint:
+
+- user asked for the `Provider Registry and Verification Seam` before more publishing behavior
+- goal was to address the highest-risk framework-neutrality gaps:
+  - provider/client registration functions in core
+  - verification moved into `PublishingProviderClient`
+  - unknown providers must not fall back to WordPress
+  - fake second provider coverage proving the shell is provider-neutral
+
+Changes made:
+
+- added `register_publishing_provider(...)` and `unregister_publishing_provider(...)`
+- changed provider metadata lookup so missing provider IDs return no definition instead of WordPress
+- added neutral fallback behavior for display/help/content-kind helper functions
+- added `PublishingProviderClient.verify_connection(...)`
+- moved WordPress `/wp-json/wp/v2/users/me?context=edit` verification into `WordPressPublishingClient`
+- added `register_publishing_provider_client(...)` and `unregister_publishing_provider_client(...)`
+- changed `verify_publishing_connection(...)` to route through the registered provider client
+- added explicit unregistered-provider checks for verify/browse/open/update/create publishing actions
+- updated network-egress review documentation for the moved verification call site
+- added tests with a fake `secondcms` provider/client to prove verification is not WordPress-bound
+
+Verification:
+
+- first focused verification run:
+  - publishing behavior that executed passed
+  - pytest errored where `tmp_path` needed `.tmp\pytest-publishing-provider-registry` but the `.tmp` parent did not exist
+- created `.tmp` and reran:
+  - `pytest tests/unit/core/test_publishing.py tests/unit/core/test_publishing_browse.py tests/unit/core/test_publishing_framework.py tests/unit/ui/test_main_frame.py tests/unit/ui/test_main_frame_menu_contract.py tests/unit/ui/test_publishing_connection_dialog_a11y.py tests/unit/ui/test_dialog_inventory.py tests/unit/ui/test_main_frame_characterization.py tests/unit/tools/test_module_size_budget.py tests/unit/tools/test_check_banned_patterns.py tests/unit/tools/test_announce_gap.py tests/unit/tools/test_network_egress_audit.py tests/unit/tools/test_dialog_button_contract.py tests/unit/ui/test_dialog_hardening_contract.py -q --basetemp=.tmp\pytest-publishing-provider-registry`
+  - result: `113 passed in 31.29s`
+
+Next read:
+
+- provider registry and verification are now framework-neutral enough for later providers/quillins to plug in without inheriting WordPress behavior
+- next likely plan work remains `Remote Item Editor Identity`
+
 ## 2026-06-18 12:55:14 -04:00
 
 Implementation checkpoint:

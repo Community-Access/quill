@@ -1,6 +1,23 @@
 # Publishing Providers Framework Readiness
 
-Status: stable implementation checkpoint with current `origin/main` merged, focused validation green, and next work identified.
+Status: stable implementation checkpoint with current `origin/main` merged, provider registry seam in place, focused validation green, and next work identified.
+
+## 2026-06-18 provider registry and verification seam
+
+- implemented the planned framework-neutrality seam before adding more publishing behavior
+- provider metadata and provider clients now both have explicit registration functions
+- `PublishingProviderClient` now owns `verify_connection(...)`
+- WordPress verification moved into `WordPressPublishingClient`
+- unknown providers no longer fall back to WordPress:
+  - metadata helpers return empty/default-neutral values for missing providers
+  - publishing actions report the provider as unregistered
+- fake second provider regression coverage proves the shell verifies through the registered provider client instead of assuming WordPress for app-password auth
+- network-egress review entry now points at `core/publishing_clients.py::verify_connection`
+- focused publishing/governance validation passed:
+  - `113 passed in 31.29s`
+- next likely plan work:
+  - `Remote Item Editor Identity` for clearer tab/title identity on opened remote items
+  - then continue provider-neutral publishing lifecycle behavior on top of the registry seam
 
 ## 2026-06-18 provider-neutral publishing copy
 

@@ -6,17 +6,21 @@ from pathlib import Path
 import pytest
 
 import quill.core.publishing as publishing
+import quill.core.publishing_clients as publishing_clients
 from quill.core import paths
 from quill.core.publishing import PublishingConnectionProfile
 from quill.core.publishing_providers import (
     AUTH_METHOD_APP_PASSWORD,
     AUTH_METHOD_BROWSER_SESSION,
     AUTH_METHOD_EMAIL_LINK,
+    PublishingProviderDefinition,
     provider_content_kind_label,
     provider_auth_methods,
     provider_supported_auth_methods,
     publishing_auth_method_name,
     publishing_provider_help_text,
+    register_publishing_provider,
+    unregister_publishing_provider,
 )
 
 
@@ -160,7 +164,7 @@ def test_verify_publishing_connection_allows_local_http(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
-        publishing,
+        publishing_clients,
         "urlopen",
         lambda *_a, **_k: _FakeResponse({"id": 7, "name": "Writer"}),
     )
@@ -194,7 +198,7 @@ def test_unsupported_wordpress_auth_method_is_normalized_to_app_password() -> No
 def test_verify_publishing_connection_reports_auth_failure(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    class _Unauthorized(publishing.HTTPError):
+    class _Unauthorized(publishing_clients.HTTPError):
         def __init__(self) -> None:
             super().__init__(
                 url="https://example.com/wp-json/wp/v2/users/me?context=edit",
@@ -205,7 +209,7 @@ def test_verify_publishing_connection_reports_auth_failure(
             )
 
     monkeypatch.setattr(
-        publishing,
+        publishing_clients,
         "urlopen",
         lambda *_a, **_k: (_ for _ in ()).throw(_Unauthorized()),
     )
@@ -220,6 +224,96 @@ def test_verify_publishing_connection_reports_auth_failure(
     ok, message = publishing.verify_publishing_connection(profile, "bad-secret")
     assert ok is False
     assert "Authentication failed" in message
+
+
+class _FakeSecondProviderClient:
+    provider_id = "secondcms"
+
+    def __init__(self) -> None:
+        self.verified_profile: PublishingConnectionProfile | None = None
+        self.verified_secret = ""
+
+    def verify_connection(
+        self,
+        profile: object,
+        secret: str,
+        *,
+        timeout_seconds: float,
+    ) -> tuple[bool, str]:
+        del timeout_seconds
+        assert isinstance(profile, PublishingConnectionProfile)
+        self.verified_profile = profile
+        self.verified_secret = secret
+        return True, f"Second CMS verified for {profile.account_identifier}."
+
+    def browse_content(self, *_args, **_kwargs):
+        return False, "not implemented", []
+
+    def load_remote_item(self, *_args, **_kwargs):
+        return False, "not implemented", None
+
+    def update_remote_item(self, *_args, **_kwargs):
+        return False, "not implemented", None
+
+    def create_remote_item(self, *_args, **_kwargs):
+        return False, "not implemented", None
+
+
+def test_registered_second_provider_verification_uses_registered_client() -> None:
+    client = _FakeSecondProviderClient()
+    register_publishing_provider(
+        PublishingProviderDefinition(
+            id="secondcms",
+            name="Second CMS",
+            help_text="Second provider for framework-neutral publishing tests.",
+            default_content_format="html",
+            supported_auth_methods=(AUTH_METHOD_APP_PASSWORD,),
+            implemented_auth_methods=(AUTH_METHOD_APP_PASSWORD,),
+            supported_content_kinds=("article",),
+            implemented_content_kinds=("article",),
+            content_kind_labels={"article": "Article"},
+            content_kind_plural_labels={"article": "Articles"},
+        )
+    )
+    publishing_clients.register_publishing_provider_client(client)
+    try:
+        profile = PublishingConnectionProfile(
+            id="pub-second",
+            label="Second provider",
+            provider_id="secondcms",
+            site_url="https://second.example.com",
+            auth_method=AUTH_METHOD_APP_PASSWORD,
+            account_identifier="writer",
+        )
+        ok, message = publishing.verify_publishing_connection(profile, "second-secret")
+    finally:
+        publishing_clients.unregister_publishing_provider_client("secondcms")
+        unregister_publishing_provider("secondcms")
+
+    assert ok is True
+    assert message == "Second CMS verified for writer."
+    assert client.verified_profile is not None
+    assert client.verified_profile.provider_id == "secondcms"
+    assert client.verified_secret == "second-secret"
+
+
+def test_unknown_provider_does_not_fall_back_to_wordpress() -> None:
+    profile = PublishingConnectionProfile(
+        id="pub-unknown",
+        label="Mystery provider",
+        provider_id="mystery",
+        site_url="https://example.com",
+        auth_method=AUTH_METHOD_APP_PASSWORD,
+        account_identifier="writer",
+    )
+
+    ok, message = publishing.verify_publishing_connection(profile, "secret")
+
+    assert ok is False
+    assert message == "mystery publishing provider is not registered."
+    assert provider_auth_methods("mystery") == ()
+    assert provider_supported_auth_methods("mystery") == ()
+    assert provider_content_kind_label("mystery", "entry") == "Entry"
 
 
 def test_provider_metadata_keeps_ui_honest_about_implemented_auth_methods() -> None:

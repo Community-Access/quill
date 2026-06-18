@@ -1,5 +1,28 @@
 # Codex Handoff
 
+## 2026-06-18 Provider Registry and Verification Seam Slice
+
+- implemented the highest-risk framework-neutrality cleanup requested after the audit
+- added explicit provider metadata registration in `publishing_providers.py`:
+  - `register_publishing_provider(...)`
+  - `unregister_publishing_provider(...)`
+- added explicit provider client registration in `publishing_clients.py`:
+  - `register_publishing_provider_client(...)`
+  - `unregister_publishing_provider_client(...)`
+- moved publishing connection verification behind `PublishingProviderClient.verify_connection(...)`
+- moved WordPress app-password verification into `WordPressPublishingClient`
+- stopped unknown provider IDs from falling back to WordPress metadata or behavior
+- added a fake second provider test proving:
+  - the shell can verify a non-WordPress provider through a registered client
+  - app-password auth no longer implies WordPress
+  - unknown providers report as unregistered rather than using WordPress defaults
+- updated the network-egress audit rationale to follow the moved verification call site
+- verification:
+  - initial run exposed only a missing `.tmp` parent for pytest's `--basetemp`
+  - after creating `.tmp`, focused publishing/governance validation passed:
+    - `113 passed in 31.29s`
+- branch remains `features/publishing-providers-framework`; no push was performed
+
 ## 2026-06-18 Provider-Neutral Publishing Copy Slice
 
 - performed the provider-boundary cleanup requested after the audit

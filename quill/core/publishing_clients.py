@@ -12,7 +12,11 @@ from urllib.parse import urlencode, urlparse
 from urllib.request import Request, urlopen
 
 from quill.core.net import verified_ssl_context
-from quill.core.publishing_providers import WORDPRESS_PROVIDER_ID, provider_content_kind_label
+from quill.core.publishing_providers import (
+    WORDPRESS_PROVIDER_ID,
+    provider_content_kind_label,
+    publishing_provider_display_name,
+)
 
 _HTML_ENTITY_PATTERN = re.compile(r"&(?:#\d+|#[xX][0-9A-Fa-f]+|[A-Za-z][A-Za-z0-9]+);")
 _PRESERVE_HTML_ESCAPES = {"<", ">", "&"}
@@ -45,6 +49,14 @@ class PublishingRemoteDocument:
 
 class PublishingProviderClient(Protocol):
     provider_id: str
+
+    def verify_connection(
+        self,
+        profile: object,
+        secret: str,
+        *,
+        timeout_seconds: float,
+    ) -> tuple[bool, str]: ...
 
     def browse_content(
         self,
@@ -93,6 +105,58 @@ class PublishingProviderClient(Protocol):
 
 class WordPressPublishingClient:
     provider_id = WORDPRESS_PROVIDER_ID
+
+    def verify_connection(
+        self,
+        profile: object,
+        secret: str,
+        *,
+        timeout_seconds: float,
+    ) -> tuple[bool, str]:
+        account_identifier = str(getattr(profile, "account_identifier", "")).strip()
+        site_url = str(getattr(profile, "site_url", "")).strip()
+        provider_id = str(getattr(profile, "provider_id", WORDPRESS_PROVIDER_ID)).strip()
+        if not account_identifier:
+            return False, "Enter a username or email before verifying the publishing connection."
+        if not secret.strip():
+            return False, "Enter an application password before verifying the publishing connection."
+        endpoint = _wordpress_users_me_endpoint(site_url)
+        request = Request(
+            endpoint,
+            headers={
+                "Accept": "application/json",
+                "Authorization": _basic_auth_header(account_identifier, secret),
+            },
+            method="GET",
+        )
+        try:
+            with urlopen(request, timeout=timeout_seconds, context=_context_for(endpoint)) as response:
+                payload = json.loads(response.read().decode("utf-8", errors="replace"))
+        except HTTPError as exc:
+            if exc.code == 401:
+                return False, "Authentication failed. Check the sign-in name or application password."
+            if exc.code == 403:
+                return False, "Access denied. This account cannot publish on that site."
+            return (
+                False,
+                (
+                    f"{publishing_provider_display_name(provider_id)} returned HTTP "
+                    f"{exc.code} while verifying the connection."
+                ),
+            )
+        except URLError as exc:
+            reason = getattr(exc, "reason", None)
+            text = str(reason).strip() or "unknown network error"
+            if "timed out" in text.lower():
+                return False, "Connection timed out. Check the site URL and try again."
+            return False, f"Could not reach the publishing site: {text}"
+        except TimeoutError:
+            return False, "Connection timed out. Check the site URL and try again."
+        except json.JSONDecodeError:
+            return False, "The publishing site returned an invalid response."
+        if not isinstance(payload, dict):
+            return False, "The publishing site returned an invalid response."
+        return True, f"Publishing connection verified for {_display_host(site_url)}."
 
     def browse_content(
         self,
@@ -276,13 +340,27 @@ class WordPressPublishingClient:
         return True, f"Created publishing content on {host}.", document
 
 
-_BUILTIN_PUBLISHING_CLIENTS: dict[str, PublishingProviderClient] = {
+_PUBLISHING_PROVIDER_CLIENTS: dict[str, PublishingProviderClient] = {
     WORDPRESS_PROVIDER_ID: WordPressPublishingClient(),
 }
 
 
+def register_publishing_provider_client(client: PublishingProviderClient) -> None:
+    provider_id = client.provider_id.strip().lower()
+    if not provider_id:
+        raise ValueError("Publishing provider client id is required.")
+    _PUBLISHING_PROVIDER_CLIENTS[provider_id] = client
+
+
+def unregister_publishing_provider_client(provider_id: str) -> None:
+    normalized = provider_id.strip().lower()
+    if normalized == WORDPRESS_PROVIDER_ID:
+        raise ValueError("The built-in WordPress publishing client cannot be unregistered.")
+    _PUBLISHING_PROVIDER_CLIENTS.pop(normalized, None)
+
+
 def publishing_provider_client(provider_id: str) -> PublishingProviderClient | None:
-    return _BUILTIN_PUBLISHING_CLIENTS.get(provider_id.strip().lower())
+    return _PUBLISHING_PROVIDER_CLIENTS.get(provider_id.strip().lower())
 
 
 @dataclass(frozen=True, slots=True)
@@ -391,6 +469,10 @@ def _wordpress_item_endpoint(site_url: str, content_kind: str, remote_id: str) -
         site_url.rstrip("/")
         + f"/wp-json/wp/v2/{_wordpress_kind_path(content_kind)}/{remote_id.strip()}?{query}"
     )
+
+
+def _wordpress_users_me_endpoint(site_url: str) -> str:
+    return site_url.rstrip("/") + "/wp-json/wp/v2/users/me?context=edit"
 
 
 def _wordpress_kind_path(content_kind: str) -> str:

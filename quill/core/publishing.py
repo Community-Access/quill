@@ -1,17 +1,11 @@
 from __future__ import annotations
 
-import base64
-import json
-import ssl
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
-from urllib.request import Request, urlopen
 from uuid import uuid4
 
 from quill.core.html_to_markdown import html_to_markdown
-from quill.core.net import verified_ssl_context
 from quill.core.paths import app_data_dir
 from quill.core.browser_preview import render_preview_body
 from quill.core.publishing_clients import (
@@ -27,6 +21,7 @@ from quill.core.publishing_providers import (
     provider_implemented_auth_methods,
     provider_supported_auth_methods,
     publishing_auth_method_name,
+    publishing_provider_definition,
     publishing_provider_display_name,
 )
 from quill.core.storage import read_json, write_json_atomic
@@ -262,6 +257,9 @@ def verify_publishing_connection(
     policy_error = _validate_endpoint_security(normalized.site_url)
     if policy_error:
         return False, policy_error
+    if publishing_provider_definition(normalized.provider_id) is None:
+        provider_name = publishing_provider_display_name(normalized.provider_id)
+        return False, f"{provider_name} publishing provider is not registered."
     if normalized.auth_method not in provider_implemented_auth_methods(normalized.provider_id):
         return (
             False,
@@ -271,12 +269,11 @@ def verify_publishing_connection(
                 "but is not implemented yet."
             ),
         )
-    if normalized.auth_method == AUTH_METHOD_APP_PASSWORD:
-        return _verify_wordpress_app_password(normalized, secret, timeout_seconds=timeout_seconds)
-    return (
-        False,
-        f"{publishing_auth_method_name(normalized.auth_method)} is not implemented yet.",
-    )
+    client = publishing_provider_client(normalized.provider_id)
+    if client is None:
+        provider_name = publishing_provider_display_name(normalized.provider_id)
+        return False, f"{provider_name} publishing is not implemented yet."
+    return client.verify_connection(normalized, secret, timeout_seconds=timeout_seconds)
 
 
 def browse_publishing_content(
@@ -293,6 +290,9 @@ def browse_publishing_content(
     policy_error = _validate_endpoint_security(normalized.site_url)
     if policy_error:
         return False, policy_error, []
+    if publishing_provider_definition(normalized.provider_id) is None:
+        provider_name = publishing_provider_display_name(normalized.provider_id)
+        return False, f"{provider_name} publishing provider is not registered.", []
     if normalized.auth_method not in provider_implemented_auth_methods(normalized.provider_id):
         return (
             False,
@@ -339,6 +339,9 @@ def load_publishing_remote_item(
     policy_error = _validate_endpoint_security(normalized.site_url)
     if policy_error:
         return False, policy_error, None
+    if publishing_provider_definition(normalized.provider_id) is None:
+        provider_name = publishing_provider_display_name(normalized.provider_id)
+        return False, f"{provider_name} publishing provider is not registered.", None
     if normalized.auth_method not in provider_implemented_auth_methods(normalized.provider_id):
         return (
             False,
@@ -387,6 +390,9 @@ def update_publishing_remote_item(
     policy_error = _validate_endpoint_security(normalized.site_url)
     if policy_error:
         return False, policy_error, None
+    if publishing_provider_definition(normalized.provider_id) is None:
+        provider_name = publishing_provider_display_name(normalized.provider_id)
+        return False, f"{provider_name} publishing provider is not registered.", None
     if normalized.auth_method not in provider_implemented_auth_methods(normalized.provider_id):
         return (
             False,
@@ -435,6 +441,9 @@ def create_publishing_remote_item(
     policy_error = _validate_endpoint_security(normalized.site_url)
     if policy_error:
         return False, policy_error, None
+    if publishing_provider_definition(normalized.provider_id) is None:
+        provider_name = publishing_provider_display_name(normalized.provider_id)
+        return False, f"{provider_name} publishing provider is not registered.", None
     if normalized.auth_method not in provider_implemented_auth_methods(normalized.provider_id):
         return (
             False,
@@ -519,59 +528,6 @@ def _publishing_update_body_html(document_text: str, authoring_surface: str) -> 
     return render_preview_body(document_text, "markdown")
 
 
-def _verify_wordpress_app_password(
-    profile: PublishingConnectionProfile,
-    secret: str,
-    *,
-    timeout_seconds: float,
-) -> tuple[bool, str]:
-    if not profile.account_identifier.strip():
-        return False, "Enter a username or email before verifying the publishing connection."
-    if not secret.strip():
-        return False, "Enter an application password before verifying the publishing connection."
-    endpoint = wordpress_users_me_endpoint(profile.site_url)
-    request = Request(
-        endpoint,
-        headers={
-            "Accept": "application/json",
-            "Authorization": _basic_auth_header(profile.account_identifier, secret),
-        },
-        method="GET",
-    )
-    try:
-        with urlopen(request, timeout=timeout_seconds, context=_context_for(endpoint)) as response:
-            payload = json.loads(response.read().decode("utf-8", errors="replace"))
-    except HTTPError as exc:
-        if exc.code == 401:
-            return False, "Authentication failed. Check the sign-in name or application password."
-        if exc.code == 403:
-            return False, "Access denied. This account cannot publish on that site."
-        return (
-            False,
-            (
-                f"{publishing_provider_display_name(profile.provider_id)} returned HTTP "
-                f"{exc.code} while verifying the connection."
-            ),
-        )
-    except URLError as exc:
-        reason = getattr(exc, "reason", None)
-        text = str(reason).strip() or "unknown network error"
-        if "timed out" in text.lower():
-            return False, "Connection timed out. Check the site URL and try again."
-        return False, f"Could not reach the publishing site: {text}"
-    except TimeoutError:
-        return False, "Connection timed out. Check the site URL and try again."
-    except json.JSONDecodeError:
-        return False, "The publishing site returned an invalid response."
-    if not isinstance(payload, dict):
-        return False, "The publishing site returned an invalid response."
-    return True, f"Publishing connection verified for {_display_host(profile.site_url)}."
-
-
-def wordpress_users_me_endpoint(site_url: str) -> str:
-    return site_url.rstrip("/") + "/wp-json/wp/v2/users/me?context=edit"
-
-
 def _normalized_profile(profile: PublishingConnectionProfile) -> PublishingConnectionProfile:
     normalized = PublishingConnectionProfile.from_dict(asdict(profile))
     return normalized
@@ -619,12 +575,6 @@ def _delete_secret_from_credential_manager(connection_id: str) -> None:
         return
 
 
-def _context_for(endpoint: str) -> ssl.SSLContext | None:
-    if urlparse(endpoint).scheme == "https":
-        return verified_ssl_context()
-    return None
-
-
 def _validate_endpoint_security(site_url: str) -> str | None:
     parsed = urlparse(site_url)
     scheme = parsed.scheme.lower()
@@ -670,8 +620,3 @@ def _display_status(status: str) -> str:
     if normalized:
         return normalized.replace("_", " ")
     return "unknown"
-
-
-def _basic_auth_header(identifier: str, secret: str) -> str:
-    token = f"{identifier.strip()}:{secret.strip()}".encode()
-    return "Basic " + base64.b64encode(token).decode("ascii")

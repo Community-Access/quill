@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 WORDPRESS_PROVIDER_ID = "wordpress"
 
@@ -85,21 +85,42 @@ def available_publishing_providers() -> tuple[PublishingProviderDefinition, ...]
     return tuple(PROVIDER_DEFINITIONS.values())
 
 
-def publishing_provider_definition(provider_id: str) -> PublishingProviderDefinition:
+def register_publishing_provider(definition: PublishingProviderDefinition) -> None:
+    normalized = definition.id.strip().lower()
+    if not normalized:
+        raise ValueError("Publishing provider id is required.")
+    PROVIDER_DEFINITIONS[normalized] = (
+        definition if definition.id == normalized else replace(definition, id=normalized)
+    )
+
+
+def unregister_publishing_provider(provider_id: str) -> None:
     normalized = provider_id.strip().lower()
-    return PROVIDER_DEFINITIONS.get(normalized, PROVIDER_DEFINITIONS[WORDPRESS_PROVIDER_ID])
+    if normalized == WORDPRESS_PROVIDER_ID:
+        raise ValueError("The built-in WordPress publishing provider cannot be unregistered.")
+    PROVIDER_DEFINITIONS.pop(normalized, None)
+
+
+def publishing_provider_definition(provider_id: str) -> PublishingProviderDefinition | None:
+    normalized = provider_id.strip().lower()
+    return PROVIDER_DEFINITIONS.get(normalized)
 
 
 def publishing_provider_display_name(provider_id: str) -> str:
-    return publishing_provider_definition(provider_id).name
+    definition = publishing_provider_definition(provider_id)
+    if definition is not None:
+        return definition.name
+    return provider_id.strip() or "Unknown provider"
 
 
 def publishing_provider_help_text(provider_id: str) -> str:
-    return publishing_provider_definition(provider_id).help_text
+    definition = publishing_provider_definition(provider_id)
+    return definition.help_text if definition is not None else ""
 
 
 def default_content_format_for_provider(provider_id: str) -> str:
-    return publishing_provider_definition(provider_id).default_content_format
+    definition = publishing_provider_definition(provider_id)
+    return definition.default_content_format if definition is not None else "html"
 
 
 def auth_method_definition(auth_method_id: str) -> PublishingAuthMethodDefinition:
@@ -114,23 +135,27 @@ def publishing_auth_method_name(auth_method_id: str) -> str:
 
 
 def provider_auth_methods(provider_id: str) -> tuple[str, ...]:
-    return publishing_provider_definition(provider_id).implemented_auth_methods
+    return provider_implemented_auth_methods(provider_id)
 
 
 def provider_supported_auth_methods(provider_id: str) -> tuple[str, ...]:
-    return publishing_provider_definition(provider_id).supported_auth_methods
+    definition = publishing_provider_definition(provider_id)
+    return definition.supported_auth_methods if definition is not None else ()
 
 
 def provider_implemented_auth_methods(provider_id: str) -> tuple[str, ...]:
-    return publishing_provider_definition(provider_id).implemented_auth_methods
+    definition = publishing_provider_definition(provider_id)
+    return definition.implemented_auth_methods if definition is not None else ()
 
 
 def provider_content_kinds(provider_id: str) -> tuple[str, ...]:
-    return publishing_provider_definition(provider_id).implemented_content_kinds
+    definition = publishing_provider_definition(provider_id)
+    return definition.implemented_content_kinds if definition is not None else ()
 
 
 def provider_supported_content_kinds(provider_id: str) -> tuple[str, ...]:
-    return publishing_provider_definition(provider_id).supported_content_kinds
+    definition = publishing_provider_definition(provider_id)
+    return definition.supported_content_kinds if definition is not None else ()
 
 
 def provider_content_kind_label(
@@ -141,6 +166,9 @@ def provider_content_kind_label(
 ) -> str:
     definition = publishing_provider_definition(provider_id)
     normalized = content_kind.strip().lower()
+    if definition is None:
+        label = normalized.replace("_", " ").title()
+        return label + "s" if plural else label
     if plural:
         singular = definition.content_kind_labels.get(normalized, normalized.title())
         return definition.content_kind_plural_labels.get(normalized, singular + "s")
