@@ -1,6 +1,23 @@
 # Publishing Providers Framework Readiness
 
-Status: stable implementation checkpoint with current `origin/main` merged, provider registry seam in place, focused validation green, WordPress extraction direction recorded, and next work identified.
+Status: stable implementation checkpoint with current `origin/main` merged, provider registry seam in place, remote item editor identity implemented, focused validation green, and WordPress extraction direction recorded.
+
+## 2026-06-18 remote item editor identity
+
+- implemented the next planned remote identity slice
+- generic `Document.name` now supports metadata-backed display names for pathless documents
+- local paths still take precedence, so normal file-backed documents are unchanged
+- publishing remote opens now preserve the provider-returned title as:
+  - `display_name`
+  - `publishing_remote_title`
+- publishing tabs can receive a generic source label from metadata
+- publishing create/update success refreshes the stored remote title/display name from the returned provider document
+- no fake temp/local file path was introduced; remote-linkage truth remains in source metadata
+- focused publishing/governance validation passed after documenting measured module-budget growth:
+  - `117 passed in 62.98s`
+- next likely plan work:
+  - continue provider-neutral publishing lifecycle behavior on top of the registry and identity seams
+  - consider deeper progressive browse loading only if product wants more browse scaling before provider extraction work
 
 ## 2026-06-18 WordPress first-party Quillin direction
 

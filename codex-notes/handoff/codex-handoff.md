@@ -1,5 +1,29 @@
 # Codex Handoff
 
+## 2026-06-18 Remote Item Editor Identity Slice
+
+- implemented the next plan slice after the provider-registry seam
+- added generic metadata-backed document display names:
+  - local file paths still win
+  - pathless documents may use `source_metadata["display_name"]`
+  - blank/pathless documents still show `Untitled`
+- publishing remote opens now store:
+  - `display_name`
+  - `source_label`
+  - `publishing_remote_title`
+- publishing create/update success paths refresh the saved remote title/display name from the provider response
+- existing tab/title refresh now shows remote item identity without inventing a fake local file path
+- accessibility/product alignment:
+  - no new dialog surface
+  - existing tab/title/status update path remains in place
+  - authoritative remote linkage metadata stays separate from UI display identity
+- verification:
+  - first focused run passed behavior/a11y/governance but failed module-size ratchet from `main_frame.py` growth
+  - budget note updated for `quill/ui/main_frame.py` `24205 -> 24214`
+  - rerun passed:
+    - `117 passed in 62.98s`
+- branch remains `features/publishing-providers-framework`; no push was performed
+
 ## 2026-06-18 WordPress as Future Bundled Quillin Direction
 
 - recorded the architecture decision prompted by the provider-registry seam:

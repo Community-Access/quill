@@ -36,6 +36,14 @@ def test_remote_publishing_open_records_explicit_representation_metadata() -> No
     assert '"source_kind": "publishing_remote"' in SOURCE
     assert '"publishing_authoring_surface": prepared_content.authoring_surface' in SOURCE
     assert '"publishing_open_representation": prepared_content.open_representation' in SOURCE
+    assert '"display_name": remote_document.title' in SOURCE
+    assert '"source_label": "from publishing"' in SOURCE
+    assert '"publishing_remote_title": remote_document.title' in SOURCE
+
+
+def test_remote_publishing_tabs_use_metadata_identity() -> None:
+    assert 'tab.source_label = str(document.source_metadata.get("source_label", "")).strip()' in SOURCE
+    assert "self.notebook.AddPage(panel, document.name, select=select)" in SOURCE
 
 
 def test_remote_publishing_update_uses_saved_authoring_surface_metadata() -> None:
@@ -52,6 +60,8 @@ def test_publishing_create_draft_commands_stay_command_registered_and_metadata_b
     assert 'def _create_publishing_page_draft(self) -> None:' in SOURCE
     assert '"publishing_remote_id": remote_document.remote_id' in SOURCE
     assert '"publishing_content_kind": remote_document.content_kind' in SOURCE
+    assert '"display_name": remote_document.title' in SOURCE
+    assert '"publishing_remote_title": remote_document.title' in SOURCE
 
 
 def test_publishing_send_results_use_explicit_confirmation_formatter() -> None:

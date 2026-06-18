@@ -16,7 +16,12 @@ class Document:
 
     @property
     def name(self) -> str:
-        return self.path.name if self.path is not None else "Untitled"
+        if self.path is not None:
+            return self.path.name
+        display_name = str(self.source_metadata.get("display_name", "")).strip()
+        if display_name:
+            return " ".join(display_name.split())
+        return "Untitled"
 
     @property
     def revision(self) -> int:

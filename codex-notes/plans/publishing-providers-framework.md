@@ -16,6 +16,23 @@ Practical staging:
 - medium term: formalize the provider capability/registration contract enough that bundled providers and Quillin-contributed providers can share it
 - later: extract WordPress into a first-party bundled Quillin or equivalent built-in extension package without changing shell workflows
 
+## 2026-06-18 remote item editor identity implementation note
+
+The `Remote Item Editor Identity` slice is now implemented in code.
+
+Implementation decision:
+
+- use generic `Document.source_metadata["display_name"]` for pathless document display identity
+- keep `Document.path` unset for remote publishing documents so Quill does not pretend remote content is a local file
+- store the provider-returned remote title separately as `publishing_remote_title`
+- use `source_metadata["source_label"]` for a lightweight tab source suffix
+- refresh title/display metadata after create/update provider responses
+
+This preserves the planning distinction between UI identity and authoritative remote linkage:
+
+- UI identity: document display name and tab source label
+- linkage truth: provider id, site URL, remote id, remote URL, content kind, status, authoring surface, and updated timestamp
+
 ## 2026-06-12 browse, confirmation, and remote-identity planning addendum
 
 This addendum records a planning-only review after the first browse/open/update/create-draft publishing slices were integrated.

@@ -3805,6 +3805,7 @@ class MainFrame(
             editor.ChangeValue(document.text)
         self._bind_editor_events(editor)
         tab = _DocumentTab(panel=panel, editor=editor, document=document, splitter=splitter)
+        tab.source_label = str(document.source_metadata.get("source_label", "")).strip()
         self._document_tabs.append(tab)
         index = self.notebook.GetPageCount()
         self.notebook.AddPage(panel, document.name, select=select)
@@ -10604,12 +10605,15 @@ class MainFrame(
         )
         metadata = {
             "source_kind": "publishing_remote",
+            "display_name": remote_document.title,
+            "source_label": "from publishing",
             "publishing_authoring_surface": prepared_content.authoring_surface,
             "publishing_open_representation": prepared_content.open_representation,
             "publishing_provider_id": remote_document.provider_id,
             "publishing_site_url": remote_document.site_url,
             "publishing_remote_id": remote_document.remote_id,
             "publishing_remote_url": remote_document.remote_url,
+            "publishing_remote_title": remote_document.title,
             "publishing_content_kind": remote_document.content_kind,
             "publishing_status": remote_document.status,
             "publishing_updated_at": remote_document.updated_at,
@@ -10714,6 +10718,8 @@ class MainFrame(
         metadata["publishing_status"] = remote_document.status
         metadata["publishing_updated_at"] = remote_document.updated_at
         metadata["publishing_remote_url"] = remote_document.remote_url
+        metadata["publishing_remote_title"] = remote_document.title
+        metadata["display_name"] = remote_document.title
         self.document.mark_saved()
         self._refresh_title()
         self._set_status(result_message.splitlines()[0])
@@ -10776,6 +10782,8 @@ class MainFrame(
         self.document.source_metadata.update(
             {
                 "source_kind": "publishing_remote",
+                "display_name": remote_document.title,
+                "source_label": "from publishing",
                 "publishing_authoring_surface": authoring_surface,
                 "publishing_open_representation": (
                     "raw_html" if authoring_surface == "html" else "readable_markdown"
@@ -10784,6 +10792,7 @@ class MainFrame(
                 "publishing_site_url": remote_document.site_url,
                 "publishing_remote_id": remote_document.remote_id,
                 "publishing_remote_url": remote_document.remote_url,
+                "publishing_remote_title": remote_document.title,
                 "publishing_content_kind": remote_document.content_kind,
                 "publishing_status": remote_document.status,
                 "publishing_updated_at": remote_document.updated_at,

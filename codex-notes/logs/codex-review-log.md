@@ -1,5 +1,43 @@
 # Codex Review Log
 
+## 2026-06-18 13:15:32 -04:00
+
+Implementation checkpoint:
+
+- continued with the next plan slice: `Remote Item Editor Identity`
+- goal was to make opened remote publishing items feel identifiable in tab/title surfaces without creating fake local-file truth
+
+Changes made:
+
+- added metadata-backed pathless document display names in `quill/core/document.py`
+- kept local file paths authoritative over metadata display names
+- publishing remote open metadata now includes:
+  - `display_name`
+  - `source_label`
+  - `publishing_remote_title`
+- generic tab creation now picks up `source_label` from document metadata
+- publishing create/update success paths refresh remote title/display metadata from the returned provider document
+- added focused tests for:
+  - path precedence over metadata display name
+  - metadata display names for pathless documents
+  - remote publishing metadata/title contract in `MainFrame`
+- updated module-size budget documentation for measured `main_frame.py` growth:
+  - `24205 -> 24214`
+
+Verification:
+
+- first focused run:
+  - behavior, publishing, accessibility/dialog, and governance tests passed
+  - module-size budget failed on the measured `main_frame.py` growth
+- after budget documentation, rerun passed:
+  - `pytest tests/unit/core/test_document.py tests/unit/core/test_publishing.py tests/unit/core/test_publishing_browse.py tests/unit/core/test_publishing_framework.py tests/unit/ui/test_main_frame.py tests/unit/ui/test_main_frame_menu_contract.py tests/unit/ui/test_publishing_connection_dialog_a11y.py tests/unit/ui/test_dialog_inventory.py tests/unit/ui/test_main_frame_characterization.py tests/unit/tools/test_module_size_budget.py tests/unit/tools/test_check_banned_patterns.py tests/unit/tools/test_announce_gap.py tests/unit/tools/test_network_egress_audit.py tests/unit/tools/test_dialog_button_contract.py tests/unit/ui/test_dialog_hardening_contract.py -q --basetemp=.tmp\pytest-publishing-remote-identity`
+  - result: `117 passed in 62.98s`
+
+Next read:
+
+- remote item editor identity is now covered without new dialog surface
+- next work can continue provider-neutral publishing lifecycle behavior or deeper browse scaling
+
 ## 2026-06-18 13:10:29 -04:00
 
 Planning checkpoint:

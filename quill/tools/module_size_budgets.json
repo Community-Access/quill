@@ -25,10 +25,11 @@
   "_rebaseline_2026_06_15_kelly_attribution": "main_frame.py 22690->22713: expanded About dialog with Kelly Ford special-thanks block (+12 lines) and 4 additional GitHub links for his open-source accessibility projects (Image Description Toolkit, QuickMail, RSSQuick, ChatViewer), plus compliance.py E501 fix (multiline string, +3 lines). validation.py 1028->1069 for categories and requires field parsing in _parse_manifest (the fields were already validated but not wired into the returned dataclass; wiring them caused F841 unused-variable lint errors that were removed by deleting the dead assignments — net growth from the surrounding parse block). main_frame_braille.py 732->734, main_frame_quill_key.py 644->645, main_frame_quillins.py 730->737 from minor formatter/lint-fix normalization in the 0.6.0 release pass.",
   "_rebaseline_2026_06_15_jaws_label_fix": "main_frame.py 22912->22974 (+62): fix JAWS label-buddy Z-order in open_general_preferences/_make_control (factory pattern for Choice/SpinCtrl/TextCtrl) and open_profiles_and_features_settings (keyboard_pack_choice deferred to layout section with StaticText label first). Growth is accessibility-required; CQ-1 decomposition is the path to lower the budget.",
   "_rebaseline_2026_06_15_vision_prompt_library": "Merging PR #248 (Vision Prompt Library, contributed by Kelly Ford): assistant_tools.py 1877->1982 (+105 for style picker, describe-again loop, retry button, and settings-reload fix); settings.py 754->785 (+31 for 4 vision prompt fields + upgrade_prompt_braille_pack); settings_specs.py 1290->1323 (+33 for 4 vision SettingSpec entries). main_frame_image.py given an explicit budget entry at 593.",
+  "_rebaseline_2026_06_18_publishing_remote_identity": "Publishing Remote Item Editor Identity: main_frame.py 24205->24214 (+9) for metadata-backed remote display names/source labels on publishing open/create/update paths. The generic Document.name display_name logic lives in core/document.py under the default cap.",
   "_next_target_main_frame": 15000,
   "_default_cap": 600,
   "budgets": {
-    "quill/ui/main_frame.py": 24205,
+    "quill/ui/main_frame.py": 24214,
     "quill/ui/main_frame_quill_key.py": 650,
     "quill/ui/main_frame_braille.py": 736,
     "quill/ui/assistant_tools.py": 2008,
