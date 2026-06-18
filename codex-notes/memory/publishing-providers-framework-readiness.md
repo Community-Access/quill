@@ -1,6 +1,20 @@
 # Publishing Providers Framework Readiness
 
-Status: active implementation checkpoint with current `origin/main` merged, provider registry seam in place, remote item editor identity implemented, publish-now lifecycle actions added, focused validation green, and WordPress extraction direction recorded.
+Status: active implementation checkpoint with current `origin/main` merged, provider registry seam in place, remote item editor identity implemented, publish-now and open-remote publish lifecycle actions added, focused validation green, and WordPress extraction direction recorded.
+
+## 2026-06-18 remote publish lifecycle
+
+- added provider-neutral `publishing.publish_remote_item` for promoting an already-open remote publishing item through the existing review-first update flow
+- File > Publish now exposes `Publish Open Remote Content...`
+- implementation keeps the shell provider-neutral:
+  - command id uses `publishing.*`, not WordPress wording
+  - UI validates the tab's stored provider/site metadata before sending
+  - core routes status promotion through `PublishingProviderClient.update_remote_item(...)`
+- extended the provider client update seam with optional `status`
+- WordPress reference client includes `status: "publish"` only when promotion is requested; normal remote update payloads remain title/content only
+- no new dialog class was added; the existing confirmation/message-box path is reused
+- focused verification passed:
+  - `120 passed in 62.51s`
 
 ## 2026-06-18 publish-now lifecycle
 

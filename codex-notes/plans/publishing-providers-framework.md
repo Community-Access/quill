@@ -1,5 +1,32 @@
 # Publishing Providers Framework Plan
 
+## 2026-06-18 remote publish lifecycle implementation note
+
+The possible remote-item lifecycle refinement from the prior publish-now note is now implemented.
+
+Implemented:
+
+- `publishing.publish_remote_item`
+- File > Publish menu entry for `Publish Open Remote Content...`
+- shared update/publish helper that preserves the existing remote-item metadata checks:
+  - opened remote item required
+  - current connection required
+  - stored provider id must match current connection
+  - stored site URL must match current connection
+- optional `status` on `PublishingProviderClient.update_remote_item(...)`
+- WordPress reference behavior that sends `status=publish` only for the publish-open-remote action
+- regression tests for command feature mapping, provider-neutral command ids, menu discoverability, shell source contract, and WordPress update payloads with and without publish status
+
+Validation:
+
+- `pytest tests/unit/core/test_document.py tests/unit/core/test_publishing.py tests/unit/core/test_publishing_browse.py tests/unit/core/test_publishing_framework.py tests/unit/ui/test_main_frame.py tests/unit/ui/test_main_frame_menu_contract.py tests/unit/ui/test_publishing_connection_dialog_a11y.py tests/unit/ui/test_dialog_inventory.py tests/unit/ui/test_main_frame_characterization.py tests/unit/tools/test_module_size_budget.py tests/unit/tools/test_check_banned_patterns.py tests/unit/tools/test_announce_gap.py tests/unit/tools/test_network_egress_audit.py tests/unit/tools/test_dialog_button_contract.py tests/unit/ui/test_dialog_hardening_contract.py -q --basetemp=.tmp\pytest-publishing-remote-publish`
+- result: `120 passed in 62.51s`
+
+Next likely implementation direction:
+
+- begin the provider extraction/Quillin packaging preparation work, keeping WordPress as the in-tree reference provider until the first-party bundled Quillin boundary is ready
+- alternatively, if product wants more user-visible publishing behavior first, keep routing it through provider-client capabilities rather than adding WordPress-specific shell assumptions
+
 ## 2026-06-18 publish-now lifecycle implementation note
 
 The next provider-neutral publishing lifecycle slice is implemented.

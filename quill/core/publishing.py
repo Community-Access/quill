@@ -382,6 +382,7 @@ def update_publishing_remote_item(
     title: str,
     document_text: str,
     authoring_surface: str,
+    status: str | None = None,
     timeout_seconds: float = 10.0,
 ) -> tuple[bool, str, PublishingRemoteDocument | None]:
     normalized = _normalized_profile(profile)
@@ -421,6 +422,7 @@ def update_publishing_remote_item(
         title=clean_title,
         body_html=body_html,
         timeout_seconds=timeout_seconds,
+        status=status,
     )
 
 

@@ -88,6 +88,7 @@ class PublishingProviderClient(Protocol):
         title: str,
         body_html: str,
         timeout_seconds: float,
+        status: str | None = None,
     ) -> tuple[bool, str, PublishingRemoteDocument | None]: ...
 
     def create_remote_item(
@@ -262,6 +263,7 @@ class WordPressPublishingClient:
         title: str,
         body_html: str,
         timeout_seconds: float,
+        status: str | None = None,
     ) -> tuple[bool, str, PublishingRemoteDocument | None]:
         account_identifier = str(getattr(profile, "account_identifier", "")).strip()
         site_url = str(getattr(profile, "site_url", "")).strip()
@@ -274,6 +276,10 @@ class WordPressPublishingClient:
             "title": title,
             "content": body_html,
         }
+        if status is not None:
+            clean_status = status.strip().lower()
+            if clean_status:
+                payload["status"] = clean_status
         try:
             result = _request_json(
                 endpoint,

@@ -1,5 +1,30 @@
 # Codex Handoff
 
+## 2026-06-18 Remote Publish Lifecycle Slice
+
+- implemented provider-neutral publish/promote for already-open remote publishing content
+- added command/menu wiring for:
+  - `publishing.publish_remote_item`
+- File > Publish now includes:
+  - `Publish Open Remote Content...`
+- behavior:
+  - only runs from a tab opened from publishing remote content
+  - verifies current connection exists
+  - checks stored provider id and site URL against the current connection before writing
+  - reuses the existing review-first confirmation and result message path
+- provider/client coverage:
+  - `PublishingProviderClient.update_remote_item(...)` now accepts optional `status`
+  - WordPress update payload includes `status: publish` only for this publish-open-remote path
+  - normal update remote content still sends title/content only
+- verification:
+  - first focused run passed behavior/a11y/governance but failed module-size ratchet from deliberate command/menu growth
+  - budget notes updated for:
+    - `quill/ui/main_frame.py` `24240 -> 24269`
+    - `quill/ui/main_frame_menu.py` `3364 -> 3377`
+  - rerun passed:
+    - `120 passed in 62.51s`
+- branch remains `features/publishing-providers-framework`; no push was performed
+
 ## 2026-06-18 Publish Now Lifecycle Slice
 
 - implemented the next provider-neutral publishing lifecycle step after the break

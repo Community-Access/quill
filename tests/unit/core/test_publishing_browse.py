@@ -331,6 +331,59 @@ def test_wordpress_update_remote_item_posts_json_payload(monkeypatch) -> None:
     }
 
 
+def test_wordpress_publish_remote_item_posts_publish_status(monkeypatch) -> None:
+    request_details: dict[str, object] = {}
+
+    def _urlopen(request, **_kwargs):
+        request_details["url"] = request.full_url
+        request_details["method"] = request.get_method()
+        request_details["body"] = request.data.decode("utf-8") if request.data else ""
+        return _FakeResponse(
+            {
+                "id": 22,
+                "link": "https://example.com/about",
+                "title": {"rendered": "About page"},
+                "status": "publish",
+                "modified_gmt": "2026-06-08T05:00:00",
+                "type": "page",
+                "content": {"rendered": "<p>About body</p>"},
+            }
+        )
+
+    monkeypatch.setattr(publishing_clients, "urlopen", _urlopen)
+    profile = PublishingConnectionProfile(
+        id="pub-one",
+        label="Site one",
+        provider_id="wordpress",
+        site_url="https://example.com",
+        auth_method=AUTH_METHOD_APP_PASSWORD,
+        account_identifier="writer",
+    )
+
+    ok, message, document = publishing.update_publishing_remote_item(
+        profile,
+        "secret",
+        content_kind="page",
+        remote_id="22",
+        title="About page",
+        document_text="<p>About body</p>",
+        authoring_surface="html",
+        status="publish",
+    )
+
+    assert ok is True
+    assert message == "Updated publishing content on example.com."
+    assert document is not None
+    assert document.status == "publish"
+    assert request_details["method"] == "POST"
+    assert request_details["url"] == "https://example.com/wp-json/wp/v2/pages/22?context=edit&_fields=id%2Clink%2Ctitle%2Cstatus%2Cmodified_gmt%2Ctype%2Ccontent"
+    assert json.loads(str(request_details["body"])) == {
+        "title": "About page",
+        "content": "<p>About body</p>",
+        "status": "publish",
+    }
+
+
 def test_wordpress_create_remote_item_posts_json_payload(monkeypatch) -> None:
     request_details: dict[str, object] = {}
 

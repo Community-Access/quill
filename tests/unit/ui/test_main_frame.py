@@ -48,9 +48,14 @@ def test_remote_publishing_tabs_use_metadata_identity() -> None:
 
 def test_remote_publishing_update_uses_saved_authoring_surface_metadata() -> None:
     assert '"publishing.update_remote_item"' in SOURCE
+    assert '"publishing.publish_remote_item"' in SOURCE
+    assert 'def _publish_open_remote_item(self) -> None:' in SOURCE
+    assert 'def _send_publishing_remote_item(self, *, status: str | None) -> None:' in SOURCE
     assert 'authoring_surface = str(metadata.get("publishing_authoring_surface", "")).strip().lower()' in SOURCE
     assert 'document_text=self.editor.GetValue()' in SOURCE
     assert 'authoring_surface=authoring_surface or "markdown"' in SOURCE
+    assert 'dialog_title = "Publish Open Remote Content" if is_publish else "Update Remote Content"' in SOURCE
+    assert 'status=status' in SOURCE
 
 
 def test_publishing_create_draft_commands_stay_command_registered_and_metadata_backed() -> None:

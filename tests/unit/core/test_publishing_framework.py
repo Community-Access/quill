@@ -14,6 +14,7 @@ def test_publishing_commands_map_to_publishing_feature() -> None:
         "publishing.browse_content",
         "publishing.open_remote_item",
         "publishing.update_remote_item",
+        "publishing.publish_remote_item",
         "publishing.schedule_publish",
     ]
 
@@ -32,6 +33,7 @@ def test_publishing_command_ids_stay_provider_neutral() -> None:
         "publishing.browse_content",
         "publishing.open_remote_item",
         "publishing.update_remote_item",
+        "publishing.publish_remote_item",
         "publishing.schedule_publish",
     ]
 

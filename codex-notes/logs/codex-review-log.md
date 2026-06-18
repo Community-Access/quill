@@ -1,5 +1,37 @@
 # Codex Review Log
 
+## 2026-06-18 16:47:18 -04:00
+
+Implementation result:
+
+- completed the planned open-remote publish/promote lifecycle slice
+- added provider-neutral `publishing.publish_remote_item`
+- added File > Publish > Publish Open Remote Content...
+- extended `PublishingProviderClient.update_remote_item(...)` with optional `status`
+- WordPress reference client now posts `status: publish` only when requested by the provider-neutral publish-open-remote action
+- normal update remote content continues to send title/content only
+
+Accessibility/provider-neutrality notes:
+
+- no new dialog class was introduced
+- the action reuses the existing review-first confirmation and message-box wrapper flow
+- shell validates open-remote metadata, provider id, and site URL before sending
+- command/menu names remain provider-neutral and are mapped through `future.publishing`
+
+Verification:
+
+- first focused run:
+  - behavior, publishing, accessibility/dialog, menu, and governance tests passed
+  - module-size budget failed on measured command/menu growth
+- after budget documentation, rerun passed:
+  - `pytest tests/unit/core/test_document.py tests/unit/core/test_publishing.py tests/unit/core/test_publishing_browse.py tests/unit/core/test_publishing_framework.py tests/unit/ui/test_main_frame.py tests/unit/ui/test_main_frame_menu_contract.py tests/unit/ui/test_publishing_connection_dialog_a11y.py tests/unit/ui/test_dialog_inventory.py tests/unit/ui/test_main_frame_characterization.py tests/unit/tools/test_module_size_budget.py tests/unit/tools/test_check_banned_patterns.py tests/unit/tools/test_announce_gap.py tests/unit/tools/test_network_egress_audit.py tests/unit/tools/test_dialog_button_contract.py tests/unit/ui/test_dialog_hardening_contract.py -q --basetemp=.tmp\pytest-publishing-remote-publish`
+  - result: `120 passed in 62.51s`
+
+Next read:
+
+- publish-now for local documents and publish-open-remote for existing remote items are both implemented
+- likely next work is preparing the WordPress provider extraction boundary / bundled first-party Quillin direction, unless product chooses another provider-neutral lifecycle behavior first
+
 ## 2026-06-18 16:36:04 -04:00
 
 Implementation checkpoint:

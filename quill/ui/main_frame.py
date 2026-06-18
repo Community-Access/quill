@@ -1803,6 +1803,12 @@ class MainFrame(
             None,
         )
         self.commands.register(
+            "publishing.publish_remote_item",
+            "Publish Open Remote Content...",
+            self._publish_open_remote_item,
+            None,
+        )
+        self.commands.register(
             "tools.ai_rewrite_selection",
             "Rewrite Selection",
             self.open_ai_rewrite_selection,
@@ -10645,14 +10651,24 @@ class MainFrame(
         self._set_status(f"Opened {content_kind} from publishing.")
 
     def _update_publishing_remote_item(self) -> None:
+        self._send_publishing_remote_item(status=None)
+
+    def _publish_open_remote_item(self) -> None:
+        self._send_publishing_remote_item(status="publish")
+
+    def _send_publishing_remote_item(self, *, status: str | None) -> None:
         from quill.core.publishing import current_publishing_connection, load_publishing_secret
 
         metadata = self.document.source_metadata
         if metadata.get("source_kind") != "publishing_remote":
-            message = "Open remote publishing content before updating remote content."
+            message = (
+                "Open remote publishing content before publishing remote content."
+                if status == "publish"
+                else "Open remote publishing content before updating remote content."
+            )
             self._show_message_box(
                 message,
-                "Update Remote Content",
+                "Publish Open Remote Content" if status == "publish" else "Update Remote Content",
                 self._wx.ICON_INFORMATION | self._wx.OK,
             )
             self._set_status(message)
@@ -10662,7 +10678,7 @@ class MainFrame(
             message = "No current publishing connection is selected."
             self._show_message_box(
                 message,
-                "Update Remote Content",
+                "Publish Open Remote Content" if status == "publish" else "Update Remote Content",
                 self._wx.ICON_WARNING | self._wx.OK,
             )
             self._set_status(message)
@@ -10676,7 +10692,7 @@ class MainFrame(
             message = "The current publishing connection does not match this remote item."
             self._show_message_box(
                 message,
-                "Update Remote Content",
+                "Publish Open Remote Content" if status == "publish" else "Update Remote Content",
                 self._wx.ICON_WARNING | self._wx.OK,
             )
             self._set_status(message)
@@ -10685,7 +10701,7 @@ class MainFrame(
             message = "The current publishing connection does not match this remote site."
             self._show_message_box(
                 message,
-                "Update Remote Content",
+                "Publish Open Remote Content" if status == "publish" else "Update Remote Content",
                 self._wx.ICON_WARNING | self._wx.OK,
             )
             self._set_status(message)
@@ -10693,20 +10709,32 @@ class MainFrame(
         label_kind = "page" if content_kind == "page" else "post"
         remote_url = str(metadata.get("publishing_remote_url", "")).strip() or "(no public URL)"
         title = self._current_document_title()
+        is_publish = status == "publish"
+        dialog_title = "Publish Open Remote Content" if is_publish else "Update Remote Content"
+        action_label = "Publish" if is_publish else "Update"
+        action_detail = (
+            "publish it"
+            if is_publish
+            else "send the current document text to the remote item"
+        )
         review_message = (
-            f"Update this remote {label_kind} on {profile.site_url}?\n\n"
+            f"{action_label} this remote {label_kind} on {profile.site_url}?\n\n"
             f"Title: {title}\n"
             f"Authoring surface: {authoring_surface or 'markdown'}\n"
             f"Remote URL: {remote_url}\n\n"
-            "Choose Yes to send the current document text to the remote item."
+            f"Choose Yes to {action_detail}."
         )
         proceed = self._show_message_box(
             review_message,
-            "Update Remote Content",
+            dialog_title,
             self._wx.ICON_INFORMATION | self._wx.YES_NO | self._wx.CANCEL,
         )
         if proceed != self._wx.ID_YES:
-            self._set_status("Update remote content cancelled")
+            self._set_status(
+                "Publish open remote content cancelled"
+                if is_publish
+                else "Update remote content cancelled"
+            )
             return
         ok, message, remote_document = update_publishing_remote_item(
             profile,
@@ -10716,6 +10744,7 @@ class MainFrame(
             title=title,
             document_text=self.editor.GetValue(),
             authoring_surface=authoring_surface or "markdown",
+            status=status,
         )
         icon = self._wx.ICON_INFORMATION if ok else self._wx.ICON_WARNING
         result_message = (
@@ -10723,7 +10752,7 @@ class MainFrame(
             if ok and remote_document is not None
             else message
         )
-        self._show_message_box(result_message, "Update Remote Content", icon | self._wx.OK)
+        self._show_message_box(result_message, dialog_title, icon | self._wx.OK)
         if not ok or remote_document is None:
             self._set_status(message)
             return
