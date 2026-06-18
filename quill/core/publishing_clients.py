@@ -110,30 +110,48 @@ class WordPressPublishingClient:
         if not secret.strip():
             return False, "Enter an application password before browsing published content.", []
         results: list[PublishingRemoteItemSummary] = []
+        failures: list[str] = []
         requested_statuses = _normalized_statuses(statuses)
-        try:
-            for content_kind in content_kinds:
-                endpoint = _wordpress_collection_endpoint(
-                    site_url,
-                    content_kind,
-                    statuses=requested_statuses,
-                )
+        for content_kind in content_kinds:
+            endpoint = _wordpress_collection_endpoint(
+                site_url,
+                content_kind,
+                statuses=requested_statuses,
+            )
+            try:
                 payload = _request_json(
                     endpoint,
                     account_identifier=account_identifier,
                     secret=secret,
                     timeout_seconds=timeout_seconds,
                 )
-                if not isinstance(payload, list):
-                    return False, "The publishing site returned an invalid response.", []
-                for item in payload:
-                    summary = _wordpress_summary_from_payload(site_url, content_kind, item)
-                    if summary is not None:
-                        results.append(summary)
-        except _PublishingRequestError as exc:
-            return False, exc.message, []
+            except _PublishingRequestError as exc:
+                failures.append(
+                    f"{_content_kind_label(content_kind)}: {exc.message.rstrip('.')}"
+                )
+                continue
+            if not isinstance(payload, list):
+                failures.append(f"{_content_kind_label(content_kind)}: invalid response")
+                continue
+            for item in payload:
+                summary = _wordpress_summary_from_payload(site_url, content_kind, item)
+                if summary is not None:
+                    results.append(summary)
+        if failures and not results:
+            return False, failures[0], []
         results.sort(key=lambda item: (item.updated_at, item.title.lower()), reverse=True)
         host = _display_host(site_url)
+        if failures:
+            failed_scopes = "; ".join(failures)
+            return (
+                True,
+                (
+                    f"Loaded partial published content from {host}. "
+                    f"Some content could not be loaded: {failed_scopes}. "
+                    "Try again with a narrower content scope."
+                ),
+                results,
+            )
         return True, f"Loaded published content from {host}.", results
 
     def load_remote_item(
@@ -479,6 +497,10 @@ def _context_for(endpoint: str) -> ssl.SSLContext | None:
 
 def _display_host(site_url: str) -> str:
     return (urlparse(site_url).netloc or site_url.strip()).strip().rstrip("/")
+
+
+def _content_kind_label(content_kind: str) -> str:
+    return "Pages" if content_kind == "page" else "Posts"
 
 
 def _basic_auth_header(identifier: str, secret: str) -> str:

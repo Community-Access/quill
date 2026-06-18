@@ -1,5 +1,46 @@
 # Codex Review Log
 
+## 2026-06-18 12:46:43 -04:00
+
+Implementation checkpoint:
+
+- resumed from the plan after committing the publishing confirmation result-copy slice
+- selected the remaining `Browse Remote Content Scaling` gap that could be implemented without adding a new dialog:
+  - timeout-aware partial results for multi-kind browse
+
+Changes made:
+
+- updated `WordPressPublishingClient.browse_content`
+- posts/pages are still loaded via separate collection requests
+- when one requested content kind succeeds and another fails:
+  - preserve the loaded results
+  - return `ok=True`
+  - report a partial-load message that names the failed kind
+  - suggest retrying with a narrower content scope
+- when all requested kinds fail:
+  - return `ok=False`
+  - preserve the first provider error
+- added a regression test for posts loading while pages time out
+
+Accessibility / governance read:
+
+- no new custom dialog was added
+- existing browse-dialog label order, focus flow, and shared message-box wrapper remain unchanged
+- partial-load result copy is plain language and suitable for screen-reader announcement
+- module-size gate stayed green; no budget update was needed
+
+Verification:
+
+- `pytest tests/unit/core/test_publishing.py tests/unit/core/test_publishing_browse.py tests/unit/core/test_publishing_framework.py tests/unit/ui/test_main_frame.py tests/unit/ui/test_main_frame_menu_contract.py tests/unit/ui/test_publishing_connection_dialog_a11y.py tests/unit/ui/test_dialog_inventory.py tests/unit/ui/test_main_frame_characterization.py tests/unit/tools/test_module_size_budget.py tests/unit/tools/test_check_banned_patterns.py tests/unit/tools/test_announce_gap.py tests/unit/tools/test_network_egress_audit.py tests/unit/tools/test_dialog_button_contract.py tests/unit/ui/test_dialog_hardening_contract.py -q --basetemp=.tmp\pytest-publishing-browse-partial`
+- result: `110 passed in 31.38s`
+
+Next read:
+
+- browse now has explicit status scope plus partial-results behavior
+- remaining likely plan work is either:
+  - deeper progressive browse UI/loading
+  - `Remote Item Editor Identity` for clearer tab/title identity on opened remote items
+
 ## 2026-06-18 12:40:50 -04:00
 
 Implementation checkpoint:

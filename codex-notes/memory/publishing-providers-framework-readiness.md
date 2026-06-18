@@ -2,6 +2,18 @@
 
 Status: stable implementation checkpoint with current `origin/main` merged, focused validation green, and next work identified.
 
+## 2026-06-18 browse partial results
+
+- continued `Browse Remote Content Scaling`
+- WordPress browse now preserves partial results when multiple content kinds are requested and one kind fails after another succeeds
+- partial-result wording names the failed content kind and says to retry with a narrower content scope
+- all-failed and single-kind failed browse still fail normally
+- focused publishing/governance verification passed:
+  - `110 passed in 31.38s`
+- next likely plan work:
+  - complete remaining browse scaling with deeper progressive UI/loading work, if desired
+  - or move to `Remote Item Editor Identity` for clearer tab/title identity on opened remote items
+
 ## 2026-06-18 publishing confirmation model
 
 - implemented the next plan-directed confirmation refinement after browse status scope

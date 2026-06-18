@@ -1,5 +1,22 @@
 # Codex Handoff
 
+## 2026-06-18 Browse Partial Results Slice
+
+- continued the next `Browse Remote Content Scaling` work after the confirmation model slice
+- implemented timeout-aware partial results for multi-kind WordPress browse:
+  - posts/pages are still fetched as separate provider calls
+  - if one requested content kind loads and another fails, Quill now keeps the loaded items
+  - the result message names the failed content slice and suggests retrying with a narrower content scope
+  - single-kind or all-failed browse still reports the provider error and returns no items
+- accessibility/product alignment:
+  - existing browse dialog remains unchanged, so label order and keyboard flow stay intact
+  - the native result message is plain-language and names the partial-load state for screen readers
+  - no new custom dialog surface was added
+- verification:
+  - `pytest tests/unit/core/test_publishing.py tests/unit/core/test_publishing_browse.py tests/unit/core/test_publishing_framework.py tests/unit/ui/test_main_frame.py tests/unit/ui/test_main_frame_menu_contract.py tests/unit/ui/test_publishing_connection_dialog_a11y.py tests/unit/ui/test_dialog_inventory.py tests/unit/ui/test_main_frame_characterization.py tests/unit/tools/test_module_size_budget.py tests/unit/tools/test_check_banned_patterns.py tests/unit/tools/test_announce_gap.py tests/unit/tools/test_network_egress_audit.py tests/unit/tools/test_dialog_button_contract.py tests/unit/ui/test_dialog_hardening_contract.py -q --basetemp=.tmp\pytest-publishing-browse-partial`
+  - result: `110 passed in 31.38s`
+- branch remains `features/publishing-providers-framework`; no push was performed
+
 ## 2026-06-18 Publishing Confirmation Model Slice
 
 - continued from the plan after the browse status scope slice

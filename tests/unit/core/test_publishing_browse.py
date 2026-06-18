@@ -121,6 +121,47 @@ def test_browse_publishing_content_can_request_drafts_only(monkeypatch) -> None:
     ]
 
 
+def test_browse_publishing_content_returns_partial_results_when_one_kind_times_out(
+    monkeypatch,
+) -> None:
+    def _urlopen(request, **_kwargs):
+        if "/pages?" in request.full_url:
+            raise TimeoutError("timed out")
+        return _FakeResponse(
+            [
+                {
+                    "id": 11,
+                    "link": "https://example.com/posts/hello",
+                    "title": {"rendered": "Hello post"},
+                    "status": "publish",
+                    "modified_gmt": "2026-06-08T04:00:00",
+                    "type": "post",
+                }
+            ]
+        )
+
+    monkeypatch.setattr(publishing_clients, "urlopen", _urlopen)
+    profile = PublishingConnectionProfile(
+        id="pub-one",
+        label="Site one",
+        provider_id="wordpress",
+        site_url="https://example.com",
+        auth_method=AUTH_METHOD_APP_PASSWORD,
+        account_identifier="writer",
+    )
+
+    ok, message, items = publishing.browse_publishing_content(profile, "secret")
+
+    assert ok is True
+    assert [item.title for item in items] == ["Hello post"]
+    assert message == (
+        "Loaded partial published content from example.com. "
+        "Some content could not be loaded: "
+        "Pages: Connection timed out. Check the site URL and try again. "
+        "Try again with a narrower content scope."
+    )
+
+
 def test_load_publishing_remote_item_returns_remote_document(monkeypatch) -> None:
     def _urlopen(request, **_kwargs):
         return _FakeResponse(
