@@ -13,10 +13,14 @@ from quill.core.publishing_providers import (
     AUTH_METHOD_APP_PASSWORD,
     AUTH_METHOD_BROWSER_SESSION,
     AUTH_METHOD_EMAIL_LINK,
+    PUBLISHING_OPERATION_VERIFY,
     PublishingProviderDefinition,
     provider_content_kind_label,
+    provider_implemented_operations,
     provider_auth_methods,
+    provider_supports_operation,
     provider_supported_auth_methods,
+    provider_supported_operations,
     publishing_auth_method_name,
     publishing_provider_help_text,
     register_publishing_provider,
@@ -271,6 +275,8 @@ def test_registered_second_provider_verification_uses_registered_client() -> Non
             implemented_auth_methods=(AUTH_METHOD_APP_PASSWORD,),
             supported_content_kinds=("article",),
             implemented_content_kinds=("article",),
+            supported_operations=(PUBLISHING_OPERATION_VERIFY,),
+            implemented_operations=(PUBLISHING_OPERATION_VERIFY,),
             content_kind_labels={"article": "Article"},
             content_kind_plural_labels={"article": "Articles"},
         )
@@ -295,6 +301,60 @@ def test_registered_second_provider_verification_uses_registered_client() -> Non
     assert client.verified_profile is not None
     assert client.verified_profile.provider_id == "secondcms"
     assert client.verified_secret == "second-secret"
+
+
+def test_second_provider_capabilities_gate_unimplemented_lifecycle_actions() -> None:
+    client = _FakeSecondProviderClient()
+    register_publishing_provider(
+        PublishingProviderDefinition(
+            id="secondcms",
+            name="Second CMS",
+            help_text="Second provider for framework-neutral publishing tests.",
+            default_content_format="html",
+            supported_auth_methods=(AUTH_METHOD_APP_PASSWORD,),
+            implemented_auth_methods=(AUTH_METHOD_APP_PASSWORD,),
+            supported_content_kinds=("article",),
+            implemented_content_kinds=("article",),
+            supported_operations=(PUBLISHING_OPERATION_VERIFY,),
+            implemented_operations=(PUBLISHING_OPERATION_VERIFY,),
+            content_kind_labels={"article": "Article"},
+            content_kind_plural_labels={"article": "Articles"},
+        )
+    )
+    publishing_clients.register_publishing_provider_client(client)
+    try:
+        profile = PublishingConnectionProfile(
+            id="pub-second",
+            label="Second provider",
+            provider_id="secondcms",
+            site_url="https://second.example.com",
+            auth_method=AUTH_METHOD_APP_PASSWORD,
+            account_identifier="writer",
+        )
+        supported_operations = provider_supported_operations("secondcms")
+        implemented_operations = provider_implemented_operations("secondcms")
+        ok, message, items = publishing.browse_publishing_content(profile, "second-secret")
+        publish_ok, publish_message, document = publishing.create_publishing_remote_item(
+            profile,
+            "second-secret",
+            content_kind="article",
+            title="Ready",
+            document_text="Body",
+            authoring_surface="markdown",
+            status="publish",
+        )
+    finally:
+        publishing_clients.unregister_publishing_provider_client("secondcms")
+        unregister_publishing_provider("secondcms")
+
+    assert supported_operations == (PUBLISHING_OPERATION_VERIFY,)
+    assert implemented_operations == (PUBLISHING_OPERATION_VERIFY,)
+    assert ok is False
+    assert message == "Second CMS browse is not implemented yet."
+    assert items == []
+    assert publish_ok is False
+    assert publish_message == "Second CMS publish is not implemented yet."
+    assert document is None
 
 
 def test_unknown_provider_does_not_fall_back_to_wordpress() -> None:
@@ -333,3 +393,10 @@ def test_provider_metadata_supplies_content_kind_labels() -> None:
     assert provider_content_kind_label("wordpress", "page") == "Page"
     assert provider_content_kind_label("wordpress", "post", plural=True) == "Posts"
     assert provider_content_kind_label("wordpress", "page", plural=True) == "Pages"
+
+
+def test_provider_metadata_supplies_operation_capabilities() -> None:
+    assert "publish" in provider_implemented_operations("wordpress")
+    assert "browse" in provider_supported_operations("wordpress")
+    assert provider_supports_operation("wordpress", "publish") is True
+    assert provider_supports_operation("mystery", "publish") is False

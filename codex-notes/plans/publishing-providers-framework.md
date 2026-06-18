@@ -1,5 +1,44 @@
 # Publishing Providers Framework Plan
 
+## 2026-06-18 provider operation capability implementation note
+
+The next provider-extraction preparation slice is implemented.
+
+Implemented:
+
+- provider operation constants for:
+  - verify
+  - browse
+  - load
+  - update
+  - create
+  - publish
+- `PublishingProviderDefinition.supported_operations`
+- `PublishingProviderDefinition.implemented_operations`
+- metadata helpers:
+  - `provider_supported_operations(...)`
+  - `provider_implemented_operations(...)`
+  - `provider_supports_operation(...)`
+- core action gating before provider-client calls
+- publish-specific gating for both:
+  - current-document publish-now
+  - already-open remote publish/promote
+
+Why this matters:
+
+- future bundled or Quillin-contributed providers can register partial lifecycle capability without pretending to support the full WordPress surface
+- the shell can remain provider-neutral while core makes capability decisions from provider metadata
+- WordPress stays the reference provider for now, but its full lifecycle support is declared data rather than an implicit framework assumption
+
+Validation:
+
+- `pytest tests/unit/core/test_document.py tests/unit/core/test_publishing.py tests/unit/core/test_publishing_browse.py tests/unit/core/test_publishing_framework.py tests/unit/ui/test_main_frame.py tests/unit/ui/test_main_frame_menu_contract.py tests/unit/ui/test_publishing_connection_dialog_a11y.py tests/unit/ui/test_dialog_inventory.py tests/unit/ui/test_main_frame_characterization.py tests/unit/tools/test_module_size_budget.py tests/unit/tools/test_check_banned_patterns.py tests/unit/tools/test_announce_gap.py tests/unit/tools/test_network_egress_audit.py tests/unit/tools/test_dialog_button_contract.py tests/unit/ui/test_dialog_hardening_contract.py -q --basetemp=.tmp\pytest-publishing-capabilities-wide`
+- result: `122 passed in 42.70s`
+
+Next likely implementation direction:
+
+- continue extraction-prep by tightening provider/client registration validation, so provider definitions and clients cannot silently drift apart before WordPress is moved toward a first-party bundled Quillin boundary
+
 ## 2026-06-18 remote publish lifecycle implementation note
 
 The possible remote-item lifecycle refinement from the prior publish-now note is now implemented.

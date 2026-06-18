@@ -15,10 +15,17 @@ from quill.core.publishing_clients import (
 )
 from quill.core.publishing_providers import (
     AUTH_METHOD_APP_PASSWORD,
+    PUBLISHING_OPERATION_BROWSE,
+    PUBLISHING_OPERATION_CREATE,
+    PUBLISHING_OPERATION_LOAD,
+    PUBLISHING_OPERATION_PUBLISH,
+    PUBLISHING_OPERATION_UPDATE,
+    PUBLISHING_OPERATION_VERIFY,
     default_content_format_for_provider,
     provider_content_kind_label,
     provider_content_kinds,
     provider_implemented_auth_methods,
+    provider_supports_operation,
     provider_supported_auth_methods,
     publishing_auth_method_name,
     publishing_provider_definition,
@@ -269,6 +276,9 @@ def verify_publishing_connection(
                 "but is not implemented yet."
             ),
         )
+    operation_error = _provider_operation_error(normalized.provider_id, PUBLISHING_OPERATION_VERIFY)
+    if operation_error:
+        return False, operation_error
     client = publishing_provider_client(normalized.provider_id)
     if client is None:
         provider_name = publishing_provider_display_name(normalized.provider_id)
@@ -303,6 +313,9 @@ def browse_publishing_content(
             ),
             [],
         )
+    operation_error = _provider_operation_error(normalized.provider_id, PUBLISHING_OPERATION_BROWSE)
+    if operation_error:
+        return False, operation_error, []
     client = publishing_provider_client(normalized.provider_id)
     if client is None:
         provider_name = publishing_provider_display_name(normalized.provider_id)
@@ -352,6 +365,9 @@ def load_publishing_remote_item(
             ),
             None,
         )
+    operation_error = _provider_operation_error(normalized.provider_id, PUBLISHING_OPERATION_LOAD)
+    if operation_error:
+        return False, operation_error, None
     client = publishing_provider_client(normalized.provider_id)
     if client is None:
         provider_name = publishing_provider_display_name(normalized.provider_id)
@@ -404,6 +420,12 @@ def update_publishing_remote_item(
             ),
             None,
         )
+    requested_operation = PUBLISHING_OPERATION_UPDATE
+    if status and status.strip().lower() == "publish":
+        requested_operation = PUBLISHING_OPERATION_PUBLISH
+    operation_error = _provider_operation_error(normalized.provider_id, requested_operation)
+    if operation_error:
+        return False, operation_error, None
     client = publishing_provider_client(normalized.provider_id)
     if client is None:
         provider_name = publishing_provider_display_name(normalized.provider_id)
@@ -456,6 +478,13 @@ def create_publishing_remote_item(
             ),
             None,
         )
+    clean_status = status.strip().lower() or "draft"
+    requested_operation = (
+        PUBLISHING_OPERATION_PUBLISH if clean_status == "publish" else PUBLISHING_OPERATION_CREATE
+    )
+    operation_error = _provider_operation_error(normalized.provider_id, requested_operation)
+    if operation_error:
+        return False, operation_error, None
     client = publishing_provider_client(normalized.provider_id)
     if client is None:
         provider_name = publishing_provider_display_name(normalized.provider_id)
@@ -470,7 +499,7 @@ def create_publishing_remote_item(
         content_kind=content_kind,
         title=clean_title,
         body_html=body_html,
-        status=status.strip().lower() or "draft",
+        status=clean_status,
         timeout_seconds=timeout_seconds,
     )
 
@@ -533,6 +562,14 @@ def _publishing_update_body_html(document_text: str, authoring_surface: str) -> 
 def _normalized_profile(profile: PublishingConnectionProfile) -> PublishingConnectionProfile:
     normalized = PublishingConnectionProfile.from_dict(asdict(profile))
     return normalized
+
+
+def _provider_operation_error(provider_id: str, operation: str) -> str | None:
+    if provider_supports_operation(provider_id, operation):
+        return None
+    provider_name = publishing_provider_display_name(provider_id)
+    operation_label = operation.replace("_", " ")
+    return f"{provider_name} {operation_label} is not implemented yet."
 
 
 def _should_fallback_to_raw_html(body_html: str) -> bool:

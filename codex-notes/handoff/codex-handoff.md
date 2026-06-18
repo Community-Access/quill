@@ -1,5 +1,26 @@
 # Codex Handoff
 
+## 2026-06-18 Provider Operation Capability Slice
+
+- implemented explicit provider operation capability metadata
+- added operation support for:
+  - verify
+  - browse
+  - load
+  - update
+  - create
+  - publish
+- WordPress declares all current operations as the reference provider
+- core publishing actions now check provider operation support before calling clients
+- publish actions require `publish` capability:
+  - publish current post/page
+  - publish already-open remote content
+- fake second-provider tests prove a provider can support verification without browse/publish
+- verification:
+  - focused core run: `35 passed in 3.42s`
+  - wider publishing/UI/governance run: `122 passed in 42.70s`
+- branch remains `features/publishing-providers-framework`; no push was performed
+
 ## 2026-06-18 Remote Publish Lifecycle Slice
 
 - implemented provider-neutral publish/promote for already-open remote publishing content

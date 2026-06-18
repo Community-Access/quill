@@ -1,6 +1,22 @@
 # Publishing Providers Framework Readiness
 
-Status: active implementation checkpoint with current `origin/main` merged, provider registry seam in place, remote item editor identity implemented, publish-now and open-remote publish lifecycle actions added, focused validation green, and WordPress extraction direction recorded.
+Status: active implementation checkpoint with current `origin/main` merged, provider registry seam in place, operation capability metadata added, remote item editor identity implemented, publish-now and open-remote publish lifecycle actions added, focused validation green, and WordPress extraction direction recorded.
+
+## 2026-06-18 provider operation capabilities
+
+- added explicit provider operation capability metadata for:
+  - verify
+  - browse
+  - load
+  - update
+  - create
+  - publish
+- WordPress declares all current operations because it remains the in-tree reference provider
+- core publishing actions now check operation support before calling provider clients
+- publish-now and publish-open-remote now require the provider `publish` operation instead of assuming publish is available whenever create/update exists
+- fake second-provider coverage proves a provider can verify without browse/publish support, and the framework reports capability gaps instead of falling through to WordPress-shaped behavior
+- focused verification passed:
+  - `122 passed in 42.70s`
 
 ## 2026-06-18 remote publish lifecycle
 

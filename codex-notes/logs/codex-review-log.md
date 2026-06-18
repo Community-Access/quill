@@ -1,5 +1,34 @@
 # Codex Review Log
 
+## 2026-06-18 16:52:14 -04:00
+
+Implementation result:
+
+- completed the provider operation capability slice
+- added provider operation metadata for verify, browse, load, update, create, and publish
+- WordPress declares all current operations as the in-tree reference provider
+- core publishing functions now check provider operation support before provider-client calls
+- publish-now and publish-open-remote now require the provider `publish` operation
+
+Framework-neutrality notes:
+
+- providers can now register partial lifecycle capability without pretending to match WordPress
+- fake second-provider coverage proves verification can be implemented while browse/publish remain unavailable
+- WordPress behavior remains unchanged, but its support is now explicit metadata rather than an implicit shell assumption
+
+Verification:
+
+- focused core run:
+  - `pytest tests/unit/core/test_publishing.py tests/unit/core/test_publishing_browse.py tests/unit/core/test_publishing_framework.py -q --basetemp=.tmp\pytest-publishing-capabilities`
+  - result: `35 passed in 3.42s`
+- wider publishing/UI/governance run:
+  - `pytest tests/unit/core/test_document.py tests/unit/core/test_publishing.py tests/unit/core/test_publishing_browse.py tests/unit/core/test_publishing_framework.py tests/unit/ui/test_main_frame.py tests/unit/ui/test_main_frame_menu_contract.py tests/unit/ui/test_publishing_connection_dialog_a11y.py tests/unit/ui/test_dialog_inventory.py tests/unit/ui/test_main_frame_characterization.py tests/unit/tools/test_module_size_budget.py tests/unit/tools/test_check_banned_patterns.py tests/unit/tools/test_announce_gap.py tests/unit/tools/test_network_egress_audit.py tests/unit/tools/test_dialog_button_contract.py tests/unit/ui/test_dialog_hardening_contract.py -q --basetemp=.tmp\pytest-publishing-capabilities-wide`
+  - result: `122 passed in 42.70s`
+
+Next read:
+
+- next likely extraction-prep work is tighter provider/client registration validation so provider definitions and clients cannot drift before WordPress moves toward a bundled first-party Quillin boundary
+
 ## 2026-06-18 16:47:18 -04:00
 
 Implementation result:

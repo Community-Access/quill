@@ -4,6 +4,21 @@ from dataclasses import dataclass, replace
 
 WORDPRESS_PROVIDER_ID = "wordpress"
 
+PUBLISHING_OPERATION_VERIFY = "verify"
+PUBLISHING_OPERATION_BROWSE = "browse"
+PUBLISHING_OPERATION_LOAD = "load"
+PUBLISHING_OPERATION_UPDATE = "update"
+PUBLISHING_OPERATION_CREATE = "create"
+PUBLISHING_OPERATION_PUBLISH = "publish"
+PUBLISHING_OPERATIONS = (
+    PUBLISHING_OPERATION_VERIFY,
+    PUBLISHING_OPERATION_BROWSE,
+    PUBLISHING_OPERATION_LOAD,
+    PUBLISHING_OPERATION_UPDATE,
+    PUBLISHING_OPERATION_CREATE,
+    PUBLISHING_OPERATION_PUBLISH,
+)
+
 AUTH_METHOD_APP_PASSWORD = "app_password"
 AUTH_METHOD_PASSWORD = "password"
 AUTH_METHOD_BROWSER_SESSION = "browser_session"
@@ -29,6 +44,8 @@ class PublishingProviderDefinition:
     implemented_auth_methods: tuple[str, ...]
     supported_content_kinds: tuple[str, ...]
     implemented_content_kinds: tuple[str, ...]
+    supported_operations: tuple[str, ...]
+    implemented_operations: tuple[str, ...]
     content_kind_labels: dict[str, str]
     content_kind_plural_labels: dict[str, str]
 
@@ -75,6 +92,8 @@ PROVIDER_DEFINITIONS: dict[str, PublishingProviderDefinition] = {
         implemented_auth_methods=(AUTH_METHOD_APP_PASSWORD,),
         supported_content_kinds=("post", "page"),
         implemented_content_kinds=("post", "page"),
+        supported_operations=PUBLISHING_OPERATIONS,
+        implemented_operations=PUBLISHING_OPERATIONS,
         content_kind_labels={"post": "Post", "page": "Page"},
         content_kind_plural_labels={"post": "Posts", "page": "Pages"},
     ),
@@ -151,6 +170,21 @@ def provider_implemented_auth_methods(provider_id: str) -> tuple[str, ...]:
 def provider_content_kinds(provider_id: str) -> tuple[str, ...]:
     definition = publishing_provider_definition(provider_id)
     return definition.implemented_content_kinds if definition is not None else ()
+
+
+def provider_supported_operations(provider_id: str) -> tuple[str, ...]:
+    definition = publishing_provider_definition(provider_id)
+    return definition.supported_operations if definition is not None else ()
+
+
+def provider_implemented_operations(provider_id: str) -> tuple[str, ...]:
+    definition = publishing_provider_definition(provider_id)
+    return definition.implemented_operations if definition is not None else ()
+
+
+def provider_supports_operation(provider_id: str, operation: str) -> bool:
+    normalized = operation.strip().lower()
+    return normalized in provider_implemented_operations(provider_id)
 
 
 def provider_supported_content_kinds(provider_id: str) -> tuple[str, ...]:
