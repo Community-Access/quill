@@ -277,8 +277,9 @@ from quill.core.onboarding import (
 )
 from quill.core.outline import OutlineEntry, extract_outline_entries
 from quill.core.paths import app_data_dir, ensure_app_directories
-from quill.core.publishing import prepare_publishing_remote_content
 from quill.core.publishing import create_publishing_remote_item
+from quill.core.publishing import prepare_publishing_remote_content
+from quill.core.publishing import publishing_result_message
 from quill.core.publishing import update_publishing_remote_item
 from quill.core.quick_nav import (
     NavItem,
@@ -10701,7 +10702,12 @@ class MainFrame(
             authoring_surface=authoring_surface or "markdown",
         )
         icon = self._wx.ICON_INFORMATION if ok else self._wx.ICON_WARNING
-        self._show_message_box(message, "Update Remote Content", icon | self._wx.OK)
+        result_message = (
+            publishing_result_message("updated", remote_document)
+            if ok and remote_document is not None
+            else message
+        )
+        self._show_message_box(result_message, "Update Remote Content", icon | self._wx.OK)
         if not ok or remote_document is None:
             self._set_status(message)
             return
@@ -10710,7 +10716,7 @@ class MainFrame(
         metadata["publishing_remote_url"] = remote_document.remote_url
         self.document.mark_saved()
         self._refresh_title()
-        self._set_status(message)
+        self._set_status(result_message.splitlines()[0])
 
     def _create_publishing_draft(self) -> None:
         self._create_publishing_item("post")
@@ -10758,7 +10764,12 @@ class MainFrame(
             status="draft",
         )
         icon = self._wx.ICON_INFORMATION if ok else self._wx.ICON_WARNING
-        self._show_message_box(message, "Create Publishing Draft", icon | self._wx.OK)
+        result_message = (
+            publishing_result_message("created", remote_document)
+            if ok and remote_document is not None
+            else message
+        )
+        self._show_message_box(result_message, "Create Publishing Draft", icon | self._wx.OK)
         if not ok or remote_document is None:
             self._set_status(message)
             return
@@ -10780,7 +10791,7 @@ class MainFrame(
         )
         self.document.mark_saved()
         self._refresh_title()
-        self._set_status(message)
+        self._set_status(result_message.splitlines()[0])
 
     def _publishing_document_title(self) -> str:
         title = self._current_document_title().strip()

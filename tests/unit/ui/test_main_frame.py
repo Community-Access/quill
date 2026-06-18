@@ -52,3 +52,9 @@ def test_publishing_create_draft_commands_stay_command_registered_and_metadata_b
     assert 'def _create_publishing_page_draft(self) -> None:' in SOURCE
     assert '"publishing_remote_id": remote_document.remote_id' in SOURCE
     assert '"publishing_content_kind": remote_document.content_kind' in SOURCE
+
+
+def test_publishing_send_results_use_explicit_confirmation_formatter() -> None:
+    assert 'publishing_result_message("updated", remote_document)' in SOURCE
+    assert 'publishing_result_message("created", remote_document)' in SOURCE
+    assert "result_message.splitlines()[0]" in SOURCE

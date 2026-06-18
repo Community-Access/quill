@@ -495,6 +495,22 @@ def prepare_publishing_remote_content(
     )
 
 
+def publishing_result_message(action: str, document: PublishingRemoteDocument) -> str:
+    verb = "Updated" if action.strip().lower() == "updated" else "Created"
+    content_kind = "page" if document.content_kind == "page" else "post"
+    title = document.title.strip() or "(untitled)"
+    status = _display_status(document.status)
+    lines = [
+        f"{verb} {content_kind} on {_display_host(document.site_url)}.",
+        f"Title: {title}",
+        f"Status: {status}",
+    ]
+    remote_url = document.remote_url.strip()
+    if remote_url:
+        lines.append(f"Link: {remote_url}")
+    return "\n".join(lines)
+
+
 def _publishing_update_body_html(document_text: str, authoring_surface: str) -> str:
     normalized_surface = authoring_surface.strip().lower()
     if normalized_surface == "html":
@@ -644,6 +660,15 @@ def _is_local_host(hostname: str) -> bool:
 
 def _display_host(site_url: str) -> str:
     return (urlparse(site_url).netloc or site_url.strip()).strip().rstrip("/")
+
+
+def _display_status(status: str) -> str:
+    normalized = status.strip().lower()
+    if normalized == "publish":
+        return "published"
+    if normalized:
+        return normalized.replace("_", " ")
+    return "unknown"
 
 
 def _basic_auth_header(identifier: str, secret: str) -> str:

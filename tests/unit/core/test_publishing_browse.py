@@ -5,6 +5,7 @@ import json
 import quill.core.publishing as publishing
 import quill.core.publishing_clients as publishing_clients
 from quill.core.publishing import PublishingConnectionProfile
+from quill.core.publishing_clients import PublishingRemoteDocument
 from quill.core.publishing_clients import publishing_provider_client
 from quill.core.publishing_providers import AUTH_METHOD_APP_PASSWORD
 
@@ -389,6 +390,47 @@ def test_prepare_publishing_remote_content_falls_back_to_raw_html_for_tables() -
     assert prepared.authoring_surface == "html"
     assert prepared.open_representation == "raw_html"
     assert prepared.text == "<table><tr><td>Cell</td></tr></table>"
+
+
+def test_publishing_result_message_names_outcome_site_state_and_link() -> None:
+    document = PublishingRemoteDocument(
+        provider_id="wordpress",
+        site_url="https://example.com",
+        remote_id="22",
+        remote_url="https://example.com/about",
+        title="About page",
+        status="publish",
+        updated_at="2026-06-18T12:00:00",
+        content_kind="page",
+        body="<p>About body</p>",
+    )
+
+    assert publishing.publishing_result_message("updated", document) == (
+        "Updated page on example.com.\n"
+        "Title: About page\n"
+        "Status: published\n"
+        "Link: https://example.com/about"
+    )
+
+
+def test_publishing_result_message_handles_drafts_without_link() -> None:
+    document = PublishingRemoteDocument(
+        provider_id="wordpress",
+        site_url="https://example.com",
+        remote_id="11",
+        remote_url="",
+        title="Draft post",
+        status="draft",
+        updated_at="2026-06-18T12:00:00",
+        content_kind="post",
+        body="<p>Draft body</p>",
+    )
+
+    assert publishing.publishing_result_message("created", document) == (
+        "Created post on example.com.\n"
+        "Title: Draft post\n"
+        "Status: draft"
+    )
 
 
 def test_update_publishing_remote_item_converts_markdown_tabs_to_html_body(monkeypatch) -> None:

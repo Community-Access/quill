@@ -1,5 +1,26 @@
 # Codex Handoff
 
+## 2026-06-18 Publishing Confirmation Model Slice
+
+- continued from the plan after the browse status scope slice
+- implemented the next approved `Publishing Confirmation Model` refinement:
+  - create/update publishing success dialogs now use a shared explicit result formatter
+  - outcome copy reports target site, content kind, title, resulting state, and returned URL when available
+  - status bar updates use the concise first line only so multi-line result text does not clutter the live status region
+- no new dialog surface was added; existing native message boxes remain the governed confirmation surface
+- desktop accessibility alignment:
+  - pre-send confirmations remain explicit and keyboard-confirmed
+  - post-send feedback is plain language and screen-reader friendly
+  - failure paths still preserve provider error wording
+- module-size ratchet was remeasured and documented for the deliberate growth:
+  - `quill/ui/main_frame.py`: `24194 -> 24205`
+  - `quill/core/publishing.py`: `651 -> 676`
+- verification:
+  - first focused run had only module-size budget failures from the measured growth
+  - after budget documentation, focused publishing/governance run passed:
+    - `109 passed in 32.31s`
+- branch remains `features/publishing-providers-framework`; no push was performed
+
 ## 2026-06-18 Browse Status Scope Slice
 
 - implemented the next plan-directed publishing browse step from the 2026-06-12 addendum:

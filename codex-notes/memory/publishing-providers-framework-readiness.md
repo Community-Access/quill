@@ -2,6 +2,24 @@
 
 Status: stable implementation checkpoint with current `origin/main` merged, focused validation green, and next work identified.
 
+## 2026-06-18 publishing confirmation model
+
+- implemented the next plan-directed confirmation refinement after browse status scope
+- create/update publishing success messages now use `publishing_result_message`
+- result copy includes:
+  - target site
+  - content kind
+  - title
+  - resulting status, with WordPress `publish` rendered as `published`
+  - returned remote link when available
+- existing pre-send confirmation prompts remain in place and no new dialog surface was introduced
+- `MainFrame` now shows the structured result in the native message box and only the first line in the status bar
+- focused publishing and governance verification passed after documenting measured module-budget growth:
+  - `109 passed in 32.31s`
+- next likely plan work after this checkpoint:
+  - continue `Browse Remote Content Scaling` with progressive loading / timeout-aware partial results
+  - or move into `Remote Item Editor Identity` for clearer tab/title identity on opened remote items
+
 ## 2026-06-18 browse status scope
 
 - implemented the first next-step browse refinement from the plan addendum

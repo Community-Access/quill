@@ -1,5 +1,49 @@
 # Codex Review Log
 
+## 2026-06-18 12:40:50 -04:00
+
+Implementation checkpoint:
+
+- resumed coding from the approved publishing plan after the browse status scope slice
+- selected `Publishing Confirmation Model` as the next small plan item
+- used the Desktop Accessibility Specialist guidance for the wxPython/native-dialog surface:
+  - keep pre-send confirmation explicit
+  - ensure post-send status changes are announced/plain-language friendly
+  - avoid new custom dialog surface unless needed
+
+Changes made:
+
+- added `publishing_result_message()` in `quill/core/publishing.py`
+- result messages now include:
+  - created/updated action
+  - content kind
+  - target host
+  - title
+  - resulting status
+  - link when the provider returns one
+- `MainFrame` create/update publishing flows now show that result text in the existing native message box
+- status bar updates use the first result line only
+- added focused core and UI contract tests for the formatter and create/update wiring
+- updated module-size budget documentation for deliberate publishing-confirmation growth:
+  - `quill/ui/main_frame.py` `24194 -> 24205`
+  - `quill/core/publishing.py` `651 -> 676`
+
+Verification:
+
+- first focused verification run:
+  - behavior and accessibility/governance tests passed
+  - module-size budget failed because the new publishing result formatter and UI wiring exceeded the previous recorded budgets
+- after budget documentation, focused verification passed:
+  - `pytest tests/unit/core/test_publishing.py tests/unit/core/test_publishing_browse.py tests/unit/core/test_publishing_framework.py tests/unit/ui/test_main_frame.py tests/unit/ui/test_main_frame_menu_contract.py tests/unit/ui/test_publishing_connection_dialog_a11y.py tests/unit/ui/test_dialog_inventory.py tests/unit/ui/test_main_frame_characterization.py tests/unit/tools/test_module_size_budget.py tests/unit/tools/test_check_banned_patterns.py tests/unit/tools/test_announce_gap.py tests/unit/tools/test_network_egress_audit.py tests/unit/tools/test_dialog_button_contract.py tests/unit/ui/test_dialog_hardening_contract.py -q --basetemp=.tmp\pytest-publishing-confirmation`
+  - result: `109 passed in 32.31s`
+
+Next read:
+
+- publishing confirmation copy now matches the plan's required target/site/state/link outcome model for create/update
+- likely next work is either:
+  - remaining browse scaling and timeout/partial-result wording
+  - remote item editor identity/tab-title clarity
+
 ## 2026-06-12 19:10:42 -04:00
 
 Stopping-point sync:
