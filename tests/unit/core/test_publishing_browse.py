@@ -74,8 +74,50 @@ def test_browse_publishing_content_returns_posts_and_pages(
     assert [item.content_kind for item in items] == ["page", "post"]
     assert items[0].title == "About page"
     assert items[1].remote_url == "https://example.com/posts/hello"
-    assert any("/posts?" in call for call in calls)
-    assert any("/pages?" in call for call in calls)
+    assert any("/posts?" in call and "status=publish%2Cdraft" in call for call in calls)
+    assert any("/pages?" in call and "status=publish%2Cdraft" in call for call in calls)
+
+
+def test_browse_publishing_content_can_request_drafts_only(monkeypatch) -> None:
+    calls: list[str] = []
+
+    def _urlopen(request, **_kwargs):
+        calls.append(request.full_url)
+        return _FakeResponse(
+            [
+                {
+                    "id": 11,
+                    "link": "https://example.com/posts/draft",
+                    "title": {"rendered": "Draft post"},
+                    "status": "draft",
+                    "modified_gmt": "2026-06-08T04:00:00",
+                    "type": "post",
+                }
+            ]
+        )
+
+    monkeypatch.setattr(publishing_clients, "urlopen", _urlopen)
+    profile = PublishingConnectionProfile(
+        id="pub-one",
+        label="Site one",
+        provider_id="wordpress",
+        site_url="https://example.com",
+        auth_method=AUTH_METHOD_APP_PASSWORD,
+        account_identifier="writer",
+    )
+
+    ok, _message, items = publishing.browse_publishing_content(
+        profile,
+        "secret",
+        content_kinds=("post",),
+        statuses=("draft",),
+    )
+
+    assert ok is True
+    assert [item.status for item in items] == ["draft"]
+    assert calls == [
+        "https://example.com/wp-json/wp/v2/posts?context=edit&per_page=50&status=draft&_fields=id%2Clink%2Ctitle%2Cstatus%2Cmodified_gmt%2Ctype"
+    ]
 
 
 def test_load_publishing_remote_item_returns_remote_document(monkeypatch) -> None:

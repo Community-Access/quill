@@ -48,7 +48,9 @@ def test_browse_dialog_names_the_content_list() -> None:
     assert 'wx.StaticText(self.dialog, label="Selected published content details")' in source
     assert 'self.summary.SetName("Selected published content details")' in source
     assert 'self.content_scope.SetName("Content to browse")' in source
+    assert 'self.status_scope.SetName("Status to browse")' in source
     assert 'self.open_as.SetName("Open in Quill as")' in source
+    assert 'self.status_scope_caption = wx.StaticText(self.dialog, label="Status to browse")' in source
 
 
 def test_publishing_dialogs_set_initial_focus_and_stable_secret_tab_order() -> None:
@@ -56,6 +58,7 @@ def test_publishing_dialogs_set_initial_focus_and_stable_secret_tab_order() -> N
     assert "self.connection_label.SetFocus()" in source
     assert "self.connection_list.SetFocus()" in source
     assert "self.content_scope.SetFocus()" in source
+    assert 'choices=["Published and drafts", "Published only", "Drafts only"]' in source
     assert "self.reveal_secret.MoveAfterInTabOrder(self.secret)" in source
     assert "self.verify_button.MoveAfterInTabOrder(self.reveal_secret)" in source
     assert "self.secret_masked = wx.TextCtrl(panel, style=wx.TE_PASSWORD)" in source

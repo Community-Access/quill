@@ -52,6 +52,7 @@ class PublishingProviderClient(Protocol):
         secret: str,
         *,
         content_kinds: tuple[str, ...],
+        statuses: tuple[str, ...],
         timeout_seconds: float,
     ) -> tuple[bool, str, list[PublishingRemoteItemSummary]]: ...
 
@@ -99,6 +100,7 @@ class WordPressPublishingClient:
         secret: str,
         *,
         content_kinds: tuple[str, ...],
+        statuses: tuple[str, ...],
         timeout_seconds: float,
     ) -> tuple[bool, str, list[PublishingRemoteItemSummary]]:
         account_identifier = str(getattr(profile, "account_identifier", "")).strip()
@@ -108,9 +110,14 @@ class WordPressPublishingClient:
         if not secret.strip():
             return False, "Enter an application password before browsing published content.", []
         results: list[PublishingRemoteItemSummary] = []
+        requested_statuses = _normalized_statuses(statuses)
         try:
             for content_kind in content_kinds:
-                endpoint = _wordpress_collection_endpoint(site_url, content_kind)
+                endpoint = _wordpress_collection_endpoint(
+                    site_url,
+                    content_kind,
+                    statuses=requested_statuses,
+                )
                 payload = _request_json(
                     endpoint,
                     account_identifier=account_identifier,
@@ -327,11 +334,17 @@ def _request_json(
         raise _PublishingRequestError("The publishing site returned an invalid response.") from exc
 
 
-def _wordpress_collection_endpoint(site_url: str, content_kind: str) -> str:
+def _wordpress_collection_endpoint(
+    site_url: str,
+    content_kind: str,
+    *,
+    statuses: tuple[str, ...],
+) -> str:
     query = urlencode(
         {
             "context": "edit",
             "per_page": "50",
+            "status": ",".join(statuses),
             "_fields": "id,link,title,status,modified_gmt,type",
         }
     )
@@ -448,6 +461,14 @@ def _normalized_content_kind(value: object, *, fallback: str) -> str:
     if normalized == "page":
         return "page"
     return "post"
+
+
+def _normalized_statuses(statuses: tuple[str, ...]) -> tuple[str, ...]:
+    allowed = {"publish", "draft"}
+    normalized = tuple(
+        dict.fromkeys(status.strip().lower() for status in statuses if status.strip().lower() in allowed)
+    )
+    return normalized or ("publish", "draft")
 
 
 def _context_for(endpoint: str) -> ssl.SSLContext | None:

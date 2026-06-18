@@ -10563,7 +10563,7 @@ class MainFrame(
             self._set_status("AI connection settings cancelled")
 
     def _open_publishing_connections(self) -> None:
-        dialog = PublishingConnectionsDialog(self.frame)
+        dialog = PublishingConnectionsDialog(self.frame, announce_cb=self._announce)
         if dialog.show_modal():
             self._set_status("Updated publishing connections")
         else:
@@ -10592,7 +10592,7 @@ class MainFrame(
         self._set_status(message)
 
     def _browse_publishing_content(self) -> None:
-        dialog = BrowsePublishingContentDialog(self.frame)
+        dialog = BrowsePublishingContentDialog(self.frame, announce_cb=self._announce)
         remote_document = dialog.show_modal()
         if remote_document is None:
             self._set_status("Browse published content cancelled")

@@ -283,6 +283,7 @@ def browse_publishing_content(
     secret: str,
     *,
     content_kinds: tuple[str, ...] | None = None,
+    statuses: tuple[str, ...] | None = None,
     timeout_seconds: float = 10.0,
 ) -> tuple[bool, str, list[PublishingRemoteItemSummary]]:
     normalized = _normalized_profile(profile)
@@ -318,6 +319,7 @@ def browse_publishing_content(
         normalized,
         secret,
         content_kinds=filtered_kinds,
+        statuses=statuses or ("publish", "draft"),
         timeout_seconds=timeout_seconds,
     )
 

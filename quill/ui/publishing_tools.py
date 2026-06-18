@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from collections.abc import Callable
+
 from quill.core.publishing import (
     PublishingConnectionProfile,
     browse_publishing_content,
@@ -26,10 +28,17 @@ from quill.ui.dialog_contract import apply_modal_ids, show_message_box, show_mod
 
 
 class EditPublishingConnectionDialog:
-    def __init__(self, parent: object, profile: PublishingConnectionProfile | None = None) -> None:
+    def __init__(
+        self,
+        parent: object,
+        profile: PublishingConnectionProfile | None = None,
+        *,
+        announce_cb: Callable[[str], None] | None = None,
+    ) -> None:
         import wx
 
         self._wx = wx
+        self._announce = announce_cb or (lambda _message: None)
         self._provider_choices = tuple(
             (item.id, item.name) for item in available_publishing_providers()
         )
@@ -230,8 +239,15 @@ class EditPublishingConnectionDialog:
         self.last_verification_ok = ok
         self.last_verification_message = message
         self.connection_status.SetLabel(message)
+        self._announce(message)
         icon = self._wx.ICON_INFORMATION if ok else self._wx.ICON_WARNING
-        show_message_box(message, "Publishing Connection Check", icon | self._wx.OK, self.dialog)
+        show_message_box(
+            message,
+            "Publishing Connection Check",
+            icon | self._wx.OK,
+            self.dialog,
+            announce=self._announce,
+        )
 
     def show_modal(self) -> PublishingConnectionProfile | None:
         self.dialog.CentreOnParent()
@@ -266,10 +282,16 @@ class EditPublishingConnectionDialog:
 
 
 class BrowsePublishingContentDialog:
-    def __init__(self, parent: object) -> None:
+    def __init__(
+        self,
+        parent: object,
+        *,
+        announce_cb: Callable[[str], None] | None = None,
+    ) -> None:
         import wx
 
         self._wx = wx
+        self._announce = announce_cb or (lambda _message: None)
         self._profile = current_publishing_connection()
         self._secret = load_publishing_secret(self._profile.id) if self._profile is not None else ""
         self._items: list[PublishingRemoteItemSummary] = []
@@ -307,6 +329,16 @@ class BrowsePublishingContentDialog:
         self.content_scope.SetName("Content to browse")
         self.content_scope.SetSelection(0)
         filters.Add(self.content_scope, 0)
+        filters.AddSpacer(16)
+        self.status_scope_caption = wx.StaticText(self.dialog, label="Status to browse")
+        filters.Add(self.status_scope_caption, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
+        self.status_scope = wx.Choice(
+            self.dialog,
+            choices=["Published and drafts", "Published only", "Drafts only"],
+        )
+        self.status_scope.SetName("Status to browse")
+        self.status_scope.SetSelection(0)
+        filters.Add(self.status_scope, 0)
         filters.AddSpacer(16)
         self.open_as_caption = wx.StaticText(self.dialog, label="Open in Quill as")
         filters.Add(self.open_as_caption, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
@@ -373,6 +405,14 @@ class BrowsePublishingContentDialog:
             return tuple(kind for kind in available if kind == "page")
         return available
 
+    def _scope_statuses(self) -> tuple[str, ...]:
+        selection = self.status_scope.GetSelection()
+        if selection == 1:
+            return ("publish",)
+        if selection == 2:
+            return ("draft",)
+        return ("publish", "draft")
+
     def _open_representation(self) -> str:
         if self.open_as.GetSelection() == 1:
             return "raw_html"
@@ -413,6 +453,7 @@ class BrowsePublishingContentDialog:
             self._profile,
             self._secret,
             content_kinds=self._scope_kinds(),
+            statuses=self._scope_statuses(),
         )
         self._items = items
         self.content_list.Set([self._item_label(item) for item in items])
@@ -422,7 +463,13 @@ class BrowsePublishingContentDialog:
         if ok and items:
             self._update_summary()
         icon = self._wx.ICON_INFORMATION if ok else self._wx.ICON_WARNING
-        show_message_box(message, "Browse Published Content", icon | self._wx.OK, self.dialog)
+        show_message_box(
+            message,
+            "Browse Published Content",
+            icon | self._wx.OK,
+            self.dialog,
+            announce=self._announce,
+        )
 
     def _on_selection_changed(self, _event: object) -> None:
         self._update_summary()
@@ -444,6 +491,7 @@ class BrowsePublishingContentDialog:
                 "Browse Published Content",
                 self._wx.ICON_WARNING | self._wx.OK,
                 self.dialog,
+                announce=self._announce,
             )
             self._update_summary(message)
             return
@@ -462,10 +510,16 @@ class BrowsePublishingContentDialog:
 
 
 class PublishingConnectionsDialog:
-    def __init__(self, parent: object) -> None:
+    def __init__(
+        self,
+        parent: object,
+        *,
+        announce_cb: Callable[[str], None] | None = None,
+    ) -> None:
         import wx
 
         self._wx = wx
+        self._announce = announce_cb or (lambda _message: None)
         self.dialog = wx.Dialog(
             parent,
             title="Publishing Connections",
@@ -577,7 +631,7 @@ class PublishingConnectionsDialog:
         self._update_summary()
 
     def _on_add(self, _event: object) -> None:
-        dialog = EditPublishingConnectionDialog(self.dialog)
+        dialog = EditPublishingConnectionDialog(self.dialog, announce_cb=self._announce)
         if dialog.show_modal() is None:
             return
         self._store = load_publishing_connections()
@@ -587,7 +641,11 @@ class PublishingConnectionsDialog:
         selected = self._selected_connection()
         if selected is None:
             return
-        dialog = EditPublishingConnectionDialog(self.dialog, selected)
+        dialog = EditPublishingConnectionDialog(
+            self.dialog,
+            selected,
+            announce_cb=self._announce,
+        )
         if dialog.show_modal() is None:
             return
         self._store = load_publishing_connections()
@@ -602,6 +660,7 @@ class PublishingConnectionsDialog:
             "Remove Publishing Connection",
             self._wx.YES_NO | self._wx.ICON_WARNING,
             self.dialog,
+            announce=self._announce,
         )
         if answer != self._wx.YES:
             return
@@ -622,7 +681,14 @@ class PublishingConnectionsDialog:
         secret = load_publishing_secret(selected.id)
         ok, message = verify_publishing_connection(selected, secret)
         icon = self._wx.ICON_INFORMATION if ok else self._wx.ICON_WARNING
-        show_message_box(message, "Publishing Connection Check", icon | self._wx.OK, self.dialog)
+        show_message_box(
+            message,
+            "Publishing Connection Check",
+            icon | self._wx.OK,
+            self.dialog,
+            announce=self._announce,
+        )
+        self._announce(message)
         self.summary.SetValue(self.summary.GetValue() + f"\n\nLast check: {message}")
 
     def show_modal(self) -> bool:

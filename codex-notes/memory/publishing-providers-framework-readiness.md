@@ -2,6 +2,15 @@
 
 Status: stable implementation checkpoint with current `origin/main` merged, focused validation green, and next work identified.
 
+## 2026-06-18 browse status scope
+
+- implemented the first next-step browse refinement from the plan addendum
+- browse now includes drafts by default instead of silently limiting the list to published content
+- the browse dialog exposes an explicit `Status to browse` choice with visible label and accessible name
+- publishing dialogs now receive MainFrame's announcement callback so status text updates satisfy current main's GATE-12 screen-reader announcement rule
+- focused publishing plus current-main governance validation is green:
+  - `106 passed in 51.90s`
+
 ## 2026-06-18 main merge refresh
 
 - `origin/main` advanced to `2a92c03` and has been merged into `features/publishing-providers-framework`

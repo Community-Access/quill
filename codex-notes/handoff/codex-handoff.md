@@ -1,5 +1,47 @@
 # Codex Handoff
 
+## 2026-06-18 Browse Status Scope Slice
+
+- implemented the next plan-directed publishing browse step from the 2026-06-12 addendum:
+  - browse now defaults to both published content and drafts
+  - browse accepts provider-neutral status filters
+  - the WordPress client sends an explicit status scope in collection queries
+  - the existing browse dialog now has a keyboard-reachable `Status to browse` choice:
+    - `Published and drafts`
+    - `Published only`
+    - `Drafts only`
+- kept the slice inside the existing governed browse dialog instead of adding a new dialog
+- aligned publishing dialogs with current main's GATE-12 announce-gap requirement by threading `announce_cb` from MainFrame into publishing dialogs
+- preserved current main's dialog and message-box governance:
+  - `apply_modal_ids`
+  - `show_modal_dialog`
+  - `show_message_box`
+  - no raw `ShowModal`
+  - no raw `wx.MessageBox`
+
+## 2026-06-18 Latest Verification
+
+- focused publishing plus current-main governance verification passed
+- result: `106 passed in 51.90s`
+- verification set:
+  - `tests/unit/core/test_publishing.py`
+  - `tests/unit/core/test_publishing_browse.py`
+  - `tests/unit/core/test_publishing_framework.py`
+  - `tests/unit/ui/test_main_frame.py`
+  - `tests/unit/ui/test_main_frame_menu_contract.py`
+  - `tests/unit/ui/test_publishing_connection_dialog_a11y.py`
+  - `tests/unit/ui/test_dialog_inventory.py`
+  - `tests/unit/ui/test_main_frame_characterization.py`
+  - `tests/unit/tools/test_module_size_budget.py`
+  - `tests/unit/tools/test_check_banned_patterns.py`
+  - `tests/unit/tools/test_announce_gap.py`
+  - `tests/unit/tools/test_network_egress_audit.py`
+  - `tests/unit/tools/test_dialog_button_contract.py`
+  - `tests/unit/ui/test_dialog_hardening_contract.py`
+- run detail:
+  - used workspace-local temp path:
+    - `--basetemp=.tmp/pytest-publishing-browse-status`
+
 ## 2026-06-18 Main Merge Refresh
 
 - fetched latest `origin/main`, which advanced to `2a92c03`
