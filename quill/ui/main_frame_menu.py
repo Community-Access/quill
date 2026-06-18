@@ -117,7 +117,9 @@ class MenuBuilderMixin:
         self._id_publishing_verify_connection = wx.NewIdRef()
         self._id_publishing_browse_content = wx.NewIdRef()
         self._id_publishing_create_draft = wx.NewIdRef()
+        self._id_publishing_publish_current = wx.NewIdRef()
         self._id_publishing_create_page_draft = wx.NewIdRef()
+        self._id_publishing_publish_current_page = wx.NewIdRef()
         self._id_publishing_update_remote_item = wx.NewIdRef()
         self._publishing_file_menu = wx.Menu()
         self._publishing_file_menu.Append(
@@ -140,8 +142,16 @@ class MenuBuilderMixin:
             self._menu_label("Create Post &Draft...", "publishing.create_draft"),
         )
         self._publishing_file_menu.Append(
+            self._id_publishing_publish_current,
+            self._menu_label("&Publish Post Now...", "publishing.publish_current"),
+        )
+        self._publishing_file_menu.Append(
             self._id_publishing_create_page_draft,
             self._menu_label("Create Page Draft...", "publishing.create_page_draft"),
+        )
+        self._publishing_file_menu.Append(
+            self._id_publishing_publish_current_page,
+            self._menu_label("Publish Page Now...", "publishing.publish_current_page"),
         )
         self._publishing_file_menu.Append(
             self._id_publishing_update_remote_item,
@@ -2024,8 +2034,18 @@ class MenuBuilderMixin:
         )
         self.frame.Bind(
             wx.EVT_MENU,
+            lambda _e: self._publish_current_document(),
+            id=self._id_publishing_publish_current,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
             lambda _e: self._create_publishing_page_draft(),
             id=self._id_publishing_create_page_draft,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self._publish_current_page(),
+            id=self._id_publishing_publish_current_page,
         )
         self.frame.Bind(
             wx.EVT_MENU,

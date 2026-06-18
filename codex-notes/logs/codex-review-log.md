@@ -1,5 +1,42 @@
 # Codex Review Log
 
+## 2026-06-18 16:36:04 -04:00
+
+Implementation checkpoint:
+
+- user asked what was next in the plan and to start the next coding thing if ready
+- selected provider-neutral publishing lifecycle behavior
+- implemented publish-now create actions that were already reserved in the command-feature map
+
+Changes made:
+
+- registered `publishing.publish_current` in `MainFrame`
+- registered `publishing.publish_current_page` in `MainFrame`
+- added File > Publish menu IDs/items/bindings for:
+  - `Publish Post Now...`
+  - `Publish Page Now...`
+- generalized `_create_publishing_item(...)` to accept a provider-neutral lifecycle status
+- publish-now actions reuse the same review-first confirmation path and result formatter as draft creation
+- WordPress create regression coverage now asserts `status: publish` in the provider payload
+- updated menu/main-frame contract tests for the new commands and menu entries
+- documented measured module-size growth:
+  - `quill/ui/main_frame.py` `24214 -> 24240`
+  - `quill/ui/main_frame_menu.py` `3344 -> 3364`
+
+Verification:
+
+- first focused run:
+  - behavior, publishing, accessibility/dialog, menu, and governance tests passed
+  - module-size budget failed on measured command/menu growth
+- after budget documentation, rerun passed:
+  - `pytest tests/unit/core/test_document.py tests/unit/core/test_publishing.py tests/unit/core/test_publishing_browse.py tests/unit/core/test_publishing_framework.py tests/unit/ui/test_main_frame.py tests/unit/ui/test_main_frame_menu_contract.py tests/unit/ui/test_publishing_connection_dialog_a11y.py tests/unit/ui/test_dialog_inventory.py tests/unit/ui/test_main_frame_characterization.py tests/unit/tools/test_module_size_budget.py tests/unit/tools/test_check_banned_patterns.py tests/unit/tools/test_announce_gap.py tests/unit/tools/test_network_egress_audit.py tests/unit/tools/test_dialog_button_contract.py tests/unit/ui/test_dialog_hardening_contract.py -q --basetemp=.tmp\pytest-publishing-publish-now`
+  - result: `119 passed in 32.58s`
+
+Next read:
+
+- publish-now for new post/page content is implemented
+- likely next lifecycle slice is publish/promote for an already-open remote draft, if desired
+
 ## 2026-06-18 13:19:06 -04:00
 
 Break-ready sync checkpoint:

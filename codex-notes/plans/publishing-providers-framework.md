@@ -1,5 +1,28 @@
 # Publishing Providers Framework Plan
 
+## 2026-06-18 publish-now lifecycle implementation note
+
+The next provider-neutral publishing lifecycle slice is implemented.
+
+Implemented:
+
+- `publishing.publish_current`
+- `publishing.publish_current_page`
+- File > Publish menu entries for `Publish Post Now...` and `Publish Page Now...`
+- provider-client create flow with `status="publish"`
+- review-first confirmation and post-send result confirmation through the existing message path
+
+Important constraints preserved:
+
+- no WordPress-specific command ID or shell path
+- no new dialog surface
+- no silent network write
+- publish-now behavior stays in the provider-neutral lifecycle layer while WordPress only receives the provider status in its client payload
+
+Possible next lifecycle refinement:
+
+- add a separate promote/publish action for an already-open remote draft, using the same provider-neutral update seam if product wants remote item promotion before provider extraction work
+
 ## 2026-06-18 break-ready implementation status
 
 Current branch state is ready for remote sync after the latest publishing framework slices:

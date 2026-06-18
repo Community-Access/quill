@@ -147,7 +147,15 @@ def test_publishing_actions_live_in_file_menu_not_top_level_publishing_menu() ->
     )
     assert (
         'self._publishing_file_menu.Append(\n'
+        '            self._id_publishing_publish_current,' in source
+    )
+    assert (
+        'self._publishing_file_menu.Append(\n'
         '            self._id_publishing_create_page_draft,' in source
+    )
+    assert (
+        'self._publishing_file_menu.Append(\n'
+        '            self._id_publishing_publish_current_page,' in source
     )
     assert (
         'self._publishing_file_menu.Append(\n'

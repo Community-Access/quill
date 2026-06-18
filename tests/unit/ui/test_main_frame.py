@@ -55,13 +55,24 @@ def test_remote_publishing_update_uses_saved_authoring_surface_metadata() -> Non
 
 def test_publishing_create_draft_commands_stay_command_registered_and_metadata_backed() -> None:
     assert '"publishing.create_draft"' in SOURCE
+    assert '"publishing.publish_current"' in SOURCE
     assert '"publishing.create_page_draft"' in SOURCE
+    assert '"publishing.publish_current_page"' in SOURCE
     assert 'def _create_publishing_draft(self) -> None:' in SOURCE
+    assert 'def _publish_current_document(self) -> None:' in SOURCE
     assert 'def _create_publishing_page_draft(self) -> None:' in SOURCE
+    assert 'def _publish_current_page(self) -> None:' in SOURCE
+    assert 'status=publishing_status' in SOURCE
     assert '"publishing_remote_id": remote_document.remote_id' in SOURCE
     assert '"publishing_content_kind": remote_document.content_kind' in SOURCE
     assert '"display_name": remote_document.title' in SOURCE
     assert '"publishing_remote_title": remote_document.title' in SOURCE
+
+
+def test_publishing_publish_now_uses_existing_confirmation_path() -> None:
+    assert 'dialog_title = "Publish Current Document" if publishing_status == "publish"' in SOURCE
+    assert '"Publish current document cancelled"' in SOURCE
+    assert 'f"Choose Yes to send the current document text and {action_label.lower()} it."' in SOURCE
 
 
 def test_publishing_send_results_use_explicit_confirmation_formatter() -> None:

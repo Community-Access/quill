@@ -1779,9 +1779,21 @@ class MainFrame(
             None,
         )
         self.commands.register(
+            "publishing.publish_current",
+            "Publish Post Now...",
+            self._publish_current_document,
+            None,
+        )
+        self.commands.register(
             "publishing.create_page_draft",
             "Create Page Draft...",
             self._create_publishing_page_draft,
+            None,
+        )
+        self.commands.register(
+            "publishing.publish_current_page",
+            "Publish Page Now...",
+            self._publish_current_page,
             None,
         )
         self.commands.register(
@@ -10725,12 +10737,18 @@ class MainFrame(
         self._set_status(result_message.splitlines()[0])
 
     def _create_publishing_draft(self) -> None:
-        self._create_publishing_item("post")
+        self._create_publishing_item("post", status="draft")
+
+    def _publish_current_document(self) -> None:
+        self._create_publishing_item("post", status="publish")
 
     def _create_publishing_page_draft(self) -> None:
-        self._create_publishing_item("page")
+        self._create_publishing_item("page", status="draft")
 
-    def _create_publishing_item(self, content_kind: str) -> None:
+    def _publish_current_page(self) -> None:
+        self._create_publishing_item("page", status="publish")
+
+    def _create_publishing_item(self, content_kind: str, *, status: str) -> None:
         from quill.core.publishing import current_publishing_connection, load_publishing_secret
 
         profile = current_publishing_connection()
@@ -10746,19 +10764,27 @@ class MainFrame(
         title = self._publishing_document_title()
         authoring_surface = self._publishing_document_authoring_surface()
         label_kind = "page" if content_kind == "page" else "post"
+        publishing_status = "publish" if status.strip().lower() == "publish" else "draft"
+        action_label = "Publish" if publishing_status == "publish" else "Create"
+        state_label = "published" if publishing_status == "publish" else "draft"
+        dialog_title = "Publish Current Document" if publishing_status == "publish" else "Create Publishing Draft"
         review_message = (
-            f"Create a remote {label_kind} draft on {profile.site_url}?\n\n"
+            f"{action_label} this remote {label_kind} as {state_label} on {profile.site_url}?\n\n"
             f"Title: {title}\n"
             f"Authoring surface: {authoring_surface}\n\n"
-            "Choose Yes to send the current document text and create a draft."
+            f"Choose Yes to send the current document text and {action_label.lower()} it."
         )
         proceed = self._show_message_box(
             review_message,
-            "Create Publishing Draft",
+            dialog_title,
             self._wx.ICON_INFORMATION | self._wx.YES_NO | self._wx.CANCEL,
         )
         if proceed != self._wx.ID_YES:
-            self._set_status("Create publishing draft cancelled")
+            self._set_status(
+                "Publish current document cancelled"
+                if publishing_status == "publish"
+                else "Create publishing draft cancelled"
+            )
             return
         ok, message, remote_document = create_publishing_remote_item(
             profile,
@@ -10767,7 +10793,7 @@ class MainFrame(
             title=title,
             document_text=self.editor.GetValue(),
             authoring_surface=authoring_surface,
-            status="draft",
+            status=publishing_status,
         )
         icon = self._wx.ICON_INFORMATION if ok else self._wx.ICON_WARNING
         result_message = (
@@ -10775,7 +10801,7 @@ class MainFrame(
             if ok and remote_document is not None
             else message
         )
-        self._show_message_box(result_message, "Create Publishing Draft", icon | self._wx.OK)
+        self._show_message_box(result_message, dialog_title, icon | self._wx.OK)
         if not ok or remote_document is None:
             self._set_status(message)
             return

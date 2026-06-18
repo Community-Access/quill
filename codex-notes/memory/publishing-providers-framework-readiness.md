@@ -1,6 +1,21 @@
 # Publishing Providers Framework Readiness
 
-Status: break-ready checkpoint with current `origin/main` merged, provider registry seam in place, remote item editor identity implemented, focused validation green, WordPress extraction direction recorded, and branch ready to push.
+Status: active implementation checkpoint with current `origin/main` merged, provider registry seam in place, remote item editor identity implemented, publish-now lifecycle actions added, focused validation green, and WordPress extraction direction recorded.
+
+## 2026-06-18 publish-now lifecycle
+
+- added provider-neutral publish-now actions after the break:
+  - `publishing.publish_current`
+  - `publishing.publish_current_page`
+- File > Publish now exposes `Publish Post Now...` and `Publish Page Now...`
+- implementation reuses the same create-provider client path with `status="publish"`
+- no WordPress-specific shell behavior was added
+- no new custom dialog was added; the existing review-first confirmation and result message path is reused
+- focused publishing/governance validation passed after documenting measured module-budget growth:
+  - `119 passed in 32.58s`
+- next likely work:
+  - consider publish/promote of already-open remote drafts if product wants a remote-item lifecycle action
+  - otherwise continue hardening the provider/client contract toward future first-party Quillin extraction
 
 ## 2026-06-18 break-ready sync
 

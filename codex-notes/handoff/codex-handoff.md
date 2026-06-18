@@ -1,5 +1,29 @@
 # Codex Handoff
 
+## 2026-06-18 Publish Now Lifecycle Slice
+
+- implemented the next provider-neutral publishing lifecycle step after the break
+- added command/menu wiring for:
+  - `publishing.publish_current`
+  - `publishing.publish_current_page`
+- File > Publish now includes:
+  - `Publish Post Now...`
+  - `Publish Page Now...`
+- reused the existing create-provider path with `status="publish"` rather than adding WordPress-specific shell behavior
+- reused the existing review-first confirmation and result message surfaces
+- no new dialog surface was added
+- provider/client coverage:
+  - WordPress create payload now has regression coverage for `status: publish`
+  - command/menu tests cover the new provider-neutral publish-now actions
+- verification:
+  - first focused run passed behavior/a11y/governance but failed module-size ratchet from deliberate command/menu growth
+  - budget notes updated for:
+    - `quill/ui/main_frame.py` `24214 -> 24240`
+    - `quill/ui/main_frame_menu.py` `3344 -> 3364`
+  - rerun passed:
+    - `119 passed in 32.58s`
+- branch remains `features/publishing-providers-framework`; no push was performed
+
 ## 2026-06-18 Break-Ready Remote Sync Checkpoint
 
 - final break checkpoint after:

@@ -382,6 +382,54 @@ def test_wordpress_create_remote_item_posts_json_payload(monkeypatch) -> None:
     }
 
 
+def test_wordpress_publish_current_item_posts_publish_status(monkeypatch) -> None:
+    request_details: dict[str, object] = {}
+
+    def _urlopen(request, **_kwargs):
+        request_details["body"] = request.data.decode("utf-8") if request.data else ""
+        return _FakeResponse(
+            {
+                "id": 45,
+                "link": "https://example.com/posts/live",
+                "title": {"rendered": "Live title"},
+                "status": "publish",
+                "modified_gmt": "2026-06-12T22:15:00",
+                "type": "post",
+                "content": {"rendered": "<p>Live body</p>"},
+            }
+        )
+
+    monkeypatch.setattr(publishing_clients, "urlopen", _urlopen)
+    profile = PublishingConnectionProfile(
+        id="pub-one",
+        label="Site one",
+        provider_id="wordpress",
+        site_url="https://example.com",
+        auth_method=AUTH_METHOD_APP_PASSWORD,
+        account_identifier="writer",
+    )
+
+    ok, message, document = publishing.create_publishing_remote_item(
+        profile,
+        "secret",
+        content_kind="post",
+        title="Live title",
+        document_text="<p>Live body</p>",
+        authoring_surface="html",
+        status="publish",
+    )
+
+    assert ok is True
+    assert message == "Created publishing content on example.com."
+    assert document is not None
+    assert document.status == "publish"
+    assert json.loads(str(request_details["body"])) == {
+        "title": "Live title",
+        "content": "<p>Live body</p>",
+        "status": "publish",
+    }
+
+
 def test_load_publishing_remote_item_rejects_unsupported_content_kind() -> None:
     profile = PublishingConnectionProfile(
         id="pub-one",
