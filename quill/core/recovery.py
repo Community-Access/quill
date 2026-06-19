@@ -96,47 +96,49 @@ def _release_file_lock(fd: int) -> None:
 def begin_session(session_id: str) -> list[RecoveryOffer]:
     _validate_session_id(session_id)
     fd = _acquire_file_lock()
-    with _state_lock:
-        state = _load_state()
-        offers: list[RecoveryOffer] = []
-        previous_session = state.get("last_session_id")
-        previous_clean = bool(state.get("clean_exit", True))
-        if isinstance(previous_session, str) and previous_session and not previous_clean:
-            latest = latest_session_snapshot(previous_session)
-            if latest is not None and not _is_offer_dismissed(state, previous_session, latest):
-                cursor_position = _load_cursor_position(state, previous_session)
-                dismissal_count = _load_dismissal_count(state, previous_session)
-                offers.append(
-                    RecoveryOffer(
-                        session_id=previous_session,
-                        snapshot=latest,
-                        cursor_position=cursor_position,
-                        dismissal_count=dismissal_count,
+    try:
+        with _state_lock:
+            state = _load_state()
+            offers: list[RecoveryOffer] = []
+            previous_session = state.get("last_session_id")
+            previous_clean = bool(state.get("clean_exit", True))
+            if isinstance(previous_session, str) and previous_session and not previous_clean:
+                latest = latest_session_snapshot(previous_session)
+                if latest is not None and not _is_offer_dismissed(state, previous_session, latest):
+                    cursor_position = _load_cursor_position(state, previous_session)
+                    dismissal_count = _load_dismissal_count(state, previous_session)
+                    offers.append(
+                        RecoveryOffer(
+                            session_id=previous_session,
+                            snapshot=latest,
+                            cursor_position=cursor_position,
+                            dismissal_count=dismissal_count,
+                        )
                     )
-                )
-        state["last_session_id"] = session_id
-        state["clean_exit"] = False
-        _save_state(state)
-    if fd is not None:
-        _release_file_lock(fd)
+            state["last_session_id"] = session_id
+            state["clean_exit"] = False
+            _save_state(state)
+    finally:
+        if fd is not None:
+            _release_file_lock(fd)
     return offers
 
 
 def mark_clean_exit(session_id: str) -> None:
     _validate_session_id(session_id)
     fd = _acquire_file_lock()
-    with _state_lock:
-        state = _load_state()
-        last_session = state.get("last_session_id")
-        if last_session != session_id:
-            if fd is not None:
-                _release_file_lock(fd)
-            return
-        state["last_session_id"] = session_id
-        state["clean_exit"] = True
-        _save_state(state)
-    if fd is not None:
-        _release_file_lock(fd)
+    try:
+        with _state_lock:
+            state = _load_state()
+            last_session = state.get("last_session_id")
+            if last_session != session_id:
+                return
+            state["last_session_id"] = session_id
+            state["clean_exit"] = True
+            _save_state(state)
+    finally:
+        if fd is not None:
+            _release_file_lock(fd)
 
 
 def mark_recovery_offer_dismissed(offer: RecoveryOffer) -> None:
@@ -184,17 +186,19 @@ def save_cursor_position(session_id: str, position: int) -> None:
     """
     _validate_session_id(session_id)
     fd = _acquire_file_lock()
-    with _state_lock:
-        state = _load_state()
-        positions: dict[str, int] = {}
-        raw = state.get("cursor_positions")
-        if isinstance(raw, dict):
-            positions = {k: v for k, v in raw.items() if isinstance(k, str) and isinstance(v, int)}
-        positions[session_id] = int(position)
-        state["cursor_positions"] = positions
-        _save_state(state)
-    if fd is not None:
-        _release_file_lock(fd)
+    try:
+        with _state_lock:
+            state = _load_state()
+            positions: dict[str, int] = {}
+            raw = state.get("cursor_positions")
+            if isinstance(raw, dict):
+                positions = {k: v for k, v in raw.items() if isinstance(k, str) and isinstance(v, int)}
+            positions[session_id] = int(position)
+            state["cursor_positions"] = positions
+            _save_state(state)
+    finally:
+        if fd is not None:
+            _release_file_lock(fd)
 
 
 def _state_path() -> Path:
@@ -214,17 +218,19 @@ def _save_state(data: dict[str, object]) -> None:
 
 def _record_offer_outcome(offer: RecoveryOffer, *, outcome: str) -> None:
     fd = _acquire_file_lock()
-    with _state_lock:
-        state = _load_state()
-        state["last_recovery_offer"] = {
-            "session_id": offer.session_id,
-            "snapshot": str(offer.snapshot),
-            "outcome": outcome,
-            "recorded_at": datetime.now(UTC).isoformat(),
-        }
-        _save_state(state)
-    if fd is not None:
-        _release_file_lock(fd)
+    try:
+        with _state_lock:
+            state = _load_state()
+            state["last_recovery_offer"] = {
+                "session_id": offer.session_id,
+                "snapshot": str(offer.snapshot),
+                "outcome": outcome,
+                "recorded_at": datetime.now(UTC).isoformat(),
+            }
+            _save_state(state)
+    finally:
+        if fd is not None:
+            _release_file_lock(fd)
 
 
 def _is_offer_dismissed(state: dict[str, object], session_id: str, snapshot: Path) -> bool:
@@ -257,14 +263,16 @@ def _load_dismissal_count(state: dict[str, object], session_id: str) -> int:
 
 def _increment_dismissal_count(session_id: str) -> None:
     fd = _acquire_file_lock()
-    with _state_lock:
-        state = _load_state()
-        counts: dict[str, int] = {}
-        raw = state.get("recovery_dismissal_counts")
-        if isinstance(raw, dict):
-            counts = {k: v for k, v in raw.items() if isinstance(k, str) and isinstance(v, int)}
-        counts[session_id] = counts.get(session_id, 0) + 1
-        state["recovery_dismissal_counts"] = counts
-        _save_state(state)
-    if fd is not None:
-        _release_file_lock(fd)
+    try:
+        with _state_lock:
+            state = _load_state()
+            counts: dict[str, int] = {}
+            raw = state.get("recovery_dismissal_counts")
+            if isinstance(raw, dict):
+                counts = {k: v for k, v in raw.items() if isinstance(k, str) and isinstance(v, int)}
+            counts[session_id] = counts.get(session_id, 0) + 1
+            state["recovery_dismissal_counts"] = counts
+            _save_state(state)
+    finally:
+        if fd is not None:
+            _release_file_lock(fd)

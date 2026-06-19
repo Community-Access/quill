@@ -115,7 +115,8 @@ def generate_toc(text: str, *, min_level: int = 1, max_level: int = 6) -> str:
     lines = []
     for heading in headings:
         indent = "  " * (heading.level - base_level)
-        lines.append(f"{indent}- [{heading.title}](#{heading.slug})")
+        safe_title = heading.title.replace("[", "\\[").replace("]", "\\]").replace("(", "\\(").replace(")", "\\)")
+        lines.append(f"{indent}- [{safe_title}](#{heading.slug})")
     return "\n".join(lines)
 
 
