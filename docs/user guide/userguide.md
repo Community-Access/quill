@@ -2158,7 +2158,7 @@ QUILL opens and edits formatted braille text files — `.brf`, `.brl`, `.pef`, a
 
 **Saving is byte-for-byte.** When you save a braille file, QUILL preserves it exactly: no trailing-space trimming, no line-ending normalization, and form feeds (the hard page breaks) are kept. If the text contains characters outside the braille-ASCII range, QUILL still saves them as-is and gives you a single, non-blocking spoken warning so nothing is silently changed. This means a round-trip — open, save — gives you back an identical file.
 
-**The braille status cell.** While a braille file is active, the status bar carries a braille cell that updates as you move: it reads like `BRF Pg 12/87 | Ln 14/25 | Cell 31/40 | Print 7`. That is the braille page, the line within the page, the cell within the line, and the print page. Print-page detection arrives in a later phase; until then the print segment reads `Print ?`.
+**The braille status cell.** While a braille file is active, the status bar carries a braille cell that updates as you move: it reads like `BRF Pg 12/87 | Ln 14/25 | Cell 31/40 | Print 7`. That is the braille page, the line within the page, the cell within the line, and the print page. Print-page detection runs on every open and on every page-map recalculation, so the print segment is always populated when a print-to-braille anchor is available; on documents without anchors it reads `Print ?`.
 
 **The Braille menu.** Braille commands live under **Tools > Braille**. Bindings are intentionally left unset so nothing collides with your screen reader or existing editor keys; you can assign your own in the keyboard customizer, or run them from the Command Palette.
 
@@ -2226,21 +2226,18 @@ From the help dialog you can:
 
 The **Personalise QUILL** wizard runs automatically the first time QUILL starts. You can re-run it at any time from **Help → Personalise QUILL**.
 
-The wizard walks you through eight short pages:
+The wizard walks you through six short pages (five if you do not enable AI writing assistance on the Extras page):
 
 1. **Welcome** — an introduction to what the wizard covers.
-2. **Keyboard and Sound** — choose a keyboard pack and whether QUILL plays audio cues. QUILL auto-detects your screen reader and sets accessible defaults.
-3. **Feature Profile** — choose a starting profile: Essential (minimal), Standard (recommended for most users), Power User (all features on), or Accessibility Focus (screen-reader optimised). You can switch profiles later.
-4. **Remote Access** — enable or hide FTP, SFTP, WebDAV, and S3 remote file commands. Disabling this removes the remote-site menu items entirely, keeping the File menu clean.
-5. **AI Assistance** — turn the AI writing assistant on or off. You can add an API key later; QUILL will prompt you when you first use an AI feature.
-6. **Reading and Accessibility** — configure read-aloud behaviour and screen-reader announcement style.
-7. **Writing Tools** — enable or disable spell-check-as-you-type, abbreviation expansion, and the Copy Tray.
-8. **Startup Behaviour** — choose what QUILL opens when it starts and whether to check for updates automatically.
-9. **Summary** — review all your choices before they are applied. Use Back to revise any page. Nothing changes in QUILL until you press Finish.
+2. **Intent** — the most important page. A single question: *What kind of writing do you do?* A list of seven starting points is shown. Arrow up and down through the list. As you move, a large read-only text area below the list updates live to tell you, in plain spoken English, exactly what you will have if you choose that option. There are no feature IDs, no jargon about flags, and no list of what you will not get. Just what you get.
+3. **Extras** — offers a few optional extras such as AI writing assistance, Braille Mode, and typing automation. Only the extras that are not already part of your base choice are shown. Each extra is a single checkbox. Checking one adds a sentence to the preview so you always know what you are committing to.
+4. **AI Provider** — shown only if you enabled AI on the Extras page. Collects your provider and your API key. Supported providers are Anthropic (Claude), OpenAI (GPT), Google Gemini, OpenRouter (many models), and Ollama, which runs models on your own device or connects to an Ollama-compatible cloud host. The key is stored securely in the Windows Credential Manager, not in a settings file. You can skip this and set the key up later.
+5. **Keyboard and Sound** — choose a keyboard pack and whether QUILL plays audio cues. QUILL auto-detects your screen reader and sets accessible defaults.
+6. **Summary** — review all your choices before they are applied. The summary is plain text: your profile name, what features are active, which Quillins are enabled, your keyboard pack, and your sound setting. Use Back to revise any page. Nothing changes in QUILL until you press Finish.
 
 **Important:** The wizard is transactional. Your choices are held in memory until you press Finish. If you close or cancel the wizard, no settings are changed.
 
-**Profiles explained:**
+**Profiles explained:** The four built-in profiles each start you at a different level of feature density and accessibility support. You can switch profiles at any time from **Tools → Customize & Support → Profiles and Features...** or by pressing `Alt+Shift+P`.
 
 | Profile | Best for |
 |---------|----------|
@@ -2248,8 +2245,6 @@ The wizard walks you through eight short pages:
 | Standard | Most users — balanced feature set with AI and tools available |
 | Power User | All features on; suited to advanced writing, extraction, and GLOW workflows |
 | Accessibility Focus | Screen-reader primary; maximises keyboard coverage and announcements |
-
-You can switch profiles at any time from **Tools → Customize & Support → Profiles and Features...** or by pressing `Alt+Shift+P`.
 
 ## Translation and Community Localization
 

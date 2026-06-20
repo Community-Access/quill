@@ -4845,12 +4845,13 @@ The dialog is registered in `dialog_inventory.json`. `affirmative_id = wx.ID_CLO
 
 ### §23.4 Topics Coverage
 
-The schema (`quill/core/help/topics.json`) currently contains 109 topics covering:
+The schema (`quill/core/help/topics.json`) currently contains 134 topics covering:
 
 - Main editor surface, status bar, document tabs
 - All major dialogs: Find/Replace, Spell Check, AI Assistant, Remote/SSH, Preferences pages
 - Startup Wizard pages (F1 on any wizard control explains the effect of each choice)
 - Feature profiles, keyboard packs, read-aloud settings, GLOW workflows
+- All 25 braille commands registered in `quill/core/feature_command_map.py` (status, navigation, page tools, translation, back-translation, pack install, line/cell, progress, save-as-clean, line-ending normalize). A regression test in `tests/unit/tools/test_help_coverage.py` (`test_every_braille_command_has_a_help_topic`) walks the command map and fails CI if a new `braille.*` command ships without a topic.
 
 Full coverage target is 250 topics (all `SetName()` calls in `quill/ui/`).
 

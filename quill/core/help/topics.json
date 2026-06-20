@@ -714,5 +714,157 @@
     "body": "This is the context-sensitive help dialog. It shows information about the control you were focused on when you pressed F1. Tab to the 'Open User Guide' button for the full documentation section, or press Escape to close.",
     "keystrokes": ["F1 - Open this dialog", "Escape - Close", "Ctrl+F1 - Open User Guide"],
     "user_guide_section": "help-learning-and-daily-confidence"
+  },
+  {
+    "id": "braille.status_cell",
+    "title": "Status Bar Braille Cell",
+    "body": "When a braille file (.brf or .brl) is the active document, the status bar shows a live cell that updates as you move the caret. The cell has four segments: braille page (e.g. BRF Pg 12/87), line within the page (Ln 14/25), cell within the line (Cell 31/40), and print page (Print 7). When the print-page detector cannot resolve a page, the print segment reads 'Print ?' so the fallback is visible rather than silent. Use the Braille menu to read the same information as a spoken announcement.",
+    "user_guide_section": "braille-mode"
+  },
+  {
+    "id": "braille.brf_tools",
+    "title": "BRF Tools Preferences",
+    "body": "The BRF Tools Quillin adds a four-tab preferences dialog. The Translation tab picks the default UEB or legacy table. The Page tab sets the line and cell counts per braille page and chooses form-feed handling. The Proofing tab stores per-document sidecar paths and the proofed-pages color. The Advanced tab exposes NABCC mode, output line endings, and developer diagnostics. The dialog is only available when the BRF Tools Quillin is installed.",
+    "user_guide_section": "braille-mode"
+  },
+  {
+    "id": "braille.translation_profile",
+    "title": "Translation Profile",
+    "body": "A translation profile is a named bundle of liblouis tables, proofing rules, and output options. Profiles are listed under Tools > Braille > Translation Profile. The active profile is shown in the status bar. Switch profiles with the keyboard, or pick from the menu. The QUILL Braille Pack ships UEB (Grade 1 and Grade 2), Standard American English (legacy), and a curated set of additional languages.",
+    "user_guide_section": "braille-mode"
+  },
+  {
+    "id": "braille.read_status",
+    "title": "Read Braille Status",
+    "body": "Speak the current braille position. The spoken announcement respects your status verbosity: Normal verbosity speaks the page, line, and cell; Verbose adds the print page and running head. The status bar cell updates in parallel so sighted and screen-reader users get the same information at the same time. Safe to run on a non-braille document - QUILL says 'This is not a braille document' and does nothing else.",
+    "user_guide_section": "braille-mode"
+  },
+  {
+    "id": "braille.read_detailed_status",
+    "title": "Read Detailed Braille Status",
+    "body": "Speak the full detailed status: braille page, line within the page, cell within the line, print page, running head, proofing state, and detection confidence. Available in any profile; expands to the most detail in Beginner. Composes the example string from the spec so the structure stays stable across releases.",
+    "user_guide_section": "braille-mode"
+  },
+  {
+    "id": "braille.read_print_page",
+    "title": "Read Current Print Page",
+    "body": "Speak the current print page using the BRF page-detection engine. If the detector cannot resolve a page, the spoken announcement says 'Print page unknown' so the fallback is honest. The status bar print segment shows the same value.",
+    "user_guide_section": "braille-mode"
+  },
+  {
+    "id": "braille.go_to_page",
+    "title": "Go to Braille Page",
+    "body": "Jump to a braille page by number. Opens a small input dialog that accepts 1..N. QUILL validates the page against the current page map and refuses to move if the number is out of range, announcing 'Braille page 0 of N' or 'Braille page 412 of 87' as appropriate. After the move, the new position is read aloud using Read Braille Status.",
+    "keystrokes": ["Enter - Jump to page", "Escape - Cancel"],
+    "user_guide_section": "braille-mode"
+  },
+  {
+    "id": "braille.go_to_print_page",
+    "title": "Go to Print Page",
+    "body": "Jump to a print page by number. QUILL uses the BRF page-detection engine to translate the print page into a braille position, then moves the caret there. Announces 'Print page N, braille page M of T' on arrival. If the print page is not in the page map, says 'Print page N not found in this document' and does not move.",
+    "keystrokes": ["Enter - Jump to page", "Escape - Cancel"],
+    "user_guide_section": "braille-mode"
+  },
+  {
+    "id": "braille.next_print_page_change",
+    "title": "Next Print Page Change",
+    "body": "Move the caret to the start of the next braille page whose print page number differs from the current one. Spoken: 'Print page change. From page 7 to page 8.' If the caret is already on the last change, says 'No more print page changes.' Inverse of Previous Print Page Change.",
+    "user_guide_section": "braille-mode"
+  },
+  {
+    "id": "braille.previous_print_page_change",
+    "title": "Previous Print Page Change",
+    "body": "Move the caret to the start of the previous braille page whose print page number differs from the current one. Spoken: 'Print page change. From page 8 to page 7.' If the caret is on the first change, says 'No previous print page changes.' Inverse of Next Print Page Change.",
+    "user_guide_section": "braille-mode"
+  },
+  {
+    "id": "braille.insert_page_break",
+    "title": "Insert Braille Page Break",
+    "body": "Insert a form-feed character (0x0C) at the caret. The new page break is reflected in the page map immediately; the status bar updates to show the new page number. Insert is undoable with Ctrl+Z. To remove an existing page break, place the caret on it and choose Remove Braille Page Break at Cursor from the same menu.",
+    "user_guide_section": "braille-mode"
+  },
+  {
+    "id": "braille.recalculate_page_map",
+    "title": "Recalculate Page Map",
+    "body": "Rebuild the page map after edits that may have invalidated it. QUILL walks the document once and re-emits the page boundaries. Safe to run on a non-braille document - says 'This is not a braille document' and does nothing else. Recalculate is automatic on every open; this command is for the rare case where a manual refresh is wanted (e.g. after a bulk import).",
+    "user_guide_section": "braille-mode"
+  },
+  {
+    "id": "braille.read_line_and_cell",
+    "title": "Read Current Line and Cell",
+    "body": "Speak the current line within the braille page and the cell within the line. Useful when you only need fine-grained position feedback without the full status. The line segment is 1-based within the current page; the cell segment is 1-based within the current line. Status bar updates in parallel.",
+    "user_guide_section": "braille-mode"
+  },
+  {
+    "id": "braille.read_braille_page",
+    "title": "Read Current Braille Page",
+    "body": "Speak the current braille page number, plus the total page count. Format: 'Braille page 12 of 87.' This is the page-only equivalent of Read Braille Status, which also speaks line and cell.",
+    "user_guide_section": "braille-mode"
+  },
+  {
+    "id": "braille.read_progress_summary",
+    "title": "Read Progress Summary",
+    "body": "Speak a one-line progress summary: which braille page you are on, how many pages are proofed, how many need review, and your estimated completion percentage. Format example: 'Progress summary. 87 braille pages. Current page 12. 9 pages proofed. 3 pages need review. Estimated completion 10 percent.' The summary comes from the sidecar when present; on first open the percentages are zero.",
+    "user_guide_section": "braille-mode"
+  },
+  {
+    "id": "braille.next_page",
+    "title": "Next Braille Page",
+    "body": "Move the caret to the start of the next braille page. Spoken: 'Braille page 13.' If the caret is already on the last page, says 'No next braille page' and does not move. Inverse of Previous Braille Page.",
+    "user_guide_section": "braille-mode"
+  },
+  {
+    "id": "braille.previous_page",
+    "title": "Previous Braille Page",
+    "body": "Move the caret to the start of the previous braille page. Spoken: 'Braille page 11.' If the caret is already on the first page, says 'No previous braille page' and does not move. Inverse of Next Braille Page.",
+    "user_guide_section": "braille-mode"
+  },
+  {
+    "id": "braille.remove_page_break",
+    "title": "Remove Braille Page Break at Cursor",
+    "body": "Delete the form-feed character (0x0C) at the caret. The two adjacent pages merge into one; the page map updates immediately. If the caret is not on a form-feed, says 'No page break at cursor' and does nothing. Undoable with Ctrl+Z.",
+    "user_guide_section": "braille-mode"
+  },
+  {
+    "id": "braille.normalize_line_endings",
+    "title": "Normalize Line Endings",
+    "body": "Convert every line ending in the document to the active document's line ending style (CRLF, LF, or CR). The status bar announces the count of changes. Currently a placeholder: the command is wired and reachable but the in-place transform is reserved for a future release. A spoken 'Line ending normalization is not yet implemented' is heard when the command runs.",
+    "user_guide_section": "braille-mode"
+  },
+  {
+    "id": "braille.save_as_clean",
+    "title": "Save As Clean",
+    "body": "Save a copy of the current braille document with trailing whitespace stripped, smart quotes replaced with ASCII quotes, and zero-width characters removed. Opens a Save As dialog. The original file is left unchanged. Use this to produce a downstream-clean copy for printing or sharing.",
+    "user_guide_section": "braille-mode"
+  },
+  {
+    "id": "braille.translate_ueb_g1",
+    "title": "Translate to UEB Grade 1",
+    "body": "Forward-translate the active document (or selection) to Unified English Braille Grade 1 using the liblouis table configured in Translation Profile. Opens the result in a new document and announces the page count. Requires the QUILL Braille Pack.",
+    "user_guide_section": "braille-mode"
+  },
+  {
+    "id": "braille.translate_ueb_g2",
+    "title": "Translate to UEB Grade 2",
+    "body": "Forward-translate the active document (or selection) to Unified English Braille Grade 2 (contracted) using the liblouis table configured in Translation Profile. Opens the result in a new document and announces the page count. Requires the QUILL Braille Pack.",
+    "user_guide_section": "braille-mode"
+  },
+  {
+    "id": "braille.translate_selection",
+    "title": "Translate Selection",
+    "body": "Forward-translate the current selection (or the whole document if nothing is selected) using the active translation profile. Opens the result in a new document. The translation respects the proofing-aware rules in the profile when present. Requires the QUILL Braille Pack.",
+    "user_guide_section": "braille-mode"
+  },
+  {
+    "id": "braille.back_translate",
+    "title": "Back-Translate",
+    "body": "Convert braille back to print. Back-translation is always opened as a clearly labelled draft because automatic back-translation is not authoritative. The draft uses the same proofing rules as the active profile when available. Requires the QUILL Braille Pack.",
+    "user_guide_section": "braille-mode"
+  },
+  {
+    "id": "braille.install_pack",
+    "title": "Install QUILL Braille Pack",
+    "body": "Install or update the optional QUILL Braille Pack. The pack adds the liblouis translation engine, UEB and legacy English tables, plus a curated set of additional languages. Runs entirely out of process so a liblouis failure cannot take QUILL down. If the pack is already installed, the command updates it in place.",
+    "user_guide_section": "braille-mode"
   }
 ]

@@ -77,7 +77,7 @@ This release changes that completely. QUILL now starts you at the right level an
 
 ### The redesigned startup wizard
 
-When you run QUILL for the first time, a short wizard opens. It has five pages and takes about two minutes.
+When you run QUILL for the first time, a short wizard opens. It has six pages (five if you do not enable AI writing assistance on the Extras page) and takes about two minutes.
 
 The most important page asks one question: **What kind of writing do you do?** A list of seven starting points is shown. Arrow up and down through the list. As you move, a large read-only text area below the list updates live to tell you, in plain spoken English, exactly what you will have if you choose that option. There are no feature IDs, no jargon about flags, and no list of what you will not get. Just what you get.
 
@@ -512,7 +512,7 @@ While a braille file is active, the status bar includes a braille cell that upda
 BRF Pg 12/87 | Ln 14/25 | Cell 31/40 | Print 7
 ```
 
-That status gives the braille page, line within the page, cell within the line, and print page. Print-page detection arrives in a later phase; until then the print segment reads `Print ?`.
+That status gives the braille page, line within the page, cell within the line, and print page. Print-page detection runs on every open and on every page-map recalculation, so the print segment is always populated when a print-to-braille anchor is available; on documents without anchors it reads `Print ?`.
 
 ### Braille commands
 
