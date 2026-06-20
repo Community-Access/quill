@@ -40,6 +40,52 @@ class CommandRegistry:
             feature_id=feature_id or feature_for_command(command_id),
         )
 
+    def try_register(
+        self,
+        command_id: str,
+        title: str,
+        handler: CommandHandler,
+        keybinding: str | None = None,
+        feature_id: str | None = None,
+    ) -> bool:
+        """Register if absent. Returns True if registered, False if it already existed.
+
+        Tooling that conditionally wants to add a command (e.g. a Quillin
+        extension on startup) can use this to detect collisions without
+        having to catch ValueError.
+        """
+        if command_id in self._commands:
+            return False
+        self.register(
+            command_id,
+            title,
+            handler,
+            keybinding=keybinding,
+            feature_id=feature_id,
+        )
+        return True
+
+    def replace(
+        self,
+        command_id: str,
+        title: str,
+        handler: CommandHandler,
+        keybinding: str | None = None,
+        feature_id: str | None = None,
+    ) -> None:
+        """Overwrite any existing entry with the same command_id.
+
+        Use sparingly: callers replacing built-in commands are responsible
+        for the resulting keyboard-binding and feature-catalog visibility.
+        """
+        self._commands[command_id] = Command(
+            id=command_id,
+            title=title,
+            keybinding=keybinding,
+            handler=handler,
+            feature_id=feature_id or feature_for_command(command_id),
+        )
+
     def run(self, command_id: str) -> None:
         command = self._commands.get(command_id)
         if command is None:
