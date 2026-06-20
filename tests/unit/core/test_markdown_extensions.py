@@ -103,3 +103,29 @@ class TestApplyNl2br:
     def test_skips_code_fences(self) -> None:
         text = "```\nline a\nline b\n```"
         assert apply_nl2br(text) == text
+
+    def test_skips_tilde_fences(self) -> None:
+        text = "~~~\nline a\nline b\n~~~"
+        assert apply_nl2br(text) == text
+
+    def test_four_backtick_fence_preserves_contents(self) -> None:
+        text = "````\nline a\nline b\n````"
+        assert apply_nl2br(text) == text
+
+    def test_closing_fence_must_match_opener_character(self) -> None:
+        # Tilde opener, backtick closer - the closer is ignored; backticks
+        # inside are still treated as code content, and the backticks
+        # themselves do not close the tilde fence.
+        text = "~~~\n```\nstill inside\n```\n~~~\n"
+        result = apply_nl2br(text)
+        # Trailing blank line is collapsed by splitlines(); only the
+        # structural equality matters here.
+        assert result == text.rstrip("\n")
+        assert "still inside" in result
+        assert "\n~~~\n" not in result  # closing tilde fence did not gain a hard break
+
+    def test_closing_fence_must_be_at_least_as_long(self) -> None:
+        # Three backticks open, three tildes do NOT close (different char);
+        # a shorter backtick run also does not close.
+        text = "```\nline a\n~~\nstill inside\n```"
+        assert apply_nl2br(text) == text

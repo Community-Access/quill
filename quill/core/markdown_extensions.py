@@ -115,7 +115,13 @@ def generate_toc(text: str, *, min_level: int = 1, max_level: int = 6) -> str:
     lines = []
     for heading in headings:
         indent = "  " * (heading.level - base_level)
-        safe_title = heading.title.replace("[", "\\[").replace("]", "\\]").replace("(", "\\(").replace(")", "\\)")
+        safe_title = (
+            heading.title
+            .replace("[", "\\[")
+            .replace("]", "\\]")
+            .replace("(", "\\(")
+            .replace(")", "\\)")
+        )
         lines.append(f"{indent}- [{safe_title}](#{heading.slug})")
     return "\n".join(lines)
 
@@ -149,25 +155,59 @@ def apply_nl2br(text: str) -> str:
 
     Within each paragraph (a run of non-blank lines), every line except the
     last gets a trailing Markdown hard-break (two spaces). Blank lines that
-    separate paragraphs, and code fences, are left untouched.
+    separate paragraphs, and fenced code blocks (CommonMark ````` `` and
+    ``~~~`` fences with three or more characters), are left untouched.
     """
     lines = text.splitlines(keepends=False)
     out: list[str] = []
     in_code = False
+    open_fence_char: str | None = None
+    open_fence_len = 0
     for index, line in enumerate(lines):
-        if line.strip().startswith("```"):
-            in_code = not in_code
+        fence = _match_fence(line)
+        if fence is not None:
+            char, length = fence
+            if not in_code:
+                in_code = True
+                open_fence_char = char
+                open_fence_len = length
+            elif char == open_fence_char and length >= open_fence_len:
+                in_code = False
+                open_fence_char = None
+                open_fence_len = 0
             out.append(line)
             continue
         if in_code or not line.strip():
             out.append(line)
             continue
         next_line = lines[index + 1] if index + 1 < len(lines) else ""
-        if next_line.strip() and not next_line.strip().startswith("```"):
+        if next_line.strip() and _match_fence(next_line) is None:
             out.append(line.rstrip() + "  ")
         else:
             out.append(line)
     return "\n".join(out)
+
+
+def _match_fence(line: str) -> tuple[str, int] | None:
+    """Return ``(char, length)`` for a CommonMark fence line, else None.
+
+    Recognises 3+ backticks or tildes after up to three spaces of indent.
+    """
+    stripped = line.lstrip(" ")
+    if not stripped:
+        return None
+    first = stripped[0]
+    if first not in ("`", "~"):
+        return None
+    count = 0
+    for char in stripped:
+        if char == first:
+            count += 1
+        else:
+            break
+    if count < 3:
+        return None
+    return first, count
 
 
 def describe_processing_status(profile_name: str, extension_names: list[str]) -> str:
