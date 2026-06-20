@@ -339,7 +339,7 @@ trigger.
 
 This checklist was generated from a full source scrub of `quill/ui/` (chiefly
 `quill/ui/main_frame.py`, plus `palette.py`, `assistant_panel.py`,
-`assistant_tools.py`, `ai_model_panel.py`, `style_panel.py`, `sticky_notes.py`,
+`assistant_tools.py`, `ai_model_panel.py`, `train_style_dialog.py`, `sticky_notes.py`,
 `preview_dialog.py`, and `web_form.py`) and the bindings in
 `quill/core/keymap.py`. When you add or change a dialog, update the matching row
 here in the same change so this file stays a faithful, complete map.

@@ -290,22 +290,30 @@ def test_navigate_next_heading_announces_level_and_ordinal() -> None:
     text = "# Top\nIntro\n## Child\nBody\n### Grandchild\nMore\n"
     frame = _build_frame(text, insertion_point=0)
     statuses: list[str] = []
-    frame._set_status = statuses.append  # type: ignore[method-assign]
+    # `_announce_navigation_move` routes through `_quill_feedback` rather than
+    # `_set_status` directly.  Override `_quill_feedback` to capture the
+    # announced message regardless of the user's browse_mode_feedback setting.
+    frame._quill_feedback = lambda message, **_kw: statuses.append(message)  # type: ignore[method-assign]
+    # The default browse_mode_move_detail is "position", so the announcement
+    # includes the line and column.  Pin it explicitly so a future default
+    # change does not silently drift the expected message.
+    frame.settings.browse_mode_move_detail = "position"
 
     frame.navigate_next_heading()
 
-    assert statuses == ["Moved to next heading, H2, 2 of 3: Child"]
+    assert statuses == ["Moved to next heading, H2, 2 of 3: Child at line 3, column 1"]
 
 
 def test_navigate_previous_heading_announces_level_and_ordinal() -> None:
     text = "# Top\nIntro\n## Child\nBody\n### Grandchild\nMore\n"
     frame = _build_frame(text, insertion_point=len(text))
     statuses: list[str] = []
-    frame._set_status = statuses.append  # type: ignore[method-assign]
+    frame._quill_feedback = lambda message, **_kw: statuses.append(message)  # type: ignore[method-assign]
+    frame.settings.browse_mode_move_detail = "position"
 
     frame.navigate_previous_heading()
 
-    assert statuses == ["Moved to previous heading, H3, 3 of 3: Grandchild"]
+    assert statuses == ["Moved to previous heading, H3, 3 of 3: Grandchild at line 5, column 1"]
 
 
 def test_select_line_announces_scope_and_word_count() -> None:

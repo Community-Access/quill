@@ -5465,10 +5465,10 @@ explore a phrasing option — and switching to a browser or a separate AI
 client breaks flow, especially when using NVDA or JAWS where switching
 applications involves extra navigation. Ask AI keeps the interaction
 entirely within the QUILL keyboard model.</p>
-<p><strong>Entry point.</strong>
-<code>Tools &gt; AI Assistant &gt; Ask AI...</code> (<code>Alt+Q</code>
-default chord). The Command Palette entry is "Ask AI". The binding is
-user-reassignable.</p>
+<p><strong>Entry point.</strong> <code>AI &gt; Ask AI...</code> (Command
+Palette) and <code>AI &gt; Writing Assistant...</code>
+(<code>Alt+Q</code> default chord). The Command Palette entry is "Ask
+AI". The binding is user-reassignable.</p>
 <p><strong>Providers.</strong> Three providers are supported. QUILL
 detects which keys are configured and only shows available
 providers.</p>
@@ -5603,9 +5603,8 @@ rhythm, convert to bullets, generate an outline. Without a library,
 these prompts must be retyped or pasted from an external file each time.
 The Prompt Library turns these into first-class named commands,
 accessible from the keyboard, the command palette, and the dialog.</p>
-<p><strong>Entry point.</strong>
-<code>Tools &gt; AI Assistant &gt; Prompt Library...</code>. Command
-Palette: "Prompt Library". User-assignable binding.</p>
+<p><strong>Entry point.</strong> <code>AI &gt; Prompt Library...</code>.
+Command Palette: "Prompt Library". User-assignable binding.</p>
 <p><strong>Prompt object fields.</strong></p>
 <table>
 <thead>
@@ -7439,13 +7438,14 @@ focus across chained modals, preserving the explicit-consent
 requirements and retiring the screen-reader startup-crash path; Phase 6
 — assistant/AI tool dialog consolidation
 (<code>assistant_tools.py</code>, <code>ai_model_panel.py</code>,
-<code>style_panel.py</code>, <code>assistant_panel.py</code>) onto the
-same modal/focus/error contract with safe async/"busy" semantics; Phase
-7 — CQ-16 characterization expansion around dialog-launch command paths
-(return values and side effects) before any CQ-1 decomposition; Phase 8
-— manual NVDA baseline, JAWS spot (startup, assistant, sticky notes,
-watch profiles), and Narrator sanity passes across
-<code>dialogs.md</code>, each row carrying pass/fail evidence.</p>
+<code>train_style_dialog.py</code>, <code>assistant_panel.py</code>)
+onto the same modal/focus/error contract with safe async/"busy"
+semantics; Phase 7 — CQ-16 characterization expansion around
+dialog-launch command paths (return values and side effects) before any
+CQ-1 decomposition; Phase 8 — manual NVDA baseline, JAWS spot (startup,
+assistant, sticky notes, watch profiles), and Narrator sanity passes
+across <code>dialogs.md</code>, each row carrying pass/fail
+evidence.</p>
 <p><strong>Dialog-by-dialog coverage map (no section exempt).</strong>
 Every checklist family in <code>dialogs.md</code> is in scope with a
 default disposition: file/session dialogs (native-flow normalization +
@@ -11616,7 +11616,7 @@ preserved.</td>
 <td>6</td>
 <td>Assistant/AI dialog consolidation (folds DLG-2)</td>
 <td><strong>Todo</strong></td>
-<td><code>assistant_tools.py</code>/<code>ai_model_panel.py</code>/<code>style_panel.py</code>/<code>assistant_panel.py</code>
+<td><code>assistant_tools.py</code>/<code>ai_model_panel.py</code>/<code>train_style_dialog.py</code>/<code>assistant_panel.py</code>
 async/"busy" semantics.</td>
 </tr>
 <tr>

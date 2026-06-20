@@ -151,40 +151,74 @@ def mark_recovery_offer_recovered(offer: RecoveryOffer) -> None:
 
 
 def latest_session_snapshot(session_id: str) -> Path | None:
+    """Return the newest non-empty autosave ``.snap`` for *session_id*.
+
+    Calls ``stat()`` exactly once per candidate file (#356 / #289): the
+    previous implementation paid two syscalls per file (one to filter
+    non-empty, one to sort by mtime).
+    """
     _validate_session_id(session_id)
     root = app_data_dir() / "autosave" / session_id
     if not root.exists():
         return None
-    snapshots = sorted(
-        [s for s in root.glob("*.snap") if s.stat().st_size > 0],
-        key=lambda item: item.stat().st_mtime,
-        reverse=True,
-    )
-    if not snapshots:
+    candidates: list[tuple[Path, float, int]] = []
+    for path in root.glob("*.snap"):
+        try:
+            info = path.stat()
+        except OSError:
+            # Snapshot deleted between glob and stat (autosave cleanup).
+            continue
+        if info.st_size > 0:
+            candidates.append((path, info.st_mtime, info.st_size))
+    if not candidates:
         return None
-    return snapshots[0]
+    candidates.sort(key=lambda item: item[1], reverse=True)
+    return candidates[0][0]
 
 
 def read_recovery_snapshot(path: Path) -> tuple[str, bool]:
     """Read *path* and return ``(text, had_replacements)``.
 
     ``had_replacements`` is True when the file contained bytes that could not
-    be decoded as UTF-8 and were substituted with U+FFFD (the Unicode
-    replacement character).  The UI surfaces this as a status-bar note in the
-    recovery dialog so the user knows to inspect the recovered text.
+    be decoded as UTF-8. The caller decides how to surface that.
+
+    Reads the bytes first and decodes with ``errors="strict"`` (#356 / #301)
+    so a real UnicodeDecodeError is caught and a replacement is performed
+    explicitly; the previous ``errors="replace"`` call made it impossible
+    to distinguish "user typed U+FFFD" from "file had undecodable bytes".
     """
-    text = path.read_text(encoding="utf-8", errors="replace")
-    had_replacements = "�" in text
-    return text, had_replacements
+    raw_bytes = path.read_bytes()
+    try:
+        text = raw_bytes.decode("utf-8")
+    except UnicodeDecodeError:
+        text = raw_bytes.decode("utf-8", errors="replace")
+        return text, True
+    return text, False
 
 
-def save_cursor_position(session_id: str, position: int) -> None:
+#: Maximum caret offset the recovery layer will round-trip. Matches the
+#: editor's hard cap on document length so a corrupt value cannot survive a
+#: round trip and surface a bogus cursor offset to the next session.
+_MAX_CURSOR_POSITION = 10_000_000
+
+
+def save_cursor_position(
+    session_id: str,
+    position: int,
+    document_length: int | None = None,
+) -> None:
     """Persist the editor cursor *position* for *session_id*.
 
     Called from the UI on every autosave so the next session can restore the
     caret to where the user was working ("Resume from where I left off", §8.4).
+
+    The persisted value is clamped to ``[0, document_length or _MAX_CURSOR_POSITION]``
+    (#356 / #311). Out-of-bounds or non-int values are silently treated as 0
+    on load so a corrupt snapshot can never resurrect a bogus caret offset.
     """
     _validate_session_id(session_id)
+    upper_bound = document_length if document_length is not None else _MAX_CURSOR_POSITION
+    clamped_position = max(0, min(int(position), upper_bound))
     fd = _acquire_file_lock()
     try:
         with _state_lock:
@@ -192,8 +226,10 @@ def save_cursor_position(session_id: str, position: int) -> None:
             positions: dict[str, int] = {}
             raw = state.get("cursor_positions")
             if isinstance(raw, dict):
-                positions = {k: v for k, v in raw.items() if isinstance(k, str) and isinstance(v, int)}
-            positions[session_id] = int(position)
+                positions = {
+                    k: v for k, v in raw.items() if isinstance(k, str) and isinstance(v, int)
+                }
+            positions[session_id] = clamped_position
             state["cursor_positions"] = positions
             _save_state(state)
     finally:
@@ -250,7 +286,13 @@ def _load_cursor_position(state: dict[str, object], session_id: str) -> int:
     if not isinstance(positions, dict):
         return 0
     raw = positions.get(session_id)
-    return int(raw) if isinstance(raw, int) else 0
+    if not isinstance(raw, int):
+        return 0
+    # Clamp on load too (#356 / #311): a value that survived save but was
+    # tampered with on disk must not surface a bogus caret offset.
+    if raw < 0 or raw > _MAX_CURSOR_POSITION:
+        return 0
+    return raw
 
 
 def _load_dismissal_count(state: dict[str, object], session_id: str) -> int:

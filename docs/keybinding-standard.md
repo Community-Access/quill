@@ -40,19 +40,37 @@ not a free pass.
 
 ### Documented bindings (allowlist, as of 0.7.0)
 
-| Command id                  | Chord              | Justification                                          |
-|-----------------------------|--------------------|--------------------------------------------------------|
-| `view.send_to_tray`         | `Ctrl+Alt+T`       | Windows-shell registration; cannot move to QUILL-key.  |
-| `view.toggle_tab_control`   | `Ctrl+Alt+Shift+T` | Windows-shell registration; cannot move to QUILL-key.  |
-| `format.heading_1`          | `Ctrl+Alt+1`       | Overrides NVDA switch-to-synth-1.                      |
-| `format.heading_2`          | `Ctrl+Alt+2`       | Overrides NVDA switch-to-synth-2.                      |
-| `format.heading_3`          | `Ctrl+Alt+3`       | Overrides NVDA switch-to-synth-3.                      |
-| `format.heading_4`          | `Ctrl+Alt+4`       | Overrides NVDA switch-to-synth-4.                      |
-| `format.heading_5`          | `Ctrl+Alt+5`       | Overrides NVDA switch-to-synth-5.                      |
-| `format.heading_6`          | `Ctrl+Alt+6`       | Overrides NVDA switch-to-synth-6.                      |
+| Command id                          | Chord                | Justification                                          |
+|-------------------------------------|----------------------|--------------------------------------------------------|
+| `view.send_to_tray`                 | `Ctrl+Alt+T`         | Windows-shell registration; cannot move to QUILL-key.  |
+| `view.toggle_tab_control`           | `Ctrl+Alt+Shift+T`   | Windows-shell registration; cannot move to QUILL-key.  |
+| `format.heading_1`                  | `Ctrl+Alt+1`         | Overrides NVDA switch-to-synth-1.                      |
+| `format.heading_2`                  | `Ctrl+Alt+2`         | Overrides NVDA switch-to-synth-2.                      |
+| `format.heading_3`                  | `Ctrl+Alt+3`         | Overrides NVDA switch-to-synth-3.                      |
+| `format.heading_4`                  | `Ctrl+Alt+4`         | Overrides NVDA switch-to-synth-4.                      |
+| `format.heading_5`                  | `Ctrl+Alt+5`         | Overrides NVDA switch-to-synth-5.                      |
+| `format.heading_6`                  | `Ctrl+Alt+6`         | Overrides NVDA switch-to-synth-6.                      |
+| `format.toggle_bullet_list`         | `Ctrl+Alt+7`         | Overrides NVDA review-cursor (EdSharp port).           |
+| `format.toggle_numbered_list`       | `Ctrl+Alt+8`         | Overrides NVDA review-cursor (EdSharp port).           |
+| `tools.ai_spell_check`              | `Ctrl+Alt+Shift+S`   | AI reserved chord class (#357).                        |
+| `tools.ai_spell_check_interactive`  | `Ctrl+Alt+Shift+I`   | AI reserved chord class (#357).                        |
+| `tools.ai_grammar_style`            | `Ctrl+Alt+Shift+G`   | AI reserved chord class (#357).                        |
+| `tools.ai_translate_selection`      | `Ctrl+Alt+Shift+T`   | AI reserved chord class (#357).                        |
+| `tools.ai_thesaurus`                | `Ctrl+Alt+Shift+H`   | AI reserved chord class (#357).                        |
+| `tools.compare_next_difference`     | `Ctrl+Alt+Shift+.`   | Compare reserved chord class (#357).                   |
+| `tools.compare_previous_difference` | `Ctrl+Alt+Shift+,`   | Compare reserved chord class (#357).                   |
+| `tools.compare_announce_difference` | `Ctrl+Alt+Shift+D`   | Compare reserved chord class (#357).                   |
 
 NVDA's switch-to-synth-N has a documented QUILL-key alternative
 (`Ctrl+Shift+Grave, <N>`) for users who want both behaviours.
+
+The AI and compare chord classes share `Ctrl+Alt+Shift+<letter>` and
+`Ctrl+Alt+Shift+<punct>` respectively. They were chosen because F8,
+Shift+F8, and Ctrl+F8 (the previous inline accelerators) collided with
+the selection bindings `edit.start_selection` / `edit.complete_selection`
+/ `edit.reselect`. The chord class is documented as a reservation so
+future AI / compare work reuses the modifier stack instead of inventing
+a new one.
 
 ### The `# §edsharp-ok` escape hatch
 

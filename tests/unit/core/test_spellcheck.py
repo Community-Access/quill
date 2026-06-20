@@ -96,3 +96,103 @@ def test_previous_misspelling_returns_previous_before_cursor() -> None:
     item = previous_misspelling(text, text.index("laterwrong"), {"midword"})
     assert item is not None
     assert item.word == "earlywrong"
+
+
+# --- #315 list_misspellings memoization ----------------------------------
+
+
+def test_list_misspellings_memoizes_repeated_calls() -> None:
+    """#315: two ``list_misspellings`` calls with the same text and
+    dictionary must return equivalent results, and the cached result
+    must survive until the cache is reset.
+    """
+    text = "alpha bravo charlie delta"
+    dictionary = {"alpha", "bravo", "charlie", "delta"}
+    first = list_misspellings(text, dictionary)
+    second = list_misspellings(text, dictionary)
+    assert first == second
+
+
+def test_list_misspellings_cache_invalidates_on_dictionary_change() -> None:
+    """#315: adding a word to the dictionary must change the result.
+    The memoization key includes the dictionary identity, so an
+    updated dictionary is treated as a fresh request.
+    """
+    text = "alpha foobar"
+    short_dict = {"alpha"}
+    long_dict = {"alpha", "foobar"}
+    short_result = list_misspellings(text, short_dict)
+    long_result = list_misspellings(text, long_dict)
+    assert [item.word for item in short_result] == ["foobar"]
+    assert long_result == []
+
+
+def test_list_misspellings_cache_reset_clears() -> None:
+    """#315: ``reset_caches`` must clear the memoization so perf-budget
+    tests can measure the cold path.
+    """
+    text = "alpha bravo"
+    dictionary = {"alpha"}
+    list_misspellings(text, dictionary)
+    spellcheck.reset_caches()
+    # After reset, the call must still work (it just rebuilds the cache).
+    assert list_misspellings(text, dictionary) == []
+
+
+# --- #316 suggest_words length-bucketed cache ----------------------------
+
+
+def test_length_buckets_returns_words_by_length() -> None:
+    """#316: the helper exposes a ``{length: [words]}`` view. The
+    bundled wordlist always has words of many lengths, so this is a
+    smoke test of the bucketing contract.
+    """
+    wordlist = spellcheck._load_wordlist()
+    if not wordlist:
+        pytest.skip("bundled wordlist unavailable in this environment")
+    buckets = spellcheck._length_buckets(wordlist)
+    assert isinstance(buckets, dict)
+    for length, words in buckets.items():
+        assert all(len(word) == length for word in words)
+
+
+def test_suggest_words_still_returns_close_matches_after_bucketing() -> None:
+    """#316: the new length-bucketed candidate pool must produce the
+    same quality of suggestions as the previous O(W) scan. The bundled
+    wordlist or the stub corpus is used depending on what is
+    available.
+    """
+    wordlist = spellcheck._load_wordlist()
+    if wordlist:
+        # A clear typo: ``writting`` -> ``writing`` (length delta 0).
+        suggestions = suggest_words("writting", set(), limit=5)
+        assert "writing" in [s.lower() for s in suggestions]
+    else:
+        # Stub corpus: very small; ``textt`` -> ``text`` (length delta 1).
+        suggestions = suggest_words("textt", set(), limit=5)
+        assert "text" in [s.lower() for s in suggestions]
+
+
+def test_length_buckets_cached_after_first_call() -> None:
+    """#316: a second call to ``_length_buckets`` with the same
+    wordlist identity must hit the cache, so the per-call work stays
+    bounded by the bucket size rather than the full corpus size.
+    """
+    wordlist = spellcheck._load_wordlist()
+    if not wordlist:
+        pytest.skip("bundled wordlist unavailable in this environment")
+    spellcheck._length_buckets(wordlist)
+    cached = spellcheck._LENGTH_BUCKETS_BY_WORDLIST_ID.get(id(wordlist))
+    assert cached is not None
+
+
+def test_length_buckets_cache_reset_clears() -> None:
+    """#316: ``reset_caches`` must clear the length-bucket cache so
+    perf-budget tests can rebuild from scratch.
+    """
+    wordlist = spellcheck._load_wordlist()
+    if not wordlist:
+        pytest.skip("bundled wordlist unavailable in this environment")
+    spellcheck._length_buckets(wordlist)
+    spellcheck.reset_caches()
+    assert spellcheck._LENGTH_BUCKETS_BY_WORDLIST_ID == {}

@@ -244,6 +244,14 @@ class Settings:
     hygiene_allow_double_space_after_period: bool = False
     hygiene_max_blank_lines: int = 2
     hygiene_rules_disabled: str = ""  # comma-separated rule IDs
+    # #303: Heading Organizer duplicate-H1 check. When true, the
+    # organizer flags documents that have more than one H1 as an
+    # accessibility warning. The default of False preserves the
+    # pre-#303 behavior (only "must start at H1" and "skipped level"
+    # issues were surfaced). Opt-in so existing users who deliberately
+    # split long works into multiple top-level chapters are not
+    # surprised by a new warning.
+    heading_organizer_warn_duplicate_h1: bool = False
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Settings:
@@ -674,6 +682,11 @@ class Settings:
         except (TypeError, ValueError):
             hygiene_max_blank_lines = 2
         hygiene_rules_disabled = str(data.get("hygiene_rules_disabled", "")).strip()
+        # #303: Heading Organizer duplicate-H1 warning opt-in. Default
+        # to False so existing users are not surprised.
+        heading_organizer_warn_duplicate_h1 = bool(
+            data.get("heading_organizer_warn_duplicate_h1", False)
+        )
         if recent_files_limit < 1:
             recent_files_limit = 1
         if recent_files_limit > 50:
@@ -859,6 +872,7 @@ class Settings:
             hygiene_allow_double_space_after_period=hygiene_allow_double_space_after_period,
             hygiene_max_blank_lines=hygiene_max_blank_lines,
             hygiene_rules_disabled=hygiene_rules_disabled,
+            heading_organizer_warn_duplicate_h1=heading_organizer_warn_duplicate_h1,
         )
 
 

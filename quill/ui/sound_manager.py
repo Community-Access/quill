@@ -222,15 +222,10 @@ class _SoundManager:
             self.player.load_pack(SoundPack(name="(error)", author="", description="", license=""))
 
     def _apply_volume(self, volume: int) -> None:
-        # sound_lib backend exposes Output.set_volume(float 0.0-1.0).
-        # Access it through the backend if available.
-        backend = self.player._backend  # type: ignore[attr-defined]
-        output = getattr(backend, "_output", None)
-        if output is not None:
-            try:
-                output.set_volume(volume / 100.0)
-            except Exception:  # noqa: BLE001
-                pass
+        # sound_lib's set_volume takes float 0.0-1.0; SoundPlayer.set_volume
+        # clamps and forwards to the backend, so sound_manager stays
+        # backend-agnostic and does not reach into _backend._output.
+        self.player.set_volume(volume / 100.0)
 
     def register_quillin_sounds(
         self,
@@ -240,7 +235,7 @@ class _SoundManager:
         sound_events: tuple[tuple[str, str], ...],
     ) -> None:
         """Merge WAV bytes from a Quillin's sound_pack into the active player pack."""
-        from quill.core.sound_pack import _path_is_unsafe
+        from quill.core.sound_pack import is_unsafe_path
 
         # A Quillin is sandboxed: every path it supplies must stay inside its own
         # bundle. Reject traversal/absolute segments before touching the disk so a
@@ -248,7 +243,7 @@ class _SoundManager:
         # extension directory. (The .qsp loader already guards this; the Quillin
         # API builds paths by hand, so it must guard too.)
         bundle_root = directory.resolve()
-        if _path_is_unsafe(sound_pack):
+        if is_unsafe_path(sound_pack):
             logger.debug(
                 "SoundManager: Quillin %s sound_pack path rejected (unsafe): %s",
                 quillin_id,
@@ -262,7 +257,7 @@ class _SoundManager:
             )
             return
         for event_id, wav_name in sound_events:
-            if _path_is_unsafe(wav_name):
+            if is_unsafe_path(wav_name):
                 logger.debug(
                     "SoundManager: Quillin %s WAV name rejected (unsafe): %s",
                     quillin_id,
@@ -289,27 +284,32 @@ class _SoundManager:
         """Overlay the bundled indent tone pack for *scale* onto the player.
 
         Registers each WAV in the pack as an individual event so the primary
-        pack's earcons are preserved. The old overlay events are not explicitly
-        removed — they are replaced if the same event IDs exist in the new pack.
-        Call again with a different scale to switch; call with ``""`` to clear.
+        pack's earcons are preserved. The old overlay events are explicitly
+        unregistered on every reload (including ``scale == ""``), so a switch
+        between scales or turning the overlay off never leaves stale indent
+        events in the player.
         """
         from quill.core.sound_pack import SoundPackError, load_sound_pack
 
+        # Always drop the previous overlay's events, even when scale is empty
+        # or the new pack fails to load — the previous events were registered
+        # against this player and would otherwise leak into the next reload.
+        if self._indent_event_ids:
+            self.player.unregister_events(self._indent_event_ids)
+            self._indent_event_ids = frozenset()
+
         self._indent_scale = scale
         if not scale:
-            self._indent_event_ids = frozenset()
             return
 
         pack_path = self._bundled_indent_path(scale)
         if pack_path is None:
             logger.debug("SoundManager: indent tone pack not found for scale %r", scale)
-            self._indent_event_ids = frozenset()
             return
         try:
             pack = load_sound_pack(pack_path)
         except SoundPackError as exc:
             logger.warning("SoundManager: failed to load indent pack %s: %s", pack_path, exc)
-            self._indent_event_ids = frozenset()
             return
 
         self._indent_event_ids = frozenset(pack.events.keys())

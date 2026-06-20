@@ -47,7 +47,7 @@ This is the fast tour. The detailed notes below keep every important implementat
 - **Meet People Where They Are** is a complete reimagining of first-run setup. A redesigned startup wizard asks what kind of writing you do and shows a plain-English, screen-reader-readable preview of exactly what you will get. Seven intent profiles replace the old nine technical ones in the wizard. Menus, the Command Palette, and the Go to Anything dialog all reflect your chosen profile instantly - commands for features you have not enabled simply do not appear. Pressing Cancel on first run starts you in the simplest possible editor rather than leaving you with raw defaults.
 - **Insert Automation** turns typed abbreviations, smart triggers, `.LOG` files, document directives, and append anchors into one safe automation system.
 - **The Quillin Extension Platform** now supports settings pages, searchable preferences, tabs, document events, lifecycle events, status-bar cells, dependencies, network allowlists, command descriptions, developer logging, announcement priority, scaffolding tools, and stronger validation.
-- **AI Writing Toolkit** ships a complete, keyboard-first AI writing layer: grammar check, AI Thesaurus (Shift+F8), rewrite, summarize, expand, generate table of contents, Document Q&A, translation, and AI read-aloud. Every feature supports six providers — Anthropic Claude, OpenAI, Google Gemini, OpenRouter, Ollama, and custom endpoints. Custom per-task instructions let you shape how the AI behaves for each task. Prompt caching keeps costs down automatically: Claude marks system prompts as cacheable, OpenAI caches prefixes over 1024 tokens, and local Ollama models cache in-process. No mouse required for any of it.
+- **AI Writing Toolkit** ships a complete, keyboard-first AI writing layer: grammar check, AI Thesaurus (Ctrl+Alt+Shift+H), rewrite, summarize, expand, generate table of contents, Document Q&A, translation, and AI read-aloud. Every feature supports six providers — Anthropic Claude, OpenAI, Google Gemini, OpenRouter, Ollama, and custom endpoints. Custom per-task instructions let you shape how the AI behaves for each task. Prompt caching keeps costs down automatically: Claude marks system prompts as cacheable, OpenAI caches prefixes over 1024 tokens, and local Ollama models cache in-process. No mouse required for any of it.
 - **Braille Mode** opens and edits braille text files while preserving bytes, form feeds, line endings, and layout. It adds braille-aware status, page navigation, page tools, and optional liblouis-powered translation through the QUILL Braille Pack.
 - **Compare Mode** is now a first-class keyboard-driven workflow with difference navigation, speech announcements, and optional sound cues.
 - **Code-aware editing** adds language profiles, token movement, manual language selection, and optional indentation tones.
@@ -1026,7 +1026,7 @@ QUILL 0.7.0 ships a full AI writing-assistant layer. Every feature in this layer
 
 ### Provider setup: AI Hub
 
-**Tools > AI Hub** (or **AI > AI Hub...**) opens a five-tab settings dialog that replaces the old single-screen AI Connection dialog.
+**AI > AI Hub...** opens a five-tab settings dialog that replaces the old single-screen AI Connection dialog.
 
 - **Provider tab.** Choose your AI provider: Anthropic Claude, OpenAI, Google Gemini, OpenRouter (access to many models through one key), or Ollama (on-device or self-hosted). Enter your API key once; it is stored in the Windows Credential Manager and never written to disk. Choose a model, set a custom host for self-hosted deployments, and use Test Connection to verify the key and model before leaving the dialog.
 - **On-Device tab.** If you want AI with no cloud traffic at all, point Ollama at a local URL. The tab lists recommended models with size and capability notes so you can choose what fits your hardware.
@@ -1055,7 +1055,7 @@ All four commands open a two-part result dialog: a step log at the top (showing 
 
 ### AI Thesaurus
 
-**Shift+F8** opens the AI Thesaurus. Type a word or use the word already under your cursor; the dialog sends the word and its surrounding sentence to your AI provider and returns a list of synonyms, each with a usage note explaining the register, connotation, or context. Arrow through the list, press Enter or the Replace Word button to substitute the word in your document, or copy a synonym to the clipboard. Double-clicking a synonym replaces it immediately and closes the dialog.
+**Ctrl+Alt+Shift+H** opens the AI Thesaurus. Type a word or use the word already under your cursor; the dialog sends the word and its surrounding sentence to your AI provider and returns a list of synonyms, each with a usage note explaining the register, connotation, or context. Arrow through the list, press Enter or the Replace Word button to substitute the word in your document, or copy a synonym to the clipboard. Double-clicking a synonym replaces it immediately and closes the dialog.
 
 The context sentence is extracted automatically from the line where your cursor rests, giving the AI enough context to distinguish between, for example, "bank" (financial) and "bank" (river).
 
@@ -1103,7 +1103,11 @@ No configuration is needed. The caching path is active whenever at least one cus
 | Command | Shortcut |
 | --- | --- |
 | Ask Quill chat | Alt+Q |
-| AI Thesaurus | Shift+F8 |
+| AI Spell Check | Ctrl+Alt+Shift+S |
+| AI Spell Check Interactive | Ctrl+Alt+Shift+I |
+| AI Grammar and Style | Ctrl+Alt+Shift+G |
+| AI Translate Selection | Ctrl+Alt+Shift+T |
+| AI Thesaurus | Ctrl+Alt+Shift+H |
 | Check Grammar with AI | Tools > Check Grammar with AI |
 | Check Spelling with AI | Tools > Check Spelling with AI |
 | Rewrite Selection | AI > Rewrite Selection |
@@ -1114,6 +1118,14 @@ No configuration is needed. The caching path is active whenever at least one cus
 | Translate | AI > Translate |
 | Read with AI Voice | Tools > Read Aloud > Read with AI Voice |
 | AI Hub | AI > AI Hub... |
+
+The previous inline F7/Shift+F7/F8/Shift+F8/Ctrl+Shift+T accelerators on the
+AI menu collided with the selection bindings `edit.start_selection`
+(F8), `edit.complete_selection` (Shift+F8), and the QUILL-key
+chord for `edit.reselect` (Ctrl+F8). The new chord class is
+`Ctrl+Alt+Shift+<letter>` and is reserved for AI commands so power users
+can find them by feel; the full allowlist is in
+`docs/keybinding-standard.md` §10.2.
 
 ### What data leaves your machine
 
@@ -1369,6 +1381,14 @@ Most earcons are off until you choose a sound pack and enable events. Existing s
 ### Indentation tones default to Off
 
 Indentation tones do not play until you pick a scale. Code files remain silent unless you ask QUILL for tone feedback.
+
+### Dictation device picker deferred to 0.7.1
+
+The **Choose Dictation Device** menu entry that earlier 0.7.0 drafts planned to ship has been pulled from this release. The infrastructure for choosing a dictation device is already present (`quill.core.dictation.list_dictation_devices` plus the `dictation_device_index` setting), but the menu surface and dialog contract were not finished in time for a quality release. The picker ships in 0.7.1 with a dedicated dialog under **Tools -> Reading & Dictation**. Until then, QUILL uses the system's default dictation input.
+
+### Translations: POT-only ship
+
+QUILL ships the translations template (`quill/locale/quill.pot`) only. No `.po` source translations or compiled `.mo` binaries are bundled. The POT is regenerated for each release so it stays in lockstep with the strings the source actually emits; verify with `pybabel extract -F babel.cfg -k _ -k "ngettext:1,2" -k lazy_gettext --project QUILL --copyright-holder "BITS" -o quill/locale/quill.pot .`. The translation contribution path is documented in `docs/translating.md` and `MAINTAINERS.md`; new language teams open an issue with the `translation` label to onboard.
 
 ## Experience 15: EdSharp port — screen-reader-safe heading shortcuts, section-move, list toggle, and a Section status cell
 

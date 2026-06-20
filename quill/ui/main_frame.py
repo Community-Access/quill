@@ -181,13 +181,6 @@ from quill.core.guides import (
     build_keyboard_shortcut_html,
     build_welcome_guide,
 )
-from quill.core.heading_organizer import (
-    HeadingBlock,
-    apply_heading_organizer_edits,
-    heading_context_at,
-    parse_heading_blocks,
-    validate_heading_sequence,
-)
 from quill.core.heading_styles import HeadingStyle, apply_heading_style
 from quill.core.intake import (
     build_bad_extraction_package,
@@ -239,10 +232,15 @@ from quill.core.locations import LocationRing
 from quill.core.macros import MacroManager
 from quill.core.markdown_sections import (
     _LIST_AUTO_FILL_ARM_SECONDS,
+    HeadingBlock,
+    apply_heading_organizer_edits,
     fill_numbered_markers,
+    heading_context_at,
     is_caret_inside_list,
+    parse_heading_blocks,
     should_auto_fill_numbers,
     strip_list_markers,
+    validate_heading_sequence,
 )
 from quill.core.marks import MarkRing, NamedMarks, line_column_for_position
 from quill.core.menu_customization import (
@@ -269,6 +267,7 @@ from quill.core.onboarding import (
     load_speech_onboarding_complete,
     load_startup_wizard_prompt_suppressed,
     load_trust_consent_complete,
+    load_trust_consent_status,
     load_watch_folder_onboarding_complete,
     mark_assistant_onboarding_complete,
     mark_glow_onboarding_complete,
@@ -277,6 +276,7 @@ from quill.core.onboarding import (
     mark_startup_wizard_prompt_suppressed,
     mark_trust_consent_complete,
     mark_watch_folder_onboarding_complete,
+    trust_consent_change_log,
 )
 from quill.core.outline import OutlineEntry, extract_outline_entries
 from quill.core.paths import app_data_dir, ensure_app_directories
@@ -521,7 +521,7 @@ from quill.ui.share_dialogs import (
     write_export,
 )
 from quill.ui.sticky_notes import StickyNoteEditorDialog, StickyNotesVaultDialog
-from quill.ui.style_panel import TrainStyleDialog
+from quill.ui.train_style_dialog import TrainStyleDialog
 from quill.ui.word_view import WordDocumentSurface
 
 
@@ -962,6 +962,9 @@ class MainFrame(
         ensure_app_directories()
         self._first_run_profile_prompt = not safe_mode and not load_onboarding_complete()
         self._first_run_trust_consent_prompt = not safe_mode and not load_trust_consent_complete()
+        # Cache the on-disk consent status so the re-consent dialog can branch
+        # between first-install and "your prior consent is out of date" (#305).
+        self._trust_consent_status = load_trust_consent_status()
         self.features = FeatureManager.load(persistent=not safe_mode)
         self.macros = MacroManager.load(persistent=not safe_mode)
         self.settings = load_settings()
@@ -13535,7 +13538,19 @@ class MainFrame(
             self._set_status("Renamed heading")
 
         def validate(show_success: bool = False) -> bool:
-            issues = validate_heading_sequence(working)
+            # #303: surface the duplicate-H1 warning only when the user
+            # has explicitly opted in. Defaults keep the historical
+            # behavior (only "must start at H1" and "skipped level"
+            # issues fire) so users who deliberately write multi-H1
+            # works are not interrupted by a new warning.
+            issues = validate_heading_sequence(
+                working,
+                require_single_h1=getattr(
+                    self.settings,
+                    "heading_organizer_warn_duplicate_h1",
+                    False,
+                ),
+            )
             if not issues:
                 if show_success:
                     self._show_message_box(
@@ -23925,6 +23940,8 @@ class MainFrame(
 
     def _show_trust_consent_onboarding(self, force: bool) -> bool:
         wx = self._wx
+        status = getattr(self, "_trust_consent_status", None)
+        reconsent = bool(status is not None and status.accepted and status.needs_reconsent)
         message = (
             "By selecting I accept, you confirm that:\n\n"
             "1. You are responsible for how AI outputs are used, reviewed, and shared.\n"
@@ -23933,6 +23950,16 @@ class MainFrame(
             "4. API keys are stored in Windows Credential Manager when available, "
             "with DPAPI-encrypted fallback storage.\n\n"
             "Do you accept and want to continue?"
+        )
+        if reconsent:
+            deltas = self._format_reconsent_deltas(status.loaded_version)
+            message = (
+                "Your prior trust, privacy, and responsible-AI disclosure is out of "
+                "date.  Please review the changes below before continuing.\n\n"
+                f"Changes since your prior consent:\n\n{deltas}\n\n" + message
+            )
+        title = (
+            "Trust and Privacy Consent" if reconsent else "Trust, Privacy, and Responsible AI Use"
         )
         dialog = wx.MessageDialog(
             self.frame,
@@ -23943,13 +23970,31 @@ class MainFrame(
         if hasattr(dialog, "SetYesNoLabels"):
             dialog.SetYesNoLabels("I accept", "I do not accept")
         try:
-            accepted = self._show_modal_dialog(dialog, "Trust and Privacy Consent") == wx.ID_YES
+            accepted = self._show_modal_dialog(dialog, title) == wx.ID_YES
         finally:
             dialog.Destroy()
         if accepted:
             mark_trust_consent_complete()
+            self._trust_consent_status = load_trust_consent_status()
             return True
         return False
+
+    @staticmethod
+    def _format_reconsent_deltas(loaded_version: int) -> str:
+        """Render the per-version change log as numbered bullet points (#305).
+
+        Returns the deltas for every version strictly greater than
+        ``loaded_version``, in version order.  Empty string when no deltas
+        are recorded (e.g. the change log was wiped in a future cleanup).
+        """
+        lines: list[str] = []
+        for version, delta in sorted(trust_consent_change_log().items()):
+            if version <= loaded_version:
+                continue
+            if not delta:
+                continue
+            lines.append(f"- (version {version}) {delta}")
+        return "\n".join(lines)
 
     def _show_bw_onboarding(self, force: bool) -> None:
         wx = self._wx

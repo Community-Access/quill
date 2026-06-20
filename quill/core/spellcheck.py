@@ -21,6 +21,7 @@ from __future__ import annotations
 import logging
 import re
 import threading
+from collections import defaultdict
 from dataclasses import dataclass
 from difflib import get_close_matches
 from pathlib import Path
@@ -106,6 +107,23 @@ _BACKEND_LOCK = threading.Lock()
 _WORDLIST_CACHE: frozenset[str] | None = None
 _ENCHANT_DICT: object | None = None
 _ENCHANT_TRIED: bool = False
+
+# #316: length-bucketed wordlist caches, keyed on the wordlist frozenset
+# id so a reload of the bundled wordlist (reset_caches) automatically
+# rebuilds the buckets on next access.  This avoids the O(W) scan of the
+# ~370k-word bundled corpus on every call to ``suggest_words``.
+_LENGTH_BUCKETS_LOCK = threading.Lock()
+_LENGTH_BUCKETS_BY_WORDLIST_ID: dict[int, dict[int, list[str]]] = {}
+
+# #315: memoization cache for ``list_misspellings`` keyed on
+# (text, frozenset(dictionary)).  ``list_misspellings`` runs over every
+# word in the document on each call; spell-check-as-you-type and the
+# Spell Check dialog can fire it many times per second, so caching the
+# result for an unchanged text+dictionary pair keeps the hot path
+# cheap.  The key includes the dictionary's frozenset identity so a
+# user edit to the personal/document/project dictionaries invalidates
+# the cache automatically.
+_MISSPELLINGS_CACHE: dict[tuple[str, int], list[Misspelling]] = {}
 
 
 @dataclass(frozen=True, slots=True)
@@ -194,12 +212,19 @@ def reset_caches() -> None:
     ``_WORDLIST_CACHE`` / ``_ENCHANT_DICT`` / ``_ENCHANT_TRIED`` globals by
     hand, which is fragile if any of those names change. This public helper
     is the supported entry point for "make spellcheck cold again".
+
+    Also drops the #315 misspellings memoization cache and the #316
+    length-bucketed wordlist caches so a perf-budget test exercising
+    the cold path stays reliable.
     """
     global _WORDLIST_CACHE, _ENCHANT_DICT, _ENCHANT_TRIED
     with _BACKEND_LOCK:
         _WORDLIST_CACHE = None
         _ENCHANT_DICT = None
         _ENCHANT_TRIED = False
+    with _LENGTH_BUCKETS_LOCK:
+        _LENGTH_BUCKETS_BY_WORDLIST_ID.clear()
+    _MISSPELLINGS_CACHE.clear()
 
 
 def backend_info() -> BackendInfo:
@@ -223,7 +248,7 @@ def backend_info() -> BackendInfo:
     )
 
 
-def is_known_word(token: str, extra: set[str] | None = None) -> bool:
+def is_known_word(token: str, extra: set[str] | frozenset[str] | None = None) -> bool:
     """Check whether *token* is spelled correctly.
 
     *extra* is the union of personal/document/project dictionaries.
@@ -262,12 +287,28 @@ class Misspelling:
 
 
 def list_misspellings(text: str, dictionary: set[str]) -> list[Misspelling]:
+    """Return every misspelling in *text*, honouring *dictionary*.
+
+    #315: the result is memoized on the ``(text, frozenset(dictionary))``
+    key so repeated calls during spell-check-as-you-type and the Spell
+    Check dialog are cheap when neither input has changed. The
+    frozenset identity changes when a user edits their personal,
+    document, or project dictionary, so cache invalidation is
+    automatic; ``reset_caches()`` also clears the cache for perf
+    benchmarks.
+    """
+    dictionary_key = frozenset(item.lower() for item in dictionary)
+    cache_key = (text, hash(dictionary_key))
+    cached = _MISSPELLINGS_CACHE.get(cache_key)
+    if cached is not None:
+        return list(cached)
     misspellings: list[Misspelling] = []
     for match in _WORD_PATTERN.finditer(text):
         token = match.group(0)
-        if not is_known_word(token, dictionary):
+        if not is_known_word(token, dictionary_key):
             misspellings.append(Misspelling(word=token, start=match.start(), end=match.end()))
-    return misspellings
+    _MISSPELLINGS_CACHE[cache_key] = misspellings
+    return list(misspellings)
 
 
 def next_misspelling(text: str, cursor: int, dictionary: set[str]) -> Misspelling | None:
@@ -351,10 +392,44 @@ def suggest_words(word: str, dictionary: set[str], limit: int = 8) -> list[str]:
     # difflib over 370k strings is slow; constraining to +/- 2 characters
     # collapses that to a few thousand candidates without losing quality.
     target_len = len(lowered)
-    pool = [w for w in base if abs(len(w) - target_len) <= 2]
-    pool.extend(extras - set(pool))
+    # #316: length-bucketed candidate pool, see _length_buckets().
+    buckets = _length_buckets(base)
+    pool: list[str] = []
+    bucket_seen: set[str] = set()
+    for delta in (0, -1, 1, -2, 2):
+        for candidate in buckets.get(target_len + delta, ()):
+            if candidate in bucket_seen:
+                continue
+            bucket_seen.add(candidate)
+            pool.append(candidate)
+    pool.extend(extras - bucket_seen)
     matches = get_close_matches(lowered, pool, n=max(1, limit), cutoff=0.6)
     return matches[:limit]
+
+
+def _length_buckets(wordlist: frozenset[str]) -> dict[int, list[str]]:
+    """Return a ``{length: [words...]}`` view of *wordlist* (#316).
+
+    The buckets are cached on ``id(wordlist)`` so a reload of the
+    bundled wordlist (``reset_caches``) automatically rebuilds them
+    next time. Frozen inputs (``frozenset`` and the bundled
+    ``_STUB_WORDS``) keep stable ``id`` values for the life of the
+    process so the cache hit rate stays high in normal use.
+    """
+    key = id(wordlist)
+    cached = _LENGTH_BUCKETS_BY_WORDLIST_ID.get(key)
+    if cached is not None:
+        return cached
+    with _LENGTH_BUCKETS_LOCK:
+        cached = _LENGTH_BUCKETS_BY_WORDLIST_ID.get(key)
+        if cached is not None:
+            return cached
+        buckets: dict[int, list[str]] = defaultdict(list)
+        for word in wordlist:
+            buckets[len(word)].append(word)
+        frozen: dict[int, list[str]] = dict(buckets)
+        _LENGTH_BUCKETS_BY_WORDLIST_ID[key] = frozen
+        return frozen
 
 
 def add_word_to_scope(

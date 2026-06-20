@@ -715,34 +715,36 @@ class MenuBuilderMixin:
         compare_menu = wx.Menu()
         compare_menu.Append(
             self._id_compare_start_with_file,
-            self._menu_label(_("&Compare with File..."), "compare.start_with_file"),
+            self._menu_label(_("&Compare with File..."), "tools.compare_with_file"),
         )
         compare_menu.AppendSeparator()
+        # #357 keymap consolidation: command ids use the tools.compare_*
+        # namespace and the F8/Shift+F8/Ctrl+F8 inline accelerators were
+        # stripped; the canonical bindings now live in DEFAULT_KEYMAP as
+        # Ctrl+Alt+Shift+> / < / D (see quill/core/keymap.py).
         compare_menu.Append(
             self._id_compare_next,
-            self._menu_label(_("&Next Difference\tF8"), "compare.next_difference"),
+            self._menu_label(_("&Next Difference"), "tools.compare_next_difference"),
         )
         compare_menu.Append(
             self._id_compare_previous,
-            self._menu_label(_("&Previous Difference\tShift+F8"), "compare.previous_difference"),
+            self._menu_label(_("&Previous Difference"), "tools.compare_previous_difference"),
         )
         compare_menu.Append(
             self._id_compare_current,
             self._menu_label(
-                _("Read &Current Difference\tCtrl+F8"),
-                "compare.current_difference_summary",
+                _("Read &Current Difference"),
+                "tools.compare_announce_difference",
             ),
         )
         compare_menu.AppendSeparator()
         compare_menu.Append(
             self._id_compare_toggle_whitespace,
-            self._menu_label(_("Toggle &Ignore Whitespace"), "compare.toggle_ignore_whitespace"),
+            self._menu_label(_("Toggle &Ignore Whitespace"), "tools.compare_toggle_sync"),
         )
         compare_menu.Append(
             self._id_compare_generate_report,
-            self._menu_label(
-                _("&Generate Accessible Report"), "compare.generate_accessible_report"
-            ),
+            self._menu_label(_("&Generate Accessible Report"), "tools.compare_options"),
         )
         navigate_menu.AppendSubMenu(compare_menu, _("&Compare"))
         navigate_menu.AppendSeparator()
@@ -1604,27 +1606,31 @@ class MenuBuilderMixin:
             self._id_check_grammar_ai,
             self._menu_label(_("Check Grammar with &AI..."), "tools.check_grammar_ai"),
         )
+        # #357 keymap consolidation: the F7/Shift+F7/F8/Shift+F8/Ctrl+Shift+T
+        # inline accelerators were stripped; the canonical bindings now live
+        # in DEFAULT_KEYMAP as Ctrl+Alt+Shift+S/I/G/T/H (see
+        # quill/core/keymap.py).  Inline accelerators are kept only where
+        # they remain the canonical binding and no chord keymap entry
+        # exists for the command.
         ai_menu.AppendSeparator()
         ai_menu.Append(
             self._id_ai_spell_check,
-            self._menu_label(_("AI &Spell Check...\tF7"), "tools.ai_spell_check"),
+            self._menu_label(_("AI &Spell Check..."), "tools.ai_spell_check"),
         )
         ai_menu.Append(
             self._id_ai_spell_check_interactive,
             self._menu_label(
-                _("AI Spell Check &Interactive...\tShift+F7"), "tools.ai_spell_check_interactive"
+                _("AI Spell Check &Interactive..."), "tools.ai_spell_check_interactive"
             ),
         )
         ai_menu.Append(
             self._id_ai_grammar_style,
-            self._menu_label(_("AI &Grammar and Style Check...\tF8"), "tools.ai_grammar_style"),
+            self._menu_label(_("AI &Grammar and Style Check..."), "tools.ai_grammar_style"),
         )
         ai_menu.AppendSeparator()
         ai_menu.Append(
             self._id_ai_translate_selection,
-            self._menu_label(
-                _("Translate &Selection...\tCtrl+Shift+T"), "tools.ai_translate_selection"
-            ),
+            self._menu_label(_("Translate &Selection..."), "tools.ai_translate_selection"),
         )
         ai_menu.Append(
             self._id_ai_translate_document,
@@ -1663,7 +1669,7 @@ class MenuBuilderMixin:
         )
         ai_menu.Append(
             self._id_ai_thesaurus,
-            self._menu_label(_("AI &Thesaurus...\tShift+F8"), "tools.ai_thesaurus"),
+            self._menu_label(_("AI &Thesaurus..."), "tools.ai_thesaurus"),
         )
         ai_menu.AppendSeparator()
         ai_menu.Append(

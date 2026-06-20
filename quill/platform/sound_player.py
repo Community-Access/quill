@@ -15,7 +15,10 @@ Backend selection (in priority order)
 
 Public API
 ----------
-* :class:`SoundPlayer`    -- facade: cooldown, mute, disabled-event filtering
+* :class:`SoundPlayer`    -- facade: cooldown, mute, disabled-event filtering,
+                             per-event registration/unregistration, and
+                             :meth:`SoundPlayer.set_volume` for the master
+                             output level
 * :data:`_detect_backend` -- called once at SoundPlayer construction
 """
 
@@ -25,6 +28,7 @@ import logging
 import queue
 import threading
 import time
+from collections.abc import Iterable
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
@@ -242,6 +246,43 @@ class SoundPlayer:
         """Add or replace a single event's WAV bytes (used by Quillin sound packs)."""
         with self._lock:
             self._events[event_id] = wav
+
+    def unregister_event(self, event_id: str) -> None:
+        """Remove a single event from the active pack.
+
+        No-op when *event_id* is not present. Used by the indent tone overlay
+        to drop its events when the overlay is cleared.
+        """
+        with self._lock:
+            self._events.pop(event_id, None)
+            self._cooldowns.pop(event_id, None)
+
+    def unregister_events(self, event_ids: frozenset[str] | Iterable[str]) -> None:
+        """Remove a batch of event IDs from the active pack."""
+        with self._lock:
+            for event_id in event_ids:
+                self._events.pop(event_id, None)
+                self._cooldowns.pop(event_id, None)
+
+    def set_volume(self, volume: float) -> None:
+        """Set the master playback volume on the active backend.
+
+        *volume* is in the range ``[0.0, 1.0]`` and is passed through to the
+        backend's volume control when one exists; backends without a volume
+        control (winsound, null) silently ignore the call. Never raises.
+        """
+        try:
+            clamped = max(0.0, min(1.0, float(volume)))
+        except (TypeError, ValueError):
+            return
+        backend = self._backend
+        output = getattr(backend, "_output", None)
+        if output is None:
+            return
+        try:
+            output.set_volume(clamped)
+        except Exception:  # noqa: BLE001
+            pass
 
     def set_disabled(self, disabled: frozenset[str]) -> None:
         with self._lock:

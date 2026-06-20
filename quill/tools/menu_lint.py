@@ -59,6 +59,22 @@ _CTRL_ALT_DOCUMENTED: frozenset[str] = frozenset({
     # EdSharp port: list-toggle shortcuts override NVDA review-cursor.
     "format.toggle_bullet_list",  # Ctrl+Alt+7
     "format.toggle_numbered_list",  # Ctrl+Alt+8
+    # #357 keymap consolidation: AI commands use Ctrl+Alt+Shift+<letter> as
+    # their chord class. Inline accelerators were stripped from main_frame_menu
+    # because they collided with the F7/F8 selection bindings. The chord class
+    # is reserved for AI commands so power users can find them by feel.
+    "tools.ai_spell_check",  # Ctrl+Alt+Shift+S
+    "tools.ai_spell_check_interactive",  # Ctrl+Alt+Shift+I
+    "tools.ai_grammar_style",  # Ctrl+Alt+Shift+G
+    "tools.ai_translate_selection",  # Ctrl+Alt+Shift+T
+    "tools.ai_thesaurus",  # Ctrl+Alt+Shift+H
+    # #357 keymap consolidation: compare commands share the Ctrl+Alt+Shift+
+    # chord class. The previous inline F8/Shift+F8/Ctrl+F8 accelerators
+    # collided with edit.start_selection / edit.complete_selection /
+    # edit.reselect.
+    "tools.compare_next_difference",  # Ctrl+Alt+Shift+.
+    "tools.compare_previous_difference",  # Ctrl+Alt+Shift+,
+    "tools.compare_announce_difference",  # Ctrl+Alt+Shift+D
 })
 
 # §10.3 binding-spec cluster labels that must appear as the label argument

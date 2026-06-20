@@ -267,7 +267,7 @@
   "quill/ui/status_dialog.py::HelpStatusDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/sticky_notes.py::StickyNoteEditorDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/sticky_notes.py::StickyNotesVaultDialog.__init__::wx.Dialog": "hardened_custom",
-  "quill/ui/style_panel.py::TrainStyleDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/train_style_dialog.py::TrainStyleDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/vision_prompt_manager_dialog.py::VisionPromptManagerDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/vision_prompt_manager_dialog.py::VisionPromptManagerDialog._on_delete::wx.MessageDialog": "native",
   "quill/ui/vision_prompt_manager_dialog.py::VisionPromptManagerDialog._show_prompt_editor::wx.Dialog": "hardened_custom",

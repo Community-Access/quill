@@ -146,7 +146,11 @@ def insert_toc(text: str) -> tuple[str, int]:
         insert_after = headings[0].line  # 1-based; insert after this line
         lines = lines[:insert_after] + ["", toc, ""] + lines[insert_after:]
     else:
-        lines = [toc, "", *lines]
+        # The early return on line 139 already handles the
+        # "no headings, no TOC" case (#343); this branch is unreachable
+        # through generate_toc, but keep it for any future caller that
+        # synthesises a non-empty toc for a heading-less document.
+        lines = ["", toc, "", *lines]
     return "\n".join(lines), len(headings)
 
 

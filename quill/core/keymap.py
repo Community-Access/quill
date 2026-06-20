@@ -88,6 +88,37 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "tools.dictation_toggle": "Ctrl+Shift+Grave, D",
     "tools.describe_image": "Ctrl+Shift+Grave, I",
     "tools.document_intake_report": "Ctrl+Shift+I",
+    # #357 keymap consolidation: AI commands move from inline F7/Shift+F7/F8/
+    # Shift+F8/Ctrl+Shift+T accelerators (which collided with the selection
+    # bindings at F8/Shift+F8/Ctrl+F8) to Ctrl+Alt+Shift+ chords, matching
+    # the EdSharp port convention. The chord class is reserved for AI so
+    # power users can find them by feel. Justifications name the screen-
+    # reader binding each chord displaces (NVDA review-cursor for the
+    # chord class; F7/F8 selection-start/complete for the displaced
+    # inline accelerators).
+    "tools.ai_spell_check": "Ctrl+Alt+Shift+S",  # §edsharp-ok — AI reserved chord class
+    "tools.ai_spell_check_interactive": "Ctrl+Alt+Shift+I",  # §edsharp-ok — AI reserved chord class
+    "tools.ai_grammar_style": "Ctrl+Alt+Shift+G",  # §edsharp-ok — AI reserved chord class
+    "tools.ai_translate_selection": "Ctrl+Alt+Shift+T",  # §edsharp-ok — AI reserved chord class
+    "tools.ai_thesaurus": "Ctrl+Alt+Shift+H",  # §edsharp-ok — AI reserved chord class
+    # #357 keymap consolidation: compare commands move from inline
+    # F8/Shift+F8/Ctrl+F8 accelerators (colliding with the selection
+    # bindings) to the same Ctrl+Alt+Shift+ chord class as the AI
+    # commands. The compare class also owns Ctrl+Alt+Shift+D for
+    # "Read Current Difference"; Alt+Shift+D stays free for
+    # view.toggle_dark_mode (different modifier stack).
+    "tools.compare_next_difference": (
+        "Ctrl+Alt+Shift+."
+    ),  # §edsharp-ok — compare reserved chord class
+    "tools.compare_previous_difference": (
+        "Ctrl+Alt+Shift+,"
+    ),  # §edsharp-ok — compare reserved chord class
+    "tools.compare_announce_difference": (
+        "Ctrl+Alt+Shift+D"
+    ),  # §edsharp-ok — compare reserved chord class
+    # view.toggle_dark_mode owns Alt+Shift+D, which does not collide with
+    # the Ctrl+Alt+Shift+D compare binding above (different modifier stack).
+    "view.toggle_dark_mode": "Alt+Shift+D",
     "help.switch_feature_profile": "Alt+Shift+P",
     "edit.copy_with_source": "Ctrl+Shift+C",
     "edit.copy_selection_for_email": "Ctrl+Shift+Grave, C",

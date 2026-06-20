@@ -162,8 +162,14 @@ def validate_manifest(raw: object) -> list[str]:
     return errors
 
 
-def _path_is_unsafe(wav_path: str) -> bool:
-    """Return True when wav_path contains traversal sequences or is absolute."""
+def is_unsafe_path(wav_path: str) -> bool:
+    """Return True when wav_path contains traversal sequences or is absolute.
+
+    Public path-traversal guard for callers outside the QSP loader (for example
+    Quillin's hand-built path arguments in ``sound_manager.register_quillin_sounds``).
+    A leading ``..`` segment, a leading ``/`` or ``\\``, or a platform-absolute
+    path all count as unsafe.
+    """
     parts = Path(wav_path).parts
     # Path.is_absolute() on Windows requires a drive letter, so a POSIX-style
     # leading slash (e.g. "/etc/passwd") would be missed.  Check both.
@@ -174,6 +180,11 @@ def _path_is_unsafe(wav_path: str) -> bool:
     if wav_path.startswith("/") or wav_path.startswith("\\"):
         return True
     return False
+
+
+# Internal alias kept so the loader's own validator (which lives in this module)
+# does not need to import the public name via itself.
+_path_is_unsafe = is_unsafe_path
 
 
 # ---------------------------------------------------------------------------

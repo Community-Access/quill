@@ -21,8 +21,8 @@ import re
 import threading
 
 from quill.core.browser_preview import guess_preview_kind
-from quill.core.heading_organizer import parse_heading_blocks
 from quill.core.links import infer_markup_kind
+from quill.core.markdown_sections import parse_heading_blocks
 from quill.core.marks import line_column_for_position
 from quill.core.selection import line_span
 

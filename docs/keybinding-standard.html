@@ -181,7 +181,8 @@
 QUILL follows. The gate that enforces these rules lives in
 <code>quill/tools/menu_lint.py</code> (GATE-12). Any change to this
 document must be reflected in the gate and vice versa.</p>
-<h2 id="the-quill-key-chord-space">§10.1 The QUILL-key chord space</h2>
+<h2 id="101-the-quill-key-chord-space">§10.1 The QUILL-key chord
+space</h2>
 <p>Most editor commands bind to one of two kinds of chord:</p>
 <ol type="1">
 <li><strong>A standard modifier chord</strong> (<code>Ctrl+X</code>,
@@ -191,17 +192,17 @@ intercepts app-globally.</li>
 <li><strong>A QUILL-key chord</strong> of the form
 <code>Ctrl+Shift+Grave, &lt;second-key&gt;</code> for everything else.
 The grave-prefix is easy to type without looking, has no native
-screen-reader collision, and chains naturally so that the user’s left
+screen-reader collision, and chains naturally so that the user's left
 hand never leaves the home row.</li>
 </ol>
 <p>The default-second-key is single-character. Shift variants use the
 <code>Shift+</code> prefix on the second key
 (<code>Ctrl+Shift+Grave, Shift+J</code>).</p>
-<h2 id="the-ctrlalt-policy-revised-0.7.0">§10.2 The Ctrl+Alt+ policy
+<h2 id="102-the-ctrlalt-policy-revised-070">§10.2 The Ctrl+Alt+ policy
 (revised 0.7.0)</h2>
 <p><code>Ctrl+Alt+</code> is screen-reader-hostile because NVDA, JAWS,
 and Windows Speech Recognition intercept most of those chords
-app-globally. For years QUILL’s policy was a flat ban.</p>
+app-globally. For years QUILL's policy was a flat ban.</p>
 <p>In 0.7.0 the policy is relaxed: a <code>Ctrl+Alt+</code> binding may
 enter <code>DEFAULT_KEYMAP</code> when <strong>either</strong>:</p>
 <ul>
@@ -212,15 +213,10 @@ comment <code># §edsharp-ok — &lt;justification&gt;</code>.</li>
 </ul>
 <p>The rename from <code>_CTRL_ALT_ALLOWED</code> to
 <code>_CTRL_ALT_DOCUMENTED</code> makes the narrower scope explicit: the
-allowlist is now “documented exceptions,” not a free pass.</p>
-<h3 id="documented-bindings-allowlist-as-of-0.7.0">Documented bindings
+allowlist is now "documented exceptions," not a free pass.</p>
+<h3 id="documented-bindings-allowlist-as-of-070">Documented bindings
 (allowlist, as of 0.7.0)</h3>
 <table>
-<colgroup>
-<col style="width: 27%" />
-<col style="width: 19%" />
-<col style="width: 53%" />
-</colgroup>
 <thead>
 <tr>
 <th>Command id</th>
@@ -269,25 +265,83 @@ allowlist is now “documented exceptions,” not a free pass.</p>
 <td><code>Ctrl+Alt+6</code></td>
 <td>Overrides NVDA switch-to-synth-6.</td>
 </tr>
+<tr>
+<td><code>format.toggle_bullet_list</code></td>
+<td><code>Ctrl+Alt+7</code></td>
+<td>Overrides NVDA review-cursor (EdSharp port).</td>
+</tr>
+<tr>
+<td><code>format.toggle_numbered_list</code></td>
+<td><code>Ctrl+Alt+8</code></td>
+<td>Overrides NVDA review-cursor (EdSharp port).</td>
+</tr>
+<tr>
+<td><code>tools.ai_spell_check</code></td>
+<td><code>Ctrl+Alt+Shift+S</code></td>
+<td>AI reserved chord class (#357).</td>
+</tr>
+<tr>
+<td><code>tools.ai_spell_check_interactive</code></td>
+<td><code>Ctrl+Alt+Shift+I</code></td>
+<td>AI reserved chord class (#357).</td>
+</tr>
+<tr>
+<td><code>tools.ai_grammar_style</code></td>
+<td><code>Ctrl+Alt+Shift+G</code></td>
+<td>AI reserved chord class (#357).</td>
+</tr>
+<tr>
+<td><code>tools.ai_translate_selection</code></td>
+<td><code>Ctrl+Alt+Shift+T</code></td>
+<td>AI reserved chord class (#357).</td>
+</tr>
+<tr>
+<td><code>tools.ai_thesaurus</code></td>
+<td><code>Ctrl+Alt+Shift+H</code></td>
+<td>AI reserved chord class (#357).</td>
+</tr>
+<tr>
+<td><code>tools.compare_next_difference</code></td>
+<td><code>Ctrl+Alt+Shift+.</code></td>
+<td>Compare reserved chord class (#357).</td>
+</tr>
+<tr>
+<td><code>tools.compare_previous_difference</code></td>
+<td><code>Ctrl+Alt+Shift+,</code></td>
+<td>Compare reserved chord class (#357).</td>
+</tr>
+<tr>
+<td><code>tools.compare_announce_difference</code></td>
+<td><code>Ctrl+Alt+Shift+D</code></td>
+<td>Compare reserved chord class (#357).</td>
+</tr>
 </tbody>
 </table>
-<p>NVDA’s switch-to-synth-N has a documented QUILL-key alternative
+<p>NVDA's switch-to-synth-N has a documented QUILL-key alternative
 (<code>Ctrl+Shift+Grave, &lt;N&gt;</code>) for users who want both
 behaviours.</p>
-<h3 id="the-edsharp-ok-escape-hatch">The <code># §edsharp-ok</code>
+<p>The AI and compare chord classes share
+<code>Ctrl+Alt+Shift+&lt;letter&gt;</code> and
+<code>Ctrl+Alt+Shift+&lt;punct&gt;</code> respectively. They were chosen
+because F8, Shift+F8, and Ctrl+F8 (the previous inline accelerators)
+collided with the selection bindings <code>edit.start_selection</code> /
+<code>edit.complete_selection</code> / <code>edit.reselect</code>. The
+chord class is documented as a reservation so future AI / compare work
+reuses the modifier stack instead of inventing a new one.</p>
+<h3 id="the--edsharp-ok-escape-hatch">The <code># §edsharp-ok</code>
 escape hatch</h3>
 <p>A <code>Ctrl+Alt+</code> binding outside the allowlist passes the
 gate if the line ends with the comment <code># §edsharp-ok</code>. The
-comment must name the screen-reader binding the chord overrides
-(e.g. “overrides NVDA review-cursor”). This is the path for one-off
-bindings that need a documented exception without growing the global
+comment must name the screen-reader binding the chord overrides (e.g.
+"overrides NVDA review-cursor"). This is the path for one-off bindings
+that need a documented exception without growing the global
 allowlist.</p>
 <h3 id="process-for-adding-a-new-ctrlalt-binding">Process for adding a
 new <code>Ctrl+Alt+</code> binding</h3>
 <ol type="1">
 <li>Add the command id to <code>_CTRL_ALT_DOCUMENTED</code> in
 <code>menu_lint.py</code> if the binding is permanent. Skip this step if
-the binding is one-off and you’ll use the inline escape hatch
+the binding is one-off and you'll use the inline escape hatch
 instead.</li>
 <li>In <code>keymap.py</code>, append the <code># §edsharp-ok</code>
 comment to the binding line (or update the comment to reference the new
@@ -299,13 +353,13 @@ covering the new allowlist entry or the inline escape-hatch path.</li>
 <li>Document the new chord in
 <code>docs/CONTROL_REFERENCE.md</code>.</li>
 </ol>
-<h2 id="tools-menu-clusters">§10.3 Tools-menu clusters</h2>
+<h2 id="103-tools-menu-clusters">§10.3 Tools-menu clusters</h2>
 <p>The Tools menu is organised into the nine clusters listed in
 <code>_REQUIRED_CLUSTER_LABELS</code> in <code>menu_lint.py</code>.
 Every cluster name must appear as a menu label in
 <code>main_frame_menu.py</code>; a missing cluster name fails the
 gate.</p>
-<h2 id="two-level-cap">§10.4 Two-level cap</h2>
+<h2 id="104-two-level-cap">§10.4 Two-level cap</h2>
 <p>No Tools-menu item may be more than two submenu levels deep. The gate
 rejects any <code>wx.Menu()</code> variable that is itself a child of a
 submenu <em>and</em> has <code>AppendSubMenu</code> calls of its own
@@ -315,11 +369,6 @@ submenu <em>and</em> has <code>AppendSubMenu</code> calls of its own
 <code>merge_keymaps</code> so a user with a saved pre-0.7.0 keymap is
 silently routed to the new chord without losing muscle memory:</p>
 <table>
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 36%" />
-<col style="width: 30%" />
-</colgroup>
 <thead>
 <tr>
 <th>Legacy chord</th>

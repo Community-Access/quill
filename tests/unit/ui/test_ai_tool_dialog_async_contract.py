@@ -2,7 +2,7 @@
 
 Phase 6 of the dialog estate work (DLG-3.6, which folds in DLG-2) requires the
 assistant/AI tool dialogs in ``assistant_tools.py``, ``ai_model_panel.py``,
-``style_panel.py``, and ``assistant_panel.py`` to share one modal/focus/error
+``train_style_dialog.py``, and ``assistant_panel.py`` to share one modal/focus/error
 contract *with safe async/"busy" semantics*: a long-running action disables its
 trigger before work starts, runs off the UI thread, marshals every result
 (including failures) back with ``CallAfter``, and re-enables the trigger when the
@@ -77,7 +77,7 @@ def test_ai_model_download_disables_and_reenables_around_the_worker() -> None:
 
 def test_style_guide_build_disables_and_reenables_around_the_worker() -> None:
     _assert_async_busy_cycle(
-        _read("style_panel.py"),
+        _read("train_style_dialog.py"),
         trigger="def _start_build(",
         disable="self.build_button.Enable(False)",
         completion="_deliver_guide",

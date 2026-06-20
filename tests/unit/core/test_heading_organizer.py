@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 
-from quill.core.heading_organizer import (
+from quill.core.markdown_sections import (
     HeadingBlock,
     apply_heading_organizer_edits,
     heading_context_at,
@@ -169,3 +169,127 @@ def test_parse_markdown_heading_blocks_html_path_unchanged() -> None:
     text = "<h1>A</h1><h2>B</h2>"
     blocks = parse_heading_blocks(text, "html")
     assert [block.level for block in blocks] == [1, 2]  # type: ignore[misc]
+
+
+# --- #359 Heading-module consolidation -----------------------------------
+# Replaces the deleted heading_organizer.py as the home of these tests.
+
+
+def test_apply_heading_organizer_edits_preserves_blank_line_gaps() -> None:
+    """#359: reordering three headings must keep the ``\\n\\n`` separator
+    between consecutive sections, not collapse them to single ``\\n``."""
+    text = "# A\nA body\n\n# B\nB body\n\n# C\nC body\n"
+    blocks = parse_heading_blocks(text, "markdown")
+    assert [block.title for block in blocks] == ["A", "B", "C"]
+    # Reverse the order to C, B, A.
+    updated = list(reversed(blocks))
+    rendered = apply_heading_organizer_edits(text, "markdown", updated)
+    # Each pair of consecutive sections must still be separated by a blank
+    # line, not joined by a single newline.
+    assert rendered.count("\n\n") >= 2
+    assert "# C\nC body\n\n# B\nB body\n\n# A\nA body\n" == rendered
+
+
+def test_heading_regexes_agree_on_no_space_and_empty_heading() -> None:
+    """#359: ``#NoSpace`` and ``# `` (empty) must parse identically across
+    both the heading-organizer and heading-styles paths."""
+    from quill.core.heading_styles import apply_heading_style
+
+    text = "#NoSpace\nbody\n# \nempty body\n"
+    blocks = parse_heading_blocks(text, "markdown")
+    assert [block.title for block in blocks] == ["NoSpace", ""]
+    # Heading-style application should match the same set of headings.
+    new_text, changed = apply_heading_style(
+        text,
+        markup_kind="markdown",
+        style=_style_with_color(),
+    )
+    # Both pre-#359 the heading-style regex required ``# title`` with a
+    # required space + body; the canonical regex matches both forms so two
+    # headings should be re-styled.
+    assert changed == 2
+
+
+def _style_with_color():  # type: ignore[no-untyped-def]
+    from quill.core.heading_styles import HeadingStyle
+
+    return HeadingStyle(font_family="serif", font_size_pt=14, text_align="left")
+
+
+# --- #303 Duplicate-H1 warning opt-in -----------------------------------
+
+
+def test_validate_heading_sequence_default_does_not_warn_duplicate_h1() -> None:
+    """#303: when ``require_single_h1`` is omitted (the historical
+    default) a document with multiple H1s must not produce a
+    duplicate-H1 issue. The warning is opt-in via the
+    ``heading_organizer_warn_duplicate_h1`` setting; existing users who
+    deliberately split a work into multiple top-level chapters must
+    keep seeing the same validation output they have always seen."""
+    blocks = [
+        HeadingBlock(0, 1, "Chapter One", 0, 0, 0, 0),
+        HeadingBlock(1, 2, "Section", 0, 0, 0, 0),
+        HeadingBlock(2, 1, "Chapter Two", 0, 0, 0, 0),
+    ]
+    issues = validate_heading_sequence(blocks)
+    assert not any("single H1" in issue for issue in issues)
+
+
+def test_validate_heading_sequence_opt_in_warns_duplicate_h1() -> None:
+    """#303: when ``require_single_h1=True`` the validator reports the
+    duplicate-H1 count, regardless of whether the extra H1s are at the
+    start, middle, or end of the document."""
+    blocks = [
+        HeadingBlock(0, 1, "Chapter One", 0, 0, 0, 0),
+        HeadingBlock(1, 2, "Section", 0, 0, 0, 0),
+        HeadingBlock(2, 1, "Chapter Two", 0, 0, 0, 0),
+    ]
+    issues = validate_heading_sequence(blocks, require_single_h1=True)
+    assert any("single H1" in issue and "found 2" in issue for issue in issues)
+
+
+def test_validate_heading_sequence_single_h1_opt_in_passes() -> None:
+    """#303: a document with a single H1 must not be flagged by the
+    opt-in duplicate-H1 check."""
+    blocks = [
+        HeadingBlock(0, 1, "Title", 0, 0, 0, 0),
+        HeadingBlock(1, 2, "Sub", 0, 0, 0, 0),
+    ]
+    issues = validate_heading_sequence(blocks, require_single_h1=True)
+    assert not any("single H1" in issue for issue in issues)
+
+
+# --- #314 heading_context_at O(N) optimisation ----------------------------
+
+
+def test_heading_context_at_handles_large_document_quickly() -> None:
+    """#314: a document with thousands of headings and lines must
+    complete ``heading_context_at`` in well under a second. The previous
+    O(N*H) implementation called ``text.count("\\n", 0, block.start)``
+    for every block, so this case took a noticeable fraction of a
+    second on the test machine. The bound here is intentionally
+    generous: if the implementation regresses to O(N*H) on a 5,000
+    heading document, the test will fail loudly on any modern machine.
+    """
+    import time
+
+    heading_count = 5000
+    lines_per_heading = 2
+    body_lines = ["body line"] * lines_per_heading
+    sections = [f"# Heading {i}\n" + "\n".join(body_lines) + "\n" for i in range(heading_count)]
+    text = "".join(sections)
+    # Target is the last heading in the document.
+    target = text.rfind(f"# Heading {heading_count - 1}")
+
+    start = time.perf_counter()
+    context = heading_context_at(text, target, "markdown")
+    elapsed = time.perf_counter() - start
+
+    assert context is not None
+    assert context.level == 1
+    assert context.ordinal == heading_count
+    assert context.total == heading_count
+    # Generous bound: well above what the new implementation needs and
+    # well below what the old O(N*H) implementation costs on the test
+    # machine.  This is a smoke test, not a benchmark.
+    assert elapsed < 2.0, f"heading_context_at took {elapsed:.3f}s"

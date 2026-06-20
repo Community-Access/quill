@@ -14,9 +14,8 @@ from dataclasses import dataclass
 from datetime import timedelta
 
 from quill.core.braille_statusbar import short_form_from_resolver
-from quill.core.heading_organizer import parse_heading_blocks
 from quill.core.links import infer_markup_kind
-from quill.core.markdown_sections import current_section_at
+from quill.core.markdown_sections import current_section_at, parse_heading_blocks
 from quill.core.marks import line_column_for_position
 from quill.core.metrics import compute_document_stats
 from quill.core.palette import load_palette_usage, top_suggestion

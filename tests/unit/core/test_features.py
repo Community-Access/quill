@@ -58,6 +58,27 @@ def test_feature_mapping_infers_command_groups() -> None:
     assert feature_for_command("tools.run_python") == "future.ai"
 
 
+def test_feature_mapping_returns_nested_feature_id() -> None:
+    """Regression for #346: feature_for_command must pass through the nested
+    feature id that the COMMAND_FEATURE_MAP declares verbatim. Downstream
+    consumers (find_feature / FeatureManager) match against the literal id
+    in FEATURE_DEFINITIONS, so a nested id with an internal dot must
+    survive the round-trip without truncation."""
+    # The typescript-console command maps to a sub-feature of developer_console.
+    nested = feature_for_command("tools.open_typescript_console")
+    assert nested == "core.developer_console.typescript"
+
+    # find_feature must resolve the nested id back to its own definition
+    # (not the parent core.developer_console).
+    feature = find_feature(nested)
+    assert feature is not None
+    assert feature.id == "core.developer_console.typescript"
+    assert "typescript" in feature.name.lower()
+    # The nested feature must declare its parent dependency so a state
+    # change propagates correctly.
+    assert "core.developer_console" in feature.dependencies
+
+
 def test_feature_manager_respects_profile_state() -> None:
     manager = FeatureManager(active_profile_id=PROFILE_ESSENTIAL)
     assert manager.state_for("core.file") == FEATURE_STATE_ON

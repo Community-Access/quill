@@ -284,3 +284,84 @@ def test_winsound_backend_queue_drops_excess() -> None:
     backend.shutdown()
 
     assert len(played) <= _WINSOUND_QUEUE_MAX + 1
+
+
+# ---------------------------------------------------------------------------
+# #332 -- public set_volume / unregister_event(s) (was private _backend._output)
+# ---------------------------------------------------------------------------
+
+
+class _VolumeRecordingBackend(_RecordingBackend):
+    """Recording backend that exposes a settable Output.volume for set_volume."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.volume: float | None = None
+        outer = self
+
+        class _Output:
+            def set_volume(inner_self, v: float) -> None:  # noqa: N805
+                outer.volume = v
+
+        self._output = _Output()
+
+
+def test_set_volume_clamps_and_forwards_to_backend() -> None:
+    backend = _VolumeRecordingBackend()
+    player = SoundPlayer(backend=backend)
+
+    player.set_volume(0.5)
+    assert backend.volume == 0.5
+
+    # Values above 1.0 clamp down.
+    player.set_volume(2.0)
+    assert backend.volume == 1.0
+
+    # Values below 0.0 clamp up.
+    player.set_volume(-0.5)
+    assert backend.volume == 0.0
+
+
+def test_set_volume_is_silent_on_backends_without_output() -> None:
+    backend = _RecordingBackend()  # no _output attr
+    player = SoundPlayer(backend=backend)
+
+    # Must not raise; the call is a no-op.
+    player.set_volume(0.5)
+
+
+def test_set_volume_ignores_non_numeric_argument() -> None:
+    backend = _VolumeRecordingBackend()
+    player = SoundPlayer(backend=backend)
+
+    # Garbage in, no exception, no volume update.
+    player.set_volume("nope")  # type: ignore[arg-type]
+    assert backend.volume is None
+
+
+def test_unregister_event_removes_a_single_event() -> None:
+    player, _ = _player("alpha", "beta")
+    assert "alpha" in player.loaded_event_ids()
+
+    player.unregister_event("alpha")
+
+    assert "alpha" not in player.loaded_event_ids()
+    assert "beta" in player.loaded_event_ids()
+
+
+def test_unregister_event_unknown_id_is_a_noop() -> None:
+    player, _ = _player("alpha")
+    player.unregister_event("does-not-exist")  # must not raise
+    assert "alpha" in player.loaded_event_ids()
+
+
+def test_unregister_events_removes_a_batch() -> None:
+    player, _ = _player("a", "b", "c", "d")
+
+    player.unregister_events(frozenset({"a", "c"}))
+
+    remaining = player.loaded_event_ids()
+    assert "a" not in remaining
+    assert "c" not in remaining
+    assert "b" in remaining
+    assert "d" in remaining
