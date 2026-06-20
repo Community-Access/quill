@@ -1,4 +1,4 @@
-"""Structured data for the About Quill dialog.
+"""Structured data for the About QUILL for All dialog.
 
 The dialog used to assemble its content from a giant Markdown blob inside
 ``MainFrame._about_markdown``. JAWS in Forms mode read the flattened result
@@ -10,6 +10,11 @@ collects everything the dialog needs into a single :class:`AboutInfo`
 dataclass, and ``quill/ui/info_pages.py::show_about_quill_native`` renders
 that dataclass into a ``wx.Notebook`` with Overview / Dependencies / Links
 tabs plus Visit / Copy buttons.
+
+The displayed version and channel come from the generated
+:mod:`quill._build_info` module (when present) via
+:mod:`quill.build_info`; the About dialog and crash reports always show
+the same string because they read the same file.
 """
 
 from __future__ import annotations
@@ -19,6 +24,15 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from quill import __version__
+from quill.branding import (
+    APP_COPYRIGHT,
+    APP_DESCRIPTION,
+    APP_DISPLAY_NAME,
+    APP_LICENSE_NAME,
+    APP_ORGANIZATION,
+    INDEPENDENCE_NOTICE,
+)
+from quill.build_info import get_short_version, get_support_info
 
 # Org links shown on the Overview tab. Mirrors ``MainFrame._ABOUT_LINKS``.
 _DEFAULT_ORG_LINKS: tuple[tuple[str, str], ...] = (
@@ -57,12 +71,9 @@ _DEFAULT_GITHUB_LINKS: tuple[tuple[str, str], ...] = (
     ),
 )
 
-_COPYRIGHT = "Copyright (c) Blind Information Technology Solutions (BITS) and Community Access"
-
 _OVERVIEW_PARAGRAPHS: tuple[str, ...] = (
-    "Quill {version} {channel} is a screen-reader-first writing and document "
-    "environment for Windows and Mac from Blind Information Technology Solutions "
-    "(BITS) and Community Access.",
+    "{product_name} {version} {channel} is a screen-reader-first writing and document "
+    f"environment for Windows and Mac from {APP_ORGANIZATION}.",
     "With sincere thanks to our contributors and beta testers: Techopolis, "
     "Taylor Arndt, Michael Doise, Kayla Bentas, Shane Popplestone, Doug Langley, "
     "Becky K, and Kelly Ford.",
@@ -78,7 +89,7 @@ _OVERVIEW_PARAGRAPHS: tuple[str, ...] = (
     "https://github.com/accessibleapps) for the open-source accessibility "
     "libraries that QUILL builds on: app_updater, smart_list, accessible_output2, "
     "html_to_text, app_elements, platform_utils, and keyboard_handler.",
-    "BITS Whisperer brings speech and dictation integration to Quill, arriving "
+    "BITS Whisperer brings speech and dictation integration to QUILL, arriving "
     "in phases: a speech-model manager with machine-aware recommendations, a "
     "provider center with local-first and cloud planning, readiness checks, and "
     "a download queue. Bundled Read Aloud voices (DECtalk and eSpeak NG) play "
@@ -87,7 +98,7 @@ _OVERVIEW_PARAGRAPHS: tuple[str, ...] = (
 )
 
 _BIT_WHISPERER_PARA = (
-    "BITS Whisperer brings speech and dictation integration to Quill, arriving "
+    "BITS Whisperer brings speech and dictation integration to QUILL, arriving "
     "in phases: a speech-model manager with machine-aware recommendations, a "
     "provider center with local-first and cloud planning, readiness checks, and "
     "a download queue. Bundled Read Aloud voices (DECtalk and eSpeak NG) play "
@@ -148,7 +159,9 @@ class AboutInfo:
     readers can navigate cleanly through headings, lists, and links.
     """
 
+    product_name: str
     version: str
+    display_version: str
     channel: str
     tagline: str
     overview_paragraphs: tuple[str, ...]
@@ -159,11 +172,14 @@ class AboutInfo:
     dependencies: tuple[DependencyRow, ...]
     bundled_components: tuple[DependencyRow, ...]
     dependencies_available: bool
-    copyright: str = _COPYRIGHT
+    copyright: str = APP_COPYRIGHT
+    license_name: str = APP_LICENSE_NAME
+    independence_notice: str = INDEPENDENCE_NOTICE
+    support_info: str = ""
 
     def headline(self) -> str:
         """The first thing JAWS/NVDA should read on the Overview tab."""
-        return f"Quill {self.version} {self.channel}"
+        return f"{self.product_name} {self.display_version}"
 
 
 def _load_contributors() -> tuple[Link, ...]:
@@ -231,8 +247,10 @@ def _load_glow_summary() -> str:
 
 def gather_about_info(
     *,
-    version: str = __version__,
-    channel: str = "Beta",
+    version: str | None = None,
+    display_version: str | None = None,
+    channel: str | None = None,
+    product_name: str | None = None,
     pyproject_path: Path | None = None,
     contributors: tuple[Link, ...] | None = None,
     org_links: tuple[Link, ...] | None = None,
@@ -240,11 +258,17 @@ def gather_about_info(
     dependency_loader: Callable[[Path], tuple[DependencyRow, ...]] | None = None,
     bundled_loader: Callable[[], tuple[DependencyRow, ...]] | None = None,
     glow_summary: str | None = None,
+    support_info: str | None = None,
 ) -> AboutInfo:
     """Build an :class:`AboutInfo` from the canonical sources.
 
     All parameters are injectable so tests can supply deterministic data
     without needing a real ``pyproject.toml`` or the GLOW engine present.
+
+    When ``version`` is not supplied, the function reads the generated
+    :mod:`quill.build_info` module; ``quill/__init__.py::__version__`` is
+    the fallback. The same source feeds :func:`get_support_info`, so the
+    About dialog and the clipboard block always agree.
     """
 
     resolved_pyproject = pyproject_path if pyproject_path is not None else _default_pyproject_path()
@@ -253,12 +277,26 @@ def gather_about_info(
     dependencies = dep_loader(resolved_pyproject)
     bundled = bundle_loader()
 
+    short = display_version or get_short_version()
+    resolved_channel = channel or _resolve_channel()
+    resolved_version = version or __version__
+    resolved_product = product_name or APP_DISPLAY_NAME
+    resolved_support = support_info if support_info is not None else get_support_info()
+
     return AboutInfo(
-        version=version,
-        channel=channel,
-        tagline=("A screen-reader-first writing and document environment for Windows and Mac."),
+        product_name=resolved_product,
+        version=resolved_version,
+        display_version=short,
+        channel=resolved_channel,
+        tagline=(
+            f"{APP_DESCRIPTION} {resolved_product} helps people write, edit, "
+            "convert, compare, and publish documents in a screen-reader-friendly "
+            "environment."
+        ),
         overview_paragraphs=tuple(
-            p.format(version=version, channel=channel) if "{" in p else p
+            p.format(product_name=resolved_product, version=short, channel=resolved_channel)
+            if "{" in p
+            else p
             for p in _OVERVIEW_PARAGRAPHS
         ),
         glow_summary=glow_summary if glow_summary is not None else _load_glow_summary(),
@@ -268,7 +306,21 @@ def gather_about_info(
         dependencies=dependencies,
         bundled_components=bundled,
         dependencies_available=resolved_pyproject.exists(),
+        support_info=resolved_support,
     )
+
+
+def _resolve_channel() -> str:
+    """Return the channel from generated build info, or 'Release' as a safe fallback."""
+    try:
+        from quill import _build_info  # type: ignore[attr-defined]
+
+        raw = str(getattr(_build_info, "CHANNEL", "stable")).lower()
+    except Exception:
+        raw = "stable"
+    if raw == "stable":
+        return "Release"
+    return raw.capitalize()
 
 
 def _default_pyproject_path() -> Path:

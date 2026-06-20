@@ -72,7 +72,7 @@ def test_iss_wrong_version_is_flagged(tmp_path: Path) -> None:
     installer = tmp_path / "installer"
     installer.mkdir()
     (installer / "quill.iss").write_text(
-        '#define AppVersion "0.9.9"\nOutputBaseFilename=Quill-Setup-0.9.9\n'
+        '#define AppVersion "0.9.9"\nOutputBaseFilename=Quill-for-All-Setup-0.9.9\n'
     )
     errors = _check_iss(tmp_path, "1.2.3")
     assert any("AppVersion" in e for e in errors), errors
@@ -82,7 +82,7 @@ def test_iss_ok_returns_no_errors(tmp_path: Path) -> None:
     installer = tmp_path / "installer"
     installer.mkdir()
     (installer / "quill.iss").write_text(
-        '#define AppVersion "1.2.3"\nOutputBaseFilename=Quill-Setup-1.2.3\n'
+        '#define AppVersion "1.2.3"\nOutputBaseFilename=Quill-for-All-Setup-1.2.3\n'
     )
     errors = _check_iss(tmp_path, "1.2.3")
     assert errors == []

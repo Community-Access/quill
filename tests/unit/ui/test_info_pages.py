@@ -46,13 +46,42 @@ def test_show_about_quill_native_uses_notebook() -> None:
     assert "wx.Notebook" in about_fn
 
 
-def test_show_about_quill_native_has_three_tabs() -> None:
-    # Overview, Dependencies, Links.
+def test_show_about_quill_native_has_four_tabs() -> None:
+    # Overview, Dependencies, Links, plus the Legal tab added with the
+    # trademark/About-dialog hardening. The exact order is intentional
+    # (Legal sits next to Overview so the independence notice is the
+    # second thing a new user reads).
     src = _info_pages_source()
     about_fn = _extract_function(src, "show_about_quill_native")
     notebook_section = about_fn.split("notebook = wx.Notebook", 1)[1]
     addpage_calls = re.findall(r"notebook\.AddPage\([^,]+,\s*\"([^\"]+)\"", notebook_section)
-    assert addpage_calls == ["Overview", "Dependencies", "Links"]
+    assert addpage_calls == ["Overview", "Legal", "Dependencies", "Links"]
+
+
+def test_show_about_quill_native_has_legal_tab() -> None:
+    """The Legal tab surfaces the independence notice, copyright, and license."""
+    src = _info_pages_source()
+    about_fn = _extract_function(src, "show_about_quill_native")
+    assert 'notebook.AddPage(legal_panel, "Legal")' in about_fn
+    assert "about_legal_text" in about_fn
+    assert "independence_notice" in about_fn
+
+
+def test_show_about_quill_native_title_uses_product_name() -> None:
+    """The dialog title uses the AboutInfo.product_name, not a hard-coded string."""
+    src = _info_pages_source()
+    about_fn = _extract_function(src, "show_about_quill_native")
+    assert '"About Quill"' not in about_fn
+    assert "about_info.product_name" in about_fn
+
+
+def test_show_about_quill_native_has_copy_support_info_button() -> None:
+    """The About dialog has a Copy Support Info button that uses the clipboard."""
+    src = _info_pages_source()
+    about_fn = _extract_function(src, "show_about_quill_native")
+    assert "about_copy_support" in about_fn
+    assert "Copy Support Info" in about_fn
+    assert "support_info" in about_fn
 
 
 def test_show_about_quill_native_overview_includes_headline() -> None:

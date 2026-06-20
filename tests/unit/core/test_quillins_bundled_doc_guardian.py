@@ -9,8 +9,6 @@ from __future__ import annotations
 
 import importlib.util
 import json
-import sys
-from pathlib import Path
 from typing import Any
 
 from quill.core.quillins.loader import bundled_extensions_root
@@ -27,9 +25,7 @@ def _load_manifest() -> dict[str, Any]:
 
 
 def _load_extension() -> Any:
-    spec = importlib.util.spec_from_file_location(
-        "doc_guardian_extension", _DIR / "extension.py"
-    )
+    spec = importlib.util.spec_from_file_location("doc_guardian_extension", _DIR / "extension.py")
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

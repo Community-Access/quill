@@ -4,6 +4,7 @@ import hashlib
 import hmac
 import json
 import os
+import re
 import ssl
 import sys
 from collections.abc import Callable
@@ -247,9 +248,35 @@ def _version_tuple(value: str) -> tuple[int, int, int, tuple[int, int]]:
     pre-releases (``1.2.0`` > ``1.2.0-rc2`` > ``1.2.0-rc1`` > ``1.2.0-beta1`` >
     ``1.2.0-alpha1``). Unrecognized suffixes are treated as the earliest stage so
     an unknown pre-release never outranks a stable build.
+
+    Accepts both PEP 440 hyphen form (``1.2.0-rc1``) and the human-readable
+    display form produced by :func:`quill.build_info.get_short_version`
+    (``1.2.0 Beta 1``). Without the second form the running 0.7.0 beta build
+    would compare its display string against ``__version__`` (the base
+    ``0.7.0``) and never recognize an updated beta as "newer".
     """
 
     cleaned = value.strip().lstrip("v")
+    # Normalize the display form ("0.7.0 Beta 1", "0.7.0 Release Candidate 2")
+    # to the PEP 440 hyphen form ("0.7.0-beta1", "0.7.0-rc2") so the rest of
+    # the parser only has to know one shape. Without this normalization the
+    # running 0.7.0 beta build would compare its display string against
+    # ``__version__`` (the base ``0.7.0``) and never recognize an updated
+    # beta as "newer" -- or, worse, would treat the suffix digits as part
+    # of the patch number ("Release Candidate 1" -> 0.7.1).
+    space_match = re.match(
+        r"^(\d+\.\d+(?:\.\d+)?)\s+"
+        r"(alpha|beta|release\s+candidate|rc|dev)"
+        r"\.?\s*(\d*)\b",
+        cleaned,
+        re.I,
+    )
+    if space_match:
+        base, label, number = space_match.groups()
+        label_key = label.strip().lower()
+        if label_key == "release candidate":
+            label_key = "rc"
+        cleaned = f"{base}-{label_key}{number}"
     # Separate the core x.y.z from any pre-release suffix (-rc1, -beta.2, ...) so
     # the suffix digits cannot leak into the patch number.
     core, separator, suffix = cleaned.partition("-")

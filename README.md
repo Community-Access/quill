@@ -1,10 +1,16 @@
-# QUILL
+# QUILL for All
 
 [![Contributors](https://contrib.rocks/image?repo=Community-Access/quill)](https://github.com/Community-Access/quill/graphs/contributors)
 
+**QUILL for All** is an open-source, accessibility-focused editor from
+Community Access.
+
+QUILL for All helps people write, edit, convert, compare, and publish
+documents in a screen-reader-friendly environment.
+
 **QUILL** stands for **Quality, Usable, Inclusive, Lightweight, Literate**.
 
-**QUILL: A quality, usable, inclusive, lightweight, and literate editor built for everyone who writes, codes, learns, and creates.**
+**QUILL for All: A quality, usable, inclusive, lightweight, and literate editor built for everyone who writes, codes, learns, and creates.**
 
 ## The Quillin Hub
 
@@ -230,3 +236,15 @@ Community contributions are welcome.
 ## License
 
 MIT. See `LICENSE`.
+
+## Legal and Trademark Notices
+
+QUILL for All is an independent open-source project by Community Access.
+It is not affiliated with, sponsored by, or endorsed by Quill.js,
+QuillBot, Quill.org, or any other similarly named product, project,
+company, or organisation.
+
+All trademarks are the property of their respective owners.
+
+See [TRADEMARKS.md](TRADEMARKS.md), [NOTICE](NOTICE), and
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for more information.

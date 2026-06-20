@@ -85,7 +85,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: quill-installer
-          path: windows-distribution/installer/Output/Quill-Setup-*.exe
+          path: windows-distribution/installer/Output/Quill-for-All-Setup-*.exe
       - name: Upload installer script
         uses: actions/upload-artifact@v7
         with:
@@ -96,6 +96,25 @@ jobs:
         with:
           name: quill-release-artifacts
           path: release-artifacts
+      # Generate the signed update feed (autoupdate manifest) so the running
+      # build's Check for Updates flow points at this installer. Reads
+      # build/version.toml for the display version and reuses the installer's
+      # actual filename so the manifest can never drift from the artifact.
+      - name: Generate update feed
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          python scripts/generate_update_feed.py \
+            --output docs/site/updates/.quill-update-feed-v1.json \
+            --tag "${{ github.ref_name }}" \
+            --notes "$(awk '/^## '"${{ github.ref_name }}"'$/{flag=1; next} /^## /{flag=0} flag' CHANGELOG.md | head -c 800)"
+      - name: Commit update feed
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/site/updates/.quill-update-feed-v1.json
+          git diff --cached --quiet || git commit -m "docs(update-feed): refresh autoupdate manifest for ${{ github.ref_name }}"
+          git push
 
   release:
     needs: build
@@ -131,10 +150,10 @@ jobs:
       - name: Create GitHub release
         uses: softprops/action-gh-release@v3
         with:
-          name: "Quill ${{ github.ref_name }} Beta"
+          name: "QUILL for All ${{ github.ref_name }} Beta"
           body_path: CHANGELOG.md
           files: |
-            release-assets/installer/Quill-Setup-*.exe
+            release-assets/installer/Quill-for-All-Setup-*.exe
             release-assets/Quill-Portable-*.zip
             release-assets/metadata/*.json
             release-assets/update/*.zip

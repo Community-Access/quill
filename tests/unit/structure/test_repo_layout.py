@@ -34,6 +34,7 @@ _SANCTIONED_ROOT_MARKDOWN = frozenset({
     "RESPONSIBLE_AI_USE.md",
     "SECURITY.md",
     "THIRD_PARTY_NOTICES.md",
+    "TRADEMARKS.md",
     "ai.md",
     "dialogs.md",
     "issues.md",

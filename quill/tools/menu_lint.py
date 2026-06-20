@@ -123,7 +123,12 @@ def _check_ctrl_alt(source: str) -> list[str]:
                 continue
             command_id = str(key_node.value)
             binding = str(val_node.value)
-            if not re.match(r"(?i)ctrl\+alt\+", binding):
+            # Match Ctrl+Alt+ exactly, but not Ctrl+Alt+Shift+... The
+            # §10.8 policy is about Ctrl+Alt+ by itself; Ctrl+Alt+Shift+ is a
+            # different chord whose screen-reader collision profile is much
+            # narrower and is governed by §10.4 (modifier-stacking) rather
+            # than this gate.
+            if not re.match(r"(?i)ctrl\+alt\+(?!shift\+)", binding):
                 continue
             if command_id in _CTRL_ALT_DOCUMENTED:
                 continue

@@ -79,6 +79,25 @@ def test_ctrl_alt_edsharp_comment_without_allowlist_entry_still_passes() -> None
     assert _check_ctrl_alt(src) == []
 
 
+def test_ctrl_alt_shift_plus_does_not_match_ctrl_alt_gate() -> None:
+    """Regression for #347: the regex `ctrl+alt+` was a prefix match, so it
+    fired on every Ctrl+Alt+Shift+... binding. The gate's intent is the
+    plain Ctrl+Alt+ chord; Ctrl+Alt+Shift+ is governed by §10.4 and is not
+    this gate's concern. An unlisted Ctrl+Alt+Shift+ binding must pass."""
+    src = (
+        "DEFAULT_KEYMAP: dict[str, str] = {\n"
+        '    "view.toggle_dark_mode": "Ctrl+Alt+Shift+D",\n'
+        '    "tools.run_macro": "Ctrl+Alt+Shift+M",\n'
+        "}\n"
+    )
+    assert _check_ctrl_alt(src) == []
+
+
+def test_ctrl_alt_lower_case_shift_plus_does_not_match() -> None:
+    src = 'DEFAULT_KEYMAP: dict[str, str] = {\n    "x": "ctrl+alt+shift+q",\n}\n'
+    assert _check_ctrl_alt(src) == []
+
+
 # ---------------------------------------------------------------------------
 # Required clusters
 # ---------------------------------------------------------------------------

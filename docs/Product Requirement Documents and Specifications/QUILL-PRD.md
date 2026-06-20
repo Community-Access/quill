@@ -3,7 +3,9 @@
 ## A magical, screen-reader-first writing and document environment, built in wxPython
 
 Status: This document specifies Quill **1.0**. The current shipping build is **0.7.0 Beta**, which implements the v1.0 checklist (section 21.1–21.16) plus the post-1.0 foundation work in section 21.17 and later. Section 21 is the living implementation map and is kept current as features land.
-Owner: Blind Information Technology Solutions (BITS) and Community Access
+Public name: QUILL for All
+Owner: Community Access
+Independence notice: QUILL for All is developed independently of any assistive-technology vendor. Vendor and screen-reader names appear throughout this document for compatibility and certification purposes only; they remain the property of their respective owners.
 Target platform: Windows 10 and Windows 11
 Target screen readers: NVDA (primary), JAWS, Narrator
 UI framework: wxPython (wxWidgets 3.2 or newer)
@@ -5365,6 +5367,248 @@ backlog below rather than half-built.
   than guessing.
 - **Live suggestions/autocomplete** while typing an abbreviation (Tab-trigger
   style) — expansion is explicit, command-driven.
+
+---
+
+## §30. Branding, legal, and trademark policy (0.7.0+)
+
+### §30.1 Public product name
+
+The product ships under the public name **"QUILL for All"**. The legacy short
+name "Quill" remains valid as a programmer-friendly identifier (package name,
+`__init__` symbol, command-line tool name) but is no longer presented to end
+users in product surfaces.
+
+All product-facing strings — window titles, About dialog, support info,
+installer metadata, README, release notes, GitHub release titles — read
+`QUILL for All`. The single source of truth is `quill/branding.py`:
+
+- `APP_DISPLAY_NAME` = `"QUILL for All"`
+- `APP_FULL_NAME` = `"QUILL for All — A screen-reader-first writing environment"`
+- `APP_ORGANIZATION` = `"Community Access"`
+- `APP_DESCRIPTION` — short tagline used in installer metadata and README
+- `APP_COPYRIGHT` — copyright line displayed in About and README
+- `APP_LICENSE_NAME` — license name displayed in About and LICENSE
+- `APP_SHORT_NAME` = `"Quill"` — programmer-friendly identifier
+- `INDEPENDENCE_NOTICE` — explicit statement of independence from any
+  assistive-technology vendor
+
+### §30.2 Independence notice
+
+`INDEPENDENCE_NOTICE` is surfaced in:
+
+- The **About** dialog Legal tab
+- `about_info.support_info()` (the Copy Support Info payload)
+- The README Legal section
+- The Notice file at the repository root
+
+The notice states that QUILL for All is developed independently of any
+assistive-technology vendor and that vendor and screen-reader names appear for
+compatibility purposes only. This is non-negotiable.
+
+### §30.3 Trademark and legal documentation
+
+The repository ships four canonical legal documents. Their content is governed
+by a CI check that asserts each file contains the required notice strings.
+
+| File | Audience | Purpose |
+| --- | --- | --- |
+| `LICENSE` | All | Full license text (project license) |
+| `NOTICE` | All | Attribution notices and the independence statement |
+| `TRADEMARKS.md` | End users, contributors | Trademark acknowledgements and usage rules |
+| `docs/legal/legal-notices.md` | Embedded in About | Short, accessible summary shown in the Legal tab |
+| `docs/legal/trademark-notices.md` | Detailed reference | Full vendor acknowledgements with links |
+
+The `tests/unit/tools/test_legal_docs.py` gate ensures:
+
+1. The independence notice appears verbatim in each surface it is required in.
+2. `TRADEMARKS.md` lists every third-party trademark referenced in the
+   About dialog Dependencies tab.
+3. The product name "QUILL for All" appears consistently across all five
+   files.
+
+### §30.4 Module policy
+
+- No `quill/core`, `quill/io`, or `quill/platform` module may hard-code the
+  string `"QUILL for All"` or `"Community Access"` directly. Use
+  `quill.branding` constants instead.
+- `quill/ui` modules may reference the constants; literal string duplication
+  is discouraged but tolerated where templating would obscure intent.
+- New translations of the About dialog or support info payload must be
+  derived from the branding constants, not from copies of the strings.
+
+---
+
+## §31. Build-number system and single source of truth (0.7.0+)
+
+### §31.1 The drift problem
+
+Prior to 0.7.0, the version string lived in `quill/__init__.py` (`__version__`)
+and was copied — by hand — into `installer/quill.iss`, the CHANGELOG, the
+autoupdate manifest, README, and the GitHub release title. Each of those
+copies was a drift hazard: a version bump in the codebase could leave
+installer metadata, the update feed, and the docs all out of sync.
+
+### §31.2 `build/version.toml` — the canonical source
+
+The single source of truth is `build/version.toml`:
+
+```toml
+[build]
+base_version = "0.7.0"
+channel = "beta"           # dev | alpha | beta | rc | stable
+prerelease_number = 1
+product_name = "QUILL for All"
+publisher = "Community Access"
+website = "https://community-access.github.io/quill/"
+```
+
+The display version is derived as:
+
+- `stable` → `base_version` (e.g. `0.7.0`)
+- `alpha` → `{base_version} Alpha {prerelease_number}` (e.g. `0.7.0 Alpha 1`)
+- `beta` → `{base_version} Beta {prerelease_number}` (e.g. `0.7.0 Beta 1`)
+- `rc` → `{base_version} Release Candidate {prerelease_number}` (e.g. `0.7.0
+  Release Candidate 1`)
+
+### §31.3 Generated artefacts
+
+`tools/generate_build_info.py` reads `build/version.toml` and emits two
+artefacts:
+
+1. **`quill/_build_info.py`** — a small Python module of frozen constants
+   (`BUILD_BASE_VERSION`, `BUILD_CHANNEL`, `BUILD_PRERELEASE_NUMBER`,
+   `BUILD_PRODUCT_NAME`, `BUILD_PUBLISHER`, `BUILD_WEBSITE`,
+   `BUILD_DISPLAY_VERSION`, `BUILD_PEP440_VERSION`, `BUILD_IS_RELEASE_BUILD`).
+   This file is regenerated at packaging time and is the authoritative source
+   read by the About dialog, support info, crash reports, and InnoSetup.
+2. **`build/build-info.txt`** — a plain-text summary used by InnoSetup's
+   pre-build step to substitute `AppName`, `AppPublisher`, `AppVersion`, and
+   `OutputBaseFilename`.
+
+### §31.4 Safe read wrapper
+
+`quill/build_info.py` is a safe read wrapper around `quill/_build_info.py`.
+When the generated module is present it re-exports its constants. When it is
+absent (e.g. during a fresh clone before packaging) it falls back to safe
+dev-build defaults derived from `quill/__version__`:
+
+- `get_display_version()` — `"0.7.0 Beta 1"` form
+- `get_short_version()` — `"0.7.0"` form
+- `get_support_info()` — formatted text payload for the Copy Support Info
+  button
+- `is_release_build()` — `True` only when channel is `stable`
+
+`quill/__init__.py` re-exports both modules and the public helpers so that
+`from quill import build_info` and `from quill import APP_DISPLAY_NAME` work
+without further imports.
+
+### §31.5 The version consistency gate (GATE-VC)
+
+`quill/tools/check_version_consistency.py` is a CI gate. It asserts:
+
+- `pyproject.toml` uses `dynamic = ["version"]` and `[tool.hatch.version]
+  path = "quill/__init__.py"`.
+- `installer/quill.iss` `#define AppVersion` and `OutputBaseFilename` both
+  match the canonical version.
+- `CHANGELOG.md` top version heading matches.
+- All five checks pass together.
+
+The gate is run from `scripts/verify_release_corpus.py` and is included in
+`windows-release.yml`.
+
+### §31.6 The release procedure for version changes
+
+To bump the version:
+
+1. Edit `build/version.toml`.
+2. Run `python -m tools.generate_build_info` to refresh the generated
+   artefacts.
+3. Add a `## <new version>` heading to `CHANGELOG.md`.
+4. Run `pytest -q` and `python -m quill.tools.check_version_consistency`.
+5. Commit, push, tag.
+
+No other file (installer script, About dialog, manifest generator) needs
+editing — they all read from the canonical source.
+
+---
+
+## §32. About dialog (0.7.0+)
+
+The About dialog is a 4-tab `wx.Notebook`:
+
+1. **Overview** — product name, version, copyright, short description.
+2. **Legal** — license name, independence notice, and short legal summary
+   (mirrors `docs/legal/legal-notices.md`).
+3. **Dependencies** — list of third-party packages, license, and version
+   (mirrors the Dependencies section of TRADEMARKS.md).
+4. **Links** — website, source, issue tracker, support.
+
+Title is dynamic: `f"About {about_info.product_name}"`.
+
+The dialog also exposes a **Copy Support Info** button that copies
+`about_info.support_info()` (a single multi-line string containing product
+name, version, install path, build identity, and platform info) to the
+clipboard for inclusion in support emails and bug reports.
+
+`quill/core/about_info.py` is the single source of truth for every field
+the dialog renders. The dialog does no string formatting of its own.
+
+---
+
+## §33. Autoupdate manifest contract (0.7.0+)
+
+The autoupdate manifest at
+`docs/site/updates/.quill-update-feed-v1.json` is published by the
+`windows-release.yml` workflow on every tagged release. The manifest
+schema:
+
+```json
+{
+  "version": "0.7.0 Beta 2",
+  "download_url": "https://github.com/Community-Access/quill/releases/download/v0.7.0-beta2/Quill-for-All-Setup-0.7.0 Beta 2.exe",
+  "published_at": "2026-06-19T12:34:56Z",
+  "notes": "Release notes excerpt.",
+  "signature": "<HMAC-SHA256>"
+}
+```
+
+### §33.1 Invariants
+
+1. `manifest.version` matches the **display version** of the release
+   (e.g. `0.7.0 Beta 2`), not the PEP 440 form. The display form is what
+   `quill/build_info.get_display_version()` returns and what the running
+   build uses for version comparison.
+2. `manifest.download_url` matches the **actual installer filename** the
+   InnoSetup script produces (`Quill-for-All-Setup-<display_version>.exe`).
+   A rename in the installer script without updating the manifest is a
+   gate failure.
+3. `manifest.signature` is HMAC-SHA256 over the canonical JSON form of the
+   payload, signed with the deployment key in `QUILL_UPDATE_MANIFEST_KEY`.
+   The running build rejects manifests whose signature does not verify.
+
+### §33.2 Version comparison
+
+The running build compares its own display version against the manifest
+version using `quill.core.updates._version_tuple()`, which accepts both the
+display form (`0.7.0 Beta 1`) and the PEP 440 form (`0.7.0-beta1`) and
+orders them consistently:
+
+- A final (non-pre-release) build outranks every pre-release of the same
+  `major.minor.patch`.
+- Within pre-releases, RC > beta > alpha.
+- Pre-release digit ordering is monotonic (`beta1 < beta2 < beta3`).
+
+A 0.7.0 beta 1 build sees beta 2 as newer. A 0.7.0 stable build sees beta 1
+as older (so users on stable are not nagged about pre-releases).
+
+### §33.3 Publisher contract
+
+`scripts/generate_update_feed.py` is the only producer of the manifest. It
+reads `build/version.toml` for the version, reads the installer filename
+from `installer/quill.iss` for the download URL, and signs the payload.
+The `windows-release.yml` workflow runs it on every tagged release and
+commits the resulting JSON back to `docs/site/updates/`.
 
 ---
 

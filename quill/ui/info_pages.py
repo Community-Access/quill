@@ -29,7 +29,7 @@ def show_about_quill_native(
     assert isinstance(about_info, AboutInfo)
     dialog = wx.Dialog(
         parent,
-        title="About Quill",
+        title=f"About {about_info.product_name}",
         style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
     )
     dialog.SetSize((760, 580))
@@ -59,6 +59,32 @@ def show_about_quill_native(
     ov_sizer.Add(overview_text, 1, wx.EXPAND | wx.ALL, 8)
     overview.SetSizer(ov_sizer)
     notebook.AddPage(overview, "Overview")
+
+    # --- Legal tab ---
+    legal_panel = wx.Panel(notebook)
+    legal_sizer = wx.BoxSizer(wx.VERTICAL)
+    notice_label = wx.StaticText(
+        legal_panel,
+        label="Independence and trademark notice",
+        name="about_legal_label",
+    )
+    notice_label.SetFont(notice_label.GetFont().Bold())
+    legal_sizer.Add(notice_label, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8)
+    legal_text = wx.TextCtrl(
+        legal_panel,
+        value="\n\n".join([
+            about_info.independence_notice,
+            about_info.copyright,
+            f"Licensed under {about_info.license_name}.",
+            f"Build: {about_info.support_info}",
+        ]),
+        style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP,
+        name="about_legal_text",
+    )
+    legal_text.SetMinSize((-1, 240))
+    legal_sizer.Add(legal_text, 1, wx.EXPAND | wx.ALL, 8)
+    legal_panel.SetSizer(legal_sizer)
+    notebook.AddPage(legal_panel, "Legal")
 
     # --- Dependencies tab ---
     deps_panel = wx.Panel(notebook)
@@ -124,11 +150,17 @@ def show_about_quill_native(
 
     btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
     btn_sizer.AddStretchSpacer()
+    copy_support_btn = wx.Button(dialog, label="Copy Support Info", name="about_copy_support")
     notices_btn = wx.Button(dialog, wx.ID_HELP, label="Open Third-Party Notices")
     close_btn = wx.Button(dialog, wx.ID_OK, label="Close")
     close_btn.SetDefault()
+    copy_support_btn.Bind(
+        wx.EVT_BUTTON,
+        lambda _e: _copy_support_to_clipboard(wx, about_info),
+    )
     notices_btn.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_HELP))
     close_btn.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_OK))
+    btn_sizer.Add(copy_support_btn, 0, wx.RIGHT, 8)
     btn_sizer.Add(notices_btn, 0, wx.RIGHT, 8)
     btn_sizer.Add(close_btn, 0)
     sizer.Add(btn_sizer, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 12)
@@ -137,11 +169,23 @@ def show_about_quill_native(
     apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_OK)
     wx.CallAfter(notebook.SetFocus)
     try:
-        result = show_modal_dialog(dialog, "About Quill")
+        result = show_modal_dialog(dialog, f"About {about_info.product_name}")
     finally:
         dialog.Destroy()
     if result == wx.ID_HELP:
         open_notices_fn()
+
+
+def _copy_support_to_clipboard(wx: Any, about_info: Any) -> None:
+    """Copy the support block to the clipboard and announce the result."""
+    text = about_info.support_info or ""
+    if not text:
+        return
+    if wx.TheClipboard.Open():
+        try:
+            wx.TheClipboard.SetData(wx.TextDataObject(text))
+        finally:
+            wx.TheClipboard.Close()
 
 
 def _build_dependency_list(parent: Any, wx: Any, rows: Any) -> Any:

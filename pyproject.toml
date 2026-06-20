@@ -141,6 +141,10 @@ packages = ["quill"]
 "quill/quillins_bundled" = "quill/quillins_bundled"
 
 [tool.pytest.ini_options]
+# Pin pythonpath so the worktree's `quill` package wins over the parent
+# checkout's `quill` package when both pyproject.toml files are visible
+# to pytest (e.g. when running from inside .claude/worktrees/quill-0.7.0).
+pythonpath = ["."]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 timeout = 30

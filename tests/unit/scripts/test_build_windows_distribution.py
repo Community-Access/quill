@@ -25,6 +25,17 @@ version = "2.4.6"
 """.strip(),
         encoding="utf-8",
     )
+    # Drive the build identity through the canonical source
+    # (build/version.toml) so the test asserts the same path as production.
+    (tmp_path / "build").mkdir()
+    (tmp_path / "build" / "version.toml").write_text(
+        'base_version = "2.4.6"\n'
+        'channel = "stable"\n'
+        "prerelease_number = 0\n"
+        'product_name = "QUILL for All"\n'
+        'publisher = "Community Access"\n',
+        encoding="utf-8",
+    )
 
     bundle = build_windows_distribution(pyproject, tmp_path / "dist")
 
@@ -44,8 +55,8 @@ version = "2.4.6"
     assert '"--console"' in launcher
 
     readme_text = (portable_dir / "README.txt").read_text(encoding="utf-8")
-    assert "Quill Portable 2.4.6" in readme_text
-    assert "Blind Information Technology Solutions (BITS) and Community Access" in readme_text
+    assert "QUILL for All Portable 2.4.6" in readme_text
+    assert "Publisher: Community Access" in readme_text
     assert "first run" in readme_text.lower()
     assert "Pandoc Conversion Wizard" in readme_text
 
@@ -56,11 +67,11 @@ version = "2.4.6"
     manifest_path = portable_dir / "manifest.json"
     assert manifest_path.exists()
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    assert (
-        manifest["publisher"]
-        == "Blind Information Technology Solutions (BITS) and Community Access"
-    )
+    assert manifest["productName"] == "QUILL for All"
+    assert manifest["publisher"] == "Community Access"
     assert manifest["version"] == "2.4.6"
+    assert manifest["baseVersion"] == "2.4.6"
+    assert manifest["channel"] == "stable"
     assert manifest["bundledPython"] is False
     assert sorted(manifest["bundledTools"]) == [
         "pandoc",
@@ -82,10 +93,11 @@ version = "2.4.6"
 def test_build_inno_setup_script_mentions_portable_bundle() -> None:
     script = build_inno_setup_script("9.9.9")
 
+    assert '#define AppName "QUILL for All"' in script
     assert '#define AppVersion "9.9.9"' in script
+    assert '#define AppPublisher "Community Access"' in script
     assert 'Source: "..\\portable\\*"' in script
-    # Publisher and accessibility-friendly installer flags are present.
-    assert "Blind Information Technology Solutions (BITS) and Community Access" in script
+    # Accessibility-friendly installer flags are present.
     assert "PrivilegesRequired=lowest" in script
     assert "WizardStyle=modern" in script
     assert "DisableDirPage=no" in script
@@ -218,7 +230,16 @@ def test_committed_installer_iss_is_in_sync_with_generator() -> None:
     assert version_match, "committed installer is missing an AppVersion define"
     version = version_match.group(1)
 
-    generated = build_inno_setup_script(version)
+    # The generator pulls product_name / publisher from build/version.toml,
+    # so re-derive them through the same source for a true equality check.
+    from scripts.build_windows_distribution import _build_identity
+
+    identity = _build_identity(repo_root)
+    generated = build_inno_setup_script(
+        version,
+        product_name=identity.product_name,
+        publisher=identity.publisher,
+    )
     assert committed.strip() == generated.strip(), (
         "installer/quill.iss is out of sync with build_inno_setup_script(); "
         "regenerate it (the file is generated, not hand-edited)."
@@ -278,7 +299,7 @@ def test_compile_inno_setup_installer_runs_compiler(monkeypatch, tmp_path: Path)
     installer_script.write_text("script", encoding="utf-8")
     compiler = tmp_path / "ISCC.exe"
     compiler.write_text("binary", encoding="utf-8")
-    installer_exe = tmp_path / "Quill-Setup-0.1.exe"
+    installer_exe = tmp_path / "Quill-for-All-Setup-0.1.exe"
 
     def fake_run(command: list[str], check: bool) -> None:
         assert check is True
@@ -306,7 +327,7 @@ def test_compile_inno_setup_installer_accepts_inno_output_folder(
     compiler.write_text("binary", encoding="utf-8")
     output_dir = tmp_path / "Output"
     output_dir.mkdir()
-    installer_exe = output_dir / "Quill-Setup-0.1.exe"
+    installer_exe = output_dir / "Quill-for-All-Setup-0.1.exe"
 
     def fake_run(command: list[str], check: bool) -> None:
         assert check is True
@@ -344,3 +365,53 @@ dev = ["pytest>=8.2"]
     dependencies = bundled_runtime_dependencies(pyproject)
 
     assert dependencies == ["alpha>=1.0", "wxPython>=4.2.2", "pyttsx3>=2.99", "pyenchant>=3.2"]
+
+
+def test_build_identity_reads_canonical_version_toml(tmp_path: Path) -> None:
+    """Installer metadata must come from build/version.toml, not literals."""
+    from scripts.build_windows_distribution import _build_identity
+
+    (tmp_path / "build").mkdir()
+    (tmp_path / "build" / "version.toml").write_text(
+        'base_version = "0.7.0"\n'
+        'channel = "rc"\n'
+        "prerelease_number = 2\n"
+        'product_name = "QUILL for All"\n'
+        'publisher = "Community Access"\n',
+        encoding="utf-8",
+    )
+
+    identity = _build_identity(tmp_path)
+
+    assert identity.base_version == "0.7.0"
+    assert identity.channel == "rc"
+    assert identity.prerelease_number == 2
+    assert identity.display_version == "0.7.0 Release Candidate 2"
+    assert identity.product_name == "QUILL for All"
+    assert identity.publisher == "Community Access"
+
+
+def test_build_identity_falls_back_when_version_toml_missing(tmp_path: Path) -> None:
+    """Missing version.toml must not crash; fall back to defaults."""
+    from scripts.build_windows_distribution import _build_identity
+
+    identity = _build_identity(tmp_path)
+
+    assert identity.base_version == "unknown"
+    assert identity.channel == "dev"
+    assert identity.display_version == "unknown Dev"
+    assert identity.product_name == "QUILL for All"
+    assert identity.publisher == "Community Access"
+
+
+def test_build_inno_setup_script_uses_identity_defaults(tmp_path: Path) -> None:
+    """The script's defaults must match branding constants, not the old literals."""
+    from scripts.build_windows_distribution import build_inno_setup_script
+
+    script = build_inno_setup_script("0.7.0 Beta 1")
+
+    assert '#define AppName "QUILL for All"' in script
+    assert '#define AppPublisher "Community Access"' in script
+    assert "Blind Information Technology Solutions" not in script
+    assert '#define AppName "Quill"' not in script
+    assert "OutputBaseFilename=Quill-for-All-Setup-0.7.0 Beta 1" in script

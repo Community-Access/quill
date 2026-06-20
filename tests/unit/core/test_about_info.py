@@ -178,11 +178,41 @@ def test_gather_about_info_callbacks_are_invoked() -> None:
 
 
 def test_gather_about_info_overview_headline_includes_version() -> None:
-    info = gather_about_info(version="3.1.4")
-    assert info.headline() == "Quill 3.1.4 Beta"
+    info = gather_about_info(version="3.1.4", display_version="3.1.4")
+    assert info.headline() == "QUILL for All 3.1.4"
 
 
 def test_about_info_dataclass_is_frozen() -> None:
     info = gather_about_info(version="1.0")
     with pytest.raises((AttributeError, TypeError)):
         info.version = "2.0"  # type: ignore[misc]
+
+
+def test_default_product_name_is_quill_for_all() -> None:
+    info = gather_about_info()
+    assert info.product_name == "QUILL for All"
+    assert "QUILL for All" in info.headline()
+
+
+def test_independence_notice_default_present() -> None:
+    info = gather_about_info()
+    assert info.independence_notice
+    assert "independent open-source project" in info.independence_notice
+    assert "Community Access" in info.independence_notice
+    # Must name at least one similarly named third party so the user
+    # understands the scope of the notice.
+    assert "QuillBot" in info.independence_notice
+
+
+def test_support_info_includes_product_and_build() -> None:
+    info = gather_about_info(support_info="Product: QUILL for All\nBuild: 20260620.0\n")
+    assert "QUILL for All" in info.support_info
+    assert "20260620.0" in info.support_info
+
+
+def test_copyright_and_license_defaults_use_branding() -> None:
+    from quill.branding import APP_COPYRIGHT, APP_LICENSE_NAME
+
+    info = gather_about_info()
+    assert info.copyright == APP_COPYRIGHT
+    assert info.license_name == APP_LICENSE_NAME

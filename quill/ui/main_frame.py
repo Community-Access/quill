@@ -24,7 +24,7 @@ except ImportError:  # pragma: no cover - non-Windows fallback
 if TYPE_CHECKING:  # imports kept out of cold-start path
     from quill.core.epub import EpubBook, EpubChapter
 
-from quill import __version__
+from quill import __version__, build_info
 from quill.core import thesaurus as thesaurus_engine
 from quill.core.a11y_regions import (
     RegionTracker,
@@ -17767,9 +17767,9 @@ class MainFrame(
             return
 
         wx = self._wx
-        current_version = getattr(getattr(self, "_updates", None), "current_version", "")
-        if not current_version:
-            current_version = __version__ or "0.0.0"
+        current_version = build_info.resolve_running_version(
+            override=getattr(getattr(self, "_updates", None), "current_version", "")
+        )
 
         self.settings.last_update_check = datetime.now(UTC).isoformat()
         try:
