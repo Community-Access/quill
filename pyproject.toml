@@ -86,7 +86,7 @@ ocr = ["winsdk>=1.0.0b10; sys_platform == 'win32'"]
 # soundfile writes the synthesized PCM to WAV; it bundles libsndfile on Windows.
 kokoro = [
     "kokoro-onnx>=0.5.0",
-    "soundfile>=0.12.0",
+    "soundfile>=0.14.0",
 ]
 pages = ["keynote-parser>=1.14.4.0", "markitdown[docx,pptx,xlsx,xls,pdf]>=0.1.6"]
 # GLOW document accessibility engine (audit / fix / convert for docx, pptx,
