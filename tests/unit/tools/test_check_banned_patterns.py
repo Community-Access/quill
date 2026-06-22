@@ -3,6 +3,8 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
+import pytest
+
 from quill.tools.check_banned_patterns import (
     _REPO_ROOT,
     _BareWxVisitor,
@@ -24,6 +26,11 @@ def _bare_wx_violations(source: str) -> list[tuple[int, str]]:
     return visitor.violations
 
 
+# find_violations() walks and AST-parses the entire repository tree, which can
+# brush up against the global 30s pytest-timeout on a loaded CI runner (it has
+# flaked with a timeout there). Give this single whole-tree scan more headroom;
+# the rest of the suite keeps the default.
+@pytest.mark.timeout(180)
 def test_clean_tree_has_no_violations() -> None:
     assert find_violations() == []
 
