@@ -31,6 +31,9 @@ class SpeechModelInfo:
     recommended_use: str
     download_url: str | None = None
     sha256: str | None = None
+    # Optional MD5 integrity hash. Some model sources (e.g. Vosk on alphacephei)
+    # publish MD5 rather than SHA-256; providers verify whichever they pin.
+    md5: str | None = None
     license_name: str | None = None
     # Pinned Hugging Face commit SHA (Faster Whisper repos). whisper.cpp pins the
     # revision in download_url instead. Empty = follow the default branch.

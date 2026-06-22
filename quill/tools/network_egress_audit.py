@@ -82,6 +82,12 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "verified TLS context, visible progress, blocked in Safe Mode. ffmpeg is not "
         "bundled (GPL/LGPL); QUILL only downloads it on an explicit action."
     ),
+    "core/speech/providers/vosk.py::_download_zip": (
+        "User-initiated offline Vosk speech-model download (#669) from the official "
+        "alphacephei.com model archive; HTTPS enforced (refuses non-https), verified "
+        "TLS context, visible progress, blocked in Safe Mode, MD5-verified against the "
+        "catalog's pinned hash, and zip-slip-guarded on extract. No silent downloads."
+    ),
     "core/ai/model_manager.py::_download": (
         "User-initiated local AI model download; verified TLS for HTTPS, visible progress callback."
     ),

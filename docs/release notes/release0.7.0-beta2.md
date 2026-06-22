@@ -182,6 +182,8 @@ can opt into two more, each by installing an optional dependency:
 - **Parakeet (English)** — NVIDIA's high-accuracy **English** engine with
   timestamps, also GPU-oriented (`parakeet` dependency, which pulls in NVIDIA
   NeMo and PyTorch — a large download).
+- **Vosk (English)** — a **very low-resource, CPU-only** engine that runs on a
+  ~40 MB model with no GPU, for old or constrained machines (`vosk` dependency).
 
 **Manage Speech Models** then offers a **Speech Engine** chooser, and your choice
 is used for transcription, captions, and dictation; each engine has its own

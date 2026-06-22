@@ -23,6 +23,10 @@ from scripts.build_windows_distribution import (
 _VERSION_TOML = Path(__file__).resolve().parents[3] / "build" / "version.toml"
 
 
+# Builds a full portable distribution (file copies + installer-script generation),
+# which can exceed the global 30s pytest-timeout on a loaded CI runner. Give this
+# heavy end-to-end test more headroom; the rest of the suite keeps the default.
+@pytest.mark.timeout(180)
 def test_build_windows_distribution_writes_portable_and_installer_files(tmp_path: Path) -> None:
     pyproject = tmp_path / "pyproject.toml"
     pyproject.write_text(

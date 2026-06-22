@@ -783,6 +783,10 @@ engines, each by installing its dependency:
 - **Parakeet** (`parakeet` dependency) — NVIDIA's high-accuracy **English-only**
   engine with timestamps, also GPU-oriented. It installs NVIDIA NeMo and PyTorch,
   which are a large download, so it is strictly opt-in.
+- **Vosk** (`vosk` dependency) — a **very low-resource, CPU-only English** engine
+  that runs on a ~40 MB model with no GPU. Ideal for older or constrained
+  machines where the other engines are impractical. Models download from
+  alphacephei.com (verified HTTPS, integrity-checked) via Manage Speech Models.
 
 When more than one engine is available, **Manage Speech Models** first asks which
 **Speech Engine** to use; QUILL remembers your choice and applies it to

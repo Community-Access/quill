@@ -77,6 +77,10 @@ fasterwhisper = ["faster-whisper>=1.0", "huggingface_hub>=0.20"]
 # bundled whisper.cpp engine remains the default and needs none of it. Models are
 # managed in Manage Speech Models. A GPU is strongly recommended.
 parakeet = ["nemo_toolkit[asr]>=2.0", "huggingface_hub>=0.20"]
+# Optional very-low-resource offline English engine: Vosk (Kaldi) (#669). Tiny
+# CPU-only models (~40 MB) for old/constrained machines. Models download from
+# alphacephei.com via Manage Speech Models; no GPU needed.
+vosk = ["vosk>=0.3.45"]
 # Native Windows OCR (OCR-1): a thin pip wheel projecting the Windows.Media.Ocr
 # WinRT APIs that ship inside Windows 10/11. The OCR engine itself is a built-in
 # OS component, so end users install nothing extra — bundling this wheel makes
@@ -238,6 +242,8 @@ module = [
     "nemo",
     "nemo.*",
     "torch",
+    # Optional Vosk engine (quill[vosk]); imported lazily in providers/vosk.py.
+    "vosk",
     "huggingface_hub",
     "sounddevice",
     "kokoro",
