@@ -18,6 +18,21 @@ from quill.core.about_info import (
     gather_about_info,
 )
 
+
+def _build_info_available() -> bool:
+    """True when the generated quill._build_info module is present.
+
+    It is generated from build/version.toml (local-only/gitignored) by
+    tools/generate_build_info.py, so it is absent in CI checkouts. The
+    channel that gather_about_info() reports comes from that module.
+    """
+    try:
+        import quill._build_info  # type: ignore[attr-defined]  # noqa: F401
+    except Exception:
+        return False
+    return True
+
+
 # ---------------------------------------------------------------------------
 # Link validation
 # ---------------------------------------------------------------------------
@@ -94,6 +109,10 @@ def test_gather_about_info_returns_real_version() -> None:
     assert info.version  # not empty
 
 
+@pytest.mark.skipif(
+    not _build_info_available(),
+    reason="generated quill._build_info absent (built from local-only version.toml; not in CI)",
+)
 def test_gather_about_info_default_channel_is_beta() -> None:
     info = gather_about_info()
     assert info.channel == "Beta"
