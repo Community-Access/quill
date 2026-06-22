@@ -112,7 +112,7 @@ github = [
     "PyGithub>=2.9.1",
 ]
 dev = [
-  "pytest>=9.0.3",
+  "pytest>=9.1.1",
   "pytest-xdist>=3.8.0",
   "pytest-timeout>=2.4.0",
   "pytest-cov>=7.1.0",
