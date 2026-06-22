@@ -18,7 +18,7 @@ pyttsx3>=2.99
 
 # CA bundle for verified HTTPS (update checks) — Python on macOS otherwise has
 # no trusted roots wired into urllib (CERTIFICATE_VERIFY_FAILED).
-certifi>=2026.5.20
+certifi>=2026.6.17
 
 # Prism screen-reader speech bridge (Windows) — routes announcements to
 # NVDA / JAWS / Narrator instead of speaking over them.
