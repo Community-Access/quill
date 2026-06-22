@@ -13975,7 +13975,7 @@ class MainFrame(
         (NAV-4). Selecting an entry jumps to it.
         """
         text = self.editor.GetValue()
-        context = self._browse_navigation_context()
+        context = self._quick_nav_panel_context()
         items = build_nav_index(text, context)
         items = include_nav_items(
             items,

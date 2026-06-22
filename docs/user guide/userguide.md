@@ -1824,7 +1824,12 @@ Performance note:
 Pressing the QUILL key (`Ctrl+Shift+Grave`) once arms a short prefix. Follow it with:
 
 - `N` to enter browse/Quick Nav mode. If the `browse_mode_sticky` setting is on, the mode stays locked until `Esc`; otherwise it expires on the QUILL-key timeout. (Press the QUILL key alone a second time to lock browse mode on regardless of the setting.)
-- `G` to open Go to Anything (Quick Nav search).
+- `G` to open Go to Anything (Quick Nav search). It lists every navigable
+  element in the document — headings, links, lists, tables, block quotes,
+  bookmarks, code blocks — with a category filter that shows a live count of
+  each type. It also lists the document's **misspellings** and, when a search is
+  active, the current query's **search hits** as their own navigable types, so
+  you can jump straight to a misspelled word or a match from the same panel.
 - `M` to **paste HTML clipboard content as Markdown** at the cursor. Quill reads the
   clipboard's rich HTML (the `HTML Format` flavour copied from web pages and word
   processors), converts headings, lists, links, bold/italic, code, and block quotes to

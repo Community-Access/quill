@@ -2060,5 +2060,30 @@ def test_open_quick_nav_reports_when_no_elements() -> None:
     assert presented == []
 
 
+def test_quick_nav_panel_context_adds_misspellings_and_search_hits() -> None:
+    # #513: the Quick Nav panel context augments the browse index with the
+    # document's misspellings and the active search's hits as nav types.
+    from quill.core.quick_nav import build_nav_index
+
+    text = "Here is teh misspelled word and another word.\n"
+    frame = _build_frame(text)
+    frame._browse_navigation_context = lambda: {"text": text, "links": []}  # type: ignore[method-assign]
+    frame._last_find_query = "word"
+    context = frame._quick_nav_panel_context()
+    assert context.get("misspellings"), "expected the misspelled 'teh' to be flagged"
+    assert len(context.get("search_hits", [])) == 2, "expected both 'word' hits"
+    kinds = {item.kind for item in build_nav_index(text, context)}
+    assert {"Misspelling", "Search hit"} <= kinds
+
+
+def test_quick_nav_panel_context_no_search_query_has_no_hits() -> None:
+    text = "plain text\n"
+    frame = _build_frame(text)
+    frame._browse_navigation_context = lambda: {"text": text}  # type: ignore[method-assign]
+    frame._last_find_query = ""
+    context = frame._quick_nav_panel_context()
+    assert "search_hits" not in context or context["search_hits"] == []
+
+
 def test_quick_nav_command_mapped_to_navigation_feature() -> None:
     assert feature_for_command("navigate.quick_nav") == "core.navigate"

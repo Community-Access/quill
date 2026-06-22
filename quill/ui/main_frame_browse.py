@@ -125,6 +125,35 @@ class BrowseModeMixin:
     def _refresh_browse_navigation_cache_now(self) -> None:
         self._browse_navigation_cache = None
         self._browse_navigation_context()
+
+    def _quick_nav_panel_context(self) -> dict[str, object]:
+        """Browse nav context plus the on-demand transient nav types for the
+        Quick Nav panel: misspellings and active-search hits (#513).
+
+        These are computed here, not in the prewarmed browse cache, so the
+        perf-critical navigation cache stays light -- they only matter when the
+        user opens the panel. Failures degrade to "none", never breaking Quick Nav.
+        """
+        context = dict(self._browse_navigation_context())
+        text = str(context.get("text", ""))
+        try:
+            from quill.core.spellcheck import list_misspellings
+
+            context["misspellings"] = [
+                m.start for m in list_misspellings(text, self._spell_dictionary())
+            ]
+        except Exception:  # noqa: BLE001 - a spell-check hiccup must never break Quick Nav
+            context["misspellings"] = []
+        query = str(getattr(self, "_last_find_query", "") or "")
+        if query:
+            try:
+                from quill.core.search import find_matches
+
+                options = getattr(self, "_last_search_options", None)
+                context["search_hits"] = [s for s, _ in find_matches(text, query, options)]
+            except Exception:  # noqa: BLE001 - never let a bad pattern break Quick Nav
+                context["search_hits"] = []
+        return context
         self._quill_feedback(
             "QUILL browse cache refreshed",
             status_message="QUILL browse cache refreshed",
