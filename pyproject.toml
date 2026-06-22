@@ -72,6 +72,11 @@ speech = ["sounddevice>=0.4"]
 # Manage Speech Models > Speech Engine; the bundled whisper.cpp engine remains
 # the default and needs none of this.
 fasterwhisper = ["faster-whisper>=1.0", "huggingface_hub>=0.20"]
+# Optional high-accuracy English offline engine: NVIDIA Parakeet via NeMo (#669).
+# NeMo + PyTorch are large and GPU-oriented, so this is strictly opt-in; the
+# bundled whisper.cpp engine remains the default and needs none of it. Models are
+# managed in Manage Speech Models. A GPU is strongly recommended.
+parakeet = ["nemo_toolkit[asr]>=2.0", "huggingface_hub>=0.20"]
 # Native Windows OCR (OCR-1): a thin pip wheel projecting the Windows.Media.Ocr
 # WinRT APIs that ship inside Windows 10/11. The OCR engine itself is a built-in
 # OS component, so end users install nothing extra — bundling this wheel makes
@@ -227,6 +232,12 @@ module = [
     "keynote_parser.*",
     "faster_whisper",
     "ctranslate2",
+    # Optional Parakeet engine (quill[parakeet]); imported lazily in
+    # providers/parakeet.py behind try/except. NeMo + PyTorch are heavy and not
+    # in the dev extra, so the scoped gate must not depend on them.
+    "nemo",
+    "nemo.*",
+    "torch",
     "huggingface_hub",
     "sounddevice",
     "kokoro",

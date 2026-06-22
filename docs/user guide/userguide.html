@@ -1428,17 +1428,25 @@ file); leave the box blank to remove a saved token.</li>
 </ul>
 <p><strong>Choosing a speech engine.</strong> QUILL ships with the
 <strong>whisper.cpp</strong> engine and uses it by default — nothing
-extra to install. If you install QUILL's optional
-<code>fasterwhisper</code> dependency, a second engine, <strong>Faster
-Whisper</strong>, becomes available. Faster Whisper runs in-process and
-uses your <strong>GPU</strong> automatically when one is present, which
-can be considerably faster on capable machines. When more than one
-engine is available, <strong>Manage Speech Models</strong> first asks
-which <strong>Speech Engine</strong> to use; QUILL remembers your choice
-and applies it to transcription, captions, and dictation. Each engine
-has its own models, so download a model after switching. Note that
-Faster Whisper does not label speakers — for speaker attribution, use
-the whisper.cpp speaker-detection model.</p>
+extra to install. You can add two more optional engines, each by
+installing its dependency:</p>
+<ul>
+<li><strong>Faster Whisper</strong> (<code>fasterwhisper</code>
+dependency) — a higher-throughput multilingual engine that runs
+in-process and uses your <strong>GPU</strong> automatically when one is
+present.</li>
+<li><strong>Parakeet</strong> (<code>parakeet</code> dependency) —
+NVIDIA's high-accuracy <strong>English-only</strong> engine with
+timestamps, also GPU-oriented. It installs NVIDIA NeMo and PyTorch,
+which are a large download, so it is strictly opt-in.</li>
+</ul>
+<p>When more than one engine is available, <strong>Manage Speech
+Models</strong> first asks which <strong>Speech Engine</strong> to use;
+QUILL remembers your choice and applies it to transcription, captions,
+and dictation. Each engine has its own models, so download a model after
+switching. All engines run <strong>entirely on your computer</strong>.
+Note that neither Faster Whisper nor Parakeet labels speakers — for
+speaker attribution, use the whisper.cpp speaker-detection model.</p>
 <p>The offline speech <strong>engine ships with QUILL</strong>: enable
 the <em>offline speech engine (whisper.cpp)</em> component in the
 installer, or place the executable under

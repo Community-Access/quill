@@ -175,11 +175,18 @@ disabled in Safe Mode. Say "cancel" or "never mind" to dismiss without acting.
 
 ### Choose your engine
 The bundled **whisper.cpp** engine needs nothing extra. On capable machines you
-can opt into **Faster Whisper**, a higher-throughput engine that uses your **GPU**
-when one is available, by installing QUILL's optional `fasterwhisper` dependency;
+can opt into two more, each by installing an optional dependency:
+
+- **Faster Whisper** — a higher-throughput multilingual engine that uses your
+  **GPU** when one is available (`fasterwhisper` dependency).
+- **Parakeet (English)** — NVIDIA's high-accuracy **English** engine with
+  timestamps, also GPU-oriented (`parakeet` dependency, which pulls in NVIDIA
+  NeMo and PyTorch — a large download).
+
 **Manage Speech Models** then offers a **Speech Engine** chooser, and your choice
-is used for transcription, captions, and dictation. (For speaker labels, use the
-whisper.cpp speaker-detection model.)
+is used for transcription, captions, and dictation; each engine has its own
+models, so download one after switching. All three run **entirely on your
+computer**. (For speaker labels, use the whisper.cpp speaker-detection model.)
 
 ## Read and proof braille
 

@@ -774,15 +774,22 @@ not need to enable Artificial Intelligence to use these features. They live unde
   (never in a settings file); leave the box blank to remove a saved token.
 
 **Choosing a speech engine.** QUILL ships with the **whisper.cpp** engine and
-uses it by default — nothing extra to install. If you install QUILL's optional
-`fasterwhisper` dependency, a second engine, **Faster Whisper**, becomes
-available. Faster Whisper runs in-process and uses your **GPU** automatically
-when one is present, which can be considerably faster on capable machines. When
-more than one engine is available, **Manage Speech Models** first asks which
+uses it by default — nothing extra to install. You can add two more optional
+engines, each by installing its dependency:
+
+- **Faster Whisper** (`fasterwhisper` dependency) — a higher-throughput
+  multilingual engine that runs in-process and uses your **GPU** automatically
+  when one is present.
+- **Parakeet** (`parakeet` dependency) — NVIDIA's high-accuracy **English-only**
+  engine with timestamps, also GPU-oriented. It installs NVIDIA NeMo and PyTorch,
+  which are a large download, so it is strictly opt-in.
+
+When more than one engine is available, **Manage Speech Models** first asks which
 **Speech Engine** to use; QUILL remembers your choice and applies it to
 transcription, captions, and dictation. Each engine has its own models, so
-download a model after switching. Note that Faster Whisper does not label
-speakers — for speaker attribution, use the whisper.cpp speaker-detection model.
+download a model after switching. All engines run **entirely on your computer**.
+Note that neither Faster Whisper nor Parakeet labels speakers — for speaker
+attribution, use the whisper.cpp speaker-detection model.
 
 The offline speech **engine ships with QUILL**: enable the *offline speech engine
 (whisper.cpp)* component in the installer, or place the executable under

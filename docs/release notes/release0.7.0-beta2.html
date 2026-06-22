@@ -382,13 +382,23 @@ disabled in Safe Mode. Say "cancel" or "never mind" to dismiss without
 acting.</p>
 <h3 id="choose-your-engine">Choose your engine</h3>
 <p>The bundled <strong>whisper.cpp</strong> engine needs nothing extra.
-On capable machines you can opt into <strong>Faster Whisper</strong>, a
-higher-throughput engine that uses your <strong>GPU</strong> when one is
-available, by installing QUILL's optional <code>fasterwhisper</code>
-dependency; <strong>Manage Speech Models</strong> then offers a
-<strong>Speech Engine</strong> chooser, and your choice is used for
-transcription, captions, and dictation. (For speaker labels, use the
-whisper.cpp speaker-detection model.)</p>
+On capable machines you can opt into two more, each by installing an
+optional dependency:</p>
+<ul>
+<li><strong>Faster Whisper</strong> — a higher-throughput multilingual
+engine that uses your <strong>GPU</strong> when one is available
+(<code>fasterwhisper</code> dependency).</li>
+<li><strong>Parakeet (English)</strong> — NVIDIA's high-accuracy
+<strong>English</strong> engine with timestamps, also GPU-oriented
+(<code>parakeet</code> dependency, which pulls in NVIDIA NeMo and
+PyTorch — a large download).</li>
+</ul>
+<p><strong>Manage Speech Models</strong> then offers a <strong>Speech
+Engine</strong> chooser, and your choice is used for transcription,
+captions, and dictation; each engine has its own models, so download one
+after switching. All three run <strong>entirely on your
+computer</strong>. (For speaker labels, use the whisper.cpp
+speaker-detection model.)</p>
 <h2 id="read-and-proof-braille">Read and proof braille</h2>
 <p>Braille Mode gained a real proofreading and quality workflow, and it
 never changes your braille file — progress and notes live in a small

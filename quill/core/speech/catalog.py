@@ -219,6 +219,53 @@ def fw_model_by_id(model_id: str) -> SpeechModelInfo | None:
     return None
 
 
+# --------------------------------------------------------------------------- #
+# Parakeet (NVIDIA NeMo) models — optional, offline, English, GPU-oriented.
+#
+# Parakeet models are single ``.nemo`` archives on the Hugging Face Hub. We store
+# the Hub repo id in ``download_url`` (the provider snapshot-downloads it) and pin
+# the commit ``revision`` for supply-chain safety. English-only, high accuracy;
+# a GPU is strongly recommended. Both are CC-BY-4.0 (attribution required).
+# --------------------------------------------------------------------------- #
+
+PARAKEET_RECOMMENDED_MODEL_ID = "parakeet-tdt-0.6b-v2"
+
+PARAKEET_MODELS: tuple[SpeechModelInfo, ...] = (
+    SpeechModelInfo(
+        id="parakeet-tdt-0.6b-v2",
+        display_name="Parakeet TDT 0.6B v2 (NVIDIA, English)",
+        language_mode="english",
+        approximate_size_mb=2400,
+        accuracy_tier="highest",
+        speed_tier="fast",
+        recommended_use="Recommended: high-accuracy English with timestamps; fast on a GPU.",
+        download_url="nvidia/parakeet-tdt-0.6b-v2",
+        revision="1b149a3589351c96ddb101709fe7dd9c7069572f",
+        license_name="CC-BY-4.0",
+    ),
+    SpeechModelInfo(
+        id="parakeet-tdt-1.1b",
+        display_name="Parakeet TDT 1.1B (NVIDIA, English)",
+        language_mode="english",
+        approximate_size_mb=4300,
+        accuracy_tier="highest",
+        speed_tier="medium",
+        recommended_use="Largest, highest-accuracy English. Big download; a GPU is recommended.",
+        download_url="nvidia/parakeet-tdt-1.1b",
+        revision="53276c6469d1f17a1352e30c4d11be3d0d7e9575",
+        license_name="CC-BY-4.0",
+    ),
+)
+
+
+def parakeet_model_by_id(model_id: str) -> SpeechModelInfo | None:
+    """Look up a Parakeet catalog model by id."""
+    for model in PARAKEET_MODELS:
+        if model.id == model_id:
+            return model
+    return None
+
+
 def is_diarization_model(model_id: str) -> bool:
     """True when a model supports speaker-turn detection (whisper.cpp tinydiarize)."""
     return model_id.endswith("-tdrz")
