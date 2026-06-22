@@ -38,7 +38,7 @@ ui = [
     "certifi>=2026.5.20",
     # Prism screen-reader speech bridge (Windows) — routes announcements to
     # NVDA/JAWS/Narrator instead of speaking over them.
-    "prismatoid>=0.16.5; sys_platform == 'win32'",
+    "prismatoid>=0.16.6; sys_platform == 'win32'",
     # Pillow: screen capture (PIL.ImageGrab) and clipboard image support.
     # Also a transitive dependency of pillow-heif on platforms where that installs.
     "Pillow>=11.0.0",

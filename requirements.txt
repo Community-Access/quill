@@ -22,7 +22,7 @@ certifi>=2026.5.20
 
 # Prism screen-reader speech bridge (Windows) — routes announcements to
 # NVDA / JAWS / Narrator instead of speaking over them.
-prismatoid>=0.16.5; sys_platform == "win32"
+prismatoid>=0.16.6; sys_platform == "win32"
 
 # macOS platform integration (VoiceOver announcements, Keychain) and the
 # Apple Foundation Models backend used by Ask Quill on macOS.
