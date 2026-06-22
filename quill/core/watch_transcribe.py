@@ -21,6 +21,8 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from pathlib import Path
 
+from .speech.formatters import to_markdown, to_plain_text, to_srt, to_vtt
+from .speech.provider import TranscriptionResult
 from .watch_actions import (
     WatchActionOutcome,
     WatchItem,
@@ -29,6 +31,34 @@ from .watch_actions import (
 )
 
 logger = logging.getLogger(__name__)
+
+#: Output formats the offline transcribe action can write, mapped to the sibling
+#: file extension. "txt"/"md" use the whole result; "srt"/"vtt" need timestamped
+#: segments and fall back to plain text when the engine returned none.
+_TRANSCRIBE_OUTPUT_FORMATS: dict[str, str] = {
+    "txt": ".txt",
+    "srt": ".srt",
+    "vtt": ".vtt",
+    "md": ".md",
+}
+
+
+def _render_transcript(result: TranscriptionResult, output_format: str) -> tuple[str, str]:
+    """Return ``(body, extension)`` for ``output_format``.
+
+    Unknown formats and caption formats with no segments fall back to plain text,
+    so a profile never writes an empty ``.srt``/``.vtt``.
+    """
+    fmt = (output_format or "txt").strip().lower()
+    if fmt in ("srt", "vtt") and not result.segments:
+        return to_plain_text(result), ".txt"
+    if fmt == "srt":
+        return to_srt(result.segments), ".srt"
+    if fmt == "vtt":
+        return to_vtt(result.segments), ".vtt"
+    if fmt in ("md", "markdown"):
+        return to_markdown(result), ".md"
+    return to_plain_text(result), ".txt"
 
 
 #: Audio/video containers the offline Whisperer engine accepts (decoded via the
@@ -74,26 +104,29 @@ class WhispererTranscribeAction(_BaseAction):
     label: str = "Transcribe audio (Whisperer)"
     description: str = (
         "Transcribe each arriving audio or video file on your machine with the "
-        "offline Whisperer engine and save the transcript as a text file next to it."
+        "offline Whisperer engine and save the transcript next to it (text, SubRip "
+        ".srt, WebVTT .vtt, or Markdown)."
     )
-    on_transcribe: Callable[[Path, Mapping[str, object]], str] | None = None
-    output_suffix: str = ".txt"
+    on_transcribe: Callable[[Path, Mapping[str, object]], TranscriptionResult] | None = None
 
-    def _resolve_transcriber(self) -> Callable[[Path, Mapping[str, object]], str]:
+    def _resolve_transcriber(self) -> Callable[[Path, Mapping[str, object]], TranscriptionResult]:
         if self.on_transcribe is not None:
             return self.on_transcribe
 
-        def _default(path: Path, options: Mapping[str, object]) -> str:
+        def _default(path: Path, options: Mapping[str, object]) -> TranscriptionResult:
             from quill.core.speech.transcribe import transcribe_audio_file
 
             model_id = str(options.get("model_id", "")) or None
             language = str(options.get("language", "")) or None
-            result = transcribe_audio_file(path, model_id=model_id, language=language)
-            return result.full_text
+            return transcribe_audio_file(path, model_id=model_id, language=language)
 
         return _default
 
-    def validate(self, options: Mapping[str, object]) -> list[str]:  # noqa: ARG002
+    def validate(self, options: Mapping[str, object]) -> list[str]:
+        output_format = str(options.get("output_format", "txt")).strip().lower()
+        if output_format and output_format not in _TRANSCRIBE_OUTPUT_FORMATS:
+            allowed = ", ".join(sorted(_TRANSCRIBE_OUTPUT_FORMATS))
+            return [f"Unknown transcript format '{output_format}'. Choose one of: {allowed}."]
         # An injected transcriber owns its own availability; only the default,
         # engine-backed path needs a model installed to do anything.
         if self.on_transcribe is not None:
@@ -110,10 +143,13 @@ class WhispererTranscribeAction(_BaseAction):
             return ["The offline Whisperer engine is not available on this machine."]
         return []
 
-    def preview(self, item: WatchItem, options: Mapping[str, object]) -> str:  # noqa: ARG002
+    def preview(self, item: WatchItem, options: Mapping[str, object]) -> str:
+        ext = _TRANSCRIBE_OUTPUT_FORMATS.get(
+            str(options.get("output_format", "txt")).strip().lower(), ".txt"
+        )
         return (
             f"Transcribe {item.source_path.name} on this machine with the offline "
-            f"Whisperer engine and save the transcript as {item.source_path.stem}.txt "
+            f"Whisperer engine and save the transcript as {item.source_path.stem}{ext} "
             "next to the audio (nothing is uploaded)."
         )
 
@@ -125,12 +161,14 @@ class WhispererTranscribeAction(_BaseAction):
             )
         transcriber = self._resolve_transcriber()
         try:
-            transcript = transcriber(path, options)
+            result = transcriber(path, options)
         except Exception as error:  # surfaced as a failed outcome
             logger.exception("Offline transcription failed for %s", path)
             return WatchActionOutcome.failed(_humanize_action_error(self.action_id, error))
-        target = path.with_suffix(self.output_suffix)
-        body = transcript if transcript.endswith("\n") else transcript + "\n"
+        body, ext = _render_transcript(result, str(options.get("output_format", "txt")))
+        if not body.endswith("\n"):
+            body += "\n"
+        target = path.with_suffix(ext)
         try:
             target.write_text(body, encoding="utf-8")
         except OSError as error:

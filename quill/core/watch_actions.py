@@ -17,7 +17,10 @@ import shutil
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
+
+if TYPE_CHECKING:
+    from .speech.provider import TranscriptionResult
 
 logger = logging.getLogger(__name__)
 
@@ -629,7 +632,7 @@ def default_registry(
     on_run_macro: Callable[[Path, str], None] | None = None,
     on_ai: Callable[[Path, Mapping[str, object]], WatchActionOutcome] | None = None,
     on_ocr: Callable[[Path], str] | None = None,
-    on_transcribe: Callable[[Path, Mapping[str, object]], str] | None = None,
+    on_transcribe: Callable[[Path, Mapping[str, object]], TranscriptionResult] | None = None,
     sandbox_runner: Callable[..., object] | None = None,
 ) -> WatchActionRegistry:
     """Build a registry pre-populated with the built-in actions and placeholders."""

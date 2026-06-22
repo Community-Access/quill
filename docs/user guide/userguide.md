@@ -1022,9 +1022,13 @@ Each watch profile runs one action on every file it claims. Besides opening,
 moving, copying, converting, running a macro or a sandboxed transform, and OCR,
 a profile can **Transcribe audio (Whisperer)**: any audio or video file dropped
 into the folder is transcribed on your machine with the offline Whisperer engine
-and a `.txt` transcript is written next to it — nothing is uploaded. It needs no
-consent; if no speech model is installed yet, the profile tells you to download
-one from **Tools → Speech → Whisperer → Manage Speech Models**. (A separate
+and a transcript is written next to it — nothing is uploaded. Choose the
+**Transcript format** in the profile: plain **Text** (`.txt`), **SubRip captions**
+(`.srt`), **WebVTT captions** (`.vtt`), or **Markdown** (`.md`). The caption
+formats carry timestamps; if the engine returns no timed segments they fall back
+to plain text so you never get an empty caption file. It needs no consent; if no
+speech model is installed yet, the profile tells you to download one from
+**Tools → Speech → Whisperer → Manage Speech Models**. (A separate
 **Transcribe audio (OpenAI Whisper)** action is available for cloud transcription
 when you have enabled AI and configured a key.)
 
