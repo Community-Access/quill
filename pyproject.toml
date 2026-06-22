@@ -41,7 +41,7 @@ ui = [
     "prismatoid>=0.16.5; sys_platform == 'win32'",
     # Pillow: screen capture (PIL.ImageGrab) and clipboard image support.
     # Also a transitive dependency of pillow-heif on platforms where that installs.
-    "Pillow>=11.0.0",
+    "Pillow>=12.2.0",
     # HEIC/HEIF image support for AI image description (iPhone default format).
     # Registers a PIL opener so HEIC files can be read and converted to JPEG
     # in memory before being sent to the vision API.
