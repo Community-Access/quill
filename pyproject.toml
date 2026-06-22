@@ -116,7 +116,7 @@ dev = [
   "pytest-xdist>=3.8.0",
   "pytest-timeout>=2.4.0",
   "pytest-cov>=7.1.0",
-  "ruff>=0.15.17",
+  "ruff>=0.15.18",
   "mypy>=2.1.0",
   # I18N: string extraction, .po update, .mo compile
   "Babel>=2.18.0",
