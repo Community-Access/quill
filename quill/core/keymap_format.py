@@ -69,7 +69,7 @@ def format_binding_for_display(
     p = (prefix or _DEFAULT_PREFIX).strip()
     needle = p + ", "
     if text.startswith(needle):
-        return f"{QUILL_KEY_LABEL} + " + text[len(needle):]
+        return f"{QUILL_KEY_LABEL} + " + text[len(needle) :]
     if text == p:
         return QUILL_KEY_LABEL
     return text

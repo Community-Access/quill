@@ -29,10 +29,7 @@ class TestFormatBindingForDisplay:
         )
 
     def test_chord_with_alt_modifier(self) -> None:
-        assert (
-            format_binding_for_display("Ctrl+Shift+Grave, Alt+1")
-            == f"{QUILL_KEY_LABEL} + Alt+1"
-        )
+        assert format_binding_for_display("Ctrl+Shift+Grave, Alt+1") == f"{QUILL_KEY_LABEL} + Alt+1"
 
     def test_non_chord_binding_passes_through(self) -> None:
         assert format_binding_for_display("Ctrl+N") == "Ctrl+N"
@@ -83,10 +80,7 @@ class TestFormatBindingForDisplay:
         )
 
     def test_surrounding_whitespace_stripped(self) -> None:
-        assert (
-            format_binding_for_display("  Ctrl+Shift+Grave, F  ")
-            == f"{QUILL_KEY_LABEL} + F"
-        )
+        assert format_binding_for_display("  Ctrl+Shift+Grave, F  ") == f"{QUILL_KEY_LABEL} + F"
 
 
 class TestFormatQuillKeyChord:

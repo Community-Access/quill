@@ -129,7 +129,7 @@ def test_about_dialog_open_handler_calls_show_about_quill() -> None:
     # The About menu wiring must route through show_about_quill.
     assert (
         re.search(
-            r"self\.frame\.Bind\(\s*wx\.EVT_MENU,\s*lambda _e:\s*self\.show_about_quill\(\),\s*id=self\._id_about_quill",
+            r"self\.frame\.Bind\(\s*wx\.EVT_MENU,\s*lambda _e:\s*self\.show_about_quill\(\),\s*id=self\._id_about_quill",  # noqa: E501
             menu_src,
         )
         is not None

@@ -63,9 +63,7 @@ def _install_wx_stub(frame: MainFrame) -> type[_CapturingMessageDialog]:
     """Replace frame._wx with a stub module that exposes the dialog class."""
     _CapturingMessageDialog.instances.clear()
 
-    def _show_modal_dialog(
-        dialog: _CapturingMessageDialog, _label: str, **_kwargs: object
-    ) -> int:
+    def _show_modal_dialog(dialog: _CapturingMessageDialog, _label: str, **_kwargs: object) -> int:
         # Forward ShowModal() so the test can drive the result, then
         # return it unchanged -- mirroring the real helper's contract.
         return dialog.ShowModal()

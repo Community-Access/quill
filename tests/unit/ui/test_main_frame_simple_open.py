@@ -180,7 +180,9 @@ def test_dialog_accepts_directory_in_path_field(wx_app, sample_dir):
         try:
             dialog._path_ctrl.SetValue(str(sample_dir / "subdir"))
             dialog._on_path_enter(None)
-            assert dialog._cwd == sample_dir / "subdir"
+            # Compare resolved paths: on CI runners the temp dir is an 8.3 short
+            # path (RUNNER~1) while the dialog stores the resolved long form.
+            assert dialog._cwd.resolve() == (sample_dir / "subdir").resolve()
             # The subdir contains deep.txt.
             labels = dialog._list.GetStrings()
             assert any("deep.txt" in label for label in labels)
