@@ -136,6 +136,28 @@ yourself once with `winget install Gyan.FFmpeg`.
 **Generate Captions (Offline)...** transcribes a file with timestamps and saves
 it as **SRT** or **VTT** subtitles you can review and ship.
 
+### Transcribe a whole folder automatically
+Watch Folder automation can now transcribe for you. Point a watch profile at a
+folder, choose the **Transcribe audio (Whisperer)** action, and every audio or
+video file you drop in is transcribed **on your machine** and saved next to it —
+nothing is uploaded. Pick the **Transcript format** per profile: plain **Text**,
+**SubRip (.srt)**, **WebVTT (.vtt)**, or **Markdown**. The caption formats carry
+timestamps and fall back to plain text when the engine returns no timed segments,
+so you never get an empty caption file. If no speech model is installed yet, the
+profile tells you where to get one. This automation always uses the on-device
+engine — it never uploads your audio.
+
+### Add a cloud transcription provider (optional)
+Prefer a cloud service for its accuracy? You can now add one as an **extension**.
+Install the bundled **OpenAI Whisper Transcription** Quillin and set an OpenAI API
+key in AI Hub, and "OpenAI Whisper" appears as a provider in **Manage Speech
+Models**. Cloud transcription is strictly **opt-in and never silent**: audio is
+uploaded only when you explicitly transcribe a file with that provider, never
+offline and never in Safe Mode — and the folder automation above never uses it.
+Extensions that add a provider ship no code and request no network permission;
+QUILL itself performs the upload through its audited network path, so the
+extension never sees your audio or your key.
+
 ### Dictate into your document
 **Dictate (Offline)** lets you speak directly into the editor. Press the command
 (or `QUILL key + Shift + D`) to start — you hear a start tone and "Dictation

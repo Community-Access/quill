@@ -337,6 +337,33 @@ official build and sets it up — or install it yourself once with
 <p><strong>Generate Captions (Offline)...</strong> transcribes a file
 with timestamps and saves it as <strong>SRT</strong> or
 <strong>VTT</strong> subtitles you can review and ship.</p>
+<h3 id="transcribe-a-whole-folder-automatically">Transcribe a whole
+folder automatically</h3>
+<p>Watch Folder automation can now transcribe for you. Point a watch
+profile at a folder, choose the <strong>Transcribe audio
+(Whisperer)</strong> action, and every audio or video file you drop in
+is transcribed <strong>on your machine</strong> and saved next to it —
+nothing is uploaded. Pick the <strong>Transcript format</strong> per
+profile: plain <strong>Text</strong>, <strong>SubRip (.srt)</strong>,
+<strong>WebVTT (.vtt)</strong>, or <strong>Markdown</strong>. The
+caption formats carry timestamps and fall back to plain text when the
+engine returns no timed segments, so you never get an empty caption
+file. If no speech model is installed yet, the profile tells you where
+to get one. This automation always uses the on-device engine — it never
+uploads your audio.</p>
+<h3 id="add-a-cloud-transcription-provider-optional">Add a cloud
+transcription provider (optional)</h3>
+<p>Prefer a cloud service for its accuracy? You can now add one as an
+<strong>extension</strong>. Install the bundled <strong>OpenAI Whisper
+Transcription</strong> Quillin and set an OpenAI API key in AI Hub, and
+"OpenAI Whisper" appears as a provider in <strong>Manage Speech
+Models</strong>. Cloud transcription is strictly <strong>opt-in and
+never silent</strong>: audio is uploaded only when you explicitly
+transcribe a file with that provider, never offline and never in Safe
+Mode — and the folder automation above never uses it. Extensions that
+add a provider ship no code and request no network permission; QUILL
+itself performs the upload through its audited network path, so the
+extension never sees your audio or your key.</p>
 <h3 id="dictate-into-your-document">Dictate into your document</h3>
 <p><strong>Dictate (Offline)</strong> lets you speak directly into the
 editor. Press the command (or <code>QUILL key + Shift + D</code>) to
