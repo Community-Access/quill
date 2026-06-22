@@ -95,6 +95,7 @@ stack unification, O7 Azure provider, O8/AI-19 **GitHub Copilot SDK**, O9/SHELL-
 OCR structuring, and AI-11/12/18. The **Accessibility Agents** from GLOW
 (Accessibility Editor, Screen-Reader UX Reviewer, Braille/BRF assistant) become
 catalog agents here (the launch set already promotes `accessibility_agent.py`).
+The old per-ID AX-A..F stubs are consolidated into the tracking issue **#675**.
 
 ## 4. Accessibility tooling (from GLOW)
 
@@ -104,8 +105,9 @@ catalog agents here (the launch set already promotes `accessibility_agent.py`).
   Guidelines, Microsoft Accessibility Checker rules, and WCAG 2.2 AA, returning a
   scored, navigable findings report with remediation guidance. Lands as an
   in-QUILL audit surface (and an agent in §3).
-- **GLOW family (#528–#534):** the seven GLOW capabilities, re-homed on QUILL's
-  invariants; consolidated here rather than tracked as bare stubs.
+- **GLOW family:** the seven GLOW capabilities (the old #528–#534 stubs) plus the
+  WATCH-8 GLOW watch action (#566), re-homed on QUILL's invariants and tracked in
+  the consolidated issue **#674** rather than as bare per-ID stubs.
 - **Out of QUILL's scope:** GLOW's server/Keycloak/Office-add-in/MCP-deployment
   surfaces stay in the GLOW product; QUILL takes the authoring-time checks.
 
