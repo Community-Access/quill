@@ -1018,7 +1018,18 @@ If you prefer to keep your text on your machine entirely:
 - **Watch Folder Profiles...** configures folder path, subfolders, startup behavior, and polling behavior.
 - **Watch Folder Queue...** shows current runtime state and active configuration.
 
-When BITS Whisperer is enabled (QUILL 2.0), Watch Folder also appears in the BITS Whisperer submenu alongside Dictation.
+Each watch profile runs one action on every file it claims. Besides opening,
+moving, copying, converting, running a macro or a sandboxed transform, and OCR,
+a profile can **Transcribe audio (Whisperer)**: any audio or video file dropped
+into the folder is transcribed on your machine with the offline Whisperer engine
+and a `.txt` transcript is written next to it — nothing is uploaded. It needs no
+consent; if no speech model is installed yet, the profile tells you to download
+one from **Tools → Speech → Whisperer → Manage Speech Models**. (A separate
+**Transcribe audio (OpenAI Whisper)** action is available for cloud transcription
+when you have enabled AI and configured a key.)
+
+The broader BITS Whisperer cloud-provider suite remains deferred; when it is
+enabled, Watch Folder also appears in the BITS Whisperer submenu alongside Dictation.
 
 Speech model selection intentionally follows a two-mode flow:
 

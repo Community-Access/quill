@@ -67,13 +67,17 @@ single `announcement_verbosity` knob.
   whisper.cpp + Faster Whisper engines, offline transcription, transcript and
   caption formats, speaker attribution, dictate-at-cursor, mic selection, the
   model manager, and the installer component.
+- **Also shipped (WATCH-9):** Watch Folder can auto-transcribe arriving audio
+  on-device — the **Transcribe audio (Whisperer)** watch action
+  (`watch_transcribe.py` + wx-free `speech/transcribe.py`) writes a sibling
+  `.txt` per file, offline and consent-free.
 - **To consolidate from BITS Whisperer:** the broader provider matrix (cloud +
-  on-device tiers) behind QUILL's network-egress audit and Safe Mode; the
-  watch-folder automation surface (**BITS Whisperer → Dictation and Watch
-  Folder**); export-format breadth; and the guided provider/model onboarding.
+  on-device tiers) behind QUILL's network-egress audit and Safe Mode;
+  export-format breadth (SRT/VTT); and the guided provider/model onboarding.
   These were the old `bw_*` "BITS Whisperer" tier IDs (BW-1..10, WATCH-8/9) —
   now folded here, not deferred.
-- **Open:** #617 epic context, #663 offline voice commands (S5).
+- **Open:** #617 epic context, #663 offline voice commands (S5). Tracked as one
+  consolidation issue, not the old per-ID stubs (#515, #567–#577, now closed).
 
 ## 3. Agentic AI platform (planned — PRD ready)
 

@@ -283,15 +283,20 @@ offline STT foundation, whisper.cpp + Faster Whisper engines, offline
 transcription, transcript and caption formats, speaker attribution,
 dictate-at-cursor, mic selection, the model manager, and the installer
 component.</li>
+<li><strong>Also shipped (WATCH-9):</strong> Watch Folder can
+auto-transcribe arriving audio on-device — the <strong>Transcribe audio
+(Whisperer)</strong> watch action (<code>watch_transcribe.py</code> +
+wx-free <code>speech/transcribe.py</code>) writes a sibling
+<code>.txt</code> per file, offline and consent-free.</li>
 <li><strong>To consolidate from BITS Whisperer:</strong> the broader
 provider matrix (cloud + on-device tiers) behind QUILL's network-egress
-audit and Safe Mode; the watch-folder automation surface (<strong>BITS
-Whisperer → Dictation and Watch Folder</strong>); export-format breadth;
-and the guided provider/model onboarding. These were the old
-<code>bw_*</code> "BITS Whisperer" tier IDs (BW-1..10, WATCH-8/9) — now
-folded here, not deferred.</li>
+audit and Safe Mode; export-format breadth (SRT/VTT); and the guided
+provider/model onboarding. These were the old <code>bw_*</code> "BITS
+Whisperer" tier IDs (BW-1..10, WATCH-8/9) — now folded here, not
+deferred.</li>
 <li><strong>Open:</strong> #617 epic context, #663 offline voice
-commands (S5).</li>
+commands (S5). Tracked as one consolidation issue, not the old per-ID
+stubs (#515, #567–#577, now closed).</li>
 </ul>
 <h2 id="3-agentic-ai-platform-planned--prd-ready">3. Agentic AI platform
 (planned — PRD ready)</h2>

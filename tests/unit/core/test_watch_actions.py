@@ -26,6 +26,7 @@ from quill.core.watch_actions import (
     _humanize_action_error,
     default_registry,
 )
+from quill.core.watch_transcribe import WhispererTranscribeAction
 
 
 def _item(path: Path) -> WatchItem:
@@ -480,3 +481,85 @@ def test_move_action_permission_error_humanized(tmp_path: Path) -> None:
     assert outcome.status == OUTCOME_FAILED
     assert "permission" in outcome.message.lower() or "folder" in outcome.message.lower()
     assert "Errno" not in outcome.message
+
+
+# ---------------------------------------------------------------------------
+# WhispererTranscribeAction (WATCH-9): offline audio transcription
+# ---------------------------------------------------------------------------
+
+
+def test_whisperer_transcribe_writes_sibling_transcript(tmp_path: Path) -> None:
+    audio = tmp_path / "interview.mp3"
+    audio.write_bytes(b"fake-audio")
+    captured: dict[str, object] = {}
+
+    def fake_transcribe(path: Path, options) -> str:
+        captured["path"] = path
+        captured["model_id"] = options.get("model_id")
+        return "hello world"
+
+    action = WhispererTranscribeAction(on_transcribe=fake_transcribe)
+    outcome = action.run(_item(audio), {"model_id": "base"})
+
+    assert outcome.status == OUTCOME_DONE
+    transcript = audio.with_suffix(".txt")
+    assert outcome.result_path == transcript
+    assert transcript.read_text(encoding="utf-8") == "hello world\n"
+    assert captured["path"] == audio
+    assert captured["model_id"] == "base"
+
+
+def test_whisperer_transcribe_requires_no_consent_and_no_feature() -> None:
+    action = WhispererTranscribeAction(on_transcribe=lambda _p, _o: "x")
+    # Offline path: no per-profile consent and no feature flag required, so it is
+    # always available in the registry.
+    assert action.requires_consent is False
+    assert action.required_feature_id == ""
+
+
+def test_whisperer_transcribe_skips_non_audio(tmp_path: Path) -> None:
+    doc = tmp_path / "notes.txt"
+    doc.write_text("not audio")
+    action = WhispererTranscribeAction(on_transcribe=lambda _p, _o: "should not run")
+    outcome = action.run(_item(doc), {})
+    assert outcome.status == OUTCOME_SKIPPED
+    assert "supported audio" in outcome.message
+
+
+def test_whisperer_transcribe_engine_error_is_failed_outcome(tmp_path: Path) -> None:
+    audio = tmp_path / "clip.wav"
+    audio.write_bytes(b"x")
+
+    def boom(_path: Path, _options) -> str:
+        raise RuntimeError("engine exploded")
+
+    action = WhispererTranscribeAction(on_transcribe=boom)
+    outcome = action.run(_item(audio), {})
+    assert outcome.status == OUTCOME_FAILED
+    assert "engine exploded" in outcome.message
+
+
+def test_whisperer_transcribe_injected_handler_validates_ok() -> None:
+    # With an injected handler, validate() never probes the engine.
+    action = WhispererTranscribeAction(on_transcribe=lambda _p, _o: "x")
+    assert action.validate({}) == []
+
+
+def test_whisperer_transcribe_default_validate_reports_missing_model(monkeypatch) -> None:
+    # No injected handler: validate() reports the no-model guidance instead of
+    # silently succeeding, so the profile dry-run explains why it would not run.
+    import quill.core.speech.transcribe as transcribe_mod
+
+    monkeypatch.setattr(transcribe_mod, "has_installed_offline_model", lambda: False)
+    action = WhispererTranscribeAction()
+    problems = action.validate({})
+    assert problems
+    assert "Manage Speech Models" in problems[0]
+
+
+def test_default_registry_registers_real_transcribe_action() -> None:
+    registry = default_registry()
+    action = registry.get("bw_transcribe")
+    assert isinstance(action, WhispererTranscribeAction)
+    # No longer a placeholder: it is feature-ungated and consent-free (offline).
+    assert registry.is_available("bw_transcribe")

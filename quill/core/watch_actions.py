@@ -629,9 +629,14 @@ def default_registry(
     on_run_macro: Callable[[Path, str], None] | None = None,
     on_ai: Callable[[Path, Mapping[str, object]], WatchActionOutcome] | None = None,
     on_ocr: Callable[[Path], str] | None = None,
+    on_transcribe: Callable[[Path, Mapping[str, object]], str] | None = None,
     sandbox_runner: Callable[..., object] | None = None,
 ) -> WatchActionRegistry:
     """Build a registry pre-populated with the built-in actions and placeholders."""
+    # Imported here (not at module scope) so watch_transcribe can depend on this
+    # module's base types without an import-time cycle.
+    from .watch_transcribe import CloudTranscribeAction, WhispererTranscribeAction
+
     registry = WatchActionRegistry(feature_enabled=feature_enabled)
     registry.register(OpenAction(on_open=on_open))
     registry.register(MoveAction())
@@ -650,120 +655,9 @@ def default_registry(
             reason="GLOW accessibility auditing is not available yet.",
         )
     )
-    registry.register(
-        UnavailableAction(
-            action_id="bw_transcribe",
-            label="Transcribe audio (BITS Whisperer)",
-            required_feature_id="future.bits_whisperer",
-            description="Transcribe arriving audio into an editable document.",
-            reason="BITS Whisperer transcription is not available yet.",
-        )
-    )
+    registry.register(WhispererTranscribeAction(on_transcribe=on_transcribe))
     registry.register(CloudTranscribeAction())
     return registry
-
-
-@dataclass(slots=True)
-class CloudTranscribeAction(_BaseAction):
-    """Watch action: transcribe arriving audio via OpenAI Whisper (AI-cloud).
-
-    Gated by ``future.ai`` and requires an OpenAI API key stored in the
-    credential manager. Sends audio bytes to the OpenAI transcription endpoint
-    (GATE-9 reviewed: ``transcription.py::_post_audio``). The user must have
-    enabled AI and configured an OpenAI API key — no silent transcription.
-
-    The action writes a sibling ``.txt`` file next to the audio file.
-    Supported extensions: .mp3, .mp4, .m4a, .wav, .webm, .ogg, .flac.
-    Files over 25 MB are skipped with a OUTCOME_SKIPPED outcome.
-    """
-
-    action_id: str = "cloud_transcribe"
-    label: str = "Transcribe audio (OpenAI Whisper)"
-    description: str = (
-        "Transcribe arriving audio files via OpenAI Whisper and save the transcript "
-        "as a text file next to the audio. Requires an OpenAI API key."
-    )
-    required_feature_id: str = "future.ai"
-    requires_consent: bool = True
-    output_suffix: str = ".txt"
-
-    def describe(self) -> str:
-        return self.description
-
-    def preview(self, item: WatchItem, options: Mapping[str, object]) -> str:  # noqa: ARG002
-        return (
-            f"Transcribe {item.source_path.name} via OpenAI Whisper and save "
-            f"the transcript as {item.source_path.stem}.txt next to the audio file."
-        )
-
-    def validate(self, options: Mapping[str, object]) -> list[str]:  # noqa: ARG002
-        problems: list[str] = []
-        try:
-            from quill.core.assistant_ai import load_assistant_api_key
-
-            if not load_assistant_api_key():
-                problems.append(
-                    "No OpenAI API key is configured. "
-                    "Add one in AI Hub before using cloud transcription."
-                )
-        except Exception:  # noqa: BLE001
-            problems.append("Could not check API key configuration.")
-        return problems
-
-    def run(self, item: WatchItem, options: Mapping[str, object]) -> WatchActionOutcome:
-        from quill.core.ai.transcription import (
-            MAX_FILE_SIZE_BYTES,
-            SUPPORTED_AUDIO_EXTENSIONS,
-            TranscriptionError,
-            TranscriptionFileTooLargeError,
-            TranscriptionFormatError,
-            transcribe_file,
-        )
-        from quill.core.assistant_ai import load_assistant_api_key
-
-        path = item.source_path
-        if path.suffix.lower() not in SUPPORTED_AUDIO_EXTENSIONS:
-            return WatchActionOutcome.skipped(
-                f"{path.name} is not a supported audio format. Skipped."
-            )
-
-        size = path.stat().st_size if path.exists() else 0
-        if size > MAX_FILE_SIZE_BYTES:
-            size_mb = size / (1024 * 1024)
-            return WatchActionOutcome.skipped(
-                f"{path.name} is {size_mb:.1f} MB, which exceeds the 25 MB cloud limit. Skipped."
-            )
-
-        api_key = load_assistant_api_key() or ""
-        if not api_key:
-            return WatchActionOutcome.failed(
-                "No OpenAI API key configured. Add one in AI Hub to use cloud transcription."
-            )
-
-        language = str(options.get("language", "")) or None
-        try:
-            transcript = transcribe_file(path, api_key, language=language)
-        except TranscriptionFileTooLargeError as exc:
-            return WatchActionOutcome.skipped(str(exc))
-        except TranscriptionFormatError as exc:
-            return WatchActionOutcome.skipped(str(exc))
-        except TranscriptionError as exc:
-            logger.exception("Cloud transcription failed for %s", path)
-            return WatchActionOutcome.failed(f"Transcription failed: {exc}")
-        except Exception as exc:  # noqa: BLE001
-            logger.exception("Cloud transcription crashed for %s", path)
-            return WatchActionOutcome.failed(_humanize_action_error(self.action_id, exc))
-
-        target = path.with_suffix(self.output_suffix)
-        body = transcript if transcript.endswith("\n") else transcript + "\n"
-        try:
-            target.write_text(body, encoding="utf-8")
-        except OSError as exc:
-            return WatchActionOutcome.failed(f"Could not write transcript: {exc}")
-
-        return WatchActionOutcome.done(
-            f"Transcribed {path.name} to {target.name}", result_path=target
-        )
 
 
 __all__ = [
@@ -771,7 +665,6 @@ __all__ = [
     "OUTCOME_FAILED",
     "OUTCOME_SKIPPED",
     "AiAction",
-    "CloudTranscribeAction",
     "ConvertAction",
     "CopyAction",
     "MoveAction",
