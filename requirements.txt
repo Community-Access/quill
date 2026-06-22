@@ -26,7 +26,7 @@ prismatoid>=0.16.5; sys_platform == "win32"
 
 # macOS platform integration (VoiceOver announcements, Keychain) and the
 # Apple Foundation Models backend used by Ask Quill on macOS.
-pyobjc>=12.2; sys_platform == "darwin"
+pyobjc>=12.2.1; sys_platform == "darwin"
 apple-fm-sdk>=0.2.0; sys_platform == "darwin"
 
 # Spell check (optional)
