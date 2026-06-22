@@ -57,7 +57,7 @@ audio = ["sound_lib>=0.83"]
 # Edit files over SSH/SFTP (issue #139): browse a remote host, download to edit,
 # upload on save with a tilde backup. paramiko handles password and OpenSSH-key
 # auth; it is optional so the rest of Quill runs without it.
-ssh = ["paramiko>=3.4"]
+ssh = ["paramiko>=5.0.0"]
 # On-device AI for the Ask Quill chat. Windows/Linux use llama.cpp (CPU, GGUF);
 # a GGUF model (e.g. Phi-4-mini Q4) goes in <app data>/models or QUILL_LLAMA_MODEL.
 ai = ["llama-cpp-python>=0.3.30"]
