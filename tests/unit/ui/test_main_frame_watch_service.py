@@ -4,9 +4,12 @@ from pathlib import Path
 
 from quill.ui.main_frame import MainFrame
 
-SOURCE = (Path(__file__).resolve().parents[3] / "quill" / "ui" / "main_frame.py").read_text(
-    encoding="utf-8"
-)
+_UI_DIR = Path(__file__).resolve().parents[3] / "quill" / "ui"
+SOURCE = (_UI_DIR / "main_frame.py").read_text(encoding="utf-8")
+# The Add/Edit Watch Profile dialog (_edit_watch_profile) was extracted into a
+# mixin (GATE-11), so editor-dialog introspection checks both files.
+WATCH_PROFILE_SOURCE = (_UI_DIR / "main_frame_watch_profile.py").read_text(encoding="utf-8")
+WATCH_UI_SOURCE = SOURCE + "\n" + WATCH_PROFILE_SOURCE
 
 
 def test_main_frame_uses_watch_service_not_legacy_watcher() -> None:
@@ -70,7 +73,7 @@ def test_watch_profile_manager_dialog_is_accessible() -> None:
     assert 'title="Watch Folder Profiles"' in SOURCE
     assert "panel = wx.Panel(dialog)" not in SOURCE
     assert 'listbox.SetName("Watch folder profile list")' in SOURCE
-    assert "def _edit_watch_profile(self, profile: WatchProfile | None)" in SOURCE
+    assert "def _edit_watch_profile(self, profile: WatchProfile | None)" in WATCH_UI_SOURCE
 
 
 def test_watch_queue_monitor_dialog_is_accessible() -> None:
@@ -82,40 +85,43 @@ def test_watch_queue_monitor_dialog_is_accessible() -> None:
 
 
 def test_watch_profile_editor_uses_registry_actions() -> None:
-    assert "self._watch_service.registry.available_actions()" in SOURCE
-    assert 'options["destination"] = destination' in SOURCE
-    assert "post_values = [POST_LEAVE, POST_MOVE, POST_DELETE]" in SOURCE
+    assert "self._watch_service.registry.available_actions()" in WATCH_UI_SOURCE
+    assert 'options["destination"] = destination' in WATCH_UI_SOURCE
+    assert "post_values = [POST_LEAVE, POST_MOVE, POST_DELETE]" in WATCH_UI_SOURCE
 
 
 def test_watch_profile_editor_exposes_filters_and_schedule() -> None:
     # WATCH-5: per-profile suffix/name-pattern/min-size/min-age filters and schedule.
-    assert 'suffix_input.SetName("File type suffixes, comma separated")' in SOURCE
-    assert 'pattern_input.SetName("File name patterns, comma separated")' in SOURCE
-    assert 'size_input.SetName("Minimum file size in bytes")' in SOURCE
-    assert 'age_input.SetName("Minimum file age in seconds")' in SOURCE
-    assert 'sched_choice.SetName("Schedule mode")' in SOURCE
-    assert "sched_modes = [SCHED_ALWAYS, SCHED_WINDOW, SCHED_QUIET]" in SOURCE
-    assert "name_patterns=name_patterns," in SOURCE
-    assert "schedule_mode=schedule_mode," in SOURCE
+    assert 'suffix_input.SetName("File type suffixes, comma separated")' in WATCH_UI_SOURCE
+    assert 'pattern_input.SetName("File name patterns, comma separated")' in WATCH_UI_SOURCE
+    assert 'size_input.SetName("Minimum file size in bytes")' in WATCH_UI_SOURCE
+    assert 'age_input.SetName("Minimum file age in seconds")' in WATCH_UI_SOURCE
+    assert 'sched_choice.SetName("Schedule mode")' in WATCH_UI_SOURCE
+    assert "sched_modes = [SCHED_ALWAYS, SCHED_WINDOW, SCHED_QUIET]" in WATCH_UI_SOURCE
+    assert "name_patterns=name_patterns," in WATCH_UI_SOURCE
+    assert "schedule_mode=schedule_mode," in WATCH_UI_SOURCE
 
 
 def test_watch_profile_editor_exposes_per_action_options() -> None:
     # WATCH-7: per-action option controls for convert/macro/python/AI.
-    assert 'convert_choice.SetName("Convert target format")' in SOURCE
-    assert 'macro_input.SetName("Macro name to run")' in SOURCE
-    assert 'python_code.SetName("Python transform code")' in SOURCE
-    assert 'ai_choice.SetName("AI action mode")' in SOURCE
-    assert 'options["target_format"]' in SOURCE
-    assert 'options["macro_name"]' in SOURCE
-    assert 'options["mode"]' in SOURCE
+    assert 'convert_choice.SetName("Convert target format")' in WATCH_UI_SOURCE
+    assert 'macro_input.SetName("Macro name to run")' in WATCH_UI_SOURCE
+    assert 'python_code.SetName("Python transform code")' in WATCH_UI_SOURCE
+    assert 'ai_choice.SetName("AI action mode")' in WATCH_UI_SOURCE
+    assert 'options["target_format"]' in WATCH_UI_SOURCE
+    assert 'options["macro_name"]' in WATCH_UI_SOURCE
+    assert 'options["mode"]' in WATCH_UI_SOURCE
+    # WATCH-9: offline transcribe action gained an output-format picker.
+    assert 'transcribe_choice.SetName("Transcript output format")' in WATCH_UI_SOURCE
+    assert 'options["output_format"]' in WATCH_UI_SOURCE
 
 
 def test_watch_profile_editor_has_consent_and_dry_run_preview() -> None:
     # WATCH-6: per-profile AI consent control and a side-effect-free dry-run preview.
-    assert 'consent.SetName("AI consent for this profile")' in SOURCE
+    assert 'consent.SetName("AI consent for this profile")' in WATCH_UI_SOURCE
     assert "def _watch_ai_consent_detail(self) -> str:" in SOURCE
-    assert 'preview_button = wx.Button(dialog, label="Pre&view (dry run)")' in SOURCE
-    assert "self._watch_service.registry.dry_run(" in SOURCE
+    assert 'preview_button = wx.Button(dialog, label="Pre&view (dry run)")' in WATCH_UI_SOURCE
+    assert "self._watch_service.registry.dry_run(" in WATCH_UI_SOURCE
     assert "def _watch_dry_run_sample(self, profile: WatchProfile) -> Path:" in SOURCE
 
 
