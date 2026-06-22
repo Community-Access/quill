@@ -40,7 +40,7 @@ pyenchant>=3.3.0
 llama-cpp-python>=0.3.31
 
 # Dictation / voice input (mic permission required).
-SpeechRecognition>=3.16.1
+SpeechRecognition>=3.17.0
 
 # Native Windows OCR (OCR-1) lives in pyproject's [ocr] extra, not here. It is
 # bundled into packaged Windows builds (scripts/build_windows_distribution.py),
