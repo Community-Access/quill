@@ -39,6 +39,7 @@ from quill.core.quillins.model import (
     RUNTIME_PYTHON,
     RUNTIMES,
     SCHEMA_ID,
+    TRANSCRIPTION_PROVIDER_KINDS,
     ContextMenuContribution,
     Contributions,
     ExtensionCommand,
@@ -52,6 +53,7 @@ from quill.core.quillins.model import (
     SnippetGalleryEntry,
     SnippetParam,
     StatusBarContribution,
+    TranscriptionProviderContribution,
 )
 
 _ID_PATTERN = re.compile(r"^[a-z0-9]+([._-][a-z0-9]+)*$")
@@ -97,6 +99,15 @@ _CONTRIBUTES_KEYS = frozenset({
     "schedule",
     "file_types",
     "snippet_gallery",
+    "transcription_providers",
+})
+_TRANSCRIPTION_PROVIDER_KEYS = frozenset({
+    "id",
+    "display_name",
+    "kind",
+    "description",
+    "credential",
+    "max_file_mb",
 })
 _COMMAND_KEYS = frozenset({"id", "title", "description", "run"})
 _SCHEDULE_KEYS = frozenset({"id", "interval_seconds", "handler", "description"})
@@ -471,134 +482,6 @@ def _validate_smart_triggers(raw: object, errors: list[str]) -> tuple[object, ..
     return tuple(result)
 
 
-def _validate_pref_condition(raw: object, label: str, errors: list[str]) -> None:
-    if not isinstance(raw, dict):
-        errors.append(f"{label} must be an object with 'setting' and 'equals'")
-        return
-    _check_unknown_keys(raw, _PREF_CONDITION_KEYS, label, errors)
-    if "setting" not in raw:
-        errors.append(f"{label} must have 'setting'")
-    else:
-        _require_str(raw.get("setting"), f"{label}.setting", errors)
-    if "equals" not in raw:
-        errors.append(f"{label} must have 'equals'")
-
-
-def _validate_pref_settings_list(raw: object, label: str, errors: list[str]) -> None:
-    if not isinstance(raw, list):
-        errors.append(f"{label} must be an array")
-        return
-    for si, setting in enumerate(raw):
-        slabel = f"{label}[{si}]"
-        if not isinstance(setting, dict):
-            errors.append(f"{slabel} must be an object")
-            continue
-        _check_unknown_keys(setting, _PREF_SETTING_KEYS, slabel, errors)
-        _require_str(setting.get("key"), f"{slabel}.key", errors)
-        _require_str(setting.get("label"), f"{slabel}.label", errors)
-        stype = _require_str(setting.get("type"), f"{slabel}.type", errors)
-        if stype is not None and stype not in _PREF_SETTING_TYPES:
-            errors.append(
-                f"{slabel}.type must be one of {sorted(_PREF_SETTING_TYPES)} (got '{stype}')"
-            )
-        if "default" not in setting:
-            errors.append(f"{slabel} must have 'default'")
-        if "description" not in setting:
-            errors.append(f"{slabel} must have 'description'")
-        if "search_keywords" in setting:
-            kws = setting["search_keywords"]
-            if not isinstance(kws, list):
-                errors.append(f"{slabel}.search_keywords must be an array")
-            else:
-                for ki, kw in enumerate(kws):
-                    if not isinstance(kw, str):
-                        errors.append(f"{slabel}.search_keywords[{ki}] must be a string")
-                    elif len(kw) > 64:
-                        errors.append(
-                            f"{slabel}.search_keywords[{ki}] must be at most 64 characters"
-                        )
-        if "visible_when" in setting:
-            _validate_pref_condition(setting["visible_when"], f"{slabel}.visible_when", errors)
-        if "enabled_when" in setting:
-            _validate_pref_condition(setting["enabled_when"], f"{slabel}.enabled_when", errors)
-
-
-def _validate_pref_sections_list(raw: object, label: str, errors: list[str]) -> None:
-    if not isinstance(raw, list):
-        errors.append(f"{label} must be an array")
-        return
-    for si, section in enumerate(raw):
-        slabel = f"{label}[{si}]"
-        if not isinstance(section, dict):
-            errors.append(f"{slabel} must be an object")
-            continue
-        _check_unknown_keys(section, _PREF_SECTION_KEYS, slabel, errors)
-        _require_str(section.get("id"), f"{slabel}.id", errors)
-        title = _require_str(section.get("title"), f"{slabel}.title", errors)
-        if title is not None and not (1 <= len(title) <= 80):
-            errors.append(f"{slabel}.title must be 1-80 characters")
-        if "settings" in section:
-            _validate_pref_settings_list(section["settings"], f"{slabel}.settings", errors)
-        if "visible_when" in section:
-            _validate_pref_condition(section["visible_when"], f"{slabel}.visible_when", errors)
-        if "enabled_when" in section:
-            _validate_pref_condition(section["enabled_when"], f"{slabel}.enabled_when", errors)
-
-
-def _validate_pref_tabs(raw: object, parent_label: str, errors: list[str]) -> None:
-    if not isinstance(raw, list):
-        errors.append(f"{parent_label}.tabs must be an array")
-        return
-    for ti, tab in enumerate(raw):
-        tlabel = f"{parent_label}.tabs[{ti}]"
-        if not isinstance(tab, dict):
-            errors.append(f"{tlabel} must be an object")
-            continue
-        _check_unknown_keys(tab, _PREF_TAB_KEYS, tlabel, errors)
-        _require_str(tab.get("id"), f"{tlabel}.id", errors)
-        title = _require_str(tab.get("title"), f"{tlabel}.title", errors)
-        if title is not None and not (1 <= len(title) <= 60):
-            errors.append(f"{tlabel}.title must be 1-60 characters")
-        if "description" not in tab:
-            errors.append(f"{tlabel} must have 'description'")
-        if "order" not in tab or not isinstance(tab.get("order"), int):
-            errors.append(f"{tlabel} must have 'order' as an integer")
-        if "sections" in tab:
-            _validate_pref_sections_list(tab["sections"], f"{tlabel}.sections", errors)
-        if "visible_when" in tab:
-            _validate_pref_condition(tab["visible_when"], f"{tlabel}.visible_when", errors)
-        if "enabled_when" in tab:
-            _validate_pref_condition(tab["enabled_when"], f"{tlabel}.enabled_when", errors)
-
-
-def _validate_preferences(raw: object, errors: list[str]) -> tuple[object, ...]:
-    if not isinstance(raw, list):
-        errors.append("contributes.preferences must be an array")
-        return ()
-    result: list[object] = []
-    for index, page in enumerate(raw):
-        label = f"contributes.preferences[{index}]"
-        if not isinstance(page, dict):
-            errors.append(f"{label} must be an object")
-            continue
-        _check_unknown_keys(page, _PREF_PAGE_KEYS, label, errors)
-        _require_str(page.get("id"), f"{label}.id", errors)
-        title = _require_str(page.get("title"), f"{label}.title", errors)
-        if title is not None and not (1 <= len(title) <= 80):
-            errors.append(f"{label}.title must be 1-80 characters")
-        desc = _require_str(page.get("description"), f"{label}.description", errors)
-        if desc is not None and len(desc) > 400:
-            errors.append(f"{label}.description must be at most 400 characters")
-        if "tabs" in page:
-            _validate_pref_tabs(page["tabs"], label, errors)
-        if "sections" in page:
-            _validate_pref_sections_list(page["sections"], f"{label}.sections", errors)
-        if "settings" in page:
-            _validate_pref_settings_list(page["settings"], f"{label}.settings", errors)
-        result.append(page)
-    return tuple(result)
-
-
 def _validate_document_events(raw: object, errors: list[str]) -> tuple[object, ...]:
     if not isinstance(raw, list):
         errors.append("contributes.document_events must be an array")
@@ -684,6 +567,69 @@ def _validate_status_bar(raw: object, errors: list[str]) -> tuple[StatusBarContr
                     handler=handler,
                     tooltip=tooltip,
                     width=width,
+                )
+            )
+    return tuple(result)
+
+
+def _validate_transcription_providers(
+    raw: object, errors: list[str]
+) -> tuple[TranscriptionProviderContribution, ...]:
+    if not isinstance(raw, list):
+        errors.append("contributes.transcription_providers must be an array")
+        return ()
+    result: list[TranscriptionProviderContribution] = []
+    seen_ids: set[str] = set()
+    for index, item in enumerate(raw):
+        label = f"contributes.transcription_providers[{index}]"
+        if not isinstance(item, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        _check_unknown_keys(item, _TRANSCRIPTION_PROVIDER_KEYS, label, errors)
+        provider_id = _require_str(item.get("id"), f"{label}.id", errors)
+        if provider_id is not None:
+            if not _COMMAND_ID_PATTERN.match(provider_id):
+                errors.append(f"{label}.id must be namespaced under 'ext.' (e.g. ext.acme.whisper)")
+            elif provider_id in seen_ids:
+                errors.append(f"{label}.id is a duplicate: '{provider_id}'")
+            else:
+                seen_ids.add(provider_id)
+        display_name = _require_str(item.get("display_name"), f"{label}.display_name", errors)
+        kind = _require_str(item.get("kind"), f"{label}.kind", errors)
+        if kind is not None and kind not in TRANSCRIPTION_PROVIDER_KINDS:
+            allowed = ", ".join(TRANSCRIPTION_PROVIDER_KINDS)
+            errors.append(f"{label}.kind '{kind}' is not a known provider kind. Allowed: {allowed}")
+        description = ""
+        if "description" in item:
+            desc = _require_str(item.get("description"), f"{label}.description", errors)
+            if desc is not None:
+                description = desc
+        credential = ""
+        if "credential" in item:
+            cred = _require_str(item.get("credential"), f"{label}.credential", errors)
+            if cred is not None:
+                credential = cred
+        max_file_mb = 0.0
+        if "max_file_mb" in item:
+            value = item.get("max_file_mb")
+            if not isinstance(value, int | float) or isinstance(value, bool) or value <= 0:
+                errors.append(f"{label}.max_file_mb must be a positive number")
+            else:
+                max_file_mb = float(value)
+        if (
+            provider_id is not None
+            and display_name is not None
+            and kind is not None
+            and kind in TRANSCRIPTION_PROVIDER_KINDS
+        ):
+            result.append(
+                TranscriptionProviderContribution(
+                    id=provider_id,
+                    display_name=display_name,
+                    kind=kind,
+                    description=description,
+                    credential=credential,
+                    max_file_mb=max_file_mb,
                 )
             )
     return tuple(result)
@@ -1033,6 +979,10 @@ def _validate_contributes(
 
     preferences: tuple[object, ...] = ()
     if "preferences" in raw:
+        # Imported at call scope so validation_preferences can import this
+        # module's shared helpers without an import-time cycle (GATE-11 split).
+        from .validation_preferences import _validate_preferences
+
         preferences = _validate_preferences(raw["preferences"], errors)
 
     document_events: tuple[object, ...] = ()
@@ -1057,6 +1007,12 @@ def _validate_contributes(
     if "snippet_gallery" in raw:
         snippet_gallery = _validate_snippet_gallery(raw["snippet_gallery"], errors)
 
+    transcription_providers: tuple[TranscriptionProviderContribution, ...] = ()
+    if "transcription_providers" in raw:
+        transcription_providers = _validate_transcription_providers(
+            raw["transcription_providers"], errors
+        )
+
     contributions = Contributions(
         commands=tuple(commands),
         menus=menus,
@@ -1072,6 +1028,7 @@ def _validate_contributes(
         schedule=schedule,
         file_types=file_types,
         snippet_gallery=snippet_gallery,
+        transcription_providers=transcription_providers,
     )
     return contributions, contributed_ids, any_handler, has_document_events
 
@@ -1266,6 +1223,11 @@ def validate_manifest(
             errors.append("contributes.file_types requires the 'document.events' capability")
         if main is None:
             errors.append("contributes.file_types requires a top-level 'main' module")
+
+    # Host-mediated transcription providers are declarative: the Quillin declares
+    # the provider but runs no code and makes no network calls itself -- the QUILL
+    # host performs the upload, governed by the network-egress audit. By least
+    # privilege the declaring Quillin therefore needs no 'net' capability.
 
     # net_allowed_hosts is only meaningful when the net capability is declared.
     if net_allowed_hosts and CAP_NET not in capabilities:

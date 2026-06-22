@@ -1886,6 +1886,23 @@ partial profile can never start a worker.
 Quill integrates BITS Whisperer speech capabilities in phased increments to minimize regression risk
 and preserve accessibility reliability.
 
+**Cloud providers ship as Quillins, not core.** Per the consolidation plan (#669), the cloud
+provider matrix is delivered as extensions rather than baked into core. A Quillin declares a
+provider through the **`transcription_providers`** manifest contribution; QUILL's host implements
+it. The contract is host-mediated and least-privilege: the Quillin ships no code and requests no
+`net` capability — it only declares the provider (`id`, `display_name`, a host-vetted `kind`,
+optional `credential` label and `max_file_mb`). The host performs the upload through its existing
+network-egress-audited transcription path, so the sandbox never receives audio bytes or the API
+key, and a manifest can never target an arbitrary endpoint (only known `kind`s are accepted).
+Host adapters implement the `SpeechToTextProvider` ABC and register into the speech registry, so a
+contributed provider appears in Manage Speech Models and the transcribe pickers. Providers are
+tagged network-backed and are excluded from the offline paths (the offline Watch Folder transcribe
+action only ever uses on-device engines); they are unavailable in Safe Mode or without a configured
+key. Implementation: `quill/core/speech/quillin_providers.py`, the `transcription_providers`
+model/validation/schema in `quill/core/quillins/`, and the bundled reference Quillin
+`openai-whisper-transcription`. Developer reference: `docs/quillins/quillins.md` §"Transcription
+providers".
+
 > **Offline speech & dictation reengineering (#617).** The full provider-architecture
 > plan — one offline-first speech engine (whisper.cpp default, with Windows, cloud, and
 > Faster Whisper providers), two user verbs (Dictate / Transcribe), an accessible model

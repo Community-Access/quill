@@ -1449,6 +1449,23 @@ needs microphone-capture support (the optional <code>sounddevice</code>
 package); if it is missing, QUILL tells you and you can still use
 Windows dictation. Because automatic transcription is never perfect,
 results are always a draft to review.</p>
+<h5 id="cloud-transcription-providers-optional-via-quillins">Cloud
+transcription providers (optional, via Quillins)</h5>
+<p>The offline engines above keep everything on your machine. If you
+want a cloud provider as well — for example <strong>OpenAI
+Whisper</strong> for its accuracy — install the <strong>OpenAI Whisper
+Transcription</strong> Quillin (a bundled extension) and configure an
+OpenAI API key in AI Hub. It then appears as a provider in Manage Speech
+Models.</p>
+<p>Cloud providers are <strong>opt-in and never silent</strong>: audio
+is uploaded only when you explicitly transcribe a file with that
+provider, never offline and never in Safe Mode. The Watch Folder
+"Transcribe audio (Whisperer)" automation always uses the on-device
+engines only, so a cloud provider can never auto-upload your audio.
+Extensions that add a provider ship no code and request no network
+permission — QUILL itself performs the upload through its audited
+network path, so the extension never sees your audio or your key.
+(Developers: see the Quillin guide, "Transcription providers".)</p>
 <h4 id="read-aloud-with-ai-voice-openai-tts">Read Aloud with AI Voice
 (OpenAI TTS)</h4>
 <p><code>AI &gt; Read Selection Aloud (AI Voice)</code> and

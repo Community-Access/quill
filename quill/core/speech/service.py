@@ -63,6 +63,16 @@ def default_registry(executable_path: str | None = None) -> SpeechProviderRegist
     except Exception:  # noqa: BLE001 - an optional engine must never break the registry
         pass
 
+    # Cloud providers contributed by enabled Quillins (network-backed; the offline
+    # transcribe paths skip them). Empty in Safe Mode or with no provider Quillins.
+    try:
+        from .quillin_providers import quillin_transcription_providers
+
+        for cloud_provider in quillin_transcription_providers():
+            registry.register(cloud_provider)
+    except Exception:  # noqa: BLE001 - a contributed provider must never break the registry
+        pass
+
     return registry
 
 

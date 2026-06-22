@@ -52,6 +52,7 @@ from quill.core.quillins.loader import (
     set_event_enabled,
 )
 from quill.core.quillins.registry import ContributionRegistry
+from quill.core.speech.quillin_providers import register_quillin_transcription_providers
 from quill.plugins import THIRD_PARTY_PLUGINS_FEATURE
 from quill.ui.main_frame_quillins_host import _EditorHostServices
 
@@ -171,11 +172,9 @@ class QuillinsMenuMixin:
         self._quillin_file_type_index: dict[str, list[tuple[ExtensionManifest, Path, str]]] = {}
         # quillin_id -> list of live wx.Timer objects (Part 1 schedule).
         self._quillin_timers: dict[str, list[Any]] = {}
-        # H-SAFE-1: when Safe Mode is on, we register the *manager* and
-        # *wizard* commands (the local surface) but skip the contribution
-        # registration entirely. This is the load-bearing gate that makes
-        # ``--safe-mode`` actually safe — without it the banner was a lie
-        # and bundled/third-party commands stayed live.
+        # H-SAFE-1: Safe Mode keeps the manager/wizard commands but skips
+        # contribution registration entirely -- the load-bearing gate that makes
+        # ``--safe-mode`` safe (no live commands, no contributed providers).
         if self._safe_mode:
             return
         self._register_quillin_contributions()
@@ -222,6 +221,7 @@ class QuillinsMenuMixin:
         bundled_manifests = load_enabled_bundled_manifests(self.features)
         third_party_manifests = load_enabled_manifests(self.features)
         manifests = [*bundled_manifests, *third_party_manifests]
+        register_quillin_transcription_providers(manifests)  # cloud STT (empty clears)
         if not manifests:
             return
 

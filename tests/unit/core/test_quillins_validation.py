@@ -1001,3 +1001,61 @@ def test_parse_snippet_gallery_builds_model() -> None:
     assert entry.id == "greet"
     assert entry.params[0].name == "name"
     assert entry.params[0].default == "x"
+
+
+# ---------------------------------------------------------------------------
+# transcription_providers contribution (host-mediated cloud providers)
+# ---------------------------------------------------------------------------
+
+
+def _transcription_provider_manifest() -> dict[str, object]:
+    """A declarative provider manifest: no code, no net capability needed."""
+    return {
+        "schema": "quill.extension/1",
+        "id": "com.example.whisper",
+        "name": "Example Whisper",
+        "version": "1.0.0",
+        "contributes": {
+            "transcription_providers": [
+                {
+                    "id": "ext.example.openai-whisper",
+                    "display_name": "Example Whisper",
+                    "kind": "openai_whisper",
+                    "description": "Cloud STT.",
+                    "max_file_mb": 25,
+                }
+            ]
+        },
+    }
+
+
+def test_transcription_provider_manifest_parses_without_net() -> None:
+    m = parse_manifest(_transcription_provider_manifest())
+    providers = m.contributes.transcription_providers
+    assert len(providers) == 1
+    p = providers[0]
+    assert p.id == "ext.example.openai-whisper"
+    assert p.kind == "openai_whisper"
+    assert p.max_file_mb == 25.0
+
+
+def test_transcription_provider_unknown_kind_rejected() -> None:
+    raw = _transcription_provider_manifest()
+    raw["contributes"]["transcription_providers"][0]["kind"] = "acme-cloud"
+    with pytest.raises(ManifestError, match="kind"):
+        parse_manifest(raw)
+
+
+def test_transcription_provider_id_must_be_namespaced() -> None:
+    raw = _transcription_provider_manifest()
+    raw["contributes"]["transcription_providers"][0]["id"] = "not-namespaced"
+    with pytest.raises(ManifestError, match=r"ext\."):
+        parse_manifest(raw)
+
+
+def test_transcription_provider_duplicate_ids_rejected() -> None:
+    raw = _transcription_provider_manifest()
+    dup = dict(raw["contributes"]["transcription_providers"][0])
+    raw["contributes"]["transcription_providers"].append(dup)
+    with pytest.raises(ManifestError, match="duplicate"):
+        parse_manifest(raw)

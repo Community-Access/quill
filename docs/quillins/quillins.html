@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>quillins</title>
   <style>
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -5291,16 +5295,86 @@ the handler raises an exception, the host shows the last good value.</p>
 </ul>
 <p>Missing either causes validation to fail.</p>
 <hr />
+<h2 id="transcription-providers-cloud-speech-to-text">Transcription
+providers (cloud speech-to-text)</h2>
+<p>A Quillin can add a <strong>cloud transcription provider</strong> to
+QUILL's speech engine — for example OpenAI Whisper — so it appears
+wherever you transcribe an audio or video file (Tools → Speech →
+Whisperer). This is a <strong>host-mediated, declarative</strong>
+contribution: your Quillin <em>declares</em> the provider, and QUILL's
+host performs the upload using its own network-egress-audited
+transcription path.</p>
+<p>That design is deliberate. The sandbox never hands an extension raw
+audio bytes, an API key, or arbitrary network access, so a
+transcription-provider Quillin:</p>
+<ul>
+<li>ships <strong>no code</strong> (no <code>main</code>, no handlers),
+and</li>
+<li>needs <strong>no <code>net</code> capability</strong> (least
+privilege — it makes no calls itself).</li>
+</ul>
+<p>Each <code>transcription_providers</code> entry declares:</p>
+<ul>
+<li><code>id</code> — namespaced under <code>ext.</code> and unique
+across enabled Quillins.</li>
+<li><code>display_name</code> — shown in the engine/model picker.</li>
+<li><code>kind</code> — the host adapter that performs the call. Only
+host-vetted kinds are accepted; currently <code>openai_whisper</code>.
+(A manifest can therefore never point the host at an arbitrary
+endpoint.)</li>
+<li><code>description</code> — optional, ≤400 chars.</li>
+<li><code>credential</code> — optional credential-store label holding
+the API key. Empty uses the adapter's default (the OpenAI key configured
+in AI Hub).</li>
+<li><code>max_file_mb</code> — optional upload-size ceiling
+override.</li>
+</ul>
+<div class="sourceCode" id="cb74"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;schema&quot;</span><span class="fu">:</span> <span class="st">&quot;quill.extension/1&quot;</span><span class="fu">,</span></span>
+<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;com.example.whisper&quot;</span><span class="fu">,</span></span>
+<span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;OpenAI Whisper Transcription&quot;</span><span class="fu">,</span></span>
+<span id="cb74-5"><a href="#cb74-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;version&quot;</span><span class="fu">:</span> <span class="st">&quot;1.0.0&quot;</span><span class="fu">,</span></span>
+<span id="cb74-6"><a href="#cb74-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;categories&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;ai&quot;</span><span class="ot">,</span> <span class="st">&quot;integration&quot;</span><span class="ot">,</span> <span class="st">&quot;accessibility&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb74-7"><a href="#cb74-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;contributes&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb74-8"><a href="#cb74-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;transcription_providers&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb74-9"><a href="#cb74-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">{</span></span>
+<span id="cb74-10"><a href="#cb74-10" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;ext.example.openai-whisper&quot;</span><span class="fu">,</span></span>
+<span id="cb74-11"><a href="#cb74-11" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;display_name&quot;</span><span class="fu">:</span> <span class="st">&quot;OpenAI Whisper&quot;</span><span class="fu">,</span></span>
+<span id="cb74-12"><a href="#cb74-12" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;kind&quot;</span><span class="fu">:</span> <span class="st">&quot;openai_whisper&quot;</span><span class="fu">,</span></span>
+<span id="cb74-13"><a href="#cb74-13" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;description&quot;</span><span class="fu">:</span> <span class="st">&quot;Cloud speech-to-text via OpenAI&#39;s Whisper API.&quot;</span><span class="fu">,</span></span>
+<span id="cb74-14"><a href="#cb74-14" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;max_file_mb&quot;</span><span class="fu">:</span> <span class="dv">25</span></span>
+<span id="cb74-15"><a href="#cb74-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">}</span></span>
+<span id="cb74-16"><a href="#cb74-16" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span></span>
+<span id="cb74-17"><a href="#cb74-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb74-18"><a href="#cb74-18" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p><strong>Safety and behavior:</strong></p>
+<ul>
+<li>Cloud providers are <strong>network-backed</strong> and are
+<strong>excluded from QUILL's offline paths</strong> — the offline Watch
+Folder "Transcribe audio (Whisperer)" action only ever uses on-device
+engines, so a cloud provider can never silently upload audio. Cloud
+transcription happens only through explicit, consented UI.</li>
+<li>A cloud provider is <strong>unavailable in Safe Mode</strong> and
+when no API key is configured.</li>
+<li>The bundled <code>openai-whisper-transcription</code> Quillin is the
+reference implementation.</li>
+</ul>
+<h3 id="capability-requirements-1">Capability requirements</h3>
+<p><code>contributes.transcription_providers</code> requires
+<strong>no</strong> capability and <strong>no</strong> <code>main</code>
+module — it is purely declarative.</p>
+<hr />
 <h2 id="command-descriptions">Command descriptions</h2>
 <p>Commands may carry a human-readable <code>description</code> for
 display in the keyboard reference and command palette:</p>
-<div class="sourceCode" id="cb74"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;ext.myquillin.run&quot;</span><span class="fu">,</span></span>
-<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;title&quot;</span><span class="fu">:</span> <span class="st">&quot;Run My Quillin&quot;</span><span class="fu">,</span></span>
-<span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;description&quot;</span><span class="fu">:</span> <span class="st">&quot;Processes the selected text and inserts the result below the cursor.&quot;</span><span class="fu">,</span></span>
-<span id="cb74-5"><a href="#cb74-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;run&quot;</span><span class="fu">:</span> <span class="fu">{</span> <span class="dt">&quot;handler&quot;</span><span class="fu">:</span> <span class="st">&quot;run&quot;</span> <span class="fu">}</span></span>
-<span id="cb74-6"><a href="#cb74-6" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb75"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;ext.myquillin.run&quot;</span><span class="fu">,</span></span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;title&quot;</span><span class="fu">:</span> <span class="st">&quot;Run My Quillin&quot;</span><span class="fu">,</span></span>
+<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;description&quot;</span><span class="fu">:</span> <span class="st">&quot;Processes the selected text and inserts the result below the cursor.&quot;</span><span class="fu">,</span></span>
+<span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;run&quot;</span><span class="fu">:</span> <span class="fu">{</span> <span class="dt">&quot;handler&quot;</span><span class="fu">:</span> <span class="st">&quot;run&quot;</span> <span class="fu">}</span></span>
+<span id="cb75-6"><a href="#cb75-6" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 <p><code>description</code> is optional, at most 400 characters. It is
 shown in the QUILL keyboard reference alongside the title and
 binding.</p>
@@ -5308,15 +5382,15 @@ binding.</p>
 <h2 id="preferences--search-keywords">Preferences — search keywords</h2>
 <p>Individual settings may carry extra words users might type to find
 the setting in the Preferences search box:</p>
-<div class="sourceCode" id="cb75"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;key&quot;</span><span class="fu">:</span> <span class="st">&quot;date_format&quot;</span><span class="fu">,</span></span>
-<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;label&quot;</span><span class="fu">:</span> <span class="st">&quot;Date format&quot;</span><span class="fu">,</span></span>
-<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;choice&quot;</span><span class="fu">,</span></span>
-<span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;default&quot;</span><span class="fu">:</span> <span class="st">&quot;long&quot;</span><span class="fu">,</span></span>
-<span id="cb75-6"><a href="#cb75-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;description&quot;</span><span class="fu">:</span> <span class="st">&quot;How the date is written in the header.&quot;</span><span class="fu">,</span></span>
-<span id="cb75-7"><a href="#cb75-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;search_keywords&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;timestamp&quot;</span><span class="ot">,</span> <span class="st">&quot;iso&quot;</span><span class="ot">,</span> <span class="st">&quot;strftime&quot;</span><span class="ot">,</span> <span class="st">&quot;header format&quot;</span><span class="ot">]</span></span>
-<span id="cb75-8"><a href="#cb75-8" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb76"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;key&quot;</span><span class="fu">:</span> <span class="st">&quot;date_format&quot;</span><span class="fu">,</span></span>
+<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;label&quot;</span><span class="fu">:</span> <span class="st">&quot;Date format&quot;</span><span class="fu">,</span></span>
+<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;choice&quot;</span><span class="fu">,</span></span>
+<span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;default&quot;</span><span class="fu">:</span> <span class="st">&quot;long&quot;</span><span class="fu">,</span></span>
+<span id="cb76-6"><a href="#cb76-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;description&quot;</span><span class="fu">:</span> <span class="st">&quot;How the date is written in the header.&quot;</span><span class="fu">,</span></span>
+<span id="cb76-7"><a href="#cb76-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;search_keywords&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;timestamp&quot;</span><span class="ot">,</span> <span class="st">&quot;iso&quot;</span><span class="ot">,</span> <span class="st">&quot;strftime&quot;</span><span class="ot">,</span> <span class="st">&quot;header format&quot;</span><span class="ot">]</span></span>
+<span id="cb76-8"><a href="#cb76-8" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 <p>QUILL's preference search matches against <code>label</code>,
 <code>description</code>, and <code>search_keywords</code>. Adding
 synonyms and technical terms improves discoverability for users who may
@@ -5412,25 +5486,25 @@ origin.</p>
 <p>Quillins with the <code>ui.log</code> capability may call
 <code>api.log(message)</code> to write structured log lines to the QUILL
 Developer Console:</p>
-<div class="sourceCode" id="cb76"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>api.log(<span class="st">&quot;Journal Stamp enabled — ready to stamp.&quot;</span>)</span>
-<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>api.log(<span class="ss">f&quot;Setting changed: </span><span class="sc">{</span>key<span class="sc">}</span><span class="ss"> = </span><span class="sc">{</span>value<span class="sc">!r}</span><span class="ss">&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb77"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>api.log(<span class="st">&quot;Journal Stamp enabled — ready to stamp.&quot;</span>)</span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>api.log(<span class="ss">f&quot;Setting changed: </span><span class="sc">{</span>key<span class="sc">}</span><span class="ss"> = </span><span class="sc">{</span>value<span class="sc">!r}</span><span class="ss">&quot;</span>)</span></code></pre></div>
 <p><code>api.log()</code> is a no-op when the Developer Console is
 closed or when <code>QUILL_DEV_BUILD</code> is not set; it never writes
 to files or to the screen reader. Declare the <code>ui.log</code>
 capability to use it:</p>
-<div class="sourceCode" id="cb77"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;capabilities&quot;</span><span class="er">:</span> <span class="ot">[</span><span class="st">&quot;ui.log&quot;</span><span class="ot">]</span></span></code></pre></div>
+<div class="sourceCode" id="cb78"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;capabilities&quot;</span><span class="er">:</span> <span class="ot">[</span><span class="st">&quot;ui.log&quot;</span><span class="ot">]</span></span></code></pre></div>
 <p><code>ui.log</code> requires no consent gate — it has no user-visible
 side effect and cannot exfiltrate data.</p>
 <hr />
 <h2 id="announcement-priority">Announcement priority</h2>
 <p><code>api.announce()</code> accepts an optional <code>priority</code>
 keyword argument:</p>
-<div class="sourceCode" id="cb78"><pre
-class="sourceCode python"><code class="sourceCode python"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>api.announce(<span class="st">&quot;Saved.&quot;</span>, priority<span class="op">=</span><span class="st">&quot;quiet&quot;</span>)      <span class="co"># queued, does not interrupt</span></span>
-<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a>api.announce(<span class="st">&quot;Warning: TODO found.&quot;</span>, priority<span class="op">=</span><span class="st">&quot;normal&quot;</span>)</span>
-<span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a>api.announce(<span class="st">&quot;Error: file not writable.&quot;</span>, priority<span class="op">=</span><span class="st">&quot;urgent&quot;</span>)  <span class="co"># interrupts</span></span></code></pre></div>
+<div class="sourceCode" id="cb79"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>api.announce(<span class="st">&quot;Saved.&quot;</span>, priority<span class="op">=</span><span class="st">&quot;quiet&quot;</span>)      <span class="co"># queued, does not interrupt</span></span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>api.announce(<span class="st">&quot;Warning: TODO found.&quot;</span>, priority<span class="op">=</span><span class="st">&quot;normal&quot;</span>)</span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a>api.announce(<span class="st">&quot;Error: file not writable.&quot;</span>, priority<span class="op">=</span><span class="st">&quot;urgent&quot;</span>)  <span class="co"># interrupts</span></span></code></pre></div>
 <p>Valid priorities: <code>quiet</code>, <code>normal</code>,
 <code>urgent</code>. Default is <code>normal</code>. The host maps these
 to the screen reader's urgency channel (SSML priority, NVDA speak flags,

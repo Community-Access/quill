@@ -31,14 +31,24 @@ def _default_registry() -> SpeechProviderRegistry:
     return default_registry()
 
 
+def _is_offline(provider: SpeechToTextProvider) -> bool:
+    """True for on-device providers. Network providers (Quillin cloud adapters)
+    set ``requires_network = True`` and are skipped here so the offline transcribe
+    paths never upload audio without explicit, consented UI."""
+    return not getattr(provider, "requires_network", False)
+
+
 def has_installed_offline_model(registry: SpeechProviderRegistry | None = None) -> bool:
     """Return True when some available offline provider has a model on disk.
 
     Cheap enough to call from a validate()/preview() path: it lists installed
-    models but never loads an engine or transcribes.
+    models but never loads an engine or transcribes. Network providers are
+    excluded so a cloud Quillin never satisfies the offline path.
     """
     reg = registry if registry is not None else _default_registry()
-    return any(provider.list_installed_models() for provider in reg.available())
+    return any(
+        provider.list_installed_models() for provider in reg.available() if _is_offline(provider)
+    )
 
 
 def _provider_and_model(
@@ -51,6 +61,8 @@ def _provider_and_model(
     Raises :class:`SpeechError` when no offline provider has a usable model.
     """
     for provider in registry.available():
+        if not _is_offline(provider):
+            continue  # cloud providers are used only via explicit consented UI
         installed = provider.list_installed_models()
         if not installed:
             continue

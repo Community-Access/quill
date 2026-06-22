@@ -512,6 +512,38 @@
               }
             }
           }
+        },
+        "transcription_providers": {
+          "type": "array",
+          "description": "Host-mediated cloud transcription providers. The Quillin declares the provider; QUILL performs the upload via the named 'kind' adapter under the network-egress audit, so the sandbox never handles audio bytes or the API key. Purely declarative: the Quillin runs no code and needs no 'net' capability (the host's call is audited).",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "display_name", "kind"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^ext\\.[a-z0-9]+([._-][a-z0-9]+)*$",
+                "description": "Namespaced under ext.; unique across enabled Quillins."
+              },
+              "display_name": { "type": "string", "minLength": 1, "maxLength": 80 },
+              "kind": {
+                "enum": ["openai_whisper"],
+                "description": "Host adapter that performs the transcription."
+              },
+              "description": { "type": "string", "maxLength": 400 },
+              "credential": {
+                "type": "string",
+                "maxLength": 128,
+                "description": "Credential-store label holding the API key. Empty uses the adapter default."
+              },
+              "max_file_mb": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "description": "Optional upload-size ceiling override, in MB."
+              }
+            }
+          }
         }
       }
     }

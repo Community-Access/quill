@@ -3637,6 +3637,57 @@ Missing either causes validation to fail.
 
 ---
 
+## Transcription providers (cloud speech-to-text)
+
+A Quillin can add a **cloud transcription provider** to QUILL's speech engine — for example OpenAI Whisper — so it appears wherever you transcribe an audio or video file (Tools → Speech → Whisperer). This is a **host-mediated, declarative** contribution: your Quillin *declares* the provider, and QUILL's host performs the upload using its own network-egress-audited transcription path.
+
+That design is deliberate. The sandbox never hands an extension raw audio bytes, an API key, or arbitrary network access, so a transcription-provider Quillin:
+
+- ships **no code** (no `main`, no handlers), and
+- needs **no `net` capability** (least privilege — it makes no calls itself).
+
+Each `transcription_providers` entry declares:
+
+- `id` — namespaced under `ext.` and unique across enabled Quillins.
+- `display_name` — shown in the engine/model picker.
+- `kind` — the host adapter that performs the call. Only host-vetted kinds are accepted; currently `openai_whisper`. (A manifest can therefore never point the host at an arbitrary endpoint.)
+- `description` — optional, ≤400 chars.
+- `credential` — optional credential-store label holding the API key. Empty uses the adapter's default (the OpenAI key configured in AI Hub).
+- `max_file_mb` — optional upload-size ceiling override.
+
+```json
+{
+  "schema": "quill.extension/1",
+  "id": "com.example.whisper",
+  "name": "OpenAI Whisper Transcription",
+  "version": "1.0.0",
+  "categories": ["ai", "integration", "accessibility"],
+  "contributes": {
+    "transcription_providers": [
+      {
+        "id": "ext.example.openai-whisper",
+        "display_name": "OpenAI Whisper",
+        "kind": "openai_whisper",
+        "description": "Cloud speech-to-text via OpenAI's Whisper API.",
+        "max_file_mb": 25
+      }
+    ]
+  }
+}
+```
+
+**Safety and behavior:**
+
+- Cloud providers are **network-backed** and are **excluded from QUILL's offline paths** — the offline Watch Folder "Transcribe audio (Whisperer)" action only ever uses on-device engines, so a cloud provider can never silently upload audio. Cloud transcription happens only through explicit, consented UI.
+- A cloud provider is **unavailable in Safe Mode** and when no API key is configured.
+- The bundled `openai-whisper-transcription` Quillin is the reference implementation.
+
+### Capability requirements
+
+`contributes.transcription_providers` requires **no** capability and **no** `main` module — it is purely declarative.
+
+---
+
 ## Command descriptions
 
 Commands may carry a human-readable `description` for display in the keyboard reference and command palette:

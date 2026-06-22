@@ -793,6 +793,22 @@ Offline **dictation** also needs microphone-capture support (the optional
 Windows dictation. Because automatic transcription is never perfect, results are
 always a draft to review.
 
+##### Cloud transcription providers (optional, via Quillins)
+
+The offline engines above keep everything on your machine. If you want a cloud
+provider as well — for example **OpenAI Whisper** for its accuracy — install the
+**OpenAI Whisper Transcription** Quillin (a bundled extension) and configure an
+OpenAI API key in AI Hub. It then appears as a provider in Manage Speech Models.
+
+Cloud providers are **opt-in and never silent**: audio is uploaded only when you
+explicitly transcribe a file with that provider, never offline and never in Safe
+Mode. The Watch Folder "Transcribe audio (Whisperer)" automation always uses the
+on-device engines only, so a cloud provider can never auto-upload your audio.
+Extensions that add a provider ship no code and request no network permission —
+QUILL itself performs the upload through its audited network path, so the
+extension never sees your audio or your key. (Developers: see the Quillin guide,
+"Transcription providers".)
+
 #### Read Aloud with AI Voice (OpenAI TTS)
 
 `AI > Read Selection Aloud (AI Voice)` and `AI > Read Document Aloud (AI Voice)`

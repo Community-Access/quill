@@ -311,6 +311,39 @@ class FileTypeContribution:
     description: str = ""
 
 
+#: Host-implemented transcription provider "kinds". The host knows how to talk to
+#: each vetted endpoint; a Quillin may only *declare* a provider of a known kind,
+#: so a manifest can never point the host at an arbitrary URL. Add a new kind here
+#: (and a host adapter in ``quill/core/speech/quillin_providers.py``) only after it
+#: is vetted into the network-egress audit.
+TRANSCRIPTION_PROVIDER_KINDS: tuple[str, ...] = ("openai_whisper",)
+
+
+@dataclass(frozen=True, slots=True)
+class TranscriptionProviderContribution:
+    """A cloud transcription provider declared by a Quillin (host-mediated).
+
+    The Quillin declares *which* provider and its branding/limits; QUILL's host
+    performs the actual upload through the network-egress audit using the named
+    ``kind`` adapter, so the sandbox never handles audio bytes or the API key.
+    This contribution is purely declarative -- the Quillin runs no code and makes
+    no network calls of its own, so it needs no ``net`` capability (least
+    privilege); the host's call is governed by the egress audit.
+
+    ``id`` is namespaced under ``ext.`` and must be unique across enabled
+    Quillins. ``kind`` selects the host adapter. ``credential`` is the
+    credential-store label holding the API key (empty = the adapter default).
+    ``max_file_mb`` overrides the adapter's upload ceiling when > 0.
+    """
+
+    id: str
+    display_name: str
+    kind: str
+    description: str = ""
+    credential: str = ""
+    max_file_mb: float = 0.0
+
+
 @dataclass(frozen=True, slots=True)
 class SnippetParam:
     """A single fill-in field prompted before a gallery snippet is inserted."""
@@ -364,6 +397,9 @@ class Contributions:
     file_types: tuple[FileTypeContribution, ...] = ()
     # Snippet gallery templates. Each entry is a SnippetGalleryEntry (Part 3).
     snippet_gallery: tuple[SnippetGalleryEntry, ...] = ()
+    # Host-mediated cloud transcription providers. Each is a
+    # TranscriptionProviderContribution; requires the 'net' capability.
+    transcription_providers: tuple[TranscriptionProviderContribution, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
