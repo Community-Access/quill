@@ -13,7 +13,7 @@ jobs:
   dependency-audit-and-sbom:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
@@ -43,7 +43,7 @@ jobs:
     env:
       GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Run gitleaks scan
         if: ${{ env.GITLEAKS_LICENSE != '' }}
         # gitleaks org scanning requires a license key in this repo.
@@ -60,7 +60,7 @@ jobs:
     # never used (quill/ui is excluded in pyproject.toml).
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
@@ -80,7 +80,7 @@ jobs:
     # 'python -m quill.tools.dialog_inventory --write' to register a new dialog).
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
@@ -100,7 +100,7 @@ jobs:
     # inventory with a rationale. A new call without review fails the build.
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
@@ -120,7 +120,7 @@ jobs:
     # vulnerability auditing (pip-audit strict) runs in the SBOM job above.
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
