@@ -19521,9 +19521,7 @@ class MainFrame(
         channel = "Beta / prerelease" if release.prerelease else "Stable"
         raw = (release.notes or "").strip()
         notes = (
-            _strip_md_to_plain(raw)
-            if raw
-            else "(No release notes were provided for this version.)"
+            _strip_md_to_plain(raw) if raw else "(No release notes were provided for this version.)"
         )
         published = f"Published: {release.published_at}\n" if release.published_at else ""
         header = (
