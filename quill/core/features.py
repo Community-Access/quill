@@ -41,7 +41,11 @@ PROFILE_DEFINITIONS: dict[str, FeatureProfile] = {
             "core.editor": FEATURE_STATE_ON,
             "core.file": FEATURE_STATE_ON,
             "core.edit": FEATURE_STATE_ON,
-            "core.abbreviations": FEATURE_STATE_OFF,
+            # Abbreviations is available (not locked, not hidden) so its enable
+            # toggle is discoverable in the command palette. The expansion
+            # *behaviour* still defaults off via settings.abbreviation_expansion,
+            # so users are not surprised by auto-expansion until they opt in.
+            "core.abbreviations": FEATURE_STATE_ON,
             "core.notes": FEATURE_STATE_OFF,
             "core.search": FEATURE_STATE_ON,
             "core.search.regex": FEATURE_STATE_OFF,
