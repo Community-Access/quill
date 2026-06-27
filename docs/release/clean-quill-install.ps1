@@ -8,9 +8,19 @@
     like a first-time install. Verifies the machine is clean afterward.
 
     Locations removed:
-      - %LOCALAPPDATA%\Programs\QUILL for All   (install dir)
+      - %LOCALAPPDATA%\Programs\QUILL for All   (install dir, 0.7.0+)
+      - %LOCALAPPDATA%\Programs\Quill           (install dir, 0.5.0/0.6.0 branding)
+      - %ProgramFiles%\QUILL for All            (admin-elevated install, 0.7.0+)
+      - %ProgramFiles%\Quill                    (admin-elevated install, 0.5.0/0.6.0)
       - %APPDATA%\Quill                          (settings, keymap, recovery, AI)
       - %LOCALAPPDATA%\Quill                     (caches, if present)
+
+    The 0.5.0/0.6.0 installer used AppName "Quill" (dir "Quill"); 0.7.0+ uses
+    "QUILL for All". Because all releases share the same Inno AppId, an upgrade
+    reuses the original folder - so a clean reset for upgrade-path testing must
+    cover BOTH names. The installer is per-user by default but allows elevating
+    to an admin (Program Files) install via the privileges dialog, so those
+    locations are cleaned too.
 
     WARNING: %APPDATA%\Quill holds your real settings and any per-user data.
     Deleting it is what makes the test a true fresh install. Use -Backup to
@@ -39,10 +49,18 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-$installDir = Join-Path $env:LOCALAPPDATA 'Programs\QUILL for All'
+# Per-user install dirs (default). Both AppName variants across versions.
+$installDirNew = Join-Path $env:LOCALAPPDATA 'Programs\QUILL for All'
+$installDirOld = Join-Path $env:LOCALAPPDATA 'Programs\Quill'
+# Admin-elevated install dirs (only if the user chose elevation in the dialog).
+$pf = if ($env:ProgramFiles) { $env:ProgramFiles } else { 'C:\Program Files' }
+$installPfNew = Join-Path $pf 'QUILL for All'
+$installPfOld = Join-Path $pf 'Quill'
+$installDirs = @($installDirNew, $installDirOld, $installPfNew, $installPfOld)
+
 $dataRoaming = Join-Path $env:APPDATA 'Quill'
 $dataLocal  = Join-Path $env:LOCALAPPDATA 'Quill'
-$targets = @($installDir, $dataRoaming, $dataLocal)
+$targets = @($installDirs + @($dataRoaming, $dataLocal))
 
 function Write-State {
     param([string]$Label)
@@ -57,11 +75,15 @@ function Write-State {
 
 Write-State -Label 'before'
 
-# 1. Stop any running QUILL process.
+# 1. Stop any running QUILL process (matched by install dir, either branding).
 $procNames = @('quill', 'pythonw', 'python')
+$installDirsLower = $installDirs | ForEach-Object { $_.ToLower() }
 $running = Get-Process -Name $procNames -ErrorAction SilentlyContinue |
     Where-Object {
-        try { $_.Path -and $_.Path.ToLower().Contains('quill for all') } catch { $false }
+        try {
+            $p = $_.Path
+            $p -and ($installDirsLower | Where-Object { $p.ToLower().StartsWith($_) })
+        } catch { $false }
     }
 if ($running) {
     Write-Host ""
@@ -94,13 +116,15 @@ if (-not $Force) {
 # 2b. Run the Inno Setup uninstaller first if present, so the Add/Remove
 #     Programs entry, registry keys, and Start Menu shortcuts are cleared
 #     too (manual folder deletion alone leaves those orphaned).
-if (Test-Path -LiteralPath $installDir) {
-    $uninst = Get-ChildItem -LiteralPath $installDir -Filter 'unins*.exe' -ErrorAction SilentlyContinue |
-        Sort-Object Name | Select-Object -First 1
-    if ($uninst) {
-        Write-Host "Running uninstaller: $($uninst.FullName)"
-        Start-Process -FilePath $uninst.FullName -ArgumentList '/VERYSILENT', '/NORESTART', '/SUPPRESSMSGBOXES' -Wait
-        Start-Sleep -Milliseconds 500
+foreach ($dir in $installDirs) {
+    if (Test-Path -LiteralPath $dir) {
+        $uninst = Get-ChildItem -LiteralPath $dir -Filter 'unins*.exe' -ErrorAction SilentlyContinue |
+            Sort-Object Name | Select-Object -First 1
+        if ($uninst) {
+            Write-Host "Running uninstaller: $($uninst.FullName)"
+            Start-Process -FilePath $uninst.FullName -ArgumentList '/VERYSILENT', '/NORESTART', '/SUPPRESSMSGBOXES' -Wait
+            Start-Sleep -Milliseconds 500
+        }
     }
 }
 
