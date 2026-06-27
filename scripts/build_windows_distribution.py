@@ -83,13 +83,17 @@ PIPER_PINNED_URL = (
 )
 PIPER_PINNED_SHA256 = "f3c58906402b24f3a96d92145f58acba6d86c9b5db896d207f78dc80811efcea"
 
-# Kokoro neural-TTS model + voices. Unlike the other engines, Kokoro ships via
-# the generic ..\portable\* installer copy under {app}\kokoro-models -- the exact
-# location the runtime resolves in quill.core.read_aloud._bundled_kokoro_model_dir
-# -- so there is no dedicated installer component (see the test that asserts
-# "speechkokoro" is absent). The filenames mirror KOKORO_ONNX_MODEL_FILENAME /
-# KOKORO_ONNX_VOICES_FILENAME in read_aloud.py; keep them in sync. _stage_kokoro
-# downloads + SHA-256 verifies these unless a local --kokoro-dir is provided.
+# Kokoro neural-TTS model + voices. Always STAGED into the portable bundle under
+# kokoro-models/, but the INSTALLER gates the copy behind the optional
+# "speechkokoro" component (Types: full custom) -- so Full installs still ship it
+# while Custom installs can drop ~120 MB; the generic ..\portable\* copy excludes
+# kokoro-models\* to avoid installing it unconditionally. The runtime resolves
+# {app}\kokoro-models (quill.core.read_aloud._bundled_kokoro_model_dir) and, when
+# skipped, downloads on demand to %APPDATA%\Quill\kokoro-models, which it prefers
+# over the bundled copy (default_kokoro_model_dir). The filenames mirror
+# KOKORO_ONNX_MODEL_FILENAME / KOKORO_ONNX_VOICES_FILENAME in read_aloud.py; keep
+# them in sync. _stage_kokoro downloads + SHA-256 verifies these unless a local
+# --kokoro-dir is provided.
 KOKORO_MODEL_FILENAME = "kokoro-v1.0.int8.onnx"
 KOKORO_VOICES_FILENAME = "voices-v1.0.bin"
 KOKORO_MODEL_URL = (
@@ -679,6 +683,10 @@ def build_inno_setup_script(
         " (liblouis translation engine, UEB, Standard American English,"
         ' and international braille profiles, ~15 MB)";'
         " Types: full custom; Flags: checkablealone",
+        'Name: "speechkokoro"; Description: "Install bundled Kokoro neural TTS voices'
+        " (~120 MB, high-quality offline speech). If you skip this, you can download"
+        ' Kokoro later from Manage Voices / Speech Hub";'
+        " Types: full custom; Flags: checkablealone",
         "",
         "[InstallDelete]",
         "; Upgrade hygiene -- the single most important fix for reliable upgrades.",
@@ -712,12 +720,19 @@ def build_inno_setup_script(
         "[Files]",
         'Source: "..\\portable\\*"; DestDir: "{app}";'
         " Flags: ignoreversion recursesubdirs createallsubdirs;"
-        ' Excludes: "docs\\QUILL-PRD.md,tools\\pandoc\\*,tools\\speech\\dectalk\\*,tools\\speech\\espeak-ng\\*,tools\\speech\\piper\\*,tools\\speech\\whispercpp\\*,tools\\nodejs\\*,vendor\\braille-pack\\*,_tool-download\\*,_speech-download\\*"',
+        ' Excludes: "docs\\QUILL-PRD.md,tools\\pandoc\\*,tools\\speech\\dectalk\\*,tools\\speech\\espeak-ng\\*,tools\\speech\\piper\\*,tools\\speech\\whispercpp\\*,tools\\nodejs\\*,vendor\\braille-pack\\*,kokoro-models\\*,_tool-download\\*,_speech-download\\*"',
         "; QUILL Braille Pack: liblouis runtime, translation tables, and BRF profiles.",
         "; Installed to vendor\\braille-pack so QUILL detects it automatically via QUILL_APP_ROOT.",
         'Source: "..\\portable\\vendor\\braille-pack\\*"; DestDir: "{app}\\vendor\\braille-pack";'
         " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist;"
         " Components: braillepack",
+        "; Kokoro neural TTS models (~120 MB). Optional component; the runtime",
+        "; resolves {app}\\kokoro-models (QUILL_APP_ROOT). When skipped, QUILL",
+        "; downloads them on demand to %APPDATA%\\Quill\\kokoro-models, which the",
+        "; runtime prefers over the bundled copy (read_aloud.default_kokoro_model_dir).",
+        'Source: "..\\portable\\kokoro-models\\*"; DestDir: "{app}\\kokoro-models";'
+        " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist;"
+        " Components: speechkokoro",
         'Source: "..\\portable\\tools\\pandoc\\*"; DestDir: "{app}\\tools\\pandoc";'
         " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist;"
         " Components: pandoc",

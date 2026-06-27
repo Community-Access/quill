@@ -104,8 +104,9 @@ version = "2.4.6"
     assert manifest["speechAssets"]["dectalk"]["downloadable"] is True
     assert manifest["speechAssets"]["espeak"]["downloadable"] is True
     assert manifest["speechAssets"]["piper"]["downloadable"] is True
-    # Kokoro ships at the bundle root (kokoro-models/), the location the runtime
-    # resolves a bundled copy from, not under tools/speech and not as a component.
+    # Kokoro is always STAGED at the portable bundle root (kokoro-models/), the
+    # location the runtime resolves a bundled copy from; the installer gates the
+    # copy behind the optional speechkokoro component (asserted separately).
     assert manifest["speechAssets"]["kokoro"]["bundled"] is True
     assert (portable_dir / "kokoro-models" / "kokoro-v1.0.int8.onnx").exists()
     assert (portable_dir / "kokoro-models" / "voices-v1.0.bin").exists()
@@ -158,10 +159,15 @@ def test_build_inno_setup_script_mentions_portable_bundle() -> None:
     # Tools > Speech > Whisperer.
     assert 'Name: "speechwhisper"; Description: "Install the offline speech engine' in script
     assert "(Tools > Speech > Whisperer)" in script
-    assert "speechkokoro" not in script
+    # Kokoro is an optional component (Types: full custom): Full installs ship it,
+    # Custom installs can drop ~120 MB and download it later. It is excluded from
+    # the unconditional copy and gated behind its own [Files] entry.
+    assert 'Name: "speechkokoro"; Description: "Install bundled Kokoro neural TTS voices' in script
+    assert 'Source: "..\\portable\\kokoro-models\\*"; DestDir: "{app}\\kokoro-models";' in script
+    assert "Components: speechkokoro" in script
     assert "speechopenvoice" not in script
     assert (
-        'Excludes: "docs\\QUILL-PRD.md,tools\\pandoc\\*,tools\\speech\\dectalk\\*,tools\\speech\\espeak-ng\\*,tools\\speech\\piper\\*,tools\\speech\\whispercpp\\*,tools\\nodejs\\*,vendor\\braille-pack\\*,_tool-download\\*,_speech-download\\*"'
+        'Excludes: "docs\\QUILL-PRD.md,tools\\pandoc\\*,tools\\speech\\dectalk\\*,tools\\speech\\espeak-ng\\*,tools\\speech\\piper\\*,tools\\speech\\whispercpp\\*,tools\\nodejs\\*,vendor\\braille-pack\\*,kokoro-models\\*,_tool-download\\*,_speech-download\\*"'
         in script
     )
     assert 'Source: "..\\portable\\tools\\pandoc\\*"; DestDir: "{app}\\tools\\pandoc";' in script
