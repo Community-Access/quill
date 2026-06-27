@@ -119,6 +119,11 @@ class MenuBuilderMixin:
         self._id_export_other = wx.NewIdRef()  # "Other Pandoc Format..."
         self._id_batch_convert_import = wx.NewIdRef()
         self._id_batch_convert_export = wx.NewIdRef()
+        # File > Convert File... is appended to the File menu below (~line 362),
+        # so its id must be created here, before that use, not in the later
+        # tools-id block (regression from b28416b caused a launch-time
+        # AttributeError building the File menu).
+        self._id_convert_file = wx.NewIdRef()
         self._sessions_menu = wx.Menu()
         self._open_documents_menu = wx.Menu()
         self._recent_sessions_menu = wx.Menu()
@@ -1374,7 +1379,6 @@ class MenuBuilderMixin:
         self._id_ocr_screen = wx.NewIdRef()
         self._id_describe_image = wx.NewIdRef()
         self._id_regex_helper = wx.NewIdRef()
-        self._id_convert_file = wx.NewIdRef()
         self._id_external_tools = wx.NewIdRef()
         self._id_read_aloud = wx.NewIdRef()
         self._id_read_aloud_stop = wx.NewIdRef()
