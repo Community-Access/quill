@@ -11,6 +11,14 @@ STATUS_BAR_ITEMS: tuple[str, ...] = (
     "line_column",
     "message",
     "word_count",
+    # Character count of the whole document.
+    "char_count",
+    # Total line count of the whole document.
+    "line_count",
+    # Estimated reading time from the word count (~200 wpm).
+    "reading_time",
+    # Caret position as a percentage through the document.
+    "document_progress",
     "mode",
     # Tab key behaviour: "Indent" (smart line indent) or "Tab char" (literal
     # tab insertion). Toggled with QUILL Key + U.
@@ -55,6 +63,10 @@ def _default_status_bar_order() -> list[str]:
 
 def _default_status_bar_hidden() -> list[str]:
     return [
+        "char_count",
+        "line_count",
+        "reading_time",
+        "document_progress",
         "selection",
         "encoding",
         "line_endings",

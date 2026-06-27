@@ -29,8 +29,6 @@ from quill.branding import APP_SHORT_NAME
 from quill.core import thesaurus as thesaurus_engine
 from quill.core.a11y_regions import (
     RegionTracker,
-    build_accessibility_audit_report,
-    render_snapshot,
 )
 from quill.core.accessibility_agent import AgentRunResult, summarize_plan
 from quill.core.ai import Assistant
@@ -112,7 +110,6 @@ from quill.core.context_menu import (
     CursorContext,
     build_context_menu,
 )
-from quill.core.contrast import render_contrast_report, validate_theme_contrast
 from quill.core.custom_profiles import (
     CustomProfile,
     build_bare_bones_profile_data,
@@ -228,7 +225,6 @@ from quill.core.lexical import (
     render_lookup,
 )
 from quill.core.lexical_preload import start_lexical_preload
-from quill.core.link_inventory import collect_link_inventory, render_link_inventory_report
 from quill.core.links import build_link_text, find_link_at_cursor, infer_markup_kind
 from quill.core.locations import LocationRing
 from quill.core.macros import MacroManager
@@ -890,6 +886,10 @@ class MainFrame(
         "message": "Status Message",
         "line_column": "Position",
         "word_count": "Word Count",
+        "char_count": "Character Count",
+        "line_count": "Line Count",
+        "reading_time": "Reading Time",
+        "document_progress": "Document Progress",
         "mode": "Keyboard Mode",
         "tab_mode": "Tab Mode",
         "selection": "Selection Length",
@@ -917,6 +917,10 @@ class MainFrame(
         "message": -1,
         "line_column": 140,
         "word_count": 140,
+        "char_count": 140,
+        "line_count": 130,
+        "reading_time": 150,
+        "document_progress": 150,
         "mode": 110,
         "tab_mode": 130,
         "selection": 110,
@@ -944,6 +948,10 @@ class MainFrame(
         "message": "core.app",
         "line_column": "core.editor",
         "word_count": "core.analysis",
+        "char_count": "core.analysis",
+        "line_count": "core.analysis",
+        "reading_time": "core.analysis",
+        "document_progress": "core.editor",
         "mode": "core.editor",
         "tab_mode": "core.editor",
         "selection": "core.editor",
@@ -2489,9 +2497,9 @@ class MainFrame(
             None,
         )
         self.commands.register(
-            "tools.pandoc_wizard",
-            "Pandoc Conversion Wizard...",
-            self.open_pandoc_wizard,
+            "file.convert_file",
+            "Convert File...",
+            self.convert_file,
             None,
         )
         self.commands.register(
@@ -2534,18 +2542,6 @@ class MainFrame(
             "tools.check_glow_updates",
             "Check for GLOW Updates...",
             self.check_for_glow_updates,
-            None,
-        )
-        self.commands.register(
-            "tools.validate_contrast",
-            "Validate Contrast...",
-            self.validate_contrast,
-            None,
-        )
-        self.commands.register(
-            "tools.link_inventory",
-            "Link Inventory and Alt-Text Catalog...",
-            self.show_link_inventory,
             None,
         )
         self.commands.register(
@@ -2853,18 +2849,6 @@ class MainFrame(
             "help.status_page",
             "Status Page",
             self.show_help_status_page,
-            None,
-        )
-        self.commands.register(
-            "tools.keyboard_trap_snapshot",
-            "Keyboard Trap Audit Snapshot...",
-            self.show_keyboard_trap_snapshot,
-            None,
-        )
-        self.commands.register(
-            "tools.accessibility_audit",
-            "Accessibility Audit...",
-            self.show_accessibility_audit,
             None,
         )
         self.commands.register(
@@ -3732,7 +3716,7 @@ class MainFrame(
             "tools.document_intake_report": self._id_document_intake_report,
             "tools.review_extraction_quality": self._id_review_extraction_quality,
             "tools.report_bad_extraction": self._id_report_bad_extraction,
-            "tools.pandoc_wizard": self._id_pandoc_wizard,
+            "file.convert_file": self._id_convert_file,
             "tools.external_tools": self._id_external_tools,
             "tools.compare_with_file": self._id_compare_with_file,
             "tools.compare_open_documents": self._id_compare_open_documents,
@@ -7527,7 +7511,10 @@ class MainFrame(
         wx = self._wx
         exts = pandoc_formats.extensions_for(format_name)
         ext_list = ";".join(f"*{ext}" for ext in sorted(exts)) or "*.*"
-        ext_patterns = ";".join(sorted(exts)) or "*.*"
+        # The wx filter pattern needs the glob form (*.docx), not the bare
+        # extension (.docx) -- otherwise the dialog matches no files and e.g.
+        # .docx documents never appear in the list.
+        ext_patterns = ";".join(f"*{ext}" for ext in sorted(exts)) or "*.*"
         format_label = pandoc_formats.get_format(format_name)
         label = format_label.display_name if format_label else format_name
         wildcard = f"{label} ({ext_list})|{ext_patterns}|All files (*.*)|*.*"
@@ -7545,9 +7532,13 @@ class MainFrame(
 
         self._set_status(f"Importing {source_path.name} via Pandoc...")
         try:
+            # Import always brings the file in as Markdown text (the editor's
+            # format). The output must be a text writer, not the *input* format
+            # -- passing format_name here made Pandoc try to write e.g. docx to
+            # stdout ("Cannot write docx output to terminal").
             result = convert_document_with_pandoc(
                 source_path,
-                format_name,
+                "markdown",
                 from_format=format_name,
             )
         except (PandocUnavailableError, PandocConversionError, ValueError) as error:
@@ -7621,8 +7612,7 @@ class MainFrame(
                 self._set_status("Export cancelled (save required first)")
                 return
 
-        exts = pandoc_formats.extensions_for(format_name)
-        target_ext = next(iter(sorted(exts)), ".out")
+        target_ext = pandoc_formats.primary_extension_for(format_name) or ".out"
         format_label = pandoc_formats.get_format(format_name)
         label = format_label.display_name if format_label else format_name
         wildcard = f"{label} (*{target_ext})|*{target_ext}|All files (*.*)|*.*"
@@ -13650,163 +13640,122 @@ class MainFrame(
         apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_OK)
         self._show_modal_dialog(dialog, "External Tools and Format Support")
 
-    def open_pandoc_wizard(self) -> None:
+    def _convert_file_default_output_dir(self) -> str:
+        """Best initial output folder for the Convert File dialog.
+
+        Priority: the folder remembered from the last conversion, then the
+        general file-dialog default directory.
+        """
+
+        remembered = getattr(self.settings, "convert_file_last_output_dir", "")
+        if remembered and Path(remembered).is_dir():
+            return remembered
+        return self._file_dialog_default_dir()
+
+    def _remember_convert_file_choices(self, output_dir: Path, output_token: str) -> None:
+        """Persist the Convert File output folder and format for next time."""
+
+        from quill.core.settings import save_settings
+
+        self.settings.convert_file_last_output_dir = str(output_dir)
+        self.settings.convert_file_last_format = output_token
+        save_settings(self.settings)
+
+    def convert_file(self) -> None:
+        """File > Convert File: convert any document to another format via Pandoc."""
+
         wx = self._wx
         status = get_external_tool_status("pandoc")
         if not status.installed:
             result = self._show_message_box(
                 (
-                    "Pandoc is not installed yet. Quill can guide you, but the conversion wizard "
+                    "Pandoc is not installed yet. Quill can guide you, but Convert File "
                     "needs Pandoc first. Copy the install command now?"
                 ),
-                "Pandoc Conversion Wizard",
+                "Convert File",
                 wx.ICON_INFORMATION | wx.YES_NO | wx.NO_DEFAULT,
             )
             if result == wx.YES and self._copy_to_clipboard(copyable_install_command("pandoc")):
                 self._set_status("Copied Pandoc install command")
             else:
-                self._set_status("Pandoc wizard unavailable until Pandoc is installed")
+                self._set_status("Convert File unavailable until Pandoc is installed")
             return
 
-        request = self._prompt_pandoc_conversion_request()
+        from quill.core import convert_formats
+        from quill.ui.convert_file_dialog import ConvertFileDialog
+
+        dialog = ConvertFileDialog(
+            self.frame,
+            default_output_dir=self._convert_file_default_output_dir(),
+            default_format=getattr(self.settings, "convert_file_last_format", "gfm") or "gfm",
+            show_modal_fn=self._show_modal_dialog,
+        )
+        request = dialog.prompt()
         if request is None:
-            self._set_status("Pandoc wizard cancelled")
+            self._set_status("Convert File cancelled")
             return
-        source_path, output_kind = request
-        self._set_status(f"Running Pandoc on {source_path.name}...")
+
+        target = request.output_path
+        if target.exists():
+            confirm = self._show_message_box(
+                f"{target.name} already exists in that folder. Replace it?",
+                "Convert File",
+                wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
+            )
+            if confirm != wx.YES:
+                self._set_status("Convert File cancelled (file already exists)")
+                return
+
+        from_format = convert_formats.reader_for_path(str(request.source_path))
+        self._set_status(
+            f"Converting {request.source_path.name} to "
+            f"{convert_formats.label_for(request.output_token)}..."
+        )
         try:
-            result = convert_document_with_pandoc(source_path, output_kind, tool_status=status)
+            convert_file_with_pandoc(
+                request.source_path,
+                target,
+                from_format=from_format,
+                to_format=request.output_token,
+                tool_status=status,
+                resolve_writer=False,
+            )
         except (PandocUnavailableError, PandocConversionError, ValueError) as error:
             self._show_message_box(
-                f"Pandoc conversion failed: {error}",
-                "Pandoc Conversion Wizard",
+                f"Conversion failed: {error}",
+                "Convert File",
                 wx.ICON_ERROR | wx.OK,
             )
-            self._set_status("Pandoc conversion failed")
+            self._set_status("Conversion failed")
             return
-        document = Document(
-            text=result.text,
-            path=None,
-            modified=False,
-            source_metadata={
-                "source_kind": output_kind,
-                "engine": "pandoc",
-                "quality_score": 100,
-                "source_file": source_path.name,
-                "pandoc_path": result.pandoc_path,
-            },
-        )
-        index = self._create_document_tab(document, select=True)
-        self._set_tab_page_text(index, f"Pandoc - {source_path.stem} ({output_kind})")
-        self._set_status(f"Opened {source_path.name} as {output_kind} via Pandoc")
 
-    def _prompt_pandoc_conversion_request(self) -> tuple[Path, str] | None:
-        wx = self._wx
-        wildcard = (
-            "Pandoc-friendly files "
-            "(*.docx;*.md;*.markdown;*.html;*.htm;*.epub;*.odt;*.rst;*.txt)|"
-            "*.docx;*.md;*.markdown;*.html;*.htm;*.epub;*.odt;*.rst;*.txt|"
-            "All files (*.*)|*.*"
-        )
-        dialog = wx.Dialog(self.frame, title="Pandoc Conversion Wizard", size=(760, 360))
-        root = wx.BoxSizer(wx.VERTICAL)
-        root.Add(
-            wx.StaticText(
-                dialog,
-                label=(
-                    "Choose a source file and output format. Quill will convert it with Pandoc "
-                    "and open the converted text in a new tab."
-                ),
-            ),
-            0,
-            wx.ALL | wx.EXPAND,
-            8,
-        )
-        source_row = wx.BoxSizer(wx.HORIZONTAL)
-        source_label = wx.StaticText(dialog, label="Source file")
-        source_field = wx.TextCtrl(dialog)
-        browse_button = wx.Button(dialog, label="Browse...")
-        source_row.Add(source_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
-        source_row.Add(source_field, 1, wx.RIGHT | wx.EXPAND, 8)
-        source_row.Add(browse_button, 0)
-        root.Add(source_row, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
+        self._remember_convert_file_choices(request.output_dir, request.output_token)
+        self._record_recent(target)
+        self._announce(f"Converted to {target.name}")
 
-        format_row = wx.BoxSizer(wx.HORIZONTAL)
-        format_label = wx.StaticText(dialog, label="Output format")
-        format_choice = wx.Choice(
-            dialog,
-            choices=[
-                "Markdown (.md)",
-                "HTML (.html)",
-                "Plain text (.txt)",
-            ],
-        )
-        # SET-4: pre-select the user's default export preset where the wizard
-        # offers it; pdf/docx/epub have no wizard output, so fall back to Markdown.
-        _preset_to_index = {"markdown": 0, "html": 1, "text": 2}
-        format_choice.SetSelection(
-            _preset_to_index.get(getattr(self.settings, "default_export_preset", "html"), 0)
-        )
-        format_row.Add(format_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
-        format_row.Add(format_choice, 1, wx.EXPAND)
-        root.Add(format_row, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
+        if request.action == "open":
+            self.open_file(path=target)
+            self._set_status(f"Converted and opened {target.name}")
+            return
 
-        validation_text = wx.StaticText(dialog, label="")
-        root.Add(validation_text, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
+        # Convert File (save) action: offer to open the result when it is a
+        # text format QUILL can edit; binary outputs just land on disk.
+        if convert_formats.is_text_output(request.output_token):
+            if (
+                self._show_message_box(
+                    f"Conversion complete. Open {target.name} now?",
+                    "Convert File",
+                    wx.ICON_QUESTION | wx.YES_NO | wx.YES_DEFAULT,
+                )
+                == wx.YES
+            ):
+                self.open_file(path=target)
+        self._set_status(f"Converted to {target}")
 
-        buttons = wx.BoxSizer(wx.HORIZONTAL)
-        convert_button = wx.Button(dialog, id=wx.ID_OK, label="Convert and Open")
-        cancel_button = wx.Button(dialog, id=wx.ID_CANCEL, label="Cancel")
-        buttons.AddStretchSpacer(1)
-        buttons.Add(convert_button, 0, wx.RIGHT, 6)
-        buttons.Add(cancel_button, 0)
-        root.Add(buttons, 0, wx.ALL | wx.EXPAND, 8)
-        dialog.SetSizer(root)
-        dialog_result: dict[str, object] = {}
-
-        def browse_source() -> None:
-            with wx.FileDialog(
-                dialog,
-                "Choose a source document for Pandoc",
-                wildcard=wildcard,
-                style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
-            ) as file_dialog:
-                if self._show_modal_dialog(file_dialog, "Pandoc Source File") == wx.ID_OK:
-                    source_field.SetValue(file_dialog.GetPath())
-                    validation_text.SetLabel("")
-
-        def submit() -> None:
-            raw_path = source_field.GetValue().strip()
-            if not raw_path:
-                validation_text.SetLabel("Choose a source file before continuing.")
-                source_field.SetFocus()
-                return
-            candidate = Path(raw_path)
-            if not candidate.exists() or not candidate.is_file():
-                validation_text.SetLabel("The selected source file was not found.")
-                source_field.SetFocus()
-                return
-            output_options = ["markdown", "html", "plain"]
-            selection = format_choice.GetSelection()
-            if selection < 0 or selection >= len(output_options):
-                validation_text.SetLabel("Choose an output format before continuing.")
-                format_choice.SetFocus()
-                return
-            dialog_result["source_path"] = candidate
-            dialog_result["output_kind"] = output_options[selection]
-            dialog.EndModal(wx.ID_OK)
-
-        browse_button.Bind(wx.EVT_BUTTON, lambda _e: browse_source())
-        convert_button.Bind(wx.EVT_BUTTON, lambda _e: submit())
-        cancel_button.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_CANCEL))
-        apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
-        if self._show_modal_dialog(dialog, "Pandoc Conversion Wizard") != wx.ID_OK:
-            return None
-        source_path = dialog_result.get("source_path")
-        output_kind = dialog_result.get("output_kind")
-        if not isinstance(source_path, Path) or not isinstance(output_kind, str):
-            return None
-        return source_path, output_kind
+    # Backwards-compatible alias: the External Tools dialog re-opens the
+    # conversion UI after a successful Pandoc install.
+    def open_pandoc_wizard(self) -> None:
+        self.convert_file()
 
     def save_diagnostics_bundle(self) -> None:
         wx = self._wx
@@ -14440,25 +14389,6 @@ class MainFrame(
         )
         self._record_notification(f"Saved diagnostics to {bundle_path.name}", "diagnostics")
         return bundle_path
-
-    def show_keyboard_trap_snapshot(self) -> None:
-        wx = self._wx
-        snapshot = self._region_tracker.snapshot()
-        report = render_snapshot(snapshot)
-        self._show_message_box(report, "Keyboard Trap Audit", wx.ICON_INFORMATION | wx.OK)
-        self._set_status(
-            "Keyboard trap audit: potential trap detected"
-            if snapshot.has_keyboard_trap
-            else "Keyboard trap audit: no trap detected"
-        )
-
-    def show_accessibility_audit(self) -> None:
-        wx = self._wx
-        snapshot = self._region_tracker.snapshot()
-        detection = detect_screen_reader()
-        report = build_accessibility_audit_report(snapshot, detection.name)
-        self._show_message_box(report, "Accessibility Audit", wx.ICON_INFORMATION | wx.OK)
-        self._set_status("Accessibility audit complete")
 
     def _create_named_scratch_tab(self, title: str, text: str) -> None:
         index = self._create_document_tab(
@@ -19857,28 +19787,6 @@ class MainFrame(
         self._set_status(f"Closing Quill for update {manifest.version}")
         self.exit_app()
 
-    def validate_contrast(self) -> None:
-        wx = self._wx
-        checks = validate_theme_contrast(self.settings.theme)
-        report = render_contrast_report(self.settings.theme, checks)
-        self._show_message_box(report, "Contrast Validation", wx.ICON_INFORMATION | wx.OK)
-        failed = [check for check in checks if not check.passes_normal_text]
-        if failed:
-            self._set_status("Contrast validation found failing pairs")
-            self._record_notification("Contrast validation reported failures", "accessibility")
-            return
-        self._set_status("Contrast validation passed")
-        self._record_notification("Contrast validation passed", "accessibility")
-
-    def show_link_inventory(self) -> None:
-        wx = self._wx
-        inventory = collect_link_inventory(self.editor.GetValue())
-        report = render_link_inventory_report(inventory)
-        self._show_message_box(report, "Link Inventory", wx.ICON_INFORMATION | wx.OK)
-        self._set_status(
-            f"Link inventory: {len(inventory.links)} link(s), {len(inventory.images)} image(s)"
-        )
-
     def compare_with_file(self) -> None:
         wx = self._wx
         with wx.FileDialog(
@@ -22441,7 +22349,16 @@ class MainFrame(
 
         session = most_recent_session()
         if session is None:
-            self._set_status("No saved writing sessions yet. Start an AI session first.")
+            # Empty state: a quiet status-bar line reads as "nothing happened"
+            # to a screen-reader user, so surface a clear, announced dialog.
+            self._show_message_box(
+                "No saved AI writing sessions yet. Start a conversation in Ask Quill "
+                "(sessions are saved automatically as you chat), then reopen AI Session "
+                "Branches to browse and compare its branches.",
+                "AI Session Branches",
+                self._wx.ICON_INFORMATION | self._wx.OK,
+            )
+            self._set_status("No saved AI writing sessions yet")
             return
         SessionBrowserDialog(
             self.frame,

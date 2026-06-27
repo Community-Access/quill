@@ -48,6 +48,13 @@ WRITER_MAP: dict[str, str] = {
     "plain": "plain",
 }
 
+# Pandoc writers that produce a binary file and cannot be written to stdout.
+# convert_document_with_pandoc captures stdout as text, so asking it for one of
+# these is a programming error -- Pandoc would otherwise fail with the cryptic
+# "Cannot write <fmt> output to terminal". We reject it up front with a clear
+# message so the mistake surfaces wherever it is made.
+_BINARY_WRITERS: frozenset[str] = frozenset({"docx", "odt", "epub", "pdf", "pptx"})
+
 ProgressCallback = Callable[[str, int, int], None]
 
 
@@ -101,6 +108,11 @@ def convert_document_with_pandoc(
         raise PandocConversionError(f"Input file not found: {source_path}")
 
     writer = _resolve_writer(output_kind)
+    if writer in _BINARY_WRITERS:
+        raise PandocConversionError(
+            f"{output_kind!r} is a binary format and cannot be read into the editor as "
+            "text. Choose a text output (markdown, html, or plain text)."
+        )
     if cancel is not None and cancel.is_set():
         raise PandocCancelledError("Cancelled before start.")
 
@@ -165,6 +177,7 @@ def convert_file_with_pandoc(
     cancel: threading.Event | None = None,
     timeout_seconds: float = 120.0,
     extra_args: tuple[str, ...] = (),
+    resolve_writer: bool = True,
 ) -> Path:
     """Convert ``source_path`` to ``target_path`` via Pandoc.
 
@@ -172,6 +185,12 @@ def convert_file_with_pandoc(
     loop's "write to disk" path. ``from_format`` and ``to_format`` are
     Tier-1 format names from :mod:`quill.core.pandoc_formats`; the runner
     resolves the actual Pandoc ``--to`` flag via :func:`_resolve_writer`.
+
+    ``resolve_writer=False`` skips that legacy aliasing and uses ``to_format``
+    as a literal Pandoc writer token. The Convert File dialog passes real
+    Pandoc tokens (e.g. ``"markdown"`` for Pandoc-flavoured Markdown) and must
+    not have them remapped (``markdown`` -> ``gfm``). An empty ``from_format``
+    lets Pandoc infer the reader from the input file extension.
     """
 
     status = tool_status or get_external_tool_status("pandoc")
@@ -180,7 +199,9 @@ def convert_file_with_pandoc(
     if not source_path.is_file():
         raise PandocConversionError(f"Input file not found: {source_path}")
 
-    writer = _resolve_writer(to_format)
+    writer = _resolve_writer(to_format) if resolve_writer else to_format.strip()
+    if not writer:
+        raise ValueError("Pandoc output kind must be a non-empty writer name")
 
     if cancel is not None and cancel.is_set():
         raise PandocCancelledError("Cancelled before start.")
@@ -191,10 +212,13 @@ def convert_file_with_pandoc(
         except Exception:  # noqa: BLE001
             logger.exception("pandoc progress callback raised on start")
 
-    command = [
-        str(status.path),
-        "--from",
-        from_format,
+    command = [str(status.path)]
+    # An empty ``from_format`` lets Pandoc infer the reader from the input file
+    # extension. The broader Convert File catalogue relies on this for inputs
+    # that are not in the curated reader map.
+    if from_format.strip():
+        command += ["--from", from_format]
+    command += [
         "--to",
         writer,
         "-o",
@@ -250,7 +274,13 @@ def _resolve_writer(output_kind: str) -> str:
         return "plain"
     if output_kind in pandoc_formats.TIER1_OUTPUTS:
         return output_kind
-    raise ValueError(f"Unsupported Pandoc output kind: {output_kind}")
+    # Broader Convert File catalogue: pass an arbitrary Pandoc writer token
+    # (e.g. "rst", "asciidoc", "org", "html5") through unchanged. Pandoc itself
+    # validates the writer and produces a clear error for an unknown one, so we
+    # no longer reject it here. An empty token is still a programming error.
+    if not output_kind.strip():
+        raise ValueError("Pandoc output kind must be a non-empty writer name")
+    return output_kind
 
 
 def _map_exception(exc: BaseException) -> RuntimeError:

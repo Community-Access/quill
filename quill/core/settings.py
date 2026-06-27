@@ -180,6 +180,11 @@ class Settings:
     import_export_overwrite: str = "ask"
     import_export_output_layout: str = "subfolder"
     import_export_last_folder: str = ""
+    # File > Convert File dialog memory: the last output folder and the last
+    # chosen output format (a Pandoc writer token, e.g. "gfm", "docx"). Session
+    # memory, not a user-tunable policy, so not exposed in Preferences.
+    convert_file_last_output_dir: str = ""
+    convert_file_last_format: str = "gfm"
     # SET-2: tunable timing and pacing
     autosave_interval_seconds: int = 30
     quick_nav_debounce_ms: int = 250
@@ -375,6 +380,8 @@ class Settings:
     batch_speech_sentence_gap_ms: int = 0  # 0-10000; pause between sentences (opt-in; see docs)
     batch_speech_tail_padding_ms: int = 300  # 0-10000; trailing pad per section (anti-clipping)
     batch_speech_intro_section_title: str = "Introduction"
+    batch_speech_temp_folder: str = ""  # parent for scratch dirs; blank = system temp
+    batch_speech_save_spoken_text: bool = False  # also save the text sent to the engine
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Settings:
@@ -651,6 +658,10 @@ class Settings:
         if import_export_output_layout not in {"subfolder", "same_folder"}:
             import_export_output_layout = "subfolder"
         import_export_last_folder = str(data.get("import_export_last_folder", "")).strip()
+        convert_file_last_output_dir = str(data.get("convert_file_last_output_dir", "")).strip()
+        convert_file_last_format = str(data.get("convert_file_last_format", "gfm")).strip()
+        if not convert_file_last_format:
+            convert_file_last_format = "gfm"
         try:
             watch_folder_poll_interval_seconds = int(
                 data.get("watch_folder_poll_interval_seconds", 5)
@@ -933,6 +944,8 @@ class Settings:
             str(data.get("batch_speech_intro_section_title", "Introduction")).strip()
             or "Introduction"
         )
+        batch_speech_temp_folder = str(data.get("batch_speech_temp_folder", "")).strip()
+        batch_speech_save_spoken_text = bool(data.get("batch_speech_save_spoken_text", False))
         if recent_files_limit < 1:
             recent_files_limit = 1
         if recent_files_limit > 50:
@@ -1047,6 +1060,8 @@ class Settings:
             import_export_overwrite=import_export_overwrite,
             import_export_output_layout=import_export_output_layout,
             import_export_last_folder=import_export_last_folder,
+            convert_file_last_output_dir=convert_file_last_output_dir,
+            convert_file_last_format=convert_file_last_format,
             autosave_interval_seconds=autosave_interval_seconds,
             quick_nav_debounce_ms=quick_nav_debounce_ms,
             quick_nav_min_chars=quick_nav_min_chars,
@@ -1165,6 +1180,8 @@ class Settings:
             batch_speech_article_gap_ms=batch_speech_article_gap_ms,
             batch_speech_sentence_gap_ms=batch_speech_sentence_gap_ms,
             batch_speech_tail_padding_ms=batch_speech_tail_padding_ms,
+            batch_speech_temp_folder=batch_speech_temp_folder,
+            batch_speech_save_spoken_text=batch_speech_save_spoken_text,
             batch_speech_intro_section_title=batch_speech_intro_section_title,
         )
 

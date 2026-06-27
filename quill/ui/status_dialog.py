@@ -120,11 +120,16 @@ class HelpStatusDialog:
     def refresh(self, data: dict) -> None:
         """Repopulate all list controls with updated data."""
         self._status_list.DeleteAllItems()
+        # Blank the Section cell when it repeats the row above. Otherwise a
+        # screen reader re-reads the section name ("Overview", "Overview"...) on
+        # every Down-arrow within a section, drowning out the actual setting.
+        last_section = None
         for section, setting, value in data.get("status_rows", []):
             idx = self._status_list.GetItemCount()
-            self._status_list.InsertItem(idx, section)
+            self._status_list.InsertItem(idx, "" if section == last_section else section)
             self._status_list.SetItem(idx, 1, setting)
             self._status_list.SetItem(idx, 2, str(value))
+            last_section = section
 
         self._tasks_list.DeleteAllItems()
         for task, status, progress, started, finished in data.get("task_rows", []):

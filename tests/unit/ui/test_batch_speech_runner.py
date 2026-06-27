@@ -6,10 +6,13 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from quill.ui.batch_speech_runner import (
+    _book_output_path,
     _build_translator,
     _export_translations,
+    _make_temp_root,
     _resolve_chapter_sound_path,
 )
+from quill.ui.batch_speech_export_dialog import BatchSpeechRequest
 
 
 def _frame(sound_id: str, pack_path: str = "") -> SimpleNamespace:
@@ -31,6 +34,61 @@ def _tr_frame(tmp_path: Path) -> SimpleNamespace:
 def test_build_translator_none_without_targets(tmp_path: Path) -> None:
     req = SimpleNamespace(translation_targets=())
     assert _build_translator(req) is None
+
+
+def test_book_output_path_named_from_folder(tmp_path: Path) -> None:
+    folder = tmp_path / "MyBook"
+    folder.mkdir()
+    req = BatchSpeechRequest(
+        source_folder=folder,
+        recursive=False,
+        extensions=(".md",),
+        engine="sapi5",
+        voice="",
+        rate=200,
+        speed=1.0,
+        output_format="wav",
+        sound_enabled=False,
+        sound_volume=0,
+        article_gap_ms=0,
+        sentence_gap_ms=0,
+        tail_padding_ms=0,
+        speak_headings=True,
+        skip_existing=False,
+        make_book=True,
+        book_format="m4b",
+    )
+    # No explicit save-as -> named from the folder, in the folder, with the format suffix.
+    assert _book_output_path(req) == folder / "MyBook.m4b"
+    # An explicit path is honored and forced to the book's suffix.
+    req.book_output_path = str(tmp_path / "out.tmp")
+    assert _book_output_path(req) == tmp_path / "out.m4b"
+
+
+def test_make_temp_root_under_chosen_parent(tmp_path: Path) -> None:
+    parent = tmp_path / "scratch"
+    req = BatchSpeechRequest(
+        source_folder=tmp_path,
+        recursive=False,
+        extensions=(".md",),
+        engine="sapi5",
+        voice="",
+        rate=200,
+        speed=1.0,
+        output_format="wav",
+        sound_enabled=False,
+        sound_volume=0,
+        article_gap_ms=0,
+        sentence_gap_ms=0,
+        tail_padding_ms=0,
+        speak_headings=True,
+        skip_existing=False,
+        temp_folder=str(parent),
+    )
+    root = _make_temp_root(req)
+    assert root.is_dir()
+    assert root.parent == parent
+    assert root.name.startswith("quill-batch-")
 
 
 def test_export_translations_local_engine(tmp_path: Path, monkeypatch) -> None:

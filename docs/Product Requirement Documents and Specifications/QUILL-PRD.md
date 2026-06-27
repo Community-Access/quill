@@ -2014,24 +2014,37 @@ QUILL converts whole folders of documents to speech audio and gives the user fin
 
 The ChapterForge-aligned "folder of audio → one chaptered master" feature (design
 source: the sibling ChapterForge project; only the surfaces that fit QUILL's
-audiobook vision are ported). **Tools → Speech → Build Audiobook from Folder…**
-combines a folder of audio files into a single chaptered **MP3** (ID3 CHAP/CTOC) or
-**M4B** (native MP4 chapter atoms) master. Implementation: wx-free
-`quill/core/speech/audiobook.py` — folder scan + natural sort, `title_from_filename`
-(strips a leading track prefix), `find_cover` (preferred-name image discovery),
-`probe_duration_ms` (ffprobe), and the ffmpeg concat-demuxer build (chapters from
-`chapters.compute_chapters`, tags + cover from FFMETADATA / attached picture; MP3
-chapters via mutagen). Each source file is one chapter (title from its filename); the
-book's tags (title/author/narrator/genre/year) and an auto-detected cover are
-written. The accessible `audiobook_builder_dialog.py` collects the inputs and the
-build runs on the background task pool.
+audiobook vision are ported). Audiobook building is folded into **Tools → Speech →
+Batch Export to Speech Audio…**: ticking **Assemble the results into one audiobook**
+reveals the book tags (title/author/narrator/genre/year), a cover-image picker, the
+book format, and a save-as path. After the documents are synthesized (one chapter
+per document), the produced — plus any pre-recorded — audio in the folder is combined
+into a single chaptered **MP3** (ID3 CHAP/CTOC) or **M4B** (native MP4 chapter atoms)
+master. Implementation: wx-free `quill/core/speech/audiobook.py` — folder scan +
+natural sort, `title_from_filename` (strips a leading track prefix), `find_cover`
+(preferred-name image discovery), `probe_duration_ms` (ffprobe), and the ffmpeg
+concat-demuxer build (chapters from `chapters.compute_chapters`, tags + cover from
+FFMETADATA / attached picture; MP3 chapters via mutagen). The book's tags and an
+auto-detected cover are written, and the build runs on the background task pool. (The
+former standalone `audiobook_builder_dialog.py` was retired into this dialog so the
+two near-identical surfaces share one accessible path.)
 
-- **In-dialog chapter editing.** The dialog lists the chapters and lets the user
-  **rename** (inline title field), **reorder** (move up/down), and **merge** an
-  entry into the one above it before building. A merged chapter carries multiple
-  source files in `AudiobookChapter.extra_paths` (played in order, summed duration,
-  one marker); the edited plan flows through `AudiobookRequest.chapter_plan` and
-  `audiobook.chapters_from_plan`. The chapter list is keyboard-activatable (GATE-13).
+- **Run diagnostics and progress.** The batch dialog also exposes a **temporary
+  files folder** (each run gets a `quill-batch-<timestamp>` scratch subfolder) and a
+  **Save the text sent to speech** option (writes a `<doc>.spoken.txt` sidecar of the
+  exact normalized/pronounced/polished text). A timestamped diagnostic log is opened
+  in the output folder *before* conversion starts (`quill/core/speech/conversion_log.py`)
+  and records discovery, per-document progress/timings, skips, errors, and the book
+  build. Progress is shown in a focused, screen-reader-announced `AIProgressDialog`
+  (percentage = words processed / total words) that can be minimized to the status bar.
+- **Chapter granularity and review.** In the consolidated flow each document (or
+  each pre-recorded file) becomes one chapter, titled from its heading/filename.
+  Ticking **Review chapters before building** (and always, for a folder of
+  pre-recorded audio) opens `audiobook_chapter_editor_dialog.py` after synthesis —
+  the rename/reorder/merge editor from the old standalone builder — whose edited
+  plan flows through `audiobook.chapters_from_plan` (`AudiobookChapter.extra_paths`
+  carries merged files). The runner shows it by marshalling the modal to the UI
+  thread and blocking the background worker until the user closes it.
 - **ACX loudness.** A **Normalize to ACX** option applies an ffmpeg `loudnorm` pass
   (targeting RMS ≈ -20 dB, true-peak -3.1 dB) during the existing re-encoding build,
   so chapters/tags are preserved. After the build the master is measured with

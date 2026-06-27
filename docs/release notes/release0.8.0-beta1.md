@@ -1,6 +1,6 @@
-# QUILL 1.0 — Meet You Where You Are
+# QUILL — Meet You Where You Are
 
-### The screen-reader-first writing studio, built by the people who depend on it. This is the public beta (build 0.8.0 Beta 1) carrying the complete QUILL 1.0 feature set.
+### The screen-reader-first writing studio, built by the people who depend on it. This is the public beta, build 0.8.0 Beta 1.
 
 *From Community Access. Free. Optional by design. Private by default. Yours to make quiet.*
 
@@ -20,9 +20,9 @@ one tool to transcribe, another to proofread, another to make an audiobook,
 another to check a braille file — and choose, every single day, to fight software
 that was never built with you in mind.
 
-QUILL 1.0 is the end of that bargain.
+QUILL is the end of that bargain.
 
-QUILL — **Quality, Usable, Inclusive, Lightweight, Literate** — is a complete
+QUILL — **Quality, Usable, Inclusive, Lightweight, Literate** — is a
 writing studio that puts the screen-reader user first. Not as an accessibility
 checkbox bolted on at the end, but as the design center everything else is built
 around. It writes, edits, and saves like a fast plain editor on day one. Then,
@@ -32,12 +32,65 @@ talking-book export, guided proofing, multilingual narration, and a whole
 writer's toolkit — every one of them optional, every one of them spoken, every
 one of them keyboard-first.
 
-This document is the QUILL 1.0 story and its full feature set, and you can use all
-of it today. This public beta — versioned **0.8.0 Beta 1** — is the 1.0 feature
-set in your hands and the community's hands, ahead of the 1.0 stamp. The only
-things between here and 1.0 are live screen-reader sign-off and installer
-verification on real machines: the work that only the community and the keyboard
-can finish.
+This document is the QUILL story and what you can do with this build today. This
+public beta — versioned **0.8.0 Beta 1** — puts the current feature set in your
+hands and the community's hands. It is a work in progress, and we will keep
+refining it, release after release, with your feedback driving what comes next.
+
+---
+
+## An apology, and a commitment
+
+Before anything else, we owe you an honest word.
+
+The 0.7.0 release shipped with some fundamental issues, and it then took us far
+too long to get a better build into your hands. We are sorry. You trusted us
+with the tool you write with every day, and a long gap between a flawed build
+and a fixed one is exactly the kind of thing accessible software should never do
+to the people who depend on it.
+
+We are changing how we work because of it. We are adjusting our release cycle to
+be more frequent and more responsive, so that a problem you report does not sit
+unanswered for days, and so that improvements reach you in smaller, steadier
+steps. We believe this version represents a much higher quality bar than 0.7.0,
+and we intend to keep raising it.
+
+We are also not going to pretend everything is finished. We already know about
+areas that need more attention — the **AI menu** wants a cleaner structure, our
+**Compare Mode** features need more aggressive real-world testing, and the
+**feature-entitlement** process (which features show up for which profile) needs
+more polish. We will keep working on these in the open.
+
+Again, we apologize. We hope you will understand that we are a small team,
+working and devoting tremendous time and effort into this project because we
+believe in it and we use it ourselves. Thank you for your patience, and for
+staying with us.
+
+---
+
+## A thank-you contest — help us raise the bar
+
+As part of that commitment to raising the quality bar, we want your help — and we
+want to reward it.
+
+We are giving away **five copies of Microsoft Office 365 Family Edition**
+(valued at $129 each) to the **top five contributors** during this beta. We are
+looking for the people who provide thoughtful feedback, find and report issues,
+and show up as team players and community builders — the people who believe that
+building is done by everyone who picks up an oar to assist and drive the work
+forward with passion.
+
+This is our way of saying thank you for your time, your patience, and your
+involvement. We value every one of you, and we wish we could do more — but we
+hope this sparks some interest in helping us reach a quality bar we will all be
+proud of.
+
+How to take part:
+
+- **Report issues** through **Help > Report a Bug** in QUILL.
+- **Get involved** — test, suggest, document, and help other users.
+- **Follow the QUILL Mastodon account** at **quillforall@mastodon.social** for
+  updates and contest news.
 
 ---
 
@@ -58,7 +111,7 @@ Transcribe in one app, paste into another, proof in a third, and hope the
 formatting survived the trip. Every handoff was a place for a screen-reader user
 to get lost.
 
-QUILL 1.0 is the decision to stop shipping seams. We took what each of those tools
+QUILL is the decision to stop shipping seams. We took what each of those tools
 did best, held it to one uncompromising standard — does it launch cleanly, does it
 speak clearly, does it work entirely from the keyboard, does it keep your work on
 your machine — and re-homed the survivors inside one editor. We left behind, or
@@ -264,7 +317,9 @@ from a folder of documents.
 **More voices, local and cloud.** Local Read Aloud uses the Windows system voice
 through **SAPI 5** directly, plus **DECtalk** (driven through its real synthesis
 runtime), **eSpeak-NG**, **Piper**, and **Kokoro** — and every catalog voice ships
-a short spoken preview so you can hear it before choosing. For cloud-grade
+a short spoken preview so you can hear it before choosing. **Kokoro voices now
+ship as part of the product**, so its high-quality neural narration works fully
+offline out of the box, with no separate download. For cloud-grade
 narration, **AI Voice** supports **OpenAI** (11 voices), **Google Gemini 2.5** (30
 voices), and **ElevenLabs** (audiobook-grade export). QUILL shows an estimated cost
 before any export, splits long text only on sentence boundaries so audio never
@@ -418,7 +473,7 @@ and inserting the finished list is a single undo step.
 
 ## 10. The writer's toolkit you already had — now in one place
 
-QUILL 1.0 also carries forward the toolkit that grew up across earlier releases —
+QUILL also carries forward the toolkit that grew up across earlier releases —
 the durable value of those separate apps and earlier betas, re-homed on QUILL's
 invariants:
 
@@ -460,6 +515,17 @@ invariants:
   styles; broad document intake (DOCX, EPUB, PPTX, PDF, OCR, CSV/TSV); and an
   opt-in, fully keyboard-friendly **Simple File Open dialog** for when the native
   picker gets in your way.
+- **Convert any document — File > Convert File.** A single dialog converts a file
+  to a wide range of formats through Pandoc: a curated common set up front, or
+  every format your Pandoc build supports. Pick a source file, an output format,
+  and an output folder, then **Convert File** to write it to disk or **Convert and
+  Open** to convert and edit it in a new tab. Your output folder and last format
+  are remembered. Exporting from the Export submenu now also defaults to the right
+  file extension for each format.
+- **A more configurable status bar.** Choose what the status bar shows and in what
+  order, now including new optional cells for **character count, line count,
+  estimated reading time, and document progress** alongside the existing position,
+  word count, mode, and the rest.
 
 ## 11. A smoother upgrade, a cleaner start, and a sturdier app
 
@@ -547,28 +613,14 @@ Everything below is the detail behind those four steps.
   scrubbed first. You choose Send, Copy, or Don't Send (the default). A local copy
   is always saved. Reliability is part of accessibility: your work should never be
   silently lost.
-
----
-
-## 12. Share to Mastodon, straight from the editor
-
-- **Post without leaving your document.** Press **QUILL Key + Shift+P** (or
-  **Tools → Share → Post to Mastodon...**). QUILL takes your selection — or the
-  whole document if nothing is selected — and opens a compose window where you
-  edit the text, choose which account to post from, pick the visibility, and
-  watch a live character count. Your post appears **"via QUILL."** This is a
-  deliberately small poster, not a full client.
-- **Several accounts, each with a friendly name.** Add accounts under
-  **Tools → Share → Mastodon Accounts...**; each gets a nickname that shows in
-  the account picker, and you can set a default or remove one. Signing in
-  registers QUILL on your server and uses a one-time browser authorization;
-  your sign-in is kept in the Windows Credential Manager, never in a plain file.
-- **Picking a sound pack is finally simple.** The first-run **Keyboard and
-  Sound** page now offers a **dropdown of the sound packs that ship with QUILL**
-  instead of a file picker that could not actually select them (the bundled
-  packs are folders, not files). It defaults to QUILL's own pack, so turning
-  sound on just works — and your choice now survives a reinstall instead of
-  falling silent.
+- **Screen-reader and crash fixes in this build.** The AI Hub and the Skill
+  Library no longer crash when opened or closed, and Escape now closes the Skill
+  Library as expected. Word prediction no longer reads the word "Word" before
+  every suggestion; the prompt-library preview reads line by line under JAWS
+  instead of character by character; the Application Status window no longer
+  repeats a section name on every row; and the Ask Quill provider chooser now
+  announces its label. AI Session Branches gives a clear spoken message when there
+  are no saved sessions yet instead of appearing to do nothing.
 
 ---
 
@@ -593,9 +645,9 @@ That is the whole idea. One studio, many doors, and you choose which to open.
 
 ---
 
-## What comes next — QUILL 1.1 and beyond
+## What comes next
 
-QUILL 1.0 is a foundation, and it was built to grow. The roadmap is tracked openly,
+QUILL is a foundation, and it was built to grow. The roadmap is tracked openly,
 and every item here is optional and screen-reader-first by the same rules as
 everything above.
 
@@ -618,30 +670,29 @@ everything above.
   tutorial and walkthrough series, and a growing library of community Verbosity
   Packs, sound packs, and Quillins.
 
-Some of these are close; some are 2.0. All are built on the same promises, so
-nothing new will ever cost you the quiet, the privacy, or the control you have
+Some of these are close; some are further out. All are built on the same promises,
+so nothing new will ever cost you the quiet, the privacy, or the control you have
 today.
 
 ---
 
 ## Availability
 
-QUILL is **free**. This public beta carries the complete 1.0 feature set:
+QUILL is **free**. This public beta includes:
 
 - **Windows installer** — per-user, no admin required, with every speech engine
-  (whisper.cpp, eSpeak-NG, DECtalk, Piper), Pandoc, and the braille pack bundled.
-  Choose components during setup; a Full install includes everything.
+  (whisper.cpp, eSpeak-NG, DECtalk, Piper, Kokoro), Pandoc, and the braille pack
+  bundled. Choose components during setup; a Full install includes everything.
 - **Portable edition** — the same fully-bundled studio in a folder you can carry on
   a drive, with an empty `data/` folder so it works from the first launch.
 
-The road to the **1.0** stamp is short and deliberate: live screen-reader sign-off
-across JAWS, NVDA, and Narrator, and installer verification on clean Windows 10 and
-11 machines. That is work the community does best, which is why the feature set is
-in your hands now.
+We keep refining QUILL with live screen-reader use across JAWS, NVDA, and
+Narrator, and installer verification on clean Windows 10 and 11 machines. That is
+work the community does best, which is why the feature set is in your hands now.
 
-## How to help shape 1.0
+## How to help shape QUILL
 
-The fastest way to influence QUILL 1.0 is to use this beta for real work — write
+The fastest way to influence QUILL is to use this beta for real work — write
 with it, review with it, customize it, push it. Then tell us what works, what
 breaks, and what should be better:
 
@@ -658,6 +709,21 @@ download a model from **Manage Speech Models**; **ffmpeg** (one click from
 **Tools > Speech > Download FFmpeg...**) lets you transcribe formats beyond WAV; and
 **Faster Whisper** adds a GPU engine on capable machines. None are required to
 launch, edit, or save.
+
+---
+
+## A word on feedback — and a request
+
+Please remember that this is a **beta**. Bugs will exist — that is the nature of
+a public beta, and finding them is exactly what this stage is for. We are trying
+very hard to stay on top of your feedback, and we will be more diligent in that
+process going forward. The improved crash reporting and the direct, in-app
+submission experience are built precisely to make that easier — for you to report
+and for us to act on it quickly.
+
+And one request: **be kind, and be constructive.** Honest, frank feedback is
+welcome — we can handle that, and we genuinely want it. A small team reads every
+report, and a clear, generous one helps us fix the right thing faster.
 
 ---
 

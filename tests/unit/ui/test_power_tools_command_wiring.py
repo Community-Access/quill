@@ -168,7 +168,6 @@ def test_every_command_is_menu_wired() -> None:
         "_append_power_tools_markdown_profiles_items",
         "_append_power_tools_navigate_items",
         "_append_power_tools_search_items",
-        "_append_power_tools_accessibility_items",
         "_append_power_tools_copy_tray_items",
     ):
         assert f"self.{helper}(" in _SOURCE, f"{helper} is not called from the menu build"

@@ -207,7 +207,6 @@ def _tool_for_command(command: Command) -> AssistantTool:
         "file.open",
         "file.save_as",
         "file.restore_backup",
-        "tools.pandoc_wizard",
         "tools.run_python",
     }
     return AssistantTool(

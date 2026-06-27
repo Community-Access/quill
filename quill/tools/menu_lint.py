@@ -96,7 +96,6 @@ _REQUIRED_CLUSTER_LABELS: tuple[tuple[str, str], ...] = (
     ("AI Assistant", "AI &Assistant"),
     ("Advanced", "&Advanced"),
     ("Quillins", "&Quillins"),
-    ("Accessibility", "A&ccessibility"),
     ("Customize & Support", "&Customize && Support"),
     ("Writing & Language", "&Writing && Language"),
 )

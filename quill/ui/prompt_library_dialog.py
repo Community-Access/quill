@@ -74,8 +74,13 @@ class PromptLibraryDialog:
         # -- Right: prompt text preview --
         right = wx.BoxSizer(wx.VERTICAL)
         right.Add(wx.StaticText(self.dialog, label="Prompt &text:"), 0, wx.BOTTOM, 2)
+        # TE_WORDWRAP, not TE_RICH2: a read-only RichEdit (TE_RICH2) control
+        # makes JAWS read character-by-character instead of line-by-line when
+        # arrowing through the preview. The preview only shows plain text, so
+        # the plain multiline EDIT control (which JAWS navigates correctly) is
+        # the right choice and matches the other read-only previews in the app.
         self._preview = wx.TextCtrl(
-            self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2
+            self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
         )
         self._preview.SetName("Prompt text preview")
         right.Add(self._preview, 1, wx.EXPAND)

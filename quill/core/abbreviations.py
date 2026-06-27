@@ -212,11 +212,16 @@ def load_abbreviation_library(data_dir: Path | None = None) -> AbbreviationLibra
     path = base / _ABBREVIATIONS_FILE
     if not path.exists():
         return _make_default_library()
+    # read_json returns its default (not a raise) on a corrupt/unreadable file.
+    # Use a sentinel so a present-but-corrupt file degrades to the built-in
+    # defaults rather than an empty library (passing default={} would look like
+    # a valid-but-empty payload and silently wipe the user's abbreviations).
+    corrupt = object()
     try:
-        data = read_json(path, default={})
+        data = read_json(path, default=corrupt)
     except Exception:  # noqa: BLE001
         return _make_default_library()
-    if not isinstance(data, dict):
+    if data is corrupt or not isinstance(data, dict):
         return _make_default_library()
     abbreviations: list[Abbreviation] = []
     for raw in data.get("abbreviations", []):

@@ -192,7 +192,6 @@ def test_export_import_settings_round_trip() -> None:
 
 def test_suggested_save_basename_first_line_branches() -> None:
     import types
-
     from pathlib import Path as _Path
 
     frame = MainFrame.__new__(MainFrame)

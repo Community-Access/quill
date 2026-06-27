@@ -47,6 +47,18 @@ def test_convert_document_with_pandoc_returns_stdout(monkeypatch, tmp_path: Path
     assert result.source_path == source
 
 
+def test_convert_document_rejects_binary_output_kind(tmp_path: Path) -> None:
+    # A binary writer (docx/odt/epub/pdf) cannot be captured as text. Reject it
+    # up front with a clear message instead of letting Pandoc fail with the
+    # cryptic "Cannot write docx output to terminal".
+    source = tmp_path / "sample.docx"
+    source.write_text("placeholder", encoding="utf-8")
+    tool_status = type("Status", (), {"installed": True, "path": "C:/Tools/pandoc.exe"})()
+
+    with pytest.raises(PandocConversionError, match="binary format"):
+        convert_document_with_pandoc(source, "docx", tool_status=tool_status, from_format="docx")
+
+
 def test_convert_document_with_pandoc_raises_on_error(monkeypatch, tmp_path: Path) -> None:
     source = tmp_path / "sample.docx"
     source.write_text("placeholder", encoding="utf-8")

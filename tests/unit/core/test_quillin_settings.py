@@ -8,7 +8,9 @@ import pytest
 from quill.core import quillin_settings as qs
 
 
-def test_round_trip_uses_versioned_envelope(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+def test_round_trip_uses_versioned_envelope(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
     monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
     qs.save_settings("demo", {"foo": 1, "bar": "x"})
     # On disk it is wrapped with a schema_version, but the API returns the inner dict.

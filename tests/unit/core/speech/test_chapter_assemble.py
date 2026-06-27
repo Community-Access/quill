@@ -78,6 +78,33 @@ def test_long_section_is_chunked(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     assert all(len(chunk) <= 80 or len(chunk.split()) == 1 for chunk in calls)
 
 
+def test_headingless_document_reports_chunk_progress(tmp_path: Path) -> None:
+    # Regression for the "stuck on Preparing..." report: a heading-less document is
+    # a single section, so without chunk-level progress the bar never moves until the
+    # whole (long) synthesis finishes. With chunking on, on_progress must fire once
+    # per chunk and finish at (total, total) even though there is only one section.
+    one_big_section = [DocumentSection("", " ".join(f"Sentence number {i}." for i in range(60)))]
+    opts = ChapterAssembleOptions(
+        article_gap_ms=0, sound_enabled=False, output_format="wav", max_chunk_chars=80
+    )
+    ticks: list[tuple[int, int]] = []
+    r = assemble_chaptered_audio(
+        one_big_section,
+        tmp_path / "o.wav",
+        make_fake_synth(),
+        opts,
+        work_dir=tmp_path / "w",
+        on_progress=lambda done, total: ticks.append((done, total)),
+    )
+    assert r.section_count == 1  # heading-less -> exactly one section
+    # Initial 0/N tick plus one per chunk; more than one chunk for this long body.
+    assert ticks[0][0] == 0
+    assert ticks[-1] == (ticks[-1][1], ticks[-1][1])  # ends at total/total
+    assert ticks[-1][1] > 1  # the single section was split into multiple chunks
+    # Strictly increasing "done" count, one per synthesized chunk.
+    assert [d for d, _t in ticks] == list(range(ticks[-1][1] + 1))
+
+
 def test_short_section_not_chunked(tmp_path: Path) -> None:
     from quill.core.speech import chapter_assemble
 

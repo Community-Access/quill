@@ -903,5 +903,7 @@ class AIHubDialog:
     # ------------------------------------------------------------------
 
     def show(self) -> None:
-        self._show_modal(self.dialog)
+        # _show_modal is MainFrame._show_modal_dialog(dialog, label); the label
+        # is required (it names the modal region for screen readers).
+        self._show_modal(self.dialog, _("AI Hub"))
         self.dialog.Destroy()

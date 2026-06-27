@@ -20,6 +20,11 @@ from typing import Any
 
 from quill.ui.batch_speech_export_dialog import BatchSpeechExportDialog, BatchSpeechRequest
 
+
+class _BookReviewCancelled(Exception):
+    """Internal: the user cancelled the chapter-review dialog, so skip the book build."""
+
+
 _ENGINE_OPTIONS = [
     ("Windows (SAPI 5)", "sapi5"),
     ("DECtalk", "dectalk"),
@@ -81,6 +86,8 @@ def _defaults(frame: Any) -> BatchSpeechRequest:
         tail_padding_ms=int(s.batch_speech_tail_padding_ms),
         speak_headings=True,
         skip_existing=False,
+        temp_folder=(getattr(s, "batch_speech_temp_folder", "") or ""),
+        save_spoken_text=bool(getattr(s, "batch_speech_save_spoken_text", False)),
     )
     # Apply-on-open: a remembered project profile overlays the global defaults.
     return _apply_project_profile(frame, base)
@@ -282,6 +289,7 @@ def _export_translations(
     opts_fn: Any,
     for_language: Any,
     voice_blacklist: Any = None,
+    temp_root: Path | None = None,
 ) -> int:
     """Export *src* in each configured target language; return chapters produced."""
     import shutil
@@ -319,7 +327,9 @@ def _export_translations(
             )
         else:
             t_spec = SynthesisSpec(engine=t_engine, voice=t_voice, rate=req.rate, speed=req.speed)
-        work = Path(tempfile.mkdtemp(prefix="quill_batch_tr_"))
+        work = Path(
+            tempfile.mkdtemp(prefix="quill_batch_tr_", dir=str(temp_root) if temp_root else None)
+        )
         try:
             result = synthesize_document_to_chaptered_file(
                 src,
@@ -465,21 +475,140 @@ def _persist_choices(frame: Any, req: BatchSpeechRequest) -> None:
     s.batch_speech_article_gap_ms = req.article_gap_ms
     s.batch_speech_sentence_gap_ms = req.sentence_gap_ms
     s.batch_speech_tail_padding_ms = req.tail_padding_ms
+    s.batch_speech_temp_folder = req.temp_folder
+    s.batch_speech_save_spoken_text = req.save_spoken_text
     try:
         save_settings(s)
     except Exception:  # noqa: BLE001 - persistence is best-effort
         pass
 
 
+def _book_output_path(req: BatchSpeechRequest) -> Path:
+    """Where the assembled audiobook is written (explicit path, or named from folder)."""
+    if req.book_output_path.strip():
+        return Path(req.book_output_path).with_suffix(f".{req.book_format}")
+    folder = req.source_folder
+    return folder / f"{folder.name}.{req.book_format}"
+
+
+def _make_temp_root(req: BatchSpeechRequest) -> Path:
+    """Create and return this run's scratch root under the chosen (or system) temp dir."""
+    import tempfile
+    from datetime import datetime
+
+    parent = Path(req.temp_folder) if req.temp_folder.strip() else Path(tempfile.gettempdir())
+    parent.mkdir(parents=True, exist_ok=True)
+    stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    root = parent / f"quill-batch-{stamp}"
+    root.mkdir(parents=True, exist_ok=True)
+    return root
+
+
+def _prompt_chapter_plan_sync(
+    frame: Any, audio_files: list[Path]
+) -> list[tuple[str, list[str]]] | None | object:
+    """Show the chapter editor on the UI thread and block until the user closes it.
+
+    Returns the edited ``(title, [paths])`` plan, or ``None`` when the user cancels.
+    Runs from the background task, so it marshals the modal to the UI thread via
+    ``CallAfter`` and waits on an event for the result. A sentinel is unnecessary:
+    the dialog always yields a plan or None, both meaningful to the caller.
+    """
+    import threading
+
+    from quill.core.speech.audiobook import title_from_filename
+    from quill.ui.audiobook_chapter_editor_dialog import ChapterEditorDialog
+
+    rows = [
+        (str(p), title_from_filename(p) or f"Chapter {i}")
+        for i, p in enumerate(audio_files, start=1)
+    ]
+    holder: dict[str, Any] = {}
+    done = threading.Event()
+
+    def _show() -> None:
+        try:
+            dlg = ChapterEditorDialog(
+                frame.frame, rows=rows, announce=getattr(frame, "_announce", None)
+            )
+            holder["plan"] = dlg.show(frame._show_modal_dialog)
+        except Exception as exc:  # noqa: BLE001 - never wedge the worker on a UI error
+            holder["plan"] = None
+            holder["error"] = exc
+        finally:
+            done.set()
+
+    frame._wx.CallAfter(_show)
+    done.wait()
+    return holder.get("plan")
+
+
+def _assemble_book(
+    frame: Any,
+    req: BatchSpeechRequest,
+    audio_files: list[Path],
+    log: Any,
+    *,
+    plan: list[tuple[str, list[str]]] | None = None,
+) -> str:
+    """Combine *audio_files* into one chaptered audiobook; return a summary line.
+
+    When *plan* is given (the user reviewed/edited chapters) it drives the chapter
+    titles and any merges; otherwise one filename-derived chapter per file is used.
+    """
+    from quill.core.speech.audiobook import (
+        build_audiobook,
+        build_chapter_list,
+        chapters_from_plan,
+        find_cover,
+    )
+    from quill.core.speech.ffmpeg import AudioMetadata
+
+    out = _book_output_path(req)
+    # Never fold a previously built book (or this run's own target) back in as a chapter.
+    sources = [p for p in audio_files if p.is_file() and p.resolve() != out.resolve()]
+    if not sources:
+        log.log("Audiobook: no audio files to assemble.")
+        return "audiobook skipped (no audio found)"
+    if plan is not None:
+        chapters = chapters_from_plan([(title, [Path(p) for p in paths]) for title, paths in plan])
+    else:
+        chapters = build_chapter_list(sources)
+    cover_text = req.book_cover_path.strip()
+    cover = Path(cover_text) if cover_text else find_cover(req.source_folder)
+    metadata = AudioMetadata(
+        album=req.book_title or req.source_folder.name,
+        artist=req.book_author,
+        album_artist=req.book_narrator or req.book_author,
+        genre=req.book_genre,
+        year=req.book_year,
+    )
+    out.parent.mkdir(parents=True, exist_ok=True)
+    log.log(f"Audiobook: assembling {len(chapters)} chapter(s) -> {out.name} ({req.book_format})")
+    result = build_audiobook(
+        chapters,
+        out,
+        output_format=req.book_format,
+        metadata=metadata,
+        cover=cover if (cover and cover.is_file()) else None,
+        acx_normalize=req.book_acx_normalize,
+        on_progress=lambda m: log.log(f"Audiobook: {m}"),
+    )
+    log.log(f"Audiobook built: {result.output_path} ({result.chapter_count} chapters)")
+    return f"audiobook {out.name} ({result.chapter_count} chapters)"
+
+
 def _run(frame: Any, req: BatchSpeechRequest) -> None:
     from quill.core.speech.batch_export import discover_files
     from quill.core.speech.chapter_assemble import ChapterAssembleOptions
+    from quill.core.speech.conversion_log import NullConversionLog, open_conversion_log
     from quill.core.speech.document_speech import (
         DocumentSpeechError,
         SynthesisSpec,
         synthesize_document_to_chaptered_file,
         synthesize_document_to_separate_files,
     )
+    from quill.ui.ai_transcribe_dialog import AIProgressDialog
 
     files = discover_files(
         req.source_folder,
@@ -489,7 +618,9 @@ def _run(frame: Any, req: BatchSpeechRequest) -> None:
         exclude_glob=req.exclude_glob,
         max_file_bytes=req.max_file_bytes,
     )
-    if not files:
+    # With audiobook assembly on, an empty document set is allowed — the run
+    # assembles whatever audio is already in the folder (the pre-recorded case).
+    if not files and not req.make_book:
         frame._show_message_box(
             "No matching documents were found in that folder.",
             "Batch Export to Speech Audio",
@@ -497,8 +628,13 @@ def _run(frame: Any, req: BatchSpeechRequest) -> None:
         )
         return
 
+    # In book mode each document becomes one chapter file, so force the single-file
+    # path and a plain WAV per document; the book is then assembled into its format.
+    book_mode = req.make_book
+    effective_format = "wav" if book_mode else req.output_format
+    suffix = {"mp3": ".mp3", "m4b": ".m4b"}.get(effective_format, ".wav")
+
     spec = SynthesisSpec(engine=req.engine, voice=req.voice, rate=req.rate, speed=req.speed)
-    suffix = {"mp3": ".mp3", "m4b": ".m4b"}.get(req.output_format, ".wav")
     dictionaries = _active_pronunciation_dictionaries(frame, req.engine, req.source_folder)
     for_language = _build_translator(req)
     # Cost surfacing (roadmap §7): when cloud translated targets are configured,
@@ -521,160 +657,298 @@ def _run(frame: Any, req: BatchSpeechRequest) -> None:
 
     voice_blacklist = load_blacklist()
 
+    # Open the diagnostic log in the output folder (where the audio/book lands) and
+    # create this run's scratch root — both before any conversion work starts.
+    out_folder = _book_output_path(req).parent if book_mode else req.source_folder
+    try:
+        log: Any = open_conversion_log(out_folder, title="Batch export to speech")
+    except OSError:
+        log = NullConversionLog()
+    temp_root = _make_temp_root(req)
+    log.log(f"Temporary files: {temp_root}")
+    log.log(
+        f"Discovered {len(files)} document(s); engine={req.engine}, voice={req.voice}, "
+        f"per-document format={effective_format}, book={book_mode}, dry_run={req.dry_run}"
+    )
+
+    # A focused, non-modal progress dialog (screen reader announces it on open) that
+    # can be minimized to the status bar; percentage = words processed / total words.
+    progress_dialog = AIProgressDialog(
+        frame.frame,
+        "Batch Export to Speech Audio",
+        "Preparing...",
+        status_fn=frame._set_status,
+    )
+    # Defer the show so it runs *after* the modal config dialog has finished tearing
+    # down — otherwise the closing modal reclaims focus right after our SetFocus and
+    # the progress dialog opens without the screen-reader focus landing on it.
+    frame._wx.CallAfter(progress_dialog.show)
+
+    # Chunk size by engine. Kokoro's model has a small context window (~510 phoneme
+    # tokens); handing it one ~8000-char call (what a heading-less document produced)
+    # stalls it, which is exactly the "stuck on Preparing..." report. Keep Kokoro well
+    # under that window; Piper streams sentence-by-sentence so it only needs a modest
+    # cap; classic engines stay on the large cap to avoid needless per-call overhead.
+    chunk_chars = {"kokoro": 1000, "piper": 4000}.get(req.engine, 8000)
+
     def opts(sound_path: Path | None = None) -> ChapterAssembleOptions:
         return ChapterAssembleOptions(
             article_gap_ms=req.article_gap_ms,
             sound_enabled=req.sound_enabled,
             sound_volume=req.sound_volume,
             sound_path=sound_path,
-            output_format=req.output_format,
+            output_format=effective_format,
             speak_headings=req.speak_headings,
             sentence_gap_ms=req.sentence_gap_ms,
             tail_padding_ms=req.tail_padding_ms,
             normalize_loudness=req.normalize_loudness,
             # Auto-chunk very long sections so a single synthesis call never runs
             # past the engine timeout; short sections are unaffected (one call).
-            max_chunk_chars=8000,
+            max_chunk_chars=chunk_chars,
         )
 
     total = len(files)
 
-    def work(progress: Any) -> object:
+    def _save_spoken_sidecar(src: Path, transform_preview: Any, extract_text: Any) -> None:
+        """Write the exact text sent to the engine as a ``<doc>.spoken.txt`` sidecar."""
+        try:
+            preview = transform_preview(
+                extract_text(src),
+                engine=req.engine,
+                pronunciation_dictionaries=dictionaries,
+            )
+            out = src.with_suffix(".spoken.txt")
+            out.write_text(preview.text + "\n", encoding="utf-8")
+            log.log(f"Saved spoken text: {out.name}")
+        except Exception as exc:  # noqa: BLE001 - sidecar capture must not break a run
+            log.log(f"Could not save spoken text for {src.name}: {exc}")
+
+    def work(_bg_progress: Any) -> object:
         from quill.core.speech.batch_export import (
             _unique_path,
+            count_document_words,
             extract_text,
             transform_preview,
         )
 
         # Resolve the configured chapter-transition sound once for the whole run;
         # None falls back to the generated placeholder chime in chapter assembly.
-        sound_dir = Path(tempfile.mkdtemp(prefix="quill_batch_snd_"))
+        sound_dir = Path(tempfile.mkdtemp(prefix="snd_", dir=str(temp_root)))
         chapter_sound = _resolve_chapter_sound_path(frame, sound_dir) if req.sound_enabled else None
         done = skipped = errors = total_chapters = total_subs = 0
-        for i, src in enumerate(files, start=1):
-            progress(src.name, i, total)
-            if req.dry_run:
-                # Write the exact spoken text (after pronunciation + polish) to a
-                # sidecar instead of synthesizing — a cheap review pass.
-                try:
-                    preview = transform_preview(
-                        extract_text(src),
-                        engine=req.engine,
-                        pronunciation_dictionaries=dictionaries,
-                    )
-                    out = src.with_suffix(".preview.txt")
-                    out.write_text(
-                        f"# Dry run preview for {src.name} "
-                        f"({preview.substitutions} pronunciation substitution(s))\n\n"
-                        f"{preview.text}\n",
-                        encoding="utf-8",
-                    )
-                    done += 1
-                    total_subs += preview.substitutions
-                    frame._wx.CallAfter(
-                        frame._set_status,
-                        f"{src.name}: preview written ({preview.substitutions} substitutions)",
-                    )
-                except Exception as exc:  # noqa: BLE001 - isolate per-file failures
-                    errors += 1
-                    frame._wx.CallAfter(frame._set_status, f"Error on {src.name}: {exc}")
-                continue
-            if req.chapter_mode == "separate":
-                out_dir = src.parent / src.stem
-                if req.on_existing == "skip" and out_dir.is_dir() and any(out_dir.iterdir()):
-                    skipped += 1
+        book_summary = ""
+
+        # Pre-count words so progress is reported as a percentage of the corpus.
+        log.log("Counting words...")
+        word_counts = [count_document_words(f) for f in files]
+        total_words = sum(word_counts)
+        log.log(f"Total words to convert: {total_words}")
+        processed_words = 0
+
+        def advance(words: int, message: str) -> None:
+            """Add *words* to the processed count and push percent + message everywhere."""
+            nonlocal processed_words
+            processed_words += words
+            pct = int(processed_words / total_words * 100) if total_words else -1
+            progress_dialog.set_progress(pct, message)
+            log.log(message)
+            frame._wx.CallAfter(frame._set_status, message)
+
+        try:
+            for i, src in enumerate(files, start=1):
+                words = word_counts[i - 1]
+                log.log(f"[{i}/{total}] start {src.name} ({words} words)")
+                # Leave the "Preparing..." label immediately so a single long file
+                # (e.g. a heading-less document) does not look frozen while it runs.
+                start_pct = int(processed_words / total_words * 100) if total_words else -1
+                progress_dialog.set_progress(
+                    start_pct, f"[{i}/{total}] {src.name}: synthesizing..."
+                )
+                if not req.dry_run and req.save_spoken_text:
+                    _save_spoken_sidecar(src, transform_preview, extract_text)
+                if req.dry_run:
+                    try:
+                        preview = transform_preview(
+                            extract_text(src),
+                            engine=req.engine,
+                            pronunciation_dictionaries=dictionaries,
+                        )
+                        out = src.with_suffix(".preview.txt")
+                        out.write_text(
+                            f"# Dry run preview for {src.name} "
+                            f"({preview.substitutions} pronunciation substitution(s))\n\n"
+                            f"{preview.text}\n",
+                            encoding="utf-8",
+                        )
+                        done += 1
+                        total_subs += preview.substitutions
+                        advance(
+                            words,
+                            f"[{i}/{total}] {src.name}: preview written "
+                            f"({preview.substitutions} substitutions)",
+                        )
+                    except Exception as exc:  # noqa: BLE001 - isolate per-file failures
+                        errors += 1
+                        advance(words, f"[{i}/{total}] Error on {src.name}: {exc}")
                     continue
-                sep_work = Path(tempfile.mkdtemp(prefix="quill_batch_sep_"))
+                if not book_mode and req.chapter_mode == "separate":
+                    out_dir = src.parent / src.stem
+                    if req.on_existing == "skip" and out_dir.is_dir() and any(out_dir.iterdir()):
+                        skipped += 1
+                        advance(words, f"[{i}/{total}] Skipped {src.name} (exists)")
+                        continue
+                    sep_work = Path(tempfile.mkdtemp(prefix="sep_", dir=str(temp_root)))
+                    try:
+                        written = synthesize_document_to_separate_files(
+                            src,
+                            out_dir,
+                            spec,
+                            opts(chapter_sound),
+                            work_dir=sep_work / "w",
+                            pronunciation_dictionaries=dictionaries,
+                            combine_headings=req.combine_headings,
+                            voice_rotation=list(req.round_robin_voices),
+                            voice_blacklist=voice_blacklist,
+                        )
+                        done += 1
+                        total_chapters += len(written)
+                        advance(words, f"[{i}/{total}] {src.stem}: {len(written)} article file(s)")
+                    except DocumentSpeechError as exc:
+                        errors += 1
+                        advance(words, f"[{i}/{total}] Skipped {src.name}: {exc}")
+                    except Exception as exc:  # noqa: BLE001 - isolate per-file failures
+                        errors += 1
+                        advance(words, f"[{i}/{total}] Error on {src.name}: {exc}")
+                    finally:
+                        shutil.rmtree(sep_work, ignore_errors=True)
+                    continue
+                final = src.with_suffix(suffix)
+                if final.exists():
+                    if req.on_existing == "skip":
+                        skipped += 1
+                        advance(words, f"[{i}/{total}] Skipped {src.name} (exists)")
+                        continue
+                    if req.on_existing == "rename":
+                        final = _unique_path(final)
+                    # "overwrite": leave ``final`` as-is
+                work_dir = Path(tempfile.mkdtemp(prefix="doc_", dir=str(temp_root)))
+                staged = work_dir / f"out{suffix}"
+
+                def _file_progress(
+                    parts_done: int,
+                    parts_total: int,
+                    _i: int = i,
+                    _src: Path = src,
+                    _words: int = words,
+                ) -> None:
+                    """Move the bar within a single document as each audio chunk lands."""
+                    frac = parts_done / parts_total if parts_total else 1.0
+                    pct = (
+                        int((processed_words + frac * _words) / total_words * 100)
+                        if total_words
+                        else -1
+                    )
+                    progress_dialog.set_progress(
+                        pct, f"[{_i}/{total}] {_src.name}: chunk {parts_done}/{parts_total}"
+                    )
+
                 try:
-                    written = synthesize_document_to_separate_files(
+                    result = synthesize_document_to_chaptered_file(
                         src,
-                        out_dir,
+                        staged,
                         spec,
                         opts(chapter_sound),
-                        work_dir=sep_work / "w",
+                        work_dir=work_dir / "w",
                         pronunciation_dictionaries=dictionaries,
                         combine_headings=req.combine_headings,
                         voice_rotation=list(req.round_robin_voices),
                         voice_blacklist=voice_blacklist,
+                        on_progress=_file_progress,
                     )
+                    deliverable = result.with_tones_path or result.output_path
+                    shutil.copyfile(deliverable, final)
                     done += 1
-                    total_chapters += len(written)
-                    frame._wx.CallAfter(
-                        frame._set_status, f"{src.stem}: {len(written)} article file(s)"
-                    )
+                    chapter_count = len(result.chapters)
+                    total_chapters += chapter_count
+                    advance(words, f"[{i}/{total}] {final.name}: {chapter_count} chapter(s)")
+                    if for_language is not None:
+                        total_chapters += _export_translations(
+                            frame,
+                            req,
+                            src,
+                            final,
+                            suffix,
+                            chapter_sound,
+                            opts,
+                            for_language,
+                            voice_blacklist,
+                            temp_root,
+                        )
                 except DocumentSpeechError as exc:
                     errors += 1
-                    frame._wx.CallAfter(frame._set_status, f"Skipped {src.name}: {exc}")
+                    advance(words, f"[{i}/{total}] Skipped {src.name}: {exc}")
                 except Exception as exc:  # noqa: BLE001 - isolate per-file failures
                     errors += 1
-                    frame._wx.CallAfter(frame._set_status, f"Error on {src.name}: {exc}")
+                    advance(words, f"[{i}/{total}] Error on {src.name}: {exc}")
                 finally:
-                    shutil.rmtree(sep_work, ignore_errors=True)
-                continue
-            final = src.with_suffix(suffix)
-            if final.exists():
-                if req.on_existing == "skip":
-                    skipped += 1
-                    continue
-                if req.on_existing == "rename":
-                    final = _unique_path(final)
-                # "overwrite": leave ``final`` as-is
-            work_dir = Path(tempfile.mkdtemp(prefix="quill_batch_speech_"))
-            staged = work_dir / f"out{suffix}"
-            try:
-                result = synthesize_document_to_chaptered_file(
-                    src,
-                    staged,
-                    spec,
-                    opts(chapter_sound),
-                    work_dir=work_dir / "w",
-                    pronunciation_dictionaries=dictionaries,
-                    combine_headings=req.combine_headings,
-                    voice_rotation=list(req.round_robin_voices),
-                    voice_blacklist=voice_blacklist,
-                )
-                deliverable = result.with_tones_path or result.output_path
-                shutil.copyfile(deliverable, final)
-                done += 1
-                chapter_count = len(result.chapters)
-                total_chapters += chapter_count
-                frame._wx.CallAfter(frame._set_status, f"{final.name}: {chapter_count} chapter(s)")
-                if for_language is not None:
-                    total_chapters += _export_translations(
-                        frame,
-                        req,
-                        src,
-                        final,
-                        suffix,
-                        chapter_sound,
-                        opts,
-                        for_language,
-                        voice_blacklist,
-                    )
-            except DocumentSpeechError as exc:
-                errors += 1
-                frame._wx.CallAfter(frame._set_status, f"Skipped {src.name}: {exc}")
-            except Exception as exc:  # noqa: BLE001 - isolate per-file failures
-                errors += 1
-                frame._wx.CallAfter(frame._set_status, f"Error on {src.name}: {exc}")
-            finally:
-                shutil.rmtree(work_dir, ignore_errors=True)
-        shutil.rmtree(sound_dir, ignore_errors=True)
-        # Persist any voices that failed this run so later runs skip them.
-        save_blacklist(voice_blacklist)
-        return (done, skipped, errors, total_chapters, total_subs)
+                    shutil.rmtree(work_dir, ignore_errors=True)
+
+            # Audiobook assembly: combine the produced (and any pre-recorded) audio
+            # in the folder into one chaptered book.
+            if book_mode and not req.dry_run:
+                from quill.core.speech.audiobook import scan_audio_folder
+
+                try:
+                    audio = scan_audio_folder(req.source_folder, recursive=req.recursive)
+                    # Open the chapter editor when the user asked to review, or when
+                    # there were no documents to synthesize (a pure pre-recorded folder,
+                    # the old standalone builder's case). Cancelling skips the book.
+                    plan: list[tuple[str, list[str]]] | None = None
+                    if audio and (req.book_review_chapters or not files):
+                        progress_dialog.set_progress(-1, "Review chapters before building...")
+                        log.log("Opening the chapter editor for review...")
+                        plan = _prompt_chapter_plan_sync(frame, audio)  # type: ignore[assignment]
+                        if plan is None:
+                            book_summary = "audiobook cancelled at chapter review"
+                            log.log(book_summary)
+                            frame._wx.CallAfter(frame._set_status, book_summary)
+                            raise _BookReviewCancelled
+                    progress_dialog.set_progress(-1, "Assembling audiobook...")
+                    log.log("Assembling audiobook...")
+                    book_summary = _assemble_book(frame, req, audio, log, plan=plan)
+                    frame._wx.CallAfter(frame._set_status, book_summary)
+                except _BookReviewCancelled:
+                    pass  # user cancelled the review; keep the synthesized audio, skip the book
+                except Exception as exc:  # noqa: BLE001 - report, don't crash the run
+                    errors += 1
+                    book_summary = f"audiobook failed: {exc}"
+                    log.log(book_summary)
+                    frame._wx.CallAfter(frame._set_status, book_summary)
+
+            # Persist any voices that failed this run so later runs skip them.
+            save_blacklist(voice_blacklist)
+            log.log(
+                f"Done: {done} done, {skipped} skipped, {errors} error(s), "
+                f"{total_chapters} chapter(s). {book_summary}".strip()
+            )
+            return (done, skipped, errors, total_chapters, total_subs, book_summary)
+        finally:
+            progress_dialog.close()
+            log.close()
+            shutil.rmtree(temp_root, ignore_errors=True)
 
     def on_success(result: object) -> None:
-        done, skipped, errors, total_chapters, total_subs = result  # type: ignore[misc]
+        done, skipped, errors, total_chapters, total_subs, book_summary = result  # type: ignore[misc]
         if req.dry_run:
             frame._set_status(
                 f"Dry run complete: {done} preview(s) written, {total_subs} "
                 f"substitution(s), {errors} error(s)"
             )
             return
+        tail = f"; {book_summary}" if book_summary else ""
         frame._set_status(
             f"Batch speech export complete: {done} done ({total_chapters} chapters), "
-            f"{skipped} skipped, {errors} error(s)"
+            f"{skipped} skipped, {errors} error(s){tail}"
         )
 
     frame._run_background_task(

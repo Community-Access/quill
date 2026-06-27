@@ -64,11 +64,16 @@ class PandocFormat:
     ``display_name`` is the human label used in menus and the wizard.
     ``extensions`` is the canonical set of file extensions for this format,
     in lowercase and including the leading dot.
+    ``primary_extension`` is the single preferred extension (e.g. ``.md`` for
+    Markdown, ``.html`` for HTML) used to default Save dialogs. It is always a
+    member of ``extensions``; ``extensions`` is an unordered set, so callers
+    must not rely on ``sorted()`` to pick the preferred one.
     """
 
     name: str
     display_name: str
     extensions: frozenset[str]
+    primary_extension: str
 
 
 # Ordered by the issue #262 "safest QUILL menu design" recommendation, so the
@@ -79,56 +84,67 @@ _FORMATS: tuple[PandocFormat, ...] = (
         "markdown",
         "Markdown",
         frozenset({".md", ".markdown", ".mdown", ".mkd", ".mkdn"}),
+        ".md",
     ),
     PandocFormat(
         "commonmark",
         "CommonMark",
         frozenset({".md", ".markdown"}),
+        ".md",
     ),
     PandocFormat(
         "gfm",
         "GitHub-Flavored Markdown",
         frozenset({".md", ".markdown"}),
+        ".md",
     ),
     PandocFormat(
         "html",
         "HTML",
         frozenset({".html", ".htm"}),
+        ".html",
     ),
     PandocFormat(
         "docx",
         "Word Document",
         frozenset({".docx"}),
+        ".docx",
     ),
     PandocFormat(
         "odt",
         "OpenDocument Text",
         frozenset({".odt"}),
+        ".odt",
     ),
     PandocFormat(
         "rtf",
         "Rich Text Format",
         frozenset({".rtf"}),
+        ".rtf",
     ),
     PandocFormat(
         "plain_text",
         "Plain Text",
         frozenset({".txt"}),
+        ".txt",
     ),
     PandocFormat(
         "csv",
         "CSV / TSV Table",
         frozenset({".csv", ".tsv"}),
+        ".csv",
     ),
     PandocFormat(
         "epub",
         "EPUB Book",
         frozenset({".epub"}),
+        ".epub",
     ),
     PandocFormat(
         "latex",
         "LaTeX / TeX",
         frozenset({".tex", ".ltx", ".latex"}),
+        ".tex",
     ),
     # PDF is Tier-1 *output only* (issue #262). It is not registered as an
     # input format; PDF import is intentionally not supported.
@@ -136,6 +152,7 @@ _FORMATS: tuple[PandocFormat, ...] = (
         "pdf",
         "PDF Document",
         frozenset({".pdf"}),
+        ".pdf",
     ),
 )
 
@@ -193,6 +210,19 @@ def extensions_for(name: str) -> frozenset[str]:
 
     fmt = _FORMATS_BY_NAME.get(name)
     return fmt.extensions if fmt is not None else frozenset()
+
+
+def primary_extension_for(name: str) -> str | None:
+    """Return the preferred file extension for ``name`` (e.g. ``".md"``).
+
+    Save dialogs use this to default a filename. Returns ``None`` when the
+    format is unknown. Unlike ``sorted(extensions_for(name))`` this returns
+    the canonical extension (``.md`` for Markdown, ``.html`` for HTML) rather
+    than the alphabetically-first one.
+    """
+
+    fmt = _FORMATS_BY_NAME.get(name)
+    return fmt.primary_extension if fmt is not None else None
 
 
 def is_editable_in_quill(name: str) -> bool:

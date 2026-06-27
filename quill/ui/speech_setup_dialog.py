@@ -75,14 +75,12 @@ def build_engine_descriptors(
     known = {"whispercpp", "fasterwhisper", "vosk"}
     for pid, provider in by_id.items():
         if pid not in known:
-            descriptors.append(
-                {
-                    "label": str(getattr(provider, "display_name", pid)),
-                    "provider": provider,
-                    "installed": True,
-                    "install_action": None,
-                }
-            )
+            descriptors.append({
+                "label": str(getattr(provider, "display_name", pid)),
+                "provider": provider,
+                "installed": True,
+                "install_action": None,
+            })
     return descriptors
 
 
@@ -205,11 +203,7 @@ class SpeechSetupDialog:
         )
         self._engine_radio.SetName("Dictation engine")
         current_idx = next(
-            (
-                i
-                for i, d in enumerate(self._engine_descriptors)
-                if d["provider"] is self._provider
-            ),
+            (i for i, d in enumerate(self._engine_descriptors) if d["provider"] is self._provider),
             0,
         )
         self._engine_radio.SetSelection(current_idx)

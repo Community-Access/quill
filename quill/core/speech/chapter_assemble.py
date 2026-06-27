@@ -157,6 +157,8 @@ def _synthesize_section(
     sentence_gap_ms: int,
     tail_padding_ms: int,
     max_chunk_chars: int = 0,
+    parts: list[str] | None = None,
+    on_part_done: Callable[[], None] | None = None,
 ) -> None:
     """Synthesize one section to *out_wav*, optionally pausing between sentences,
     chunking a very long section, and padding the tail to prevent end-of-clip cutoff.
@@ -165,16 +167,23 @@ def _synthesize_section(
     directly (byte-identical to the legacy path). Otherwise the section is split
     into pieces (chunks for a long section, else sentences), synthesized separately,
     joined with ``sentence_gap_ms`` of silence, and padded by ``tail_padding_ms``.
+
+    *parts* may be supplied pre-computed (so the caller can total them for progress);
+    *on_part_done* is invoked once per synthesized piece for fine-grained progress —
+    crucial for a heading-less document, which is one giant section split into chunks.
     """
     sentence_gap_ms = max(0, sentence_gap_ms)
     tail_padding_ms = max(0, tail_padding_ms)
-    parts = _section_parts(
-        spoken, sentence_gap_ms=sentence_gap_ms, max_chunk_chars=max(0, max_chunk_chars)
-    )
+    if parts is None:
+        parts = _section_parts(
+            spoken, sentence_gap_ms=sentence_gap_ms, max_chunk_chars=max(0, max_chunk_chars)
+        )
 
     # Fast path: nothing to splice -> one call, no re-encoding.
     if len(parts) == 1 and tail_padding_ms == 0:
         synthesize(parts[0], out_wav)
+        if on_part_done is not None:
+            on_part_done()
         return
 
     part_wavs: list[Path] = []
@@ -184,6 +193,8 @@ def _synthesize_section(
         if not pw.is_file():
             raise AssembleError(f"Synthesizer did not produce audio for section {idx}, part {j}.")
         part_wavs.append(pw)
+        if on_part_done is not None:
+            on_part_done()
 
     fmt = PcmFormat.from_wav(part_wavs[0])
     gap = silence_frames(fmt, sentence_gap_ms)
@@ -234,6 +245,7 @@ def assemble_chaptered_audio(
     *,
     work_dir: Path,
     synthesizers: list[Synthesizer] | None = None,
+    on_progress: Callable[[int, int], None] | None = None,
 ) -> ChapterAssembleResult:
     """Synthesize, concat (with gap/earcon), tag, and write the chaptered file(s).
 
@@ -255,12 +267,35 @@ def assemble_chaptered_audio(
     )
     rotation = [s for s in (synthesizers or []) if s is not None]
 
-    # 1. Synthesize each section to its own WAV and measure it.
+    # 1. Synthesize each section to its own WAV and measure it. Parts are computed
+    #    up front so progress can be reported per synthesized chunk — a heading-less
+    #    document is one section split into several chunks, so chunk-level reporting
+    #    is the only way its progress bar moves at all.
+    section_parts = [
+        _section_parts(
+            spoken,
+            sentence_gap_ms=options.sentence_gap_ms,
+            max_chunk_chars=max(0, options.max_chunk_chars),
+        )
+        for _title, spoken in resolved
+    ]
+    total_parts = sum(len(p) for p in section_parts) or 1
+    done_parts = 0
+    if on_progress is not None:
+        on_progress(0, total_parts)
+
     section_wavs: list[Path] = []
     section_durations: list[int] = []
     for i, (_title, spoken) in enumerate(resolved):
         wav = work_dir / f"section_{i:04d}.wav"
         section_synth = rotation[i % len(rotation)] if rotation else synthesize
+
+        def _tick() -> None:
+            nonlocal done_parts
+            done_parts += 1
+            if on_progress is not None:
+                on_progress(done_parts, total_parts)
+
         _synthesize_section(
             spoken,
             wav,
@@ -270,6 +305,8 @@ def assemble_chaptered_audio(
             sentence_gap_ms=options.sentence_gap_ms,
             tail_padding_ms=options.tail_padding_ms,
             max_chunk_chars=options.max_chunk_chars,
+            parts=section_parts[i],
+            on_part_done=_tick,
         )
         if not wav.is_file():
             raise AssembleError(f"Synthesizer did not produce audio for section {i}.")

@@ -122,7 +122,11 @@ def build_intellisense_suggestions(
         )
 
     for word in suggest_words(fragment, dictionary, limit=limit):
-        add_suggestion("word", f"Word: {word}", word, len(word))
+        # Label is just the word: word predictions dominate the list, so a
+        # "Word: " prefix makes a screen reader announce "Word" before every
+        # item when arrowing. The kind ("word") still distinguishes it; the
+        # rarer HTML/Markdown suggestions keep their prefixes to disambiguate.
+        add_suggestion("word", word, word, len(word))
 
     return context, suggestions[:limit]
 

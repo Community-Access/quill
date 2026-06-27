@@ -203,9 +203,17 @@ def test_resolve_writer_passthrough() -> None:
     assert pandoc_io._resolve_writer("pdf") == "pdf"
 
 
-def test_resolve_writer_rejects_unknown() -> None:
+def test_resolve_writer_passes_through_arbitrary_pandoc_tokens() -> None:
+    # The Convert File catalogue reaches beyond Tier-1, so an unknown non-empty
+    # writer name is passed straight to Pandoc (which validates it) rather than
+    # rejected here. Only an empty token is a programming error.
+    assert pandoc_io._resolve_writer("rst") == "rst"
+    assert pandoc_io._resolve_writer("asciidoc") == "asciidoc"
+
+
+def test_resolve_writer_rejects_empty() -> None:
     with pytest.raises(ValueError):
-        pandoc_io._resolve_writer("not-a-format")
+        pandoc_io._resolve_writer("   ")
 
 
 def test_tier1_format_set_is_consistent_with_io() -> None:

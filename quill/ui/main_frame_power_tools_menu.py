@@ -748,9 +748,6 @@ class PowerToolsMenuMixin:
     def _append_power_tools_search_items(self, search_menu: object) -> None:
         self._append_power_tools_group(search_menu, "search")
 
-    def _append_power_tools_accessibility_items(self, accessibility_menu: object) -> None:
-        self._append_power_tools_group(accessibility_menu, "accessibility")
-
     def _append_power_tools_copy_tray_items(self, menu: object) -> None:
         self._append_power_tools_group(menu, "copy_tray")
 

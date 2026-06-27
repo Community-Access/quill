@@ -107,7 +107,10 @@ class SkillLibraryDialog:
 
         self.dialog.SetSizer(root)
         self.dialog.Fit()
-        apply_modal_ids(self.dialog)
+        # The only dismissing button is Close (ID_CLOSE), so wire it as both the
+        # affirmative and escape id. Without escape_id, Escape does nothing
+        # because wx only auto-handles Escape for an ID_CANCEL button.
+        apply_modal_ids(self.dialog, affirmative_id=wx.ID_CLOSE, escape_id=wx.ID_CLOSE)
 
         self._list.Bind(wx.EVT_LISTBOX, self._on_select)
         apply_listbox_activation(self._list, self._on_run_or_cancel)
@@ -399,7 +402,15 @@ class SkillLibraryDialog:
         self.dialog.ShowModal()
 
     def close(self) -> None:
-        self.dialog.EndModal(wx.ID_CLOSE)
+        # open_skill_library() runs the modal loop via _show_modal_dialog and
+        # then calls close(); the Close button and the window-close handler also
+        # call close(). End the modal loop if we are still in it; otherwise the
+        # loop already returned, so destroy the dismissed dialog. Calling
+        # EndModal on a non-modal dialog raises wxAssertionError, so guard it.
+        if self.dialog.IsModal():
+            self.dialog.EndModal(wx.ID_CLOSE)
+        else:
+            self.dialog.Destroy()
 
 
 class _SkillParameterDialog:

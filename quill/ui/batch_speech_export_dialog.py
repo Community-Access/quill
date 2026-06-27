@@ -80,6 +80,27 @@ class BatchSpeechRequest:
     # Translation backend: "ai_assistant" (configured AI provider) or "libretranslate".
     translation_provider: str = "ai_assistant"
     libretranslate_url: str = "http://localhost:5000"
+    # Temporary-files parent folder. Empty = the system temp dir. Each run creates a
+    # ``quill-batch-<timestamp>`` subfolder under it for all of its scratch dirs.
+    temp_folder: str = ""
+    # Save the exact text sent to the engine (after normalization/pronunciation/
+    # polish) as a ``<doc>.spoken.txt`` sidecar, in addition to synthesizing.
+    save_spoken_text: bool = False
+    # Audiobook assembly: when set, combine the produced (or pre-recorded) audio in
+    # the source folder into a single chaptered M4B/MP3 with the book tags below.
+    make_book: bool = False
+    book_title: str = ""
+    book_author: str = ""
+    book_narrator: str = ""
+    book_genre: str = "Audiobook"
+    book_year: str = ""
+    book_cover_path: str = ""
+    book_format: str = "m4b"  # m4b | mp3
+    book_output_path: str = ""
+    book_acx_normalize: bool = False
+    # Pause after synthesis to open the chapter editor (rename/reorder/merge) before
+    # the book is built. A folder of pre-recorded audio (no documents) always opens it.
+    book_review_chapters: bool = False
     _voice_label: str = field(default="", repr=False)
 
 
@@ -99,6 +120,9 @@ _FORMAT_INDEX = {fmt: i for i, fmt in enumerate(_FORMAT_CHOICES)}
 # Chapter modes, in the order they appear in the mode Choice control.
 _MODE_CHOICES = ("single", "separate")
 _MODE_INDEX = {mode: i for i, mode in enumerate(_MODE_CHOICES)}
+# Audiobook output formats, in the order they appear in the book format Choice.
+_BOOK_FORMATS = ("m4b", "mp3")
+_BOOK_FORMAT_INDEX = {fmt: i for i, fmt in enumerate(_BOOK_FORMATS)}
 
 
 class BatchSpeechExportDialog:
@@ -192,6 +216,7 @@ class BatchSpeechExportDialog:
         pace_row = wx.BoxSizer(wx.HORIZONTAL)
         pace_row.Add(wx.StaticText(self.dialog, label="R&ate (WPM):"), 0, wx.ALIGN_CENTER_VERTICAL)
         self._rate = wx.SpinCtrl(self.dialog, min=80, max=450, initial=defaults.rate)
+        self._set_accessible_name(self._rate, "Rate (WPM)")
         pace_row.Add(self._rate, 0, wx.LEFT | wx.RIGHT, 6)
         pace_row.Add(
             wx.StaticText(self.dialog, label="&Kokoro speed:"), 0, wx.ALIGN_CENTER_VERTICAL
@@ -199,6 +224,10 @@ class BatchSpeechExportDialog:
         self._speed = wx.SpinCtrlDouble(
             self.dialog, min=0.5, max=2.0, inc=0.05, initial=defaults.speed
         )
+        # A SpinCtrlDouble wraps an inner TextCtrl (the focusable edit); the adjacent
+        # StaticText and the composite's own name do not reach that inner field, so a
+        # screen reader reads it unnamed. _set_accessible_name names the inner edit too.
+        self._set_accessible_name(self._speed, "Kokoro speed")
         pace_row.Add(self._speed, 0, wx.LEFT, 6)
         root.Add(pace_row, 0, wx.LEFT | wx.TOP, 8)
 
@@ -212,6 +241,9 @@ class BatchSpeechExportDialog:
         rr_add_row.Add(self._rr_pick, 1, wx.EXPAND | wx.RIGHT, 6)
         rr_add_row.Add(rr_add, 0)
         root.Add(rr_add_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8)
+        # A dedicated label immediately before the list: a screen reader names a list
+        # from its preceding StaticText, so SetName alone left it announced unnamed.
+        label("Voice o&rder (the rotation; use the buttons below to reorder):")
         self._rr_list = wx.ListBox(self.dialog, style=wx.LB_SINGLE)
         self._rr_list.SetName("Round-robin voice order")
         apply_listbox_activation(self._rr_list, lambda _e: self._rr_pick.SetFocus())
@@ -313,6 +345,7 @@ class BatchSpeechExportDialog:
         tr_add_row.Add(self._tr_voice, 2, wx.EXPAND | wx.RIGHT, 6)
         tr_add_row.Add(tr_add, 0)
         root.Add(tr_add_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8)
+        label("Languages &chosen (translated exports):")
         self._tr_list = wx.ListBox(self.dialog, style=wx.LB_SINGLE)
         self._tr_list.SetName("Translation targets")
         apply_listbox_activation(self._tr_list, lambda _e: self._tr_lang.SetFocus())
@@ -333,6 +366,90 @@ class BatchSpeechExportDialog:
         tr_btn_row.Add(self._tr_provider, 0, wx.LEFT, 6)
         root.Add(tr_btn_row, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
+        # --- Temporary files + diagnostics ---
+        label("&Temporary files folder (blank = system temp):")
+        tmp_row = wx.BoxSizer(wx.HORIZONTAL)
+        self._temp_folder = wx.TextCtrl(self.dialog, value=defaults.temp_folder)
+        self._temp_folder.SetName("Temporary files folder")
+        tmp_browse = wx.Button(self.dialog, label="Browse temp&...")
+        tmp_browse.Bind(wx.EVT_BUTTON, self._on_browse_temp)
+        tmp_row.Add(self._temp_folder, 1, wx.EXPAND | wx.RIGHT, 6)
+        tmp_row.Add(tmp_browse, 0)
+        root.Add(tmp_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+        self._save_spoken = wx.CheckBox(
+            self.dialog, label="Save the te&xt sent to speech (one sidecar per document)"
+        )
+        self._save_spoken.SetValue(defaults.save_spoken_text)
+        root.Add(self._save_spoken, 0, wx.LEFT | wx.TOP, 8)
+
+        # --- Audiobook assembly (optional) ---
+        self._make_book = wx.CheckBox(self.dialog, label="Assemble the results into one audioboo&k")
+        self._make_book.SetValue(defaults.make_book)
+        self._make_book.Bind(wx.EVT_CHECKBOX, lambda _e: self._sync_book_enabled())
+        root.Add(self._make_book, 0, wx.LEFT | wx.TOP, 8)
+        book_grid = wx.FlexGridSizer(cols=2, vgap=4, hgap=8)
+        book_grid.AddGrowableCol(1, 1)
+        self._book_title = self._add_book_field(book_grid, "Book ti&tle:", defaults.book_title)
+        self._book_author = self._add_book_field(book_grid, "A&uthor:", defaults.book_author)
+        self._book_narrator = self._add_book_field(book_grid, "Narra&tor:", defaults.book_narrator)
+        self._book_genre = self._add_book_field(book_grid, "Gen&re:", defaults.book_genre)
+        self._book_year = self._add_book_field(book_grid, "Yea&r:", defaults.book_year)
+        root.Add(book_grid, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8)
+        label("Cover ima&ge (auto-detected from the folder; optional):")
+        cover_row = wx.BoxSizer(wx.HORIZONTAL)
+        self._book_cover = wx.TextCtrl(self.dialog, value=defaults.book_cover_path)
+        self._book_cover.SetName("Cover image")
+        cover_browse = wx.Button(self.dialog, label="Browse co&ver...")
+        cover_browse.Bind(wx.EVT_BUTTON, self._on_browse_cover)
+        cover_row.Add(self._book_cover, 1, wx.EXPAND | wx.RIGHT, 6)
+        cover_row.Add(cover_browse, 0)
+        root.Add(cover_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+        book_fmt_row = wx.BoxSizer(wx.HORIZONTAL)
+        book_fmt_row.Add(
+            wx.StaticText(self.dialog, label="Book for&mat:"), 0, wx.ALIGN_CENTER_VERTICAL
+        )
+        self._book_format = wx.Choice(
+            self.dialog, choices=["M4B audiobook (native chapters)", "MP3 (with chapter markers)"]
+        )
+        self._book_format.SetName("Book format")
+        self._book_format.SetSelection(_BOOK_FORMAT_INDEX.get(defaults.book_format, 0))
+        self._book_format.Bind(wx.EVT_CHOICE, lambda _e: self._sync_book_output_suffix())
+        book_fmt_row.Add(self._book_format, 0, wx.LEFT, 6)
+        root.Add(book_fmt_row, 0, wx.LEFT | wx.TOP, 8)
+        self._book_acx = wx.CheckBox(
+            self.dialog, label="Normalize the book to ACX (Audible) lou&dness"
+        )
+        self._book_acx.SetValue(defaults.book_acx_normalize)
+        root.Add(self._book_acx, 0, wx.LEFT | wx.TOP, 8)
+        self._book_review = wx.CheckBox(
+            self.dialog, label="&Review chapters (rename/reorder/merge) before building"
+        )
+        self._book_review.SetValue(defaults.book_review_chapters)
+        root.Add(self._book_review, 0, wx.LEFT | wx.TOP, 8)
+        label("Save the book &as (blank = the source folder):")
+        book_out_row = wx.BoxSizer(wx.HORIZONTAL)
+        self._book_output = wx.TextCtrl(self.dialog, value=defaults.book_output_path)
+        self._book_output.SetName("Save the book as")
+        book_out_browse = wx.Button(self.dialog, label="Browse boo&k...")
+        book_out_browse.Bind(wx.EVT_BUTTON, self._on_browse_book_output)
+        book_out_row.Add(self._book_output, 1, wx.EXPAND | wx.RIGHT, 6)
+        book_out_row.Add(book_out_browse, 0)
+        root.Add(book_out_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+        self._book_controls = [
+            self._book_title,
+            self._book_author,
+            self._book_narrator,
+            self._book_genre,
+            self._book_year,
+            self._book_cover,
+            cover_browse,
+            self._book_format,
+            self._book_acx,
+            self._book_review,
+            self._book_output,
+            book_out_browse,
+        ]
+
         # --- Buttons (OK = Start) ---
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         start_btn = wx.Button(self.dialog, id=wx.ID_OK, label="&Start")
@@ -350,6 +467,7 @@ class BatchSpeechExportDialog:
         self._seed_rotation(defaults.round_robin_voices)
         self._reload_tr_voices()
         self._seed_translations(defaults.translation_targets)
+        self._sync_book_enabled()
 
     # ------------------------------------------------------------------ helpers
 
@@ -364,6 +482,47 @@ class BatchSpeechExportDialog:
         spin = wx.SpinCtrl(self.dialog, min=0, max=hi, initial=int(value))
         grid.Add(spin, 0)
         return spin
+
+    def _set_accessible_name(self, ctrl: object, name: str) -> None:
+        """Set a control's accessible name, reaching the inner edit of composite spinners.
+
+        ``wx.SpinCtrlDouble`` wraps a child ``TextCtrl`` (the focusable edit); that
+        inner field is what a screen reader lands on, and the composite's own name does
+        not propagate to it, so we name the child too. Plain controls just get a name.
+        """
+        ctrl.SetName(name)  # type: ignore[attr-defined]
+        get_children = getattr(ctrl, "GetChildren", None)
+        if not callable(get_children):
+            return
+        for child in get_children():
+            if isinstance(child, self._wx.TextCtrl):
+                child.SetName(name)
+
+    def _add_book_field(self, grid: object, text: str, value: str) -> object:
+        wx = self._wx
+        grid.Add(wx.StaticText(self.dialog, label=text), 0, wx.ALIGN_CENTER_VERTICAL)
+        ctrl = wx.TextCtrl(self.dialog, value=value)
+        grid.Add(ctrl, 0, wx.EXPAND)
+        return ctrl
+
+    def _sync_book_enabled(self) -> None:
+        """Enable the book fields only while 'Assemble into one audiobook' is on."""
+        on = self._make_book.GetValue()
+        for ctrl in self._book_controls:
+            ctrl.Enable(on)
+
+    def _current_book_format(self) -> str:
+        idx = self._book_format.GetSelection()
+        return _BOOK_FORMATS[idx] if 0 <= idx < len(_BOOK_FORMATS) else "m4b"
+
+    def _sync_book_output_suffix(self) -> None:
+        text = self._book_output.GetValue().strip()
+        if not text:
+            return
+        path = Path(text)
+        if not path.name:
+            return
+        self._book_output.SetValue(str(path.with_suffix(f".{self._current_book_format()}")))
 
     def _select_engine(self, engine_id: str) -> None:
         for i, (_lbl, eid) in enumerate(self._engine_options):
@@ -546,6 +705,19 @@ class BatchSpeechExportDialog:
             translation_provider=(
                 "libretranslate" if self._tr_provider.GetSelection() == 1 else "ai_assistant"
             ),
+            temp_folder=self._temp_folder.GetValue().strip(),
+            save_spoken_text=self._save_spoken.GetValue(),
+            make_book=self._make_book.GetValue(),
+            book_title=self._book_title.GetValue().strip(),
+            book_author=self._book_author.GetValue().strip(),
+            book_narrator=self._book_narrator.GetValue().strip(),
+            book_genre=self._book_genre.GetValue().strip(),
+            book_year=self._book_year.GetValue().strip(),
+            book_cover_path=self._book_cover.GetValue().strip(),
+            book_format=self._current_book_format(),
+            book_output_path=self._book_output.GetValue().strip(),
+            book_acx_normalize=self._book_acx.GetValue(),
+            book_review_chapters=self._book_review.GetValue(),
         )
 
     # ------------------------------------------------------------------ events
@@ -556,6 +728,35 @@ class BatchSpeechExportDialog:
             # Native folder picker owned by this dialog; not a GATE-42 target stem.
             if dlg.ShowModal() == wx.ID_OK:
                 self._source.SetValue(dlg.GetPath())
+
+    def _on_browse_temp(self, _evt: object) -> None:
+        wx = self._wx
+        with wx.DirDialog(self.dialog, "Choose a folder for temporary files") as dlg:
+            if dlg.ShowModal() == wx.ID_OK:  # GATE-42-OK: native folder picker
+                self._temp_folder.SetValue(dlg.GetPath())
+
+    def _on_browse_cover(self, _evt: object) -> None:
+        wx = self._wx
+        with wx.FileDialog(
+            self.dialog,
+            "Choose a cover image",
+            wildcard="Images (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png",
+            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
+        ) as dlg:
+            if dlg.ShowModal() == wx.ID_OK:  # GATE-42-OK: native file picker
+                self._book_cover.SetValue(dlg.GetPath())
+
+    def _on_browse_book_output(self, _evt: object) -> None:
+        wx = self._wx
+        fmt = self._current_book_format()
+        with wx.FileDialog(
+            self.dialog,
+            "Save the audiobook as",
+            wildcard=f"{fmt.upper()} (*.{fmt})|*.{fmt}",
+            style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
+        ) as dlg:
+            if dlg.ShowModal() == wx.ID_OK:  # GATE-42-OK: native file picker
+                self._book_output.SetValue(str(Path(dlg.GetPath()).with_suffix(f".{fmt}")))
 
     def _on_preview_click(self, _evt: object) -> None:
         self._on_preview(self._collect(preview=True))
@@ -570,7 +771,9 @@ class BatchSpeechExportDialog:
                 self.dialog,
             )
             return
-        if not req.extensions:
+        # With audiobook assembly on, an empty file-type set is allowed: the run
+        # assembles whatever audio is already in the folder (the pre-recorded case).
+        if not req.extensions and not req.make_book:
             show_message_box(
                 "Select at least one file type to include.",
                 "Batch Export to Speech Audio",

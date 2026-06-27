@@ -98,6 +98,21 @@ class StatusBarMixin:
             visible.insert(0, "message")
         return visible
 
+    def _statusbar_document_stats(self) -> object | None:
+        """Return DocumentStats for the live buffer, or None if unavailable.
+
+        Shared by the word/char/line/reading-time cells. The dead-widget guard
+        (#269) mirrors the other cells: a queued caret event can fire after the
+        editor's C++ TextCtrl is destroyed.
+        """
+        editor = getattr(self, "editor", None)
+        if editor is None:
+            return None
+        try:
+            return compute_document_stats(editor.GetValue())
+        except RuntimeError:
+            return None
+
     def _statusbar_text_for_item(self, item: str) -> str:
         feature_id = self._STATUS_BAR_FEATURES.get(item)
         feature_manager = getattr(self, "features", None)
@@ -145,15 +160,34 @@ class StatusBarMixin:
             except RuntimeError:
                 return ""
             return f"Ln {line}, Col {column}"
-        if item == "word_count":
+        if item in ("word_count", "char_count", "line_count", "reading_time"):
+            stats = self._statusbar_document_stats()
+            if stats is None:
+                return ""
+            if item == "word_count":
+                return f"{stats.words:,} words"
+            if item == "char_count":
+                return f"{stats.characters:,} chars"
+            if item == "line_count":
+                return f"{stats.lines:,} lines"
+            # reading_time: ~200 words per minute, rounded up to a whole minute.
+            if stats.words == 0:
+                return "0 min read"
+            minutes = (stats.words + 199) // 200
+            return "<1 min read" if stats.words < 200 else f"{minutes} min read"
+        if item == "document_progress":
             editor = getattr(self, "editor", None)
             if editor is None:
                 return ""
             try:
-                stats = compute_document_stats(editor.GetValue())
+                total = len(editor.GetValue())
+                caret = editor.GetInsertionPoint()
             except RuntimeError:
                 return ""
-            return f"{stats.words:,} words"
+            if total <= 0:
+                return "0%"
+            percent = round(min(caret, total) / total * 100)
+            return f"{percent}%"
         if item == "mode":
             return "Overwrite" if getattr(self, "_overwrite_mode", False) else "Insert"
         if item == "tab_mode":

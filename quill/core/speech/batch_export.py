@@ -554,6 +554,24 @@ class TransformPreview:
     substitutions: int
 
 
+def count_words(text: str) -> int:
+    """Whitespace-delimited word count — the unit the progress dialog reports in."""
+    return len(text.split())
+
+
+def count_document_words(path: Path) -> int:
+    """Words in *path*'s readable text, or 0 when it cannot be read.
+
+    Used to pre-compute the corpus size so batch progress can be reported as a
+    percentage (words processed / total words). Best-effort: an unreadable or
+    unsupported file contributes 0 rather than aborting the count.
+    """
+    try:
+        return count_words(extract_text(path))
+    except (UnsupportedFormatError, OSError, ValueError):
+        return 0
+
+
 def transform_preview(
     text: str,
     *,

@@ -220,6 +220,32 @@ def test_end_to_end_with_fake_engine(tmp_path: Path, monkeypatch: pytest.MonkeyP
     assert result.with_tones_path is not None  # sounder enabled
 
 
+def test_headingless_document_forwards_chunk_progress(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A heading-less doc is one section; on_progress still fires per synthesized chunk."""
+
+    def fake_kokoro(text: str, out: Path, *, voice: str = "af_heart", speed: float = 1.0) -> None:
+        _write_silence(out, ms=150)
+
+    monkeypatch.setattr(ds.read_aloud, "synthesize_with_kokoro", fake_kokoro)
+
+    txt = tmp_path / "no_headings.txt"
+    txt.write_text(" ".join(f"Sentence number {i}." for i in range(60)), encoding="utf-8")
+
+    ticks: list[tuple[int, int]] = []
+    opts = ChapterAssembleOptions(article_gap_ms=0, output_format="wav", max_chunk_chars=80)
+    result = ds.synthesize_document_to_chaptered_file(
+        txt,
+        tmp_path / "out.wav",
+        ds.SynthesisSpec(engine="kokoro", voice="am_liam"),
+        opts,
+        on_progress=lambda done, total: ticks.append((done, total)),
+    )
+    assert result.section_count == 1  # heading-less -> single section
+    assert ticks[-1] == (ticks[-1][1], ticks[-1][1]) and ticks[-1][1] > 1
+
+
 def test_pronunciation_dictionaries_reach_the_engine(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

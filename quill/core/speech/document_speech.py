@@ -274,6 +274,7 @@ def synthesize_document_to_chaptered_file(
     voice_rotation: list[str] | None = None,
     translate: Translator | None = None,
     voice_blacklist: Any | None = None,
+    on_progress: Any | None = None,
 ) -> ChapterAssembleResult:
     """Convert one document to a chaptered audio file using a real engine.
 
@@ -307,7 +308,13 @@ def synthesize_document_to_chaptered_file(
     work_dir = work_dir or Path(tempfile.mkdtemp(prefix="quill_docspeech_"))
     try:
         return assemble_chaptered_audio(
-            sections, output_path, synth, options, work_dir=work_dir, synthesizers=rotation
+            sections,
+            output_path,
+            synth,
+            options,
+            work_dir=work_dir,
+            synthesizers=rotation,
+            on_progress=on_progress,
         )
     finally:
         if owns_work_dir:

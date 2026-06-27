@@ -232,3 +232,58 @@ def test_format_choice_maps_each_option(wx_app, tmp_path):
     finally:
         dlg.dialog.Destroy()
         frame.Destroy()
+
+
+def test_temp_folder_and_save_spoken_collect(wx_app, tmp_path):
+    frame, dlg = _make(wx_app, tmp_path)
+    try:
+        assert dlg._collect(preview=False).temp_folder == ""
+        assert dlg._collect(preview=False).save_spoken_text is False
+        dlg._temp_folder.SetValue(str(tmp_path / "scratch"))
+        dlg._save_spoken.SetValue(True)
+        req = dlg._collect(preview=False)
+        assert req.temp_folder == str(tmp_path / "scratch")
+        assert req.save_spoken_text is True
+    finally:
+        dlg.dialog.Destroy()
+        frame.Destroy()
+
+
+def test_book_fields_collect_and_format_maps(wx_app, tmp_path):
+    frame, dlg = _make(wx_app, tmp_path)
+    try:
+        # Off by default; the book fields are disabled until the toggle is set.
+        assert dlg._collect(preview=False).make_book is False
+        assert dlg._book_title.IsEnabled() is False
+        dlg._make_book.SetValue(True)
+        dlg._sync_book_enabled()
+        assert dlg._book_title.IsEnabled() is True
+        dlg._book_title.SetValue("My Book")
+        dlg._book_author.SetValue("Jane Doe")
+        dlg._book_narrator.SetValue("Sam Reader")
+        dlg._book_format.SetSelection(1)  # mp3
+        req = dlg._collect(preview=False)
+        assert req.make_book is True
+        assert req.book_title == "My Book"
+        assert req.book_author == "Jane Doe"
+        assert req.book_narrator == "Sam Reader"
+        assert req.book_format == "mp3"
+        assert req.book_genre == "Audiobook"  # default carried through
+        assert req.book_review_chapters is False  # off by default
+        dlg._book_review.SetValue(True)
+        assert dlg._collect(preview=False).book_review_chapters is True
+    finally:
+        dlg.dialog.Destroy()
+        frame.Destroy()
+
+
+def test_speed_spinner_inner_edit_is_named(wx_app, tmp_path):
+    # The SpinCtrlDouble's inner TextCtrl (what a screen reader focuses) must carry
+    # the accessible name, not just the composite — regression for the unnamed speed.
+    frame, dlg = _make(wx_app, tmp_path)
+    try:
+        inner = [c for c in dlg._speed.GetChildren() if isinstance(c, wx.TextCtrl)]
+        assert inner and inner[0].GetName() == "Kokoro speed"
+    finally:
+        dlg.dialog.Destroy()
+        frame.Destroy()

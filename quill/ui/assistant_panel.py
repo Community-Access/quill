@@ -264,6 +264,10 @@ class AskQuillChatDialog:
         self._setup_provider = wx.Choice(
             panel, choices=[_PROVIDER_LABELS[p] for p in _PROVIDER_IDS]
         )
+        # The adjacent "Provider:" StaticText is not auto-associated as the
+        # accessible name on Windows, so set it explicitly or a screen reader
+        # announces this combo box unlabeled when tabbed to.
+        self._setup_provider.SetName("Provider")
         self._setup_provider.SetSelection(0)
         row.Add(self._setup_provider, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 12)
 

@@ -585,7 +585,9 @@ def _build_feedback() -> dict:
         FeedbackEvent.PAUSED: ("", "Dictation paused.", "Locked dictation paused"),
         FeedbackEvent.RESUMED: ("transcription_started", "Dictation resumed.", ""),
         FeedbackEvent.TRANSCRIBING: (
-            "", "Transcribing, please wait. The first one loads the model.", "Transcribing...",
+            "",
+            "Transcribing, please wait. The first one loads the model.",
+            "Transcribing...",
         ),
         FeedbackEvent.INSERTED: ("transcription_word_inserted", "Dictation inserted.", ""),
         FeedbackEvent.NO_SPEECH: ("", "No speech was recognized.", "No speech recognized"),

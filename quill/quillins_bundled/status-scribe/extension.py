@@ -83,10 +83,16 @@ def on_timer_refresh(api, event: dict) -> None:
     """Timer tick: recount the active document so the cell never goes stale.
 
     ``event`` carries ``timer_id`` and ``interval_seconds``.
+
+    This is a *background* refresh, so it deliberately does **not** call
+    ``api.set_status`` — that routes to the host status line, which a screen reader
+    speaks, and a recurring timer pushing the same value made QUILL announce e.g.
+    "Words: 0" every few minutes. The recount updates ``_last_count``; the status
+    bar cell reflects it the next time the host renders the cell via
+    ``get_count_cell``. Saves and tab switches still update (and may speak) the cell.
     """
     interval = event.get("interval_seconds")
     _refresh_count(api)
-    api.set_status(_count_text(api))
     api.log(f"Status Scribe: timer refresh ({interval}s) -> {_last_count}")
 
 
