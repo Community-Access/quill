@@ -106,7 +106,7 @@ jobs:
           python scripts/generate_update_feed.py \
             --output docs/site/updates/.quill-update-feed-v1.json \
             --tag "${{ github.ref_name }}" \
-            --notes "$(awk '/^## '"${{ github.ref_name }}"'$/{flag=1; next} /^## /{flag=0} flag' CHANGELOG.md | head -c 800)"
+            --notes "$(python scripts/extract_release_body.py --version '${{ github.ref_name }}' --max-chars 800)"
       - name: Commit update feed
         if: startsWith(github.ref, 'refs/tags/v')
         run: |
@@ -122,6 +122,15 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
       - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Build release body from CHANGELOG
+        run: |
+          python scripts/extract_release_body.py \
+            --version "${{ github.ref_name }}" \
+            --output release-body.md \
+            --fallback-full
       - name: Download installer artifact
         uses: actions/download-artifact@v8
         with:
@@ -151,7 +160,7 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           name: "QUILL for All ${{ github.ref_name }} Beta"
-          body_path: CHANGELOG.md
+          body_path: release-body.md
           files: |
             release-assets/installer/Quill-for-All-Setup-*.exe
             release-assets/Quill-Portable-*.zip

@@ -19276,14 +19276,7 @@ class MainFrame(
                 self._record_notification(f"Update {target.version} found; downloading", "update")
                 self._download_update_release(target)
                 return
-            # #179: defer the WebView2 update dialog if the warm-up has not
-            # finished so the UI thread does not block for tens of seconds.
-            if self._webview_warm:
-                action = self._show_update_available_dialog(current_version, target)
-            else:
-                self._set_status("Preparing update dialog... (one-time WebView2 setup)")
-                self._wx.CallAfter(self._show_update_available_dialog, current_version, target)
-                action = "deferred"
+            action = self._show_update_available_dialog(current_version, target)
             if action == "download":
                 self._download_update_release(target)
             elif action == "skip":
@@ -19339,12 +19332,7 @@ class MainFrame(
         save_settings(self.settings)
         self._set_status("Switched to the beta update channel")
         self._announce("Beta updates enabled")
-        if self._webview_warm:
-            action = self._show_update_available_dialog(current_version, release)
-        else:
-            self._set_status("Preparing update dialog... (one-time WebView2 setup)")
-            self._wx.CallAfter(self._show_update_available_dialog, current_version, release)
-            action = "deferred"
+        action = self._show_update_available_dialog(current_version, release)
         if action == "download":
             self._download_update_release(release)
         elif action == "skip":
@@ -19472,40 +19460,122 @@ class MainFrame(
         finally:
             dialog.Destroy()
 
+    def _present_release_notes(
+        self,
+        *,
+        title: str,
+        header: str,
+        notes_plain: str,
+        buttons: list[tuple[str, int]],
+        affirmative_id: int,
+        escape_id: int,
+    ) -> int:
+        """Show release notes in a read-only multi-line edit (help-text style).
+
+        ``header`` is a short label above the notes; ``notes_plain`` is the
+        flattened changelog section shown in a scrollable, screen-reader-friendly
+        ``TextCtrl``. Returns the id of the button the user pressed.
+        """
+        wx = self._wx
+        dialog = wx.Dialog(
+            self.frame, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
+        )
+        dialog.SetSize((560, 520))
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        if header:
+            heading = wx.StaticText(dialog, label=header)
+            sizer.Add(heading, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 12)
+        notes_label = wx.StaticText(dialog, label="Release &notes:")
+        sizer.Add(notes_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, 12)
+        body = wx.TextCtrl(
+            dialog,
+            value=notes_plain,
+            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_AUTO_URL | wx.TE_RICH2,
+            name="release_notes",
+        )
+        body.SetName("Release notes")
+        sizer.Add(body, 1, wx.EXPAND | wx.ALL, 12)
+        btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        btn_sizer.AddStretchSpacer()
+        for label, return_id in buttons:
+            button = wx.Button(dialog, return_id, label=label)
+            button.Bind(wx.EVT_BUTTON, lambda _e, r=return_id: dialog.EndModal(r))
+            if return_id == affirmative_id:
+                button.SetDefault()
+            btn_sizer.Add(button, 0, wx.RIGHT, 6)
+        sizer.Add(btn_sizer, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 12)
+        dialog.SetSizer(sizer)
+        apply_modal_ids(dialog, affirmative_id=affirmative_id, escape_id=escape_id)
+        # Land focus on the notes so screen-reader users enter on the text.
+        wx.CallAfter(body.SetFocus)
+        try:
+            return self._show_modal_dialog(dialog, title)
+        finally:
+            dialog.Destroy()
+
     def _show_update_available_dialog(self, current_version: str, release: GitHubRelease) -> str:
         """Present an available update. Returns one of ``"download"``,
         ``"skip"`` (don't offer this version again) or ``"later"``."""
-        from quill.ui.preview_dialog import HtmlMessageDialog
-
         wx = self._wx
         self._announce(f"Update available: {release.version}")
         channel = "Beta / prerelease" if release.prerelease else "Stable"
-        notes = release.notes or "_(no release notes provided)_"
-        if len(notes) > 600:
-            notes = notes[:600] + "…"
-        published = f"**Published:** {release.published_at}  \n" if release.published_at else ""
-        body = self._render_html(
-            f"# Update available: {release.version}\n\n"
-            f"**Channel:** {channel}  \n"
-            f"{published}"
-            f"**Current version:** {current_version}\n\n"
-            "## Release notes\n\n" + notes
+        raw = (release.notes or "").strip()
+        notes = (
+            _strip_md_to_plain(raw)
+            if raw
+            else "(No release notes were provided for this version.)"
         )
-        result = HtmlMessageDialog(
-            self.frame,
-            "Check for Updates",
-            body,
-            [
-                ("Skip this version", wx.ID_IGNORE),
+        published = f"Published: {release.published_at}\n" if release.published_at else ""
+        header = (
+            f"Update available: {release.version}\n"
+            f"Channel: {channel}\n"
+            f"{published}"
+            f"Current version: {current_version}"
+        )
+        result = self._present_release_notes(
+            title="Check for Updates",
+            header=header,
+            notes_plain=notes,
+            buttons=[
                 ("Later", wx.ID_CANCEL),
+                ("Skip this version", wx.ID_IGNORE),
                 ("Download update", wx.ID_OK),
             ],
-        ).show_modal()
+            affirmative_id=wx.ID_OK,
+            escape_id=wx.ID_CANCEL,
+        )
         if result == wx.ID_OK:
             return "download"
         if result == wx.ID_IGNORE:
             return "skip"
         return "later"
+
+    def show_whats_new(self) -> None:
+        """Show the running build's abbreviated release notes on demand.
+
+        Lets users see the same notes the Check-for-Updates dialog shows, even
+        between updates, so the format is familiar when an update lands.
+        """
+        from quill import build_info
+        from quill.core.release_notes import current_release_notes
+
+        wx = self._wx
+        version = build_info.get_short_version()
+        notes = current_release_notes()
+        if not notes:
+            notes = (
+                "Release notes are not bundled with this build.\n\n"
+                "See the changelog on the project site for what's new."
+            )
+        self._present_release_notes(
+            title="What's New",
+            header=f"What's new in QUILL {version}",
+            notes_plain=notes,
+            buttons=[("Close", wx.ID_CLOSE)],
+            affirmative_id=wx.ID_CLOSE,
+            escape_id=wx.ID_CLOSE,
+        )
+        self._set_status("Showed What's New")
 
     def _skip_update_version(self, version: str) -> None:
         """Remember a version the user chose to skip so we stop offering it."""

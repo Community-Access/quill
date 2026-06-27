@@ -1182,6 +1182,13 @@ def bundle_embedded_python(
     print(f"Copying Quill package source from {quill_source} into runtime...")
     shutil.copytree(quill_source, site_packages / "quill", dirs_exist_ok=True)
 
+    # Stage the changelog inside the package so the running build can show
+    # abbreviated "What's New" / Check-for-Updates release notes offline
+    # (quill.core.release_notes.find_changelog reads quill/CHANGELOG.md).
+    changelog_src = source_root / "CHANGELOG.md"
+    if changelog_src.is_file():
+        shutil.copy2(changelog_src, site_packages / "quill" / "CHANGELOG.md")
+
     _install_vendored_glow(python_exe, source_root)
     _prune_embedded_runtime(site_packages)
 

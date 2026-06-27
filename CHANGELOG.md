@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.8.0 Beta 2 (in development)
+
+Second public beta. Rolls up 0.8.0 Beta 1 plus the changes below. This section
+doubles as the in-app release notes: the same text appears when you **Check for
+Updates** and any time from **Help > What's New**.
+
+### What's New in this beta
+
+- **Release notes now show when you check for updates.** When an update is found, QUILL presents an abbreviated, screen-reader-friendly summary of what changed in a read-only multi-line edit (the same control help text and wizards use), alongside **Download**, **Skip this version**, and **Later**. The notes are sourced from this changelog, so every release carries a short "what's new" list.
+- **New: Help > What's New.** See the current build's release notes on demand, between updates, in the same accessible control — so the format is familiar when an update lands.
+- **Faster, simpler update prompt.** The update dialog no longer waits on a one-time WebView2 warm-up before it can appear.
+
 ## 0.8.0 Beta 1 (in development)
 
 Next public beta. Rolls up the 0.7.0 line plus subsequent fixes. The GitHub Pages update feed is intentionally left pointed at the prior release so existing testers are not prompted to update until 0.8.0 is published as a release.

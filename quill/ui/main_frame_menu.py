@@ -1415,6 +1415,7 @@ class MenuBuilderMixin:
         self._id_shell_remove = wx.NewIdRef()
         self._id_notifications = wx.NewIdRef()
         self._id_check_updates = wx.NewIdRef()
+        self._id_whats_new = wx.NewIdRef()
         self._id_check_glow_updates = wx.NewIdRef()
         self._id_status_bar_settings = wx.NewIdRef()
         self._id_share_export = wx.NewIdRef()
@@ -2303,6 +2304,7 @@ class MenuBuilderMixin:
         # "Check for Updates on Startup" lives in Settings now (removed the
         # duplicate Help-menu toggle).
         help_menu.Append(self._id_check_updates, _("Check for &Updates..."))
+        help_menu.Append(self._id_whats_new, _("&What's New..."))
         if self._feature_enabled("core.glow"):
             help_menu.Append(self._id_check_glow_updates, _("Check for &GLOW Updates..."))
         help_menu.Append(self._id_about_quill, _("&About Quill"))
@@ -3655,6 +3657,11 @@ class MenuBuilderMixin:
             wx.EVT_MENU,
             lambda _e: self.check_for_updates(),
             id=self._id_check_updates,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.show_whats_new(),
+            id=self._id_whats_new,
         )
         self.frame.Bind(
             wx.EVT_MENU,

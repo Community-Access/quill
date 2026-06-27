@@ -78,6 +78,7 @@
   "quill/ui/main_frame.py::MainFrame._offer_post_download_actions::wx.Dialog": "hardened_custom",
   "quill/ui/main_frame.py::MainFrame._open_find_replace::wx.FindReplaceDialog": "native",
   "quill/ui/main_frame.py::MainFrame._present_quick_nav::wx.Dialog": "hardened_custom",
+  "quill/ui/main_frame.py::MainFrame._present_release_notes::wx.Dialog": "hardened_custom",
   "quill/ui/main_frame.py::MainFrame._prompt_code_language::wx.TextEntryDialog": "native",
   "quill/ui/main_frame.py::MainFrame._prompt_file_search::wx.Dialog": "hardened_custom",
   "quill/ui/main_frame.py::MainFrame._prompt_migration_summary::wx.MessageDialog": "native",
