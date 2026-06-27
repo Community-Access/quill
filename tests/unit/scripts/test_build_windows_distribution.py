@@ -306,6 +306,25 @@ def test_uninstaller_custom_data_guard_refuses_broad_targets() -> None:
         assert constant in guard
 
 
+def test_bundled_launcher_prefers_runtime_dir_over_orphaned_root() -> None:
+    # The hoisted {app}\quill.exe at the bundle root is orphaned from the embedded
+    # runtime (python313.dll / _pth / .pyd modules live in python\), so launching
+    # it binds to a system Python or fails outright on a clean machine -- which
+    # broke the Start Menu / Desktop shortcuts. BundledLauncherPath must prefer the
+    # working python\quill.exe (next to the runtime), then python\pythonw.exe, and
+    # use the root quill.exe only as a last-resort fallback.
+    script = build_inno_setup_script("9.9.9")
+    code = script[script.index("\n[Code]\n") :]
+    fn = code[code.index("function BundledLauncherPath") :]
+    fn = fn[: fn.index("\nend;")]
+    i_python_quill = fn.index("{app}\\python\\quill.exe")
+    i_python_pythonw = fn.index("{app}\\python\\pythonw.exe")
+    i_root_quill = fn.index("{app}\\quill.exe")  # distinct from the python\ paths
+    assert i_python_quill < i_python_pythonw < i_root_quill, (
+        "BundledLauncherPath must prefer python\\quill.exe over the orphaned root quill.exe"
+    )
+
+
 def test_shell_verb_registry_lines_cover_every_verb_and_extension() -> None:
     # SHELL-3: the installer's right-click verbs are generated straight from
     # the single core registry, so the menu can never drift from the CLI.

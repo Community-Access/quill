@@ -2,7 +2,7 @@
 ; Edit build_inno_setup_script(), not this file, to change packaging.
 
 #define AppName "QUILL for All"
-#define AppVersion "0.8.0 Beta 1"
+#define AppVersion "0.8.0 Beta 2"
 #define AppPublisher "Community Access"
 #define AppURL "https://github.com/Community-Access/quill"
 #define AppExeName "quill.exe"
@@ -38,7 +38,7 @@ MinVersion=10.0
 ; The file-association and Send-to-Quill tasks write Explorer keys, so
 ; tell Windows to refresh association/icon caches after install.
 ChangesAssociations=yes
-OutputBaseFilename=Quill-for-All-Setup-0.8.0 Beta 1
+OutputBaseFilename=Quill-for-All-Setup-0.8.0 Beta 2
 Compression=lzma2/ultra
 SolidCompression=yes
 WizardStyle=modern
@@ -321,23 +321,26 @@ Type: filesandordirs; Name: "{app}\python"
 
 [Code]
 // -- Bundled launcher resolution ------------------------------------------------
-// quill.exe at the bundle root is a copy of the embedded runtime's
-// pythonw.exe whose VERSIONINFO has been stamped with the Quill
-// product identity (see _stamp_quill_launcher in
-// build_windows_distribution.py), so JAWS's Ctrl+JAWSKey+V reports
-// the real Quill version instead of "Python 3.x.x" (issue #615).
-// BundledLauncherPath tries the hoisted quill.exe first, then the
-// older python\quill.exe (kept for back-compat with bundles from
-// before the hoist landed), then plain python\pythonw.exe, and
-// finally '' so every call site falls back gracefully.
+// IMPORTANT: prefer python\quill.exe (inside the runtime dir) over the
+// hoisted {app}\quill.exe at the bundle root. Both are stamped copies of
+// pythonw.exe (issue #615), but the root copy is ORPHANED from the runtime:
+// python313.dll, python313.zip, the .pyd modules, and python313._pth all
+// live in python\, not at the root. So a root-launched quill.exe cannot
+// find the bundled interpreter and either binds to a system Python (wrong
+// site-packages -> crash) or, on a clean machine with no system Python,
+// fails to start at all -- which broke the Start Menu / Desktop shortcuts.
+// python\quill.exe sits next to the runtime, so it loads the embedded
+// interpreter in isolation (correct sys.prefix, pywin32 bootstrap runs).
+// The root {app}\quill.exe stays only as the portable-evidence marker and
+// as a last-resort fallback for dev builds that ship no python\ runtime.
 function BundledLauncherPath(Param: String): String;
 begin
-  if FileExists(ExpandConstant('{app}\quill.exe')) then
-    Result := ExpandConstant('{app}\quill.exe')
-  else if FileExists(ExpandConstant('{app}\python\quill.exe')) then
+  if FileExists(ExpandConstant('{app}\python\quill.exe')) then
     Result := ExpandConstant('{app}\python\quill.exe')
   else if FileExists(ExpandConstant('{app}\python\pythonw.exe')) then
     Result := ExpandConstant('{app}\python\pythonw.exe')
+  else if FileExists(ExpandConstant('{app}\quill.exe')) then
+    Result := ExpandConstant('{app}\quill.exe')
   else
     Result := '';
 end;
