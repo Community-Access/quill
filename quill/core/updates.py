@@ -22,9 +22,28 @@ GITHUB_RELEASES_API = "https://api.github.com/repos/Community-Access/quill/relea
 _SIGNATURE_SALT = "quill-manifest-signature-v1"
 _MANIFEST_KEY_ENV = "QUILL_UPDATE_MANIFEST_KEY"
 _TRUSTED_HOSTS_ENV = "QUILL_UPDATE_TRUSTED_HOSTS"
+# Test/rehearsal overrides. Both default to the production endpoints and are
+# inert unless explicitly set, so a release can be dry-run against a throwaway
+# repo/feed without touching the public ones. The asset-download path still
+# enforces HTTPS + the trusted-host allowlist, so an override can only redirect
+# *discovery*, never relax download security.
+_API_URL_ENV = "QUILL_UPDATE_API_URL"
+_MANIFEST_URL_ENV = "QUILL_UPDATE_MANIFEST_URL"
 # Pre-release ordering: a final (non-pre-release) build outranks every
 # pre-release of the same major.minor.patch. See _version_tuple / _prerelease_rank.
 _STABLE_PRERELEASE_RANK = (9, 0)
+
+
+def resolve_releases_api_url(default: str = GITHUB_RELEASES_API) -> str:
+    """The GitHub Releases API URL, honouring the QUILL_UPDATE_API_URL override."""
+    override = os.getenv(_API_URL_ENV, "").strip()
+    return override or default
+
+
+def resolve_manifest_url(default: str = DEFAULT_UPDATE_MANIFEST_URL) -> str:
+    """The signed-manifest feed URL, honouring the QUILL_UPDATE_MANIFEST_URL override."""
+    override = os.getenv(_MANIFEST_URL_ENV, "").strip()
+    return override or default
 
 
 def _ssl_context() -> ssl.SSLContext:
@@ -49,9 +68,10 @@ class UpdateManifest:
 
 
 def fetch_update_manifest(
-    url: str = DEFAULT_UPDATE_MANIFEST_URL,
+    url: str | None = None,
     timeout: int = 10,
 ) -> UpdateManifest:
+    url = url or resolve_manifest_url()
     _validate_remote_url(url)
     with urlopen(url, timeout=timeout, context=_ssl_context()) as response:
         payload = response.read().decode("utf-8", errors="strict")
@@ -69,7 +89,7 @@ class GitHubRelease:
 
 def fetch_latest_release(
     include_prereleases: bool = False,
-    api_url: str = GITHUB_RELEASES_API,
+    api_url: str | None = None,
     timeout: int = 10,
 ) -> GitHubRelease | None:
     """Return the newest GitHub release the user is eligible for.
@@ -78,6 +98,7 @@ def fetch_latest_release(
     Beta channel (include_prereleases=True): newest release including prereleases.
     Returns None when no eligible release exists.
     """
+    api_url = api_url or resolve_releases_api_url()
     request = Request(
         api_url,
         headers={
@@ -163,8 +184,9 @@ def _release_from_json(data: dict) -> GitHubRelease:
     )
 
 
-def fetch_releases(api_url: str = GITHUB_RELEASES_API, timeout: int = 10) -> list[GitHubRelease]:
+def fetch_releases(api_url: str | None = None, timeout: int = 10) -> list[GitHubRelease]:
     """All non-draft GitHub releases (newest-first as GitHub returns them)."""
+    api_url = api_url or resolve_releases_api_url()
     request = Request(
         api_url,
         headers={"Accept": "application/vnd.github+json", "User-Agent": "Quill-Updater"},
@@ -374,5 +396,7 @@ __all__ = [
     "fetch_update_manifest",
     "is_newer_version",
     "parse_update_manifest",
+    "resolve_manifest_url",
+    "resolve_releases_api_url",
     "verify_manifest_signature",
 ]

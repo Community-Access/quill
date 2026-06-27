@@ -19164,9 +19164,10 @@ class MainFrame(
             fetch_error: str | None = None
             try:
                 try:
-                    manifest = fetch_update_manifest(
-                        "https://community-access.github.io/quill/updates/.quill-update-feed-v1.json"
-                    )
+                    # URL resolves the QUILL_UPDATE_MANIFEST_URL override (default:
+                    # the production signed-manifest feed) so a release can be
+                    # rehearsed against a throwaway feed without code changes.
+                    manifest = fetch_update_manifest()
                 except (URLError, ValueError, OSError):
                     pass
                 if manifest is None or not is_newer_version(current_version, manifest.version):

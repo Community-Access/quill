@@ -220,3 +220,59 @@ def test_salt_only_signature_rejected(monkeypatch) -> None:
         signature=salt_sig,
     )
     assert not verify_manifest_signature(m), "salt-only signature must be rejected"
+
+
+def test_resolve_endpoints_default_to_production(monkeypatch) -> None:
+    # Release-rehearsal overrides must be inert unless explicitly set, so a normal
+    # user always hits the production endpoints.
+    from quill.core.updates import (
+        GITHUB_RELEASES_API,
+        resolve_manifest_url,
+        resolve_releases_api_url,
+    )
+
+    monkeypatch.delenv("QUILL_UPDATE_API_URL", raising=False)
+    monkeypatch.delenv("QUILL_UPDATE_MANIFEST_URL", raising=False)
+    assert resolve_releases_api_url() == GITHUB_RELEASES_API
+    assert resolve_manifest_url() == DEFAULT_UPDATE_MANIFEST_URL
+
+
+def test_resolve_endpoints_honour_overrides(monkeypatch) -> None:
+    # Setting the env vars redirects discovery to a throwaway repo/feed.
+    from quill.core.updates import resolve_manifest_url, resolve_releases_api_url
+
+    api = "https://api.github.com/repos/Community-Access/quill-update-selftest/releases"
+    feed = "https://community-access.github.io/quill-update-selftest/feed.json"
+    monkeypatch.setenv("QUILL_UPDATE_API_URL", api)
+    monkeypatch.setenv("QUILL_UPDATE_MANIFEST_URL", feed)
+    assert resolve_releases_api_url() == api
+    assert resolve_manifest_url() == feed
+
+
+def test_fetch_releases_uses_api_override(monkeypatch) -> None:
+    # The override must actually reach the network call, not just the resolver:
+    # fetch_releases() with no explicit api_url queries the overridden endpoint.
+    from quill.core import updates
+
+    override = "https://api.github.com/repos/Community-Access/quill-update-selftest/releases"
+    monkeypatch.setenv("QUILL_UPDATE_API_URL", override)
+
+    seen: dict[str, str] = {}
+
+    class _FakeResponse:
+        def __enter__(self) -> _FakeResponse:
+            return self
+
+        def __exit__(self, *exc: object) -> None:
+            return None
+
+        def read(self) -> bytes:
+            return b"[]"
+
+    def _fake_urlopen(request, *args, **kwargs):  # noqa: ANN001
+        seen["url"] = request.full_url if hasattr(request, "full_url") else str(request)
+        return _FakeResponse()
+
+    monkeypatch.setattr(updates, "urlopen", _fake_urlopen)
+    assert updates.fetch_releases() == []
+    assert seen["url"] == override
