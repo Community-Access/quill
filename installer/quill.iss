@@ -410,24 +410,114 @@ begin
   end;
 end;
 
+// -- Uninstall: discover a custom data location ----------------------------
+// When the user chose a custom data folder, save_storage_mode writes
+// {"mode":"custom","path":"..."} into storage-mode.json under
+// %APPDATA%\Quill (quill.core.storage_mode). The pointer therefore lives
+// INSIDE the folder the uninstaller deletes, so it must be read first --
+// otherwise the custom directory is silently orphaned on 'remove all data'.
+// JSON stores backslashes doubled, so they are collapsed after extraction.
+function ReadCustomDataDir(): String;
+var
+  ModeFile: String;
+  Raw: AnsiString;
+  S: String;
+  P, Q: Integer;
+begin
+  Result := '';
+  ModeFile := ExpandConstant('{userappdata}\Quill\storage-mode.json');
+  if not FileExists(ModeFile) then
+    Exit;
+  if not LoadStringFromFile(ModeFile, Raw) then
+    Exit;
+  S := String(Raw);
+  // Only honour an explicit custom mode; appdata/portable have no path.
+  if Pos('"custom"', S) = 0 then
+    Exit;
+  P := Pos('"path"', S);
+  if P = 0 then
+    Exit;
+  S := Copy(S, P + 6, Length(S));
+  P := Pos(':', S);
+  if P = 0 then
+    Exit;
+  S := Copy(S, P + 1, Length(S));
+  P := Pos('"', S);
+  if P = 0 then
+    Exit;
+  S := Copy(S, P + 1, Length(S));
+  Q := Pos('"', S);
+  if Q = 0 then
+    Exit;
+  S := Copy(S, 1, Q - 1);
+  StringChangeEx(S, '\\', '\', True);
+  Result := S;
+end;
+
+function NormalizedDir(Dir: String): String;
+begin
+  Result := Lowercase(RemoveBackslashUnlessRoot(Dir));
+end;
+
+// Guard: never let a stray or hostile storage-mode.json point the
+// uninstaller at a drive root, the install dir, or a well-known shell
+// folder. Only an existing directory more specific than a drive root
+// (Length > 3, e.g. not 'c:\') and outside those locations is eligible.
+function IsSafeCustomDataDir(Dir: String): Boolean;
+var
+  N: String;
+begin
+  Result := False;
+  if Dir = '' then
+    Exit;
+  if not DirExists(Dir) then
+    Exit;
+  N := NormalizedDir(Dir);
+  if Length(N) <= 3 then
+    Exit;
+  if N = NormalizedDir(ExpandConstant('{app}')) then Exit;
+  if N = NormalizedDir(ExpandConstant('{userappdata}')) then Exit;
+  if N = NormalizedDir(ExpandConstant('{userappdata}\Quill')) then Exit;
+  if N = NormalizedDir(ExpandConstant('{localappdata}')) then Exit;
+  if N = NormalizedDir(ExpandConstant('{userprofile}')) then Exit;
+  if N = NormalizedDir(ExpandConstant('{userdocs}')) then Exit;
+  if N = NormalizedDir(ExpandConstant('{win}')) then Exit;
+  if N = NormalizedDir(ExpandConstant('{sys}')) then Exit;
+  Result := True;
+end;
+
 // -- Uninstall: ask before wiping personal data ----------------------------
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 var
   DataDir: String;
+  CustomDir: String;
+  Prompt: String;
+  HasCustom: Boolean;
 begin
   if CurUninstallStep = usUninstall then
   begin
     DataDir := ExpandConstant('{userappdata}\Quill');
-    if DirExists(DataDir) then
+    // Read the custom-location pointer BEFORE DataDir is deleted below.
+    CustomDir := ReadCustomDataDir();
+    HasCustom := (CustomDir <> '') and IsSafeCustomDataDir(CustomDir);
+    if DirExists(DataDir) or HasCustom then
     begin
-      if MsgBox('Also remove your Quill data?' + #13#10 + #13#10 +
+      Prompt := 'Also remove your Quill data?' + #13#10 + #13#10 +
                 'This deletes your settings, dictionaries, autosaves, backups,' + #13#10 +
-                'and onboarding state in:' + #13#10 + DataDir + #13#10 + #13#10 +
+                'and onboarding state in:';
+      if DirExists(DataDir) then
+        Prompt := Prompt + #13#10 + DataDir;
+      if HasCustom then
+        Prompt := Prompt + #13#10 + CustomDir;
+      Prompt := Prompt + #13#10 + #13#10 +
                 'Choose No to keep your documents and settings for a future' + #13#10 +
-                'reinstall. Choose Yes to remove everything.',
-                mbConfirmation, MB_YESNO or MB_DEFBUTTON2) = IDYES then
+                'reinstall. Choose Yes to remove everything.';
+      if MsgBox(Prompt, mbConfirmation, MB_YESNO or MB_DEFBUTTON2) = IDYES then
       begin
-        DelTree(DataDir, True, True, True);
+        if HasCustom then
+          DelTree(CustomDir, True, True, True);
+        if DirExists(DataDir) then
+          DelTree(DataDir, True, True, True);
       end;
     end;
   end;

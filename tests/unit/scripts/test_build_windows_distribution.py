@@ -263,6 +263,49 @@ def test_installer_preserves_user_config_and_never_touches_the_data_dir() -> Non
     assert "{userappdata}" not in install_delete
 
 
+def test_uninstaller_offers_to_remove_custom_data_location() -> None:
+    # A user who chose a custom data folder has its path recorded in
+    # storage-mode.json under %APPDATA%\Quill (quill.core.storage_mode). That
+    # pointer lives inside the very folder the uninstaller deletes, so the
+    # uninstaller must read it BEFORE removing %APPDATA%\Quill -- otherwise the
+    # custom directory is silently orphaned on "remove all data" (the bug this
+    # guards against). The custom dir is then deleted, gated by the safety check.
+    script = build_inno_setup_script("9.9.9")
+    code = script[script.index("\n[Code]\n") :]
+    assert "function ReadCustomDataDir(): String;" in code
+    assert "storage-mode.json" in code
+    # Only an explicit custom mode is honoured (appdata/portable carry no path).
+    assert '\'"custom"\'' in code
+    assert "IsSafeCustomDataDir(CustomDir)" in code
+    assert "DelTree(CustomDir, True, True, True);" in code
+    # The pointer read must precede the %APPDATA%\Quill deletion, or the file
+    # would already be gone when we try to read it.
+    assert code.index("CustomDir := ReadCustomDataDir()") < code.index("DelTree(DataDir")
+
+
+def test_uninstaller_custom_data_guard_refuses_broad_targets() -> None:
+    # The guard must never let a stray or hostile storage-mode.json point the
+    # uninstaller at a drive root, the install dir, or a well-known shell folder.
+    # Each is explicitly excluded, and only an existing directory more specific
+    # than a bare drive root is eligible for deletion.
+    script = build_inno_setup_script("9.9.9")
+    code = script[script.index("\n[Code]\n") :]
+    guard_at = code.index("function IsSafeCustomDataDir")
+    guard = code[guard_at : code.index("\nend;", guard_at)]
+    assert "if not DirExists(Dir) then" in guard  # must be a real existing dir
+    assert "Length(N) <= 3" in guard  # rejects bare drive roots like c:\
+    for constant in (
+        "{app}",
+        "{userappdata}",
+        "{localappdata}",
+        "{userprofile}",
+        "{userdocs}",
+        "{win}",
+        "{sys}",
+    ):
+        assert constant in guard
+
+
 def test_shell_verb_registry_lines_cover_every_verb_and_extension() -> None:
     # SHELL-3: the installer's right-click verbs are generated straight from
     # the single core registry, so the menu can never drift from the CLI.
