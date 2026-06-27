@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>README</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="document-guardian">Document Guardian</h1>
+<p><strong>Bundled QUILL Quillin</strong> —
+<code>com.quill.docguardian</code></p>
+<p>A reference implementation showing
+<code>document.before_close</code>, <code>document.before_save</code>,
+and <code>document.after_save</code> event handlers. Document Guardian
+watches your documents and speaks up when something is worth knowing
+before it is too late.</p>
+<h2 id="what-it-does">What it does</h2>
+<h3 id="close-guard-document.before_close">Close Guard
+(document.before_close)</h3>
+<p>Before any tab closes, Document Guardian checks whether the document
+looks like it might be unfinished:</p>
+<ul>
+<li>If the document has never been saved and has fewer words than your
+threshold (default: 3), it speaks a warning so you can press Ctrl+Z if
+the close was accidental.</li>
+<li>If the document contains your TODO marker text (default:
+<code>TODO</code>), it warns you regardless of word count.</li>
+<li>Already-saved files are only checked for the TODO marker, not word
+count.</li>
+</ul>
+<p>Document Guardian does not block or cancel the close — it just makes
+sure you heard the situation.</p>
+<h3 id="save-stamp-document.before_save">Save Stamp
+(document.before_save)</h3>
+<p>If you keep a line beginning with <code>Updated:</code> in your
+plain-text notes, Document Guardian will update it with the current date
+and time before every save. Disabled by default. When enabled, it looks
+for the first line starting with <code>Updated:</code> and replaces it.
+If no such line exists, it leaves the document unchanged.</p>
+<h3 id="save-confirmation-document.after_save">Save Confirmation
+(document.after_save)</h3>
+<p>After every save, speaks the file name and size. Useful when saving
+to a network drive or an external device where you want confirmation
+that the file actually landed. Disabled by default.</p>
+<h2 id="settings">Settings</h2>
+<p>Configure from <strong>Preferences</strong> (Ctrl+Comma) →
+<strong>Document Guardian</strong>:</p>
+<ul>
+<li><strong>Close Guard tab</strong> — enable/disable, word count
+threshold, and TODO marker text.</li>
+<li><strong>Save Stamp tab</strong> — enable/disable, and timestamp
+format (Long, ISO 8601, date-only).</li>
+<li><strong>Save Confirmation tab</strong> — enable/disable the
+after-save path-and-size announcement.</li>
+</ul>
+<h2 id="capabilities">Capabilities</h2>
+<ul>
+<li><code>document.events</code> — subscribes to before_close,
+before_save, and after_save</li>
+<li><code>editor.read</code> — reads document text to count words and
+find TODO markers</li>
+<li><code>editor.write</code> — rewrites the Updated: line before
+save</li>
+<li><code>ui.announce</code> — speaks warnings, stamps, and save
+confirmations</li>
+<li><code>settings.own.read</code> / <code>settings.own.write</code> —
+reads and persists settings</li>
+</ul>
+<h2 id="license">License</h2>
+<p>MIT. Copyright (c) Blind Information Technology Solutions (BITS) and
+Community Access.</p>
+</body>
+</html>

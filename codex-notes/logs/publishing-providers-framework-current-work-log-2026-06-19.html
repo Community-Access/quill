@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>publishing-providers-framework-current-work-log-2026-06-19</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="publishing-providers-framework-current-work-log">Publishing
+Providers Framework Current Work Log</h1>
+<h2 id="phase-1-slice-a">Phase 1 Slice A</h2>
+<p>Reviewed the canonical planning, readiness, follow-up, extraction,
+handoff, and review-log records before implementation.</p>
+<p>Work completed:</p>
+<ul>
+<li>added an immutable adapter contract joining provider metadata and
+client</li>
+<li>made registry contribution explicit and package-facing</li>
+<li>rejected mismatched ids before registry mutation</li>
+<li>pinned host-owned secret access and trusted in-process
+execution</li>
+<li>required a plain network-capability rationale</li>
+<li>added a WordPress bundled package module wrapping existing runtime
+objects</li>
+<li>avoided shell, menu, dialog, credential, and publishing workflow
+changes</li>
+</ul>
+<p>Validation history:</p>
+<ul>
+<li>all five new adapter tests passed on the first focused run</li>
+<li>four existing publishing tests initially errored because
+<code>.tmp</code> did not exist</li>
+<li>created the test-only parent and reran the complete focused
+command</li>
+<li>final focused result: <code>34 passed in 0.69s</code></li>
+<li>Ruff passed</li>
+<li>provider registry gate passed</li>
+<li>removed the test-only <code>.tmp</code> directory</li>
+</ul>
+<p>No Phase 2, Phase 3, or Phase 4 work was performed.</p>
+<h2 id="main-merge-and-phase-1-slice-b">2026-06-20 - Main Merge And
+Phase 1 Slice B</h2>
+<ul>
+<li>fetched current <code>origin/main</code> at
+<code>3df921ea</code></li>
+<li>resolved four merge conflicts while preserving both publishing work
+and main behavior</li>
+<li>rebaselined merge-only module budgets and regenerated the combined
+MainFrame public surface</li>
+<li>committed the merge as <code>a3bec29</code></li>
+<li>decided normal startup should exercise the trusted bundled-provider
+contract</li>
+<li>added explicit bundled-provider bootstrap before UI import</li>
+<li>proved WordPress definition/client identity and repeat-bootstrap
+behavior</li>
+<li>committed the slice as <code>90a3f6e</code></li>
+</ul>
+<p>Validation:</p>
+<ul>
+<li>merge-focused: <code>149 passed</code></li>
+<li>slice-focused: <code>77 passed</code></li>
+<li>Ruff: passed</li>
+<li>provider registry gate: passed</li>
+<li>final full unit suite:
+<code>4056 passed, 66 failed, 14 skipped</code></li>
+<li>full-suite failures were outside publishing/startup; examples
+include current-main planning-doc/version-gate inconsistencies and
+state-sensitive fixtures</li>
+</ul>
+<p>Validation policy now recorded: every next slice runs focused
+publishing tests, relevant unit tests, Ruff, registry gate, and the full
+suite with local temp state.</p>
+<p>No schedule publish, compare/sync, worker execution, or live
+third-party loading work was performed.</p>
+<h2 id="phase-1-closeout-audit">2026-06-20 - Phase 1 Closeout Audit</h2>
+<ul>
+<li>confirmed the branch was clean and synchronized at
+<code>630a41fa</code></li>
+<li>audited adapter validation, WordPress package shape, startup
+bootstrap, identity preservation, and deliberate security/runtime
+boundaries</li>
+<li>found no remaining Phase 1 acceptance gap</li>
+<li>ran the focused closeout battery: <code>77 passed</code></li>
+<li>ran Ruff: passed</li>
+<li>ran the module-size gate: passed</li>
+<li>ran the provider registry gate: passed</li>
+<li>changed documentation only; no product runtime behavior changed</li>
+<li>recorded the user’s explicit post-closeout authorization for
+schedule publishing, compare/sync, Quillin worker execution, and live
+third-party loading</li>
+</ul>
+<p>Phase 1 is closed. The next roadmap phase is schedule publishing.</p>
+<h2 id="schedule-publishing-implementation">2026-06-21 - Schedule
+Publishing Implementation</h2>
+<p>Continued in Claude Code from the Codex restart prompt for this
+phase; the prompt’s Codex <code>apply_patch</code> tooling-blocker
+section did not apply (no sandboxed patch helper in this tool) and was
+dropped, everything else carried over. Verified repository state first:
+<code>origin/main</code> had advanced one unrelated commit (macOS DMG
+packaging fix, <code>34e85556</code>) past what the restart prompt
+assumed; merged it into the branch before starting.</p>
+<p>Work completed in two commits:</p>
+<ul>
+<li>Core checkpoint: <code>PUBLISHING_OPERATION_SCHEDULE</code>; new
+<code>quill/core/publishing_schedule.py</code>
+(<code>validate_scheduled_publish_time</code>);
+<code>scheduled_at</code> parameter added to the
+<code>PublishingProviderClient</code> protocol, the WordPress client
+(<code>date_gmt</code> payload field, <code>_fields</code> query param,
+<code>scheduled_for</code> response field), and to
+<code>create_publishing_remote_item</code>/<code>update_publishing_remote_item</code>;
+<code>publishing_result_message</code>/<code>_display_status</code>
+extended for the <code>"scheduled"</code>/<code>"future"</code> case;
+<code>PUBLISHING_OPERATION_SCHEDULE</code> added to the provider/client
+operation-method validation map; <code>tzdata</code> added as a base
+dependency. New tests:
+<code>tests/unit/core/test_publishing_schedule.py</code> (5 tests) plus
+5 new WordPress-payload tests and one unsupported-provider gating test
+added to the existing
+<code>test_publishing_browse.py</code>/<code>test_publishing.py</code>
+files; 3 pre-existing endpoint-URL assertions updated for the new
+<code>date_gmt</code> <code>_fields</code> entry.</li>
+<li>UI + governance checkpoint: <code>SchedulePublishDialog</code> in
+<code>quill/ui/publishing_tools.py</code> (date/time
+<code>TextCtrl</code>, IANA timezone <code>Choice</code> defaulting to
+UTC, content-kind <code>Choice</code>/<code>StaticText</code> depending
+on context, validate-and-reopen loop); menu id/item/binding and command
+registration for <code>publishing.schedule_publish</code>;
+<code>_schedule_publishing_publish</code> handler in
+<code>main_frame.py</code> covering both new-document and
+already-open-remote-item scheduling with the same review-first
+confirmation idiom as the existing publish/update actions. Regenerated
+<code>dialog_inventory.json</code>; added the dialog to
+<code>dialogs.md</code>; bumped <code>module_size_budgets.json</code>
+for the five files that grew, with a dated rebaseline comment; widened
+the <code>_request_json</code> network-egress rationale to cover
+create/update/schedule (it previously only mentioned browse/open, which
+was already stale before this change). New test file
+<code>test_schedule_publish_dialog_a11y.py</code> (8 tests); extended
+<code>test_main_frame_menu_contract.py</code>’s publishing menu
+assertion.</li>
+</ul>
+<p>Validation:</p>
+<ul>
+<li>core-focused: <code>61 passed</code></li>
+<li>combined publishing/accessibility/governance battery:
+<code>153 passed</code></li>
+<li>Ruff: passed (both checkpoints)</li>
+<li>provider registry gate: passed</li>
+<li>scoped <code>mypy quill/core quill/io</code>: same 7 pre-existing
+findings as before this slice (6 in <code>brf_page_detection.py</code>,
+1 in <code>publishing_validation.py</code>’s untouched
+<code>_extend_unknown_issues</code>), none introduced by this work</li>
+<li>full unit suite: <code>4074 passed, 66 failed, 14 skipped</code> —
+the 66 failures are the identical pre-existing set from the
+<code>4056 passed, 66 failed, 14 skipped</code> baseline; the +18
+passing delta is exactly the new tests added in this slice</li>
+</ul>
+<p>No compare/sync, Quillin worker execution, or live third-party
+loading work was performed. Committed locally as two checkpoints; not
+pushed (this session’s explicit instruction, matching the standing repo
+convention).</p>
+<h2 id="compare-with-remote-implementation">2026-06-21 - Compare With
+Remote Implementation</h2>
+<p>Continued in the same session immediately after the
+schedule-publishing phase, plus a small housekeeping detour: the next
+push returned a GitHub “repository moved” notice, so <code>origin</code>
+was updated to
+<code>https://github.com/Community-Access/quill.git</code> (recorded
+separately in <code>codex-handoff.md</code>) and the schedule-publishing
+checkpoints were pushed at the user’s explicit request.</p>
+<p>Before implementing, researched whether
+<code>Document.source_metadata</code> (the in-memory carrier of all
+<code>publishing_*</code> linkage fields) survives a local
+save-and-reopen cycle, since the phase’s “Initial slices” list opens
+with “define remote identity/linkage source of truth.” Confirmed via
+<code>quill/io/export.py</code> and <code>quill/io/open_read.py</code>
+that it does not — metadata is rebuilt from file-format detection on
+open, never serialized on save. Decided to scope this slice to the open
+tab’s <code>source_metadata</code> as the linkage source of truth and
+explicitly defer the durable file-path-keyed registry, rather than build
+that larger, separable piece now.</p>
+<p>Work completed in two commits:</p>
+<ul>
+<li>Core checkpoint: new <code>quill/core/publishing_compare.py</code>
+(<code>PublishingComparison</code> dataclass,
+<code>build_publishing_comparison</code>);
+<code>compare_publishing_remote_item</code> and
+<code>publishing_comparison_message</code> added to
+<code>quill/core/publishing.py</code>;
+<code>publishing.compare_remote_item</code> added to
+<code>feature_command_map.py</code>. New
+<code>tests/unit/core/test_publishing_compare.py</code> (6 tests) plus 3
+new tests added to <code>test_publishing_browse.py</code>
+(no-difference, remote-changed, and load-failure-propagation cases
+against a fake WordPress response) and one command id added to both
+list-based assertions in <code>test_publishing_framework.py</code>.</li>
+<li>UI + governance checkpoint: menu id/item/binding for
+<code>publishing.compare_remote_item</code> placed ahead of
+<code>Update Remote Content...</code>; command registration;
+<code>_compare_publishing_remote_item</code> handler in
+<code>main_frame.py</code> reusing the exact connection-match guard
+logic already in the update/publish-remote handler. Extended
+<code>test_main_frame_menu_contract.py</code>’s publishing menu
+assertion. Bumped <code>module_size_budgets.json</code> for
+<code>publishing.py</code>/<code>main_frame.py</code>/<code>main_frame_menu.py</code>
+growth with a dated rebaseline comment. No dialog-inventory,
+<code>dialogs.md</code>, or network-egress-audit changes — no new dialog
+surface or network call site.</li>
+</ul>
+<p>Validation:</p>
+<ul>
+<li>focused battery (core + menu contract + module-size +
+network-egress): <code>86 passed</code></li>
+<li>Ruff: passed (both checkpoints)</li>
+<li>provider registry gate: passed</li>
+<li>scoped <code>mypy quill/core quill/io</code>: unchanged from before
+this slice (same 7 pre-existing findings)</li>
+<li>full unit suite: <code>4083 passed, 66 failed, 14 skipped</code> —
+identical pre-existing failure set; +9 passing delta matches the new
+tests added</li>
+</ul>
+<p>No Quillin worker execution or live third-party loading work was
+performed. Committed locally as two checkpoints; not pushed pending
+explicit request.</p>
+<h2 id="quillin-worker-execution-boundaries-implementation">2026-06-21 -
+Quillin Worker Execution Boundaries Implementation</h2>
+<p>User then asked to push the compare checkpoints
+(<code>c8ed954e</code> pushed cleanly to the corrected remote) and to
+continue with the next roadmap phase.</p>
+<p>Researched QUILL’s Quillin/extension architecture via two parallel
+Explore agents before planning, since this phase’s name implied touching
+the sandboxing model directly: confirmed Quillins already run Python
+workers via <code>subprocess.Popen</code>
+(<code>quill/core/quillins/host.py</code> + <code>host_worker.py</code>,
+JSONL IPC) and Node workers via
+<code>quill/core/ai/external_engine.py</code>’s allowlisted subprocess
+runner, both with capability/consent gating — but none of this is
+reusable for publishing providers without new provider-specific IPC
+work, and there is no untrusted provider yet to justify building it
+(SEC-8 keeps third-party discovery locked off regardless of this phase).
+Also confirmed <code>quill.stability.task_manager.TaskManager</code>
+(verified exact class name by reading the file directly) already gives
+background dispatch + cooperative <code>CancellationToken</code> +
+UI-thread-marshalled callbacks, unused by publishing today.</p>
+<p>Presented the user three explicit scope options (lifecycle behavior
+now/boundary deferred; build the real boundary now against a fake
+provider; skip straight to third-party loading) via AskUserQuestion; the
+user picked the first, recommended option.</p>
+<p>Work completed in two commits:</p>
+<ul>
+<li>Core checkpoint: <code>PublishingOperationCancelled</code>
+(<code>quill/core/publishing_providers.py</code>);
+<code>is_cancelled</code> parameter added to
+<code>browse_publishing_content</code> (<code>publishing.py</code>) and
+to the <code>PublishingProviderClient.browse_content</code> Protocol +
+WordPress implementation (<code>publishing_clients.py</code>), checked
+between per-content-kind requests; new
+<code>quill/core/publishing_worker.py</code>
+(<code>browse_publishing_content_task</code>, the sole bridge to
+<code>quill.stability.task_manager</code>);
+<code>publishing_adapters.py</code> gained
+<code>WORKER_EXECUTION = "worker"</code> with its own “not implemented
+yet” rejection, distinct from the generic-rejection branch (required
+fixing one existing parametrized test that had used
+<code>"worker"</code> as its generic-rejection example). New
+<code>tests/unit/core/test_publishing_worker.py</code> (2 tests); 2 new
+cancellation tests added to <code>test_publishing_browse.py</code>; 1
+new case added to <code>test_publishing_adapters.py</code>’s
+parametrize.</li>
+<li>UI + governance checkpoint:
+<code>BrowsePublishingContentDialog</code>
+(<code>quill/ui/publishing_tools.py</code>) now threads a required
+<code>task_manager</code> constructor parameter, gained a Cancel button,
+and dispatches <code>_on_load</code> through
+<code>task_manager.submit()</code> instead of blocking the UI thread;
+new
+<code>_on_cancel_load</code>/<code>_on_browse_task_success</code>/<code>_on_browse_task_failure</code>
+with an operation-id staleness guard and a <code>_destroyed</code> flag
+set in <code>show_modal()</code>’s teardown (which also
+best-effort-cancels any in-flight task). Did not touch the
+<code>wx.ID_CANCEL</code> Close button or Escape handling, per this
+repo’s escape-trap governance tests. <code>main_frame.py</code>’s
+<code>_browse_publishing_content</code> now passes
+<code>self._task_manager</code>. New static source-inspection tests in
+<code>test_publishing_connection_dialog_a11y.py</code> (4 tests) and one
+in <code>test_main_frame.py</code>; bumped
+<code>module_size_budgets.json</code> for the three touched files.</li>
+</ul>
+<p>Validation:</p>
+<ul>
+<li>focused battery (core + UI + module-size):
+<code>97 passed</code></li>
+<li>dialog governance gates (inventory, banned-patterns, button
+contract, hardening, announce-gap): <code>44 passed</code></li>
+<li>Ruff: passed (both checkpoints)</li>
+<li>provider registry gate: passed</li>
+<li>scoped <code>mypy quill/core quill/io</code>: unchanged from before
+this slice (same 7 pre-existing findings)</li>
+<li>full unit suite: <code>4093 passed, 66 failed, 14 skipped</code> —
+identical pre-existing failure set; +10 passing delta matches the new
+tests added</li>
+<li>smoke-launched <code>python -m quill</code> for ~12s: no startup
+traceback (only a benign unrelated lexicon-file stderr warning),
+confirming the new wiring doesn’t break MainFrame construction. Could
+not interactively click through Browse → Load → Cancel: no pywinauto
+installed, no project run-skill exists for this wxPython desktop app.
+Recorded as a known verification gap rather than claimed as tested.</li>
+</ul>
+<p>No live third-party provider loading work was performed. Committed
+locally as two checkpoints; not pushed pending explicit request.</p>
+<h2
+id="live-third-party-provider-loading-final-phase-roadmap-closed">2026-06-21
+- Live Third-Party Provider Loading (Final Phase, Roadmap Closed)</h2>
+<p>User asked to continue, and confirmed wanting memory/docs kept
+current throughout (already the established practice this session).</p>
+<p>Researched QUILL’s SEC-8 policy and the “Install from Folder” Quillin
+flow via one Explore agent before scoping, since the phase name implied
+loosening a security boundary: confirmed SEC-8
+(<code>docs/QUILL-PRD.md</code>, <code>core.third_party_plugins</code>
+flag in <code>quill/core/feature_catalog.py</code>,
+<code>locked_off=True</code>) is product-wide — it keeps all third-party
+Quillin code from running in a default v1.0 build, regardless of
+publishing. “Install from Folder”
+(<code>quill/ui/main_frame_quillins.py</code> →
+<code>quill/core/quillins/loader.py</code>’s
+<code>install_extension()</code>) is already open and ungated, but
+installed code still never executes while the flag is locked off. Found
+<code>register_publishing_provider</code>/<code>register_publishing_provider_client</code>
+are themselves completely open functions with no gate — third-party
+provider loading is blocked today ENTIRELY by the Quillin-execution
+lock, not by anything publishing-specific.</p>
+<p>Presented the user three explicit options via AskUserQuestion (build
+the contract with loading kept locked off; flip the SEC-8 flag and wire
+real loading; stop here as policy-blocked). The user chose the first,
+recommended option, matching the “build the contract, defer the risky
+part” pattern used in schedule/compare/worker-execution.</p>
+<p>Work completed in one commit (no UI/dialog/menu/budget changes needed
+— this was a pure core-contract addition):</p>
+<ul>
+<li><code>quill/core/publishing_adapters.py</code>: new
+<code>ThirdPartyPublishingProviderAdapter</code> dataclass (no trusted
+defaults for <code>secret_access</code>/<code>execution</code>, unlike
+the bundled adapter) and
+<code>register_third_party_publishing_provider()</code>. Validation
+cascade: ids must match; network rationale required; secrets must be
+host-owned; execution must be <code>worker</code> (in-process rejected
+outright for untrusted code); provider id must not conflict with an
+existing bundled adapter; then an unconditional final rejection (“Live
+third-party publishing provider loading is not implemented yet.”).
+Module docstring states explicitly this contract does not loosen,
+bypass, or duplicate the SEC-8 lock.</li>
+<li><code>tests/unit/core/test_publishing_adapters.py</code>: 14 new
+tests — each validation branch independently triggered, an id-mismatch
+case, a bundled-id-conflict case, and a proof test that even a fully
+well-formed third-party adapter still gets rejected with the live
+registries (<code>PROVIDER_DEFINITIONS</code>,
+<code>_PUBLISHING_PROVIDER_CLIENTS</code>) left completely
+untouched.</li>
+</ul>
+<p>Validation:</p>
+<ul>
+<li>focused battery (publishing core + adapters):
+<code>82 passed</code></li>
+<li>Ruff: passed</li>
+<li>provider registry gate: passed (confirms zero registry impact)</li>
+<li>scoped <code>mypy quill/core quill/io</code>: unchanged from before
+this slice (same 7 pre-existing findings)</li>
+<li>full unit suite: <code>4100 passed, 66 failed, 14 skipped</code> —
+identical pre-existing failure set; +7 passing delta matches the new
+tests added</li>
+<li><code>publishing_adapters.py</code> measured at 146 lines, well
+under the untracked 600-line default cap — no module-size budget entry
+needed</li>
+</ul>
+<p><strong>This closes the publishing-providers-framework
+roadmap.</strong> All four phases authorized by the 2026-06-20 Phase 1
+closeout are addressed. Two decisions remain explicitly open for the
+user/product, recorded as deliberate non-defaults rather than
+oversights: the deferred cross-session publishing-linkage registry
+(compare phase), and whether/when to loosen
+<code>core.third_party_plugins</code>/SEC-8 for real third-party
+execution (this phase). Committed locally; not pushed pending explicit
+request.</p>
+<h2
+id="durable-publishing-linkage-registry-resolves-first-open-decision">2026-06-22
+- Durable Publishing Linkage Registry (Resolves First Open
+Decision)</h2>
+<p>User asked to resolve the first of the two decisions left open at
+roadmap close. Planned via
+<code>EnterPlanMode</code>/<code>ExitPlanMode</code> after reading the
+actual call sites directly (<code>Document.source_metadata</code>,
+<code>_write_document_to_disk</code>,
+<code>_finish_open_document</code>, the three publish-success handlers,
+<code>quill/io/export.py</code>’s <code>mark_saved</code> call,
+<code>quill/core/publishing.py</code>’s connections-store pattern to
+mirror).</p>
+<p>Work completed in two commits:</p>
+<ol type="1">
+<li><strong>Core</strong>: new
+<code>quill/core/publishing_linkage.py</code> —
+<code>PublishingLinkageEntry</code> frozen dataclass, path-keyed JSON
+store at <code>app_data_dir() / "publishing-linkage.json"</code>
+(mirrors <code>publishing-connections.json</code>:
+<code>read_json</code>/<code>write_json_atomic</code>, defensive
+<code>isinstance</code> checks at every JSON level),
+<code>load_publishing_linkage_registry</code>/<code>save_publishing_linkage_registry</code>/<code>get_publishing_linkage</code>/<code>upsert_publishing_linkage</code>/<code>remove_publishing_linkage</code>,
+and
+<code>publishing_linkage_from_source_metadata</code>/<code>apply_publishing_linkage_to_source_metadata</code>
+converters. 16 new tests in
+<code>tests/unit/core/test_publishing_linkage.py</code>.</li>
+<li><strong>UI integration</strong>:
+<code>MainFrame._sync_publishing_linkage_for_document</code> (the one
+shared helper) called from <code>_write_document_to_disk</code> (after
+every save) and from all three handlers that refresh publishing metadata
+after a successful network round trip —
+<code>_send_publishing_remote_item</code>, the schedule-publish handler,
+and the create-draft/publish-now handler (the latter two were not in the
+original plan; discovered while implementing, since they mutate
+<code>source_metadata</code> via the identical pattern, and added for
+consistency). <code>_finish_open_document</code> looks up the registry
+by <code>selected_path</code> and restores a hit into
+<code>source_metadata</code> before either tab branch runs. The helper
+skips untitled documents and
+<code>CsvGridSurface</code>/<code>WordDocumentSurface</code> tabs
+(Compare/Update only ever read markdown/HTML text from
+<code>self.editor.GetValue()</code>, a shape those structured surfaces
+don’t produce). 4 new static-source tests in
+<code>tests/unit/ui/test_main_frame.py</code>;
+<code>main_frame.py</code>’s module-size budget bumped
+25127-&gt;25165.</li>
+</ol>
+<p>Real bug caught mid-implementation: the first version of the helper
+used bare <code>self.editor</code>/<code>document.source_metadata</code>
+attribute access and broke
+<code>test_main_frame_cq16_characterization.py::test_write_document_to_disk_routes_rtf_through_the_rtf_writer</code>,
+which calls <code>_write_document_to_disk</code> against a bare
+<code>MainFrame.__new__</code> test double and a
+<code>SimpleNamespace(path=...)</code> document — neither has those
+attributes, matching that suite’s documented convention of stubbing only
+what each method touches. Fixed by rewriting the helper to be fully
+<code>getattr</code>-defensive (checks <code>source_metadata</code> is a
+dict before touching anything else, so the common non-publishing case
+never reaches <code>self.editor</code> at all), confirmed by re-running
+the full suite and seeing the previously-broken test pass again with no
+new failures introduced.</p>
+<p>Validation methodology finding, recorded for future sessions: ran the
+full suite with pytest’s <em>default</em> temp directory rather than a
+custom <code>--basetemp</code> this time. Every prior full-suite
+baseline in this roadmap was recorded using
+<code>--basetemp=.tmp\pytest-&lt;slice&gt;-full</code>, a path under the
+repo and therefore outside <code>Path.home()</code> — and
+<code>quill/core/paths.py</code>’s H-1-core guard
+(<code>_is_constrained_to_home</code>) silently rejects a
+<code>QUILL_DATA_DIR</code> override outside home, so any test using the
+shared <code>quill_data_dir</code> conftest fixture would have silently
+lost isolation under those basetemps and fallen through to the real
+<code>%APPDATA%\Quill</code>. A <code>git stash</code>/clean-tree
+comparison run this slice independently confirms the true pre-existing
+baseline is <code>19 failed</code> (identical names with or without this
+slice’s changes), not the <code>66</code> recorded in every earlier
+phase’s notes. Not retroactively corrected in those notes; flagged here
+only so a future session doesn’t mistake <code>66</code> for ground
+truth or repeat the same basetemp pattern. One harmless concrete side
+effect from finding this: the slice’s own first (buggy) test run wrote a
+single bogus entry into the real
+<code>%APPDATA%\Roaming\Quill\publishing-linkage.json</code>; asked the
+user, who chose to leave it (harmless test data).</p>
+<p>Validation:</p>
+<ul>
+<li>focused battery: <code>77 passed</code></li>
+<li>Ruff and <code>ruff format --check</code>: passed</li>
+<li>scoped <code>mypy quill/core quill/io</code>: unchanged (same 7
+pre-existing findings)</li>
+<li>full unit suite: <code>4167 passed, 19 failed, 14 skipped</code>;
+clean-tree comparison (<code>git stash</code>) shows the identical 19
+failures at <code>4147 passed</code>, proving zero regressions and that
+the +20 delta is exactly the new tests added</li>
+</ul>
+<p>Committed locally as two checkpoints (core, then UI integration); not
+pushed pending explicit request.</p>
+<p><strong>One decision remains open</strong>: whether/when to loosen
+<code>core.third_party_plugins</code>/SEC-8 for real third-party Quillin
+or publishing-provider execution.</p>
+<h2 id="merged-originmain-beta-2-into-the-branch">2026-06-22 - Merged
+origin/main (Beta 2) into the branch</h2>
+<p>User asked to integrate upstream changes, preserving this branch’s
+work and keeping it fully compliant, updating our code only where main’s
+changes required it. <code>origin/main</code> had advanced 116 commits
+(PR #664, “Beta 2”: offline speech/Whisper, the verbosity system,
+braille proofing, i18n display-language switching, crash-submit dialog,
+data-location migration, and more) since this branch’s fork point.</p>
+<p><code>git merge origin/main</code> auto-merged
+<code>main_frame.py</code> and <code>main_frame_menu.py</code> cleanly;
+5 files needed manual resolution:</p>
+<ul>
+<li><code>quill/__main__.py</code>: a real conflict, not just textual —
+main’s Beta-2 work replaced the old
+<code>_bootstrap_storage_mode()</code> first-run storage-mode prompt
+(inherited boilerplate from before this branch forked, not our code)
+with <code>_propagate_portable_environment()</code> +
+<code>apply_pending_data_location_migration()</code>. The merge silently
+dropped <code>_bootstrap_storage_mode</code>’s <em>definition</em> while
+leaving a stray call to it in the conflict region. Resolved by dropping
+the stale call (main’s replacement already runs earlier in
+<code>main()</code>) and keeping our actual contribution, the
+<code>bootstrap_bundled_publishing_providers()</code> call, intact.</li>
+<li><code>quill/tools/module_size_budgets.json</code>: resolved
+programmatically rather than by hand — both sides’ historical
+<code>_rebaseline_*</code> comment entries were unioned (main’s side was
+a superset for every region but one, where a one-line annotation
+difference was kept from main), and every <code>budgets</code> dict
+entry was set to the file’s actual measured line count in the merged
+tree (not either side’s stale recorded number), since both branches had
+independently grown several shared files (<code>main_frame.py</code>:
+25165/25499→<strong>26092</strong> actual;
+<code>main_frame_menu.py</code>: 3633/3658→<strong>3780</strong>
+actual).</li>
+<li><code>tests/unit/ui/fixtures/dialog_inventory.json</code>:
+regenerated from source
+(<code>python -m quill.tools.dialog_inventory --write</code>) rather
+than hand-merged — it’s a generated snapshot, AST-scanned from
+<code>quill/**/*.py</code>.</li>
+<li><code>tests/unit/ui/test_main_frame_menu_contract.py</code> and
+<code>test_power_tools_command_wiring.py</code>: both sides had added
+independent, non-overlapping tests/assertions at the same insertion
+point; kept both.</li>
+</ul>
+<p>Two test failures surfaced after conflicts were resolved, both
+expected consequences of main’s legitimate growth, not regressions:</p>
+<ul>
+<li>3 <code>test_compile_translations.py</code> failures:
+<code>ModuleNotFoundError: babel</code>. Main’s i18n work added
+<code>Babel&gt;=2.18.0</code> to the <code>dev</code> extra in
+<code>pyproject.toml</code>; this dev environment hadn’t re-run
+<code>pip install -e ".[ui,dev]"</code> since. Fixed by
+reinstalling.</li>
+<li><code>test_main_frame_characterization.py::test_main_frame_public_surface_is_unchanged</code>:
+main’s Beta-2 features legitimately added ~29 new public
+<code>MainFrame</code> methods (verbosity, speech, braille proofing,
+etc.). Regenerated the snapshot
+(<code>python -m quill.tools.ui_surface --write</code>).</li>
+</ul>
+<p>Validation: <code>ruff check .</code> passed (clean);
+<code>ruff format --check .</code> flagged 2 files main itself owns
+(<code>test_keymap_format.py</code>,
+<code>test_prompt_unsaved_changes_native_labels.py</code>) — verified
+via a throwaway <code>git worktree add</code> of
+<code>origin/main</code> alone that this is pre-existing on main, caused
+by a ruff version bump (0.15.16→0.15.18) changing line-wrap heuristics,
+not anything this merge touched; left alone since it isn’t our code and
+needs no functional change. Scoped
+<code>mypy quill/core quill/io</code>: <strong>down</strong> to 1
+finding (the pre-existing <code>publishing_validation.py</code> one) —
+the 6 <code>brf_page_detection.py</code> findings present before this
+merge are gone, resolved by main’s own braille-proofing work.
+Module-size budget gate, provider registry gate, and the Quillin
+self-lint (<code>--strict</code>, 14/14 bundled Quillins) all passed.
+Full suite: <code>4885 passed, 4 failed, 13 skipped</code>. The 4
+failures (<code>test_about_info</code>, <code>test_open_read</code>,
+<code>test_build_windows_distribution</code>,
+<code>test_check_version_consistency</code>) were verified, via a
+throwaway <code>git worktree add</code> of <code>origin/main</code>
+alone, to be byte-for-byte identical pre-existing failures on main
+itself (a real, unrelated version-skew between
+<code>quill/__init__.py</code> (“0.7.0”) and
+<code>installer/quill.iss</code>/<code>CHANGELOG.md</code> (“0.7.0 Beta
+1”), plus two environment/build-state-sensitive checks) — not introduced
+by this merge. Re-ran the full publishing-specific test battery (144
+tests across core + UI) after the merge commit: all pass. Smoke-launched
+the app: no traceback.</p>
+<p>One harmless side effect: an automatic <code>--write</code>
+regeneration step (<code>pip install</code>) bumped the installed
+<code>ruff</code> from 0.15.16 to 0.15.18 in this dev environment as a
+transitive consequence of reinstalling for the <code>babel</code>
+dependency; not pinned or reverted, since the project’s own
+<code>pyproject.toml</code> doesn’t pin an exact ruff version.</p>
+<p>Committed as a single merge commit (<code>a17acdd2</code>); not
+pushed pending explicit request, per the standing repo convention.</p>
+<h2
+id="locked-publishing-off-behind-the-existing-feature-flag">2026-06-22 -
+Locked publishing off behind the existing feature flag</h2>
+<p>User asked to lock the publishing feature behind a “dev flag” so it
+isn’t rolled into the public release when this branch’s PR eventually
+lands. Researched the existing feature-flag system first rather than
+inventing a new mechanism, since the user explicitly wanted to match how
+current features are defined.</p>
+<p>Found <code>future.publishing</code> already exists in
+<code>quill/core/feature_catalog.py</code> (used throughout for
+command-feature mapping) but was a normal toggle,
+default-quiet-but-enabled in every profile
+(<code>FEATURE_STATE_QUIET</code> everywhere in
+<code>quill/core/features.py</code>). The established mechanism for
+“shipped but hidden from a default build” in this codebase is
+<code>locked_off=True</code> — used today by
+<code>core.third_party_plugins</code> (SEC-8) and
+<code>core.rich_text_lens</code>.
+<code>FeatureManager.state_for()</code> checks <code>locked_off</code>
+before consulting any profile, so it overrides every profile
+unconditionally; there is no settings-level override. Confirmed via the
+user’s own clarifying answer (“how are current features defined? I want
+this to match that”) that the static <code>locked_off=True</code>
+precedent, not a new <code>QUILL_DEV_BUILD</code>-conditional mechanism,
+was wanted.</p>
+<p>Critical finding before implementing: the File &gt; Publish submenu
+in <code>quill/ui/main_frame_menu.py</code> was built
+<strong>unconditionally</strong> — no feature check wrapped it at all.
+Locking the flag alone would only have removed publishing commands from
+the Command Palette/Go to Anything (via the existing
+<code>is_visible()</code> -&gt; <code>is_enabled()</code> -&gt;
+<code>state_for()</code> chain that <code>quill/ui/palette.py</code>
+already uses) — the visible File &gt; Publish submenu and its items
+would still have appeared and worked. Found the established menu-gating
+pattern by reading how <code>core.glow</code> does it (only the
+<code>.Append()</code>/<code>AppendSubMenu()</code> calls are wrapped in
+<code>if self._feature_enabled(...):</code> — menu id
+(<code>wx.NewIdRef()</code>) declarations and <code>Bind()</code> calls
+stay unconditional, since an id never attached to a real menu item can’t
+fire from the UI regardless). Confirmed with the user this was wanted
+before touching code.</p>
+<p>Implemented:</p>
+<ul>
+<li><code>quill/core/feature_catalog.py</code>:
+<code>future.publishing</code> gains <code>locked_off=True</code> and an
+updated description explaining why.</li>
+<li><code>quill/ui/main_frame_menu.py</code>: the whole Publish submenu
+construction block (creating <code>self._publishing_file_menu</code>,
+all 11 <code>.Append()</code> calls, the separator, and
+<code>file_menu.AppendSubMenu(...)</code>) is now wrapped in
+<code>if self._feature_enabled("future.publishing"):</code>. The 11
+<code>wx.NewIdRef()</code> declarations and the later
+<code>Bind()</code> calls are untouched, matching the GLOW precedent
+exactly.</li>
+<li>No command-handler-level guards added (also matching the GLOW
+precedent — <code>glow_audit_document</code>/etc. have no internal
+feature check either; the menu gate plus palette filtering is considered
+sufficient since nothing else in the UI exposes these command ids).</li>
+</ul>
+<p>Test fallout, all expected and updated:</p>
+<ul>
+<li><code>tests/unit/core/test_features.py::test_feature_manager_respects_profile_state</code>:
+<code>state_for("future.publishing")</code> now asserts
+<code>FEATURE_STATE_OFF</code> instead of
+<code>FEATURE_STATE_QUIET</code> (locked_off overrides the profile’s
+quiet setting, by design).</li>
+<li>New
+<code>tests/unit/core/test_publishing_framework.py::test_publishing_feature_is_locked_off_pending_review</code>
+and <code>test_publishing_disabled_in_default_build</code>, mirroring
+<code>test_plugins.py</code>’s existing SEC-8 lock tests exactly.</li>
+<li><code>tests/unit/ui/test_main_frame_menu_contract.py</code>: the
+existing
+<code>test_publishing_actions_live_in_file_menu_not_top_level_publishing_menu</code>
+needed its expected indentation updated (+4 spaces, one new nesting
+level) but otherwise needed no semantic change, since string-match
+source-inspection tests don’t care about the new <code>if</code>
+wrapper’s presence beyond indentation. New
+<code>test_publishing_menu_is_gated_behind_its_locked_off_feature_flag</code>
+pins the gate itself.</li>
+<li><code>quill/tools/module_size_budgets.json</code>:
+<code>main_frame_menu.py</code> rebaselined 3780-&gt;3786 (+6, the
+<code>if</code> line plus its 5-line explanatory comment).</li>
+</ul>
+<p>Validation: Ruff/<code>ruff format --check</code> clean; scoped
+<code>mypy quill/core quill/io</code> unchanged (1 pre-existing
+finding); module-size budget gate passed; full suite
+<code>4888 passed, 4 failed, 13 skipped</code> (the same 4 failures
+verified pre-existing on <code>origin/main</code> itself earlier this
+session — unrelated to this change); smoke-launched the app, no
+traceback. The dialog-inventory and <code>ui_surface</code> generated
+snapshots did not need regenerating — no dialog surfaces or public
+methods were added/removed, only an existing block’s visibility was
+gated.</p>
+<p>Committed locally (<code>6861b4d</code>); not pushed pending explicit
+request.</p>
+<h2
+id="second-originmain-sync-24-commits-restored-8-lost-test-functions">2026-06-22
+- Second origin/main sync (24 commits) + restored 8 lost test
+functions</h2>
+<p>User asked to pull and merge main again, explicitly stressing that
+the merge must not break this branch’s own work.
+<code>origin/main</code> had advanced 24 commits (093a8ac4..8419d7ca:
+Quick Nav misspellings/search-hits, Vosk and NVIDIA Parakeet offline
+speech engines, host-mediated cloud transcription Quillins, watch-folder
+transcription actions, several dependency bumps, and a CI green-main
+fix) — much smaller than the prior 116-commit sync.</p>
+<p>4 conflicts, one of which surfaced a real, pre-existing problem
+<strong>not</strong> introduced by this merge:
+<code>tests/unit/ui/test_main_frame.py</code> conflicted because
+origin/main’s tiny <code># noqa: E501</code> fix landed inside
+<code>test_about_dialog_open_handler_calls_show_about_quill</code> — a
+test function that turned out to be <strong>completely missing from our
+branch</strong>, along with 7 sibling tests
+(<code>test_document_tab_declares_language_profile_slots</code>,
+<code>test_open_startup_logs_handler_is_defined</code>,
+<code>test_help_view_startup_logs_menu_id_is_defined</code>,
+<code>test_startup_speech_gate_uses_quiet_status</code>,
+<code>test_screen_reader_detected_announcement_is_gated</code>,
+<code>test_show_about_quill_passes_real_about_info_instance</code>,
+<code>test_close_tab_does_not_hit_undeclared_slot</code>). Traced this
+with
+<code>git show &lt;commit&gt;:&lt;path&gt; | grep '^def test_'</code>
+across the previous merge commit (<code>a17acdd2</code>) and both of its
+parents: confirmed these 8 tests already existed in
+<code>093a8ac4</code> (an ancestor of our branch, merged in last time)
+and in both merge parents individually, but git’s merge silently dropped
+them from the result without ever flagging a conflict — a real
+delete/modify hazard, not something caught by “no CONFLICT reported.”
+The underlying <code>main_frame.py</code> production code for all 8 was
+never affected (confirmed: all 8 pass immediately once the test
+functions are restored), so this was pure lost test <em>coverage</em>,
+not a functional regression — but coverage this branch had been silently
+missing for a while. Restored all 8 by reconstructing the file from both
+full versions (<code>git show &lt;ref&gt;:&lt;path&gt;</code>) rather
+than trusting the line-based 3-way merge a second time; verified each
+restored test individually passes against current
+<code>main_frame.py</code>.</p>
+<p>The other 3 conflicts followed the now-established playbook from the
+first sync: <code>module_size_budgets.json</code> resolved by the same
+programmatic approach (union of comment keys, every <code>budgets</code>
+entry set to the file’s <em>actual measured</em> size in the merged tree
+rather than either side’s recorded number — this also revealed that
+several of <code>origin/main</code>’s own recorded budget numbers,
+e.g. <code>features.py</code> at 1029 vs. a real measured 710 on main
+itself, were stale/loose; not fixed on main, just not carried forward
+into our ledger) — <code>quill/ui/main_frame.py</code> settled at
+<strong>25686</strong> real lines (down from 26092 after the previous
+sync, since main’s newer commits extracted some code out even while
+adding Quick Nav/watch features). <code>dialog_inventory.json</code> and
+<code>main_frame_public_surface.json</code> both regenerated via their
+<code>--write</code> tools rather than hand-merged, same as last
+time.</p>
+<p>Verified the publishing lock from the previous session entry survived
+the merge intact: <code>future.publishing</code> still
+<code>locked_off=True</code> in <code>feature_catalog.py</code>, and the
+<code>if self._feature_enabled("future.publishing"):</code> gate is
+still wrapping the File &gt; Publish submenu in
+<code>main_frame_menu.py</code>.</p>
+<p>Validation: reinstalled <code>pip install -e ".[ui,dev]"</code> for
+the dependency bumps (pytest 9.0.3-&gt;9.1.1, pillow); Ruff clean;
+scoped <code>mypy quill/core quill/io</code> unchanged (same 1
+pre-existing finding); module-size budget gate, provider registry gate,
+and Quillin self-lint (15/15 — main’s new
+<code>openai-whisper-transcription</code> bundled Quillin) all passed;
+full suite <code>4966 passed, 1 failed, 16 skipped</code> — the 1
+failure
+(<code>test_read_open_document_uses_corpus_fixture_byte_identical</code>,
+a braille line-ending mismatch) verified byte-for-byte identical on a
+clean <code>origin/main</code> worktree, confirming it’s pre-existing
+and unrelated; the 3 other failures from the previous merge’s baseline
+(<code>test_about_info</code>,
+<code>test_build_windows_distribution</code>,
+<code>test_check_version_consistency</code>) are now
+<strong>gone</strong> — main’s own commits since the last sync fixed the
+“0.7.0 Beta 1” vs “0.7.0” version-skew that caused them. Re-ran the full
+201-test publishing+feature+menu+budget battery clean; smoke-launched
+the app, no traceback.</p>
+<p>Committed locally as a single merge commit (<code>8e50df9</code>);
+not pushed pending explicit request.</p>
+<h2 id="implemented-the-publishing-profile-restriction">2026-06-22 -
+Implemented the publishing profile restriction</h2>
+<p>Earlier the same day, scoped (planning-only, no code) a separate,
+additive requirement: the user was told publishing must only be
+available in “writer and above” profiles. Before coding, two flagged
+open questions from that scoping doc
+(<code>codex-notes/plans/publishing-profile-restriction-2026-06-22.md</code>)
+needed resolving — soft vs. hard restriction, and <code>ON</code>
+vs. <code>QUIET</code> for the included profiles. Asked directly rather
+than assume (both have real, non-obvious tradeoffs); the user confirmed
+both recommended defaults (soft, <code>ON</code>), then asked to begin
+coding.</p>
+<p>Implemented exactly per the scoping doc’s table. In
+<code>quill/core/features.py</code>’s <code>PROFILE_DEFINITIONS</code>,
+<code>"future.publishing"</code> changed from
+<code>FEATURE_STATE_QUIET</code> to <code>FEATURE_STATE_ON</code> in
+<code>PROFILE_WRITER</code> and
+<code>PROFILE_DEVELOPER_POWER_TEXT</code>; to
+<code>FEATURE_STATE_OFF</code> in <code>PROFILE_ESSENTIAL</code>,
+<code>"reader_and_student"</code>, <code>"office_and_admin"</code>,
+<code>"low_vision"</code>,
+<code>"braille_screen_reader_power_user"</code>, and
+<code>PROFILE_ACCESSIBILITY_PROFESSIONAL</code>.
+<code>PROFILE_AUTHOR_STUDENT</code> was missing the key entirely (a
+latent gap flagged during scoping); added it explicitly as
+<code>FEATURE_STATE_ON</code> rather than leaving it to the implicit
+default. <code>PROFILE_FULL_QUILL</code> needed no change (its
+<code>states</code> dict is a comprehension over every registered
+feature, already <code>ON</code>). Each changed line got a short inline
+comment pointing back at the rationale on
+<code>PROFILE_ESSENTIAL</code>’s entry rather than repeating the
+explanation 9 times. <code>quill/core/feature_catalog.py</code>’s
+<code>future.publishing</code> description was extended to state the
+restriction (it previously only mentioned the review-gate lock).</p>
+<p>Confirmed, as predicted during scoping, that no UI/menu/palette code
+needed to change: <code>main_frame_menu.py</code>’s
+<code>if self._feature_enabled("future.publishing"):</code> gate and
+<code>palette.py</code>’s <code>is_visible()</code> filtering both
+already resolve through <code>FeatureManager.state_for()</code>, which
+reads the live active profile on every call. The only source of truth is
+the <code>PROFILE_DEFINITIONS</code> data.</p>
+<p>Two new tests in
+<code>tests/unit/core/test_publishing_framework.py</code>:
+<code>test_publishing_profile_states_match_writer_tier_and_above</code>
+asserts the <em>configured</em> value for all 10 profiles directly
+against <code>PROFILE_DEFINITIONS</code> (independent of the live lock);
+a deliberately separate
+<code>test_publishing_profile_states_are_overridden_by_the_lock</code>
+asserts that
+<code>FeatureManager(active_profile_id=...).state_for("future.publishing")</code>
+is still <code>FEATURE_STATE_OFF</code> for every single profile,
+including the 4 configured <code>ON</code>, while
+<code>locked_off=True</code> remains — a regression guard so a future
+session doesn’t mistake “the profile data says ON” for “the feature is
+actually reachable” (those are two genuinely separate facts now that
+both are in play). <code>quill/core/features.py</code>’s module-size
+budget bumped 727-&gt;738 (+11 lines, the 9 changed/added dict entries
+plus 3 explanatory comment blocks referencing each other instead of
+repeating).</p>
+<p>Validation: Ruff/<code>ruff format --check</code> clean; scoped
+<code>mypy quill/core quill/io</code> unchanged (same 1 pre-existing
+finding); module-size budget gate passed; full suite
+<code>4968 passed, 1 failed, 16 skipped</code> — the 1 failure is the
+same braille line-ending mismatch already verified pre-existing on
+<code>origin/main</code> earlier this session, untouched by this change;
+provider registry gate passed; smoke-launched the app, no traceback.</p>
+<h2 id="third-originmain-sync-25-commits">2026-06-23 - Third origin/main
+sync (25 commits)</h2>
+<p>Fetched <code>origin/main</code>, now at <code>ff39b5c5</code> (25
+commits ahead of our last merge base), mostly speech-provider work (Vosk
+bundling, on-demand Faster Whisper install, Groq/ElevenLabs cloud
+transcription, Tab-mode/spoken indent/notification polish) plus the
+usual generated-artifact drift. <code>main_frame_menu.py</code> was
+touched by 3 of those commits — checked first, before merging, that none
+of the changed regions overlapped the File &gt; Publish gating
+block.</p>
+<p>Same 3 conflicts as both previous syncs, all generated/measured
+artifacts: <code>quill/tools/module_size_budgets.json</code>,
+<code>tests/unit/ui/fixtures/dialog_inventory.json</code>,
+<code>tests/unit/ui/fixtures/main_frame_public_surface.json</code>.
+Resolved the two fixtures by regenerating via their <code>--write</code>
+tools (309 dialog surfaces, 533 public methods) rather than
+hand-merging, same as every prior sync. Resolved the budgets file with a
+one-off script: union every <code>_rebaseline_*</code> comment key from
+both sides, and for every tracked module take
+<code>max(our committed budget, main's committed budget, real post-merge measured line count)</code>
+— never lowering either side’s deliberate history, never leaving a
+budget below what the merged tree actually measures. Three modules
+exceeded both sides’ individually-committed numbers once combined and
+needed a fresh real-measured bump, recorded under a new
+<code>_rebaseline_2026_06_23_third_main_merge</code> comment:
+<code>quill/__main__.py</code> 624-&gt;628,
+<code>quill/ui/main_frame.py</code> 25686-&gt;25843,
+<code>quill/ui/main_frame_menu.py</code> 3786-&gt;3854.</p>
+<p>Given the prior session’s lesson that “no CONFLICT reported” does not
+guarantee nothing was lost, spot-checked every publishing-critical file
+by comparing <code>^def test_</code> counts (and, for
+<code>main_frame_menu.py</code>, exact
+<code>_id_publishing*</code>/<code>.Append</code>/<code>Bind</code>
+counts) between pre-merge <code>HEAD</code> and the merged working tree:
+<code>test_publishing_framework.py</code> 6/6,
+<code>test_features.py</code> 23/23,
+<code>test_main_frame_menu_contract.py</code> 10/10,
+<code>test_main_frame.py</code> 21/21 (the file that lost 8 tests two
+syncs ago) — all identical, nothing silently dropped this time.
+<code>main_frame_menu.py</code> kept all 11
+<code>_id_publishing_*</code> ids, all 11 <code>.Append()</code> calls
+inside the <code>if self._feature_enabled("future.publishing"):</code>
+block, and all 11 corresponding <code>Bind()</code> calls.</p>
+<p>Mid-validation, ran <code>git stash</code> /
+<code>git stash pop</code> to check whether a <code>mypy</code> finding
+in <code>publishing_validation.py</code> pre-existed before this merge
+(it did — confirmed identical on pre-merge <code>HEAD</code> too, and
+separately confirmed pre-existing on a clean <code>origin/main</code>
+worktree, unrelated to this work). The stash round-trip silently cleared
+<code>.git/MERGE_HEAD</code> and <code>.git/MERGE_MSG</code> even though
+<code>HEAD</code> itself never moved — a real git footgun worth
+remembering: <strong>do not <code>git stash</code> while a merge’s
+conflicts are resolved-but-uncommitted; it can silently drop the merge
+bookkeeping and turn the eventual commit into a fake single-parent
+commit instead of a real merge.</strong> Caught it before committing
+(parent count check), asked the user before running
+<code>git reset --hard HEAD</code> (safe here since <code>HEAD</code>
+hadn’t moved and everything uncommitted was deterministically
+reconstructable), then redid <code>git merge origin/main</code> from
+scratch through git’s normal machinery and reapplied the identical
+conflict resolution — confirmed byte-identical results the second time
+(same 309/533/three rebaseline numbers). Committed as a proper 2-parent
+merge (<code>f231352</code>, parents <code>e256d799</code> and
+<code>ff39b5c5</code>) — no manual editing of <code>.git/</code>
+internals.</p>
+<p>Validation on the final committed state:
+Ruff/<code>ruff format --check</code> clean (2 pre-existing non-standard
+<code># noqa</code> warnings from main’s own commits, not errors);
+module-size budget gate passed; full suite
+<code>5038 passed, 1 failed, 16 skipped</code> — the 1 failure
+(<code>test_read_open_document_uses_corpus_fixture_byte_identical</code>)
+verified pre-existing on a clean <code>origin/main</code> worktree
+before merging, untouched by this sync; Quillin self-lint 17/17 (main’s
+new <code>elevenlabs-transcription</code> and
+<code>groq-transcription</code> bundled Quillins included);
+smoke-checked <code>python -m quill --help</code> for a clean import.
+Not pushed pending explicit request.</p>
+<p>Committed locally; not pushed pending explicit request.</p>
+</body>
+</html>

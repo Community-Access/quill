@@ -100,3 +100,11 @@ docs/planning/source/test/
 docs/planning/source/**/output_audio/
 docs/planning/source/**/papers/
 docs/planning/source/**/*.log
+
+# External reference / sample material kept in the working folder but not part of
+# QUILL source — never commit. "Code Samples to Innovate With" is a ~626 MB
+# code-sample corpus (AI_TTS_Studio etc.); examples/audio holds large TTS test
+# fixtures; docs/prototypes is throwaway prototype scratch.
+/Code Samples to Innovate With/
+/examples/audio/
+/docs/prototypes/

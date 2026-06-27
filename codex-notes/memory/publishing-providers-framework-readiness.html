@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>publishing-providers-framework-readiness</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="publishing-providers-framework-readiness">Publishing Providers
+Framework Readiness</h1>
+<h2 id="follow-up-phases-opened">2026-06-19 follow-up phases opened</h2>
+<ul>
+<li><p>added
+<code>codex-notes/notes/publishing-follow-up-phases-2026-06-19.md</code></p></li>
+<li><p>opened the follow-up roadmap in this order:</p>
+<ul>
+<li>WordPress first-party bundled provider package path</li>
+<li>schedule publish</li>
+<li>local-vs-remote compare/sync</li>
+<li>live third-party publishing provider loading</li>
+</ul></li>
+<li><p>live third-party provider loading remains last because it depends
+on SEC-8/policy, consent, network, conflict, and validation
+gates</p></li>
+<li><p>recommended first implementation slice: define the
+bundled-provider adapter contract ## 2026-06-19 framework readiness
+tightening</p></li>
+<li><p>reviewed the active plan and confirmed the current publishing
+framework scope is ready for a branch readiness checkpoint</p></li>
+<li><p>current scope includes provider metadata, connection/auth model,
+secure secrets, endpoint validation, provider/client seam, WordPress
+reference provider, browse/open/create/update/publish lifecycle, remote
+identity, operation capabilities, and validation gates</p></li>
+<li><p>deferred items are explicitly not blockers for the current
+framework checkpoint:</p>
+<ul>
+<li>WordPress extraction as a first-party bundled Quillin/provider
+package</li>
+<li>schedule publish</li>
+<li>local-vs-remote compare/sync model</li>
+<li>live third-party publishing provider loading</li>
+</ul></li>
+<li><p>recommendation: stop adding speculative framework machinery and
+move to review/readiness unless a concrete review gap appears Status:
+active upstream implementation checkpoint on
+<code>feature/publishing-providers-framework</code>, tracking
+<code>origin/feature/publishing-providers-framework</code>, with current
+upstream <code>main</code> at <code>7a64564</code>, merge/conflict
+recovery represented by HEAD <code>cbe5ed6</code>, provider registry
+seam in place, operation capability metadata added, provider/client
+validation implemented, provider metadata contract validation added, and
+the internal tool gate wired into local pre-commit plus PR CI, remote
+item editor identity implemented, publish-now and open-remote publish
+lifecycle actions added, focused validation green, current framework
+scope marked ready, and WordPress extraction direction and blocker note
+recorded as deferred follow-up.</p></li>
+</ul>
+<h2 id="wordpress-extraction-blockers">2026-06-19 WordPress extraction
+blockers</h2>
+<ul>
+<li>added
+<code>codex-notes/notes/wordpress-provider-extraction-readiness-2026-06-19.md</code></li>
+<li>recorded that WordPress remains the in-tree reference provider for
+now</li>
+<li>blockers before extraction:
+<ul>
+<li>package-facing provider registration contract</li>
+<li>explicit lifecycle bridge from publishing core to bundled provider
+package</li>
+<li>preserved network consent/no-silent-network review</li>
+<li>host-owned secret storage/access</li>
+<li>provider validation before user-facing exposure</li>
+<li>provider-neutral shell/UI wording</li>
+<li>SEC-8 third-party loading remains locked off</li>
+<li>performance and reliability measurement for provider adapter
+calls</li>
+</ul></li>
+<li>no product runtime behavior changed</li>
+</ul>
+<h2 id="providerclient-contract-validation">2026-06-18 provider/client
+contract validation</h2>
+<ul>
+<li>added provider metadata contract validation through
+<code>validate_publishing_provider_definition(...)</code></li>
+<li>the publishing provider registry gate now checks metadata and
+clients together</li>
+<li>contract checks now catch:
+<ul>
+<li>implemented auth method not listed as supported</li>
+<li>implemented content kind not listed as supported</li>
+<li>implemented operation not listed as supported</li>
+<li>unknown auth method ids</li>
+<li>unknown operation ids</li>
+<li>missing singular/plural labels for implemented content kinds</li>
+</ul></li>
+<li>WordPress remains the in-tree reference provider; no runtime
+third-party publishing provider loading was added</li>
+<li>validation passed:
+<ul>
+<li>focused publishing core tests: <code>24 passed in 0.69s</code></li>
+<li>focused provider gate tests: <code>5 passed in 0.21s</code></li>
+<li>wider publishing/tool/module-size slice:
+<code>58 passed in 4.23s</code></li>
+<li>direct provider gate command:
+<code>Publishing provider/client registry is valid.</code></li>
+<li><code>pre-commit run publishing-provider-registry --all-files</code>:
+passed</li>
+</ul></li>
+<li>full unit suite after this slice:
+<code>3738 passed, 11 skipped, 53 failed, 2 warnings</code></li>
+<li>remaining full-suite failures/skips/warnings are outside the touched
+provider-contract slice and remain out of scope</li>
+</ul>
+<h2 id="provider-validation-cilocal-wiring">2026-06-18 provider
+validation CI/local wiring</h2>
+<ul>
+<li>wired <code>python -m quill.tools.check_publishing_providers</code>
+into the existing local/CI gate collections</li>
+<li>local hook added: <code>publishing-provider-registry</code> in
+<code>.pre-commit-config.yaml</code></li>
+<li>PR CI internal-gates job now runs the publishing provider registry
+gate directly</li>
+<li>PR CI internal-gate unit-test bundle now includes
+<code>tests\unit\tools\test_check_publishing_providers.py</code></li>
+<li>validation passed:
+<ul>
+<li>direct tool command:
+<code>Publishing provider/client registry is valid.</code></li>
+<li>focused publishing-provider tool tests:
+<code>5 passed in 0.37s</code></li>
+<li>internal-gate bundle: <code>56 passed in 11.76s</code></li>
+<li><code>pre-commit run publishing-provider-registry --all-files</code>:
+passed</li>
+</ul></li>
+<li>full unit suite after this slice:
+<code>3732 passed, 11 skipped, 53 failed, 2 warnings</code></li>
+<li>remaining full-suite failures/skips/warnings are outside the touched
+CI/local publishing-gate slice and remain out of scope</li>
+</ul>
+<h2 id="provider-validation-tool-gate">2026-06-18 provider validation
+tool gate</h2>
+<ul>
+<li>added internal
+<code>python -m quill.tools.check_publishing_providers</code> gate for
+provider/client registry validation</li>
+<li>the gate surfaces validation without loading third-party publishing
+providers or exposing runtime Quillin provider loading</li>
+<li>focused tool tests passed: <code>5 passed in 0.21s</code></li>
+<li>wide publishing/tool/module-size slice passed:
+<code>52 passed in 3.56s</code></li>
+<li>full unit suite after this slice:
+<code>3731 passed, 11 skipped, 54 failed, 2 warnings</code></li>
+<li>remaining full-suite failures/skips/warnings are outside the touched
+provider-validation/tooling slice and remain out of scope</li>
+</ul>
+<h2 id="testing-discipline">2026-06-18 testing discipline</h2>
+<ul>
+<li><p>user set the working rule that every development/code slice must
+receive focused validation plus the broad available unit-test
+battery</p></li>
+<li><p>in-scope failures must be fixed before committing that
+slice</p></li>
+<li><p>unrelated failures/skips/warnings from merged main or
+environment-sensitive areas should be recorded but not fixed unless the
+current slice touches those areas</p></li>
+<li><p>commit locally as each step is completed; do not push unless
+explicitly requested</p></li>
+<li><p>latest full unit baseline after provider/client validation
+extraction: <code>3726 passed, 11 skipped, 54 failed, 2 warnings</code>
+## 2026-06-18 provider/client validation</p></li>
+<li><p>implemented the planned provider/client registration validation
+slice</p></li>
+<li><p>added validation helpers in
+<code>quill/core/publishing_validation.py</code>:</p>
+<ul>
+<li><code>PublishingProviderValidationIssue</code></li>
+<li><code>validate_publishing_provider_client(...)</code></li>
+<li><code>validate_registered_publishing_provider_clients(...)</code></li>
+</ul></li>
+<li><p>validation now reports provider definitions with no clients,
+clients with no provider definitions, and declared operations whose
+required client method is missing</p></li>
+<li><p>tests cover clean built-in registration, missing client, orphan
+client, and operation/client-method drift</p></li>
+<li><p>validation passed:</p>
+<ul>
+<li>focused: <code>20 passed in 0.59s</code></li>
+<li>broader core publishing: <code>39 passed in 3.89s</code></li>
+</ul></li>
+<li><p>next likely work should remain extraction-prep focused: decide
+where this validation is surfaced for bundled/future providers before
+any WordPress extraction or live Quillin provider loading ## 2026-06-18
+upstream access and branch recovery</p></li>
+<li><p>user reports the head developer granted push access and resolved
+conflicts before creating the current branch</p></li>
+<li><p>current remote is upstream:
+<code>origin https://github.com/community-access/quill</code></p></li>
+<li><p>current active branch:
+<code>feature/publishing-providers-framework</code></p></li>
+<li><p>current tracking branch:
+<code>origin/feature/publishing-providers-framework</code></p></li>
+<li><p>current HEAD:
+<code>cbe5ed6 Merge branch 'features/publishing-providers-framework' of https://github.com/stickbear2015/quill into feature/publishing-providers-framework</code></p></li>
+<li><p>current <code>origin/main</code> / <code>main</code>:
+<code>7a64564 chore(docs): drop relocated 0.5.0 release notes and old verbosity plan</code></p></li>
+<li><p>working tree was clean before this recovery documentation
+update</p></li>
+<li><p>historical fork-only instructions below are preserved as history,
+but the active branch workflow is now upstream
+<code>origin/feature/publishing-providers-framework</code></p></li>
+<li><p>merge commit records conflict resolution across module budgets,
+dialog/public-surface fixtures, menu contract tests, import ordering,
+and a power-tools wiring slice boundary</p></li>
+<li><p>merge commit records precommit gates green: ruff format, ruff
+check, banned-pattern, dialog escape-button contract, module-size
+budget, and announce-gap gate</p></li>
+<li><p>merge commit records test results:</p>
+<ul>
+<li><code>tests/unit/ui/</code> 690/690 pass</li>
+<li><code>tests/unit/core/</code> 2544 pass + 4 skipped + 11 thesaurus
+timeouts deselected</li>
+<li>12 <code>test_brf_page_detection.py</code> failures are documented
+as pre-existing on <code>origin/main</code> and unrelated to this
+merge</li>
+</ul></li>
+<li><p>next work should continue from the existing provider-neutral
+framework plan rather than recreate the old fork branch state</p></li>
+<li><p>do not continue into the next implementation slice yet; tighten
+docs/review notes around the recovered merge and known residual test
+state first</p></li>
+</ul>
+<h2 id="fork-push-and-upstream-pr">2026-06-18 fork push and upstream
+PR</h2>
+<ul>
+<li>fork branch pushed:
+<ul>
+<li><code>stickbear2015:features/publishing-providers-framework</code></li>
+</ul></li>
+<li>upstream pull request created:
+<ul>
+<li><code>https://github.com/Community-Access/quill/pull/268</code></li>
+</ul></li>
+<li>target:
+<ul>
+<li><code>Community-Access/quill:main</code></li>
+</ul></li>
+<li>current sync instruction:
+<ul>
+<li>push notes/log updates to the fork remote only</li>
+<li>do not push directly to upstream until the user has the needed
+access</li>
+</ul></li>
+</ul>
+<h2 id="provider-operation-capabilities">2026-06-18 provider operation
+capabilities</h2>
+<ul>
+<li>added explicit provider operation capability metadata for:
+<ul>
+<li>verify</li>
+<li>browse</li>
+<li>load</li>
+<li>update</li>
+<li>create</li>
+<li>publish</li>
+</ul></li>
+<li>WordPress declares all current operations because it remains the
+in-tree reference provider</li>
+<li>core publishing actions now check operation support before calling
+provider clients</li>
+<li>publish-now and publish-open-remote now require the provider
+<code>publish</code> operation instead of assuming publish is available
+whenever create/update exists</li>
+<li>fake second-provider coverage proves a provider can verify without
+browse/publish support, and the framework reports capability gaps
+instead of falling through to WordPress-shaped behavior</li>
+<li>focused verification passed:
+<ul>
+<li><code>122 passed in 42.70s</code></li>
+</ul></li>
+</ul>
+<h2 id="remote-publish-lifecycle">2026-06-18 remote publish
+lifecycle</h2>
+<ul>
+<li>added provider-neutral <code>publishing.publish_remote_item</code>
+for promoting an already-open remote publishing item through the
+existing review-first update flow</li>
+<li>File &gt; Publish now exposes
+<code>Publish Open Remote Content...</code></li>
+<li>implementation keeps the shell provider-neutral:
+<ul>
+<li>command id uses <code>publishing.*</code>, not WordPress
+wording</li>
+<li>UI validates the tab’s stored provider/site metadata before
+sending</li>
+<li>core routes status promotion through
+<code>PublishingProviderClient.update_remote_item(...)</code></li>
+</ul></li>
+<li>extended the provider client update seam with optional
+<code>status</code></li>
+<li>WordPress reference client includes <code>status: "publish"</code>
+only when promotion is requested; normal remote update payloads remain
+title/content only</li>
+<li>no new dialog class was added; the existing confirmation/message-box
+path is reused</li>
+<li>focused verification passed:
+<ul>
+<li><code>120 passed in 62.51s</code></li>
+</ul></li>
+</ul>
+<h2 id="publish-now-lifecycle">2026-06-18 publish-now lifecycle</h2>
+<ul>
+<li>added provider-neutral publish-now actions after the break:
+<ul>
+<li><code>publishing.publish_current</code></li>
+<li><code>publishing.publish_current_page</code></li>
+</ul></li>
+<li>File &gt; Publish now exposes <code>Publish Post Now...</code> and
+<code>Publish Page Now...</code></li>
+<li>implementation reuses the same create-provider client path with
+<code>status="publish"</code></li>
+<li>no WordPress-specific shell behavior was added</li>
+<li>no new custom dialog was added; the existing review-first
+confirmation and result message path is reused</li>
+<li>focused publishing/governance validation passed after documenting
+measured module-budget growth:
+<ul>
+<li><code>119 passed in 32.58s</code></li>
+</ul></li>
+<li>next likely work:
+<ul>
+<li>consider publish/promote of already-open remote drafts if product
+wants a remote-item lifecycle action</li>
+<li>otherwise continue hardening the provider/client contract toward
+future first-party Quillin extraction</li>
+</ul></li>
+</ul>
+<h2 id="break-ready-sync">2026-06-18 break-ready sync</h2>
+<ul>
+<li>latest local implementation commits before sync:
+<ul>
+<li>provider registry and verification seam</li>
+<li>WordPress future first-party Quillin direction</li>
+<li>remote item editor identity</li>
+</ul></li>
+<li>latest focused validation:
+<ul>
+<li><code>117 passed in 62.98s</code></li>
+</ul></li>
+<li>push requested by user so remote can match the local clean
+checkpoint</li>
+<li>next likely work after break:
+<ul>
+<li>provider-neutral publishing lifecycle behavior</li>
+<li>or deeper browse scaling if that becomes the preferred next
+slice</li>
+</ul></li>
+</ul>
+<h2 id="remote-item-editor-identity">2026-06-18 remote item editor
+identity</h2>
+<ul>
+<li>implemented the next planned remote identity slice</li>
+<li>generic <code>Document.name</code> now supports metadata-backed
+display names for pathless documents</li>
+<li>local paths still take precedence, so normal file-backed documents
+are unchanged</li>
+<li>publishing remote opens now preserve the provider-returned title as:
+<ul>
+<li><code>display_name</code></li>
+<li><code>publishing_remote_title</code></li>
+</ul></li>
+<li>publishing tabs can receive a generic source label from
+metadata</li>
+<li>publishing create/update success refreshes the stored remote
+title/display name from the returned provider document</li>
+<li>no fake temp/local file path was introduced; remote-linkage truth
+remains in source metadata</li>
+<li>focused publishing/governance validation passed after documenting
+measured module-budget growth:
+<ul>
+<li><code>117 passed in 62.98s</code></li>
+</ul></li>
+<li>next likely plan work:
+<ul>
+<li>continue provider-neutral publishing lifecycle behavior on top of
+the registry and identity seams</li>
+<li>consider deeper progressive browse loading only if product wants
+more browse scaling before provider extraction work</li>
+</ul></li>
+</ul>
+<h2 id="wordpress-first-party-quillin-direction">2026-06-18 WordPress
+first-party Quillin direction</h2>
+<ul>
+<li>architecture note recorded in the active publishing plan</li>
+<li>current implementation should keep WordPress in-tree as the
+reference provider while the framework contract is still being
+proven</li>
+<li>desired extraction destination:
+<ul>
+<li>WordPress becomes a trusted first-party bundled Quillin or
+equivalent built-in extension package</li>
+<li>it registers through the same provider/client seam as future
+providers</li>
+</ul></li>
+<li>immediate implementation rule:
+<ul>
+<li>do not move WordPress yet</li>
+<li>do keep all shell, dialogs, and publishing actions
+provider-neutral</li>
+<li>keep WordPress-specific endpoint/auth behavior inside provider
+metadata/client code</li>
+</ul></li>
+<li>next implementation slice remains
+<code>Remote Item Editor Identity</code></li>
+</ul>
+<h2 id="provider-registry-and-verification-seam">2026-06-18 provider
+registry and verification seam</h2>
+<ul>
+<li>implemented the planned framework-neutrality seam before adding more
+publishing behavior</li>
+<li>provider metadata and provider clients now both have explicit
+registration functions</li>
+<li><code>PublishingProviderClient</code> now owns
+<code>verify_connection(...)</code></li>
+<li>WordPress verification moved into
+<code>WordPressPublishingClient</code></li>
+<li>unknown providers no longer fall back to WordPress:
+<ul>
+<li>metadata helpers return empty/default-neutral values for missing
+providers</li>
+<li>publishing actions report the provider as unregistered</li>
+</ul></li>
+<li>fake second provider regression coverage proves the shell verifies
+through the registered provider client instead of assuming WordPress for
+app-password auth</li>
+<li>network-egress review entry now points at
+<code>core/publishing_clients.py::verify_connection</code></li>
+<li>focused publishing/governance validation passed:
+<ul>
+<li><code>113 passed in 31.29s</code></li>
+</ul></li>
+<li>next likely plan work:
+<ul>
+<li><code>Remote Item Editor Identity</code> for clearer tab/title
+identity on opened remote items</li>
+<li>then continue provider-neutral publishing lifecycle behavior on top
+of the registry seam</li>
+</ul></li>
+</ul>
+<h2 id="provider-neutral-publishing-copy">2026-06-18 provider-neutral
+publishing copy</h2>
+<ul>
+<li>cleaned up the provider-boundary audit findings</li>
+<li>browse surface now uses <code>Browse Publishing Content</code> /
+<code>Publishing content</code> wording instead of
+<code>Published content</code></li>
+<li>provider metadata now owns content-kind display labels and plural
+labels</li>
+<li>browse content-scope choices are generated from provider-supported
+content kinds</li>
+<li>core/provider-client messages now say
+<code>publishing content</code> where drafts can be included</li>
+<li>focused publishing/governance verification passed after documenting
+measured module-budget growth:
+<ul>
+<li><code>111 passed in 32.46s</code></li>
+</ul></li>
+<li>next likely plan work:
+<ul>
+<li><code>Remote Item Editor Identity</code> for clearer tab/title
+identity on opened remote items</li>
+<li>or deeper progressive browse loading beyond partial-result
+wording</li>
+</ul></li>
+</ul>
+<h2 id="browse-partial-results">2026-06-18 browse partial results</h2>
+<ul>
+<li>continued <code>Browse Remote Content Scaling</code></li>
+<li>WordPress browse now preserves partial results when multiple content
+kinds are requested and one kind fails after another succeeds</li>
+<li>partial-result wording names the failed content kind and says to
+retry with a narrower content scope</li>
+<li>all-failed and single-kind failed browse still fail normally</li>
+<li>focused publishing/governance verification passed:
+<ul>
+<li><code>110 passed in 31.38s</code></li>
+</ul></li>
+<li>next likely plan work:
+<ul>
+<li>complete remaining browse scaling with deeper progressive UI/loading
+work, if desired</li>
+<li>or move to <code>Remote Item Editor Identity</code> for clearer
+tab/title identity on opened remote items</li>
+</ul></li>
+</ul>
+<h2 id="publishing-confirmation-model">2026-06-18 publishing
+confirmation model</h2>
+<ul>
+<li>implemented the next plan-directed confirmation refinement after
+browse status scope</li>
+<li>create/update publishing success messages now use
+<code>publishing_result_message</code></li>
+<li>result copy includes:
+<ul>
+<li>target site</li>
+<li>content kind</li>
+<li>title</li>
+<li>resulting status, with WordPress <code>publish</code> rendered as
+<code>published</code></li>
+<li>returned remote link when available</li>
+</ul></li>
+<li>existing pre-send confirmation prompts remain in place and no new
+dialog surface was introduced</li>
+<li><code>MainFrame</code> now shows the structured result in the native
+message box and only the first line in the status bar</li>
+<li>focused publishing and governance verification passed after
+documenting measured module-budget growth:
+<ul>
+<li><code>109 passed in 32.31s</code></li>
+</ul></li>
+<li>next likely plan work after this checkpoint:
+<ul>
+<li>continue <code>Browse Remote Content Scaling</code> with progressive
+loading / timeout-aware partial results</li>
+<li>or move into <code>Remote Item Editor Identity</code> for clearer
+tab/title identity on opened remote items</li>
+</ul></li>
+</ul>
+<h2 id="browse-status-scope">2026-06-18 browse status scope</h2>
+<ul>
+<li>implemented the first next-step browse refinement from the plan
+addendum</li>
+<li>browse now includes drafts by default instead of silently limiting
+the list to published content</li>
+<li>the browse dialog exposes an explicit <code>Status to browse</code>
+choice with visible label and accessible name</li>
+<li>publishing dialogs now receive MainFrame’s announcement callback so
+status text updates satisfy current main’s GATE-12 screen-reader
+announcement rule</li>
+<li>focused publishing plus current-main governance validation is green:
+<ul>
+<li><code>106 passed in 51.90s</code></li>
+</ul></li>
+</ul>
+<h2 id="main-merge-refresh">2026-06-18 main merge refresh</h2>
+<ul>
+<li><code>origin/main</code> advanced to <code>2a92c03</code> and has
+been merged into
+<code>features/publishing-providers-framework</code></li>
+<li>the integrated branch keeps publishing as a provider-aware content
+workflow under <code>File &gt; Publish</code></li>
+<li>current main’s adjacent work is also retained, including the new AI
+menu flag, 0.6.0/Quillin/power-tools/UI updates, stricter
+dialog/message-box gates, and regenerated UI snapshots</li>
+<li>publishing dialogs now use the shared message-box wrapper instead of
+raw <code>wx.MessageBox</code></li>
+<li>focused publishing plus merge-sensitive validation is green:
+<ul>
+<li><code>124 passed in 55.82s</code></li>
+</ul></li>
+<li>no push has been performed for this checkpoint</li>
+</ul>
+<h2 id="planning-language-correction">2026-06-12 planning-language
+correction</h2>
+<ul>
+<li>updated the latest publishing planning note so it does not imply
+Quill is being designed only for blind users</li>
+<li>corrected wording now reflects the intended product stance more
+accurately:
+<ul>
+<li>accessibility-first</li>
+<li>strong non-visual feedback</li>
+<li>broader audience than a single user group</li>
+</ul></li>
+<li>no product behavior changed in this pass</li>
+</ul>
+<h2 id="cleanup-note">2026-06-12 cleanup note</h2>
+<ul>
+<li>post-sync workspace cleanup is complete</li>
+<li>stray repo-local guidance drift has been corrected</li>
+<li>local temp/cache noise from validation reruns has been removed</li>
+<li>readiness judgment is unchanged:
+<ul>
+<li>publishing integration is still in good shape on current
+upstream</li>
+<li>next meaningful product work is still
+<code>Update Remote Content...</code></li>
+</ul></li>
+</ul>
+<h2 id="upstream-resync-update">2026-06-12 upstream resync update</h2>
+<ul>
+<li>refreshed from current <code>origin/main</code> and merged that
+updated <code>main</code> back into
+<code>features/publishing-providers-framework</code></li>
+<li>synced <code>main</code> tip during this pass:
+<code>97d04f6</code></li>
+<li>major newly integrated upstream themes include:
+<ul>
+<li>developer console / QDC</li>
+<li>GitHub remote file access</li>
+<li>autoupdate / deployment work</li>
+<li>help, translation, setup-wizard, copy-tray, prompt-library, and
+abbreviation surfaces</li>
+</ul></li>
+<li>publishing integration still reads cleanly after that newer shell
+churn:
+<ul>
+<li>GitHub Remote uses <code>File &gt; Open from Remote</code></li>
+<li>publishing still uses <code>File &gt; Publish</code></li>
+<li>publishing command mappings coexist with newer developer-console
+command mappings</li>
+</ul></li>
+</ul>
+<h2 id="validation-update">2026-06-12 validation update</h2>
+<ul>
+<li>publishing-owned plus merge-sensitive branch slice passed after the
+new sync</li>
+<li>result:
+<ul>
+<li><code>129 passed in 19.12s</code></li>
+</ul></li>
+</ul>
+<p>Validated areas included:</p>
+<ul>
+<li>publishing core and browse/open flows</li>
+<li>feature mapping and feature visibility</li>
+<li>remote-sites persistence/dialogs</li>
+<li>main-frame characterization</li>
+<li>file-menu contract for publishing placement</li>
+<li>dialog inventory and banned-pattern gates</li>
+<li>budget gate and adjacent menu/wiring/status-bar contracts</li>
+</ul>
+<h2 id="final-state-update">2026-06-10 final state update</h2>
+<ul>
+<li>current branch is
+<code>features/publishing-providers-framework</code></li>
+<li>current branch history now includes merge of the latest observed
+<code>origin/main</code> work as of 2026-06-10:
+<ul>
+<li><code>54cef8c</code> Node.js runtime / QDC tutorial / installer
+component work</li>
+<li><code>106ef2c</code> editor menu consolidation / notebook store
+groundwork</li>
+<li><code>d394863</code> notebook workspace UI layer</li>
+</ul></li>
+<li>branch-owned publishing and merge-sensitive verification slice last
+passed at:
+<ul>
+<li><code>87 passed in 9.85s</code></li>
+</ul></li>
+<li>Codex support documents have been centralized under
+<code>codex-notes/</code></li>
+<li>branch is in a good reviewable state, but direct merge to
+<code>main</code> is still not the recommended next step</li>
+</ul>
+<h2 id="current-recommendation">Current recommendation</h2>
+<ul>
+<li>okay for visibility / draft PR discussion</li>
+<li>not ideal yet for final merge to <code>main</code></li>
+</ul>
+<p>Why:</p>
+<ul>
+<li>publishing foundation, connection management, and browse/open flows
+are in place</li>
+<li>approved content-representation behavior is implemented</li>
+<li>but the explicit <code>Update Remote Content...</code> lifecycle
+step is still the next intended product slice</li>
+<li>branch also carries process/support documentation that may deserve
+scoping before any final <code>main</code> merge</li>
+</ul>
+<h2 id="audit-update">2026-06-10 audit update</h2>
+<ul>
+<li><code>fork/main</code> has been resynced to
+<code>origin/main</code></li>
+<li><code>features/publishing-providers-framework</code> has been merged
+with current <code>main</code></li>
+<li>the branch is no longer planning-only; it already contains
+publishing foundation, connection management, and browse/open
+implementation work</li>
+<li>publishing now enters through <code>File &gt; Publish</code>, not a
+top-level <code>Publishing</code> menu</li>
+<li>browse/open now supports the approved representation choice:
+<ul>
+<li>default <code>Readable Markdown</code></li>
+<li>per-open override <code>Raw HTML</code></li>
+<li>automatic fallback to <code>Raw HTML</code> when conversion would be
+misleading or lossy</li>
+</ul></li>
+<li>publishing-open metadata now records the chosen Quill authoring
+surface explicitly so later update work can stay honest about
+Markdown-authored versus HTML-authored remote tabs</li>
+</ul>
+<h2 id="git-state">Git state</h2>
+<ul>
+<li>Repo: <code>C:\code\git-src\quill</code></li>
+<li>Branch: <code>features/publishing-providers-framework</code></li>
+<li>local historical notes below may mention older merge points; latest
+meaningful branch state is the merged-and-documented state above</li>
+<li>latest documentation-only cleanup commits after the merge include:
+<ul>
+<li><code>249ba49</code>
+<code>docs(codex): record merge readiness assessment</code></li>
+<li><code>08f3677</code>
+<code>docs(codex): centralize notes and planning artifacts</code></li>
+<li><code>1b65db4</code>
+<code>docs(codex): record clean push checkpoint</code></li>
+</ul></li>
+</ul>
+<h2 id="source-of-truth">Source of truth</h2>
+<ul>
+<li>Planning spec:
+<code>codex-notes/plans/publishing-providers-framework.md</code></li>
+<li>Tracking issue: <code>#140</code></li>
+<li>Issue URL:
+<code>http://github.com/community-access/quill</code></li>
+<li>Product source of truth: <code>docs/QUILL-PRD.md</code></li>
+</ul>
+<h2 id="pre-coding-guardrails">Pre-coding guardrails</h2>
+<ul>
+<li>Follow <code>CONTRIBUTING.md</code> and
+<code>docs/QUILL-PRD.md</code>.</li>
+<li>Keep the implementation simple, accessible, and powerful by reusing
+existing Quill patterns.</li>
+<li>Preserve the approved <code>File &gt; Publish</code> menu direction
+from the current plan.</li>
+<li>Support both posts and pages.</li>
+<li>Keep network actions explicit, review-first, and never silent.</li>
+<li>Keep publishing behind feature gating until the implementation is
+ready.</li>
+<li>Do not add memory or process notes under the existing product docs
+tree unless explicitly requested.</li>
+</ul>
+<h2 id="existing-patterns-the-implementation-should-reuse">Existing
+patterns the implementation should reuse</h2>
+<ul>
+<li>Feature definitions and command gating in
+<code>quill/core/features.py</code> and
+<code>quill/core/feature_command_map.py</code></li>
+<li>Command registration via <code>quill/core/commands.py</code></li>
+<li>Menu wiring in <code>quill/ui/main_frame_menu.py</code></li>
+<li>Top-level menu definitions and menu customization in
+<code>quill/ui/main_frame.py</code> and
+<code>quill/core/menu_customization.py</code></li>
+<li>Dialog patterns from <code>quill/ui/assistant_tools.py</code></li>
+<li>Dialog governance from <code>dialogs.md</code> and
+<code>quill/tools/dialog_inventory.py</code></li>
+<li>Notification storage in
+<code>quill/core/notifications.py</code></li>
+<li>Verified TLS and no-silent-network expectations in
+<code>quill/core/net.py</code> and
+<code>quill/tools/network_egress_audit.py</code></li>
+<li>About-surface contributor pattern in
+<code>quill/ui/main_frame.py</code></li>
+</ul>
+</body>
+</html>

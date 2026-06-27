@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>publishing-providers-framework-restart-2026-06-19</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="publishing-providers-framework-restart-handoff">Publishing
+Providers Framework Restart Handoff</h1>
+<h2 id="branch-and-baseline">Branch And Baseline</h2>
+<ul>
+<li>repository: <code>C:\code\git-src\quill</code></li>
+<li>branch: <code>feature/publishing-providers-framework</code></li>
+<li>upstream tracking branch:
+<code>origin/feature/publishing-providers-framework</code></li>
+<li>baseline before Phase 1 slice A: <code>5181feb9</code></li>
+</ul>
+<h2 id="implemented-state">Implemented State</h2>
+<ul>
+<li><code>quill/core/publishing_adapters.py</code> defines the trusted
+bundled adapter.</li>
+<li><code>quill/core/publishing_bundled/wordpress.py</code> returns a
+package-shaped WordPress adapter using existing registry objects.</li>
+<li><code>tests/unit/core/test_publishing_adapters.py</code> covers
+successful WordPress adaptation and pre-exposure rejection of invalid
+shapes.</li>
+<li>User-visible publishing behavior is unchanged.</li>
+</ul>
+<h2 id="validation">Validation</h2>
+<ul>
+<li>focused adapter/publishing/provider-gate battery:
+<code>34 passed in 0.69s</code></li>
+<li>Ruff: passed</li>
+<li><code>python -m quill.tools.check_publishing_providers</code>:
+passed</li>
+</ul>
+<h2 id="resume-boundary">Resume Boundary</h2>
+<p>Continue Phase 1 only. The next decision is whether WordPress should
+bootstrap through the bundled adapter during normal app startup.
+Preserve existing provider/client identity and behavior if implementing
+that slice.</p>
+<p>Do not begin schedule publish, compare/sync, Quillin worker
+execution, or live third-party provider loading unless the user
+explicitly expands scope.</p>
+<h2 id="phase-1-slice-b-handoff">2026-06-20 Phase 1 Slice B Handoff</h2>
+<ul>
+<li>Merged <code>origin/main</code> at <code>3df921ea</code> in merge
+commit <code>a3bec29</code>.</li>
+<li>Normal startup now calls
+<code>bootstrap_bundled_publishing_providers()</code> before importing
+the UI.</li>
+<li>The explicit bootstrap registers WordPress through its bundled
+adapter while preserving the existing definition and client
+objects.</li>
+<li>Implementation commit: <code>90a3f6e</code>.</li>
+</ul>
+<p>Validation:</p>
+<ul>
+<li>focused merge-resolution battery: <code>149 passed</code></li>
+<li>focused publishing/startup/registry/size battery:
+<code>77 passed</code></li>
+<li>Ruff: passed</li>
+<li>provider registry gate: passed</li>
+<li>full unit suite: <code>4056 passed, 66 failed, 14 skipped</code>; no
+publishing, adapter, startup, size-budget, or provider-gate
+failures</li>
+<li>remaining full-suite failures are outside this slice and include
+current-main repository inconsistencies and state-sensitive
+fixtures</li>
+</ul>
+<p>Going forward, every Phase 1 slice must run focused publishing tests,
+relevant new unit tests, Ruff, the provider registry gate, and the full
+unit suite with a workspace-local temporary directory. Record both
+passes and unrelated baseline failures.</p>
+<p>Resume inside Phase 1 only. Do not begin schedule publish,
+compare/sync, Quillin worker execution, or live third-party loading
+without explicit approval.</p>
+<h2 id="phase-1-closeout-handoff">2026-06-20 Phase 1 Closeout
+Handoff</h2>
+<p>Phase 1 is complete. The WordPress bundled-provider adapter contract
+and normal startup bootstrap passed closeout with
+<code>77 passed</code>, Ruff, the module-size gate, and the provider
+registry gate. The closeout is documentation-only.</p>
+<p>The user explicitly approved schedule publishing, compare/sync,
+Quillin worker execution, and live third-party provider loading after
+this audit. Begin the next chat by verifying the clean pushed branch and
+reviewing the closeout note. The next roadmap phase is schedule
+publishing; keep it separate from compare/sync, worker execution, and
+third-party loading.</p>
+<h2 id="schedule-publishing-handoff">2026-06-21 Schedule Publishing
+Handoff</h2>
+<p>Implemented in Claude Code (the restart prompt for this phase was
+originally written for Codex; its <code>apply_patch</code>
+tooling-blocker section was dropped as not applicable, everything else
+carried over unchanged). Before implementing, <code>origin/main</code>
+was found one unrelated commit ahead of what the restart prompt assumed
+(<code>34e85556</code>, macOS DMG packaging) and was merged into the
+branch.</p>
+<p>Implemented state:</p>
+<ul>
+<li><code>quill/core/publishing_providers.py</code> defines
+<code>PUBLISHING_OPERATION_SCHEDULE</code>.</li>
+<li><code>quill/core/publishing_schedule.py</code> defines
+<code>validate_scheduled_publish_time</code>.</li>
+<li><code>quill/core/publishing.py</code>’s
+<code>create_publishing_remote_item</code>/<code>update_publishing_remote_item</code>
+accept an optional <code>scheduled_at</code> parameter; no new top-level
+action function was added.</li>
+<li><code>quill/core/publishing_clients.py</code>’s
+<code>PublishingProviderClient</code> protocol and
+<code>WordPressPublishingClient</code> accept the same
+<code>scheduled_at</code> parameter; WordPress sends
+<code>status="future"</code> plus a UTC <code>date_gmt</code>, and
+<code>PublishingRemoteDocument</code> gained a
+<code>scheduled_for</code> field populated from the response.</li>
+<li><code>quill/ui/publishing_tools.py</code> defines
+<code>SchedulePublishDialog</code>.</li>
+<li><code>quill/ui/main_frame_menu.py</code> and
+<code>quill/ui/main_frame.py</code> wire
+<code>publishing.schedule_publish</code> as a command,
+<code>File &gt; Publish &gt; Schedule Publish...</code> menu item, and
+<code>_schedule_publishing_publish</code> handler.</li>
+</ul>
+<p>Validation: focused core (<code>61 passed</code>), combined
+publishing/accessibility/governance battery (<code>153 passed</code>),
+Ruff, provider registry gate, and a full-suite run
+(<code>4074 passed, 66 failed, 14 skipped</code>) — the 66 failures
+match the pre-existing baseline exactly; no regressions.</p>
+<p>Committed locally in two checkpoints (core, then UI+governance); the
+user then explicitly asked for these to be pushed, which was done
+(<code>af28e198</code>). A subsequent push returned a GitHub “repository
+moved” notice; <code>origin</code> was updated to
+<code>https://github.com/Community-Access/quill.git</code> (see
+<code>codex-handoff.md</code>, 2026-06-21 entry).</p>
+<h2 id="compare-with-remote-handoff">2026-06-21 Compare With Remote
+Handoff</h2>
+<p>Continued in the same session as the schedule-publishing work.
+Implemented the local-versus-remote compare phase as the smallest slice
+satisfying the Phase 3 “Initial slices” list, after confirming
+<code>Document.source_metadata</code> does not survive a local
+save-and-reopen cycle (<code>quill/io/export.py</code> never serializes
+it; <code>quill/io/open_read.py</code> rebuilds it fresh on open).
+Decision: compare against the open tab’s <code>source_metadata</code>
+only for this slice; the durable file-path-keyed linkage registry from
+this plan’s “Remote identity” section remains explicitly deferred, not
+built.</p>
+<p>Implemented state:</p>
+<ul>
+<li><code>quill/core/publishing_compare.py</code> defines
+<code>PublishingComparison</code> and
+<code>build_publishing_comparison</code>.</li>
+<li><code>quill/core/publishing.py</code>’s
+<code>compare_publishing_remote_item</code> delegates entirely to the
+existing <code>load_publishing_remote_item</code> (no new provider
+operation, no new client method) and
+<code>publishing_comparison_message</code> formats the plain-language
+report.</li>
+<li><code>quill/core/feature_command_map.py</code> maps
+<code>publishing.compare_remote_item</code> to
+<code>future.publishing</code>.</li>
+<li><code>quill/ui/main_frame_menu.py</code> and
+<code>quill/ui/main_frame.py</code> wire the command, a
+<code>File &gt; Publish &gt; Compare With Remote...</code> menu item
+ahead of <code>Update Remote Content...</code>, and the
+<code>_compare_publishing_remote_item</code> handler, which reuses the
+existing connection-match guards and the existing native message-box
+reporting pattern — no new dialog surface was added.</li>
+</ul>
+<p>Validation: focused battery (<code>86 passed</code>), Ruff, the
+provider registry gate, and a full-suite run
+(<code>4083 passed, 66 failed, 14 skipped</code>) — the 66 failures
+match the pre-existing baseline exactly; no regressions.</p>
+<p>Committed locally in two checkpoints (core, then UI+governance); the
+user then explicitly asked for these to be pushed, which was done
+(<code>c8ed954e</code>), pushing cleanly to the corrected
+<code>https://github.com/Community-Access/quill.git</code> remote.</p>
+<h2 id="quillin-worker-execution-boundaries-handoff">2026-06-21 Quillin
+Worker Execution Boundaries Handoff</h2>
+<p>Continued in the same session. Before planning, researched QUILL’s
+Quillin/extension architecture directly (two parallel Explore agents)
+since the phase name implied touching the sandboxing model: confirmed
+Quillins already run via subprocess isolation
+(<code>quill/core/quillins/host.py</code> + <code>host_worker.py</code>
+for Python, <code>quill/core/ai/external_engine.py</code> for Node) with
+capability/consent gating, but none of it is reusable for publishing
+providers without new provider-specific IPC work — and there’s no
+untrusted provider yet to justify building it, since SEC-8 keeps
+third-party discovery locked off regardless. Presented the user three
+explicit scope options; they picked “lifecycle behavior now, real
+boundary deferred” (the recommended option).</p>
+<p>Implemented state:</p>
+<ul>
+<li><code>quill/core/publishing_providers.py</code> defines
+<code>PublishingOperationCancelled</code>.</li>
+<li><code>quill/core/publishing.py</code>’s
+<code>browse_publishing_content</code> and
+<code>quill/core/publishing_clients.py</code>’s
+<code>PublishingProviderClient.browse_content</code>/<code>WordPressPublishingClient.browse_content</code>
+accept an <code>is_cancelled</code> callable, checked between
+per-content-kind requests.</li>
+<li>New <code>quill/core/publishing_worker.py</code>
+(<code>browse_publishing_content_task</code>) is the sole bridge from
+<code>quill.core.publishing</code> to
+<code>quill.stability.task_manager</code> — <code>publishing.py</code>
+itself stays decoupled from the stability layer.</li>
+<li><code>quill/ui/publishing_tools.py</code>’s
+<code>BrowsePublishingContentDialog</code> now requires a
+<code>task_manager</code> constructor parameter, dispatches loads
+through it with a real Cancel button, and ignores stale callbacks via an
+operation-id + <code>_destroyed</code> guard.
+<code>quill/ui/main_frame.py</code> threads
+<code>self._task_manager</code> through.</li>
+<li><code>quill/core/publishing_adapters.py</code> gained
+<code>WORKER_EXECUTION = "worker"</code>, explicitly rejected with a
+distinct “not implemented yet” message.</li>
+</ul>
+<p>Validation: focused battery (<code>97 passed</code>), dialog
+governance gates (<code>44 passed</code>), Ruff, mypy, the provider
+registry gate, and a full-suite run
+(<code>4093 passed, 66 failed, 14 skipped</code>) — the 66 failures
+match the pre-existing baseline exactly. Smoke-launched the app to
+confirm no startup traceback; could not interactively click through
+Browse/Cancel (no pywinauto, no project run-skill for this wx app) —
+recorded honestly as a verification gap rather than claimed as
+tested.</p>
+<p>Committed locally in two checkpoints (core, then UI+governance);
+<strong>not pushed</strong> pending explicit request.</p>
+<h2
+id="live-third-party-provider-loading-handoff-roadmap-closed">2026-06-21
+Live Third-Party Provider Loading Handoff (Roadmap Closed)</h2>
+<p>User asked to continue and confirmed wanting memory/docs kept current
+(established practice all session). Before scoping, researched SEC-8 and
+the “Install from Folder” Quillin flow directly, since the phase name
+implied loosening a security boundary. Found SEC-8
+(<code>core.third_party_plugins</code>, <code>locked_off=True</code> in
+<code>quill/core/feature_catalog.py</code>) is product-wide, not
+publishing-specific, and that
+<code>register_publishing_provider</code>/<code>register_publishing_provider_client</code>
+are themselves completely ungated — the only thing stopping third-party
+providers today is that third-party Quillin code cannot execute at all
+yet. Presented the user three explicit options; they chose to build the
+validation contract while leaving SEC-8 and real loading untouched,
+matching every prior phase’s “build the contract, defer the risky part”
+pattern.</p>
+<p>Implemented state:</p>
+<ul>
+<li><code>quill/core/publishing_adapters.py</code> defines
+<code>ThirdPartyPublishingProviderAdapter</code> and
+<code>register_third_party_publishing_provider</code>. The function
+validates everything (matching ids, required rationale, host-owned
+secrets, required worker execution, no id conflict with bundled
+adapters) and then unconditionally rejects registration — proven by
+tests to leave the live registries completely untouched even for a fully
+well-formed adapter.</li>
+</ul>
+<p>No UI, dialog, menu, or module-size-budget changes were needed —
+<code>publishing_adapters.py</code> stayed at 146 lines.</p>
+<p>Validation: focused battery (<code>82 passed</code>), Ruff, mypy, the
+provider registry gate (confirms zero registry impact), and a full-suite
+run (<code>4100 passed, 66 failed, 14 skipped</code>) — the 66 failures
+match the pre-existing baseline exactly.</p>
+<p>Committed locally in one checkpoint; <strong>not pushed</strong>
+pending explicit request.</p>
+<p><strong>This closes the publishing-providers-framework
+roadmap.</strong> All four phases the 2026-06-20 Phase 1 closeout
+authorized are addressed: WordPress bundled-provider path, schedule
+publishing, local-versus-remote compare, and Quillin worker execution /
+live third-party loading (the last two both concluded “build the
+contract, defer the boundary,” since no untrusted code can run in this
+product yet). Two decisions remain explicitly open for whoever resumes
+this branch, not engineering defaults: whether to build the durable
+cross-session publishing-linkage registry deferred in the compare phase,
+and whether/when to loosen <code>core.third_party_plugins</code>/SEC-8
+for real third-party execution. If resuming, verify local branch state
+(it will be ahead of
+<code>origin/feature/publishing-providers-framework</code> until pushed)
+and read this file’s full history plus the four closeout notes in
+<code>codex-notes/notes/</code> before deciding what, if anything, comes
+next.</p>
+<h2
+id="durable-publishing-linkage-registry-handoff-first-open-decision-resolved">2026-06-22
+Durable Publishing Linkage Registry Handoff (First Open Decision
+Resolved)</h2>
+<p>User chose to resolve the first of the two decisions above.
+Implemented state:</p>
+<ul>
+<li><code>quill/core/publishing_linkage.py</code> (new): path-keyed JSON
+registry (<code>app_data_dir() / "publishing-linkage.json"</code>),
+<code>PublishingLinkageEntry</code> dataclass,
+load/save/get/upsert/remove functions, and
+<code>publishing_linkage_from_source_metadata</code>/<code>apply_publishing_linkage_to_source_metadata</code>
+converters against <code>Document.source_metadata</code>.</li>
+<li><code>quill/ui/main_frame.py</code>: new
+<code>_sync_publishing_linkage_for_document</code> helper, called from
+<code>_write_document_to_disk</code> (the save chokepoint) and from all
+three handlers that refresh publishing metadata after a successful round
+trip (<code>_send_publishing_remote_item</code>, the schedule-publish
+handler, the create-draft/publish-now handler).
+<code>_finish_open_document</code> restores a registry hit into
+<code>source_metadata</code> before either tab branch runs. The helper
+is fully <code>getattr</code>-defensive (a first cut without that broke
+an existing characterization test against a bare
+<code>MainFrame.__new__</code> test double) and skips untitled documents
+and <code>CsvGridSurface</code>/<code>WordDocumentSurface</code>
+tabs.</li>
+<li><code>quill/tools/module_size_budgets.json</code>:
+<code>main_frame.py</code> rebaselined 25127-&gt;25165.</li>
+</ul>
+<p>Methodology note for whoever resumes next: this slice’s full-suite
+validation used pytest’s <em>default</em> temp dir, not a custom
+<code>--basetemp</code>. Every earlier phase’s recorded
+<code>66 failed</code> baseline used
+<code>--basetemp=.tmp\pytest-&lt;slice&gt;-full</code> (a path outside
+<code>Path.home()</code>), which silently breaks
+<code>QUILL_DATA_DIR</code> isolation for any test depending on the
+shared <code>quill_data_dir</code> conftest fixture (per
+<code>quill/core/paths.py</code>’s H-1-core
+<code>_is_constrained_to_home</code> guard) — those tests would fall
+through to the real <code>%APPDATA%\Quill</code>. A
+<code>git stash</code>/clean-tree comparison this slice ran confirms the
+true baseline is <code>19 failed</code> (identical names with or without
+this slice), not <code>66</code>. Do not assume <code>66</code> is
+ground truth if continuing validation on this branch; do not reuse a
+custom <code>--basetemp</code> outside home for isolation-sensitive
+tests.</p>
+<p>Validation: focused battery <code>77 passed</code>;
+Ruff/<code>ruff format --check</code> passed; scoped mypy unchanged
+(same 7 pre-existing findings); full suite
+<code>4167 passed, 19 failed, 14 skipped</code>, clean-tree comparison
+confirms the 19 are pre-existing and unrelated.</p>
+<p>Committed locally in two checkpoints (core, then UI integration);
+<strong>not pushed</strong> pending explicit request.</p>
+<p><strong>One decision remains open</strong>: whether/when to loosen
+<code>core.third_party_plugins</code>/SEC-8 for real third-party Quillin
+or publishing-provider execution. If resuming, read this entry plus the
+new closeout note in <code>codex-notes/notes/</code> before deciding
+what, if anything, comes next.</p>
+</body>
+</html>

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>main-branch-audit-note-2026-06-10</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="main-branch-audit-note">Main Branch Audit Note</h1>
+<p>Timestamp: <code>2026-06-10 16:19:03 -04:00</code></p>
+<p>This note captures findings from a full-suite audit that was run
+locally after merging current <code>main</code> into
+<code>features/publishing-providers-framework</code>.</p>
+<p>Important scope note:</p>
+<ul>
+<li>this was a local audit only</li>
+<li>no main-branch fixes from this note were kept on the feature
+branch</li>
+<li>the branch-specific verification was later reset back to the
+publishing-owned test slice only</li>
+</ul>
+<h2 id="why-this-note-exists">Why This Note Exists</h2>
+<p>During a mistaken full-suite run, several failures/timeouts surfaced
+that appear to belong to current <code>main</code> behavior or test
+coverage rather than to the publishing branch itself.</p>
+<p>Those findings were useful enough to preserve for the maintainers of
+<code>main</code>, even though the related local tightening work was
+reverted from the feature branch.</p>
+<h2 id="full-suite-findings">Full-Suite Findings</h2>
+<h3 id="stale-tests-against-current-quill_data_dir-contract">1. Stale
+Tests Against Current <code>QUILL_DATA_DIR</code> Contract</h3>
+<p>Observed failure pattern:</p>
+<ul>
+<li>multiple tests attempted to write under
+<code>C:\Users\spopp\AppData\Roaming\Quill\...</code></li>
+<li>in this environment that produced <code>PermissionError</code>
+failures</li>
+<li>failing clusters included:
+<ul>
+<li><code>tests/integration/test_document_workflows.py::test_text_document_roundtrip_and_backup</code></li>
+<li><code>tests/unit/core/ai/test_ai_sessions.py::test_save_load_round_trip</code></li>
+<li><code>tests/unit/core/ai/test_ai_sessions.py::test_list_and_most_recent</code></li>
+<li><code>tests/unit/core/test_recent.py</code></li>
+<li><code>tests/unit/core/test_recovery.py</code></li>
+<li><code>tests/unit/core/test_ipc.py</code></li>
+<li><code>tests/unit/core/test_keymap.py::test_load_keymap_merges_overrides</code></li>
+<li><code>tests/unit/core/test_menu_customization.py::test_round_trip_persistence</code></li>
+</ul></li>
+</ul>
+<p>Likely root cause:</p>
+<ul>
+<li>current <code>main</code> documents <code>QUILL_DATA_DIR</code> as a
+dev-only override</li>
+<li>in dev mode the override is accepted only when it resolves under
+<code>Path.home()</code></li>
+<li>many older tests still set <code>QUILL_DATA_DIR</code> directly to
+<code>tmp_path</code>, which is outside that home-constrained boundary
+in this environment</li>
+<li>those tests therefore silently fell back to real app-data paths and
+failed there</li>
+</ul>
+<p>Suggested direction:</p>
+<ul>
+<li>introduce a shared test fixture for a home-scoped fake data
+directory</li>
+<li>migrate stale persistence/config tests to that fixture rather than
+per-test raw <code>tmp_path</code> overrides</li>
+</ul>
+<h3 id="tls-audit-test-scales-poorly-in-full-suite">2. TLS Audit Test
+Scales Poorly in Full Suite</h3>
+<p>Observed behavior:</p>
+<ul>
+<li><code>tests/unit/core/test_net_tls.py::test_no_check_hostname_or_verify_mode_disabled</code>
+passed in isolation</li>
+<li>during the full suite it timed out while walking AST nodes across
+the package</li>
+</ul>
+<p>Likely root cause:</p>
+<ul>
+<li>the test parses every Python file and then walks every AST, even
+when the file does not mention <code>check_hostname</code> or
+<code>verify_mode</code></li>
+</ul>
+<p>Suggested direction:</p>
+<ul>
+<li>prefilter files by text content before AST parsing, while preserving
+the same security assertion</li>
+</ul>
+<h3 id="thesaurus-cold-load-pressure-in-full-suite">3. Thesaurus
+Cold-Load Pressure in Full Suite</h3>
+<p>Observed behavior:</p>
+<ul>
+<li><code>tests/unit/core/test_reset_caches.py::test_thesaurus_preload_after_reset_is_idempotent</code>
+passed in isolation</li>
+<li>during the full suite it later timed out while reparsing thesaurus
+data after cache reset</li>
+</ul>
+<p>Likely root cause:</p>
+<ul>
+<li>cumulative suite pressure rather than a direct functional break</li>
+<li>the thesaurus parse path currently does redundant synonym-cleaning
+work per entry</li>
+</ul>
+<p>Suggested direction:</p>
+<ul>
+<li>profile <code>quill/core/thesaurus.py</code> cold-load path</li>
+<li>remove duplicate cleaning work in <code>_parse_mythes</code></li>
+<li>decide whether this should be treated as implementation
+optimization, test budget tuning, or both</li>
+</ul>
+<h2 id="local-verification-that-supported-these-findings">Local
+Verification That Supported These Findings</h2>
+<p>The following targeted reruns were green locally during
+investigation:</p>
+<ul>
+<li>stale persistence/recovery slice: <code>11 passed</code></li>
+<li>IPC/keymap/menu persistence slice: <code>11 passed</code></li>
+<li>TLS audit file: <code>5 passed</code></li>
+<li>thesaurus reset-cache repro: <code>1 passed</code></li>
+</ul>
+<p>Interpretation:</p>
+<ul>
+<li>the main concern is not that these areas are fundamentally
+broken</li>
+<li>the bigger issue is that current <code>main</code> has stale tests
+around the data-dir contract and a couple of full-suite scalability hot
+spots</li>
+</ul>
+<h2 id="branch-impact">Branch Impact</h2>
+<ul>
+<li>none of the above findings were kept as branch code changes</li>
+<li>publishing-branch validation was rerun afterward on the maintained
+publishing slice only</li>
+<li>that scoped branch slice passed:
+<code>84 passed in 9.75s</code></li>
+</ul>
+</body>
+</html>

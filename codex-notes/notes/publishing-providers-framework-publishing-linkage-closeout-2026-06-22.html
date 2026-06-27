@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>publishing-providers-framework-publishing-linkage-closeout-2026-06-22</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1
+id="publishing-providers-framework-linkage-registry-closeout">Publishing
+Providers Framework Linkage Registry Closeout</h1>
+<h2 id="outcome">Outcome</h2>
+<p>The durable, file-path-keyed publishing linkage registry is complete.
+This resolves the first of the two decisions left explicitly open when
+the publishing-providers-framework roadmap closed on 2026-06-21. A
+previously linked, previously saved publishing document now keeps its
+Compare/Update/ Schedule link after being closed and reopened, or after
+the app restarts — not just for the life of the open tab.</p>
+<h2 id="why-this-was-needed">Why This Was Needed</h2>
+<p>The compare-with-remote phase (2026-06-21) deliberately scoped to the
+open tab’s in-memory <code>Document.source_metadata</code> and deferred
+persistence, after confirming <code>quill/io/export.py</code> never
+serializes <code>source_metadata</code> on save and
+<code>quill/io/open_read.py</code> rebuilds it fresh from file-format
+detection on every reopen. That left a real gap: close and reopen a
+<code>.md</code> file that was linked to a WordPress post, and
+Compare/Update/Schedule all refuse to act (“Open remote publishing
+content before…”) until the user re-browses and re-links, even though
+the file on disk is unchanged.</p>
+<h2 id="what-was-built">What Was Built</h2>
+<ul>
+<li><code>quill/core/publishing_linkage.py</code> (new): a path-keyed
+JSON store at <code>app_data_dir() / "publishing-linkage.json"</code>,
+following the exact pattern already established by
+<code>publishing-connections.json</code> in
+<code>quill/core/publishing.py</code> —
+<code>read_json</code>/<code>write_json_atomic</code>, defensive
+<code>isinstance</code> checks at every level of the loaded JSON so a
+corrupt file degrades to an empty registry rather than raising.
+<code>PublishingLinkageEntry</code> is a frozen dataclass holding the
+ten <code>publishing_*</code> fields. Two converter functions,
+<code>publishing_linkage_from_source_metadata</code> and
+<code>apply_publishing_linkage_to_source_metadata</code>, round-trip
+against <code>Document.source_metadata</code> without ever touching
+unrelated keys already in that dict (CSV/Word open-mode flags, engine
+names, etc.).</li>
+<li><code>MainFrame._sync_publishing_linkage_for_document</code>
+(<code>quill/ui/main_frame.py</code>): the one helper every write path
+calls. It is called from <code>_write_document_to_disk</code> (the save
+chokepoint reached by both <code>save_file</code> and
+<code>save_file_as</code>) and from all three handlers that refresh
+publishing metadata after a successful network round trip:
+<code>_send_publishing_remote_item</code>, the schedule-publish handler,
+and the create-draft/publish-now handler. The latter two were not in the
+original plan — they were discovered while implementing, since they
+mutate <code>source_metadata</code> via the identical
+<code>publishing_status</code>/<code>publishing_updated_at</code>/
+<code>publishing_remote_url</code>/<code>publishing_remote_title</code>
+pattern as the handler that <em>was</em> planned, and adding them keeps
+scheduling and creating a new remote item from an already-saved local
+file just as durable as updating one.</li>
+<li><code>_finish_open_document</code> looks up the registry by
+<code>selected_path</code> and, on a hit, merges the entry into the
+freshly-read document’s <code>source_metadata</code> before either the
+new-tab or the refresh-existing branch runs — so a reopen, and
+<code>_reload_in_place</code>’s Save-As-then-reload-in-matching-view
+flow, both restore the link identically.</li>
+</ul>
+<h2 id="deliberate-scope-boundary">Deliberate Scope Boundary</h2>
+<p><code>_sync_publishing_linkage_for_document</code> skips two cases
+entirely, by design:</p>
+<ul>
+<li><strong>Untitled documents</strong>
+(<code>document.path is None</code>): never registered. The first
+registry write happens only when the user actually saves the document
+somewhere; browsing and opening a remote item alone does not create an
+entry.</li>
+<li><strong>CSV grid and Word structured surfaces</strong>
+(<code>CsvGridSurface</code>, <code>WordDocumentSurface</code>):
+Compare/Update/Schedule have only ever read
+<code>self.editor.GetValue()</code> as markdown/HTML text, a shape those
+structured surfaces were never designed to produce. Without this
+exclusion, saving a previously-linked document as <code>.docx</code> and
+reopening it could have restored
+<code>source_kind="publishing_remote"</code> onto a Word tab for the
+first time ever (today this configuration is structurally impossible,
+since Browse always creates a plain-surface document). Excluding it at
+the write site means it can never be wrongly restored at the read site
+either — no read-side guard was needed.</li>
+</ul>
+<p>No explicit “unlink” command, no new feature flag, no network egress
+audit change, and no dialog/dialog-inventory change: this is pure
+persistence plumbing behind commands that already exist, with no new
+user-facing surface. Stale entries (file deleted, remote item deleted)
+are inert dead weight, not validated against on read — Compare already
+surfaces remote-side problems when invoked.</p>
+<h2 id="a-real-bug-caught-mid-implementation">A Real Bug Caught
+Mid-Implementation</h2>
+<p>The first version of
+<code>_sync_publishing_linkage_for_document</code> used bare
+<code>self.editor</code>/<code>document.source_metadata</code> attribute
+access. That broke an existing characterization test,
+<code>test_main_frame_cq16_characterization.py::test_write_document_to_disk_routes_rtf_through_the_rtf_writer</code>,
+which calls <code>_write_document_to_disk</code> against a bare
+<code>MainFrame.__new__()</code> test double (no <code>editor</code>
+attribute) and a <code>SimpleNamespace(path=...)</code> document (no
+<code>source_metadata</code> attribute) — that test module’s own stated
+convention is to stub only the attributes each method actually touches
+at the time the test was written. Fixed by rewriting the helper to be
+fully <code>getattr</code>-defensive: it checks that
+<code>source_metadata</code> is a dict before doing anything else, so
+the overwhelmingly common non-publishing-document save path never
+touches <code>self.editor</code> at all. This matches the pre-existing
+defensive style already used a few lines above in the same function for
+<code>self.settings</code>
+(<code>getattr(getattr(self, "settings", None), ...)</code>).</p>
+<h2 id="validation-methodology-finding">Validation Methodology
+Finding</h2>
+<p>This slice’s full-suite comparisons used pytest’s <em>default</em>
+temp directory, not a custom <code>--basetemp</code>. Every full-suite
+baseline recorded by the four earlier phases in this roadmap
+(<code>...,66 failed,...</code>) was validated with
+<code>--basetemp=.tmp\pytest-&lt;slice&gt;-full</code> — a path under
+the repository and therefore outside <code>Path.home()</code>.
+<code>quill/core/paths.py</code>’s H-1-core guard
+(<code>_is_constrained_to_home</code>) silently rejects a
+<code>QUILL_DATA_DIR</code> override that isn’t under home, so any test
+depending on the shared <code>quill_data_dir</code> conftest fixture
+(which does not itself override <code>Path.home</code>) would have
+silently lost isolation under those custom basetemps and fallen through
+to the <em>real</em> <code>%APPDATA%\Quill</code> directory. A
+<code>git stash</code>/clean-tree comparison run independently in this
+slice confirms the true pre-existing baseline is <code>19 failed</code>
+— identical failure names with and without this slice’s changes, none
+publishing-, document-, or export/open_read-related — not the
+<code>66</code> recorded in every earlier phase’s notes. This is not
+retroactively corrected in those earlier notes (out of scope, and the
+conclusions in them were not affected — none of those failures were ever
+publishing-related either). Flagging it here so a future session does
+not mistake <code>66</code> for ground truth, and does not repeat the
+custom-basetemp-outside-home pattern for any test that depends on
+<code>QUILL_DATA_DIR</code> isolation.</p>
+<p>One concrete, harmless side effect surfaced by this discovery: this
+slice’s own first (buggy) test run, before its own fixture was fixed to
+override <code>Path.home()</code> defensively, wrote one bogus entry
+into the real
+<code>%APPDATA%\Roaming\Quill\publishing-linkage.json</code> on the
+development machine. The user was asked directly and chose to leave it
+as-is (it is harmless fabricated test data, not real application data,
+and the sandbox’s auto-mode classifier correctly declined to let it be
+deleted automatically since the path is outside the repository).</p>
+<h2 id="acceptance-evidence">Acceptance Evidence</h2>
+<ul>
+<li><code>tests/unit/core/test_publishing_linkage.py</code> (16 tests):
+round-trip save/load, path canonicalization via <code>.resolve()</code>,
+overwrite semantics, no-op removal of an unknown path, corrupt/malformed
+JSON degrading to an empty registry rather than raising, and both
+converter functions tested independently and round-tripped
+together.</li>
+<li><code>tests/unit/ui/test_main_frame.py</code> (4 new static-source
+tests): the save chokepoint calls the sync helper; the helper excludes
+structured surfaces; <code>_finish_open_document</code> restores from
+the registry; all three publish-success handlers call the sync helper
+(asserted via an exact occurrence count).</li>
+<li>Full battery: <code>77 passed</code> (linkage core tests,
+publishing/compare core tests, all of <code>test_main_frame.py</code>
+including the CQ-16 characterization suite, module-size budget
+tests).</li>
+<li>Ruff and <code>ruff format --check</code>: passed.</li>
+<li>Scoped <code>mypy quill/core quill/io</code>: unchanged — same 7
+pre-existing, unrelated findings (6 in
+<code>brf_page_detection.py</code>, 1 in
+<code>publishing_validation.py</code>) as every prior phase in this
+roadmap.</li>
+<li>Full unit suite: <code>4167 passed, 19 failed, 14 skipped</code>.
+Clean-tree comparison (<code>git stash</code>/<code>git stash pop</code>
+around the full suite run) independently confirms the same 19 failures
+at <code>4147 passed</code> with this slice’s changes entirely removed —
+proving zero regressions and that the +20 passing delta is exactly the
+new tests this slice added.</li>
+<li><code>quill/ui/main_frame.py</code> measured at 25165 lines;
+module-size budget rebaselined 25127-&gt;25165 with a dated
+<code>_rebaseline_2026_06_22_publishing_linkage</code> entry recording
+exactly why.</li>
+</ul>
+<h2 id="commits">Commits</h2>
+<p>Two local checkpoints on
+<code>feature/publishing-providers-framework</code>: core (the new
+registry module and its tests), then UI integration (the three
+<code>main_frame.py</code> call sites, their tests, and the module-size
+budget bump). Not pushed, pending explicit request, per the standing
+repo convention.</p>
+<h2 id="whats-actually-done-and-what-isnt">What’s Actually Done And What
+Isn’t</h2>
+<p>Done: linkage now survives save → close → reopen → app restart for
+any publishing-linked document that has been saved to a plain-surface
+local file (markdown, HTML, plain text, RTF). Not done, and out of scope
+for this slice: any UI to inspect, browse, or manually unlink registry
+entries; any validation of a registry entry against the actual remote
+state at open time (Compare already exists for that, on request); any
+handling of a moved or renamed local file (a path-keyed registry has no
+way to follow a rename — the old entry simply becomes inert).</p>
+<p><strong>One decision remains explicitly open</strong> for the user or
+product owner, unchanged from the roadmap closeout: whether and when to
+loosen <code>core.third_party_plugins</code>/SEC-8 for real third-party
+Quillin or publishing-provider execution, and if so, what
+signing/review/sandboxing process (SEC-8’s own stated prerequisite)
+should gate it.</p>
+</body>
+</html>

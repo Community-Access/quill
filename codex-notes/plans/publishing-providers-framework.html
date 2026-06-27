@@ -1,0 +1,3580 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>publishing-providers-framework</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="publishing-providers-framework-plan">Publishing Providers
+Framework Plan</h1>
+<h2 id="follow-up-phases-opened">2026-06-19 follow-up phases opened</h2>
+<p>The post-framework follow-up phases are now opened in
+<code>codex-notes/notes/publishing-follow-up-phases-2026-06-19.md</code>.</p>
+<p>Phase order:</p>
+<ol type="1">
+<li>WordPress first-party bundled provider package path.</li>
+<li>Schedule publish.</li>
+<li>Local-vs-remote compare and first honest sync model.</li>
+<li>Live third-party publishing provider loading.</li>
+</ol>
+<p>Rationale:</p>
+<ul>
+<li>WordPress extraction should prove the trusted first-party
+bundled-provider path first</li>
+<li>schedule and compare/sync are product lifecycle work that can
+continue through the existing provider seam</li>
+<li>live third-party provider loading is last because it intersects
+SEC-8, consent, network capability, conflict handling, and provider
+validation policy</li>
+</ul>
+<p>Recommended first slice:</p>
+<ul>
+<li>define the bundled-provider adapter contract before moving WordPress
+or enabling any live third-party provider loading ## 2026-06-19
+framework readiness tightening checkpoint</li>
+</ul>
+<p>Current read after reviewing the plan: the approved publishing
+framework scope is complete enough for a branch readiness
+checkpoint.</p>
+<p>Marked complete for the current framework scope:</p>
+<ul>
+<li>provider metadata and auth model</li>
+<li>connection profile storage and secure secret handling</li>
+<li>endpoint security validation</li>
+<li>WordPress as the in-tree reference provider</li>
+<li>provider/client registry seam</li>
+<li>browse/open/create/update/publish lifecycle actions</li>
+<li>remote item editor identity</li>
+<li>provider operation capability metadata</li>
+<li>provider/client and provider metadata validation gates</li>
+<li>local pre-commit and PR CI wiring for the publishing provider
+registry gate</li>
+</ul>
+<p>Deliberately deferred beyond this framework checkpoint:</p>
+<ul>
+<li>WordPress extraction into a first-party bundled Quillin or
+equivalent provider package</li>
+<li>schedule publish</li>
+<li>local-vs-remote compare and first honest sync model</li>
+<li>live third-party publishing provider loading</li>
+</ul>
+<p>Recommendation:</p>
+<ul>
+<li>treat the current branch as a publishing framework readiness
+checkpoint</li>
+<li>do not add more framework machinery unless review identifies a
+concrete gap</li>
+<li>continue product work or WordPress-as-bundled-Quillin extraction
+only as separately approved follow-up phases</li>
+</ul>
+<p>Validation plan for this tightening pass:</p>
+<ul>
+<li>publishing-owned validation battery passed:
+<code>137 passed in 32.51s</code></li>
+<li>provider registry gate passed:
+<code>Publishing provider/client registry is valid.</code></li>
+<li>full-suite baseline remains the latest recorded
+<code>3738 passed, 11 skipped, 53 failed, 2 warnings</code>; unrelated
+main-side failures remain out of scope ## 2026-06-19 WordPress
+extraction blocker note</li>
+</ul>
+<p>The WordPress provider extraction-readiness checkpoint is documented
+in
+<code>codex-notes/notes/wordpress-provider-extraction-readiness-2026-06-19.md</code>.</p>
+<p>Recorded conclusions:</p>
+<ul>
+<li>WordPress should remain the in-tree reference provider for now</li>
+<li>the provider/client contract is sharper, but extraction still needs
+an explicit bundled-provider adapter shape</li>
+<li>provider registration, network consent, host-owned secret access,
+validation-before-exposure, and UI provider-neutrality are blockers
+before moving WordPress</li>
+<li>third-party publishing provider loading remains out of scope while
+SEC-8 keeps third-party Quillins locked off for QUILL 1.0</li>
+</ul>
+<p>Validation:</p>
+<ul>
+<li>documentation-only slice; no product runtime behavior changed</li>
+</ul>
+<p>Next likely implementation direction:</p>
+<ul>
+<li>define the bundled-provider adapter shape or continue product
+lifecycle work through the existing in-tree provider/client seam ##
+2026-06-18 provider/client contract validation note</li>
+</ul>
+<p>The provider extraction preparation slice is implemented.</p>
+<p>Implemented:</p>
+<ul>
+<li>added <code>validate_publishing_provider_definition(...)</code> to
+make provider metadata validation explicit</li>
+<li>expanded the provider registry gate so it now checks provider
+metadata before checking provider clients</li>
+<li>validated that implemented auth methods, content kinds, and
+operations are listed as supported</li>
+<li>validated that auth methods and operations use known contract
+ids</li>
+<li>validated that implemented content kinds have singular and plural
+labels</li>
+<li>kept the work as pure contract/tooling validation; WordPress remains
+in-tree and no third-party provider loading was enabled</li>
+</ul>
+<p>Validation:</p>
+<ul>
+<li><code>ruff format quill\core\publishing_validation.py tests\unit\core\test_publishing.py</code></li>
+<li><code>ruff check quill\core\publishing_validation.py tests\unit\core\test_publishing.py</code></li>
+<li><code>pytest tests\unit\core\test_publishing.py -q --basetemp=.tmp\pytest-provider-contract</code>
+<ul>
+<li>result: <code>24 passed in 0.69s</code></li>
+</ul></li>
+<li><code>pytest tests\unit\tools\test_check_publishing_providers.py -q --basetemp=.tmp\pytest-provider-contract-tool</code>
+<ul>
+<li>result: <code>5 passed in 0.21s</code></li>
+</ul></li>
+<li><code>python -m quill.tools.check_publishing_providers</code>
+<ul>
+<li>result:
+<code>Publishing provider/client registry is valid.</code></li>
+</ul></li>
+<li>wider publishing/tool/module-size slice:
+<ul>
+<li>result: <code>58 passed in 4.23s</code></li>
+</ul></li>
+<li><code>pre-commit run publishing-provider-registry --all-files</code>
+<ul>
+<li>result: passed</li>
+</ul></li>
+<li>full <code>tests/unit</code>:
+<code>3738 passed, 11 skipped, 53 failed, 2 warnings</code>; remaining
+failures are outside the touched provider-contract slice and are left
+for their owning main-side work</li>
+</ul>
+<p>Next likely implementation direction:</p>
+<ul>
+<li>continue extraction readiness by documenting the WordPress
+extraction blockers or contract packaging expectations, still without
+moving WordPress or enabling live third-party provider loading ##
+2026-06-18 provider validation CI/local wiring note</li>
+</ul>
+<p>The provider validation gate is now wired into the existing local and
+CI check collections.</p>
+<p>Implemented:</p>
+<ul>
+<li>added a <code>publishing-provider-registry</code> local pre-commit
+hook</li>
+<li>added <code>python -m quill.tools.check_publishing_providers</code>
+to the PR CI <code>internal-gates</code> job</li>
+<li>added
+<code>tests\unit\tools\test_check_publishing_providers.py</code> to the
+PR CI internal-gate unit-test bundle</li>
+<li>kept the gate limited to first-party in-tree provider/client
+registry drift; no runtime third-party publishing provider loading was
+enabled</li>
+</ul>
+<p>Validation:</p>
+<ul>
+<li><code>python -m quill.tools.check_publishing_providers</code>
+<ul>
+<li>result:
+<code>Publishing provider/client registry is valid.</code></li>
+</ul></li>
+<li><code>pytest tests\unit\tools\test_check_publishing_providers.py -q --basetemp=.tmp\pytest-publishing-provider-ci-wire</code>
+<ul>
+<li>result: <code>5 passed in 0.37s</code></li>
+</ul></li>
+<li>PR CI internal-gate unit-test bundle:
+<ul>
+<li>result: <code>56 passed in 11.76s</code></li>
+</ul></li>
+<li><code>pre-commit run publishing-provider-registry --all-files</code>
+<ul>
+<li>result: passed</li>
+</ul></li>
+<li>full <code>tests/unit</code>:
+<code>3732 passed, 11 skipped, 53 failed, 2 warnings</code>; remaining
+failures are outside the touched CI/local publishing-gate slice and are
+left for their owning main-side work</li>
+</ul>
+<p>Next likely implementation direction:</p>
+<ul>
+<li>return to the provider-extraction preparation plan after this
+tooling checkpoint, with no push performed</li>
+</ul>
+<h2 id="provider-validation-tool-gate-implementation-note">2026-06-18
+provider validation tool gate implementation note</h2>
+<p>The next provider-extraction preparation slice is implemented.</p>
+<p>Implemented:</p>
+<ul>
+<li><code>quill.tools.check_publishing_providers</code></li>
+<li>readable validation report formatting for provider/client drift</li>
+<li>CLI-style <code>main()</code> that returns <code>0</code> when the
+registry is valid and <code>1</code> when validation issues exist</li>
+<li>focused tool tests covering:
+<ul>
+<li>clean built-in registry output</li>
+<li>formatted validation issues</li>
+<li>missing provider client</li>
+<li>orphan provider client</li>
+</ul></li>
+</ul>
+<p>Validation:</p>
+<ul>
+<li><code>python -m quill.tools.check_publishing_providers</code>
+<ul>
+<li>result:
+<code>Publishing provider/client registry is valid.</code></li>
+</ul></li>
+<li><code>ruff format quill\tools\check_publishing_providers.py tests\unit\tools\test_check_publishing_providers.py</code></li>
+<li><code>ruff check quill\tools\check_publishing_providers.py tests\unit\tools\test_check_publishing_providers.py</code></li>
+<li>focused tool tests: <code>5 passed in 0.21s</code></li>
+<li>wide publishing/tool/module-size slice:
+<code>52 passed in 3.56s</code></li>
+<li>full <code>tests/unit</code>:
+<code>3731 passed, 11 skipped, 54 failed, 2 warnings</code>; remaining
+failures are outside the touched provider-validation/tooling slice and
+are left for their owning main-side work</li>
+</ul>
+<p>Next likely implementation direction:</p>
+<ul>
+<li>decide whether to wire this internal gate into existing local/CI
+check collections, while still avoiding runtime third-party publishing
+provider loading ## 2026-06-18 testing discipline checkpoint</li>
+</ul>
+<p>Working rule for all remaining publishing-provider development:</p>
+<ul>
+<li>every code/development slice must run focused tests for the touched
+behavior</li>
+<li>every slice must also run the broad available unit-test battery
+before being considered complete</li>
+<li>if the full suite reports failures outside the touched slice, record
+them clearly and leave merged-main / unrelated areas untouched unless
+the slice required modifying them</li>
+<li>if the full suite exposes an in-scope failure, fix it before
+committing the slice</li>
+<li>commit locally as work proceeds; do not push unless explicitly
+requested</li>
+</ul>
+<p>Current known full-suite baseline from the provider/client validation
+slice:</p>
+<ul>
+<li><code>tests/unit</code>:
+<code>3726 passed, 11 skipped, 54 failed, 2 warnings</code></li>
+<li>the 54 failures, 11 skips, and 2 warnings are outside the
+publishing-validation slice and remain owned by their existing main-side
+areas ## 2026-06-18 provider/client validation implementation note</li>
+</ul>
+<p>The next provider-extraction preparation slice is implemented.</p>
+<p>Implemented:</p>
+<ul>
+<li><code>PublishingProviderValidationIssue</code></li>
+<li><code>validate_publishing_provider_client(...)</code></li>
+<li><code>validate_registered_publishing_provider_clients(...)</code></li>
+<li>provider/client registry drift checks for:
+<ul>
+<li>registered provider definition without a client</li>
+<li>registered client without a provider definition</li>
+<li>declared provider operation without the required callable client
+method</li>
+</ul></li>
+<li>operation-to-client-method mapping for verify, browse, load, update,
+create, and publish</li>
+<li>regression coverage using a fake partial provider/client so future
+provider extraction cannot silently drift from declared capability
+metadata</li>
+</ul>
+<p>Validation:</p>
+<ul>
+<li><code>ruff format quill\core\publishing_validation.py tests\unit\core\test_publishing.py</code></li>
+<li><code>ruff check quill\core\publishing_validation.py tests\unit\core\test_publishing.py</code></li>
+<li><code>pytest tests\unit\core\test_publishing.py tests\unit\core\test_publishing_framework.py -q --basetemp=.tmp\pytest-provider-validation</code>
+<ul>
+<li>result: <code>20 passed in 0.59s</code></li>
+</ul></li>
+<li><code>pytest tests\unit\core\test_publishing.py tests\unit\core\test_publishing_browse.py tests\unit\core\test_publishing_framework.py -q --basetemp=.tmp\pytest-provider-validation-wide</code>
+<ul>
+<li>result: <code>39 passed in 3.89s</code></li>
+</ul></li>
+<li>full <code>tests/unit</code> after extraction:
+<code>3726 passed, 11 skipped, 54 failed</code>; remaining failures are
+outside the touched publishing validation slice and are left for their
+owning main-side work</li>
+</ul>
+<p>Next likely implementation direction:</p>
+<ul>
+<li>continue provider extraction preparation by deciding how/where this
+validation should be surfaced for first-party bundled providers and
+future Quillin-contributed providers, without exposing live third-party
+publishing provider loading yet ## 2026-06-18 upstream access recovery
+checkpoint</li>
+</ul>
+<p>The active working branch has been recovered onto the upstream
+repository after the head developer granted push access and resolved the
+branch conflicts before creating the current branch.</p>
+<p>Current git state:</p>
+<ul>
+<li>active branch:
+<code>feature/publishing-providers-framework</code></li>
+<li>tracking branch:
+<code>origin/feature/publishing-providers-framework</code></li>
+<li>upstream remote:
+<code>https://github.com/community-access/quill</code></li>
+<li>current HEAD:
+<code>cbe5ed6 Merge branch 'features/publishing-providers-framework' of https://github.com/stickbear2015/quill into feature/publishing-providers-framework</code></li>
+<li>current main baseline:
+<code>7a64564 chore(docs): drop relocated 0.5.0 release notes and old verbosity plan</code></li>
+<li>working tree: clean before this recovery-doc update</li>
+</ul>
+<p>Merge validation recorded in HEAD:</p>
+<ul>
+<li>reconciled publishing branch with <code>origin/main</code> at
+<code>7a64564</code></li>
+<li>rebaselined GATE-11 module-size budgets for publishing/main-menu
+growth, including explicit entries for <code>publishing.py</code>,
+<code>publishing_clients.py</code>, and
+<code>publishing_tools.py</code></li>
+<li>regenerated dialog inventory and main-frame public-surface
+fixtures</li>
+<li>resolved merge-sensitive test updates in
+<code>test_main_frame.py</code>,
+<code>test_main_frame_menu_contract.py</code>,
+<code>main_frame.py</code>, and
+<code>test_power_tools_command_wiring.py</code></li>
+<li>precommit gates green: ruff format, ruff check, banned-pattern,
+dialog escape-button contract, module-size budget, and announce-gap
+gate</li>
+<li>tests recorded by merge author: <code>tests/unit/ui/</code> 690/690
+pass; <code>tests/unit/core/</code> 2544 pass + 4 skipped + 11 thesaurus
+timeouts deselected</li>
+<li>known residual from <code>origin/main</code>: 12
+<code>test_brf_page_detection.py</code> failures, described in the merge
+commit as pre-existing and unrelated to this merge</li>
+</ul>
+<p>Planning hold:</p>
+<ul>
+<li>do not continue into the next implementation slice yet</li>
+<li>first tighten documentation and any review checklist items implied
+by the merge validation and known residual test state</li>
+</ul>
+<p>Recovery interpretation:</p>
+<ul>
+<li>historical notes below that reference
+<code>stickbear2015:features/publishing-providers-framework</code>
+describe the fork PR checkpoint before upstream push access was
+granted</li>
+<li>new work should use
+<code>feature/publishing-providers-framework</code> on
+<code>origin</code></li>
+<li>the conflict-resolution state is represented by the current merge
+commit, so future planning should treat this branch as the active
+continuation rather than re-opening the old fork-only workflow</li>
+</ul>
+<h2 id="fork-pr-checkpoint">2026-06-18 fork PR checkpoint</h2>
+<p>The publishing framework branch has been pushed to the fork and
+opened as an upstream PR.</p>
+<ul>
+<li>fork branch:
+<ul>
+<li><code>stickbear2015:features/publishing-providers-framework</code></li>
+</ul></li>
+<li>upstream PR:
+<ul>
+<li><code>https://github.com/Community-Access/quill/pull/268</code></li>
+</ul></li>
+<li>target:
+<ul>
+<li><code>Community-Access/quill:main</code></li>
+</ul></li>
+</ul>
+<p>Repository handling note:</p>
+<ul>
+<li>continue pushing branch/log/doc updates to the fork remote only</li>
+<li>do not push directly to <code>Community-Access/quill</code> until
+the user has been given that access</li>
+</ul>
+<h2 id="provider-operation-capability-implementation-note">2026-06-18
+provider operation capability implementation note</h2>
+<p>The next provider-extraction preparation slice is implemented.</p>
+<p>Implemented:</p>
+<ul>
+<li>provider operation constants for:
+<ul>
+<li>verify</li>
+<li>browse</li>
+<li>load</li>
+<li>update</li>
+<li>create</li>
+<li>publish</li>
+</ul></li>
+<li><code>PublishingProviderDefinition.supported_operations</code></li>
+<li><code>PublishingProviderDefinition.implemented_operations</code></li>
+<li>metadata helpers:
+<ul>
+<li><code>provider_supported_operations(...)</code></li>
+<li><code>provider_implemented_operations(...)</code></li>
+<li><code>provider_supports_operation(...)</code></li>
+</ul></li>
+<li>core action gating before provider-client calls</li>
+<li>publish-specific gating for both:
+<ul>
+<li>current-document publish-now</li>
+<li>already-open remote publish/promote</li>
+</ul></li>
+</ul>
+<p>Why this matters:</p>
+<ul>
+<li>future bundled or Quillin-contributed providers can register partial
+lifecycle capability without pretending to support the full WordPress
+surface</li>
+<li>the shell can remain provider-neutral while core makes capability
+decisions from provider metadata</li>
+<li>WordPress stays the reference provider for now, but its full
+lifecycle support is declared data rather than an implicit framework
+assumption</li>
+</ul>
+<p>Validation:</p>
+<ul>
+<li><code>pytest tests/unit/core/test_document.py tests/unit/core/test_publishing.py tests/unit/core/test_publishing_browse.py tests/unit/core/test_publishing_framework.py tests/unit/ui/test_main_frame.py tests/unit/ui/test_main_frame_menu_contract.py tests/unit/ui/test_publishing_connection_dialog_a11y.py tests/unit/ui/test_dialog_inventory.py tests/unit/ui/test_main_frame_characterization.py tests/unit/tools/test_module_size_budget.py tests/unit/tools/test_check_banned_patterns.py tests/unit/tools/test_announce_gap.py tests/unit/tools/test_network_egress_audit.py tests/unit/tools/test_dialog_button_contract.py tests/unit/ui/test_dialog_hardening_contract.py -q --basetemp=.tmp\pytest-publishing-capabilities-wide</code></li>
+<li>result: <code>122 passed in 42.70s</code></li>
+</ul>
+<p>Next likely implementation direction:</p>
+<ul>
+<li>continue extraction-prep by tightening provider/client registration
+validation, so provider definitions and clients cannot silently drift
+apart before WordPress is moved toward a first-party bundled Quillin
+boundary</li>
+</ul>
+<h2 id="remote-publish-lifecycle-implementation-note">2026-06-18 remote
+publish lifecycle implementation note</h2>
+<p>The possible remote-item lifecycle refinement from the prior
+publish-now note is now implemented.</p>
+<p>Implemented:</p>
+<ul>
+<li><code>publishing.publish_remote_item</code></li>
+<li>File &gt; Publish menu entry for
+<code>Publish Open Remote Content...</code></li>
+<li>shared update/publish helper that preserves the existing remote-item
+metadata checks:
+<ul>
+<li>opened remote item required</li>
+<li>current connection required</li>
+<li>stored provider id must match current connection</li>
+<li>stored site URL must match current connection</li>
+</ul></li>
+<li>optional <code>status</code> on
+<code>PublishingProviderClient.update_remote_item(...)</code></li>
+<li>WordPress reference behavior that sends <code>status=publish</code>
+only for the publish-open-remote action</li>
+<li>regression tests for command feature mapping, provider-neutral
+command ids, menu discoverability, shell source contract, and WordPress
+update payloads with and without publish status</li>
+</ul>
+<p>Validation:</p>
+<ul>
+<li><code>pytest tests/unit/core/test_document.py tests/unit/core/test_publishing.py tests/unit/core/test_publishing_browse.py tests/unit/core/test_publishing_framework.py tests/unit/ui/test_main_frame.py tests/unit/ui/test_main_frame_menu_contract.py tests/unit/ui/test_publishing_connection_dialog_a11y.py tests/unit/ui/test_dialog_inventory.py tests/unit/ui/test_main_frame_characterization.py tests/unit/tools/test_module_size_budget.py tests/unit/tools/test_check_banned_patterns.py tests/unit/tools/test_announce_gap.py tests/unit/tools/test_network_egress_audit.py tests/unit/tools/test_dialog_button_contract.py tests/unit/ui/test_dialog_hardening_contract.py -q --basetemp=.tmp\pytest-publishing-remote-publish</code></li>
+<li>result: <code>120 passed in 62.51s</code></li>
+</ul>
+<p>Next likely implementation direction:</p>
+<ul>
+<li>begin the provider extraction/Quillin packaging preparation work,
+keeping WordPress as the in-tree reference provider until the
+first-party bundled Quillin boundary is ready</li>
+<li>alternatively, if product wants more user-visible publishing
+behavior first, keep routing it through provider-client capabilities
+rather than adding WordPress-specific shell assumptions</li>
+</ul>
+<h2 id="publish-now-lifecycle-implementation-note">2026-06-18
+publish-now lifecycle implementation note</h2>
+<p>The next provider-neutral publishing lifecycle slice is
+implemented.</p>
+<p>Implemented:</p>
+<ul>
+<li><code>publishing.publish_current</code></li>
+<li><code>publishing.publish_current_page</code></li>
+<li>File &gt; Publish menu entries for <code>Publish Post Now...</code>
+and <code>Publish Page Now...</code></li>
+<li>provider-client create flow with <code>status="publish"</code></li>
+<li>review-first confirmation and post-send result confirmation through
+the existing message path</li>
+</ul>
+<p>Important constraints preserved:</p>
+<ul>
+<li>no WordPress-specific command ID or shell path</li>
+<li>no new dialog surface</li>
+<li>no silent network write</li>
+<li>publish-now behavior stays in the provider-neutral lifecycle layer
+while WordPress only receives the provider status in its client
+payload</li>
+</ul>
+<p>Possible next lifecycle refinement:</p>
+<ul>
+<li>add a separate promote/publish action for an already-open remote
+draft, using the same provider-neutral update seam if product wants
+remote item promotion before provider extraction work</li>
+</ul>
+<h2 id="break-ready-implementation-status">2026-06-18 break-ready
+implementation status</h2>
+<p>Current branch state is ready for remote sync after the latest
+publishing framework slices:</p>
+<ul>
+<li>provider registry and verification seam is implemented</li>
+<li>unknown providers no longer fall back to WordPress</li>
+<li>WordPress remains the in-tree reference provider for now, with a
+future first-party bundled Quillin extraction direction recorded</li>
+<li>remote item editor identity is implemented with metadata-backed
+display names and no fake local file path</li>
+<li>latest focused publishing/governance validation passed:
+<ul>
+<li><code>117 passed in 62.98s</code></li>
+</ul></li>
+</ul>
+<p>Next implementation direction after the break:</p>
+<ul>
+<li>continue provider-neutral publishing lifecycle behavior on top of
+the registry and identity seams</li>
+<li>revisit deeper browse scaling only if product wants more
+collection-loading refinement before lifecycle expansion</li>
+</ul>
+<h2 id="wordpress-provider-packaging-direction">2026-06-18 WordPress
+provider packaging direction</h2>
+<p>Decision note after provider-registry review:</p>
+<ul>
+<li>WordPress should remain the in-tree reference provider while the
+publishing framework contracts are still being proven.</li>
+<li>The desired end-state is for WordPress to be extractable into a
+trusted first-party bundled Quillin once the provider registry, client
+contract, consent/security checks, and publishing lifecycle behavior are
+stable.</li>
+<li>The framework should therefore continue to be developed as
+provider-neutral core infrastructure plus one reference provider, not as
+WordPress-specific publishing with extension points added later.</li>
+<li>New implementation slices must keep WordPress details inside
+provider metadata/client code and must avoid shell assumptions that
+would make WordPress special.</li>
+<li>Future Quillin provider loading should use the same provider/client
+registration seam now present in core, but the current publishing
+implementation must not depend on live third-party Quillin provider
+loading before the runtime and policy are ready.</li>
+</ul>
+<p>Practical staging:</p>
+<ul>
+<li>short term: keep WordPress bundled in core as a reference
+implementation and regression anchor</li>
+<li>medium term: formalize the provider capability/registration contract
+enough that bundled providers and Quillin-contributed providers can
+share it</li>
+<li>later: extract WordPress into a first-party bundled Quillin or
+equivalent built-in extension package without changing shell
+workflows</li>
+</ul>
+<h2 id="remote-item-editor-identity-implementation-note">2026-06-18
+remote item editor identity implementation note</h2>
+<p>The <code>Remote Item Editor Identity</code> slice is now implemented
+in code.</p>
+<p>Implementation decision:</p>
+<ul>
+<li>use generic <code>Document.source_metadata["display_name"]</code>
+for pathless document display identity</li>
+<li>keep <code>Document.path</code> unset for remote publishing
+documents so Quill does not pretend remote content is a local file</li>
+<li>store the provider-returned remote title separately as
+<code>publishing_remote_title</code></li>
+<li>use <code>source_metadata["source_label"]</code> for a lightweight
+tab source suffix</li>
+<li>refresh title/display metadata after create/update provider
+responses</li>
+</ul>
+<p>This preserves the planning distinction between UI identity and
+authoritative remote linkage:</p>
+<ul>
+<li>UI identity: document display name and tab source label</li>
+<li>linkage truth: provider id, site URL, remote id, remote URL, content
+kind, status, authoring surface, and updated timestamp</li>
+</ul>
+<h2
+id="browse-confirmation-and-remote-identity-planning-addendum">2026-06-12
+browse, confirmation, and remote-identity planning addendum</h2>
+<p>This addendum records a planning-only review after the first
+browse/open/update/create-draft publishing slices were integrated.</p>
+<p>Research basis:</p>
+<ul>
+<li>WordPress REST API collection endpoints for posts and pages default
+list queries to <code>status=publish</code></li>
+<li>WordPress REST API pagination guidance explicitly expects large
+collections to be fetched page by page rather than as one oversized
+pull</li>
+<li>those WordPress details informed this review, but the resulting
+product guidance below is intentionally provider-neutral so the
+publishing framework remains reusable across future providers</li>
+</ul>
+<p>Observed product gaps from branch testing:</p>
+<ul>
+<li>drafts created through the current publishing flow may not appear in
+the browse surface</li>
+<li>loading both posts and pages together can time out on servers with
+large content collections</li>
+<li>write actions need stronger explicit outcome confirmation for user
+trust:
+<ul>
+<li>create draft</li>
+<li>update remote content</li>
+<li>later publish/promote flows</li>
+</ul></li>
+<li>opened remote items still behave too much like anonymous unsaved
+documents in title-bar identity terms</li>
+</ul>
+<p>Planning decisions locked by this addendum:</p>
+<ul>
+<li>publishing browse must evolve from a simple one-shot fetch into a
+scalable collection-loading model</li>
+<li>draft visibility is part of the browse contract and must be made
+explicit in product wording and filters</li>
+<li>publishing write actions must always produce unambiguous success or
+failure confirmation in plain language</li>
+<li>opened remote items should gain a clearer document identity model so
+the editor title/tab better reflects the remote item title without
+pretending the item is a normal local source file</li>
+</ul>
+<p>Approved planning direction for the next non-coding design pass:</p>
+<ul>
+<li>treat browse as a provider-neutral listing workflow with:
+<ul>
+<li>explicit content-kind scope</li>
+<li>explicit status scope</li>
+<li>progressive or staged loading where feasible</li>
+<li>timeout/error messages that say which slice failed</li>
+</ul></li>
+<li>avoid a design that assumes every provider can cheaply return all
+content kinds and all statuses in one request</li>
+<li>preserve the review-first rule not only before network writes, but
+also after them with clear result reporting</li>
+<li>keep temporary/local identity work separate from remote-linkage
+truth:
+<ul>
+<li>the UI may use a temp-backed or synthesized local identity for
+tab/title clarity</li>
+<li>the source metadata must remain the authoritative linkage
+record</li>
+</ul></li>
+</ul>
+<p>Provider-neutral browse-model guidance:</p>
+<ul>
+<li>the browse surface should be designed around a generic model of:
+<ul>
+<li>connection</li>
+<li>content kind</li>
+<li>status set</li>
+<li>page of results</li>
+<li>partial result state</li>
+<li>timeout / partial-failure state</li>
+</ul></li>
+<li>WordPress happens to expose posts and pages as separate endpoints
+with default <code>publish</code> status filtering, but future providers
+may expose:
+<ul>
+<li>one combined content endpoint</li>
+<li>different status vocabularies</li>
+<li>cursor-based pagination instead of page-based pagination</li>
+</ul></li>
+<li>Quill therefore should normalize browse behavior at the framework
+layer instead of hard-coding WordPress assumptions into the product
+contract</li>
+</ul>
+<p>Recommended next implementation-planning slices:</p>
+<ul>
+<li><code>Browse Remote Content Scaling</code>
+<ul>
+<li>add explicit status filters, including drafts</li>
+<li>add staged or progressive loading for multiple content kinds</li>
+<li>add timeout-aware partial results and retry wording</li>
+</ul></li>
+<li><code>Publishing Confirmation Model</code>
+<ul>
+<li>standardize pre-send confirmation and post-send result confirmation
+across create/update/publish actions</li>
+<li>outcome copy should report:
+<ul>
+<li>target site</li>
+<li>content kind</li>
+<li>resulting state</li>
+<li>public or admin URL when available</li>
+</ul></li>
+</ul></li>
+<li><code>Remote Item Editor Identity</code>
+<ul>
+<li>decide whether opened remote items should use:
+<ul>
+<li>synthesized temp file names</li>
+<li>tab-title overrides</li>
+<li>or both</li>
+</ul></li>
+<li>preserve the distinction between UI identity and authoritative
+remote linkage metadata</li>
+</ul></li>
+</ul>
+<p>Constraints preserved from the main plan:</p>
+<ul>
+<li>no silent network writes</li>
+<li>command-first architecture must remain intact for command palette
+discoverability</li>
+<li>dialog count should stay low unless a new governed dialog is clearly
+justified</li>
+<li>every new confirmation or browse filter surface must remain
+accessibility-first and use standard-control patterns</li>
+</ul>
+<h2 id="audit-addendum">2026-06-10 audit addendum</h2>
+<p>This addendum reflects a post-merge audit after updating the branch
+with current <code>main</code>.</p>
+<p>Audit findings:</p>
+<ul>
+<li>the branch is still aligned with the approved architecture
+direction: provider-aware core layer, feature gating,
+<code>File &gt; Publish</code> entry points, dialog governance, and
+explicit network egress review are all present in code</li>
+<li>the branch’s current implementation already covers:
+<ul>
+<li>multi-connection storage</li>
+<li>WordPress application-password verification</li>
+<li>provider-aware browse of posts and pages</li>
+<li>open-remote-item into a normal Quill tab with source metadata</li>
+</ul></li>
+<li>the branch’s audit-identified representation gap has now been
+implemented in code:
+<ul>
+<li>remote content opens as <code>Readable Markdown</code> by
+default</li>
+<li>the browse/open flow now offers a per-open <code>Raw HTML</code>
+override</li>
+<li>Quill now performs a conservative automatic fallback to
+<code>Raw HTML</code></li>
+<li>open metadata now records the chosen Quill authoring surface
+explicitly</li>
+</ul></li>
+</ul>
+<p>Audit guidance locked in by this addendum:</p>
+<ul>
+<li>preserve metadata that makes the chosen open representation honest
+and machine-readable for later update work</li>
+<li>treat the next remaining remote-authoring work as update-flow
+behavior on top of this completed representation choice, not as a fresh
+representation-design question</li>
+</ul>
+<p>Status: Approved and in implementation. Owner: product and
+engineering. Scope: active implementation guided by this spec.</p>
+<p>Tracking:</p>
+<ul>
+<li>GitHub issue: <code>#140</code></li>
+<li>Issue URL: <a
+href="http://github.com/community-access/quill">community-access/quill
+issue #140</a></li>
+</ul>
+<p>This plan must be read together with <a
+href="C:/code/git-src/quill/docs/QUILL-PRD.md">docs/QUILL-PRD.md</a>,
+which remains the product source of truth. If this plan conflicts with
+the PRD, the PRD wins.</p>
+<h2 id="summary">Summary</h2>
+<p>Introduce a provider-based publishing framework that lets QUILL
+connect to external publishing platforms without turning WordPress into
+a one-off special case.</p>
+<p>WordPress is the first planned provider because it is common, mature,
+and exposes a stable REST API. The framework should still be designed so
+later providers can plug into the same concepts, workflows, and UI
+surfaces.</p>
+<p>This document is the active planning and implementation spec for the
+publishing work. It describes the approved architecture, rollout path,
+current constraints, and decision points that should guide
+implementation changes.</p>
+<h2 id="spec-status">Spec status</h2>
+<p>This document now serves two roles:</p>
+<ul>
+<li>a planning record of the repo audit and integration constraints</li>
+<li>an implementation-driving product and engineering spec for the
+approved publishing slices</li>
+</ul>
+<p>Anything in this document labeled as a recommendation is the current
+preferred direction unless a later review explicitly changes it.</p>
+<p>Implementation note:</p>
+<ul>
+<li>planning is complete enough for coding and refinement work to
+continue against this spec</li>
+<li>implementation changes should update this document when they
+materially clarify architecture, supported provider behavior, or
+accessibility requirements</li>
+</ul>
+<h2 id="goals">Goals</h2>
+<ul>
+<li>Let users publish without leaving QUILL.</li>
+<li>Treat WordPress as the first provider, not the final
+architecture.</li>
+<li>Preserve QUILL’s accessibility bar across setup, browsing,
+publishing, and error recovery.</li>
+<li>Reuse existing QUILL patterns where they already solve adjacent
+problems well.</li>
+<li>Keep the first approved slice small enough to review clearly.</li>
+<li>Follow the PRD requirements for explicit network consent, feature
+metadata and gating, and standard-control accessibility behavior.</li>
+</ul>
+<h2 id="planning-stage-decisions-locked-by-this-spec">Planning-stage
+decisions locked by this spec</h2>
+<p>These decisions are now the recommended baseline for future
+implementation unless product review explicitly reopens them:</p>
+<ul>
+<li>publishing enters through the <code>File</code> menu rather than a
+dedicated top-level <code>Publishing</code> menu</li>
+<li>WordPress is the only named provider in the first user-visible
+slices</li>
+<li>publishing ships behind a dedicated gated feature id</li>
+<li>the first implementation adds no publishing status-bar cell</li>
+<li>the first implementation does not depend on Quillins or any
+third-party plugin runtime</li>
+<li>WordPress can become a first-party bundled Quillin later, but that
+is an extraction destination after the framework seam is stable, not a
+prerequisite for the current slices</li>
+<li>publishing must support multiple saved publishing connections, not a
+single global site</li>
+<li>publishing connection UX must stay provider-agnostic until a
+provider is explicitly chosen</li>
+<li>publishing authentication cannot assume application passwords are
+the only realistic user credential path</li>
+<li>for the current WordPress provider, Quill must only surface sign-in
+methods that are real, standards-based remote WordPress flows we can
+honestly support today</li>
+<li>local-to-remote linkage starts in a Quill-local registry, not inside
+the source document</li>
+<li>the first publish path is explicit, review-first, and never
+silent</li>
+<li>the first content path should prefer HTML-oriented output, with any
+source transformation explained plainly to the user</li>
+<li>remote content opening must support a clear Quill-level
+representation choice so a user can work either in readable Markdown or
+in raw HTML when that is the truer editing surface</li>
+<li>publish and update flows must respect the document’s chosen
+authoring surface: Markdown-authored content is converted to HTML at
+send time, while explicitly HTML-authored content is sent as HTML
+without a hidden Markdown pass</li>
+<li>publishing includes both posts and pages from the first approved
+product design</li>
+<li>simplicity is a hard requirement: reuse existing Quill patterns and
+avoid inventing parallel systems unless the current codebase truly lacks
+the needed hook</li>
+<li>every publishing dialog control must have one visible label
+positioned immediately above or immediately to the left of the control,
+with no helper text inserted between the label and the field in reading
+or tab-flow order</li>
+</ul>
+<p>These decisions can still be changed, but the burden should be on the
+change proposal to explain why the current spec is no longer the safest
+fit for Quill.</p>
+<h2 id="non-goals-for-the-first-approved-slice">Non-goals for the first
+approved slice</h2>
+<ul>
+<li>Full multi-provider plugin loading.</li>
+<li>A generic third-party provider marketplace.</li>
+<li>Rich media upload workflows.</li>
+<li>Taxonomy, category, tag, SEO, or theme-specific editing.</li>
+<li>Real-time bidirectional sync.</li>
+<li>Bulk cross-site publishing.</li>
+<li>custom publishing-specific infrastructure that duplicates existing
+Quill menu, dialog, notification, settings, or About-surface
+patterns</li>
+</ul>
+<h2 id="why-this-fits-quill">Why this fits QUILL</h2>
+<p>QUILL already owns most of the writing lifecycle:</p>
+<ul>
+<li>writing</li>
+<li>editing</li>
+<li>review</li>
+<li>accessibility auditing</li>
+<li>AI-assisted revision</li>
+</ul>
+<p>Publishing is the next natural step. If users have to leave QUILL for
+the final handoff, the workflow breaks at the point where many users
+most want continuity and low friction.</p>
+<h2 id="existing-repo-patterns-this-plan-should-reuse">Existing repo
+patterns this plan should reuse</h2>
+<p>The current codebase already has patterns worth reusing instead of
+inventing parallel systems:</p>
+<ul>
+<li>Provider metadata modules in <code>quill/core</code></li>
+<li>Dedicated connection dialogs in <code>quill/ui</code></li>
+<li>Secure secret storage via Credential Manager or platform
+fallback</li>
+<li>Feature-flag gating through <code>FeatureManager</code></li>
+<li>HTTPS and local-endpoint policy checks</li>
+<li>Cause-specific verification messages for network configuration
+flows</li>
+</ul>
+<p>The AI connection system is the strongest direct precedent. The
+publishing design should borrow its shape where that shape still makes
+sense.</p>
+<p>Additional structure observed in the current codebase that should
+shape the plan:</p>
+<ul>
+<li><code>quill/ui/main_frame_menu.py</code> already owns a very large,
+centralized top-level menu build and event-binding surface.</li>
+<li><code>quill/ui/assistant_tools.py</code> already provides a mature
+pattern for connection dialogs, hub dialogs, verification actions, model
+discovery, and review-first summary text.</li>
+<li><code>dialogs.md</code> and the generated dialog inventory already
+act as the project’s explicit dialog-governance system.</li>
+</ul>
+<h2 id="simplicity-rule">Simplicity rule</h2>
+<p>Simplicity is a first-order requirement for this feature.</p>
+<p>That means:</p>
+<ul>
+<li>reuse existing Quill menu, dialog, command, notification, settings,
+and secure-storage patterns whenever possible</li>
+<li>keep the first implementation small and obvious rather than
+framework-heavy for its own sake</li>
+<li>avoid building new generic infrastructure unless the current
+codebase clearly cannot support the needed behavior</li>
+<li>prefer a thin publishing layer that hooks into existing Quill
+systems over a separate publishing subsystem with its own rules</li>
+</ul>
+<p>If a future implementation choice is between a clever abstraction and
+a simple reuse of existing Quill behavior, this plan prefers the simpler
+reuse unless there is a concrete reason not to.</p>
+<h2 id="repo-wide-planning-audit">Repo-wide planning audit</h2>
+<p>This section records the current repo audit so the plan is based on
+the real application structure, not assumptions.</p>
+<h3 id="full-repo-audit-scope">Full-repo audit scope</h3>
+<p>This planning pass reviewed the repo as a full system, not only the
+obvious UI files. The audit covered:</p>
+<ul>
+<li>top-level governance and contributor docs</li>
+<li>product docs and user-facing guides</li>
+<li><code>quill/core</code> feature, command, settings, storage, trust,
+notifications, and network patterns</li>
+<li><code>quill/ui</code> shell integration points for menus, dialogs,
+status bar, and assistant-style connection flows</li>
+<li><code>quill/tools</code> enforcement gates for dialog inventory and
+network egress review</li>
+<li><code>quill/plugins</code> and related tests to verify current
+extensibility limits</li>
+<li>representative unit-test families that would fail if publishing were
+added carelessly</li>
+<li>project config in <code>pyproject.toml</code> to confirm typing,
+test, packaging, and dependency expectations</li>
+</ul>
+<p>This means the plan below is intentionally written against the repo’s
+real contracts, not against a hypothetical clean-slate architecture.</p>
+<h3 id="documentation-and-policy-audit">Documentation and policy
+audit</h3>
+<p>Confirmed from <code>CONTRIBUTING.md</code>, <code>README.md</code>,
+<code>RELEASE.md</code>, <code>docs/QUILL-PRD.md</code>,
+<code>docs/userguide.md</code>, and <code>dialogs.md</code>:</p>
+<ul>
+<li>the repo already has explicit workflow, product, release, and UX
+rules</li>
+<li><code>docs/QUILL-PRD.md</code> is the source of truth for behavior,
+trust, and discoverability requirements</li>
+<li>user-facing behavior is expected to be explicit, plain-language, and
+accessibility-first</li>
+<li>dialog additions are treated as governed product surfaces, not
+incidental implementation details</li>
+<li>release discipline matters because <code>main</code> is protected
+and changes are expected to be reviewable and sliceable</li>
+</ul>
+<p>Planning implication:</p>
+<ul>
+<li>publishing must be treated as a product feature spanning
+architecture, UX, tests, and docs from the start</li>
+<li>each user-visible publishing slice should be planned with docs and
+dialog-governance work included, not postponed</li>
+</ul>
+<h3 id="architecture-and-layering">Architecture and layering</h3>
+<p>Confirmed from <code>CONTRIBUTING.md</code> and the current code:</p>
+<ul>
+<li><code>quill/core</code> is the pure domain layer and should own
+publishing provider definitions, settings models, connection
+verification logic, and capability metadata.</li>
+<li><code>quill/ui</code> owns menus, dialogs, status-bar interactions,
+command palette surfacing, and widget lifecycle.</li>
+<li><code>quill/plugins</code> is intentionally minimal in the current
+product and should not be treated as a ready-made publishing extension
+mechanism for the first approved slices.</li>
+<li><code>quill/tools</code> and <code>tests</code> already enforce
+behavior around dialogs, menu wiring, and feature surfaces.</li>
+</ul>
+<h3 id="menu-structure">Menu structure</h3>
+<p>Confirmed from <code>quill/ui/main_frame_menu.py</code>:</p>
+<ul>
+<li>the menu shell is already centralized and very large</li>
+<li>top-level menus are already fixed and tested for order</li>
+<li>menu items are individually bound and the repo has tests that fail
+if a new menu id is appended without a corresponding menu binding</li>
+</ul>
+<p>Planning implication:</p>
+<ul>
+<li>publishing should enter through the existing menu architecture, not
+a separate shell model</li>
+<li>any future publishing menu entry must be planned together with
+command ids and bind coverage</li>
+</ul>
+<p>Additional planning implication from the menu source:</p>
+<ul>
+<li><code>quill/ui/main_frame_menu.py</code> is already a large
+contract-heavy surface, so the safest approach is to add publishing by
+following the existing menu-construction and binding style exactly</li>
+<li>any first implementation should avoid spreading publishing menu
+construction across multiple new mixins unless there is already an
+established pattern for that split</li>
+<li>publishing should stay inside the existing <code>File</code> menu
+grouping so it remains close to other document lifecycle actions and
+avoids unnecessary top-level menu sprawl</li>
+</ul>
+<h3 id="command-system">Command system</h3>
+<p>Confirmed from <code>quill/core/commands.py</code> and
+<code>quill/core/feature_command_map.py</code>:</p>
+<ul>
+<li>commands are explicitly registered</li>
+<li>each command needs a stable command id</li>
+<li>each command is tied to a feature id, either explicitly or via the
+mapping helper</li>
+<li>command visibility can be filtered by the active feature
+manager</li>
+</ul>
+<p>Planning implication:</p>
+<ul>
+<li>publishing must be planned as a command family, not merely as menu
+labels or dialog launches</li>
+<li>the plan must define command naming early enough that feature
+gating, palette surfacing, and help coverage can stay consistent</li>
+</ul>
+<p>Additional planning implication from the command registry:</p>
+<ul>
+<li>publishing commands should be registered through the same explicit
+<code>CommandRegistry.register(...)</code> path as the rest of the
+app</li>
+<li>command titles should be plain-language first, because they will
+surface in menus and the command palette without a second translation
+layer</li>
+</ul>
+<h3 id="feature-gating-and-profile-integration">Feature gating and
+profile integration</h3>
+<p>Confirmed from the PRD, <code>quill/core/features.py</code>, and
+<code>quill/core/feature_command_map.py</code>:</p>
+<ul>
+<li>Quill treats feature ids as a cross-cutting contract</li>
+<li>features gate commands, menus, settings, help, and status
+surfaces</li>
+<li>hidden and quiet behavior is already a first-class concept</li>
+</ul>
+<p>Planning implication:</p>
+<ul>
+<li>publishing needs a dedicated feature id and must be designed as
+gated from the start</li>
+<li>planning should assume incomplete publishing flows remain hidden or
+quiet until their corresponding slices are ready</li>
+</ul>
+<p>Additional planning implication from the shipped profile model:</p>
+<ul>
+<li>the safest first stance is to keep publishing hidden or quiet
+outside <code>Full Quill</code> and explicit overrides until the
+end-to-end workflow proves stable</li>
+<li>publishing must declare privacy/network impact metadata honestly,
+because feature descriptions already carry those semantics</li>
+</ul>
+<h3 id="dialog-governance">Dialog governance</h3>
+<p>Confirmed from <code>dialogs.md</code>,
+<code>quill/tools/dialog_inventory.py</code>,
+<code>tests/unit/ui/fixtures/dialog_inventory.json</code>, and
+<code>tests/unit/ui/test_dialog_inventory.py</code>:</p>
+<ul>
+<li>dialogs are a governed surface with explicit inventory and
+classification</li>
+<li>new dialogs are not informal additions; they require registry
+presence and sanctioned classification</li>
+<li>the repo already distinguishes <code>native</code>,
+<code>web</code>, and <code>hardened_custom</code> dialog surfaces</li>
+</ul>
+<p>Planning implication:</p>
+<ul>
+<li>every planned publishing dialog must be named and treated as a
+governed dialog surface</li>
+<li>the first slice should minimize dialog count and nesting because
+every new surface adds governance and regression burden</li>
+</ul>
+<p>Additional planning implication from the dialog governance
+tooling:</p>
+<ul>
+<li>any publishing dialog implementation will need both human checklist
+coverage in <code>dialogs.md</code> and machine registry coverage in
+<code>tests/unit/ui/fixtures/dialog_inventory.json</code></li>
+<li>a plan that adds too many secondary or nested dialogs too early will
+create unnecessary maintenance pressure</li>
+<li>any custom publishing dialog must use Quill’s shared dialog contract
+helpers (<code>apply_modal_ids</code>, <code>show_modal_dialog</code>,
+and the associated focus-routing behavior) instead of raw
+<code>ShowModal()</code> or one-off modal wiring</li>
+<li>this requirement is not new policy invented for publishing; it is
+consistent with the existing repo-wide accessibility contract already
+stated in <code>docs/QUILL-PRD.md</code>, especially the
+label-association and label-in-name expectations and the A11Y-4
+dialog-governance work</li>
+<li>publishing dialog fields should follow the repo’s clearer native
+pattern: one visible label directly paired with one control in the same
+row or immediately above it, with accessible names that begin with the
+same visible label text</li>
+<li>publishing manager dialogs should prefer direct labels for their
+primary list, details, and action regions instead of long introductory
+paragraphs when the controls themselves are the main thing a
+screen-reader user needs to reach</li>
+<li>publishing helper or reassurance copy should live in intro, status,
+or verification text, not as free-floating field-adjacent text that can
+be announced as though it belongs to the next control</li>
+<li>publishing code and tests should explicitly guard against
+label-order regressions found in human screen-reader testing, including
+JAWS and other manual validation called for by the dialog contract</li>
+</ul>
+<h3 id="existing-connection-flow-precedent">Existing connection-flow
+precedent</h3>
+<p>Confirmed from <code>quill/ui/assistant_tools.py</code> and
+<code>quill/core/assistant_ai.py</code>:</p>
+<ul>
+<li>the app already has a mature connection dialog pattern</li>
+<li>the current precedent includes provider choice, help text, secure
+secret handling, verification, discovery actions, and clear status
+messaging</li>
+<li>endpoint security and blank-key rules are already enforced in tested
+core logic</li>
+</ul>
+<p>Planning implication:</p>
+<ul>
+<li>publishing should mirror this pattern rather than inventing a
+bespoke setup flow</li>
+<li>WordPress verification should follow the same cause-specific
+messaging philosophy</li>
+</ul>
+<p>Additional planning implication:</p>
+<ul>
+<li>publishing connection UX should reuse the app’s existing pattern of
+“configure, verify, then discover or act”</li>
+<li>secure-secret handling should follow the same split between ordinary
+settings and secure credential storage</li>
+<li>generic auth-method architecture may describe more than one future
+sign-in style, but a provider must not advertise or surface a method
+unless that provider actually supports a real remote flow Quill can
+implement honestly</li>
+<li>for WordPress specifically, the current implementation scope should
+treat application passwords as the built-in remote REST-auth path;
+browser-session, email-link, and ordinary-site-password flows stay
+architectural concepts for future providers or explicit
+provider-specific integrations, not current WordPress UI choices</li>
+<li>browse, open, and later update flows should route through a
+provider-client seam in <code>quill/core</code> so the UI never owns
+WordPress endpoint knowledge directly</li>
+</ul>
+<h3 id="notifications-and-status-bar">Notifications and status bar</h3>
+<p>Confirmed from <code>quill/core/notifications.py</code> and
+<code>quill/ui/main_frame_statusbar.py</code>:</p>
+<ul>
+<li>Quill already has a persistent notifications store</li>
+<li>the status bar is interactive and feature-aware</li>
+<li>status cells are deliberately tied to actions, not just passive
+text</li>
+</ul>
+<p>Planning implication:</p>
+<ul>
+<li>publishing does not need a custom “toast” model</li>
+<li>user-facing publishing outcomes should be planned through existing
+notification/status patterns where appropriate</li>
+<li>the first slices should avoid adding a new status-bar cell unless
+publishing becomes persistent enough to justify one</li>
+</ul>
+<p>Additional planning implication from the status-bar
+implementation:</p>
+<ul>
+<li>status-bar cells in Quill are interactive, keyboard-navigable, and
+feature-aware, so adding one is a heavier commitment than adding a
+message string</li>
+<li>the first publishing slices should use explicit dialog feedback plus
+the existing notification center rather than introducing a persistent
+publishing cell too early</li>
+</ul>
+<h3 id="help-and-user-facing-docs">Help and user-facing docs</h3>
+<p>Confirmed from <code>README.md</code>,
+<code>docs/userguide.md</code>, <code>docs/QUILL-PRD.md</code>, and
+<code>dialogs.md</code>:</p>
+<ul>
+<li>the project already documents connection flows, trust/privacy
+expectations, and menu entry points in detail</li>
+<li>user-facing text expects plain-language, explicit wording</li>
+<li>dialog additions imply checklist and eventual userguide/help
+updates</li>
+</ul>
+<p>Planning implication:</p>
+<ul>
+<li>publishing is not done when the core works;
+help/userguide/discoverability updates must be part of the rollout
+plan</li>
+<li>the plan should stage documentation work alongside feature slices
+instead of as an afterthought</li>
+</ul>
+<p>Documentation hook-in sequence for publishing:</p>
+<ul>
+<li>update <code>dialogs.md</code> as soon as a publishing dialog
+exists</li>
+<li>update user-facing docs only when the feature is no longer
+hidden-only</li>
+<li>keep wording honest about provider support and plugin/runtime
+limitations</li>
+</ul>
+<p>Additional About-surface follow-up from the code review:</p>
+<ul>
+<li>the current About surface is built from
+<code>quill/ui/main_frame.py</code></li>
+<li>contributor GitHub identities are listed through the existing
+<code>_ABOUT_GITHUB_LINKS</code> structure</li>
+<li>contributor thank-you prose is rendered through
+<code>_about_markdown()</code></li>
+<li>the plan should preserve that pattern and add
+<code>stickbear2015</code> exactly in the same style as the existing
+contributor GitHub entries</li>
+<li>the plan should not introduce a second contributor-credit mechanism
+just for publishing follow-up work</li>
+</ul>
+<h3 id="plugin-and-extensibility-reality">Plugin and extensibility
+reality</h3>
+<p>Confirmed from <code>quill/plugins/__init__.py</code>,
+<code>quill/plugins/api.py</code>, and
+<code>tests/unit/core/test_plugins.py</code>:</p>
+<ul>
+<li>third-party plugin loading is locked off</li>
+<li>the plugin API is intentionally minimal right now</li>
+<li>the product term “Quillins” exists, but the runtime is not yet a
+general extension platform for this feature</li>
+</ul>
+<p>Planning implication:</p>
+<ul>
+<li>this plan must not depend on Quillins for the first
+implementation</li>
+<li>future provider extensibility should be architected internally
+first, then exposed later when plugin runtime policy actually supports
+it</li>
+</ul>
+<p>Implementation clarification:</p>
+<ul>
+<li>the current approved implementation should provide a built-in
+provider registry and provider-client contract for publishing
+actions</li>
+<li>WordPress is the first built-in provider client using that
+contract</li>
+<li>future Quillins may eventually contribute providers through an
+adapter to that same contract, but the current implementation must not
+pretend live Quillin provider loading exists before the plugin runtime
+policy changes</li>
+</ul>
+<h3 id="test-and-enforcement-audit">Test and enforcement audit</h3>
+<p>Confirmed from the current test suite and tooling:</p>
+<ul>
+<li>menu structure and menu binding contracts are tested</li>
+<li>dialog inventory and dialog classification are tested</li>
+<li>dialog contract and hardening behavior are tested</li>
+<li>feature mapping and profile behavior are tested</li>
+<li>plugin policy expectations are tested</li>
+<li>provider and connection logic already have unit-test precedents in
+adjacent systems</li>
+<li>network egress is structurally audited in
+<code>quill/tools/network_egress_audit.py</code></li>
+</ul>
+<p>Likely enforcement surfaces for publishing work:</p>
+<ul>
+<li><code>tests/unit/ui/test_main_frame_menu_contract.py</code></li>
+<li><code>tests/unit/ui/test_dialog_inventory.py</code></li>
+<li><code>tests/unit/ui/test_dialog_contract.py</code></li>
+<li><code>tests/unit/ui/test_dialog_hardening_contract.py</code></li>
+<li><code>tests/unit/ui/test_dialog_focus_routing_guard.py</code></li>
+<li><code>tests/unit/core/test_features.py</code></li>
+<li><code>tests/unit/ui/test_dialog_button_parenting.py</code></li>
+<li><code>tests/unit/ui/test_connection_dialog_a11y.py</code></li>
+<li>provider-oriented core tests modeled after existing
+assistant/provider tests</li>
+<li>a likely future <code>network_egress_audit</code> entry once real
+publishing requests are implemented</li>
+</ul>
+<p>Planning implication:</p>
+<ul>
+<li>publishing must be planned against existing enforcement points
+before implementation starts</li>
+<li>every user-visible slice should declare which test contracts it is
+expected to touch</li>
+<li>publishing work should not be considered complete until it has been
+run against the relevant accessibility, usability, dialog-governance,
+menu-contract, feature-gating, and publishing-focused tests already
+present in <code>tests/</code></li>
+<li>every new publishing dialog must use the repo’s shared dialog
+contract and hardening helpers rather than raw modal wiring</li>
+</ul>
+<h3 id="settings-storage-and-trust-model-audit">Settings, storage, and
+trust-model audit</h3>
+<p>Confirmed from <code>quill/core/settings.py</code>,
+<code>quill/core/storage.py</code>, <code>quill/core/trust.py</code>,
+<code>quill/core/net.py</code>, and adjacent connection flows:</p>
+<ul>
+<li>Quill already distinguishes ordinary settings from sensitive
+secrets</li>
+<li>JSON persistence is atomic and path-guarded</li>
+<li>trusted-location and explicit-consent behavior are already part of
+the app’s design vocabulary</li>
+<li>verified TLS is the baseline for outbound HTTPS requests</li>
+</ul>
+<p>Planning implication:</p>
+<ul>
+<li>publishing settings must be split into normal configuration versus
+secure credentials</li>
+<li>remote publishing must follow the same explicit-consent and
+verified-transport stance as other networked features</li>
+<li>the publishing plan should assume no ad hoc file persistence shape
+that bypasses current storage patterns</li>
+</ul>
+<h3 id="packaging-and-dependency-audit">Packaging and dependency
+audit</h3>
+<p>Confirmed from <code>pyproject.toml</code>:</p>
+<ul>
+<li><code>quill/core</code> is under stricter typing expectations than
+<code>quill/ui</code></li>
+<li>tests, lint, and packaging assume incremental, reviewable
+additions</li>
+<li>optional dependencies are already grouped by capability, rather than
+bundled indiscriminately</li>
+</ul>
+<p>Planning implication:</p>
+<ul>
+<li>the first publishing slice should prefer a core-heavy design that is
+easy to type-check and unit-test</li>
+<li>provider dependencies should be kept minimal for the first slice and
+should not force a broad packaging rethink</li>
+</ul>
+<h3 id="editor-and-document-lifecycle-audit">Editor and
+document-lifecycle audit</h3>
+<p>Confirmed from the repo structure and product docs:</p>
+<ul>
+<li>Quill centers the local writing/editing workflow and treats external
+actions as extensions of that workflow</li>
+<li>documents, save paths, format handling, and status/reporting are
+already designed around local-first editing</li>
+<li>the current product model does not justify mutating arbitrary
+document formats for remote-link state in the first slice</li>
+</ul>
+<p>Planning implication:</p>
+<ul>
+<li>the safest first hook is from the existing current-document workflow
+outward to publishing actions</li>
+<li>remote linkage should begin with a Quill-local registry unless a
+later approved design chooses document-embedded metadata</li>
+</ul>
+<h2 id="prd-constraints-this-plan-must-satisfy">PRD constraints this
+plan must satisfy</h2>
+<p>The PRD sets several non-optional requirements that apply directly to
+publishing work:</p>
+<ul>
+<li>No silent network calls. Any remote publishing action must be
+explicit, consented, show progress where appropriate, and report the
+outcome.</li>
+<li>Accessibility-first UI. Publishing surfaces should use the same
+stock-control, screen-reader-native approach Quill expects elsewhere in
+the product.</li>
+<li>Feature-registry integration. Publishing cannot be an orphan
+surface; it needs a feature id, metadata, privacy and network labels,
+and consistent gating across commands, menus, settings, help, and status
+surfaces.</li>
+<li>Local-first trust model. Remote publishing is optional, visible, and
+never the default path for ordinary editing.</li>
+<li>Plugin realism. The PRD’s plugin runtime is limited in v1.0, so this
+plan must not assume a broad third-party publishing plugin marketplace
+as a first implementation dependency.</li>
+<li>Menu and command discoverability. Any eventual publish actions
+should fit the command palette, menu model, and keybinding conventions
+rather than becoming a separate ad hoc workflow.</li>
+</ul>
+<h2 id="proposed-architecture">Proposed architecture</h2>
+<h3 id="core-provider-model">1. Core provider model</h3>
+<p>Add a publishing domain in <code>quill/core</code> with:</p>
+<ul>
+<li>provider definitions</li>
+<li>connection profile settings</li>
+<li>secure credential handling</li>
+<li>auth-method definitions</li>
+<li>endpoint verification</li>
+<li>provider capability metadata</li>
+</ul>
+<p>The framework should not assume all providers behave like WordPress.
+The core abstractions should represent QUILL actions, not REST
+endpoints.</p>
+<p>The implementation should also respect Quill’s layer boundaries from
+<code>CONTRIBUTING.md</code> and the PRD:</p>
+<ul>
+<li><code>quill/core</code> owns provider logic, settings models,
+verification logic, and capability metadata</li>
+<li><code>quill/ui</code> owns dialogs, menus, progress, and
+announcements</li>
+<li>publishing work should not add raw persistence or widget ownership
+into <code>core</code></li>
+</ul>
+<h3 id="provider-contract">2. Provider contract</h3>
+<p>Each provider should eventually implement a shared contract
+covering:</p>
+<ul>
+<li>verify connection</li>
+<li>list or browse content</li>
+<li>fetch a single item</li>
+<li>create draft post</li>
+<li>update post</li>
+<li>publish post now</li>
+<li>schedule post publish</li>
+<li>create draft page</li>
+<li>update page</li>
+<li>publish page now</li>
+<li>schedule page publish</li>
+</ul>
+<p>Nice-to-have later:</p>
+<ul>
+<li>delete or trash</li>
+<li>upload media</li>
+<li>sync status comparison</li>
+</ul>
+<p>Recommended planning shape for the contract:</p>
+<ul>
+<li>one provider interface in <code>quill/core</code></li>
+<li>one command-facing service layer that translates Quill actions into
+provider calls</li>
+<li>no UI classes in the contract itself</li>
+</ul>
+<h3 id="wordpress-provider">3. WordPress provider</h3>
+<p>The first provider should target the standard WordPress REST API and
+support:</p>
+<ul>
+<li>self-hosted WordPress</li>
+<li>WordPress.com sites exposing the standard API</li>
+<li>WP Engine-hosted sites</li>
+<li>other hosts exposing compatible WordPress REST endpoints</li>
+<li>both posts and pages as first-class content types</li>
+</ul>
+<p>Authentication baseline:</p>
+<ul>
+<li>do not assume a single universal WordPress login method</li>
+<li>support a provider-owned list of possible auth methods</li>
+<li>allow the first real implementation to start with one verified
+method, but keep the model open to browser-based or email-link style
+sign-in later</li>
+</ul>
+<h3 id="settings-and-secrets">4. Settings and secrets</h3>
+<p>Connection profile settings should likely include:</p>
+<ul>
+<li>connection/profile id</li>
+<li>user-visible connection label</li>
+<li>provider id</li>
+<li>site URL</li>
+<li>auth method id</li>
+<li>account identifier such as username or email when the chosen auth
+method needs one</li>
+<li>content format preference</li>
+<li>optional site-specific defaults later</li>
+</ul>
+<p>Planning correction:</p>
+<ul>
+<li>the implementation must not store publishing setup as one singleton
+connection record if Quill is expected to work with multiple author
+sites</li>
+<li>the first data model should start with a list of saved publishing
+connection profiles plus a default/last-used selection model</li>
+</ul>
+<p>Secrets should be stored using the same secure pattern already used
+by AI connection flows, not plain settings JSON.</p>
+<h3 id="feature-gating">5. Feature gating</h3>
+<p>Publishing should ship behind its own feature flag until it is proven
+end to end.</p>
+<p>Recommended initial flag shape:</p>
+<ul>
+<li>hidden or quiet in normal profiles</li>
+<li>visible in Full Quill or explicit feature override</li>
+<li>documented as experimental until the workflow is complete</li>
+<li>labeled with explicit privacy and network impact metadata per the
+PRD feature-registry model</li>
+</ul>
+<p>Recommended feature metadata stance:</p>
+<ul>
+<li>maturity: <code>advanced</code> or equivalent early-stage label
+until draft publishing and update flows are both stable</li>
+<li>privacy label: explicitly network-sending</li>
+<li>visibility: hidden or quiet outside <code>Full Quill</code> until
+the first full user-visible slice is approved</li>
+</ul>
+<h2 id="proposed-ux-surfaces">Proposed UX surfaces</h2>
+<h3 id="current-ui-structure-the-plan-should-fit-into">Current UI
+structure the plan should fit into</h3>
+<p>The current application already has these top-level menus in the
+shell:</p>
+<ul>
+<li>File</li>
+<li>Edit</li>
+<li>Insert</li>
+<li>View</li>
+<li>Search</li>
+<li>AI</li>
+<li>BITS Whisperer</li>
+<li>Navigate</li>
+<li>Format</li>
+<li>Tools</li>
+<li>Window</li>
+<li>Help</li>
+</ul>
+<p>Because that structure already exists, publishing should be planned
+as an extension of the current shell rather than as a separate UI
+model.</p>
+<h2 id="phase-1-product-spec">Phase 1 product spec</h2>
+<p>This section defines the current target behavior for the first
+coherent user-visible publishing phase. Connection management and
+verification are already implemented, so this section now mainly guides
+the first real remote content workflows built on that foundation.</p>
+<h3 id="phase-1-scope">Phase 1 scope</h3>
+<p>Phase 1 should include:</p>
+<ul>
+<li>provider-aware publishing connection profiles</li>
+<li>multiple saved publishing connections</li>
+<li>a provider-agnostic connection manager surface</li>
+<li>WordPress connection verification for the first implemented auth
+method</li>
+<li>publish-current-document confirmation and draft creation</li>
+<li>browse existing remote items</li>
+<li>open remote items into Quill for review and editing</li>
+<li>update existing remote items after explicit confirmation</li>
+<li>support for both posts and pages</li>
+<li>explicit result reporting</li>
+<li>command and menu discoverability for the approved actions</li>
+</ul>
+<p>Phase 1 should not include:</p>
+<ul>
+<li>any additional top-level menu expansion</li>
+<li>persistent sync</li>
+<li>media upload</li>
+<li>category/tag/taxonomy editing</li>
+<li>multi-provider user choice beyond WordPress</li>
+<li>document-embedded remote metadata</li>
+<li>a publishing status-bar cell</li>
+</ul>
+<h3 id="phase-1-user-story">Phase 1 user story</h3>
+<p>The intended first user journey is:</p>
+<ol type="1">
+<li>The user discovers publishing actions in the <code>File</code>
+menu.</li>
+<li>The user opens a provider-agnostic publishing connections
+surface.</li>
+<li>The user creates or selects a saved publishing connection
+profile.</li>
+<li>Only after choosing a provider does Quill show provider-specific
+fields or auth language.</li>
+<li>The user verifies the selected connection using the auth method
+supported for that provider/profile.</li>
+<li>The user returns to the current document and chooses an action such
+as <code>Create Draft...</code>,
+<code>Publish Current Document...</code>, or
+<code>Browse Published Content...</code>.</li>
+<li>For a new publish, Quill presents a review-first confirmation dialog
+with content type, title, destination summary, publish state, and
+network explanation.</li>
+<li>For browse or edit, Quill presents a provider-neutral remote-content
+browser that clearly distinguishes posts from pages and reports the
+selected site’s host.</li>
+<li>Quill performs the explicit remote action only after the user
+confirms it.</li>
+<li>Quill reports the outcome through the dialog result, status text,
+and notifications.</li>
+</ol>
+<h3 id="phase-1-command-set">Phase 1 command set</h3>
+<p>The recommended phase 1 command family is:</p>
+<ul>
+<li><code>publishing.connections</code></li>
+<li><code>publishing.new_connection</code></li>
+<li><code>publishing.edit_connection</code></li>
+<li><code>publishing.verify_connection</code></li>
+<li><code>publishing.create_draft</code></li>
+<li><code>publishing.publish_current</code></li>
+<li><code>publishing.create_page_draft</code></li>
+<li><code>publishing.publish_current_page</code></li>
+</ul>
+<p>The following commands should be planned into the next active
+content-workflow slice, with only
+<code>publishing.schedule_publish</code> remaining deferred after
+that:</p>
+<ul>
+<li><code>publishing.browse_content</code></li>
+<li><code>publishing.open_remote_item</code></li>
+<li><code>publishing.update_remote_item</code></li>
+<li><code>publishing.schedule_publish</code></li>
+</ul>
+<h3 id="phase-1-menu-contract">Phase 1 menu contract</h3>
+<p>The recommended phase 1 menu contract is:</p>
+<ul>
+<li><code>File -&gt; Publishing Connections...</code></li>
+<li><code>File -&gt; Verify Current Publishing Connection</code></li>
+<li>separator</li>
+<li><code>File -&gt; Create Draft...</code></li>
+<li><code>File -&gt; Publish Current Document...</code></li>
+<li>separator</li>
+<li><code>File -&gt; Create Page Draft...</code></li>
+<li><code>File -&gt; Publish Current Page...</code></li>
+</ul>
+<p><code>Browse Published Content...</code> is now part of the next
+approved content-workflow slice and should be implemented in a
+provider-neutral way even though WordPress is the first backing
+provider.</p>
+<h3 id="exact-hook-in-plan">Exact hook-in plan</h3>
+<p>This section describes the current planning view of exactly how
+publishing would hook into existing Quill surfaces when implementation
+is eventually approved.</p>
+<h4 id="feature-registry-hook-in">1. Feature registry hook-in</h4>
+<p>Planned hook:</p>
+<ul>
+<li>define a dedicated publishing feature id in
+<code>quill/core/features.py</code></li>
+<li>add command-to-feature mappings in
+<code>quill/core/feature_command_map.py</code></li>
+<li>ensure publishing surfaces follow the same hidden/quiet/on rules as
+other advanced features</li>
+</ul>
+<p>What this avoids breaking:</p>
+<ul>
+<li>existing profile behavior</li>
+<li>command palette filtering</li>
+<li>help/menu/status consistency gates</li>
+</ul>
+<h4 id="command-registry-hook-in">2. Command registry hook-in</h4>
+<p>Planned hook:</p>
+<ul>
+<li>register publishing commands through the existing command
+registry</li>
+<li>make menu items, palette entries, and later keybindings resolve
+through those commands</li>
+</ul>
+<p>Recommended initial command family:</p>
+<ul>
+<li><code>publishing.connections</code></li>
+<li><code>publishing.new_connection</code></li>
+<li><code>publishing.edit_connection</code></li>
+<li><code>publishing.verify_connection</code></li>
+<li><code>publishing.create_draft</code></li>
+<li><code>publishing.publish_current</code></li>
+<li><code>publishing.browse_content</code></li>
+<li><code>publishing.open_remote_item</code></li>
+<li><code>publishing.update_remote_item</code></li>
+</ul>
+<p>What this avoids breaking:</p>
+<ul>
+<li>menu-only feature drift</li>
+<li>orphan dialogs not reachable from the palette</li>
+<li>inconsistent feature-id attribution</li>
+</ul>
+<h4 id="menu-hook-in">3. Menu hook-in</h4>
+<p>Planned hook:</p>
+<ul>
+<li>add publishing actions within the existing <code>File</code> menu in
+<code>quill/ui/main_frame_menu.py</code></li>
+<li>bind each menu id through the existing <code>wx.EVT_MENU</code>
+pattern</li>
+<li>keep the first menu footprint deliberately small</li>
+</ul>
+<p>Recommended initial submenu items:</p>
+<ul>
+<li><code>Publishing Connections...</code></li>
+<li><code>Verify Current Publishing Connection</code></li>
+<li>separator</li>
+<li><code>Create Draft...</code></li>
+<li><code>Publish Current Document...</code></li>
+<li>separator</li>
+<li><code>Create Page Draft...</code></li>
+<li><code>Publish Current Page...</code></li>
+<li><code>Browse Published Content...</code></li>
+</ul>
+<p>Phase 1 refinement:</p>
+<ul>
+<li><code>Browse Published Content...</code> is now part of the next
+approved content-workflow slice and should stay in the <code>File</code>
+menu contract once that slice is implemented</li>
+</ul>
+<p>What this avoids breaking:</p>
+<ul>
+<li>top-level menu sprawl before the workflow is mature</li>
+<li>failure of menu binding contract tests</li>
+<li>discoverability gaps between menu and command palette</li>
+</ul>
+<h4 id="dialog-hook-in">4. Dialog hook-in</h4>
+<p>Planned hook:</p>
+<ul>
+<li>implement publishing dialogs as governed <code>wx.Dialog</code>
+surfaces or sanctioned stock/web surfaces, depending on the specific
+need</li>
+<li>add each publishing dialog to <code>dialogs.md</code></li>
+<li>ensure each new dialog is accepted by the dialog inventory gate</li>
+</ul>
+<p>Planned first dialog surfaces:</p>
+<ul>
+<li><code>Publishing Connections Dialog</code></li>
+<li><code>Edit Publishing Connection Dialog</code></li>
+<li><code>Publish Current Content Dialog</code></li>
+<li>later <code>Browse Published Content Dialog</code></li>
+</ul>
+<p>What this avoids breaking:</p>
+<ul>
+<li>dialog inventory gates</li>
+<li>keyboard and screen-reader regression expectations</li>
+<li>focus return and escape/default button contracts</li>
+</ul>
+<h4 id="notifications-and-status-hook-in">5. Notifications and status
+hook-in</h4>
+<p>Planned hook:</p>
+<ul>
+<li>use existing notifications for meaningful results such as connection
+verified, draft created, or publish failed</li>
+<li>consider status-bar integration only after publishing becomes
+persistent enough to justify a dedicated surface</li>
+</ul>
+<p>Recommended first status behavior:</p>
+<ul>
+<li>no dedicated publishing status-bar cell in the first implementation
+slices</li>
+<li>rely on explicit dialog feedback, status text, and
+notifications</li>
+</ul>
+<p>What this avoids breaking:</p>
+<ul>
+<li>unnecessary status-bar complexity</li>
+<li>premature persistent UI for a feature that may remain gated or
+quiet</li>
+</ul>
+<h4 id="help-and-documentation-hook-in">6. Help and documentation
+hook-in</h4>
+<p>Planned hook:</p>
+<ul>
+<li>update <code>dialogs.md</code> when dialogs are added</li>
+<li>update user-facing docs only when a slice becomes user-visible</li>
+<li>keep PRD-aligned wording around privacy, network consent, and
+supported scope</li>
+</ul>
+<p>What this avoids breaking:</p>
+<ul>
+<li>stale dialog checklist coverage</li>
+<li>discoverability gaps</li>
+<li>mismatch between the actual shipping UI and the user guide</li>
+</ul>
+<h4 id="a.-governance-and-audit-hook-in">6a. Governance and audit
+hook-in</h4>
+<p>Planned hook:</p>
+<ul>
+<li>keep publishing changes aligned with the existing contributor and
+release rules</li>
+<li>treat network egress review, dialog registration, and feature
+mapping as first-class acceptance criteria</li>
+<li>include docs updates in the same slice as newly user-visible
+publishing surfaces</li>
+</ul>
+<p>What this avoids breaking:</p>
+<ul>
+<li>shipping a user-visible feature that bypasses current repo
+gates</li>
+<li>a plan that looks sound architecturally but fails the repo’s actual
+governance model</li>
+</ul>
+<h4 id="extensibility-hook-in">7. Extensibility hook-in</h4>
+<p>Planned hook:</p>
+<ul>
+<li>keep provider architecture internal-first in
+<code>quill/core</code></li>
+<li>do not expose Quillin/plugin extension points for publishing in the
+initial approved work</li>
+<li>plan a later internal seam where provider registration could be
+generalized when plugin policy permits it</li>
+</ul>
+<p>What this avoids breaking:</p>
+<ul>
+<li>the current locked-off third-party plugin policy</li>
+<li>false expectations that provider installation is available now</li>
+</ul>
+<h2 id="exact-implementation-thinking-summary">Exact
+implementation-thinking summary</h2>
+<p>This section is intentionally concrete so later implementation, if
+approved, can proceed from a shared mental model rather than vague
+intent.</p>
+<h3 id="how-the-feature-would-enter-the-app">How the feature would enter
+the app</h3>
+<p>The planned entry path is:</p>
+<ul>
+<li>feature registry enables publishing for the active profile</li>
+<li>command registry exposes publishing commands</li>
+<li>the <code>File</code> menu surfaces the approved subset of those
+commands</li>
+<li>dialogs handle connection setup and explicit remote actions</li>
+<li>notifications and status text report outcomes</li>
+</ul>
+<p>This means publishing would hook into the existing application shell
+the same way other advanced features do, instead of becoming a sidecar
+workflow or a one-off floating tool.</p>
+<h3 id="how-the-current-document-would-participate">How the current
+document would participate</h3>
+<p>The working assumption is:</p>
+<ul>
+<li>the active document remains the source object</li>
+<li>publish actions read from the active document state</li>
+<li>publish confirmation happens in a dialog before any remote call</li>
+<li>remote identity is stored outside the document in the first design,
+likely in a Quill-local registry keyed by file path or document
+identity</li>
+</ul>
+<p>This minimizes risk to the existing editor and format handlers while
+still allowing later update flows.</p>
+<h3 id="how-wordpress-specific-behavior-would-stay-contained">How
+WordPress-specific behavior would stay contained</h3>
+<p>The working assumption is:</p>
+<ul>
+<li>provider-neutral commands ask for publish, browse, update, or verify
+actions</li>
+<li>a service layer translates those actions into provider-specific API
+calls</li>
+<li>WordPress-specific fields or limitations stay inside
+provider/service code and provider-aware help text, not spread through
+global shell logic</li>
+</ul>
+<p>This keeps the UI language mostly provider-neutral while still
+allowing the first provider to be WordPress.</p>
+<h3 id="how-this-avoids-breaking-todays-app">How this avoids breaking
+today’s app</h3>
+<p>The current planning model is deliberately conservative:</p>
+<ul>
+<li>one bounded menu change only: add publishing actions inside
+<code>File</code>, with no broader top-level menu reorganization in the
+first slices</li>
+<li>no new status-bar cell in the first slices</li>
+<li>no plugin-runtime dependency</li>
+<li>no silent background sync</li>
+<li>no document-format mutation for remote ids in the first slice</li>
+<li>no bypass around the command registry, menu bindings, dialog
+inventory, feature gating, settings persistence, or network-egress
+review systems</li>
+</ul>
+<p>That is the core reason this plan should integrate cleanly with the
+existing codebase if implementation is later approved.</p>
+<h3 id="recommended-menu-placement-strategy">Recommended menu placement
+strategy</h3>
+<p>Based on the current menu layout, the best planning path is:</p>
+<h3 id="phase-a-use-the-file-menu">Phase A: use the <code>File</code>
+menu</h3>
+<p>Use the existing <code>File</code> menu for the first implementation
+slices. That keeps publishing near save, open, and other document
+lifecycle actions, and it matches the updated product direction.</p>
+<p>Implementation note for that slice:</p>
+<ul>
+<li>add publishing actions through the existing <code>File</code> menu
+construction in <code>quill/ui/main_frame_menu.py</code></li>
+<li>keep the new actions inside the existing menu-customization and
+menu-editor model rather than treating them as a shell special case</li>
+<li>keep the final order stable across menu build, menu customization,
+command palette discoverability, and help text</li>
+</ul>
+<p>Recommended first commands in <code>File</code>:</p>
+<ul>
+<li><code>Publishing Connection...</code></li>
+<li><code>Verify Publishing Connection</code></li>
+<li><code>Publish Current Document...</code></li>
+<li><code>Create Draft...</code></li>
+<li><code>Create Page Draft...</code></li>
+<li><code>Publish Current Page...</code></li>
+<li><code>Browse Published Content...</code></li>
+</ul>
+<p>Items that are not yet implemented should remain visible only when
+consistent with the project’s feature-gating rules; otherwise they
+should stay hidden behind the feature flag until ready.</p>
+<p>Planning note from the menu contract audit:</p>
+<ul>
+<li>each new publishing menu id must have a matching
+<code>wx.EVT_MENU</code> binding</li>
+<li>the plan should treat that as part of the acceptance criteria for
+any implementation slice that adds menu items</li>
+</ul>
+<h3 id="phase-b-keep-publishing-in-file">Phase B: keep publishing in
+<code>File</code></h3>
+<p>The current direction is to keep publishing inside <code>File</code>,
+not move it back to a dedicated top-level menu later.</p>
+<h3 id="command-palette-integration">Command palette integration</h3>
+<p>Every planned publishing action should also exist as a
+command-palette command from the start. The menu should not be the only
+discovery path.</p>
+<p>Recommended initial command concepts:</p>
+<ul>
+<li><code>publishing.connection</code></li>
+<li><code>publishing.verify_connection</code></li>
+<li><code>publishing.create_draft</code></li>
+<li><code>publishing.publish_current</code></li>
+<li><code>publishing.browse_content</code></li>
+</ul>
+<h3 id="phase-1-ui-surface">Phase 1 UI surface</h3>
+<p>The smallest coherent user-facing setup is:</p>
+<ul>
+<li>a top-level <code>Publishing</code> entry point</li>
+<li>a connections manager for multiple saved sites</li>
+<li>an add or edit connection dialog that stays provider-agnostic until
+the provider is chosen</li>
+<li>a verify connection action</li>
+</ul>
+<p>This is the minimum needed before post creation flows make sense.</p>
+<p>The eventual UI should use Quill’s normal discoverability paths:</p>
+<ul>
+<li>menu entry</li>
+<li>command palette command</li>
+<li>feature-gated visibility</li>
+<li>clear disabled-state explanation when unavailable</li>
+</ul>
+<p>Phase 1 recommendation:</p>
+<ul>
+<li>keep the visible first flow to connection plus publish-current
+actions</li>
+<li>do not expand into browse/update until the connection and
+draft-creation paths are stable and understandable</li>
+</ul>
+<h3 id="dialog-strategy-based-on-existing-app-patterns">Dialog strategy
+based on existing app patterns</h3>
+<p>The existing AI surfaces provide the closest UI precedent for
+publishing. The publishing plan should intentionally reuse that
+shape:</p>
+<ul>
+<li>a focused connection dialog for provider-specific credentials and
+verification</li>
+<li>an optional publishing hub dialog later if the workflow grows beyond
+one dialog</li>
+<li>plain-language summary text near the top of the dialog</li>
+<li>explicit action buttons for verification and discovery tasks</li>
+<li><code>OK</code> or <code>Cancel</code> modal behavior with proper
+escape and default-action wiring</li>
+</ul>
+<h3 id="recommended-first-publishing-dialogs">Recommended first
+publishing dialogs</h3>
+<h4 id="publishing-connections-dialog">1. Publishing Connections
+Dialog</h4>
+<p>Purpose:</p>
+<ul>
+<li>list saved publishing connections</li>
+<li>add a new connection</li>
+<li>edit an existing connection</li>
+<li>choose the current/default connection</li>
+<li>verify the selected connection</li>
+</ul>
+<p>Recommended controls:</p>
+<ul>
+<li>list of saved connections</li>
+<li>add button</li>
+<li>edit button</li>
+<li>remove button</li>
+<li>set current/default button</li>
+<li>verify button</li>
+</ul>
+<p>This dialog should be the publishing equivalent of a connection
+manager, not a singleton settings form.</p>
+<h4 id="edit-publishing-connection-dialog">2. Edit Publishing Connection
+Dialog</h4>
+<p>Purpose:</p>
+<ul>
+<li>enter a connection label</li>
+<li>choose provider</li>
+<li>enter site URL</li>
+<li>choose auth method</li>
+<li>only then show provider-specific or auth-specific fields</li>
+<li>save and verify the connection profile</li>
+</ul>
+<p>Recommended controls:</p>
+<ul>
+<li>connection label text field</li>
+<li>provider choice</li>
+<li>site URL text field</li>
+<li>auth method choice</li>
+<li>account identifier field when needed</li>
+<li>secret field only when the chosen auth method actually needs
+one</li>
+<li>provider help text</li>
+<li>verify button</li>
+</ul>
+<p>Expected plain-language summary text:</p>
+<ul>
+<li>explain that Quill can connect to a publishing site only when the
+user configures it</li>
+<li>state that verification sends a deliberate network request to the
+configured site</li>
+<li>state that saved sign-in data, when present, is stored securely on
+the device</li>
+<li>avoid assuming the user already knows what an application password
+is</li>
+</ul>
+<h4 id="publish-current-content-dialog">2. Publish Current Content
+Dialog</h4>
+<p>Purpose:</p>
+<ul>
+<li>confirm what is being sent</li>
+<li>clearly indicate whether the current action is targeting a post or a
+page</li>
+<li>choose title</li>
+<li>choose draft or publish now</li>
+<li>choose initial format behavior if needed</li>
+</ul>
+<p>Recommended controls:</p>
+<ul>
+<li>read-only content-type summary: post or page</li>
+<li>title text field</li>
+<li>status choice: draft or publish now</li>
+<li>content-format summary</li>
+<li>plain-language network summary</li>
+<li>confirmation buttons</li>
+</ul>
+<p>This dialog should be review-first and explicit about remote action.
+One shared dialog may be reused for both post and page flows as long as
+the active content type is clear in the title, summary text, and control
+labels.</p>
+<p>Expected plain-language summary text:</p>
+<ul>
+<li>say whether the action will create a draft or publish
+immediately</li>
+<li>name the target site clearly</li>
+<li>state that document content will be sent over the network if the
+user continues</li>
+<li>explain any format conversion in one sentence, not jargon</li>
+</ul>
+<h4 id="browse-published-content-dialog">3. Browse Published Content
+Dialog</h4>
+<p>Purpose:</p>
+<ul>
+<li>list remote posts and pages</li>
+<li>inspect summary metadata</li>
+<li>open selected item into QUILL</li>
+<li>choose update target when publishing changes later</li>
+</ul>
+<p>Recommended controls:</p>
+<ul>
+<li>content-type filter or grouped list that clearly distinguishes posts
+from pages</li>
+<li>searchable list control</li>
+<li>metadata preview pane or read-only text area</li>
+<li>open button</li>
+<li>refresh button</li>
+</ul>
+<p>This is now part of the next approved implementation slice. The same
+caution still applies: keep it provider-neutral in shell language and
+governed by the same dialog and command contracts as the connection
+work.</p>
+<h3 id="dialog-governance-requirements">Dialog governance
+requirements</h3>
+<p>Because the repo already treats dialogs as a governed surface,
+publishing planning should explicitly require:</p>
+<ul>
+<li>a <code>dialogs.md</code> entry for every user-facing publishing
+dialog</li>
+<li>dialog inventory registration when code is eventually added</li>
+<li>dialog contract compliance: title announcement, tab order,
+enter/escape behavior, and focus return</li>
+<li>nested dialog planning kept minimal in the first slice</li>
+</ul>
+<p>Recommended classification expectations:</p>
+<ul>
+<li><code>Publishing Connections Dialog</code>: likely
+<code>hardened_custom</code></li>
+<li><code>Edit Publishing Connection Dialog</code>: likely
+<code>hardened_custom</code></li>
+<li><code>Publish Current Content Dialog</code>: likely
+<code>hardened_custom</code></li>
+<li><code>Browse Published Content Dialog</code>: likely
+<code>hardened_custom</code></li>
+<li>confirm-only or pick-one prompts inside the flow: prefer native
+dialogs where possible</li>
+</ul>
+<h3 id="phase-2-ui-surface">Phase 2 UI surface</h3>
+<p>After connection works:</p>
+<ul>
+<li>create post draft</li>
+<li>publish current post</li>
+<li>create page draft</li>
+<li>publish current page</li>
+<li>edit existing posts</li>
+<li>edit existing pages</li>
+<li>schedule publish</li>
+<li>browse existing posts</li>
+<li>browse existing pages</li>
+<li>open a selected item into QUILL for editing</li>
+</ul>
+<h3 id="accessibility-requirements">Accessibility requirements</h3>
+<p>All publishing surfaces must meet the same QUILL bar as other
+dialogs:</p>
+<ul>
+<li>keyboard-only complete</li>
+<li>predictable focus</li>
+<li>plain-language verification and failure messages</li>
+<li>no dead-end dialogs</li>
+<li>clear success announcements</li>
+<li>no hidden network behavior</li>
+<li>use stock, screen-reader-friendly controls consistent with the PRD’s
+writing-surface and dialog philosophy</li>
+</ul>
+<p>More specifically, based on the current dialog estate:</p>
+<ul>
+<li>prefer stock <code>wx.Dialog</code>, <code>wx.TextCtrl</code>,
+<code>wx.Choice</code>, <code>wx.ListBox</code>, and standard
+buttons</li>
+<li>avoid introducing bespoke publishing-specific custom controls in the
+first iteration</li>
+<li>keep verification and publish flows in short, linear dialogs rather
+than wizard sprawl</li>
+</ul>
+<h2 id="ux-contract-for-first-implementation">UX contract for first
+implementation</h2>
+<p>This is the planning-level UX contract that future implementation
+should satisfy.</p>
+<h3 id="connection-setup-behavior">Connection setup behavior</h3>
+<p>The connection dialog should:</p>
+<ul>
+<li>start from saved connections rather than a single global connection
+record</li>
+<li>keep provider names generic until the user chooses or edits a
+provider</li>
+<li>support multiple saved sites cleanly</li>
+<li>provide a visible verify action before save-and-exit is the only
+path forward</li>
+<li>use cause-specific feedback such as invalid URL, insecure endpoint,
+authentication failure, unreachable host, or successful
+verification</li>
+</ul>
+<p>The connection flow should not:</p>
+<ul>
+<li>auto-verify silently on field blur or dialog open</li>
+<li>hide the fact that a real network call is happening</li>
+<li>assume every user has or understands an application password</li>
+<li>use provider-specific jargon before the provider is chosen</li>
+</ul>
+<h3 id="publish-confirmation-behavior">Publish confirmation
+behavior</h3>
+<p>The publish dialog should:</p>
+<ul>
+<li>name the target site</li>
+<li>show the proposed title</li>
+<li>let the user choose at least draft versus publish now, unless the
+slice is draft-only</li>
+<li>explain content-format behavior in plain language</li>
+<li>require explicit confirmation before any remote call starts</li>
+</ul>
+<p>The publish flow should not:</p>
+<ul>
+<li>assume the current filename is always the final title without
+showing it</li>
+<li>publish immediately on menu command with no confirmation step</li>
+<li>perform background retries or deferred sync in the first slice</li>
+</ul>
+<h3 id="outcome-reporting-behavior">Outcome reporting behavior</h3>
+<p>Success reporting should:</p>
+<ul>
+<li>confirm what happened in plain language</li>
+<li>identify the target site</li>
+<li>provide the remote result identity that matters most, such as URL or
+remote item id</li>
+<li>surface the outcome through dialog feedback, status text, and
+notifications</li>
+</ul>
+<p>Failure reporting should:</p>
+<ul>
+<li>say what failed</li>
+<li>keep the message specific where possible</li>
+<li>avoid traceback language and raw protocol noise unless the detailed
+view is explicitly requested</li>
+</ul>
+<h2 id="planning-stage-acceptance-criteria">Planning-stage acceptance
+criteria</h2>
+<p>The plan should consider a future slice ready for implementation only
+if the slice can satisfy these criteria in concept before any code
+starts.</p>
+<h3 id="acceptance-criteria-for-slice-1-foundation-work">Acceptance
+criteria for slice 1 foundation work</h3>
+<ul>
+<li>the feature id, command ids, and initial provider/service boundaries
+are defined in advance</li>
+<li>the connection model separates ordinary settings from secure
+credentials</li>
+<li>the endpoint policy is explicitly HTTPS-first and consistent with
+existing network rules</li>
+<li>the slice does not require new menus or dialogs unless separately
+approved</li>
+<li>the test plan names the affected core test families and confirms no
+dialog/menu gates are expected to change</li>
+</ul>
+<h3 id="acceptance-criteria-for-the-first-user-visible-slice">Acceptance
+criteria for the first user-visible slice</h3>
+<ul>
+<li>the menu location is fixed inside the <code>File</code> menu</li>
+<li>the command names and labels are fixed</li>
+<li>the dialog list is fixed and minimal</li>
+<li>the user journey is explicit and review-first</li>
+<li>the documentation update list is known in advance</li>
+<li>the regression surfaces are named in advance</li>
+</ul>
+<h3
+id="regression-checklist-for-future-implementation-review">Regression
+checklist for future implementation review</h3>
+<p>Any implementation proposal should explicitly verify impact on:</p>
+<ul>
+<li>feature registry definitions and profile visibility behavior</li>
+<li>command registry and command-to-feature mappings</li>
+<li>menu ids and <code>wx.EVT_MENU</code> binding coverage</li>
+<li>dialog inventory and <code>dialogs.md</code></li>
+<li>notification usage and status-text reporting</li>
+<li>settings persistence versus secure-secret storage boundaries</li>
+<li>network-egress review expectations</li>
+<li>user-facing docs once the feature becomes visible</li>
+</ul>
+<h2
+id="recommended-decisions-resolved-from-earlier-open-questions">Recommended
+decisions resolved from earlier open questions</h2>
+<p>These replace the earlier broad ambiguity with a recommended spec
+stance.</p>
+<h3 id="menu-placement">Menu placement</h3>
+<p>Recommendation:</p>
+<ul>
+<li>place publishing entry points under the <code>File</code> menu</li>
+<li>avoid introducing a permanent top-level <code>Publishing</code>
+menu</li>
+</ul>
+<p>Rationale:</p>
+<ul>
+<li>this now matches the updated product direction</li>
+<li>it keeps publishing near other document lifecycle actions</li>
+<li>it still works within the current menu-building architecture as long
+as the existing shell contract is followed exactly</li>
+</ul>
+<h3 id="provider-naming-in-the-first-ui">Provider naming in the first
+UI</h3>
+<p>Recommendation:</p>
+<ul>
+<li>WordPress should be the only implemented provider in the first
+visible slice, even if the core is provider-based</li>
+<li>the generic connections UI should not hard-code WordPress wording
+before provider selection</li>
+</ul>
+<p>Rationale:</p>
+<ul>
+<li>it keeps the user promise honest</li>
+<li>it prevents a “provider framework” UI from implying support breadth
+that does not exist yet</li>
+<li>it keeps the generic connection-management surface reusable when
+later providers arrive</li>
+</ul>
+<h3 id="title-derivation">Title derivation</h3>
+<p>Recommendation:</p>
+<ul>
+<li>prompt every time, with the default suggested from the first heading
+and a fallback to filename</li>
+</ul>
+<p>Rationale:</p>
+<ul>
+<li>it avoids surprising remote titles</li>
+<li>it still keeps the workflow fast</li>
+</ul>
+<h3 id="remote-linkage-storage">Remote linkage storage</h3>
+<p>Recommendation:</p>
+<ul>
+<li>use a Quill-local registry in the first phase</li>
+</ul>
+<p>Rationale:</p>
+<ul>
+<li>it avoids mutating the source document contract</li>
+<li>it reduces risk across multiple document formats</li>
+</ul>
+<h3 id="first-publish-format-behavior">First publish format
+behavior</h3>
+<p>Recommendation:</p>
+<ul>
+<li>prefer HTML-oriented output in the first WordPress slice</li>
+<li>if source text is Markdown or another format, explain the conversion
+in the confirmation step</li>
+<li>treat conversion as a Quill authoring-surface rule rather than as a
+WordPress-only special case</li>
+<li>when the current document is a Markdown-authored publishing
+document, convert Markdown to HTML at publish or update time</li>
+<li>when the current document is explicitly an HTML-authored publishing
+document, publish the HTML body directly</li>
+</ul>
+<p>Rationale:</p>
+<ul>
+<li>WordPress natively expects HTML in the standard REST flow</li>
+<li>this is the least ambiguous first behavior</li>
+<li>Quill already understands Markdown and HTML as distinct working
+surfaces, so publishing should build on that existing model instead of
+inventing a second parallel content-mode concept</li>
+</ul>
+<h3 id="first-user-visible-dialog-set">First user-visible dialog
+set</h3>
+<p>Recommendation:</p>
+<ul>
+<li><code>Publishing Connections Dialog</code></li>
+<li><code>Edit Publishing Connection Dialog</code></li>
+<li><code>Publish Current Content Dialog</code></li>
+</ul>
+<p>Deferred by default:</p>
+<ul>
+<li><code>Browse Published Content Dialog</code></li>
+</ul>
+<p>Rationale:</p>
+<ul>
+<li>this is the smallest coherent user journey</li>
+<li>it keeps the first visible surface area reviewable</li>
+</ul>
+<p>Accessibility and usability requirement:</p>
+<ul>
+<li>every editable field in the connection flow must have an explicit,
+speech-friendly purpose in tab order</li>
+<li>helper text must explain what belongs in a field instead of giving
+only provider background or overly chatty prose</li>
+<li>no field should feel effectively unlabeled just because nearby
+visual text exists</li>
+<li>every publishing dialog must use Quill’s shared dialog contract for
+modal ids, title announcement, focus routing, and escape/affirmative
+behavior</li>
+<li>provider-specific sign-in choices shown in the UI must be limited to
+the methods that genuinely work in the current slice, not broader
+“planned” concepts that only exist in metadata</li>
+</ul>
+<h3 id="first-visible-remote-action">First visible remote action</h3>
+<p>Recommendation:</p>
+<ul>
+<li>the first visible remote action set should include both
+<code>Create Draft...</code> and
+<code>Publish Current Document...</code></li>
+<li>the first visible page action set should include both
+<code>Create Page Draft...</code> and
+<code>Publish Current Page...</code></li>
+<li>the default selection inside the publish confirmation dialog should
+still be <code>Draft</code></li>
+</ul>
+<p>Rationale:</p>
+<ul>
+<li>this keeps the first visible workflow honest about the likely
+long-term shape of publishing</li>
+<li>it avoids a later UX reset where users must relearn the same dialog
+for publish-now</li>
+<li>it still preserves the safer path by defaulting to draft</li>
+</ul>
+<p>Guardrail:</p>
+<ul>
+<li>publish-now should remain an explicit user choice in the dialog,
+never the menu command’s silent default</li>
+</ul>
+<h3 id="browse-in-the-next-content-workflow-rollout">Browse in the next
+content-workflow rollout</h3>
+<p>Recommendation:</p>
+<ul>
+<li><code>Browse Published Content...</code> should be implemented in
+the next approved content-workflow slice</li>
+</ul>
+<p>Rationale:</p>
+<ul>
+<li>the connection and verification foundation is already built</li>
+<li>page support should not be deferred, because it is now part of the
+approved content scope</li>
+<li>browse still adds more dialog surface, more remote state complexity,
+and more inventory/test burden</li>
+<li>browse should therefore land only in the same disciplined
+provider-neutral architecture, not as a one-off WordPress browser</li>
+</ul>
+<p>Refinement trigger after the first browse/edit implementation:</p>
+<ul>
+<li>refine browse further only after the initial browse, open, and
+update loop is stable and its local-to-remote linkage model is
+proven</li>
+</ul>
+<h3 id="success-result-model">Success result model</h3>
+<p>Recommendation:</p>
+<ul>
+<li>the first slice should preserve both the remote URL and the remote
+id when both are available</li>
+</ul>
+<p>Rationale:</p>
+<ul>
+<li>the URL is the most useful immediate user-facing result</li>
+<li>the remote id is often the more stable internal linkage key</li>
+<li>storing both avoids an early redesign if one is needed later for
+update, browse, or sync flows</li>
+</ul>
+<p>First-slice behavior:</p>
+<ul>
+<li>if only one of these values is returned reliably, Quill should store
+the available value and leave room in the local record for the other
+later</li>
+</ul>
+<h3 id="quill-local-linkage-record-shape">Quill-local linkage record
+shape</h3>
+<p>Recommendation:</p>
+<ul>
+<li>the first slice should use a flat Quill-local linkage record
+shape</li>
+</ul>
+<p>Recommended minimum fields:</p>
+<ul>
+<li><code>provider_id</code></li>
+<li><code>site_url</code></li>
+<li><code>remote_id</code></li>
+<li><code>remote_url</code></li>
+</ul>
+<p>Deferred by default:</p>
+<ul>
+<li><code>last_synced_at</code></li>
+<li>content hash or revision markers</li>
+<li>remote title cache</li>
+</ul>
+<p>Rationale:</p>
+<ul>
+<li>a flat local record is easy to inspect, easy to migrate later, and
+low-risk for the first slice</li>
+<li>it preserves the information most likely to matter for later update
+and browse flows without overdesigning sync early</li>
+</ul>
+<h3 id="success-wording">Success wording</h3>
+<p>Recommendation:</p>
+<ul>
+<li>use plain-language completion messages built around action + site +
+result</li>
+<li>messages should use the configured host only</li>
+</ul>
+<p>Recommended first wording set:</p>
+<ul>
+<li>draft created: <code>Draft created on &lt;host&gt;.</code></li>
+<li>draft created with link:
+<code>Draft created on &lt;host&gt;. Link available.</code></li>
+<li>published now: <code>Published to &lt;host&gt;.</code></li>
+<li>published now with link:
+<code>Published to &lt;host&gt;. Link available.</code></li>
+<li>connection verified:
+<code>Publishing connection verified for &lt;host&gt;.</code></li>
+</ul>
+<p>Rationale:</p>
+<ul>
+<li>this matches Quill’s preference for concise, useful
+announcements</li>
+<li>it avoids jargon like <code>POST succeeded</code> or
+<code>remote object created</code></li>
+<li>it keeps success reporting understandable in speech output</li>
+</ul>
+<h3 id="publish-state-label-text">Publish-state label text</h3>
+<p>Recommendation:</p>
+<ul>
+<li>the publish-state choice should use action-oriented labels:
+<ul>
+<li><code>Create draft</code></li>
+<li><code>Publish now</code></li>
+</ul></li>
+</ul>
+<p>Rationale:</p>
+<ul>
+<li>these labels describe what will happen next, not just the resulting
+state</li>
+<li>they are clearer in speech output than bare state words like
+<code>Draft</code></li>
+<li>they keep the dialog aligned with Quill’s preference for plain,
+explicit wording</li>
+</ul>
+<h2 id="proposed-rollout-plan">Proposed rollout plan</h2>
+<h3 id="slice-0-planning-and-approval">Slice 0: planning and
+approval</h3>
+<ul>
+<li>approve architecture direction</li>
+<li>approve naming</li>
+<li>approve feature-gating approach</li>
+<li>approve first implementation slice</li>
+<li>approve exact hook-in points for commands, menus, dialogs,
+notifications, and docs</li>
+</ul>
+<h3 id="slice-1-framework-foundation">Slice 1: framework foundation</h3>
+<ul>
+<li>publishing provider metadata</li>
+<li>connection profile model</li>
+<li>auth method model</li>
+<li>multi-connection storage model</li>
+<li>secure secret storage</li>
+<li>endpoint security validation</li>
+<li>WordPress verification flow for the first supported auth method</li>
+<li>unit tests for those pieces</li>
+<li>feature-registry and feature-gating integration</li>
+</ul>
+<p>Status:</p>
+<ul>
+<li>completed</li>
+</ul>
+<p>Delivered scope:</p>
+<ul>
+<li>publishing provider metadata</li>
+<li>connection profile model</li>
+<li>auth method model</li>
+<li>multi-connection storage model</li>
+<li>secure secret storage</li>
+<li>endpoint security validation</li>
+<li>WordPress verification flow for the first supported auth method</li>
+<li>publishing menu placement inside <code>File</code></li>
+<li>publishing connections manager and add or edit connection
+dialogs</li>
+<li>accessibility hardening for those dialogs</li>
+<li>related menu, dialog-inventory, egress-audit, and size-budget
+updates needed to keep the repo gates honest</li>
+</ul>
+<p>Planned tests and governance for this slice:</p>
+<ul>
+<li>core unit tests modeled after current assistant/provider tests</li>
+<li>no dialog inventory changes</li>
+<li>no menu contract changes</li>
+</ul>
+<p>This slice proved that the framework shape is sound and that the
+connection surfaces can meet the repo’s accessibility and governance bar
+before the larger content workflows land.</p>
+<h3
+id="slice-2-first-remote-content-workflows-on-the-approved-connection-foundation">Slice
+2: first remote content workflows on the approved connection
+foundation</h3>
+<ul>
+<li>create draft from current QUILL document</li>
+<li>send title and body</li>
+<li>return resulting URL or post id</li>
+<li>announce success clearly</li>
+<li>add the first approved publishing entry points under
+<code>File</code></li>
+<li>add the first approved publishing dialogs</li>
+<li>browse existing posts and pages</li>
+<li>open a selected remote item into Quill for review and editing</li>
+<li>update an existing post, page, or draft after explicit
+confirmation</li>
+</ul>
+<p>Architecture requirement for this slice:</p>
+<ul>
+<li>the commands, service layer, and dialogs must stay provider-neutral
+in shape even though the first live backend is WordPress</li>
+<li>content-type handling must be framed as Quill concepts such as post,
+page, browse, open remote item, and update remote item rather than
+hard-coded WordPress endpoint language in the shell</li>
+</ul>
+<p>Planned tests and governance for this slice:</p>
+<ul>
+<li>menu binding coverage remains green</li>
+<li>dialog inventory snapshot updated deliberately</li>
+<li>dialog checklist entries added</li>
+<li>user-facing text reviewed for plain-language and explicit-consent
+wording</li>
+<li>relevant accessibility and usability tests in <code>tests/</code>
+must be run against the publishing dialogs and menu flow before the
+slice is considered complete</li>
+<li>representation-switching and publish-format tests should be added in
+a dedicated publishing-focused test module rather than folded into
+unrelated editor or export tests, while still reusing existing Quill
+conversion helpers where that keeps the implementation simple</li>
+<li>publishing-focused unit tests may stay grouped in a small dedicated
+publishing test module at first; if the command family, provider matrix,
+or remote-content workflows grow substantially, split those tests into
+narrower publishing-specific files rather than folding more coverage
+into unrelated general test modules</li>
+</ul>
+<p>Current implementation progress inside this slice:</p>
+<ul>
+<li>publishing now has a built-in provider-client seam in
+<code>quill/core</code> for browse and open actions</li>
+<li>WordPress browse currently supports both posts and pages through
+that provider-client seam</li>
+<li>the <code>File -&gt; Publish</code> submenu now includes
+<code>Browse Published Content...</code></li>
+<li>the browse dialog loads published content through the current
+connection and can open the selected remote post or page into a normal
+Quill editor tab</li>
+<li>loaded remote content currently enters the editor as an untitled
+local tab with publishing metadata attached in
+<code>Document.source_metadata</code></li>
+<li>this keeps the editor flow simple now while leaving room for a later
+local linkage registry and explicit update flow</li>
+<li>current remote-open behavior already includes remote HTML
+normalization for common entity readability cases and now supports an
+explicit Quill authoring-surface decision at open time</li>
+<li>remote content can now open as readable Markdown or raw HTML, with
+that choice preserved clearly enough that later update and publish
+actions can remain honest</li>
+</ul>
+<p>Next implementation steps for this slice:</p>
+<ul>
+<li>add an explicit <code>Update Remote Content...</code> flow that
+reads the publishing metadata from the current document and confirms the
+target site, content type, and remote item before sending changes</li>
+<li>define and implement the first Quill-local linkage registry for
+local file path to remote id plus remote URL so saved local documents
+can reconnect to the correct remote item without relying only on the
+open tab state</li>
+<li>add the first publish/create dialogs for current-document post and
+page creation using the same provider-client seam instead of a
+WordPress-specific UI path</li>
+<li>ensure loaded remote posts and pages announce enough plain-language
+context in the editor and status text that users understand whether they
+are editing local-only content or content already linked to a remote
+site</li>
+<li>add a provider-neutral remote HTML normalization step before content
+is placed into the editor so rendered punctuation and similar entities
+from WordPress and later providers are decoded into readable editor text
+while still preserving a truthful path for later round-trip and update
+logic</li>
+<li>extend the new representation-aware open metadata into the first
+explicit <code>Update Remote Content...</code> flow so Quill sends
+Markdown-authored tabs through Markdown-to-HTML conversion and sends
+HTML-authored tabs as HTML</li>
+<li>route publish and update send-time formatting through existing Quill
+Markdown/HTML conversion capabilities instead of a custom
+publishing-only formatter</li>
+<li>define tests for common remote HTML entity cases, especially curly
+apostrophes, curly quotes, dashes, ellipses, non-breaking spaces, and
+mixed named versus numeric entities coming from WordPress classic or
+block-editor HTML</li>
+<li>expand tests for send-time conversion boundaries:
+<ul>
+<li>Markdown-authored publishing documents are converted to HTML on
+create or update</li>
+<li>HTML-authored publishing documents are sent as HTML without
+additional Markdown interpretation</li>
+</ul></li>
+<li>expand focused publishing tests to cover update preconditions,
+linkage-record persistence, and command wiring for the next publish and
+update actions before broader sync work begins</li>
+</ul>
+<h3
+id="slice-3-schedule-and-refinement-after-create-browse-and-update-are-stable">Slice
+3: schedule and refinement after create, browse, and update are
+stable</h3>
+<ul>
+<li>schedule publish</li>
+<li>compare local versus remote state</li>
+<li>define the first honest sync model</li>
+<li>refine browse summaries, filtering, and remote-state reporting once
+the base browse-edit loop is stable</li>
+</ul>
+<p>Planned tests and governance for this slice:</p>
+<ul>
+<li>any new schedule or sync-related dialog added to dialog registry and
+checklist</li>
+<li>command coverage expanded only as later refinement genuinely adds
+new actions</li>
+<li>feature gating verified across all added publishing commands</li>
+</ul>
+<h3 id="slice-4-schedule-and-sync-polish">Slice 4: schedule and sync
+polish</h3>
+<ul>
+<li>schedule publish</li>
+<li>compare local versus remote state</li>
+<li>define the first honest sync model</li>
+</ul>
+<h2 id="document-model-questions">Document model questions</h2>
+<p>These need explicit decisions before implementation expands:</p>
+<h3 id="source-format">1. Source format</h3>
+<p>QUILL documents may be plain text, Markdown, or HTML-oriented
+content. WordPress expects HTML in the standard REST flow.</p>
+<p>Decision needed:</p>
+<ul>
+<li>what authoring surface should a publishing document be considered to
+use at any given time</li>
+<li>when should Quill convert Markdown to HTML for provider send
+operations</li>
+<li>when should Quill preserve and expose raw HTML instead of
+translating it into Markdown</li>
+</ul>
+<p>Recommended planning stance:</p>
+<ul>
+<li>first implementation should support a simple, explicit
+content-format choice</li>
+<li>user-facing behavior must be explicit when a document is being
+transformed rather than round-tripped as-is</li>
+<li>the primary decision is no longer “HTML only or Markdown
+conversion”; the primary decision is which Quill authoring surface the
+document is using right now</li>
+<li>if a publishing document is being authored as Markdown, Quill
+converts that Markdown to HTML at publish or update time because the
+provider contract expects HTML</li>
+<li>if a publishing document is being authored as HTML, Quill sends the
+HTML body as authored</li>
+<li>this choice must be visible enough in the workflow that users are
+never surprised about whether Quill is treating the document as Markdown
+or HTML</li>
+<li>when remote HTML is opened into the Quill editor, entity decoding
+and closely related readability normalization should be treated as part
+of the editor-loading pipeline rather than as a hidden publish-time
+mutation, because the immediate problem is that rendered WordPress
+punctuation can appear as broken raw entity text in the editable
+surface</li>
+<li>that normalization should be conservative: decode standard HTML
+entities intended for human-readable text, but avoid a broad cleanup
+pass that silently strips meaningful markup structure before the later
+update and round-trip design is settled</li>
+</ul>
+<h3 id="a.-remote-open-representation">1a. Remote-open
+representation</h3>
+<p>Decision needed:</p>
+<ul>
+<li>should remote content open as Markdown by default</li>
+<li>should remote content open as raw HTML by default</li>
+<li>or should Quill ask at open time while the safest default is still
+being proven</li>
+</ul>
+<p>Recommended planning stance:</p>
+<ul>
+<li>keep the representation model simple and honest by supporting two
+explicit outcomes only:
+<ul>
+<li><code>Readable Markdown</code></li>
+<li><code>Raw HTML</code></li>
+</ul></li>
+<li>use Quill terminology, not provider terminology, because this is an
+editor-surface choice rather than a WordPress-only behavior</li>
+<li>prefer readable Markdown when Quill can conservatively translate
+common remote HTML into a faithful editing surface</li>
+<li>fall back to raw HTML when conversion would be obviously lossy,
+misleading, or contrary to an explicit user preference</li>
+<li>preserve the original remote source facts and the chosen Quill
+authoring surface in metadata so later update logic knows whether it is
+converting Markdown to HTML or sending HTML as-authored</li>
+<li>do not silently flip an already opened document from one authoring
+surface to the other during a later save, update, or publish action</li>
+</ul>
+<p>Implementation-guidance note:</p>
+<ul>
+<li>Quill already includes Markdown/HTML-aware authoring behavior and
+conversion utilities elsewhere in the product, so the publishing
+architecture should hook into those existing capabilities instead of
+creating a publishing-only content-transformation stack</li>
+</ul>
+<h3 id="title-extraction">2. Title extraction</h3>
+<p>Decision needed:</p>
+<ul>
+<li>derive title from filename</li>
+<li>derive title from first heading</li>
+<li>prompt every time</li>
+<li>allow site-specific default behavior later</li>
+</ul>
+<p>Recommended first behavior:</p>
+<ul>
+<li>prompt with a suggested default from the first heading, then
+fallback to filename</li>
+</ul>
+<h3 id="remote-identity">3. Remote identity</h3>
+<p>Once a local document is linked to a remote WordPress post, QUILL
+needs a way to remember that association.</p>
+<p>Options:</p>
+<ul>
+<li>embedded document metadata</li>
+<li>sidecar metadata file</li>
+<li>QUILL-local registry keyed by file path</li>
+</ul>
+<p>Recommended first planning direction:</p>
+<ul>
+<li>start with a QUILL-local registry because it is lowest-risk and
+avoids mutating document formats unexpectedly</li>
+<li>if later moved into document metadata, that should require a
+separate approval step because it changes the file-behavior
+contract</li>
+</ul>
+<h3 id="connection-and-authentication-model">4. Connection and
+authentication model</h3>
+<p>Decision needed:</p>
+<ul>
+<li>should a saved publishing connection represent one site/profile
+pair</li>
+<li>how should Quill represent auth methods that do not use a long-lived
+password</li>
+<li>how should Quill support future browser-based or one-time-link
+sign-in flows without rewriting the whole connection model</li>
+</ul>
+<p>Recommended first planning direction:</p>
+<ul>
+<li>model publishing connections as named saved profiles</li>
+<li>model authentication as a provider-owned auth-method choice, not a
+hard-coded password field</li>
+<li>allow secrets to be optional because some auth methods may rely on
+browser/session flows instead</li>
+<li>keep the first implementation honest if only one auth method is
+actually wired for WordPress at first</li>
+</ul>
+<h2 id="risks">Risks</h2>
+<h3 id="architecture-risk">1. Architecture risk</h3>
+<p>If WordPress is implemented directly in UI code, the framework will
+become WordPress-specific and harder to generalize later.</p>
+<p>Mitigation:</p>
+<ul>
+<li>keep provider logic in <code>quill/core</code></li>
+<li>keep UI surfaces provider-agnostic where practical</li>
+</ul>
+<h3 id="accessibility-risk">2. Accessibility risk</h3>
+<p>Publishing workflows can turn into complex multi-step dialogs with
+hidden state.</p>
+<p>Mitigation:</p>
+<ul>
+<li>keep first slices narrow</li>
+<li>verify every dialog flow with the project’s existing dialog
+hardening expectations</li>
+<li>keep publishing UI within the same command/menu/help/status model
+rather than inventing a parallel surface</li>
+</ul>
+<h3 id="security-risk">3. Security risk</h3>
+<p>This feature adds new network egress and new stored credentials.</p>
+<p>Mitigation:</p>
+<ul>
+<li>reuse existing secure storage patterns</li>
+<li>enforce HTTPS for remote endpoints</li>
+<li>keep all requests explicit and user-driven</li>
+<li>add tests for endpoint policy and auth failure reporting</li>
+<li>include feature metadata that accurately labels privacy and network
+impact</li>
+</ul>
+<h3 id="content-fidelity-risk">4. Content fidelity risk</h3>
+<p>Markdown or rich structured content may not map perfectly to
+WordPress post content.</p>
+<p>Mitigation:</p>
+<ul>
+<li>start with clearly defined supported formats</li>
+<li>avoid overpromising sync fidelity in the first release</li>
+<li>explicitly test how remote HTML from WordPress editors is normalized
+when opened into Quill, because a remote item that renders correctly on
+the site but exposes raw entities like <code>&amp;#8217;</code> in Quill
+is both a readability bug and a trust bug for later update flows</li>
+</ul>
+<h3 id="scope-risk">5. Scope risk</h3>
+<p>Publishing can easily expand into CMS management.</p>
+<p>Mitigation:</p>
+<ul>
+<li>explicitly keep first scope to connect, verify, create, update,
+browse, and schedule</li>
+</ul>
+<h3 id="regression-risk-against-existing-shell-contracts">6. Regression
+risk against existing shell contracts</h3>
+<p>Because Quill already has tests and conventions around menus,
+dialogs, commands, and feature surfaces, publishing can break the app
+structurally even before it breaks functionally.</p>
+<p>Mitigation:</p>
+<ul>
+<li>plan every new publishing command id before implementation</li>
+<li>plan every menu id and matching event binding before
+implementation</li>
+<li>plan every publishing dialog as an inventory-governed surface</li>
+<li>avoid introducing a status-bar cell in the first slices</li>
+<li>stage docs and checklist updates as part of each user-visible
+slice</li>
+</ul>
+<h2 id="remaining-decisions-for-review">Remaining decisions for
+review</h2>
+<p>The major planning decisions are now covered by this spec. Any
+remaining questions should be treated as normal implementation-detail
+review items rather than planning blockers.</p>
+<h2 id="recommended-first-approved-implementation-slice">Recommended
+first approved implementation slice</h2>
+<p>If this plan is approved, the first code slice should be limited
+to:</p>
+<ul>
+<li>publishing provider metadata</li>
+<li>publishing connection settings</li>
+<li>secure application-password storage</li>
+<li>WordPress endpoint verification</li>
+<li>feature gating</li>
+<li>focused unit tests</li>
+</ul>
+<p>And it should explicitly avoid:</p>
+<ul>
+<li>assuming the v1.1+ plugin marketplace/runtime is already
+available</li>
+<li>adding custom-drawn or unusual UI controls</li>
+<li>adding any silent or background remote publishing behavior</li>
+</ul>
+<p>That slice is small enough to review clearly and large enough to
+validate the architecture before we build user-facing publishing actions
+on top of it.</p>
+<h2
+id="recommended-first-user-visible-slice-after-the-foundation">Recommended
+first user-visible slice after the foundation</h2>
+<p>If the foundation slice succeeds, the next recommended slice should
+be limited to:</p>
+<ul>
+<li><code>File</code> menu publishing action wiring</li>
+<li><code>Publishing Connection Dialog</code></li>
+<li><code>Publish Current Content Dialog</code></li>
+<li>WordPress draft creation from the current document</li>
+<li>WordPress page draft creation from the current document</li>
+<li>explicit publish-now from the current document as a user-controlled
+choice</li>
+<li>plain-language success and failure reporting</li>
+<li>local preservation of remote URL and remote id when available</li>
+<li>targeted dialog, menu, feature, and core tests</li>
+</ul>
+<p>And it should still avoid:</p>
+<ul>
+<li>browse/update/schedule flows unless separately approved</li>
+<li>top-level menu promotion</li>
+<li>status-bar cell addition</li>
+<li>multi-provider UI promises</li>
+</ul>
+<h2 id="full-repo-planning-conclusion">Full-repo planning
+conclusion</h2>
+<p>After the full repo audit, the current planning direction still looks
+usable inside Quill’s existing architecture if it is implemented
+conservatively.</p>
+<p>Why it looks viable:</p>
+<ul>
+<li>the repo already has a provider-and-connection precedent to borrow
+from</li>
+<li>the shell already has stable places to surface new commands and
+dialogs</li>
+<li>the feature/profile system can gate incomplete work safely</li>
+<li>the test suite already tells us where careless integration would
+break contracts</li>
+<li>the product docs strongly support explicit, user-driven network
+features when they are accessible and well-labeled</li>
+</ul>
+<p>What makes it high-risk if done carelessly:</p>
+<ul>
+<li>menu and dialog surfaces are contract-heavy</li>
+<li>network features are governance-heavy</li>
+<li>plugin/extensibility assumptions would be premature</li>
+<li>status-bar and profile integration carry more blast radius than they
+first appear to</li>
+</ul>
+<p>So the planning recommendation remains:</p>
+<ul>
+<li>design publishing as an internal core-plus-shell feature</li>
+<li>start with WordPress as the first provider, not the whole product
+model</li>
+<li>support both posts and pages</li>
+<li>enter through the <code>File</code> menu</li>
+<li>use explicit dialogs and existing notifications</li>
+<li>keep remote linkage outside the source document at first</li>
+<li>keep publish-now as an explicit writer-controlled choice rather than
+a system-decided content action</li>
+<li>delay any status-bar cell or external plugin story until the base
+workflow is proven</li>
+</ul>
+<h2 id="about-surface-follow-up">About-surface follow-up</h2>
+<p>This is not part of the publishing framework itself, but it should be
+tracked alongside this planning pass because it came up during
+review.</p>
+<p>Observed current pattern:</p>
+<ul>
+<li>the About surface is generated in
+<code>quill/ui/main_frame.py</code></li>
+<li>contributor names appear in prose in
+<code>_about_markdown()</code></li>
+<li>contributor GitHub entries appear in
+<code>_ABOUT_GITHUB_LINKS</code></li>
+</ul>
+<p>Planned follow-up:</p>
+<ul>
+<li>add <code>stickbear2015</code> to the About-surface contributor
+GitHub list using the same pattern and style as the existing contributor
+GitHub entries</li>
+<li>keep the format exactly parallel to the other contributor GitHub
+links</li>
+<li>avoid inventing a separate contributor-credit mechanism when the
+About surface already has one</li>
+</ul>
+<h2 id="what-this-plan-deliberately-does-not-change">What this plan
+deliberately does not change</h2>
+<p>To reduce risk, the current planning direction does not assume
+changes to:</p>
+<ul>
+<li>the top-level menu order beyond placing publishing actions inside
+the existing <code>File</code> menu</li>
+<li>the command palette architecture</li>
+<li>the status-bar layout model</li>
+<li>the plugin runtime policy</li>
+<li>the current dialog classification system</li>
+<li>the existing AI or BITS provider systems beyond borrowing their
+connection-flow patterns</li>
+</ul>
+<p>Those systems are integration points, not redesign targets, for this
+feature.</p>
+<h2 id="acceptance-bar-for-the-planning-phase">Acceptance bar for the
+planning phase</h2>
+<p>This plan is ready to move into implementation only when:</p>
+<ul>
+<li>the architecture direction is approved</li>
+<li>the first slice is approved</li>
+<li>we create a branch before implementation starts</li>
+</ul>
+<h2 id="phase-1-closeout">2026-06-20 Phase 1 Closeout</h2>
+<p>The WordPress first-party bundled-provider package path is complete.
+The closeout audit verified the trusted adapter contract,
+validation-before-exposure, host-owned secrets, in-process Phase 1
+execution, explicit WordPress package shape, normal startup bootstrap,
+repeat safety, and preserved provider and client identity.</p>
+<p>Closeout validation: <code>77 passed</code>, Ruff passed, the
+module-size gate passed, and the provider registry gate passed.</p>
+<p>The user explicitly approved schedule publishing, local-versus-remote
+compare/sync, Quillin worker execution, and live third-party provider
+loading to become unblocked after this closeout. Proceed in separately
+reviewable roadmap phases, beginning with schedule publishing. Security,
+consent, accessibility, provider-neutrality, validation, and test gates
+remain required.</p>
+<h2 id="schedule-publishing-implemented">2026-06-21 Schedule Publishing
+Implemented</h2>
+<p>The schedule-publishing roadmap phase is complete, implemented as a
+Claude Code session continuing from this plan (the originating restart
+prompt was written for Codex; its tooling-specific blocker section did
+not apply and was dropped).</p>
+<p>Implemented:</p>
+<ul>
+<li><code>PUBLISHING_OPERATION_SCHEDULE</code> provider operation, added
+to <code>PUBLISHING_OPERATIONS</code> so WordPress gains it
+automatically through its existing
+<code>supported_operations</code>/<code>implemented_operations</code>
+reference.</li>
+<li><code>quill.core.publishing_schedule.validate_scheduled_publish_time(when, *, now=None)</code>:
+rejects timezone-naive values and values not strictly in the
+future.</li>
+<li><code>create_publishing_remote_item</code> and
+<code>update_publishing_remote_item</code>
+(<code>quill/core/publishing.py</code>) gained an optional
+<code>scheduled_at</code> parameter rather than a new top-level function
+— when set, status is forced to <code>"future"</code>, the operation
+gate checks <code>schedule</code> support, and the time is validated
+before any client call.</li>
+<li><code>PublishingProviderClient.create_remote_item</code>/<code>update_remote_item</code>
+and the WordPress client gained a matching <code>scheduled_at</code>
+parameter; WordPress sends <code>status="future"</code> and an explicit
+UTC <code>date_gmt</code>, and round-trips the provider’s returned
+<code>date_gmt</code> back into a new
+<code>PublishingRemoteDocument.scheduled_for</code> field.</li>
+<li><code>publishing_result_message</code> reports a
+<code>"Scheduled"</code> verb and a
+<code>"Scheduled for: ... UTC"</code> line; <code>_display_status</code>
+maps <code>"future"</code> to <code>"scheduled"</code>.</li>
+<li>New accessible <code>SchedulePublishDialog</code>
+(<code>quill/ui/publishing_tools.py</code>): plain <code>TextCtrl</code>
+date/time fields, a <code>Choice</code> of IANA time zones (default
+<code>UTC</code>), and a content-kind <code>Choice</code> (new document)
+or fixed <code>StaticText</code> (already-open remote item).
+Re-validates and re-shows on bad input instead of closing silently.</li>
+<li>One command (<code>publishing.schedule_publish</code>, already
+mapped to the <code>future.publishing</code> feature) and one
+<code>File &gt; Publish &gt; Schedule Publish...</code> menu entry cover
+both scheduling a new post/page from the current document and scheduling
+an already-open remote item; the handler runs the same plain-language
+review-first confirmation idiom as the existing publish-now/update
+actions before any network call.</li>
+</ul>
+<p>Deliberately not implemented in this phase: timers, polling,
+recurring automation, or any delayed Quill-side execution. The provider
+only schedules; Quill never wakes up later to do anything.</p>
+<p>Validation: core focused battery <code>61 passed</code>; combined
+publishing/accessibility/governance battery <code>153 passed</code>;
+Ruff and the provider registry gate passed; scoped
+<code>mypy quill/core quill/io</code> shows the same pre-existing,
+unrelated findings as before (six <code>brf_page_detection.py</code>
+issues and one loosely-typed <code>_extend_unknown_issues</code>
+parameter in <code>publishing_validation.py</code> that this slice did
+not touch); full unit suite
+<code>4074 passed, 66 failed, 14 skipped</code> — the 66 failures are
+the identical pre-existing set from the recorded
+<code>4056 passed, 66 failed, 14 skipped</code> baseline (none
+publishing-, dialog-, or module-size-related), and the +18 passing delta
+is exactly the new tests this slice added.</p>
+<p>Committed locally as two checkpoints (core, then UI+governance); not
+pushed, per this session’s explicit instruction to keep work local until
+the user pushes.</p>
+<p>Next roadmap phase per the Phase 1 closeout authorization:
+local-versus-remote compare and the first honest sync model.</p>
+<h2 id="compare-with-remote-implemented">2026-06-21 Compare With Remote
+Implemented</h2>
+<p>The local-versus-remote compare phase is complete, scoped to the
+smallest slice that satisfies every “Initial slices” bullet in
+<code>codex-notes/notes/publishing-follow-up-phases-2026-06-19.md</code>’s
+Phase 3 definition.</p>
+<p>Research finding that shaped scope:
+<code>Document.source_metadata</code> (which carries every
+<code>publishing_*</code> linkage field) is in-memory only —
+<code>quill/io/export.py</code> never serializes it and
+<code>quill/io/open_read.py</code> rebuilds it fresh from file-format
+detection on reopen. That means a publishing-remote tab’s linkage to its
+remote item currently survives only for the life of that open tab, not
+across a save-to-local-file-and-reopen cycle.</p>
+<p>Decision: build compare against the open tab’s
+<code>source_metadata</code> as the linkage source of truth for this
+slice, and explicitly defer the durable file-path-keyed “Quill-local
+linkage record” sketched under this document’s “Remote identity”
+section. This is a deliberate scope cut, not an oversight — it mirrors
+every prior phase’s choice to defer that same registry, and it still
+satisfies the phase’s actual “Done when” criteria (clear comparison on
+request, honest unknown/stale reporting, no automatic overwrite).
+Building the cross-session registry remains available as a future
+follow-up if product wants compare/update to work after closing and
+reopening a locally-saved publishing document.</p>
+<p>Implemented:</p>
+<ul>
+<li><code>quill.core.publishing_compare.build_publishing_comparison</code>:
+pure diff of title/body/status between a freshly-fetched
+<code>PublishingRemoteDocument</code> and the local side, plus a
+<code>remote_changed_since_last_known</code> signal computed by
+comparing the remote’s <code>updated_at</code> against the
+<code>publishing_updated_at</code> the open tab last cached.</li>
+<li><code>compare_publishing_remote_item</code> in
+<code>quill/core/publishing.py</code>: delegates entirely to the
+existing <code>load_publishing_remote_item</code> for fetching and
+validation (reuses <code>PUBLISHING_OPERATION_LOAD</code> — no new
+provider operation, no new client method, no new network-egress audit
+entry), then builds the comparison.</li>
+<li><code>publishing_comparison_message</code>: plain-language report
+(title/body/status match-or-differs lines, an explicit “Remote changed
+since you last synced” line only when true, the remote link) — no
+diff-algorithm output, no jargon.</li>
+<li>One command/menu entry, <code>publishing.compare_remote_item</code>
+/ <code>File &gt; Publish &gt; Compare With Remote...</code>, placed
+ahead of <code>Update Remote Content...</code>. The handler reuses the
+exact connection-match guard logic from the existing
+update/publish-remote handler and reports through the existing native
+message-box pattern — no new dialog surface, no dialog-inventory
+change.</li>
+</ul>
+<p>Validation: focused battery <code>86 passed</code>; Ruff and the
+provider registry gate passed; scoped
+<code>mypy quill/core quill/io</code> unchanged (same 7 pre-existing
+findings); full unit suite
+<code>4083 passed, 66 failed, 14 skipped</code> — identical pre-existing
+failure set, +9 passing delta matching the new tests added.</p>
+<p>Committed locally as two checkpoints (core, then UI+governance); not
+pushed pending explicit request.</p>
+<p>Next roadmap phase: Quillin worker execution boundaries and lifecycle
+behavior.</p>
+<h2 id="quillin-worker-execution-boundaries-implemented">2026-06-21
+Quillin Worker Execution Boundaries Implemented</h2>
+<p>This phase’s scope was deliberately narrowed after research found
+there is no untrusted publishing provider yet to validate a real
+subprocess/IPC worker boundary against (third-party loading remains
+SEC-8-locked regardless). Building that boundary now would be
+speculative greenfield work with no concrete consumer. The user
+confirmed (via explicit choice among three framed options) the
+recommended scope: deliver real, testable lifecycle behavior now, and
+formalize the execution-policy contract as “declared but not yet
+implemented” for a worker policy, deferring the actual boundary to the
+live third-party loading phase.</p>
+<p>Implemented:</p>
+<ul>
+<li><code>browse_publishing_content</code> (and the WordPress
+<code>browse_content</code> client method, via a new
+<code>is_cancelled</code> parameter on both the Protocol and the
+implementation) now check a caller-supplied cancellation callback
+between per-content-kind requests, raising the new
+<code>PublishingOperationCancelled</code>
+(<code>quill/core/publishing_providers.py</code>) rather than returning
+partial results — cancellation means “stop and discard,” kept distinct
+from the existing unrelated partial-results-on-timeout behavior.</li>
+<li>New <code>quill/core/publishing_worker.py</code>: the only
+publishing module allowed to import
+<code>quill.stability.task_manager</code>, so
+<code>quill.core.publishing</code> itself stays decoupled from the
+stability layer. <code>browse_publishing_content_task</code> matches
+<code>TaskManager.submit()</code>’s mandatory wrapper kwargs and
+translates <code>PublishingOperationCancelled</code> into
+<code>quill.stability.task_manager.CancelledError</code>.</li>
+<li><code>BrowsePublishingContentDialog</code> now dispatches its load
+through <code>MainFrame</code>’s existing <code>TaskManager</code>
+instead of blocking the UI thread, with a real Cancel button. Cancelling
+detaches the dialog immediately and reports “Browse cancelled.” honestly
+without waiting for the background thread to actually stop — a true
+mid-request abort needs the deferred subprocess boundary. Stale
+callbacks (after a cancel or dialog teardown) are ignored via an
+operation-id guard; the existing <code>wx.ID_CANCEL</code> Close button
+and Escape handling are untouched (no new escape-trap pattern).</li>
+<li><code>quill/core/publishing_adapters.py</code> gained
+<code>WORKER_EXECUTION = "worker"</code>, recognized and explicitly
+rejected with a distinct “not implemented yet” message, separate from
+the generic rejection for truly unknown execution values.</li>
+</ul>
+<p>Validation: focused battery <code>97 passed</code>; Ruff, mypy
+(unchanged pre-existing findings), and the provider registry gate
+passed; full unit suite <code>4093 passed, 66 failed, 14 skipped</code>
+— identical pre-existing failure set, +10 passing delta matching the new
+tests. Smoke-launched the app (<code>python -m quill</code>) to confirm
+no startup traceback from the new wiring; could not interactively drive
+Browse/Cancel since no GUI automation tooling (pywinauto) or project
+run-skill exists for this wx app — recorded as a known verification gap,
+not papered over.</p>
+<p>Committed locally as two checkpoints (core, then UI+governance); not
+pushed pending explicit request.</p>
+<p>Next roadmap phase: live third-party provider loading — the actual
+final phase, where a real worker boundary would first have a concrete
+consumer.</p>
+<h2
+id="live-third-party-provider-loading-contract-shipped-loading-deliberately-not-implemented">2026-06-21
+Live Third-Party Provider Loading — Contract Shipped, Loading
+Deliberately Not Implemented</h2>
+<p>Research before implementation found this phase is not a
+publishing-scoped engineering task at heart: SEC-8
+(<code>docs/QUILL-PRD.md</code>) is a product-wide lock — the
+<code>core.third_party_plugins</code> feature flag
+(<code>locked_off=True</code>,
+<code>quill/core/feature_catalog.py</code>) keeps <em>all</em>
+third-party Quillin code from executing in a default QUILL 1.0 build,
+not just publishing-related code. “Install from Folder” already exists
+and is <em>not</em> gated by that flag, but the code still never runs
+while the flag is locked off. Critically,
+<code>register_publishing_provider</code>/<code>register_publishing_provider_client</code>
+(<code>quill/core/publishing_providers.py</code>,
+<code>quill/core/publishing_clients.py</code>) are completely open,
+ungated functions today — any in-process code could already call them
+directly, bypassing even the Phase 1 bundled-adapter validation
+contract. So “live third-party provider loading” is really asking
+whether to create an exception to, or flip, a documented security
+boundary that protects far more than publishing — a product policy
+decision, not an implementation detail to infer.</p>
+<p>Presented the user three explicit options (build the contract with
+loading kept locked off; actually flip the SEC-8 flag and wire real
+loading; stop here as policy-blocked). The user chose the first,
+recommended option — the same “build the contract, defer the risky part”
+pattern used in every prior phase of this roadmap.</p>
+<p>Implemented: <code>ThirdPartyPublishingProviderAdapter</code> and
+<code>register_third_party_publishing_provider</code> in
+<code>quill/core/publishing_adapters.py</code>. Unlike the bundled
+adapter, <code>secret_access</code> and <code>execution</code> have no
+trusted defaults — a third-party adapter must state its policy
+explicitly. Validation cascade: ids must match; network rationale
+required; secrets must be host-owned; execution must be
+<code>worker</code> (in-process is rejected outright — untrusted code
+never gets the trusted path); provider id must not conflict with an
+existing bundled adapter. Every one of those branches is independently
+tested and provably enforced. The function’s <em>last</em> line, reached
+only by a fully well-formed adapter, unconditionally raises “Live
+third-party publishing provider loading is not implemented yet.” —
+proven by a dedicated test that the live registries
+(<code>PROVIDER_DEFINITIONS</code>,
+<code>_PUBLISHING_PROVIDER_CLIENTS</code>) are untouched even in that
+case. The module docstring states explicitly that this contract does not
+loosen, bypass, or duplicate the
+<code>core.third_party_plugins</code>/SEC-8 lock, and that implementing
+real loading remains a separate, explicit product decision.</p>
+<p>Validation: focused battery <code>82 passed</code> (14 new adapter
+tests); Ruff, mypy (unchanged pre-existing findings), and the provider
+registry gate passed (confirming zero registry impact — nothing
+third-party ever reaches it); full unit suite
+<code>4100 passed, 66 failed, 14 skipped</code> — identical pre-existing
+failure set, +7 passing delta matching the new tests. No UI, dialog,
+menu, or module-size-budget changes —
+<code>publishing_adapters.py</code> stayed at 146 lines, well under the
+untracked cap.</p>
+<p>Committed locally as one checkpoint; not pushed pending explicit
+request.</p>
+<h2 id="roadmap-closed">Roadmap Closed</h2>
+<p>All four phases the 2026-06-20 Phase 1 closeout authorized are now
+addressed: (1) WordPress first-party bundled-provider path, (2) schedule
+publishing, (3) local-versus-remote compare, (4) Quillin worker
+execution boundaries / live third-party provider loading — the last two
+converged on the same conclusion: build the contract, defer the
+boundary, because no untrusted code can run in this product yet. Two
+explicit, separate product decisions remain open for the user/product
+owner outside of implementation work: whether to ever build the durable
+cross-session publishing-linkage registry deferred in the compare phase,
+and whether/when to loosen <code>core.third_party_plugins</code> (SEC-8)
+for real third-party Quillin and publishing-provider execution. Neither
+is an engineering default to assume.</p>
+<h2
+id="durable-publishing-linkage-registry-implemented-first-open-decision-resolved">2026-06-22
+Durable Publishing Linkage Registry Implemented (First Open Decision
+Resolved)</h2>
+<p>The user chose to resolve the first of the two decisions left open at
+roadmap close: building the durable, file-path-keyed publishing-linkage
+registry deferred by the compare phase. Implemented as a Claude Code
+session, planned via
+<code>EnterPlanMode</code>/<code>ExitPlanMode</code> after direct code
+research (no Explore agent needed — the relevant call sites were small
+enough to read directly).</p>
+<p>Confirmed by reading the actual code:
+<code>Document.source_metadata</code>
+(<code>quill/core/document.py</code>) carries ten
+<code>publishing_*</code> fields plus two guard keys
+(<code>source_kind</code>, <code>source_label</code>), set in exactly
+two main_frame.py sites (browse-and-open, send-remote-item-success) and
+read in two more (compare, send). <code>Document.name</code> falls back
+to <code>display_name</code> only when <code>path is None</code>, so
+restoring linkage on reopen never needs to touch
+<code>display_name</code>. The save chokepoint is
+<code>_write_document_to_disk</code> (called from
+<code>save_file</code>/<code>save_file_as</code> only); the
+format-specific writers in <code>quill/io/export.py</code> call
+<code>document.mark_saved(target)</code> before returning, so
+<code>document.path</code> is guaranteed set by the time the chokepoint
+returns. The open chokepoint is <code>_finish_open_document</code>,
+reached by every open including <code>_reload_in_place</code>’s
+Save-As-then-reload-in-matching-view flow.</p>
+<p>Implemented:</p>
+<ul>
+<li>New <code>quill/core/publishing_linkage.py</code>:
+<code>PublishingLinkageEntry</code> frozen dataclass, a path-keyed JSON
+store at <code>app_data_dir() / "publishing-linkage.json"</code>
+(mirrors the existing <code>publishing-connections.json</code> pattern
+exactly — <code>read_json</code>/<code>write_json_atomic</code>,
+defensive <code>isinstance</code> checks on every level of the loaded
+JSON), and
+<code>publishing_linkage_from_source_metadata</code>/<code>apply_publishing_linkage_to_source_metadata</code>
+converters that round-trip against <code>Document.source_metadata</code>
+without ever touching unrelated keys already in that dict.</li>
+<li><code>MainFrame._sync_publishing_linkage_for_document</code>: the
+single helper both the save chokepoint and every successful-publish call
+site (<code>_send_publishing_remote_item</code>, the schedule-publish
+handler, and the create-draft/publish-now handler — three sites, not the
+one originally scoped in the plan; the other two were discovered while
+implementing and added for consistency) call after refreshing
+<code>source_metadata</code>. Skips when
+<code>document.path is None</code> (untitled documents are never
+registered) and when the active editor is a
+<code>CsvGridSurface</code>/<code>WordDocumentSurface</code>
+(Compare/Update only ever read <code>self.editor.GetValue()</code> as
+markdown/HTML text, a shape those structured surfaces were never
+designed to produce — linkage is never persisted for them, so it can
+never be wrongly restored either).</li>
+<li><code>_finish_open_document</code> looks up the registry by
+<code>selected_path</code> and merges a hit into the freshly-read
+document’s <code>source_metadata</code> before either the new-tab or
+refresh-existing branch runs.</li>
+</ul>
+<p>Real bug caught during implementation, not just typed and shipped:
+the first version of <code>_sync_publishing_linkage_for_document</code>
+did bare <code>self.editor</code>/<code>document.source_metadata</code>
+attribute access and broke an existing characterization test
+(<code>test_main_frame_cq16_characterization.py::test_write_document_to_disk_routes_rtf_through_the_rtf_writer</code>),
+which calls <code>_write_document_to_disk</code> against a bare
+<code>MainFrame.__new__</code> test double with no <code>editor</code>
+attribute and a <code>SimpleNamespace(path=...)</code> document with no
+<code>source_metadata</code>. That characterization suite’s own stated
+convention is “stub only the attributes each method touches,” matching
+the pre-existing <code>getattr</code>-defensive style already used a few
+lines above for <code>self.settings</code>. Rewrote the helper to be
+fully <code>getattr</code>-defensive (checks
+<code>source_metadata</code> is a dict before doing anything else, so
+the common non-publishing-document case never even looks at
+<code>self.editor</code>), confirmed via re-running the full suite.</p>
+<p>Validation methodology note for future sessions: full-suite
+comparisons in this slice were run with pytest’s <em>default</em> temp
+directory, not a custom <code>--basetemp</code>. Earlier phases in this
+roadmap (schedule/compare/worker-execution/third-party-loading)
+validated against
+<code>--basetemp=.tmp\pytest-&lt;slice&gt;-full</code>, a path under the
+repo and therefore outside <code>Path.home()</code>.
+<code>quill/core/paths.py</code>’s H-1-core guard
+(<code>_is_constrained_to_home</code>) silently rejects a
+<code>QUILL_DATA_DIR</code> override that isn’t under home, so any test
+relying on the shared <code>quill_data_dir</code> conftest fixture
+(which does not itself override <code>Path.home</code>) would have
+silently fallen through to the <em>real</em>
+<code>%APPDATA%\Quill</code> directory under that custom basetemp —
+breaking isolation and very plausibly explaining why this roadmap’s
+recorded baseline was <code>66 failed</code> rather than the
+<code>19 failed</code> this slice independently verified via
+<code>git stash</code>/clean-tree comparison (identical 19 failure names
+with and without this slice’s changes; none publishing-, document-, or
+export/open_read-related). Not re-litigated or fixed retroactively —
+flagging only so a future session does not assume 66 is the true
+baseline, and does not repeat the same custom-basetemp pattern for
+isolation-sensitive tests. One concrete, minor side effect from this
+discovery: this slice’s own first (buggy) test run wrote one bogus entry
+to the real <code>%APPDATA%\Roaming\Quill\publishing-linkage.json</code>
+before the fixture was fixed; the user was asked and chose to leave it
+(harmless test data, not real app data).</p>
+<p>Validation: focused battery <code>77 passed</code> (linkage core
+tests, publishing/compare core tests, main_frame tests including the
+CQ-16 characterization suite, module-size budget tests); Ruff and
+<code>ruff format --check</code> passed; scoped
+<code>mypy quill/core quill/io</code> unchanged (same 7 pre-existing
+findings); full unit suite
+<code>4167 passed, 19 failed, 14 skipped</code>, with the 19 failures
+verified pre-existing and unrelated via a clean-tree
+(<code>git stash</code>) comparison showing the identical 19 names at
+<code>4147 passed</code>. <code>main_frame.py</code>’s module-size
+budget bumped 25127-&gt;25165 (+38) with a dated rebaseline entry.</p>
+<p>Committed locally as two checkpoints (core, then UI+governance); not
+pushed pending explicit request.</p>
+<p><strong>One decision remains open</strong>: whether/when to loosen
+<code>core.third_party_plugins</code>/SEC-8 for real third-party Quillin
+or publishing-provider execution.</p>
+<h2
+id="publishing-profile-restriction-scoped-not-implemented">2026-06-22
+Publishing Profile Restriction — Scoped, Not Implemented</h2>
+<p>The user was told publishing must only be available in “writer and
+above” profiles — a separate, additive requirement on top of the
+<code>future.publishing</code> <code>locked_off=True</code> review-gate
+lock added earlier the same day. Since QUILL’s 10 feature profiles have
+no existing tier/rank concept (they’re personas, not a capability
+ladder), “writer and above” had no formal meaning until confirmed
+directly with the user: Writer, Author or Student, Developer and Power
+Text, and Full Quill get it; Essential, Reader and Student, Office and
+Admin, Low Vision, Braille and Screen Reader Power User, and
+Accessibility Professional do not. This was planning/scoping only, per
+explicit instruction — no source files were touched. Full scope, the
+exact target <code>states</code> table for all 10 profiles, why no
+UI/menu code changes are needed (the existing lock’s gating already
+reads the live active profile), the test plan, and three explicitly
+flagged open questions (soft- vs. hard-override semantics,
+<code>ON</code> vs. <code>QUIET</code> for the included profiles, and
+<em>when</em> to land it relative to the separate lock-lifting decision)
+all live in
+<code>codex-notes/plans/publishing-profile-restriction-2026-06-22.md</code>.</p>
+</body>
+</html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>publishing-providers-framework-compare-with-remote-closeout-2026-06-21</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1
+id="publishing-providers-framework-compare-with-remote-closeout">Publishing
+Providers Framework Compare-With-Remote Closeout</h1>
+<h2 id="outcome">Outcome</h2>
+<p>The local-versus-remote compare roadmap phase is complete. Users can
+request an honest, read-only comparison of an already-open remote
+publishing item against its current remote state, without Quill ever
+auto-merging, auto-overwriting, or silently syncing either side.</p>
+<h2 id="scope-decision-linkage-source-of-truth">Scope Decision: Linkage
+Source Of Truth</h2>
+<p>The phase’s own “Initial slices” list
+(<code>publishing-follow-up-phases-2026-06-19.md</code>, Phase 3) opens
+with “define remote identity/linkage source of truth.” Research before
+implementation confirmed <code>Document.source_metadata</code> — the
+in-memory carrier of every <code>publishing_*</code> field — is never
+written to disk by the save path (<code>quill/io/export.py</code>) and
+is rebuilt fresh from file-format detection on reopen
+(<code>quill/io/open_read.py</code>). A durable, file-path-keyed linkage
+registry (sketched in the original plan under “Remote identity”) would
+be needed to make compare/update survive closing and reopening a
+locally-saved publishing document.</p>
+<p>This phase deliberately scoped to the <strong>open tab’s
+<code>source_metadata</code></strong> as the linkage source of truth and
+explicitly deferred the durable registry — consistent with every prior
+phase deferring the same piece, and still sufficient to satisfy the
+phase’s actual “Done when” criteria. This is a recorded decision, not a
+gap discovered by accident: if a future session needs compare/update to
+work across app restarts for locally-saved publishing documents,
+building that registry is the prerequisite, and it does not exist
+yet.</p>
+<h2 id="acceptance-evidence">Acceptance Evidence</h2>
+<ul>
+<li><code>build_publishing_comparison</code>
+(<code>quill/core/publishing_compare.py</code>) is a pure function:
+title/body/status diffed field-by-field, plus a
+<code>remote_changed_since_last_known</code> signal from comparing the
+freshly fetched remote’s <code>updated_at</code> against the open tab’s
+cached <code>publishing_updated_at</code>.</li>
+<li><code>compare_publishing_remote_item</code> reuses the existing
+<code>load_publishing_remote_item</code> for fetching and validation —
+no new provider operation, no new client method, no new network-egress
+call site. Comparing is honestly modeled as “load, then diff,” not a new
+provider capability.</li>
+<li><code>publishing_comparison_message</code> reports in plain language
+only: which fields match or differ, an explicit remote-changed warning
+only when true, and the remote link — no diff-algorithm output, no
+jargon.</li>
+<li>One command/menu entry (<code>publishing.compare_remote_item</code>,
+<code>File &gt; Publish &gt; Compare With Remote...</code>) covers the
+feature; the handler reuses the exact connection-match guard logic
+already in the update/publish-remote handler rather than inventing new
+wording.</li>
+<li>Reports through the existing native message-box pattern — zero new
+dialog-governance surface, zero
+<code>dialogs.md</code>/<code>dialog_inventory.json</code> changes.</li>
+<li>No automatic overwrite, merge, or background sync was added; the
+user acts afterward through the existing
+<code>Update Remote Content...</code> /
+<code>Publish Open Remote Content...</code> / re-browse-and-open
+actions.</li>
+</ul>
+<h2 id="closeout-validation">Closeout Validation</h2>
+<ul>
+<li>focused battery (core + menu contract + module-size + network-egress
+gates): <code>86 passed</code></li>
+<li>Ruff: passed</li>
+<li>provider registry gate: passed</li>
+<li>scoped <code>mypy quill/core quill/io</code>: unchanged from before
+this slice (same 7 pre-existing, unrelated findings)</li>
+<li>full unit suite: <code>4083 passed, 66 failed, 14 skipped</code> —
+the 66 failures are the identical pre-existing set; the +9 passing delta
+is exactly the new tests added in this slice</li>
+</ul>
+<h2 id="commits">Commits</h2>
+<p>Two local checkpoints on
+<code>feature/publishing-providers-framework</code>:</p>
+<ol type="1">
+<li>Core: <code>publishing_compare.py</code>,
+<code>compare_publishing_remote_item</code>,
+<code>publishing_comparison_message</code>,
+<code>feature_command_map.py</code> entry, tests.</li>
+<li>UI + governance: menu/command/handler wiring, menu contract test,
+module-size budget bump.</li>
+</ol>
+<p>Not pushed — pending explicit request, per the standing repo
+convention.</p>
+<h2 id="next-order">Next Order</h2>
+<p>Per the 2026-06-20 Phase 1 closeout authorization: Quillin worker
+execution boundaries and lifecycle behavior is next, then live
+third-party provider loading last. Security, accessibility, validation,
+and provider-neutrality requirements remain in force for both.</p>
+</body>
+</html>

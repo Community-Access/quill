@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>publishing-remote-integration-planning-2026-06-10</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="publishing-remote-integration-planning">Publishing / Remote
+Integration Planning</h1>
+<p>Timestamp: <code>2026-06-10 17:24:40 -04:00</code></p>
+<p>Purpose:</p>
+<ul>
+<li>planning-only note</li>
+<li>no code changes proposed in this note</li>
+<li>evaluates how much of the publishing framework could be rolled into
+the newer remote-site infrastructure from current <code>main</code></li>
+</ul>
+<h2 id="short-answer">Short Answer</h2>
+<p>Some of it can and probably should be aligned later, but not all of
+it should be merged.</p>
+<p>Best planning direction:</p>
+<ul>
+<li>share storage and transport concepts where they are genuinely the
+same</li>
+<li>keep publishing-specific content workflows separate where the
+product semantics are different</li>
+</ul>
+<p>In other words:</p>
+<ul>
+<li>unify lower-level remote profile and credential patterns
+carefully</li>
+<li>do not collapse publishing into generic file-transfer UX</li>
+</ul>
+<h2 id="what-the-new-remote-infrastructure-already-gives-us">What The
+New Remote Infrastructure Already Gives Us</h2>
+<p>Current <code>main</code> now has a real remote-site stack for:</p>
+<ul>
+<li>FTP</li>
+<li>SFTP</li>
+<li>WebDAV</li>
+<li>S3</li>
+<li>generic “open from remote” / “save to remote” flows</li>
+</ul>
+<p>That stack already includes:</p>
+<ul>
+<li>a saved remote-site profile model in
+<code>quill/core/remote_sites.py</code></li>
+<li>password persistence patterns</li>
+<li>a governed remote-sites dialog in
+<code>quill/ui/remote_sites_dialog.py</code></li>
+<li><code>File</code> menu integration in
+<code>quill/ui/main_frame_menu.py</code></li>
+<li>remote open/save shell wiring in
+<code>quill/ui/main_frame.py</code></li>
+</ul>
+<p>This means the repo now has a broader “remote destination” concept
+than when the publishing plan was first drafted.</p>
+<h2 id="where-publishing-and-remote-sites-truly-overlap">Where
+Publishing And Remote Sites Truly Overlap</h2>
+<p>These parts overlap enough that future alignment is worth
+planning:</p>
+<h3 id="saved-remote-destination-pattern">1. Saved Remote Destination
+Pattern</h3>
+<p>Both systems need:</p>
+<ul>
+<li>named saved profiles</li>
+<li>a current/last-used selection model</li>
+<li>secure credential storage</li>
+<li>endpoint-specific metadata</li>
+<li>explicit user-driven network actions</li>
+</ul>
+<p>Planning takeaway:</p>
+<ul>
+<li>publishing connections and remote sites are both variants of a saved
+remote destination</li>
+<li>they do not need to stay totally unrelated forever</li>
+</ul>
+<h3 id="credential-persistence-strategy">2. Credential Persistence
+Strategy</h3>
+<p>Both systems already use the same broad trust model:</p>
+<ul>
+<li>secure persistence</li>
+<li>no plaintext credentials</li>
+<li>explicit user action before network use</li>
+</ul>
+<p>Planning takeaway:</p>
+<ul>
+<li>we should eventually standardize the credential-storage facade,
+naming, and lifecycle expectations</li>
+<li>this is a strong candidate for shared infrastructure</li>
+</ul>
+<h3 id="file-menu-placement-and-dialog-rhythm">3. File Menu Placement
+And Dialog Rhythm</h3>
+<p>Both systems live under <code>File</code> and follow a similar
+high-level rhythm:</p>
+<ul>
+<li>choose remote destination</li>
+<li>verify or browse</li>
+<li>act explicitly</li>
+</ul>
+<p>Planning takeaway:</p>
+<ul>
+<li>the shell can probably grow toward a more coherent “Remote” mental
+model without changing the underlying publishing semantics</li>
+</ul>
+<h2 id="where-publishing-and-remote-sites-should-stay-separate">Where
+Publishing And Remote Sites Should Stay Separate</h2>
+<p>This is the important part.</p>
+<h3 id="publishing-is-not-file-transfer">1. Publishing Is Not File
+Transfer</h3>
+<p>Remote Sites is fundamentally about files and paths:</p>
+<ul>
+<li>host</li>
+<li>directory</li>
+<li>remote file path</li>
+<li>transport protocol</li>
+</ul>
+<p>Publishing is fundamentally about content objects:</p>
+<ul>
+<li>post</li>
+<li>page</li>
+<li>remote content id</li>
+<li>authoring surface</li>
+<li>publish/update semantics</li>
+<li>site API behavior</li>
+</ul>
+<p>Planning takeaway:</p>
+<ul>
+<li>publishing should not be rewritten as “just another remote file
+transport”</li>
+<li>a WordPress post is not analogous to an SFTP path in the user’s
+mental model or in the code’s behavior</li>
+</ul>
+<h3 id="publishing-needs-content-aware-metadata">2. Publishing Needs
+Content-Aware Metadata</h3>
+<p>Publishing already depends on content-specific truth:</p>
+<ul>
+<li>content kind</li>
+<li>remote id</li>
+<li>remote URL</li>
+<li>publishing status</li>
+<li>chosen authoring surface</li>
+<li>open representation</li>
+</ul>
+<p>Remote Sites does not own those concepts.</p>
+<p>Planning takeaway:</p>
+<ul>
+<li>publishing must continue to own its content identity and
+representation metadata</li>
+<li>collapsing this into generic remote-site metadata would likely make
+the design less honest and harder to maintain</li>
+</ul>
+<h3 id="publishing-uses-provider-logic-not-just-transport-logic">3.
+Publishing Uses Provider Logic, Not Just Transport Logic</h3>
+<p>Remote Sites is transport-oriented. Publishing is
+provider-oriented.</p>
+<p>That difference matters because publishing needs:</p>
+<ul>
+<li>provider-specific browse logic</li>
+<li>provider-specific content-kind support</li>
+<li>provider-specific create/update workflows</li>
+<li>provider-specific API contracts</li>
+</ul>
+<p>Planning takeaway:</p>
+<ul>
+<li>the existing provider/client seam in publishing is still the right
+architectural center</li>
+<li>remote sites should not replace that seam</li>
+</ul>
+<h2 id="my-recommendation">My Recommendation</h2>
+<p>I would not merge publishing directly into the current Remote Sites
+feature.</p>
+<p>I would plan a phased alignment instead.</p>
+<h2 id="recommended-alignment-plan">Recommended Alignment Plan</h2>
+<h3 id="phase-a-keep-product-flows-separate">Phase A: Keep Product Flows
+Separate</h3>
+<p>For now:</p>
+<ul>
+<li>keep <code>File &gt; Publish</code> as its own content workflow</li>
+<li>keep <code>Open from Remote</code> / <code>Save to Remote</code> as
+file-transfer workflows</li>
+<li>keep publishing dialogs and remote-sites dialogs separate</li>
+</ul>
+<p>Reason:</p>
+<ul>
+<li>they solve different user jobs</li>
+<li>forcing a single UI too early would create confusion and probably
+regress accessibility clarity</li>
+</ul>
+<h3
+id="phase-b-introduce-a-shared-remote-destination-concept-under-the-hood">Phase
+B: Introduce A Shared “Remote Destination” Concept Under The Hood</h3>
+<p>Later, if we want less duplication:</p>
+<ul>
+<li>define a shared lower-level remote destination/storage
+abstraction</li>
+<li>let both publishing connections and remote sites build on it</li>
+</ul>
+<p>That shared layer could eventually cover:</p>
+<ul>
+<li>id / label / endpoint basics</li>
+<li>secret persistence helpers</li>
+<li>current-selection storage</li>
+<li>maybe some normalized trust/network metadata</li>
+</ul>
+<p>But it should not own:</p>
+<ul>
+<li>publishing content kinds</li>
+<li>publishing authoring-surface rules</li>
+<li>browse/update/publish semantics</li>
+<li>remote file browser semantics</li>
+</ul>
+<h3 id="phase-c-consider-a-shell-level-discoverability-cleanup">Phase C:
+Consider A Shell-Level Discoverability Cleanup</h3>
+<p>Once both systems are more mature:</p>
+<ul>
+<li>we could revisit the <code>File</code> menu wording and
+grouping</li>
+<li>maybe shape a clearer “Remote” cluster</li>
+</ul>
+<p>Example future direction:</p>
+<ul>
+<li>file transfer actions remain path/file oriented</li>
+<li>publishing actions remain content/site oriented</li>
+<li>both live near each other without pretending they are the same
+thing</li>
+</ul>
+<h2 id="what-feels-safe-to-reuse-later">What Feels Safe To Reuse
+Later</h2>
+<p>These are the pieces I think are safest to fold together over
+time:</p>
+<ul>
+<li>saved-profile persistence conventions</li>
+<li>secret storage helpers</li>
+<li>current-selection / last-used selection behavior</li>
+<li>some dialog structural patterns</li>
+<li>some network/trust validation helpers where semantics truly
+match</li>
+</ul>
+<h2 id="what-i-would-not-reuse-blindly">What I Would Not Reuse
+Blindly</h2>
+<p>These should stay publishing-owned unless a later design proves
+otherwise:</p>
+<ul>
+<li>provider registry</li>
+<li>publishing client seam</li>
+<li>browse published content UX</li>
+<li>remote content identity metadata</li>
+<li>authoring-surface / representation logic</li>
+<li>update remote content flow</li>
+<li>local linkage registry for publish/update relationships</li>
+</ul>
+<h2 id="overall-judgment">Overall Judgment</h2>
+<p>A moderate amount of future consolidation looks worthwhile.</p>
+<p>But the right consolidation target is:</p>
+<ul>
+<li>shared remote-destination infrastructure</li>
+</ul>
+<p>not:</p>
+<ul>
+<li>one merged publishing-and-file-transfer feature</li>
+</ul>
+<p>If we over-merge them, we’ll probably make the code less synchronized
+in practice, because we’d be forcing two different product models into
+one abstraction too early.</p>
+<p>If we align them at the storage/trust/credential layer, we get most
+of the maintainability win without losing the publishing model we
+already planned carefully.</p>
+<h2 id="best-next-planning-follow-up">Best Next Planning Follow-Up</h2>
+<p>Before any code:</p>
+<ul>
+<li>inventory exactly which fields overlap between
+<code>PublishingConnectionProfile</code> and
+<code>RemoteSite</code></li>
+<li>separate overlaps into:
+<ul>
+<li>truly shared</li>
+<li>superficially similar but semantically different</li>
+</ul></li>
+<li>decide whether a future shared <code>remote_destinations</code> core
+module would reduce duplication cleanly or just rename it</li>
+</ul>
+<p>That would give us a clean answer on whether consolidation is
+actually worth it before we touch the implementation.</p>
+</body>
+</html>

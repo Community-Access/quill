@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>publishing-providers-framework-current-status-2026-06-19</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="publishing-providers-framework-current-status">Publishing
+Providers Framework Current Status</h1>
+<h2 id="follow-up-phase-progress">Follow-Up Phase Progress</h2>
+<ol type="1">
+<li>WordPress first-party bundled provider path: in progress; slice A
+complete.</li>
+<li>Schedule publish: not started.</li>
+<li>Local-vs-remote compare and honest sync model: not started.</li>
+<li>Live third-party publishing provider loading: not started.</li>
+</ol>
+<p>The first extraction blocker is partially resolved for the trusted
+in-process path: a bundled package can contribute paired provider
+metadata and a client through an adapter with explicit security/runtime
+policy.</p>
+<p>Still unresolved before deeper extraction:</p>
+<ul>
+<li>whether WordPress bootstraps through the adapter during normal app
+startup</li>
+<li>whether a later provider call crosses a Quillin worker boundary</li>
+<li>worker timeout, error, cancellation, and result-dataclass
+behavior</li>
+<li>discovery/loading policy beyond explicitly imported first-party
+packages</li>
+</ul>
+<p>SEC-8 remains unchanged. Third-party publishing providers are not
+enabled.</p>
+<h2 id="status">2026-06-20 Status</h2>
+<p>Phase 1 slice B is complete. WordPress now bootstraps through the
+trusted bundled adapter in normal application startup while retaining
+the same provider definition, client, credentials, REST behavior,
+commands, menus, dialogs, and visible workflows.</p>
+<p>The next work must remain within Phase 1. Worker execution and
+third-party discovery/loading remain unresolved and explicitly
+unapproved.</p>
+<h2 id="phase-1-closed---2026-06-20">Phase 1 Closed - 2026-06-20</h2>
+<p>The closeout audit passed. The WordPress first-party bundled-provider
+path is complete, including trusted adapter validation and normal
+startup bootstrap.</p>
+<p>The user’s post-closeout approval unblocks the later roadmap phases.
+Current order: schedule publishing, compare/sync, Quillin worker
+execution, then live third-party loading. No later-phase implementation
+was performed during closeout.</p>
+<h2 id="schedule-publishing-complete---2026-06-21">Schedule Publishing
+Complete - 2026-06-21</h2>
+<p>Schedule publishing is implemented and closed out. WordPress can now
+schedule a new post/page or an already-open remote item via
+<code>status="future"</code> + UTC <code>date_gmt</code>, behind one
+provider-neutral command/menu entry and one accessible dialog.
+Compare/sync, Quillin worker execution, and live third-party loading
+remain unresolved and explicitly unapproved-for-implementation until
+separately reviewed. Current order: compare/sync next, then Quillin
+worker execution, then live third-party loading.</p>
+<h2 id="compare-with-remote-complete---2026-06-21">Compare With Remote
+Complete - 2026-06-21</h2>
+<p>Compare is implemented and closed out. Users can request an honest
+comparison of an already-open remote publishing item against its current
+remote state (title/body/status, plus a “remote changed since you last
+synced” signal) without any automatic overwrite or merge. Cross-session
+linkage persistence was explicitly deferred —
+<code>source_metadata</code> does not survive a local save/reopen, and
+building a durable registry remains a separate, unscheduled piece of
+work. Quillin worker execution and live third-party loading remain
+unresolved and explicitly unapproved-for-implementation until separately
+reviewed. Current order: Quillin worker execution next, then live
+third-party loading.</p>
+<h2
+id="quillin-worker-execution-boundaries-complete---2026-06-21">Quillin
+Worker Execution Boundaries Complete - 2026-06-21</h2>
+<p>Implemented and closed out, scoped narrowly after confirming no
+untrusted publishing provider exists yet to validate a real subprocess
+worker boundary against. Browsing publishing content now dispatches
+through the app’s existing background task manager with a real, honest
+Cancel button, instead of blocking the UI thread. The execution-policy
+contract now recognizes a <code>"worker"</code> value as
+declared-but-not-yet-implemented. The actual subprocess/IPC boundary
+remains deferred to the live third-party provider loading phase — the
+only phase left. SEC-8 remains unchanged; third-party providers are
+still not enabled.</p>
+<h2
+id="live-third-party-provider-loading-complete---2026-06-21-roadmap-closed">Live
+Third-Party Provider Loading Complete - 2026-06-21 (Roadmap Closed)</h2>
+<p>Implemented and closed out. The third-party publishing provider
+adapter contract now exists and is fully validated and tested
+(id-conflict checking against bundled providers, host-owned secrets,
+required worker execution), but registering one always fails — live
+third-party loading is not implemented. This was a deliberate choice
+after confirming SEC-8 is a product-wide lock (not publishing-specific)
+and that the publishing provider registries have no gate of their own;
+“live loading” would mean creating an exception to, or flipping, a
+security boundary that protects every Quillin capability, not just
+publishing. That remains an explicit, separate product decision, not
+something this work assumed or defaulted into.</p>
+<p><strong>All four roadmap phases authorized by the 2026-06-20 Phase 1
+closeout are now complete.</strong> SEC-8 remains unchanged; third-party
+providers and third-party Quillin code in general are still not enabled
+in a default build.</p>
+<h2
+id="durable-publishing-linkage-registry-complete---2026-06-22">Durable
+Publishing Linkage Registry Complete - 2026-06-22</h2>
+<p>The first of the two decisions left open at roadmap close is
+resolved. A previously-linked, previously-saved publishing document now
+keeps its Compare/Update/Schedule link after being closed and reopened
+(or after the app restarts) —
+<code>quill/core/publishing_linkage.py</code> persists the linkage in a
+path-keyed JSON store under the app data directory, and
+<code>main_frame.py</code> saves to it on every save and successful
+publish/update/schedule, and restores from it on every open. Untitled
+documents and CSV/Word structured-surface tabs are deliberately
+excluded, since Compare/Update were never designed to work against them.
+The remaining open decision is unchanged: whether/when to loosen
+<code>core.third_party_plugins</code>/SEC-8 for real third-party Quillin
+or publishing-provider execution.</p>
+</body>
+</html>

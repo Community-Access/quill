@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>publishing-providers-framework-worker-execution-closeout-2026-06-21</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1
+id="publishing-providers-framework-quillin-worker-execution-closeout">Publishing
+Providers Framework Quillin Worker Execution Closeout</h1>
+<h2 id="outcome">Outcome</h2>
+<p>The Quillin worker execution boundaries and lifecycle behavior phase
+is complete, scoped narrowly to deliver real, testable lifecycle
+behavior now while explicitly deferring the actual subprocess/IPC worker
+boundary to the live third-party provider loading phase, which is next
+and last.</p>
+<h2 id="scope-decision-defer-the-real-boundary">Scope Decision: Defer
+The Real Boundary</h2>
+<p>Research before implementation (two parallel codebase explorations)
+found QUILL’s Quillin extension system already has a full subprocess-
+based worker model — Python workers via <code>subprocess.Popen</code>
+(<code>quill/core/quillins/host.py</code> + <code>host_worker.py</code>,
+JSONL IPC) and Node workers via
+<code>quill/core/ai/external_engine.py</code>’s allowlisted subprocess
+runner — with capability/consent gating already wired through. None of
+it is reusable for publishing providers without new provider-specific
+IPC work, and critically: <strong>there is no untrusted publishing
+provider yet to validate a real worker boundary against</strong>.
+Third-party provider loading remains locked off by SEC-8 regardless of
+this phase, so building a subprocess boundary now would be speculative
+greenfield work with no concrete consumer.</p>
+<p>The user was presented three explicit options (lifecycle behavior now
+with the boundary deferred; build the real boundary now against a fake
+test-only provider; skip straight to third-party loading planning) and
+chose the first, recommended option. This is a recorded decision, not a
+gap discovered by accident: the actual subprocess/IPC worker boundary
+remains unbuilt, and building it is the natural first concrete task of
+the next (final) roadmap phase, when a real provider will exist to
+justify and validate it.</p>
+<h2 id="acceptance-evidence">Acceptance Evidence</h2>
+<ul>
+<li><code>browse_publishing_content</code> and the WordPress client’s
+<code>browse_content</code> (Protocol and implementation) accept an
+<code>is_cancelled</code> callable, checked between per-content-kind
+requests. Cancellation raises the new
+<code>PublishingOperationCancelled</code> rather than returning partial
+results — cancel means stop-and-discard, kept distinct from the existing
+unrelated partial-results-on-timeout behavior, which is untouched.</li>
+<li>New <code>quill/core/publishing_worker.py</code> is the only
+publishing module that imports
+<code>quill.stability.task_manager</code>;
+<code>quill.core.publishing</code> itself stays decoupled from the
+stability layer, importing nothing beyond a plain callable.</li>
+<li><code>BrowsePublishingContentDialog</code> now dispatches its load
+through <code>MainFrame</code>’s existing <code>TaskManager</code>
+instead of blocking the UI thread, with a real Cancel button. Clicking
+Cancel detaches the dialog immediately and reports “Browse cancelled.”
+honestly — it does not claim to forcibly stop an in-flight socket read,
+which only a real subprocess boundary could do. Stale callbacks (after a
+cancel or dialog teardown) are ignored via an operation-id +
+<code>_destroyed</code> guard.</li>
+<li>The existing <code>wx.ID_CANCEL</code> Close button and Escape
+handling are untouched — no new escape-trap pattern was introduced,
+verified by the existing
+<code>test_dialog_button_contract.py</code>/<code>test_dialog_hardening_contract.py</code>
+gates passing unchanged.</li>
+<li><code>quill/core/publishing_adapters.py</code> recognizes
+<code>WORKER_EXECUTION = "worker"</code> as a
+declared-but-not-yet-implemented execution policy with its own honest
+rejection message, distinct from the generic rejection for truly unknown
+values.</li>
+</ul>
+<h2 id="honest-limitation-documented-not-hidden">Honest Limitation
+(Documented, Not Hidden)</h2>
+<p>A cooperative cancel only takes effect at a checkpoint the worker
+function actually reaches (between the two per-content-kind requests
+browse loops over). If Cancel is clicked while the first or only request
+is blocked on a socket read, that background thread keeps running until
+its own socket timeout fires — the dialog still detaches and reports
+“cancelled” to the user immediately, but the thread isn’t forcibly
+killed. This is exactly the gap a real subprocess worker boundary would
+close, and exactly why building one is deferred rather than faked.</p>
+<h2 id="closeout-validation">Closeout Validation</h2>
+<ul>
+<li>focused battery (core + UI + module-size):
+<code>97 passed</code></li>
+<li>dialog governance gates (inventory, banned-patterns, button
+contract, hardening, announce-gap): <code>44 passed</code></li>
+<li>Ruff: passed</li>
+<li>provider registry gate: passed</li>
+<li>scoped <code>mypy quill/core quill/io</code>: unchanged from before
+this slice (same 7 pre-existing, unrelated findings)</li>
+<li>full unit suite: <code>4093 passed, 66 failed, 14 skipped</code> —
+the 66 failures are the identical pre-existing set; the +10 passing
+delta is exactly the new tests added in this slice</li>
+<li>smoke-launched <code>python -m quill</code> for ~12s: no startup
+traceback (only an unrelated benign lexicon-file stderr warning),
+confirming the new wiring doesn’t break MainFrame construction</li>
+<li><strong>not verified</strong>: interactive Browse → Load Content →
+Cancel behavior. No pywinauto installed and no project run-skill exists
+for driving this wxPython desktop app, so this could not be automated.
+Recorded as a known verification gap rather than claimed as tested —
+confidence in the runtime behavior rests on the passing governance
+gates, the static source-inspection tests, and code review, consistent
+with how every other wx dialog in this codebase is tested.</li>
+</ul>
+<h2 id="commits">Commits</h2>
+<p>Two local checkpoints on
+<code>feature/publishing-providers-framework</code>:</p>
+<ol type="1">
+<li>Core: <code>PublishingOperationCancelled</code>,
+<code>is_cancelled</code> threading, new
+<code>publishing_worker.py</code>, <code>publishing_adapters.py</code>
+execution-policy branch, their tests (including the adapter test
+fix).</li>
+<li>UI + governance: <code>BrowsePublishingContentDialog</code> cancel
+wiring, <code>main_frame.py</code> task_manager threading, UI tests,
+module-size budget bump.</li>
+</ol>
+<p>Not pushed — pending explicit request, per the standing repo
+convention.</p>
+<h2 id="next-order">Next Order</h2>
+<p>Per the 2026-06-20 Phase 1 closeout authorization, this was the third
+of four unblocked phases. <strong>Live third-party provider loading is
+next and last.</strong> It should begin by building the real
+subprocess/IPC worker boundary this phase deliberately deferred — now
+justified by an actual untrusted provider — reviewed against SEC-8,
+consent, validation, and network-capability requirements before any
+third-party provider is exposed.</p>
+</body>
+</html>

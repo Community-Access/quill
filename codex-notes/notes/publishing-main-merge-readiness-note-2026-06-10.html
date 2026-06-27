@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>publishing-main-merge-readiness-note-2026-06-10</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="publishing-branch-merge-readiness-note">Publishing Branch Merge
+Readiness Note</h1>
+<h2 id="section">2026-06-10 22:48:16 -04:00</h2>
+<h2 id="bottom-line">Bottom Line</h2>
+<p>Recommendation: tell the head developer to hold his horses on a
+direct merge to <code>main</code>.</p>
+<p>This branch looks ready for review as a draft PR or scoped
+integration discussion, but it does not yet look like the cleanest
+candidate for an immediate merge-to-main as-is.</p>
+<h2 id="why-i-say-hold">Why I Say Hold</h2>
+<h3
+id="the-publishing-work-is-stable-but-still-functionally-incomplete">1.
+The publishing work is stable, but still functionally incomplete</h3>
+<p>What is in good shape now:</p>
+<ul>
+<li>provider-based publishing connection framework exists</li>
+<li>publishing dialogs and accessibility hardening are in place</li>
+<li>browse/open published content exists</li>
+<li>remote published content now opens as <code>Readable Markdown</code>
+by default</li>
+<li>per-open <code>Raw HTML</code> override exists</li>
+<li>focused publishing and merge-sensitive validation is green</li>
+</ul>
+<p>What is still missing from the larger publishing story:</p>
+<ul>
+<li>the explicit <code>Update Remote Content...</code> workflow is still
+not implemented</li>
+<li>send/update behavior based on stored authoring-surface metadata is
+still pending</li>
+<li>the branch currently proves connection + browse/open foundations
+more than full round-trip publishing lifecycle completeness</li>
+</ul>
+<p>That means this is a strong foundation branch, but not yet the full
+user-facing publishing feature story.</p>
+<h3 id="main-has-been-moving-fast-in-adjacent-ui-architecture">2.
+<code>main</code> has been moving fast in adjacent UI architecture</h3>
+<p>Since this branch started, <code>main</code> has absorbed major work
+in:</p>
+<ul>
+<li>remote I/O site-manager transports</li>
+<li>menu consolidation and QUILL-key remapping</li>
+<li>notebook workspace UI and notebook store</li>
+<li>Node.js runtime / Quillins packaging work</li>
+<li>ongoing sweep/test/stability cleanup</li>
+</ul>
+<p>Recent upstream commits now visible on <code>origin/main</code>
+include:</p>
+<ul>
+<li><code>54cef8c</code>
+<code>feat(quillins): Node.js runtime, QDC tutorial, installer Node.js component, test fixes (Closes #158)</code></li>
+<li><code>106ef2c</code>
+<code>feat(editors): §10.3 menu consolidation, §10.8 QUILL-key remap, M2 notebook store (GATE-12)</code></li>
+<li><code>d394863</code>
+<code>feat(notebook): §10.4 Milestone 2 — Notebook workspace UI layer</code></li>
+</ul>
+<p>We successfully merged those changes into this branch and kept our
+publishing slice green, which is good. But it also means
+<code>main</code> is still in an active period of structural UI churn,
+and landing a partially-complete publishing branch right now would
+increase integration surface area.</p>
+<h3
+id="the-branch-contains-a-lot-more-than-just-production-publishing-code">3.
+The branch contains a lot more than just production publishing code</h3>
+<p>Compared to <code>origin/main</code>, this branch currently
+includes:</p>
+<ul>
+<li>production publishing modules</li>
+<li>menu/main-frame wiring</li>
+<li>tests and characterization fixture updates</li>
+<li>module-budget and UI-surface updates</li>
+<li>planning docs</li>
+<li>review logs</li>
+<li>handoff notes</li>
+<li>merge/audit notes</li>
+</ul>
+<p>That may be exactly what we want for branch continuity, but it is not
+automatically what we want to merge into <code>main</code> in one shot
+without a cleanup/scoping pass.</p>
+<h2 id="what-is-ready">What <em>Is</em> Ready</h2>
+<p>These pieces look reviewable and technically credible:</p>
+<ul>
+<li><code>quill/core/publishing.py</code></li>
+<li><code>quill/core/publishing_clients.py</code></li>
+<li><code>quill/core/publishing_providers.py</code></li>
+<li><code>quill/ui/publishing_tools.py</code></li>
+<li>command registration / feature wiring for publishing</li>
+<li>focused publishing tests and a11y coverage</li>
+</ul>
+<p>The branch-owned verification slice passed after the latest
+<code>main</code> merge:</p>
+<ul>
+<li>87 tests passed in 9.85s</li>
+</ul>
+<p>That says the implemented slice is not shaky. The question is not “is
+it broken?” The question is “is this the right moment and shape for
+<code>main</code>?” I think the answer there is still “not quite.”</p>
+<h2 id="recommendation-to-give-the-lead-developer">Recommendation to
+Give the Lead Developer</h2>
+<p>Suggested message:</p>
+<p>“Please hold off on merging this branch directly into
+<code>main</code> for now. The publishing foundation is integrated with
+current <code>main</code> and its focused test slice is green, but the
+end-to-end publishing workflow is still incomplete. It’s ready for draft
+PR review and scoping feedback, but I’d prefer to land at least the
+update-remote-content path and do a cleanup pass on branch-only
+planning/log artifacts before asking for a full merge.”</p>
+<h2 id="best-next-step">Best Next Step</h2>
+<p>My recommendation is one of these two paths:</p>
+<ol type="1">
+<li>Open a draft PR now if people need visibility.</li>
+<li>Do one more implementation slice before merge:
+<ul>
+<li>add <code>Update Remote Content...</code></li>
+<li>use stored publishing metadata to choose Markdown-to-HTML conversion
+vs raw-HTML send</li>
+<li>then do a cleanup pass to separate production changes from
+branch-process notes</li>
+</ul></li>
+</ol>
+<h2 id="final-judgment">Final Judgment</h2>
+<ul>
+<li>Ready for draft PR: yes</li>
+<li>Ready for technical review: yes</li>
+<li>Ready for direct merge to <code>main</code> without caveat: no</li>
+</ul>
+</body>
+</html>

@@ -1,0 +1,2427 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>codex-review-log</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="codex-review-log">Codex Review Log</h1>
+<h2 id="section">2026-06-19 00:24:11 -04:00</h2>
+<p>Follow-up phases opened:</p>
+<ul>
+<li>added
+codex-notes/notes/publishing-follow-up-phases-2026-06-19.md</li>
+<li>ordered the follow-up phases as WordPress first-party bundled
+provider package path, schedule publish, local-vs-remote compare/sync,
+then live third-party provider loading</li>
+<li>kept live third-party provider loading last because it depends on
+SEC-8/policy, consent, network capability, conflict handling, and
+provider validation readiness</li>
+<li>recommended first slice: define the bundled-provider adapter
+contract before moving WordPress or enabling third-party provider
+loading</li>
+</ul>
+<p>Validation:</p>
+<ul>
+<li>documentation/planning-only slice; no runtime behavior changed ##
+2026-06-19 00:19:11 -04:00</li>
+</ul>
+<p>Framework readiness tightening checkpoint:</p>
+<ul>
+<li>reviewed the active publishing providers framework plan at the
+user’s request</li>
+<li>confirmed the current framework scope is ready as a branch
+checkpoint: WordPress is correctly included as the in-tree reference
+provider, while future WordPress-as-bundled-Quillin extraction remains
+deferred</li>
+<li>marked deferred items clearly: WordPress package extraction,
+schedule publish, local-vs-remote compare/sync, and live third-party
+publishing provider loading</li>
+<li>recommendation is to move to review/readiness validation instead of
+adding more speculative framework machinery</li>
+</ul>
+<p>Validation:</p>
+<ul>
+<li>rerun publishing-owned validation battery and provider registry gate
+before committing this tightening checkpoint</li>
+<li>no push has been performed ## 2026-06-19 00:02:32 -04:00</li>
+</ul>
+<p>WordPress extraction-readiness checkpoint:</p>
+<ul>
+<li>audited the current provider/client seam and Quillins runtime
+gate</li>
+<li>added
+codex-notes/notes/wordpress-provider-extraction-readiness-2026-06-19.md</li>
+<li>recorded WordPress extraction blockers and minimum bundled-provider
+package expectations</li>
+<li>confirmed this is a documentation/planning slice only: WordPress
+remains in-tree and no third-party publishing provider loading was
+enabled</li>
+</ul>
+<p>Validation:</p>
+<ul>
+<li>documentation-only slice; product runtime behavior unchanged</li>
+</ul>
+<p>Next read:</p>
+<ul>
+<li>if continuing extraction readiness, define the bundled-provider
+adapter shape before moving WordPress</li>
+<li>if continuing product behavior, keep routing through the existing
+provider/client seam</li>
+<li>no push has been performed</li>
+</ul>
+<h2 id="section-1">2026-06-18 23:29:17 -04:00</h2>
+<p>Provider/client contract validation checkpoint:</p>
+<ul>
+<li>added <code>validate_publishing_provider_definition(...)</code> for
+explicit metadata contract validation</li>
+<li>expanded the provider registry gate so metadata is checked before
+provider-client drift</li>
+<li>contract validation now catches unsupported implemented
+auth/content/operation entries, unknown contract ids, and missing
+content-kind labels</li>
+<li>kept the slice extraction-prep only: WordPress remains in-tree and
+no runtime third-party provider loading was added</li>
+</ul>
+<p>Verification:</p>
+<ul>
+<li><code>ruff format quill\core\publishing_validation.py tests\unit\core\test_publishing.py</code></li>
+<li><code>ruff check quill\core\publishing_validation.py tests\unit\core\test_publishing.py</code></li>
+<li>focused publishing core tests: <code>24 passed in 0.69s</code></li>
+<li>focused provider gate tests: <code>5 passed in 0.21s</code></li>
+<li>direct provider gate command:
+<code>Publishing provider/client registry is valid.</code></li>
+<li>wider publishing/tool/module-size slice:
+<code>58 passed in 4.23s</code></li>
+<li><code>pre-commit run publishing-provider-registry --all-files</code>:
+passed</li>
+<li>full <code>tests/unit</code>:
+<code>3738 passed, 11 skipped, 53 failed, 2 warnings in 102.09s</code></li>
+<li>remaining full-suite failures/skips/warnings are outside the touched
+provider-contract slice and left for their owning main-side areas</li>
+</ul>
+<p>Next read:</p>
+<ul>
+<li>provider extraction readiness now has a sharper metadata/client
+contract gate</li>
+<li>next likely work is a WordPress extraction-blocker/packaging
+expectations note or another small contract-hardening slice</li>
+<li>no push has been performed ## 2026-06-18 22:56:24 -04:00</li>
+</ul>
+<p>Provider validation CI/local wiring checkpoint:</p>
+<ul>
+<li>wired the provider validation tool gate into
+<code>.pre-commit-config.yaml</code> as
+<code>publishing-provider-registry</code></li>
+<li>wired the same gate into <code>.github/workflows/pr-ci.yml</code>
+under the <code>internal-gates</code> job</li>
+<li>added
+<code>tests\unit\tools\test_check_publishing_providers.py</code> to the
+PR CI internal-gate unit-test bundle</li>
+<li>kept the implementation as tooling-only validation; no runtime
+third-party publishing provider loading was added</li>
+</ul>
+<p>Verification:</p>
+<ul>
+<li><code>python -m quill.tools.check_publishing_providers</code>
+<ul>
+<li>result:
+<code>Publishing provider/client registry is valid.</code></li>
+</ul></li>
+<li>focused tool tests: <code>5 passed in 0.37s</code></li>
+<li>PR CI internal-gate unit-test bundle:
+<code>56 passed in 11.76s</code></li>
+<li><code>pre-commit run publishing-provider-registry --all-files</code>:
+passed</li>
+<li>full <code>tests/unit</code>:
+<code>3732 passed, 11 skipped, 53 failed, 2 warnings in 100.24s</code></li>
+<li>remaining full-suite failures/skips/warnings are outside the touched
+CI/local publishing-gate slice and left for their owning main-side
+areas</li>
+</ul>
+<p>Next read:</p>
+<ul>
+<li>provider validation is now implemented, tool-gated, locally hooked,
+and covered by PR CI internal gates</li>
+<li>no push has been performed</li>
+</ul>
+<h2 id="section-2">2026-06-18 22:35:00 -04:00</h2>
+<p>Provider validation tool gate checkpoint:</p>
+<ul>
+<li>implemented <code>quill.tools.check_publishing_providers</code></li>
+<li>added readable provider/client validation report formatting and
+CLI-style exit status</li>
+<li>added unit coverage for clean registry, issue formatting, missing
+provider client, and orphan provider client</li>
+<li>kept the surface as an internal tool gate only; no runtime
+third-party publishing provider loading was added</li>
+</ul>
+<p>Verification:</p>
+<ul>
+<li><code>python -m quill.tools.check_publishing_providers</code>
+<ul>
+<li>result:
+<code>Publishing provider/client registry is valid.</code></li>
+</ul></li>
+<li><code>ruff format quill\tools\check_publishing_providers.py tests\unit\tools\test_check_publishing_providers.py</code></li>
+<li><code>ruff check quill\tools\check_publishing_providers.py tests\unit\tools\test_check_publishing_providers.py</code>
+<ul>
+<li>result: all checks passed</li>
+</ul></li>
+<li>focused tool tests: <code>5 passed in 0.21s</code></li>
+<li>wide publishing/tool/module-size slice:
+<code>52 passed in 3.56s</code></li>
+<li>full <code>tests/unit</code>:
+<code>3731 passed, 11 skipped, 54 failed, 2 warnings in 95.28s</code></li>
+<li>remaining full-suite failures/skips/warnings are outside the touched
+provider-validation/tooling slice and left for their owning main-side
+areas</li>
+</ul>
+<p>Next read:</p>
+<ul>
+<li>provider validation is now surfaced through an internal tool
+gate</li>
+<li>next likely work is wiring the gate into existing local/CI check
+collections, if desired, without enabling runtime third-party publishing
+provider loading</li>
+<li>no push has been performed</li>
+</ul>
+<h2 id="section-3">2026-06-18 22:30:03 -04:00</h2>
+<p>Testing discipline checkpoint:</p>
+<ul>
+<li>user instructed that all remaining development/code slices must run
+both focused validation and the full available unit-test battery</li>
+<li>in-scope failures must be fixed before committing the slice</li>
+<li>unrelated merged-main or environment-sensitive
+failures/skips/warnings should be recorded and left untouched unless the
+current slice modifies those areas</li>
+<li>continue committing locally as work proceeds</li>
+<li>do not push</li>
+<li>current full-suite baseline from the provider/client validation
+extraction: <code>3726 passed, 11 skipped, 54 failed, 2 warnings</code>
+## 2026-06-18 22:04:10 -04:00</li>
+</ul>
+<p>Provider/client validation implementation checkpoint:</p>
+<ul>
+<li>user approved committing locally as work proceeds, with no push</li>
+<li>implemented the planned provider/client registration validation
+slice</li>
+<li>added validation API in
+<code>quill/core/publishing_validation.py</code>:
+<ul>
+<li><code>PublishingProviderValidationIssue</code></li>
+<li><code>validate_publishing_provider_client(...)</code></li>
+<li><code>validate_registered_publishing_provider_clients(...)</code></li>
+</ul></li>
+<li>validation detects:
+<ul>
+<li>provider definitions with no registered client</li>
+<li>registered clients with no provider definition</li>
+<li>declared implemented operations without required callable client
+methods</li>
+</ul></li>
+<li>added unit coverage in
+<code>tests/unit/core/test_publishing.py</code> for clean registration,
+missing client, orphan client, and operation-method drift</li>
+</ul>
+<p>Verification:</p>
+<ul>
+<li><code>ruff format quill\core\publishing_validation.py tests\unit\core\test_publishing.py</code></li>
+<li><code>ruff check quill\core\publishing_validation.py tests\unit\core\test_publishing.py</code>
+<ul>
+<li>result: all checks passed</li>
+</ul></li>
+<li><code>pytest tests\unit\core\test_publishing.py tests\unit\core\test_publishing_framework.py -q --basetemp=.tmp\pytest-provider-validation</code>
+<ul>
+<li>result: <code>20 passed in 0.59s</code></li>
+</ul></li>
+<li><code>pytest tests\unit\core\test_publishing.py tests\unit\core\test_publishing_browse.py tests\unit\core\test_publishing_framework.py -q --basetemp=.tmp\pytest-provider-validation-wide</code>
+<ul>
+<li>result: <code>39 passed in 3.89s</code></li>
+</ul></li>
+</ul>
+<p>Next read:</p>
+<ul>
+<li><p>provider/client validation is now implemented</p></li>
+<li><p>next work should decide where validation is surfaced for
+bundled/future providers before any WordPress extraction or live Quillin
+provider loading</p></li>
+<li><p>no push has been performed Full unit-suite follow-up:</p></li>
+<li><p>initial full
+<code>pytest tests\unit -q --basetemp=.tmp\pytest-unit-full</code>
+exposed one in-scope failure:
+<code>quill/core/publishing_clients.py</code> exceeded the GATE-11
+module-size budget</p></li>
+<li><p>fixed the in-scope issue by extracting validation into new pure
+module <code>quill/core/publishing_validation.py</code> instead of
+raising the existing budget</p></li>
+<li><p>reran <code>tests/unit/tools/test_module_size_budget.py</code>:
+<code>8 passed in 0.64s</code></p></li>
+<li><p>reran broader publishing tests after extraction:
+<code>39 passed in 3.89s</code></p></li>
+<li><p>reran full <code>tests/unit</code>:
+<code>3726 passed, 11 skipped, 54 failed, 2 warnings in 145.00s</code></p></li>
+<li><p>remaining full-suite failures are outside the touched publishing
+validation slice and include pre-existing/main-side areas such as
+AI/session settings, BRF page detection, settings/onboarding
+persistence, devtools history, open-read line endings, and share-dialog
+offer expectations ## 2026-06-18 21:33:40 -04:00</p></li>
+</ul>
+<p>Recovery / branch-state checkpoint:</p>
+<ul>
+<li>user requested a full recovery update for Codex planning docs,
+memory files, and working chat logs</li>
+<li>user noted the head developer granted push access and resolved
+conflicts before creating the branch</li>
+<li>current branch:
+<code>feature/publishing-providers-framework</code></li>
+<li>tracking branch:
+<code>origin/feature/publishing-providers-framework</code></li>
+<li>remote: <code>https://github.com/community-access/quill</code></li>
+<li>current HEAD:
+<code>cbe5ed6 Merge branch 'features/publishing-providers-framework' of https://github.com/stickbear2015/quill into feature/publishing-providers-framework</code></li>
+<li>current upstream main:
+<code>7a64564 chore(docs): drop relocated 0.5.0 release notes and old verbosity plan</code></li>
+<li>working tree was clean before this recovery documentation
+update</li>
+</ul>
+<p>Merge commit evidence reviewed:</p>
+<ul>
+<li><code>cbe5ed6</code> reconciled the publishing branch with
+<code>origin/main</code> at <code>7a64564</code></li>
+<li>conflict resolution covered:
+<ul>
+<li><code>quill/tools/module_size_budgets.json</code> GATE-11 rebaseline
+for publishing/main-menu growth</li>
+<li><code>tests/unit/ui/fixtures/dialog_inventory.json</code>
+regenerated with publishing dialogs and post-#179 crash-recovery
+surface</li>
+<li><code>tests/unit/ui/fixtures/main_frame_public_surface.json</code>
+regenerated with 494 public methods</li>
+<li><code>tests/unit/ui/test_main_frame.py</code> ruff-formatted after
+conflict resolution</li>
+<li><code>tests/unit/ui/test_main_frame_menu_contract.py</code> restored
+per-file menu source reads and added
+<code>main_frame_power_tools_menu.py</code></li>
+<li><code>quill/ui/main_frame.py</code> import block fixed by
+<code>ruff check --fix</code></li>
+<li><code>tests/unit/ui/test_power_tools_command_wiring.py</code> slice
+boundary expanded after publishing growth</li>
+</ul></li>
+<li>precommit gates recorded green: ruff format, ruff check,
+banned-pattern, dialog escape-button contract, module-size budget,
+announce-gap gate</li>
+<li>tests recorded by merge author:
+<ul>
+<li><code>tests/unit/ui/</code> 690/690 pass</li>
+<li><code>tests/unit/core/</code> 2544 pass + 4 skipped + 11 thesaurus
+timeouts deselected</li>
+<li>12 <code>test_brf_page_detection.py</code> failures are documented
+as pre-existing on <code>origin/main</code> and unrelated to this
+merge</li>
+</ul></li>
+</ul>
+<p>Current hold:</p>
+<ul>
+<li>do not continue into the next plan implementation yet</li>
+<li>finish tightening recovery/review notes against the merge evidence
+first</li>
+</ul>
+<p>Documentation synchronized:</p>
+<ul>
+<li><code>codex-notes/plans/publishing-providers-framework.md</code></li>
+<li><code>codex-notes/memory/publishing-providers-framework-readiness.md</code></li>
+<li><code>codex-notes/handoff/codex-handoff.md</code></li>
+<li><code>codex-notes/logs/codex-review-log.md</code></li>
+</ul>
+<p>Next read:</p>
+<ul>
+<li>prior fork-only instructions are historical</li>
+<li>active work should continue on upstream
+<code>origin/feature/publishing-providers-framework</code></li>
+<li>use the current merge commit as the baseline for future
+publishing-provider work</li>
+</ul>
+<h2 id="section-4">2026-06-18 18:19:27 -04:00</h2>
+<p>Repository sync / PR checkpoint:</p>
+<ul>
+<li>pushed local publishing branch updates to the fork remote:
+<ul>
+<li><code>features/publishing-providers-framework</code></li>
+<li><code>https://github.com/stickbear2015/quill.git</code></li>
+</ul></li>
+<li>created upstream pull request using GitHub CLI:
+<ul>
+<li><code>https://github.com/Community-Access/quill/pull/268</code></li>
+</ul></li>
+<li>PR source:
+<ul>
+<li><code>stickbear2015:features/publishing-providers-framework</code></li>
+</ul></li>
+<li>PR target:
+<ul>
+<li><code>Community-Access/quill:main</code></li>
+</ul></li>
+</ul>
+<p>Current repository handling instruction:</p>
+<ul>
+<li>push this documentation checkpoint to the fork/origin repository
+only</li>
+<li>do not push directly to the upstream
+<code>Community-Access/quill</code> repository</li>
+<li>upstream repo updates will wait until the user has been given the
+needed access</li>
+</ul>
+<h2 id="section-5">2026-06-18 16:52:14 -04:00</h2>
+<p>Implementation result:</p>
+<ul>
+<li>completed the provider operation capability slice</li>
+<li>added provider operation metadata for verify, browse, load, update,
+create, and publish</li>
+<li>WordPress declares all current operations as the in-tree reference
+provider</li>
+<li>core publishing functions now check provider operation support
+before provider-client calls</li>
+<li>publish-now and publish-open-remote now require the provider
+<code>publish</code> operation</li>
+</ul>
+<p>Framework-neutrality notes:</p>
+<ul>
+<li>providers can now register partial lifecycle capability without
+pretending to match WordPress</li>
+<li>fake second-provider coverage proves verification can be implemented
+while browse/publish remain unavailable</li>
+<li>WordPress behavior remains unchanged, but its support is now
+explicit metadata rather than an implicit shell assumption</li>
+</ul>
+<p>Verification:</p>
+<ul>
+<li>focused core run:
+<ul>
+<li><code>pytest tests/unit/core/test_publishing.py tests/unit/core/test_publishing_browse.py tests/unit/core/test_publishing_framework.py -q --basetemp=.tmp\pytest-publishing-capabilities</code></li>
+<li>result: <code>35 passed in 3.42s</code></li>
+</ul></li>
+<li>wider publishing/UI/governance run:
+<ul>
+<li><code>pytest tests/unit/core/test_document.py tests/unit/core/test_publishing.py tests/unit/core/test_publishing_browse.py tests/unit/core/test_publishing_framework.py tests/unit/ui/test_main_frame.py tests/unit/ui/test_main_frame_menu_contract.py tests/unit/ui/test_publishing_connection_dialog_a11y.py tests/unit/ui/test_dialog_inventory.py tests/unit/ui/test_main_frame_characterization.py tests/unit/tools/test_module_size_budget.py tests/unit/tools/test_check_banned_patterns.py tests/unit/tools/test_announce_gap.py tests/unit/tools/test_network_egress_audit.py tests/unit/tools/test_dialog_button_contract.py tests/unit/ui/test_dialog_hardening_contract.py -q --basetemp=.tmp\pytest-publishing-capabilities-wide</code></li>
+<li>result: <code>122 passed in 42.70s</code></li>
+</ul></li>
+</ul>
+<p>Next read:</p>
+<ul>
+<li>next likely extraction-prep work is tighter provider/client
+registration validation so provider definitions and clients cannot drift
+before WordPress moves toward a bundled first-party Quillin
+boundary</li>
+</ul>
+<h2 id="section-6">2026-06-18 16:47:18 -04:00</h2>
+<p>Implementation result:</p>
+<ul>
+<li>completed the planned open-remote publish/promote lifecycle
+slice</li>
+<li>added provider-neutral
+<code>publishing.publish_remote_item</code></li>
+<li>added File &gt; Publish &gt; Publish Open Remote Content…</li>
+<li>extended
+<code>PublishingProviderClient.update_remote_item(...)</code> with
+optional <code>status</code></li>
+<li>WordPress reference client now posts <code>status: publish</code>
+only when requested by the provider-neutral publish-open-remote
+action</li>
+<li>normal update remote content continues to send title/content
+only</li>
+</ul>
+<p>Accessibility/provider-neutrality notes:</p>
+<ul>
+<li>no new dialog class was introduced</li>
+<li>the action reuses the existing review-first confirmation and
+message-box wrapper flow</li>
+<li>shell validates open-remote metadata, provider id, and site URL
+before sending</li>
+<li>command/menu names remain provider-neutral and are mapped through
+<code>future.publishing</code></li>
+</ul>
+<p>Verification:</p>
+<ul>
+<li>first focused run:
+<ul>
+<li>behavior, publishing, accessibility/dialog, menu, and governance
+tests passed</li>
+<li>module-size budget failed on measured command/menu growth</li>
+</ul></li>
+<li>after budget documentation, rerun passed:
+<ul>
+<li><code>pytest tests/unit/core/test_document.py tests/unit/core/test_publishing.py tests/unit/core/test_publishing_browse.py tests/unit/core/test_publishing_framework.py tests/unit/ui/test_main_frame.py tests/unit/ui/test_main_frame_menu_contract.py tests/unit/ui/test_publishing_connection_dialog_a11y.py tests/unit/ui/test_dialog_inventory.py tests/unit/ui/test_main_frame_characterization.py tests/unit/tools/test_module_size_budget.py tests/unit/tools/test_check_banned_patterns.py tests/unit/tools/test_announce_gap.py tests/unit/tools/test_network_egress_audit.py tests/unit/tools/test_dialog_button_contract.py tests/unit/ui/test_dialog_hardening_contract.py -q --basetemp=.tmp\pytest-publishing-remote-publish</code></li>
+<li>result: <code>120 passed in 62.51s</code></li>
+</ul></li>
+</ul>
+<p>Next read:</p>
+<ul>
+<li>publish-now for local documents and publish-open-remote for existing
+remote items are both implemented</li>
+<li>likely next work is preparing the WordPress provider extraction
+boundary / bundled first-party Quillin direction, unless product chooses
+another provider-neutral lifecycle behavior first</li>
+</ul>
+<h2 id="section-7">2026-06-18 16:36:04 -04:00</h2>
+<p>Implementation checkpoint:</p>
+<ul>
+<li>user asked what was next in the plan and to start the next coding
+thing if ready</li>
+<li>selected provider-neutral publishing lifecycle behavior</li>
+<li>implemented publish-now create actions that were already reserved in
+the command-feature map</li>
+</ul>
+<p>Changes made:</p>
+<ul>
+<li>registered <code>publishing.publish_current</code> in
+<code>MainFrame</code></li>
+<li>registered <code>publishing.publish_current_page</code> in
+<code>MainFrame</code></li>
+<li>added File &gt; Publish menu IDs/items/bindings for:
+<ul>
+<li><code>Publish Post Now...</code></li>
+<li><code>Publish Page Now...</code></li>
+</ul></li>
+<li>generalized <code>_create_publishing_item(...)</code> to accept a
+provider-neutral lifecycle status</li>
+<li>publish-now actions reuse the same review-first confirmation path
+and result formatter as draft creation</li>
+<li>WordPress create regression coverage now asserts
+<code>status: publish</code> in the provider payload</li>
+<li>updated menu/main-frame contract tests for the new commands and menu
+entries</li>
+<li>documented measured module-size growth:
+<ul>
+<li><code>quill/ui/main_frame.py</code>
+<code>24214 -&gt; 24240</code></li>
+<li><code>quill/ui/main_frame_menu.py</code>
+<code>3344 -&gt; 3364</code></li>
+</ul></li>
+</ul>
+<p>Verification:</p>
+<ul>
+<li>first focused run:
+<ul>
+<li>behavior, publishing, accessibility/dialog, menu, and governance
+tests passed</li>
+<li>module-size budget failed on measured command/menu growth</li>
+</ul></li>
+<li>after budget documentation, rerun passed:
+<ul>
+<li><code>pytest tests/unit/core/test_document.py tests/unit/core/test_publishing.py tests/unit/core/test_publishing_browse.py tests/unit/core/test_publishing_framework.py tests/unit/ui/test_main_frame.py tests/unit/ui/test_main_frame_menu_contract.py tests/unit/ui/test_publishing_connection_dialog_a11y.py tests/unit/ui/test_dialog_inventory.py tests/unit/ui/test_main_frame_characterization.py tests/unit/tools/test_module_size_budget.py tests/unit/tools/test_check_banned_patterns.py tests/unit/tools/test_announce_gap.py tests/unit/tools/test_network_egress_audit.py tests/unit/tools/test_dialog_button_contract.py tests/unit/ui/test_dialog_hardening_contract.py -q --basetemp=.tmp\pytest-publishing-publish-now</code></li>
+<li>result: <code>119 passed in 32.58s</code></li>
+</ul></li>
+</ul>
+<p>Next read:</p>
+<ul>
+<li>publish-now for new post/page content is implemented</li>
+<li>likely next lifecycle slice is publish/promote for an already-open
+remote draft, if desired</li>
+</ul>
+<h2 id="section-8">2026-06-18 13:19:06 -04:00</h2>
+<p>Break-ready sync checkpoint:</p>
+<ul>
+<li>user asked to update logs, memory files, planning notes, and push
+the branch so it is clean for a break</li>
+<li>recorded the final checkpoint across:
+<ul>
+<li>handoff</li>
+<li>readiness memory</li>
+<li>publishing framework plan</li>
+<li>review log</li>
+</ul></li>
+</ul>
+<p>Current state:</p>
+<ul>
+<li>provider registry and verification seam is committed</li>
+<li>WordPress future first-party Quillin direction is committed</li>
+<li>remote item editor identity is committed</li>
+<li>latest focused validation:
+<ul>
+<li><code>117 passed in 62.98s</code></li>
+</ul></li>
+</ul>
+<p>Next read:</p>
+<ul>
+<li>after push, remote and local should be aligned</li>
+<li>next implementation should continue provider-neutral publishing
+lifecycle behavior unless product chooses deeper browse scaling
+first</li>
+</ul>
+<h2 id="section-9">2026-06-18 13:15:32 -04:00</h2>
+<p>Implementation checkpoint:</p>
+<ul>
+<li>continued with the next plan slice:
+<code>Remote Item Editor Identity</code></li>
+<li>goal was to make opened remote publishing items feel identifiable in
+tab/title surfaces without creating fake local-file truth</li>
+</ul>
+<p>Changes made:</p>
+<ul>
+<li>added metadata-backed pathless document display names in
+<code>quill/core/document.py</code></li>
+<li>kept local file paths authoritative over metadata display names</li>
+<li>publishing remote open metadata now includes:
+<ul>
+<li><code>display_name</code></li>
+<li><code>source_label</code></li>
+<li><code>publishing_remote_title</code></li>
+</ul></li>
+<li>generic tab creation now picks up <code>source_label</code> from
+document metadata</li>
+<li>publishing create/update success paths refresh remote title/display
+metadata from the returned provider document</li>
+<li>added focused tests for:
+<ul>
+<li>path precedence over metadata display name</li>
+<li>metadata display names for pathless documents</li>
+<li>remote publishing metadata/title contract in
+<code>MainFrame</code></li>
+</ul></li>
+<li>updated module-size budget documentation for measured
+<code>main_frame.py</code> growth:
+<ul>
+<li><code>24205 -&gt; 24214</code></li>
+</ul></li>
+</ul>
+<p>Verification:</p>
+<ul>
+<li>first focused run:
+<ul>
+<li>behavior, publishing, accessibility/dialog, and governance tests
+passed</li>
+<li>module-size budget failed on the measured <code>main_frame.py</code>
+growth</li>
+</ul></li>
+<li>after budget documentation, rerun passed:
+<ul>
+<li><code>pytest tests/unit/core/test_document.py tests/unit/core/test_publishing.py tests/unit/core/test_publishing_browse.py tests/unit/core/test_publishing_framework.py tests/unit/ui/test_main_frame.py tests/unit/ui/test_main_frame_menu_contract.py tests/unit/ui/test_publishing_connection_dialog_a11y.py tests/unit/ui/test_dialog_inventory.py tests/unit/ui/test_main_frame_characterization.py tests/unit/tools/test_module_size_budget.py tests/unit/tools/test_check_banned_patterns.py tests/unit/tools/test_announce_gap.py tests/unit/tools/test_network_egress_audit.py tests/unit/tools/test_dialog_button_contract.py tests/unit/ui/test_dialog_hardening_contract.py -q --basetemp=.tmp\pytest-publishing-remote-identity</code></li>
+<li>result: <code>117 passed in 62.98s</code></li>
+</ul></li>
+</ul>
+<p>Next read:</p>
+<ul>
+<li>remote item editor identity is now covered without new dialog
+surface</li>
+<li>next work can continue provider-neutral publishing lifecycle
+behavior or deeper browse scaling</li>
+</ul>
+<h2 id="section-10">2026-06-18 13:10:29 -04:00</h2>
+<p>Planning checkpoint:</p>
+<ul>
+<li>user asked whether WordPress should become a Quillin so the
+framework remains clean</li>
+<li>decision recorded:
+<ul>
+<li>yes as a likely end-state</li>
+<li>not immediately, because moving it now would mix framework contract
+work, provider behavior, and Quillin loading/runtime boundaries</li>
+</ul></li>
+</ul>
+<p>Recorded direction:</p>
+<ul>
+<li>keep WordPress in-tree as the reference provider while publishing
+contracts are still being proven</li>
+<li>keep all new framework work provider-neutral and
+extraction-friendly</li>
+<li>target WordPress as a trusted first-party bundled Quillin or
+equivalent built-in extension package after:
+<ul>
+<li>provider registry is stable</li>
+<li>provider client contract is stable</li>
+<li>consent/security/network behavior is stable</li>
+<li>publishing lifecycle behavior is stable</li>
+</ul></li>
+<li>future Quillin-contributed providers should use the same
+provider/client registration seam rather than a separate publishing
+extension model</li>
+</ul>
+<p>Files updated:</p>
+<ul>
+<li><code>codex-notes/plans/publishing-providers-framework.md</code></li>
+<li><code>codex-notes/handoff/codex-handoff.md</code></li>
+<li><code>codex-notes/memory/publishing-providers-framework-readiness.md</code></li>
+<li><code>codex-notes/logs/codex-review-log.md</code></li>
+</ul>
+<p>Next read:</p>
+<ul>
+<li>proceed with <code>Remote Item Editor Identity</code></li>
+</ul>
+<h2 id="section-11">2026-06-18 13:06:24 -04:00</h2>
+<p>Implementation checkpoint:</p>
+<ul>
+<li>user asked for the
+<code>Provider Registry and Verification Seam</code> before more
+publishing behavior</li>
+<li>goal was to address the highest-risk framework-neutrality gaps:
+<ul>
+<li>provider/client registration functions in core</li>
+<li>verification moved into <code>PublishingProviderClient</code></li>
+<li>unknown providers must not fall back to WordPress</li>
+<li>fake second provider coverage proving the shell is
+provider-neutral</li>
+</ul></li>
+</ul>
+<p>Changes made:</p>
+<ul>
+<li>added <code>register_publishing_provider(...)</code> and
+<code>unregister_publishing_provider(...)</code></li>
+<li>changed provider metadata lookup so missing provider IDs return no
+definition instead of WordPress</li>
+<li>added neutral fallback behavior for display/help/content-kind helper
+functions</li>
+<li>added
+<code>PublishingProviderClient.verify_connection(...)</code></li>
+<li>moved WordPress <code>/wp-json/wp/v2/users/me?context=edit</code>
+verification into <code>WordPressPublishingClient</code></li>
+<li>added <code>register_publishing_provider_client(...)</code> and
+<code>unregister_publishing_provider_client(...)</code></li>
+<li>changed <code>verify_publishing_connection(...)</code> to route
+through the registered provider client</li>
+<li>added explicit unregistered-provider checks for
+verify/browse/open/update/create publishing actions</li>
+<li>updated network-egress review documentation for the moved
+verification call site</li>
+<li>added tests with a fake <code>secondcms</code> provider/client to
+prove verification is not WordPress-bound</li>
+</ul>
+<p>Verification:</p>
+<ul>
+<li>first focused verification run:
+<ul>
+<li>publishing behavior that executed passed</li>
+<li>pytest errored where <code>tmp_path</code> needed
+<code>.tmp\pytest-publishing-provider-registry</code> but the
+<code>.tmp</code> parent did not exist</li>
+</ul></li>
+<li>created <code>.tmp</code> and reran:
+<ul>
+<li><code>pytest tests/unit/core/test_publishing.py tests/unit/core/test_publishing_browse.py tests/unit/core/test_publishing_framework.py tests/unit/ui/test_main_frame.py tests/unit/ui/test_main_frame_menu_contract.py tests/unit/ui/test_publishing_connection_dialog_a11y.py tests/unit/ui/test_dialog_inventory.py tests/unit/ui/test_main_frame_characterization.py tests/unit/tools/test_module_size_budget.py tests/unit/tools/test_check_banned_patterns.py tests/unit/tools/test_announce_gap.py tests/unit/tools/test_network_egress_audit.py tests/unit/tools/test_dialog_button_contract.py tests/unit/ui/test_dialog_hardening_contract.py -q --basetemp=.tmp\pytest-publishing-provider-registry</code></li>
+<li>result: <code>113 passed in 31.29s</code></li>
+</ul></li>
+</ul>
+<p>Next read:</p>
+<ul>
+<li>provider registry and verification are now framework-neutral enough
+for later providers/quillins to plug in without inheriting WordPress
+behavior</li>
+<li>next likely plan work remains
+<code>Remote Item Editor Identity</code></li>
+</ul>
+<h2 id="section-12">2026-06-18 12:55:14 -04:00</h2>
+<p>Implementation checkpoint:</p>
+<ul>
+<li>user asked to clean up the provider-boundary audit findings</li>
+<li>scope chosen:
+<ul>
+<li>published-only browse wording cleanup</li>
+<li>provider-owned content-kind labels</li>
+<li>keep the framework from hard-coding Post/Page labels in the browse
+shell</li>
+</ul></li>
+</ul>
+<p>Changes made:</p>
+<ul>
+<li>renamed browse labels and menu/command text to publishing-content
+wording:
+<ul>
+<li><code>Browse Publishing Content...</code></li>
+<li><code>Publishing content</code></li>
+<li><code>Selected publishing content details</code></li>
+</ul></li>
+<li>added <code>content_kind_labels</code> and
+<code>content_kind_plural_labels</code> to provider metadata</li>
+<li>added <code>provider_content_kind_label(...)</code></li>
+<li>changed the browse dialog content-scope choices to derive from
+provider content kinds:
+<ul>
+<li><code>All content types</code></li>
+<li><code>{Provider label} only</code></li>
+</ul></li>
+<li>changed core and provider-client messages from
+<code>published content</code> to <code>publishing content</code> where
+drafts can be included</li>
+<li>updated focused tests for:
+<ul>
+<li>provider content-kind labels</li>
+<li>browse dialog accessible labels</li>
+<li>browse/open/update/create message copy</li>
+</ul></li>
+</ul>
+<p>Verification:</p>
+<ul>
+<li>first focused verification run:
+<ul>
+<li>behavior, menu, dialog, a11y, and governance tests passed</li>
+<li>module-size budget failed from deliberate
+provider-label/browse-shell growth</li>
+</ul></li>
+<li>updated module-size budget documentation:
+<ul>
+<li><code>quill/ui/publishing_tools.py</code>
+<code>699 -&gt; 715</code></li>
+<li><code>quill/core/publishing.py</code>
+<code>676 -&gt; 677</code></li>
+</ul></li>
+<li>rerun:
+<ul>
+<li><code>pytest tests/unit/core/test_publishing.py tests/unit/core/test_publishing_browse.py tests/unit/core/test_publishing_framework.py tests/unit/ui/test_main_frame.py tests/unit/ui/test_main_frame_menu_contract.py tests/unit/ui/test_publishing_connection_dialog_a11y.py tests/unit/ui/test_dialog_inventory.py tests/unit/ui/test_main_frame_characterization.py tests/unit/tools/test_module_size_budget.py tests/unit/tools/test_check_banned_patterns.py tests/unit/tools/test_announce_gap.py tests/unit/tools/test_network_egress_audit.py tests/unit/tools/test_dialog_button_contract.py tests/unit/ui/test_dialog_hardening_contract.py -q --basetemp=.tmp\pytest-publishing-neutral-copy</code></li>
+<li>result: <code>111 passed in 32.46s</code></li>
+</ul></li>
+</ul>
+<p>Next read:</p>
+<ul>
+<li>provider endpoint logic remains contained in provider/client
+code</li>
+<li>browse shell copy is now status-neutral and less
+WordPress-shaped</li>
+<li>next likely plan work is <code>Remote Item Editor Identity</code>
+unless product wants deeper progressive browse UI first</li>
+</ul>
+<h2 id="section-13">2026-06-18 12:46:43 -04:00</h2>
+<p>Implementation checkpoint:</p>
+<ul>
+<li>resumed from the plan after committing the publishing confirmation
+result-copy slice</li>
+<li>selected the remaining <code>Browse Remote Content Scaling</code>
+gap that could be implemented without adding a new dialog:
+<ul>
+<li>timeout-aware partial results for multi-kind browse</li>
+</ul></li>
+</ul>
+<p>Changes made:</p>
+<ul>
+<li>updated <code>WordPressPublishingClient.browse_content</code></li>
+<li>posts/pages are still loaded via separate collection requests</li>
+<li>when one requested content kind succeeds and another fails:
+<ul>
+<li>preserve the loaded results</li>
+<li>return <code>ok=True</code></li>
+<li>report a partial-load message that names the failed kind</li>
+<li>suggest retrying with a narrower content scope</li>
+</ul></li>
+<li>when all requested kinds fail:
+<ul>
+<li>return <code>ok=False</code></li>
+<li>preserve the first provider error</li>
+</ul></li>
+<li>added a regression test for posts loading while pages time out</li>
+</ul>
+<p>Accessibility / governance read:</p>
+<ul>
+<li>no new custom dialog was added</li>
+<li>existing browse-dialog label order, focus flow, and shared
+message-box wrapper remain unchanged</li>
+<li>partial-load result copy is plain language and suitable for
+screen-reader announcement</li>
+<li>module-size gate stayed green; no budget update was needed</li>
+</ul>
+<p>Verification:</p>
+<ul>
+<li><code>pytest tests/unit/core/test_publishing.py tests/unit/core/test_publishing_browse.py tests/unit/core/test_publishing_framework.py tests/unit/ui/test_main_frame.py tests/unit/ui/test_main_frame_menu_contract.py tests/unit/ui/test_publishing_connection_dialog_a11y.py tests/unit/ui/test_dialog_inventory.py tests/unit/ui/test_main_frame_characterization.py tests/unit/tools/test_module_size_budget.py tests/unit/tools/test_check_banned_patterns.py tests/unit/tools/test_announce_gap.py tests/unit/tools/test_network_egress_audit.py tests/unit/tools/test_dialog_button_contract.py tests/unit/ui/test_dialog_hardening_contract.py -q --basetemp=.tmp\pytest-publishing-browse-partial</code></li>
+<li>result: <code>110 passed in 31.38s</code></li>
+</ul>
+<p>Next read:</p>
+<ul>
+<li>browse now has explicit status scope plus partial-results
+behavior</li>
+<li>remaining likely plan work is either:
+<ul>
+<li>deeper progressive browse UI/loading</li>
+<li><code>Remote Item Editor Identity</code> for clearer tab/title
+identity on opened remote items</li>
+</ul></li>
+</ul>
+<h2 id="section-14">2026-06-18 12:40:50 -04:00</h2>
+<p>Implementation checkpoint:</p>
+<ul>
+<li>resumed coding from the approved publishing plan after the browse
+status scope slice</li>
+<li>selected <code>Publishing Confirmation Model</code> as the next
+small plan item</li>
+<li>used the Desktop Accessibility Specialist guidance for the
+wxPython/native-dialog surface:
+<ul>
+<li>keep pre-send confirmation explicit</li>
+<li>ensure post-send status changes are announced/plain-language
+friendly</li>
+<li>avoid new custom dialog surface unless needed</li>
+</ul></li>
+</ul>
+<p>Changes made:</p>
+<ul>
+<li>added <code>publishing_result_message()</code> in
+<code>quill/core/publishing.py</code></li>
+<li>result messages now include:
+<ul>
+<li>created/updated action</li>
+<li>content kind</li>
+<li>target host</li>
+<li>title</li>
+<li>resulting status</li>
+<li>link when the provider returns one</li>
+</ul></li>
+<li><code>MainFrame</code> create/update publishing flows now show that
+result text in the existing native message box</li>
+<li>status bar updates use the first result line only</li>
+<li>added focused core and UI contract tests for the formatter and
+create/update wiring</li>
+<li>updated module-size budget documentation for deliberate
+publishing-confirmation growth:
+<ul>
+<li><code>quill/ui/main_frame.py</code>
+<code>24194 -&gt; 24205</code></li>
+<li><code>quill/core/publishing.py</code>
+<code>651 -&gt; 676</code></li>
+</ul></li>
+</ul>
+<p>Verification:</p>
+<ul>
+<li>first focused verification run:
+<ul>
+<li>behavior and accessibility/governance tests passed</li>
+<li>module-size budget failed because the new publishing result
+formatter and UI wiring exceeded the previous recorded budgets</li>
+</ul></li>
+<li>after budget documentation, focused verification passed:
+<ul>
+<li><code>pytest tests/unit/core/test_publishing.py tests/unit/core/test_publishing_browse.py tests/unit/core/test_publishing_framework.py tests/unit/ui/test_main_frame.py tests/unit/ui/test_main_frame_menu_contract.py tests/unit/ui/test_publishing_connection_dialog_a11y.py tests/unit/ui/test_dialog_inventory.py tests/unit/ui/test_main_frame_characterization.py tests/unit/tools/test_module_size_budget.py tests/unit/tools/test_check_banned_patterns.py tests/unit/tools/test_announce_gap.py tests/unit/tools/test_network_egress_audit.py tests/unit/tools/test_dialog_button_contract.py tests/unit/ui/test_dialog_hardening_contract.py -q --basetemp=.tmp\pytest-publishing-confirmation</code></li>
+<li>result: <code>109 passed in 32.31s</code></li>
+</ul></li>
+</ul>
+<p>Next read:</p>
+<ul>
+<li>publishing confirmation copy now matches the plan’s required
+target/site/state/link outcome model for create/update</li>
+<li>likely next work is either:
+<ul>
+<li>remaining browse scaling and timeout/partial-result wording</li>
+<li>remote item editor identity/tab-title clarity</li>
+</ul></li>
+</ul>
+<h2 id="section-15">2026-06-12 19:10:42 -04:00</h2>
+<p>Stopping-point sync:</p>
+<ul>
+<li>user requested a clean handoff state, detailed commit, and push</li>
+<li>current branch work is being left in a documented
+planning-and-implementation checkpoint</li>
+<li>latest uncommitted changes in this pass are documentation-only:
+<ul>
+<li>updated publishing plan addendum</li>
+<li>new focused planning note</li>
+<li>corrected audience-language framing</li>
+<li>refreshed readiness memory</li>
+<li>refreshed handoff</li>
+<li>refreshed review log</li>
+</ul></li>
+</ul>
+<p>Branch state being documented at this stop:</p>
+<ul>
+<li>merged <code>main</code> publishing branch remains repaired after
+the upstream menu-split regression</li>
+<li>implemented publishing slices currently include:
+<ul>
+<li>connection storage and verification</li>
+<li>browse/open remote content</li>
+<li>remote update</li>
+<li>create post/page draft</li>
+</ul></li>
+<li>planning artifacts now also capture the next design concerns:
+<ul>
+<li>browse scaling and timeouts</li>
+<li>draft visibility</li>
+<li>stronger publishing confirmation/result UX</li>
+<li>remote-item editor identity</li>
+</ul></li>
+</ul>
+<p>Push intent:</p>
+<ul>
+<li>commit only tracked repo artifacts relevant to this branch
+state</li>
+<li>keep local assistant-guidance files out of git</li>
+</ul>
+<h2 id="section-16">2026-06-12 19:05:06 -04:00</h2>
+<p>Documentation correction:</p>
+<ul>
+<li>user requested that the latest planning write-up not imply Quill is
+being built only for blind users</li>
+<li>corrected the new planning note accordingly</li>
+<li>updated related support docs to keep the wording consistent:
+<ul>
+<li>handoff</li>
+<li>readiness memory</li>
+<li>review log</li>
+</ul></li>
+</ul>
+<p>Corrected framing:</p>
+<ul>
+<li>Quill remains accessibility-first</li>
+<li>the product should provide strong non-visual feedback</li>
+<li>the audience framing should stay broader than a single accessibility
+group</li>
+</ul>
+<h2 id="section-17">2026-06-12 19:00:31 -04:00</h2>
+<p>Research and planning pass:</p>
+<ul>
+<li>user requested a thorough planning-only pass with no coding</li>
+<li>reviewed current official WordPress developer documentation to
+inform provider-neutral publishing planning:
+<ul>
+<li>posts REST API reference</li>
+<li>pages REST API reference</li>
+<li>REST API pagination guidance</li>
+</ul></li>
+</ul>
+<p>Key research findings used in planning:</p>
+<ul>
+<li>WordPress post/page collection endpoints default to
+<code>status=publish</code></li>
+<li>post/page collection endpoints support explicit <code>status</code>
+filtering</li>
+<li>large result sets are expected to be paginated</li>
+<li>WordPress guidance explicitly expects clients to retrieve large
+collections page by page</li>
+</ul>
+<p>Planning outputs completed:</p>
+<ul>
+<li>updated the main publishing planning document with a new addendum
+covering:
+<ul>
+<li>draft visibility</li>
+<li>browse scaling / timeout handling</li>
+<li>confirmation-result UX</li>
+<li>remote-item editor identity</li>
+</ul></li>
+<li>created a separate review note for focused reading:
+<ul>
+<li><code>codex-notes/notes/publishing-browse-confirmation-and-remote-identity-planning-2026-06-12.md</code></li>
+</ul></li>
+</ul>
+<p>Important guardrail preserved:</p>
+<ul>
+<li>research used WordPress because it is the first implemented
+provider</li>
+<li>planning conclusions were written to remain provider-neutral at the
+framework and product-contract level</li>
+</ul>
+<h2 id="section-18">2026-06-12 18:54:42 -04:00</h2>
+<p>Planning-only checkpoint:</p>
+<ul>
+<li>user reported product-behavior concerns after the recent publishing
+work</li>
+<li>requested planning only, not coding</li>
+</ul>
+<p>Observed/product concerns to account for in the plan:</p>
+<ul>
+<li>drafts created through publishing are not visible in the current
+browse-content experience</li>
+<li>browsing both posts and pages together can time out on large
+servers</li>
+<li>create-draft actions do not currently provide a strong enough
+success confirmation for user confidence</li>
+<li>update/publish flows should similarly provide explicit confirmation
+and outcome feedback</li>
+<li>opened remote posts/pages currently do not get a temporary local
+file/title-bar path that reflects the remote item title</li>
+</ul>
+<p>Planning implications recorded from this checkpoint:</p>
+<ul>
+<li>browse-content likely needs a more scalable loading strategy for
+large sites:
+<ul>
+<li>staged loading</li>
+<li>per-kind loading</li>
+<li>better timeout/error messaging</li>
+<li>possibly separate post/page fetches surfaced progressively</li>
+</ul></li>
+<li>draft visibility needs to be reviewed as part of the browse
+contract, not treated as a side issue</li>
+<li>publishing actions need a clearer confirmation/result UX across:
+<ul>
+<li>create draft</li>
+<li>update remote content</li>
+<li>later publish/promote flows</li>
+</ul></li>
+<li>title-bar/document identity for opened publishing items should be
+reviewed so the open tab better reflects the remote content title</li>
+</ul>
+<h2 id="section-19">2026-06-12 18:45:31 -04:00</h2>
+<p>Post-fix assessment:</p>
+<ul>
+<li>user asked whether the startup regression was caused by merging
+<code>main</code> into the publishing branch</li>
+<li>answer: yes</li>
+<li>the failure source was the upstream/main menu-split integration
+state carried into the branch merge:
+<ul>
+<li><code>MenuBuilderMixin</code> called
+<code>_append_power_tools_file_create_items(...)</code></li>
+<li><code>PowerToolsMenuMixin</code> did not define that helper</li>
+<li>startup failed during menu construction</li>
+</ul></li>
+<li>this was a merge-quality miss, not a publishing-feature
+regression</li>
+</ul>
+<p>Process correction going forward:</p>
+<ul>
+<li>post-merge work needs an immediate launch/smoke pass, not only
+feature-slice tests</li>
+<li>upstream mixin/menu refactors need explicit contract checks:
+<ul>
+<li>builder call sites</li>
+<li>helper definitions</li>
+<li>startup-critical menu bindings</li>
+</ul></li>
+<li>the new regression test added in this fix is intended to keep this
+exact merge failure from recurring</li>
+</ul>
+<h2 id="section-20">2026-06-12 18:42:20 -04:00</h2>
+<p>Startup regression fix:</p>
+<ul>
+<li>fixed the reported launch crash:
+<ul>
+<li><code>AttributeError: 'MainFrame' object has no attribute '_append_power_tools_file_create_items'</code></li>
+</ul></li>
+</ul>
+<p>Root cause:</p>
+<ul>
+<li>this was not caused by the post-merge publishing changes</li>
+<li>it was an upstream/main integration gap from the split menu/mixin
+refactor</li>
+<li><code>MenuBuilderMixin._build_menu()</code> called
+<code>_append_power_tools_file_create_items(...)</code></li>
+<li><code>PowerToolsMenuMixin</code> did not define that helper, so
+startup failed during menu construction</li>
+</ul>
+<p>Resolution:</p>
+<ul>
+<li>added the missing
+<code>_append_power_tools_file_create_items(...)</code> helper to
+<code>PowerToolsMenuMixin</code></li>
+<li>kept behavior aligned with the merged menu intent:
+<ul>
+<li><code>New Document from Clipboard</code> remains placed near
+<code>File &gt; New</code></li>
+</ul></li>
+<li>added a regression test that verifies the menu builder does not call
+any missing power-tools helper</li>
+</ul>
+<p>Validation:</p>
+<ul>
+<li>reran the targeted startup-regression plus publishing-owned
+slice</li>
+<li>result: <code>40 passed in 1.85s</code></li>
+<li>verification set:
+<ul>
+<li><code>tests/unit/ui/test_main_frame_menu_contract.py</code></li>
+<li><code>tests/unit/core/test_publishing_browse.py</code></li>
+<li><code>tests/unit/core/test_publishing_framework.py</code></li>
+<li><code>tests/unit/ui/test_main_frame.py</code></li>
+<li><code>tests/unit/ui/test_publishing_connection_dialog_a11y.py</code></li>
+</ul></li>
+</ul>
+<h2 id="section-21">2026-06-12 18:39:17 -04:00</h2>
+<p>Startup regression investigation:</p>
+<ul>
+<li>user reported an immediate startup crash after the upstream merge
+and later publishing work</li>
+<li>traceback pointed to:
+<ul>
+<li><code>quill/ui/main_frame_menu.py</code></li>
+<li>missing
+<code>MainFrame._append_power_tools_file_create_items</code></li>
+</ul></li>
+<li>investigation result:
+<ul>
+<li>this is not caused by the publishing slice added after the
+merge</li>
+<li>this is an upstream/main integration bug in the split menu/mixin
+path</li>
+<li><code>MenuBuilderMixin._build_menu()</code> now calls
+<code>_append_power_tools_file_create_items(...)</code></li>
+<li><code>PowerToolsMenuMixin</code> does not define that helper, so
+startup fails before the app can finish constructing</li>
+</ul></li>
+<li>remediation plan:
+<ul>
+<li>add the missing mixin helper</li>
+<li>add a regression test so the menu builder cannot reference a missing
+helper again</li>
+</ul></li>
+</ul>
+<h2 id="section-22">2026-06-12 18:31:56 -04:00</h2>
+<p>Implementation result:</p>
+<ul>
+<li>completed the first local-to-remote publish slice after
+remote-update support</li>
+<li>added:
+<ul>
+<li><code>publishing.create_draft</code></li>
+<li><code>publishing.create_page_draft</code></li>
+</ul></li>
+<li>both actions are command-registered so they remain
+command-palette-visible, not menu-only</li>
+</ul>
+<p>Behavior added in this pass:</p>
+<ul>
+<li>Quill can now create a remote WordPress post draft from the current
+document</li>
+<li>Quill can now create a remote WordPress page draft from the current
+document</li>
+<li>both actions live under <code>File &gt; Publish</code></li>
+<li>both actions stay review-first with an explicit confirmation before
+network write-back</li>
+<li>successful create flows now attach publishing-remote linkage
+metadata to the current document so later remote-update actions can
+operate on the created item</li>
+<li>outbound content respects the same authoring-surface rule already
+used by remote update:
+<ul>
+<li>Markdown-authored documents render to HTML body content on send</li>
+<li>explicitly HTML-authored documents send raw HTML unchanged</li>
+</ul></li>
+</ul>
+<p>PRD / governance alignment check:</p>
+<ul>
+<li>commands are still real <code>publishing.*</code> commands,
+preserving command palette discoverability</li>
+<li>no new custom dialog surface was added in this slice</li>
+<li>the flow stays inside standard confirmation/message-box patterns,
+reducing dialog-governance burden</li>
+<li>plain-language command labels and status copy were preserved</li>
+</ul>
+<p>Validation:</p>
+<ul>
+<li>reran the publishing-owned slice with the new create-draft
+coverage</li>
+<li>result: <code>39 passed in 1.94s</code></li>
+<li>verification set:
+<ul>
+<li><code>tests/unit/core/test_publishing_browse.py</code></li>
+<li><code>tests/unit/core/test_publishing_framework.py</code></li>
+<li><code>tests/unit/ui/test_main_frame.py</code></li>
+<li><code>tests/unit/ui/test_main_frame_menu_contract.py</code></li>
+<li><code>tests/unit/ui/test_publishing_connection_dialog_a11y.py</code></li>
+</ul></li>
+</ul>
+<h2 id="section-23">2026-06-12 18:25:56 -04:00</h2>
+<p>Implementation start:</p>
+<ul>
+<li>resumed the next publishing slice after remote-update support</li>
+<li>selected the first local-to-remote publish path as the next
+implementation target</li>
+<li>scope chosen for this pass:
+<ul>
+<li><code>publishing.create_draft</code></li>
+<li><code>publishing.create_page_draft</code></li>
+</ul></li>
+<li>current implementation intent:
+<ul>
+<li>keep these as real commands so they stay
+command-palette-visible</li>
+<li>keep them under <code>File &gt; Publish</code></li>
+<li>avoid a new custom dialog if the existing review/confirmation
+pattern is enough</li>
+<li>preserve PRD rules:
+<ul>
+<li>explicit review-first network action</li>
+<li>plain-language status and command names</li>
+<li>accessibility-safe standard controls</li>
+<li>minimal dialog-governance expansion</li>
+</ul></li>
+</ul></li>
+</ul>
+<h2 id="section-24">2026-06-12 18:19:18 -04:00</h2>
+<p>Planning checkpoint:</p>
+<ul>
+<li>user asked what comes next in the approved publishing flow after
+remote update support</li>
+<li>user also asked to keep checking:
+<ul>
+<li>command palette coverage</li>
+<li>PRD alignment</li>
+<li>accessibility requirements</li>
+<li>dialog-governance requirements</li>
+</ul></li>
+<li>current read:
+<ul>
+<li>the new <code>publishing.update_remote_item</code> action is
+command-registered, so it is on the same command-path surface as the
+rest of Quill command palette actions</li>
+<li>next likely product slice is the first explicit create/publish path
+for local documents rather than more remote-open/update refinement</li>
+</ul></li>
+<li>planning intent for the next implementation recommendation:
+<ul>
+<li>keep adding publishing actions as real commands, not menu-only
+actions</li>
+<li>avoid unnecessary new dialogs</li>
+<li>preserve review-first network consent and plain-language
+accessibility copy</li>
+</ul></li>
+</ul>
+<h2 id="section-25">2026-06-12 18:15:44 -04:00</h2>
+<p>Implementation result:</p>
+<ul>
+<li>completed the planned <code>Update Remote Content...</code> slice
+for publishing-remote tabs</li>
+<li>added provider write-back plumbing for remote publishing
+updates</li>
+<li>added the
+<code>File &gt; Publish &gt; Update Remote Content...</code> entry and
+command wiring</li>
+</ul>
+<p>Behavior added in this pass:</p>
+<ul>
+<li>Quill now updates an opened publishing-remote post/page back to the
+provider when the user explicitly chooses
+<code>Update Remote Content...</code></li>
+<li>the action only proceeds for tabs opened from publishing remote
+content</li>
+<li>the action checks that the current publishing connection still
+matches the opened remote item</li>
+<li>the action stays review-first with a confirmation summary before
+network write-back</li>
+<li>outbound content respects the saved authoring surface:
+<ul>
+<li>Markdown-authored publishing tabs are rendered to HTML body content
+on send</li>
+<li>explicitly HTML-authored publishing tabs are sent as raw HTML
+unchanged</li>
+</ul></li>
+<li>successful update responses refresh saved remote metadata on the
+current document:
+<ul>
+<li>remote URL</li>
+<li>publishing status</li>
+<li>publishing updated-at timestamp</li>
+</ul></li>
+</ul>
+<p>Validation:</p>
+<ul>
+<li>reran the publishing-owned update slice with workspace-local temp
+dirs</li>
+<li>result: <code>36 passed in 1.58s</code></li>
+<li>verification set:
+<ul>
+<li><code>tests/unit/core/test_publishing_browse.py</code></li>
+<li><code>tests/unit/core/test_publishing_framework.py</code></li>
+<li><code>tests/unit/ui/test_main_frame.py</code></li>
+<li><code>tests/unit/ui/test_main_frame_menu_contract.py</code></li>
+<li><code>tests/unit/ui/test_publishing_connection_dialog_a11y.py</code></li>
+</ul></li>
+</ul>
+<p>Notes:</p>
+<ul>
+<li>an earlier broader scoped rerun hit unrelated <code>tmp_path</code>
+setup issues before the workspace-local <code>.tmp/pytest</code> base
+existed</li>
+<li>no additional upstream/main failures were introduced by this
+publishing slice</li>
+</ul>
+<h2 id="section-26">2026-06-12 18:01:00 -04:00</h2>
+<p>Implementation start:</p>
+<ul>
+<li>resumed the next planned publishing slice:
+<code>Update Remote Content...</code></li>
+<li>re-read the active publishing plan, current handoff, and current
+review log before coding</li>
+<li>confirmed the branch already preserves remote-open metadata needed
+for update work:
+<ul>
+<li><code>source_kind</code></li>
+<li><code>publishing_authoring_surface</code></li>
+<li><code>publishing_open_representation</code></li>
+<li>provider/site/remote-id/content-kind/status metadata</li>
+</ul></li>
+<li>confirmed the current code gap is exactly the expected one:
+<ul>
+<li>browse/open exists</li>
+<li>remote update command id exists in feature mapping</li>
+<li>no remote write-back API, menu item, or UI handler exists yet</li>
+</ul></li>
+<li>implementation intent for this pass:
+<ul>
+<li>add provider-aware remote update support</li>
+<li>convert Markdown-authored publishing tabs to HTML body content on
+send</li>
+<li>send explicitly HTML-authored publishing tabs as raw HTML
+unchanged</li>
+<li>keep the action explicit and review-first inside
+<code>File &gt; Publish</code></li>
+</ul></li>
+</ul>
+<h2 id="section-27">2026-06-12 17:43:01 -04:00</h2>
+<p>Planning checkpoint:</p>
+<ul>
+<li>user asked whether the branch is ready to carry on after the latest
+upstream merge/sync work</li>
+<li>answer: yes</li>
+<li>branch is in a good place for new coding work again</li>
+<li>focused publishing integration remains green against current
+<code>main</code></li>
+</ul>
+<p>Next planned implementation slice:</p>
+<ul>
+<li><code>Update Remote Content...</code></li>
+<li>use stored publishing metadata from an opened remote publishing
+tab</li>
+<li>decide update behavior from the saved authoring surface:
+<ul>
+<li>Markdown-authored remote tabs convert to HTML on send</li>
+<li>explicitly HTML-authored remote tabs send raw HTML unchanged</li>
+</ul></li>
+<li>keep the flow explicit and review-first, consistent with the
+approved publishing plan</li>
+</ul>
+<h2 id="section-28">2026-06-12 17:30:59 -04:00</h2>
+<p>Workspace-noise cleanup:</p>
+<ul>
+<li>removed the leftover local temp/cache directories with elevated
+permissions:
+<ul>
+<li><code>.tmp/</code></li>
+<li><code>.pytest_cache/</code></li>
+<li><code>codegit-srcquill.pytest_cache/</code></li>
+</ul></li>
+<li>rechecked branch state after the cleanup</li>
+<li>no product-code changes were made in this pass</li>
+<li>this leaves the tracked tree focused on the documentation correction
+only</li>
+</ul>
+<p>Final intent from this checkpoint:</p>
+<ul>
+<li>refresh handoff/readiness docs so they match the correction and
+cleanup</li>
+<li>commit the documentation cleanup</li>
+<li>push so the remote branch ends in a clean, fully documented
+state</li>
+</ul>
+<h2 id="section-29">2026-06-12 17:29:07 -04:00</h2>
+<p>Guidance-file correction:</p>
+<ul>
+<li>corrected a repo-local guidance mistake</li>
+<li>removed the untracked repo <code>AGENTS.md</code> file that should
+not have been introduced here</li>
+<li>reverted the repo-local <code>CLAUDE.md</code>
+accessibility-guidance addition</li>
+<li>this correction keeps repository support files focused on project
+artifacts rather than assistant-environment overrides</li>
+</ul>
+<h2 id="section-30">2026-06-12 17:27:38 -04:00</h2>
+<p>Main resync + publishing integration audit:</p>
+<ul>
+<li>reviewed current handoff, review log, readiness memory, and
+publishing plan before syncing</li>
+<li>fetched current <code>origin/main</code> and found local
+<code>main</code> was behind by 29 commits</li>
+<li>fast-forwarded local <code>main</code> to <code>97d04f6</code></li>
+<li>pushed synced <code>main</code> to <code>fork/main</code></li>
+<li>merged updated <code>main</code> into
+<code>features/publishing-providers-framework</code></li>
+</ul>
+<p>High-impact upstream themes pulled in:</p>
+<ul>
+<li>developer console / QDC work</li>
+<li>GitHub remote file access under
+<code>File &gt; Open from Remote</code></li>
+<li>autoupdate and release/deployment infrastructure</li>
+<li>new help, translation, setup-wizard, copy-tray, abbreviation, and
+prompt-library surfaces</li>
+<li>expanded dialog inventory, menu linting, and accessibility
+gates</li>
+</ul>
+<p>Publishing integration review:</p>
+<ul>
+<li>preserved publishing command mappings alongside new
+developer-console mappings</li>
+<li>preserved <code>File &gt; Publish</code> submenu while keeping newer
+<code>File &gt; Open from Remote</code> GitHub items from
+<code>main</code></li>
+<li>regenerated:
+<ul>
+<li><code>tests/unit/ui/fixtures/dialog_inventory.json</code></li>
+<li><code>tests/unit/ui/fixtures/main_frame_public_surface.json</code></li>
+</ul></li>
+<li>updated <code>quill/tools/module_size_budgets.json</code> to reflect
+the merged branch truth, including explicit tracking for
+<code>quill/ui/publishing_tools.py</code></li>
+<li>current PRD/menu read stays coherent:
+<ul>
+<li>GitHub Remote belongs under
+<code>File &gt; Open from Remote</code></li>
+<li>publishing still fits cleanly as its own
+<code>File &gt; Publish</code> workflow</li>
+</ul></li>
+</ul>
+<p>Validation result:</p>
+<ul>
+<li>reran publishing-owned plus merge-sensitive validation slice against
+the new upstream baseline</li>
+<li>result: <code>129 passed in 19.12s</code></li>
+</ul>
+<p>Validation slice:</p>
+<ul>
+<li><code>tests/unit/core/test_publishing.py</code></li>
+<li><code>tests/unit/core/test_publishing_browse.py</code></li>
+<li><code>tests/unit/core/test_publishing_framework.py</code></li>
+<li><code>tests/unit/core/test_features.py</code></li>
+<li><code>tests/unit/core/test_remote_sites.py</code></li>
+<li><code>tests/unit/ui/test_main_frame.py</code></li>
+<li><code>tests/unit/ui/test_publishing_connection_dialog_a11y.py</code></li>
+<li><code>tests/unit/ui/test_remote_sites_dialog.py</code></li>
+<li><code>tests/unit/ui/test_main_frame_characterization.py</code></li>
+<li><code>tests/unit/ui/test_main_frame_menu_contract.py</code></li>
+<li><code>tests/unit/ui/test_dialog_inventory.py</code></li>
+<li><code>tests/performance/test_budgets.py</code></li>
+<li><code>tests/unit/ui/test_main_frame_share_dialogs.py</code></li>
+<li><code>tests/unit/ui/test_power_tools_command_wiring.py</code></li>
+<li><code>tests/unit/ui/test_status_bar_layout_contract.py</code></li>
+<li><code>tests/unit/tools/test_menu_lint.py</code></li>
+<li><code>tests/unit/tools/test_check_banned_patterns.py</code></li>
+</ul>
+<h2 id="section-31">2026-06-10 23:09:01 -04:00</h2>
+<p>Final documentation sync:</p>
+<ul>
+<li>user requested one last pass so nothing is left to do after
+push</li>
+<li>reviewed the moved log, handoff, and memory files together</li>
+<li>refreshed final branch-state documentation in:
+<ul>
+<li><code>codex-notes/logs/codex-review-log.md</code></li>
+<li><code>codex-notes/handoff/codex-handoff.md</code></li>
+<li><code>codex-notes/memory/publishing-providers-framework-readiness.md</code></li>
+</ul></li>
+</ul>
+<p>Current branch state:</p>
+<ul>
+<li>latest pushed branch tip before this doc sync was
+<code>1b65db4</code></li>
+<li>branch already contained:
+<ul>
+<li>merge of current <code>origin/main</code></li>
+<li>green maintained publishing/merge-sensitive test slice
+(<code>87 passed</code>)</li>
+<li>centralized <code>codex-notes/</code> layout</li>
+</ul></li>
+<li>purpose of this checkpoint is to leave the remote with fully aligned
+support docs, not to change product behavior</li>
+</ul>
+<p>Next action from this checkpoint:</p>
+<ul>
+<li>commit these final documentation updates</li>
+<li>push so remote branch tip and local documentation state match
+exactly</li>
+</ul>
+<h2 id="section-32">2026-06-10 23:06:36 -04:00</h2>
+<p>Clean-and-push checkpoint:</p>
+<ul>
+<li>user deleted the now-empty old folder after the Codex-notes
+reorganization</li>
+<li>checked tracked git state before committing</li>
+<li>tracked branch state was already clean, so the folder removal did
+not leave additional staged or unstaged tracked changes</li>
+<li>recording this checkpoint so the log reflects the final cleanup and
+push request</li>
+</ul>
+<p>Next action from this checkpoint:</p>
+<ul>
+<li>commit this log update</li>
+<li>push the branch so the remote tip matches the clean local state</li>
+</ul>
+<h2 id="section-33">2026-06-10 23:03:19 -04:00</h2>
+<p>Codex-notes reorganization:</p>
+<ul>
+<li>committed the current merge-readiness assessment state first</li>
+<li>created a central <code>codex-notes/</code> folder to reduce
+root-folder clutter</li>
+<li>moved tracked Codex artifacts into:
+<ul>
+<li><code>codex-notes/handoff/</code></li>
+<li><code>codex-notes/logs/</code></li>
+<li><code>codex-notes/memory/</code></li>
+<li><code>codex-notes/notes/</code></li>
+<li><code>codex-notes/plans/</code></li>
+</ul></li>
+<li>added <code>codex-notes/README.md</code> so the new layout is
+self-explanatory</li>
+</ul>
+<p>Files moved in this pass:</p>
+<ul>
+<li><code>codex-handoff.md</code> -&gt;
+<code>codex-notes/handoff/codex-handoff.md</code></li>
+<li><code>codex-review-log.md</code> -&gt;
+<code>codex-notes/logs/codex-review-log.md</code></li>
+<li><code>codex-memory/publishing-providers-framework-readiness.md</code>
+-&gt;
+<code>codex-notes/memory/publishing-providers-framework-readiness.md</code></li>
+<li><code>codex-plans/publishing-providers-framework.md</code> -&gt;
+<code>codex-notes/plans/publishing-providers-framework.md</code></li>
+<li><code>main-branch-audit-note-2026-06-10.md</code> -&gt;
+<code>codex-notes/notes/main-branch-audit-note-2026-06-10.md</code></li>
+<li><code>publishing-main-merge-readiness-note-2026-06-10.md</code>
+-&gt;
+<code>codex-notes/notes/publishing-main-merge-readiness-note-2026-06-10.md</code></li>
+<li><code>publishing-remote-integration-planning-2026-06-10.md</code>
+-&gt;
+<code>codex-notes/notes/publishing-remote-integration-planning-2026-06-10.md</code></li>
+</ul>
+<p>Current result:</p>
+<ul>
+<li>root is cleaner</li>
+<li>Codex planning/history artifacts now live under one obvious
+top-level folder</li>
+<li>no additional production-code changes were made in this cleanup
+pass</li>
+</ul>
+<h2 id="section-34">2026-06-10 22:56:23 -04:00</h2>
+<p>Repo-organization request:</p>
+<ul>
+<li>user asked for a two-step cleanup:
+<ul>
+<li>first commit the current readiness-assessment note/log state</li>
+<li>then move planning, logs, handoff docs, notes, and Codex
+memory/planning artifacts into a central folder</li>
+</ul></li>
+<li>intent is repo tidiness: root is getting crowded</li>
+<li>next actions from this checkpoint:
+<ul>
+<li>commit current markdown state as-is</li>
+<li>create a central Codex-notes location</li>
+<li>move tracked note artifacts there</li>
+<li>update references and log the reorganization in detail</li>
+</ul></li>
+</ul>
+<h2 id="section-35">2026-06-10 22:48:16 -04:00</h2>
+<p>Merge-readiness assessment:</p>
+<ul>
+<li>reviewed branch history against current
+<code>origin/main</code></li>
+<li>checked recent upstream direction before making a
+recommendation</li>
+<li>created a dedicated note:
+<ul>
+<li><code>publishing-main-merge-readiness-note-2026-06-10.md</code></li>
+</ul></li>
+</ul>
+<p>Current recommendation:</p>
+<ul>
+<li>do not rush this branch straight into <code>main</code> yet</li>
+<li>branch looks ready for draft PR / review visibility</li>
+<li>branch does not yet look ideal for direct merge because:
+<ul>
+<li>publishing lifecycle work is still incomplete
+(<code>Update Remote Content...</code> is still pending)</li>
+<li><code>main</code> is in active adjacent UI churn from
+notebook/menu/Node runtime work</li>
+<li>the branch currently carries planning/log/handoff artifacts in
+addition to production code</li>
+</ul></li>
+</ul>
+<p>Summary judgment:</p>
+<ul>
+<li>ready for review: yes</li>
+<li>ready for draft PR: yes</li>
+<li>ready for direct merge to <code>main</code> as-is: no</li>
+</ul>
+<h2 id="section-36">2026-06-10 22:27:23 -04:00</h2>
+<p>Merge-and-audit checkpoint:</p>
+<ul>
+<li>reviewed <code>codex-handoff.md</code> and
+<code>codex-review-log.md</code> first, then merged current
+<code>origin/main</code> into
+<code>features/publishing-providers-framework</code></li>
+<li>preserved branch publishing work while integrating newer upstream
+notebook/menu/dialog-budget changes</li>
+<li>resolved merge conflicts in:
+<ul>
+<li><code>quill/ui/main_frame_menu.py</code></li>
+<li><code>quill/tools/module_size_budgets.json</code></li>
+<li><code>tests/unit/ui/fixtures/dialog_inventory.json</code></li>
+</ul></li>
+<li>updated
+<code>tests/unit/ui/fixtures/main_frame_public_surface.json</code> to
+include notebook public methods introduced by merged
+<code>main</code></li>
+<li>corrected the first local test attempt after it hit sandbox
+temp-directory permission failures; reran the same branch-owned slice
+with workspace-local <code>TEMP</code>/<code>TMP</code> and cache
+paths</li>
+</ul>
+<p>Validation result:</p>
+<ul>
+<li>maintained branch-owned publishing plus merge-sensitive verification
+slice is green again</li>
+<li>exact slice rerun:
+<ul>
+<li><code>tests/unit/core/test_publishing.py</code></li>
+<li><code>tests/unit/core/test_publishing_browse.py</code></li>
+<li><code>tests/unit/core/test_publishing_framework.py</code></li>
+<li><code>tests/unit/core/test_features.py</code></li>
+<li><code>tests/unit/core/test_remote_sites.py</code></li>
+<li><code>tests/unit/ui/test_main_frame.py</code></li>
+<li><code>tests/unit/ui/test_publishing_connection_dialog_a11y.py</code></li>
+<li><code>tests/unit/ui/test_remote_sites_dialog.py</code></li>
+<li><code>tests/unit/ui/test_main_frame_characterization.py</code></li>
+<li><code>tests/unit/ui/test_main_frame_menu_contract.py</code></li>
+<li><code>tests/unit/ui/test_dialog_inventory.py</code></li>
+<li><code>tests/performance/test_budgets.py</code></li>
+</ul></li>
+<li>result: <code>87 passed in 9.85s</code></li>
+</ul>
+<p>Current recommendation:</p>
+<ul>
+<li>branch is ready for new coding work again</li>
+<li>next implementation slice still looks like
+<code>Update Remote Content...</code></li>
+<li>shape that slice around the now-merged authoring-surface truth:
+<ul>
+<li>keep <code>Readable Markdown</code> as the default open path</li>
+<li>preserve explicit <code>Raw HTML</code> overrides</li>
+<li>use stored remote metadata to decide whether update/publish should
+convert Markdown to HTML or send raw HTML unchanged</li>
+</ul></li>
+</ul>
+<h2 id="section-37">2026-06-10 17:40:40 -04:00</h2>
+<p>Stopping-point checkpoint:</p>
+<ul>
+<li>branch is at a clean stopping point</li>
+<li>latest implementation work for remote-open publishing representation
+is already committed and pushed</li>
+<li>planning notes for possible future publishing/remote-site alignment
+are also preserved in-repo</li>
+<li>no outstanding tracked workspace changes remained before this
+doc-only wrap-up update</li>
+<li>intended next coding slice when work resumes:
+<ul>
+<li>explicit <code>Update Remote Content...</code> flow</li>
+<li>use stored publishing metadata and authoring-surface truth for
+send-time conversion decisions</li>
+</ul></li>
+</ul>
+<h2 id="section-38">2026-06-10 17:36:42 -04:00</h2>
+<p>Commit clarification:</p>
+<ul>
+<li>user asked to proceed with the detailed commit</li>
+<li>that commit had already been created immediately before this
+message</li>
+<li>current detailed checkpoint commit is:
+<ul>
+<li><code>00d0683</code>
+<code>feat(publishing): default remote opens to readable markdown</code></li>
+</ul></li>
+<li>next actionable git step, if wanted, is push</li>
+</ul>
+<h2 id="section-39">2026-06-10 17:31:23 -04:00</h2>
+<p>Repo-portability checkpoint:</p>
+<ul>
+<li>user asked that the planning/log/handoff documents be committed into
+the repo instead of staying local-only</li>
+<li>reason: preserve branch context across machines and avoid losing
+working notes if the current environment fails</li>
+<li>next action from this checkpoint is a full detailed commit
+including:
+<ul>
+<li>current publishing representation-slice code</li>
+<li>updated plan/readiness documents</li>
+<li>previously untracked Codex handoff/log/planning notes</li>
+</ul></li>
+</ul>
+<h2 id="section-40">2026-06-10 17:24:40 -04:00</h2>
+<p>Planning-only checkpoint:</p>
+<ul>
+<li>user asked whether the newer remote-site stack from current
+<code>main</code> (FTP/SFTP/WebDAV/S3 and related open/save remote
+flows) should absorb part of the publishing framework for better
+synchronization</li>
+<li>reviewed current remote-site code, publishing code, and the active
+publishing plan</li>
+<li>created a separate planning note:
+<ul>
+<li><code>publishing-remote-integration-planning-2026-06-10.md</code></li>
+</ul></li>
+</ul>
+<p>Current planning judgment:</p>
+<ul>
+<li>some future consolidation is worthwhile at the saved-profile /
+credential / trust / remote-destination infrastructure layer</li>
+<li>publishing should still remain separate from generic remote file
+transfer at the content-workflow layer</li>
+<li>recommendation is phased alignment, not a direct merge of the two
+product flows</li>
+<li>no code changes requested or planned from this checkpoint</li>
+</ul>
+<h2 id="section-41">2026-06-10 17:13:23 -04:00</h2>
+<p>Implementation slice completed:</p>
+<ul>
+<li>started and completed the planned remote-open representation work
+for publishing content</li>
+<li>added a core representation-prep helper in
+<code>quill/core/publishing.py</code></li>
+<li>browse/open now defaults remote publishing content to
+<code>Readable Markdown</code></li>
+<li>browse/open now allows a per-open <code>Raw HTML</code> override in
+<code>quill/ui/publishing_tools.py</code></li>
+<li>added conservative automatic fallback to raw HTML for obviously
+HTML-structured content such as tables</li>
+<li><code>quill/ui/main_frame.py</code> now records the chosen authoring
+surface and open representation from the prepared content instead of
+hard-coding HTML metadata</li>
+<li>expanded focused publishing coverage in:
+<ul>
+<li><code>tests/unit/core/test_publishing_browse.py</code></li>
+<li><code>tests/unit/ui/test_main_frame.py</code></li>
+<li><code>tests/unit/ui/test_publishing_connection_dialog_a11y.py</code></li>
+</ul></li>
+</ul>
+<p>Validation result:</p>
+<ul>
+<li>maintained publishing-focused slice passed cleanly after the
+change</li>
+<li>result: 87 passed in 9.96s</li>
+</ul>
+<p>What this means for next work:</p>
+<ul>
+<li>the earlier representation-choice gap is no longer the next planned
+task</li>
+<li>the next likely slice is the first explicit
+<code>Update Remote Content...</code> flow using the stored publishing
+metadata and the new Markdown-vs-HTML authoring-surface truth</li>
+</ul>
+<h2 id="section-42">2026-06-10 17:05:14 -04:00</h2>
+<p>Logging workflow note:</p>
+<ul>
+<li>user wants all chat output reflected in this file going forward</li>
+<li>includes coding updates, planning notes, checkpoint reminders, and
+light conversational/project guidance that affects the work</li>
+<li>newest entries stay at the top</li>
+</ul>
+<h2 id="section-43">2026-06-10 17:03:51 -04:00</h2>
+<p>Checkpoint / next-slice reminder:</p>
+<ul>
+<li>branch-owned publishing verification is in a good state to resume
+coding</li>
+<li>next planned implementation slice remains remote-open representation
+handling for publishing content</li>
+<li>current behavior still opens publishing remotes as raw HTML</li>
+<li>next code step is:
+<ul>
+<li>default open as <code>Readable Markdown</code></li>
+<li>allow per-open <code>Raw HTML</code> override</li>
+<li>preserve explicit representation metadata for later save/update flow
+work</li>
+</ul></li>
+<li>user asked that reminder responses like this be logged going
+forward</li>
+</ul>
+<h2 id="section-44">2026-06-10 16:19:03 -04:00</h2>
+<p>Follow-up note handling:</p>
+<ul>
+<li>created a separate maintainer-facing audit note at
+<code>main-branch-audit-note-2026-06-10.md</code></li>
+<li>preserved the earlier full-suite findings there so they can be
+handed to <code>main</code> maintainers without carrying unrelated fixes
+on this branch</li>
+<li>kept this branch itself scoped to the publishing slice after the
+revert/correction pass</li>
+</ul>
+<h2 id="section-45">2026-06-10 16:15:07 -04:00</h2>
+<p>Correction to the prior audit pass:</p>
+<ul>
+<li>reverted the audit-only test/code tightening I added after
+mistakenly running the full upstream suite</li>
+<li>removed that out-of-scope audit work from the tracked tree so this
+branch is back to validating only the feature-owned publishing
+slice</li>
+<li>kept the local notes and corrected the review approach rather than
+carrying unrelated upstream-suite changes forward</li>
+</ul>
+<p>What I validated instead:</p>
+<ul>
+<li>reran only the branch-owned publishing/integration slice we have
+been maintaining:
+<ul>
+<li><code>tests/unit/ui/test_main_frame_characterization.py</code></li>
+<li><code>tests/unit/ui/test_dialog_inventory.py</code></li>
+<li><code>tests/unit/ui/test_main_frame_menu_contract.py</code></li>
+<li><code>tests/performance/test_budgets.py</code></li>
+<li><code>tests/unit/core/test_publishing.py</code></li>
+<li><code>tests/unit/core/test_publishing_browse.py</code></li>
+<li><code>tests/unit/core/test_publishing_framework.py</code></li>
+<li><code>tests/unit/core/test_features.py</code></li>
+<li><code>tests/unit/ui/test_publishing_connection_dialog_a11y.py</code></li>
+<li><code>tests/unit/ui/test_main_frame.py</code></li>
+<li><code>tests/unit/core/test_remote_sites.py</code></li>
+<li><code>tests/unit/ui/test_remote_sites_dialog.py</code></li>
+</ul></li>
+</ul>
+<p>Result:</p>
+<ul>
+<li>scoped publishing slice passed cleanly: 84 passed in 9.75s</li>
+<li>working tree is back to the expected tracked state for code, with
+only local note files remaining untracked</li>
+</ul>
+<h2 id="section-46">2026-06-10 15:57:07 -04:00</h2>
+<p>What I changed in this audit/tightening pass:</p>
+<ul>
+<li>ran a full-suite <code>pytest -q</code> audit after the
+<code>main</code> merge work</li>
+<li>traced the first failure wave to stale tests that still pointed
+<code>QUILL_DATA_DIR</code> at temp paths outside the dev-build home
+constraint introduced on current <code>main</code></li>
+<li>added a shared <code>home_data_dir</code> fixture in
+<code>tests/conftest.py</code> that:
+<ul>
+<li>creates a fake home-scoped data directory</li>
+<li>sets <code>HOME</code> and <code>USERPROFILE</code></li>
+<li>patches <code>Path.home()</code></li>
+<li>keeps <code>QUILL_DATA_DIR</code> inside the allowed dev override
+boundary</li>
+</ul></li>
+<li>updated the remaining stale persistence/config tests to use the
+home-scoped fixture:
+<ul>
+<li><code>tests/integration/test_document_workflows.py</code></li>
+<li><code>tests/unit/core/ai/test_ai_sessions.py</code></li>
+<li><code>tests/unit/core/test_recent.py</code></li>
+<li><code>tests/unit/core/test_recovery.py</code></li>
+<li><code>tests/unit/core/test_ipc.py</code></li>
+<li><code>tests/unit/core/test_keymap.py</code></li>
+<li><code>tests/unit/core/test_menu_customization.py</code></li>
+</ul></li>
+<li>tightened the full-suite security/perf audit tests:
+<ul>
+<li><code>tests/unit/core/test_net_tls.py</code> now AST-parses only
+files that mention TLS attributes under review</li>
+<li><code>quill/core/thesaurus.py</code> now cleans each synonym once
+instead of twice during parse</li>
+</ul></li>
+</ul>
+<p>Validation results from this pass:</p>
+<ul>
+<li>stale-failure slice re-run passed: 11 passed</li>
+<li>IPC/keymap/menu persistence slice re-run passed: 11 passed</li>
+<li>TLS audit file re-run passed: 5 passed</li>
+<li>thesaurus reset-cache timeout repro re-run passed in isolation: 1
+passed</li>
+</ul>
+<p>Full-suite status:</p>
+<ul>
+<li>full <code>pytest -q</code> no longer fails on the earlier
+storage-path regressions</li>
+<li>the suite now advances much further, but it still does not complete
+green in one uninterrupted run in this environment</li>
+<li>latest blocking point is a performance timeout during
+<code>tests/unit/core/test_reset_caches.py::test_thesaurus_preload_after_reset_is_idempotent</code></li>
+<li>that test passes in isolation, so the remaining issue is currently a
+suite-run timeout/perf characteristic rather than a confirmed functional
+regression</li>
+</ul>
+<p>Planning/audit conclusion:</p>
+<ul>
+<li>publishing branch behavior still aligns with the post-merge plan
+after these fixes</li>
+<li>no new publishing-architecture mismatch was found in this audit
+pass</li>
+<li>if we get the full suite consistently green, the next recommended
+coding slice is still the planned remote-open representation work:
+<ul>
+<li>default remote publishing opens to
+<code>Readable Markdown</code></li>
+<li>allow explicit <code>Raw HTML</code> override</li>
+<li>preserve representation/authoring metadata for later update
+flow</li>
+</ul></li>
+</ul>
+<h2 id="section-47">2026-06-10</h2>
+<p>What I changed in this main-resync and merge pass:</p>
+<ul>
+<li>reviewed <code>codex-review-log.md</code> and
+<code>codex-handoff.md</code></li>
+<li>confirmed local <code>main</code> was behind
+<code>origin/main</code> by 4 commits</li>
+<li>stashed local branch work so the resync and merge could happen
+safely</li>
+<li>fast-forwarded local <code>main</code> to
+<code>origin/main</code></li>
+<li>pushed updated <code>main</code> to <code>fork/main</code></li>
+<li>merged updated <code>main</code> into
+<code>features/publishing-providers-framework</code></li>
+<li>resolved merge conflicts in:
+<ul>
+<li><code>quill/tools/module_size_budgets.json</code></li>
+<li><code>tests/unit/ui/fixtures/dialog_inventory.json</code></li>
+<li><code>tests/unit/ui/fixtures/main_frame_public_surface.json</code></li>
+</ul></li>
+<li>regenerated:
+<ul>
+<li><code>tests/unit/ui/fixtures/dialog_inventory.json</code></li>
+<li><code>tests/unit/ui/fixtures/main_frame_public_surface.json</code></li>
+</ul></li>
+<li>reapplied the publishing-branch tighten-ups on top of the new merged
+tree:
+<ul>
+<li><code>quill/ui/main_frame.py</code></li>
+<li><code>tests/unit/core/test_publishing.py</code></li>
+<li><code>tests/unit/core/test_features.py</code></li>
+<li><code>tests/unit/ui/test_main_frame.py</code></li>
+<li><code>dialogs.md</code></li>
+<li><code>codex-memory/publishing-providers-framework-readiness.md</code></li>
+<li><code>codex-plans/publishing-providers-framework.md</code></li>
+</ul></li>
+</ul>
+<p>What changed from <code>main</code> that mattered to this branch:</p>
+<ul>
+<li>upstream added a significant Remote Sites feature set with new
+remote transport/core/dialog surfaces</li>
+<li>upstream also changed:
+<ul>
+<li>dialog inventory</li>
+<li>main-frame public surface</li>
+<li>menu wiring</li>
+<li>network-egress audit</li>
+<li>module-size budget baselines</li>
+</ul></li>
+<li>this merge therefore had to be treated as a real integration pass,
+not just a routine sync</li>
+</ul>
+<p>Implementation/maintenance result:</p>
+<ul>
+<li>new merge commit created: <code>47d5ff7</code>
+(<code>Merge main into features/publishing-providers-framework</code>)</li>
+<li>local <code>main</code>, <code>origin/main</code>, and
+<code>fork/main</code> now match at <code>d27b364</code></li>
+</ul>
+<p>Why this was needed:</p>
+<ul>
+<li><code>main</code> had moved again after the previous sync</li>
+<li>the feature branch needed the latest upstream shell and contract
+changes merged in before more publishing work continues</li>
+<li>the newer upstream Remote Sites changes touched several of the same
+UI-governance surfaces that publishing also uses</li>
+</ul>
+<p>Validation run:</p>
+<ul>
+<li><code>tests/unit/ui/test_main_frame_characterization.py</code></li>
+<li><code>tests/unit/ui/test_dialog_inventory.py</code></li>
+<li><code>tests/unit/ui/test_main_frame_menu_contract.py</code></li>
+<li><code>tests/performance/test_budgets.py</code></li>
+<li><code>tests/unit/core/test_publishing.py</code></li>
+<li><code>tests/unit/core/test_publishing_browse.py</code></li>
+<li><code>tests/unit/core/test_publishing_framework.py</code></li>
+<li><code>tests/unit/core/test_features.py</code></li>
+<li><code>tests/unit/ui/test_publishing_connection_dialog_a11y.py</code></li>
+<li><code>tests/unit/ui/test_main_frame.py</code></li>
+<li><code>tests/unit/core/test_remote_sites.py</code></li>
+<li><code>tests/unit/ui/test_remote_sites_dialog.py</code></li>
+<li>result: 84 tests passed</li>
+</ul>
+<p>Plan/document follow-up:</p>
+<ul>
+<li>the publishing plan file remains correct in direction, but now
+explicitly sits beside a newer upstream Remote Sites shell pattern that
+may be worth borrowing from in later implementation slices</li>
+<li>the readiness note and dialog checklist were updated to stay aligned
+with the real merged branch state</li>
+</ul>
+<h2 id="section-48">2026-06-10</h2>
+<p>What I changed in this follow-up audit pass:</p>
+<ul>
+<li>audited the publishing branch against the newly merged
+<code>main</code></li>
+<li>verified that the implemented publishing work still matches the
+approved architecture in core, menu, dialog, feature, and egress-review
+seams</li>
+<li>identified the main remaining drift: remote-open representation is
+still raw HTML only, while the approved plan calls for
+<code>Readable Markdown</code> by default plus explicit
+<code>Raw HTML</code> override/fallback</li>
+<li>tightened the interim implementation by recording explicit
+remote-open metadata in <code>quill/ui/main_frame.py</code>:
+<ul>
+<li><code>source_kind = publishing_remote</code></li>
+<li><code>publishing_authoring_surface = html</code></li>
+<li><code>publishing_open_representation = raw_html</code></li>
+</ul></li>
+<li>updated:
+<ul>
+<li><code>dialogs.md</code></li>
+<li><code>codex-memory/publishing-providers-framework-readiness.md</code></li>
+<li><code>codex-plans/publishing-providers-framework.md</code> ##
+2026-06-14</li>
+</ul></li>
+</ul>
+<p>What I changed in this pass:</p>
+<ul>
+<li>restored <code>CLAUDE.md</code> fully from <code>main</code></li>
+<li>ran a broader merge-sensitive verification pass around the
+<code>main</code> surfaces that publishing extends</li>
+<li>restored <code>CLAUDE.md</code> from <code>main</code> so the branch
+no longer carries the duplicated response-heading guidance</li>
+<li>reran the publishing-owned verification slice against the merged
+publishing branch</li>
+<li>updated <code>codex-notes/handoff/codex-handoff.md</code></li>
+</ul>
+<p>Why this was needed:</p>
+<ul>
+<li>the heading/accessibility rule is already being carried by local
+<code>AGENTS.md</code>, so <code>CLAUDE.md</code> should not drift on
+the branch</li>
+<li>after the large <code>main</code> merge, we needed one more truthful
+pass focused on the code and governance surfaces owned by the publishing
+work</li>
+<li>the notes needed to reflect the newest verified checkpoint</li>
+<li>after the targeted publishing-owned pass, we still wanted confidence
+that the newer <code>main</code> shell work and our publishing
+integration were coexisting cleanly where they touch</li>
+</ul>
+<p>Validation run:</p>
+<ul>
+<li><code>.venv\Scripts\pytest.exe tests/unit/core/test_features.py tests/unit/core/test_publishing.py tests/unit/core/test_publishing_browse.py tests/unit/core/test_publishing_framework.py tests/unit/ui/test_main_frame.py tests/unit/ui/test_main_frame_menu_contract.py tests/unit/ui/test_publishing_connection_dialog_a11y.py tests/unit/ui/test_dialog_inventory.py tests/unit/ui/test_main_frame_characterization.py tests/unit/tools/test_module_size_budget.py tests/unit/tools/test_check_banned_patterns.py tests/unit/tools/test_network_egress_audit.py tests/unit/tools/test_dialog_button_contract.py tests/unit/ui/test_dialog_hardening_contract.py -q --basetemp=.tmp/pytest-publishing-final</code></li>
+<li>result: <code>121 passed in 43.18s</code></li>
+</ul>
+<p>Broader merge-sensitive validation run:</p>
+<ul>
+<li><p><code>.venv\Scripts\pytest.exe tests/unit/ui/test_main_frame.py tests/unit/ui/test_main_frame_accessibility.py tests/unit/ui/test_main_frame_browse.py tests/unit/ui/test_main_frame_characterization.py tests/unit/ui/test_main_frame_clear_logs.py tests/unit/ui/test_main_frame_close_resilience.py tests/unit/ui/test_main_frame_compare_and_macros.py tests/unit/ui/test_main_frame_ctx1_wiring.py tests/unit/ui/test_main_frame_cq16_characterization.py tests/unit/ui/test_main_frame_dict2_wiring.py tests/unit/ui/test_main_frame_editing_lens.py tests/unit/ui/test_main_frame_feat19_wiring.py tests/unit/ui/test_main_frame_feedback.py tests/unit/ui/test_main_frame_forget_key.py tests/unit/ui/test_main_frame_heading_style.py tests/unit/ui/test_main_frame_insert_link.py tests/unit/ui/test_main_frame_libraries.py tests/unit/ui/test_main_frame_menu_contract.py tests/unit/ui/test_main_frame_menu_editor.py tests/unit/ui/test_main_frame_navigation.py tests/unit/ui/test_main_frame_onboarding.py tests/unit/ui/test_main_frame_open_threading.py tests/unit/ui/test_main_frame_preview_dark.py tests/unit/ui/test_main_frame_prompt_search.py tests/unit/ui/test_main_frame_quill_key.py tests/unit/ui/test_main_frame_quillins.py tests/unit/ui/test_main_frame_regex_helper.py tests/unit/ui/test_main_frame_save_as_format.py tests/unit/ui/test_main_frame_settings_dialog.py tests/unit/ui/test_main_frame_share_dialogs.py tests/unit/ui/test_main_frame_statusbar_context.py tests/unit/ui/test_main_frame_undo_atomic.py tests/unit/ui/test_main_frame_watch_service.py tests/unit/ui/test_remote_sites_dialog.py tests/unit/ui/test_connection_dialog_a11y.py tests/unit/ui/test_dialog_inventory.py tests/unit/ui/test_dialog_hardening_contract.py tests/unit/core/test_features.py tests/unit/core/test_remote_sites.py tests/unit/core/test_github_provider.py tests/unit/core/test_publishing.py tests/unit/core/test_publishing_browse.py tests/unit/core/test_publishing_framework.py tests/unit/tools/test_module_size_budget.py tests/unit/tools/test_check_banned_patterns.py tests/unit/tools/test_network_egress_audit.py tests/unit/tools/test_dialog_button_contract.py -q --basetemp=.tmp/pytest-publishing-broader</code></p></li>
+<li><p>result: <code>424 passed in 36.44s</code></p>
+<ul>
+<li><code>codex-handoff.md</code></li>
+</ul></li>
+<li><p>added a focused regression assertion in
+<code>tests/unit/ui/test_main_frame.py</code></p></li>
+<li><p>updated older publishing and feature tests to honor the current
+dev-only <code>QUILL_DATA_DIR</code> override contract from
+<code>quill/core/paths.py</code></p></li>
+</ul>
+<p>Why this was needed:</p>
+<ul>
+<li>several local memory/checklist files still described the pre-merge
+or pre-implementation state</li>
+<li>the code needed a more explicit interim contract so later
+update/publish flows do not have to guess whether a remotely opened
+document is HTML-authored</li>
+</ul>
+<p>Validation run for this pass:</p>
+<ul>
+<li><code>tests/unit/core/test_publishing.py</code></li>
+<li><code>tests/unit/core/test_publishing_browse.py</code></li>
+<li><code>tests/unit/core/test_publishing_framework.py</code></li>
+<li><code>tests/unit/core/test_features.py</code></li>
+<li><code>tests/unit/ui/test_publishing_connection_dialog_a11y.py</code></li>
+<li><code>tests/unit/ui/test_main_frame.py</code></li>
+<li>result: 53 tests passed</li>
+</ul>
+<p>What I changed in this pass:</p>
+<ul>
+<li>synced local <code>main</code> to <code>origin/main</code></li>
+<li>pushed <code>main</code> to <code>fork/main</code></li>
+<li>merged <code>main</code> into
+<code>features/publishing-providers-framework</code></li>
+<li>updated merge-resolution files:
+<ul>
+<li><code>quill/tools/module_size_budgets.json</code></li>
+<li><code>quill/tools/ui_surface.py</code></li>
+<li><code>tests/unit/ui/fixtures/dialog_inventory.json</code></li>
+<li><code>tests/unit/ui/fixtures/main_frame_public_surface.json</code></li>
+<li><code>tests/unit/ui/test_main_frame_menu_contract.py</code></li>
+</ul></li>
+<li>restored local planning notes after the merge</li>
+</ul>
+<p>Implementation/maintenance result:</p>
+<ul>
+<li>merge commit created: <code>23b8adf</code>
+(<code>Merge main into features/publishing-providers-framework</code>)</li>
+<li><code>fork/main</code> now matches <code>origin/main</code> at
+<code>c43ff0f</code></li>
+</ul>
+<p>Why this was needed:</p>
+<ul>
+<li><code>origin/main</code> had moved substantially ahead of the
+fork</li>
+<li>the feature branch needed the latest upstream changes without losing
+planning work already in progress</li>
+<li>the conflicting UI-surface snapshots and menu-contract helpers
+needed a truthful merged baseline</li>
+</ul>
+<p>Validation run:</p>
+<ul>
+<li><code>.venv\Scripts\pytest.exe tests/unit/ui/test_main_frame_characterization.py tests/unit/ui/test_dialog_inventory.py tests/unit/ui/test_main_frame_menu_contract.py tests/performance/test_budgets.py</code></li>
+<li>result: 17 tests passed</li>
+</ul>
+<p>What to check when resuming:</p>
+<ul>
+<li><code>codex-handoff.md</code></li>
+<li><code>codex-review-log.md</code></li>
+<li><code>codex-plans/publishing-providers-framework.md</code></li>
+</ul>
+<h2 id="section-49">2026-06-14</h2>
+<p>What I changed in this pass:</p>
+<ul>
+<li>merged the latest <code>origin/main</code> into
+<code>features/publishing-providers-framework</code> again</li>
+<li>resolved the new conflicts by taking upstream <code>main</code> for
+braille/close/crash-report/doc work and preserving only the
+publishing-owned surfaces we maintain</li>
+<li>regenerated
+<code>tests/unit/ui/fixtures/dialog_inventory.json</code> and
+<code>tests/unit/ui/fixtures/main_frame_public_surface.json</code></li>
+<li>fixed <code>tests/unit/ui/test_main_frame_menu_contract.py</code> so
+<code>_menu_source()</code> includes every <code>main_frame*.py</code>
+module again; the narrowed upstream version had stopped seeing helper
+definitions in <code>main_frame_power_tools.py</code> and produced a
+false failure</li>
+<li>remeasured <code>quill/tools/module_size_budgets.json</code> to the
+current integrated tree and kept the explicit publishing tracked
+entries</li>
+<li>confirmed <code>CLAUDE.md</code> is identical to
+<code>origin/main</code></li>
+</ul>
+<p>Why this was needed:</p>
+<ul>
+<li><code>main</code> had advanced again with the close-path fix we were
+waiting on, plus braille/mainline work that touched several of the same
+shell surfaces as the publishing branch</li>
+<li>the branch needed another careful reintegration cycle without
+rewriting unrelated upstream behavior</li>
+<li>the local notes needed a truthful checkpoint before commit/push</li>
+</ul>
+<p>Validation runs:</p>
+<ul>
+<li>focused publishing-owned suite:
+<ul>
+<li><code>121 passed</code></li>
+</ul></li>
+<li>broader merge-sensitive suite:
+<ul>
+<li><code>429 passed</code></li>
+</ul></li>
+<li>full branch suite:
+<ul>
+<li>blocked in this environment by upstream dependency/import issues in
+<code>tests/unit/ui/test_update_manager.py</code>
+(<code>requests</code>, then <code>platform_utils</code>)</li>
+<li>after ignoring that file, remaining non-publishing failures/timeouts
+are upstream/mainline:
+<ul>
+<li><code>tests/unit/core/ai/test_ai_sessions.py::test_list_and_most_recent</code></li>
+<li><code>tests/unit/core/test_recovery.py::test_begin_session_offers_previous_unclean_snapshot</code></li>
+<li><code>tests/unit/core/test_recovery.py::test_latest_session_snapshot_and_reader</code></li>
+<li><code>tests/unit/core/test_recovery.py::test_concurrent_begin_session_serialize_via_lock</code></li>
+<li>timeout in
+<code>tests/unit/core/test_reset_caches.py::test_thesaurus_preload_after_reset_is_idempotent</code></li>
+</ul></li>
+</ul></li>
+</ul>
+<p>What this means:</p>
+<ul>
+<li>the publishing integration itself is passing in the owned and
+merge-adjacent areas</li>
+<li>the remaining branch-wide red spots are not attributable to
+publishing code changes and should be treated as
+upstream/main/environment follow-up, not as regressions introduced by
+this branch</li>
+<li>current branch status for any uncommitted planning-note edits</li>
+</ul>
+<h2 id="section-50">2026-06-09</h2>
+<p>What I changed in this pass:</p>
+<ul>
+<li>updated
+<code>codex-plans/publishing-providers-framework.md</code></li>
+<li>no implementation code changed</li>
+<li>no tests changed</li>
+<li>no commit created in this pass</li>
+</ul>
+<p>Planning decision added:</p>
+<ul>
+<li>convert only clearly text-first HTML to
+<code>Readable Markdown</code></li>
+<li>fall back to <code>Raw HTML</code> for anything that looks
+interactive, embedded, layout-heavy, or structurally rich</li>
+</ul>
+<p>Why this was added:</p>
+<ul>
+<li>to keep remote-open conversion honest</li>
+<li>to avoid lossy Markdown flattening for HTML-native structures</li>
+<li>to make later update and publish behavior easier to explain
+clearly</li>
+</ul>
+<p>What to check when resuming:</p>
+<ul>
+<li><code>codex-handoff.md</code></li>
+<li><code>codex-review-log.md</code></li>
+<li><code>codex-plans/publishing-providers-framework.md</code></li>
+</ul>
+</body>
+</html>

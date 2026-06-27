@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>publishing-providers-framework-current-state-2026-06-19</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="publishing-providers-framework-current-plan-state">Publishing
+Providers Framework Current Plan State</h1>
+<h2 id="phase-1-slice-a-complete">Phase 1 Slice A Complete</h2>
+<p>This checkpoint supplements
+<code>publishing-providers-framework.md</code> with the latest
+implemented state.</p>
+<p>Implemented:</p>
+<ul>
+<li><code>BundledPublishingProviderAdapter</code> pairs a stable
+provider id, provider definition, and matching provider client.</li>
+<li>Registration rejects mismatched ids before changing either existing
+registry.</li>
+<li>Trusted bundled adapters require a network-capability
+rationale.</li>
+<li>Secret access is fixed to host-owned storage.</li>
+<li>Execution is fixed to the trusted in-process path for this
+phase.</li>
+<li><code>quill.core.publishing_bundled.wordpress</code> represents
+WordPress using the same definition and client objects already used by
+publishing workflows.</li>
+</ul>
+<p>Validation:</p>
+<ul>
+<li>focused adapter, publishing, and provider-gate tests:
+<code>34 passed in 0.69s</code></li>
+<li>Ruff: passed</li>
+<li>provider registry gate: passed</li>
+</ul>
+<p>Recommended next Phase 1 slice:</p>
+<ul>
+<li>decide whether normal app bootstrap should register WordPress
+through the bundled adapter</li>
+<li>preserve current provider/client behavior and all user-visible
+workflows</li>
+<li>rerun focused publishing tests and the provider registry gate</li>
+</ul>
+<p>Do not begin schedule publish, compare/sync, worker execution, or
+live third-party provider loading without explicit approval.</p>
+<h2 id="phase-1-slice-b-complete---2026-06-20">Phase 1 Slice B Complete
+- 2026-06-20</h2>
+<p>Decision: WordPress should bootstrap through the trusted bundled
+adapter during normal application startup.</p>
+<p>Implemented:</p>
+<ul>
+<li>explicit first-party bootstrap in
+<code>quill.core.publishing_bundled</code></li>
+<li>bootstrap call at the application entry point before UI import</li>
+<li>repeat-safe registration preserving existing provider-definition and
+client identity</li>
+<li>no change to credentials, network behavior, commands, menus,
+dialogs, or user-visible publishing behavior</li>
+</ul>
+<p>Required validation for every next slice: focused publishing tests,
+slice-specific unit tests, Ruff, provider registry gate, and the
+complete unit suite using a workspace-local temp root. Record any
+non-slice baseline failures instead of silently omitting the full
+run.</p>
+<p>Phase 1 remains active. The prohibited later-phase work remains out
+of scope.</p>
+<h2 id="phase-1-closed---2026-06-20">Phase 1 Closed - 2026-06-20</h2>
+<p>The closeout audit found no remaining acceptance gap in the WordPress
+first-party bundled-provider path. Phase 1 is complete. Focused closeout
+validation passed with <code>77 passed</code>, Ruff, the module-size
+gate, and the provider registry gate.</p>
+<p>The user explicitly approved schedule publishing, local-versus-remote
+compare/sync, Quillin worker execution, and live third-party provider
+loading to become unblocked after this audit. Continue with schedule
+publishing as the next separately reviewable roadmap phase.
+Authorization does not waive SEC-8, consent, accessibility, validation,
+or testing requirements.</p>
+<h2 id="schedule-publishing-complete---2026-06-21">Schedule Publishing
+Complete - 2026-06-21</h2>
+<p>Implemented as the smallest coherent slice: one new
+<code>schedule</code> provider operation, a timezone-aware
+<code>validate_scheduled_publish_time</code> model, an optional
+<code>scheduled_at</code> parameter on the existing
+<code>create_publishing_remote_item</code>/<code>update_publishing_remote_item</code>
+functions (no new top-level action function), WordPress
+<code>status="future"</code> + UTC <code>date_gmt</code> behavior with
+round-tripped <code>scheduled_for</code>, and one accessible
+<code>SchedulePublishDialog</code> plus one command/menu entry covering
+both new-document and already-open-remote-item scheduling.</p>
+<p>Validation: core focused battery <code>61 passed</code>; combined
+publishing/accessibility/governance battery <code>153 passed</code>;
+Ruff and the provider registry gate passed; full unit suite
+<code>4074 passed, 66 failed, 14 skipped</code>, the 66 failures
+matching the pre-existing baseline exactly with no new failures.</p>
+<p>Next roadmap phase: local-versus-remote compare and the first honest
+sync model.</p>
+<h2 id="compare-with-remote-complete---2026-06-21">Compare With Remote
+Complete - 2026-06-21</h2>
+<p>Implemented as the smallest coherent slice:
+<code>build_publishing_comparison</code> (pure diff model),
+<code>compare_publishing_remote_item</code> (reuses
+<code>load_publishing_remote_item</code>/<code>PUBLISHING_OPERATION_LOAD</code>,
+no new provider operation or client method),
+<code>publishing_comparison_message</code>, and one command/menu entry
+reporting through the existing native message-box pattern (no new dialog
+surface). Cross-session linkage persistence (a durable local registry so
+compare/update still works after closing and reopening a locally-saved
+publishing document) was explicitly deferred —
+<code>source_metadata</code> does not survive save/reopen today, and
+building that registry is a separable, larger concern than this phase’s
+actual scope required.</p>
+<p>Validation: focused battery <code>86 passed</code>; Ruff and the
+provider registry gate passed; full unit suite
+<code>4083 passed, 66 failed, 14 skipped</code>, the 66 failures
+matching the pre-existing baseline exactly.</p>
+<p>Next roadmap phase: Quillin worker execution boundaries and lifecycle
+behavior.</p>
+<h2
+id="quillin-worker-execution-boundaries-complete---2026-06-21">Quillin
+Worker Execution Boundaries Complete - 2026-06-21</h2>
+<p>Scoped narrowly after confirming there’s no untrusted provider yet to
+validate a real subprocess worker boundary against. Implemented:
+cooperative cancellation
+(<code>is_cancelled</code>/<code>PublishingOperationCancelled</code>)
+threaded through <code>browse_publishing_content</code> and the
+WordPress client’s <code>browse_content</code>; a new
+<code>publishing_worker.py</code> dispatch module bridging to
+<code>quill.stability.task_manager</code>;
+<code>BrowsePublishingContentDialog</code> now runs its load through the
+existing <code>TaskManager</code> with a real Cancel button instead of
+blocking the UI thread; <code>publishing_adapters.py</code> recognizes
+<code>"worker"</code> as a declared-but-deferred execution policy with
+its own honest rejection message. The real subprocess/IPC boundary
+itself remains deferred to the live third-party loading phase.</p>
+<p>Validation: focused battery <code>97 passed</code>; Ruff, mypy, and
+the provider registry gate passed; full unit suite
+<code>4093 passed, 66 failed, 14 skipped</code> matching the
+pre-existing baseline exactly.</p>
+<p>Next roadmap phase: live third-party provider loading.</p>
+<h2
+id="live-third-party-provider-loading-contract-shipped-roadmap-closed---2026-06-21">Live
+Third-Party Provider Loading — Contract Shipped, Roadmap Closed -
+2026-06-21</h2>
+<p>Found this phase was really a product security policy question, not
+an engineering scoping one: SEC-8
+(<code>core.third_party_plugins</code>, <code>locked_off=True</code>) is
+product-wide, and the publishing provider registries have zero gate of
+their own today. Presented the user three options; they chose: build the
+<code>ThirdPartyPublishingProviderAdapter</code> validation contract
+(id-conflict checking against bundled providers, host-owned secrets,
+required worker execution) while leaving real loading unimplemented and
+the SEC-8 lock untouched — mirroring exactly how Phase 1 shipped a
+contract before wiring WordPress through it.</p>
+<p>Validation: focused battery <code>82 passed</code>; Ruff, mypy, and
+the provider registry gate passed (confirming zero registry impact);
+full unit suite <code>4100 passed, 66 failed, 14 skipped</code> matching
+the pre-existing baseline exactly.</p>
+<p>All four roadmap phases authorized by the 2026-06-20 Phase 1 closeout
+are now addressed. Two decisions remain explicitly open for the
+user/product, not engineering defaults: the deferred cross-session
+publishing-linkage registry (from the compare phase), and whether/when
+to loosen SEC-8 for real third-party execution.</p>
+</body>
+</html>

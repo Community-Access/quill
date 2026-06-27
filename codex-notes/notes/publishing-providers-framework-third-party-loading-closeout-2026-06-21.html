@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>publishing-providers-framework-third-party-loading-closeout-2026-06-21</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1
+id="publishing-providers-framework-third-party-loading-closeout-roadmap-closed">Publishing
+Providers Framework Third-Party Loading Closeout (Roadmap Closed)</h1>
+<h2 id="outcome">Outcome</h2>
+<p>The live third-party publishing provider loading phase is complete in
+the only form that didn’t require a unilateral product security
+decision: the validation contract exists and is fully tested, but no
+third-party provider can actually register. This closes the
+publishing-providers- framework roadmap — all four phases the 2026-06-20
+Phase 1 closeout authorized are now addressed.</p>
+<h2 id="why-this-phase-was-scoped-narrowly">Why This Phase Was Scoped
+Narrowly</h2>
+<p>Research before implementation found this phase is not a publishing-
+scoped engineering task at heart. SEC-8 (<code>docs/QUILL-PRD.md</code>)
+is a product-wide lock: the <code>core.third_party_plugins</code>
+feature flag (<code>locked_off=True</code>,
+<code>quill/core/feature_catalog.py</code>) keeps <em>all</em>
+third-party Quillin code from executing in a default QUILL 1.0 build —
+the PRD’s own words: “a default build never loads third-party plugin
+code… gating this off keeps untrusted plugin code out of the process
+entirely.” This protects every Quillin capability, not just
+publishing.</p>
+<p>“Install from Folder” already exists
+(<code>quill/ui/main_frame_quillins.py</code>’s <code>on_install</code>,
+calling <code>install_extension()</code> in
+<code>quill/core/quillins/loader.py</code>) and is not itself gated by
+the flag — a user can install a third-party Quillin today — but the
+installed code still never runs while the flag is locked off, since
+<code>discover_extensions()</code>/<code>load_enabled_manifests()</code>
+return empty regardless of install state.</p>
+<p>Critically: <code>register_publishing_provider</code> and
+<code>register_publishing_provider_client</code>
+(<code>quill/core/publishing_providers.py</code>,
+<code>quill/core/publishing_clients.py</code>) are completely open,
+ungated module functions today. Any code already running in-process —
+including a loaded Quillin — could call them directly, bypassing even
+the Phase 1 bundled-adapter validation contract. The only thing actually
+preventing a third-party publishing provider today is that third-party
+code cannot execute in-process at all yet, which is purely a
+SEC-8/Quillin-loading concern, not a publishing-provider-registry
+concern.</p>
+<p>Given this, “live third-party provider loading” amounts to asking
+whether to create an exception to, or flip, SEC-8 — a product security
+policy decision, not an implementation detail to infer from a
+roadmap-phase rubber-stamp. The user was presented three explicit
+options and chose to build the contract while leaving SEC-8 and real
+loading untouched, the same “build the contract, defer the risky part”
+pattern used by every prior phase of this roadmap (the bundled adapter
+before WordPress was wired through it; declaring <code>worker</code>
+execution without building it).</p>
+<h2 id="acceptance-evidence">Acceptance Evidence</h2>
+<ul>
+<li><code>ThirdPartyPublishingProviderAdapter</code>
+(<code>quill/core/publishing_adapters.py</code>) has no trusted defaults
+for <code>secret_access</code>/<code>execution</code> — unlike the
+bundled adapter, a third-party contributor must state its policy
+explicitly rather than inherit one meant for reviewed code.</li>
+<li><code>register_third_party_publishing_provider</code> validates, in
+order: ids match; network capability rationale is required; secrets must
+be host-owned; execution must be <code>worker</code> (in-process is
+rejected outright — untrusted code never gets the trusted path reserved
+for bundled providers); the provider id must not conflict with an
+existing bundled adapter. Every branch is independently tested.</li>
+<li>The function’s last line — reached only by a fully well-formed
+adapter that passed every prior check — unconditionally raises “Live
+third-party publishing provider loading is not implemented yet.” Proven
+by a dedicated test that the live registries
+(<code>PROVIDER_DEFINITIONS</code>,
+<code>_PUBLISHING_PROVIDER_CLIENTS</code>) are completely untouched even
+in that case.</li>
+<li>The module docstring states explicitly that this contract does not
+loosen, bypass, or duplicate the
+<code>core.third_party_plugins</code>/SEC-8 lock, and that implementing
+real loading remains a separate, explicit product decision.</li>
+<li>No UI, dialog, menu, or governance-fixture changes were needed —
+this is a pure core-layer contract with zero runtime exposure.</li>
+</ul>
+<h2 id="closeout-validation">Closeout Validation</h2>
+<ul>
+<li>focused battery (publishing core + adapters):
+<code>82 passed</code></li>
+<li>Ruff: passed</li>
+<li>provider registry gate: passed — confirms zero impact on what’s
+actually registered/exposed, since nothing third-party ever reaches the
+registry</li>
+<li>scoped <code>mypy quill/core quill/io</code>: unchanged from before
+this slice (same 7 pre-existing, unrelated findings)</li>
+<li>full unit suite: <code>4100 passed, 66 failed, 14 skipped</code> —
+the 66 failures are the identical pre-existing set; the +7 passing delta
+is exactly the new tests added in this slice</li>
+<li><code>quill/core/publishing_adapters.py</code> measured at 146
+lines, well under the untracked 600-line default cap — no module-size
+budget entry needed</li>
+</ul>
+<h2 id="commits">Commits</h2>
+<p>One local checkpoint on
+<code>feature/publishing-providers-framework</code>, adding the contract
+and its tests. Not pushed — pending explicit request, per the standing
+repo convention.</p>
+<h2 id="roadmap-closed-whats-actually-done-and-what-isnt">Roadmap Closed
+— What’s Actually Done And What Isn’t</h2>
+<p>All four phases authorized by the 2026-06-20 Phase 1 closeout:</p>
+<ol type="1">
+<li>WordPress first-party bundled-provider path — done (Phase 1, prior
+session).</li>
+<li>Schedule publishing — done 2026-06-21.</li>
+<li>Local-versus-remote compare and the first honest sync model — done
+2026-06-21.</li>
+<li>Quillin worker execution boundaries / live third-party provider
+loading — both converged on the same answer this session: build the
+contract, defer the boundary, because no untrusted code can run in this
+product yet.</li>
+</ol>
+<p><strong>Two decisions remain explicitly open</strong> for the user or
+product owner, recorded as deliberate non-defaults rather than
+oversights — neither should be assumed if this branch is revisited:</p>
+<ul>
+<li>Whether to build the durable, file-path-keyed cross-session
+publishing- linkage registry deferred in the compare phase
+(<code>Document.source_metadata</code> does not survive a local
+save-and-reopen cycle today).</li>
+<li>Whether and when to loosen
+<code>core.third_party_plugins</code>/SEC-8 for real third-party Quillin
+or publishing-provider execution, and if so, what
+signing/review/sandboxing process (SEC-8’s own stated prerequisite)
+should gate it.</li>
+</ul>
+</body>
+</html>

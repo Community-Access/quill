@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>claude-code-restart-prompt-handling-2026-06-22</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="claude-code-handling-codex-restart-prompts">Claude Code:
+Handling Codex Restart Prompts</h1>
+<h2 id="context">Context</h2>
+<p>This repo’s owner alternates between OpenAI Codex and Claude Code on
+the same feature branches, using
+<code>codex-notes/{plans,memory,logs,notes,handoff}/</code> as the
+cross-session continuity record. Restart/handoff prompts originally
+written for Codex sometimes get handed to Claude Code instead. This note
+records how to convert one without losing anything that matters, since
+it’s a feature-independent process question, not specific to any one
+branch.</p>
+<h2 id="what-to-drop">What to drop</h2>
+<p>Codex-tool-specific sections do not apply to Claude Code and should
+be dropped entirely:</p>
+<ul>
+<li>Instructions to “retry a harmless <code>apply_patch</code> edit” or
+diagnose <code>apply_patch</code>/sandbox failures — these describe
+Codex’s own patch-tool plumbing. Claude Code edits files directly via
+its Edit/Write tools; there is no sandboxed patch helper to test and no
+equivalent failure mode to retry around.</li>
+<li>Any other Codex-CLI-specific tooling references (e.g. Codex’s own
+sandbox or elevated-permission model).</li>
+</ul>
+<h2 id="what-to-keep">What to keep</h2>
+<p>Everything else in a Codex restart prompt is tool-agnostic and should
+carry over unchanged:</p>
+<ul>
+<li>Repository-state assumptions — but verify them before trusting them.
+<code>origin/main</code> and even
+<code>origin/&lt;feature-branch&gt;</code> can move between when a
+prompt was written and when it’s acted on; run <code>git fetch</code>
+and compare before assuming the prompt’s snapshot is current.</li>
+<li>Phase scope and non-goals.</li>
+<li>The acceptance/closeout contract for the work (security,
+accessibility, validation, provider-neutrality, or whatever the
+project’s own standing requirements are for that feature).</li>
+<li>Implementation order and the validation commands the prompt
+specifies.</li>
+</ul>
+<h2 id="process-to-follow">Process to follow</h2>
+<ul>
+<li>Verify git state first (branch, HEAD, tracking remote, divergence
+from main) before reading anything else.</li>
+<li>Read the relevant codex-notes files for the feature next,
+most-recently -dated sections first.</li>
+<li>For anything non-trivial, research the current code state directly
+rather than trusting the prompt’s old file/line references, then plan
+(Claude Code’s plan mode) before implementing — especially when the
+prompt implies a decision with more than one defensible scope, or one
+that touches a security/policy boundary rather than pure engineering
+taste. Bring genuine policy forks back to the user explicitly instead of
+picking a side.</li>
+<li>Follow this repo’s own standing convention, already recorded in
+<code>codex-notes/handoff/codex-handoff.md</code>’s 2026-06-18 “Testing
+Discipline Checkpoint” entry: commit locally as work proceeds; do not
+push unless explicitly requested — even when a restart prompt’s own
+closing instructions say to push. Ask the current user first.</li>
+<li>Keep using the existing codex-notes convention: append new dated
+<code>## YYYY-MM-DD ...</code> sections to the canonical
+plan/memory/work-log/status /handoff files for the feature rather than
+creating a new file per session, and write one closeout note per
+completed phase.</li>
+</ul>
+<h2 id="provenance">Provenance</h2>
+<p>First applied 2026-06-21 when converting a Codex-authored restart
+prompt for the publishing-providers-framework “schedule publishing”
+phase — see
+<code>codex-notes/handoff/publishing-providers-framework-restart-2026-06-19.md</code>’s
+2026-06-21 entries for the worked example, including a case where the
+prompt’s repository-state snapshot had already gone stale
+(<code>origin/main</code> had advanced one commit past what the prompt
+assumed) and was caught by verifying first rather than trusting it.
+Recorded here as a standalone note since it applies to any future
+Codex-to-Claude handoff on this repo, not just that branch.</p>
+</body>
+</html>

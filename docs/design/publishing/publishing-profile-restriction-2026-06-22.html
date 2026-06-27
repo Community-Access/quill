@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>publishing-profile-restriction-2026-06-22</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1
+id="publishing-profile-restriction-writer-and-above-scoping-plan">Publishing
+Profile Restriction (“Writer and Above”) — Scoping Plan</h1>
+<h2 id="status">Status</h2>
+<p><strong>Implemented 2026-06-22</strong>, same day as the scoping. The
+two open questions in “Open questions / flagged assumptions” below were
+resolved before coding: soft restriction (Recommended option chosen) and
+<code>FEATURE_STATE_ON</code> (Recommended option chosen) for the
+included profiles. The third open question (timing) was resolved by the
+user asking to begin coding immediately — landed now, while still inert
+behind <code>future.publishing</code>’s
+<code>locked_off=True</code>.</p>
+<p>Implementation: <code>quill/core/features.py</code>’s
+<code>PROFILE_DEFINITIONS</code> now match the table below exactly
+(<code>author_or_student</code>’s previously-absent key was added, not
+left as an implicit default).
+<code>quill/core/feature_catalog.py</code>’s
+<code>future.publishing</code> description was extended to state the
+restriction. No UI/menu/palette code changed, confirmed unnecessary as
+predicted. Two new tests added to
+<code>tests/unit/core/test_publishing_framework.py</code>:
+<code>test_publishing_profile_states_match_writer_tier_and_above</code>
+(the configured values) and
+<code>test_publishing_profile_states_are_overridden_by_the_lock</code>
+(the regression test guarding the lock/profile interaction). Module-size
+budget for <code>features.py</code> bumped 727-&gt;738. Full suite,
+scoped mypy, ruff, provider-registry gate, and a smoke launch all clean
+— see
+<code>codex-notes/logs/publishing-providers-framework-current-work-log-2026-06-19.md</code>’s
+matching 2026-06-22 entry for full validation numbers.</p>
+<p>The rest of this document is preserved as written during scoping, for
+the historical record of what was decided and why.</p>
+<h2 id="context">Context</h2>
+<p>The user was told (by someone above them in the project) that the
+publishing feature must only be available in “writer and above”
+profiles. This is a separate, additive requirement from the existing
+<code>future.publishing</code> <code>locked_off=True</code> review-gate
+lock added 2026-06-22 (see
+<code>codex-notes/logs/publishing-providers-framework-current-work-log-2026-06-19.md</code>’s
+“Locked publishing off behind the existing feature flag” entry) to keep
+publishing out of the public release until this branch’s PR is
+reviewed.</p>
+<p>The two are independent and stack:</p>
+<ul>
+<li><strong>The <code>locked_off</code> lock</strong> is the master kill
+switch. While it’s <code>True</code>,
+<code>FeatureManager.state_for("future.publishing")</code> returns
+<code>FEATURE_STATE_OFF</code> unconditionally, for every profile, with
+no exceptions — it is checked before any profile is ever consulted.</li>
+<li><strong>This profile restriction</strong> describes the feature’s
+<em>intended configuration once that lock is eventually lifted</em> —
+which profiles should see/use publishing by default once it’s actually
+live. It has zero user-visible effect today and will continue to have
+zero effect for as long as <code>locked_off=True</code> remains in
+place.</li>
+</ul>
+<p>Do not confuse “configuring the profile states correctly” with
+“lifting the review-gate lock.” They are two separate decisions; this
+plan only scopes the first.</p>
+<h2 id="decided-scope">Decided scope</h2>
+<p>QUILL’s 10 feature profiles (<code>quill/core/features.py</code>,
+<code>PROFILE_DEFINITIONS</code>) have <strong>no existing tier or
+rank</strong> — they’re independent personas (Essential, Casual Writer,
+Author or Student, Reader and Student, Office and Admin, Developer and
+Power Text, Low Vision, Braille and Screen Reader Power User,
+Accessibility Professional, Full Quill), not a capability ladder.
+“Writer and above” therefore has no formal, pre-existing meaning in this
+codebase. Confirmed directly with the user (offered three concrete
+readings; they chose the second):</p>
+<blockquote>
+<p><strong>Writer + “serious writing” profiles</strong>: Writer, Author
+or Student, Developer and Power Text, and Full Quill get publishing
+access. Reader and Student, Office and Admin, Low Vision, Braille and
+Screen Reader Power User, and Accessibility Professional are treated as
+different use cases, not a writing-capability tier, and do not get it.
+Essential — the baseline/default profile — does not get it either.</p>
+</blockquote>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Profile (id)</th>
+<th>Display name</th>
+<th>Gets publishing?</th>
+<th>Target <code>future.publishing</code> state</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>essential</code></td>
+<td>Essential</td>
+<td>No</td>
+<td><code>FEATURE_STATE_OFF</code></td>
+</tr>
+<tr>
+<td><code>writer</code></td>
+<td>Casual Writer</td>
+<td><strong>Yes</strong></td>
+<td><code>FEATURE_STATE_ON</code></td>
+</tr>
+<tr>
+<td><code>author_or_student</code></td>
+<td>Author or Student</td>
+<td><strong>Yes</strong></td>
+<td><code>FEATURE_STATE_ON</code></td>
+</tr>
+<tr>
+<td><code>reader_and_student</code></td>
+<td>Reader and Student</td>
+<td>No</td>
+<td><code>FEATURE_STATE_OFF</code></td>
+</tr>
+<tr>
+<td><code>office_and_admin</code></td>
+<td>Office and Admin</td>
+<td>No</td>
+<td><code>FEATURE_STATE_OFF</code></td>
+</tr>
+<tr>
+<td><code>developer_power_text</code></td>
+<td>Developer and Power Text</td>
+<td><strong>Yes</strong></td>
+<td><code>FEATURE_STATE_ON</code></td>
+</tr>
+<tr>
+<td><code>low_vision</code></td>
+<td>Low Vision</td>
+<td>No</td>
+<td><code>FEATURE_STATE_OFF</code></td>
+</tr>
+<tr>
+<td><code>braille_screen_reader_power_user</code></td>
+<td>Braille and Screen Reader Power User</td>
+<td>No</td>
+<td><code>FEATURE_STATE_OFF</code></td>
+</tr>
+<tr>
+<td><code>accessibility_professional</code></td>
+<td>Accessibility Professional</td>
+<td>No</td>
+<td><code>FEATURE_STATE_OFF</code></td>
+</tr>
+<tr>
+<td><code>full_quill</code></td>
+<td>Full Quill</td>
+<td><strong>Yes</strong></td>
+<td>already <code>FEATURE_STATE_ON</code> — no change needed</td>
+</tr>
+</tbody>
+</table>
+<h2 id="current-state-vs.-target-state">Current state vs. target
+state</h2>
+<p>Read directly from <code>quill/core/features.py</code> (lines as of
+this writing):</p>
+<ul>
+<li>Every profile listed above <strong>except
+<code>author_or_student</code></strong> already has an explicit
+<code>"future.publishing": FEATURE_STATE_QUIET</code> entry in its
+<code>states</code> dict (lines 76, 104, 155, 177, 200, 224, 248, 270).
+All of these need to change from <code>FEATURE_STATE_QUIET</code> to
+either <code>FEATURE_STATE_ON</code> (the 3 included profiles:
+<code>writer</code>, <code>developer_power_text</code>) or
+<code>FEATURE_STATE_OFF</code> (the 5 excluded profiles:
+<code>essential</code>, <code>reader_and_student</code>,
+<code>office_and_admin</code>, <code>low_vision</code>,
+<code>braille_screen_reader_power_user</code>,
+<code>accessibility_professional</code> — that’s 6, not 5; see the table
+above for the authoritative list).</li>
+<li><code>author_or_student</code>’s <code>states</code> dict (lines
+116-134) has <strong>no</strong> <code>"future.publishing"</code> key at
+all. Today, ignoring the lock, that silently falls back to the default
+<code>FEATURE_STATE_ON</code> via <code>state_for()</code>’s
+<code>self.active_profile.states.get(feature_id, FEATURE_STATE_ON)</code>
+— which happens to already match the target state, but as an
+unintentional gap, not a deliberate choice. The implementation should
+add the key explicitly (<code>FEATURE_STATE_ON</code>) so the intent is
+documented in the data rather than relying on an accidental
+default.</li>
+<li><code>full_quill</code>’s <code>states</code> dict is
+<code>{feature_id: FEATURE_STATE_ON for feature_id in FEATURE_DEFINITIONS}</code>
+— a comprehension over every registered feature. It already evaluates to
+<code>ON</code> for <code>future.publishing</code> and needs no
+change.</li>
+</ul>
+<h2 id="why-no-uimenu-code-changes-are-needed">Why no UI/menu code
+changes are needed</h2>
+<p>The gating added for the review-gate lock already reads the <em>live,
+active</em> profile on every call — confirmed by tracing the call
+chain:</p>
+<pre><code>main_frame_menu.py:
+    if self._feature_enabled(&quot;future.publishing&quot;):   # wraps the Publish submenu
+
+MainFrame._feature_enabled (main_frame.py:7082-7086):
+    return self.features.is_enabled(feature_id)
+
+FeatureManager.is_enabled (features.py:451-459):
+    if self.state_for(feature_id) == FEATURE_STATE_OFF: return False
+    ...
+
+FeatureManager.state_for (features.py:436-446):
+    if definition.locked_on: return ON
+    if definition.locked_off: return OFF          # &lt;- short-circuits today
+    if feature_id in self.overrides: return override
+    return self.active_profile.states.get(feature_id, ON)   # &lt;- profile-aware</code></pre>
+<p>The same chain backs <code>quill/ui/palette.py</code>’s
+<code>is_visible()</code> (Command Palette / Go to Anything filtering,
+via <code>COMMAND_FEATURE_MAP</code>). Once <code>locked_off</code> is
+lifted, both surfaces will automatically respect whichever profile is
+active — <strong>no changes are needed in
+<code>main_frame_menu.py</code>, <code>quill/ui/palette.py</code>, or
+<code>quill/core/feature_command_map.py</code></strong> for the profile
+restriction itself. The only source-of-truth file is
+<code>quill/core/features.py</code>’s
+<code>PROFILE_DEFINITIONS</code>.</p>
+<h2
+id="implementation-checklist-for-whenever-this-is-actually-built">Implementation
+checklist (for whenever this is actually built)</h2>
+<ol type="1">
+<li>In <code>quill/core/features.py</code>, change
+<code>"future.publishing"</code> in these <code>states</code> dicts:
+<ul>
+<li><code>PROFILE_ESSENTIAL</code> → <code>FEATURE_STATE_OFF</code></li>
+<li><code>PROFILE_WRITER</code> → <code>FEATURE_STATE_ON</code></li>
+<li><code>PROFILE_AUTHOR_STUDENT</code> → <strong>add</strong>
+<code>"future.publishing": FEATURE_STATE_ON</code> (key currently
+absent)</li>
+<li><code>"reader_and_student"</code> →
+<code>FEATURE_STATE_OFF</code></li>
+<li><code>"office_and_admin"</code> →
+<code>FEATURE_STATE_OFF</code></li>
+<li><code>PROFILE_DEVELOPER_POWER_TEXT</code> →
+<code>FEATURE_STATE_ON</code></li>
+<li><code>"low_vision"</code> → <code>FEATURE_STATE_OFF</code></li>
+<li><code>"braille_screen_reader_power_user"</code> →
+<code>FEATURE_STATE_OFF</code></li>
+<li><code>PROFILE_ACCESSIBILITY_PROFESSIONAL</code> →
+<code>FEATURE_STATE_OFF</code></li>
+<li><code>PROFILE_FULL_QUILL</code> — no change (comprehension already
+yields <code>ON</code>)</li>
+</ul></li>
+<li>Update <code>future.publishing</code>’s <code>description</code> in
+<code>quill/core/feature_catalog.py</code> to also state the profile
+restriction once it’s actually live (today’s description only mentions
+the review-gate lock — e.g. append something like “Once enabled,
+available by default in the Casual Writer, Author or Student, Developer
+and Power Text, and Full Quill profiles; off by default elsewhere, but
+any user can still turn it on individually via Manage Individual
+Features.”).</li>
+<li>No changes to <code>main_frame_menu.py</code>,
+<code>palette.py</code>, <code>feature_command_map.py</code>, or any
+dialog/menu surface (see above).</li>
+</ol>
+<h2 id="test-plan-for-whenever-this-is-implemented">Test plan (for
+whenever this is implemented)</h2>
+<ul>
+<li><strong>Direct profile-data assertions</strong> (independent of the
+live <code>locked_off</code> short-circuit — these test the
+<em>configured</em> values): for each of the 10 profile ids, assert
+<code>PROFILE_DEFINITIONS[profile_id].states["future.publishing"]</code>
+equals the target state in the table above. Natural home:
+<code>tests/unit/core/test_features.py</code> or a new test in
+<code>tests/unit/core/test_publishing_framework.py</code>.</li>
+<li><strong>Lock/profile interaction regression test</strong> (important
+— prevents a future session from mistaking “the profile data says ON”
+for “the feature is actually reachable”): with the profile states set as
+above and <code>locked_off</code> still <code>True</code>, assert
+<code>FeatureManager(active_profile_id=...).state_for("future.publishing")</code>
+is <code>FEATURE_STATE_OFF</code> for <strong>every</strong> profile,
+including the 3 that are configured <code>ON</code>. This documents the
+lock’s precedence explicitly rather than leaving it implicit.</li>
+<li><strong>Once the lock is separately lifted</strong> (a later,
+distinct change — not part of this profile-restriction work):
+<ul>
+<li><code>FeatureManager(active_profile_id=PROFILE_WRITER).is_enabled("future.publishing")</code>
+is <code>True</code>; same for <code>PROFILE_AUTHOR_STUDENT</code>,
+<code>PROFILE_DEVELOPER_POWER_TEXT</code>,
+<code>PROFILE_FULL_QUILL</code>.</li>
+<li><code>FeatureManager(active_profile_id=PROFILE_ESSENTIAL).is_enabled("future.publishing")</code>
+is <code>False</code>; same for the other 5 excluded profiles.</li>
+<li><code>open_individual_feature_toggles</code>’s feature list still
+includes <code>future.publishing</code> (proves the restriction is a
+soft per-profile default, not a hard lock — see below) once
+<code>locked_off</code> no longer excludes it from that screen.</li>
+</ul></li>
+</ul>
+<h2
+id="open-questions-flagged-assumptions-confirm-before-implementing">Open
+questions / flagged assumptions (confirm before implementing)</h2>
+<p>These are genuine product decisions, not engineering defaults —
+flagged explicitly rather than silently assumed:</p>
+<ol type="1">
+<li><strong>Soft vs. hard restriction.</strong> Every profile-scoped
+feature in this catalog today (<code>future.ai</code>,
+<code>future.character_inspector</code>, <code>future.cleanup</code>,
+and publishing itself) uses a <em>soft</em> default: the profile sets
+what’s on by default, but <code>open_individual_feature_toggles</code>
+lets any user override any non-locked feature regardless of profile.
+There is no existing mechanism in this codebase for a <em>hard</em>,
+unoverridable per-profile restriction — building one would be new
+infrastructure, not a data change. <strong>This plan assumes
+soft</strong> (matching every existing precedent). If “only available in
+writer and above” was meant literally — i.e., an Essential-profile user
+must never be able to turn it on even manually — that requires a
+different, larger design and should be raised explicitly before
+implementing.</li>
+<li><strong><code>FEATURE_STATE_ON</code>
+vs. <code>FEATURE_STATE_QUIET</code> for the 3 included
+profiles.</strong> This plan recommends <code>ON</code> (fully
+available, not gated behind a separate “show quiet/future features”
+toggle) since the instruction was “available,” not “discoverable for
+advanced users only.” <code>QUIET</code> would mean even Writer-profile
+users wouldn’t see it by default without first enabling that separate
+toggle.</li>
+<li><strong>Timing.</strong> This plan doesn’t decide <em>when</em> to
+make the <code>features.py</code> edit — it could land now (harmless and
+inert while <code>locked_off=True</code> stays in place) so it’s ready
+the instant the review-gate lock is lifted, or it could be deferred
+until the lock-lifting decision is made. That’s a separate “when”
+question for the user, not an engineering call.</li>
+</ol>
+<h2 id="relationship-to-the-rest-of-the-roadmap">Relationship to the
+rest of the roadmap</h2>
+<p>This is a refinement of the already-closed
+publishing-providers-framework roadmap, not a new roadmap phase. See
+<code>codex-notes/plans/publishing-providers-framework.md</code> for the
+full history; a one-paragraph pointer to this file has been appended
+there.</p>
+</body>
+</html>
