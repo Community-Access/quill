@@ -45,10 +45,10 @@ SpeechRecognition>=3.17.0
 
 # Native Windows OCR (OCR-1) lives in pyproject's [ocr] extra, not here. It is
 # bundled into packaged Windows builds (scripts/build_windows_distribution.py),
-# but the winsdk wheel only ships for stable CPython releases, so listing it in
-# this catch-all requirements file would break `pip install` / tooling envs on
-# newer/older interpreters. Install it explicitly with: pip install winsdk
-# (or `pip install .[ocr]`) on a supported Windows Python.
+# but the winrt-* OCR wheels are Windows-only, so listing them in this
+# catch-all requirements file would break `pip install` / tooling envs on
+# non-Windows interpreters. Install them explicitly with `pip install .[ocr]`
+# on a supported Windows Python.
 
 # Structured document import (Word/PowerPoint/Excel/Pages/PDF fallback).
 # Only the converters Quill actually routes through MarkItDown are pulled in

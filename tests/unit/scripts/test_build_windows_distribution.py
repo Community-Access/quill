@@ -49,7 +49,17 @@ version = "2.4.6"
         encoding="utf-8",
     )
 
-    bundle = build_windows_distribution(pyproject, tmp_path / "dist")
+    # Kokoro ships ~120 MB of model files; stage them from a local fake dir so
+    # this offline test never downloads them (production downloads when no dir
+    # is given). The two filenames must match _stage_kokoro's expectations.
+    fake_kokoro_dir = tmp_path / "kokoro-src"
+    fake_kokoro_dir.mkdir()
+    (fake_kokoro_dir / "kokoro-v1.0.int8.onnx").write_text("model", encoding="utf-8")
+    (fake_kokoro_dir / "voices-v1.0.bin").write_text("voices", encoding="utf-8")
+
+    bundle = build_windows_distribution(
+        pyproject, tmp_path / "dist", kokoro_dir=fake_kokoro_dir
+    )
 
     portable_dir = tmp_path / "dist" / "portable"
     installer_script = tmp_path / "dist" / "installer" / "quill.iss"
@@ -96,6 +106,11 @@ version = "2.4.6"
     assert manifest["speechAssets"]["dectalk"]["downloadable"] is True
     assert manifest["speechAssets"]["espeak"]["downloadable"] is True
     assert manifest["speechAssets"]["piper"]["downloadable"] is True
+    # Kokoro ships at the bundle root (kokoro-models/), the location the runtime
+    # resolves a bundled copy from, not under tools/speech and not as a component.
+    assert manifest["speechAssets"]["kokoro"]["bundled"] is True
+    assert (portable_dir / "kokoro-models" / "kokoro-v1.0.int8.onnx").exists()
+    assert (portable_dir / "kokoro-models" / "voices-v1.0.bin").exists()
 
     assert installer_script.exists()
     assert bundle["installer_script"] == str(installer_script)
@@ -348,11 +363,16 @@ version = "3.0.0"
     fake_pandoc_dir = tmp_path / "pandoc"
     fake_pandoc_dir.mkdir()
     (fake_pandoc_dir / "pandoc.exe").write_text("binary", encoding="utf-8")
+    fake_kokoro_dir = tmp_path / "kokoro-src"
+    fake_kokoro_dir.mkdir()
+    (fake_kokoro_dir / "kokoro-v1.0.int8.onnx").write_text("model", encoding="utf-8")
+    (fake_kokoro_dir / "voices-v1.0.bin").write_text("voices", encoding="utf-8")
 
     bundle = build_windows_distribution(
         pyproject,
         tmp_path / "dist",
         bundled_tool_dirs={"pandoc": fake_pandoc_dir},
+        kokoro_dir=fake_kokoro_dir,
     )
 
     manifest = json.loads(
@@ -361,6 +381,9 @@ version = "3.0.0"
     assert "pandoc" in manifest["bundledTools"]
     assert "speech/piper" in manifest["bundledTools"]
     assert manifest["speechAssets"]["dectalk"]["bundled"] is True
+    # Kokoro is staged to the bundle root, not tools/, and not via bundledTools.
+    assert manifest["speechAssets"]["kokoro"]["bundled"] is True
+    assert (tmp_path / "dist" / "portable" / "kokoro-models" / "voices-v1.0.bin").exists()
     assert (tmp_path / "dist" / "portable" / "tools" / "pandoc" / "pandoc.exe").exists()
     assert bundle["portable_dir"] == str(tmp_path / "dist" / "portable")
 

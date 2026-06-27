@@ -4,6 +4,12 @@
 
 Next public beta. Rolls up the 0.7.0 line plus subsequent fixes. The GitHub Pages update feed is intentionally left pointed at the prior release so existing testers are not prompted to update until 0.8.0 is published as a release.
 
+### Runtime and packaging
+
+- **Bundled Python runtime moved to 3.13.** The Windows installer's embedded interpreter is now CPython **3.13.14** (was 3.12.6). Minimum supported Python stays 3.12. Every bundled dependency ships a 3.13 Windows wheel.
+- **Native Windows OCR migrated off `winsdk` to the `winrt-*` packages.** `winsdk` (the legacy monolith) shipped no wheel past CPython 3.12, which blocked the 3.13 move; it is replaced by Microsoft's pywinrt namespace packages (`winrt-runtime`, `winrt-Windows.Media.Ocr`, and the Graphics.Imaging/Globalization/Storage namespaces), which ship 3.13 wheels. The projected API is identical, so zero-install Windows OCR (OCR-1) is unchanged for users. Internal: `quill/platform/windows/windows_ocr.py` imports from `winrt.windows.*`; the availability flag is now `_WINRT_AVAILABLE`.
+- **Kokoro neural voices are now bundled in the installer.** The Kokoro ONNX model and voices ship under `{app}/kokoro-models`, so the engine works offline at first launch without the ~114 MB download. The build stages them from a local directory (`--kokoro-dir`) or downloads and SHA-256-verifies them from the pinned kokoro-onnx release.
+
 ### Documentation accuracy and locked-feature hygiene
 
 - **Documentation reconciled against the code.** All user-facing docs (user guide, release notes, control reference, PRD, keybinding standard) were verified against `quill/ui/main_frame_menu.py`, `quill/core/keymap.py`, and `quill/core/feature_catalog.py`. Locked-off features (**BITS Whisperer**, **GLOW**) were removed from the user-facing docs and preserved in `docs/planning/deferred-locked-features.md`; offline-speech menu paths were corrected to the flat **Tools > Speech** (the gated "Whisperer" submenu no longer appears in docs); and stale keybindings/menu names were fixed to match the code — AI Grammar and Style (`Ctrl+Alt+Shift+G`), Translate Selection (`Ctrl+Alt+Shift+T`), AI Thesaurus (`Ctrl+Alt+Shift+H`), Compare navigation (`Ctrl+Alt+Shift+.` / `,` / `D`), Verbosity Quiet/Meeting/Undo (no default key), Replace (`Ctrl+H`), Browser Preview (`QUILL Key + V`), List submenu under **Insert** (not Format), the **Advanced** Tools submenu (was documented as "Power Tools"), and **Keymap Editor** (was "Keyboard Manager").

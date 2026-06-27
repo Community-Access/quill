@@ -16,6 +16,7 @@ authors = [
 classifiers = [
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Operating System :: Microsoft :: Windows",
   "Operating System :: MacOS",
 ]
@@ -93,12 +94,25 @@ mp3 = ["mutagen>=1.47"]
 # an "ElevenLabs API key" credential is configured. All calls go through the
 # host-owned gateway quill/core/ai/elevenlabs_tts.py (the only importer of the SDK).
 elevenlabs = ["elevenlabs>=1.0.0"]
-# Native Windows OCR (OCR-1): a thin pip wheel projecting the Windows.Media.Ocr
+# Native Windows OCR (OCR-1): thin pip wheels projecting the Windows.Media.Ocr
 # WinRT APIs that ship inside Windows 10/11. The OCR engine itself is a built-in
-# OS component, so end users install nothing extra — bundling this wheel makes
+# OS component, so end users install nothing extra — bundling these wheels makes
 # the zero-install Windows backend available; Tesseract (OCR-2) stays a separate
 # opt-in install for users who choose it.
-ocr = ["winsdk>=1.0.0b10; sys_platform == 'win32'"]
+#
+# These are the Microsoft pywinrt ``winrt-*`` namespace packages. They replace
+# the legacy ``winsdk`` monolith, whose wheels stopped at cp312 and so blocked
+# the embedded-runtime move to Python 3.13; the projected API is identical (see
+# quill/platform/windows/windows_ocr.py). Only the directly-imported namespaces
+# plus winrt-runtime are listed; pywinrt pulls the rest (Foundation,
+# Storage.Streams, ...) transitively.
+ocr = [
+    "winrt-runtime>=3.2.1; sys_platform == 'win32'",
+    "winrt-Windows.Media.Ocr>=3.2.1; sys_platform == 'win32'",
+    "winrt-Windows.Graphics.Imaging>=3.2.1; sys_platform == 'win32'",
+    "winrt-Windows.Globalization>=3.2.1; sys_platform == 'win32'",
+    "winrt-Windows.Storage>=3.2.1; sys_platform == 'win32'",
+]
 # Kokoro neural TTS (offline, no GPU/torch required). kokoro-onnx runs the Kokoro
 # voice model through onnxruntime (CPU). Voice model files (~114 MB) are downloaded
 # on first use via Voice Picker > Download Kokoro and stored in the app data dir.

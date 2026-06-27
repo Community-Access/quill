@@ -57,9 +57,12 @@ _KOKORO_ONNX_PACK = "kokoro-onnx"
 _KOKORO_ONNX_MODULE = "kokoro_onnx"
 
 # kokoro-onnx pulls in onnxruntime as a transitive dep; soundfile handles WAV I/O.
+# Keep these floors in sync with the pyproject ``kokoro`` extra -- the latest
+# kokoro-onnx is 0.5.0 (capped at Python <3.14), so an earlier >=0.9 floor here
+# was unsatisfiable and the on-demand install could never resolve a version.
 _KOKORO_ONNX_REQUIREMENTS: tuple[str, ...] = (
-    "kokoro-onnx>=0.9",
-    "soundfile>=0.12",
+    "kokoro-onnx>=0.5.0",
+    "soundfile>=0.14.0",
 )
 
 _INSTALL_TIMEOUT_S = 1800.0

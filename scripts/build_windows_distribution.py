@@ -48,14 +48,14 @@ from quill.branding import APP_DISPLAY_NAME, APP_ORGANIZATION  # noqa: E402
 
 # Pinned Windows embeddable Python. Bumping these values is the only
 # thing needed to ship on a new Python point release.
-EMBEDDED_PYTHON_VERSION = "3.12.6"
+EMBEDDED_PYTHON_VERSION = "3.13.14"
 EMBEDDED_PYTHON_URL = (
     f"https://www.python.org/ftp/python/{EMBEDDED_PYTHON_VERSION}/"
     f"python-{EMBEDDED_PYTHON_VERSION}-embed-amd64.zip"
 )
 # SHA-256 of the official embeddable zip. If python.org rotates the file
 # the build will fail loudly rather than ship an unverified runtime.
-EMBEDDED_PYTHON_SHA256 = "a86a2e28870967745d255cc597d1e4d19ae79e65e927cdc324baa0256202231c"
+EMBEDDED_PYTHON_SHA256 = "90b4e5b9898b72d744650524bff92377c367f44bd5fbd09e3148656c080ad907"
 
 DECTALK_RELEASE_ZIP_URL = (
     "https://github.com/dectalk/dectalk/releases/download/2023-10-30/vs2022.zip"
@@ -82,6 +82,25 @@ PIPER_PINNED_URL = (
     "https://github.com/rhasspy/piper/releases/download/2023.11.14-2/piper_windows_amd64.zip"
 )
 PIPER_PINNED_SHA256 = "f3c58906402b24f3a96d92145f58acba6d86c9b5db896d207f78dc80811efcea"
+
+# Kokoro neural-TTS model + voices. Unlike the other engines, Kokoro ships via
+# the generic ..\portable\* installer copy under {app}\kokoro-models -- the exact
+# location the runtime resolves in quill.core.read_aloud._bundled_kokoro_model_dir
+# -- so there is no dedicated installer component (see the test that asserts
+# "speechkokoro" is absent). The filenames mirror KOKORO_ONNX_MODEL_FILENAME /
+# KOKORO_ONNX_VOICES_FILENAME in read_aloud.py; keep them in sync. _stage_kokoro
+# downloads + SHA-256 verifies these unless a local --kokoro-dir is provided.
+KOKORO_MODEL_FILENAME = "kokoro-v1.0.int8.onnx"
+KOKORO_VOICES_FILENAME = "voices-v1.0.bin"
+KOKORO_MODEL_URL = (
+    "https://github.com/thewh1teagle/kokoro-onnx/releases/download/"
+    "model-files-v1.0/kokoro-v1.0.int8.onnx"
+)
+KOKORO_MODEL_SHA256 = "6e742170d309016e5891a994e1ce1559c702a2ccd0075e67ef7157974f6406cb"
+KOKORO_VOICES_URL = (
+    "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin"
+)
+KOKORO_VOICES_SHA256 = "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
 
 # GLOW is hidden for 0.5.0 (the core.glow feature is locked off), so the heavy
 # `glow` extra (quill-glow-core[glow], not yet on a public index) is NOT bundled
@@ -154,7 +173,12 @@ def main() -> int:
         "--kokoro-dir",
         type=Path,
         default=None,
-        help="Optional local Kokoro voices/models directory to bundle under portable\\tools\\speech\\kokoro.",
+        help=(
+            "Optional local directory holding the Kokoro model files "
+            "(kokoro-v1.0.int8.onnx, voices-v1.0.bin) to stage under "
+            "portable\\kokoro-models. When omitted the files are downloaded from "
+            "the pinned kokoro-onnx release and SHA-256 verified."
+        ),
     )
     parser.add_argument(
         "--whisper-dir",
@@ -202,11 +226,11 @@ def main() -> int:
                 "pandoc": args.pandoc_dir,
                 "speech/dectalk": args.dectalk_dir,
                 "speech/espeak-ng": args.espeak_dir,
-                "speech/kokoro": args.kokoro_dir,
                 "speech/whispercpp": args.whisper_dir,
             }.items()
             if path is not None
         },
+        kokoro_dir=args.kokoro_dir,
         compile_installer=args.compile_installer,
         iscc_path=args.iscc_path,
     )
@@ -225,6 +249,7 @@ def build_windows_distribution(
     bundle_python: bool = False,
     source_root: Path | None = None,
     bundled_tool_dirs: dict[str, Path] | None = None,
+    kokoro_dir: Path | None = None,
     braille_pack_dir: Path | None = None,
     compile_installer: bool = False,
     iscc_path: Path | None = None,
@@ -261,6 +286,9 @@ def build_windows_distribution(
     if "speech/piper" not in effective_bundled_tools:
         effective_bundled_tools["speech/piper"] = _download_and_stage_piper(portable_dir)
     bundled_tools = _stage_bundled_tools(portable_dir, effective_bundled_tools)
+    # Kokoro is staged separately (not via _stage_bundled_tools): it ships under
+    # the bundle-root kokoro-models/ folder the runtime looks for, not tools/.
+    _stage_kokoro(portable_dir, kokoro_dir)
 
     readme = portable_dir / "README.txt"
     readme.write_text(
@@ -1308,6 +1336,47 @@ def _stage_bundled_tools(portable_dir: Path, bundled_tool_dirs: dict[str, Path])
     return sorted(bundled)
 
 
+def _stage_kokoro(portable_dir: Path, source_dir: Path | None) -> bool:
+    """Stage the Kokoro ONNX model + voices into portable/kokoro-models/.
+
+    The runtime (quill.core.read_aloud._bundled_kokoro_model_dir) resolves a
+    bundled Kokoro copy from {app}/kokoro-models, so the two files ship via the
+    generic ..\\portable\\* installer copy rather than a dedicated component.
+
+    When *source_dir* is given (the --kokoro-dir flag) the model and voices are
+    copied from there; otherwise they are downloaded from the pinned kokoro-onnx
+    release and SHA-256 verified. An already-staged pair is reused. Returns True
+    when both files are present after staging.
+    """
+    target = portable_dir / "kokoro-models"
+    target.mkdir(parents=True, exist_ok=True)
+    model_dst = target / KOKORO_MODEL_FILENAME
+    voices_dst = target / KOKORO_VOICES_FILENAME
+    if model_dst.exists() and voices_dst.exists():
+        print("Kokoro models already staged; skipping.")
+        return True
+
+    if source_dir is not None:
+        model_src = source_dir / KOKORO_MODEL_FILENAME
+        voices_src = source_dir / KOKORO_VOICES_FILENAME
+        missing = [str(p) for p in (model_src, voices_src) if not p.exists()]
+        if missing:
+            raise RuntimeError(
+                "Kokoro source directory is missing required files: " + ", ".join(missing)
+            )
+        shutil.copy2(model_src, model_dst)
+        shutil.copy2(voices_src, voices_dst)
+        print(f"Kokoro models copied from {source_dir} to {target}")
+        return True
+
+    print(f"Downloading Kokoro model from {KOKORO_MODEL_URL}...")
+    _download_with_verification(KOKORO_MODEL_URL, model_dst, expected_sha256=KOKORO_MODEL_SHA256)
+    print(f"Downloading Kokoro voices from {KOKORO_VOICES_URL}...")
+    _download_with_verification(KOKORO_VOICES_URL, voices_dst, expected_sha256=KOKORO_VOICES_SHA256)
+    print(f"Kokoro models staged to {target}")
+    return True
+
+
 def _download_and_stage_dectalk_release(portable_dir: Path) -> Path:
     speech_root = portable_dir / "_speech-download" / "dectalk"
     speech_root.mkdir(parents=True, exist_ok=True)
@@ -1349,6 +1418,18 @@ def _speech_asset_manifest(
             "exists": engine_dir.exists(),
             "downloadable": True,
         }
+    # Kokoro lives at the bundle root (kokoro-models/), not under tools/speech,
+    # because that is where the runtime resolves a bundled copy via QUILL_APP_ROOT.
+    kokoro_dir = portable_dir / "kokoro-models"
+    kokoro_ready = (kokoro_dir / KOKORO_MODEL_FILENAME).exists() and (
+        kokoro_dir / KOKORO_VOICES_FILENAME
+    ).exists()
+    manifest["kokoro"] = {
+        "bundled": kokoro_ready,
+        "path": str(kokoro_dir) if kokoro_ready else "",
+        "exists": kokoro_ready,
+        "downloadable": True,
+    }
     return manifest
 
 
