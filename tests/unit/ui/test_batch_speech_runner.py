@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from types import SimpleNamespace
 
+from quill.ui.batch_speech_export_dialog import BatchSpeechRequest
 from quill.ui.batch_speech_runner import (
     _book_output_path,
     _build_translator,
@@ -12,7 +13,6 @@ from quill.ui.batch_speech_runner import (
     _make_temp_root,
     _resolve_chapter_sound_path,
 )
-from quill.ui.batch_speech_export_dialog import BatchSpeechRequest
 
 
 def _frame(sound_id: str, pack_path: str = "") -> SimpleNamespace:
