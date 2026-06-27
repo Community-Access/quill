@@ -29,6 +29,8 @@ dependencies = [
     # Windows has no system IANA timezone database, so stdlib zoneinfo needs
     # this package to resolve real zone names (publishing schedule dialog).
     "tzdata>=2025.1",
+    # Native .docx reading/writing without requiring Pandoc.
+    "python-docx>=1.1.2",
 ]
 
 [project.optional-dependencies]
