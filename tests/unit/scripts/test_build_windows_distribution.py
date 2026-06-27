@@ -275,7 +275,7 @@ def test_uninstaller_offers_to_remove_custom_data_location() -> None:
     assert "function ReadCustomDataDir(): String;" in code
     assert "storage-mode.json" in code
     # Only an explicit custom mode is honoured (appdata/portable carry no path).
-    assert '\'"custom"\'' in code
+    assert "'\"custom\"'" in code
     assert "IsSafeCustomDataDir(CustomDir)" in code
     assert "DelTree(CustomDir, True, True, True);" in code
     # The pointer read must precede the %APPDATA%\Quill deletion, or the file

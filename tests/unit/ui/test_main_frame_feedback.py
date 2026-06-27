@@ -295,7 +295,7 @@ def test_check_for_updates_can_close_app_before_installer(monkeypatch) -> None:
     monkeypatch.setattr(
         main_frame_module,
         "fetch_update_manifest",
-        lambda _url: UpdateManifest(
+        lambda *_a, **_k: UpdateManifest(
             version="0.1.1",
             download_url="https://example.com/Quill-Setup-0.1.1.exe",
             published_at="2026-05-30T00:00:00Z",
@@ -331,7 +331,7 @@ def test_check_for_updates_allows_download_without_immediate_exit(monkeypatch) -
     monkeypatch.setattr(
         main_frame_module,
         "fetch_update_manifest",
-        lambda _url: UpdateManifest(
+        lambda *_a, **_k: UpdateManifest(
             version="0.1.1",
             download_url="https://example.com/Quill-Setup-0.1.1.exe",
             published_at="2026-05-30T00:00:00Z",
@@ -391,7 +391,7 @@ def test_check_for_updates_silent_honors_skipped_version(monkeypatch) -> None:
     monkeypatch.setattr(
         main_frame_module,
         "fetch_update_manifest",
-        lambda _url: (_ for _ in ()).throw(main_frame_module.URLError("offline")),
+        lambda *_a, **_k: (_ for _ in ()).throw(main_frame_module.URLError("offline")),
     )
     release = GitHubRelease(
         version="9.9.9",

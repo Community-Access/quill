@@ -904,7 +904,7 @@ def build_inno_setup_script(
         "",
         "// -- Uninstall: discover a custom data location ----------------------------",
         "// When the user chose a custom data folder, save_storage_mode writes",
-        "// {\"mode\":\"custom\",\"path\":\"...\"} into storage-mode.json under",
+        '// {"mode":"custom","path":"..."} into storage-mode.json under',
         "// %APPDATA%\\Quill (quill.core.storage_mode). The pointer therefore lives",
         "// INSIDE the folder the uninstaller deletes, so it must be read first --",
         "// otherwise the custom directory is silently orphaned on 'remove all data'.",
