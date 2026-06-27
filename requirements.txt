@@ -37,8 +37,13 @@ pyenchant>=3.3.0
 # Windows/Linux use llama.cpp (CPU, GGUF) — also download a GGUF model
 # (e.g. Phi-4-mini Q4) into <app data>/models or set QUILL_LLAMA_MODEL.
 # Use llama-cpp-python CPU wheels to avoid source builds and Windows long-path failures.
+# Pin to the newest version with a prebuilt CPU wheel on the index below
+# (currently 0.3.19, cp310-cp313 win_amd64). A higher floor (>=0.3.31) has no
+# prebuilt wheel, so pip silently falls back to the PyPI sdist and compiles
+# llama.cpp from source via CMake -- which hangs. Bump this only when the index
+# publishes a newer wheel for the supported Python versions.
 --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
-llama-cpp-python>=0.3.31
+llama-cpp-python==0.3.19
 
 # Dictation / voice input (mic permission required).
 SpeechRecognition>=3.17.0

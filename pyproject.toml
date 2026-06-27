@@ -70,7 +70,11 @@ audio = ["sound_lib>=0.83"]
 ssh = ["paramiko>=5.0.0"]
 # On-device AI for the Ask Quill chat. Windows/Linux use llama.cpp (CPU, GGUF);
 # a GGUF model (e.g. Phi-4-mini Q4) goes in <app data>/models or QUILL_LLAMA_MODEL.
-ai = ["llama-cpp-python>=0.3.31"]
+# Pinned to the newest version with a prebuilt CPU wheel on the abetlen index
+# (see requirements.txt). A higher floor has no wheel and makes pip compile
+# llama.cpp from source. Install via requirements.txt (which carries the
+# --extra-index-url) or pass that index so the wheel resolves.
+ai = ["llama-cpp-python==0.3.19"]
 dictation = ["SpeechRecognition>=3.17.0"]
 # Offline speech-to-text (#617). The whisper.cpp executable + GGML models are
 # managed out-of-band (AI > Speech > Manage Speech Models); this optional extra
