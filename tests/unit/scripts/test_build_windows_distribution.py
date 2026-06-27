@@ -57,9 +57,7 @@ version = "2.4.6"
     (fake_kokoro_dir / "kokoro-v1.0.int8.onnx").write_text("model", encoding="utf-8")
     (fake_kokoro_dir / "voices-v1.0.bin").write_text("voices", encoding="utf-8")
 
-    bundle = build_windows_distribution(
-        pyproject, tmp_path / "dist", kokoro_dir=fake_kokoro_dir
-    )
+    bundle = build_windows_distribution(pyproject, tmp_path / "dist", kokoro_dir=fake_kokoro_dir)
 
     portable_dir = tmp_path / "dist" / "portable"
     installer_script = tmp_path / "dist" / "installer" / "quill.iss"
