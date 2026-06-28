@@ -268,11 +268,22 @@ def build_windows_distribution(
     installer_dir.mkdir(parents=True, exist_ok=True)
     reference_installer_dir.mkdir(parents=True, exist_ok=True)
 
-    # The portable bundle ships an empty ``data/`` folder so the install is
-    # recognised as portable from first launch with zero setup. ``data/`` is
-    # the user's deliberate opt-in: a folder with quill.exe but no data/ is
-    # not portable (see quill.core.storage_mode._has_portable_evidence).
-    (portable_dir / "data").mkdir(exist_ok=True)
+    # The portable bundle ships a ``data/`` folder so the install is recognised
+    # as portable from first launch with zero setup. ``data/`` is the user's
+    # deliberate opt-in: a folder with quill.exe but no data/ is not portable
+    # (see quill.core.storage_mode._has_portable_evidence). The keep-file makes
+    # the folder non-empty so it survives zipping/unzipping -- many archivers
+    # drop empty directories, which would silently break portable detection.
+    data_dir = portable_dir / "data"
+    data_dir.mkdir(exist_ok=True)
+    (data_dir / "README.txt").write_text(
+        "This folder holds your QUILL data when you choose portable mode on first\n"
+        "run (settings, keymap, and documents you keep here). It ships empty; QUILL\n"
+        "fills it the first time you opt into portable storage. Keeping this folder\n"
+        "next to quill.exe is what marks this bundle as portable -- do not delete\n"
+        "it.\n",
+        encoding="utf-8",
+    )
 
     staged_docs = _stage_distribution_docs(portable_dir, resolved_source_root)
     effective_bundled_tools = dict(bundled_tool_dirs or {})
@@ -359,7 +370,7 @@ def build_windows_distribution(
 
     python_runtime_dir: Path | None = None
     if bundle_python:
-        python_runtime_dir = bundle_embedded_python(
+        staged_runtime = bundle_embedded_python(
             portable_dir / "python",
             source_root=resolved_source_root,
             pyproject=pyproject,
@@ -367,17 +378,25 @@ def build_windows_distribution(
             launcher_file_version=iss_numeric_version,
             build_cache_dir=output_dir / "_build-tools",
         )
-        # Hoist the stamped quill.exe from python/ to the bundle root so
-        # double-clicking quill.exe at the bundle root launches the app,
-        # matching the detection contract in storage_mode._has_portable_evidence
-        # (the portable anchor is the folder that contains quill.exe + data/).
-        stamped = python_runtime_dir / "quill.exe"
-        if stamped.exists():
-            shutil.copy2(stamped, portable_dir / "quill.exe")
-        else:
-            print(
-                f"Warning: stamped launcher {stamped} not found; bundle-root quill.exe not written."
-            )
+        # Flatten the runtime to the bundle root. quill.exe (a VERSIONINFO-stamped
+        # pythonw.exe) can only bootstrap when its python313.dll/zip/_pth sit next
+        # to it; nesting them in python\ orphaned the root quill.exe (#722). With
+        # the runtime at the root, double-clicking quill.exe loads its own
+        # interpreter and the sitecustomize self-run hook starts QUILL -- no
+        # python\, no -m, no console, no .cmd. The runtime ships none of the
+        # already-staged bundle entries (data/docs/tools/vendor/kokoro-models/
+        # manifest.json/README.txt), so the move cannot clobber them; a future
+        # collision fails loudly rather than overwriting.
+        for entry in sorted(staged_runtime.iterdir()):
+            dest = portable_dir / entry.name
+            if dest.exists():
+                raise RuntimeError(
+                    f"Embedded-runtime file {entry.name!r} collides with a staged "
+                    f"bundle entry at {dest}; flatten would clobber it."
+                )
+            shutil.move(str(entry), str(dest))
+        staged_runtime.rmdir()
+        python_runtime_dir = portable_dir
 
     result = {
         "portable_dir": str(portable_dir),
@@ -394,6 +413,46 @@ def build_windows_distribution(
         )
         result["installer_exe"] = str(installer_exe)
     return result
+
+
+def _self_run_sitecustomize_source() -> str:
+    """Return the sitecustomize.py that makes quill.exe self-running.
+
+    Auto-imported at interpreter startup (the embeddable runtime's
+    ``python<ver>._pth`` enables ``import site``). When the running executable is
+    the stamped ``quill.exe`` and no script/module/args were given -- the argv a
+    bare double-click produces -- it launches QUILL directly and exits, so the
+    user never needs ``-m quill`` and there is no console window or .cmd flash.
+    Any other use of the embedded interpreter (``python.exe``, ``pip``,
+    ``quill.exe -m quill``) takes the no-op path and behaves normally.
+    """
+    return (
+        '"""Self-running launcher hook for the bundled quill.exe (build-generated)."""\n'
+        "import os\n"
+        "import sys\n"
+        "\n"
+        "\n"
+        "def _looks_like_bare_launch():\n"
+        '    if os.path.basename(sys.executable).lower() != "quill.exe":\n'
+        "        return False\n"
+        "    # A double-click gives the no-script interactive argv: [''] (or empty).\n"
+        '    return len(sys.argv) <= 1 and (not sys.argv or sys.argv[0] == "")\n'
+        "\n"
+        "\n"
+        "if _looks_like_bare_launch():\n"
+        "    try:\n"
+        "        from quill.__main__ import main\n"
+        "\n"
+        "        main()\n"
+        "    except SystemExit:\n"
+        "        raise\n"
+        "    except BaseException:\n"
+        "        import traceback\n"
+        "\n"
+        "        traceback.print_exc()\n"
+        "    finally:\n"
+        "        os._exit(0)\n"
+    )
 
 
 def _render_readme(
@@ -631,9 +690,9 @@ def build_inno_setup_script(
         "RestartApplications=no",
         "UninstallDisplayName={#AppName} {#AppVersion}",
         "; The bundled launcher carries a real icon so Add/Remove Programs",
-        "; shows one. BundledLauncherPath (see [Code]) prefers quill.exe at",
-        "; the bundle root -- a VERSIONINFO-stamped copy of pythonw.exe, see",
-        "; _stamp_quill_launcher -- then python\\quill.exe, then plain",
+        "; shows one. BundledLauncherPath (see [Code]) is {app}\\quill.exe -- a",
+        "; VERSIONINFO-stamped copy of pythonw.exe (see _stamp_quill_launcher)",
+        "; that sits next to the flattened embedded runtime -- then plain",
         "; pythonw.exe, and gracefully returns blank when no bundled runtime",
         "; is present (e.g. a dev build), in which case no icon is shown.",
         "UninstallDisplayIcon={code:BundledLauncherPath}",
@@ -705,7 +764,7 @@ def build_inno_setup_script(
         "; upgrade would only make installs slow for no safety gain. Bundled",
         "; tools/voices/braille live under {app}\\tools and {app}\\vendor; user",
         "; documents live in %APPDATA%\\Quill -- neither is touched here.",
-        'Type: filesandordirs; Name: "{app}\\python\\Lib\\site-packages\\quill"',
+        'Type: filesandordirs; Name: "{app}\\Lib\\site-packages\\quill"',
         'Type: filesandordirs; Name: "{app}\\__pycache__"',
         "; NOTE: user CONFIG in %APPDATA%\\Quill (settings.json, keymap.json,",
         "; features.json) is intentionally NOT deleted here. Those stores now",
@@ -817,36 +876,30 @@ def build_inno_setup_script(
         "; user's data in %APPDATA%\\Quill is decided by an explicit prompt in",
         "; [Code] below -- we never silently keep or wipe it.",
         'Type: filesandordirs; Name: "{app}\\__pycache__"',
-        "; {app}\\python is the bundled embedded runtime: wholly owned by Quill,",
-        "; no user data lives there (that's %APPDATA%\\Quill). Python generates",
-        "; __pycache__ dirs across Lib\\site-packages on first run (the build",
-        "; uses --no-compile), and those nest arbitrarily deep, so the only",
+        "; {app}\\Lib is the bundled embedded runtime's library tree: wholly owned",
+        "; by Quill, no user data lives there (that's %APPDATA%\\Quill). Python",
+        "; generates __pycache__ dirs across Lib\\site-packages on first run (the",
+        "; build uses --no-compile), and those nest arbitrarily deep, so the only",
         "; reliable cleanup is removing the whole tree rather than chasing",
         "; specific __pycache__ paths.",
-        'Type: filesandordirs; Name: "{app}\\python"',
+        'Type: filesandordirs; Name: "{app}\\Lib"',
         "",
         "[Code]",
         "// -- Bundled launcher resolution ------------------------------------------------",
-        "// IMPORTANT: prefer python\\quill.exe (inside the runtime dir) over the",
-        "// hoisted {app}\\quill.exe at the bundle root. Both are stamped copies of",
-        "// pythonw.exe (issue #615), but the root copy is ORPHANED from the runtime:",
-        "// python313.dll, python313.zip, the .pyd modules, and python313._pth all",
-        "// live in python\\, not at the root. So a root-launched quill.exe cannot",
-        "// find the bundled interpreter and either binds to a system Python (wrong",
-        "// site-packages -> crash) or, on a clean machine with no system Python,",
-        "// fails to start at all -- which broke the Start Menu / Desktop shortcuts.",
-        "// python\\quill.exe sits next to the runtime, so it loads the embedded",
-        "// interpreter in isolation (correct sys.prefix, pywin32 bootstrap runs).",
-        "// The root {app}\\quill.exe stays only as the portable-evidence marker and",
-        "// as a last-resort fallback for dev builds that ship no python\\ runtime.",
+        "// The embedded runtime is flattened into {app}: python313.dll, python313.zip,",
+        "// the .pyd modules and python313._pth sit at the install root next to",
+        "// {app}\\quill.exe (a VERSIONINFO-stamped copy of pythonw.exe, issue #615).",
+        "// So {app}\\quill.exe loads the bundled interpreter in isolation (correct",
+        "// sys.prefix, pywin32 bootstrap runs) and the sitecustomize self-run hook",
+        "// starts QUILL. pythonw.exe is the no-stamp fallback; both are absent only",
+        "// in a dev build with no bundled runtime, where this returns blank and no",
+        "// shortcut/icon is wired.",
         "function BundledLauncherPath(Param: String): String;",
         "begin",
-        "  if FileExists(ExpandConstant('{app}\\python\\quill.exe')) then",
-        "    Result := ExpandConstant('{app}\\python\\quill.exe')",
-        "  else if FileExists(ExpandConstant('{app}\\python\\pythonw.exe')) then",
-        "    Result := ExpandConstant('{app}\\python\\pythonw.exe')",
-        "  else if FileExists(ExpandConstant('{app}\\quill.exe')) then",
+        "  if FileExists(ExpandConstant('{app}\\quill.exe')) then",
         "    Result := ExpandConstant('{app}\\quill.exe')",
+        "  else if FileExists(ExpandConstant('{app}\\pythonw.exe')) then",
+        "    Result := ExpandConstant('{app}\\pythonw.exe')",
         "  else",
         "    Result := '';",
         "end;",
@@ -1128,6 +1181,16 @@ def bundle_embedded_python(
     if "#import site" in pth_text:
         pth_text = pth_text.replace("#import site", "import site")
         pth.write_text(pth_text, encoding="utf-8")
+
+    # Make the stamped quill.exe a self-running launcher (no console window, no
+    # "-m quill" argument, no .cmd shim). site is enabled above, so Python
+    # auto-imports this sitecustomize at startup; it launches QUILL only when the
+    # running executable is quill.exe and no script/args were given (a bare
+    # double-click). Every other use of the runtime -- python.exe, pip during
+    # this build, an explicit "quill.exe -m quill" -- is left untouched.
+    (target_dir / "sitecustomize.py").write_text(
+        _self_run_sitecustomize_source(), encoding="utf-8"
+    )
 
     python_exe = target_dir / "python.exe"
     if not python_exe.exists():
