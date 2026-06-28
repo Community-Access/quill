@@ -1202,9 +1202,8 @@ def bundle_embedded_python(
     # running executable is quill.exe and no script/args were given (a bare
     # double-click). Every other use of the runtime -- python.exe, pip during
     # this build, an explicit "quill.exe -m quill" -- is left untouched.
-    (target_dir / "sitecustomize.py").write_text(
-        _self_run_sitecustomize_source(), encoding="utf-8"
-    )
+    sitecustomize = target_dir / "sitecustomize.py"
+    sitecustomize.write_text(_self_run_sitecustomize_source(), encoding="utf-8")
 
     python_exe = target_dir / "python.exe"
     if not python_exe.exists():

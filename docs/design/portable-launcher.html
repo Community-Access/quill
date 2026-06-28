@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>portable-launcher</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">portable-launcher</h1>
+</header>
+<h1 id="portable-installed-launcher-contract">Portable &amp; Installed
+Launcher Contract</h1>
+<blockquote>
+<p><strong>Why this file exists.</strong> Twice now the Windows launcher
+has broken in a way that shipped to users: the bundle-root
+<code>quill.exe</code> could not start. This document is the durable
+contract for how QUILL launches on Windows so the same class of bug
+cannot return unnoticed. The rules below are enforced by tests in
+<code>tests/unit/scripts/test_build_windows_distribution.py</code>; if
+you change the packaging, change this doc and those guards together.</p>
+</blockquote>
+<h2 id="the-one-invariant">1. The one invariant</h2>
+<p><strong>The <code>quill.exe</code> a user clicks must sit in the same
+directory as the embedded Python runtime it needs
+(<code>python313.dll</code>, <code>python313.zip</code>,
+<code>python313._pth</code>, the <code>*.pyd</code> modules), and it
+must start QUILL with no command-line arguments.</strong></p>
+<p><code>quill.exe</code> is a byte-for-byte copy of the embeddable
+distribution’s <code>pythonw.exe</code>, re-stamped with QUILL’s
+VERSIONINFO via <code>rcedit</code> (so a screen reader’s “what app is
+this” reads <em>QUILL for All</em>, not <em>Python</em>). It is
+<strong>still just <code>pythonw.exe</code></strong> — it has no idea it
+should run QUILL, and a bare <code>pythonw.exe</code> double-click does
+nothing useful. Two things make it work:</p>
+<ol type="1">
+<li><strong>Co-location with the runtime.</strong> A Windows executable
+finds its dependent DLLs (<code>python313.dll</code>) next to itself. If
+the runtime is in a <code>python\</code> subfolder but
+<code>quill.exe</code> is at the bundle root, the root copy is
+<em>orphaned</em>: on a clean machine it fails to start; on a machine
+with a system Python it binds to the wrong interpreter and crashes. This
+is the bug.</li>
+<li><strong>A self-run hook.</strong> See §2.</li>
+</ol>
+<h2 id="how-quill.exe-self-runs-sitecustomize.py">2. How
+<code>quill.exe</code> self-runs: <code>sitecustomize.py</code></h2>
+<p>The build writes a generated <code>sitecustomize.py</code> next to
+the runtime (<code>scripts/build_windows_distribution.py</code> →
+<code>_self_run_sitecustomize_source()</code>, written in
+<code>bundle_embedded_python()</code> right after the <code>._pth</code>
+is patched to enable <code>import site</code>).</p>
+<p>Python auto-imports <code>sitecustomize</code> at interpreter startup
+whenever <code>site</code> is enabled. The hook checks two things and,
+only when both hold, starts QUILL and exits:</p>
+<ul>
+<li>the running executable is <strong><code>quill.exe</code></strong>
+(<code>os.path.basename(sys.executable)</code>), and</li>
+<li><strong>no script/module/args</strong> were given — the argv a bare
+double-click produces
+(<code>len(sys.argv) &lt;= 1 and (not sys.argv or sys.argv[0] == "")</code>).</li>
+</ul>
+<p>So:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Invocation</th>
+<th><code>sitecustomize</code> branch</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Double-click <code>quill.exe</code></td>
+<td>self-run</td>
+<td>QUILL launches (no console, no <code>-m</code>)</td>
+</tr>
+<tr>
+<td><code>quill.exe -m quill</code></td>
+<td>no-op</td>
+<td>normal <code>-m quill</code> runs (shortcuts use this)</td>
+</tr>
+<tr>
+<td><code>python.exe ...</code>, <code>pip ...</code> (incl. during the
+build)</td>
+<td>no-op</td>
+<td>normal Python</td>
+</tr>
+</tbody>
+</table>
+<p>The result is a launcher that needs <strong>no <code>-m</code>, no
+console window, and no <code>.cmd</code> shim</strong> (an earlier
+<code>run-quill.cmd</code> approach was rejected because the console
+window flashed on launch).</p>
+<h2 id="the-layout-flat-not-nested">3. The layout: flat, not nested</h2>
+<p>The portable bundle and the installed app both use a
+<strong>flat</strong> layout — the embedded runtime is unpacked at the
+bundle/install root, beside <code>quill.exe</code>:</p>
+<pre><code>&lt;bundle root&gt;/
+  quill.exe            &lt;- self-runs (stamped pythonw.exe + sitecustomize)
+  pythonw.exe  python.exe  python313.dll  python313.zip  python313._pth
+  sitecustomize.py
+  Lib/  Scripts/       &lt;- runtime stdlib + site-packages (incl. quill)
+  data/                &lt;- portable-mode data target (ships with a keep-file)
+  docs/  tools/  vendor/  kokoro-models/
+  manifest.json  README.txt</code></pre>
+<p>The build stages the runtime into a temporary <code>python\</code>
+subfolder and then <strong>flattens it to the root</strong>
+(<code>build_windows_distribution()</code>, the
+<code>for entry in sorted(staged_runtime.iterdir())</code> move). The
+runtime ships none of the bundle’s own entries (<code>data/</code>,
+<code>docs/</code>, <code>tools/</code>, <code>vendor/</code>,
+<code>kokoro-models/</code>, <code>manifest.json</code>,
+<code>README.txt</code>), so the move cannot clobber them — and a future
+name collision raises rather than overwriting.</p>
+<p>The installer is generated <strong>from</strong> the portable bundle
+(<code>[Files] Source: "..\portable\*" -&gt; {app}</code>), so the
+installed app inherits the flat layout automatically.
+<code>BundledLauncherPath</code> in the <code>[Code]</code> section
+resolves <code>{app}\quill.exe</code>, then
+<code>{app}\pythonw.exe</code> — <strong>never a
+<code>{app}\python\</code> path</strong>.</p>
+<h3 id="why-not-nested-the-history">Why not nested (the history)</h3>
+<ul>
+<li><strong>#615</strong> introduced the VERSIONINFO-stamped
+<code>quill.exe</code> and nested the runtime under
+<code>python\</code>, hoisting an orphaned copy of
+<code>quill.exe</code> to the bundle root as a “portable-evidence
+marker.” That root copy could not load the interpreter.</li>
+<li><strong>#722</strong> fixed the <em>installer shortcuts</em> to
+launch <code>python\quill.exe -m quill</code>, so installed users were
+fine — but the <em>portable</em> double-click still landed on the
+orphaned root <code>quill.exe</code> and did nothing. Portable users
+were stuck.</li>
+<li>The fix (this contract) <strong>flattens the runtime to the
+root</strong> so the click target is no longer orphaned, and adds the
+<code>sitecustomize</code> self-run hook so no <code>-m</code> and no
+<code>.cmd</code> are needed.</li>
+</ul>
+<h3 id="upgrading-over-a-pre-flatten-nested-install">Upgrading over a
+pre-flatten (nested) install</h3>
+<p>Inno Setup only <em>overlays</em> new <code>[Files]</code>; it never
+removes files a previous install left behind. So installing the flat
+build over an old nested install would otherwise leave two messes, both
+handled by the generator:</p>
+<ul>
+<li><strong>Stale <code>{app}\python</code> runtime tree</strong> (~150
+MB plus a second, dead <code>quill.exe</code>). The
+<code>[InstallDelete]</code> section wipes <code>{app}\python</code> on
+install. It holds no user data (that lives in
+<code>%APPDATA%\Quill</code>, or <code>{app}\data</code> for portable),
+so the wipe is always safe; on a clean or already-flat install the dir
+is absent and it is a no-op. The live flat runtime at the
+<code>{app}</code> root is <em>not</em> wiped — it is overwritten in
+place by the <code>ignoreversion</code> <code>[Files]</code> copy.</li>
+<li><strong>A desktop shortcut pointing at a launcher that no longer
+exists.</strong> An old shortcut targeted <code>run-quill.cmd</code>
+(beta 1) or the nested <code>python\quill.exe</code>; after the upgrade
+both are gone, so the shortcut would be dead. The
+<code>CurStepChanged(ssInstall)</code> hook deletes the stale
+<code>{autodesktop}\&lt;App&gt;.lnk</code> before <code>[Icons]</code>
+recreates it pointing at the flat <code>{app}\quill.exe</code> (via
+<code>BundledLauncherPath</code>). The Start-Menu shortcut is recreated
+by <code>[Icons]</code> on every install, so it refreshes
+automatically.</li>
+</ul>
+<p><strong>Portable upgraders</strong> should extract the new zip to a
+<em>fresh</em> folder rather than on top of an old one — there is no
+installer to run the <code>{app}\python</code> cleanup, so an
+extract-over-old would leave the stale <code>python\</code> subfolder
+beside the new flat runtime. It is harmless (the flat
+<code>quill.exe</code> ignores it), but it is clutter and confusing. The
+README advises a clean extract.</p>
+<h2 id="portable-mode-detection-depends-on-this">4. Portable-mode
+detection depends on this</h2>
+<p><code>quill.core.storage_mode._has_portable_evidence</code> marks a
+bundle “portable” when the anchor has <strong><code>quill.exe</code> + a
+sibling <code>data/</code></strong> folder. Therefore:</p>
+<ul>
+<li><code>data/</code> <strong>must ship in the bundle</strong> and must
+survive zipping. Archivers drop empty directories, so the build writes a
+<code>data/README.txt</code> keep-file. Without it, an unzipped bundle
+could lose <code>data/</code> and silently stop being recognized as
+portable.</li>
+<li><code>_resolve_app_root</code> walks up from
+<code>sys.executable</code>, so it still resolves correctly whether
+<code>quill.exe</code> runs from the root (flat) — the supported layout
+— or, defensively, one level down.</li>
+</ul>
+<h2 id="regression-guards-do-not-remove">5. Regression guards (do not
+remove)</h2>
+<p>In
+<code>tests/unit/scripts/test_build_windows_distribution.py</code>:</p>
+<ul>
+<li><code>test_bundled_launcher_resolves_flat_self_running_quill_exe</code>
+— <code>BundledLauncherPath</code> prefers <code>{app}\quill.exe</code>,
+then <code>{app}\pythonw.exe</code>, and uses no <code>python\</code>
+path.</li>
+<li><code>test_installer_script_has_no_nested_python_launcher_path</code>
+— the whole <code>.iss</code> contains no <code>{app}\python\</code>
+string.</li>
+<li><code>test_self_run_sitecustomize_launches_quill_for_a_bare_exe</code>
+— the generated <code>sitecustomize.py</code> guards on
+<code>quill.exe</code> + bare argv and calls
+<code>quill.__main__:main</code>.</li>
+<li><code>test_portable_bundle_flattens_runtime_to_root</code> — a built
+portable bundle has <code>quill.exe</code>,
+<code>sitecustomize.py</code>, <code>python313.dll</code>, and
+<code>Lib/...</code> at the root, <strong>no <code>python\</code>
+subdir</strong>, and a <code>data/</code> folder.</li>
+<li><code>test_installer_clean_replaces_first_party_package_for_safe_upgrades</code>
+— the <code>[InstallDelete]</code> clean-replace targets
+<code>{app}\Lib\site-packages\quill</code> (flat).</li>
+<li><code>test_committed_installer_iss_is_in_sync_with_generator</code>
+— <code>installer/quill.iss</code> is the exact generator output;
+regenerate it when the generator changes.</li>
+</ul>
+<h2 id="manual-verification-before-a-release">6. Manual verification
+before a release</h2>
+<p>After building (or before re-uploading a portable zip):</p>
+<ol type="1">
+<li>Unzip the portable bundle to a fresh folder.</li>
+<li>Confirm there is <strong>no <code>python\</code> subfolder</strong>,
+and <code>quill.exe</code>, <code>sitecustomize.py</code>,
+<code>python313.dll</code>, and <code>data\</code> are all at the
+root.</li>
+<li><strong>Double-click <code>quill.exe</code></strong> — QUILL must
+open with no console window and no arguments.
+(<code>python.exe -m quill --version</code> from the root is a good
+non-GUI smoke check that the flat runtime loads.)</li>
+<li>For the installer: install, then launch from the Start Menu shortcut
+<strong>and</strong> by double-clicking <code>{app}\quill.exe</code>
+directly — both must work.</li>
+</ol>
+<h2 id="things-that-will-re-break-this-dont">7. Things that will
+re-break this — don’t</h2>
+<ul>
+<li>Re-nesting the runtime under <code>python\</code> while leaving
+<code>quill.exe</code> at the root.</li>
+<li>Hoisting/placing a <code>quill.exe</code> anywhere the runtime is
+not beside it.</li>
+<li>Removing <code>sitecustomize.py</code> generation, or relying on
+<code>-m quill</code> in shortcuts as the <em>only</em> launch mechanism
+(it does not help a bare double-click).</li>
+<li>Shipping an empty <code>data/</code> with no keep-file (it can
+vanish on zip/unzip).</li>
+<li>Hand-editing <code>installer/quill.iss</code> (it is generated; edit
+<code>build_inno_setup_script()</code> and regenerate).</li>
+</ul>
+</body>
+</html>
