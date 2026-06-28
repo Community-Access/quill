@@ -94,6 +94,32 @@ flat layout automatically. `BundledLauncherPath` in the `[Code]` section resolve
   target is no longer orphaned, and adds the `sitecustomize` self-run hook so no
   `-m` and no `.cmd` are needed.
 
+### Upgrading over a pre-flatten (nested) install
+
+Inno Setup only *overlays* new `[Files]`; it never removes files a previous
+install left behind. So installing the flat build over an old nested install
+would otherwise leave two messes, both handled by the generator:
+
+- **Stale `{app}\python` runtime tree** (~150 MB plus a second, dead `quill.exe`).
+  The `[InstallDelete]` section wipes `{app}\python` on install. It holds no user
+  data (that lives in `%APPDATA%\Quill`, or `{app}\data` for portable), so the
+  wipe is always safe; on a clean or already-flat install the dir is absent and
+  it is a no-op. The live flat runtime at the `{app}` root is *not* wiped — it is
+  overwritten in place by the `ignoreversion` `[Files]` copy.
+- **A desktop shortcut pointing at a launcher that no longer exists.** An old
+  shortcut targeted `run-quill.cmd` (beta 1) or the nested `python\quill.exe`;
+  after the upgrade both are gone, so the shortcut would be dead. The
+  `CurStepChanged(ssInstall)` hook deletes the stale `{autodesktop}\<App>.lnk`
+  before `[Icons]` recreates it pointing at the flat `{app}\quill.exe` (via
+  `BundledLauncherPath`). The Start-Menu shortcut is recreated by `[Icons]` on
+  every install, so it refreshes automatically.
+
+**Portable upgraders** should extract the new zip to a *fresh* folder rather than
+on top of an old one — there is no installer to run the `{app}\python` cleanup,
+so an extract-over-old would leave the stale `python\` subfolder beside the new
+flat runtime. It is harmless (the flat `quill.exe` ignores it), but it is clutter
+and confusing. The README advises a clean extract.
+
 ## 4. Portable-mode detection depends on this
 
 `quill.core.storage_mode._has_portable_evidence` marks a bundle "portable" when

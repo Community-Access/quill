@@ -251,11 +251,12 @@ def test_installer_clean_replaces_first_party_package_for_safe_upgrades() -> Non
     install_delete = script[install_delete_at:files_at]
     assert 'Type: filesandordirs; Name: "{app}\\Lib\\site-packages\\quill"' in install_delete
     assert 'Type: filesandordirs; Name: "{app}\\__pycache__"' in install_delete
-    # Speed/safety boundary: at INSTALL time we must NOT wipe the whole embedded
-    # runtime (slow, no safety gain) -- only the first-party package. With the
-    # runtime flattened into {app}, the package lives at {app}\Lib\site-packages\
-    # quill, and there is no nested {app}\python tree to delete.
-    assert 'Name: "{app}\\python"' not in install_delete
+    # The live flat runtime at {app} root is overwritten in place by [Files]
+    # (ignoreversion), not wiped -- re-extracting it every upgrade is slow for no
+    # safety gain. But installing the flat build OVER a pre-flatten (nested)
+    # install must remove the stale {app}\python runtime tree, or it lingers
+    # forever as orphaned cruft. It holds no user data, so the wipe is safe.
+    assert 'Type: filesandordirs; Name: "{app}\\python"' in install_delete
 
 
 def test_installer_preserves_user_config_and_never_touches_the_data_dir() -> None:

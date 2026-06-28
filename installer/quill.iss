@@ -104,6 +104,15 @@ Name: "speechkokoro"; Description: "Install bundled Kokoro neural TTS voices (~1
 ; documents live in %APPDATA%\Quill -- neither is touched here.
 Type: filesandordirs; Name: "{app}\Lib\site-packages\quill"
 Type: filesandordirs; Name: "{app}\__pycache__"
+; Upgrade cleanup (flat layout). A pre-flatten install kept the embedded
+; runtime under {app}\python with an orphaned root quill.exe. The runtime
+; now lives flattened in {app}, so installing this build OVER an old nested
+; install must wipe the stale {app}\python tree -- Inno only overlays new
+; [Files] and never removes it, so it would otherwise linger forever as
+; orphaned cruft (~150 MB, and a second dead quill.exe). It holds no user
+; data (that is %APPDATA%\Quill or {app}\data), so this is always safe;
+; on a clean or already-flat install the dir is absent and this is a no-op.
+Type: filesandordirs; Name: "{app}\python"
 ; NOTE: user CONFIG in %APPDATA%\Quill (settings.json, keymap.json,
 ; features.json) is intentionally NOT deleted here. Those stores now
 ; carry forward safely across releases -- each is a delta of the user's
@@ -372,10 +381,14 @@ var
 begin
   if CurStep = ssInstall then
   begin
-    // Drop any pre-existing desktop shortcut before Inno writes the
-    // new one. A beta-1 install created a shortcut pointing at
-    // run-quill.cmd; removing it here guarantees the new shortcut
-    // launches quill.exe, not the obsolete launcher.
+    // Remove any pre-existing desktop shortcut before [Icons] recreates
+    // it, so an upgrade never leaves a shortcut pointing at a launcher
+    // that no longer exists. Earlier installs targeted run-quill.cmd
+    // (beta 1) or, in the nested layout, quill.exe inside the old python
+    // subfolder -- both now invalid (the runtime is flattened into {app}
+    // and the stale python subfolder is wiped by [InstallDelete] above).
+    // [Icons] then recreates the shortcut pointing at the flat,
+    // self-running {app}\quill.exe (via BundledLauncherPath).
     StaleShortcut := ExpandConstant('{autodesktop}\{#AppName}.lnk');
     if FileExists(StaleShortcut) then
       DeleteFile(StaleShortcut);
