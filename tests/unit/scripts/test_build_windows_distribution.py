@@ -200,15 +200,17 @@ def test_build_inno_setup_script_mentions_portable_bundle() -> None:
     assert "User Guide" in script
     assert "userguide.html" in script
     assert 'Parameters: "-m quill"' in script
-    # Bundled-launcher resolution (issue #615): the hoisted quill.exe at the
-    # bundle root is preferred, falling back to python\quill.exe then plain
-    # pythonw.exe, via the BundledLauncherPath/HasBundledLauncher [Code]
-    # functions.
+    # Bundled-launcher resolution: the embedded runtime is flattened into {app},
+    # so quill.exe sits next to its own python313.dll/_pth and self-runs (the
+    # sitecustomize hook). BundledLauncherPath resolves {app}\quill.exe, then
+    # {app}\pythonw.exe -- never a nested python\ path (the orphan that broke
+    # portable launch, #722).
     assert "function BundledLauncherPath(Param: String): String;" in script
     assert "function HasBundledLauncher(): Boolean;" in script
     assert "{app}\\quill.exe" in script
-    assert "{app}\\python\\quill.exe" in script
-    assert "{app}\\python\\pythonw.exe" in script
+    assert "{app}\\pythonw.exe" in script
+    assert "{app}\\python\\quill.exe" not in script
+    assert "{app}\\python\\pythonw.exe" not in script
     assert "{code:BundledLauncherPath}" in script
     assert "Check: HasBundledLauncher" in script
     assert "Check: not HasBundledLauncher" in script
@@ -247,13 +249,12 @@ def test_installer_clean_replaces_first_party_package_for_safe_upgrades() -> Non
     # The InstallDelete section runs before [Files] re-lays the payload.
     assert install_delete_at < files_at
     install_delete = script[install_delete_at:files_at]
-    assert (
-        'Type: filesandordirs; Name: "{app}\\python\\Lib\\site-packages\\quill"' in install_delete
-    )
+    assert 'Type: filesandordirs; Name: "{app}\\Lib\\site-packages\\quill"' in install_delete
     assert 'Type: filesandordirs; Name: "{app}\\__pycache__"' in install_delete
     # Speed/safety boundary: at INSTALL time we must NOT wipe the whole embedded
-    # runtime (slow, no safety gain) -- only the first-party package. (The
-    # [UninstallDelete] section may still remove {app}\python on uninstall.)
+    # runtime (slow, no safety gain) -- only the first-party package. With the
+    # runtime flattened into {app}, the package lives at {app}\Lib\site-packages\
+    # quill, and there is no nested {app}\python tree to delete.
     assert 'Name: "{app}\\python"' not in install_delete
 
 
@@ -312,23 +313,127 @@ def test_uninstaller_custom_data_guard_refuses_broad_targets() -> None:
         assert constant in guard
 
 
-def test_bundled_launcher_prefers_runtime_dir_over_orphaned_root() -> None:
-    # The hoisted {app}\quill.exe at the bundle root is orphaned from the embedded
-    # runtime (python313.dll / _pth / .pyd modules live in python\), so launching
-    # it binds to a system Python or fails outright on a clean machine -- which
-    # broke the Start Menu / Desktop shortcuts. BundledLauncherPath must prefer the
-    # working python\quill.exe (next to the runtime), then python\pythonw.exe, and
-    # use the root quill.exe only as a last-resort fallback.
+def test_bundled_launcher_resolves_flat_self_running_quill_exe() -> None:
+    # Regression guard for #722. The embedded runtime is flattened into {app}:
+    # python313.dll / _pth / .pyd modules sit next to {app}\quill.exe, so it loads
+    # its own interpreter and the sitecustomize hook self-runs QUILL. A NESTED
+    # python\ layout orphaned the bundle-root quill.exe (it could not load the
+    # interpreter) and broke launch. BundledLauncherPath must resolve the flat
+    # {app}\quill.exe first, then {app}\pythonw.exe, and reference no python\ path.
     script = build_inno_setup_script("9.9.9")
     code = script[script.index("\n[Code]\n") :]
     fn = code[code.index("function BundledLauncherPath") :]
     fn = fn[: fn.index("\nend;")]
-    i_python_quill = fn.index("{app}\\python\\quill.exe")
-    i_python_pythonw = fn.index("{app}\\python\\pythonw.exe")
-    i_root_quill = fn.index("{app}\\quill.exe")  # distinct from the python\ paths
-    assert i_python_quill < i_python_pythonw < i_root_quill, (
-        "BundledLauncherPath must prefer python\\quill.exe over the orphaned root quill.exe"
+    assert "{app}\\python\\" not in fn, "launcher resolution must not use a nested python\\ path"
+    i_root_quill = fn.index("{app}\\quill.exe")
+    i_root_pythonw = fn.index("{app}\\pythonw.exe")
+    assert i_root_quill < i_root_pythonw, (
+        "BundledLauncherPath must prefer the flat {app}\\quill.exe self-runner"
     )
+
+
+def test_installer_script_has_no_nested_python_launcher_path() -> None:
+    # Strong, whole-script regression guard for #722: with the runtime flattened
+    # into {app}, no generated installer line may reference a nested {app}\python\
+    # path again (that nesting is what orphaned the bundle-root quill.exe).
+    script = build_inno_setup_script("9.9.9")
+    assert "{app}\\python\\" not in script
+
+
+def test_self_run_sitecustomize_launches_quill_for_a_bare_exe() -> None:
+    # The generated sitecustomize.py is what makes the portable quill.exe a
+    # self-running launcher: no "-m quill", no console window, no .cmd flash.
+    # It must (a) only act when the executable is quill.exe, (b) only on a bare
+    # double-click (no script/module/args), and (c) start QUILL via
+    # quill.__main__:main. Every other use of the runtime (python.exe, pip during
+    # the build, an explicit "quill.exe -m quill") must take the no-op path.
+    from scripts.build_windows_distribution import _self_run_sitecustomize_source
+
+    src = _self_run_sitecustomize_source()
+    assert 'os.path.basename(sys.executable).lower() != "quill.exe"' in src
+    assert "len(sys.argv) <= 1" in src
+    assert "from quill.__main__ import main" in src
+    assert "main()" in src
+    # It must be importable, valid Python.
+    compile(src, "sitecustomize.py", "exec")
+
+
+def test_portable_bundle_flattens_runtime_to_root(tmp_path: Path, monkeypatch) -> None:
+    # Regression guard for #722: the embedded runtime must be flattened into the
+    # bundle root so the bundle-root quill.exe sits next to python313.dll/_pth and
+    # self-runs. No nested python\ subdir may remain, and the portable-evidence
+    # contract (quill.exe + data/ at the root) must hold.
+    import scripts.build_windows_distribution as bwd
+
+    pyproject = tmp_path / "pyproject.toml"
+    pyproject.write_text('[project]\nname = "quill"\nversion = "1.2.3"\n', encoding="utf-8")
+    (tmp_path / "build").mkdir()
+    (tmp_path / "build" / "version.toml").write_text(
+        'base_version = "1.2.3"\n'
+        'channel = "stable"\n'
+        "prerelease_number = 0\n"
+        'product_name = "QUILL for All"\n'
+        'publisher = "Community Access"\n',
+        encoding="utf-8",
+    )
+    fake_kokoro = tmp_path / "kokoro-src"
+    fake_kokoro.mkdir()
+    (fake_kokoro / "kokoro-v1.0.int8.onnx").write_text("m", encoding="utf-8")
+    (fake_kokoro / "voices-v1.0.bin").write_text("v", encoding="utf-8")
+    # Fake every bundled tool dir so the offline test never downloads anything.
+    tool_dirs = {}
+    for tool_id, exe in {
+        "pandoc": "pandoc.exe",
+        "speech/dectalk": "say.exe",
+        "speech/espeak-ng": "espeak-ng.exe",
+        "speech/piper": "piper.exe",
+    }.items():
+        d = tmp_path / tool_id.replace("/", "_")
+        d.mkdir()
+        (d / exe).write_text("bin", encoding="utf-8")
+        tool_dirs[tool_id] = d
+
+    # Stand in for the heavy embedded-python staging (download + pip): create a
+    # python\ dir with representative runtime files, including the stamped
+    # quill.exe and the self-run sitecustomize.py, so the test exercises the
+    # flatten move rather than the network path.
+    def fake_bundle_embedded_python(target_dir: Path, **_kwargs: object) -> Path:
+        target_dir.mkdir(parents=True, exist_ok=True)
+        for name in (
+            "quill.exe",
+            "pythonw.exe",
+            "python.exe",
+            "python313.dll",
+            "python313.zip",
+            "python313._pth",
+            "sitecustomize.py",
+        ):
+            (target_dir / name).write_text(name, encoding="utf-8")
+        (target_dir / "Lib" / "site-packages" / "quill").mkdir(parents=True)
+        (target_dir / "Lib" / "site-packages" / "quill" / "__main__.py").write_text(
+            "x", encoding="utf-8"
+        )
+        return target_dir
+
+    monkeypatch.setattr(bwd, "bundle_embedded_python", fake_bundle_embedded_python)
+
+    bwd.build_windows_distribution(
+        pyproject,
+        tmp_path / "dist",
+        bundle_python=True,
+        bundled_tool_dirs=tool_dirs,
+        kokoro_dir=fake_kokoro,
+    )
+
+    portable = tmp_path / "dist" / "portable"
+    assert not (portable / "python").exists(), "runtime must be flattened; no python\\ subdir"
+    assert (portable / "quill.exe").is_file()
+    assert (portable / "sitecustomize.py").is_file()
+    assert (portable / "python313.dll").is_file()
+    assert (portable / "python313._pth").is_file()
+    assert (portable / "Lib" / "site-packages" / "quill" / "__main__.py").is_file()
+    # Portable-evidence contract: quill.exe + a sibling data/ at the bundle root.
+    assert (portable / "data").is_dir()
 
 
 def test_shell_verb_registry_lines_cover_every_verb_and_extension() -> None:

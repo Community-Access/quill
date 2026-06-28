@@ -386,7 +386,8 @@ def build_windows_distribution(
         # python\, no -m, no console, no .cmd. The runtime ships none of the
         # already-staged bundle entries (data/docs/tools/vendor/kokoro-models/
         # manifest.json/README.txt), so the move cannot clobber them; a future
-        # collision fails loudly rather than overwriting.
+        # collision fails loudly rather than overwriting. The full launcher
+        # contract is documented in docs/design/portable-launcher.md.
         for entry in sorted(staged_runtime.iterdir()):
             dest = portable_dir / entry.name
             if dest.exists():

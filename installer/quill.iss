@@ -48,9 +48,9 @@ CloseApplications=force
 RestartApplications=no
 UninstallDisplayName={#AppName} {#AppVersion}
 ; The bundled launcher carries a real icon so Add/Remove Programs
-; shows one. BundledLauncherPath (see [Code]) prefers quill.exe at
-; the bundle root -- a VERSIONINFO-stamped copy of pythonw.exe, see
-; _stamp_quill_launcher -- then python\quill.exe, then plain
+; shows one. BundledLauncherPath (see [Code]) is {app}\quill.exe -- a
+; VERSIONINFO-stamped copy of pythonw.exe (see _stamp_quill_launcher)
+; that sits next to the flattened embedded runtime -- then plain
 ; pythonw.exe, and gracefully returns blank when no bundled runtime
 ; is present (e.g. a dev build), in which case no icon is shown.
 UninstallDisplayIcon={code:BundledLauncherPath}
@@ -102,7 +102,7 @@ Name: "speechkokoro"; Description: "Install bundled Kokoro neural TTS voices (~1
 ; upgrade would only make installs slow for no safety gain. Bundled
 ; tools/voices/braille live under {app}\tools and {app}\vendor; user
 ; documents live in %APPDATA%\Quill -- neither is touched here.
-Type: filesandordirs; Name: "{app}\python\Lib\site-packages\quill"
+Type: filesandordirs; Name: "{app}\Lib\site-packages\quill"
 Type: filesandordirs; Name: "{app}\__pycache__"
 ; NOTE: user CONFIG in %APPDATA%\Quill (settings.json, keymap.json,
 ; features.json) is intentionally NOT deleted here. Those stores now
@@ -317,36 +317,30 @@ Filename: "{app}\{#AppExeName}"; Description: "Launch {#AppName}"; Flags: postin
 ; user's data in %APPDATA%\Quill is decided by an explicit prompt in
 ; [Code] below -- we never silently keep or wipe it.
 Type: filesandordirs; Name: "{app}\__pycache__"
-; {app}\python is the bundled embedded runtime: wholly owned by Quill,
-; no user data lives there (that's %APPDATA%\Quill). Python generates
-; __pycache__ dirs across Lib\site-packages on first run (the build
-; uses --no-compile), and those nest arbitrarily deep, so the only
+; {app}\Lib is the bundled embedded runtime's library tree: wholly owned
+; by Quill, no user data lives there (that's %APPDATA%\Quill). Python
+; generates __pycache__ dirs across Lib\site-packages on first run (the
+; build uses --no-compile), and those nest arbitrarily deep, so the only
 ; reliable cleanup is removing the whole tree rather than chasing
 ; specific __pycache__ paths.
-Type: filesandordirs; Name: "{app}\python"
+Type: filesandordirs; Name: "{app}\Lib"
 
 [Code]
 // -- Bundled launcher resolution ------------------------------------------------
-// IMPORTANT: prefer python\quill.exe (inside the runtime dir) over the
-// hoisted {app}\quill.exe at the bundle root. Both are stamped copies of
-// pythonw.exe (issue #615), but the root copy is ORPHANED from the runtime:
-// python313.dll, python313.zip, the .pyd modules, and python313._pth all
-// live in python\, not at the root. So a root-launched quill.exe cannot
-// find the bundled interpreter and either binds to a system Python (wrong
-// site-packages -> crash) or, on a clean machine with no system Python,
-// fails to start at all -- which broke the Start Menu / Desktop shortcuts.
-// python\quill.exe sits next to the runtime, so it loads the embedded
-// interpreter in isolation (correct sys.prefix, pywin32 bootstrap runs).
-// The root {app}\quill.exe stays only as the portable-evidence marker and
-// as a last-resort fallback for dev builds that ship no python\ runtime.
+// The embedded runtime is flattened into {app}: python313.dll, python313.zip,
+// the .pyd modules and python313._pth sit at the install root next to
+// {app}\quill.exe (a VERSIONINFO-stamped copy of pythonw.exe, issue #615).
+// So {app}\quill.exe loads the bundled interpreter in isolation (correct
+// sys.prefix, pywin32 bootstrap runs) and the sitecustomize self-run hook
+// starts QUILL. pythonw.exe is the no-stamp fallback; both are absent only
+// in a dev build with no bundled runtime, where this returns blank and no
+// shortcut/icon is wired.
 function BundledLauncherPath(Param: String): String;
 begin
-  if FileExists(ExpandConstant('{app}\python\quill.exe')) then
-    Result := ExpandConstant('{app}\python\quill.exe')
-  else if FileExists(ExpandConstant('{app}\python\pythonw.exe')) then
-    Result := ExpandConstant('{app}\python\pythonw.exe')
-  else if FileExists(ExpandConstant('{app}\quill.exe')) then
+  if FileExists(ExpandConstant('{app}\quill.exe')) then
     Result := ExpandConstant('{app}\quill.exe')
+  else if FileExists(ExpandConstant('{app}\pythonw.exe')) then
+    Result := ExpandConstant('{app}\pythonw.exe')
   else
     Result := '';
 end;
