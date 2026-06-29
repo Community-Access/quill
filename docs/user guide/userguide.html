@@ -4303,6 +4303,58 @@ rather than guessing. This is the screen-reader descendant of the
 classic "Reveal Codes" view. It ships without a shortcut; assign one in
 the Keymap Editor (search for "Describe Character") if you inspect text
 often.</p>
+<h3 id="reveal-codes">Reveal Codes</h3>
+<p>QUILL keeps formatting codes <strong>hidden</strong> so your editing
+buffer stays clean, fast plain text. <strong>Reveal Codes</strong> lets
+you see and hear every one of them on demand — the beloved WordPerfect
+feature, rebuilt for a screen reader. Press <strong>Alt+F3</strong> (or
+tick <strong>View → Reveal Codes</strong>) to open a pane below the
+editor that shows your document as an ordered stream of bracketed codes
+and text: <code>[Bold On]</code>, <code>[Font: Arial]</code>,
+<code>[Size: 14]</code>, <code>[Center]</code>,
+<code>[Heading 2]</code>, <code>[Link: …]</code>, <code>[Tab]</code>,
+<code>[¶ Hard Return]</code>, <code>[No-Break Space]</code>,
+<code>[Smart Quote]</code>, and so on. The editor itself does not change
+— Reveal Codes is a window onto the hidden scaffolding, not a different
+way of editing.</p>
+<p><strong>Moving between the panes.</strong> <strong>F6</strong> cycles
+through the regions — Editor → Reveal Codes (when shown) → Status Bar —
+and <strong>Shift+F6</strong> cycles back, exactly like switching
+windows. The two carets stay in sync: when you move in the Reveal Codes
+pane, the editor's cursor follows to the matching place, and when you
+move the editor cursor, the pane highlights the code or text you are on.
+So you can sit in the pane, arrow through the codes, and your place in
+the document tracks along.</p>
+<p><strong>Hearing the codes.</strong> Each code is its own labelled,
+individually-announced item — your screen reader says "bold on", "tab",
+"centred", "font Arial" as a single unit, never spelled out letter by
+letter. Within the pane you can:</p>
+<ul>
+<li><strong>Arrow up and down</strong> to move through every code and
+text run in order.</li>
+<li>Jump <strong>code to code</strong> (skipping the plain text) to scan
+structure quickly.</li>
+<li>Jump from an opening code such as <code>[Bold On]</code> to its
+matching <code>[Bold Off]</code>, and hear how far the formatting
+reaches ("bold on, 12 characters").</li>
+</ul>
+<p><strong>Two views and how chatty it is.</strong> In <strong>Settings
+→ Editing</strong> (or the View menu) choose:</p>
+<ul>
+<li><strong>Structured</strong> (default) — one item per code in an
+accessible list. The clearest mode for a screen reader: discrete,
+labelled, unambiguous.</li>
+<li><strong>Flowed</strong> — the codes rendered inline within the
+running text (<code>[Bold On]Hello[Bold Off]</code>), the closest match
+to the classic WordPerfect look and the most natural layout on a braille
+display.</li>
+<li><strong>Verbosity</strong> — <em>quiet</em> (just the code name),
+<em>balanced</em> (adds an opening code's reach), or <em>detailed</em>
+(adds Unicode notes for invisibles).</li>
+</ul>
+<p>Reveal Codes is <strong>hidden by default</strong> and costs nothing
+until you open it. Your choices of view and verbosity are remembered
+between sessions.</p>
 <h3 id="read-aloud">Read Aloud</h3>
 <p>Read Aloud uses local voices with a deterministic support policy. The
 Windows system voice runs on <strong>SAPI 5</strong> and is always

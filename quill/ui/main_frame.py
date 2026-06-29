@@ -507,6 +507,7 @@ from quill.ui.main_frame_power_tools_menu import PowerToolsMenuMixin
 from quill.ui.main_frame_profile_picker import ProfilePickerMixin
 from quill.ui.main_frame_quill_key import QuillKeyMixin
 from quill.ui.main_frame_quillins import QuillinsMenuMixin
+from quill.ui.main_frame_reveal_codes import RevealCodesMixin
 from quill.ui.main_frame_section_move import SectionMoveMixin
 from quill.ui.main_frame_selection import SelectionMarksMixin
 from quill.ui.main_frame_sessions import SessionsMixin
@@ -866,6 +867,7 @@ class MainFrame(
     PowerToolsActionsMixin,
     ClassicEditorMixin,
     PowerToolsMenuMixin,
+    RevealCodesMixin,
     QuillinsMenuMixin,
     ContextHelpMixin,
     WatchProfileDialogMixin,
@@ -1282,6 +1284,15 @@ class MainFrame(
         self._main_splitter.Initialize(self._documents_panel)
         layout = wx.BoxSizer(wx.VERTICAL)
         layout.Add(self._main_splitter, 1, wx.EXPAND)
+        # Reveal Codes pane: docked below the editor, above the status bar
+        # (WordPerfect arrangement), hidden by default and shown via Alt+F3.
+        from quill.ui.reveal_codes_pane import RevealCodesPane
+
+        self._reveal_pane = RevealCodesPane(wx, self.frame, self)
+        self._reveal_pane.panel.SetMinSize((-1, 160))
+        self._reveal_last_state: tuple[int, int, int] | None = None
+        layout.Add(self._reveal_pane.panel, 0, wx.EXPAND)
+        self._reveal_pane.panel.Show(bool(getattr(self.settings, "reveal_codes_visible", False)))
         self.statusbar = wx.Panel(self.frame)
         self.statusbar.SetName("Status bar")
         self.statusbar.Bind(wx.EVT_SET_FOCUS, self._on_container_focus)
@@ -3237,6 +3248,7 @@ class MainFrame(
             self._binding_for("format.underline"),
         )
         self.register_format_codes_commands()
+        self.register_reveal_codes_commands()
         self.commands.register(
             "format.heading_1",
             "Insert Heading 1",
@@ -15602,6 +15614,9 @@ class MainFrame(
         unreachable region. This is the fix for the tab bar being unreachable
         by F6 and by the JAWS cursor when Show Tab Control is on."""
         labels = ["Editor"]
+        reveal = getattr(self, "_reveal_pane", None)
+        if reveal is not None and reveal.panel.IsShown():
+            labels.append("Reveal Codes")
         if self._tab_control_visible:
             try:
                 has_tabs = self.notebook.GetPageCount() > 0
@@ -15636,7 +15651,10 @@ class MainFrame(
             win = self._wx.Window.FindFocus()
         except Exception:
             win = None
+        reveal = getattr(self, "_reveal_pane", None)
         while win is not None:
+            if reveal is not None and "Reveal Codes" in regions and win is reveal.panel:
+                return "Reveal Codes"
             if preview_ctrl is not None and win is preview_ctrl and "Preview" in regions:
                 return "Preview"
             if "Document Tabs" in regions and win is self.notebook:
@@ -15657,6 +15675,11 @@ class MainFrame(
         if label == "Status Bar":
             self.statusbar.SetFocus()
             return
+        if label == "Reveal Codes":
+            reveal = getattr(self, "_reveal_pane", None)
+            if reveal is not None and reveal.panel.IsShown():
+                reveal.focus()
+                return
         if label == "Document Tabs":
             self.notebook.SetFocus()
             return

@@ -168,6 +168,20 @@ problems while preserving every line ending and form feed. The limits come from
 your existing **Cells per line** and **Lines per page** settings (Preferences →
 Braille), so the diagnostics match your page geometry.
 
+**Reveal Codes — see and hear every hidden formatting code (Alt+F3).** The beloved
+WordPerfect feature, reimagined screen-reader-first. Press **Alt+F3** (or **View →
+Reveal Codes**) to open a pane below the editor that shows your document as a stream
+of bracketed codes and text — `[Bold On]`, `[Font: Arial]`, `[Center]`, `[Tab]`,
+`[¶ Hard Return]`, `[No-Break Space]` — so nothing about your document stays hidden.
+**F6** moves between the editor, the Reveal Codes pane, and the status bar
+(**Shift+F6** goes back); the two carets stay in sync, so moving in the pane moves
+the editor caret and vice versa. Every code is an individually-announced, navigable
+item: arrow code-to-code, jump from a `[Bold On]` to its matching `[Bold Off]`, and
+hear its reach ("bold on, 12 characters"). Choose a **Structured** list (one labeled
+item per code — the most accessible) or a **Flowed** view (codes inline within the
+text, the classic visual/braille layout), with quiet / balanced / detailed
+verbosity. Hidden by default; your clean editing buffer is unchanged.
+
 ### Fixes
 
 - **The portable build launches again, and opens documents.** Double-clicking

@@ -91,6 +91,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "navigate.speak_status_summary": "Ctrl+Shift+Grave, Q",
     "view.send_to_tray": "Ctrl+Shift+Grave, T",
     "view.toggle_soft_wrap": "Alt+Z",
+    "view.reveal_codes_toggle": "Alt+F3",  # WordPerfect Reveal Codes
     "view.toggle_tab_control": "Ctrl+Shift+Grave, Shift+T",
     "app.command_palette": "Ctrl+Shift+P",
     "app.preferences": "Ctrl+,",
@@ -185,7 +186,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "edit.find": "Ctrl+F",
     "edit.find_next": "F3",
     "edit.find_previous": "Shift+F3",
-    "edit.find_all_matches": "Alt+F3",
+    "edit.find_all_matches": "Ctrl+Shift+F3",  # was Alt+F3 (now Reveal Codes)
     "edit.replace": "Ctrl+H",
     "tools.search_in_files": "Ctrl+Shift+F",
     "tools.replace_in_files": "Ctrl+Shift+R",

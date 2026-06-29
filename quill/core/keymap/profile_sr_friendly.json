@@ -61,7 +61,7 @@
     "edit.find": "Ctrl+F",
     "edit.find_next": "F3",
     "edit.find_previous": "Shift+F3",
-    "edit.find_all_matches": "Alt+F3",
+    "edit.find_all_matches": "Ctrl+Shift+F3",
     "edit.replace": "Ctrl+H",
     "tools.search_in_files": "Ctrl+Shift+F",
     "tools.replace_in_files": "Ctrl+Shift+R",

@@ -29,7 +29,7 @@
     "edit.find": "Ctrl+F",
     "edit.find_next": "F3",
     "edit.find_previous": "Shift+F3",
-    "edit.find_all_matches": "Alt+F3",
+    "edit.find_all_matches": "Ctrl+Shift+F3",
     "edit.replace": "Ctrl+H",
     "edit.replace_all": "Ctrl+Shift+H",
     "edit.insert_link": "Ctrl+K",

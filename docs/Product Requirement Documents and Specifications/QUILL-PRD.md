@@ -3499,6 +3499,28 @@ The screen-reader descendant of "Reveal Codes". An accessible dialog — rendere
 
 ---
 
+### 5.89b Reveal Codes (WordPerfect-style synchronized code inspector)
+
+QUILL keeps formatting codes hidden so the editing buffer stays clean plain text (see the rich-text hidden-codes model). **Reveal Codes** is the on-demand companion: a second, synchronized view that makes every hidden formatting code and structural/invisible character explicit, navigable, and individually announced — the beloved WordPerfect feature, rebuilt screen-reader-first. The full design rationale is preserved in this PRD (this section is canonical; the former `docs/planning/reveal-codes-design.md` was retired into it on shipment).
+
+**Activation and layout.** `view.reveal_codes_toggle` (**Alt+F3**, the WordPerfect chord; also **View → Reveal Codes**, a checkable item) shows/hides a pane docked **below the editor, above the status bar**. Hidden by default and zero-cost while hidden (the token stream is not built). The visible/view/verbosity state persists in settings.
+
+**The F6 region cycle.** The pane is a first-class focus region. When shown it joins QUILL's existing rotation, so **F6** moves **Editor → Reveal Codes → Status Bar** (with Document Tabs / Preview when present) and **Shift+F6** cycles back — no new keybinding (`_current_focus_region_labels` / `_detect_active_region` / `_focus_region` in `main_frame.py` gained one entry each). `edit.find_all_matches` moved off Alt+F3 to `Ctrl+Shift+F3` to free the chord.
+
+**Synchronized carets.** Both views share one logical position via the markup↔visible offset map. Moving in the pane drives the editor caret to the matching markup offset; moving the editor caret highlights the matching token in the pane (a throttled idle tick, off the typing hot path). The editor buffer is the markup, so the markup offset is the editor caret space directly.
+
+**The token model (`quill/core/reveal_codes.py`, wx-free).** `build_code_stream(markup) -> list[CodeToken]` linearizes the document, built on `rtf_model.analyze_markdown` (per-character offset map + formatting) and `char_describe` (invisibles). Each `CodeToken` records `kind` (TEXT / FORMAT_ON / FORMAT_OFF / BLOCK / STRUCTURE / INVISIBLE), a display `label` and `spoken` phrase, both `markup_*` and `visible_*` offset ranges, an optional `pair_index` linking an ON code to its matching OFF, and `attrs`. Inline formatting (bold/italic/underline/strike/super/subscript/font/size/color/highlight/link) becomes paired ON/OFF codes; paragraph attributes (heading, bullet, named style, alignment, spacing, indent) become BLOCK codes at the line head; paragraph breaks become `[¶ Hard Return]`; tabs and notable invisibles (no-break/zero-width spaces, smart quotes, dashes) become their own tokens; everything else groups into TEXT runs. `token_at_markup_offset`, `pair_distance`, and `describe_token` support sync, pairing, and verbosity-aware announcements.
+
+**Presentations and verbosity.** `reveal_codes_view` selects **Structured** (a read-only `wx.ListBox`, one labelled/announced item per token — the most accessible and the default) or **Flowed** (a read-only `wx.TextCtrl` rendering codes inline within the text, the classic visual/braille layout). `reveal_codes_verbosity` (quiet / balanced / detailed) gates how much each move announces. In-pane commands: `reveal.next_code` / `reveal.previous_code` (scan code-to-code) and `reveal.go_to_pair` (ON↔OFF).
+
+**Accessibility.** Discrete, individually-named items (Structured) are the headline win over a visual-only Reveal Codes; entering/leaving the pane announces; codes are conveyed by bracketed text + label, never colour alone; navigation never chatters beyond the chosen verbosity. SAPI/braille users get the literal bracketed codes in Flowed mode.
+
+**Scope note.** Read-only navigation, interrogation, and full bidirectional sync ship now (both presentations, verbosity, pairing). In-pane *editing* (delete a code to strip its effect; insert/replace codes) is the defined next step: it requires the formatting markers' exact character spans, which `analyze_markdown` abstracts away, so it is built on the marker-span work rather than shipped against the zero-width code boundaries to avoid corrupting markup.
+
+**Implementation map.** `quill/core/reveal_codes.py` (model), `quill/ui/reveal_codes_pane.py` (the pane + sync controller), `quill/ui/main_frame_reveal_codes.py` (`RevealCodesMixin`: toggle, idle sync, in-pane command delegates), `quill/ui/main_frame.py` (pane creation in the layout; region-cycle entries; command registration), `quill/ui/main_frame_menu.py` (View item + EVT_MENU/EVT_IDLE binding), `quill/core/settings.py` (`reveal_codes_visible` / `reveal_codes_view` / `reveal_codes_verbosity`), `quill/core/keymap.py` + `keymap_packs.py` (Alt+F3, friendly title). Tests: `tests/unit/core/test_reveal_codes.py`.
+
+---
+
 ### 5.90 AI Writing Toolkit: architecture and feature matrix
 
 This section documents the AI writing layer shipped in QUILL 0.6.0, covering provider abstraction, the connection model, per-feature design, and the data-disclosure posture.

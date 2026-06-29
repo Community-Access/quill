@@ -86,6 +86,11 @@ class Settings:
     # When True, saving a document first opens the F7 spelling review so the user
     # can correct misspellings before the file is written. Off by default.
     spell_check_before_save: bool = False
+    # Reveal Codes pane (WordPerfect-style hidden-code inspector). Hidden by
+    # default; Alt+F3 toggles it, F6 cycles focus into it.
+    reveal_codes_visible: bool = False
+    reveal_codes_view: str = "structured"  # "structured" | "flowed"
+    reveal_codes_verbosity: str = "balanced"  # "quiet" | "balanced" | "detailed"
     intellisense_as_you_type: bool = False
     snippet_trigger_expansion: bool = True
     preview_browser: str = "system"
@@ -519,6 +524,13 @@ class Settings:
         persistent_undo = bool(data.get("persistent_undo", False))
         spellcheck_as_you_type = bool(data.get("spellcheck_as_you_type", False))
         spell_check_before_save = bool(data.get("spell_check_before_save", False))
+        reveal_codes_visible = bool(data.get("reveal_codes_visible", False))
+        reveal_codes_view = str(data.get("reveal_codes_view", "structured")).strip().lower()
+        if reveal_codes_view not in {"structured", "flowed"}:
+            reveal_codes_view = "structured"
+        reveal_codes_verbosity = str(data.get("reveal_codes_verbosity", "balanced")).strip().lower()
+        if reveal_codes_verbosity not in {"quiet", "balanced", "detailed"}:
+            reveal_codes_verbosity = "balanced"
         intellisense_as_you_type = bool(data.get("intellisense_as_you_type", False))
         snippet_trigger_expansion = bool(data.get("snippet_trigger_expansion", True))
         preview_browser = str(data.get("preview_browser", "system")).strip() or "system"
@@ -1040,6 +1052,9 @@ class Settings:
             persistent_undo=persistent_undo,
             spellcheck_as_you_type=spellcheck_as_you_type,
             spell_check_before_save=spell_check_before_save,
+            reveal_codes_visible=reveal_codes_visible,
+            reveal_codes_view=reveal_codes_view,
+            reveal_codes_verbosity=reveal_codes_verbosity,
             intellisense_as_you_type=intellisense_as_you_type,
             snippet_trigger_expansion=snippet_trigger_expansion,
             preview_browser=preview_browser,
