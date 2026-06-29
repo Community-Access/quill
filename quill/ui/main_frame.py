@@ -4196,35 +4196,39 @@ class MainFrame(
         # to the native NSTextView, then pin the AX role so VoiceOver
         # treats the editor as a real text area rather than a generic
         # group.
-        # The editor surface is configurable. The Experimental tab can override the
-        # braille Editor control type for testing; "default" follows that setting.
-        kind = str(getattr(self.settings, "editor_control_kind", "rich2")).strip().lower()
-        override = (
-            str(getattr(self.settings, "experimental_editor_surface", "default")).strip().lower()
-        )
-        if override and override != "default":
-            kind = override
-        border = wx.BORDER_NONE if getattr(self.settings, "editor_hide_border", False) else 0
-        if sys.platform == "darwin" and kind != "rtf":
-            editor = wx.TextCtrl(splitter, style=wx.TE_MULTILINE | border)
-        elif kind == "rtf":
-            # Experimental: a wx.RichTextCtrl surface. It is TextCtrl-compatible for
-            # the value/caret API QUILL relies on (GetValue/ChangeValue/insertion
-            # point/last position), so the plain-text editing path still works.
-            import wx.richtext as _rt
-
-            editor = _rt.RichTextCtrl(splitter, style=wx.TE_MULTILINE | border)
-        elif kind == "plain":
-            # A Notepad-style EDIT control -- editable, reports its value to
-            # JAWS/NVDA correctly, and avoids the RichEdit leading-cell quirk (#616).
-            editor = wx.TextCtrl(splitter, style=wx.TE_MULTILINE | border)
+        if sys.platform == "darwin":
+            editor = wx.TextCtrl(splitter, style=wx.TE_MULTILINE)
         else:
-            # "rich"/"rich2" keep a RichEdit (2.0 / 3.0); TE_NOHIDESEL stays there.
-            rich_flag = wx.TE_RICH if kind == "rich" else wx.TE_RICH2
-            editor = wx.TextCtrl(
-                splitter,
-                style=wx.TE_MULTILINE | rich_flag | wx.TE_NOHIDESEL | border,
+            # The editor surface is configurable (Windows/Linux). The Experimental tab
+            # can override the braille Editor control type for testing; "default"
+            # follows that setting. An optional borderless style gives a cleaner frame.
+            kind = str(getattr(self.settings, "editor_control_kind", "rich2")).strip().lower()
+            override = (
+                str(getattr(self.settings, "experimental_editor_surface", "default"))
+                .strip()
+                .lower()
             )
+            if override and override != "default":
+                kind = override
+            border = wx.BORDER_NONE if getattr(self.settings, "editor_hide_border", False) else 0
+            if kind == "rtf":
+                # Experimental: a wx.RichTextCtrl surface. It is TextCtrl-compatible for
+                # the value/caret API QUILL relies on (GetValue/ChangeValue/insertion
+                # point/last position), so the plain-text editing path still works.
+                import wx.richtext as _rt
+
+                editor = _rt.RichTextCtrl(splitter, style=wx.TE_MULTILINE | border)
+            elif kind == "plain":
+                # A Notepad-style EDIT control -- editable, reports its value to
+                # JAWS/NVDA correctly, and avoids the RichEdit leading-cell quirk (#616).
+                editor = wx.TextCtrl(splitter, style=wx.TE_MULTILINE | border)
+            else:
+                # "rich"/"rich2" keep a RichEdit (2.0 / 3.0); TE_NOHIDESEL stays there.
+                rich_flag = wx.TE_RICH if kind == "rich" else wx.TE_RICH2
+                editor = wx.TextCtrl(
+                    splitter,
+                    style=wx.TE_MULTILINE | rich_flag | wx.TE_NOHIDESEL | border,
+                )
         editor.SetName("Document")
         if sys.platform == "darwin":
             self._pin_macos_editor_accessibility_role(editor)
