@@ -69,6 +69,10 @@ _DEFAULT_GITHUB_LINKS: tuple[tuple[str, str], ...] = (
         "wx-accessible-webview on GitHub",
         "https://github.com/Community-Access/wx-accessible-webview",
     ),
+    (
+        "herwigfelix: macOS app launch fix (#755)",
+        "https://github.com/herwigfelix",
+    ),
 )
 
 _OVERVIEW_PARAGRAPHS: tuple[str, ...] = (
