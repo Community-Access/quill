@@ -41,7 +41,7 @@ ui = [
     "wx-accessible-webview>=0.2.0",
     # Windows SAPI 5 text-to-speech (Read Aloud system voice + self-voicing
     # announcement fallback). Windows-only at runtime; harmless elsewhere.
-    "comtypes>=1.4; sys_platform == 'win32'",
+    "comtypes>=1.4.16; sys_platform == 'win32'",
     # CA bundle for verified HTTPS update checks (macOS Python lacks trusted roots).
     "certifi>=2026.6.17",
     # Prism screen-reader speech bridge (Windows) — routes announcements to
