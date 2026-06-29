@@ -17557,18 +17557,44 @@ class MainFrame(
             self._set_status("Nothing to synthesize")
             return
 
+        # WAV is always available (the engines emit it directly). The compressed
+        # listening formats (MP3, M4A/M4B, OGG, Opus, FLAC) need ffmpeg to encode
+        # the synthesized WAV, so they only appear when ffmpeg is installed (#750).
+        from quill.core.speech.ffmpeg import ffmpeg_available, resolve_export_format
+
+        formats: list[tuple[str, str]] = [("wav", "Wave file")]
+        if ffmpeg_available():
+            formats += [
+                ("mp3", "MP3 audio"),
+                ("m4a", "M4A audio"),
+                ("m4b", "M4B audiobook"),
+                ("ogg", "OGG audio"),
+                ("opus", "Opus audio"),
+                ("flac", "FLAC audio"),
+            ]
+        wildcard = "|".join(f"{label} (*.{ext})|*.{ext}" for ext, label in formats)
+        wildcard += "|All files (*.*)|*.*"
+
         with wx.FileDialog(
             self.frame,
             _TITLE,
-            wildcard="Wave file (*.wav)|*.wav|All files (*.*)|*.*",
+            wildcard=wildcard,
             style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
         ) as dlg:
             if self._show_modal_dialog(dlg, _TITLE) != wx.ID_OK:
                 self._set_status("Speech generation cancelled")
                 return
             output_path = Path(dlg.GetPath())
-        if output_path.suffix.lower() != ".wav":
-            output_path = output_path.with_suffix(".wav")
+            filter_index = dlg.GetFilterIndex()
+
+        # Pick the target format: a recognized typed extension wins (so "song.mp3"
+        # under "All files" still makes an MP3); otherwise the selected filter
+        # decides and the extension is normalized to match (see resolve_export_format).
+        target_fmt, _normalize_suffix = resolve_export_format(
+            output_path.suffix, filter_index, [ext for ext, _ in formats]
+        )
+        if _normalize_suffix:
+            output_path = output_path.with_suffix(f".{target_fmt}")
 
         engine = self.settings.read_aloud_engine.strip().lower() or "sapi5"
         s = self.settings
@@ -17653,17 +17679,30 @@ class MainFrame(
         _espeak_voice = s.read_aloud_espeak_voice
         _espeak_rate = s.read_aloud_espeak_rate
         _out = output_path
+        _target_fmt = target_fmt
 
         def work(progress: Callable[[str, int, int], None]) -> object:
+            import tempfile
+
+            from quill.core.speech.ffmpeg import transcode_audio
+
             progress(f"Starting {_engine}", 0, 1)
+            # The synthesis engines only emit WAV. For a compressed target, render
+            # to a temporary WAV first, then encode it to the chosen format (#750).
+            tmp_dir: str | None = None
+            if _target_fmt == "wav":
+                wav_target = _out
+            else:
+                tmp_dir = tempfile.mkdtemp(prefix="quill-speech-")
+                wav_target = Path(tmp_dir) / f"{_out.stem}.wav"
             if _engine == "sapi5":
                 synthesize_to_file_with_sapi5(
-                    _out_text, _out, voice=_voice, rate=_rate, volume=_vol
+                    _out_text, wav_target, voice=_voice, rate=_rate, volume=_vol
                 )
             elif _engine == "dectalk":
                 synthesize_to_file_with_dectalk(
                     _out_text,
-                    _out,
+                    wav_target,
                     executable_path=dectalk_exe_snap,
                     voice=_dectalk_voice,
                     rate=_dectalk_rate,
@@ -17671,20 +17710,33 @@ class MainFrame(
             elif _engine == "piper":
                 synthesize_with_piper(
                     _out_text,
-                    _out,
+                    wav_target,
                     executable_path=piper_exe_snap,
                     model_path=piper_model_snap,
                 )
             elif _engine == "kokoro":
-                synthesize_with_kokoro(_out_text, _out, voice=_kokoro_voice, speed=_kokoro_speed)
+                synthesize_with_kokoro(
+                    _out_text, wav_target, voice=_kokoro_voice, speed=_kokoro_speed
+                )
             elif _engine == "espeak":
                 synthesize_with_espeak(
                     _out_text,
-                    _out,
+                    wav_target,
                     executable_path=espeak_exe_snap,
                     voice=_espeak_voice,
                     rate=_espeak_rate,
                 )
+            if _target_fmt != "wav":
+                progress(f"Encoding {_target_fmt.upper()}", 1, 1)
+                try:
+                    transcode_audio(wav_target, _out, _target_fmt)
+                finally:
+                    wav_target.unlink(missing_ok=True)
+                    if tmp_dir:
+                        try:
+                            Path(tmp_dir).rmdir()
+                        except OSError:
+                            pass
             progress("Finalizing output", 1, 1)
             return str(_out)
 

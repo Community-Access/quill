@@ -8,6 +8,36 @@ import pytest
 from quill.core.speech import ffmpeg
 
 
+def test_resolve_export_format_named_filter_normalizes_suffix() -> None:
+    # User left the typed name extensionless and picked the MP3 filter (index 1):
+    # choose mp3 and signal the suffix should be normalized.
+    exts = ["wav", "mp3", "m4a", "ogg", "opus", "flac"]
+    fmt, normalize = ffmpeg.resolve_export_format("", 1, exts)
+    assert (fmt, normalize) == ("mp3", True)
+
+
+def test_resolve_export_format_typed_extension_wins_and_keeps_name() -> None:
+    # "song.mp3" typed under the "All files" filter (trailing index) still makes
+    # an MP3, and the user's name is preserved (no normalization).
+    exts = ["wav", "mp3", "flac"]
+    fmt, normalize = ffmpeg.resolve_export_format(".mp3", len(exts), exts)
+    assert (fmt, normalize) == ("mp3", False)
+
+
+def test_resolve_export_format_unknown_under_all_files_falls_back_to_wav() -> None:
+    exts = ["wav", "mp3"]
+    # Unknown extension under "All files" -> wav, normalize on.
+    assert ffmpeg.resolve_export_format(".xyz", len(exts), exts) == ("wav", True)
+    # Already .wav under "All files" -> wav, no normalization needed.
+    assert ffmpeg.resolve_export_format(".wav", len(exts), exts) == ("wav", False)
+
+
+def test_resolve_export_format_wav_filter_selected() -> None:
+    # Selecting the WAV filter (index 0) with no typed extension stays wav.
+    exts = ["wav", "mp3"]
+    assert ffmpeg.resolve_export_format("", 0, exts) == ("wav", True)
+
+
 def test_build_transcode_command_targets_16k_mono_wav() -> None:
     args = ffmpeg.build_transcode_command("ffmpeg", Path("in.mp3"), Path("out.wav"))
     assert args[0] == "ffmpeg"
