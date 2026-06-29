@@ -99,11 +99,16 @@ version = "2.4.6"
         "speech/dectalk",
         "speech/espeak-ng",
         "speech/piper",
+        "speech/whispercpp",
     ]
     assert manifest["docs"] == [r"docs\userguide.md"]
     assert manifest["speechAssets"]["dectalk"]["downloadable"] is True
     assert manifest["speechAssets"]["espeak"]["downloadable"] is True
     assert manifest["speechAssets"]["piper"]["downloadable"] is True
+    # whisper.cpp is the default offline transcription/dictation engine, so the
+    # build always stages it (#742 regression: a selected component with no
+    # payload). It is bundled, not merely downloadable on demand.
+    assert manifest["speechAssets"]["whispercpp"]["bundled"] is True
     # Kokoro is always STAGED at the portable bundle root (kokoro-models/), the
     # location the runtime resolves a bundled copy from; the installer gates the
     # copy behind the optional speechkokoro component (asserted separately).
@@ -404,6 +409,7 @@ def test_portable_bundle_flattens_runtime_to_root(tmp_path: Path, monkeypatch) -
         "speech/dectalk": "say.exe",
         "speech/espeak-ng": "espeak-ng.exe",
         "speech/piper": "piper.exe",
+        "speech/whispercpp": "whisper-cli.exe",
     }.items():
         d = tmp_path / tool_id.replace("/", "_")
         d.mkdir()

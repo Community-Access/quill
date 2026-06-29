@@ -83,6 +83,24 @@ PIPER_PINNED_URL = (
 )
 PIPER_PINNED_SHA256 = "f3c58906402b24f3a96d92145f58acba6d86c9b5db896d207f78dc80811efcea"
 
+# Pinned whisper.cpp Windows release. _download_and_stage_whisper() tries the
+# latest GitHub release first and falls back to these if the API is unreachable.
+# The CPU x64 zip ships whisper-cli.exe alongside its whisper.dll / ggml*.dll
+# dependencies -- the offline speech engine (#617, #742). whisper.cpp is the
+# DEFAULT offline transcription/dictation provider, so unlike the other speech
+# engines it MUST ship: the build raises rather than producing an installer whose
+# selected "speechwhisper" component has no payload.
+#
+# NOTE: the pinned fallback SHA-256 is a placeholder. Release CI reaches the
+# GitHub API and uses the latest-release path (sha256=None, matching the other
+# engines), so the fallback only fires when the API is unreachable. Fill this in
+# (download the asset once and record its SHA-256) before relying on an offline
+# build; until then _download_and_stage_whisper refuses the unverified fallback.
+WHISPERCPP_PINNED_URL = (
+    "https://github.com/ggml-org/whisper.cpp/releases/download/v1.7.4/whisper-bin-x64.zip"
+)
+WHISPERCPP_PINNED_SHA256 = "<REPLACE_WITH_WHISPER_BIN_X64_SHA256>"
+
 # Kokoro neural-TTS model + voices. Always STAGED into the portable bundle under
 # kokoro-models/, but the INSTALLER gates the copy behind the optional
 # "speechkokoro" component (Types: full custom) -- so Full installs still ship it
@@ -300,6 +318,8 @@ def build_windows_distribution(
         effective_bundled_tools["speech/espeak-ng"] = _download_and_stage_espeak(portable_dir)
     if "speech/piper" not in effective_bundled_tools:
         effective_bundled_tools["speech/piper"] = _download_and_stage_piper(portable_dir)
+    if "speech/whispercpp" not in effective_bundled_tools:
+        effective_bundled_tools["speech/whispercpp"] = _download_and_stage_whisper(portable_dir)
     bundled_tools = _stage_bundled_tools(portable_dir, effective_bundled_tools)
     # Kokoro is staged separately (not via _stage_bundled_tools): it ships under
     # the bundle-root kokoro-models/ folder the runtime looks for, not tools/.
@@ -1634,6 +1654,7 @@ def _speech_asset_manifest(
         "dectalk": "dectalk",
         "espeak": "espeak-ng",
         "piper": "piper",
+        "whispercpp": "whispercpp",
     }
     for engine, dir_name in engine_dirs.items():
         engine_dir = speech_root / dir_name
@@ -1800,6 +1821,66 @@ def _download_and_stage_piper(portable_dir: Path) -> Path:
     shutil.copytree(piper_root, stage_dir, dirs_exist_ok=True)
     archive.unlink(missing_ok=True)
     print(f"Piper staged to {stage_dir}")
+    return stage_dir
+
+
+def _download_and_stage_whisper(portable_dir: Path) -> Path:
+    """Download the whisper.cpp engine for Windows and return a staging directory.
+
+    Tries the latest ggml-org/whisper.cpp GitHub release first; falls back to the
+    pinned version. Stages to portable/_tool-download/whispercpp/stage/ so
+    _stage_bundled_tools() copies it to tools/speech/whispercpp/. Re-uses a prior
+    download. The staged folder keeps whisper-cli.exe alongside its whisper.dll /
+    ggml*.dll dependencies so resolve_whisper_executable() finds a runnable engine.
+
+    whisper.cpp is the default offline transcription/dictation provider (#617), so
+    this download is not optional: a failure raises rather than letting the build
+    produce an installer whose selected "speechwhisper" component ships no engine
+    (the empty-component regression behind #742).
+    """
+    stage_dir = portable_dir / "_tool-download" / "whispercpp" / "stage"
+    if (stage_dir / "whisper-cli.exe").exists() or (stage_dir / "main.exe").exists():
+        print("whisper.cpp already downloaded; skipping.")
+        return stage_dir
+
+    url = (
+        _fetch_latest_github_asset_url("ggml-org", "whisper.cpp", "-bin-x64.zip")
+        or WHISPERCPP_PINNED_URL
+    )
+    if url == WHISPERCPP_PINNED_URL and WHISPERCPP_PINNED_SHA256.startswith("<"):
+        raise RuntimeError(
+            "Could not reach the whisper.cpp releases API and the pinned fallback "
+            "SHA-256 is still a placeholder. Set WHISPERCPP_PINNED_URL / "
+            "WHISPERCPP_PINNED_SHA256 to a verified release before building offline, "
+            "or supply --whisper-dir with a local engine."
+        )
+    sha256 = WHISPERCPP_PINNED_SHA256 if url == WHISPERCPP_PINNED_URL else None
+
+    tmp_dir = portable_dir / "_tool-download" / "whispercpp"
+    tmp_dir.mkdir(parents=True, exist_ok=True)
+    archive = tmp_dir / "whisper-bin-x64.zip"
+    print(f"Downloading whisper.cpp from {url}...")
+    _download_with_verification(url, archive, expected_sha256=sha256)
+
+    extract_dir = tmp_dir / "extracted"
+    if extract_dir.exists():
+        shutil.rmtree(extract_dir)
+    extract_dir.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(archive) as zf:
+        zf.extractall(extract_dir)
+
+    # Newer releases ship whisper-cli.exe; older ones shipped main.exe. Either is
+    # on resolve_whisper_executable()'s allowlist, so accept whichever is present.
+    exe_candidates = list(extract_dir.rglob("whisper-cli.exe")) or list(
+        extract_dir.rglob("main.exe")
+    )
+    if not exe_candidates:
+        raise RuntimeError("whisper.cpp zip did not contain whisper-cli.exe or main.exe")
+    engine_root = exe_candidates[0].parent
+    stage_dir.mkdir(parents=True, exist_ok=True)
+    shutil.copytree(engine_root, stage_dir, dirs_exist_ok=True)
+    archive.unlink(missing_ok=True)
+    print(f"whisper.cpp staged to {stage_dir}")
     return stage_dir
 
 
