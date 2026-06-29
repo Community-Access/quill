@@ -375,6 +375,238 @@ existing one?</li>
 <h2 id="9-out-of-scope-for-now">9. Out of scope (for now)</h2>
 <p>Upstream model training/quantization; non-Windows/macOS platforms;
 accelerator vendor-specific kernels.</p>
+<h2 id="10-detailed-code-grounded-phase-analysis">10. Detailed,
+code-grounded phase analysis</h2>
+<p>This section walks each phase against the actual code, describing
+what is <em>safe</em> to do (guarded, reversible, no new failure modes),
+the expected impact across <strong>size / memory / footprint / speed /
+capability</strong>, and the <strong>Windows/macOS</strong> differences.
+"Safe" assumes: downloads are SHA-256-verified (existing pattern), work
+stays off the UI thread, every change is opt-in or behaviour-preserving,
+and Safe Mode still disables network/AI. Network-dependent steps assume
+stable internet <em>for the download only</em> — once a model/asset is
+local, the feature is fully offline.</p>
+<h3 id="100-current-baseline-what-we-are-optimizing-from">10.0 Current
+baseline (what we are optimizing from)</h3>
+<ul>
+<li><strong>Installer ≈ 245 MB</strong> (measured from a local 0.8.1
+build). It is dominated by the embedded CPython 3.13 runtime + wheels
+(notably wxPython) under <code>Lib/site-packages</code>, plus
+<code>python313.dll</code>/<code>.zip</code> and the bundled whisper.cpp
+engine (#747, ~8 MB CPU build).</li>
+<li><strong>Speech model downloads</strong> (on first use, not in the
+installer) — whisper.cpp / Faster Whisper: tiny 75 MB, base 145 MB,
+small 465 MB, medium 1500 MB, large-v3 3100 MB. Faster Whisper's on-disk
+int8 is smaller than the GGML figure for the same tier.</li>
+<li><strong>On-device LLM (GGUF, Q4_K_M)</strong> via
+<code>quill/core/ai/model_manager.py</code>: <code>llama-3.2-1b</code> ≈
+0.8 GB (default under 8 GB RAM), <code>phi-4-mini</code> ≈ 2.5 GB (8
+GB+). Auto-downloaded to <code>&lt;app data&gt;/models</code>,
+SHA-256-verified, urllib-only.</li>
+<li><strong>Already quantized + lazy + machine-aware</strong>, so the
+wins below are about <em>fit, footprint, and routing</em>, not new
+quantization.</li>
+</ul>
+<h3 id="101-phase-0--measurement-no-behaviour-change-foundation">10.1
+Phase 0 — Measurement (no behaviour change; foundation)</h3>
+<p><strong>What is possible, safely.</strong> A read-only
+<code>scripts/footprint_report.py</code> that emits: installed size by
+component (walk <code>{app}</code> and the optional-component dirs),
+each on-disk model size (<code>&lt;app data&gt;/models</code>,
+<code>speech-engine</code>, <code>kokoro-models</code>), and peak RSS
+per engine for a fixed sample (drive each provider's
+<code>transcribe_file</code> / read-aloud / a short LLM completion under
+a sampler). Reuse the existing machine probes
+(<code>service.detect_total_ram_gb</code>, <code>detect_has_gpu</code>,
+<code>models_dir_free_gb</code>). Pure measurement — no risk.</p>
+<p><strong>Impact:</strong> none to the product; unlocks every later
+decision with numbers. <strong>Cross-platform:</strong> identical logic;
+sizes differ (macOS bundle is a <code>.app</code>, no embedded
+<code>python313.dll</code>; it has a Python.framework). The report
+should label the platform and not assume Windows paths.</p>
+<h3 id="102-phase-1--packaging--disk-footprint">10.2 Phase 1 — Packaging
+/ disk footprint</h3>
+<p><strong>What exists.</strong>
+<code>scripts/build_windows_distribution.py</code> already: bundles the
+embedded runtime, <strong>prunes build-only packages</strong>, makes
+large engines optional installer components (Kokoro ~120 MB, DECtalk,
+Piper, eSpeak, Node.js ~30 MB, braille pack ~15 MB, pandoc), and
+<strong>downloads engines at build time</strong> (#747 whisper, etc.).
+macOS uses py2app (<code>scripts/setup_macos.py</code> /
+<code>build_macos.sh</code>), which zips pure-Python into
+<code>pythonNNN.zip</code> and now bundles missing <code>@rpath</code>
+dylibs (#755).</p>
+<p><strong>Safe, high-value moves:</strong></p>
+<ul>
+<li><strong>Trim the embedded stdlib/wheels.</strong> Exclude
+provably-unused stdlib (e.g. <code>tkinter</code>, <code>test</code>,
+<code>idlelib</code>, <code>ensurepip</code>, <code>distutils</code>
+leftovers) and large unused wheel data. <em>Guard:</em> gate behind the
+existing import-surface tests + a smoke launch
+(<code>python -m quill --version</code>) so a wrongly-pruned module
+fails the build, never the user. <strong>Impact:</strong> tens of MB off
+the installer; faster download/extract; zero runtime change.
+<strong>Reversible:</strong> it is a build-time exclude list.</li>
+<li><strong>More assets on-demand.</strong> Anything rarely used (extra
+Kokoro voices, large speech tiers) moves from "bundled" to "downloaded
+on first use" via the existing SHA-verified download path.
+<strong>Impact:</strong> smaller base installer; first-use cost shifts
+to a one-time, resumable download. <em>Guard:</em> the feature already
+degrades to "download needed" messaging; Safe Mode blocks it.</li>
+<li><strong>DLL de-dup / compression.</strong> Detect duplicate native
+DLLs across engine dirs; rely on the installer's compression.
+<strong>Impact:</strong> moderate size; no behaviour change.</li>
+</ul>
+<p><strong>Cross-platform.</strong> Windows: the embedded-runtime trim
+is the biggest lever. macOS: the py2app bundle has different internals
+(framework Python, <code>.dylib</code> signing); the trim list must be
+computed per-platform, and the macOS <code>.app</code> must stay
+notarization-valid (every Mach-O signed — already handled in
+<code>build_macos.sh</code>). Note today's whisper.cpp bundling is
+<strong>Windows-specific</strong>; a macOS build would need a mac
+<code>whisper-cli</code> (a tracked gap, see 10.5).</p>
+<p><strong>Impact summary:</strong> size ↓↓ (installer), download time
+↓; memory/speed unchanged; capability unchanged (on-demand keeps every
+feature, just not pre-bundled).</p>
+<h3 id="103-phase-2--runtime-memory--model-lifecycle">10.3 Phase 2 —
+Runtime memory &amp; model lifecycle</h3>
+<p><strong>What exists.</strong> Heavy ML imports are lazy
+(<code>FasterWhisperProvider.is_available</code> probes via
+<code>importlib.util.find_spec</code>, never importing CTranslate2 on
+the UI thread). Providers expose <code>warm()</code> /
+<code>unload()</code>; the dictation provider is cached
+(<code>_dictation_provider</code>) and prewarmed in the background;
+Kokoro has <code>prewarm_kokoro_model</code> /
+<code>warm_kokoro_onnx</code>. So the machinery to load/unload exists —
+there is no <em>policy</em> tying it together.</p>
+<p><strong>Safe, high-value moves:</strong></p>
+<ul>
+<li><strong>Idle-unload policy.</strong> A background, timer-based sweep
+that calls the existing <code>unload()</code> on a model untouched for N
+minutes (and on memory-pressure). <em>Guard:</em> unload is already a
+no-op-safe operation; a subsequent use simply reloads (warm cost).
+Off-thread via <code>QuillTaskManager</code>; UI via
+<code>wx.CallAfter</code>. <strong>Impact:</strong> peak RSS ↓↓ when the
+user moves between features; first-use-after-idle speed ↓ slightly (one
+reload) — acceptable and configurable.</li>
+<li><strong>Single-flight loading.</strong> Ensure only one load of a
+given model is in flight (a lock keyed by model id) so rapid triggers
+can't double-load. <strong>Impact:</strong> memory spike ↓, no duplicate
+work. Pure safety.</li>
+<li><strong>Low-resource mode (opt-in or auto on low RAM).</strong> Caps
+<em>concurrently loaded</em> engines to one and biases selection to the
+smallest model. <strong>Crucially it never disables AI or
+speech</strong> — it serializes them. <em>Guard:</em> a setting (default
+off; may auto-enable below a RAM threshold with a one-time, accessible
+notice). <strong>Impact:</strong> the full feature set fits on small
+machines; throughput ↓ when many features are used at once
+(one-at-a-time), which is the right trade for a capability floor.</li>
+</ul>
+<p><strong>Cross-platform.</strong> Memory probing already abstracts via
+<code>bw_speech</code> (<code>total_ram_gb</code>).
+<code>psutil</code>-style RSS sampling for the report must tolerate
+absence; unload semantics are pure-Python and identical on both OSes.
+CUDA paths only ever <em>add</em> a faster option when present.</p>
+<p><strong>Impact summary:</strong> memory ↓↓ (the headline runtime
+win); speed ↓ slightly only on reload-after-idle; capability unchanged
+(never disables features); footprint unchanged.</p>
+<h3 id="104-phase-3--model--quant-selection-extend-the-recommender">10.4
+Phase 3 — Model / quant selection (extend the recommender)</h3>
+<p><strong>What exists.</strong>
+<code>quill/core/speech/service.py</code> already does machine-aware
+selection: <code>recommend_model_id</code> uses conservative RAM tiers
+(≤3 GB → tiny; &lt;6 → base; &lt;12 → small; &lt;16 → medium; ≥16 →
+medium, or large-v3 with a GPU), <code>required_ram_gb</code> maps
+size→RAM (≤200 MB→2 GB, ≤600→4 GB, ≤1800→6 GB, else 8 GB),
+<code>enough_disk_for</code> guards disk, and
+<code>describe_models</code> surfaces fit + a GPU note. The LLM side
+mirrors this (<code>model_manager</code> RAM tiering at an 8 GB
+threshold).</p>
+<p><strong>Safe, high-value moves:</strong></p>
+<ul>
+<li><strong>Smallest-viable default + accessible upgrade
+prompt.</strong> New installs default to the recommended
+(smallest-that-fits) model; offer "your machine can handle a more
+accurate model" as a one-step, screen-reader-friendly prompt — never an
+automatic large download. <strong>Impact:</strong> download size ↓ and
+time-to-first-use ↓↓ for most users; accuracy is a deliberate upgrade.
+<em>Guard:</em> recommendation is already conservative and
+selectable.</li>
+<li><strong>Expose quant variants where they help.</strong> Offer q5/q8
+whisper.cpp or CTranslate2 <code>int8_float16</code> as alternatives
+within a tier, picked by the recommender. <strong>Impact:</strong> lets
+a machine trade a little size/RAM for accuracy without jumping a whole
+tier. <em>Guard:</em> additive catalog entries; defaults unchanged.</li>
+<li><strong>Unify the speech + LLM recommenders</strong> behind one
+machine profile so guidance is consistent. Pure refactor; behaviour
+preserved.</li>
+</ul>
+<p><strong>Cross-platform.</strong> RAM/disk/GPU probes already
+cross-platform; CUDA nudge only applies where a GPU exists, so macOS/CPU
+users always get the CPU-appropriate default. No OS-specific
+behaviour.</p>
+<p><strong>Impact summary:</strong> size ↓ (smaller defaults), speed ↑
+(right-sized models load and run faster), capability ↑ (clear upgrade
+path), memory ↓ (defaults fit).</p>
+<h3 id="105-phase-4--ai-routing-cloud-first--minimal-local">10.5 Phase 4
+— AI routing (cloud-first / minimal-local)</h3>
+<p><strong>What exists.</strong> <code>quill/core/ai/</code> already
+supports cloud providers (OpenAI, Anthropic, Gemini, OpenRouter) and
+on-device (Ollama probed in <code>onboarding</code>, llama.cpp via
+<code>llama_cpp_backend</code> + the GGUF <code>model_manager</code>),
+with a fast/quality tier split (<code>model_tiers.py</code>) and
+consent-gated, provider-neutral routing.</p>
+<p><strong>Safe, high-value moves:</strong></p>
+<ul>
+<li><strong>First-class "cloud-first / no local weight" path.</strong> A
+setup choice that uses a cloud provider for AI and downloads
+<strong>zero</strong> local LLM weight — ideal for very low-storage
+machines. <strong>Impact:</strong> footprint ↓↓ (no multi-GB GGUF),
+quality ↑ (frontier models), at the cost of requiring connectivity +
+consent for AI only. <em>Guard:</em> the consent gates and "nothing sent
+without consent" model are unchanged; speech stays fully on-device.</li>
+<li><strong>Low-resource on-device default.</strong> Where on-device is
+chosen, default to the smallest capable GGUF (<code>llama-3.2-1b</code>,
+~0.8 GB) on &lt;8 GB machines (already the threshold) and only suggest
+<code>phi-4-mini</code> upward. <strong>Impact:</strong> on-device AI
+runs on modest hardware; bigger models are an opt-in upgrade.</li>
+<li><strong>Graceful fallback chain.</strong> When a cloud call fails
+(offline/timeout) and a local model exists, offer to fall back (and vice
+versa), surfaced accessibly. <em>Guard:</em> never silently switch
+providers in a way that changes the privacy posture; always
+announce.</li>
+</ul>
+<p><strong>Cross-platform.</strong> Cloud routing is OS-agnostic.
+On-device llama.cpp + GGUF work on both; macOS could additionally use
+Metal acceleration via the runtime when present (bonus, never required).
+<strong>Tracked gap:</strong> the offline <em>speech</em> engine binary
+(whisper.cpp) is bundled for Windows only today; macOS parity (a mac
+<code>whisper-cli</code>, or defaulting macOS offline speech to Faster
+Whisper / a mac build) should be called out so "speech wherever
+possible" holds on Mac too.</p>
+<p><strong>Impact summary:</strong> footprint ↓↓ (cloud-first),
+capability ↑ (frontier or right-sized local), reliability ↑ (fallback
+chain), with privacy posture preserved.</p>
+<h3 id="106-sequencing-reliability-and-make-it-magic-notes">10.6
+Sequencing, reliability, and "make it magic" notes</h3>
+<ul>
+<li><strong>Order matters:</strong> Phase 0 first (numbers), then 1
+(cheap, safe size wins), then 2 (the memory headline), then 3/4
+(capability + routing). Each phase is independently shippable and
+reversible.</li>
+<li><strong>Reliability:</strong> every download stays SHA-256-verified
+and resumable-by-retry; every new mode is a setting with a safe default;
+Safe Mode continues to disable network/AI; all model work stays off the
+UI thread. No phase introduces a new hard dependency or a GPU
+requirement.</li>
+<li><strong>The "magic":</strong> the compounding effect is <em>a
+screen-reader-first writing studio whose full AI + speech feature set
+installs small, starts fast, and runs on a cheap CPU-only laptop</em> —
+downloading only what a given machine can use, holding only one model in
+memory at a time when RAM is tight, and transparently using a GPU or a
+cloud provider as a bonus when they exist. Capability scales <em>up</em>
+with the hardware and never falls <em>off</em> on the low end.</li>
+</ul>
 <h2 id="appendix-a--concrete-code-touchpoints-for-scoping">Appendix A —
 concrete code touchpoints (for scoping)</h2>
 <ul>
@@ -394,5 +626,90 @@ concrete code touchpoints (for scoping)</h2>
 <li>Settings surface for new modes: <code>quill/core/settings.py</code>
 + <code>settings_specs.py</code>.</li>
 </ul>
+<h2 id="appendix-b--size--ram-reference-current-values">Appendix B —
+size / RAM reference (current values)</h2>
+<p>Offline speech models (download size; on-disk int8 for Faster Whisper
+is smaller), and the RAM tier <code>service.required_ram_gb</code> maps
+each to:</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Download</th>
+<th>Accuracy</th>
+<th>Speed</th>
+<th>Est. RAM tier</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tiny</td>
+<td>75 MB</td>
+<td>low</td>
+<td>fast</td>
+<td>~2 GB</td>
+</tr>
+<tr>
+<td>base</td>
+<td>145 MB</td>
+<td>low</td>
+<td>fast</td>
+<td>~2 GB</td>
+</tr>
+<tr>
+<td>small</td>
+<td>465 MB</td>
+<td>medium</td>
+<td>medium/fast</td>
+<td>~4 GB</td>
+</tr>
+<tr>
+<td>medium</td>
+<td>1500 MB</td>
+<td>high</td>
+<td>slow</td>
+<td>~6 GB</td>
+</tr>
+<tr>
+<td>large-v3</td>
+<td>3100 MB</td>
+<td>highest</td>
+<td>slow</td>
+<td>~8 GB</td>
+</tr>
+</tbody>
+</table>
+<p>Speech recommender (<code>service.recommend_model_id</code>) by total
+RAM: &lt;3 GB → tiny; &lt;6 → base; &lt;12 → small; &lt;16 → medium; ≥16
+→ medium (or large-v3 with a GPU).</p>
+<p>On-device LLM (GGUF Q4_K_M, <code>ai/model_manager.py</code>;
+auto-downloaded + SHA-256):</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Size</th>
+<th>Default for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Llama 3.2 1B Instruct</td>
+<td>~0.8 GB</td>
+<td>machines under 8 GB RAM</td>
+</tr>
+<tr>
+<td>Phi-4-mini Instruct</td>
+<td>~2.5 GB</td>
+<td>machines with 8 GB+ RAM</td>
+</tr>
+</tbody>
+</table>
+<p>Installer (Windows, 0.8.1 local build): ≈ 245 MB, dominated by the
+embedded CPython 3.13 runtime + wheels. Optional/bundled components
+include Kokoro voices (~120 MB), Node.js (~30 MB), the braille pack (~15
+MB), and the whisper.cpp CPU engine (~8 MB, Windows build).</p>
+<p>All figures are current observations to be re-baselined by the Phase
+0 report.</p>
 </body>
 </html>
