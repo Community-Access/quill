@@ -295,7 +295,7 @@
     "quill/core/read_aloud.py": 1299,
     "quill/core/settings.py": 1328,
     "quill/core/settings_registry.py": 158,
-    "quill/core/spellcheck.py": 614,
+    "quill/core/spellcheck.py": 615,
     "quill/core/settings_specs.py": 1895,
     "quill/core/watch_actions.py": 789,
     "quill/io/rtf.py": 712,

@@ -145,6 +145,7 @@ def set_active_language(lang: str | None) -> None:
     _ACTIVE_LANGUAGE = new
     reset_caches()
 
+
 # #316: length-bucketed wordlist caches, keyed on the wordlist frozenset
 # id so a reload of the bundled wordlist (reset_caches) automatically
 # rebuilds the buckets on next access.  This avoids the O(W) scan of the

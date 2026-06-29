@@ -364,13 +364,13 @@ from quill.core.spellcheck import (
     backend_info as spellcheck_backend_info,
 )
 from quill.core.spellcheck import (
-    set_active_language as spellcheck_set_active_language,
-)
-from quill.core.spellcheck import (
     next_misspelling as find_next_misspelling,
 )
 from quill.core.spellcheck import (
     previous_misspelling as find_previous_misspelling,
+)
+from quill.core.spellcheck import (
+    set_active_language as spellcheck_set_active_language,
 )
 from quill.core.spoken_echo import format_spoken_echo, new_history, record_spoken
 from quill.core.sticky_notes import save_sticky_note
