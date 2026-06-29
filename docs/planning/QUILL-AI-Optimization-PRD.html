@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>QUILL-AI-Optimization-PRD</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="quill-ai-footprint--optimization--prd-draft">QUILL AI Footprint
+&amp; Optimization — PRD (Draft)</h1>
+<ul>
+<li>Status: Draft / Proposed (not yet scheduled)</li>
+<li>Owner: TBD</li>
+<li>Created: 2026-06-29</li>
+<li>Related: <code>docs/planning/roadmap.md</code>,
+<code>docs/Product Requirement Documents and Specifications/QUILL-PRD.md</code></li>
+</ul>
+<blockquote>
+<p>This is an initial draft to frame the work. It is deliberately
+measurement-first: nothing here should be built before Phase 0 produces
+real numbers, because QUILL already does most of the high-value
+quantization and lazy loading, and the remaining wins are in packaging,
+runtime memory, and routing rather than in re-quantizing models.</p>
+</blockquote>
+<h2 id="1-summary">1. Summary</h2>
+<p>Reduce QUILL's on-disk and in-memory footprint and improve AI/ML
+efficiency <strong>without</strong> regressing accessibility, output
+quality, privacy, or the zero-config "it just works" experience. The
+headline levers are installer/disk size, peak runtime RAM per engine,
+and cloud-vs-on-device routing — not new model quantization, which is
+already pervasive.</p>
+<h2 id="2-background--what-quill-already-does">2. Background — what
+QUILL already does</h2>
+<p>QUILL is already heavily optimized on the model side. Any plan must
+build on this, not duplicate it:</p>
+<ul>
+<li><strong>Quantized models throughout.</strong> Faster Whisper runs
+CTranslate2 <strong>int8 on CPU</strong> / float16 on CUDA
+(<code>quill/core/speech/providers/fasterwhisper.py</code>); Kokoro TTS
+ships the <strong>int8 ONNX</strong> model
+(<code>kokoro-v1.0.int8.onnx</code>); whisper.cpp uses
+<strong>GGML-quantized</strong> models; local LLMs run through Ollama /
+<code>llama_cpp_backend</code> as <strong>GGUF (Q4/Q5)</strong>, where
+the runtime owns quantization.</li>
+<li><strong>Lazy, optional loading.</strong> Heavy ML imports are
+deferred (<code>faster_whisper</code> / <code>ctranslate2</code> are
+probed via <code>importlib.util.find_spec</code>, imported only on use),
+so an uninstalled engine never costs startup time or idle memory.</li>
+<li><strong>Warm/unload lifecycle.</strong> Dictation and Kokoro models
+have prewarm + cached providers + <code>unload()</code> paths.</li>
+<li><strong>Optional install components + on-demand downloads.</strong>
+The installer makes large engines optional (Kokoro ~120 MB, DECtalk,
+Piper, eSpeak, Faster Whisper) and downloads several on demand; the
+build prunes build-only packages.</li>
+<li><strong>Machine-aware recommendations.</strong> The speech model
+manager already sizes model suggestions to the user's RAM / GPU /
+disk.</li>
+</ul>
+<p>So "should we quantize?" is largely answered <strong>yes,
+already</strong>. The open question is everything <em>around</em> the
+models.</p>
+<h2 id="3-goals">3. Goals</h2>
+<ol type="1">
+<li>Make the installed/disk footprint smaller and more predictable, with
+large or rarely-used assets opt-in.</li>
+<li>Lower peak runtime RAM, especially with multiple engines (speech +
+TTS + AI) in play, via an explicit unload policy and an optional
+low-resource mode.</li>
+<li>Default users onto the smallest viable model/quant for their
+machine, with a clear, accessible upgrade path.</li>
+<li>Give a first-class "cloud-first / minimal local" path for users who
+don't want on-device model weight at all.</li>
+<li>Do all of the above with <strong>zero</strong> regression to
+accessibility, output quality, privacy posture, or first-run
+simplicity.</li>
+</ol>
+<h2 id="4-non-goals">4. Non-goals</h2>
+<ul>
+<li>Re-quantizing or retraining models QUILL ships (already quantized
+upstream).</li>
+<li>Changing the privacy model (AI stays opt-in, provider-neutral,
+consent-gated).</li>
+<li>GPU/accelerator-specific tuning beyond what the engines already
+auto-select.</li>
+<li>Dropping macOS support or Windows-primary status.</li>
+</ul>
+<h2 id="5-success-metrics-to-be-baselined-in-phase-0">5. Success metrics
+(to be baselined in Phase 0)</h2>
+<ul>
+<li>Installer size (MB) and installed-on-disk size, base vs. full
+component set.</li>
+<li>Peak RSS per engine (whisper.cpp, Faster Whisper, Vosk, Kokoro,
+local LLM) for a representative task, and with N engines concurrently
+loaded.</li>
+<li>Cold-start time to first usable editor; time-to-first-token /
+first-audio per engine.</li>
+<li>Default-model size shipped/recommended per machine tier.</li>
+<li>No regression: transcription WER, TTS intelligibility, and AI task
+quality stay within agreed tolerances; accessibility checks
+unchanged.</li>
+</ul>
+<h2 id="6-phased-plan">6. Phased plan</h2>
+<h3 id="phase-0--measure-prerequisite">Phase 0 — Measure
+(prerequisite)</h3>
+<p>Build a repeatable footprint/inventory report: installed size by
+component, per-model on-disk sizes, and peak RAM per engine / per
+concurrent combination. Land it as a script + a short doc so every later
+phase is judged against numbers. <strong>Acceptance:</strong> a
+committed report for the current release on a reference machine.</p>
+<h3 id="phase-1--packaging--disk-footprint">Phase 1 — Packaging / disk
+footprint</h3>
+<p>Audit the installer (currently ~245 MB, dominated by the embedded
+runtime + wheels). Trim the embedded stdlib/wheels, dedupe DLLs, and
+push more assets to on-demand. <strong>Acceptance:</strong> measurable
+base-installer reduction with no feature loss (on-demand paths
+verified).</p>
+<h3 id="phase-2--runtime-memory">Phase 2 — Runtime memory</h3>
+<p>Add an explicit <strong>unload-idle-models</strong> policy,
+single-flight model loading, and a <strong>Low-resource mode</strong>
+setting that caps concurrently loaded engines and prefers the smallest
+models. <strong>Acceptance:</strong> peak RSS with multiple engines
+drops measurably; no UI stalls (work stays off the UI thread).</p>
+<h3 id="phase-3--model--quant-selection">Phase 3 — Model / quant
+selection</h3>
+<p>Default to the smallest viable quant, extend the existing
+machine-aware recommender with accessible upgrade prompts, and offer
+quant variants where useful (e.g. q4/q8 whisper.cpp, CTranslate2
+int8_float16). <strong>Acceptance:</strong> new installs default to a
+machine-appropriate model; upgrades are one accessible step.</p>
+<h3 id="phase-4--ai-routing">Phase 4 — AI routing</h3>
+<p>A <strong>cloud-first / minimal-local</strong> option (zero local
+model weight) and low-resource on-device defaults (small GGUF).
+<strong>Acceptance:</strong> a user can run the AI suite with no local
+model downloaded; on-device defaults fit modest machines.</p>
+<h2 id="7-risks--constraints">7. Risks &amp; constraints</h2>
+<ul>
+<li><strong>Accessibility first.</strong> Any new setting/mode must be
+fully keyboard- and screen-reader-accessible and announced; no
+visual-only cues.</li>
+<li><strong>No quality regression.</strong> Smaller defaults must stay
+usable; upgrades must be obvious.</li>
+<li><strong>Privacy.</strong> Cloud-first routing must keep the existing
+consent gates; nothing leaves the machine without consent.</li>
+<li><strong>Thread safety.</strong> Model load/unload and measurement
+must stay off the UI thread (<code>QuillTaskManager</code> /
+<code>wx.CallAfter</code>).</li>
+<li><strong>Platform.</strong> Windows-primary, macOS-supported; Linux
+is not a target.</li>
+</ul>
+<h2 id="8-open-questions">8. Open questions</h2>
+<ul>
+<li>What machine tiers do we target for "smallest viable default"?</li>
+<li>Unload policy: idle-timeout, memory-pressure trigger, or both?</li>
+<li>Does "Low-resource mode" also gate non-AI features (e.g. previews),
+or AI/speech only?</li>
+<li>Cloud-first: a distinct setup-wizard path, or a toggle on the
+existing one?</li>
+</ul>
+<h2 id="9-out-of-scope-for-now">9. Out of scope (for now)</h2>
+<p>Upstream model training/quantization; non-Windows/macOS platforms;
+accelerator vendor-specific kernels.</p>
+<h2 id="appendix-a--concrete-code-touchpoints-for-scoping">Appendix A —
+concrete code touchpoints (for scoping)</h2>
+<ul>
+<li>Speech engines: <code>quill/core/speech/providers/</code>
+(whispercpp, fasterwhisper, vosk),
+<code>quill/core/speech/service.py</code>, model manager UI in
+<code>quill/ui/main_frame_speech.py</code>.</li>
+<li>TTS: <code>quill/core/read_aloud.py</code>, Kokoro model resolution
+/ warm.</li>
+<li>Local LLM / AI: <code>quill/core/ai/model_manager.py</code>,
+<code>quill/core/ai/llama_cpp_backend.py</code>, provider routing in
+<code>quill/core/ai/</code>.</li>
+<li>Packaging: <code>scripts/build_windows_distribution.py</code>
+(optional components, runtime bundling, prune step),
+<code>installer/quill.iss</code>, <code>scripts/setup_macos.py</code> /
+<code>scripts/build_macos.sh</code>.</li>
+<li>Settings surface for new modes: <code>quill/core/settings.py</code>
++ <code>settings_specs.py</code>.</li>
+</ul>
+</body>
+</html>
