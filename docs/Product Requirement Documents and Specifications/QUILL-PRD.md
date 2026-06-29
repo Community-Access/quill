@@ -1931,18 +1931,21 @@ and runs entirely on the user's machine. The detailed rollout/provider-center su
 the deferred BITS Whisperer suite (locked off, `core.bw_whisperer`) is captured in
 `docs/planning/deferred-locked-features.md`; this section describes only what ships today.
 
-**On-demand engine recovery (release-asset acquisition).** The whisper.cpp engine ships
-in the installer, so offline speech works out of the box. As a recovery/optional path —
-and the first concrete step of the AI footprint/optimization plan
-(`docs/planning/QUILL-AI-Optimization-PRD.md` §10.2.4) — `Tools -> Speech -> Download
-Offline Speech Engine...` fetches QUILL's own copy of the engine when it is missing.
-Acquisition is `quill/core/release_assets.py` (wx-free): a **pinned**, **SHA-256-verified**
-download from QUILL's controlled GitHub release asset (`assets-v1`), HTTPS-only, with
-retry/resumable download, atomic verified install, and a clean error on failure. It is
-gated by an explicit user action, the GATE-9 network-egress audit, and Safe Mode; the
-bundled copy means capability never depends on the download. Only components QUILL is
-licensed to redistribute are hosted this way (whisper.cpp is MIT); license-unclear
-engines are not re-hosted, and ffmpeg is never re-hosted (it stays user-installed).
+**On-demand engine acquisition (release-asset).** The whisper.cpp engine is **not
+bundled** (PRD footprint plan §10.2.4): it downloads on demand from QUILL's verified
+release asset to `%APPDATA%\Quill\speech-engine`, which the runtime searches. The
+**first time offline dictation/transcription is used without it, QUILL offers the
+download in-flow** (the dictation pre-flight prompts), and it is also at
+`Tools -> Speech -> Download Offline Speech Engine...`. Acquisition is
+`quill/core/release_assets.py` (wx-free): a **pinned**, **SHA-256-verified** download
+from QUILL's controlled GitHub release asset (`assets-v1`), HTTPS-only, with
+retry/resumable download, atomic verified install, and a clean error on failure;
+gated by an explicit user action, the GATE-9 network-egress audit, and Safe Mode.
+**Upgraders keep their existing `{app}\tools\speech\whispercpp` copy** (Inno never
+removes it; `[InstallDelete]` does not touch it; the resolver still checks it), so
+upgrades never lose offline speech. Only components QUILL is licensed to redistribute
+are hosted this way (whisper.cpp is MIT, Kokoro Apache-2.0); license-unclear engines
+are not re-hosted, and ffmpeg is never re-hosted (it stays user-installed).
 
 **Kokoro voices unbundled (proof of concept).** The ~120 MB Kokoro neural voices are
 no longer shipped in the installer; they download on demand through the same
@@ -1988,8 +1991,8 @@ providers".
 > (plain text / Markdown / HTML), **Generate Captions** (SRT / VTT), push-to-talk
 > **Dictate at the cursor** (distinct earcons, status-bar state, microphone picker,
 > QUILL Key + Shift+D), and **speaker attribution** via the whisper.cpp speaker-detection
-> model. The whisper.cpp engine ships as an installer component, and `sounddevice` is
-> bundled for capture. **S4 added Faster Whisper** as an optional, GPU-aware second engine
+> model. The whisper.cpp engine downloads on demand (unbundled, §5.25c above), and
+> `sounddevice` is bundled for capture. **S4 added Faster Whisper** as an optional, GPU-aware second engine
 > (`fasterwhisper` extra): when present it appears in a **Speech Engine** chooser, the
 > choice is saved in `speech_provider`, and it is used for transcription, captions, and
 > dictation. whisper.cpp remains the default and needs nothing extra; Faster Whisper does

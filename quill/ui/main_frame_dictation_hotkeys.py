@@ -390,13 +390,25 @@ class DictationHotkeysMixin:
         provider = self._dictation_provider()
         try:
             if not provider.is_available():  # type: ignore[attr-defined]
-                # The engine itself (e.g. the whisper.cpp binary) is missing, so
-                # recording would capture audio that can never be transcribed.
-                self._announce(
-                    "The speech engine isn't set up on this computer, so dictation can't "
-                    "run. Open Tools, Speech and Dictation to set it up.",
-                    force=True,
+                # The engine (the whisper.cpp binary) is no longer bundled (PRD
+                # 10.2.4 unbundle), so recording would capture audio that can't be
+                # transcribed. Offer to fetch it right here rather than stranding
+                # the user -- the download is small, verified, and one click.
+                wx = self._wx
+                offer = self._show_message_box(
+                    "The offline speech engine isn't installed yet. Download it now "
+                    "(about 8 MB, verified)? Dictation will be ready once it finishes.",
+                    "Offline Speech Engine",
+                    wx.ICON_QUESTION | wx.YES_NO,
                 )
+                if offer == wx.YES:
+                    self.download_offline_speech_engine()
+                else:
+                    self._announce(
+                        "Dictation needs the offline speech engine. You can install it "
+                        "any time from Tools, Speech, Download Offline Speech Engine.",
+                        force=True,
+                    )
                 return False
             if not provider.list_installed_models():  # type: ignore[attr-defined]
                 self._announce(

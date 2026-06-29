@@ -80,7 +80,6 @@ Name: "pandoc"; Description: "Install bundled Pandoc for document conversion"; T
 Name: "speechdectalk"; Description: "Install bundled DECtalk runtime"; Types: full custom; Flags: checkablealone
 Name: "speechespeak"; Description: "Install bundled eSpeak-NG runtime"; Types: full custom; Flags: checkablealone
 Name: "speechpiper"; Description: "Install bundled Piper neural TTS runtime"; Types: full custom; Flags: checkablealone
-Name: "speechwhisper"; Description: "Install the offline speech engine (whisper.cpp) for private, on-device transcription and dictation (Tools > Speech > Whisperer)"; Types: full custom; Flags: checkablealone
 Name: "nodejs"; Description: "Install portable Node.js runtime for Node Quillins and the Developer Console TypeScript interface (~30 MB); not required for Python Quillins"; Flags: checkablealone
 Name: "braillepack"; Description: "Install QUILL Braille Pack (liblouis translation engine, UEB, Standard American English, and international braille profiles, ~15 MB)"; Types: full custom; Flags: checkablealone
 
@@ -138,11 +137,12 @@ Source: "..\portable\tools\pandoc\*"; DestDir: "{app}\tools\pandoc"; Flags: igno
 Source: "..\portable\tools\speech\dectalk\*"; DestDir: "{app}\tools\speech\dectalk"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist; Components: speechdectalk
 Source: "..\portable\tools\speech\espeak-ng\*"; DestDir: "{app}\tools\speech\espeak-ng"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist; Components: speechespeak
 Source: "..\portable\tools\speech\piper\*"; DestDir: "{app}\tools\speech\piper"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist; Components: speechpiper
-; whisper.cpp offline speech engine. Resolved at runtime from
-; {app}\tools\speech\whispercpp (QUILL_APP_ROOT). Optional;
-; skipifsourcedoesntexist means a build without the bundled engine still
-; installs, and users can also drop the executable here or download it later.
-Source: "..\portable\tools\speech\whispercpp\*"; DestDir: "{app}\tools\speech\whispercpp"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist; Components: speechwhisper
+; whisper.cpp offline speech engine is NOT bundled (PRD 10.2.4 unbundle):
+; QUILL downloads the ~8 MB engine on demand to %APPDATA%\Quill\speech-engine
+; (verified release asset), and offline speech offers it at point of use.
+; Upgraders keep any existing {app}\tools\speech\whispercpp copy -- Inno
+; never removes it and [InstallDelete] does not touch it. A --whisper-dir
+; build still stages it; the installer no longer ships it.
 ; Node.js portable runtime (optional). The build script copies a portable
 ; node.exe distribution into portable\tools\nodejs when building with
 ; --bundle-nodejs. skipifsourcedoesntexist means a build without bundled
