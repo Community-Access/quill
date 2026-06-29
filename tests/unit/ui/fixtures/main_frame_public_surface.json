@@ -123,6 +123,7 @@
   "download_faster_whisper",
   "download_ffmpeg",
   "download_kokoro_engine",
+  "download_offline_speech_engine",
   "download_piper_exe",
   "download_vosk",
   "duplicate_line",
