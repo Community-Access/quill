@@ -15,8 +15,12 @@ from pathlib import Path
 
 from quill.core.read_aloud import ReadAloudUnavailableError
 
+# Hosted on QUILL's own "assets-v1" GitHub release rather than the upstream
+# dectalk release: the byte-identical vs2022.zip is re-published there so the
+# on-demand download has a single, controlled, SHA-pinned acquisition point
+# (matching the bundled-build pin in scripts/build_windows_distribution.py).
 DECTALK_RELEASE_ZIP_URL = (
-    "https://github.com/dectalk/dectalk/releases/download/2023-10-30/vs2022.zip"
+    "https://github.com/Community-Access/quill/releases/download/assets-v1/vs2022.zip"
 )
 # SHA-256 of the pinned vs2022.zip release asset, verified before extraction (SEC-6).
 DECTALK_RELEASE_ZIP_SHA256 = "4a778056c109b37f95ade4b3d3e308b9396b22a4b0629f9756ec0e5051b9636d"

@@ -94,16 +94,26 @@ version = "2.4.6"
     # legacy run-quill.cmd launcher.
     assert manifest["portableEntry"].endswith("quill.exe")
     assert manifest.get("portableLauncher") is None
+    # DECtalk, eSpeak-NG, and whisper.cpp are unbundled (PRD 10.2.4): only Pandoc
+    # and Piper auto-stage by default; the rest download on demand.
     assert sorted(manifest["bundledTools"]) == [
         "pandoc",
-        "speech/dectalk",
-        "speech/espeak-ng",
         "speech/piper",
     ]
     assert manifest["docs"] == [r"docs\userguide.md"]
     assert manifest["speechAssets"]["dectalk"]["downloadable"] is True
     assert manifest["speechAssets"]["espeak"]["downloadable"] is True
     assert manifest["speechAssets"]["piper"]["downloadable"] is True
+    # DECtalk and eSpeak-NG are unbundled (PRD 10.2.4): not staged by default,
+    # downloaded on demand from QUILL's verified assets-v1 release instead.
+    assert manifest["speechAssets"]["dectalk"]["bundled"] is False
+    assert (portable_dir / "tools" / "speech" / "dectalk").exists() is False
+    assert manifest["speechAssets"]["espeak"]["bundled"] is False
+    assert (portable_dir / "tools" / "speech" / "espeak-ng").exists() is False
+    # whisper.cpp is unbundled (PRD 10.2.4): not staged by default (no --whisper-dir
+    # here), downloaded on demand from QUILL's verified release asset instead.
+    assert manifest["speechAssets"]["whispercpp"]["bundled"] is False
+    assert (portable_dir / "tools" / "speech" / "whispercpp").exists() is False
     # Kokoro is always STAGED at the portable bundle root (kokoro-models/), the
     # location the runtime resolves a bundled copy from; the installer gates the
     # copy behind the optional speechkokoro component (asserted separately).
@@ -145,26 +155,28 @@ def test_build_inno_setup_script_mentions_portable_bundle() -> None:
     assert (
         'Name: "pandoc"; Description: "Install bundled Pandoc for document conversion";' in script
     )
-    assert 'Name: "speechdectalk"; Description: "Install bundled DECtalk runtime";' in script
-    # All DECtalk voices ship together under a single component checkbox — no
-    # per-voice sub-components and no voice-selection wizard page.
-    assert 'Name: "speechdectalk\\voices"' not in script
+    # DECtalk and eSpeak-NG are unbundled (PRD 10.2.4): no installer components
+    # and no [Files] entries. QUILL downloads each on demand from its verified
+    # assets-v1 release; upgraders keep any existing copy.
+    assert "speechdectalk" not in script
+    assert "speechespeak" not in script
+    assert 'DestDir: "{app}\\tools\\speech\\dectalk"' not in script
+    assert 'DestDir: "{app}\\tools\\speech\\espeak-ng"' not in script
+    # No per-voice DECtalk sub-components or voice-selection wizard page ever.
     assert "DecTalkVoicePage" not in script
     assert "ShouldInstallAllVoices" not in script
     assert "ShouldInstallPaulVoice" not in script
-    assert 'Name: "speechespeak"; Description: "Install bundled eSpeak-NG runtime";' in script
     assert 'Name: "speechpiper"; Description: "Install bundled Piper neural TTS runtime";' in script
-    # The offline whisper.cpp speech engine ships as its own optional component
-    # (#617), gated payload under tools\speech\whispercpp, surfaced under
-    # Tools > Speech > Whisperer.
-    assert 'Name: "speechwhisper"; Description: "Install the offline speech engine' in script
-    assert "(Tools > Speech > Whisperer)" in script
-    # Kokoro is an optional component (Types: full custom): Full installs ship it,
-    # Custom installs can drop ~120 MB and download it later. It is excluded from
-    # the unconditional copy and gated behind its own [Files] entry.
-    assert 'Name: "speechkokoro"; Description: "Install bundled Kokoro neural TTS voices' in script
-    assert 'Source: "..\\portable\\kokoro-models\\*"; DestDir: "{app}\\kokoro-models";' in script
-    assert "Components: speechkokoro" in script
+    # whisper.cpp is unbundled (PRD 10.2.4): no installer component and no
+    # tools\speech\whispercpp [Files] entry. QUILL downloads the engine on demand
+    # from its verified release asset; upgraders keep any existing copy.
+    assert "speechwhisper" not in script
+    assert 'DestDir: "{app}\\tools\\speech\\whispercpp"' not in script
+    # Kokoro is unbundled (PRD 10.2.4): no installer component and no kokoro-models
+    # [Files] entry. QUILL downloads it on demand from its verified release asset;
+    # upgraders keep any existing {app}\kokoro-models copy (Inno never removes it).
+    assert "speechkokoro" not in script
+    assert 'DestDir: "{app}\\kokoro-models"' not in script
     assert "speechopenvoice" not in script
     assert (
         'Excludes: "docs\\QUILL-PRD.md,tools\\pandoc\\*,tools\\speech\\dectalk\\*,tools\\speech\\espeak-ng\\*,tools\\speech\\piper\\*,tools\\speech\\whispercpp\\*,tools\\nodejs\\*,vendor\\braille-pack\\*,kokoro-models\\*,_tool-download\\*,_speech-download\\*"'
@@ -172,31 +184,21 @@ def test_build_inno_setup_script_mentions_portable_bundle() -> None:
     )
     assert 'Source: "..\\portable\\tools\\pandoc\\*"; DestDir: "{app}\\tools\\pandoc";' in script
     assert "Components: pandoc" in script
-    assert (
-        'Source: "..\\portable\\tools\\speech\\dectalk\\*"; DestDir: "{app}\\tools\\speech\\dectalk";'
-        in script
-    )
-    # Single DECtalk entry: no voices exclusion, no per-voice Check: functions.
-    assert 'Excludes: "voices\\*"' not in script
-    assert "Components: speechdectalk" in script
+    # DECtalk and eSpeak-NG are unbundled (PRD 10.2.4): no [Files] Source entries.
+    assert 'Source: "..\\portable\\tools\\speech\\dectalk\\*";' not in script
+    assert 'Source: "..\\portable\\tools\\speech\\espeak-ng\\*";' not in script
     assert "Check: ShouldInstallAllVoices()" not in script
     assert "Check: ShouldInstallPaulVoice()" not in script
-    assert (
-        'Source: "..\\portable\\tools\\speech\\espeak-ng\\*"; DestDir: "{app}\\tools\\speech\\espeak-ng";'
-        in script
-    )
     assert (
         'Source: "..\\portable\\tools\\speech\\piper\\*"; DestDir: "{app}\\tools\\speech\\piper";'
         in script
     )
-    assert (
-        'Source: "..\\portable\\tools\\speech\\whispercpp\\*";'
-        ' DestDir: "{app}\\tools\\speech\\whispercpp";' in script
-    )
-    assert "Components: speechdectalk" in script
-    assert "Components: speechespeak" in script
+    # whisper.cpp is unbundled (PRD 10.2.4): no [Files] entry for it.
+    assert 'Source: "..\\portable\\tools\\speech\\whispercpp\\*";' not in script
+    assert "Components: speechdectalk" not in script  # unbundled (PRD 10.2.4)
+    assert "Components: speechespeak" not in script  # unbundled (PRD 10.2.4)
     assert "Components: speechpiper" in script
-    assert "Components: speechwhisper" in script
+    assert "Components: speechwhisper" not in script  # unbundled (PRD 10.2.4)
     assert "User Guide" in script
     assert "userguide.html" in script
     assert 'Parameters: "-m quill"' in script
@@ -404,6 +406,7 @@ def test_portable_bundle_flattens_runtime_to_root(tmp_path: Path, monkeypatch) -
         "speech/dectalk": "say.exe",
         "speech/espeak-ng": "espeak-ng.exe",
         "speech/piper": "piper.exe",
+        "speech/whispercpp": "whisper-cli.exe",
     }.items():
         d = tmp_path / tool_id.replace("/", "_")
         d.mkdir()
@@ -569,7 +572,12 @@ version = "3.0.0"
     )
     assert "pandoc" in manifest["bundledTools"]
     assert "speech/piper" in manifest["bundledTools"]
-    assert manifest["speechAssets"]["dectalk"]["bundled"] is True
+    # DECtalk and eSpeak-NG are unbundled (PRD 10.2.4): not staged by default, so
+    # not marked bundled, but still flagged downloadable for on-demand acquisition.
+    assert manifest["speechAssets"]["dectalk"]["bundled"] is False
+    assert manifest["speechAssets"]["dectalk"]["downloadable"] is True
+    assert manifest["speechAssets"]["espeak"]["bundled"] is False
+    assert manifest["speechAssets"]["espeak"]["downloadable"] is True
     # Kokoro is staged to the bundle root, not tools/, and not via bundledTools.
     assert manifest["speechAssets"]["kokoro"]["bundled"] is True
     assert (tmp_path / "dist" / "portable" / "kokoro-models" / "voices-v1.0.bin").exists()

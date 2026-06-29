@@ -336,5 +336,3 @@ def _make_progress_tqdm(info: SpeechModelInfo, progress: ProgressCallback) -> ty
             return super().update(n)  # type: ignore[no-any-return]
 
     return _ProgressTqdm
-    if progress is not None:
-        progress(0.99, f"Finishing {info.display_name}...")

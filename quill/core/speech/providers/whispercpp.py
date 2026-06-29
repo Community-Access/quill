@@ -224,9 +224,10 @@ class WhisperCppProvider:
             return ProviderInstallStatus(
                 installed=False,
                 detail=(
-                    "The offline speech engine is not installed. Re-run the QUILL "
-                    "installer and enable the offline speech engine component, or "
-                    "place whisper-cli under tools/speech/whispercpp."
+                    "The offline speech engine is not installed yet. Use "
+                    "Tools > Speech > Download Offline Speech Engine to fetch it "
+                    "(about 8 MB, verified), or place whisper-cli under "
+                    "tools/speech/whispercpp."
                 ),
             )
         return ProviderInstallStatus(installed=True, detail=exe)

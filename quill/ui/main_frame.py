@@ -6821,14 +6821,17 @@ class MainFrame(
                 self.editor.WriteText("![image]()")
 
     def _check_tts_fallback_on_startup(self) -> None:
-        """When SAPI 5 self-voicing fails to initialise, record it -- and only
-        *speak* it when no screen reader is handling speech.
+        """When SAPI 5 self-voicing fails to initialise, surface it appropriately.
 
         SAPI 5 is QUILL's own fallback voice, used only when no screen reader is
-        present. When a reader is doing the talking, a SAPI failure is benign, so
-        announcing "TTS failed" is alarming noise. We always log a diagnostic
-        note; we speak a (corrected) prompt only when the user would otherwise
-        have no voice at all.
+        present. When a reader (NVDA/JAWS/Narrator) is doing the talking, a SAPI
+        failure is benign, so it must not surface as an alarming accessibility
+        error or a spoken "no voice" prompt -- the screen-reader user is not
+        affected and has nothing to fix. We therefore decide the surface *before*
+        recording anything: a detected reader gets only a quiet, unspoken status
+        note plus a benign informational breadcrumb; without a reader the
+        self-voice was the only voice, so the failure is spoken and recorded as a
+        real accessibility problem (#749).
         """
         try:
             from quill.platform.windows.prism_bridge import tts_init_failed
@@ -6836,20 +6839,26 @@ class MainFrame(
             return
         if not tts_init_failed():
             return
-        self._record_notification(
-            "Text-to-speech (the SAPI 5 self-voice) did not start. If you use a "
-            "screen reader, QUILL speaks through it and no action is needed. To "
-            "use QUILL's own voice instead, run Tools > Retry TTS Engine.",
-            "accessibility",
-        )
         if self._screen_reader_handling_speech():
-            # The screen reader is doing the talking; the self-voice is not
-            # needed. Show a quiet, unspoken note rather than announcing a failure.
+            # The screen reader is doing the talking; the self-voice is not needed.
+            # Keep only a benign, informational breadcrumb (category "info", not
+            # "accessibility") and a quiet, unspoken status note -- never an alarm.
+            self._record_notification(
+                "QUILL's optional SAPI 5 self-voice did not start. You are using a "
+                "screen reader, so this has no effect on speech and no action is "
+                "needed.",
+                "info",
+            )
             self._set_status_quiet("Speaking through your screen reader.")
             return
         # No screen reader: the self-voice was the only voice, so this is a real
-        # problem the user must hear. (F8 toggles overwrite mode -- the retry is
+        # problem the user must hear and may want to revisit. (The retry is
         # Tools > Retry TTS Engine.)
+        self._record_notification(
+            "Text-to-speech (the SAPI 5 self-voice) did not start. Run "
+            "Tools > Retry TTS Engine to try again.",
+            "accessibility",
+        )
         self._set_status(
             "Text-to-speech failed to start, so QUILL has no voice. "
             "Run Tools > Retry TTS Engine to try again."
@@ -9388,6 +9397,10 @@ class MainFrame(
         if self.document.path is None:
             self.save_file_as()
             return
+        # Optional pre-save proofread (off by default): review misspellings in the
+        # editor before the file is written. save_file_as runs its own copy.
+        if getattr(self.settings, "spell_check_before_save", False):
+            self.open_spell_check_dialog()
         if self.document.modified:
             backup_document(self.document)
         self._write_document_to_disk(self.document)
@@ -9605,6 +9618,10 @@ class MainFrame(
             target = self._resolve_save_target(Path(dialog.GetPath()), chosen_filter)
             self._last_file_dir = str(target.parent)
 
+        # Optional pre-save proofread (off by default), after the user has chosen
+        # the destination but before the file is written.
+        if getattr(self.settings, "spell_check_before_save", False):
+            self.open_spell_check_dialog()
         self.document.set_text(self.editor.GetValue())
         if self.document.modified and self.document.path is not None:
             backup_document(self.document)
@@ -13401,6 +13418,7 @@ class MainFrame(
             accounts=accounts,
             default_account_id=_accounts.default_account_id(),
             announce=self._announce_result,
+            spell_review=self._spell_review_textctrl,
         )
         if dialog.show() == self._wx.ID_OK:
             url = dialog.posted_url or ""
@@ -16270,6 +16288,26 @@ class MainFrame(
             f"document={document_count}, project={project_count}"
         )
 
+    def _spell_review_textctrl(self, text_ctrl: object) -> None:
+        """Run the F7 spelling review over a wx text control (e.g. a Mastodon post).
+
+        Mirrors open_spell_check_dialog but targets the given control instead of
+        the editor, so corrections apply to the post text before it is sent (#549
+        Mastodon proofread-before-send).
+        """
+        from quill.ui.spell_review import review_textctrl
+
+        review_textctrl(
+            self._wx,
+            self.frame,
+            text_ctrl,
+            dictionary=self._spell_dictionary(),
+            announce_fn=self._announce,
+            settings=self.settings,
+            show_modal=self._show_modal_dialog,
+        )
+        self._invalidate_spell_dictionary_cache()
+
     def open_spell_check_dialog(self) -> None:
         """Open the guided F7 Spelling Review dialog."""
         from quill.core.spelling.session import ReviewSession
@@ -17439,14 +17477,19 @@ class MainFrame(
         ).start()
 
     def _download_kokoro_models(self) -> None:
-        """Download the Kokoro ONNX model and voices file in the background."""
-        import urllib.request as _ureq
+        """Fetch the Kokoro ONNX model + voices from QUILL's verified release asset,
+        then ensure the kokoro-onnx package is installed (Kokoro unbundle, PRD 10.2.4).
 
+        Kokoro is no longer bundled in fresh installers; this downloads it on demand
+        into the user data dir, which the runtime prefers. The download is pinned +
+        SHA-256-verified via quill.core.release_assets, runs on a worker thread behind
+        a cancelable percentage, and is blocked in Safe Mode. Users upgrading from a
+        release that bundled Kokoro keep their {app}/kokoro-models copy, so this only
+        runs when Kokoro is actually missing.
+        """
         from quill.core.read_aloud import (
             KOKORO_ONNX_MODEL_FILENAME,
-            KOKORO_ONNX_MODEL_URL,
             KOKORO_ONNX_VOICES_FILENAME,
-            KOKORO_ONNX_VOICES_URL,
             default_kokoro_model_dir,
             kokoro_onnx_ready,
         )
@@ -17458,6 +17501,28 @@ class MainFrame(
         model_path = dest_dir / KOKORO_ONNX_MODEL_FILENAME
         voices_path = dest_dir / KOKORO_ONNX_VOICES_FILENAME
 
+        # Smart re-download: if the voices are already present, don't silently
+        # re-fetch ~120 MB -- offer to replace them. Declining keeps the existing
+        # copy (and just finishes the package step if needed). Re-fetching only
+        # happens when the user opts in. (#kokoro-replace)
+        force = True
+        if model_path.exists() and voices_path.exists():
+            from quill.core.speech.engine_install import is_kokoro_onnx_available
+
+            again = self._show_message_box(
+                "The Kokoro voices are already downloaded. Download a fresh copy "
+                "(replace what you have)?",
+                "Download Kokoro",
+                wx.ICON_QUESTION | wx.YES_NO,
+            )
+            if again != wx.YES:
+                force = False  # keep the existing files
+                if kokoro_onnx_ready() and is_kokoro_onnx_available():
+                    # _set_status already speaks; a second _announce of the same
+                    # text would double-speak it (#728).
+                    self._set_status("Kokoro is already installed.")
+                    return
+
         cancel = threading.Event()
         progress = AIProgressDialog(
             self.frame,
@@ -17468,57 +17533,30 @@ class MainFrame(
         progress.show()
         self._announce("Downloading Kokoro models.")
 
-        pairs = [
-            (KOKORO_ONNX_VOICES_URL, voices_path),
-            (KOKORO_ONNX_MODEL_URL, model_path),
-        ]
-
         def _run() -> None:
             try:
+                from quill.core.release_assets import fetch_component
                 from quill.core.speech.engine_install import (
                     install_kokoro_onnx,
                     is_kokoro_onnx_available,
                 )
 
-                for i, (url, path) in enumerate(pairs):
-                    if cancel.is_set():
-                        raise RuntimeError("Cancelled")
-                    if path.exists():
-                        wx.CallAfter(
-                            progress.set_progress,
-                            int((i + 1) / len(pairs) * 100),
-                            f"{path.name} already present; skipping.",
-                        )
-                        continue
-                    wx.CallAfter(
-                        progress.set_progress,
-                        int(i / len(pairs) * 100),
-                        f"Downloading {path.name}...",
+                if force or not (model_path.exists() and voices_path.exists()):
+                    # Reserve 0-80% for the model + voices, 80-100% for the package.
+                    def _model_progress(frac: float, msg: str) -> None:
+                        wx.CallAfter(progress.set_progress, int(frac * 80), msg)
+
+                    fetch_component(
+                        "kokoro",
+                        dest_dir,
+                        progress=_model_progress,
+                        should_cancel=cancel.is_set,
+                        label="Downloading Kokoro voices...",
                     )
-                    with _ureq.urlopen(url, timeout=300) as resp:  # noqa: S310
-                        total = int(resp.headers.get("Content-Length", 0))
-                        got = 0
-                        chunks: list[bytes] = []
-                        while True:
-                            if cancel.is_set():
-                                raise RuntimeError("Cancelled")
-                            chunk = resp.read(65536)
-                            if not chunk:
-                                break
-                            chunks.append(chunk)
-                            got += len(chunk)
-                            if total:
-                                pct = int((i + got / total) / len(pairs) * 100)
-                                wx.CallAfter(
-                                    progress.set_progress,
-                                    pct,
-                                    f"Downloading {path.name}...",
-                                )
-                    path.write_bytes(b"".join(chunks))
                 if not is_kokoro_onnx_available():
 
                     def _pkg_progress(frac: float, msg: str) -> None:
-                        wx.CallAfter(progress.set_progress, int(frac * 100), msg)
+                        wx.CallAfter(progress.set_progress, 80 + int(frac * 20), msg)
 
                     # GATE-40-OK: Kokoro engine install worker.
                     install_kokoro_onnx(progress=_pkg_progress)
@@ -17567,18 +17605,44 @@ class MainFrame(
             self._set_status("Nothing to synthesize")
             return
 
+        # WAV is always available (the engines emit it directly). The compressed
+        # listening formats (MP3, M4A/M4B, OGG, Opus, FLAC) need ffmpeg to encode
+        # the synthesized WAV, so they only appear when ffmpeg is installed (#750).
+        from quill.core.speech.ffmpeg import ffmpeg_available, resolve_export_format
+
+        formats: list[tuple[str, str]] = [("wav", "Wave file")]
+        if ffmpeg_available():
+            formats += [
+                ("mp3", "MP3 audio"),
+                ("m4a", "M4A audio"),
+                ("m4b", "M4B audiobook"),
+                ("ogg", "OGG audio"),
+                ("opus", "Opus audio"),
+                ("flac", "FLAC audio"),
+            ]
+        wildcard = "|".join(f"{label} (*.{ext})|*.{ext}" for ext, label in formats)
+        wildcard += "|All files (*.*)|*.*"
+
         with wx.FileDialog(
             self.frame,
             _TITLE,
-            wildcard="Wave file (*.wav)|*.wav|All files (*.*)|*.*",
+            wildcard=wildcard,
             style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
         ) as dlg:
             if self._show_modal_dialog(dlg, _TITLE) != wx.ID_OK:
                 self._set_status("Speech generation cancelled")
                 return
             output_path = Path(dlg.GetPath())
-        if output_path.suffix.lower() != ".wav":
-            output_path = output_path.with_suffix(".wav")
+            filter_index = dlg.GetFilterIndex()
+
+        # Pick the target format: a recognized typed extension wins (so "song.mp3"
+        # under "All files" still makes an MP3); otherwise the selected filter
+        # decides and the extension is normalized to match (see resolve_export_format).
+        target_fmt, _normalize_suffix = resolve_export_format(
+            output_path.suffix, filter_index, [ext for ext, _ in formats]
+        )
+        if _normalize_suffix:
+            output_path = output_path.with_suffix(f".{target_fmt}")
 
         engine = self.settings.read_aloud_engine.strip().lower() or "sapi5"
         s = self.settings
@@ -17663,17 +17727,30 @@ class MainFrame(
         _espeak_voice = s.read_aloud_espeak_voice
         _espeak_rate = s.read_aloud_espeak_rate
         _out = output_path
+        _target_fmt = target_fmt
 
         def work(progress: Callable[[str, int, int], None]) -> object:
+            import tempfile
+
+            from quill.core.speech.ffmpeg import transcode_audio
+
             progress(f"Starting {_engine}", 0, 1)
+            # The synthesis engines only emit WAV. For a compressed target, render
+            # to a temporary WAV first, then encode it to the chosen format (#750).
+            tmp_dir: str | None = None
+            if _target_fmt == "wav":
+                wav_target = _out
+            else:
+                tmp_dir = tempfile.mkdtemp(prefix="quill-speech-")
+                wav_target = Path(tmp_dir) / f"{_out.stem}.wav"
             if _engine == "sapi5":
                 synthesize_to_file_with_sapi5(
-                    _out_text, _out, voice=_voice, rate=_rate, volume=_vol
+                    _out_text, wav_target, voice=_voice, rate=_rate, volume=_vol
                 )
             elif _engine == "dectalk":
                 synthesize_to_file_with_dectalk(
                     _out_text,
-                    _out,
+                    wav_target,
                     executable_path=dectalk_exe_snap,
                     voice=_dectalk_voice,
                     rate=_dectalk_rate,
@@ -17681,20 +17758,33 @@ class MainFrame(
             elif _engine == "piper":
                 synthesize_with_piper(
                     _out_text,
-                    _out,
+                    wav_target,
                     executable_path=piper_exe_snap,
                     model_path=piper_model_snap,
                 )
             elif _engine == "kokoro":
-                synthesize_with_kokoro(_out_text, _out, voice=_kokoro_voice, speed=_kokoro_speed)
+                synthesize_with_kokoro(
+                    _out_text, wav_target, voice=_kokoro_voice, speed=_kokoro_speed
+                )
             elif _engine == "espeak":
                 synthesize_with_espeak(
                     _out_text,
-                    _out,
+                    wav_target,
                     executable_path=espeak_exe_snap,
                     voice=_espeak_voice,
                     rate=_espeak_rate,
                 )
+            if _target_fmt != "wav":
+                progress(f"Encoding {_target_fmt.upper()}", 1, 1)
+                try:
+                    transcode_audio(wav_target, _out, _target_fmt)
+                finally:
+                    wav_target.unlink(missing_ok=True)
+                    if tmp_dir:
+                        try:
+                            Path(tmp_dir).rmdir()
+                        except OSError:
+                            pass
             progress("Finalizing output", 1, 1)
             return str(_out)
 

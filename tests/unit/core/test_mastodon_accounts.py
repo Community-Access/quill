@@ -95,3 +95,56 @@ def test_accounts_file_carries_a_schema_version(store: dict[str, str]) -> None:
         encoding="utf-8",
     )
     assert [a.nickname for a in accounts.list_accounts()] == ["Main"]
+
+
+def test_spell_check_before_post_defaults_off(store: dict[str, str]) -> None:
+    account = _add("Main")
+    assert account.spell_check_before_post is False
+    assert accounts.list_accounts()[0].spell_check_before_post is False
+
+
+def test_set_spell_check_before_post_toggles_and_persists(store: dict[str, str]) -> None:
+    account = _add("Main")
+    accounts.set_spell_check_before_post(account.id, True)
+    assert accounts.get_account(account.id).spell_check_before_post is True
+    accounts.set_spell_check_before_post(account.id, False)
+    assert accounts.get_account(account.id).spell_check_before_post is False
+
+
+def test_add_account_can_enable_pre_post_review(store: dict[str, str]) -> None:
+    account = accounts.add_account(
+        nickname="Pre",
+        instance_url="https://mastodon.social",
+        handle="@pre@mastodon.social",
+        client_id="cid",
+        client_secret="csecret",
+        access_token="tok",
+        spell_check_before_post=True,
+    )
+    assert accounts.get_account(account.id).spell_check_before_post is True
+
+
+def test_existing_account_without_field_migrates_to_off(store: dict[str, str]) -> None:
+    import json as _json
+    from pathlib import Path
+
+    # Simulate an account saved before the field existed (opt-in migration).
+    Path(str(accounts.accounts_path())).write_text(
+        _json.dumps({
+            "schema_version": 1,
+            "accounts": [
+                {
+                    "id": "abc123",
+                    "nickname": "Legacy",
+                    "instance_url": "https://mastodon.social",
+                    "handle": "@legacy@mastodon.social",
+                    "client_id": "cid",
+                }
+            ],
+            "default_id": "abc123",
+        }),
+        encoding="utf-8",
+    )
+    account = accounts.get_account("abc123")
+    assert account is not None
+    assert account.spell_check_before_post is False

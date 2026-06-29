@@ -1475,6 +1475,7 @@ class MenuBuilderMixin:
         self._id_dictation_settings = wx.NewIdRef()
         self._id_dictation_history = wx.NewIdRef()
         self._id_speech_ffmpeg = wx.NewIdRef()
+        self._id_speech_offline_engine = wx.NewIdRef()
         self._id_speech_engine_dl = wx.NewIdRef()
         self._id_speech_hf_token = wx.NewIdRef()
         self._id_speech_export_audio = wx.NewIdRef()
@@ -1768,6 +1769,12 @@ class MenuBuilderMixin:
         speech_menu.Append(
             self._id_speech_ffmpeg,
             self._menu_label(_("Download &FFmpeg..."), "tools.speech_ffmpeg"),
+        )
+        speech_menu.Append(
+            self._id_speech_offline_engine,
+            self._menu_label(
+                _("Download &Offline Speech Engine..."), "tools.speech_offline_engine"
+            ),
         )
         speech_menu.Append(
             self._id_speech_engine_dl,
@@ -2893,6 +2900,11 @@ class MenuBuilderMixin:
             wx.EVT_MENU,
             lambda _e: self.download_ffmpeg(),
             id=self._id_speech_ffmpeg,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.download_offline_speech_engine(),
+            id=self._id_speech_offline_engine,
         )
         self.frame.Bind(
             wx.EVT_MENU,

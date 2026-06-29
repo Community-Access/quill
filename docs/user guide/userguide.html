@@ -1479,6 +1479,15 @@ reminders.</li>
 misspelling, QUILL reads it letter by letter. The pause before spelling
 starts is configurable.</li>
 </ul>
+<h4 id="spell-check-a-document-before-saving">Spell check a document
+before saving</h4>
+<p>Turn on <strong>Settings → Editing → Spell check a document before
+saving</strong> (off by default) and QUILL opens the same Spelling
+Review (F7) automatically whenever you save, so you can correct
+misspellings before the file is written. Review or skip the issues as
+usual; the save then proceeds with your corrections. This applies to
+<strong>Save</strong> and <strong>Save As</strong> for the document you
+are editing.</p>
 <p><strong>Editor shortcuts</strong> (without opening the dialog):</p>
 <table>
 <thead>
@@ -1786,6 +1795,15 @@ PATH. ffmpeg is open-source (GPL/LGPL) and fetched directly from the
 official builder; QUILL never bundles or redistributes it. Without
 ffmpeg, the whisper.cpp engine needs a 16 kHz mono WAV, while the Faster
 Whisper engine handles the other formats on its own.</li>
+<li><strong>Download Offline Speech Engine...</strong> The private,
+on-device speech engine (whisper.cpp) is not bundled in the installer;
+the first time you use offline dictation or transcription, QUILL
+<strong>offers to download it for you</strong> (about 8 MB,
+checksum-verified, with a cancelable progress bar; disabled in Safe
+Mode). You can also fetch it any time from <strong>Tools &gt; Speech
+&gt; Download Offline Speech Engine...</strong>. If you are
+<strong>upgrading</strong> from a version that bundled the engine, your
+existing copy is kept and keeps working — nothing to download.</li>
 <li><strong>Speaker attribution.</strong> If you download the "Small
 English with speaker detection" model (in Manage Speech Models), QUILL
 marks <strong>who is speaking when</strong> — each turn is labelled
@@ -2667,6 +2685,43 @@ move text</li>
 <li><code>Ctrl+A</code> to select everything</li>
 </ul>
 <p>Quill adds two especially useful ideas on top of that.</p>
+<h3 id="repeat-next-command">Repeat Next Command</h3>
+<p>When you need to do the same thing several times — move down twenty
+lines, delete ten words, insert forty dashes, or replay a macro — you do
+not have to press the key over and over. Choose <strong>Edit → Repeat
+Next Command…</strong>, type how many times, and the <em>next</em>
+command you run repeats that many times. Then the count clears
+automatically, so ordinary editing carries on as normal.</p>
+<p>A few details:</p>
+<ul>
+<li>It works with almost any command, including movement, deletion,
+insertion, and a recorded macro.</li>
+<li>The count is capped at 1000, so a slip of the finger can never run
+away.</li>
+<li>It ships without a keyboard shortcut. If you use it often, assign
+one in <strong>Preferences → Keyboard → Keymap Editor</strong> (search
+for "Repeat Next Command").</li>
+</ul>
+<p>This is the keyboard-first "Repeat" idea from the classic WordPerfect
+Editor, brought into QUILL.</p>
+<h3 id="restore-deleted-text">Restore Deleted Text</h3>
+<p>Undo (<code>Ctrl+Z</code>) puts the last edit back exactly where it
+was. Sometimes you want the opposite: you deleted a sentence, and now
+you want to drop it somewhere <em>else</em>. <strong>Edit → Restore
+Deleted Text…</strong> remembers the last three blocks you removed with
+QUILL's structured delete commands — delete to start or end of line,
+delete to start or end of document, and delete paragraph — and lets you
+pick one from a list and re-insert it at the cursor.</p>
+<ul>
+<li>The list shows each deletion newest-first with a short preview and
+its length, so you can tell them apart by ear.</li>
+<li>If there is only one remembered deletion, it is restored immediately
+with no list.</li>
+<li>Like Repeat Next Command, it ships unbound; assign a shortcut in the
+Keymap Editor if you like (search for "Restore Deleted Text").</li>
+</ul>
+<p>This is the modern, place-it-anywhere form of the classic Editor's
+"Cancel" buffer.</p>
 <h3 id="copy-tray">Copy Tray</h3>
 <p>Copy Tray is <strong>twelve</strong> independently addressable
 clipboard slots that survive application restarts. Each slot holds text
@@ -4226,18 +4281,51 @@ causing an error.</li>
 Review, and Inspection</h2>
 <p>Quill earns trust by making difficult files readable and
 inspectable.</p>
+<h3 id="describe-character-at-cursor">Describe Character at Cursor</h3>
+<p>Some characters look the same but are not: a curly "smart" quote
+versus a straight apostrophe, a no-break space versus an ordinary space,
+an invisible zero-width space that quietly breaks a search, or a stray
+byte-order mark pasted from the web. <strong>Tools → Advanced → Describe
+Character at Cursor</strong> opens an accessible dialog — in the same
+read-only style as F1 help, so your screen reader reads it all in one
+pass — describing exactly what sits under the cursor:</p>
+<ul>
+<li>its name (for example "No-break space" or "Right single quotation
+mark"),</li>
+<li>its Unicode code point in both hexadecimal and decimal,</li>
+<li>its category in plain language (uppercase letter, dash punctuation,
+control character, and so on), and</li>
+<li>a note for the invisibles that are easy to miss, plus a flag when
+the character is non-ASCII.</li>
+</ul>
+<p>If the cursor is at the very end of the document, it tells you so
+rather than guessing. This is the screen-reader descendant of the
+classic "Reveal Codes" view. It ships without a shortcut; assign one in
+the Keymap Editor (search for "Describe Character") if you inspect text
+often.</p>
 <h3 id="read-aloud">Read Aloud</h3>
 <p>Read Aloud uses local voices with a deterministic support policy. The
-Windows system voice runs on <strong>SAPI 5</strong>;
-<strong>DECtalk</strong> and <strong>eSpeak NG</strong> are bundled for
-immediate local playback; <strong>Piper</strong> and
-<strong>Kokoro</strong> (neural, offline) are available as explicit
-downloads from Speech Center so base installs stay smaller. You can
-start, pause, stop, preview, and choose a voice. Speech onboarding
-announces current availability and recommended next actions before any
-download starts. For cloud voices, see <a
+Windows system voice runs on <strong>SAPI 5</strong> and is always
+available offline with no download — it is the floor that keeps Read
+Aloud working immediately. <strong>DECtalk</strong>, <strong>eSpeak
+NG</strong>, <strong>Piper</strong>, and <strong>Kokoro</strong>
+(neural, offline) are available as explicit downloads from Speech
+Center, so base installs stay smaller. You can start, pause, stop,
+preview, and choose a voice. Speech onboarding announces current
+availability and recommended next actions before any download starts.
+For cloud voices, see <a
 href="#read-aloud-with-ai-voice-openai-or-google-gemini">Read Aloud with
 AI Voice</a>.</p>
+<p>The <strong>Kokoro</strong> voice models (~120 MB), the classic
+<strong>DECtalk</strong> runtime (~2 MB), and the <strong>eSpeak
+NG</strong> engine with its voice data (~40 MB) are not bundled in the
+installer; the first time you choose one of these voices, QUILL
+downloads it for you from its own verified source (checksum-checked,
+with a cancelable progress window), and your other voices — including
+the always-present SAPI 5 system voice — keep working in the meantime.
+If you are <strong>upgrading</strong> from a version that bundled these,
+your existing copies are kept and keep working — you do not need to
+download anything.</p>
 <p>To audition a voice in <strong>Manage Voices</strong>, select it and
 use the <strong>Preview</strong> button. If the voice is already
 downloaded, Quill synthesises the preview phrase with that voice's real
@@ -4882,6 +4970,9 @@ you are most likely to want to tune every day.</p>
 <li>system tray mode</li>
 <li>persistent undo</li>
 <li>spell check as you type</li>
+<li><strong>spell check a document before saving</strong> — when on,
+saving opens the Spelling Review (F7) first so you can correct the
+document before it is written. Off by default.</li>
 <li>line-number visibility</li>
 <li>whether Quill starts with no document open</li>
 <li><strong>suggest a filename from the first line</strong> — when on,
@@ -5049,6 +5140,15 @@ code your server shows you.</li>
 a default</strong>, or <strong>remove</strong> one (which deletes its
 saved sign-in from this computer). Your sign-in is stored securely in
 the Windows Credential Manager, never in a plain file.</p>
+<p><strong>Proofread posts before sending.</strong> In <strong>Mastodon
+Accounts...</strong>, select an account and tick <strong>Spell-check
+posts before sending</strong> to turn on per-account proofreading (off
+by default). When it is on, pressing <strong>Post</strong> for that
+account first opens the Spelling Review (F7) on the post text so you can
+fix misspellings, and the post is sent only after you finish or skip the
+review. The setting is per account, so you can enable it for some
+accounts and not others; existing accounts are unaffected until you turn
+it on.</p>
 <h2 id="working-with-different-document-types">Working with Different
 Document Types</h2>
 <p>Quill is strongest today with plain text, Markdown, HTML, RTF, EPUB,
@@ -5327,10 +5427,29 @@ Warning</strong> and <strong>Previous Warning</strong> move through the
 findings and announce "Warning N of M" with the message, and
 <strong>Warnings Summary</strong> speaks the total and the most common
 categories. Validation only reads the file; it never changes it.</li>
+<li><strong>Repair</strong> — fix the two problems that stop a braille
+file from embossing cleanly. <strong>Read Layout Metrics</strong> speaks
+the diagnostic numbers in one pass: the cursor's cell and the current
+line length; the longest line in the file against your cells-per-line
+limit, with a spoken "page width exceeded" when it is over; the current
+and total braille pages; and the longest page against your
+lines-per-page limit, with a spoken "page depth exceeded" when it is
+over. <strong>Go to Longest Line</strong> and <strong>Go to Longest
+Page</strong> take you straight to the worst offender so you can repair
+it by hand — for a too-deep page, that usually means inserting a page
+break (Insert Braille Page Break) where one is missing. <strong>Remove
+Trailing Spaces on This Line</strong> and <strong>Remove Trailing Spaces
+in Whole File</strong> clear the trailing spaces that cause most
+page-width problems, while keeping every line ending and form feed
+intact. The cell and line limits come from your <strong>Cells per
+line</strong> and <strong>Lines per page</strong> settings under
+<strong>Preferences → Braille</strong>, so the diagnostics always match
+the page geometry you are transcribing for.</li>
 </ul>
-<p>Every status and navigation command is safe to run on a non-braille
-document — it simply tells you "This is not a braille document" rather
-than doing anything.</p>
+<p>Every status, navigation, and layout command is safe to run on a
+non-braille document — it simply tells you "This is not a braille
+document" rather than doing anything. (Remove Trailing Spaces and Go to
+Longest Line work on any document's text.)</p>
 <p><strong>Translation (Universal BRF Pack).</strong> Forward and back
 translation between print text and braille require the optional
 <strong>QUILL Braille Pack</strong>. Instead of a simple set of tables,

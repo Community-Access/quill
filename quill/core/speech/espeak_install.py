@@ -14,6 +14,7 @@ blocked in Safe Mode, on an explicit user action only. Windows-only. wx-free.
 
 from __future__ import annotations
 
+import hashlib
 import os
 import ssl
 import subprocess
@@ -30,11 +31,18 @@ ProgressCallback = Callable[[float, str], None]
 # Pinned to 1.52.0, the latest stable Windows release.
 # The MSI bundles espeak-ng.exe, libespeak-ng.dll, and the full espeak-ng-data
 # language/voice directory (~40 MB), so no follow-on download is needed.
-# Asset filename is just "espeak-ng.msi" (no version suffix in this release).
+#
+# Hosted on QUILL's own "assets-v1" GitHub release rather than the upstream
+# espeak-ng release: the byte-identical MSI is re-published there so the
+# on-demand download has a single, controlled, SHA-pinned acquisition point
+# (matching the bundled-build pin in scripts/build_windows_distribution.py).
 ESPEAK_RELEASE_TAG = "1.52.0"
 ESPEAK_DOWNLOAD_URL = (
-    f"https://github.com/espeak-ng/espeak-ng/releases/download/{ESPEAK_RELEASE_TAG}/espeak-ng.msi"
+    "https://github.com/Community-Access/quill/releases/download/assets-v1/espeak-ng.msi"
 )
+# SHA-256 of the pinned espeak-ng.msi, verified before extraction (SEC-6).
+# Matches ESPEAK_PINNED_SHA256 in scripts/build_windows_distribution.py.
+ESPEAK_DOWNLOAD_SHA256 = "7f673c709ea5dd579d3b5ebb98688cc575328a6ab7438d2bc405b88cedaeafb9"
 _DOWNLOAD_TIMEOUT_S = 1800.0
 
 
@@ -90,6 +98,7 @@ def install_espeak(
     tmp_msi = Path(raw)
     try:
         _download_msi(ESPEAK_DOWNLOAD_URL, tmp_msi, progress_fn, timeout_seconds)
+        _verify_msi_sha256(tmp_msi)
         if progress_fn is not None:
             progress_fn(0.9, "Extracting eSpeak-NG (this may take a moment)...")
         _extract_msi(tmp_msi, dest)
@@ -100,6 +109,26 @@ def install_espeak(
     if progress_fn is not None:
         progress_fn(1.0, "Done.")
     return exe
+
+
+def _verify_msi_sha256(path: Path) -> None:
+    """Verify the downloaded MSI against the pinned SHA-256 (SEC-6).
+
+    Raises :class:`EspeakInstallError` (and leaves the caller to discard the
+    file) if the digest does not match, so a corrupted or substituted download
+    never reaches ``msiexec``.
+    """
+    digest = hashlib.sha256()
+    with path.open("rb") as fh:
+        for chunk in iter(lambda: fh.read(1 << 20), b""):
+            digest.update(chunk)
+    actual = digest.hexdigest()
+    if actual.lower() != ESPEAK_DOWNLOAD_SHA256.lower():
+        raise EspeakInstallError(
+            "Downloaded eSpeak-NG failed its integrity check and was discarded.\n"
+            f"  expected: {ESPEAK_DOWNLOAD_SHA256}\n"
+            f"  got:      {actual}"
+        )
 
 
 def _download_msi(

@@ -715,6 +715,14 @@ connection, nothing uploaded.
 - **Spell word aloud** — after announcing the misspelling, QUILL reads it
   letter by letter. The pause before spelling starts is configurable.
 
+#### Spell check a document before saving
+
+Turn on **Settings → Editing → Spell check a document before saving** (off by
+default) and QUILL opens the same Spelling Review (F7) automatically whenever you
+save, so you can correct misspellings before the file is written. Review or skip
+the issues as usual; the save then proceeds with your corrections. This applies
+to **Save** and **Save As** for the document you are editing.
+
 **Editor shortcuts** (without opening the dialog):
 
 | Key | Action |
@@ -956,6 +964,13 @@ not need to enable Artificial Intelligence to use these features. They live unde
   never bundles or redistributes it. Without ffmpeg, the whisper.cpp engine needs
   a 16 kHz mono WAV, while the Faster Whisper engine handles the other formats on
   its own.
+- **Download Offline Speech Engine...** The private, on-device speech engine
+  (whisper.cpp) is not bundled in the installer; the first time you use offline
+  dictation or transcription, QUILL **offers to download it for you** (about 8 MB,
+  checksum-verified, with a cancelable progress bar; disabled in Safe Mode). You
+  can also fetch it any time from **Tools > Speech > Download Offline Speech
+  Engine...**. If you are **upgrading** from a version that bundled the engine,
+  your existing copy is kept and keeps working — nothing to download.
 - **Speaker attribution.** If you download the "Small English with speaker
   detection" model (in Manage Speech Models), QUILL marks **who is speaking when**
   — each turn is labelled "Speaker 1", "Speaker 2", and so on in the transcript
@@ -2236,7 +2251,9 @@ If the cursor is at the very end of the document, it tells you so rather than gu
 
 ### Read Aloud
 
-Read Aloud uses local voices with a deterministic support policy. The Windows system voice runs on **SAPI 5**; **DECtalk** and **eSpeak NG** are bundled for immediate local playback; **Piper** and **Kokoro** (neural, offline) are available as explicit downloads from Speech Center so base installs stay smaller. You can start, pause, stop, preview, and choose a voice. Speech onboarding announces current availability and recommended next actions before any download starts. For cloud voices, see [Read Aloud with AI Voice](#read-aloud-with-ai-voice-openai-or-google-gemini).
+Read Aloud uses local voices with a deterministic support policy. The Windows system voice runs on **SAPI 5** and is always available offline with no download — it is the floor that keeps Read Aloud working immediately. **DECtalk**, **eSpeak NG**, **Piper**, and **Kokoro** (neural, offline) are available as explicit downloads from Speech Center, so base installs stay smaller. You can start, pause, stop, preview, and choose a voice. Speech onboarding announces current availability and recommended next actions before any download starts. For cloud voices, see [Read Aloud with AI Voice](#read-aloud-with-ai-voice-openai-or-google-gemini).
+
+The **Kokoro** voice models (~120 MB), the classic **DECtalk** runtime (~2 MB), and the **eSpeak NG** engine with its voice data (~40 MB) are not bundled in the installer; the first time you choose one of these voices, QUILL downloads it for you from its own verified source (checksum-checked, with a cancelable progress window), and your other voices — including the always-present SAPI 5 system voice — keep working in the meantime. If you are **upgrading** from a version that bundled these, your existing copies are kept and keep working — you do not need to download anything.
 
 To audition a voice in **Manage Voices**, select it and use the **Preview** button. If the voice is already downloaded, Quill synthesises the preview phrase with that voice's real model; if it is not downloaded yet (for example a Kokoro voice), Quill plays a short pre-recorded sample so you can still hear it before deciding to download. The rate, volume, pitch, and speed controls apply to real synthesis, so they stay dimmed until the voice is downloaded.
 
@@ -2582,6 +2599,7 @@ Quill's current settings and customization surface covers the things you are mos
 - system tray mode
 - persistent undo
 - spell check as you type
+- **spell check a document before saving** — when on, saving opens the Spelling Review (F7) first so you can correct the document before it is written. Off by default.
 - line-number visibility
 - whether Quill starts with no document open
 - **suggest a filename from the first line** — when on, saving an untitled document pre-fills the Save dialog with a name taken from the first line (across formats; leading markup like a Markdown heading, quote, or list bullet is stripped). Off by default.
@@ -2684,6 +2702,8 @@ The first time you post, Quill offers to add an account; you can also open **Too
 3. Paste that code back into Quill. Your account is saved.
 
 You can add several accounts, give each its own nickname, **set a default**, or **remove** one (which deletes its saved sign-in from this computer). Your sign-in is stored securely in the Windows Credential Manager, never in a plain file.
+
+**Proofread posts before sending.** In **Mastodon Accounts...**, select an account and tick **Spell-check posts before sending** to turn on per-account proofreading (off by default). When it is on, pressing **Post** for that account first opens the Spelling Review (F7) on the post text so you can fix misspellings, and the post is sent only after you finish or skip the review. The setting is per account, so you can enable it for some accounts and not others; existing accounts are unaffected until you turn it on.
 
 ## Working with Different Document Types
 

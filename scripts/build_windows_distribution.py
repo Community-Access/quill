@@ -83,6 +83,18 @@ PIPER_PINNED_URL = (
 )
 PIPER_PINNED_SHA256 = "f3c58906402b24f3a96d92145f58acba6d86c9b5db896d207f78dc80811efcea"
 
+# Pinned whisper.cpp Windows release. _download_and_stage_whisper() tries the
+# latest GitHub release first and falls back to these if the API is unreachable.
+# The plain CPU x64 zip ships whisper-cli.exe (under Release/) alongside its
+# whisper.dll / ggml*.dll dependencies -- the offline speech engine (#617, #742).
+# whisper.cpp is the DEFAULT offline transcription/dictation provider, so unlike
+# the other speech engines it MUST ship: the build raises rather than producing
+# an installer whose selected "speechwhisper" component has no payload.
+WHISPERCPP_PINNED_URL = (
+    "https://github.com/ggml-org/whisper.cpp/releases/download/v1.9.1/whisper-bin-x64.zip"
+)
+WHISPERCPP_PINNED_SHA256 = "7d8be46ecd31828e1eb7a2ecdd0d6b314feafd82163038ab6092594b0a063539"
+
 # Kokoro neural-TTS model + voices. Always STAGED into the portable bundle under
 # kokoro-models/, but the INSTALLER gates the copy behind the optional
 # "speechkokoro" component (Types: full custom) -- so Full installs still ship it
@@ -287,23 +299,28 @@ def build_windows_distribution(
 
     staged_docs = _stage_distribution_docs(portable_dir, resolved_source_root)
     effective_bundled_tools = dict(bundled_tool_dirs or {})
-    # Auto-download Pandoc, DECtalk, and eSpeak-NG unless the caller provided
-    # a local directory for them. Each function tries the latest GitHub release
-    # first and falls back to a pinned version; existing staged files are reused.
+    # Auto-download Pandoc and Piper unless the caller provided a local directory.
+    # Each function tries the latest GitHub release first and falls back to a
+    # pinned version; existing staged files are reused.
     if "pandoc" not in effective_bundled_tools:
         effective_bundled_tools["pandoc"] = _download_and_stage_pandoc(portable_dir)
-    if "speech/dectalk" not in effective_bundled_tools:
-        effective_bundled_tools["speech/dectalk"] = _download_and_stage_dectalk_release(
-            portable_dir
-        )
-    if "speech/espeak-ng" not in effective_bundled_tools:
-        effective_bundled_tools["speech/espeak-ng"] = _download_and_stage_espeak(portable_dir)
     if "speech/piper" not in effective_bundled_tools:
         effective_bundled_tools["speech/piper"] = _download_and_stage_piper(portable_dir)
+    # whisper.cpp, DECtalk, and eSpeak-NG are NO LONGER bundled by default
+    # (PRD 10.2.4 unbundle): fresh installs download them on demand from QUILL's
+    # pinned, SHA-256-verified "assets-v1" release, and offline speech offers the
+    # download at point of use. SAPI 5 remains the always-present offline floor.
+    # A build may still stage a local copy by passing --whisper-dir / --dectalk-dir
+    # / --espeak-dir (populates effective_bundled_tools above, staged below).
+    # Upgraders keep their existing copies ([InstallDelete] does not touch them).
     bundled_tools = _stage_bundled_tools(portable_dir, effective_bundled_tools)
-    # Kokoro is staged separately (not via _stage_bundled_tools): it ships under
-    # the bundle-root kokoro-models/ folder the runtime looks for, not tools/.
-    _stage_kokoro(portable_dir, kokoro_dir)
+    # Kokoro is NO LONGER bundled by default (PRD 10.2.4 unbundle): fresh installs
+    # download it on demand from QUILL's pinned, SHA-256-verified release asset, and
+    # the runtime prefers the %APPDATA% copy. A build may still opt to stage a local
+    # copy into the portable bundle by passing --kokoro-dir. Upgraders keep their
+    # existing {app}/kokoro-models (Inno never removes it).
+    if kokoro_dir is not None:
+        _stage_kokoro(portable_dir, kokoro_dir)
 
     readme = portable_dir / "README.txt"
     readme.write_text(
@@ -757,19 +774,16 @@ def build_inno_setup_script(
         "; Every component below gates real [Files] payload. The Writing",
         "; Assistant and the rest of Quill's core ship unconditionally with the",
         "; main bundle, so there is no separate AI component to toggle here.",
-        "; DECtalk voice selection is handled by a guided wizard page (see [Code]).",
         'Name: "pandoc"; Description: "Install bundled Pandoc for document conversion";'
-        " Types: full custom; Flags: checkablealone",
-        'Name: "speechdectalk"; Description: "Install bundled DECtalk runtime";'
-        " Types: full custom; Flags: checkablealone",
-        'Name: "speechespeak"; Description: "Install bundled eSpeak-NG runtime";'
         " Types: full custom; Flags: checkablealone",
         'Name: "speechpiper"; Description: "Install bundled Piper neural TTS runtime";'
         " Types: full custom; Flags: checkablealone",
-        'Name: "speechwhisper"; Description: "Install the offline speech engine'
-        " (whisper.cpp) for private, on-device transcription and dictation"
-        ' (Tools > Speech > Whisperer)";'
-        " Types: full custom; Flags: checkablealone",
+        # whisper.cpp, DECtalk, and eSpeak-NG are unbundled (PRD 10.2.4): no
+        # installer component. QUILL downloads each on demand from its verified
+        # "assets-v1" release asset (Tools > Speech > Download Offline Speech
+        # Engine; Manage Voices for DECtalk/eSpeak), and offline speech offers it
+        # at point of use. SAPI 5 remains the always-present offline floor and
+        # upgraders keep their existing copies.
         'Name: "nodejs"; Description: "Install portable Node.js runtime for Node Quillins'
         " and the Developer Console TypeScript interface (~30 MB);"
         ' not required for Python Quillins";'
@@ -778,10 +792,9 @@ def build_inno_setup_script(
         " (liblouis translation engine, UEB, Standard American English,"
         ' and international braille profiles, ~15 MB)";'
         " Types: full custom; Flags: checkablealone",
-        'Name: "speechkokoro"; Description: "Install bundled Kokoro neural TTS voices'
-        " (~120 MB, high-quality offline speech). If you skip this, you can download"
-        ' Kokoro later from Manage Voices / Speech Hub";'
-        " Types: full custom; Flags: checkablealone",
+        # Kokoro is unbundled (PRD 10.2.4): no installer component. QUILL downloads
+        # the ~120 MB model on demand from its verified release asset (Manage Voices
+        # / Speech Hub). Upgraders keep their existing {app}\kokoro-models copy.
         "",
         "[InstallDelete]",
         "; Upgrade hygiene -- the single most important fix for reliable upgrades.",
@@ -830,34 +843,32 @@ def build_inno_setup_script(
         'Source: "..\\portable\\vendor\\braille-pack\\*"; DestDir: "{app}\\vendor\\braille-pack";'
         " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist;"
         " Components: braillepack",
-        "; Kokoro neural TTS models (~120 MB). Optional component; the runtime",
-        "; resolves {app}\\kokoro-models (QUILL_APP_ROOT). When skipped, QUILL",
-        "; downloads them on demand to %APPDATA%\\Quill\\kokoro-models, which the",
-        "; runtime prefers over the bundled copy (read_aloud.default_kokoro_model_dir).",
-        'Source: "..\\portable\\kokoro-models\\*"; DestDir: "{app}\\kokoro-models";'
-        " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist;"
-        " Components: speechkokoro",
+        "; Kokoro neural TTS models are NOT bundled (PRD 10.2.4 unbundle): QUILL",
+        "; downloads them on demand to %APPDATA%\\Quill\\kokoro-models (verified",
+        "; release asset), which the runtime prefers. Upgraders keep any existing",
+        "; {app}\\kokoro-models copy -- Inno never removes it and [InstallDelete]",
+        "; does not touch it. A --kokoro-dir build still stages it into the portable",
+        "; bundle; the installer no longer ships it.",
         'Source: "..\\portable\\tools\\pandoc\\*"; DestDir: "{app}\\tools\\pandoc";'
         " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist;"
         " Components: pandoc",
-        "; All DECtalk voices ship when the DECtalk component is selected.",
-        'Source: "..\\portable\\tools\\speech\\dectalk\\*"; DestDir: "{app}\\tools\\speech\\dectalk";'
-        " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist;"
-        " Components: speechdectalk",
-        'Source: "..\\portable\\tools\\speech\\espeak-ng\\*"; DestDir: "{app}\\tools\\speech\\espeak-ng";'
-        " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist;"
-        " Components: speechespeak",
+        "; DECtalk and eSpeak-NG are NOT bundled (PRD 10.2.4 unbundle): QUILL",
+        "; downloads each on demand (verified assets-v1 release) to",
+        "; %APPDATA%\\Quill\\speech\\dectalk and %APPDATA%\\Quill\\speech\\espeak-ng,",
+        "; which the resolver searches. Upgraders keep any existing",
+        "; {app}\\tools\\speech\\dectalk / espeak-ng copy -- Inno never removes it",
+        "; and [InstallDelete] does not touch it. A --dectalk-dir / --espeak-dir",
+        "; build still stages it into the portable bundle; the installer no longer",
+        "; ships it.",
         'Source: "..\\portable\\tools\\speech\\piper\\*"; DestDir: "{app}\\tools\\speech\\piper";'
         " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist;"
         " Components: speechpiper",
-        "; whisper.cpp offline speech engine. Resolved at runtime from",
-        "; {app}\\tools\\speech\\whispercpp (QUILL_APP_ROOT). Optional;",
-        "; skipifsourcedoesntexist means a build without the bundled engine still",
-        "; installs, and users can also drop the executable here or download it later.",
-        'Source: "..\\portable\\tools\\speech\\whispercpp\\*";'
-        ' DestDir: "{app}\\tools\\speech\\whispercpp";'
-        " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist;"
-        " Components: speechwhisper",
+        "; whisper.cpp offline speech engine is NOT bundled (PRD 10.2.4 unbundle):",
+        "; QUILL downloads the ~8 MB engine on demand to %APPDATA%\\Quill\\speech-engine",
+        "; (verified release asset), and offline speech offers it at point of use.",
+        "; Upgraders keep any existing {app}\\tools\\speech\\whispercpp copy -- Inno",
+        "; never removes it and [InstallDelete] does not touch it. A --whisper-dir",
+        "; build still stages it; the installer no longer ships it.",
         "; Node.js portable runtime (optional). The build script copies a portable",
         "; node.exe distribution into portable\\tools\\nodejs when building with",
         "; --bundle-nodejs. skipifsourcedoesntexist means a build without bundled",
@@ -1602,29 +1613,6 @@ def _stage_kokoro(portable_dir: Path, source_dir: Path | None) -> bool:
     return True
 
 
-def _download_and_stage_dectalk_release(portable_dir: Path) -> Path:
-    speech_root = portable_dir / "_speech-download" / "dectalk"
-    speech_root.mkdir(parents=True, exist_ok=True)
-    archive = speech_root / "vs2022.zip"
-    print(f"Downloading DECtalk release from {DECTALK_RELEASE_ZIP_URL}...")
-    _download_with_verification(
-        DECTALK_RELEASE_ZIP_URL, archive, expected_sha256=DECTALK_RELEASE_ZIP_SHA256
-    )
-
-    extract_root = speech_root / "extracted"
-    if extract_root.exists():
-        shutil.rmtree(extract_root)
-    extract_root.mkdir(parents=True, exist_ok=True)
-    with zipfile.ZipFile(archive) as zf:
-        zf.extractall(extract_root)
-
-    # Prefer AMD64 runtime payload; keep the entire folder to preserve voices/dictionaries.
-    amd64 = extract_root / "AMD64"
-    if amd64.exists():
-        return amd64
-    return extract_root
-
-
 def _speech_asset_manifest(
     portable_dir: Path, bundled_tools: list[str]
 ) -> dict[str, dict[str, object]]:
@@ -1634,6 +1622,7 @@ def _speech_asset_manifest(
         "dectalk": "dectalk",
         "espeak": "espeak-ng",
         "piper": "piper",
+        "whispercpp": "whispercpp",
     }
     for engine, dir_name in engine_dirs.items():
         engine_dir = speech_root / dir_name
@@ -1716,52 +1705,6 @@ def _download_and_stage_pandoc(portable_dir: Path) -> Path:
     return stage_dir
 
 
-def _download_and_stage_espeak(portable_dir: Path) -> Path:
-    """Download eSpeak-NG for Windows and return a staging directory for _stage_bundled_tools.
-
-    Tries the latest GitHub release first; falls back to the pinned version.
-    Stages to portable/_tool-download/espeak/stage/ so _stage_bundled_tools()
-    copies from there to tools/speech/espeak-ng/. Re-uses a prior download.
-    Uses msiexec /a (administrative extract) to unpack the MSI without installing.
-    """
-    stage_dir = portable_dir / "_tool-download" / "espeak" / "stage"
-    if (stage_dir / "espeak-ng.exe").exists():
-        print("eSpeak-NG already downloaded; skipping.")
-        return stage_dir
-
-    url = _fetch_latest_github_asset_url("espeak-ng", "espeak-ng", ".msi") or ESPEAK_PINNED_URL
-    sha256 = ESPEAK_PINNED_SHA256 if url == ESPEAK_PINNED_URL else None
-
-    tmp_dir = portable_dir / "_tool-download" / "espeak"
-    tmp_dir.mkdir(parents=True, exist_ok=True)
-    archive = tmp_dir / "espeak-ng.msi"
-    print(f"Downloading eSpeak-NG from {url}...")
-    _download_with_verification(url, archive, expected_sha256=sha256)
-
-    extract_dir = tmp_dir / "extracted"
-    if extract_dir.exists():
-        shutil.rmtree(extract_dir)
-    extract_dir.mkdir(parents=True, exist_ok=True)
-    result = subprocess.run(
-        ["msiexec", "/a", str(archive.resolve()), "/qn", f"TARGETDIR={extract_dir.resolve()}"],
-        check=False,
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode != 0:
-        raise RuntimeError(f"msiexec /a failed for eSpeak-NG MSI:\n{result.stderr}")
-
-    exe_candidates = list(extract_dir.rglob("espeak-ng.exe"))
-    if not exe_candidates:
-        raise RuntimeError("eSpeak-NG MSI did not extract espeak-ng.exe")
-    espeak_root = exe_candidates[0].parent
-    stage_dir.mkdir(parents=True, exist_ok=True)
-    shutil.copytree(espeak_root, stage_dir, dirs_exist_ok=True)
-    archive.unlink(missing_ok=True)
-    print(f"eSpeak-NG staged to {stage_dir}")
-    return stage_dir
-
-
 def _download_and_stage_piper(portable_dir: Path) -> Path:
     """Download Piper TTS for Windows and return a staging directory for _stage_bundled_tools.
 
@@ -1800,6 +1743,66 @@ def _download_and_stage_piper(portable_dir: Path) -> Path:
     shutil.copytree(piper_root, stage_dir, dirs_exist_ok=True)
     archive.unlink(missing_ok=True)
     print(f"Piper staged to {stage_dir}")
+    return stage_dir
+
+
+def _download_and_stage_whisper(portable_dir: Path) -> Path:
+    """Download the whisper.cpp engine for Windows and return a staging directory.
+
+    Tries the latest ggml-org/whisper.cpp GitHub release first; falls back to the
+    pinned version. Stages to portable/_tool-download/whispercpp/stage/ so
+    _stage_bundled_tools() copies it to tools/speech/whispercpp/. Re-uses a prior
+    download. The staged folder keeps whisper-cli.exe alongside its whisper.dll /
+    ggml*.dll dependencies so resolve_whisper_executable() finds a runnable engine.
+
+    whisper.cpp is the default offline transcription/dictation provider (#617), so
+    this download is not optional: a failure raises rather than letting the build
+    produce an installer whose selected "speechwhisper" component ships no engine
+    (the empty-component regression behind #742).
+    """
+    stage_dir = portable_dir / "_tool-download" / "whispercpp" / "stage"
+    if (stage_dir / "whisper-cli.exe").exists() or (stage_dir / "main.exe").exists():
+        print("whisper.cpp already downloaded; skipping.")
+        return stage_dir
+
+    url = (
+        _fetch_latest_github_asset_url("ggml-org", "whisper.cpp", "-bin-x64.zip")
+        or WHISPERCPP_PINNED_URL
+    )
+    if url == WHISPERCPP_PINNED_URL and WHISPERCPP_PINNED_SHA256.startswith("<"):
+        raise RuntimeError(
+            "Could not reach the whisper.cpp releases API and the pinned fallback "
+            "SHA-256 is still a placeholder. Set WHISPERCPP_PINNED_URL / "
+            "WHISPERCPP_PINNED_SHA256 to a verified release before building offline, "
+            "or supply --whisper-dir with a local engine."
+        )
+    sha256 = WHISPERCPP_PINNED_SHA256 if url == WHISPERCPP_PINNED_URL else None
+
+    tmp_dir = portable_dir / "_tool-download" / "whispercpp"
+    tmp_dir.mkdir(parents=True, exist_ok=True)
+    archive = tmp_dir / "whisper-bin-x64.zip"
+    print(f"Downloading whisper.cpp from {url}...")
+    _download_with_verification(url, archive, expected_sha256=sha256)
+
+    extract_dir = tmp_dir / "extracted"
+    if extract_dir.exists():
+        shutil.rmtree(extract_dir)
+    extract_dir.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(archive) as zf:
+        zf.extractall(extract_dir)
+
+    # Newer releases ship whisper-cli.exe; older ones shipped main.exe. Either is
+    # on resolve_whisper_executable()'s allowlist, so accept whichever is present.
+    exe_candidates = list(extract_dir.rglob("whisper-cli.exe")) or list(
+        extract_dir.rglob("main.exe")
+    )
+    if not exe_candidates:
+        raise RuntimeError("whisper.cpp zip did not contain whisper-cli.exe or main.exe")
+    engine_root = exe_candidates[0].parent
+    stage_dir.mkdir(parents=True, exist_ok=True)
+    shutil.copytree(engine_root, stage_dir, dirs_exist_ok=True)
+    archive.unlink(missing_ok=True)
+    print(f"whisper.cpp staged to {stage_dir}")
     return stage_dir
 
 
