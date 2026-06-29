@@ -203,14 +203,15 @@ keys line up again.
 
 ### Enhancements
 
-- **Recover the offline speech engine with one click.** The private, on-device
-  speech engine (whisper.cpp) ships in the installer; if it is ever missing,
-  **Tools > Speech > Download Offline Speech Engine...** now fetches QUILL's own
-  checksum-verified copy (about 8 MB, cancelable; disabled in Safe Mode) so
-  dictation and offline transcription work without re-running the installer. This
-  is the first piece of the AI footprint/optimization plan — a pinned,
-  SHA-256-verified path for fetching redistributable components from QUILL's own
-  GitHub release assets.
+- **Smaller installer: the offline speech engine downloads on demand.** The
+  private, on-device speech engine (whisper.cpp) is no longer bundled. The first
+  time you use offline dictation or transcription, QUILL **offers to download it
+  right there** (about 8 MB, checksum-verified, cancelable; disabled in Safe Mode),
+  and it's also at **Tools > Speech > Download Offline Speech Engine...**.
+  **Upgrading from a release that bundled the engine? Your copy is kept and keeps
+  working — nothing to re-download.** First piece of the AI footprint/optimization
+  plan — a pinned, SHA-256-verified path for fetching redistributable components
+  from QUILL's own GitHub release assets.
 - **Smaller installer: Kokoro neural voices download on demand.** The ~120 MB
   Kokoro voice models are no longer bundled in the installer. The first time you
   pick a Kokoro voice, QUILL downloads it for you (checksum-verified, cancelable);

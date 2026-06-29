@@ -957,12 +957,12 @@ not need to enable Artificial Intelligence to use these features. They live unde
   a 16 kHz mono WAV, while the Faster Whisper engine handles the other formats on
   its own.
 - **Download Offline Speech Engine...** The private, on-device speech engine
-  (whisper.cpp) ships with QUILL, so dictation and offline transcription work out
-  of the box. If it is ever missing — for example on an older install that
-  pre-dated bundling — **Tools > Speech > Download Offline Speech Engine...**
-  fetches QUILL's own verified copy (about 8 MB, checksum-verified, with a
-  cancelable progress bar; disabled in Safe Mode) and sets it up. Most people
-  never need this; it is a one-click recovery.
+  (whisper.cpp) is not bundled in the installer; the first time you use offline
+  dictation or transcription, QUILL **offers to download it for you** (about 8 MB,
+  checksum-verified, with a cancelable progress bar; disabled in Safe Mode). You
+  can also fetch it any time from **Tools > Speech > Download Offline Speech
+  Engine...**. If you are **upgrading** from a version that bundled the engine,
+  your existing copy is kept and keeps working — nothing to download.
 - **Speaker attribution.** If you download the "Small English with speaker
   detection" model (in Manage Speech Models), QUILL marks **who is speaking when**
   — each turn is labelled "Speaker 1", "Speaker 2", and so on in the transcript

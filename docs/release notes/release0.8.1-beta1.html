@@ -409,13 +409,15 @@ still works exactly as before. (#750)</li>
 </ul>
 <h3 id="enhancements">Enhancements</h3>
 <ul>
-<li><strong>Recover the offline speech engine with one click.</strong>
-The private, on-device speech engine (whisper.cpp) ships in the
-installer; if it is ever missing, <strong>Tools &gt; Speech &gt;
-Download Offline Speech Engine...</strong> now fetches QUILL's own
-checksum-verified copy (about 8 MB, cancelable; disabled in Safe Mode)
-so dictation and offline transcription work without re-running the
-installer. This is the first piece of the AI footprint/optimization plan
+<li><strong>Smaller installer: the offline speech engine downloads on
+demand.</strong> The private, on-device speech engine (whisper.cpp) is
+no longer bundled. The first time you use offline dictation or
+transcription, QUILL <strong>offers to download it right there</strong>
+(about 8 MB, checksum-verified, cancelable; disabled in Safe Mode), and
+it's also at <strong>Tools &gt; Speech &gt; Download Offline Speech
+Engine...</strong>. <strong>Upgrading from a release that bundled the
+engine? Your copy is kept and keeps working — nothing to
+re-download.</strong> First piece of the AI footprint/optimization plan
 — a pinned, SHA-256-verified path for fetching redistributable
 components from QUILL's own GitHub release assets.</li>
 <li><strong>Smaller installer: Kokoro neural voices download on
