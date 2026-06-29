@@ -104,7 +104,13 @@ def show_optional_components_picker(
     _update_detail()
 
     btns = wx.BoxSizer(wx.HORIZONTAL)
-    download_btn = wx.Button(dialog, label="&Download", name="optional_components_download")
+    # The affirmative button carries wx.ID_OK so Enter works for keyboard/blind
+    # users (dialog button-contract). Its bound handler decides whether to close
+    # (download a not-yet-installed component) or stay (already installed); it does
+    # not call event.Skip(), so the default auto-close never fires unexpectedly.
+    download_btn = wx.Button(
+        dialog, wx.ID_OK, label="&Download", name="optional_components_download"
+    )
     close_btn = wx.Button(dialog, wx.ID_CANCEL, label="&Close")
     close_btn.SetDefault()
     download_btn.Bind(wx.EVT_BUTTON, _activate)
