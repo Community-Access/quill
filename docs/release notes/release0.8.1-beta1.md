@@ -42,9 +42,7 @@ full set whenever you want it.
 **Ask Quill — one conversation that knows your document.** A single, context-aware
 chat (**Ask Quill**) replaces the old scattered AI dialogs. Ask about your text,
 have it draft or rewrite, and apply suggestions through a reviewable change
-preview. **Ask Quill by Voice** adds spoken questions and spoken answers with
-transport controls for a hands-light, eyes-free conversation, and falls back to
-text and screen-reader announcements when voice is unavailable.
+preview.
 
 **Turn recordings into finished documents — the Listening Companion.** Transcribe
 an audio or video file (optionally **translating it to English** or **identifying
