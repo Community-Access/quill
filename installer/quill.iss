@@ -83,7 +83,6 @@ Name: "speechpiper"; Description: "Install bundled Piper neural TTS runtime"; Ty
 Name: "speechwhisper"; Description: "Install the offline speech engine (whisper.cpp) for private, on-device transcription and dictation (Tools > Speech > Whisperer)"; Types: full custom; Flags: checkablealone
 Name: "nodejs"; Description: "Install portable Node.js runtime for Node Quillins and the Developer Console TypeScript interface (~30 MB); not required for Python Quillins"; Flags: checkablealone
 Name: "braillepack"; Description: "Install QUILL Braille Pack (liblouis translation engine, UEB, Standard American English, and international braille profiles, ~15 MB)"; Types: full custom; Flags: checkablealone
-Name: "speechkokoro"; Description: "Install bundled Kokoro neural TTS voices (~120 MB, high-quality offline speech). If you skip this, you can download Kokoro later from Manage Voices / Speech Hub"; Types: full custom; Flags: checkablealone
 
 [InstallDelete]
 ; Upgrade hygiene -- the single most important fix for reliable upgrades.
@@ -128,11 +127,12 @@ Source: "..\portable\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs c
 ; QUILL Braille Pack: liblouis runtime, translation tables, and BRF profiles.
 ; Installed to vendor\braille-pack so QUILL detects it automatically via QUILL_APP_ROOT.
 Source: "..\portable\vendor\braille-pack\*"; DestDir: "{app}\vendor\braille-pack"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist; Components: braillepack
-; Kokoro neural TTS models (~120 MB). Optional component; the runtime
-; resolves {app}\kokoro-models (QUILL_APP_ROOT). When skipped, QUILL
-; downloads them on demand to %APPDATA%\Quill\kokoro-models, which the
-; runtime prefers over the bundled copy (read_aloud.default_kokoro_model_dir).
-Source: "..\portable\kokoro-models\*"; DestDir: "{app}\kokoro-models"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist; Components: speechkokoro
+; Kokoro neural TTS models are NOT bundled (PRD 10.2.4 unbundle): QUILL
+; downloads them on demand to %APPDATA%\Quill\kokoro-models (verified
+; release asset), which the runtime prefers. Upgraders keep any existing
+; {app}\kokoro-models copy -- Inno never removes it and [InstallDelete]
+; does not touch it. A --kokoro-dir build still stages it into the portable
+; bundle; the installer no longer ships it.
 Source: "..\portable\tools\pandoc\*"; DestDir: "{app}\tools\pandoc"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist; Components: pandoc
 ; All DECtalk voices ship when the DECtalk component is selected.
 Source: "..\portable\tools\speech\dectalk\*"; DestDir: "{app}\tools\speech\dectalk"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist; Components: speechdectalk

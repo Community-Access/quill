@@ -211,6 +211,13 @@ keys line up again.
   is the first piece of the AI footprint/optimization plan — a pinned,
   SHA-256-verified path for fetching redistributable components from QUILL's own
   GitHub release assets.
+- **Smaller installer: Kokoro neural voices download on demand.** The ~120 MB
+  Kokoro voice models are no longer bundled in the installer. The first time you
+  pick a Kokoro voice, QUILL downloads it for you (checksum-verified, cancelable);
+  other read-aloud voices (DECtalk, eSpeak NG, Piper, SAPI) work meanwhile.
+  **Upgrading from a release that bundled Kokoro? Your existing copy is kept and
+  keeps working — nothing to re-download.** This is the proof-of-concept for the
+  footprint plan's "host redistributable components as verified release assets."
 - **Hear how deep your indentation is.** Tab / Shift+Tab can now speak the new
   indentation depth — "4 spaces", "8 spaces", "1 tab" — instead of "Indented
   lines", honouring your tabs-vs-spaces and indent-width settings. Toggle with

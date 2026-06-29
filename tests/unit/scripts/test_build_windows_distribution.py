@@ -164,12 +164,11 @@ def test_build_inno_setup_script_mentions_portable_bundle() -> None:
     # Tools > Speech > Whisperer.
     assert 'Name: "speechwhisper"; Description: "Install the offline speech engine' in script
     assert "(Tools > Speech > Whisperer)" in script
-    # Kokoro is an optional component (Types: full custom): Full installs ship it,
-    # Custom installs can drop ~120 MB and download it later. It is excluded from
-    # the unconditional copy and gated behind its own [Files] entry.
-    assert 'Name: "speechkokoro"; Description: "Install bundled Kokoro neural TTS voices' in script
-    assert 'Source: "..\\portable\\kokoro-models\\*"; DestDir: "{app}\\kokoro-models";' in script
-    assert "Components: speechkokoro" in script
+    # Kokoro is unbundled (PRD 10.2.4): no installer component and no kokoro-models
+    # [Files] entry. QUILL downloads it on demand from its verified release asset;
+    # upgraders keep any existing {app}\kokoro-models copy (Inno never removes it).
+    assert "speechkokoro" not in script
+    assert 'DestDir: "{app}\\kokoro-models"' not in script
     assert "speechopenvoice" not in script
     assert (
         'Excludes: "docs\\QUILL-PRD.md,tools\\pandoc\\*,tools\\speech\\dectalk\\*,tools\\speech\\espeak-ng\\*,tools\\speech\\piper\\*,tools\\speech\\whispercpp\\*,tools\\nodejs\\*,vendor\\braille-pack\\*,kokoro-models\\*,_tool-download\\*,_speech-download\\*"'

@@ -43,6 +43,10 @@ class ReleaseAssetError(Exception):
     """A redistributable component could not be fetched/verified/installed."""
 
 
+class DownloadCancelled(ReleaseAssetError):
+    """The user cancelled the download. Never retried; surfaced to the caller."""
+
+
 @dataclass(frozen=True, slots=True)
 class ReleaseAsset:
     """One pinned, SHA-256-verified component hosted on a QUILL release tag."""
@@ -53,6 +57,9 @@ class ReleaseAsset:
     sha256: str
     expect_member: str = ""  # a file the unpacked archive must contain
     license: str = ""
+    # Upstream version of the bundled content. Recorded so a future update check
+    # can notice a newer pinned version and offer it to the user (PRD 10.2.x).
+    version: str = ""
 
     @property
     def url(self) -> str:
@@ -71,6 +78,16 @@ ASSETS: dict[str, ReleaseAsset] = {
         sha256="7d8be46ecd31828e1eb7a2ecdd0d6b314feafd82163038ab6092594b0a063539",
         expect_member="whisper-cli.exe",
         license="MIT (ggml-org/whisper.cpp v1.9.1)",
+        version="v1.9.1",
+    ),
+    "kokoro": ReleaseAsset(
+        component="kokoro",
+        tag="assets-v1",
+        filename="kokoro-models.zip",
+        sha256="c272fd63e98eb18970b14cf1f0ff83becf84d6d874344a37bc52d697e8ddd6c0",
+        expect_member="kokoro-v1.0.int8.onnx",
+        license="Apache-2.0 (kokoro-onnx model-files-v1.0); already redistributed by QUILL",
+        version="model-files-v1.0",
     ),
 }
 
@@ -100,9 +117,12 @@ def _download_resumable(
     *,
     retries: int = 4,
     timeout: float = 60.0,
+    should_cancel: Callable[[], bool] | None = None,
+    label: str = "Downloading...",
 ) -> None:
     """Download ``url`` to ``dest`` with retry/backoff, resuming a partial file via
-    HTTP Range. HTTPS-only. Raises :class:`ReleaseAssetError` after exhausting retries.
+    HTTP Range. HTTPS-only. Raises :class:`ReleaseAssetError` after exhausting retries,
+    or :class:`DownloadCancelled` immediately if ``should_cancel`` becomes true.
 
     GATE-9: this is the module's only network egress; callers gate it on an explicit
     user action and Safe Mode.
@@ -112,6 +132,8 @@ def _download_resumable(
     last_error: Exception | None = None
     for attempt in range(retries):
         try:
+            if should_cancel is not None and should_cancel():
+                raise DownloadCancelled("Download cancelled.")
             have = dest.stat().st_size if dest.exists() else 0
             request = urllib.request.Request(url)
             if have:
@@ -126,17 +148,18 @@ def _download_resumable(
                 downloaded = have
                 with dest.open("ab" if append else "wb") as out:
                     while True:
+                        if should_cancel is not None and should_cancel():
+                            raise DownloadCancelled("Download cancelled.")
                         chunk = resp.read(_CHUNK)
                         if not chunk:
                             break
                         out.write(chunk)
                         downloaded += len(chunk)
                         if progress is not None and total > 0:
-                            progress(
-                                min(downloaded / total, 0.99),
-                                "Downloading offline speech engine...",
-                            )
+                            progress(min(downloaded / total, 0.99), label)
             return
+        except DownloadCancelled:
+            raise  # a cancel is never retried — surface it immediately
         except Exception as exc:  # noqa: BLE001 - retry transient network errors
             last_error = exc
             time.sleep(min(2**attempt, 8))
@@ -144,7 +167,12 @@ def _download_resumable(
 
 
 def fetch_component(
-    component: str, target_dir: Path, *, progress: ProgressCallback | None = None
+    component: str,
+    target_dir: Path,
+    *,
+    progress: ProgressCallback | None = None,
+    should_cancel: Callable[[], bool] | None = None,
+    label: str = "Downloading...",
 ) -> Path:
     """Download, verify (SHA-256), and unpack ``component`` into ``target_dir``.
 
@@ -152,7 +180,8 @@ def fetch_component(
     ``target_dir`` only after the checksum passes, so a partial/failed download
     never leaves a half-installed engine. Returns ``target_dir``. Raises
     :class:`ReleaseAssetError` (Safe Mode, unknown/unpinned component, network,
-    checksum mismatch, or a malformed archive) so the caller can degrade cleanly.
+    checksum mismatch, or a malformed archive), or :class:`DownloadCancelled` when
+    ``should_cancel`` becomes true, so the caller can degrade cleanly.
     """
     if os.environ.get("QUILL_SAFE_MODE") == "1":
         raise ReleaseAssetError("Downloading components is disabled in Safe Mode.")
@@ -169,8 +198,8 @@ def fetch_component(
     try:
         archive = tmp / asset.filename
         if progress is not None:
-            progress(0.0, "Downloading offline speech engine...")
-        _download_resumable(asset.url, archive, progress)
+            progress(0.0, label)
+        _download_resumable(asset.url, archive, progress, should_cancel=should_cancel, label=label)
 
         actual = _sha256_file(archive)
         if actual.lower() != asset.sha256.lower():

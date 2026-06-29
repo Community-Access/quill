@@ -89,7 +89,10 @@ redistributable components from QUILL's own GitHub release assets
 (`quill/core/release_assets.py`), wired as **Tools > Speech > Download Offline Speech
 Engine...** (recovery for the bundled whisper.cpp engine). It establishes the
 reliable-acquisition foundation (PRD §10.2.3–10.2.4) that any future unbundling builds
-on; the engine stays bundled, so capability never depends on a download.
+on; the engine stays bundled, so capability never depends on a download. The **first
+real unbundle** also shipped: the ~120 MB **Kokoro** voices are no longer in the
+installer (downloaded on demand from the same verified release asset), with upgraders'
+existing copies preserved automatically — proving the size win can be taken safely.
 
 ### 1.3 Agentic AI platform (shipped in 0.8.1 Beta 1)
 

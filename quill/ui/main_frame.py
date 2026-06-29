@@ -17438,14 +17438,19 @@ class MainFrame(
         ).start()
 
     def _download_kokoro_models(self) -> None:
-        """Download the Kokoro ONNX model and voices file in the background."""
-        import urllib.request as _ureq
+        """Fetch the Kokoro ONNX model + voices from QUILL's verified release asset,
+        then ensure the kokoro-onnx package is installed (Kokoro unbundle, PRD 10.2.4).
 
+        Kokoro is no longer bundled in fresh installers; this downloads it on demand
+        into the user data dir, which the runtime prefers. The download is pinned +
+        SHA-256-verified via quill.core.release_assets, runs on a worker thread behind
+        a cancelable percentage, and is blocked in Safe Mode. Users upgrading from a
+        release that bundled Kokoro keep their {app}/kokoro-models copy, so this only
+        runs when Kokoro is actually missing.
+        """
         from quill.core.read_aloud import (
             KOKORO_ONNX_MODEL_FILENAME,
-            KOKORO_ONNX_MODEL_URL,
             KOKORO_ONNX_VOICES_FILENAME,
-            KOKORO_ONNX_VOICES_URL,
             default_kokoro_model_dir,
             kokoro_onnx_ready,
         )
@@ -17457,6 +17462,27 @@ class MainFrame(
         model_path = dest_dir / KOKORO_ONNX_MODEL_FILENAME
         voices_path = dest_dir / KOKORO_ONNX_VOICES_FILENAME
 
+        # Smart re-download: if the voices are already present, don't silently
+        # re-fetch ~120 MB -- offer to replace them. Declining keeps the existing
+        # copy (and just finishes the package step if needed). Re-fetching only
+        # happens when the user opts in. (#kokoro-replace)
+        force = True
+        if model_path.exists() and voices_path.exists():
+            from quill.core.speech.engine_install import is_kokoro_onnx_available
+
+            again = self._show_message_box(
+                "The Kokoro voices are already downloaded. Download a fresh copy "
+                "(replace what you have)?",
+                "Download Kokoro",
+                wx.ICON_QUESTION | wx.YES_NO,
+            )
+            if again != wx.YES:
+                force = False  # keep the existing files
+                if kokoro_onnx_ready() and is_kokoro_onnx_available():
+                    self._set_status("Kokoro is already installed.")
+                    self._announce("Kokoro is already installed.")
+                    return
+
         cancel = threading.Event()
         progress = AIProgressDialog(
             self.frame,
@@ -17467,57 +17493,30 @@ class MainFrame(
         progress.show()
         self._announce("Downloading Kokoro models.")
 
-        pairs = [
-            (KOKORO_ONNX_VOICES_URL, voices_path),
-            (KOKORO_ONNX_MODEL_URL, model_path),
-        ]
-
         def _run() -> None:
             try:
+                from quill.core.release_assets import fetch_component
                 from quill.core.speech.engine_install import (
                     install_kokoro_onnx,
                     is_kokoro_onnx_available,
                 )
 
-                for i, (url, path) in enumerate(pairs):
-                    if cancel.is_set():
-                        raise RuntimeError("Cancelled")
-                    if path.exists():
-                        wx.CallAfter(
-                            progress.set_progress,
-                            int((i + 1) / len(pairs) * 100),
-                            f"{path.name} already present; skipping.",
-                        )
-                        continue
-                    wx.CallAfter(
-                        progress.set_progress,
-                        int(i / len(pairs) * 100),
-                        f"Downloading {path.name}...",
+                if force or not (model_path.exists() and voices_path.exists()):
+                    # Reserve 0-80% for the model + voices, 80-100% for the package.
+                    def _model_progress(frac: float, msg: str) -> None:
+                        wx.CallAfter(progress.set_progress, int(frac * 80), msg)
+
+                    fetch_component(
+                        "kokoro",
+                        dest_dir,
+                        progress=_model_progress,
+                        should_cancel=cancel.is_set,
+                        label="Downloading Kokoro voices...",
                     )
-                    with _ureq.urlopen(url, timeout=300) as resp:  # noqa: S310
-                        total = int(resp.headers.get("Content-Length", 0))
-                        got = 0
-                        chunks: list[bytes] = []
-                        while True:
-                            if cancel.is_set():
-                                raise RuntimeError("Cancelled")
-                            chunk = resp.read(65536)
-                            if not chunk:
-                                break
-                            chunks.append(chunk)
-                            got += len(chunk)
-                            if total:
-                                pct = int((i + got / total) / len(pairs) * 100)
-                                wx.CallAfter(
-                                    progress.set_progress,
-                                    pct,
-                                    f"Downloading {path.name}...",
-                                )
-                    path.write_bytes(b"".join(chunks))
                 if not is_kokoro_onnx_available():
 
                     def _pkg_progress(frac: float, msg: str) -> None:
-                        wx.CallAfter(progress.set_progress, int(frac * 100), msg)
+                        wx.CallAfter(progress.set_progress, 80 + int(frac * 20), msg)
 
                     # GATE-40-OK: Kokoro engine install worker.
                     install_kokoro_onnx(progress=_pkg_progress)

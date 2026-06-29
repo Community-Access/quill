@@ -3839,6 +3839,22 @@ capability never depends on the download. Only components QUILL is
 licensed to redistribute are hosted this way (whisper.cpp is MIT);
 license-unclear engines are not re-hosted, and ffmpeg is never re-hosted
 (it stays user-installed).</p>
+<p><strong>Kokoro voices unbundled (proof of concept).</strong> The ~120
+MB Kokoro neural voices are no longer shipped in the installer; they
+download on demand through the same <code>release_assets</code> path
+(pinned <code>kokoro-models.zip</code> on <code>assets-v1</code>,
+SHA-256-verified) to <code>%APPDATA%\Quill\kokoro-models</code>, which
+the runtime prefers. This shrinks the base installer and proves
+release-asset hosting for a model component. <strong>Upgraders are
+protected automatically:</strong> Inno only overlays new
+<code>[Files]</code> and never removes old ones,
+<code>[InstallDelete]</code> does not touch <code>kokoro-models</code>,
+and runtime resolution still checks <code>{app}\kokoro-models</code>
+(<code>read_aloud._bundled_kokoro_model_dir</code>) — so a user
+upgrading from a release that bundled Kokoro keeps their copy with
+nothing to re-download. Kokoro is in the "safe to unbundle" class (other
+read-aloud voices remain available offline if the download has not
+happened).</p>
 <p><strong>Cloud providers ship as Quillins, not core.</strong> Per the
 consolidation plan (#669), the cloud provider matrix is delivered as
 extensions rather than baked into core. A Quillin declares a provider
