@@ -10660,11 +10660,15 @@ class MainFrame(
                 choices = {label: value for value, label in spec.choices}
                 break
         sizer.Add(wx.StaticText(parent, label="What each editor surface does:"), 0, wx.ALL, 6)
+        # Word-wrap (not TE_DONTWRAP) and a real minimum width so the prose flows as
+        # paragraphs instead of collapsing to one letter per line when the page is
+        # narrow (the control otherwise has no natural width of its own).
         info = wx.TextCtrl(
             parent,
-            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP | wx.TE_RICH2,
-            size=(-1, 180),
+            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_BESTWRAP | wx.TE_RICH2,
+            size=(560, 220),
         )
+        info.SetMinSize((360, 160))
         info.SetName("Editor surface explanation")
         sizer.Add(info, 1, wx.EXPAND | wx.ALL, 6)
         entry = control_index.get("experimental_editor_surface")  # type: ignore[union-attr]
