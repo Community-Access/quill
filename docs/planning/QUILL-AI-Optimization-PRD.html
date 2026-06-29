@@ -315,18 +315,29 @@ unchanged.</li>
 <h2 id="6-phased-plan">6. Phased plan</h2>
 <h3 id="phase-0--measure-prerequisite">Phase 0 — Measure
 (prerequisite)</h3>
-<p>Build a repeatable footprint/inventory report: installed size by
-component, per-model on-disk sizes, and peak RAM per engine / per
-concurrent combination. Land it as a script + a short doc so every later
+<p>Build a repeatable, read-only footprint/inventory report: installed
+size by component, per-model on-disk sizes, peak RAM per engine and per
+concurrent combination, and cold-start / first-token timings. Land it as
+a script + a short doc (machine-readable JSON + summary) so every later
 phase is judged against numbers. <strong>Acceptance:</strong> a
-committed report for the current release on a reference machine.</p>
+committed baseline report for the current release on a defined reference
+machine — ideally including a low-end, CPU-only machine (the
+capability-floor target). See 10.1 for the completed analysis.</p>
 <h3 id="phase-1--packaging--disk-footprint">Phase 1 — Packaging / disk
 footprint</h3>
 <p>Audit the installer (currently ~245 MB, dominated by the embedded
-runtime + wheels). Trim the embedded stdlib/wheels, dedupe DLLs, and
-push more assets to on-demand. <strong>Acceptance:</strong> measurable
-base-installer reduction with no feature loss (on-demand paths
-verified).</p>
+runtime + wheels). Trim the embedded stdlib/wheels, dedupe native
+binaries, and push <em>eligible</em> assets to on-demand. Unbundling is
+<strong>gated</strong> by the scope rule (10.2.2: never unbundle
+launch-critical/offline-first assets) and the reliable-acquisition model
+(10.2.3: pinned source + SHA-256, GATE-9 audit + consent, atomic
+install, <strong>retry/resumable download</strong>, a mirror/fallback
+URL, graceful offline UX, and an acquisition healthcheck). Hardening
+acquisition is part of Phase 1, not a follow-up.
+<strong>Acceptance:</strong> measurable base-installer reduction with no
+feature loss; every on-demand asset has a verified, retry/resumable,
+audited download with a fallback source and an accessible
+offline-failure path. See 10.1–10.2 for the completed analysis.</p>
 <h3 id="phase-2--runtime-memory">Phase 2 — Runtime memory</h3>
 <p>Add an explicit <strong>unload-idle-models</strong> policy,
 single-flight model loading, and a <strong>Low-resource mode</strong>
@@ -407,67 +418,197 @@ SHA-256-verified, urllib-only.</li>
 wins below are about <em>fit, footprint, and routing</em>, not new
 quantization.</li>
 </ul>
-<h3 id="101-phase-0--measurement-no-behaviour-change-foundation">10.1
-Phase 0 — Measurement (no behaviour change; foundation)</h3>
-<p><strong>What is possible, safely.</strong> A read-only
-<code>scripts/footprint_report.py</code> that emits: installed size by
-component (walk <code>{app}</code> and the optional-component dirs),
-each on-disk model size (<code>&lt;app data&gt;/models</code>,
-<code>speech-engine</code>, <code>kokoro-models</code>), and peak RSS
-per engine for a fixed sample (drive each provider's
-<code>transcribe_file</code> / read-aloud / a short LLM completion under
-a sampler). Reuse the existing machine probes
-(<code>service.detect_total_ram_gb</code>, <code>detect_has_gpu</code>,
-<code>models_dir_free_gb</code>). Pure measurement — no risk.</p>
-<p><strong>Impact:</strong> none to the product; unlocks every later
-decision with numbers. <strong>Cross-platform:</strong> identical logic;
-sizes differ (macOS bundle is a <code>.app</code>, no embedded
-<code>python313.dll</code>; it has a Python.framework). The report
-should label the platform and not assume Windows paths.</p>
-<h3 id="102-phase-1--packaging--disk-footprint">10.2 Phase 1 — Packaging
-/ disk footprint</h3>
+<h3
+id="101-phase-0--measurement-no-behaviour-change-foundation--analysis-complete">10.1
+Phase 0 — Measurement (no behaviour change; foundation) — ANALYSIS
+COMPLETE</h3>
+<p>Phase 0 is pure, read-only measurement. It ships nothing user-facing
+and changes no behaviour; its entire value is producing the numbers
+every later phase is judged against. Treat its output as the project's
+optimization baseline.</p>
+<p><strong>What to measure (deliverables of a
+<code>scripts/footprint_report.py</code>):</strong></p>
+<ol type="1">
+<li><strong>Installed/disk size, by component.</strong> Walk
+<code>{app}</code> (Windows) or <code>Quill.app</code> (macOS) and the
+optional-component locations, and attribute bytes to: the embedded
+runtime (<code>python313.dll</code>/<code>.zip</code>,
+<code>Lib/</code>, <code>Scripts/</code>), each wheel under
+<code>Lib/site-packages</code> (top offenders: wxPython, Pillow, winrt,
+kokoro/onnx, vosk), and each bundled engine/asset dir
+(<code>tools/speech/*</code>, <code>kokoro-models</code>,
+<code>vendor/braille-pack</code>, <code>tools/nodejs</code>,
+<code>tools/pandoc</code>). Output a sorted "biggest first" table.</li>
+<li><strong>On-disk model/asset sizes</strong> under the data dir:
+<code>&lt;app data&gt;/models</code> (GGUF + speech models),
+<code>speech-engine</code>, <code>kokoro-models</code>,
+<code>tools/ffmpeg</code>.</li>
+<li><strong>Peak RSS per engine</strong>, sampled off the UI thread, for
+a fixed micro-task: whisper.cpp and Faster Whisper transcribing a short
+clip; a Kokoro/Piper read-aloud; a short llama.cpp completion. Also the
+<strong>N-engines-loaded-at-once</strong> peak (the case Phase 2
+attacks).</li>
+<li><strong>Cold start</strong> to first usable editor, and
+<strong>time-to-first-token / first-audio</strong> per engine.</li>
+<li><strong>Machine context</strong> for the run: reuse
+<code>service.detect_total_ram_gb</code>, <code>detect_has_gpu</code>,
+<code>models_dir_free_gb</code> so the report is interpretable per
+tier.</li>
+</ol>
+<p><strong>Method/guards.</strong> Read-only filesystem walks + an
+off-thread RSS sampler (<code>QuillTaskManager</code>); tolerate a
+missing <code>psutil</code> (degrade to "RSS unavailable", never crash).
+No network. Emit machine-readable JSON + a short Markdown summary so
+results are diffable release-over-release.</p>
+<p><strong>Acceptance.</strong> A committed baseline report for the
+current release on a defined reference machine (and ideally a low-end
+CPU-only one — the capability-floor target). The report is the gate
+input for Phases 1–4.</p>
+<p><strong>Impact.</strong> Product: none (no behaviour change, no size
+change). Process: foundational — converts "we think this is big/heavy"
+into ranked, attributable numbers, so Phase 1 trims the
+<em>actually</em> large things and later phases prove their wins.
+<strong>Cross-platform:</strong> identical logic; sizes differ (macOS
+<code>.app</code> has a <code>Python.framework</code>, not
+<code>python313.dll</code>). The report labels the platform and uses
+platform-correct roots — no Windows path assumptions.</p>
+<h3 id="102-phase-1--packaging--disk-footprint--analysis-complete">10.2
+Phase 1 — Packaging / disk footprint — ANALYSIS COMPLETE</h3>
 <p><strong>What exists.</strong>
-<code>scripts/build_windows_distribution.py</code> already: bundles the
-embedded runtime, <strong>prunes build-only packages</strong>, makes
-large engines optional installer components (Kokoro ~120 MB, DECtalk,
-Piper, eSpeak, Node.js ~30 MB, braille pack ~15 MB, pandoc), and
+<code>scripts/build_windows_distribution.py</code> bundles the embedded
+runtime, <strong>prunes build-only packages</strong>, makes large
+engines optional installer components (Kokoro ~120 MB, DECtalk, Piper,
+eSpeak, Node.js ~30 MB, braille pack ~15 MB, pandoc), and
 <strong>downloads engines at build time</strong> (#747 whisper, etc.).
 macOS uses py2app (<code>scripts/setup_macos.py</code> /
-<code>build_macos.sh</code>), which zips pure-Python into
-<code>pythonNNN.zip</code> and now bundles missing <code>@rpath</code>
-dylibs (#755).</p>
-<p><strong>Safe, high-value moves:</strong></p>
+<code>build_macos.sh</code>), zipping pure-Python into
+<code>pythonNNN.zip</code> and bundling missing <code>@rpath</code>
+dylibs (#755). Runtime acquisition already follows a strong pattern (see
+10.2.3) that any unbundling must inherit.</p>
+<h4 id="1021-safe-high-value-moves-with-quantified-impact">10.2.1 Safe,
+high-value moves (with quantified impact)</h4>
 <ul>
-<li><strong>Trim the embedded stdlib/wheels.</strong> Exclude
-provably-unused stdlib (e.g. <code>tkinter</code>, <code>test</code>,
-<code>idlelib</code>, <code>ensurepip</code>, <code>distutils</code>
-leftovers) and large unused wheel data. <em>Guard:</em> gate behind the
-existing import-surface tests + a smoke launch
-(<code>python -m quill --version</code>) so a wrongly-pruned module
-fails the build, never the user. <strong>Impact:</strong> tens of MB off
-the installer; faster download/extract; zero runtime change.
-<strong>Reversible:</strong> it is a build-time exclude list.</li>
-<li><strong>More assets on-demand.</strong> Anything rarely used (extra
-Kokoro voices, large speech tiers) moves from "bundled" to "downloaded
-on first use" via the existing SHA-verified download path.
-<strong>Impact:</strong> smaller base installer; first-use cost shifts
-to a one-time, resumable download. <em>Guard:</em> the feature already
-degrades to "download needed" messaging; Safe Mode blocks it.</li>
-<li><strong>DLL de-dup / compression.</strong> Detect duplicate native
-DLLs across engine dirs; rely on the installer's compression.
+<li><strong>Trim the embedded stdlib/unused wheel data (biggest lever,
+lowest risk).</strong> Exclude provably-unused stdlib
+(<code>tkinter</code>, <code>test</code>, <code>idlelib</code>,
+<code>ensurepip</code>, <code>lib2to3</code>, <code>distutils</code>
+leftovers) and large unused data inside wheels. <em>Guard:</em> an
+explicit, reviewed exclude list, gated by the existing import-surface
+tests + a smoke launch (<code>python -m quill --version</code>, and
+<code>--dump-stacks</code> which imports the wx UI) so a wrong exclusion
+fails the <strong>build</strong>, never the user.
+<strong>Impact:</strong> estimated tens of MB off the installer (Phase 0
+ranks the exact targets); faster download + extract + first launch;
+<strong>zero</strong> runtime/behaviour change. Fully reversible (a
+build-time list).</li>
+<li><strong>Move rarely-used assets to on-demand — only those that pass
+10.2.2/10.2.3.</strong> Candidates: extra Kokoro voices, large/rare
+speech tiers, optional engines not needed at first run.
+<strong>Impact:</strong> smaller base installer; first-use cost becomes
+a one-time verified download. <em>Guard:</em> the feature must degrade
+to an accessible "download needed" affordance, Safe Mode blocks it, and
+acquisition must meet the reliability bar below <strong>before</strong>
+the asset is removed from the installer.</li>
+<li><strong>Native-binary de-dup + compression.</strong> Detect
+duplicate DLLs/dylibs across engine dirs; rely on installer compression.
 <strong>Impact:</strong> moderate size; no behaviour change.</li>
 </ul>
-<p><strong>Cross-platform.</strong> Windows: the embedded-runtime trim
-is the biggest lever. macOS: the py2app bundle has different internals
-(framework Python, <code>.dylib</code> signing); the trim list must be
-computed per-platform, and the macOS <code>.app</code> must stay
-notarization-valid (every Mach-O signed — already handled in
-<code>build_macos.sh</code>). Note today's whisper.cpp bundling is
-<strong>Windows-specific</strong>; a macOS build would need a mac
-<code>whisper-cli</code> (a tracked gap, see 10.5).</p>
-<p><strong>Impact summary:</strong> size ↓↓ (installer), download time
-↓; memory/speed unchanged; capability unchanged (on-demand keeps every
-feature, just not pre-bundled).</p>
+<p><strong>Impact summary:</strong> size ↓↓ (installer + first
+download), launch ↑ (less to unpack); memory/speed of features
+unchanged; capability unchanged — on-demand keeps every feature, just
+not pre-bundled, <em>provided acquisition is reliable</em>.</p>
+<h4 id="1022-scope-rule-what-may-and-may-not-be-unbundled">10.2.2 Scope
+rule: what may and may not be unbundled</h4>
+<p>Unbundling trades disk for a network dependency, so it is gated by
+how the feature behaves when the asset is absent. Classify every
+candidate:</p>
+<ul>
+<li><strong>Never unbundle (must work offline at first run):</strong>
+the embedded runtime and first-party <code>quill</code> package;
+anything required to launch, edit, save, or read the UI; the braille
+pack if braille is a launch-critical accessibility surface. These ship
+in the installer, always.</li>
+<li><strong>Keep a minimal default bundled, offer better
+on-demand:</strong> speech/TTS where an offline-first experience
+matters. Ship the smallest viable engine/voice so the feature works with
+no network; let users download larger/higher-quality variants on demand.
+(whisper.cpp CPU engine staying bundled is the model here.)</li>
+<li><strong>Safe to unbundle (graceful "download needed"):</strong>
+large optional voices, large model tiers, optional tools (e.g. Node.js,
+pandoc) whose absence shows a clear, accessible "install/download this
+to use the feature" path and never blocks core editing.</li>
+</ul>
+<p>A candidate may move to on-demand only if (a) it is not
+launch-critical, (b) its absence degrades to an accessible,
+understandable prompt — never a crash or a silent no-op — and (c) it
+satisfies the reliable-acquisition model in 10.2.3.</p>
+<h4
+id="1023-reliable-acquisition-model-the-touch-points-must-be-dependable">10.2.3
+Reliable acquisition model (the touch points must be dependable)</h4>
+<p>Anything we stop bundling becomes something we must fetch dependably,
+possibly years later when an upstream URL may have moved. The existing
+patterns
+(<code>build_windows_distribution._download_with_verification</code>,
+<code>ai/model_manager._download</code>,
+<code>scripts/fetch_bootstrappers.py</code>) already encode most of
+this; unbundling must adopt <strong>all</strong> of it, and close the
+gaps:</p>
+<ol type="1">
+<li><strong>Pinned, versioned source + SHA-256.</strong> Every asset has
+a pinned URL (or pinned release tag/commit) and a recorded SHA-256; the
+bytes are verified before use, and a moving ref
+(<code>HEAD</code>/<code>latest</code>/<code>main</code>) is refused for
+the <em>pinned</em> path (mirrors <code>fetch_bootstrappers</code>).
+Optional "try latest, fall back to pinned" is allowed only where the
+pinned fallback is real.</li>
+<li><strong>GATE-9 / no-silent-network.</strong> Each new download call
+site is added to <code>network_egress_audit.py</code> with a reviewed
+entry and a visible, consented surface (progress dialog / explicit
+action). No silent fetches; Safe Mode disables all of it.</li>
+<li><strong>Atomic + verified install.</strong> Download to a temp path,
+verify the SHA, then atomically place it (temp + replace) so a
+partial/failed download never leaves a half-installed asset that looks
+present.</li>
+<li><strong>Retry + resumability (the gap to close).</strong> Today's
+helpers stream-and-verify but <strong>re-download from scratch on
+failure</strong> (no HTTP Range/<code>.part</code> resume). Before
+unbundling anything large (hundreds of MB+), add bounded retry with
+backoff and resumable download so a dropped connection on a 0.5–3 GB
+asset does not force a full restart. This is a prerequisite, not an
+afterthought.</li>
+<li><strong>Source resilience.</strong> Pin to a stable host; record a
+<strong>mirror/fallback URL</strong> where licensing allows (e.g. a
+Community-Access-controlled mirror) so a single upstream outage or a
+deleted release does not strand a feature. The verified SHA makes any
+mirror safe to trust.</li>
+<li><strong>Graceful offline / failure UX.</strong> On no-network,
+timeout, 404 (upstream moved), checksum mismatch, rate-limit (HF token
+messaging already exists), or low disk (<code>enough_disk_for</code>
+already guards), surface a clear, screen-reader-friendly message and
+leave the app fully usable for everything else. Never crash, never
+silently degrade.</li>
+<li><strong>Integrity over time.</strong> A periodic/CI "acquisition
+healthcheck" that resolves every pinned URL and re-checks reachability +
+checksum, so a dead upstream is caught by us, not by a user offline at
+the worst moment.</li>
+</ol>
+<p><strong>Scope consequence:</strong> Phase 1 explicitly includes
+hardening acquisition (items 4, 5, 7 are partly new work) as a
+<em>precondition</em> for any unbundling. We do not remove an asset from
+the installer until its download path meets this bar; the size win and
+the reliability work ship together, never the win alone.</p>
+<p><strong>Cross-platform.</strong> Windows: embedded-runtime trim is
+the biggest lever; on-demand assets land under the data dir. macOS: the
+py2app bundle differs (framework Python, <code>.dylib</code> signing),
+so the trim list is computed per-platform and the <code>.app</code> must
+stay notarization-valid (every Mach-O signed — handled in
+<code>build_macos.sh</code>); an asset downloaded post-install must not
+need re-signing to run (prefer data/model files over executables for
+on-demand on macOS, or sign/quarantine-clear on fetch). Today's
+whisper.cpp engine is <strong>Windows-only</strong>; macOS
+offline-speech parity (a mac <code>whisper-cli</code>, or Faster Whisper
+as the mac default) is the tracked gap (see 10.5) and is itself an
+acquisition touch point to design reliably.</p>
 <h3 id="103-phase-2--runtime-memory--model-lifecycle">10.3 Phase 2 —
 Runtime memory &amp; model lifecycle</h3>
 <p><strong>What exists.</strong> Heavy ML imports are lazy
