@@ -161,7 +161,8 @@ keys line up again.
   QUILL's own SAPI voice is only a fallback for people with no screen reader; if
   it failed to start, QUILL spoke a scary "TTS engine failed" message (with a
   wrong "press F8" instruction) even though the screen reader was handling speech.
-  That case is now logged quietly and not spoken — QUILL only speaks up when you
+  That case is now kept only as a quiet, informational note (not an alarming
+  accessibility alert) and is never spoken — QUILL only speaks up when you
   genuinely have no other voice, pointing you to the real **Tools → Retry TTS
   Engine**. The SAPI voice also initialises correctly under a read-only install
   now (its helper cache moved to a writable per-user folder), so self-voicing
@@ -184,6 +185,21 @@ keys line up again.
   window presents and your screen reader announces it. Once the Kokoro models are
   present, the redundant 114 MB download button is hidden rather than offered
   again.
+- **Offline dictation works out of the box — the speech engine is now bundled.**
+  The private, on-device Whisper engine behind dictation (Ctrl+F9) and **Tools →
+  Speech** was missing from the installer, so QUILL reported "whisper binary not
+  found" even after you downloaded a model (the model and the engine are separate
+  downloads). The engine now ships with every build, so offline dictation works
+  with no extra step. (#742)
+- **Saving a Faster Whisper model no longer freezes at 2% and crashes.** The
+  download refreshed the on-screen progress so often that it flooded QUILL's main
+  thread — the bar appeared stuck near 2% and the app eventually crashed. Progress
+  now updates at most once per percent, so model downloads run smoothly to the
+  end. (#748)
+- **Export speech audio as MP3 (and more), not just WAV.** Generate Speech Audio
+  only ever offered WAV, even with ffmpeg installed. When ffmpeg is present you
+  can now save as **MP3, M4A, M4B, OGG, Opus, or FLAC**; without it, WAV still
+  works exactly as before. (#750)
 
 ### Enhancements
 
