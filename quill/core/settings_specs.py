@@ -1837,6 +1837,19 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
     ),
     # --- Experimental (for-testing editor surfaces) ------------------------
     SettingSpec(
+        "experimental_acknowledged",
+        "I understand features may degrade based on the control selected",
+        "experimental",
+        "bool",
+        (
+            "Required safety gate. The experimental editor-surface and hide-border "
+            "options below are IGNORED until this is ticked, so an accidental change "
+            "can never affect your editor. Tick it only if you accept that a "
+            "non-default surface is for testing and that some features may not work."
+        ),
+        keywords=("experimental", "acknowledge", "understand", "risk", "degrade", "testing"),
+    ),
+    SettingSpec(
         "experimental_editor_surface",
         "Editor surface (for testing)",
         "experimental",
@@ -1854,8 +1867,19 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
             ("rich", "RichEdit 2.0"),
             ("plain", "Notepad (plain edit control)"),
             ("rtf", "Rich text (wx.RichTextCtrl, experimental)"),
+            ("win32", "Native Win32 EDIT (pywin32 spike, Windows only)"),
         ),
-        keywords=("experimental", "editor", "surface", "richedit", "notepad", "rtf", "testing"),
+        keywords=(
+            "experimental",
+            "editor",
+            "surface",
+            "richedit",
+            "notepad",
+            "rtf",
+            "win32",
+            "native",
+            "testing",
+        ),
     ),
     SettingSpec(
         "editor_hide_border",

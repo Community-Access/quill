@@ -180,6 +180,10 @@ class Settings:
     #   editor_hide_border: draw the editor control with no border for a cleaner,
     #   Notepad-like frame. Off keeps the platform default border.
     editor_hide_border: bool = False
+    #   experimental_acknowledged: the user has confirmed they understand that
+    #   features may degrade on a non-default editor surface. The experimental
+    #   overrides above are ignored until this is True (the safety gate).
+    experimental_acknowledged: bool = False
     # What to do when a document that carries hidden formatting is saved as plain
     # text: "ask" (offer to keep the formatting), "illuminate" (always write a
     # <name>.illumination sidecar so the .txt round-trips formatting in QUILL), or
@@ -668,9 +672,10 @@ class Settings:
         experimental_editor_surface = (
             str(data.get("experimental_editor_surface", "default")).strip().lower()
         )
-        if experimental_editor_surface not in {"default", "rich2", "rich", "plain", "rtf"}:
+        if experimental_editor_surface not in {"default", "rich2", "rich", "plain", "rtf", "win32"}:
             experimental_editor_surface = "default"
         editor_hide_border = bool(data.get("editor_hide_border", False))
+        experimental_acknowledged = bool(data.get("experimental_acknowledged", False))
         plain_text_with_formatting = str(data.get("plain_text_with_formatting", "ask"))
         if plain_text_with_formatting not in {"ask", "illuminate", "plain"}:
             plain_text_with_formatting = "ask"
@@ -1121,6 +1126,7 @@ class Settings:
             editor_control_kind=editor_control_kind,
             experimental_editor_surface=experimental_editor_surface,
             editor_hide_border=editor_hide_border,
+            experimental_acknowledged=experimental_acknowledged,
             plain_text_with_formatting=plain_text_with_formatting,
             dictation_onboarding_shown=dictation_onboarding_shown,
             pronunciation_enabled=pronunciation_enabled,

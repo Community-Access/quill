@@ -208,7 +208,7 @@ def test_read_only_state_refreshes_on_open() -> None:
     # RichEdit-version handling, and the Experimental editor-surface / hide-border
     # branch all add lines to _create_document_tab before the refresh call, so
     # widen the slice.
-    create_tab = _SOURCE[_SOURCE.index("def _create_document_tab") :][:4500]
+    create_tab = _SOURCE[_SOURCE.index("def _create_document_tab") :][:5500]
     assert "self._refresh_read_only_state()" in create_tab
 
 
