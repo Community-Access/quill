@@ -495,19 +495,24 @@ dylibs (#755). Runtime acquisition already follows a strong pattern (see
 <h4 id="1021-safe-high-value-moves-with-quantified-impact">10.2.1 Safe,
 high-value moves (with quantified impact)</h4>
 <ul>
-<li><strong>Trim the embedded stdlib/unused wheel data (biggest lever,
-lowest risk).</strong> Exclude provably-unused stdlib
+<li><strong>Trim unused <em>wheel</em> data — the stdlib is already
+minimal (measured).</strong> Phase 0 measurement (Appendix C) shows the
+embeddable runtime already excludes the usual stdlib trim targets
 (<code>tkinter</code>, <code>test</code>, <code>idlelib</code>,
-<code>ensurepip</code>, <code>lib2to3</code>, <code>distutils</code>
-leftovers) and large unused data inside wheels. <em>Guard:</em> an
-explicit, reviewed exclude list, gated by the existing import-surface
-tests + a smoke launch (<code>python -m quill --version</code>, and
-<code>--dump-stacks</code> which imports the wx UI) so a wrong exclusion
-fails the <strong>build</strong>, never the user.
-<strong>Impact:</strong> estimated tens of MB off the installer (Phase 0
-ranks the exact targets); faster download + extract + first launch;
-<strong>zero</strong> runtime/behaviour change. Fully reversible (a
-build-time list).</li>
+<code>ensurepip</code>, <code>lib2to3</code>, <code>distutils</code> are
+all <strong>absent</strong>; <code>python313.zip</code> is only 3.6 MB),
+so the real footprint is the <strong>wheels</strong> under
+<code>Lib/site-packages</code> (≈ 534 MB uncompressed). The lever is
+therefore large <em>data inside wheels</em> (e.g. spell-check
+dictionaries, CLDR locale data) and over-broad transitive packages — not
+stdlib modules. <em>Guard:</em> an explicit, reviewed exclude list,
+gated by the existing import-surface tests + a smoke launch
+(<code>python -m quill --version</code>, and <code>--dump-stacks</code>
+which imports the wx UI) so a wrong exclusion fails the
+<strong>build</strong>, never the user. <strong>Impact:</strong> tens of
+MB off the installer (Appendix C ranks the exact targets); faster
+download + extract + first launch; <strong>zero</strong>
+runtime/behaviour change. Fully reversible (a build-time list).</li>
 <li><strong>Move rarely-used assets to on-demand — only those that pass
 10.2.2/10.2.3.</strong> Candidates: extra Kokoro voices, large/rare
 speech tiers, optional engines not needed at first run.
@@ -923,5 +928,138 @@ include Kokoro voices (~120 MB), Node.js (~30 MB), the braille pack (~15
 MB), and the whisper.cpp CPU engine (~8 MB, Windows build).</p>
 <p>All figures are current observations to be re-baselined by the Phase
 0 report.</p>
+<h2
+id="appendix-c--phase-0-wheelruntime-size-inventory-measured">Appendix C
+— Phase 0 wheel/runtime size inventory (measured)</h2>
+<p>Read-only measurement of a built portable distribution (Windows,
+0.8.1 local build). <strong>No files were modified; this is analysis
+only.</strong> Phase 0 proposes <em>no removals</em> — it ranks targets
+and records the verification each would require before any later phase
+acts.</p>
+<p><strong>Embedded runtime — already lean.</strong>
+<code>python313.dll</code> 5.8 MB, <code>python313.zip</code> (zipped
+stdlib) 3.6 MB, <code>python3.dll</code> 0.1 MB. The usual stdlib trim
+targets (<code>tkinter</code>, <code>test</code>, <code>idlelib</code>,
+<code>ensurepip</code>, <code>lib2to3</code>, <code>distutils</code>,
+<code>turtledemo</code>, <code>tcl</code>) are <strong>all
+absent</strong> — the Windows embeddable distribution already excludes
+them. Conclusion: "trim the stdlib" is essentially already done; the
+footprint lever is the wheels below.</p>
+<p><strong><code>Lib/site-packages</code> total: 534.6 MB.</strong> Top
+entries (MB), with role and a <em>candidate</em> flag. "Candidate" never
+means "remove now" — it means "investigate, with the named verification,
+in a later phase."</p>
+<table>
+<thead>
+<tr>
+<th>MB</th>
+<th>Package</th>
+<th>Role (to confirm)</th>
+<th>Candidate? / verification needed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>90.9</td>
+<td>enchant</td>
+<td>pyenchant spell-check backend + bundled dictionaries</td>
+<td>Trim bundled dictionary languages to those actually shipped/used.
+Core feature — keep engine, audit dictionary data.</td>
+</tr>
+<tr>
+<td>66.0</td>
+<td>win32more</td>
+<td>broad Win32/WinRT API projection</td>
+<td><strong>Highest-value unknown.</strong> Confirm which import pulls
+it (likely a transitive dep) and whether a slimmer subset/alternative
+suffices. No action until origin + usage proven.</td>
+</tr>
+<tr>
+<td>54.8</td>
+<td>quill</td>
+<td>first-party package (incl. bundled data: voice previews, schemas,
+quillins)</td>
+<td>Audit bundled <em>data</em> (e.g. voice-preview MP3s) for on-demand;
+do not touch code.</td>
+</tr>
+<tr>
+<td>52.1</td>
+<td>wx</td>
+<td>wxPython — core UI</td>
+<td>Keep (required).</td>
+</tr>
+<tr>
+<td>51.6</td>
+<td>vosk</td>
+<td>optional offline STT engine (libvosk)</td>
+<td>"Safe to unbundle" per 10.2.2 → on-demand via 10.2.4, if not a
+default. Verify it isn't a default engine first.</td>
+</tr>
+<tr>
+<td>37.7</td>
+<td>onnxruntime</td>
+<td>runs Kokoro ONNX (and OCR paths)</td>
+<td>Keep while Kokoro is offered; could become on-demand bundled
+<em>with</em> Kokoro.</td>
+</tr>
+<tr>
+<td>29.4</td>
+<td>babel</td>
+<td>CLDR locale data</td>
+<td>Trim to needed locales — verify i18n usage before any trim (i18n
+risk).</td>
+</tr>
+<tr>
+<td>20.0 + 19.4</td>
+<td>numpy.libs + numpy</td>
+<td>transitive (onnxruntime / vosk / kokoro)</td>
+<td>Keep (transitive dependency).</td>
+</tr>
+<tr>
+<td>17.9</td>
+<td>espeakng_loader</td>
+<td>eSpeak NG engine/data (pip)</td>
+<td>Optional TTS → on-demand candidate per 10.2.2/10.2.4.</td>
+</tr>
+<tr>
+<td>13.9</td>
+<td>PIL (Pillow)</td>
+<td>image handling / OCR</td>
+<td>Keep (used by image + OCR paths).</td>
+</tr>
+<tr>
+<td>10.0</td>
+<td>pip</td>
+<td>runtime pip</td>
+<td><strong>Deliberately kept</strong> — enables the optional Faster
+Whisper pip install (per the build script). Not a candidate.</td>
+</tr>
+<tr>
+<td>8.5</td>
+<td>lxml</td>
+<td>XML (docx / rdflib)</td>
+<td>Keep.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Reading of the data (analysis, not a plan):</strong></p>
+<ul>
+<li>The four biggest single wins to <em>investigate</em> are
+<code>enchant</code> (dictionary data), <code>win32more</code> (origin +
+necessity unknown — verify first), <code>babel</code> (locale data), and
+the optional speech/TTS engines <code>vosk</code> +
+<code>espeakng_loader</code> (which fit the 10.2.2 "safe to unbundle"
+class if they are not defaults).</li>
+<li>Several large entries (<code>wx</code>, <code>numpy</code>,
+<code>onnxruntime</code>, <code>PIL</code>) are core or transitive and
+are <strong>not</strong> reduction targets.</li>
+<li>Every candidate is gated: confirm role/usage (Phase 0 follow-up),
+then — only if it passes 10.2.2 — move to on-demand via the
+10.2.3/10.2.4 acquisition model.</li>
+</ul>
+<p><strong>Caveat:</strong> uncompressed on-disk sizes; the installer
+compresses, so MB-on-disk overstates MB-in-installer. The Phase 0 report
+should also record compressed contribution per component. macOS sizes
+will differ and need the same measurement.</p>
 </body>
 </html>
