@@ -99,16 +99,15 @@ version = "2.4.6"
         "speech/dectalk",
         "speech/espeak-ng",
         "speech/piper",
-        "speech/whispercpp",
     ]
     assert manifest["docs"] == [r"docs\userguide.md"]
     assert manifest["speechAssets"]["dectalk"]["downloadable"] is True
     assert manifest["speechAssets"]["espeak"]["downloadable"] is True
     assert manifest["speechAssets"]["piper"]["downloadable"] is True
-    # whisper.cpp is the default offline transcription/dictation engine, so the
-    # build always stages it (#742 regression: a selected component with no
-    # payload). It is bundled, not merely downloadable on demand.
-    assert manifest["speechAssets"]["whispercpp"]["bundled"] is True
+    # whisper.cpp is unbundled (PRD 10.2.4): not staged by default (no --whisper-dir
+    # here), downloaded on demand from QUILL's verified release asset instead.
+    assert manifest["speechAssets"]["whispercpp"]["bundled"] is False
+    assert (portable_dir / "tools" / "speech" / "whispercpp").exists() is False
     # Kokoro is always STAGED at the portable bundle root (kokoro-models/), the
     # location the runtime resolves a bundled copy from; the installer gates the
     # copy behind the optional speechkokoro component (asserted separately).
@@ -159,17 +158,16 @@ def test_build_inno_setup_script_mentions_portable_bundle() -> None:
     assert "ShouldInstallPaulVoice" not in script
     assert 'Name: "speechespeak"; Description: "Install bundled eSpeak-NG runtime";' in script
     assert 'Name: "speechpiper"; Description: "Install bundled Piper neural TTS runtime";' in script
-    # The offline whisper.cpp speech engine ships as its own optional component
-    # (#617), gated payload under tools\speech\whispercpp, surfaced under
-    # Tools > Speech > Whisperer.
-    assert 'Name: "speechwhisper"; Description: "Install the offline speech engine' in script
-    assert "(Tools > Speech > Whisperer)" in script
-    # Kokoro is an optional component (Types: full custom): Full installs ship it,
-    # Custom installs can drop ~120 MB and download it later. It is excluded from
-    # the unconditional copy and gated behind its own [Files] entry.
-    assert 'Name: "speechkokoro"; Description: "Install bundled Kokoro neural TTS voices' in script
-    assert 'Source: "..\\portable\\kokoro-models\\*"; DestDir: "{app}\\kokoro-models";' in script
-    assert "Components: speechkokoro" in script
+    # whisper.cpp is unbundled (PRD 10.2.4): no installer component and no
+    # tools\speech\whispercpp [Files] entry. QUILL downloads the engine on demand
+    # from its verified release asset; upgraders keep any existing copy.
+    assert "speechwhisper" not in script
+    assert 'DestDir: "{app}\\tools\\speech\\whispercpp"' not in script
+    # Kokoro is unbundled (PRD 10.2.4): no installer component and no kokoro-models
+    # [Files] entry. QUILL downloads it on demand from its verified release asset;
+    # upgraders keep any existing {app}\kokoro-models copy (Inno never removes it).
+    assert "speechkokoro" not in script
+    assert 'DestDir: "{app}\\kokoro-models"' not in script
     assert "speechopenvoice" not in script
     assert (
         'Excludes: "docs\\QUILL-PRD.md,tools\\pandoc\\*,tools\\speech\\dectalk\\*,tools\\speech\\espeak-ng\\*,tools\\speech\\piper\\*,tools\\speech\\whispercpp\\*,tools\\nodejs\\*,vendor\\braille-pack\\*,kokoro-models\\*,_tool-download\\*,_speech-download\\*"'
@@ -194,14 +192,12 @@ def test_build_inno_setup_script_mentions_portable_bundle() -> None:
         'Source: "..\\portable\\tools\\speech\\piper\\*"; DestDir: "{app}\\tools\\speech\\piper";'
         in script
     )
-    assert (
-        'Source: "..\\portable\\tools\\speech\\whispercpp\\*";'
-        ' DestDir: "{app}\\tools\\speech\\whispercpp";' in script
-    )
+    # whisper.cpp is unbundled (PRD 10.2.4): no [Files] entry for it.
+    assert 'Source: "..\\portable\\tools\\speech\\whispercpp\\*";' not in script
     assert "Components: speechdectalk" in script
     assert "Components: speechespeak" in script
     assert "Components: speechpiper" in script
-    assert "Components: speechwhisper" in script
+    assert "Components: speechwhisper" not in script  # unbundled (PRD 10.2.4)
     assert "User Guide" in script
     assert "userguide.html" in script
     assert 'Parameters: "-m quill"' in script

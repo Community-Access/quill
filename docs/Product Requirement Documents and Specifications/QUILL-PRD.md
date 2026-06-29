@@ -1931,6 +1931,34 @@ and runs entirely on the user's machine. The detailed rollout/provider-center su
 the deferred BITS Whisperer suite (locked off, `core.bw_whisperer`) is captured in
 `docs/planning/deferred-locked-features.md`; this section describes only what ships today.
 
+**On-demand engine acquisition (release-asset).** The whisper.cpp engine is **not
+bundled** (PRD footprint plan §10.2.4): it downloads on demand from QUILL's verified
+release asset to `%APPDATA%\Quill\speech-engine`, which the runtime searches. The
+**first time offline dictation/transcription is used without it, QUILL offers the
+download in-flow** (the dictation pre-flight prompts), and it is also at
+`Tools -> Speech -> Download Offline Speech Engine...`. Acquisition is
+`quill/core/release_assets.py` (wx-free): a **pinned**, **SHA-256-verified** download
+from QUILL's controlled GitHub release asset (`assets-v1`), HTTPS-only, with
+retry/resumable download, atomic verified install, and a clean error on failure;
+gated by an explicit user action, the GATE-9 network-egress audit, and Safe Mode.
+**Upgraders keep their existing `{app}\tools\speech\whispercpp` copy** (Inno never
+removes it; `[InstallDelete]` does not touch it; the resolver still checks it), so
+upgrades never lose offline speech. Only components QUILL is licensed to redistribute
+are hosted this way (whisper.cpp is MIT, Kokoro Apache-2.0); license-unclear engines
+are not re-hosted, and ffmpeg is never re-hosted (it stays user-installed).
+
+**Kokoro voices unbundled (proof of concept).** The ~120 MB Kokoro neural voices are
+no longer shipped in the installer; they download on demand through the same
+`release_assets` path (pinned `kokoro-models.zip` on `assets-v1`, SHA-256-verified) to
+`%APPDATA%\Quill\kokoro-models`, which the runtime prefers. This shrinks the base
+installer and proves release-asset hosting for a model component. **Upgraders are
+protected automatically:** Inno only overlays new `[Files]` and never removes old
+ones, `[InstallDelete]` does not touch `kokoro-models`, and runtime resolution still
+checks `{app}\kokoro-models` (`read_aloud._bundled_kokoro_model_dir`) — so a user
+upgrading from a release that bundled Kokoro keeps their copy with nothing to
+re-download. Kokoro is in the "safe to unbundle" class (other read-aloud voices
+remain available offline if the download has not happened).
+
 **Cloud providers ship as Quillins, not core.** Per the consolidation plan (#669), the cloud
 provider matrix is delivered as extensions rather than baked into core. A Quillin declares a
 provider through the **`transcription_providers`** manifest contribution; QUILL's host implements
@@ -1963,8 +1991,8 @@ providers".
 > (plain text / Markdown / HTML), **Generate Captions** (SRT / VTT), push-to-talk
 > **Dictate at the cursor** (distinct earcons, status-bar state, microphone picker,
 > QUILL Key + Shift+D), and **speaker attribution** via the whisper.cpp speaker-detection
-> model. The whisper.cpp engine ships as an installer component, and `sounddevice` is
-> bundled for capture. **S4 added Faster Whisper** as an optional, GPU-aware second engine
+> model. The whisper.cpp engine downloads on demand (unbundled, §5.25c above), and
+> `sounddevice` is bundled for capture. **S4 added Faster Whisper** as an optional, GPU-aware second engine
 > (`fasterwhisper` extra): when present it appears in a **Speech Engine** chooser, the
 > choice is saved in `speech_provider`, and it is used for transcription, captions, and
 > dictation. whisper.cpp remains the default and needs nothing extra; Faster Whisper does

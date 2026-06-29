@@ -964,6 +964,13 @@ not need to enable Artificial Intelligence to use these features. They live unde
   never bundles or redistributes it. Without ffmpeg, the whisper.cpp engine needs
   a 16 kHz mono WAV, while the Faster Whisper engine handles the other formats on
   its own.
+- **Download Offline Speech Engine...** The private, on-device speech engine
+  (whisper.cpp) is not bundled in the installer; the first time you use offline
+  dictation or transcription, QUILL **offers to download it for you** (about 8 MB,
+  checksum-verified, with a cancelable progress bar; disabled in Safe Mode). You
+  can also fetch it any time from **Tools > Speech > Download Offline Speech
+  Engine...**. If you are **upgrading** from a version that bundled the engine,
+  your existing copy is kept and keeps working — nothing to download.
 - **Speaker attribution.** If you download the "Small English with speaker
   detection" model (in Manage Speech Models), QUILL marks **who is speaking when**
   — each turn is labelled "Speaker 1", "Speaker 2", and so on in the transcript
@@ -2212,6 +2219,8 @@ Quill earns trust by making difficult files readable and inspectable.
 ### Read Aloud
 
 Read Aloud uses local voices with a deterministic support policy. The Windows system voice runs on **SAPI 5**; **DECtalk** and **eSpeak NG** are bundled for immediate local playback; **Piper** and **Kokoro** (neural, offline) are available as explicit downloads from Speech Center so base installs stay smaller. You can start, pause, stop, preview, and choose a voice. Speech onboarding announces current availability and recommended next actions before any download starts. For cloud voices, see [Read Aloud with AI Voice](#read-aloud-with-ai-voice-openai-or-google-gemini).
+
+The ~120 MB **Kokoro** voice models are not bundled in the installer; the first time you choose a Kokoro voice, QUILL downloads them for you from its own verified source (checksum-checked, with a cancelable progress window), and your other voices keep working in the meantime. If you are **upgrading** from a version that bundled Kokoro, your existing copy is kept and keeps working — you do not need to download anything.
 
 To audition a voice in **Manage Voices**, select it and use the **Preview** button. If the voice is already downloaded, Quill synthesises the preview phrase with that voice's real model; if it is not downloaded yet (for example a Kokoro voice), Quill plays a short pre-recorded sample so you can still hear it before deciding to download. The rate, volume, pitch, and speed controls apply to real synthesis, so they stay dimmed until the voice is downloaded.
 

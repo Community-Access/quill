@@ -1,0 +1,2494 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>quill-supported-ocr-tool-ai-hub-services-friendly-prd</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1
+id="prd-quill-supported-ocr-tool-ai-hub-services-tab-and-datalab-chandra-ocr-integration">PRD:
+QUILL Supported OCR Tool, AI Hub Services Tab, and Datalab Chandra OCR
+Integration</h1>
+<p><strong>Product:</strong> QUILL<br />
+<strong>Feature area:</strong> Supported OCR tool, AI Hub, document
+import, accessible document conversion<br />
+<strong>Status:</strong> Draft for implementation planning<br />
+<strong>Owner:</strong> Jeff Bishop / QUILL project<br />
+<strong>Last researched:</strong> 2026-06-29<br />
+<strong>Primary audience:</strong> QUILL maintainers, implementation
+agents, accessibility reviewers, release manager</p>
+<hr />
+<h2 id="1-executive-summary">1. Executive Summary</h2>
+<p>QUILL should ship a <strong>first-class, supported OCR and document
+conversion tool</strong>. This should not feel like a hidden AI
+experiment, a plugin-only feature, or an advanced developer service. It
+should be a real QUILL tool that users can rely on from the main
+application.</p>
+<p>The AI Hub should add a <strong>Services</strong> tab that configures
+the providers behind this supported OCR tool. This tab must be
+customer-facing, friendly, and informative — not a sparse technical
+settings page. It should explain what each service does, why a user
+might choose it, what files it supports, what privacy tradeoffs exist,
+how billing works, and provide direct buttons to the provider’s website,
+documentation, pricing, API key page, and privacy/security
+information.</p>
+<p>The first provider should be <strong>Datalab Document Conversion /
+Chandra OCR</strong>, exposed in configuration as <strong>Datalab
+Chandra OCR Service</strong>.</p>
+<p>The user-facing feature should be named something like <strong>QUILL
+OCR and Document Conversion</strong> or <strong>Import with OCR /
+Convert Document</strong>. It should let a user open a scanned PDF,
+image, Office document, spreadsheet, presentation, HTML file, or EPUB;
+send it to Datalab with explicit consent; receive structured Markdown,
+HTML, JSON, or chunks; and open the result directly in QUILL as an
+editable, screen-reader-friendly document.</p>
+<p>The experience should be magical for blind and keyboard-only
+users:</p>
+<ul>
+<li>A simple, friendly import flow: <strong>File → Import with OCR /
+Convert Document</strong>.</li>
+<li>Sensible defaults: <strong>Balanced mode</strong>, <strong>editable
+Markdown</strong>, page delimiters enabled for multi-page
+documents.</li>
+<li>Rich advanced controls for power users.</li>
+<li>A provider-agnostic architecture so QUILL can later support Azure
+Document Intelligence, Mistral OCR, AWS Textract, Google Document AI,
+local Tesseract, local Marker, or an institutional on-prem
+endpoint.</li>
+<li>An accessible <strong>OCR Review Mode</strong> that turns noisy OCR
+output into a guided correction and verification workflow.</li>
+</ul>
+<p>This is not just “OCR.” It is a full document rescue and conversion
+pipeline for making inaccessible, scanned, or structurally messy
+documents editable and understandable.</p>
+<hr />
+<h2 id="2-source-research-summary">2. Source Research Summary</h2>
+<h3 id="21-datalab-and-chandra-facts-relevant-to-implementation">2.1
+Datalab and Chandra facts relevant to implementation</h3>
+<p>Datalab’s Convert API converts documents to <strong>Markdown, HTML,
+JSON, or chunks</strong> and supports <code>fast</code>,
+<code>balanced</code>, and <code>accurate</code> processing modes.
+Datalab recommends <code>balanced</code> for most use cases,
+<code>fast</code> for simple/high-throughput documents, and
+<code>accurate</code> for scanned documents, complex tables, or dense
+layouts.</p>
+<p>Sources:</p>
+<ul>
+<li><a
+href="https://documentation.datalab.to/docs/recipes/conversion/conversion-api-overview">Datalab
+Convert API overview</a></li>
+<li><a
+href="https://documentation.datalab.to/docs/welcome/sdk/conversion">Datalab
+SDK document conversion</a></li>
+<li><a href="https://documentation.datalab.to/docs/welcome/api">Datalab
+API overview</a></li>
+</ul>
+<p>The Python SDK supports:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> datalab_sdk <span class="im">import</span> DatalabClient, ConvertOptions</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>client <span class="op">=</span> DatalabClient()</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>options <span class="op">=</span> ConvertOptions(</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    output_format<span class="op">=</span><span class="st">&quot;markdown&quot;</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    mode<span class="op">=</span><span class="st">&quot;balanced&quot;</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    paginate<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> client.convert(<span class="st">&quot;document.pdf&quot;</span>, options<span class="op">=</span>options)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(result.markdown)</span></code></pre></div>
+<p>The SDK requires Python 3.10+ and is installed with:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install datalab-python-sdk</span></code></pre></div>
+<p>Sources:</p>
+<ul>
+<li><a href="https://documentation.datalab.to/docs/welcome/sdk">Datalab
+Python SDK docs</a></li>
+<li><a href="https://pypi.org/project/datalab-python-sdk/">Datalab
+Python SDK on PyPI</a></li>
+</ul>
+<p>Datalab’s REST API uses:</p>
+<pre class="http"><code>POST https://www.datalab.to/api/v1/convert
+X-API-Key: YOUR_API_KEY</code></pre>
+<p>The API returns a <code>request_id</code> and
+<code>request_check_url</code>; clients poll until processing is
+complete. Datalab says results are deleted from its servers one hour
+after processing completes, so QUILL must retrieve promptly and store
+only what the user asks to keep.</p>
+<p>Source:</p>
+<ul>
+<li><a href="https://documentation.datalab.to/docs/welcome/api">Datalab
+API overview</a></li>
+</ul>
+<p>Supported file types include:</p>
+<ul>
+<li>PDF: <code>.pdf</code></li>
+<li>Spreadsheets: <code>.xls</code>, <code>.xlsx</code>,
+<code>.xlsm</code>, <code>.xltx</code>, <code>.csv</code>,
+<code>.ods</code></li>
+<li>Word documents: <code>.doc</code>, <code>.docx</code>,
+<code>.odt</code></li>
+<li>Presentations: <code>.ppt</code>, <code>.pptx</code>,
+<code>.odp</code></li>
+<li>HTML: <code>.html</code></li>
+<li>EPUB: <code>.epub</code></li>
+<li>Images: <code>.png</code>, <code>.jpg</code>, <code>.jpeg</code>,
+<code>.webp</code>, <code>.gif</code>, <code>.tiff</code></li>
+</ul>
+<p>Source:</p>
+<ul>
+<li><a
+href="https://documentation.datalab.to/docs/common/supportedfiletypes">Datalab
+supported file types</a></li>
+</ul>
+<p>Current documented limits:</p>
+<ul>
+<li>200 MB maximum file size for PDFs, images, and Office
+documents.</li>
+<li>7,000 pages maximum per request.</li>
+<li>Free tier: 10 requests per minute and 5 concurrent requests.</li>
+<li>Team plan: 200 requests per minute and 400 concurrent requests.</li>
+<li>Concurrent pages in flight: 5,000.</li>
+</ul>
+<p>Source:</p>
+<ul>
+<li><a
+href="https://documentation.datalab.to/docs/common/limits">Datalab API
+limits and rate limiting</a></li>
+</ul>
+<p>Security and data-handling guidance:</p>
+<ul>
+<li>Store API keys in environment variables or secure storage; never
+hardcode or commit them.</li>
+<li>Use per-key spend limits.</li>
+<li>Rotate keys if compromised.</li>
+<li>Do not log webhook secrets or sensitive document payloads.</li>
+<li>Results are automatically deleted from Datalab servers one hour
+after processing completes.</li>
+<li>Datalab has an opt-in setting for using documents to improve
+models.</li>
+<li>For on-prem deployments, the container should be placed behind TLS,
+protected by network controls, and authenticated externally.</li>
+</ul>
+<p>Source:</p>
+<ul>
+<li><a href="https://documentation.datalab.to/platform/security">Datalab
+security best practices</a></li>
+</ul>
+<p>Pricing and billing notes:</p>
+<ul>
+<li>Datalab uses per-page pricing; add-ons such as word bounding boxes
+and table/list bounding boxes are additive.</li>
+<li>New accounts receive a monthly free allowance: $20/month for work
+email accounts and $10/month for personal email accounts.</li>
+<li>Pay-as-you-go has no subscription or minimum spend after adding a
+payment method.</li>
+<li>Team plan is documented at $400/month and includes $400 of monthly
+usage, production rate limits, clickthrough BAA/DPA, SOC 2 report
+access, and additional custom processor capacity.</li>
+<li>Current public search results for the Datalab pricing page list
+Convert <code>fast</code> / <code>balanced</code> at <strong>$4 per
+1,000 pages</strong>. Treat this as volatile and always link to
+Datalab’s pricing page rather than hard-coding rates in QUILL UI.</li>
+</ul>
+<p>Sources:</p>
+<ul>
+<li><a href="https://documentation.datalab.to/platform/billing">Datalab
+billing docs</a></li>
+<li><a href="https://www.datalab.to/pricing">Datalab pricing
+page</a></li>
+</ul>
+<p>Chandra OCR 2 specifics:</p>
+<ul>
+<li>Chandra OCR 2 outputs Markdown, HTML, and JSON while preserving
+layout.</li>
+<li>It supports 90+ languages.</li>
+<li>It has strong support for handwriting, tables, math, forms,
+checkboxes, images, diagrams, captions, and structured data.</li>
+<li>The open-source package supports vLLM and Hugging Face inference
+modes.</li>
+<li>The Datalab managed platform states it runs an improved Chandra with
+higher accuracy than open weights, zero data retention by default, SOC 2
+Type 2, and custom BAAs.</li>
+<li>The Chandra repository says commercial self-hosting requires a
+license.</li>
+</ul>
+<p>Sources:</p>
+<ul>
+<li><a href="https://github.com/datalab-to/chandra">Chandra OCR 2 GitHub
+repository</a></li>
+<li><a href="https://huggingface.co/datalab-to/chandra-ocr-2">Chandra
+OCR 2 model card on Hugging Face</a></li>
+<li><a href="https://www.datalab.to/blog/chandra-2">Datalab Chandra 2
+announcement</a></li>
+</ul>
+<p>On-prem / enterprise option:</p>
+<ul>
+<li>Datalab offers paid on-prem options for teams with data privacy,
+regulated-environment, high-volume, customization, or SLA needs.</li>
+<li>Datalab says its container image mimics the cloud-hosted API for a
+simpler transition.</li>
+</ul>
+<p>Source:</p>
+<ul>
+<li><a
+href="https://documentation.datalab.to/docs/on-prem/overview">Datalab
+on-prem overview</a></li>
+</ul>
+<hr />
+<h2 id="3-product-positioning-ocr-is-a-supported-quill-tool">3. Product
+Positioning: OCR Is a Supported QUILL Tool</h2>
+<p>This PRD must treat OCR as a <strong>supported QUILL tool</strong>,
+not just a service connector.</p>
+<p>The Datalab Chandra integration is the first provider implementation,
+but the product feature is:</p>
+<blockquote>
+<p><strong>QUILL OCR and Document Conversion</strong></p>
+</blockquote>
+<p>This tool should appear in normal QUILL workflows, have help
+documentation, have stable menu placement, have accessible status and
+error handling, and be included in release notes as a supported
+feature.</p>
+<h3 id="41-user-facing-promise">4.1 User-facing promise</h3>
+<p>QUILL should be able to say:</p>
+<blockquote>
+<p>QUILL includes a supported OCR and document conversion tool for
+turning scanned, image-based, and poorly structured documents into
+editable, accessible content.</p>
+</blockquote>
+<h3 id="42-required-product-surfaces">4.2 Required product surfaces</h3>
+<p>OCR must be available from the main app, not only from AI Hub
+settings.</p>
+<p>Required surfaces:</p>
+<pre class="text"><code>File
+  Import with OCR / Convert Document...
+
+Tools
+  OCR and Document Conversion
+    Import with OCR...
+    Review Last OCR Result...
+    OCR Service Settings...
+    Delete OCR Temporary Files...
+
+AI Hub
+  Services
+    Datalab Chandra OCR Service</code></pre>
+<p>Recommended Help menu entries:</p>
+<pre class="text"><code>Help
+  QUILL Help
+    OCR and Document Conversion
+    OCR Privacy and Cloud Services
+    Supported OCR File Types
+    Troubleshooting OCR</code></pre>
+<h3 id="43-what-supported-means">4.3 What “supported” means</h3>
+<p>For this PRD, <strong>supported</strong> means:</p>
+<ol type="1">
+<li>The OCR tool is part of QUILL’s documented feature set.</li>
+<li>It is reachable from standard menus.</li>
+<li>It has user-facing help.</li>
+<li>It has clear error messages.</li>
+<li>It has privacy and upload consent UX.</li>
+<li>It has regression tests.</li>
+<li>It has screen-reader testing requirements.</li>
+<li>It has release-note coverage.</li>
+<li>It has diagnostic logging that does not expose secrets or document
+content.</li>
+<li>It can be disabled or left unconfigured without breaking QUILL.</li>
+<li>It is not labeled “experimental” once MVP acceptance criteria are
+met.</li>
+<li>Provider-specific failures are handled as service failures, not as
+QUILL crashes.</li>
+</ol>
+<h3 id="44-supported-feature-boundary">4.4 Supported feature
+boundary</h3>
+<p>QUILL supports the OCR workflow and user experience. Datalab provides
+the first OCR backend.</p>
+<p>QUILL should support:</p>
+<ul>
+<li>Opening the import tool.</li>
+<li>Selecting supported files.</li>
+<li>Explaining cloud upload.</li>
+<li>Submitting the file to the configured OCR provider.</li>
+<li>Tracking progress.</li>
+<li>Cancelling the job.</li>
+<li>Retrieving results.</li>
+<li>Opening editable Markdown/HTML/text output.</li>
+<li>Preserving useful structure.</li>
+<li>Guiding review of tables, forms, images, captions, low-confidence
+text, and page boundaries.</li>
+<li>Saving, exporting, or discarding the converted result.</li>
+<li>Reporting actionable errors.</li>
+</ul>
+<p>QUILL should not promise:</p>
+<ul>
+<li>Perfect OCR.</li>
+<li>Perfect reconstruction of every table or form.</li>
+<li>That cloud providers are always available.</li>
+<li>That provider pricing will remain fixed.</li>
+<li>That cloud processing is appropriate for every sensitive
+document.</li>
+</ul>
+<h3 id="45-release-positioning">4.5 Release positioning</h3>
+<p>Release notes should describe this as a supported QUILL feature:</p>
+<blockquote>
+<p>QUILL now includes a supported OCR and document conversion tool. You
+can import scanned PDFs, images, Office files, and other documents,
+convert them to editable Markdown or HTML, and review the result in an
+accessible workflow. The first supported provider is Datalab Chandra OCR
+Service, configurable from AI Hub → Services.</p>
+</blockquote>
+<hr />
+<h3 id="22-comparable-services-to-plan-for-later">2.2 Comparable
+services to plan for later</h3>
+<p>QUILL should not be locked into one OCR provider. The Services tab
+should support future provider adapters.</p>
+<table>
+<thead>
+<tr>
+<th>Provider</th>
+<th>Why it matters</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Datalab / Chandra</td>
+<td>Best initial fit for QUILL because it directly returns Markdown,
+HTML, JSON, and chunks; strong complex-layout OCR; service and on-prem
+paths.</td>
+<td><a
+href="https://documentation.datalab.to/docs/recipes/conversion/conversion-api-overview">Datalab
+Convert API</a></td>
+</tr>
+<tr>
+<td>Azure AI Document Intelligence</td>
+<td>Layout model can output Markdown; tables changed to HTML table
+representation in v4.0 GA; strong enterprise story.</td>
+<td><a
+href="https://learn.microsoft.com/en-us/azure/ai-services/document-intelligence/prebuilt/layout?view=doc-intel-4.0.0">Azure
+layout model docs</a></td>
+</tr>
+<tr>
+<td>Mistral OCR</td>
+<td>Returns Markdown, document structure metadata, images, tables,
+hyperlinks, confidence scores, optional block extraction; supports PDFs
+and images.</td>
+<td><a
+href="https://docs.mistral.ai/studio-api/document-processing/basic_ocr">Mistral
+OCR docs</a></td>
+</tr>
+<tr>
+<td>AWS Textract</td>
+<td>Strong forms/tables/query/signature extraction and AWS enterprise
+availability. More JSON-structure oriented than Markdown-first.</td>
+<td><a
+href="https://docs.aws.amazon.com/textract/latest/dg/how-it-works-analyzing.html">Amazon
+Textract analyzing documents</a></td>
+</tr>
+<tr>
+<td>Google Document AI</td>
+<td>Enterprise Document OCR supports printed and handwritten text in
+200+ languages; Form Parser handles key-value pairs, checkboxes, and
+tables.</td>
+<td><a
+href="https://docs.cloud.google.com/document-ai/docs/processors-list">Google
+Document AI processor list</a></td>
+</tr>
+<tr>
+<td>Local Tesseract</td>
+<td>Free/offline fallback for plain OCR; supports 100+ languages but
+weaker on complex layout and modern document understanding.</td>
+<td><a href="https://github.com/tesseract-ocr/tesseract">Tesseract
+GitHub repository</a></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-problem-statement">4. Problem Statement</h2>
+<p>Many users receive inaccessible or semi-accessible documents:</p>
+<ul>
+<li>Scanned PDFs with no text layer.</li>
+<li>PDFs with bad reading order.</li>
+<li>Images of letters, forms, receipts, or print handouts.</li>
+<li>Word/PDF files where tables are inaccessible.</li>
+<li>Multi-column documents where screen readers read content in the
+wrong order.</li>
+<li>Forms with checkboxes, signatures, and labels.</li>
+<li>Documents with math, diagrams, captions, handwriting, or low-quality
+scans.</li>
+</ul>
+<p>Current “OCR” workflows often dump unstructured text into the editor
+and leave the user to clean up the mess. That fails QUILL’s promise to
+meet people where they are.</p>
+<p>QUILL should provide a first-class, accessible, service-backed
+document conversion workflow that gives users structure, review tools,
+and confidence.</p>
+<hr />
+<h2 id="5-product-vision">5. Product Vision</h2>
+<p>Add an <strong>AI Hub → Services</strong> tab where users can
+configure and test document-intelligence services. Then add a
+<strong>File → Import with OCR / Convert Document</strong> command
+powered by those services.</p>
+<p>The result should feel like this:</p>
+<blockquote>
+<p>“I opened a PDF that used to be locked away from me. QUILL asked how
+I wanted it converted, told me clearly that it would be sent to Datalab,
+gave me a progress update, then opened a clean Markdown document with
+headings, tables, lists, image captions, and page breaks. When something
+looked uncertain, QUILL guided me through it.”</p>
+</blockquote>
+<hr />
+<h2 id="6-goals">6. Goals</h2>
+<h3 id="61-user-goals">6.1 User goals</h3>
+<ol type="1">
+<li>Convert inaccessible PDFs and images into editable Markdown.</li>
+<li>Preserve document structure whenever possible: headings, lists,
+tables, forms, checkboxes, images, captions, and page boundaries.</li>
+<li>Provide a simple default path for nontechnical users.</li>
+<li>Provide rich advanced settings for power users and
+institutions.</li>
+<li>Make cloud upload explicit, understandable, and optional.</li>
+<li>Allow BYOK API key usage.</li>
+<li>Support institutional on-prem endpoints.</li>
+<li>Provide accessible correction/review workflows.</li>
+</ol>
+<h3 id="62-product-goals">6.2 Product goals</h3>
+<ol type="1">
+<li>Establish a reusable <strong>Services</strong> architecture inside
+AI Hub.</li>
+<li>Implement Datalab / Chandra as the first document service.</li>
+<li>Avoid vendor lock-in through a provider adapter abstraction.</li>
+<li>Make the import pipeline asynchronous, cancellable, recoverable, and
+screen-reader friendly.</li>
+<li>Build the foundation for future services: Mistral OCR, Azure
+Document Intelligence, AWS Textract, Google Document AI, local
+Tesseract, local Marker, local Chandra, or QUILL-hosted endpoints.</li>
+</ol>
+<h3 id="63-accessibility-goals">6.3 Accessibility goals</h3>
+<ol type="1">
+<li>Every feature must be keyboard accessible.</li>
+<li>All controls must have meaningful accessible names, roles, states,
+and descriptions.</li>
+<li>Progress updates must be announced politely and not spam screen
+readers.</li>
+<li>Results must open in controls that support caret navigation and
+screen-reader reading.</li>
+<li>Tables must have a guided accessible review path.</li>
+<li>OCR confidence and warnings must be conveyed textually, not only
+visually.</li>
+<li>Avoid emoji or decorative Unicode in status messages by
+default.</li>
+</ol>
+<hr />
+<h2 id="7-non-goals-for-initial-release">7. Non-Goals for Initial
+Release</h2>
+<ol type="1">
+<li>Do not bundle local Chandra OCR 2 in the QUILL installer.</li>
+<li>Do not require a GPU for the user-facing supported OCR tool when
+cloud/service-backed OCR is configured.</li>
+<li>Do not build a full PDF editor.</li>
+<li>Do not promise perfect reconstruction of every document.</li>
+<li>Do not silently upload files to any cloud service.</li>
+<li>Do not make Datalab the only possible service in the
+architecture.</li>
+<li>Do not build enterprise billing management in QUILL beyond usage
+warnings and links.</li>
+<li>Do not implement automatic remediation of every OCR error in
+v1.</li>
+</ol>
+<hr />
+<h2 id="8-user-personas">8. User Personas</h2>
+<h3 id="81-blind-everyday-user">8.1 Blind everyday user</h3>
+<p>Needs to convert a scanned letter, handout, form, or PDF into
+readable text quickly. They may not understand OCR jargon. They want a
+safe default and a clear warning before cloud upload.</p>
+<h3 id="82-blind-power-user--document-fixer">8.2 Blind power user /
+document fixer</h3>
+<p>Wants control over page ranges, output type, OCR mode, table
+handling, image captions, block IDs, word confidence, and correction
+workflows.</p>
+<h3 id="83-institutional-accessibility-worker">8.3 Institutional
+accessibility worker</h3>
+<p>Needs to process many documents, may need BAA/DPA, SOC 2, on-prem,
+auditability, and predictable costs.</p>
+<h3 id="84-developer--contributor">8.4 Developer / contributor</h3>
+<p>Needs provider adapters, testable job orchestration, stable service
+interfaces, and simulated/mock responses for CI.</p>
+<hr />
+<h2 id="9-proposed-information-architecture">9. Proposed Information
+Architecture</h2>
+<h3 id="91-ai-hub">9.1 AI Hub</h3>
+<p>Add a new top-level tab:</p>
+<pre class="text"><code>AI Hub
+  General
+  Models
+  Prompts
+  Agents
+  Services    ← new
+  Privacy
+  Diagnostics</code></pre>
+<p>The <strong>Services</strong> tab manages external and local services
+QUILL can call.</p>
+<h3 id="92-services-tab-layout">9.2 Services tab layout</h3>
+<p>Use an accessible list or tree with detail pane.</p>
+<pre class="text"><code>Services
+  Document Conversion and OCR
+    Datalab Chandra OCR Service
+    Azure Document Intelligence
+    Mistral OCR
+    AWS Textract
+    Google Document AI
+    Local Tesseract
+    Local Marker
+  Speech and Transcription
+    Whisper / Faster Whisper
+    Cloud transcription providers
+  AI Assistants and Coding Services
+    GitHub Copilot
+    Claude
+    OpenAI-compatible endpoints</code></pre>
+<p>For v1, only <strong>Datalab Chandra OCR Service</strong> must be
+fully implemented. Others may appear as disabled “coming later” entries
+only if this does not clutter or confuse the UI.</p>
+<h3 id="83-services-tab-must-be-friendly-and-customer-facing">8.3
+Services tab must be friendly and customer-facing</h3>
+<p>The Services tab must feel like a helpful product page inside QUILL,
+not a developer settings dialog. Many users will not know what an OCR
+service, API key, endpoint, or provider means. The UI should explain
+those concepts in plain language and guide the user toward a successful
+setup.</p>
+<p>The Services tab should answer these questions without requiring the
+user to leave QUILL:</p>
+<ul>
+<li>What does this service do?</li>
+<li>Why would I use it?</li>
+<li>What kinds of documents can it help with?</li>
+<li>Is it local or cloud-based?</li>
+<li>Will my document be uploaded?</li>
+<li>What output can QUILL create from it?</li>
+<li>Does it cost money?</li>
+<li>Where do I get an API key?</li>
+<li>Where can I read the provider’s privacy, security, and pricing
+information?</li>
+<li>What should I do if I am part of a school, company, legal office,
+medical office, or other organization with privacy rules?</li>
+</ul>
+<p>Required tone:</p>
+<ul>
+<li>Friendly.</li>
+<li>Plain language.</li>
+<li>Confidence-building.</li>
+<li>Honest about cloud upload and cost.</li>
+<li>Not scary, but not vague.</li>
+<li>Helpful for nontechnical users.</li>
+<li>Detailed enough for power users and institutional users.</li>
+</ul>
+<h3 id="84-services-tab-page-model">8.4 Services tab page model</h3>
+<p>Each service should use a rich detail page with these sections:</p>
+<pre class="text"><code>Service name
+Short plain-language description
+Status and setup summary
+What this service can do
+Best for
+Supported file types
+Output options
+Privacy and data handling
+Pricing and account notes
+Setup steps
+Buttons and links
+Advanced technical settings
+Diagnostics and troubleshooting</code></pre>
+<h3 id="85-required-buttons-and-links">8.5 Required buttons and
+links</h3>
+<p>Each configured cloud service page should include customer-facing
+buttons. For Datalab, include:</p>
+<table>
+<thead>
+<tr>
+<th>Button</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Visit Datalab Website</td>
+<td>Opens the provider’s main website.</td>
+</tr>
+<tr>
+<td>Get or Manage API Key</td>
+<td>Opens the provider’s API key/account page when known; otherwise
+opens documentation.</td>
+</tr>
+<tr>
+<td>View Pricing</td>
+<td>Opens the provider’s pricing page.</td>
+</tr>
+<tr>
+<td>Read Privacy and Security Information</td>
+<td>Opens provider security/privacy docs.</td>
+</tr>
+<tr>
+<td>Read API Documentation</td>
+<td>Opens provider API docs.</td>
+</tr>
+<tr>
+<td>Read Supported File Types</td>
+<td>Opens provider supported file types documentation.</td>
+</tr>
+<tr>
+<td>Test Connection</td>
+<td>Verifies whether QUILL can reach the service.</td>
+</tr>
+<tr>
+<td>Configure This Service</td>
+<td>Moves focus to setup fields.</td>
+</tr>
+<tr>
+<td>Use This Service for OCR</td>
+<td>Sets this provider as the default OCR provider.</td>
+</tr>
+<tr>
+<td>Open QUILL OCR Help</td>
+<td>Opens QUILL’s help page for OCR and document conversion.</td>
+</tr>
+</tbody>
+</table>
+<p>Buttons must have clear accessible names. Avoid vague names like
+“Learn More” when a precise button label is possible.</p>
+<h3 id="86-datalab-chandra-ocr-customer-facing-description">8.6 Datalab
+Chandra OCR customer-facing description</h3>
+<p>The Datalab service page should include a friendly description like
+this:</p>
+<pre class="text"><code>Datalab Chandra OCR Service helps QUILL turn scanned PDFs, images, forms, tables, and complex documents into editable content. It can return Markdown, HTML, JSON, or structured chunks. For most QUILL users, Markdown is the recommended output because it opens directly in the editor and is easy to read, search, edit, and save.
+
+This is a cloud service. When you convert a document with this provider, QUILL sends the selected file to Datalab, waits for processing, retrieves the result, and opens the converted document for you. QUILL will always ask before uploading a document.</code></pre>
+<h3 id="87-service-status-summary">8.7 Service status summary</h3>
+<p>At the top of each service page, show a concise status summary:</p>
+<pre class="text"><code>Status: Ready
+Default OCR provider: Yes
+Account/API key: Configured
+Endpoint: Datalab cloud
+Default mode: Balanced
+Default output: Markdown
+Cloud upload required: Yes</code></pre>
+<p>Possible status values:</p>
+<ul>
+<li>Ready</li>
+<li>Not configured</li>
+<li>Needs API key</li>
+<li>Disabled</li>
+<li>Connection failed</li>
+<li>Provider unavailable</li>
+<li>Local provider not installed</li>
+<li>Enterprise/on-prem endpoint configured</li>
+</ul>
+<h3 id="88-plain-language-setup-steps">8.8 Plain-language setup
+steps</h3>
+<p>Datalab setup should be presented as a numbered checklist:</p>
+<pre class="text"><code>1. Create or sign in to your Datalab account.
+2. Get an API key from Datalab.
+3. Paste the API key into QUILL.
+4. Choose your default conversion mode.
+5. Press Test Connection.
+6. Use File → Import with OCR / Convert Document.</code></pre>
+<p>Add a short explanation of API keys:</p>
+<pre class="text"><code>An API key is like a password that lets QUILL use your Datalab account. Keep it private. QUILL stores it securely and will not show it in logs.</code></pre>
+<h3 id="89-friendly-provider-comparison">8.9 Friendly provider
+comparison</h3>
+<p>The Services tab should eventually include a provider comparison
+view. For v1, it can be a simple informational table with Datalab active
+and others marked future/planned.</p>
+<p>Example:</p>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Best for</th>
+<th>Local or cloud</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Datalab Chandra OCR Service</td>
+<td>Scanned PDFs, complex layouts, Markdown/HTML conversion</td>
+<td>Cloud or enterprise on-prem</td>
+<td>Supported</td>
+</tr>
+<tr>
+<td>Local Tesseract</td>
+<td>Basic offline OCR</td>
+<td>Local</td>
+<td>Planned</td>
+</tr>
+<tr>
+<td>Azure Document Intelligence</td>
+<td>Enterprise Azure environments</td>
+<td>Cloud</td>
+<td>Planned</td>
+</tr>
+<tr>
+<td>Mistral OCR</td>
+<td>Markdown-first OCR workflows</td>
+<td>Cloud</td>
+<td>Planned</td>
+</tr>
+<tr>
+<td>Google Document AI</td>
+<td>Google Cloud document processing</td>
+<td>Cloud</td>
+<td>Planned</td>
+</tr>
+<tr>
+<td>AWS Textract</td>
+<td>AWS forms, tables, and document extraction</td>
+<td>Cloud</td>
+<td>Planned</td>
+</tr>
+</tbody>
+</table>
+<h3 id="810-services-tab-accessibility-requirements">8.10 Services tab
+accessibility requirements</h3>
+<p>The rich information must remain accessible:</p>
+<ul>
+<li>Use real headings so screen reader users can jump by heading.</li>
+<li>Use normal text controls, tables, lists, buttons, and links.</li>
+<li>Do not rely on icons or color alone.</li>
+<li>Every external link button must say where it goes.</li>
+<li>If a link opens a browser, announce that it opens in the
+browser.</li>
+<li>Keep provider descriptions readable and concise.</li>
+<li>Put technical settings after friendly overview content.</li>
+<li>Provide a “Copy service summary” button for support requests.</li>
+<li>Provide a “Copy diagnostics without secrets” button.</li>
+<li>Make every section reachable by keyboard.</li>
+</ul>
+<h3 id="811-customer-facing-service-summary-copy">8.11 Customer-facing
+service summary copy</h3>
+<p>Add a button named <strong>Copy Service Summary</strong>. It should
+copy a safe summary like:</p>
+<pre class="text"><code>QUILL OCR service summary
+Provider: Datalab Chandra OCR Service
+Status: Ready
+Endpoint type: Cloud
+Default mode: Balanced
+Default output: Markdown
+Cloud upload required: Yes
+API key present: Yes
+API key value: Not included
+Last connection test: Successful</code></pre>
+<p>This helps users ask for support without exposing secrets.</p>
+<hr />
+<h2 id="10-datalab-chandra-ocr-service-configuration-ux">10. Datalab
+Chandra OCR Service Configuration UX</h2>
+<h3 id="101-service-card">10.1 Service card</h3>
+<p>Accessible name:</p>
+<blockquote>
+<p>Datalab Chandra OCR Service</p>
+</blockquote>
+<p>Description:</p>
+<blockquote>
+<p>Converts PDFs, images, Office documents, spreadsheets, presentations,
+HTML, and EPUB files into Markdown, HTML, JSON, or chunks using
+Datalab’s document conversion service and Chandra OCR.</p>
+</blockquote>
+<p>Fields:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Control</th>
+<th style="text-align: right;">Default</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enable service</td>
+<td>Checkbox</td>
+<td style="text-align: right;">Off</td>
+<td>User must opt in.</td>
+</tr>
+<tr>
+<td>API key</td>
+<td>Password edit</td>
+<td style="text-align: right;">Empty</td>
+<td>Stored in secure credential storage, not plain config.</td>
+</tr>
+<tr>
+<td>Endpoint</td>
+<td>Edit</td>
+<td style="text-align: right;"><code>https://www.datalab.to</code></td>
+<td>Allows on-prem or enterprise endpoint later.</td>
+</tr>
+<tr>
+<td>Default mode</td>
+<td>Combo box</td>
+<td style="text-align: right;">Balanced</td>
+<td>Fast, Balanced, Accurate.</td>
+</tr>
+<tr>
+<td>Default output</td>
+<td>Combo box</td>
+<td style="text-align: right;">Markdown</td>
+<td>Markdown, HTML, JSON, Chunks.</td>
+</tr>
+<tr>
+<td>Add page delimiters</td>
+<td>Checkbox</td>
+<td style="text-align: right;">On</td>
+<td>Recommended for screen reader navigation.</td>
+</tr>
+<tr>
+<td>Extract images</td>
+<td>Checkbox</td>
+<td style="text-align: right;">On</td>
+<td>Maps extracted images to document output.</td>
+</tr>
+<tr>
+<td>Generate image captions</td>
+<td>Checkbox</td>
+<td style="text-align: right;">On</td>
+<td>Valuable for screen-reader users.</td>
+</tr>
+<tr>
+<td>Default processing region</td>
+<td>Combo box</td>
+<td style="text-align: right;">Account default</td>
+<td>Account default, US, EU.</td>
+</tr>
+<tr>
+<td>Confirm before upload</td>
+<td>Checkbox</td>
+<td style="text-align: right;">On and locked for v1</td>
+<td>Never silently upload.</td>
+</tr>
+<tr>
+<td>Save converted copy automatically</td>
+<td>Checkbox</td>
+<td style="text-align: right;">Off</td>
+<td>User chooses where to save.</td>
+</tr>
+<tr>
+<td>Show advanced options on import</td>
+<td>Checkbox</td>
+<td style="text-align: right;">Off</td>
+<td>Simple by default.</td>
+</tr>
+<tr>
+<td>Monthly usage warning</td>
+<td>Number/edit</td>
+<td style="text-align: right;">Optional</td>
+<td>Local soft warning only.</td>
+</tr>
+</tbody>
+</table>
+<p>Buttons:</p>
+<ul>
+<li><strong>Visit Datalab Website</strong></li>
+<li><strong>Get or Manage API Key</strong></li>
+<li><strong>View Datalab Pricing</strong></li>
+<li><strong>Read Datalab Privacy and Security Information</strong></li>
+<li><strong>Read Datalab API Documentation</strong></li>
+<li><strong>Read Supported File Types</strong></li>
+<li><strong>Test Connection</strong></li>
+<li><strong>Use This Service for OCR</strong></li>
+<li><strong>Open QUILL OCR Help</strong></li>
+<li><strong>Copy Service Summary</strong></li>
+<li><strong>Copy Diagnostics Without Secrets</strong></li>
+<li><strong>Reset Service Settings</strong></li>
+</ul>
+<p>These buttons should appear near the friendly overview and setup
+checklist, not hidden only in advanced settings.</p>
+<h3 id="102-test-connection-behavior">10.2 Test Connection behavior</h3>
+<p>When the user presses <strong>Test Connection</strong>:</p>
+<ol type="1">
+<li>Validate that an API key exists.</li>
+<li>Make a minimal authenticated request if Datalab exposes a suitable
+account/status endpoint.</li>
+<li>If no lightweight endpoint is available, perform a safe SDK
+initialization and show “API key present; full validation will occur on
+first conversion.”</li>
+<li>Never upload a user document for testing unless the user explicitly
+chooses a sample test file.</li>
+<li>Announce success or failure to the screen reader and place focus on
+the result message.</li>
+</ol>
+<p>Example success message:</p>
+<blockquote>
+<p>Datalab service is configured. QUILL can use this service when you
+choose Import with OCR.</p>
+</blockquote>
+<p>Example failure message:</p>
+<blockquote>
+<p>Datalab service could not be verified. Check your API key, internet
+connection, and endpoint URL.</p>
+</blockquote>
+<hr />
+<h2 id="11-file-import-and-conversion-ux">11. File Import and Conversion
+UX</h2>
+<h3 id="111-menu-entry">11.1 Menu entry</h3>
+<p>Add:</p>
+<pre class="text"><code>File
+  Import with OCR / Convert Document...</code></pre>
+<p>Optional later shortcut:</p>
+<pre class="text"><code>Ctrl+Shift+O</code></pre>
+<p>Only assign the shortcut if it does not conflict with existing QUILL
+or expected Windows conventions.</p>
+<h3 id="112-import-wizard-simple-path">11.2 Import wizard: simple
+path</h3>
+<p>Step 1: Choose file.</p>
+<p>Supported types should be read from the selected provider’s
+capability descriptor.</p>
+<p>Step 2: Choose output.</p>
+<p>Default choices:</p>
+<ol type="1">
+<li><strong>Open as editable Markdown</strong> — recommended.</li>
+<li><strong>Open as accessible HTML preview and Markdown
+source</strong>.</li>
+<li><strong>Open plain text only</strong>.</li>
+<li><strong>Open OCR Review Mode</strong>.</li>
+<li><strong>Advanced: save JSON or chunks for automation.</strong></li>
+</ol>
+<p>Step 3: Consent and cost note.</p>
+<p>Required cloud notice:</p>
+<blockquote>
+<p>This document will be sent to Datalab for processing. Do not continue
+unless you are allowed to upload this document to that service. Datalab
+says conversion results are deleted from its servers one hour after
+processing completes. QUILL will retrieve the result promptly and will
+not send documents automatically.</p>
+</blockquote>
+<p>Buttons:</p>
+<ul>
+<li><strong>Convert</strong></li>
+<li><strong>Cancel</strong></li>
+<li><strong>Service Settings</strong></li>
+</ul>
+<h3 id="113-import-wizard-advanced-options">11.3 Import wizard: advanced
+options</h3>
+<p>Advanced options should be collapsible and fully keyboard
+accessible.</p>
+<p>Provider-specific Datalab options:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>QUILL label</th>
+<th>Datalab parameter</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Output format</td>
+<td>Output format</td>
+<td><code>output_format</code></td>
+</tr>
+<tr>
+<td>Processing mode</td>
+<td>Processing mode</td>
+<td><code>mode</code></td>
+</tr>
+<tr>
+<td>Page delimiters</td>
+<td>Add page delimiters</td>
+<td><code>paginate</code></td>
+</tr>
+<tr>
+<td>Maximum pages</td>
+<td>Maximum pages</td>
+<td><code>max_pages</code></td>
+</tr>
+<tr>
+<td>Page range</td>
+<td>Page range</td>
+<td><code>page_range</code></td>
+</tr>
+<tr>
+<td>Skip cached results</td>
+<td>Force fresh conversion</td>
+<td><code>skip_cache</code></td>
+</tr>
+<tr>
+<td>Extract images</td>
+<td>Extract images</td>
+<td>inverse of <code>disable_image_extraction</code></td>
+</tr>
+<tr>
+<td>Generate image captions</td>
+<td>Generate image captions</td>
+<td>inverse of <code>disable_image_captions</code></td>
+</tr>
+<tr>
+<td>Include Markdown in chunks</td>
+<td>Include Markdown in chunks/JSON</td>
+<td><code>include_markdown_in_chunks</code></td>
+</tr>
+<tr>
+<td>Token-efficient Markdown</td>
+<td>Optimize Markdown for AI token usage</td>
+<td><code>token_efficient_markdown</code></td>
+</tr>
+<tr>
+<td>Add block IDs</td>
+<td>Add block IDs to HTML</td>
+<td><code>add_block_ids</code></td>
+</tr>
+<tr>
+<td>Word bounding boxes</td>
+<td>Include word boxes and confidence</td>
+<td><code>word_bboxes</code></td>
+</tr>
+<tr>
+<td>Track changes</td>
+<td>Extract tracked changes</td>
+<td><code>extras=track_changes</code></td>
+</tr>
+<tr>
+<td>Chart understanding</td>
+<td>Understand charts and diagrams</td>
+<td><code>extras=chart_understanding</code></td>
+</tr>
+<tr>
+<td>Extract links</td>
+<td>Extract links</td>
+<td><code>extras=extract_links</code></td>
+</tr>
+<tr>
+<td>Table cell boxes</td>
+<td>Include table cell boxes</td>
+<td><code>extras=table_cell_bboxes</code></td>
+</tr>
+<tr>
+<td>List item boxes</td>
+<td>Include list item boxes</td>
+<td><code>extras=list_item_bboxes</code></td>
+</tr>
+<tr>
+<td>Infographic mode</td>
+<td>Infographic understanding</td>
+<td><code>extras=infographic</code></td>
+</tr>
+<tr>
+<td>New block types</td>
+<td>Use expanded block detection</td>
+<td><code>extras=new_block_types</code></td>
+</tr>
+<tr>
+<td>Region</td>
+<td>Processing region</td>
+<td><code>processing_location</code></td>
+</tr>
+</tbody>
+</table>
+<p>Default advanced setting recommendations:</p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">output_format</span><span class="kw">:</span><span class="at"> markdown</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mode</span><span class="kw">:</span><span class="at"> balanced</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">paginate</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="fu">disable_image_extraction</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="fu">disable_image_captions</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="fu">token_efficient_markdown</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="fu">add_block_ids</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="fu">word_bboxes</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="fu">extras</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;&quot;</span></span></code></pre></div>
+<p>For “OCR Review Mode,” use:</p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">output_format</span><span class="kw">:</span><span class="at"> html,json</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mode</span><span class="kw">:</span><span class="at"> accurate</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">paginate</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">word_bboxes</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="fu">add_block_ids</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="fu">include_markdown_in_chunks</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="fu">extras</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;table_cell_bboxes,list_item_bboxes,extract_links,chart_understanding,new_block_types&quot;</span></span></code></pre></div>
+<p>Because this costs more, QUILL must warn the user before enabling
+expensive add-ons.</p>
+<hr />
+<h2 id="12-ocr-review-mode">12. OCR Review Mode</h2>
+<p>OCR Review Mode is the differentiator. This is where QUILL can be
+magical.</p>
+<h3 id="121-purpose">12.1 Purpose</h3>
+<p>Give the user a guided, accessible way to inspect and correct OCR
+output without needing to visually compare page images.</p>
+<h3 id="122-layout">12.2 Layout</h3>
+<p>Use a split-pane or dialog with:</p>
+<ol type="1">
+<li><p><strong>Document outline tree</strong></p>
+<ul>
+<li>Pages</li>
+<li>Headings</li>
+<li>Tables</li>
+<li>Forms</li>
+<li>Images and captions</li>
+<li>Low-confidence text</li>
+<li>Warnings</li>
+</ul></li>
+<li><p><strong>Editable converted content</strong></p>
+<ul>
+<li>Markdown or structured text in a normal QUILL editing surface.</li>
+</ul></li>
+<li><p><strong>Context / confidence pane</strong></p>
+<ul>
+<li>Read-only multiline edit field.</li>
+<li>Shows source page number, block type, confidence, bounding box text
+if available, and nearby context.</li>
+</ul></li>
+<li><p><strong>Actions pane</strong></p>
+<ul>
+<li>Accept block</li>
+<li>Edit block</li>
+<li>Mark as needs review</li>
+<li>Convert table to Markdown</li>
+<li>Convert table to CSV</li>
+<li>Re-run selected pages in accurate mode</li>
+<li>Add correction to OCR dictionary</li>
+<li>Export review report</li>
+</ul></li>
+</ol>
+<h3 id="123-keyboard-model">12.3 Keyboard model</h3>
+<p>Suggested commands:</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F6</td>
+<td>Cycle panes</td>
+</tr>
+<tr>
+<td>Shift+F6</td>
+<td>Cycle panes backward</td>
+</tr>
+<tr>
+<td>F2</td>
+<td>Edit selected block</td>
+</tr>
+<tr>
+<td>Ctrl+Enter</td>
+<td>Accept current block</td>
+</tr>
+<tr>
+<td>Ctrl+Shift+Enter</td>
+<td>Accept all blocks on page</td>
+</tr>
+<tr>
+<td>Alt+R</td>
+<td>Re-run selected page or block</td>
+</tr>
+<tr>
+<td>Alt+T</td>
+<td>Open table review</td>
+</tr>
+<tr>
+<td>Alt+I</td>
+<td>Review images and captions</td>
+</tr>
+<tr>
+<td>Alt+F</td>
+<td>Review form fields and checkboxes</td>
+</tr>
+<tr>
+<td>Alt+L</td>
+<td>Jump to next low-confidence item</td>
+</tr>
+<tr>
+<td>Alt+P</td>
+<td>Announce page and block position</td>
+</tr>
+<tr>
+<td>Escape</td>
+<td>Close secondary dialogs or return to previous pane</td>
+</tr>
+</tbody>
+</table>
+<h3 id="124-screen-reader-announcements">12.4 Screen reader
+announcements</h3>
+<p>Announcements must be helpful and not noisy.</p>
+<p>Good examples:</p>
+<blockquote>
+<p>Page 3, table, 6 rows, 4 columns, confidence medium.</p>
+</blockquote>
+<blockquote>
+<p>Low-confidence word: “Arizona.” Current text may be incorrect.</p>
+</blockquote>
+<blockquote>
+<p>Image caption generated: “Bar chart showing monthly enrollment.”
+Review recommended.</p>
+</blockquote>
+<p>Avoid:</p>
+<ul>
+<li>Repeating the full document content on every focus change.</li>
+<li>Announcing raw JSON.</li>
+<li>Emoji or decorative symbols.</li>
+<li>Long automatic speech while the user is arrowing.</li>
+</ul>
+<h3 id="125-review-report">12.5 Review report</h3>
+<p>QUILL should optionally generate a Markdown review report:</p>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># OCR Review Report</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>Source file: example.pdf</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>Provider: Datalab Chandra OCR Service</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>Mode: accurate</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>Pages processed: 12</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>Output: Markdown</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="fu">## Warnings</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Page 4: 12 low-confidence words.</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Page 6: Complex table detected.</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Page 9: Image caption generated and not manually verified.</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a><span class="fu">## User actions</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Page 4: Corrected 3 words.</span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Page 6: Converted table to Markdown.</span></code></pre></div>
+<hr />
+<h2 id="13-architecture">13. Architecture</h2>
+<h3 id="131-core-components">13.1 Core components</h3>
+<pre class="text"><code>quill/
+  ai_hub/
+    services_tab.py
+    service_registry.py
+    credential_store.py
+    service_models.py
+  services/
+    base.py
+    document_conversion.py
+    datalab_provider.py
+    local_tesseract_provider.py        # future
+    azure_document_intel_provider.py   # future
+    mistral_ocr_provider.py            # future
+  document_import/
+    import_wizard.py
+    conversion_job.py
+    conversion_result.py
+    ocr_review_mode.py
+    markdown_postprocessor.py
+    html_to_markdown.py
+    table_tools.py
+  security/
+    privacy_prompts.py
+    redaction_helpers.py               # future
+  tests/
+    fixtures/
+      simple_scanned.pdf
+      table_complex.pdf
+      form_checkbox.pdf
+      handwritten_note.png</code></pre>
+<h3 id="132-provider-interfaces">13.2 Provider interfaces</h3>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dataclasses <span class="im">import</span> dataclass</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> enum <span class="im">import</span> Enum</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> Protocol, Optional, Mapping, Any</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> OutputFormat(<span class="bu">str</span>, Enum):</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    MARKDOWN <span class="op">=</span> <span class="st">&quot;markdown&quot;</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    HTML <span class="op">=</span> <span class="st">&quot;html&quot;</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    JSON <span class="op">=</span> <span class="st">&quot;json&quot;</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>    CHUNKS <span class="op">=</span> <span class="st">&quot;chunks&quot;</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>    TEXT <span class="op">=</span> <span class="st">&quot;text&quot;</span></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> ProcessingMode(<span class="bu">str</span>, Enum):</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>    FAST <span class="op">=</span> <span class="st">&quot;fast&quot;</span></span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>    BALANCED <span class="op">=</span> <span class="st">&quot;balanced&quot;</span></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>    ACCURATE <span class="op">=</span> <span class="st">&quot;accurate&quot;</span></span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span>(frozen<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> ServiceCapability:</span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>    provider_id: <span class="bu">str</span></span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>    display_name: <span class="bu">str</span></span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>    supports_cloud: <span class="bu">bool</span></span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>    supports_on_prem: <span class="bu">bool</span></span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a>    supported_extensions: <span class="bu">tuple</span>[<span class="bu">str</span>, ...]</span>
+<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a>    output_formats: <span class="bu">tuple</span>[OutputFormat, ...]</span>
+<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a>    processing_modes: <span class="bu">tuple</span>[ProcessingMode, ...]</span>
+<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a>    max_file_size_mb: Optional[<span class="bu">int</span>] <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a>    max_pages_per_request: Optional[<span class="bu">int</span>] <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a>    supports_page_range: <span class="bu">bool</span> <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a>    supports_confidence: <span class="bu">bool</span> <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a>    supports_bounding_boxes: <span class="bu">bool</span> <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a>    supports_tables: <span class="bu">bool</span> <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb20-36"><a href="#cb20-36" aria-hidden="true" tabindex="-1"></a>    supports_image_captions: <span class="bu">bool</span> <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb20-37"><a href="#cb20-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-38"><a href="#cb20-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-39"><a href="#cb20-39" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span></span>
+<span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> ConversionOptions:</span>
+<span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a>    output_format: OutputFormat <span class="op">=</span> OutputFormat.MARKDOWN</span>
+<span id="cb20-42"><a href="#cb20-42" aria-hidden="true" tabindex="-1"></a>    mode: ProcessingMode <span class="op">=</span> ProcessingMode.BALANCED</span>
+<span id="cb20-43"><a href="#cb20-43" aria-hidden="true" tabindex="-1"></a>    paginate: <span class="bu">bool</span> <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb20-44"><a href="#cb20-44" aria-hidden="true" tabindex="-1"></a>    page_range: Optional[<span class="bu">str</span>] <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb20-45"><a href="#cb20-45" aria-hidden="true" tabindex="-1"></a>    max_pages: Optional[<span class="bu">int</span>] <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb20-46"><a href="#cb20-46" aria-hidden="true" tabindex="-1"></a>    extract_images: <span class="bu">bool</span> <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb20-47"><a href="#cb20-47" aria-hidden="true" tabindex="-1"></a>    generate_image_captions: <span class="bu">bool</span> <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb20-48"><a href="#cb20-48" aria-hidden="true" tabindex="-1"></a>    include_confidence: <span class="bu">bool</span> <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb20-49"><a href="#cb20-49" aria-hidden="true" tabindex="-1"></a>    include_block_ids: <span class="bu">bool</span> <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb20-50"><a href="#cb20-50" aria-hidden="true" tabindex="-1"></a>    extras: <span class="bu">tuple</span>[<span class="bu">str</span>, ...] <span class="op">=</span> ()</span>
+<span id="cb20-51"><a href="#cb20-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-52"><a href="#cb20-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-53"><a href="#cb20-53" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span></span>
+<span id="cb20-54"><a href="#cb20-54" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> ConversionProgress:</span>
+<span id="cb20-55"><a href="#cb20-55" aria-hidden="true" tabindex="-1"></a>    status: <span class="bu">str</span></span>
+<span id="cb20-56"><a href="#cb20-56" aria-hidden="true" tabindex="-1"></a>    percent: Optional[<span class="bu">int</span>] <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb20-57"><a href="#cb20-57" aria-hidden="true" tabindex="-1"></a>    current_page: Optional[<span class="bu">int</span>] <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb20-58"><a href="#cb20-58" aria-hidden="true" tabindex="-1"></a>    total_pages: Optional[<span class="bu">int</span>] <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb20-59"><a href="#cb20-59" aria-hidden="true" tabindex="-1"></a>    message: <span class="bu">str</span> <span class="op">=</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb20-60"><a href="#cb20-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-61"><a href="#cb20-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-62"><a href="#cb20-62" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span></span>
+<span id="cb20-63"><a href="#cb20-63" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> ConversionResult:</span>
+<span id="cb20-64"><a href="#cb20-64" aria-hidden="true" tabindex="-1"></a>    provider_id: <span class="bu">str</span></span>
+<span id="cb20-65"><a href="#cb20-65" aria-hidden="true" tabindex="-1"></a>    source_path: Path</span>
+<span id="cb20-66"><a href="#cb20-66" aria-hidden="true" tabindex="-1"></a>    output_format: OutputFormat</span>
+<span id="cb20-67"><a href="#cb20-67" aria-hidden="true" tabindex="-1"></a>    markdown: Optional[<span class="bu">str</span>] <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb20-68"><a href="#cb20-68" aria-hidden="true" tabindex="-1"></a>    html: Optional[<span class="bu">str</span>] <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb20-69"><a href="#cb20-69" aria-hidden="true" tabindex="-1"></a>    json_data: Optional[Mapping[<span class="bu">str</span>, Any]] <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb20-70"><a href="#cb20-70" aria-hidden="true" tabindex="-1"></a>    chunks: Optional[Mapping[<span class="bu">str</span>, Any]] <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb20-71"><a href="#cb20-71" aria-hidden="true" tabindex="-1"></a>    images: Optional[Mapping[<span class="bu">str</span>, <span class="bu">bytes</span>]] <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb20-72"><a href="#cb20-72" aria-hidden="true" tabindex="-1"></a>    metadata: Optional[Mapping[<span class="bu">str</span>, Any]] <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb20-73"><a href="#cb20-73" aria-hidden="true" tabindex="-1"></a>    warnings: <span class="bu">tuple</span>[<span class="bu">str</span>, ...] <span class="op">=</span> ()</span>
+<span id="cb20-74"><a href="#cb20-74" aria-hidden="true" tabindex="-1"></a>    parse_quality_score: Optional[<span class="bu">float</span>] <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb20-75"><a href="#cb20-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-76"><a href="#cb20-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-77"><a href="#cb20-77" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> DocumentConversionProvider(Protocol):</span>
+<span id="cb20-78"><a href="#cb20-78" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> capabilities(<span class="va">self</span>) <span class="op">-&gt;</span> ServiceCapability:</span>
+<span id="cb20-79"><a href="#cb20-79" aria-hidden="true" tabindex="-1"></a>        ...</span>
+<span id="cb20-80"><a href="#cb20-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-81"><a href="#cb20-81" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> validate_configuration(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="bu">tuple</span>[<span class="bu">bool</span>, <span class="bu">str</span>]:</span>
+<span id="cb20-82"><a href="#cb20-82" aria-hidden="true" tabindex="-1"></a>        ...</span>
+<span id="cb20-83"><a href="#cb20-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-84"><a href="#cb20-84" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> convert(</span>
+<span id="cb20-85"><a href="#cb20-85" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>,</span>
+<span id="cb20-86"><a href="#cb20-86" aria-hidden="true" tabindex="-1"></a>        source_path: Path,</span>
+<span id="cb20-87"><a href="#cb20-87" aria-hidden="true" tabindex="-1"></a>        options: ConversionOptions,</span>
+<span id="cb20-88"><a href="#cb20-88" aria-hidden="true" tabindex="-1"></a>        progress_callback,</span>
+<span id="cb20-89"><a href="#cb20-89" aria-hidden="true" tabindex="-1"></a>        cancel_token,</span>
+<span id="cb20-90"><a href="#cb20-90" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">-&gt;</span> ConversionResult:</span>
+<span id="cb20-91"><a href="#cb20-91" aria-hidden="true" tabindex="-1"></a>        ...</span></code></pre></div>
+<h3 id="133-datalab-provider-behavior">13.3 Datalab provider
+behavior</h3>
+<p>Use the SDK by default when available:</p>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> datalab_sdk <span class="im">import</span> DatalabClient, ConvertOptions <span class="im">as</span> DatalabConvertOptions</span></code></pre></div>
+<p>Fallback to REST if the SDK is not installed or if packaging makes
+direct REST more reliable.</p>
+<p>Datalab options mapping:</p>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>DatalabConvertOptions(</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    output_format<span class="op">=</span>options.output_format.value,</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    mode<span class="op">=</span>options.mode.value,</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    paginate<span class="op">=</span>options.paginate,</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    max_pages<span class="op">=</span>options.max_pages,</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    page_range<span class="op">=</span>options.page_range,</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    disable_image_extraction<span class="op">=</span><span class="kw">not</span> options.extract_images,</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    disable_image_captions<span class="op">=</span><span class="kw">not</span> options.generate_image_captions,</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    word_bboxes<span class="op">=</span>options.include_confidence,</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    add_block_ids<span class="op">=</span>options.include_block_ids,</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>    extras<span class="op">=</span><span class="st">&quot;,&quot;</span>.join(options.extras) <span class="cf">if</span> options.extras <span class="cf">else</span> <span class="va">None</span>,</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<h3 id="134-asynchronous-job-orchestration">13.4 Asynchronous job
+orchestration</h3>
+<p>QUILL is a wxPython app. Network calls and polling must never block
+the UI thread.</p>
+<p>Use:</p>
+<ul>
+<li>Worker thread or task executor for conversion.</li>
+<li><code>wx.CallAfter</code> for UI updates.</li>
+<li>Cancel token checked between polling attempts.</li>
+<li>Exponential backoff for transient failures.</li>
+<li>Specific handling for HTTP 429 / rate limits.</li>
+<li>Job log that excludes document content and secrets.</li>
+</ul>
+<p>Job state model:</p>
+<pre class="text"><code>queued
+validating
+uploading
+submitted
+processing
+retrieving
+postprocessing
+opening
+complete
+cancelled
+failed</code></pre>
+<h3 id="135-temporary-files">13.5 Temporary files</h3>
+<p>Use:</p>
+<pre class="text"><code>%LOCALAPPDATA%\QUILL\Temp\ocr_jobs\&lt;job_id&gt;\</code></pre>
+<p>Contents:</p>
+<pre class="text"><code>source_copy.ext
+result.md
+result.html
+result.json
+images\
+job_metadata.json</code></pre>
+<p>Default cleanup:</p>
+<ul>
+<li>Delete temporary source copy after successful import unless user
+enables “keep job files.”</li>
+<li>Keep converted result only in the open document until the user
+saves.</li>
+<li>Auto-delete failed job temp folders older than 7 days.</li>
+<li>Never store API keys in job metadata.</li>
+</ul>
+<h3 id="136-credential-storage">13.6 Credential storage</h3>
+<p>Do not store API keys in JSON settings.</p>
+<p>Preferred options:</p>
+<ol type="1">
+<li>Python <code>keyring</code> package using Windows Credential
+Manager.</li>
+<li>Windows DPAPI through <code>win32crypt</code> or a small credential
+helper.</li>
+<li>Environment variable fallback: <code>DATALAB_API_KEY</code>.</li>
+</ol>
+<p>Suggested key names:</p>
+<pre class="text"><code>QUILL/services/datalab/api_key
+QUILL/services/datalab/endpoint</code></pre>
+<p>Config file may store non-secret settings:</p>
+<div class="sourceCode" id="cb27"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;services&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;datalab&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;enabled&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;endpoint&quot;</span><span class="fu">:</span> <span class="st">&quot;https://www.datalab.to&quot;</span><span class="fu">,</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;default_mode&quot;</span><span class="fu">:</span> <span class="st">&quot;balanced&quot;</span><span class="fu">,</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;default_output_format&quot;</span><span class="fu">:</span> <span class="st">&quot;markdown&quot;</span><span class="fu">,</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;paginate&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;confirm_before_upload&quot;</span><span class="fu">:</span> <span class="kw">true</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<hr />
+<h2 id="14-markdown-post-processing">14. Markdown Post-Processing</h2>
+<p>Datalab will return Markdown, but QUILL should still apply a careful
+post-processing pass.</p>
+<h3 id="141-required-post-processing">14.1 Required post-processing</h3>
+<ol type="1">
+<li>Normalize line endings.</li>
+<li>Ensure page delimiters are consistent and easy to search.</li>
+<li>Convert any unsupported or problematic Unicode to accessible text
+when QUILL’s “screen reader friendly symbols” option is enabled.</li>
+<li>Ensure tables are navigable.</li>
+<li>Ensure generated image captions are clearly marked as
+generated.</li>
+<li>Preserve links when available.</li>
+<li>Add source metadata at the top only if the user opts in.</li>
+</ol>
+<p>Recommended optional metadata block:</p>
+<div class="sourceCode" id="cb28"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!--</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="co">Converted by QUILL</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="co">Provider: Datalab Chandra OCR Service</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="co">Mode: balanced</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="co">Source: filename.pdf</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="co">Pages: 12</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="co">Review recommended: yes</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="co">--&gt;</span></span></code></pre></div>
+<h3 id="142-page-delimiters">14.2 Page delimiters</h3>
+<p>Use a consistent, screen-reader-friendly delimiter:</p>
+<div class="sourceCode" id="cb29"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!-- Page 1 --&gt;</span></span></code></pre></div>
+<p>or:</p>
+<div class="sourceCode" id="cb30"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Page 1</span><span class="co">]</span></span></code></pre></div>
+<p>Default recommendation: <code>&lt;!-- Page 1 --&gt;</code> for
+Markdown cleanliness, with a QUILL command to jump page-to-page.</p>
+<h3 id="143-tables">14.3 Tables</h3>
+<p>Default table behavior:</p>
+<ul>
+<li>Preserve Markdown tables when simple.</li>
+<li>For complex tables, preserve HTML table if Markdown would destroy
+structure.</li>
+<li>Offer a <strong>Table Review</strong> action.</li>
+<li>Offer exports:
+<ul>
+<li>Markdown table</li>
+<li>HTML table</li>
+<li>CSV</li>
+<li>TSV</li>
+</ul></li>
+</ul>
+<hr />
+<h2 id="15-privacy-consent-and-safety-requirements">15. Privacy,
+Consent, and Safety Requirements</h2>
+<h3 id="151-required-consent-prompt">15.1 Required consent prompt</h3>
+<p>Before every cloud upload, unless a future enterprise admin policy
+explicitly changes this:</p>
+<blockquote>
+<p>QUILL will send this document to Datalab for OCR and document
+conversion. Only continue if you are allowed to upload this file to that
+service. Consider whether the document contains private, medical, legal,
+educational, financial, employment, or confidential information.</p>
+</blockquote>
+<p>Buttons:</p>
+<ul>
+<li><strong>Convert</strong></li>
+<li><strong>Cancel</strong></li>
+<li><strong>Open service privacy notes</strong></li>
+</ul>
+<h3 id="152-sensitive-document-warning">15.2 Sensitive document
+warning</h3>
+<p>If filename or user-selected classification suggests sensitive
+content, add an extra warning. Do not inspect content deeply without
+consent.</p>
+<p>Potential triggers:</p>
+<ul>
+<li>Filename includes: <code>medical</code>, <code>health</code>,
+<code>patient</code>, <code>tax</code>, <code>ssn</code>,
+<code>social security</code>, <code>passport</code>,
+<code>driver</code>, <code>w2</code>, <code>w-2</code>,
+<code>bank</code>, <code>legal</code>, <code>contract</code>,
+<code>student</code>, <code>iep</code>, <code>disability</code>,
+<code>accommodation</code>.</li>
+<li>User manually selects “Sensitive document.”</li>
+</ul>
+<h3 id="153-logging-rules">15.3 Logging rules</h3>
+<p>Never log:</p>
+<ul>
+<li>API keys.</li>
+<li>Full request payloads.</li>
+<li>File contents.</li>
+<li>OCR output.</li>
+<li>URLs with signed tokens.</li>
+<li>Webhook secrets.</li>
+<li>Full error bodies that may contain document content.</li>
+</ul>
+<p>May log:</p>
+<ul>
+<li>Provider id.</li>
+<li>Non-secret endpoint host.</li>
+<li>Job state transitions.</li>
+<li>File extension.</li>
+<li>File size.</li>
+<li>Page count.</li>
+<li>Mode.</li>
+<li>Output format.</li>
+<li>Error category.</li>
+</ul>
+<h3 id="154-data-retention">15.4 Data retention</h3>
+<p>QUILL must make local retention explicit:</p>
+<ul>
+<li>Open converted result in an unsaved document.</li>
+<li>Ask before saving converted files.</li>
+<li>Provide <strong>Delete OCR temporary files now</strong>
+command.</li>
+<li>Respect Datalab’s stated one-hour result deletion window by
+retrieving promptly.</li>
+</ul>
+<hr />
+<h2 id="16-accessibility-requirements">16. Accessibility
+Requirements</h2>
+<h3 id="161-ai-hub-services-tab">16.1 AI Hub Services tab</h3>
+<ul>
+<li>The services list must be keyboard navigable.</li>
+<li>Service status must be available textually:
+<ul>
+<li>Enabled</li>
+<li>Not configured</li>
+<li>Needs API key</li>
+<li>Connection failed</li>
+<li>Ready</li>
+</ul></li>
+<li>Password/API key field must expose an accessible name and help
+text.</li>
+<li>“Test Connection” results must be placed in a focusable status field
+and announced.</li>
+</ul>
+<h3 id="162-import-wizard">16.2 Import wizard</h3>
+<ul>
+<li>All steps must have clear headings.</li>
+<li>Focus must move to the first actionable control on each step.</li>
+<li>Progress updates must be concise.</li>
+<li>Cancel must remain reachable by keyboard while processing.</li>
+<li>Errors must focus a readable details field.</li>
+</ul>
+<h3 id="163-ocr-review-mode">16.3 OCR Review Mode</h3>
+<ul>
+<li>Use normal edit controls for readable text whenever possible.</li>
+<li>Avoid custom-drawn controls unless accessible objects are
+implemented.</li>
+<li>Tables must have row/column navigation support.</li>
+<li>Low-confidence items must be discoverable by keyboard.</li>
+<li>All generated captions must be identified as generated.</li>
+</ul>
+<h3 id="164-screen-reader-testing-matrix">16.4 Screen reader testing
+matrix</h3>
+<p>Minimum manual test matrix:</p>
+<table>
+<thead>
+<tr>
+<th>Screen reader</th>
+<th>Browser/UI surface</th>
+<th>Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NVDA current stable</td>
+<td>QUILL wxPython UI</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>JAWS current stable</td>
+<td>QUILL wxPython UI</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Narrator Windows 11</td>
+<td>QUILL wxPython UI</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>VoiceOver macOS</td>
+<td>Future if cross-platform</td>
+<td>Later</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="17-error-handling">17. Error Handling</h2>
+<h3 id="171-common-errors">17.1 Common errors</h3>
+<table>
+<thead>
+<tr>
+<th>Error</th>
+<th>User-facing message</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No API key</td>
+<td>“Datalab is not configured. Add an API key in AI Hub,
+Services.”</td>
+</tr>
+<tr>
+<td>Invalid API key</td>
+<td>“Datalab rejected the API key. Check or replace the key.”</td>
+</tr>
+<tr>
+<td>Offline</td>
+<td>“QUILL cannot reach the service. Check your internet
+connection.”</td>
+</tr>
+<tr>
+<td>Unsupported file</td>
+<td>“This service does not support that file type.”</td>
+</tr>
+<tr>
+<td>File too large</td>
+<td>“This file is larger than the service limit. Try a smaller file or
+process a page range.”</td>
+</tr>
+<tr>
+<td>Too many pages</td>
+<td>“This document has more pages than the service allows in one
+request. Use a page range.”</td>
+</tr>
+<tr>
+<td>429/rate limit</td>
+<td>“The service is busy or your account is rate-limited. QUILL will
+wait and retry.”</td>
+</tr>
+<tr>
+<td>Payment/credits issue</td>
+<td>“The service reported a billing or credit issue. Check your Datalab
+account.”</td>
+</tr>
+<tr>
+<td>Cancelled</td>
+<td>“Conversion cancelled. No result was imported.”</td>
+</tr>
+<tr>
+<td>Bad result</td>
+<td>“The service returned an incomplete result. Try accurate mode or a
+smaller page range.”</td>
+</tr>
+</tbody>
+</table>
+<h3 id="172-error-details">17.2 Error details</h3>
+<p>Each error dialog should include:</p>
+<ul>
+<li>Friendly summary.</li>
+<li>Technical details button.</li>
+<li>Copy details button.</li>
+<li>Open service settings button where relevant.</li>
+<li>Retry button where relevant.</li>
+</ul>
+<hr />
+<h2 id="18-cost-and-usage-ux">18. Cost and Usage UX</h2>
+<h3 id="181-principles">18.1 Principles</h3>
+<ul>
+<li>QUILL should not pretend to know exact billing unless the provider
+returns it.</li>
+<li>QUILL should explain that OCR service pricing is provider-controlled
+and may change.</li>
+<li>QUILL should link to the provider’s pricing page.</li>
+<li>QUILL should warn before using expensive modes or add-ons.</li>
+</ul>
+<h3 id="182-estimated-usage-prompt">18.2 Estimated usage prompt</h3>
+<p>Before conversion:</p>
+<pre class="text"><code>Estimated pages: 42
+Provider: Datalab Chandra OCR Service
+Mode: Balanced
+Output: Markdown
+Cost: See Datalab pricing. Your account may include free credits or usage allowance.</code></pre>
+<p>If Datalab returns <code>cost_breakdown</code>, show it after
+conversion in the job summary.</p>
+<h3 id="183-usage-history">18.3 Usage history</h3>
+<p>Optional v1.1 feature:</p>
+<pre class="text"><code>AI Hub → Services → Usage
+  Datalab
+    Documents processed this month: 8
+    Pages submitted: 316
+    Last conversion: 2026-06-29</code></pre>
+<p>No content should be stored in usage history.</p>
+<hr />
+<h2 id="19-feature-flags">19. Feature Flags</h2>
+<p>Add feature flags:</p>
+<div class="sourceCode" id="cb33"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;features&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;ai_hub_services_tab&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;datalab_document_conversion&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;ocr_review_mode&quot;</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;service_usage_history&quot;</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;local_tesseract_fallback&quot;</span><span class="fu">:</span> <span class="kw">false</span></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<hr />
+<h2 id="20-implementation-plan">20. Implementation Plan</h2>
+<h3 id="phase-0-spike-and-verification">Phase 0: Spike and
+verification</h3>
+<p>Deliverables:</p>
+<ol type="1">
+<li>Verify Datalab SDK packaging in QUILL’s Python environment.</li>
+<li>Build a throwaway script that converts:
+<ul>
+<li>simple scanned PDF</li>
+<li>complex table PDF</li>
+<li>image with text</li>
+<li>checkbox form</li>
+<li>DOCX</li>
+</ul></li>
+<li>Compare Markdown, HTML, and JSON outputs.</li>
+<li>Confirm how to retrieve images.</li>
+<li>Confirm whether <code>output_format="markdown,html"</code> is
+supported in current SDK/API or whether QUILL must run separate
+conversions.</li>
+<li>Confirm billing/cost response fields.</li>
+<li>Confirm error response shapes.</li>
+<li>Confirm on-prem endpoint compatibility assumptions.</li>
+<li>Document sample results in
+<code>docs/research/datalab_chandra_spike.md</code>.</li>
+</ol>
+<p>Exit criteria:</p>
+<ul>
+<li>One successful conversion via SDK.</li>
+<li>One successful conversion via REST fallback.</li>
+<li>One handled failure for invalid API key.</li>
+<li>One handled 429/rate-limit simulation or mock.</li>
+</ul>
+<h3 id="phase-1-services-tab-foundation">Phase 1: Services tab
+foundation</h3>
+<p>Deliverables:</p>
+<ol type="1">
+<li><code>ServiceRegistry</code></li>
+<li><code>CredentialStore</code></li>
+<li><code>ServiceDescriptor</code></li>
+<li><code>AIHubServicesPanel</code></li>
+<li>Datalab service settings UI</li>
+<li>Test connection action</li>
+<li>Settings persistence</li>
+<li>Unit tests for settings without leaking secrets</li>
+</ol>
+<p>Exit criteria:</p>
+<ul>
+<li>User can enable Datalab, enter API key, save settings, close and
+reopen AI Hub, and test configuration.</li>
+<li>API key is not present in config files or logs.</li>
+</ul>
+<h3 id="phase-2-datalab-provider-adapter">Phase 2: Datalab provider
+adapter</h3>
+<p>Deliverables:</p>
+<ol type="1">
+<li><code>DatalabDocumentConversionProvider</code></li>
+<li>SDK implementation</li>
+<li>REST fallback</li>
+<li>Progress callback support</li>
+<li>Cancel support</li>
+<li>Retry/backoff support</li>
+<li>Result normalization to <code>ConversionResult</code></li>
+<li>Unit tests with mocked API responses</li>
+<li>Integration test guarded by <code>DATALAB_API_KEY</code></li>
+</ol>
+<p>Exit criteria:</p>
+<ul>
+<li>Provider converts a PDF to Markdown.</li>
+<li>Provider returns warnings and metadata.</li>
+<li>Provider handles cancellation and common errors.</li>
+</ul>
+<h3 id="phase-3-import-wizard">Phase 3: Import wizard</h3>
+<p>Deliverables:</p>
+<ol type="1">
+<li><code>ImportWithOcrDialog</code></li>
+<li>Simple mode</li>
+<li>Advanced mode</li>
+<li>Consent prompt</li>
+<li>Progress dialog</li>
+<li>Save/open result in QUILL</li>
+<li>Page delimiter support</li>
+<li>Recent import settings</li>
+</ol>
+<p>Exit criteria:</p>
+<ul>
+<li>User can choose a file and open converted Markdown in QUILL.</li>
+<li>UI remains responsive.</li>
+<li>Screen reader announces status.</li>
+<li>Cancel works.</li>
+</ul>
+<h3 id="phase-4-ocr-review-mode-v1">Phase 4: OCR Review Mode v1</h3>
+<p>Deliverables:</p>
+<ol type="1">
+<li>OCR review document outline</li>
+<li>Low-confidence navigation when confidence data exists</li>
+<li>Table review entry points</li>
+<li>Image caption review</li>
+<li>Review report generation</li>
+<li>Re-run selected page range in accurate mode</li>
+</ol>
+<p>Exit criteria:</p>
+<ul>
+<li>User can review warnings and accept/edit blocks by keyboard.</li>
+<li>User can generate a review report.</li>
+<li>JAWS/NVDA/Narrator testing passes basic flows.</li>
+</ul>
+<h3 id="phase-5-provider-expansion">Phase 5: Provider expansion</h3>
+<p>Add provider adapters based on demand:</p>
+<ol type="1">
+<li>Mistral OCR</li>
+<li>Azure Document Intelligence</li>
+<li>Local Tesseract</li>
+<li>Google Document AI</li>
+<li>AWS Textract</li>
+<li>Datalab on-prem profile templates</li>
+</ol>
+<p>Exit criteria:</p>
+<ul>
+<li>Services tab supports multiple providers without UI redesign.</li>
+<li>Import wizard can select provider based on capability.</li>
+</ul>
+<hr />
+<h2 id="21-test-plan">21. Test Plan</h2>
+<h3 id="211-unit-tests">21.1 Unit tests</h3>
+<ul>
+<li>Service registry loads descriptors.</li>
+<li>Credentials are saved and retrieved through mock secure store.</li>
+<li>Datalab options map correctly.</li>
+<li>Unsupported file types are rejected.</li>
+<li>Page range validation.</li>
+<li>Error mapping.</li>
+<li>Markdown post-processing.</li>
+<li>Sensitive filename warning triggers.</li>
+</ul>
+<h3 id="212-integration-tests">21.2 Integration tests</h3>
+<p>Use opt-in environment variable:</p>
+<div class="sourceCode" id="cb34"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="bu">set</span> QUILL_RUN_DATALAB_TESTS=1</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="bu">set</span> DATALAB_API_KEY=...</span></code></pre></div>
+<p>Tests:</p>
+<ul>
+<li>Convert sample PDF to Markdown.</li>
+<li>Convert sample image to Markdown.</li>
+<li>Convert sample table PDF to HTML/JSON.</li>
+<li>Invalid API key returns friendly error.</li>
+<li>Cancel during polling.</li>
+</ul>
+<h3 id="213-accessibility-tests">21.3 Accessibility tests</h3>
+<p>Manual scripts:</p>
+<ol type="1">
+<li>Configure Datalab with NVDA.</li>
+<li>Configure Datalab with JAWS.</li>
+<li>Import scanned PDF with keyboard only.</li>
+<li>Read progress messages.</li>
+<li>Review generated Markdown.</li>
+<li>Use OCR Review Mode.</li>
+<li>Correct low-confidence text.</li>
+<li>Export review report.</li>
+</ol>
+<h3 id="214-privacy-tests">21.4 Privacy tests</h3>
+<ul>
+<li>Confirm no API key in config.</li>
+<li>Confirm no API key in logs.</li>
+<li>Confirm source file content is not logged.</li>
+<li>Confirm temporary files are cleaned up.</li>
+<li>Confirm cloud consent prompt appears every time in v1.</li>
+</ul>
+<hr />
+<h2 id="22-acceptance-criteria">22. Acceptance Criteria</h2>
+<h3 id="221-mvp-acceptance-criteria">22.1 MVP acceptance criteria</h3>
+<ol type="1">
+<li>AI Hub contains a Services tab.</li>
+<li>Datalab Chandra OCR Service can be enabled and configured.</li>
+<li>API key is stored securely.</li>
+<li>User can import a supported file via File → Import with OCR /
+Convert Document.</li>
+<li>User can also discover the feature from Tools → OCR and Document
+Conversion.</li>
+<li>QUILL explicitly asks for consent before cloud upload.</li>
+<li>Conversion runs without freezing the UI.</li>
+<li>Progress is accessible.</li>
+<li>Result opens as an editable Markdown document.</li>
+<li>Tables, headings, lists, forms, image captions, and page delimiters
+are preserved when returned by the provider.</li>
+<li>Errors are understandable and actionable.</li>
+<li>Basic NVDA, JAWS, and Narrator tests pass.</li>
+<li>No document content or secrets are written to logs.</li>
+</ol>
+<h3 id="222-magical-acceptance-criteria">22.2 “Magical” acceptance
+criteria</h3>
+<ol type="1">
+<li>A blind user can convert a scanned PDF without needing sighted
+help.</li>
+<li>The default output is immediately readable and editable.</li>
+<li>QUILL guides the user to complex tables, forms, images, and
+uncertain OCR areas.</li>
+<li>The user can re-run hard pages in accurate mode.</li>
+<li>The user can export a clean Markdown document and an OCR review
+report.</li>
+<li>The same Services architecture can support a second OCR provider
+without rewriting the import UI.</li>
+</ol>
+<hr />
+<h2 id="23-risks-and-mitigations">23. Risks and Mitigations</h2>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vendor pricing changes</td>
+<td>Do not hard-code prices; link to provider pricing; show
+provider-returned cost if available.</td>
+</tr>
+<tr>
+<td>Cloud privacy concern</td>
+<td>Explicit consent; BYOK; on-prem endpoint support; local fallback
+later.</td>
+</tr>
+<tr>
+<td>Long-running jobs</td>
+<td>Async worker; progress dialog; cancellation; retry/backoff.</td>
+</tr>
+<tr>
+<td>Bad OCR output</td>
+<td>OCR Review Mode; re-run page range; allow accurate mode; preserve
+original source reference.</td>
+</tr>
+<tr>
+<td>Complex table loss</td>
+<td>Preserve HTML/JSON when Markdown cannot represent table accurately;
+add Table Review.</td>
+</tr>
+<tr>
+<td>API instability</td>
+<td>SDK plus REST fallback; provider abstraction; robust error
+handling.</td>
+</tr>
+<tr>
+<td>Accessibility regressions</td>
+<td>Manual SR test scripts; avoid custom controls; use standard wx
+controls.</td>
+</tr>
+<tr>
+<td>Large documents hit limits</td>
+<td>Page range segmentation; warn at file selection; future batch
+splitting.</td>
+</tr>
+<tr>
+<td>Secret leakage</td>
+<td>Secure credential store; log redaction; automated tests.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="24-open-questions">24. Open Questions</h2>
+<ol type="1">
+<li>Should QUILL name the service <strong>Datalab Chandra OCR
+Service</strong> or <strong>Datalab Document Conversion</strong> in the
+UI? Recommendation: user-facing name should be “Datalab Chandra OCR
+Service,” with technical description mentioning Datalab Convert
+API.</li>
+<li>Should OCR Review Mode be part of MVP or behind a beta flag?
+Recommendation: ship initial review warnings in MVP; full Review Mode
+behind a beta flag.</li>
+<li>Should QUILL support multiple output formats in one request if
+Datalab allows comma-separated formats in the current API? Verify in
+Phase 0.</li>
+<li>Should a QUILL-hosted relay service ever exist for users who cannot
+manage API keys? Recommendation: not for MVP; revisit with strong
+privacy, funding, and abuse controls.</li>
+<li>Should institutions be able to preconfigure service settings through
+an admin config file? Recommendation: yes in v1.1.</li>
+<li>Should QUILL support redaction before upload? Recommendation: future
+feature; very difficult to make reliable for scanned documents without
+already doing OCR.</li>
+</ol>
+<hr />
+<h2 id="25-recommended-implementation-prompt-for-coding-agent">25.
+Recommended Implementation Prompt for Coding Agent</h2>
+<p>Use this prompt with Claude Code, Codex, or another coding agent:</p>
+<pre class="text"><code>You are implementing QUILL&#39;s AI Hub Services tab and the first document-conversion provider: Datalab Chandra OCR Service.
+
+Read the PRD in docs/prd/ai-hub-services-datalab-chandra-ocr.md. Implement this in phases and keep a running implementation log.
+
+Core requirements:
+1. Ship OCR as a supported QUILL tool with stable File and Tools menu access, Help documentation, and release-note coverage.
+2. Add an accessible AI Hub → Services tab that is rich, friendly, customer-facing, and includes provider descriptions, benefits, supported file types, privacy notes, pricing/account notes, setup steps, diagnostics, and external website/documentation/pricing/security buttons.
+2. Add a provider registry and provider interface for document conversion services.
+3. Add secure credential storage for service API keys; never store secrets in JSON config or logs.
+4. Implement Datalab Chandra OCR Service using datalab-python-sdk where possible and a REST fallback where needed.
+5. Add File → Import with OCR / Convert Document.
+6. Add a simple import flow with safe defaults: Balanced mode, Markdown output, page delimiters on, image extraction/captioning on.
+7. Add advanced options mapped to Datalab Convert API parameters.
+8. Show a required cloud upload consent prompt before every upload.
+9. Run conversion asynchronously so the wxPython UI never freezes.
+10. Open the converted result as a new editable Markdown document.
+11. Add robust error handling for missing key, invalid key, offline, unsupported file, file too large, too many pages, rate limits, billing/credits, cancellation, and incomplete result.
+12. Add tests and mocks. Integration tests must be opt-in and require DATALAB_API_KEY.
+
+Accessibility requirements:
+- Keyboard-only support for every control.
+- Standard wx controls wherever possible.
+- Meaningful accessible names, descriptions, and status messages.
+- Progress updates must be announced politely and must not spam screen readers.
+- No emoji or decorative Unicode in status messages.
+
+Security requirements:
+- Do not log API keys, document content, OCR output, signed URLs, or full sensitive payloads.
+- Store only non-secret service settings in config.
+- Temporary files must be cleaned up.
+- Consent is mandatory for v1.
+
+Start with the foundation and do not overbuild provider-specific UI into the core architecture. The goal is Datalab first, but Azure, Mistral, AWS, Google, and local providers should be possible later through adapters.</code></pre>
+<hr />
+<h2 id="26-suggested-fileissue-breakdown">26. Suggested File/Issue
+Breakdown</h2>
+<h3 id="epic-ai-hub-services-foundation">Epic: AI Hub Services
+Foundation</h3>
+<ul>
+<li>Issue: Add ServiceDescriptor and ServiceRegistry.</li>
+<li>Issue: Add secure CredentialStore.</li>
+<li>Issue: Add AI Hub Services tab.</li>
+<li>Issue: Add service settings persistence.</li>
+<li>Issue: Add service diagnostics panel.</li>
+</ul>
+<h3 id="epic-datalab-chandra-ocr-service">Epic: Datalab Chandra OCR
+Service</h3>
+<ul>
+<li>Issue: Add Datalab provider adapter.</li>
+<li>Issue: Add SDK implementation.</li>
+<li>Issue: Add REST fallback.</li>
+<li>Issue: Add option mapping.</li>
+<li>Issue: Add mock response tests.</li>
+<li>Issue: Add integration test harness.</li>
+</ul>
+<h3 id="epic-import-with-ocr">Epic: Import with OCR</h3>
+<ul>
+<li>Issue: Add File → Import with OCR / Convert Document.</li>
+<li>Issue: Add import wizard simple mode.</li>
+<li>Issue: Add advanced options.</li>
+<li>Issue: Add consent prompt.</li>
+<li>Issue: Add progress and cancellation.</li>
+<li>Issue: Open result in new Markdown document.</li>
+</ul>
+<h3 id="epic-accessible-ocr-review">Epic: Accessible OCR Review</h3>
+<ul>
+<li>Issue: Add conversion warnings panel.</li>
+<li>Issue: Add low-confidence navigation.</li>
+<li>Issue: Add table review mode.</li>
+<li>Issue: Add image caption review.</li>
+<li>Issue: Add OCR review report export.</li>
+</ul>
+<h3 id="epic-documentation">Epic: Documentation</h3>
+<ul>
+<li>Issue: Add user help page.</li>
+<li>Issue: Add privacy help page.</li>
+<li>Issue: Add admin/on-prem configuration page.</li>
+<li>Issue: Add troubleshooting page.</li>
+<li>Issue: Add developer provider-adapter guide.</li>
+</ul>
+<hr />
+<h2 id="27-user-documentation-draft">27. User Documentation Draft</h2>
+<h3 id="import-with-ocr--convert-document">Import with OCR / Convert
+Document</h3>
+<p>Use this feature when a PDF, image, or other document is hard to
+read, has no text, or has tables and layout that do not work well with
+your screen reader.</p>
+<ol type="1">
+<li>Open the <strong>File</strong> menu.</li>
+<li>Choose <strong>Import with OCR / Convert Document</strong>.</li>
+<li>Pick your file.</li>
+<li>Choose how QUILL should open the result. <strong>Editable
+Markdown</strong> is recommended.</li>
+<li>Review the cloud upload notice.</li>
+<li>Choose <strong>Convert</strong>.</li>
+</ol>
+<p>QUILL will send the document to the selected service, retrieve the
+converted result, and open it as a new document. Review the result
+before relying on it, especially for legal, medical, financial,
+educational, or other sensitive documents.</p>
+<h3 id="choosing-a-mode">Choosing a mode</h3>
+<ul>
+<li><strong>Fast</strong>: Best for simple, clean documents.</li>
+<li><strong>Balanced</strong>: Recommended for most documents.</li>
+<li><strong>Accurate</strong>: Best for scanned pages, complex tables,
+dense layouts, forms, and handwriting. It may take longer and may cost
+more.</li>
+</ul>
+<h3 id="privacy-note">Privacy note</h3>
+<p>QUILL will not send a document to a cloud service unless you choose
+to continue after the upload notice. Do not upload documents unless you
+are allowed to send them to the selected service.</p>
+<hr />
+<h2 id="28-final-recommendation">28. Final Recommendation</h2>
+<p>Implement this as a <strong>supported OCR tool powered by a
+Services-first architecture</strong>, not as a hidden connector or
+one-off experimental command.</p>
+<p>The first release should make QUILL’s supported OCR tool feel simple
+and safe, with Datalab Chandra OCR Service as the first backend:</p>
+<ul>
+<li>Configure once in <strong>AI Hub → Services</strong>.</li>
+<li>Import from <strong>File → Import with OCR / Convert
+Document</strong>.</li>
+<li>Default to <strong>Balanced + Markdown + page
+delimiters</strong>.</li>
+<li>Require explicit upload consent.</li>
+<li>Open the result directly in QUILL.</li>
+<li>Build the provider interface so alternatives can be added
+cleanly.</li>
+</ul>
+<p>This will give QUILL a powerful, practical path for turning
+inaccessible documents into editable, navigable, screen-reader-friendly
+content while preserving user choice, privacy, and future
+flexibility.</p>
+<hr />
+<h2
+id="appendix-z-ai-menu-discoverability--the-extensible-ai-hub-services-framework">Appendix
+Z. AI menu discoverability + the extensible AI Hub Services
+framework</h2>
+<p><em>(Added during planning integration — ties this PRD to the AI
+menu, the verified on-demand acquisition path, and the broader
+"services" direction.)</em></p>
+<h3 id="z1-tight-ai-hub-and-ai-menu-integration">Z.1 Tight AI Hub
+<strong>and</strong> AI menu integration</h3>
+<p>The configuration home is <strong>AI Hub → Services</strong> (per
+§9). For discoverability, the top-level <strong>AI menu</strong> also
+surfaces the supported OCR tool directly, so users who live in the menus
+never have to know where the Services tab is:</p>
+<ul>
+<li><strong>AI → Import with OCR / Convert Document…</strong> — the
+primary action (mirrors <strong>File → Import with OCR</strong>; same
+handler).</li>
+<li><strong>AI → Services…</strong> — opens the AI Hub on the Services
+tab.</li>
+</ul>
+<p>Both honor QUILL's invariants: the dialog contract
+(<code>_show_modal_dialog</code>), cancelable spoken progress
+(<code>AIProgressDialog</code>), Safe Mode gating, and the
+network-egress audit (GATE-9) for every provider call. Upload is
+consent-gated (a document leaves the machine only on an explicit
+action).</p>
+<h3
+id="z2-the-ai-hub-services-framework-is-the-extensible-home-for-all-document-intelligence-services">Z.2
+The AI Hub Services framework is the extensible home for <em>all</em>
+document-intelligence services</h3>
+<p>This PRD's "Services tab + provider interface" is deliberately a
+<strong>framework</strong>, not an OCR-only feature. Every future
+document-intelligence service plugs into the same tab, the same provider
+interface (§13.2), the same credential storage, the same
+consent/audit/Safe-Mode rules, and the same accessible card UX. Planned
+tenants:</p>
+<ul>
+<li><strong>OCR / document conversion:</strong> Datalab Chandra (v1),
+then Mistral OCR, Azure Document Intelligence, AWS Textract, Google
+Document AI, and local engines.</li>
+<li><strong>Scribe for Documents (Pneuma Solutions):</strong> the
+partner document-conversion service specced in <a
+href="scribe.md"><code>scribe.md</code></a> is a natural
+<strong>Services-tab tenant</strong> — same "configure once, convert,
+open result in QUILL" shape, just with an OAuth connection instead of an
+API key. Its OAuth flow reuses QUILL's existing authorization-code
+pattern (see <code>scribe.md</code> §2.1).</li>
+<li>A single <strong>service descriptor</strong> (id, friendly name,
+category, capabilities, config schema, optional credential, optional
+<strong>on-demand component</strong>, menu placement) lets a new service
+appear in the Services tab + AI menu with no bespoke UI.</li>
+</ul>
+<h3
+id="z3-local-engines-reuse-the-verified-on-demand-acquisition-path">Z.3
+Local engines reuse the verified on-demand acquisition path</h3>
+<p>For <strong>local</strong> OCR engines (Tesseract / Marker / local
+Chandra), QUILL must not bloat the installer. They are fetched on demand
+through the same <strong>pinned, SHA-256-verified release-asset</strong>
+mechanism shipped for the speech engine and Kokoro
+(<code>quill/core/release_assets.py</code>; AI-Optimization PRD
+§10.2.4): a service that needs a local binary/model declares it as a
+release asset, and QUILL downloads + verifies + unpacks it with
+cancelable, accessible progress, blocked in Safe Mode — and offers a
+<strong>re-download/replace</strong> when one is already present, with
+<strong>newer-version awareness</strong> on the roadmap (a
+<code>version</code> field already exists on the asset model).</p>
+<h3 id="z4-net">Z.4 Net</h3>
+<p>OCR ships first and real (Datalab Chandra), but it lands inside a
+<strong>services framework</strong> that the AI menu and AI Hub present
+uniformly, that local engines and partner services (Scribe) join without
+new plumbing, and that inherits QUILL's privacy, consent, accessibility,
+and verified-acquisition guarantees. That is the magical, future-proof
+shape: one accessible home for document intelligence, many services over
+time.</p>
+</body>
+</html>

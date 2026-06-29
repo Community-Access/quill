@@ -105,6 +105,14 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "context, visible progress, blocked in Safe Mode, sha256-verified when a hash "
         "is known. No silent background downloads."
     ),
+    "core/release_assets.py::_download_resumable": (
+        "User-initiated on-demand fetch of a redistributable runtime component "
+        "(currently the MIT whisper.cpp engine) from QUILL's own pinned, "
+        "SHA-256-verified GitHub release asset (PRD 10.2.4). HTTPS enforced "
+        "(refuses non-https), retry/resumable, bytes verified by SHA-256 before "
+        "use, visible progress, blocked in Safe Mode. Supplements the installer "
+        "bundling; capability never depends on it."
+    ),
     "core/speech/ffmpeg_install.py::_download_zip": (
         "User-initiated optional ffmpeg download (#617) from the official Gyan.dev "
         "Windows build linked by ffmpeg.org; HTTPS enforced (refuses non-https), "

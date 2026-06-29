@@ -312,12 +312,20 @@ def build_windows_distribution(
         effective_bundled_tools["speech/espeak-ng"] = _download_and_stage_espeak(portable_dir)
     if "speech/piper" not in effective_bundled_tools:
         effective_bundled_tools["speech/piper"] = _download_and_stage_piper(portable_dir)
-    if "speech/whispercpp" not in effective_bundled_tools:
-        effective_bundled_tools["speech/whispercpp"] = _download_and_stage_whisper(portable_dir)
+    # whisper.cpp is NO LONGER bundled by default (PRD 10.2.4 unbundle): fresh
+    # installs download it on demand from QUILL's pinned, SHA-256-verified release
+    # asset (Tools > Speech > Download Offline Speech Engine), and offline speech
+    # offers the download at point of use. A build may still stage a local copy by
+    # passing --whisper-dir (populates effective_bundled_tools above, staged below).
+    # Upgraders keep their existing {app}/tools/speech/whispercpp copy.
     bundled_tools = _stage_bundled_tools(portable_dir, effective_bundled_tools)
-    # Kokoro is staged separately (not via _stage_bundled_tools): it ships under
-    # the bundle-root kokoro-models/ folder the runtime looks for, not tools/.
-    _stage_kokoro(portable_dir, kokoro_dir)
+    # Kokoro is NO LONGER bundled by default (PRD 10.2.4 unbundle): fresh installs
+    # download it on demand from QUILL's pinned, SHA-256-verified release asset, and
+    # the runtime prefers the %APPDATA% copy. A build may still opt to stage a local
+    # copy into the portable bundle by passing --kokoro-dir. Upgraders keep their
+    # existing {app}/kokoro-models (Inno never removes it).
+    if kokoro_dir is not None:
+        _stage_kokoro(portable_dir, kokoro_dir)
 
     readme = portable_dir / "README.txt"
     readme.write_text(
@@ -780,10 +788,10 @@ def build_inno_setup_script(
         " Types: full custom; Flags: checkablealone",
         'Name: "speechpiper"; Description: "Install bundled Piper neural TTS runtime";'
         " Types: full custom; Flags: checkablealone",
-        'Name: "speechwhisper"; Description: "Install the offline speech engine'
-        " (whisper.cpp) for private, on-device transcription and dictation"
-        ' (Tools > Speech > Whisperer)";'
-        " Types: full custom; Flags: checkablealone",
+        # whisper.cpp is unbundled (PRD 10.2.4): no installer component. QUILL
+        # downloads the ~8 MB engine on demand from its verified release asset
+        # (Tools > Speech > Download Offline Speech Engine), and offline speech
+        # offers it at point of use. Upgraders keep their existing copy.
         'Name: "nodejs"; Description: "Install portable Node.js runtime for Node Quillins'
         " and the Developer Console TypeScript interface (~30 MB);"
         ' not required for Python Quillins";'
@@ -792,10 +800,9 @@ def build_inno_setup_script(
         " (liblouis translation engine, UEB, Standard American English,"
         ' and international braille profiles, ~15 MB)";'
         " Types: full custom; Flags: checkablealone",
-        'Name: "speechkokoro"; Description: "Install bundled Kokoro neural TTS voices'
-        " (~120 MB, high-quality offline speech). If you skip this, you can download"
-        ' Kokoro later from Manage Voices / Speech Hub";'
-        " Types: full custom; Flags: checkablealone",
+        # Kokoro is unbundled (PRD 10.2.4): no installer component. QUILL downloads
+        # the ~120 MB model on demand from its verified release asset (Manage Voices
+        # / Speech Hub). Upgraders keep their existing {app}\kokoro-models copy.
         "",
         "[InstallDelete]",
         "; Upgrade hygiene -- the single most important fix for reliable upgrades.",
@@ -844,13 +851,12 @@ def build_inno_setup_script(
         'Source: "..\\portable\\vendor\\braille-pack\\*"; DestDir: "{app}\\vendor\\braille-pack";'
         " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist;"
         " Components: braillepack",
-        "; Kokoro neural TTS models (~120 MB). Optional component; the runtime",
-        "; resolves {app}\\kokoro-models (QUILL_APP_ROOT). When skipped, QUILL",
-        "; downloads them on demand to %APPDATA%\\Quill\\kokoro-models, which the",
-        "; runtime prefers over the bundled copy (read_aloud.default_kokoro_model_dir).",
-        'Source: "..\\portable\\kokoro-models\\*"; DestDir: "{app}\\kokoro-models";'
-        " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist;"
-        " Components: speechkokoro",
+        "; Kokoro neural TTS models are NOT bundled (PRD 10.2.4 unbundle): QUILL",
+        "; downloads them on demand to %APPDATA%\\Quill\\kokoro-models (verified",
+        "; release asset), which the runtime prefers. Upgraders keep any existing",
+        "; {app}\\kokoro-models copy -- Inno never removes it and [InstallDelete]",
+        "; does not touch it. A --kokoro-dir build still stages it into the portable",
+        "; bundle; the installer no longer ships it.",
         'Source: "..\\portable\\tools\\pandoc\\*"; DestDir: "{app}\\tools\\pandoc";'
         " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist;"
         " Components: pandoc",
@@ -864,14 +870,12 @@ def build_inno_setup_script(
         'Source: "..\\portable\\tools\\speech\\piper\\*"; DestDir: "{app}\\tools\\speech\\piper";'
         " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist;"
         " Components: speechpiper",
-        "; whisper.cpp offline speech engine. Resolved at runtime from",
-        "; {app}\\tools\\speech\\whispercpp (QUILL_APP_ROOT). Optional;",
-        "; skipifsourcedoesntexist means a build without the bundled engine still",
-        "; installs, and users can also drop the executable here or download it later.",
-        'Source: "..\\portable\\tools\\speech\\whispercpp\\*";'
-        ' DestDir: "{app}\\tools\\speech\\whispercpp";'
-        " Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist;"
-        " Components: speechwhisper",
+        "; whisper.cpp offline speech engine is NOT bundled (PRD 10.2.4 unbundle):",
+        "; QUILL downloads the ~8 MB engine on demand to %APPDATA%\\Quill\\speech-engine",
+        "; (verified release asset), and offline speech offers it at point of use.",
+        "; Upgraders keep any existing {app}\\tools\\speech\\whispercpp copy -- Inno",
+        "; never removes it and [InstallDelete] does not touch it. A --whisper-dir",
+        "; build still stages it; the installer no longer ships it.",
         "; Node.js portable runtime (optional). The build script copies a portable",
         "; node.exe distribution into portable\\tools\\nodejs when building with",
         "; --bundle-nodejs. skipifsourcedoesntexist means a build without bundled",

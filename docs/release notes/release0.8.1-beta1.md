@@ -203,6 +203,22 @@ keys line up again.
 
 ### Enhancements
 
+- **Smaller installer: the offline speech engine downloads on demand.** The
+  private, on-device speech engine (whisper.cpp) is no longer bundled. The first
+  time you use offline dictation or transcription, QUILL **offers to download it
+  right there** (about 8 MB, checksum-verified, cancelable; disabled in Safe Mode),
+  and it's also at **Tools > Speech > Download Offline Speech Engine...**.
+  **Upgrading from a release that bundled the engine? Your copy is kept and keeps
+  working — nothing to re-download.** First piece of the AI footprint/optimization
+  plan — a pinned, SHA-256-verified path for fetching redistributable components
+  from QUILL's own GitHub release assets.
+- **Smaller installer: Kokoro neural voices download on demand.** The ~120 MB
+  Kokoro voice models are no longer bundled in the installer. The first time you
+  pick a Kokoro voice, QUILL downloads it for you (checksum-verified, cancelable);
+  other read-aloud voices (DECtalk, eSpeak NG, Piper, SAPI) work meanwhile.
+  **Upgrading from a release that bundled Kokoro? Your existing copy is kept and
+  keeps working — nothing to re-download.** This is the proof-of-concept for the
+  footprint plan's "host redistributable components as verified release assets."
 - **Proofread Mastodon posts before sending (per account).** In **Tools → Share
   → Mastodon Accounts...**, select an account and tick **Spell-check posts before
   sending**: pressing Post for that account then opens the Spelling Review (F7) on

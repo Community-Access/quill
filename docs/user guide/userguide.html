@@ -1795,6 +1795,15 @@ PATH. ffmpeg is open-source (GPL/LGPL) and fetched directly from the
 official builder; QUILL never bundles or redistributes it. Without
 ffmpeg, the whisper.cpp engine needs a 16 kHz mono WAV, while the Faster
 Whisper engine handles the other formats on its own.</li>
+<li><strong>Download Offline Speech Engine...</strong> The private,
+on-device speech engine (whisper.cpp) is not bundled in the installer;
+the first time you use offline dictation or transcription, QUILL
+<strong>offers to download it for you</strong> (about 8 MB,
+checksum-verified, with a cancelable progress bar; disabled in Safe
+Mode). You can also fetch it any time from <strong>Tools &gt; Speech
+&gt; Download Offline Speech Engine...</strong>. If you are
+<strong>upgrading</strong> from a version that bundled the engine, your
+existing copy is kept and keeps working — nothing to download.</li>
 <li><strong>Speaker attribution.</strong> If you download the "Small
 English with speaker detection" model (in Manage Speech Models), QUILL
 marks <strong>who is speaking when</strong> — each turn is labelled
@@ -4247,6 +4256,13 @@ announces current availability and recommended next actions before any
 download starts. For cloud voices, see <a
 href="#read-aloud-with-ai-voice-openai-or-google-gemini">Read Aloud with
 AI Voice</a>.</p>
+<p>The ~120 MB <strong>Kokoro</strong> voice models are not bundled in
+the installer; the first time you choose a Kokoro voice, QUILL downloads
+them for you from its own verified source (checksum-checked, with a
+cancelable progress window), and your other voices keep working in the
+meantime. If you are <strong>upgrading</strong> from a version that
+bundled Kokoro, your existing copy is kept and keeps working — you do
+not need to download anything.</p>
 <p>To audition a voice in <strong>Manage Voices</strong>, select it and
 use the <strong>Preview</strong> button. If the voice is already
 downloaded, Quill synthesises the preview phrase with that voice's real
