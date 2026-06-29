@@ -389,6 +389,15 @@ decoupled from code releases.)</li>
 <li>Redistribution clearance for re-hosting <strong>DECtalk</strong> and
 <strong>eSpeak NG</strong> (GPL source-offer) on our releases — confirm
 before re-hosting; ffmpeg stays excluded.</li>
+<li>Download discoverability (10.2.5): an <strong>optional Setup-Wizard
+step</strong> offering the offline voices/engine on first run, a
+<strong>Help-menu</strong> "Download optional components…" entry, or
+both? (Leaning: both — wizard offer + a permanent Help entry — with
+everything still working uninstalled.)</li>
+<li>Newer-version awareness (10.2.3 item 9): update-check
+<strong>cadence</strong> (on startup, on feature use, or a manual "check
+for updates to components"?), and how to surface the offer without
+nagging.</li>
 </ul>
 <h2 id="9-out-of-scope-for-now">9. Out of scope (for now)</h2>
 <p>Upstream model training/quantization; non-Windows/macOS platforms;
@@ -603,6 +612,19 @@ silently degrade.</li>
 healthcheck" that resolves every pinned URL and re-checks reachability +
 checksum, so a dead upstream is caught by us, not by a user offline at
 the worst moment.</li>
+<li><strong>Already-present is smart, not silent.</strong> If a
+component is already installed, QUILL does not re-download it; it
+<strong>offers to replace</strong> (re-fetch) so the user stays in
+control, and declining keeps the existing copy. (Shipped for
+Kokoro.)</li>
+<li><strong>Newer-version awareness (planned).</strong> Each asset
+records its upstream <strong>version</strong> (a <code>version</code>
+field already exists on the manifest entry). A lightweight update check
+compares the installed version against the pinned manifest and, when a
+newer verified version exists, <strong>notifies the user and offers
+it</strong> — never auto-replacing a working component. This keeps
+voices and engines current without surprise downloads, and reuses the
+same verified, cancelable, Safe-Mode-gated fetch.</li>
 </ol>
 <p><strong>Scope consequence:</strong> Phase 1 explicitly includes
 hardening acquisition (items 4, 5, 7 are partly new work) as a
@@ -673,6 +695,48 @@ primary</em> for redistributable sub-2 GB components, keep multi-GB
 models on Hugging Face, and never re-host ffmpeg. This converts item 5
 from "hope upstream stays up" into "we are the upstream," which is the
 single biggest reliability gain for unbundling.</p>
+<h4
+id="1025-the-download-experience-must-be-magical-and-fully-accessible">10.2.5
+The download experience must be magical and fully accessible</h4>
+<p>Unbundling is only acceptable if fetching a component is delightful
+and never strands a screen-reader user. Requirements for every on-demand
+download:</p>
+<ul>
+<li><strong>Focus + progress, never "la-la-land."</strong> Each download
+runs behind an accessible, <strong>cancelable</strong> progress dialog
+(the existing <code>AIProgressDialog</code>) with spoken milestones;
+focus is owned and predictable, and on completion focus returns to a
+sensible place (the feature that needed the component, or the
+voice/model list). The UI never blocks (work is off the UI thread) and
+the user is never left waiting silently — progress is both visible and
+announced.</li>
+<li><strong>Discoverable in the right places.</strong> The component
+download is reachable where the user already is: the relevant
+<strong>feature surface</strong> (e.g. choosing a Kokoro voice triggers
+its download; Tools &gt; Speech for the engine), the <strong>Help
+menu</strong> (a "Download optional components…" / "Get offline voices
+&amp; engines" entry so it is findable on purpose), and — for first-run
+— an <strong>optional Setup-Wizard step</strong> that offers to fetch
+the offline voices/engine a user is likely to want, while making clear
+everything works without it and nothing downloads without consent.</li>
+<li><strong>Smart and respectful.</strong> Already-installed components
+are not re-downloaded; QUILL offers to <strong>replace</strong> them,
+and surfaces a <strong>newer version</strong> when one is available
+(10.2.3 items 8–9). Disk and network are checked first
+(<code>enough_disk_for</code>), failures degrade to a clear spoken
+message, and <strong>Safe Mode</strong> disables all of it.</li>
+<li><strong>One consistent surface across services.</strong> OCR
+engines, Scribe, speech, and voices all download through the same
+verified path and present the same accessible progress/consent UX, so
+"get a component" feels identical everywhere (see the AI Hub Services
+framework in
+<code>quill-supported-ocr-tool-ai-hub-services-friendly-prd.md</code>).</li>
+</ul>
+<p>The compounding effect: a first run that is small and fast, an
+obvious accessible way to add exactly the offline capability you want,
+progress you can always hear, and components that stay current — without
+ever surprising the user or leaving them wondering whether anything is
+happening.</p>
 <p><strong>Cross-platform.</strong> Windows: embedded-runtime trim is
 the biggest lever; on-demand assets land under the data dir. macOS: the
 py2app bundle differs (framework Python, <code>.dylib</code> signing),
