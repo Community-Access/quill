@@ -4246,23 +4246,27 @@ Review, and Inspection</h2>
 inspectable.</p>
 <h3 id="read-aloud">Read Aloud</h3>
 <p>Read Aloud uses local voices with a deterministic support policy. The
-Windows system voice runs on <strong>SAPI 5</strong>;
-<strong>DECtalk</strong> and <strong>eSpeak NG</strong> are bundled for
-immediate local playback; <strong>Piper</strong> and
-<strong>Kokoro</strong> (neural, offline) are available as explicit
-downloads from Speech Center so base installs stay smaller. You can
-start, pause, stop, preview, and choose a voice. Speech onboarding
-announces current availability and recommended next actions before any
-download starts. For cloud voices, see <a
+Windows system voice runs on <strong>SAPI 5</strong> and is always
+available offline with no download — it is the floor that keeps Read
+Aloud working immediately. <strong>DECtalk</strong>, <strong>eSpeak
+NG</strong>, <strong>Piper</strong>, and <strong>Kokoro</strong>
+(neural, offline) are available as explicit downloads from Speech
+Center, so base installs stay smaller. You can start, pause, stop,
+preview, and choose a voice. Speech onboarding announces current
+availability and recommended next actions before any download starts.
+For cloud voices, see <a
 href="#read-aloud-with-ai-voice-openai-or-google-gemini">Read Aloud with
 AI Voice</a>.</p>
-<p>The ~120 MB <strong>Kokoro</strong> voice models are not bundled in
-the installer; the first time you choose a Kokoro voice, QUILL downloads
-them for you from its own verified source (checksum-checked, with a
-cancelable progress window), and your other voices keep working in the
-meantime. If you are <strong>upgrading</strong> from a version that
-bundled Kokoro, your existing copy is kept and keeps working — you do
-not need to download anything.</p>
+<p>The <strong>Kokoro</strong> voice models (~120 MB), the classic
+<strong>DECtalk</strong> runtime (~2 MB), and the <strong>eSpeak
+NG</strong> engine with its voice data (~40 MB) are not bundled in the
+installer; the first time you choose one of these voices, QUILL
+downloads it for you from its own verified source (checksum-checked,
+with a cancelable progress window), and your other voices — including
+the always-present SAPI 5 system voice — keep working in the meantime.
+If you are <strong>upgrading</strong> from a version that bundled these,
+your existing copies are kept and keep working — you do not need to
+download anything.</p>
 <p>To audition a voice in <strong>Manage Voices</strong>, select it and
 use the <strong>Preview</strong> button. If the voice is already
 downloaded, Quill synthesises the preview phrase with that voice's real

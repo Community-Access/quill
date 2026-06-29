@@ -1959,6 +1959,23 @@ upgrading from a release that bundled Kokoro keeps their copy with nothing to
 re-download. Kokoro is in the "safe to unbundle" class (other read-aloud voices
 remain available offline if the download has not happened).
 
+**DECtalk and eSpeak NG unbundled.** The classic DECtalk runtime (~2 MB) and the
+eSpeak NG engine with its voice data (~40 MB) are no longer shipped in the
+installer; each downloads on demand from `assets-v1` (DECtalk via
+`quill/core/dectalk_runtime.py`, pinned `vs2022.zip`, SHA-256-verified, to
+`%APPDATA%\Quill\speech\dectalk`; eSpeak via `quill/core/speech/espeak_install.py`,
+pinned `espeak-ng.msi`, SHA-256-verified and extracted admin-free with `msiexec /a`,
+to `%APPDATA%\Quill\speech\espeak-ng`) — both folders the resolver already searches.
+The two MSI/zip assets are QUILL-hosted, byte-identical re-publishes of the upstream
+releases (matching the bundled-build pins) so the on-demand path has one controlled,
+verified acquisition point. Windows' built-in **SAPI 5** voices remain the
+always-present offline floor while a download has not happened, so the user is never
+left without a voice. **Upgraders keep any existing `{app}\tools\speech\dectalk` /
+`espeak-ng` copy** (Inno never removes it; `[InstallDelete]` does not touch it; the
+resolver still checks it). eSpeak NG is GPLv3 and DECtalk is BSD-licensed; both are
+already covered by QUILL's redistribution/compliance notices, so re-hosting carries
+the same terms as bundling did.
+
 **Cloud providers ship as Quillins, not core.** Per the consolidation plan (#669), the cloud
 provider matrix is delivered as extensions rather than baked into core. A Quillin declares a
 provider through the **`transcription_providers`** manifest contribution; QUILL's host implements

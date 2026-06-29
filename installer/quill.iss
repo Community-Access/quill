@@ -75,10 +75,7 @@ Name: "custom"; Description: "Custom installation"; Flags: iscustom
 ; Every component below gates real [Files] payload. The Writing
 ; Assistant and the rest of Quill's core ship unconditionally with the
 ; main bundle, so there is no separate AI component to toggle here.
-; DECtalk voice selection is handled by a guided wizard page (see [Code]).
 Name: "pandoc"; Description: "Install bundled Pandoc for document conversion"; Types: full custom; Flags: checkablealone
-Name: "speechdectalk"; Description: "Install bundled DECtalk runtime"; Types: full custom; Flags: checkablealone
-Name: "speechespeak"; Description: "Install bundled eSpeak-NG runtime"; Types: full custom; Flags: checkablealone
 Name: "speechpiper"; Description: "Install bundled Piper neural TTS runtime"; Types: full custom; Flags: checkablealone
 Name: "nodejs"; Description: "Install portable Node.js runtime for Node Quillins and the Developer Console TypeScript interface (~30 MB); not required for Python Quillins"; Flags: checkablealone
 Name: "braillepack"; Description: "Install QUILL Braille Pack (liblouis translation engine, UEB, Standard American English, and international braille profiles, ~15 MB)"; Types: full custom; Flags: checkablealone
@@ -133,9 +130,14 @@ Source: "..\portable\vendor\braille-pack\*"; DestDir: "{app}\vendor\braille-pack
 ; does not touch it. A --kokoro-dir build still stages it into the portable
 ; bundle; the installer no longer ships it.
 Source: "..\portable\tools\pandoc\*"; DestDir: "{app}\tools\pandoc"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist; Components: pandoc
-; All DECtalk voices ship when the DECtalk component is selected.
-Source: "..\portable\tools\speech\dectalk\*"; DestDir: "{app}\tools\speech\dectalk"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist; Components: speechdectalk
-Source: "..\portable\tools\speech\espeak-ng\*"; DestDir: "{app}\tools\speech\espeak-ng"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist; Components: speechespeak
+; DECtalk and eSpeak-NG are NOT bundled (PRD 10.2.4 unbundle): QUILL
+; downloads each on demand (verified assets-v1 release) to
+; %APPDATA%\Quill\speech\dectalk and %APPDATA%\Quill\speech\espeak-ng,
+; which the resolver searches. Upgraders keep any existing
+; {app}\tools\speech\dectalk / espeak-ng copy -- Inno never removes it
+; and [InstallDelete] does not touch it. A --dectalk-dir / --espeak-dir
+; build still stages it into the portable bundle; the installer no longer
+; ships it.
 Source: "..\portable\tools\speech\piper\*"; DestDir: "{app}\tools\speech\piper"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist; Components: speechpiper
 ; whisper.cpp offline speech engine is NOT bundled (PRD 10.2.4 unbundle):
 ; QUILL downloads the ~8 MB engine on demand to %APPDATA%\Quill\speech-engine

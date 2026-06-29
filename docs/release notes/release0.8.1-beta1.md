@@ -219,6 +219,14 @@ keys line up again.
   **Upgrading from a release that bundled Kokoro? Your existing copy is kept and
   keeps working — nothing to re-download.** This is the proof-of-concept for the
   footprint plan's "host redistributable components as verified release assets."
+- **Smaller installer: DECtalk and eSpeak NG download on demand too.** The classic
+  DECtalk runtime (~2 MB) and the eSpeak NG engine with its voice data (~40 MB) are
+  no longer bundled. When you pick one of these voices, QUILL downloads it for you
+  (checksum-verified, cancelable; disabled in Safe Mode); Windows' built-in SAPI
+  voices remain available immediately as the always-present offline voice.
+  **Upgrading from a release that bundled DECtalk or eSpeak NG? Your existing copies
+  are kept and keep working — nothing to re-download.** Same pinned, SHA-256-verified
+  release-asset path as whisper.cpp and Kokoro.
 - **Proofread Mastodon posts before sending (per account).** In **Tools → Share
   → Mastodon Accounts...**, select an account and tick **Spell-check posts before
   sending**: pressing Post for that account then opens the Spelling Review (F7) on

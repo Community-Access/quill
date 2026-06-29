@@ -386,9 +386,12 @@ existing one?</li>
 or a dedicated <code>quill-assets</code> repo / pinned
 <code>assets-vN</code> tag? (Leaning: a dedicated tag so asset churn is
 decoupled from code releases.)</li>
-<li>Redistribution clearance for re-hosting <strong>DECtalk</strong> and
-<strong>eSpeak NG</strong> (GPL source-offer) on our releases — confirm
-before re-hosting; ffmpeg stays excluded.</li>
+<li><del>Redistribution clearance for re-hosting
+<strong>DECtalk</strong> and <strong>eSpeak NG</strong> on our
+releases.</del> <strong>Resolved:</strong> DECtalk is BSD and eSpeak NG
+is GPLv3 (source-offer already in <code>compliance</code>/third-party
+notices); both are now re-hosted on <code>assets-v1</code> and fetched
+on demand. ffmpeg stays excluded (never re-hosted).</li>
 <li>Download discoverability (10.2.5): an <strong>optional Setup-Wizard
 step</strong> offering the offline voices/engine on first run, a
 <strong>Help-menu</strong> "Download optional components…" entry, or
@@ -615,8 +618,8 @@ the worst moment.</li>
 <li><strong>Already-present is smart, not silent.</strong> If a
 component is already installed, QUILL does not re-download it; it
 <strong>offers to replace</strong> (re-fetch) so the user stays in
-control, and declining keeps the existing copy. (Shipped for
-Kokoro.)</li>
+control, and declining keeps the existing copy. (Shipped for Kokoro,
+whisper.cpp, DECtalk, and eSpeak NG.)</li>
 <li><strong>Newer-version awareness (planned).</strong> Each asset
 records its upstream <strong>version</strong> (a <code>version</code>
 field already exists on the manifest entry). A lightweight update check
@@ -670,12 +673,16 @@ appropriate for a small nonprofit; no bandwidth billing surprise.</li>
 <ul>
 <li><strong>License/redistribution gate (per asset).</strong> We may
 only re-host what we are licensed to redistribute. whisper.cpp (MIT) and
-Piper are fine; <strong>eSpeak NG is GPL</strong> (redistribution
-allowed <em>with</em> the source-offer obligation — track it in
-<code>compliance</code>/third-party notices); <strong>DECtalk</strong>
-redistribution terms must be confirmed against the
-<code>dectalk/dectalk</code> release we already consume. <strong>ffmpeg
-is explicitly excluded:</strong> QUILL's deliberate stance (see
+Piper are fine; <strong>eSpeak NG is GPLv3</strong> (redistribution
+allowed <em>with</em> the source-offer obligation — already in
+<code>compliance</code>/third-party notices, same obligation as
+bundling); <strong>DECtalk</strong> is BSD-licensed (the
+<code>dectalk/dectalk</code> release we already consume), so re-hosting
+is permitted. <strong>Status:</strong> whisper.cpp, Kokoro, DECtalk, and
+eSpeak NG are all now re-hosted on our pinned <code>assets-v1</code>
+release and fetched on demand at runtime (byte-identical re-publishes of
+the upstream binaries, matching the build pins). <strong>ffmpeg is
+explicitly excluded:</strong> QUILL's deliberate stance (see
 <code>quill/core/speech/ffmpeg.py</code>) is to <em>not</em> bundle or
 redistribute ffmpeg — it stays user-installed / official source, never
 on our releases. Every re-hosted asset needs a notices entry.</li>
