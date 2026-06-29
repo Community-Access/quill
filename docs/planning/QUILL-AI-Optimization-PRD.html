@@ -382,6 +382,13 @@ is not a target.</li>
 or AI/speech only?</li>
 <li>Cloud-first: a distinct setup-wizard path, or a toggle on the
 existing one?</li>
+<li>Asset hosting (10.2.4): use the <code>quill</code> repo's releases,
+or a dedicated <code>quill-assets</code> repo / pinned
+<code>assets-vN</code> tag? (Leaning: a dedicated tag so asset churn is
+decoupled from code releases.)</li>
+<li>Redistribution clearance for re-hosting <strong>DECtalk</strong> and
+<strong>eSpeak NG</strong> (GPL source-offer) on our releases — confirm
+before re-hosting; ffmpeg stays excluded.</li>
 </ul>
 <h2 id="9-out-of-scope-for-now">9. Out of scope (for now)</h2>
 <p>Upstream model training/quantization; non-Windows/macOS platforms;
@@ -597,6 +604,70 @@ hardening acquisition (items 4, 5, 7 are partly new work) as a
 <em>precondition</em> for any unbundling. We do not remove an asset from
 the installer until its download path meets this bar; the size win and
 the reliability work ship together, never the win alone.</p>
+<h4
+id="1024-recommended-host-github-releases-on-a-community-access-repo-controlled-primary">10.2.4
+Recommended host: GitHub Releases on a Community-Access repo (controlled
+primary)</h4>
+<p>The strongest way to satisfy "source resilience" (item 5) is to host
+the redistributable assets <strong>ourselves</strong> as GitHub Release
+assets on a Community-Access repo (the <code>quill</code> repo, or a
+dedicated <code>quill-assets</code> repo / a pinned
+<code>assets-vN</code> release tag). The build already pulls several
+engines from <em>upstream</em> GitHub releases
+(<code>dectalk/dectalk</code>, <code>ggml-org/whisper.cpp</code>,
+<code>rhasspy/piper</code>, <code>electron/rcedit</code>); this change
+re-points the <em>runtime</em> on-demand path at a release <strong>we
+control</strong>. Recommended for: <strong>whisper.cpp CLI</strong> (~8
+MB), <strong>Kokoro</strong> models (~120 MB), <strong>DECtalk</strong>,
+<strong>Piper</strong>, <strong>eSpeak NG</strong>, and small/medium
+speech tiers.</p>
+<p><strong>Why it fits the model:</strong></p>
+<ul>
+<li><em>Pinned + verifiable (item 1):</em> stable
+<code>…/releases/download/&lt;tag&gt;/&lt;asset&gt;</code> URLs, pinned
+by tag, each with a recorded SHA-256. Use the <strong>direct download
+URL</strong>, not the releases <strong>API</strong>, so unauthenticated
+GitHub API rate limits never apply.</li>
+<li><em>Source resilience (item 5):</em> we own the release, so an
+upstream deleting or moving a binary can't strand us; we re-host once
+(SHA-verified) and pin to our copy. We can still record the upstream URL
+as a <em>fallback</em>, or vice-versa.</li>
+<li><em>Resumable (item 4):</em> GitHub release-asset downloads honour
+HTTP Range, so the resumable/retry work applies cleanly.</li>
+<li><em>Healthcheck (item 7):</em> trivial — CI resolves our own pinned
+asset URLs + checksums.</li>
+<li><em>Cost:</em> public-repo release assets are free and CDN-backed —
+appropriate for a small nonprofit; no bandwidth billing surprise.</li>
+</ul>
+<p><strong>Hard constraints — must be designed in:</strong></p>
+<ul>
+<li><strong>License/redistribution gate (per asset).</strong> We may
+only re-host what we are licensed to redistribute. whisper.cpp (MIT) and
+Piper are fine; <strong>eSpeak NG is GPL</strong> (redistribution
+allowed <em>with</em> the source-offer obligation — track it in
+<code>compliance</code>/third-party notices); <strong>DECtalk</strong>
+redistribution terms must be confirmed against the
+<code>dectalk/dectalk</code> release we already consume. <strong>ffmpeg
+is explicitly excluded:</strong> QUILL's deliberate stance (see
+<code>quill/core/speech/ffmpeg.py</code>) is to <em>not</em> bundle or
+redistribute ffmpeg — it stays user-installed / official source, never
+on our releases. Every re-hosted asset needs a notices entry.</li>
+<li><strong>2 GB per-asset limit.</strong> GitHub caps a single release
+asset at 2 GB. So this is ideal for engines + small/medium models, but
+the <strong>multi-GB</strong> assets — speech <code>large-v3</code>
+(~3.1 GB) and the GGUF LLMs (<code>phi-4-mini</code> ~2.5 GB) — stay on
+their canonical, already-reliable hosts (Hugging Face), which the code
+already uses. (Splitting a &gt;2 GB asset is possible but not worth the
+complexity now.)</li>
+<li><strong>Verify regardless of host.</strong> Even though we control
+the release, the SHA-256 check stays — it defends against a
+replaced/corrupted asset and lets any mirror/fallback be trusted.</li>
+</ul>
+<p><strong>Net:</strong> adopt our own GitHub Release as the <em>pinned
+primary</em> for redistributable sub-2 GB components, keep multi-GB
+models on Hugging Face, and never re-host ffmpeg. This converts item 5
+from "hope upstream stays up" into "we are the upstream," which is the
+single biggest reliability gain for unbundling.</p>
 <p><strong>Cross-platform.</strong> Windows: embedded-runtime trim is
 the biggest lever; on-demand assets land under the data dir. macOS: the
 py2app bundle differs (framework Python, <code>.dylib</code> signing),

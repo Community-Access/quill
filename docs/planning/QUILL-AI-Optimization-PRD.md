@@ -172,6 +172,11 @@ local model downloaded; on-device defaults fit modest machines.
 - Does "Low-resource mode" also gate non-AI features (e.g. previews), or AI/speech
   only?
 - Cloud-first: a distinct setup-wizard path, or a toggle on the existing one?
+- Asset hosting (10.2.4): use the `quill` repo's releases, or a dedicated
+  `quill-assets` repo / pinned `assets-vN` tag? (Leaning: a dedicated tag so asset
+  churn is decoupled from code releases.)
+- Redistribution clearance for re-hosting **DECtalk** and **eSpeak NG** (GPL
+  source-offer) on our releases — confirm before re-hosting; ffmpeg stays excluded.
 
 ## 9. Out of scope (for now)
 
@@ -347,6 +352,53 @@ of this; unbundling must adopt **all** of it, and close the gaps:
 5, 7 are partly new work) as a *precondition* for any unbundling. We do not remove
 an asset from the installer until its download path meets this bar; the size win
 and the reliability work ship together, never the win alone.
+
+#### 10.2.4 Recommended host: GitHub Releases on a Community-Access repo (controlled primary)
+
+The strongest way to satisfy "source resilience" (item 5) is to host the
+redistributable assets **ourselves** as GitHub Release assets on a Community-Access
+repo (the `quill` repo, or a dedicated `quill-assets` repo / a pinned `assets-vN`
+release tag). The build already pulls several engines from *upstream* GitHub
+releases (`dectalk/dectalk`, `ggml-org/whisper.cpp`, `rhasspy/piper`, `electron/rcedit`);
+this change re-points the *runtime* on-demand path at a release **we control**.
+Recommended for: **whisper.cpp CLI** (~8 MB), **Kokoro** models (~120 MB),
+**DECtalk**, **Piper**, **eSpeak NG**, and small/medium speech tiers.
+
+**Why it fits the model:**
+- *Pinned + verifiable (item 1):* stable `…/releases/download/<tag>/<asset>` URLs,
+  pinned by tag, each with a recorded SHA-256. Use the **direct download URL**, not
+  the releases **API**, so unauthenticated GitHub API rate limits never apply.
+- *Source resilience (item 5):* we own the release, so an upstream deleting or
+  moving a binary can't strand us; we re-host once (SHA-verified) and pin to our
+  copy. We can still record the upstream URL as a *fallback*, or vice-versa.
+- *Resumable (item 4):* GitHub release-asset downloads honour HTTP Range, so the
+  resumable/retry work applies cleanly.
+- *Healthcheck (item 7):* trivial — CI resolves our own pinned asset URLs + checksums.
+- *Cost:* public-repo release assets are free and CDN-backed — appropriate for a
+  small nonprofit; no bandwidth billing surprise.
+
+**Hard constraints — must be designed in:**
+- **License/redistribution gate (per asset).** We may only re-host what we are
+  licensed to redistribute. whisper.cpp (MIT) and Piper are fine; **eSpeak NG is
+  GPL** (redistribution allowed *with* the source-offer obligation — track it in
+  `compliance`/third-party notices); **DECtalk** redistribution terms must be
+  confirmed against the `dectalk/dectalk` release we already consume. **ffmpeg is
+  explicitly excluded:** QUILL's deliberate stance (see `quill/core/speech/ffmpeg.py`)
+  is to *not* bundle or redistribute ffmpeg — it stays user-installed / official
+  source, never on our releases. Every re-hosted asset needs a notices entry.
+- **2 GB per-asset limit.** GitHub caps a single release asset at 2 GB. So this is
+  ideal for engines + small/medium models, but the **multi-GB** assets — speech
+  `large-v3` (~3.1 GB) and the GGUF LLMs (`phi-4-mini` ~2.5 GB) — stay on their
+  canonical, already-reliable hosts (Hugging Face), which the code already uses.
+  (Splitting a >2 GB asset is possible but not worth the complexity now.)
+- **Verify regardless of host.** Even though we control the release, the SHA-256
+  check stays — it defends against a replaced/corrupted asset and lets any
+  mirror/fallback be trusted.
+
+**Net:** adopt our own GitHub Release as the *pinned primary* for redistributable
+sub-2 GB components, keep multi-GB models on Hugging Face, and never re-host
+ffmpeg. This converts item 5 from "hope upstream stays up" into "we are the
+upstream," which is the single biggest reliability gain for unbundling.
 
 **Cross-platform.** Windows: embedded-runtime trim is the biggest lever; on-demand
 assets land under the data dir. macOS: the py2app bundle differs (framework Python,
