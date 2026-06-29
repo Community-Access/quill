@@ -130,21 +130,19 @@ def test_existing_account_without_field_migrates_to_off(store: dict[str, str]) -
 
     # Simulate an account saved before the field existed (opt-in migration).
     Path(str(accounts.accounts_path())).write_text(
-        _json.dumps(
-            {
-                "schema_version": 1,
-                "accounts": [
-                    {
-                        "id": "abc123",
-                        "nickname": "Legacy",
-                        "instance_url": "https://mastodon.social",
-                        "handle": "@legacy@mastodon.social",
-                        "client_id": "cid",
-                    }
-                ],
-                "default_id": "abc123",
-            }
-        ),
+        _json.dumps({
+            "schema_version": 1,
+            "accounts": [
+                {
+                    "id": "abc123",
+                    "nickname": "Legacy",
+                    "instance_url": "https://mastodon.social",
+                    "handle": "@legacy@mastodon.social",
+                    "client_id": "cid",
+                }
+            ],
+            "default_id": "abc123",
+        }),
         encoding="utf-8",
     )
     account = accounts.get_account("abc123")
