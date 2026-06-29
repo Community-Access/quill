@@ -75,6 +75,19 @@ _DEFAULT_GITHUB_LINKS: tuple[tuple[str, str], ...] = (
     ),
 )
 
+# Golden Quills: people who have chosen to support QUILL financially. Donating is
+# always optional and never required to use any feature; this is recognition and
+# thanks, kept in alphabetical order. Add new supporters here.
+_GOLDEN_QUILLS: tuple[str, ...] = (
+    "Allison Meloy",
+    "Caroline Toews",
+    "Douglas Hunsinger",
+    "John McCann",
+)
+
+# Optional, voluntary donation link shown on the Golden Quills tab.
+_DONATE_URL = "http://www.paypal.me/jeffbis"
+
 _OVERVIEW_PARAGRAPHS: tuple[str, ...] = (
     "{product_name} {version} {channel} is a screen-reader-first writing and document "
     f"environment for Windows and Mac from {APP_ORGANIZATION}.",
@@ -166,6 +179,8 @@ class AboutInfo:
     dependencies: tuple[DependencyRow, ...]
     bundled_components: tuple[DependencyRow, ...]
     dependencies_available: bool
+    golden_quills: tuple[str, ...] = ()
+    donate_url: str = ""
     copyright: str = APP_COPYRIGHT
     license_name: str = APP_LICENSE_NAME
     independence_notice: str = INDEPENDENCE_NOTICE
@@ -190,6 +205,19 @@ def _load_contributors() -> tuple[Link, ...]:
         except ValueError:
             continue
     return tuple(out)
+
+
+def _load_golden_quills() -> tuple[str, ...]:
+    """Supporter names, de-duplicated and sorted case-insensitively."""
+    seen: set[str] = set()
+    out: list[str] = []
+    for name in _GOLDEN_QUILLS:
+        cleaned = name.strip()
+        key = cleaned.lower()
+        if cleaned and key not in seen:
+            seen.add(key)
+            out.append(cleaned)
+    return tuple(sorted(out, key=str.lower))
 
 
 def _load_org_links() -> tuple[Link, ...]:
@@ -249,6 +277,8 @@ def gather_about_info(
     contributors: tuple[Link, ...] | None = None,
     org_links: tuple[Link, ...] | None = None,
     github_links: tuple[Link, ...] | None = None,
+    golden_quills: tuple[str, ...] | None = None,
+    donate_url: str | None = None,
     dependency_loader: Callable[[Path], tuple[DependencyRow, ...]] | None = None,
     bundled_loader: Callable[[], tuple[DependencyRow, ...]] | None = None,
     glow_summary: str | None = None,
@@ -300,6 +330,8 @@ def gather_about_info(
         dependencies=dependencies,
         bundled_components=bundled,
         dependencies_available=resolved_pyproject.exists(),
+        golden_quills=golden_quills if golden_quills is not None else _load_golden_quills(),
+        donate_url=donate_url if donate_url is not None else _DONATE_URL,
         support_info=resolved_support,
     )
 

@@ -184,3 +184,18 @@ def _extract_function(source: str, name: str) -> str:
     if next_def is None:
         return rest
     return rest[: next_def.start() + len(name) + 4]
+
+
+def test_about_dialog_builds_a_golden_quills_tab() -> None:
+    src = _info_pages_source()
+    # The Overview tab is followed by the Golden Quills recognition tab.
+    assert "_build_golden_quills_tab(notebook, wx, about_info)" in src
+    tab = _extract_function(src, "_build_golden_quills_tab")
+    assert 'notebook.AddPage(panel, "Golden Quills")' in tab
+    # Donor names come from about_info (sorted in core), shown in a list.
+    assert "about_info" in tab and "golden_quills" in tab
+    # Donating must be presented as optional / never required.
+    assert "optional" in tab.lower()
+    assert "NEVER required" in tab or "never required" in tab.lower()
+    # The Donate button opens the donate URL in a browser.
+    assert "webbrowser.open(donate_url)" in tab

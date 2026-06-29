@@ -19,9 +19,9 @@ def show_about_quill_native(
 ) -> None:
     """Modal About Quill dialog backed by a ``wx.Notebook``.
 
-    Three tabs surface the version, dependencies, and links as navigable
-    controls so JAWS in Forms mode reads them as distinct elements rather
-    than a flattened blob (#260).
+    Tabs (Overview, Golden Quills, Legal, Dependencies, Links) surface the
+    version, supporters, dependencies, and links as navigable controls so JAWS in
+    Forms mode reads them as distinct elements rather than a flattened blob (#260).
     """
     from quill.core.about_info import AboutInfo
     from quill.ui.dialog_contract import apply_modal_ids
@@ -59,6 +59,9 @@ def show_about_quill_native(
     ov_sizer.Add(overview_text, 1, wx.EXPAND | wx.ALL, 8)
     overview.SetSizer(ov_sizer)
     notebook.AddPage(overview, "Overview")
+
+    # --- Golden Quills tab (financial supporters) ---
+    _build_golden_quills_tab(notebook, wx, about_info)
 
     # --- Legal tab ---
     legal_panel = wx.Panel(notebook)
@@ -186,6 +189,84 @@ def _copy_support_to_clipboard(wx: Any, about_info: Any) -> None:
             wx.TheClipboard.SetData(wx.TextDataObject(text))
         finally:
             wx.TheClipboard.Close()
+
+
+def _build_golden_quills_tab(notebook: Any, wx: Any, about_info: Any) -> None:
+    """A warm recognition tab for people who support QUILL financially.
+
+    QUILL is free; donating is entirely optional and never required to use any
+    feature. This tab simply says thank you, lists supporters in alphabetical
+    order, and offers an optional Donate button.
+    """
+    panel = wx.Panel(notebook)
+    sizer = wx.BoxSizer(wx.VERTICAL)
+
+    heading = wx.StaticText(
+        panel, label="Golden Quills — with heartfelt thanks", name="golden_quills_heading"
+    )
+    heading_font = heading.GetFont()
+    heading_font.SetPointSize(heading_font.GetPointSize() + 2)
+    heading.SetFont(heading_font.Bold())
+    sizer.Add(heading, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 10)
+
+    intro = wx.TextCtrl(
+        panel,
+        value=(
+            "QUILL is free, and it always will be. The people below — our Golden "
+            "Quills — chose to support the project financially, and their generosity "
+            "helps keep QUILL independent, accessible, and moving forward. From all "
+            "of us: thank you.\n\n"
+            "Donating is completely optional and is NEVER required to use any part of "
+            "QUILL. Every feature is, and will remain, fully available to everyone. If "
+            "you would like to chip in, the Donate button below opens a PayPal page in "
+            "your browser; if not, please simply enjoy QUILL with our gratitude."
+        ),
+        style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP,
+        name="golden_quills_intro",
+    )
+    intro.SetMinSize((-1, 130))
+    sizer.Add(intro, 0, wx.EXPAND | wx.ALL, 10)
+
+    roll_label = wx.StaticText(panel, label="Our Golden Quills", name="golden_quills_roll_label")
+    roll_label.SetFont(roll_label.GetFont().Bold())
+    sizer.Add(roll_label, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
+
+    roll = wx.ListCtrl(
+        panel,
+        style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.LC_NO_HEADER | wx.LC_HRULES,
+        name="golden_quills_list",
+    )
+    roll.AppendColumn("Supporter", width=420)
+    names = list(getattr(about_info, "golden_quills", ()) or ())
+    if names:
+        for i, name in enumerate(names):
+            roll.InsertItem(i, name)
+    else:
+        roll.InsertItem(0, "Be the first — your name could appear here.")
+    sizer.Add(roll, 1, wx.EXPAND | wx.ALL, 10)
+
+    donate_url = str(getattr(about_info, "donate_url", "") or "")
+    note = wx.StaticText(
+        panel,
+        label="Optional — never required. QUILL stays free for everyone.",
+        name="golden_quills_optional_note",
+    )
+    sizer.Add(note, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
+
+    if donate_url:
+        donate_btn = wx.Button(panel, label="Donate (optional)", name="golden_quills_donate")
+        donate_btn.SetToolTip(f"Open {donate_url} in your browser. Donating is optional.")
+
+        def _on_donate(_event: Any) -> None:
+            import webbrowser
+
+            webbrowser.open(donate_url)
+
+        donate_btn.Bind(wx.EVT_BUTTON, _on_donate)
+        sizer.Add(donate_btn, 0, wx.LEFT | wx.RIGHT | wx.TOP | wx.BOTTOM, 10)
+
+    panel.SetSizer(sizer)
+    notebook.AddPage(panel, "Golden Quills")
 
 
 def _build_dependency_list(parent: Any, wx: Any, rows: Any) -> Any:

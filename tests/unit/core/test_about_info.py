@@ -235,3 +235,32 @@ def test_copyright_and_license_defaults_use_branding() -> None:
     info = gather_about_info()
     assert info.copyright == APP_COPYRIGHT
     assert info.license_name == APP_LICENSE_NAME
+
+
+def test_golden_quills_loader_sorts_and_dedupes(monkeypatch) -> None:
+    import quill.core.about_info as ai
+
+    monkeypatch.setattr(ai, "_GOLDEN_QUILLS", ("John McCann", "allison meloy", "John McCann"))
+    # De-duplicated (case-insensitive) and sorted case-insensitively.
+    assert ai._load_golden_quills() == ("allison meloy", "John McCann")
+
+
+def test_golden_quills_default_roster_is_alphabetical() -> None:
+    info = gather_about_info()
+    assert info.golden_quills == (
+        "Allison Meloy",
+        "Caroline Toews",
+        "Douglas Hunsinger",
+        "John McCann",
+    )
+    # Always sorted, regardless of source order.
+    assert list(info.golden_quills) == sorted(info.golden_quills, key=str.lower)
+
+
+def test_donate_url_is_present_and_optional_default() -> None:
+    info = gather_about_info()
+    assert info.donate_url == "http://www.paypal.me/jeffbis"
+    # Injectable for tests / future changes.
+    assert gather_about_info(donate_url="https://example.org/give").donate_url == (
+        "https://example.org/give"
+    )
