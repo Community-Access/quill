@@ -94,7 +94,7 @@ fasterwhisper = ["faster-whisper>=1.0", "huggingface_hub>=0.20"]
 vosk = ["vosk>=0.3.45"]
 # MP3 chapter markers for batch document-to-speech (§4.8): mutagen writes the
 # ID3v2.3 CHAP/CTOC frames. Imported lazily in quill/core/speech/chapters.py.
-mp3 = ["mutagen>=1.47"]
+mp3 = ["mutagen>=1.48.1"]
 # Native Word (.docx) export with full formatting fidelity (font family, point
 # size, color, highlight, paragraph alignment) for the hidden-codes feature
 # (docs/rich-text-formatting-hidden-codes-design.md). Optional: when absent,
