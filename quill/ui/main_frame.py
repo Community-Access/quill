@@ -369,6 +369,9 @@ from quill.core.spellcheck import (
 from quill.core.spellcheck import (
     previous_misspelling as find_previous_misspelling,
 )
+from quill.core.spellcheck import (
+    set_active_language as spellcheck_set_active_language,
+)
 from quill.core.spoken_echo import format_spoken_echo, new_history, record_spoken
 from quill.core.sticky_notes import save_sticky_note
 from quill.core.structure_nav import (
@@ -1459,6 +1462,14 @@ class MainFrame(
             ("braille pack prompt", self._maybe_prompt_braille_pack_install),
             ("startup profile prompt", self.run_startup_profile_prompt),
             ("watch-folder startup", self._maybe_start_watch_folder),
+            # Apply the saved spell-check language before the cache warms so the
+            # first F7 validates against it (downloaded dicts via Tools > Spelling).
+            (
+                "spell-check language",
+                lambda: spellcheck_set_active_language(
+                    getattr(self.settings, "spellcheck_language", "en_US")
+                ),
+            ),
             ("lexical cache warm-up", start_lexical_preload),
             # §179: F1 / Shift+F1 sync-decodes ``topics.json`` the first time it
             # is pressed. On a cold machine this can take a few hundred ms and
@@ -16465,6 +16476,16 @@ class MainFrame(
             f"Spell check: {backend.name}; user dictionaries: personal={personal_count}, "
             f"document={document_count}, project={project_count}"
         )
+
+    def choose_spell_language(self) -> None:
+        """Pick the spell-check language, downloading the dictionary on demand.
+
+        Thin delegate to :mod:`quill.ui.spell_language`; English ships bundled and
+        other languages fetch from QUILL's verified release asset (PRD 10.2.4).
+        """
+        from quill.ui.spell_language import open_spell_language_chooser
+
+        open_spell_language_chooser(self._wx, self)
 
     def _spell_review_textctrl(self, text_ctrl: object) -> None:
         """Run the F7 spelling review over a wx text control (e.g. a Mastodon post).

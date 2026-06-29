@@ -723,6 +723,19 @@ save, so you can correct misspellings before the file is written. Review or skip
 the issues as usual; the save then proceeds with your corrections. This applies
 to **Save** and **Save As** for the document you are editing.
 
+#### Spell-check language
+
+**Tools → Spell Check Language...** chooses the language the spell checker validates
+against — it affects both the F7 review and check-as-you-type. **English (United
+States)** ships built in and works offline immediately. Other languages are
+downloaded on demand: pick, for example, **Spanish (Spain)** or **French (France)**
+and QUILL fetches that dictionary the first time from its own verified source
+(checksum-checked, with a cancelable progress window), then it works offline like
+English. Your choice is remembered between sessions. If you are offline or the
+download is cancelled, English keeps working and nothing else is affected. The
+downloaded dictionaries are stored under your QUILL data folder, so reinstalling or
+upgrading QUILL never makes you fetch them again.
+
 **Editor shortcuts** (without opening the dialog):
 
 | Key | Action |

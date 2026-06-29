@@ -42,9 +42,7 @@ full set whenever you want it.
 **Ask Quill — one conversation that knows your document.** A single, context-aware
 chat (**Ask Quill**) replaces the old scattered AI dialogs. Ask about your text,
 have it draft or rewrite, and apply suggestions through a reviewable change
-preview. **Ask Quill by Voice** adds spoken questions and spoken answers with
-transport controls for a hands-light, eyes-free conversation, and falls back to
-text and screen-reader announcements when voice is unavailable.
+preview.
 
 **Turn recordings into finished documents — the Listening Companion.** Transcribe
 an audio or video file (optionally **translating it to English** or **identifying
@@ -278,6 +276,13 @@ verbosity. Hidden by default; your clean editing buffer is unchanged.
   check a document before saving** option (off by default) opens the Spelling
   Review (F7) automatically when you Save or Save As, so you can correct the
   document before the file is written; the save then proceeds.
+- **Spell-check in other languages, downloaded on demand.** **Tools → Spell Check
+  Language...** picks the language QUILL checks against. English works out of the
+  box; choosing **Spanish (Spain)** or **French (France)** downloads that dictionary
+  the first time from QUILL's verified source (checksum-checked, cancelable), then
+  works offline. The choice is remembered and applies to the F7 review and
+  check-as-you-type. More languages can follow; this release proves the path with
+  Spanish and French.
 - **Hear how deep your indentation is.** Tab / Shift+Tab can now speak the new
   indentation depth — "4 spaces", "8 spaces", "1 tab" — instead of "Indented
   lines", honouring your tabs-vs-spaces and indent-width settings. Toggle with

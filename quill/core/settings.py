@@ -86,6 +86,9 @@ class Settings:
     # When True, saving a document first opens the F7 spelling review so the user
     # can correct misspellings before the file is written. Off by default.
     spell_check_before_save: bool = False
+    # Hunspell language the spell checker validates against. en_US ships bundled;
+    # other languages download on demand (quill.core.spellcheck.install_language).
+    spellcheck_language: str = "en_US"
     # Reveal Codes pane (WordPerfect-style hidden-code inspector). Hidden by
     # default; Alt+F3 toggles it, F6 cycles focus into it.
     reveal_codes_visible: bool = False
@@ -538,6 +541,7 @@ class Settings:
         persistent_undo = bool(data.get("persistent_undo", False))
         spellcheck_as_you_type = bool(data.get("spellcheck_as_you_type", False))
         spell_check_before_save = bool(data.get("spell_check_before_save", False))
+        spellcheck_language = str(data.get("spellcheck_language", "en_US")).strip() or "en_US"
         reveal_codes_visible = bool(data.get("reveal_codes_visible", False))
         reveal_codes_view = str(data.get("reveal_codes_view", "structured")).strip().lower()
         if reveal_codes_view not in {"structured", "flowed"}:
@@ -1073,6 +1077,7 @@ class Settings:
             persistent_undo=persistent_undo,
             spellcheck_as_you_type=spellcheck_as_you_type,
             spell_check_before_save=spell_check_before_save,
+            spellcheck_language=spellcheck_language,
             reveal_codes_visible=reveal_codes_visible,
             reveal_codes_view=reveal_codes_view,
             reveal_codes_verbosity=reveal_codes_verbosity,

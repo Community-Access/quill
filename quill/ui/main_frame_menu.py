@@ -1586,6 +1586,11 @@ class MenuBuilderMixin:
             self._id_misspelling_list,
             self._menu_label(_("&Misspelling List..."), "tools.misspelling_list"),
         )
+        self._id_spell_language = wx.NewIdRef()
+        writing_menu.Append(
+            self._id_spell_language,
+            self._menu_label(_("Spell Check &Language..."), "tools.spell_language"),
+        )
         self._id_thesaurus = wx.NewIdRef()
         writing_menu.Append(
             self._id_thesaurus,
@@ -3569,6 +3574,11 @@ class MenuBuilderMixin:
             wx.EVT_MENU,
             lambda _e: self.open_misspelling_list(),
             id=self._id_misspelling_list,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.choose_spell_language(),
+            id=self._id_spell_language,
         )
         self.frame.Bind(
             wx.EVT_MENU,
