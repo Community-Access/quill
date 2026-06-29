@@ -17508,8 +17508,9 @@ class MainFrame(
             if again != wx.YES:
                 force = False  # keep the existing files
                 if kokoro_onnx_ready() and is_kokoro_onnx_available():
+                    # _set_status already speaks; a second _announce of the same
+                    # text would double-speak it (#728).
                     self._set_status("Kokoro is already installed.")
-                    self._announce("Kokoro is already installed.")
                     return
 
         cancel = threading.Event()
