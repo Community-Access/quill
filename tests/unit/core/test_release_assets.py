@@ -52,6 +52,21 @@ def test_checksum_mismatch_raises(monkeypatch: pytest.MonkeyPatch, tmp_path) -> 
         ra.fetch_component("t", tmp_path / "d")
 
 
+def test_should_cancel_raises_download_cancelled_without_network(
+    monkeypatch: pytest.MonkeyPatch, tmp_path
+) -> None:
+    # should_cancel is checked at the top of the download (before any network),
+    # and a cancel is never retried -- it surfaces immediately as DownloadCancelled.
+    monkeypatch.delenv("QUILL_SAFE_MODE", raising=False)
+    with pytest.raises(ra.DownloadCancelled):
+        ra.fetch_component("whispercpp", tmp_path / "d", should_cancel=lambda: True)
+
+
+def test_kokoro_asset_is_pinned() -> None:
+    assert ra.is_pinned(ra.ASSETS["kokoro"]) is True
+    assert ra.ASSETS["kokoro"].expect_member == "kokoro-v1.0.int8.onnx"
+
+
 def test_fetch_verifies_then_unpacks_expected_member(
     monkeypatch: pytest.MonkeyPatch, tmp_path
 ) -> None:

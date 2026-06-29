@@ -260,7 +260,7 @@ class SpeechCommandsMixin:
         """
         import threading
 
-        from quill.core.release_assets import ReleaseAssetError, fetch_component
+        from quill.core.release_assets import fetch_component
         from quill.core.speech import models
         from quill.core.speech.providers.whispercpp import resolve_whisper_executable
         from quill.ui.ai_transcribe_dialog import AIProgressDialog
@@ -297,8 +297,6 @@ class SpeechCommandsMixin:
         last_percent = {"value": -1}
 
         def _on_progress(fraction: float, message: str) -> None:
-            if cancel.is_set():
-                raise ReleaseAssetError("Download cancelled.")
             percent = int(max(0.0, min(1.0, fraction)) * 100)
             if percent == last_percent["value"]:
                 return  # throttle UI updates to whole-percent changes (#748)
@@ -309,7 +307,13 @@ class SpeechCommandsMixin:
 
         def _run() -> None:
             try:
-                fetch_component("whispercpp", target, progress=_on_progress)
+                fetch_component(
+                    "whispercpp",
+                    target,
+                    progress=_on_progress,
+                    should_cancel=cancel.is_set,
+                    label="Downloading offline speech engine...",
+                )
             except Exception as exc:  # noqa: BLE001 - surface a clean message
                 wx.CallAfter(progress.close)
                 if cancel.is_set():
