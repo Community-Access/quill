@@ -361,9 +361,10 @@ submit for NVDA users. (#729)</li>
 is running.</strong> QUILL's own SAPI voice is only a fallback for
 people with no screen reader; if it failed to start, QUILL spoke a scary
 "TTS engine failed" message (with a wrong "press F8" instruction) even
-though the screen reader was handling speech. That case is now logged
-quietly and not spoken — QUILL only speaks up when you genuinely have no
-other voice, pointing you to the real <strong>Tools → Retry TTS
+though the screen reader was handling speech. That case is now kept only
+as a quiet, informational note (not an alarming accessibility alert) and
+is never spoken — QUILL only speaks up when you genuinely have no other
+voice, pointing you to the real <strong>Tools → Retry TTS
 Engine</strong>. The SAPI voice also initialises correctly under a
 read-only install now (its helper cache moved to a writable per-user
 folder), so self-voicing works for those who rely on it. Relatedly, the
@@ -388,6 +389,23 @@ download now opens after that dialog is fully gone, so the progress
 window presents and your screen reader announces it. Once the Kokoro
 models are present, the redundant 114 MB download button is hidden
 rather than offered again.</li>
+<li><strong>Offline dictation works out of the box — the speech engine
+is now bundled.</strong> The private, on-device Whisper engine behind
+dictation (Ctrl+F9) and <strong>Tools → Speech</strong> was missing from
+the installer, so QUILL reported "whisper binary not found" even after
+you downloaded a model (the model and the engine are separate
+downloads). The engine now ships with every build, so offline dictation
+works with no extra step. (#742)</li>
+<li><strong>Saving a Faster Whisper model no longer freezes at 2% and
+crashes.</strong> The download refreshed the on-screen progress so often
+that it flooded QUILL's main thread — the bar appeared stuck near 2% and
+the app eventually crashed. Progress now updates at most once per
+percent, so model downloads run smoothly to the end. (#748)</li>
+<li><strong>Export speech audio as MP3 (and more), not just
+WAV.</strong> Generate Speech Audio only ever offered WAV, even with
+ffmpeg installed. When ffmpeg is present you can now save as
+<strong>MP3, M4A, M4B, OGG, Opus, or FLAC</strong>; without it, WAV
+still works exactly as before. (#750)</li>
 </ul>
 <h3 id="enhancements">Enhancements</h3>
 <ul>
