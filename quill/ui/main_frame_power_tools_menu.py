@@ -119,6 +119,22 @@ def _build_power_tools_registrar() -> FirstPartyRegistrar:
         label="Explain A&bbreviation...",
         separator_before=False,
     )
+    add(
+        id="edit.repeat_command",
+        title="Repeat Next Command",
+        top_level="Edit",
+        group="edit",
+        label="&Repeat Next Command...",
+        separator_before=True,
+    )
+    add(
+        id="edit.restore_deletion",
+        title="Restore Deleted Text",
+        top_level="Edit",
+        group="edit",
+        label="Restore &Deleted Text...",
+        separator_before=False,
+    )
 
     # File menu ----------------------------------------------------------
     add(
@@ -607,6 +623,14 @@ def _build_power_tools_registrar() -> FirstPartyRegistrar:
         top_level="Tools",
         group="power_tools",
         label="&Line Statistics",
+        separator_before=True,
+    )
+    add(
+        id="power.describe_character",
+        title="Describe Character at Cursor",
+        top_level="Tools",
+        group="power_tools",
+        label="Describe &Character at Cursor",
         separator_before=True,
     )
     return registrar

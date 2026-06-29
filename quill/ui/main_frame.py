@@ -118,6 +118,7 @@ from quill.core.custom_profiles import (
     load_custom_profiles,
     save_custom_profiles,
 )
+from quill.core.deletion_ring import DeletionRing, removed_span
 from quill.core.diagnostics import (
     build_bug_report_payload,
     build_diagnostics_review_text,
@@ -485,7 +486,9 @@ from quill.ui.main_frame_ai_actions import AiActionsMixin
 from quill.ui.main_frame_braille import BrailleCommandsMixin
 from quill.ui.main_frame_braille_phase2 import BraillePhase2CommandsMixin
 from quill.ui.main_frame_braille_phase3 import BrailleProofingCommandsMixin
+from quill.ui.main_frame_braille_repair import BrailleRepairMixin
 from quill.ui.main_frame_browse import BrowseModeMixin
+from quill.ui.main_frame_classic_editor import ClassicEditorMixin
 from quill.ui.main_frame_copy_tray import CopyTrayMixin
 from quill.ui.main_frame_devtools import DevToolsMixin
 from quill.ui.main_frame_dictation_hotkeys import DictationHotkeysMixin
@@ -838,6 +841,7 @@ class MainFrame(
     LanguageDetectMixin,
     BrailleProofingCommandsMixin,
     BraillePhase2CommandsMixin,
+    BrailleRepairMixin,
     BrailleCommandsMixin,
     HygieneMixin,
     SimpleOpenMixin,
@@ -860,6 +864,7 @@ class MainFrame(
     GitHubRemoteMixin,
     DevToolsMixin,
     PowerToolsActionsMixin,
+    ClassicEditorMixin,
     PowerToolsMenuMixin,
     QuillinsMenuMixin,
     ContextHelpMixin,
@@ -1120,6 +1125,7 @@ class MainFrame(
         self._mark_ring = MarkRing()
         self._named_marks = NamedMarks()
         self._location_ring = LocationRing()
+        self._deletion_ring = DeletionRing()
         self._region_tracker = RegionTracker()
         # The F6 / Shift+F6 region rotation is computed live (see
         # _current_focus_region_labels) because the side preview pane only
@@ -1217,6 +1223,9 @@ class MainFrame(
         self._sticky_note_hotkey_id = wx.NewIdRef()
         self.commands = CommandRegistry()
         self.commands.set_run_listener(self._on_command_run)
+        # The repeat-count arming command must never multiply itself when a count
+        # is already pending (it would otherwise prompt once per pending count).
+        self.commands.register_non_repeatable("edit.repeat_command")
         # #235: surface the soft BRF save warning (non-NABCC chars saved as-is).
         from quill.io.text import set_save_warning_hook
 
@@ -3563,6 +3572,7 @@ class MainFrame(
         self._register_power_tools_commands()
         self._register_quillins_commands()
         self._register_braille_commands()
+        self._register_braille_repair_commands()
         self._register_speech_commands()
         self._register_list_studio_commands()
         self._register_dictation_hotkey_commands()
@@ -24056,6 +24066,11 @@ class MainFrame(
         text = self.editor.GetValue()
         cursor = self.editor.GetInsertionPoint()
         updated, new_cursor = operation(text, cursor)
+        # Record what this delete removed so Restore Deleted Text can bring it
+        # back at a new location (the WordPerfect Editor "Cancel" buffer).
+        removed = removed_span(text, updated)
+        if removed:
+            self._deletion_ring.record(removed)
         self._replace_document_text(updated)
         self.document.set_text(updated)
         self.editor.SetInsertionPoint(new_cursor)

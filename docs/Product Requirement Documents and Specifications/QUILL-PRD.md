@@ -3423,6 +3423,37 @@ Where QUILL stores its data directory (`app_data_dir()` — settings, recovery, 
 
 ---
 
+### 5.89a Classic-editor power features — Repeat, Restore Deleted Text, Describe Character
+
+**Motivation.** Three keyboard-first conveniences from the lineage of the WordPerfect Editor that have no prior equivalent in QUILL. Each targets the same audience as the rest of the power-tool suite: writers who work entirely from the keyboard with a screen reader, and who value precise, repeatable, inspectable editing. All three ship **unbound** (no default shortcut), registered through the standard command registry so they appear in the Command Palette and Keymap Editor and recirculate into their conventional menus.
+
+#### Repeat Next Command (`edit.repeat_command`, Edit menu)
+
+A numeric repeat prefix for *any* command. The user invokes Repeat Next Command, enters a count in a native, focus-managed prompt, and the very next command dispatched through the command registry runs that many times — move down twenty lines, delete ten words, insert forty dashes, or replay a recorded macro N times — in one gesture.
+
+- **Mechanism.** The count lives on `CommandRegistry` (wx-free): `arm_repeat(count)` clamps the value to `[1, MAX_REPEAT]` (`MAX_REPEAT = 1000`, so a typo can never spin the editor unbounded). `run(command_id)` consumes the pending count at the top of dispatch, resets it to 1, and loops the handler that many times; the run listener fires once per iteration so macro recording captures each step faithfully. The count persists only until the next eligible `run` — it does not leak across a session.
+- **Self-protection.** The arming command registers itself as non-repeatable (`register_non_repeatable`), so re-arming while a count is pending never multiplies the prompt.
+- **Scope.** Repeats commands dispatched through the registry (the keyboard path screen-reader users rely on). Re-entrant handlers that themselves call `run` see a cleared count and are not double-counted.
+
+#### Restore Deleted Text (`edit.restore_deletion`, Edit menu)
+
+A small kill-ring distinct from both Undo and the Copy Tray. QUILL's structured delete commands (`delete_to_line_start`/`_end`, `delete_to_document_start`/`_end`, `delete_paragraph`) record the removed span into a deletion ring; Restore Deleted Text presents the recent deletions in an accessible list and re-inserts the chosen one at the cursor.
+
+- **Why it is distinct.** Undo reverts the last edit *in place*; the Copy Tray captures *copies*. The deletion ring captures *deletions* and lets the writer place recovered text *anywhere* — the modern form of the WordPerfect Editor "Cancel" buffer.
+- **Mechanism.** `quill/core/deletion_ring.py` holds `DeletionRing` (newest-first, capped at three, collapses consecutive identical deletions) and `removed_span(before, after)`, which recovers the contiguous removed run by stripping the common prefix and suffix. `_apply_line_operation` records `removed_span` after every structured delete. The UI presents a `wx.SingleChoiceDialog` of speakable previews (`"Most recent (12 characters): ..."`); a single entry inserts immediately.
+- **Read-only and bounds.** Honours the read-only guard; an empty ring announces "No deleted text to restore".
+
+#### Describe Character at Cursor (`power.describe_character`, Tools → Advanced)
+
+The screen-reader descendant of "Reveal Codes". An accessible dialog — rendered in the same read-only `ContextHelpDialog` the F1 help uses, so a screen reader reads the whole description in one pass — names the exact character under the caret.
+
+- **What it reports.** Glyph (or a speakable stand-in for non-printing characters), Unicode name, code point in hexadecimal and decimal, general category in plain language, and a note for invisibles that bite writers: no-break space, narrow no-break space, zero-width space/joiner/non-joiner, BOM, smart quotes, en/em dash, soft hyphen, tab, and line endings. Non-ASCII characters are flagged.
+- **Mechanism.** `quill/core/char_describe.py` exposes `describe_character(text, position) -> CharacterDescription` (a `summary` for the status line and a `detail` block for the dialog). Positions at or past end of text report "End of document" rather than raising. The special-character map is keyed by code point (built via `chr`) so invisibles are unambiguous in source.
+
+**Implementation map.** `quill/core/commands.py` (`arm_repeat`, `pending_repeat`, `register_non_repeatable`, repeat loop in `run`), `quill/core/deletion_ring.py`, `quill/core/char_describe.py`, `quill/ui/main_frame_power_tools.py` (`repeat_command`, `restore_deletion`, `describe_character`, `_deletion_preview`), `quill/ui/main_frame.py` (`_deletion_ring` init, non-repeatable registration, `removed_span` capture in `_apply_line_operation`), `quill/ui/main_frame_power_tools_menu.py` (manifest entries), `quill/core/feature_command_map.py`, `quill/core/help/topics.json`. Tests: `tests/unit/core/test_command_repeat.py`, `test_deletion_ring.py`, `test_char_describe.py`.
+
+---
+
 ### 5.90 AI Writing Toolkit: architecture and feature matrix
 
 This section documents the AI writing layer shipped in QUILL 0.6.0, covering provider abstraction, the connection model, per-feature design, and the data-disclosure posture.
@@ -5875,12 +5906,41 @@ that planning section.
   translation output is always labelled a *draft*. On worker failure QUILL
   announces the reason and opens no empty document.
 
+- **Layout diagnostics and repair (BR-024, NLS-BRT parity).** A **Braille →
+  Repair** submenu brings the NLS Braille Repair Tool's proofreading workflow to
+  QUILL for the two classic problems: *page width exceeded* (a line over the cell
+  limit, almost always trailing spaces) and *page depth exceeded* (a page over
+  the line limit).
+  - **Read Layout Metrics** (`braille.read_layout_metrics`) speaks the NLS-style
+    status in one pass: cursor cell and current line length; the longest line in
+    the file vs. the cells-per-line limit (with a "page width exceeded" warning);
+    current/total braille pages and the line within the page; and the longest
+    page vs. the lines-per-page limit (with a "page depth exceeded" warning).
+  - **Go to Longest Line** / **Go to Longest Page**
+    (`braille.go_to_longest_line`, `braille.go_to_longest_page`) move the caret to
+    the worst offender for manual repair, recording the jump in the location ring.
+  - **Remove Trailing Spaces on This Line** / **…in Whole File**
+    (`braille.strip_trailing_spaces_line`, `braille.strip_trailing_spaces_document`)
+    strip trailing spaces/tabs while preserving every line ending and form feed.
+  - The cell and line limits come from the existing `braille_cells_per_line`
+    (28–42, default 40) and `braille_lines_per_page` (20–30, default 25)
+    settings, so the diagnostics honour the user's configured page geometry.
+  - **Implementation map.** `quill/core/brf_repair.py` (pure: `LayoutMetrics`,
+    `compute_layout_metrics`, `describe_layout`, `longest_line_offset`,
+    `longest_page_offset`, `strip_trailing_spaces_all`,
+    `strip_trailing_spaces_current_line`), `quill/ui/main_frame_braille_repair.py`
+    (`BrailleRepairMixin`, in its own module so the at-budget
+    `main_frame_braille.py` need not grow), `quill/core/feature_command_map.py`,
+    `quill/core/help/topics.json`. Tests: `tests/unit/core/test_brf_repair.py`.
+
 ### Non-goals (this phase)
 
 The proofing/sidecar workflow (Phase 3) and the bundled translation
 pack install path remain tracked separately (BR-015 and later). The translation
 install path is a no-op stub until the signed, audited download lands; see the
 deployment plan in `docs/planning/planning.md` (Feature: Braille Mode).
+Six-key entry and an embedded forward-translation editor (as in NLS-BRT's
+"contracted braille typed manually") remain out of scope.
 
 ## §27. Markdown Profiles and Table of Contents (#257)
 

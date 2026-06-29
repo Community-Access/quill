@@ -1505,6 +1505,28 @@ Use the familiar commands first:
 
 Quill adds two especially useful ideas on top of that.
 
+### Repeat Next Command
+
+When you need to do the same thing several times — move down twenty lines, delete ten words, insert forty dashes, or replay a macro — you do not have to press the key over and over. Choose **Edit → Repeat Next Command…**, type how many times, and the *next* command you run repeats that many times. Then the count clears automatically, so ordinary editing carries on as normal.
+
+A few details:
+
+- It works with almost any command, including movement, deletion, insertion, and a recorded macro.
+- The count is capped at 1000, so a slip of the finger can never run away.
+- It ships without a keyboard shortcut. If you use it often, assign one in **Preferences → Keyboard → Keymap Editor** (search for "Repeat Next Command").
+
+This is the keyboard-first "Repeat" idea from the classic WordPerfect Editor, brought into QUILL.
+
+### Restore Deleted Text
+
+Undo (`Ctrl+Z`) puts the last edit back exactly where it was. Sometimes you want the opposite: you deleted a sentence, and now you want to drop it somewhere *else*. **Edit → Restore Deleted Text…** remembers the last three blocks you removed with QUILL's structured delete commands — delete to start or end of line, delete to start or end of document, and delete paragraph — and lets you pick one from a list and re-insert it at the cursor.
+
+- The list shows each deletion newest-first with a short preview and its length, so you can tell them apart by ear.
+- If there is only one remembered deletion, it is restored immediately with no list.
+- Like Repeat Next Command, it ships unbound; assign a shortcut in the Keymap Editor if you like (search for "Restore Deleted Text").
+
+This is the modern, place-it-anywhere form of the classic Editor's "Cancel" buffer.
+
 ### Copy Tray
 
 Copy Tray is **twelve** independently addressable clipboard slots that survive application restarts. Each slot holds text you copy there explicitly. Unlike the system clipboard — shared across every application and reset on every copy — Copy Tray slots belong exclusively to QUILL and hold their contents until you replace or clear them.
@@ -2201,6 +2223,17 @@ Under **Format → HTML & Encoding**, Quill includes a full set of tools for the
 
 Quill earns trust by making difficult files readable and inspectable.
 
+### Describe Character at Cursor
+
+Some characters look the same but are not: a curly "smart" quote versus a straight apostrophe, a no-break space versus an ordinary space, an invisible zero-width space that quietly breaks a search, or a stray byte-order mark pasted from the web. **Tools → Advanced → Describe Character at Cursor** opens an accessible dialog — in the same read-only style as F1 help, so your screen reader reads it all in one pass — describing exactly what sits under the cursor:
+
+- its name (for example "No-break space" or "Right single quotation mark"),
+- its Unicode code point in both hexadecimal and decimal,
+- its category in plain language (uppercase letter, dash punctuation, control character, and so on), and
+- a note for the invisibles that are easy to miss, plus a flag when the character is non-ASCII.
+
+If the cursor is at the very end of the document, it tells you so rather than guessing. This is the screen-reader descendant of the classic "Reveal Codes" view. It ships without a shortcut; assign one in the Keymap Editor (search for "Describe Character") if you inspect text often.
+
 ### Read Aloud
 
 Read Aloud uses local voices with a deterministic support policy. The Windows system voice runs on **SAPI 5**; **DECtalk** and **eSpeak NG** are bundled for immediate local playback; **Piper** and **Kokoro** (neural, offline) are available as explicit downloads from Speech Center so base installs stay smaller. You can start, pause, stop, preview, and choose a voice. Speech onboarding announces current availability and recommended next actions before any download starts. For cloud voices, see [Read Aloud with AI Voice](#read-aloud-with-ai-voice-openai-or-google-gemini).
@@ -2804,8 +2837,9 @@ QUILL opens and edits formatted braille text files — `.brf`, `.brl`, `.pef`, a
 - **Page Tools** — Insert Braille Page Break (a form feed) and Remove Braille Page Break at the cursor, plus Recalculate Page Map (rebuild the page map after edits) and a placeholder for Normalize Line Endings.
 - **Proofing** — track your proofreading progress without ever changing the braille file. Mark the current braille page Proofed, Needs Review, or clear its mark; Add a Proofing Note to the current page; Read a spoken Progress Summary (pages proofed, pages needing review, last proofed page, and estimated completion); List Proofed Pages or List Pages Needing Review (choosing a page jumps you to it); and Export a Proofing Report to a plain-text file. Progress is stored in a small companion file next to the braille file, so it travels with the document and never alters it. These commands tell you to save the file first if it has not been saved yet.
 - **Validation** — check the layout of a braille file. **Validate BRF Layout** scans for ten kinds of problem — lines or pages that are too long, pages that look stuck (too short), missing page breaks, mixed line endings, characters that are not braille ASCII, malformed or missing page indicators, gaps or duplicates in page numbering, inconsistent running heads, and files that are Unicode braille rather than NABCC — and opens a Warnings List you can step through; choosing a warning takes you to it. **Next Warning** and **Previous Warning** move through the findings and announce "Warning N of M" with the message, and **Warnings Summary** speaks the total and the most common categories. Validation only reads the file; it never changes it.
+- **Repair** — fix the two problems that stop a braille file from embossing cleanly. **Read Layout Metrics** speaks the diagnostic numbers in one pass: the cursor's cell and the current line length; the longest line in the file against your cells-per-line limit, with a spoken "page width exceeded" when it is over; the current and total braille pages; and the longest page against your lines-per-page limit, with a spoken "page depth exceeded" when it is over. **Go to Longest Line** and **Go to Longest Page** take you straight to the worst offender so you can repair it by hand — for a too-deep page, that usually means inserting a page break (Insert Braille Page Break) where one is missing. **Remove Trailing Spaces on This Line** and **Remove Trailing Spaces in Whole File** clear the trailing spaces that cause most page-width problems, while keeping every line ending and form feed intact. The cell and line limits come from your **Cells per line** and **Lines per page** settings under **Preferences → Braille**, so the diagnostics always match the page geometry you are transcribing for.
 
-Every status and navigation command is safe to run on a non-braille document — it simply tells you "This is not a braille document" rather than doing anything.
+Every status, navigation, and layout command is safe to run on a non-braille document — it simply tells you "This is not a braille document" rather than doing anything. (Remove Trailing Spaces and Go to Longest Line work on any document's text.)
 
 **Translation (Universal BRF Pack).** Forward and back translation between print text and braille require the optional **QUILL Braille Pack**. Instead of a simple set of tables, the pack uses a three-layer architecture: a full technical catalog of every available liblouis table, a set of user-facing profiles that map friendly names to the correct tables, and the translation runtime itself.
 

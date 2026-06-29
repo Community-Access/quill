@@ -1,310 +1,166 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>release0.8.1-beta1</title>
-  <style>
-    /* Default styles provided by pandoc.
-    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-    */
-    html {
-      color: #1a1a1a;
-      background-color: #fdfdfd;
-    }
-    body {
-      margin: 0 auto;
-      max-width: 36em;
-      padding-left: 50px;
-      padding-right: 50px;
-      padding-top: 50px;
-      padding-bottom: 50px;
-      hyphens: auto;
-      overflow-wrap: break-word;
-      text-rendering: optimizeLegibility;
-      font-kerning: normal;
-    }
-    @media (max-width: 600px) {
-      body {
-        font-size: 0.9em;
-        padding: 12px;
-      }
-      h1 {
-        font-size: 1.8em;
-      }
-    }
-    @media print {
-      html {
-        background-color: white;
-      }
-      body {
-        background-color: transparent;
-        color: black;
-        font-size: 12pt;
-      }
-      p, h2, h3 {
-        orphans: 3;
-        widows: 3;
-      }
-      h2, h3, h4 {
-        page-break-after: avoid;
-      }
-    }
-    p {
-      margin: 1em 0;
-    }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
-    }
-    img {
-      max-width: 100%;
-    }
-    svg {
-      height: auto;
-      max-width: 100%;
-    }
-    h1, h2, h3, h4, h5, h6 {
-      margin-top: 1.4em;
-    }
-    h5, h6 {
-      font-size: 1em;
-      font-style: italic;
-    }
-    h6 {
-      font-weight: normal;
-    }
-    ol, ul {
-      padding-left: 1.7em;
-      margin-top: 1em;
-    }
-    li > ol, li > ul {
-      margin-top: 0;
-    }
-    blockquote {
-      margin: 1em 0 1em 1.7em;
-      padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
-      color: #606060;
-    }
-    code {
-      white-space: pre-wrap;
-      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
-      font-size: 85%;
-      margin: 0;
-      hyphens: manual;
-    }
-    pre {
-      margin: 1em 0;
-      overflow: auto;
-    }
-    pre code {
-      padding: 0;
-      overflow: visible;
-      overflow-wrap: normal;
-    }
-    .sourceCode {
-     background-color: transparent;
-     overflow: visible;
-    }
-    hr {
-      border: none;
-      border-top: 1px solid #1a1a1a;
-      height: 1px;
-      margin: 1em 0;
-    }
-    table {
-      margin: 1em 0;
-      border-collapse: collapse;
-      width: 100%;
-      overflow-x: auto;
-      display: block;
-      font-variant-numeric: lining-nums tabular-nums;
-    }
-    table caption {
-      margin-bottom: 0.75em;
-    }
-    tbody {
-      margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
-    }
-    th {
-      border-top: 1px solid #1a1a1a;
-      padding: 0.25em 0.5em 0.25em 0.5em;
-    }
-    td {
-      padding: 0.125em 0.5em 0.25em 0.5em;
-    }
-    header {
-      margin-bottom: 4em;
-      text-align: center;
-    }
-    #TOC li {
-      list-style: none;
-    }
-    #TOC ul {
-      padding-left: 1.3em;
-    }
-    #TOC > ul {
-      padding-left: 0;
-    }
-    #TOC a:not(:hover) {
-      text-decoration: none;
-    }
-    span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
-    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    /* The extra [class] is a hack that increases specificity enough to
-       override a similar rule in reveal.js */
-    ul.task-list[class]{list-style: none;}
-    ul.task-list li input[type="checkbox"] {
-      font-size: inherit;
-      width: 0.8em;
-      margin: 0 0.8em 0.2em -1.6em;
-      vertical-align: middle;
-    }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
-  </style>
-</head>
-<body>
-<h1 id="quill--meet-you-where-you-are">QUILL — Meet You Where You
+<h1 id="quill-meet-you-where-you-are">QUILL — Meet You Where You
 Are</h1>
 <h3
-id="the-screen-reader-first-writing-studio-built-by-the-people-who-depend-on-it-this-is-the-public-beta-build-081-beta-1">The
+id="the-screen-reader-first-writing-studio-built-by-the-people-who-depend-on-it.-this-is-the-public-beta-build-0.8.1-beta-1.">The
 screen-reader-first writing studio, built by the people who depend on
 it. This is the public beta, build 0.8.1 Beta 1.</h3>
 <p><em>From Community Access. Free. Optional by design. Private by
 default. Yours to make quiet.</em></p>
 <p>This release document is the narrative companion to the
-<strong>"0.8.1 Beta 1"</strong> section of <code>CHANGELOG.md</code>
+<strong>“0.8.1 Beta 1”</strong> section of <code>CHANGELOG.md</code>
 (the canonical, append-as-you-go log). It tracks what changes in 0.8.1
 Beta 1 on top of the 0.8.0 line.</p>
 <hr />
-<h2 id="what-081-beta-1-adds-over-080">What 0.8.1 Beta 1 adds over
+<h2 id="what-0.8.1-beta-1-adds-over-0.8.0">What 0.8.1 Beta 1 adds over
 0.8.0</h2>
-<p>This release carries forward everything through 0.8.0 (private
+<p>This release carries forward everything through 0.8.0 — private
 on-device speech, document-to-audiobook production, braille
 proofreading, talking-book export, guided proofing, multilingual
 narration, Mastodon posting, and the upgrade hardening that makes betas
-safe to update). Its headline is a complete, screen-reader-first
+safe to update. Its headline is a complete, screen-reader-first
 <strong>AI suite</strong> — optional, private by default, and built
-around the provider you choose — that brings a context-aware assistant,
-audio transcription that becomes finished documents, and reviewable AI
-writing help into QUILL. The list below is what is new, fixed, or
-improved since Beta 1.</p>
-<h3 id="features">Features</h3>
-<p><strong>Your writing companion, now built in — optional, and private
-by default.</strong> This release's headline addition is a complete,
-screen-reader-first AI suite under one new top-level <strong>AI</strong>
-menu. It is <strong>off until you turn it on</strong>, it works with the
-provider <em>you</em> choose — a private <strong>on-device</strong>
-model (Ollama) or an account with <strong>OpenAI, Anthropic (Claude),
-Google Gemini, or OpenRouter</strong> — and nothing leaves your machine
-without your consent. Set it up once and every AI feature below shares
-that one connection.</p>
-<p><strong>Set up AI in seconds, the gentle way.</strong> A short
-<strong>AI Setup Wizard</strong> (the first item in the AI menu, "Set Up
-AI… — start here") walks you through a single choice — on-device, an AI
-account, or not now — with a one-step connect and a Test Connection
-check. Click any AI action before you have set things up and QUILL
-offers the wizard right there instead of failing. Newcomers can stay in
-a simpler <strong>Basic</strong> mode with a smaller AI menu; "Show
-advanced AI features" reveals the full set whenever you want it.</p>
-<p><strong>Ask Quill — one conversation that knows your
-document.</strong> A single, context-aware chat (<strong>Ask
-Quill</strong>) replaces the old scattered AI dialogs. Ask about your
-text, have it draft or rewrite, and apply suggestions through a
-reviewable change preview. <strong>Ask Quill by Voice</strong> adds
-spoken questions and spoken answers with transport controls for a
-hands-light, eyes-free conversation, and falls back to text and
-screen-reader announcements when voice is unavailable.</p>
-<p><strong>Turn recordings into finished documents — the Listening
-Companion.</strong> Transcribe an audio or video file (optionally
-<strong>translating it to English</strong> or <strong>identifying the
-speakers</strong>), then let QUILL turn the transcript into something
-useful: <strong>Meeting Minutes, Action Items, an Executive Summary,
-Interview Notes, Study Notes, Q&amp;A, a Follow-Up Email, Key Quotes, a
-Decisions Log, or a clean draft</strong> — picked from one context-aware
-list. You can run those same <strong>Transcript Actions</strong> on any
-open document, build your own with a no-syntax <strong>Action
-Builder</strong> (a name, plain-language instructions, and an optional
-reference document), and even have a watch-folder transcribe new
-recordings and produce the document automatically.</p>
-<p><strong>One home for Prompts, Skills, and Agents — the AI
-Library.</strong> Your reusable AI know-how lives in a single tabbed
-manager. Save a <strong>Prompt</strong>, promote it into a multi-step
+around the provider you choose.</p>
+<p>This page is organised by theme, with a heading for every change so
+you can jump between them with your screen reader’s heading navigation.
+The big themes are:</p>
+<ul>
+<li><strong>The AI suite</strong> — a context-aware assistant,
+transcription that becomes finished documents, and reviewable writing
+help.</li>
+<li><strong>Rich formatting and faithful documents</strong> — real
+formatting that stays out of your way, and a way to keep it beside a
+plain-text file.</li>
+<li><strong>Editing and accessibility</strong> — the Spoken Echo, a far
+better Keyboard Manager, three classic-editor power tools, and quieter,
+calmer announcements.</li>
+<li><strong>Braille</strong> — new layout-repair tools for files that
+will not emboss.</li>
+<li><strong>Fixes and smaller enhancements</strong> — the rest of what
+changed.</li>
+</ul>
+<hr />
+<h2 id="the-ai-suite">The AI suite</h2>
+<h3 id="optional-and-private-by-default">Optional, and private by
+default</h3>
+<p>This release’s headline addition is a complete, screen-reader-first
+AI suite under one new top-level <strong>AI</strong> menu. It is
+<strong>off until you turn it on</strong>, it works with the provider
+<em>you</em> choose — a private <strong>on-device</strong> model
+(Ollama) or an account with <strong>OpenAI, Anthropic (Claude), Google
+Gemini, or OpenRouter</strong> — and nothing leaves your machine without
+your consent. Set it up once and every AI feature below shares that one
+connection.</p>
+<h3 id="set-up-ai-in-seconds-the-gentle-way">Set up AI in seconds, the
+gentle way</h3>
+<p>A short <strong>AI Setup Wizard</strong> (the first item in the AI
+menu, “Set Up AI… — start here”) walks you through a single choice —
+on-device, an AI account, or not now — with a one-step connect and a
+Test Connection check. Click any AI action before you have set things up
+and QUILL offers the wizard right there instead of failing. Newcomers
+can stay in a simpler <strong>Basic</strong> mode with a smaller AI
+menu; “Show advanced AI features” reveals the full set whenever you want
+it.</p>
+<h3 id="ask-quill-one-conversation-that-knows-your-document">Ask Quill —
+one conversation that knows your document</h3>
+<p>A single, context-aware chat (<strong>Ask Quill</strong>) replaces
+the old scattered AI dialogs. Ask about your text, have it draft or
+rewrite, and apply suggestions through a reviewable change preview.
+<strong>Ask Quill by Voice</strong> adds spoken questions and spoken
+answers with transport controls for a hands-light, eyes-free
+conversation, and falls back to text and screen-reader announcements
+when voice is unavailable.</p>
+<h3
+id="the-listening-companion-turn-recordings-into-finished-documents">The
+Listening Companion — turn recordings into finished documents</h3>
+<p>Transcribe an audio or video file (optionally <strong>translating it
+to English</strong> or <strong>identifying the speakers</strong>), then
+let QUILL turn the transcript into something useful: <strong>Meeting
+Minutes, Action Items, an Executive Summary, Interview Notes, Study
+Notes, Q&amp;A, a Follow-Up Email, Key Quotes, a Decisions Log, or a
+clean draft</strong> — picked from one context-aware list. You can run
+those same <strong>Transcript Actions</strong> on any open document,
+build your own with a no-syntax <strong>Action Builder</strong> (a name,
+plain-language instructions, and an optional reference document), and
+even have a watch-folder transcribe new recordings and produce the
+document automatically.</p>
+<h3 id="the-ai-library-prompts-skills-and-agents-in-one-place">The AI
+Library — Prompts, Skills, and Agents in one place</h3>
+<p>Your reusable AI know-how lives in a single tabbed manager. Save a
+<strong>Prompt</strong>, promote it into a multi-step
 <strong>Skill</strong>, and promote that into a first-class
 <strong>Agent</strong> — a real continuum, all reviewable and editable,
 all running through the connection you set up once.</p>
-<p><strong>Everyday writing help, always reviewable.</strong> Rewrite,
-summarise, expand, continue, fix grammar, or generate a table of
-contents from <strong>Transform Selection</strong>; proofread with
-<strong>AI spell check</strong> and a <strong>grammar-and-style
+<h3 id="everyday-writing-help-always-reviewable">Everyday writing help,
+always reviewable</h3>
+<p>Rewrite, summarise, expand, continue, fix grammar, or generate a
+table of contents from <strong>Transform Selection</strong>; proofread
+with <strong>AI spell check</strong> and a <strong>grammar-and-style
 check</strong>; <strong>translate</strong> a selection or the whole
 document; find richer synonyms with the <strong>AI Thesaurus</strong>;
 and put questions to your document with <strong>Document
 Q&amp;A</strong>. Every change QUILL proposes is shown as an accessible
 accept/reject preview and applied as a single, one-step
 <strong>undo</strong> — nothing is ever silently rewritten.</p>
-<p><strong>Read aloud and export audio in natural AI voices.</strong>
-Read the selection or the whole document aloud, stop on a key, or
+<h3 id="read-aloud-and-export-audio-in-natural-ai-voices">Read aloud and
+export audio in natural AI voices</h3>
+<p>Read the selection or the whole document aloud, stop on a key, or
 <strong>export the document as an audio file</strong> in your chosen
 cloud voice — alongside the on-device speech QUILL already shipped.</p>
-<p><strong>In your control, by design.</strong> AI is optional and off
-by default, provider-neutral, and consent-gated: QUILL shows you what
-would be sent before it sends it, keeps a reviewable record of AI
-changes you can undo, and never widens its own permissions.
-Organisations can restrict which providers are allowed.</p>
-<p><strong>Rich formatting that stays out of your way — hidden codes,
-spoken on demand.</strong> This release also lets you apply real
-document formatting — <strong>bold, italic, underline, strikethrough,
-superscript/subscript, font family and point size, text colour and
-highlight</strong>, plus paragraph <strong>alignment, line spacing,
-indent, and named styles</strong> — without ever seeing markup clutter
-in your editor. The buffer stays clean, fast, plain text; the formatting
-rides along as invisible codes. Apply it from the new
-<strong>Format</strong> menu (Font / Size / Align / Colour / Highlight)
-or the accessible <strong>Font...</strong> dialog, and ask
-<strong>"Describe formatting at cursor"</strong> to <em>hear</em>
-exactly what is in effect ("Arial, 14 point, centred, bold"). An
-optional setting announces formatting changes as you move the caret. The
-plain-text editor, undo, search, and AI all keep working on the same
-clean text — nothing about your normal editing changes. RTF and Word
-documents round-trip through this clean buffer and materialise back to
-real formatting on export: <strong>Word (.docx)</strong> carries font,
-size, colour, highlight, and alignment via a native writer (graceful
-Pandoc fallback if the optional <code>python-docx</code> extra is
-absent), and <strong>RTF</strong> and <strong>HTML</strong> export carry
-the same. When a target format genuinely cannot hold something, QUILL
-tells you before you commit rather than dropping it silently.</p>
-<p><strong>Keep your formatting in a plain-text file —
-Illuminations.</strong> A plain <code>.txt</code> has nowhere to store
-fonts, colours, or alignment, so saving formatted text as plain text
-normally loses them. This release introduces the
-<strong>Illumination</strong> — named for the decorative layer a scribe
-paints over a manuscript: the clean text is the manuscript, and a small
-companion file, <code>yourfile.txt.illumination</code>, holds the
-formatting beside it. The <code>.txt</code> stays genuinely plain
-everywhere else, and reopening it <em>in QUILL</em> restores every font,
-colour, and alignment exactly. A new <strong>Settings → Editing → Saving
-formatted text as plain text</strong> option lets you choose to be asked
-each time, to always write an Illumination, or to save plain and drop
-the formatting. If the <code>.txt</code> is edited elsewhere, QUILL
-notices the mismatch and opens it plain rather than mis-applying old
-formatting; for one self-contained file that keeps everything, save as
-Markdown, Word, or RTF.</p>
-<p><strong>Re-read anything QUILL just said — the Spoken Echo.</strong>
-Speech is fleeting: an indent depth, a formatting description, a save
-result, a "no matches" — once spoken, it is gone. The <strong>Spoken
+<h3 id="in-your-control-by-design">In your control, by design</h3>
+<p>AI is optional and off by default, provider-neutral, and
+consent-gated: QUILL shows you what would be sent before it sends it,
+keeps a reviewable record of AI changes you can undo, and never widens
+its own permissions. Organisations can restrict which providers are
+allowed.</p>
+<hr />
+<h2 id="rich-formatting-and-faithful-documents">Rich formatting and
+faithful documents</h2>
+<h3 id="hidden-codes-spoken-on-demand">Hidden codes, spoken on
+demand</h3>
+<p>This release lets you apply real document formatting — <strong>bold,
+italic, underline, strikethrough, superscript/subscript, font family and
+point size, text colour and highlight</strong>, plus paragraph
+<strong>alignment, line spacing, indent, and named styles</strong> —
+without ever seeing markup clutter in your editor. The buffer stays
+clean, fast, plain text; the formatting rides along as invisible codes.
+Apply it from the new <strong>Format</strong> menu (Font / Size / Align
+/ Colour / Highlight) or the accessible <strong>Font…</strong> dialog,
+and ask <strong>“Describe formatting at cursor”</strong> to
+<em>hear</em> exactly what is in effect (“Arial, 14 point, centred,
+bold”). An optional setting announces formatting changes as you move the
+caret. The plain-text editor, undo, search, and AI all keep working on
+the same clean text — nothing about your normal editing changes.</p>
+<p>RTF and Word documents round-trip through this clean buffer and
+materialise back to real formatting on export: <strong>Word
+(.docx)</strong> carries font, size, colour, highlight, and alignment
+via a native writer (graceful Pandoc fallback if the optional
+<code>python-docx</code> extra is absent), and <strong>RTF</strong> and
+<strong>HTML</strong> export carry the same. When a target format
+genuinely cannot hold something, QUILL tells you before you commit
+rather than dropping it silently.</p>
+<h3 id="keep-your-formatting-in-a-plain-text-file-illuminations">Keep
+your formatting in a plain-text file — Illuminations</h3>
+<p>A plain <code>.txt</code> has nowhere to store fonts, colours, or
+alignment, so saving formatted text as plain text normally loses them.
+This release introduces the <strong>Illumination</strong> — named for
+the decorative layer a scribe paints over a manuscript: the clean text
+is the manuscript, and a small companion file,
+<code>yourfile.txt.illumination</code>, holds the formatting beside it.
+The <code>.txt</code> stays genuinely plain everywhere else, and
+reopening it <em>in QUILL</em> restores every font, colour, and
+alignment exactly. A new <strong>Settings → Editing → Saving formatted
+text as plain text</strong> option lets you choose to be asked each
+time, to always write an Illumination, or to save plain and drop the
+formatting. If the <code>.txt</code> is edited elsewhere, QUILL notices
+the mismatch and opens it plain rather than mis-applying old formatting;
+for one self-contained file that keeps everything, save as Markdown,
+Word, or RTF.</p>
+<hr />
+<h2 id="editing-and-accessibility">Editing and accessibility</h2>
+<h3 id="re-read-anything-quill-just-said-the-spoken-echo">Re-read
+anything QUILL just said — the Spoken Echo</h3>
+<p>Speech is fleeting: an indent depth, a formatting description, a save
+result, a “no matches” — once spoken, it is gone. The <strong>Spoken
 Echo</strong> captures the last twenty things QUILL announced and shows
 them, newest first, in a read-only dialog you can arrow through,
 re-read, and copy. Open it any time with <strong>Alt+Shift+E</strong>
@@ -316,17 +172,18 @@ Formatting, Document Summary, Context Help, or Announce Contrast — pops
 the Echo open instead of re-speaking; the dedicated key remains the
 universal path. Toggle the double-press behaviour with <strong>Settings
 → Accessibility → Double-press to show the Spoken Echo</strong>.</p>
-<p><strong>A Keyboard Manager that meets you halfway.</strong>
-Customising shortcuts no longer means remembering exact syntax or
+<h3 id="a-keyboard-manager-that-meets-you-halfway">A Keyboard Manager
+that meets you halfway</h3>
+<p>Customising shortcuts no longer means remembering exact syntax or
 whether a key is free. The <strong>Keymap Editor</strong> (Preferences →
 Keyboard) now searches two ways from a single box: type part of a
-command's name to filter, or type a <em>shortcut</em> —
+command’s name to filter, or type a <em>shortcut</em> —
 <code>ctrl+alt+m</code>, <code>Control + Shift + K</code>, or a QUILL
 chord like <code>quill, s</code> — and it tells you precisely which
 command owns that key, or that it is unassigned and available. Spelling
 is forgiving: <code>control</code>, <code>ctrl</code>, or
 <code>ctl</code>, modifiers in any order, any case, with macOS
-<code>Cmd</code> kept distinct from <code>Ctrl</code>. Don't want to
+<code>Cmd</code> kept distinct from <code>Ctrl</code>. Don’t want to
 type it? Choose <strong>Record Keys</strong> and press the combination.
 Assigning a key that is already taken names the command that holds it —
 by its friendly title — and offers to move the key there for you, rather
@@ -336,7 +193,91 @@ longer exist, unreadable bindings, and keys that are assigned but cannot
 actually fire, with a one-click <strong>Heal</strong> that clears the
 bad entries and re-applies your shortcuts so menus and keys line up
 again.</p>
-<h3 id="fixes">Fixes</h3>
+<h3
+id="three-classic-editor-power-tools-for-keyboard-first-writers">Three
+classic-editor power tools for keyboard-first writers</h3>
+<p>In the tradition of the venerable WordPerfect Editor, three additions
+with no prior equivalent in QUILL. All three ship unbound, so assign
+keys in the Keymap Editor.</p>
+<ul>
+<li><strong>Repeat Next Command</strong> (Edit menu). Set a count, then
+the next command runs that many times — down twenty lines, delete ten
+words, insert forty dashes, even replay a macro N times — in a single
+gesture. The count applies once and then clears.</li>
+<li><strong>Restore Deleted Text</strong> (Edit menu). QUILL keeps the
+last three blocks removed by its structured delete commands (delete to
+line start or end, to document start or end, or delete paragraph). Pick
+one from an accessible list and it is re-inserted at the cursor. Unlike
+Undo — which reverts the last edit in place — Restore Deleted Text can
+drop recovered text anywhere.</li>
+<li><strong>Describe Character at Cursor</strong> (Tools → Advanced).
+The screen-reader descendant of “Reveal Codes”: an accessible dialog, in
+the same read-only style as F1 help, that names the exact character
+under the caret — its Unicode name, code point (hexadecimal and
+decimal), category, and plain-language notes for the invisibles that
+bite writers (a no-break space, a zero-width space, a smart quote, a
+tab, a line ending).</li>
+</ul>
+<h3 id="hear-how-deep-your-indentation-is">Hear how deep your
+indentation is</h3>
+<p>Tab / Shift+Tab can now speak the new indentation depth — “4 spaces”,
+“8 spaces”, “1 tab” — instead of “Indented lines”, honouring your
+tabs-vs-spaces and indent-width settings. Toggle with <strong>Announce
+indentation depth on Tab</strong> (Settings → Accessibility).</p>
+<h3 id="calmer-quieter-announcements">Calmer, quieter announcements</h3>
+<ul>
+<li><strong>Quieter dialogs, your choice.</strong> A new
+<strong>Announce entering and leaving dialogs</strong> setting (Settings
+→ Accessibility) turns off the spoken “Entered / Exited <em>name</em>
+dialog” cues for people whose screen reader already announces
+dialogs.</li>
+<li><strong>Quieter Read Aloud for screen-reader users.</strong> While
+Read Aloud played, QUILL selected each sentence to follow along — which
+made your screen reader announce the selection over QUILL’s chosen
+voice. This follow-along is now <strong>off by default</strong>, so the
+cursor stays put and only the Read Aloud voice is heard. Turn it back on
+with <strong>Move cursor to follow Read Aloud</strong> (Settings → Read
+Aloud).</li>
+</ul>
+<h3 id="jump-straight-to-an-open-document">Jump straight to an open
+document</h3>
+<p>With several documents open, press <strong>Alt+1</strong> through
+<strong>Alt+9</strong> (and <strong>Alt+0</strong> for the tenth) to go
+directly to that document by its position, instead of cycling with
+Ctrl+Tab. If nothing is open at that position, QUILL tells you and stays
+put. The Window menu also lists your open documents with these shortcuts
+shown beside them, and the keys are remappable in the Keymap Editor.</p>
+<hr />
+<h2 id="braille">Braille</h2>
+<h3 id="repair-tools-for-files-that-will-not-emboss">Repair tools for
+files that will not emboss</h3>
+<p>A new <strong>Braille → Repair</strong> submenu brings NLS-style
+proofreading to QUILL’s braille mode, for the two classic problems:
+<em>page width exceeded</em> (a line over the cell limit, almost always
+trailing spaces) and <em>page depth exceeded</em> (a page over the line
+limit).</p>
+<ul>
+<li><strong>Read Layout Metrics</strong> speaks the diagnostic numbers
+in one pass: the cursor’s cell and current line length, the longest line
+in the file against your cells-per-line limit (with a “page width
+exceeded” warning), the current and total braille pages, and the longest
+page against your lines-per-page limit (with a “page depth exceeded”
+warning).</li>
+<li><strong>Go to Longest Line</strong> and <strong>Go to Longest
+Page</strong> jump the cursor straight to the worst offender so you can
+fix it by hand — for a too-deep page, usually by inserting a page break
+where one is missing.</li>
+<li><strong>Remove Trailing Spaces on This Line</strong> and
+<strong>Remove Trailing Spaces in Whole File</strong> clear the trailing
+spaces that cause most page-width problems, preserving every line ending
+and form feed.</li>
+</ul>
+<p>The cell and line limits come from your existing <strong>Cells per
+line</strong> and <strong>Lines per page</strong> settings (Preferences
+→ Braille), so the diagnostics match the page geometry you are
+transcribing for.</p>
+<hr />
+<h2 id="fixes">Fixes</h2>
 <ul>
 <li><strong>The portable build launches again, and opens
 documents.</strong> Double-clicking <code>quill.exe</code> in the
@@ -345,11 +286,11 @@ from its runtime), and setting QUILL as the default app for Word (or
 other) documents now opens the file when you press Enter on it in your
 file manager — previously nothing happened.</li>
 <li><strong>The AI Hub opens instead of crashing.</strong> Activating
-the AI Hub on the 0.7.0 line failed with a "lazy string" / lazy-loading
+the AI Hub on the 0.7.0 line failed with a “lazy string” / lazy-loading
 error; it now opens to the provider/authorisation screen.
 (Community-Access/support #51, #53)</li>
-<li><strong>Far less double-spoken chatter.</strong> "No misspellings
-found" was one of many actions QUILL spoke twice — once from the status
+<li><strong>Far less double-spoken chatter.</strong> “No misspellings
+found” was one of many actions QUILL spoke twice — once from the status
 bar (which already speaks) and again from a separate announcement.
 Across updates, GitHub, SSH, dictation, the copy tray, and profile
 switches, these now speak exactly once. (#728)</li>
@@ -357,10 +298,10 @@ switches, these now speak exactly once. (#728)</li>
 longer seems to lose your text</strong> — you can Tab through the form,
 and QUILL reliably confirms the report was copied to your clipboard on
 submit for NVDA users. (#729)</li>
-<li><strong>No alarming "text-to-speech failed" when your screen reader
-is running.</strong> QUILL's own SAPI voice is only a fallback for
+<li><strong>No alarming “text-to-speech failed” when your screen reader
+is running.</strong> QUILL’s own SAPI voice is only a fallback for
 people with no screen reader; if it failed to start, QUILL spoke a scary
-"TTS engine failed" message (with a wrong "press F8" instruction) even
+“TTS engine failed” message (with a wrong “press F8” instruction) even
 though the screen reader was handling speech. That case is now logged
 quietly and not spoken — QUILL only speaks up when you genuinely have no
 other voice, pointing you to the real <strong>Tools → Retry TTS
@@ -371,7 +312,7 @@ screen-reader detection no longer flashes a brief console window that a
 braille display could announce.</li>
 <li><strong>A control-type choice for braille displays that start each
 line in cell two.</strong> On a rich-text editor control, some braille
-displays show every line's first character in cell two — the same quirk
+displays show every line’s first character in cell two — the same quirk
 long-time Word users will recognise. <strong>Preferences → Accessibility
 → Editor control type (braille)</strong> can switch the editor to
 <strong>Plain edit, like Notepad</strong> — a simple control that the
@@ -389,35 +330,9 @@ window presents and your screen reader announces it. Once the Kokoro
 models are present, the redundant 114 MB download button is hidden
 rather than offered again.</li>
 </ul>
-<h3 id="enhancements">Enhancements</h3>
+<hr />
+<h2 id="smaller-enhancements">Smaller enhancements</h2>
 <ul>
-<li><strong>Hear how deep your indentation is.</strong> Tab / Shift+Tab
-can now speak the new indentation depth — "4 spaces", "8 spaces", "1
-tab" — instead of "Indented lines", honouring your tabs-vs-spaces and
-indent-width settings. Toggle with <strong>Announce indentation depth on
-Tab</strong> (Settings → Accessibility).</li>
-<li><strong>Quieter dialogs, your choice.</strong> A new
-<strong>Announce entering and leaving dialogs</strong> setting (Settings
-→ Accessibility) turns off the spoken "Entered / Exited <em>name</em>
-dialog" cues for people whose screen reader already announces
-dialogs.</li>
-<li><strong>Jump straight to an open document.</strong> With several
-documents open, press <strong>Alt+1</strong> through
-<strong>Alt+9</strong> (and <strong>Alt+0</strong> for the tenth) to go
-directly to that document by its position, instead of cycling with
-Ctrl+Tab. If nothing is open at that position, QUILL tells you and stays
-put. The Window menu also lists your open documents with these shortcuts
-shown beside them, and the keys are remappable in the Keymap
-Editor.</li>
-<li><strong>Quieter Read Aloud for screen-reader users.</strong> While
-Read Aloud played, QUILL selected each sentence in the editor to follow
-along — which made your screen reader announce the selection
-("...selected") over QUILL's chosen voice. This follow-along is now
-<strong>off by default</strong>, so the cursor stays put and only the
-Read Aloud voice is heard. Sighted and low-vision users who want the
-cursor to track what is being read can turn it back on with the new
-<strong>Move cursor to follow Read Aloud</strong> setting (Settings →
-Read Aloud).</li>
 <li><strong>Portable installs update to the portable build, not the
 installer.</strong> Check for Updates now recognises when you are
 running the portable bundle and offers the portable
@@ -443,5 +358,3 @@ announce yet)</h2>
 update feed stays where it is. No version bump, tag, push, or feed
 change until explicitly approved. See <code>RELEASE.md</code> for the
 tag-time checklist.</p>
-</body>
-</html>

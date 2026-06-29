@@ -1818,7 +1818,7 @@ class MenuBuilderMixin:
         tools_menu.AppendSubMenu(compare_menu, _("C&omparison"))
 
         # Braille -----------------------------------------------------------------
-        tools_menu.AppendSubMenu(self._build_braille_menu(), _("&Braille"))
+        tools_menu.AppendSubMenu(self._build_braille_menu_with_repair(), _("&Braille"))
 
         # Watch Folder (extracted from former Dictation submenu) --------------
         watch_folder_menu = wx.Menu()
