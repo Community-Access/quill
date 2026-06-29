@@ -196,3 +196,55 @@ def test_length_buckets_cache_reset_clears() -> None:
     spellcheck._length_buckets(wordlist)
     spellcheck.reset_caches()
     assert spellcheck._LENGTH_BUCKETS_BY_WORDLIST_ID == {}
+
+
+def test_installable_languages_excludes_installed(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # No downloaded dicts: en_US installed, es_ES/fr_FR offered as downloads.
+    monkeypatch.setattr(spellcheck, "managed_hunspell_dir", lambda: tmp_path / "hunspell")
+    assert spellcheck.installed_languages() == ["en_US"]
+    assert set(spellcheck.installable_languages()) == {"es_ES", "fr_FR"}
+    # Once es_ES is present on disk it counts as installed and drops from the offer.
+    hs = tmp_path / "hunspell"
+    hs.mkdir(parents=True)
+    (hs / "es_ES.dic").write_text("1\nhola\n", encoding="utf-8")
+    assert "es_ES" in spellcheck.installed_languages()
+    assert "es_ES" not in spellcheck.installable_languages()
+
+
+def test_install_language_routes_through_release_assets(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    hs = tmp_path / "hunspell"
+    monkeypatch.setattr(spellcheck, "managed_hunspell_dir", lambda: hs)
+    calls: dict[str, object] = {}
+
+    def _fake_fetch(component, target, **kwargs):  # type: ignore[no-untyped-def]
+        calls["component"] = component
+        calls["target"] = target
+        Path(target).mkdir(parents=True, exist_ok=True)
+        (Path(target) / "fr_FR.dic").write_text("1\nbonjour\n", encoding="utf-8")
+        return target
+
+    from quill.core import release_assets
+
+    monkeypatch.setattr(release_assets, "fetch_component", _fake_fetch)
+    spellcheck.install_language("fr_FR")
+    assert calls["component"] == "spell-fr_FR"
+    assert calls["target"] == hs
+    assert "fr_FR" in spellcheck.installed_languages()
+
+
+def test_set_active_language_updates_and_resets(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(spellcheck, "_ACTIVE_LANGUAGE", "en_US", raising=False)
+    spellcheck.set_active_language("fr_FR")
+    assert spellcheck.active_language() == "fr_FR"
+    # Blank resets to the default and re-drops caches without error.
+    spellcheck.set_active_language("")
+    assert spellcheck.active_language() == "en_US"
+
+
+def test_language_display_name_falls_back_to_tag() -> None:
+    assert spellcheck.language_display_name("es_ES") == "Spanish (Spain)"
+    assert spellcheck.language_display_name("xx_XX") == "xx_XX"

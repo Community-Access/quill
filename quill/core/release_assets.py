@@ -89,6 +89,30 @@ ASSETS: dict[str, ReleaseAsset] = {
         license="Apache-2.0 (kokoro-onnx model-files-v1.0); already redistributed by QUILL",
         version="model-files-v1.0",
     ),
+    # Optional Hunspell spell-check dictionaries (PRD 10.2.4). English (en_US) is
+    # always bundled inside pyenchant; these add other languages on demand. Each
+    # zip holds <lang>.dic/.aff plus the upstream license/readme, byte-pinned to a
+    # LibreOffice/dictionaries commit. Discovered at runtime via ENCHANT_CONFIG_DIR
+    # (see quill/core/spellcheck.py). The GPL/LGPL/MPL terms permit redistribution
+    # with a source offer; the upstream README/LICENSE ships inside each zip.
+    "spell-es_ES": ReleaseAsset(
+        component="spell-es_ES",
+        tag="assets-v1",
+        filename="spell-es_ES.zip",
+        sha256="8e3a64262d4fc59d5328e6864e24004c5b5559fe9889061c3c7927169b27343c",
+        expect_member="es_ES.dic",
+        license="GPL-3.0/LGPL-3.0/MPL-2.0 (LibreOffice es_ES / RLA-ES)",
+        version="libreoffice-dictionaries 93d537d",
+    ),
+    "spell-fr_FR": ReleaseAsset(
+        component="spell-fr_FR",
+        tag="assets-v1",
+        filename="spell-fr_FR.zip",
+        sha256="012e2cda35ed75b767e77be07d1ac902fb99fc02bbfc2655978baa690c0ad07f",
+        expect_member="fr_FR.dic",
+        license="MPL-2.0/GPL-3.0/LGPL-3.0 (LibreOffice fr_FR / Dicollecte)",
+        version="libreoffice-dictionaries 93d537d",
+    ),
 }
 
 

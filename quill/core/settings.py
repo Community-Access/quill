@@ -86,6 +86,9 @@ class Settings:
     # When True, saving a document first opens the F7 spelling review so the user
     # can correct misspellings before the file is written. Off by default.
     spell_check_before_save: bool = False
+    # Hunspell language the spell checker validates against. en_US ships bundled;
+    # other languages download on demand (quill.core.spellcheck.install_language).
+    spellcheck_language: str = "en_US"
     intellisense_as_you_type: bool = False
     snippet_trigger_expansion: bool = True
     preview_browser: str = "system"
@@ -519,6 +522,7 @@ class Settings:
         persistent_undo = bool(data.get("persistent_undo", False))
         spellcheck_as_you_type = bool(data.get("spellcheck_as_you_type", False))
         spell_check_before_save = bool(data.get("spell_check_before_save", False))
+        spellcheck_language = str(data.get("spellcheck_language", "en_US")).strip() or "en_US"
         intellisense_as_you_type = bool(data.get("intellisense_as_you_type", False))
         snippet_trigger_expansion = bool(data.get("snippet_trigger_expansion", True))
         preview_browser = str(data.get("preview_browser", "system")).strip() or "system"
@@ -1040,6 +1044,7 @@ class Settings:
             persistent_undo=persistent_undo,
             spellcheck_as_you_type=spellcheck_as_you_type,
             spell_check_before_save=spell_check_before_save,
+            spellcheck_language=spellcheck_language,
             intellisense_as_you_type=intellisense_as_you_type,
             snippet_trigger_expansion=snippet_trigger_expansion,
             preview_browser=preview_browser,

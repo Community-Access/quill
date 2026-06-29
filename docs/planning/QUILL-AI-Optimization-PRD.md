@@ -363,7 +363,9 @@ of this; unbundling must adopt **all** of it, and close the gaps:
 8. **Already-present is smart, not silent.** If a component is already installed,
    QUILL does not re-download it; it **offers to replace** (re-fetch) so the user
    stays in control, and declining keeps the existing copy. (Shipped for Kokoro,
-   whisper.cpp, DECtalk, and eSpeak NG.)
+   whisper.cpp, DECtalk, eSpeak NG, and on-demand spell-check language packs —
+   es_ES and fr_FR as the proof-of-concept, discovered at runtime via
+   `ENCHANT_CONFIG_DIR`; see `quill/core/spellcheck.py`.)
 9. **Newer-version awareness (planned).** Each asset records its upstream
    **version** (a `version` field already exists on the manifest entry). A
    lightweight update check compares the installed version against the pinned
@@ -386,7 +388,9 @@ release tag). The build already pulls several engines from *upstream* GitHub
 releases (`dectalk/dectalk`, `ggml-org/whisper.cpp`, `rhasspy/piper`, `electron/rcedit`);
 this change re-points the *runtime* on-demand path at a release **we control**.
 Recommended for: **whisper.cpp CLI** (~8 MB), **Kokoro** models (~120 MB),
-**DECtalk**, **Piper**, **eSpeak NG**, and small/medium speech tiers.
+**DECtalk**, **Piper**, **eSpeak NG**, **non-English Hunspell spell-check
+dictionaries** (en_US ships inside pyenchant; other languages download on demand),
+and small/medium speech tiers.
 
 **Why it fits the model:**
 - *Pinned + verifiable (item 1):* stable `…/releases/download/<tag>/<asset>` URLs,

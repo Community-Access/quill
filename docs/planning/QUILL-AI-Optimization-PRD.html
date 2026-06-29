@@ -619,7 +619,10 @@ the worst moment.</li>
 component is already installed, QUILL does not re-download it; it
 <strong>offers to replace</strong> (re-fetch) so the user stays in
 control, and declining keeps the existing copy. (Shipped for Kokoro,
-whisper.cpp, DECtalk, and eSpeak NG.)</li>
+whisper.cpp, DECtalk, eSpeak NG, and on-demand spell-check language
+packs — es_ES and fr_FR as the proof-of-concept, discovered at runtime
+via <code>ENCHANT_CONFIG_DIR</code>; see
+<code>quill/core/spellcheck.py</code>.)</li>
 <li><strong>Newer-version awareness (planned).</strong> Each asset
 records its upstream <strong>version</strong> (a <code>version</code>
 field already exists on the manifest entry). A lightweight update check
@@ -649,8 +652,10 @@ engines from <em>upstream</em> GitHub releases
 re-points the <em>runtime</em> on-demand path at a release <strong>we
 control</strong>. Recommended for: <strong>whisper.cpp CLI</strong> (~8
 MB), <strong>Kokoro</strong> models (~120 MB), <strong>DECtalk</strong>,
-<strong>Piper</strong>, <strong>eSpeak NG</strong>, and small/medium
-speech tiers.</p>
+<strong>Piper</strong>, <strong>eSpeak NG</strong>, <strong>non-English
+Hunspell spell-check dictionaries</strong> (en_US ships inside
+pyenchant; other languages download on demand), and small/medium speech
+tiers.</p>
 <p><strong>Why it fits the model:</strong></p>
 <ul>
 <li><em>Pinned + verifiable (item 1):</em> stable
