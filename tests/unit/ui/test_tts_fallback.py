@@ -40,13 +40,22 @@ def test_no_failure_means_no_message(monkeypatch: pytest.MonkeyPatch) -> None:
     assert stub.spoken == [] and stub.quiet == [] and stub.notes == []
 
 
-def test_failure_with_screen_reader_is_logged_not_spoken(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_failure_with_screen_reader_is_benign_not_alarming(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     monkeypatch.setattr(prism_bridge, "tts_init_failed", lambda: True)
     stub = _Stub(backend="accessible_output2")  # a reader is voicing announcements
     stub._check_tts_fallback_on_startup()
     assert stub.spoken == []  # the benign failure is never spoken
     assert len(stub.quiet) == 1  # quiet, unspoken status note
-    assert len(stub.notes) == 1  # diagnostic recorded
+    # The breadcrumb is informational (category "info", not an alarming
+    # "accessibility" error) and tells the screen-reader user nothing is wrong (#749).
+    assert len(stub.notes) == 1
+    message, category = stub.notes[0]
+    assert category == "info"
+    assert "no action is needed" in message
+    assert "no effect" in message
+    assert "no voice" not in message.lower()
 
 
 def test_failure_without_screen_reader_speaks_correct_retry(

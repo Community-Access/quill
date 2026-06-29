@@ -6811,14 +6811,17 @@ class MainFrame(
                 self.editor.WriteText("![image]()")
 
     def _check_tts_fallback_on_startup(self) -> None:
-        """When SAPI 5 self-voicing fails to initialise, record it -- and only
-        *speak* it when no screen reader is handling speech.
+        """When SAPI 5 self-voicing fails to initialise, surface it appropriately.
 
         SAPI 5 is QUILL's own fallback voice, used only when no screen reader is
-        present. When a reader is doing the talking, a SAPI failure is benign, so
-        announcing "TTS failed" is alarming noise. We always log a diagnostic
-        note; we speak a (corrected) prompt only when the user would otherwise
-        have no voice at all.
+        present. When a reader (NVDA/JAWS/Narrator) is doing the talking, a SAPI
+        failure is benign, so it must not surface as an alarming accessibility
+        error or a spoken "no voice" prompt -- the screen-reader user is not
+        affected and has nothing to fix. We therefore decide the surface *before*
+        recording anything: a detected reader gets only a quiet, unspoken status
+        note plus a benign informational breadcrumb; without a reader the
+        self-voice was the only voice, so the failure is spoken and recorded as a
+        real accessibility problem (#749).
         """
         try:
             from quill.platform.windows.prism_bridge import tts_init_failed
@@ -6826,20 +6829,26 @@ class MainFrame(
             return
         if not tts_init_failed():
             return
-        self._record_notification(
-            "Text-to-speech (the SAPI 5 self-voice) did not start. If you use a "
-            "screen reader, QUILL speaks through it and no action is needed. To "
-            "use QUILL's own voice instead, run Tools > Retry TTS Engine.",
-            "accessibility",
-        )
         if self._screen_reader_handling_speech():
-            # The screen reader is doing the talking; the self-voice is not
-            # needed. Show a quiet, unspoken note rather than announcing a failure.
+            # The screen reader is doing the talking; the self-voice is not needed.
+            # Keep only a benign, informational breadcrumb (category "info", not
+            # "accessibility") and a quiet, unspoken status note -- never an alarm.
+            self._record_notification(
+                "QUILL's optional SAPI 5 self-voice did not start. You are using a "
+                "screen reader, so this has no effect on speech and no action is "
+                "needed.",
+                "info",
+            )
             self._set_status_quiet("Speaking through your screen reader.")
             return
         # No screen reader: the self-voice was the only voice, so this is a real
-        # problem the user must hear. (F8 toggles overwrite mode -- the retry is
+        # problem the user must hear and may want to revisit. (The retry is
         # Tools > Retry TTS Engine.)
+        self._record_notification(
+            "Text-to-speech (the SAPI 5 self-voice) did not start. Run "
+            "Tools > Retry TTS Engine to try again.",
+            "accessibility",
+        )
         self._set_status(
             "Text-to-speech failed to start, so QUILL has no voice. "
             "Run Tools > Retry TTS Engine to try again."
