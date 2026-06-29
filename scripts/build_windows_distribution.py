@@ -85,21 +85,15 @@ PIPER_PINNED_SHA256 = "f3c58906402b24f3a96d92145f58acba6d86c9b5db896d207f78dc808
 
 # Pinned whisper.cpp Windows release. _download_and_stage_whisper() tries the
 # latest GitHub release first and falls back to these if the API is unreachable.
-# The CPU x64 zip ships whisper-cli.exe alongside its whisper.dll / ggml*.dll
-# dependencies -- the offline speech engine (#617, #742). whisper.cpp is the
-# DEFAULT offline transcription/dictation provider, so unlike the other speech
-# engines it MUST ship: the build raises rather than producing an installer whose
-# selected "speechwhisper" component has no payload.
-#
-# NOTE: the pinned fallback SHA-256 is a placeholder. Release CI reaches the
-# GitHub API and uses the latest-release path (sha256=None, matching the other
-# engines), so the fallback only fires when the API is unreachable. Fill this in
-# (download the asset once and record its SHA-256) before relying on an offline
-# build; until then _download_and_stage_whisper refuses the unverified fallback.
+# The plain CPU x64 zip ships whisper-cli.exe (under Release/) alongside its
+# whisper.dll / ggml*.dll dependencies -- the offline speech engine (#617, #742).
+# whisper.cpp is the DEFAULT offline transcription/dictation provider, so unlike
+# the other speech engines it MUST ship: the build raises rather than producing
+# an installer whose selected "speechwhisper" component has no payload.
 WHISPERCPP_PINNED_URL = (
-    "https://github.com/ggml-org/whisper.cpp/releases/download/v1.7.4/whisper-bin-x64.zip"
+    "https://github.com/ggml-org/whisper.cpp/releases/download/v1.9.1/whisper-bin-x64.zip"
 )
-WHISPERCPP_PINNED_SHA256 = "<REPLACE_WITH_WHISPER_BIN_X64_SHA256>"
+WHISPERCPP_PINNED_SHA256 = "7d8be46ecd31828e1eb7a2ecdd0d6b314feafd82163038ab6092594b0a063539"
 
 # Kokoro neural-TTS model + voices. Always STAGED into the portable bundle under
 # kokoro-models/, but the INSTALLER gates the copy behind the optional
