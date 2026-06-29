@@ -1,0 +1,309 @@
+<h1 id="rich-text-formatting-with-hidden-codes-design-note">Rich Text
+Formatting with Hidden Codes — Design Note</h1>
+<p>Status: Draft for future consideration (not scheduled) Author: design
+exploration, 2026-06-26 Scope: font family, point size, paragraph
+alignment, and color/highlight in the QUILL editor, exported faithfully
+to Word (<code>.docx</code>), RTF, and HTML, while the editing buffer
+stays free of visible markup.</p>
+<h2 id="problem-and-intent">1. Problem and intent</h2>
+<p>QUILL today can apply only bold, italic, and underline, and it does
+so by writing inline markup (<code>**...**</code>,
+<code>&lt;u&gt;...&lt;/u&gt;</code>) directly into a plain
+<code>wx.TextCtrl</code>. There is no font family, point size, paragraph
+alignment, or color, and Word export runs Markdown through Pandoc
+(<code>quill/io/export.py:219</code>), whose docx writer silently drops
+inline CSS for font/size/alignment.</p>
+<p>The product intent, stated by the user:</p>
+<ul>
+<li>The user should be able to apply font, style, point size, left/right
+justification, centering, alignment, and (later) color.</li>
+<li><strong>The formatting codes must be hidden from the user.</strong>
+The document stays “simple, fast, and efficient.” The user reads and
+edits clean text.</li>
+<li>The user can <strong>interrogate</strong> the document — ask “what
+is the formatting here?” — quickly and efficiently, and (being a
+screen-reader user) <em>hear</em> the answer.</li>
+<li>The tags are <strong>materialized only at export</strong>: “when
+exporting to Word, then you put the tags in and make magic happen
+here.”</li>
+</ul>
+<p>This reframes the feature away from a WYSIWYG/visible-markup editor
+toward a clean buffer with a formatting layer that is queried on demand
+and serialized at export time.</p>
+<h2 id="why-this-fits-quills-existing-architecture">2. Why this fits
+QUILL’s existing architecture</h2>
+<p>Three existing pieces make the hidden-codes model practical rather
+than a rewrite:</p>
+<ol type="1">
+<li><p><strong>A rich intermediate model already exists.</strong>
+<code>quill/io/rtf_model.py</code> defines <code>InlineSpan</code> /
+<code>RichParagraph</code> / <code>RichDocument</code> and the
+round-trip <code>markdown_to_rich</code> /
+<code>rich_to_markdown</code>, today carrying bold, italic, links,
+headings, and bullets. It is the natural shared model for every
+writer.</p></li>
+<li><p><strong>An offset map between markup and visible text already
+exists.</strong> The opt-in rich-text lens
+(<code>quill/ui/rich_text_surface.py</code>) maps visible caret offsets
+to markup offsets (<code>analyze_markdown</code>,
+<code>format_at_markdown_offset</code>). “Hide the codes but keep the
+caret honest” is exactly what that mapping does; it is currently used
+read-only.</p></li>
+<li><p><strong>A spoken-formatting vocabulary already exists.</strong>
+<code>quill/core/format_speech.py</code>
+(<code>describe_inline_format</code>) turns formatting flags into
+phrases like <code>"bold italic"</code> or
+<code>"heading level 2"</code>. Interrogation = read the formatting at
+the caret’s mapped offset and pass the flags to this function.</p></li>
+<li><p><strong>A precedent for font/size/alignment values already
+exists.</strong> <code>quill/core/heading_styles.py</code> validates
+alignment against exactly <code>{left, right, center, justify}</code>
+and emits CSS declarations (<code>font-family</code>,
+<code>font-size: Npt</code>, <code>text-align</code>). The same
+validation and declaration logic generalizes from headings to arbitrary
+runs and paragraphs.</p></li>
+</ol>
+<h2 id="the-materialized-tag-vocabulary">3. The materialized tag
+vocabulary</h2>
+<p>The tags are only ever produced at export (and on save, depending on
+the storage model in section 4). They use Pandoc’s generic
+attribute-span / fenced -div syntax carrying explicit values. Because
+Word is written by our own python-docx code, <strong>we own attribute
+interpretation</strong> — we are not limited to Pandoc’s named
+<code>custom-style</code>, so arbitrary “14pt Arial red” is expressible.
+The syntax still degrades gracefully if ever fed to Pandoc.</p>
+<pre><code>Inline run:   [Hello world]{font-family=&quot;Arial&quot; font-size=&quot;14&quot; color=&quot;#C00000&quot;}
+Paragraph:    ::: {align=&quot;center&quot;}
+              Centered paragraph text.
+              :::</code></pre>
+<p>Fixed, small vocabulary:</p>
+<ul>
+<li>Inline (run-level): <code>font-family</code>, <code>font-size</code>
+(points), <code>color</code>, <code>highlight</code>, plus existing
+<code>bold</code> / <code>italic</code> / <code>underline</code>.</li>
+<li>Block (paragraph-level): <code>align</code> in
+<code>{left, right, center, justify}</code>.</li>
+</ul>
+<p><code>quill/core/tagging.py:parse_attribute_pairs</code> already
+parses <code>key="value"</code> pairs and is reused verbatim.</p>
+<h2 id="hidden-codes-storage-the-key-decision">4. Hidden-codes storage —
+the key decision</h2>
+<p>The editor never shows tags. There are two coherent ways to honor
+that. They differ only in where formatting lives while editing and on
+save; the export pipeline is identical in both.</p>
+<h3 id="option-a-markup-canonical-hidden-in-the-view">Option A — Markup
+canonical, hidden in the view</h3>
+<ul>
+<li><code>Document.text</code> remains the Pandoc-span markup.</li>
+<li>The editor renders the visible text with codes stripped and uses the
+existing markup-to-visible offset map so edits and the caret map back to
+the markup.</li>
+<li>Saving <code>.md</code> writes the markup (tags present in the file,
+invisible in QUILL, visible only if the file is opened raw
+elsewhere).</li>
+</ul>
+<p>Pros: reuses the lens/offset infrastructure directly; persistence is
+automatic and self-contained; lowest risk. Cons: the on-disk
+<code>.md</code>/<code>.txt</code> is not literally clean text;
+promoting the read-only lens to a fully editable surface is non-trivial
+but bounded.</p>
+<h3 id="option-b-out-of-band-overlay">Option B — Out-of-band
+overlay</h3>
+<ul>
+<li>The buffer and <code>Document.text</code> are truly clean text
+everywhere — in the editor and in any saved
+<code>.txt</code>/<code>.md</code>.</li>
+<li>Formatting is a separate layer: a list of range annotations
+<code>{start, end, attrs}</code> over the plain text, plus per-paragraph
+<code>align</code>.</li>
+<li>Tags are synthesized only at export. For persistence between
+sessions the overlay is stored in a sidecar (e.g. <code>name.md</code> +
+<code>name.md.quillfmt</code> JSON) or a native QUILL container.</li>
+</ul>
+<p>Pros: the document is literally clean text everywhere — the strongest
+match for “simple, fast, efficient.” Cons: ranges must be shifted on
+every insert/delete (offset maintenance), and a persistence
+container/sidecar must be introduced (QUILL has no native binary format
+today).</p>
+<h3 id="recommendation">Recommendation</h3>
+<p>Target <strong>Option B</strong> as the product end-state because it
+most faithfully realizes the stated intent (“the document stays simple”;
+tags exist only at export). Reach it in two moves to manage risk:</p>
+<ol type="1">
+<li>Build the shared model, builders, writers, menus, and interrogation
+against <strong>Option A</strong> first (markup canonical, hidden in the
+view). This reuses the most existing code and delivers the full
+user-visible behavior — clean editing feel, interrogation, faithful
+Word/RTF/HTML export — with the least new machinery.</li>
+<li>Then introduce the out-of-band overlay and sidecar persistence
+(Option B) as a focused follow-up: a <code>FormatOverlay</code> that
+holds ranges, an edit-delta handler on <code>EVT_TEXT</code> that shifts
+ranges on insert/delete, and a serializer that emits the materialized
+markup for the writers. Because both options converge on the same
+<code>RichDocument</code> before any writer runs, the writers, menus,
+speech, and tests built in step 1 carry over unchanged.</li>
+</ol>
+<p>The remainder of this note describes the model, writers, UI, and
+speech, all of which are common to A and B.</p>
+<h2 id="shared-model-and-parsing">5. Shared model and parsing</h2>
+<p><code>quill/io/rtf_model.py</code>:</p>
+<ul>
+<li><code>InlineSpan</code>: add <code>underline: bool</code>,
+<code>font_family: str | None</code>,
+<code>font_size_pt: int | None</code>, <code>color: str | None</code>,
+<code>highlight: str | None</code>.</li>
+<li><code>RichParagraph</code>: add <code>align: str | None</code>
+(validate via <code>heading_styles._ALLOWED_TEXT_ALIGN</code>).</li>
+<li><code>InlineFormat</code>: mirror the new inline fields so caret
+context can report them.</li>
+<li><code>markdown_to_rich</code> / <code>rich_to_markdown</code>: teach
+the inline walker (<code>_walk_inline</code>) to recognize
+<code>[...]{...}</code> spans and <code>::: {...}</code> fenced divs,
+attach attributes to the active span/paragraph, and emit them back. Span
+markup is consumed without contributing visible characters, exactly as
+<code>**</code> is today, so caret-offset tracking stays correct.</li>
+</ul>
+<h2 id="materialization-helpers-and-editor-commands">6. Materialization
+helpers and editor commands</h2>
+<p><code>quill/core/tagging.py</code>:</p>
+<ul>
+<li><code>build_span_insertion(selected_text, attrs) -&gt; InsertionResult</code>
+and
+<code>build_block_alignment(selected_text, align) -&gt; InsertionResult</code>,
+alongside the existing <code>build_markdown_insertion</code> /
+<code>build_html_insertion</code>.</li>
+<li>A merge helper so applying font then size to the same selection
+merges into one span’s attribute set rather than nesting spans (model on
+<code>heading_styles._merge_style_attr</code>).</li>
+</ul>
+<p><code>quill/ui/main_frame.py</code> +
+<code>quill/ui/main_frame_menu.py</code>:</p>
+<ul>
+<li>Thin command wrappers in the shape of <code>format_bold</code>
+(<code>main_frame.py:22548</code>): gate on
+<code>_feature_enabled("core.format")</code> and
+<code>_active_markup_surface()</code>, build,
+<code>_apply_insertion_result(...)</code>, then
+<code>_set_status(...)</code>. New: <code>format_set_font</code>,
+<code>format_set_size</code>, <code>format_align(which)</code>, and
+later color/highlight.</li>
+<li>Format-menu submenus after the Bold/Italic/Underline block:
+<strong>Font</strong>, <strong>Size</strong>, <strong>Align</strong>
+(Left/Center/Right/Justify), and Color/Highlight. New
+<code>NewIdRef</code>s near the existing format ids; bind alongside
+them. Keep logic in <code>tagging.py</code> / <code>rtf_model.py</code>
+so <code>main_frame.py</code> stays within the module-size budget
+(GATE-11).</li>
+</ul>
+<p>In Option B these commands write to the overlay instead of inserting
+markup, but their signatures, menu wiring, and announcements are
+identical.</p>
+<h2 id="interrogation-and-screen-reader-communication">7. Interrogation
+and screen-reader communication</h2>
+<ul>
+<li>Extend
+<code>quill/core/format_speech.py:describe_inline_format</code> with the
+new fields so it speaks <code>"Arial, 14 point, centered, red"</code>;
+alignment comes from paragraph context.</li>
+<li>Add a <strong>“Describe formatting at cursor”</strong> command (with
+a hotkey) that reads <code>format_at_markdown_offset</code> at the caret
+and announces via <code>_set_status</code> / <code>announce</code>
+(<code>quill/platform/windows/sr_announce.py:37</code>). This is the
+primary “interrogate the document” affordance — explicit and quiet, so
+navigation does not chatter.</li>
+<li>Optionally, an on-caret-move announcement of formatting transitions
+(<code>describe_format_transition</code> already exists) behind a user
+toggle, for users who want continuous feedback.</li>
+<li>Every apply action announces its result (e.g. “Centered”, “Arial 14
+point applied”).</li>
+<li>The opt-in rich lens (<code>rich_text_surface.py:256</code>)
+inherits the richer descriptions automatically, since it already calls
+<code>describe_inline_format</code>.</li>
+</ul>
+<h2 id="export-pipeline-identical-for-a-and-b">8. Export pipeline
+(identical for A and B)</h2>
+<p>All writers consume the extended <code>RichDocument</code>:</p>
+<ul>
+<li><strong>Word (<code>.docx</code>)</strong> — new
+<code>quill/io/docx_writer.py</code>, replacing the Pandoc branch in
+<code>write_docx_document</code> (<code>export.py:219</code>). Per
+paragraph: set <code>paragraph.alignment</code>
+(<code>WD_ALIGN_PARAGRAPH</code>), map headings/bullets to Word styles;
+per run: set <code>run.bold/italic/underline</code>,
+<code>run.font.name</code>, <code>run.font.size = Pt(...)</code>,
+<code>run.font.color.rgb</code>, and highlight. Fall back to the
+existing Pandoc path if python-docx is unavailable, so docx export never
+hard-fails.</li>
+<li><strong>RTF</strong> (<code>quill/io/rtf.py</code>) — emit
+<code>\ul</code>, a font table with <code>\fN</code>, <code>\fsN</code>
+(half-points), a color table with <code>\cfN</code>, and
+<code>\qc/\qr/\qj</code> alignment. Drop the now-supported items from
+<code>_UNSUPPORTED_FEATURES</code> (<code>rtf_model.py:451</code>).</li>
+<li><strong>HTML</strong> (<code>markdown_to_html</code>,
+<code>export.py:172</code>) — render spans/divs to
+<code>&lt;span style&gt;</code> / <code>&lt;div style&gt;</code> reusing
+<code>heading_styles.declarations</code>.</li>
+<li><strong>Plain text</strong> (<code>markdown_to_plain_text</code>) —
+strip wrappers, keep visible text, and use the existing “honest
+fidelity” reporting (<code>scan_*</code>, <code>rtf_model.py:465</code>)
+to warn that formatting is lost on plain-text save.</li>
+</ul>
+<h2 id="dependencies-and-gates">9. Dependencies and gates</h2>
+<ul>
+<li>Add <strong><code>python-docx</code></strong> (pure-Python) to
+<code>pyproject.toml</code> dependencies; installation needs explicit
+approval.</li>
+<li>mypy stays scoped to <code>core</code> / <code>io</code>; the
+new/changed modules (<code>core/tagging.py</code>,
+<code>core/format_speech.py</code>, <code>io/rtf_model.py</code>,
+<code>io/docx_writer.py</code>) must type-check.</li>
+<li>First cut uses menus only, so the dialog inventory / button-contract
+gates are not triggered. A later “Font…” dialog would route through
+<code>_show_modal_dialog</code>.</li>
+<li>No new network egress.</li>
+</ul>
+<h2 id="phasing">10. Phasing</h2>
+<ol type="1">
+<li>Inline run formatting: model fields (underline/font/size) + span
+materialization + <code>tagging</code> builders + Font/Size menus +
+interrogation; HTML/RTF render. (Storage Option A.)</li>
+<li>Paragraph alignment: <code>RichParagraph.align</code> + fenced-div
+materialization + Align menu + interrogation.</li>
+<li>python-docx Word writer; add the dependency.</li>
+<li>Color / highlight across model, builders, all writers, and
+speech.</li>
+<li>Out-of-band overlay + sidecar persistence (storage Option B) as the
+clean-document end-state, reusing everything above.</li>
+</ol>
+<h2 id="verification">11. Verification</h2>
+<ul>
+<li>Unit: extend <code>tests/unit/io/test_rtf_model.py</code> for
+span/div round-trip and offset stability; add
+<code>tests/unit/core/</code> cases for <code>format_speech</code>
+phrases and <code>tagging</code> builders/merge; add
+<code>tests/unit/io/test_docx_writer.py</code> that opens the produced
+<code>.docx</code> with python-docx and asserts
+<code>run.font.name/size</code>, <code>color.rgb</code>, and
+<code>paragraph.alignment</code>.</li>
+<li>Round-trip: markdown -&gt; rich -&gt; markdown is identity for the
+new attributes.</li>
+<li>End-to-end: <code>python -m quill</code>, apply Font/Size/Align to a
+selection, confirm the announcement and the at-caret description, Save
+As <code>.docx</code> and verify in Word, then export <code>.rtf</code>
+and <code>.html</code>.</li>
+<li>Lint/types: <code>ruff check .</code> and
+<code>mypy quill\core quill\io</code>.</li>
+</ul>
+<h2 id="open-questions-for-future-scheduling">12. Open questions for
+future scheduling</h2>
+<ul>
+<li>Confirm storage Option A-then-B versus committing to B
+immediately.</li>
+<li>Sidecar format and naming for Option B persistence, and behavior
+when a <code>.txt</code> is opened in another editor (overlay is dropped
+vs. warned).</li>
+<li>Interrogation default: on-demand only, or on-caret-move behind a
+toggle.</li>
+<li>Font/size pickers: menu presets plus a “More…” accessible dialog
+later.</li>
+</ul>

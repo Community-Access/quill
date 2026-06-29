@@ -737,6 +737,14 @@ class MenuBuilderMixin:
             self._id_toggle_entries_panel,
             self._menu_label(_("Show &Entries Panel"), "view.toggle_entries_panel"),
         )
+        self._id_reveal_codes = wx.NewIdRef()
+        view_menu.AppendCheckItem(
+            self._id_reveal_codes,
+            self._menu_label(_("Reveal &Codes"), "view.reveal_codes_toggle"),
+        )
+        view_menu.Check(
+            self._id_reveal_codes, bool(getattr(self.settings, "reveal_codes_visible", False))
+        )
         navigate_menu = wx.Menu()
         self._id_go_to_line = wx.NewIdRef()
         self._id_set_bookmark = wx.NewIdRef()
@@ -1830,7 +1838,7 @@ class MenuBuilderMixin:
         tools_menu.AppendSubMenu(compare_menu, _("C&omparison"))
 
         # Braille -----------------------------------------------------------------
-        tools_menu.AppendSubMenu(self._build_braille_menu(), _("&Braille"))
+        tools_menu.AppendSubMenu(self._build_braille_menu_with_repair(), _("&Braille"))
 
         # Watch Folder (extracted from former Dictation submenu) --------------
         watch_folder_menu = wx.Menu()
@@ -4047,6 +4055,14 @@ class MenuBuilderMixin:
             lambda _e: self.toggle_entries_panel(),
             id=self._id_toggle_entries_panel,
         )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.toggle_reveal_codes(),
+            id=self._id_reveal_codes,
+        )
+        # Idle tick keeps the Reveal Codes pane synced with the editor caret/text
+        # without binding every per-tab editor; it early-returns when the pane is hidden.
+        self.frame.Bind(wx.EVT_IDLE, self._reveal_on_idle)
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.go_to_entry_in_notebook(),

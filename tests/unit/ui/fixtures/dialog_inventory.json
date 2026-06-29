@@ -219,6 +219,7 @@
   "quill/ui/main_frame_braille_phase3.py::BrailleProofingCommandsMixin._show_warnings_list::wx.SingleChoiceDialog": "native",
   "quill/ui/main_frame_braille_phase3.py::BrailleProofingCommandsMixin.add_proofing_note::wx.TextEntryDialog": "native",
   "quill/ui/main_frame_braille_phase3.py::BrailleProofingCommandsMixin.export_proofing_report::wx.FileDialog": "native",
+  "quill/ui/main_frame_classic_editor.py::ClassicEditorMixin.restore_deletion::wx.SingleChoiceDialog": "native",
   "quill/ui/main_frame_copy_tray.py::CopyTrayMixin.clear_all_tray_slots::wx.MessageDialog": "native",
   "quill/ui/main_frame_copy_tray.py::_TraySearchDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/main_frame_dictation_hotkeys.py::DictationHotkeysMixin.open_dictation_settings::wx.Dialog": "hardened_custom",

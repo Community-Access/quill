@@ -103,6 +103,14 @@ SETTING_GROUPS: tuple[SettingGroup, ...] = (
         "Spelling Review",
         "Behavior of the F7 guided spelling review dialog.",
     ),
+    SettingGroup(
+        "experimental",
+        "Experimental",
+        (
+            "Opt-in, for-testing options that change how the editor is built. "
+            "Restart QUILL after changing anything here so it applies everywhere."
+        ),
+    ),
 )
 
 _GROUP_IDS = {group.id for group in SETTING_GROUPS}
@@ -1826,5 +1834,62 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
             ("prompt", "Summary with Undo"),
         ),
         keywords=("upgrade", "migration", "notice", "announce", "undo", "settings"),
+    ),
+    # --- Experimental (for-testing editor surfaces) ------------------------
+    SettingSpec(
+        "experimental_acknowledged",
+        "I understand features may degrade based on the control selected",
+        "experimental",
+        "bool",
+        (
+            "Required safety gate. The experimental editor-surface and hide-border "
+            "options below are IGNORED until this is ticked, so an accidental change "
+            "can never affect your editor. Tick it only if you accept that a "
+            "non-default surface is for testing and that some features may not work."
+        ),
+        keywords=("experimental", "acknowledge", "understand", "risk", "degrade", "testing"),
+    ),
+    SettingSpec(
+        "experimental_editor_surface",
+        "Editor surface (for testing)",
+        "experimental",
+        "choice",
+        (
+            "Which control backs the editor, for testing different surfaces. "
+            "'Default' follows the braille Editor control type (Accessibility). "
+            "RichEdit 3.0/2.0 are the native Windows rich controls; 'Notepad' is a "
+            "plain EDIT control; 'Rich text' is an experimental wx.RichTextCtrl. "
+            "RESTART QUILL after changing this so every document uses the new surface."
+        ),
+        choices=(
+            ("default", "Default (follow Accessibility setting)"),
+            ("rich2", "RichEdit 3.0"),
+            ("rich", "RichEdit 2.0"),
+            ("plain", "Notepad (plain edit control)"),
+            ("rtf", "Rich text (wx.RichTextCtrl, experimental)"),
+            ("win32", "Native Win32 EDIT (pywin32 spike, Windows only)"),
+        ),
+        keywords=(
+            "experimental",
+            "editor",
+            "surface",
+            "richedit",
+            "notepad",
+            "rtf",
+            "win32",
+            "native",
+            "testing",
+        ),
+    ),
+    SettingSpec(
+        "editor_hide_border",
+        "Hide editor border",
+        "experimental",
+        "bool",
+        (
+            "Draw the editor with no border for a cleaner, Notepad-like frame. "
+            "RESTART QUILL after changing this."
+        ),
+        keywords=("experimental", "border", "margin", "notepad", "frame", "chrome"),
     ),
 )

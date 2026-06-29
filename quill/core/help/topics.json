@@ -141,6 +141,18 @@
     "user_guide_section": "braille-mode"
   },
   {
+    "id": "braille.go_to_longest_line",
+    "title": "Go to Longest Braille Line",
+    "body": "Moves the cursor to the start of the longest line in the file and announces its length in cells. When a braille file will not emboss because a line is over the cell limit (page width exceeded), this jumps straight to the worst offender so you can repair it. Often the cause is trailing spaces; try Remove Trailing Spaces in Whole File first.",
+    "user_guide_section": "braille-mode"
+  },
+  {
+    "id": "braille.go_to_longest_page",
+    "title": "Go to Longest Braille Page",
+    "body": "Moves the cursor to the first line of the deepest page in the file and announces how many lines it has. When a braille file will not emboss because a page has too many lines (page depth exceeded), this jumps straight to it so you can insert a page break where one is missing (Insert Braille Page Break, Ctrl+Enter).",
+    "user_guide_section": "braille-mode"
+  },
+  {
     "id": "braille.go_to_page",
     "title": "Go to Braille Page",
     "body": "Jump to a braille page by number. Opens a small input dialog that accepts 1..N. QUILL validates the page against the current page map and refuses to move if the number is out of range, announcing 'Braille page 0 of N' or 'Braille page 412 of 87' as appropriate. After the move, the new position is read aloud using Read Braille Status.",
@@ -215,6 +227,12 @@
     "user_guide_section": "braille-mode"
   },
   {
+    "id": "braille.read_layout_metrics",
+    "title": "Read Braille Layout Metrics",
+    "body": "Speaks the NLS-style layout status used for repairing braille files: the cursor's cell and the current line length; the longest line in the file against the cells-per-line limit (with a 'page width exceeded' warning when over); the current and total braille pages and the line within the page; and the longest page against the lines-per-page limit (with a 'page depth exceeded' warning when over). The limits come from your Cells per line and Lines per page settings.",
+    "user_guide_section": "braille-mode"
+  },
+  {
     "id": "braille.read_line_and_cell",
     "title": "Read Current Line and Cell",
     "body": "Speak the current line within the braille page and the cell within the line. Useful when you only need fine-grained position feedback without the full status. The line segment is 1-based within the current page; the cell segment is 1-based within the current line. Status bar updates in parallel.",
@@ -260,6 +278,18 @@
     "id": "braille.status_cell",
     "title": "Status Bar Braille Cell",
     "body": "When a braille file (.brf or .brl) is the active document, the status bar shows a live cell that updates as you move the caret. The cell has four segments: braille page (e.g. BRF Pg 12/87), line within the page (Ln 14/25), cell within the line (Cell 31/40), and print page (Print 7). When the print-page detector cannot resolve a page, the print segment reads 'Print ?' so the fallback is visible rather than silent. Use the Braille menu to read the same information as a spoken announcement.",
+    "user_guide_section": "braille-mode"
+  },
+  {
+    "id": "braille.strip_trailing_spaces_document",
+    "title": "Remove Trailing Spaces in Whole File",
+    "body": "Removes trailing spaces and tabs from the end of every line in the file, preserving all line endings and form feeds. Trailing spaces are the usual cause of 'page width exceeded' in a braille file. After running this, use Read Braille Layout Metrics to confirm the longest line is now within the cell limit.",
+    "user_guide_section": "braille-mode"
+  },
+  {
+    "id": "braille.strip_trailing_spaces_line",
+    "title": "Remove Trailing Spaces on Current Line",
+    "body": "Removes trailing spaces and tabs from the end of the line at the cursor, leaving the rest of the file untouched. Use this for a targeted fix when Go to Longest Line has taken you to an over-width line you want to repair by hand.",
     "user_guide_section": "braille-mode"
   },
   {
@@ -327,6 +357,18 @@
       "Ctrl+Shift+1..9, 0, -, = - Paste slot 1-12",
       "Ctrl+Shift+Grave, Shift+1..9, 0, -, = - Copy to slot 1-12"
     ],
+    "user_guide_section": "writing-and-editing"
+  },
+  {
+    "id": "edit.repeat_command",
+    "title": "Repeat Next Command",
+    "body": "Sets a count so the very next command runs several times. Choose this command, enter a number, then run any command (a movement, a delete, an insertion, or a macro) and it repeats that many times. The count applies once and then clears. This is the keyboard-first 'Repeat' feature from the classic WordPerfect Editor.",
+    "user_guide_section": "writing-and-editing"
+  },
+  {
+    "id": "edit.restore_deletion",
+    "title": "Restore Deleted Text",
+    "body": "Re-inserts text you recently deleted with one of QUILL's structured delete commands (delete to line start or end, delete to document start or end, or delete paragraph). It remembers the last three deletions; choose one from the list and it is inserted at the cursor. Unlike Undo, which reverts the last edit in place, Restore Deleted Text can place the recovered text anywhere.",
     "user_guide_section": "writing-and-editing"
   },
   {
@@ -535,6 +577,12 @@
       "Enter - Activate cell"
     ],
     "user_guide_section": "the-main-window"
+  },
+  {
+    "id": "power.describe_character",
+    "title": "Describe Character at Cursor",
+    "body": "Opens an accessible dialog describing the exact character under the cursor: its name, Unicode code point (hexadecimal and decimal), general category, and plain-language notes for invisibles that are easy to miss, such as a no-break space, a zero-width space, a smart quote, a tab, or a line ending. This is the screen-reader descendant of the classic 'Reveal Codes' view.",
+    "user_guide_section": "tools-for-reading-review-and-inspection"
   },
   {
     "id": "preferences",

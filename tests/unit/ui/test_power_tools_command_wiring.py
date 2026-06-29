@@ -38,6 +38,9 @@ _POWER_TOOLS_COMMAND_IDS = [
     "power.expand_abbreviation",
     "power.preview_abbreviation",
     "power.explain_abbreviation",
+    "edit.repeat_command",
+    "edit.restore_deletion",
+    "power.describe_character",
     "power.paste_html_as_markdown",
     "power.number_lines",
     "power.hard_wrap_lines",
@@ -201,10 +204,11 @@ def test_read_only_state_refreshes_on_tab_switch() -> None:
 
 def test_read_only_state_refreshes_on_open() -> None:
     # Newly opened/selected tabs must re-apply a persisted read-only guard.
-    # #616: the macOS branch and its explanatory comment, plus the braille
-    # RichEdit-version/margin handling, add lines to _create_document_tab before
-    # the refresh call, so widen the slice.
-    create_tab = _SOURCE[_SOURCE.index("def _create_document_tab") :][:3500]
+    # #616: the macOS branch and its explanatory comment, the braille
+    # RichEdit-version handling, and the Experimental editor-surface / hide-border
+    # branch all add lines to _create_document_tab before the refresh call, so
+    # widen the slice.
+    create_tab = _SOURCE[_SOURCE.index("def _create_document_tab") :][:5500]
     assert "self._refresh_read_only_state()" in create_tab
 
 
@@ -216,9 +220,15 @@ def test_command_table_is_exactly_the_expected_ids_with_no_duplicates() -> None:
 
 
 def test_every_table_handler_exists_on_the_actions_mixin() -> None:
+    from quill.ui.main_frame_classic_editor import ClassicEditorMixin
     from quill.ui.main_frame_copy_tray import CopyTrayMixin
     from quill.ui.main_frame_power_tools import PowerToolsActionsMixin
     from quill.ui.main_frame_power_tools_menu import _MIGRATED_HANDLERS
+
+    # The classic-editor trio (Repeat, Restore Deleted Text, Describe Character)
+    # lives on ClassicEditorMixin, extracted to keep main_frame_power_tools.py
+    # within its GATE-11 budget.
+    classic_ids = {"edit.repeat_command", "edit.restore_deletion", "power.describe_character"}
 
     for command in POWER_TOOLS_COMMANDS:
         if command.id in _MIGRATED_HANDLERS:
@@ -227,6 +237,11 @@ def test_every_table_handler_exists_on_the_actions_mixin() -> None:
             assert callable(_MIGRATED_HANDLERS[command.id])
             continue
         name = command.handler_name
+        if command.id in classic_ids:
+            assert hasattr(ClassicEditorMixin, name), (
+                f"missing handler {name} on ClassicEditorMixin for {command.id}"
+            )
+            continue
         # Copy Tray commands live on CopyTrayMixin, not PowerToolsActionsMixin.
         if command.placement.group == "copy_tray":
             assert hasattr(CopyTrayMixin, name), (
@@ -264,6 +279,8 @@ def test_menu_recirculation_preserves_shipped_group_order() -> None:
             "power.expand_abbreviation",
             "power.preview_abbreviation",
             "power.explain_abbreviation",
+            "edit.repeat_command",
+            "edit.restore_deletion",
         ],
         "copy_tray": [
             "edit.open_copy_tray",
@@ -339,6 +356,7 @@ def test_menu_recirculation_preserves_shipped_group_order() -> None:
             "power.toggle_indent_announce",
             "power.infer_indent",
             "power.compute_line_statistics",
+            "power.describe_character",
         ],
     }
     for group, ids in expected.items():

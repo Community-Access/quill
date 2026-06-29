@@ -6778,6 +6778,59 @@ Where QUILL stores its data directory (`app_data_dir()` — settings, recovery, 
 
 ---
 
+### 5.89a Classic-editor power features — Repeat, Restore Deleted Text, Describe Character
+
+**Motivation.** Three keyboard-first conveniences from the lineage of the WordPerfect Editor that have no prior equivalent in QUILL. Each targets the same audience as the rest of the power-tool suite: writers who work entirely from the keyboard with a screen reader, and who value precise, repeatable, inspectable editing. All three ship **unbound** (no default shortcut), registered through the standard command registry so they appear in the Command Palette and Keymap Editor and recirculate into their conventional menus.
+
+#### Repeat Next Command (`edit.repeat_command`, Edit menu)
+
+A numeric repeat prefix for *any* command. The user invokes Repeat Next Command, enters a count in a native, focus-managed prompt, and the very next command dispatched through the command registry runs that many times — move down twenty lines, delete ten words, insert forty dashes, or replay a recorded macro N times — in one gesture.
+
+- **Mechanism.** The count lives on `CommandRegistry` (wx-free): `arm_repeat(count)` clamps the value to `[1, MAX_REPEAT]` (`MAX_REPEAT = 1000`, so a typo can never spin the editor unbounded). `run(command_id)` consumes the pending count at the top of dispatch, resets it to 1, and loops the handler that many times; the run listener fires once per iteration so macro recording captures each step faithfully. The count persists only until the next eligible `run` — it does not leak across a session.
+- **Self-protection.** The arming command registers itself as non-repeatable (`register_non_repeatable`), so re-arming while a count is pending never multiplies the prompt.
+- **Scope.** Repeats commands dispatched through the registry (the keyboard path screen-reader users rely on). Re-entrant handlers that themselves call `run` see a cleared count and are not double-counted.
+
+#### Restore Deleted Text (`edit.restore_deletion`, Edit menu)
+
+A small kill-ring distinct from both Undo and the Copy Tray. QUILL&#39;s structured delete commands (`delete_to_line_start`/`_end`, `delete_to_document_start`/`_end`, `delete_paragraph`) record the removed span into a deletion ring; Restore Deleted Text presents the recent deletions in an accessible list and re-inserts the chosen one at the cursor.
+
+- **Why it is distinct.** Undo reverts the last edit *in place*; the Copy Tray captures *copies*. The deletion ring captures *deletions* and lets the writer place recovered text *anywhere* — the modern form of the WordPerfect Editor &quot;Cancel&quot; buffer.
+- **Mechanism.** `quill/core/deletion_ring.py` holds `DeletionRing` (newest-first, capped at three, collapses consecutive identical deletions) and `removed_span(before, after)`, which recovers the contiguous removed run by stripping the common prefix and suffix. `_apply_line_operation` records `removed_span` after every structured delete. The UI presents a `wx.SingleChoiceDialog` of speakable previews (`&quot;Most recent (12 characters): ...&quot;`); a single entry inserts immediately.
+- **Read-only and bounds.** Honours the read-only guard; an empty ring announces &quot;No deleted text to restore&quot;.
+
+#### Describe Character at Cursor (`power.describe_character`, Tools → Advanced)
+
+The screen-reader descendant of &quot;Reveal Codes&quot;. An accessible dialog — rendered in the same read-only `ContextHelpDialog` the F1 help uses, so a screen reader reads the whole description in one pass — names the exact character under the caret.
+
+- **What it reports.** Glyph (or a speakable stand-in for non-printing characters), Unicode name, code point in hexadecimal and decimal, general category in plain language, and a note for invisibles that bite writers: no-break space, narrow no-break space, zero-width space/joiner/non-joiner, BOM, smart quotes, en/em dash, soft hyphen, tab, and line endings. Non-ASCII characters are flagged.
+- **Mechanism.** `quill/core/char_describe.py` exposes `describe_character(text, position) -&gt; CharacterDescription` (a `summary` for the status line and a `detail` block for the dialog). Positions at or past end of text report &quot;End of document&quot; rather than raising. The special-character map is keyed by code point (built via `chr`) so invisibles are unambiguous in source.
+
+**Implementation map.** `quill/core/commands.py` (`arm_repeat`, `pending_repeat`, `register_non_repeatable`, repeat loop in `run`), `quill/core/deletion_ring.py`, `quill/core/char_describe.py`, `quill/ui/main_frame_power_tools.py` (`repeat_command`, `restore_deletion`, `describe_character`, `_deletion_preview`), `quill/ui/main_frame.py` (`_deletion_ring` init, non-repeatable registration, `removed_span` capture in `_apply_line_operation`), `quill/ui/main_frame_power_tools_menu.py` (manifest entries), `quill/core/feature_command_map.py`, `quill/core/help/topics.json`. Tests: `tests/unit/core/test_command_repeat.py`, `test_deletion_ring.py`, `test_char_describe.py`.
+
+---
+
+### 5.89b Reveal Codes (WordPerfect-style synchronized code inspector)
+
+QUILL keeps formatting codes hidden so the editing buffer stays clean plain text (see the rich-text hidden-codes model). **Reveal Codes** is the on-demand companion: a second, synchronized view that makes every hidden formatting code and structural/invisible character explicit, navigable, and individually announced — the beloved WordPerfect feature, rebuilt screen-reader-first. The full design rationale is preserved in this PRD (this section is canonical; the former `docs/planning/reveal-codes-design.md` was retired into it on shipment).
+
+**Activation and layout.** `view.reveal_codes_toggle` (**Alt+F3**, the WordPerfect chord; also **View → Reveal Codes**, a checkable item) shows/hides a pane docked **below the editor, above the status bar**. Hidden by default and zero-cost while hidden (the token stream is not built). The visible/view/verbosity state persists in settings.
+
+**The F6 region cycle.** The pane is a first-class focus region. When shown it joins QUILL&#39;s existing rotation, so **F6** moves **Editor → Reveal Codes → Status Bar** (with Document Tabs / Preview when present) and **Shift+F6** cycles back — no new keybinding (`_current_focus_region_labels` / `_detect_active_region` / `_focus_region` in `main_frame.py` gained one entry each). `edit.find_all_matches` moved off Alt+F3 to `Ctrl+Shift+F3` to free the chord.
+
+**Synchronized carets.** Both views share one logical position via the markup↔visible offset map. Moving in the pane drives the editor caret to the matching markup offset; moving the editor caret highlights the matching token in the pane (a throttled idle tick, off the typing hot path). The editor buffer is the markup, so the markup offset is the editor caret space directly.
+
+**The token model (`quill/core/reveal_codes.py`, wx-free).** `build_code_stream(markup) -&gt; list[CodeToken]` linearizes the document, built on `rtf_model.analyze_markdown` (per-character offset map + formatting) and `char_describe` (invisibles). Each `CodeToken` records `kind` (TEXT / FORMAT_ON / FORMAT_OFF / BLOCK / STRUCTURE / INVISIBLE), a display `label` and `spoken` phrase, both `markup_*` and `visible_*` offset ranges, an optional `pair_index` linking an ON code to its matching OFF, and `attrs`. Inline formatting (bold/italic/underline/strike/super/subscript/font/size/color/highlight/link) becomes paired ON/OFF codes; paragraph attributes (heading, bullet, named style, alignment, spacing, indent) become BLOCK codes at the line head; paragraph breaks become `[¶ Hard Return]`; tabs and notable invisibles (no-break/zero-width spaces, smart quotes, dashes) become their own tokens; everything else groups into TEXT runs. `token_at_markup_offset`, `pair_distance`, and `describe_token` support sync, pairing, and verbosity-aware announcements.
+
+**Presentations and verbosity.** `reveal_codes_view` selects **Structured** (a read-only `wx.ListBox`, one labelled/announced item per token — the most accessible and the default) or **Flowed** (a read-only `wx.TextCtrl` rendering codes inline within the text, the classic visual/braille layout). `reveal_codes_verbosity` (quiet / balanced / detailed) gates how much each move announces. In-pane commands: `reveal.next_code` / `reveal.previous_code` (scan code-to-code) and `reveal.go_to_pair` (ON↔OFF).
+
+**Accessibility.** Discrete, individually-named items (Structured) are the headline win over a visual-only Reveal Codes; entering/leaving the pane announces; codes are conveyed by bracketed text + label, never colour alone; navigation never chatters beyond the chosen verbosity. SAPI/braille users get the literal bracketed codes in Flowed mode.
+
+**Scope note.** Read-only navigation, interrogation, and full bidirectional sync ship now (both presentations, verbosity, pairing). In-pane *editing* (delete a code to strip its effect; insert/replace codes) is the defined next step: it requires the formatting markers&#39; exact character spans, which `analyze_markdown` abstracts away, so it is built on the marker-span work rather than shipped against the zero-width code boundaries to avoid corrupting markup.
+
+**Implementation map.** `quill/core/reveal_codes.py` (model), `quill/ui/reveal_codes_pane.py` (the pane + sync controller), `quill/ui/main_frame_reveal_codes.py` (`RevealCodesMixin`: toggle, idle sync, in-pane command delegates), `quill/ui/main_frame.py` (pane creation in the layout; region-cycle entries; command registration), `quill/ui/main_frame_menu.py` (View item + EVT_MENU/EVT_IDLE binding), `quill/core/settings.py` (`reveal_codes_visible` / `reveal_codes_view` / `reveal_codes_verbosity`), `quill/core/keymap.py` + `keymap_packs.py` (Alt+F3, friendly title). Tests: `tests/unit/core/test_reveal_codes.py`.
+
+---
+
 ### 5.90 AI Writing Toolkit: architecture and feature matrix
 
 This section documents the AI writing layer shipped in QUILL 0.6.0, covering provider abstraction, the connection model, per-feature design, and the data-disclosure posture.
@@ -11844,13 +11897,55 @@ The Translation submenu is shown only when the pack is detected and
 QUILL is not in Safe Mode; otherwise it is hidden (never disabled).
 Back- translation output is always labelled a <em>draft</em>. On worker
 failure QUILL announces the reason and opens no empty document.</p></li>
+<li><p><strong>Layout diagnostics and repair (BR-024, NLS-BRT
+parity).</strong> A <strong>Braille → Repair</strong> submenu brings the
+NLS Braille Repair Tool's proofreading workflow to QUILL for the two
+classic problems: <em>page width exceeded</em> (a line over the cell
+limit, almost always trailing spaces) and <em>page depth exceeded</em>
+(a page over the line limit).</p>
+<ul>
+<li><strong>Read Layout Metrics</strong>
+(<code>braille.read_layout_metrics</code>) speaks the NLS-style status
+in one pass: cursor cell and current line length; the longest line in
+the file vs. the cells-per-line limit (with a "page width exceeded"
+warning); current/total braille pages and the line within the page; and
+the longest page vs. the lines-per-page limit (with a "page depth
+exceeded" warning).</li>
+<li><strong>Go to Longest Line</strong> / <strong>Go to Longest
+Page</strong> (<code>braille.go_to_longest_line</code>,
+<code>braille.go_to_longest_page</code>) move the caret to the worst
+offender for manual repair, recording the jump in the location
+ring.</li>
+<li><strong>Remove Trailing Spaces on This Line</strong> / <strong>…in
+Whole File</strong> (<code>braille.strip_trailing_spaces_line</code>,
+<code>braille.strip_trailing_spaces_document</code>) strip trailing
+spaces/tabs while preserving every line ending and form feed.</li>
+<li>The cell and line limits come from the existing
+<code>braille_cells_per_line</code> (28–42, default 40) and
+<code>braille_lines_per_page</code> (20–30, default 25) settings, so the
+diagnostics honour the user's configured page geometry.</li>
+<li><strong>Implementation map.</strong>
+<code>quill/core/brf_repair.py</code> (pure: <code>LayoutMetrics</code>,
+<code>compute_layout_metrics</code>, <code>describe_layout</code>,
+<code>longest_line_offset</code>, <code>longest_page_offset</code>,
+<code>strip_trailing_spaces_all</code>,
+<code>strip_trailing_spaces_current_line</code>),
+<code>quill/ui/main_frame_braille_repair.py</code>
+(<code>BrailleRepairMixin</code>, in its own module so the at-budget
+<code>main_frame_braille.py</code> need not grow),
+<code>quill/core/feature_command_map.py</code>,
+<code>quill/core/help/topics.json</code>. Tests:
+<code>tests/unit/core/test_brf_repair.py</code>.</li>
+</ul></li>
 </ul>
 <h3 id="non-goals-this-phase">Non-goals (this phase)</h3>
 <p>The proofing/sidecar workflow (Phase 3) and the bundled translation
 pack install path remain tracked separately (BR-015 and later). The
 translation install path is a no-op stub until the signed, audited
 download lands; see the deployment plan in
-<code>docs/planning/planning.md</code> (Feature: Braille Mode).</p>
+<code>docs/planning/planning.md</code> (Feature: Braille Mode). Six-key
+entry and an embedded forward-translation editor (as in NLS-BRT's
+"contracted braille typed manually") remain out of scope.</p>
 <h2 id="27-markdown-profiles-and-table-of-contents-257">§27. Markdown
 Profiles and Table of Contents (#257)</h2>
 <h3 id="271-overview">§27.1 Overview</h3>

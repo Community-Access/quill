@@ -89,6 +89,11 @@ class Settings:
     # Hunspell language the spell checker validates against. en_US ships bundled;
     # other languages download on demand (quill.core.spellcheck.install_language).
     spellcheck_language: str = "en_US"
+    # Reveal Codes pane (WordPerfect-style hidden-code inspector). Hidden by
+    # default; Alt+F3 toggles it, F6 cycles focus into it.
+    reveal_codes_visible: bool = False
+    reveal_codes_view: str = "structured"  # "structured" | "flowed"
+    reveal_codes_verbosity: str = "balanced"  # "quiet" | "balanced" | "detailed"
     intellisense_as_you_type: bool = False
     snippet_trigger_expansion: bool = True
     preview_browser: str = "system"
@@ -168,6 +173,20 @@ class Settings:
     # (RichEdit 2.0), or "plain" (a Notepad-style EDIT control). Takes effect for
     # documents opened after the change.
     editor_control_kind: str = "rich2"
+    # Experimental (testing) overrides — see the Experimental settings tab. Changing
+    # either takes effect on the next QUILL restart.
+    #   experimental_editor_surface: which control backs the editor, overriding
+    #   editor_control_kind for testing. "default" follows editor_control_kind;
+    #   otherwise "rich2" (RichEdit 3.0), "rich" (RichEdit 2.0), "plain" (Notepad-style
+    #   EDIT control), or "rtf" (a wx.RichTextCtrl rich-text surface, experimental).
+    experimental_editor_surface: str = "default"
+    #   editor_hide_border: draw the editor control with no border for a cleaner,
+    #   Notepad-like frame. Off keeps the platform default border.
+    editor_hide_border: bool = False
+    #   experimental_acknowledged: the user has confirmed they understand that
+    #   features may degrade on a non-default editor surface. The experimental
+    #   overrides above are ignored until this is True (the safety gate).
+    experimental_acknowledged: bool = False
     # What to do when a document that carries hidden formatting is saved as plain
     # text: "ask" (offer to keep the formatting), "illuminate" (always write a
     # <name>.illumination sidecar so the .txt round-trips formatting in QUILL), or
@@ -523,6 +542,13 @@ class Settings:
         spellcheck_as_you_type = bool(data.get("spellcheck_as_you_type", False))
         spell_check_before_save = bool(data.get("spell_check_before_save", False))
         spellcheck_language = str(data.get("spellcheck_language", "en_US")).strip() or "en_US"
+        reveal_codes_visible = bool(data.get("reveal_codes_visible", False))
+        reveal_codes_view = str(data.get("reveal_codes_view", "structured")).strip().lower()
+        if reveal_codes_view not in {"structured", "flowed"}:
+            reveal_codes_view = "structured"
+        reveal_codes_verbosity = str(data.get("reveal_codes_verbosity", "balanced")).strip().lower()
+        if reveal_codes_verbosity not in {"quiet", "balanced", "detailed"}:
+            reveal_codes_verbosity = "balanced"
         intellisense_as_you_type = bool(data.get("intellisense_as_you_type", False))
         snippet_trigger_expansion = bool(data.get("snippet_trigger_expansion", True))
         preview_browser = str(data.get("preview_browser", "system")).strip() or "system"
@@ -647,6 +673,13 @@ class Settings:
             editor_control_kind = (
                 "rich" if bool(data.get("editor_use_legacy_richedit", False)) else "rich2"
             )
+        experimental_editor_surface = (
+            str(data.get("experimental_editor_surface", "default")).strip().lower()
+        )
+        if experimental_editor_surface not in {"default", "rich2", "rich", "plain", "rtf", "win32"}:
+            experimental_editor_surface = "default"
+        editor_hide_border = bool(data.get("editor_hide_border", False))
+        experimental_acknowledged = bool(data.get("experimental_acknowledged", False))
         plain_text_with_formatting = str(data.get("plain_text_with_formatting", "ask"))
         if plain_text_with_formatting not in {"ask", "illuminate", "plain"}:
             plain_text_with_formatting = "ask"
@@ -1045,6 +1078,9 @@ class Settings:
             spellcheck_as_you_type=spellcheck_as_you_type,
             spell_check_before_save=spell_check_before_save,
             spellcheck_language=spellcheck_language,
+            reveal_codes_visible=reveal_codes_visible,
+            reveal_codes_view=reveal_codes_view,
+            reveal_codes_verbosity=reveal_codes_verbosity,
             intellisense_as_you_type=intellisense_as_you_type,
             snippet_trigger_expansion=snippet_trigger_expansion,
             preview_browser=preview_browser,
@@ -1093,6 +1129,9 @@ class Settings:
             announce_indent_depth=announce_indent_depth,
             spoken_echo_on_double_press=spoken_echo_on_double_press,
             editor_control_kind=editor_control_kind,
+            experimental_editor_surface=experimental_editor_surface,
+            editor_hide_border=editor_hide_border,
+            experimental_acknowledged=experimental_acknowledged,
             plain_text_with_formatting=plain_text_with_formatting,
             dictation_onboarding_shown=dictation_onboarding_shown,
             pronunciation_enabled=pronunciation_enabled,

@@ -2699,6 +2699,43 @@ move text</li>
 <li><code>Ctrl+A</code> to select everything</li>
 </ul>
 <p>Quill adds two especially useful ideas on top of that.</p>
+<h3 id="repeat-next-command">Repeat Next Command</h3>
+<p>When you need to do the same thing several times — move down twenty
+lines, delete ten words, insert forty dashes, or replay a macro — you do
+not have to press the key over and over. Choose <strong>Edit → Repeat
+Next Command…</strong>, type how many times, and the <em>next</em>
+command you run repeats that many times. Then the count clears
+automatically, so ordinary editing carries on as normal.</p>
+<p>A few details:</p>
+<ul>
+<li>It works with almost any command, including movement, deletion,
+insertion, and a recorded macro.</li>
+<li>The count is capped at 1000, so a slip of the finger can never run
+away.</li>
+<li>It ships without a keyboard shortcut. If you use it often, assign
+one in <strong>Preferences → Keyboard → Keymap Editor</strong> (search
+for "Repeat Next Command").</li>
+</ul>
+<p>This is the keyboard-first "Repeat" idea from the classic WordPerfect
+Editor, brought into QUILL.</p>
+<h3 id="restore-deleted-text">Restore Deleted Text</h3>
+<p>Undo (<code>Ctrl+Z</code>) puts the last edit back exactly where it
+was. Sometimes you want the opposite: you deleted a sentence, and now
+you want to drop it somewhere <em>else</em>. <strong>Edit → Restore
+Deleted Text…</strong> remembers the last three blocks you removed with
+QUILL's structured delete commands — delete to start or end of line,
+delete to start or end of document, and delete paragraph — and lets you
+pick one from a list and re-insert it at the cursor.</p>
+<ul>
+<li>The list shows each deletion newest-first with a short preview and
+its length, so you can tell them apart by ear.</li>
+<li>If there is only one remembered deletion, it is restored immediately
+with no list.</li>
+<li>Like Repeat Next Command, it ships unbound; assign a shortcut in the
+Keymap Editor if you like (search for "Restore Deleted Text").</li>
+</ul>
+<p>This is the modern, place-it-anywhere form of the classic Editor's
+"Cancel" buffer.</p>
 <h3 id="copy-tray">Copy Tray</h3>
 <p>Copy Tray is <strong>twelve</strong> independently addressable
 clipboard slots that survive application restarts. Each slot holds text
@@ -4258,6 +4295,80 @@ causing an error.</li>
 Review, and Inspection</h2>
 <p>Quill earns trust by making difficult files readable and
 inspectable.</p>
+<h3 id="describe-character-at-cursor">Describe Character at Cursor</h3>
+<p>Some characters look the same but are not: a curly "smart" quote
+versus a straight apostrophe, a no-break space versus an ordinary space,
+an invisible zero-width space that quietly breaks a search, or a stray
+byte-order mark pasted from the web. <strong>Tools → Advanced → Describe
+Character at Cursor</strong> opens an accessible dialog — in the same
+read-only style as F1 help, so your screen reader reads it all in one
+pass — describing exactly what sits under the cursor:</p>
+<ul>
+<li>its name (for example "No-break space" or "Right single quotation
+mark"),</li>
+<li>its Unicode code point in both hexadecimal and decimal,</li>
+<li>its category in plain language (uppercase letter, dash punctuation,
+control character, and so on), and</li>
+<li>a note for the invisibles that are easy to miss, plus a flag when
+the character is non-ASCII.</li>
+</ul>
+<p>If the cursor is at the very end of the document, it tells you so
+rather than guessing. This is the screen-reader descendant of the
+classic "Reveal Codes" view. It ships without a shortcut; assign one in
+the Keymap Editor (search for "Describe Character") if you inspect text
+often.</p>
+<h3 id="reveal-codes">Reveal Codes</h3>
+<p>QUILL keeps formatting codes <strong>hidden</strong> so your editing
+buffer stays clean, fast plain text. <strong>Reveal Codes</strong> lets
+you see and hear every one of them on demand — the beloved WordPerfect
+feature, rebuilt for a screen reader. Press <strong>Alt+F3</strong> (or
+tick <strong>View → Reveal Codes</strong>) to open a pane below the
+editor that shows your document as an ordered stream of bracketed codes
+and text: <code>[Bold On]</code>, <code>[Font: Arial]</code>,
+<code>[Size: 14]</code>, <code>[Center]</code>,
+<code>[Heading 2]</code>, <code>[Link: …]</code>, <code>[Tab]</code>,
+<code>[¶ Hard Return]</code>, <code>[No-Break Space]</code>,
+<code>[Smart Quote]</code>, and so on. The editor itself does not change
+— Reveal Codes is a window onto the hidden scaffolding, not a different
+way of editing.</p>
+<p><strong>Moving between the panes.</strong> <strong>F6</strong> cycles
+through the regions — Editor → Reveal Codes (when shown) → Status Bar —
+and <strong>Shift+F6</strong> cycles back, exactly like switching
+windows. The two carets stay in sync: when you move in the Reveal Codes
+pane, the editor's cursor follows to the matching place, and when you
+move the editor cursor, the pane highlights the code or text you are on.
+So you can sit in the pane, arrow through the codes, and your place in
+the document tracks along.</p>
+<p><strong>Hearing the codes.</strong> Each code is its own labelled,
+individually-announced item — your screen reader says "bold on", "tab",
+"centred", "font Arial" as a single unit, never spelled out letter by
+letter. Within the pane you can:</p>
+<ul>
+<li><strong>Arrow up and down</strong> to move through every code and
+text run in order.</li>
+<li>Jump <strong>code to code</strong> (skipping the plain text) to scan
+structure quickly.</li>
+<li>Jump from an opening code such as <code>[Bold On]</code> to its
+matching <code>[Bold Off]</code>, and hear how far the formatting
+reaches ("bold on, 12 characters").</li>
+</ul>
+<p><strong>Two views and how chatty it is.</strong> In <strong>Settings
+→ Editing</strong> (or the View menu) choose:</p>
+<ul>
+<li><strong>Structured</strong> (default) — one item per code in an
+accessible list. The clearest mode for a screen reader: discrete,
+labelled, unambiguous.</li>
+<li><strong>Flowed</strong> — the codes rendered inline within the
+running text (<code>[Bold On]Hello[Bold Off]</code>), the closest match
+to the classic WordPerfect look and the most natural layout on a braille
+display.</li>
+<li><strong>Verbosity</strong> — <em>quiet</em> (just the code name),
+<em>balanced</em> (adds an opening code's reach), or <em>detailed</em>
+(adds Unicode notes for invisibles).</li>
+</ul>
+<p>Reveal Codes is <strong>hidden by default</strong> and costs nothing
+until you open it. Your choices of view and verbosity are remembered
+between sessions.</p>
 <h3 id="read-aloud">Read Aloud</h3>
 <p>Read Aloud uses local voices with a deterministic support policy. The
 Windows system voice runs on <strong>SAPI 5</strong> and is always
@@ -5382,10 +5493,29 @@ Warning</strong> and <strong>Previous Warning</strong> move through the
 findings and announce "Warning N of M" with the message, and
 <strong>Warnings Summary</strong> speaks the total and the most common
 categories. Validation only reads the file; it never changes it.</li>
+<li><strong>Repair</strong> — fix the two problems that stop a braille
+file from embossing cleanly. <strong>Read Layout Metrics</strong> speaks
+the diagnostic numbers in one pass: the cursor's cell and the current
+line length; the longest line in the file against your cells-per-line
+limit, with a spoken "page width exceeded" when it is over; the current
+and total braille pages; and the longest page against your
+lines-per-page limit, with a spoken "page depth exceeded" when it is
+over. <strong>Go to Longest Line</strong> and <strong>Go to Longest
+Page</strong> take you straight to the worst offender so you can repair
+it by hand — for a too-deep page, that usually means inserting a page
+break (Insert Braille Page Break) where one is missing. <strong>Remove
+Trailing Spaces on This Line</strong> and <strong>Remove Trailing Spaces
+in Whole File</strong> clear the trailing spaces that cause most
+page-width problems, while keeping every line ending and form feed
+intact. The cell and line limits come from your <strong>Cells per
+line</strong> and <strong>Lines per page</strong> settings under
+<strong>Preferences → Braille</strong>, so the diagnostics always match
+the page geometry you are transcribing for.</li>
 </ul>
-<p>Every status and navigation command is safe to run on a non-braille
-document — it simply tells you "This is not a braille document" rather
-than doing anything.</p>
+<p>Every status, navigation, and layout command is safe to run on a
+non-braille document — it simply tells you "This is not a braille
+document" rather than doing anything. (Remove Trailing Spaces and Go to
+Longest Line work on any document's text.)</p>
 <p><strong>Translation (Universal BRF Pack).</strong> Forward and back
 translation between print text and braille require the optional
 <strong>QUILL Braille Pack</strong>. Instead of a simple set of tables,

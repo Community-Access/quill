@@ -140,6 +140,48 @@ bindings, and keys that are assigned but cannot actually fire, with a one-click
 **Heal** that clears the bad entries and re-applies your shortcuts so menus and
 keys line up again.
 
+**Three classic-editor power tools for keyboard-first writers.** In the tradition
+of the WordPerfect Editor, three additions with no prior equivalent in QUILL — all
+unbound by default, so assign keys in the Keymap Editor. **Repeat Next Command**
+(Edit menu): set a count, then the next command runs that many times — down twenty
+lines, delete ten words, insert forty dashes, even replay a macro N times — in one
+gesture; the count applies once and clears. **Restore Deleted Text** (Edit menu):
+QUILL keeps the last three blocks removed by its structured delete commands (delete
+to line start or end, to document start or end, or delete paragraph) and re-inserts
+the one you pick from an accessible list at the cursor — unlike Undo, which reverts
+in place, this can drop recovered text anywhere. **Describe Character at Cursor**
+(Tools → Advanced): the screen-reader descendant of "Reveal Codes" — a read-only
+dialog in the same style as F1 help that names the exact character under the caret:
+its Unicode name, code point (hex and decimal), category, and plain-language notes
+for the invisibles that bite writers (no-break space, zero-width space, smart
+quote, tab, line ending).
+
+**Braille repair tools for files that will not emboss — Braille → Repair.** A new
+submenu brings NLS-style proofreading to QUILL's braille mode. **Read Layout
+Metrics** speaks the diagnostic numbers in one pass: the cursor's cell and current
+line length, the longest line against your cells-per-line limit (with a page-width
+warning), the current and total braille pages, and the longest page against your
+lines-per-page limit (with a page-depth warning). **Go to Longest Line** and **Go
+to Longest Page** jump straight to the worst offender, and **Remove Trailing Spaces**
+(this line, or the whole file) clears the trailing spaces behind most page-width
+problems while preserving every line ending and form feed. The limits come from
+your existing **Cells per line** and **Lines per page** settings (Preferences →
+Braille), so the diagnostics match your page geometry.
+
+**Reveal Codes — see and hear every hidden formatting code (Alt+F3).** The beloved
+WordPerfect feature, reimagined screen-reader-first. Press **Alt+F3** (or **View →
+Reveal Codes**) to open a pane below the editor that shows your document as a stream
+of bracketed codes and text — `[Bold On]`, `[Font: Arial]`, `[Center]`, `[Tab]`,
+`[¶ Hard Return]`, `[No-Break Space]` — so nothing about your document stays hidden.
+**F6** moves between the editor, the Reveal Codes pane, and the status bar
+(**Shift+F6** goes back); the two carets stay in sync, so moving in the pane moves
+the editor caret and vice versa. Every code is an individually-announced, navigable
+item: arrow code-to-code, jump from a `[Bold On]` to its matching `[Bold Off]`, and
+hear its reach ("bold on, 12 characters"). Choose a **Structured** list (one labeled
+item per code — the most accessible) or a **Flowed** view (codes inline within the
+text, the classic visual/braille layout), with quiet / balanced / detailed
+verbosity. Hidden by default; your clean editing buffer is unchanged.
+
 ### Fixes
 
 - **The portable build launches again, and opens documents.** Double-clicking

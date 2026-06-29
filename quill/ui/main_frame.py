@@ -118,6 +118,7 @@ from quill.core.custom_profiles import (
     load_custom_profiles,
     save_custom_profiles,
 )
+from quill.core.deletion_ring import DeletionRing, removed_span
 from quill.core.diagnostics import (
     build_bug_report_payload,
     build_diagnostics_review_text,
@@ -488,7 +489,9 @@ from quill.ui.main_frame_ai_actions import AiActionsMixin
 from quill.ui.main_frame_braille import BrailleCommandsMixin
 from quill.ui.main_frame_braille_phase2 import BraillePhase2CommandsMixin
 from quill.ui.main_frame_braille_phase3 import BrailleProofingCommandsMixin
+from quill.ui.main_frame_braille_repair import BrailleRepairMixin
 from quill.ui.main_frame_browse import BrowseModeMixin
+from quill.ui.main_frame_classic_editor import ClassicEditorMixin
 from quill.ui.main_frame_copy_tray import CopyTrayMixin
 from quill.ui.main_frame_devtools import DevToolsMixin
 from quill.ui.main_frame_dictation_hotkeys import DictationHotkeysMixin
@@ -507,6 +510,7 @@ from quill.ui.main_frame_power_tools_menu import PowerToolsMenuMixin
 from quill.ui.main_frame_profile_picker import ProfilePickerMixin
 from quill.ui.main_frame_quill_key import QuillKeyMixin
 from quill.ui.main_frame_quillins import QuillinsMenuMixin
+from quill.ui.main_frame_reveal_codes import RevealCodesMixin
 from quill.ui.main_frame_section_move import SectionMoveMixin
 from quill.ui.main_frame_selection import SelectionMarksMixin
 from quill.ui.main_frame_sessions import SessionsMixin
@@ -841,6 +845,7 @@ class MainFrame(
     LanguageDetectMixin,
     BrailleProofingCommandsMixin,
     BraillePhase2CommandsMixin,
+    BrailleRepairMixin,
     BrailleCommandsMixin,
     HygieneMixin,
     SimpleOpenMixin,
@@ -863,7 +868,9 @@ class MainFrame(
     GitHubRemoteMixin,
     DevToolsMixin,
     PowerToolsActionsMixin,
+    ClassicEditorMixin,
     PowerToolsMenuMixin,
+    RevealCodesMixin,
     QuillinsMenuMixin,
     ContextHelpMixin,
     WatchProfileDialogMixin,
@@ -1123,6 +1130,7 @@ class MainFrame(
         self._mark_ring = MarkRing()
         self._named_marks = NamedMarks()
         self._location_ring = LocationRing()
+        self._deletion_ring = DeletionRing()
         self._region_tracker = RegionTracker()
         # The F6 / Shift+F6 region rotation is computed live (see
         # _current_focus_region_labels) because the side preview pane only
@@ -1220,6 +1228,9 @@ class MainFrame(
         self._sticky_note_hotkey_id = wx.NewIdRef()
         self.commands = CommandRegistry()
         self.commands.set_run_listener(self._on_command_run)
+        # The repeat-count arming command must never multiply itself when a count
+        # is already pending (it would otherwise prompt once per pending count).
+        self.commands.register_non_repeatable("edit.repeat_command")
         # #235: surface the soft BRF save warning (non-NABCC chars saved as-is).
         from quill.io.text import set_save_warning_hook
 
@@ -1276,6 +1287,15 @@ class MainFrame(
         self._main_splitter.Initialize(self._documents_panel)
         layout = wx.BoxSizer(wx.VERTICAL)
         layout.Add(self._main_splitter, 1, wx.EXPAND)
+        # Reveal Codes pane: docked below the editor, above the status bar
+        # (WordPerfect arrangement), hidden by default and shown via Alt+F3.
+        from quill.ui.reveal_codes_pane import RevealCodesPane
+
+        self._reveal_pane = RevealCodesPane(wx, self.frame, self)
+        self._reveal_pane.panel.SetMinSize((-1, 160))
+        self._reveal_last_state: tuple[int, int, int] | None = None
+        layout.Add(self._reveal_pane.panel, 0, wx.EXPAND)
+        self._reveal_pane.panel.Show(bool(getattr(self.settings, "reveal_codes_visible", False)))
         self.statusbar = wx.Panel(self.frame)
         self.statusbar.SetName("Status bar")
         self.statusbar.Bind(wx.EVT_SET_FOCUS, self._on_container_focus)
@@ -3239,6 +3259,7 @@ class MainFrame(
             self._binding_for("format.underline"),
         )
         self.register_format_codes_commands()
+        self.register_reveal_codes_commands()
         self.commands.register(
             "format.heading_1",
             "Insert Heading 1",
@@ -3574,6 +3595,7 @@ class MainFrame(
         self._register_power_tools_commands()
         self._register_quillins_commands()
         self._register_braille_commands()
+        self._register_braille_repair_commands()
         self._register_speech_commands()
         self._register_list_studio_commands()
         self._register_dictation_hotkey_commands()
@@ -4188,19 +4210,52 @@ class MainFrame(
         if sys.platform == "darwin":
             editor = wx.TextCtrl(splitter, style=wx.TE_MULTILINE)
         else:
-            # Braille cell-two offset: the control kind is configurable. "plain"
-            # is a Notepad-style EDIT control -- editable, so it reports its value
-            # to JAWS/NVDA correctly (the #616 RichEdit requirement was for
-            # *read-only* controls) and avoids the RichEdit leading-cell quirk.
-            # "rich"/"rich2" keep a RichEdit (2.0 / 3.0); TE_NOHIDESEL stays there.
+            # The editor surface is configurable (Windows/Linux). The Experimental tab
+            # can override the braille Editor control type for testing; "default"
+            # follows that setting. An optional borderless style gives a cleaner frame.
             kind = str(getattr(self.settings, "editor_control_kind", "rich2")).strip().lower()
-            if kind == "plain":
-                editor = wx.TextCtrl(splitter, style=wx.TE_MULTILINE)
+            # Experimental overrides apply only once the user has ticked the
+            # acknowledgment ("I understand features may degrade") in the
+            # Experimental tab -- the safety gate.
+            acknowledged = bool(getattr(self.settings, "experimental_acknowledged", False))
+            override = (
+                str(getattr(self.settings, "experimental_editor_surface", "default"))
+                .strip()
+                .lower()
+            )
+            if acknowledged and override and override != "default":
+                kind = override
+            border = (
+                wx.BORDER_NONE
+                if acknowledged and getattr(self.settings, "editor_hide_border", False)
+                else 0
+            )
+            if kind == "win32":
+                # Experimental spike: host the raw Win32 EDIT control via pywin32.
+                # Returns None off-Windows / on any failure, so we fall back to a
+                # plain wx.TextCtrl and never break the editor.
+                from quill.ui.win32_edit_surface import create_win32_edit_host
+
+                editor = create_win32_edit_host(splitter) or wx.TextCtrl(
+                    splitter, style=wx.TE_MULTILINE | border
+                )
+            elif kind == "rtf":
+                # Experimental: a wx.RichTextCtrl surface. It is TextCtrl-compatible for
+                # the value/caret API QUILL relies on (GetValue/ChangeValue/insertion
+                # point/last position), so the plain-text editing path still works.
+                import wx.richtext as _rt
+
+                editor = _rt.RichTextCtrl(splitter, style=wx.TE_MULTILINE | border)
+            elif kind == "plain":
+                # A Notepad-style EDIT control -- editable, reports its value to
+                # JAWS/NVDA correctly, and avoids the RichEdit leading-cell quirk (#616).
+                editor = wx.TextCtrl(splitter, style=wx.TE_MULTILINE | border)
             else:
+                # "rich"/"rich2" keep a RichEdit (2.0 / 3.0); TE_NOHIDESEL stays there.
                 rich_flag = wx.TE_RICH if kind == "rich" else wx.TE_RICH2
                 editor = wx.TextCtrl(
                     splitter,
-                    style=wx.TE_MULTILINE | rich_flag | wx.TE_NOHIDESEL,
+                    style=wx.TE_MULTILINE | rich_flag | wx.TE_NOHIDESEL | border,
                 )
         editor.SetName("Document")
         if sys.platform == "darwin":
@@ -10545,6 +10600,103 @@ class MainFrame(
     QPF_WILDCARD = "QUILL profile file (*.qpf)|*.qpf|All files (*.*)|*.*"
     KQP_WILDCARD = "Keyboard Quill Pack (*.kqp)|*.kqp|All files (*.*)|*.*"
 
+    def _build_experimental_explainer(
+        self, parent: object, sizer: object, specs: object, control_index: object
+    ) -> None:
+        """Add a live, read-only explanation of each editor surface to the
+        Experimental tab. The text changes with the Editor-surface selection so a
+        user can preview what choosing a given control would mean (impact from both
+        a user and a technical perspective) before committing + restarting."""
+        wx = self._wx
+        explanations = {
+            "default": (
+                "Default — follow the Accessibility setting.\n\n"
+                "User: the safest choice. The editor uses whatever 'Editor control "
+                "type (braille)' is set to under Accessibility (RichEdit 3.0 unless "
+                "you changed it). Everything works as designed; nothing experimental.\n\n"
+                "Technical: no override is applied; the surface is chosen by "
+                "settings.editor_control_kind. Choose this to undo any experiment."
+            ),
+            "rich2": (
+                "RichEdit 3.0 — the modern native rich control (QUILL's default).\n\n"
+                "User: the normal QUILL editor. Best all-round accessibility with "
+                "JAWS and NVDA; all features work. Some braille displays show the "
+                "first character of each line in cell two (the long-standing Word quirk).\n\n"
+                "Technical: a wx.TextCtrl with TE_RICH2 | TE_NOHIDESEL — the Windows "
+                "RICHEDIT50W control. Its IAccessible value is reported correctly, "
+                "which is why it is the default (#616)."
+            ),
+            "rich": (
+                "RichEdit 2.0 — the older native rich control.\n\n"
+                "User: almost identical to RichEdit 3.0; offered for testing against "
+                "screen readers or displays that behave differently on the older "
+                "engine. All features work.\n\n"
+                "Technical: a wx.TextCtrl with TE_RICH (RICHEDIT20W) | TE_NOHIDESEL."
+            ),
+            "plain": (
+                "Notepad — the plain Win32 EDIT control.\n\n"
+                "User: the simplest, fastest control — exactly what Notepad uses. "
+                "Best for braille displays (no cell-two offset) and a clean feel. "
+                "All core editing works; it cannot show rich formatting visually "
+                "(QUILL keeps formatting as hidden codes anyway).\n\n"
+                "Technical: a wx.TextCtrl with TE_MULTILINE only (the native EDIT "
+                "class). Editable, so it reports its value correctly to JAWS/NVDA."
+            ),
+            "rtf": (
+                "Rich text — an experimental wx.RichTextCtrl surface.\n\n"
+                "User: a richer control that can render formatting visually. "
+                "EXPERIMENTAL: some QUILL commands that assume a plain edit control "
+                "may behave differently or not at all. Use for testing only.\n\n"
+                "Technical: wx.richtext.RichTextCtrl. It is value/caret API-compatible "
+                "(GetValue/ChangeValue/insertion point), so basic editing and the "
+                "Reveal Codes sync work, but it is not a drop-in for every TextCtrl call."
+            ),
+            "win32": (
+                "Native Win32 EDIT — the pywin32 spike (Windows only).\n\n"
+                "User: hosts the raw Windows EDIT control (the very control Notepad "
+                "uses) directly, for the most native feel. EXPERIMENTAL and partial: "
+                "typing, selection, undo, and dirty-tracking work, but type-time "
+                "features (autoformat, describe-key) and exact multi-line caret math "
+                "may not, and very large documents address the caret approximately. "
+                "If hosting fails it silently falls back to the Notepad control.\n\n"
+                "Technical: a wx.Window hosts a native EDIT created via pywin32; "
+                "EN_CHANGE is bridged to QUILL through a subclassed window proc. "
+                "Line breaks are translated CRLF<->LF; offsets are in the control's "
+                "own space. See quill/ui/win32_edit_surface.py."
+            ),
+        }
+        choices = {}
+        for spec in specs:  # type: ignore[union-attr]
+            if getattr(spec, "key", "") == "experimental_editor_surface":
+                choices = {label: value for value, label in spec.choices}
+                break
+        sizer.Add(wx.StaticText(parent, label="What each editor surface does:"), 0, wx.ALL, 6)
+        # Word-wrap (not TE_DONTWRAP) and a real minimum width so the prose flows as
+        # paragraphs instead of collapsing to one letter per line when the page is
+        # narrow (the control otherwise has no natural width of its own).
+        info = wx.TextCtrl(
+            parent,
+            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_BESTWRAP | wx.TE_RICH2,
+            size=(560, 220),
+        )
+        info.SetMinSize((360, 160))
+        info.SetName("Editor surface explanation")
+        sizer.Add(info, 1, wx.EXPAND | wx.ALL, 6)
+        entry = control_index.get("experimental_editor_surface")  # type: ignore[union-attr]
+        combo = entry[1] if entry else None
+
+        def _refresh(_evt: object = None) -> None:
+            value = "default"
+            if combo is not None:
+                value = choices.get(combo.GetStringSelection(), "default")
+            info.ChangeValue(explanations.get(value, explanations["default"]))
+            if _evt is not None:
+                _evt.Skip()
+
+        if combo is not None:
+            combo.Bind(wx.EVT_CHOICE, _refresh)
+        _refresh()
+
     def _settings_dialog_apply_refresh(self, status: str) -> None:
         """Persist ``self.settings`` and re-run every UI side effect.
 
@@ -11823,6 +11975,7 @@ class MainFrame(
                 _sa: bool,
                 _show_data_location: bool = False,
                 _show_mgmt: bool = False,
+                _show_experimental: bool = False,
             ) -> Callable[[], None]:
                 def _build() -> None:
                     if _g.description:
@@ -11894,6 +12047,8 @@ class MainFrame(
                         return
                     for spec in _sp:
                         _make_control(_p, _ps, spec, _pi)
+                    if _show_experimental:
+                        self._build_experimental_explainer(_p, _ps, _sp, control_index)
                     if _show_data_location:
                         _build_data_location_block(_p, _ps)
                     if _show_mgmt:
@@ -12041,6 +12196,7 @@ class MainFrame(
                 show_ai_master = group.id == "ai"
                 show_data_location = group.id == "general"
                 show_mgmt = group.id == "admin"
+                show_experimental = group.id == "experimental"
                 if not specs and not show_ai_master and not show_data_location and not show_mgmt:
                     continue
                 _pg = wx.Panel(notebook, style=wx.TAB_TRAVERSAL)
@@ -12056,6 +12212,7 @@ class MainFrame(
                         show_ai_master,
                         show_data_location,
                         show_mgmt,
+                        show_experimental,
                     )
                 )
                 page_index += 1
@@ -12086,10 +12243,21 @@ class MainFrame(
 
             def _do_apply() -> None:
                 _c = {k: r() for k, r in readers.items()}
+                # Editor-surface settings only take full effect on restart; warn if
+                # the user changed one so they are not confused that nothing changed.
+                _restart_keys = (
+                    "experimental_editor_surface",
+                    "editor_hide_border",
+                    "editor_control_kind",
+                )
+                _before = {k: getattr(self.settings, k, None) for k in _restart_keys}
                 upd = self.settings
                 for k, v in _c.items():
                     upd = registry.set_value(upd, k, v)
                 self.settings = upd
+                _editor_restart_changed = any(
+                    getattr(self.settings, k, None) != _before[k] for k in _restart_keys
+                )
                 _ai_cb2 = _ai_refs.get("ai_enabled_cb")
                 if _ai_cb2 is not None:
                     save_ai_enabled(bool(_ai_cb2.GetValue()))
@@ -12115,6 +12283,15 @@ class MainFrame(
                         except ValueError as _ve:
                             self._set_status(str(_ve))
                 self._settings_dialog_apply_refresh("Settings applied")
+                if _editor_restart_changed:
+                    self._show_message_box(
+                        "The editor surface settings have changed. Restart QUILL so "
+                        "every document uses the new editor; documents you open before "
+                        "restarting may still use the previous surface.",
+                        "Restart to apply",
+                        wx.ICON_INFORMATION | wx.OK,
+                    )
+                    self._announce("Restart QUILL to apply the new editor surface.")
                 _dirty[0] = False
                 _apply_btn.Enable(False)
 
@@ -15603,6 +15780,9 @@ class MainFrame(
         unreachable region. This is the fix for the tab bar being unreachable
         by F6 and by the JAWS cursor when Show Tab Control is on."""
         labels = ["Editor"]
+        reveal = getattr(self, "_reveal_pane", None)
+        if reveal is not None and reveal.panel.IsShown():
+            labels.append("Reveal Codes")
         if self._tab_control_visible:
             try:
                 has_tabs = self.notebook.GetPageCount() > 0
@@ -15637,7 +15817,10 @@ class MainFrame(
             win = self._wx.Window.FindFocus()
         except Exception:
             win = None
+        reveal = getattr(self, "_reveal_pane", None)
         while win is not None:
+            if reveal is not None and "Reveal Codes" in regions and win is reveal.panel:
+                return "Reveal Codes"
             if preview_ctrl is not None and win is preview_ctrl and "Preview" in regions:
                 return "Preview"
             if "Document Tabs" in regions and win is self.notebook:
@@ -15658,6 +15841,11 @@ class MainFrame(
         if label == "Status Bar":
             self.statusbar.SetFocus()
             return
+        if label == "Reveal Codes":
+            reveal = getattr(self, "_reveal_pane", None)
+            if reveal is not None and reveal.panel.IsShown():
+                reveal.focus()
+                return
         if label == "Document Tabs":
             self.notebook.SetFocus()
             return
@@ -24167,6 +24355,11 @@ class MainFrame(
         text = self.editor.GetValue()
         cursor = self.editor.GetInsertionPoint()
         updated, new_cursor = operation(text, cursor)
+        # Record what this delete removed so Restore Deleted Text can bring it
+        # back at a new location (the WordPerfect Editor "Cancel" buffer).
+        removed = removed_span(text, updated)
+        if removed:
+            self._deletion_ring.record(removed)
         self._replace_document_text(updated)
         self.document.set_text(updated)
         self.editor.SetInsertionPoint(new_cursor)
