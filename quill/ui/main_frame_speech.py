@@ -249,6 +249,85 @@ class SpeechCommandsMixin:
             target=_run, daemon=True
         ).start()
 
+    def download_offline_speech_engine(self) -> None:
+        """Fetch the offline whisper.cpp engine from QUILL's verified release asset.
+
+        The engine ships in the installer, so this is the recovery / optional path
+        (e.g. an older install that pre-dated bundling, #742). The download is
+        pinned + SHA-256-verified (quill.core.release_assets), runs on a worker
+        thread behind a cancelable percentage, and is blocked in Safe Mode. The
+        bundled copy is never required to be absent for this to be useful.
+        """
+        import threading
+
+        from quill.core.release_assets import ReleaseAssetError, fetch_component
+        from quill.core.speech import models
+        from quill.core.speech.providers.whispercpp import resolve_whisper_executable
+        from quill.ui.ai_transcribe_dialog import AIProgressDialog
+
+        wx = self._wx
+        if resolve_whisper_executable() is not None:
+            again = self._show_message_box(
+                "The offline speech engine is already installed. Download QUILL's "
+                "verified copy again anyway?",
+                "Download Offline Speech Engine",
+                wx.ICON_QUESTION | wx.YES_NO,
+            )
+            if again != wx.YES:
+                return
+        confirm = self._show_message_box(
+            "Download the offline speech engine (whisper.cpp, about 8 MB) from "
+            "QUILL's own verified release? It powers private, on-device dictation and "
+            "transcription, and the download is checksum-verified.",
+            "Download Offline Speech Engine",
+            wx.ICON_QUESTION | wx.YES_NO,
+        )
+        if confirm != wx.YES:
+            return
+        cancel = threading.Event()
+        progress = AIProgressDialog(
+            self.frame,
+            "Downloading Offline Speech Engine",
+            "Preparing to download the offline speech engine...",
+            on_cancel=cancel.set,
+            status_fn=self._set_status,
+        )
+        progress.show()
+        self._announce("Downloading the offline speech engine.")
+        last_percent = {"value": -1}
+
+        def _on_progress(fraction: float, message: str) -> None:
+            if cancel.is_set():
+                raise ReleaseAssetError("Download cancelled.")
+            percent = int(max(0.0, min(1.0, fraction)) * 100)
+            if percent == last_percent["value"]:
+                return  # throttle UI updates to whole-percent changes (#748)
+            last_percent["value"] = percent
+            progress.set_progress(percent, f"{message} {percent}%")
+
+        target = models.app_data_dir() / "speech-engine"
+
+        def _run() -> None:
+            try:
+                fetch_component("whispercpp", target, progress=_on_progress)
+            except Exception as exc:  # noqa: BLE001 - surface a clean message
+                wx.CallAfter(progress.close)
+                if cancel.is_set():
+                    wx.CallAfter(self._set_status, "Speech engine download cancelled.")
+                    wx.CallAfter(self._announce, "Speech engine download cancelled.")
+                else:
+                    wx.CallAfter(self._set_status, f"Could not install the speech engine: {exc}")
+                    wx.CallAfter(self._announce, f"Could not install the speech engine. {exc}")
+                return
+            wx.CallAfter(progress.close)
+            done = "Offline speech engine installed. Dictation and transcription are ready."
+            wx.CallAfter(self._set_status, done)
+            wx.CallAfter(self._announce, done)
+
+        threading.Thread(  # GATE-40-OK: speech engine download worker.
+            target=_run, daemon=True
+        ).start()
+
     def download_faster_whisper(self) -> None:
         """Install the optional Faster Whisper engine on demand (#669 follow-up).
 

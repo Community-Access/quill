@@ -1931,6 +1931,19 @@ and runs entirely on the user's machine. The detailed rollout/provider-center su
 the deferred BITS Whisperer suite (locked off, `core.bw_whisperer`) is captured in
 `docs/planning/deferred-locked-features.md`; this section describes only what ships today.
 
+**On-demand engine recovery (release-asset acquisition).** The whisper.cpp engine ships
+in the installer, so offline speech works out of the box. As a recovery/optional path —
+and the first concrete step of the AI footprint/optimization plan
+(`docs/planning/QUILL-AI-Optimization-PRD.md` §10.2.4) — `Tools -> Speech -> Download
+Offline Speech Engine...` fetches QUILL's own copy of the engine when it is missing.
+Acquisition is `quill/core/release_assets.py` (wx-free): a **pinned**, **SHA-256-verified**
+download from QUILL's controlled GitHub release asset (`assets-v1`), HTTPS-only, with
+retry/resumable download, atomic verified install, and a clean error on failure. It is
+gated by an explicit user action, the GATE-9 network-egress audit, and Safe Mode; the
+bundled copy means capability never depends on the download. Only components QUILL is
+licensed to redistribute are hosted this way (whisper.cpp is MIT); license-unclear
+engines are not re-hosted, and ffmpeg is never re-hosted (it stays user-installed).
+
 **Cloud providers ship as Quillins, not core.** Per the consolidation plan (#669), the cloud
 provider matrix is delivered as extensions rather than baked into core. A Quillin declares a
 provider through the **`transcription_providers`** manifest contribution; QUILL's host implements

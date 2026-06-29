@@ -409,6 +409,15 @@ still works exactly as before. (#750)</li>
 </ul>
 <h3 id="enhancements">Enhancements</h3>
 <ul>
+<li><strong>Recover the offline speech engine with one click.</strong>
+The private, on-device speech engine (whisper.cpp) ships in the
+installer; if it is ever missing, <strong>Tools &gt; Speech &gt;
+Download Offline Speech Engine...</strong> now fetches QUILL's own
+checksum-verified copy (about 8 MB, cancelable; disabled in Safe Mode)
+so dictation and offline transcription work without re-running the
+installer. This is the first piece of the AI footprint/optimization plan
+— a pinned, SHA-256-verified path for fetching redistributable
+components from QUILL's own GitHub release assets.</li>
 <li><strong>Hear how deep your indentation is.</strong> Tab / Shift+Tab
 can now speak the new indentation depth — "4 spaces", "8 spaces", "1
 tab" — instead of "Indented lines", honouring your tabs-vs-spaces and

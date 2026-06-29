@@ -82,6 +82,15 @@ The **ElevenLabs / ElevenDesk** premium-cloud-TTS integration is its own workstr
 tracked in [`eleven-labs.md`](eleven-labs.md) — **not started** (the SDK-in-gateway
 approach is decided). Dictation's larger later-phase capabilities are **2.0** (§5).
 
+**AI footprint & optimization** is its own measurement-first plan, tracked in
+[`QUILL-AI-Optimization-PRD.md`](QUILL-AI-Optimization-PRD.md). Its first concrete
+slice **shipped in 0.8.1 Beta 1**: a pinned, SHA-256-verified path for fetching
+redistributable components from QUILL's own GitHub release assets
+(`quill/core/release_assets.py`), wired as **Tools > Speech > Download Offline Speech
+Engine...** (recovery for the bundled whisper.cpp engine). It establishes the
+reliable-acquisition foundation (PRD §10.2.3–10.2.4) that any future unbundling builds
+on; the engine stays bundled, so capability never depends on a download.
+
 ### 1.3 Agentic AI platform (shipped in 0.8.1 Beta 1)
 
 The detailed planning spec was retired once the platform shipped; the AI suite is

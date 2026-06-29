@@ -276,6 +276,17 @@ integration is its own workstream, tracked in <a
 href="eleven-labs.md"><code>eleven-labs.md</code></a> — <strong>not
 started</strong> (the SDK-in-gateway approach is decided). Dictation's
 larger later-phase capabilities are <strong>2.0</strong> (§5).</p>
+<p><strong>AI footprint &amp; optimization</strong> is its own
+measurement-first plan, tracked in <a
+href="QUILL-AI-Optimization-PRD.md"><code>QUILL-AI-Optimization-PRD.md</code></a>.
+Its first concrete slice <strong>shipped in 0.8.1 Beta 1</strong>: a
+pinned, SHA-256-verified path for fetching redistributable components
+from QUILL's own GitHub release assets
+(<code>quill/core/release_assets.py</code>), wired as <strong>Tools &gt;
+Speech &gt; Download Offline Speech Engine...</strong> (recovery for the
+bundled whisper.cpp engine). It establishes the reliable-acquisition
+foundation (PRD §10.2.3–10.2.4) that any future unbundling builds on;
+the engine stays bundled, so capability never depends on a download.</p>
 <h3 id="13-agentic-ai-platform-shipped-in-081-beta-1">1.3 Agentic AI
 platform (shipped in 0.8.1 Beta 1)</h3>
 <p>The detailed planning spec was retired once the platform shipped; the
