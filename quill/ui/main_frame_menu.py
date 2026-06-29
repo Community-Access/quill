@@ -2358,6 +2358,11 @@ class MenuBuilderMixin:
             self._id_why_dont_i_see_feature,
             self._menu_label(_("&Why Don't I See a Feature?"), "help.why_dont_i_see_feature"),
         )
+        self._id_download_components = wx.NewIdRef()
+        help_menu.Append(
+            self._id_download_components,
+            self._menu_label(_("&Download Optional Components..."), "help.download_components"),
+        )
         help_menu.AppendSeparator()
         self._id_open_user_guide = wx.NewIdRef()
         self._id_open_third_party_notices = wx.NewIdRef()
@@ -2680,6 +2685,11 @@ class MenuBuilderMixin:
             wx.EVT_MENU,
             lambda _e: self.show_feature_explanation(),
             id=self._id_why_dont_i_see_feature,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.open_optional_components(),
+            id=self._id_download_components,
         )
         self.frame.Bind(
             wx.EVT_MENU,

@@ -982,8 +982,22 @@ not need to enable Artificial Intelligence to use these features. They live unde
   dictation or transcription, QUILL **offers to download it for you** (about 8 MB,
   checksum-verified, with a cancelable progress bar; disabled in Safe Mode). You
   can also fetch it any time from **Tools > Speech > Download Offline Speech
-  Engine...**. If you are **upgrading** from a version that bundled the engine,
-  your existing copy is kept and keeps working — nothing to download.
+  Engine...**, or from the all-in-one **Help > Download Optional Components** list
+  (below). If you are **upgrading** from a version that bundled the engine, your
+  existing copy is kept and keeps working — nothing to download.
+
+#### Download Optional Components (Help menu)
+
+To keep the installer small, QUILL fetches several large or optional pieces only
+when you want them. **Help > Download Optional Components...** is the single place
+to see and get them all. It lists each component — the **offline speech engine**
+(whisper.cpp), **Kokoro** neural voices, **eSpeak NG** and **DECtalk** voices, the
+**FFmpeg** audio-export helper, and any non-English **spell-check dictionaries** —
+and shows for each whether it is **Installed** or **Available to download**, along
+with its approximate size. Select a component and choose **Download** to fetch it;
+each download is checksum-verified and shows its own progress. Everything here is
+optional — the base app, and Windows' built-in SAPI 5 voices, work without any of
+it — so download only what you need.
 - **Speaker attribution.** If you download the "Small English with speaker
   detection" model (in Manage Speech Models), QUILL marks **who is speaking when**
   — each turn is labelled "Speaker 1", "Speaker 2", and so on in the transcript

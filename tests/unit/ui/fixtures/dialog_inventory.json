@@ -284,6 +284,7 @@
   "quill/ui/mastodon_dialogs.py::MastodonAccountsDialog._prompt::wx.TextEntryDialog": "native",
   "quill/ui/mastodon_dialogs.py::MastodonComposeDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/ocr_review_dialog.py::OcrReviewDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/optional_components_dialog.py::show_optional_components_picker::wx.Dialog": "hardened_custom",
   "quill/ui/palette.py::CommandPaletteDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/palette.py::GoToAnythingDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/preview_dialog.py::AccessibleHtmlDialog.__init__::wx.Dialog": "hardened_custom",

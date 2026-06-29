@@ -249,6 +249,39 @@ class SpeechCommandsMixin:
             target=_run, daemon=True
         ).start()
 
+    def open_optional_components(self) -> None:
+        """Help > Download Optional Components: one place to see what is installed
+        versus available, and fetch any of it.
+
+        The picker (quill/ui/optional_components_dialog) returns the chosen
+        component id; we then run that component's existing, tested download flow
+        (each shows its own progress), so there are no stacked modals."""
+        from quill.core.optional_components import gather_optional_components
+        from quill.ui.optional_components_dialog import show_optional_components_picker
+
+        wx = self._wx
+        components = gather_optional_components()
+        chosen = show_optional_components_picker(
+            wx, self.frame, components, self._show_modal_dialog
+        )
+        if not chosen:
+            return
+        if chosen.startswith("spell-"):
+            from quill.ui.spell_language import _download_then_apply
+
+            _download_then_apply(wx, self, chosen[len("spell-") :])
+            return
+        actions = {
+            "whispercpp": self.download_offline_speech_engine,
+            "kokoro": self._download_kokoro_models,
+            "espeak": self.download_espeak_exe,
+            "dectalk": self.download_dectalk_exe,
+            "ffmpeg": self.download_ffmpeg,
+        }
+        action = actions.get(chosen)
+        if action is not None:
+            action()
+
     def download_offline_speech_engine(self) -> None:
         """Fetch the offline whisper.cpp engine from QUILL's verified release asset.
 
