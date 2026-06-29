@@ -103,6 +103,14 @@ SETTING_GROUPS: tuple[SettingGroup, ...] = (
         "Spelling Review",
         "Behavior of the F7 guided spelling review dialog.",
     ),
+    SettingGroup(
+        "experimental",
+        "Experimental",
+        (
+            "Opt-in, for-testing options that change how the editor is built. "
+            "Restart QUILL after changing anything here so it applies everywhere."
+        ),
+    ),
 )
 
 _GROUP_IDS = {group.id for group in SETTING_GROUPS}
@@ -1826,5 +1834,38 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
             ("prompt", "Summary with Undo"),
         ),
         keywords=("upgrade", "migration", "notice", "announce", "undo", "settings"),
+    ),
+    # --- Experimental (for-testing editor surfaces) ------------------------
+    SettingSpec(
+        "experimental_editor_surface",
+        "Editor surface (for testing)",
+        "experimental",
+        "choice",
+        (
+            "Which control backs the editor, for testing different surfaces. "
+            "'Default' follows the braille Editor control type (Accessibility). "
+            "RichEdit 3.0/2.0 are the native Windows rich controls; 'Notepad' is a "
+            "plain EDIT control; 'Rich text' is an experimental wx.RichTextCtrl. "
+            "RESTART QUILL after changing this so every document uses the new surface."
+        ),
+        choices=(
+            ("default", "Default (follow Accessibility setting)"),
+            ("rich2", "RichEdit 3.0"),
+            ("rich", "RichEdit 2.0"),
+            ("plain", "Notepad (plain edit control)"),
+            ("rtf", "Rich text (wx.RichTextCtrl, experimental)"),
+        ),
+        keywords=("experimental", "editor", "surface", "richedit", "notepad", "rtf", "testing"),
+    ),
+    SettingSpec(
+        "editor_hide_border",
+        "Hide editor border",
+        "experimental",
+        "bool",
+        (
+            "Draw the editor with no border for a cleaner, Notepad-like frame. "
+            "RESTART QUILL after changing this."
+        ),
+        keywords=("experimental", "border", "margin", "notepad", "frame", "chrome"),
     ),
 )

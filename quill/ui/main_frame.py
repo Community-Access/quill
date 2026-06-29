@@ -4196,23 +4196,35 @@ class MainFrame(
         # to the native NSTextView, then pin the AX role so VoiceOver
         # treats the editor as a real text area rather than a generic
         # group.
-        if sys.platform == "darwin":
-            editor = wx.TextCtrl(splitter, style=wx.TE_MULTILINE)
+        # The editor surface is configurable. The Experimental tab can override the
+        # braille Editor control type for testing; "default" follows that setting.
+        kind = str(getattr(self.settings, "editor_control_kind", "rich2")).strip().lower()
+        override = (
+            str(getattr(self.settings, "experimental_editor_surface", "default")).strip().lower()
+        )
+        if override and override != "default":
+            kind = override
+        border = wx.BORDER_NONE if getattr(self.settings, "editor_hide_border", False) else 0
+        if sys.platform == "darwin" and kind != "rtf":
+            editor = wx.TextCtrl(splitter, style=wx.TE_MULTILINE | border)
+        elif kind == "rtf":
+            # Experimental: a wx.RichTextCtrl surface. It is TextCtrl-compatible for
+            # the value/caret API QUILL relies on (GetValue/ChangeValue/insertion
+            # point/last position), so the plain-text editing path still works.
+            import wx.richtext as _rt
+
+            editor = _rt.RichTextCtrl(splitter, style=wx.TE_MULTILINE | border)
+        elif kind == "plain":
+            # A Notepad-style EDIT control -- editable, reports its value to
+            # JAWS/NVDA correctly, and avoids the RichEdit leading-cell quirk (#616).
+            editor = wx.TextCtrl(splitter, style=wx.TE_MULTILINE | border)
         else:
-            # Braille cell-two offset: the control kind is configurable. "plain"
-            # is a Notepad-style EDIT control -- editable, so it reports its value
-            # to JAWS/NVDA correctly (the #616 RichEdit requirement was for
-            # *read-only* controls) and avoids the RichEdit leading-cell quirk.
             # "rich"/"rich2" keep a RichEdit (2.0 / 3.0); TE_NOHIDESEL stays there.
-            kind = str(getattr(self.settings, "editor_control_kind", "rich2")).strip().lower()
-            if kind == "plain":
-                editor = wx.TextCtrl(splitter, style=wx.TE_MULTILINE)
-            else:
-                rich_flag = wx.TE_RICH if kind == "rich" else wx.TE_RICH2
-                editor = wx.TextCtrl(
-                    splitter,
-                    style=wx.TE_MULTILINE | rich_flag | wx.TE_NOHIDESEL,
-                )
+            rich_flag = wx.TE_RICH if kind == "rich" else wx.TE_RICH2
+            editor = wx.TextCtrl(
+                splitter,
+                style=wx.TE_MULTILINE | rich_flag | wx.TE_NOHIDESEL | border,
+            )
         editor.SetName("Document")
         if sys.platform == "darwin":
             self._pin_macos_editor_accessibility_role(editor)
@@ -12097,10 +12109,21 @@ class MainFrame(
 
             def _do_apply() -> None:
                 _c = {k: r() for k, r in readers.items()}
+                # Editor-surface settings only take full effect on restart; warn if
+                # the user changed one so they are not confused that nothing changed.
+                _restart_keys = (
+                    "experimental_editor_surface",
+                    "editor_hide_border",
+                    "editor_control_kind",
+                )
+                _before = {k: getattr(self.settings, k, None) for k in _restart_keys}
                 upd = self.settings
                 for k, v in _c.items():
                     upd = registry.set_value(upd, k, v)
                 self.settings = upd
+                _editor_restart_changed = any(
+                    getattr(self.settings, k, None) != _before[k] for k in _restart_keys
+                )
                 _ai_cb2 = _ai_refs.get("ai_enabled_cb")
                 if _ai_cb2 is not None:
                     save_ai_enabled(bool(_ai_cb2.GetValue()))
@@ -12126,6 +12149,15 @@ class MainFrame(
                         except ValueError as _ve:
                             self._set_status(str(_ve))
                 self._settings_dialog_apply_refresh("Settings applied")
+                if _editor_restart_changed:
+                    self._show_message_box(
+                        "The editor surface settings have changed. Restart QUILL so "
+                        "every document uses the new editor; documents you open before "
+                        "restarting may still use the previous surface.",
+                        "Restart to apply",
+                        wx.ICON_INFORMATION | wx.OK,
+                    )
+                    self._announce("Restart QUILL to apply the new editor surface.")
                 _dirty[0] = False
                 _apply_btn.Enable(False)
 
