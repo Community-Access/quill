@@ -17,7 +17,9 @@ from pathlib import Path
 # pyproject requires >=3.12. Building on 3.11 produced a bundle that raised a
 # SyntaxError on the first QUILL import and hung on py2app's error screen (#755).
 # Abort loudly here so a too-old interpreter can never ship that bundle again.
-if sys.version_info < (3, 12):
+# noqa rationale: UP036 assumes the running Python is >= the project's 3.12
+# target, but this guards the *build* interpreter, which can be an older 3.11.
+if sys.version_info < (3, 12):  # noqa: UP036
     raise SystemExit(
         "QUILL's macOS app must be built with Python 3.12 or newer "
         f"(py2app bundles the interpreter it runs under; this is "
