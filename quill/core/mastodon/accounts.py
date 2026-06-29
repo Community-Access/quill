@@ -46,6 +46,11 @@ class MastodonAccount:
     instance_url: str
     handle: str  # e.g. "@user@mastodon.social", for display
     client_id: str
+    # When True, posting through this account first opens the F7 spelling review
+    # on the post text so the user can fix misspellings before it is sent. Off by
+    # default; accounts saved before this field existed load as False, so the
+    # feature is purely opt-in and existing accounts are unaffected (#post-spellcheck).
+    spell_check_before_post: bool = False
 
     @property
     def display_name(self) -> str:
@@ -81,6 +86,9 @@ def list_accounts() -> list[MastodonAccount]:
                     instance_url=str(entry.get("instance_url", "")),
                     handle=str(entry.get("handle", "")),
                     client_id=str(entry.get("client_id", "")),
+                    # Missing on accounts saved before the field existed -> False
+                    # (opt-in migration: existing accounts stay off).
+                    spell_check_before_post=bool(entry.get("spell_check_before_post", False)),
                 )
             )
         except KeyError:
@@ -114,6 +122,7 @@ def _persist(accounts: list[MastodonAccount], default_id: str | None) -> None:
                     "instance_url": a.instance_url,
                     "handle": a.handle,
                     "client_id": a.client_id,
+                    "spell_check_before_post": a.spell_check_before_post,
                 }
                 for a in accounts
             ],
@@ -130,6 +139,7 @@ def add_account(
     client_id: str,
     client_secret: str,
     access_token: str,
+    spell_check_before_post: bool = False,
 ) -> MastodonAccount:
     """Store a new account's metadata + secrets; return it. Becomes default if first."""
     account = MastodonAccount(
@@ -138,6 +148,7 @@ def add_account(
         instance_url=instance_url,
         handle=handle,
         client_id=client_id,
+        spell_check_before_post=spell_check_before_post,
     )
     save_secret(_token_cred(account.id), access_token)
     save_secret(_secret_cred(account.id), client_secret)
@@ -166,6 +177,20 @@ def set_default_account(account_id: str) -> None:
         _persist(accounts, account_id)
 
 
+def set_spell_check_before_post(account_id: str, enabled: bool) -> None:
+    """Turn the pre-post spelling review on/off for one account (off by default)."""
+    from dataclasses import replace
+
+    accounts = list_accounts()
+    if not any(a.id == account_id for a in accounts):
+        return
+    updated = [
+        replace(a, spell_check_before_post=bool(enabled)) if a.id == account_id else a
+        for a in accounts
+    ]
+    _persist(updated, default_account_id())
+
+
 def access_token_for(account_id: str) -> str:
     """Return the stored access token for *account_id* (``""`` when missing)."""
     return load_secret(_token_cred(account_id))
@@ -181,4 +206,5 @@ __all__ = [
     "list_accounts",
     "remove_account",
     "set_default_account",
+    "set_spell_check_before_post",
 ]

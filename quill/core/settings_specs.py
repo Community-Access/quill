@@ -376,6 +376,16 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("spelling", "spell check", "typos"),
     ),
     SettingSpec(
+        "spell_check_before_save",
+        "Spell check a document before saving",
+        "editing",
+        "bool",
+        "Open the spelling review (F7) when you save, so you can correct "
+        "misspellings before the file is written. Off by default.",
+        feature_id="core.spellcheck",
+        keywords=("spelling", "spell check", "save", "proofread", "before saving"),
+    ),
+    SettingSpec(
         "intellisense_as_you_type",
         "Word prediction and tag IntelliSense",
         "editing",

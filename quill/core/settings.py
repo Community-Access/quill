@@ -83,6 +83,9 @@ class Settings:
     tray_enabled: bool = False
     persistent_undo: bool = False
     spellcheck_as_you_type: bool = False
+    # When True, saving a document first opens the F7 spelling review so the user
+    # can correct misspellings before the file is written. Off by default.
+    spell_check_before_save: bool = False
     intellisense_as_you_type: bool = False
     snippet_trigger_expansion: bool = True
     preview_browser: str = "system"
@@ -515,6 +518,7 @@ class Settings:
         tray_enabled = bool(data.get("tray_enabled", False))
         persistent_undo = bool(data.get("persistent_undo", False))
         spellcheck_as_you_type = bool(data.get("spellcheck_as_you_type", False))
+        spell_check_before_save = bool(data.get("spell_check_before_save", False))
         intellisense_as_you_type = bool(data.get("intellisense_as_you_type", False))
         snippet_trigger_expansion = bool(data.get("snippet_trigger_expansion", True))
         preview_browser = str(data.get("preview_browser", "system")).strip() or "system"
@@ -1035,6 +1039,7 @@ class Settings:
             tray_enabled=tray_enabled,
             persistent_undo=persistent_undo,
             spellcheck_as_you_type=spellcheck_as_you_type,
+            spell_check_before_save=spell_check_before_save,
             intellisense_as_you_type=intellisense_as_you_type,
             snippet_trigger_expansion=snippet_trigger_expansion,
             preview_browser=preview_browser,
