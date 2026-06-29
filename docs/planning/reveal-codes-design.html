@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>reveal-codes-design</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1 id="reveal-codes--design-note">Reveal Codes — Design Note</h1>
+<p>Status: Draft for future consideration (not scheduled) Author: design
+exploration, 2026-06-29 Scope: A WordPerfect-style <strong>Reveal
+Codes</strong> experience for QUILL — a second, synchronized view that
+makes the document's <em>hidden</em> formatting codes and invisible
+characters explicit, navigable, and (later) editable, while the main
+editor stays clean text. Screen-reader-first, braille-aware,
+keyboard-driven.</p>
+<p>Related:</p>
+<ul>
+<li><code>docs/planning/rich-text-formatting-hidden-codes-design.md</code>
+— the hidden-codes formatting model this feature visualizes (the codes
+Reveal Codes reveals).</li>
+<li>Shipped building blocks: <strong>Describe Formatting at
+Cursor</strong> (<code>quill/ui/main_frame_format_codes.py</code>),
+<strong>Describe Character at Cursor</strong>
+(<code>quill/core/char_describe.py</code>), the markup↔︎visible
+<strong>offset map</strong>
+(<code>quill/ui/rich_text_surface.py</code>), and the spoken vocabulary
+(<code>quill/core/format_speech.py</code>).</li>
+<li>Heritage research: WordPerfect / WordPerfect Editor "Reveal Codes"
+(<code>ed30.md</code>).</li>
+</ul>
+<h2 id="1-vision-and-heritage">1. Vision and heritage</h2>
+<p>WordPerfect's <strong>Reveal Codes</strong> (Alt-F3) split the
+screen: clean text on top, the same text below with every formatting and
+structural code shown inline as a bracketed token —
+<code>[Bold On]</code>, <code>[Tab]</code>, <code>[HRt]</code>,
+<code>[Font:Courier]</code>. The two cursors moved together: put the
+cursor on a word above and the matching code lit up below; move through
+the codes below and the text cursor tracked. You could <strong>delete a
+code to remove its effect</strong> ("cursor on <code>[Bold On]</code>,
+press Delete, text unbolds"). The WordPerfect <em>Editor</em> variant
+(<code>ed30.md</code> §"Reveal Codes") showed the raw hex/ASCII of every
+byte in a synced lower window. People <em>loved</em> this: it removed
+all mystery about why text looked the way it did, and it gave total,
+surgical control.</p>
+<p>QUILL is the perfect home to bring this forward, and to do it better
+than the original. QUILL already keeps the <strong>codes hidden</strong>
+by design (the editing buffer is clean text; formatting rides along as
+invisible codes materialized only at export — see the hidden-codes
+design note). Reveal Codes is the natural companion: a way to <em>see
+and hear</em> exactly what is in the document, on demand, without ever
+cluttering the editor. And because QUILL is screen-reader-first, we can
+do something WordPerfect never could — make every code a <strong>spoken,
+brailled, individually-navigable object</strong>, not just a visual
+glyph. This is "Reveal Codes" reimagined for people who read with their
+ears and fingers.</p>
+<p>The guiding feeling: <strong>nothing about your document is hidden
+from you.</strong> Press one key, and the whole invisible scaffold —
+every bold span, font change, tab, hard return, non-breaking space, page
+break — becomes a place you can move through, inspect, and (later)
+repair. The editor stays clean; the truth is one keystroke away.</p>
+<h2 id="2-what-quill-already-has-to-build-on">2. What QUILL already has
+to build on</h2>
+<p>Reveal Codes is an assembly of pieces QUILL already owns, not a
+rewrite:</p>
+<ol type="1">
+<li><strong>A hidden-codes formatting model.</strong> The rich-text
+model (<code>quill/io/rtf_model.py</code>: <code>InlineSpan</code> /
+<code>RichParagraph</code> / <code>RichDocument</code>) and the
+Pandoc-span markup
+(<code>[text]{font-family="Arial" font-size="14"}</code>,
+<code>::: {align}</code>) already represent every code Reveal Codes must
+show.</li>
+<li><strong>A markup↔︎visible offset map.</strong>
+<code>quill/ui/rich_text_surface.py</code>
+(<code>analyze_markdown</code>, <code>format_at_markdown_offset</code>,
+<code>build_render_plan</code>) already maps a visible caret offset to
+the markup/formatting in effect there. The whole "two cursors that track
+each other" mechanism is exactly this map, used in both directions.</li>
+<li><strong>A spoken formatting vocabulary.</strong>
+<code>quill/core/format_speech.py</code>
+(<code>describe_inline_format</code>,
+<code>describe_format_transition</code>) already turns formatting into
+phrases like "Arial, 14 point, centered, bold." Reveal Codes reuses it
+for token labels.</li>
+<li><strong>An invisible-character vocabulary.</strong>
+<code>quill/core/char_describe.py</code>
+(<code>describe_character</code>, shipped with "Describe Character at
+Cursor") already names tabs, no-break/zero-width spaces, smart quotes,
+line endings, and their code points. These are the <em>structural</em>
+codes (<code>[Tab]</code>, <code>[HRt]</code>,
+<code>[NBSP]</code>).</li>
+<li><strong>On-demand interrogation precedent.</strong> "Describe
+Formatting at Cursor" and "Describe Character at Cursor" already answer
+"what is here?" for a single point. Reveal Codes generalizes point
+interrogation into a continuous, navigable map.</li>
+</ol>
+<p>So Reveal Codes is mostly <strong>a new view over existing
+data</strong>, plus a synchronization controller and a thin code-stream
+model that unifies the formatting and character vocabularies into one
+ordered token list.</p>
+<h2 id="3-the-experience">3. The experience</h2>
+<h3 id="31-turning-it-on-view-menu-and-reaching-it-f6-region-cycle">3.1
+Turning it on (View menu) and reaching it (F6 region cycle)</h3>
+<ul>
+<li><strong>View → Reveal Codes</strong> is a checkable menu item that
+<em>shows or hides</em> the Reveal Codes pane. The choice persists
+(<code>settings.reveal_codes_visible</code>). Hidden is the default and
+costs nothing (the code stream is not built while hidden).</li>
+<li><strong>F6 cycles between the regions; Reveal Codes is one of them
+when shown.</strong> QUILL already has an F6 / Shift+F6 region rotation
+(<code>navigate.next_region</code> /
+<code>navigate.previous_region</code>, implemented by
+<code>_current_focus_region_labels()</code> /
+<code>_focus_region()</code>), today: <strong>Editor → (Document Tabs) →
+(Preview) → Status Bar →</strong> wrap. Reveal Codes joins that rotation
+<strong>whenever the pane is showing</strong>, right after the Editor,
+so F6 moves <strong>Editor → Reveal Codes → Status Bar</strong> (and
+through Document Tabs / Preview when those are present), and
+<strong>Shift+F6 cycles backwards</strong>. No new keybinding and no
+surprise — Reveal Codes is just another first-class region, the modern
+form of WordPerfect's "switch windows." Entering it lands on the code or
+text segment at your current editing position; leaving it (F6 onward, or
+Escape back to the editor) returns you exactly where you were
+inspecting.</li>
+</ul>
+<h3 id="32-the-synchronized-cursors-the-heart-of-it">3.2 The
+synchronized cursors (the heart of it)</h3>
+<p>The two views share one logical position, expressed in two coordinate
+spaces:</p>
+<ul>
+<li><strong>Move in the pane → the editor follows.</strong> Arrow to a
+code/segment in the pane and QUILL sets the editor's caret (and a light
+selection over the affected range) to the matching visible-text offset.
+If the editor is on screen, the highlight tracks with you; if you then
+press F6/Escape, you land exactly there.</li>
+<li><strong>Move in the editor → the pane follows.</strong> As the
+editor caret moves, the pane highlights the token at that offset
+(throttled, off the hot path). When you enter the pane, you are already
+on the right token.</li>
+</ul>
+<p>The mapping is the existing visible↔︎markup offset map; the controller
+just keeps the two carets in agreement, marshaling cross-view updates
+through <code>wx.CallAfter</code>.</p>
+<h3 id="33-what-you-hear-and-feel">3.3 What you hear and feel</h3>
+<p>This is where QUILL surpasses the original. Each token is a
+first-class, labeled object:</p>
+<ul>
+<li><strong>Spoken:</strong> arrowing onto a token announces it as a
+unit — "Bold on", "Tab", "Hard return", "Font Arial", "Center on",
+"Non-breaking space", "Page break" — never spelled out character by
+character. Text segments read as their words.</li>
+<li><strong>Paired codes are related aloud:</strong> landing on
+<code>[Bold On]</code> can announce its reach — "Bold on, 12 characters"
+or "Bold on, to 'world'" — and a command jumps to the matching
+<code>[Bold Off]</code>.</li>
+<li><strong>Braille:</strong> the pane renders the codes
+<strong>literally and inline</strong> —
+<code>⠦Bold on⠴ Hello ⠦Bold off⠴⠦Tab⠴</code> — so a braille reader feels
+the scaffolding the way a WordPerfect user once saw it. This is the
+truest revival of the original for braille users.</li>
+<li><strong>Verbosity is yours.</strong>
+<code>settings.reveal_codes_verbosity</code> (quiet / balanced /
+detailed) controls how much each move announces — from just the code
+name to the full attribute set and pairing distance.</li>
+</ul>
+<h3 id="34-two-presentations-of-the-same-stream">3.4 Two presentations
+of the same stream</h3>
+<p>A single setting (<code>settings.reveal_codes_view</code>) chooses
+how the stream is shown; both are driven by the identical token
+model:</p>
+<ul>
+<li><strong>Structured (default, most accessible):</strong> one
+navigable item per token in a read-only list — <code>[Bold On]</code>,
+<code>Hello world</code>, <code>[Bold Off]</code>, <code>[Tab]</code>,
+<code>[Hard Return]</code>. Up/Down moves token-to-token; each move is a
+clean, discrete screen-reader event and syncs the editor. No
+character-hunting, no ambiguity.</li>
+<li><strong>Flowed (WordPerfect parity):</strong> the running text with
+bracketed code tokens inline, in a read-only multiline control. The
+caret moves by character/word but treats a code token as one atomic unit
+(you cannot land "inside" <code>[Bold On]</code>); the screen reader
+announces the token when the caret crosses it. This is the closest
+visual/braille match to classic Reveal Codes and the best fit for
+low-vision and braille users.</li>
+</ul>
+<h3 id="35-editing-from-reveal-codes-later-phase">3.5 Editing from
+Reveal Codes (later phase)</h3>
+<p>True to WordPerfect, the pane eventually becomes a place to
+<em>act</em>, not just look:</p>
+<ul>
+<li><strong>Delete a code to remove its effect.</strong> Put the cursor
+on <code>[Bold On]</code> (or <code>[Center On]</code>,
+<code>[Font:Arial]</code>) and press Delete — the span/attribute is
+stripped from the document, the editor updates, and the change is one
+undo step. Deleting a paired "on" code removes its partner too.</li>
+<li><strong>Later: insert/replace codes</strong> from the pane (e.g.
+drop a <code>[Page Break]</code> at a point, change a
+<code>[Size:12]</code> to <code>[Size:14]</code>) via the same builders
+the Format menu uses. Text editing itself stays in the editor; the pane
+edits <em>codes</em>.</li>
+</ul>
+<p>Phase 1 is read-only navigation + interrogation; code-deletion and
+insertion follow (see §11).</p>
+<h2 id="4-the-code-stream-model--quillcorereveal_codespy-new-wx-free">4.
+The code-stream model — <code>quill/core/reveal_codes.py</code> (new,
+wx-free)</h2>
+<p>A pure, testable core module that turns the document into an ordered
+stream of tokens. This is the single source of truth both presentations
+render and the sync controller indexes.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> TokenKind(enum.Enum):</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    TEXT <span class="op">=</span> <span class="st">&quot;text&quot;</span>            <span class="co"># visible characters</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    FORMAT_ON <span class="op">=</span> <span class="st">&quot;format_on&quot;</span>  <span class="co"># [Bold On], [Font:Arial], [Center On], [Style:Heading 2]</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    FORMAT_OFF <span class="op">=</span> <span class="st">&quot;format_off&quot;</span> <span class="co"># [Bold Off], ...</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    STRUCTURE <span class="op">=</span> <span class="st">&quot;structure&quot;</span>  <span class="co"># [Tab], [Hard Return], [Page Break], [Link: ...]</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    INVISIBLE <span class="op">=</span> <span class="st">&quot;invisible&quot;</span>  <span class="co"># [No-Break Space], [Zero-Width Space], [Smart Quote]</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span>(frozen<span class="op">=</span><span class="va">True</span>, slots<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> CodeToken:</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    kind: TokenKind</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    label: <span class="bu">str</span>           <span class="co"># display/braille: &quot;Bold On&quot;, &quot;Tab&quot;, &quot;Font: Arial&quot;</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    spoken: <span class="bu">str</span>          <span class="co"># screen-reader phrase: &quot;bold on&quot;, &quot;tab&quot;, &quot;font Arial&quot;</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    visible_start: <span class="bu">int</span>   <span class="co"># offset into the CLEAN visible text this token sits at</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    visible_end: <span class="bu">int</span>     <span class="co"># == visible_start for zero-width codes; span for TEXT</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    markup_start: <span class="bu">int</span>    <span class="co"># offset into the underlying markup (for edit/delete)</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    markup_end: <span class="bu">int</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    pair_index: <span class="bu">int</span> <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span>  <span class="co"># index of the matching ON/OFF partner</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    attrs: <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">str</span>] <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span>  <span class="co"># font-family, font-size, color, align, ...</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> build_code_stream(markup: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[CodeToken]:</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;Linearize markup into text + code tokens, in document order.</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co">    Built on analyze_markdown()/RichDocument for formatting spans + paragraph</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co">    attributes, and char_describe.describe_character() for structural/invisible</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="co">    characters. Every token records both its visible-text offset range (for caret</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co">    sync) and its markup offset range (for delete/insert). ON/OFF pairs are linked.</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="co">    &quot;&quot;&quot;</span></span></code></pre></div>
+<p>Design points:</p>
+<ul>
+<li><strong>Two offset spaces per token.</strong> <code>visible_*</code>
+drives caret sync with the editor; <code>markup_*</code> drives code
+deletion/editing. Both come from the existing offset map, so they stay
+consistent with the editor's own mapping.</li>
+<li><strong>Pairing.</strong> Run-level formatting emits an ON token at
+the span start and an OFF token at the span end, linked by
+<code>pair_index</code>, so the pane can show
+<code>[Bold On]…[Bold Off]</code> and jump between them. Paragraph
+attributes (<code>align</code>, <code>style</code>) emit a single block
+marker at the paragraph head.</li>
+<li><strong>Reuse, don't reinvent.</strong>
+<code>label</code>/<code>spoken</code> for formatting come from
+<code>format_speech.describe_inline_format</code>; for invisibles from
+<code>char_describe.describe_character</code>. New vocabulary is only
+the bracketing.</li>
+<li><strong>Pure and incremental-friendly.</strong> No <code>wx</code>.
+Accepts a markup string (or a range) so the pane can rebuild only the
+changed/visible region after edits (§10).</li>
+</ul>
+<h2 id="5-the-code-vocabulary">5. The code vocabulary</h2>
+<table>
+<thead>
+<tr>
+<th>Document feature</th>
+<th>Pane label</th>
+<th>Spoken (balanced)</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bold span</td>
+<td><code>[Bold On]</code> / <code>[Bold Off]</code></td>
+<td>"bold on" / "bold off"</td>
+<td>format_speech</td>
+</tr>
+<tr>
+<td>Italic / Underline</td>
+<td><code>[Italic On]</code> …</td>
+<td>"italic on" …</td>
+<td>format_speech</td>
+</tr>
+<tr>
+<td>Strike/super/subscript</td>
+<td><code>[Strikethrough On]</code> …</td>
+<td>"strikethrough on" …</td>
+<td>format_speech</td>
+</tr>
+<tr>
+<td>Font family</td>
+<td><code>[Font: Arial]</code></td>
+<td>"font Arial"</td>
+<td>rtf_model attrs</td>
+</tr>
+<tr>
+<td>Point size</td>
+<td><code>[Size: 14]</code></td>
+<td>"14 point"</td>
+<td>rtf_model attrs</td>
+</tr>
+<tr>
+<td>Color / highlight</td>
+<td><code>[Color: red]</code> / <code>[Highlight: yellow]</code></td>
+<td>"red text" / "yellow highlight"</td>
+<td>rtf_model attrs</td>
+</tr>
+<tr>
+<td>Paragraph align</td>
+<td><code>[Center]</code> / <code>[Right]</code> /
+<code>[Justify]</code></td>
+<td>"centered" …</td>
+<td>RichParagraph.align</td>
+</tr>
+<tr>
+<td>Named style</td>
+<td><code>[Style: Heading 2]</code></td>
+<td>"heading 2"</td>
+<td>heading_styles</td>
+</tr>
+<tr>
+<td>Link</td>
+<td><code>[Link: example.com]</code></td>
+<td>"link to example dot com"</td>
+<td>rtf_model</td>
+</tr>
+<tr>
+<td>List item</td>
+<td><code>[• List]</code></td>
+<td>"bullet"</td>
+<td>rtf_model</td>
+</tr>
+<tr>
+<td>Tab</td>
+<td><code>[Tab]</code></td>
+<td>"tab"</td>
+<td>char_describe</td>
+</tr>
+<tr>
+<td>Hard return / paragraph</td>
+<td><code>[¶ Hard Return]</code></td>
+<td>"hard return"</td>
+<td>char_describe</td>
+</tr>
+<tr>
+<td>Page break</td>
+<td><code>[Page Break]</code></td>
+<td>"page break"</td>
+<td>format codes</td>
+</tr>
+<tr>
+<td>No-break / zero-width space</td>
+<td><code>[No-Break Space]</code> / <code>[Zero-Width Space]</code></td>
+<td>"non-breaking space" …</td>
+<td>char_describe</td>
+</tr>
+<tr>
+<td>Smart quote / em dash</td>
+<td><code>[Smart Quote ”]</code> / <code>[Em Dash]</code></td>
+<td>"right smart quote" …</td>
+<td>char_describe</td>
+</tr>
+<tr>
+<td>Line-ending type</td>
+<td><code>[CRLF]</code> / <code>[LF]</code> (detailed verbosity)</td>
+<td>"Windows line ending" …</td>
+<td>char_describe</td>
+</tr>
+</tbody>
+</table>
+<p>The vocabulary is intentionally small and fixed, mirroring the
+hidden-codes design's "fixed, small vocabulary" principle. New code
+kinds are added only when the formatting model gains them.</p>
+<h2 id="6-ui-architecture">6. UI architecture</h2>
+<h3 id="61-layout">6.1 Layout</h3>
+<p>A horizontal splitter inside the document view: <strong>editor on
+top, Reveal Codes pane on the bottom</strong> (the WordPerfect
+arrangement). The sash is keyboard-resizable and the split ratio
+persists. Hiding the pane (View toggle) collapses the splitter so the
+editor reclaims the full area and no stream is built. Orientation
+(bottom vs. side) is an open question (§13) but bottom is the heritage
+default.</p>
+<h3 id="62-new-ui-module--quilluireveal_codes_panepy">6.2 New UI module
+— <code>quill/ui/reveal_codes_pane.py</code></h3>
+<ul>
+<li>The pane widget (a read-only <code>wx.ListBox</code>/owner-drawn
+list for Structured mode, a read-only <code>wx.TextCtrl</code> for
+Flowed mode), with an accessible name and per-item accessible
+labels.</li>
+<li>A <strong>sync controller</strong> that owns the bidirectional caret
+tracking: editor→pane (throttled, on <code>EVT_TEXT</code>/idle and
+caret-move) and pane→editor (on selection change in the pane, via
+<code>wx.CallAfter</code>).</li>
+<li>Rebuild policy: rebuild the stream on document load/replace and,
+after edits, on a short idle debounce; only the visible window for large
+documents (§10).</li>
+</ul>
+<p>Keep all logic that can be wx-free in
+<code>core/reveal_codes.py</code>; the pane is a thin view + sync shell,
+so <code>main_frame.py</code> gains only a small delegate (GATE-11).</p>
+<h3 id="63-commands">6.3 Commands</h3>
+<ul>
+<li><code>view.reveal_codes_toggle</code> — show/hide the pane (View
+menu, checkable). Persists. <em>Reaching</em> the pane is handled by the
+existing F6 region cycle (§6.5), not a separate focus command — so there
+is no F6 rebinding to do.</li>
+<li><code>reveal.next_code</code> / <code>reveal.previous_code</code> —
+jump code-to-code (skip text), for fast scanning <strong>within</strong>
+the pane.</li>
+<li><code>reveal.go_to_pair</code> — jump between an ON code and its OFF
+partner.</li>
+<li><code>reveal.delete_code</code> — (later) strip the code under the
+cursor.</li>
+</ul>
+<p>The <code>toggle</code> gets a keymap entry; the in-pane commands
+default to sensible local keys. Everything is reassignable in the Keymap
+Editor.</p>
+<h3 id="64-settings">6.4 Settings</h3>
+<ul>
+<li><code>reveal_codes_visible: bool = False</code> — pane shown
+(persisted View toggle state).</li>
+<li><code>reveal_codes_view: str = "structured"</code> —
+<code>"structured"</code> | <code>"flowed"</code>.</li>
+<li><code>reveal_codes_verbosity: str = "balanced"</code> —
+<code>"quiet"</code> | <code>"balanced"</code> |
+<code>"detailed"</code>.</li>
+<li><code>reveal_codes_split_ratio: float</code> — remembered sash
+position.</li>
+</ul>
+<h3 id="65-f6-region-cycle-decided">6.5 F6 region cycle (decided)</h3>
+<p>Reveal Codes is a <strong>first-class focus region</strong>, reached
+through QUILL's existing F6 / Shift+F6 rotation — no new keybinding, no
+conflict. Concretely:</p>
+<ul>
+<li><strong><code>_current_focus_region_labels()</code></strong>
+(<code>quill/ui/main_frame.py</code>) appends
+<code>"Reveal Codes"</code> to its ordered list <strong>when the pane is
+showing</strong>, positioned right after <code>"Editor"</code>, so the
+cycle is <strong>Editor → Reveal Codes → Status Bar</strong> (with
+Document Tabs / Preview included when they too are present). It is
+omitted when the pane is hidden, so F6 never lands on an unreachable
+region — exactly the pattern already used for Preview (only when split)
+and Document Tabs (only when shown).</li>
+<li><strong><code>_detect_active_region()</code></strong> recognizes
+focus inside the pane and reports <code>"Reveal Codes"</code>;
+<strong><code>_focus_region("Reveal Codes")</code></strong> moves focus
+into the pane and places its caret on the token matching the editor's
+current offset.</li>
+<li><strong>F6</strong> (<code>navigate.next_region</code>) steps
+forward through the cycle; <strong>Shift+F6</strong>
+(<code>navigate.previous_region</code>) steps backward. Both already
+exist and are unchanged.</li>
+</ul>
+<p>So "F6 should move between editor, Reveal Codes (if showing), and the
+status bar, Shift+F6 backwards" is satisfied by adding one region to the
+existing rotation — the cleanest possible integration.</p>
+<h2 id="7-synchronization-design">7. Synchronization design</h2>
+<ul>
+<li><strong>Single offset authority.</strong> Both directions use the
+visible↔︎markup offset map (<code>rich_text_surface</code>). The editor
+caret is a visible offset; each token carries its visible range; mapping
+is O(log n) against the token list (binary search on
+<code>visible_start</code>).</li>
+<li><strong>Editor → pane</strong> runs on caret-move/idle, throttled
+(coalesce rapid moves; update at most ~10×/sec), never on the typing hot
+path.</li>
+<li><strong>Pane → editor</strong> fires on the pane's selection-change,
+marshaled with <code>wx.CallAfter</code>, setting the editor caret + a
+light range highlight.</li>
+<li><strong>Edits invalidate, idle rebuilds.</strong> A document edit
+marks the stream stale; a short debounce rebuilds it (incrementally
+where possible) so the pane never blocks typing. Until rebuilt, the pane
+shows the last good stream with a subtle "updating" state.</li>
+</ul>
+<h2 id="8-accessibility-the-point-of-the-whole-thing">8. Accessibility
+(the point of the whole thing)</h2>
+<ul>
+<li><strong>Discrete, labeled objects.</strong> Structured mode makes
+every code a list item with a real accessible name, so screen readers
+announce "Bold on" as one event — the single biggest win over a
+visual-only Reveal Codes.</li>
+<li><strong>Focus is honest.</strong> Entering the pane announces
+"Reveal Codes"; returning announces "Editor"; the caret always lands on
+the token matching where you were.</li>
+<li><strong>Braille-literal.</strong> Flowed mode renders codes inline
+so braille users feel the scaffolding; Structured mode gives one code
+per braille line for scanning.</li>
+<li><strong>No color-only meaning.</strong> Codes are conveyed by
+bracketed text + label, never by color alone; any visual styling is
+additive.</li>
+<li><strong>Quiet by default.</strong> Verbosity is user-controlled;
+navigation never chatters more than the user asked for. Respect
+<code>prefers-reduced-motion</code> for any highlight animation (use
+instant highlight).</li>
+<li><strong>Keyboard-complete.</strong> Show/hide, focus, code-to-code,
+pair-jump, sash resize, and (later) delete are all keyboard-reachable
+and reassignable.</li>
+</ul>
+<h2 id="9-reuse-map-what-we-are-not-rebuilding">9. Reuse map (what we
+are NOT rebuilding)</h2>
+<table>
+<thead>
+<tr>
+<th>Need</th>
+<th>Existing code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Formatting in effect at an offset</td>
+<td><code>rich_text_surface.format_at_markdown_offset</code></td>
+</tr>
+<tr>
+<td>Spoken formatting phrases</td>
+<td><code>format_speech.describe_inline_format</code></td>
+</tr>
+<tr>
+<td>Invisible-character names/code points</td>
+<td><code>char_describe.describe_character</code></td>
+</tr>
+<tr>
+<td>Markup ↔︎ visible offset map</td>
+<td><code>rich_text_surface.analyze_markdown</code></td>
+</tr>
+<tr>
+<td>Render planning over markup</td>
+<td><code>rich_text_surface.build_render_plan</code></td>
+</tr>
+<tr>
+<td>Code deletion = strip span/attr</td>
+<td>the hidden-codes builders (<code>core/tagging.py</code>)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="10-performance">10. Performance</h2>
+<ul>
+<li><strong>Zero cost when hidden</strong> — no stream built, no sync
+wired.</li>
+<li><strong>Lazy + incremental</strong> — build only the visible window
+for large documents; rebuild only the changed region after edits, on an
+idle debounce.</li>
+<li><strong>Virtualized list</strong> in Structured mode for very long
+documents.</li>
+<li><strong>Throttled sync</strong> so caret tracking never touches the
+typing hot path.</li>
+</ul>
+<h2 id="11-phasing">11. Phasing</h2>
+<ol type="1">
+<li><strong>Read-only Reveal Codes (Structured mode).</strong>
+<code>core/reveal_codes.build_code_stream</code>, the pane, View toggle,
+F6 focus, bidirectional caret sync, formatting + invisible tokens,
+spoken labels and verbosity. Built on storage Option A (markup
+canonical).</li>
+<li><strong>Flowed mode + braille-literal rendering</strong>,
+code-to-code and pair-jump commands.</li>
+<li><strong>Edit from the pane:</strong> <code>reveal.delete_code</code>
+(strip a span/attribute as one undo step), then code
+insertion/replacement via the Format-menu builders.</li>
+<li><strong>Converge with storage Option B</strong> (the out-of-band
+overlay from the hidden-codes design): the stream is then built from the
+overlay instead of markup, unchanged above that boundary. Optional:
+macro/field codes if QUILL ever adds them.</li>
+</ol>
+<h2 id="12-verification">12. Verification</h2>
+<ul>
+<li><strong>Unit
+(<code>tests/unit/core/test_reveal_codes.py</code>):</strong>
+<code>build_code_stream</code> over representative markup — correct
+token order, labels, ON/OFF pairing, and that
+<code>visible_*</code>/<code>markup_*</code> offsets round-trip against
+the offset map; invisibles (tab, NBSP, smart quote, hard return) produce
+the right tokens.</li>
+<li><strong>Sync:</strong> moving a synthetic caret in either space
+lands on the expected token (pure-function tests on the index; a thin UI
+test for the controller).</li>
+<li><strong>Accessibility:</strong> each pane item exposes an accessible
+name; entering/leaving announces; verbosity levels gate phrase
+length.</li>
+<li><strong>End-to-end:</strong> <code>python -m quill</code>, type a
+formatted paragraph, F6 into Reveal Codes, arrow through
+<code>[Bold On] … [Bold Off] [Tab] [Hard Return]</code>, confirm the
+editor caret tracks and the announcements match; toggle the View item to
+hide/show.</li>
+<li><strong>Gates:</strong> <code>ruff</code>,
+<code>mypy quill\core</code> (the new core module), dialog/menu lints if
+a dialog is added, GATE-11 (logic stays in
+<code>core/reveal_codes.py</code>).</li>
+</ul>
+<h2 id="13-open-questions--decisions-for-scheduling">13. Open questions
+/ decisions for scheduling</h2>
+<ul>
+<li><strong>Split orientation default:</strong> bottom (WordPerfect
+heritage) vs. side, and whether to offer both.</li>
+<li><strong>Edit scope in the pane:</strong> code-deletion only, or full
+code insert/replace, and how aggressively to allow text editing from the
+pane (WordPerfect allowed it).</li>
+<li><strong>Storage coupling:</strong> ship Phase 1 against Option A
+markup now, or wait for the Option B overlay so the stream is built from
+the overlay from day one.</li>
+<li><strong>Flowed-mode atomicity:</strong> confirm the "caret cannot
+land inside a code token" behavior is comfortable for braille review, or
+offer a mode where it can.</li>
+<li><strong>Persistence of pane state</strong> per document vs. global
+(remember last view/verbosity).</li>
+</ul>
+</body>
+</html>
