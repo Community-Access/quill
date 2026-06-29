@@ -193,12 +193,36 @@ quantization and lazy loading, and the remaining wins are in packaging,
 runtime memory, and routing rather than in re-quantizing models.</p>
 </blockquote>
 <h2 id="1-summary">1. Summary</h2>
-<p>Reduce QUILL's on-disk and in-memory footprint and improve AI/ML
-efficiency <strong>without</strong> regressing accessibility, output
-quality, privacy, or the zero-config "it just works" experience. The
-headline levers are installer/disk size, peak runtime RAM per engine,
-and cloud-vs-on-device routing — not new model quantization, which is
-already pervasive.</p>
+<p>Make QUILL <strong>as capable as possible on whatever hardware the
+user has</strong>, while reducing its on-disk and in-memory footprint
+and improving AI/ML efficiency — <strong>without</strong> regressing
+accessibility, output quality, privacy, or the zero-config "it just
+works" experience. Optimization here means <em>fitting more capability
+onto modest, CPU-only machines</em>, not trimming features. The headline
+levers are installer/disk size, peak runtime RAM per engine,
+smallest-viable model selection, and cloud-vs-on-device routing — not
+new model quantization, which is already pervasive.</p>
+<h2 id="11-design-principles-must-hold">1.1 Design principles (must
+hold)</h2>
+<p>These are firm constraints on every phase below:</p>
+<ul>
+<li><strong>Capable on any hardware.</strong> QUILL should run its full
+feature set on a modest, CPU-only Windows machine with limited RAM.
+Optimization exists to <em>extend</em> capability downward to low-end
+hardware, never to disable features on it.</li>
+<li><strong>AI and speech available wherever feasible.</strong> Prefer
+enabling AI and speech — on-device when it fits, cloud when the user
+opts in — over gating them behind hardware. A weaker machine should get
+a smaller/slower model, not "no feature."</li>
+<li><strong>No GPU requirement, ever.</strong> The default,
+fully-supported path is <strong>CPU-only</strong>. Our user community
+most likely has no discrete GPU; nothing may require one or degrade the
+experience when one is absent.</li>
+<li><strong>GPU is a welcome bonus when present.</strong> If a usable
+GPU is detected, engines may auto-accelerate (e.g. Faster Whisper's CUDA
+float16 path) — automatically and optionally, never as a precondition
+and never something the user must configure.</li>
+</ul>
 <h2 id="2-background--what-quill-already-does">2. Background — what
 QUILL already does</h2>
 <p>QUILL is already heavily optimized on the model side. Any plan must
@@ -231,15 +255,23 @@ already</strong>. The open question is everything <em>around</em> the
 models.</p>
 <h2 id="3-goals">3. Goals</h2>
 <ol type="1">
+<li><strong>Keep the full feature set usable on CPU-only, modest-RAM
+machines</strong> — the primary target. AI and speech work without a
+GPU; a weaker machine gets a smaller/slower model, not a disabled
+feature.</li>
 <li>Make the installed/disk footprint smaller and more predictable, with
 large or rarely-used assets opt-in.</li>
 <li>Lower peak runtime RAM, especially with multiple engines (speech +
 TTS + AI) in play, via an explicit unload policy and an optional
-low-resource mode.</li>
+low-resource mode that trades speed for fit — without turning features
+off.</li>
 <li>Default users onto the smallest viable model/quant for their
 machine, with a clear, accessible upgrade path.</li>
 <li>Give a first-class "cloud-first / minimal local" path for users who
 don't want on-device model weight at all.</li>
+<li>Auto-use a GPU when one is present (bonus acceleration), with the
+CPU path as the always-supported default and no required
+configuration.</li>
 <li>Do all of the above with <strong>zero</strong> regression to
 accessibility, output quality, privacy posture, or first-run
 simplicity.</li>
@@ -250,8 +282,13 @@ simplicity.</li>
 upstream).</li>
 <li>Changing the privacy model (AI stays opt-in, provider-neutral,
 consent-gated).</li>
-<li>GPU/accelerator-specific tuning beyond what the engines already
-auto-select.</li>
+<li>Custom GPU kernels or vendor-specific accelerator tuning. The
+engines' built-in auto-acceleration (e.g. CUDA) is used as-is
+<strong>when a GPU is present</strong>; the CPU path is the default and
+is never gated on a GPU. Requiring a GPU for any feature is explicitly
+out of scope.</li>
+<li>Disabling or hiding AI/speech features on low-end hardware. Modest
+machines get smaller/slower models, not fewer features.</li>
 <li>Dropping macOS support or Windows-primary status.</li>
 </ul>
 <h2 id="5-success-metrics-to-be-baselined-in-phase-0">5. Success metrics
@@ -265,6 +302,12 @@ loaded.</li>
 <li>Cold-start time to first usable editor; time-to-first-token /
 first-audio per engine.</li>
 <li>Default-model size shipped/recommended per machine tier.</li>
+<li><strong>Capability floor:</strong> the full AI + speech feature set
+runs on a defined low-end, <strong>CPU-only</strong> reference machine
+(no GPU, modest RAM) with acceptable latency — this is the primary
+bar.</li>
+<li>GPU present: features auto-accelerate with no user configuration,
+and behave identically (only faster) to the CPU path.</li>
 <li>No regression: transcription WER, TTS intelligibility, and AI task
 quality stay within agreed tolerances; accessibility checks
 unchanged.</li>
@@ -287,9 +330,12 @@ verified).</p>
 <h3 id="phase-2--runtime-memory">Phase 2 — Runtime memory</h3>
 <p>Add an explicit <strong>unload-idle-models</strong> policy,
 single-flight model loading, and a <strong>Low-resource mode</strong>
-setting that caps concurrently loaded engines and prefers the smallest
-models. <strong>Acceptance:</strong> peak RSS with multiple engines
-drops measurably; no UI stalls (work stays off the UI thread).</p>
+setting that caps <em>concurrently loaded</em> engines and prefers the
+smallest models — trading speed/concurrency for fit, never turning AI or
+speech off. <strong>Acceptance:</strong> peak RSS with multiple engines
+drops measurably; every AI and speech feature still runs (just
+one-model-at-a-time / smaller) on a CPU-only, modest-RAM machine; no UI
+stalls (work stays off the UI thread).</p>
 <h3 id="phase-3--model--quant-selection">Phase 3 — Model / quant
 selection</h3>
 <p>Default to the smallest viable quant, extend the existing

@@ -13,11 +13,31 @@
 
 ## 1. Summary
 
-Reduce QUILL's on-disk and in-memory footprint and improve AI/ML efficiency
-**without** regressing accessibility, output quality, privacy, or the
-zero-config "it just works" experience. The headline levers are installer/disk
-size, peak runtime RAM per engine, and cloud-vs-on-device routing — not new model
-quantization, which is already pervasive.
+Make QUILL **as capable as possible on whatever hardware the user has**, while
+reducing its on-disk and in-memory footprint and improving AI/ML efficiency —
+**without** regressing accessibility, output quality, privacy, or the zero-config
+"it just works" experience. Optimization here means *fitting more capability onto
+modest, CPU-only machines*, not trimming features. The headline levers are
+installer/disk size, peak runtime RAM per engine, smallest-viable model selection,
+and cloud-vs-on-device routing — not new model quantization, which is already
+pervasive.
+
+## 1.1 Design principles (must hold)
+
+These are firm constraints on every phase below:
+
+- **Capable on any hardware.** QUILL should run its full feature set on a modest,
+  CPU-only Windows machine with limited RAM. Optimization exists to *extend*
+  capability downward to low-end hardware, never to disable features on it.
+- **AI and speech available wherever feasible.** Prefer enabling AI and speech —
+  on-device when it fits, cloud when the user opts in — over gating them behind
+  hardware. A weaker machine should get a smaller/slower model, not "no feature."
+- **No GPU requirement, ever.** The default, fully-supported path is **CPU-only**.
+  Our user community most likely has no discrete GPU; nothing may require one or
+  degrade the experience when one is absent.
+- **GPU is a welcome bonus when present.** If a usable GPU is detected, engines may
+  auto-accelerate (e.g. Faster Whisper's CUDA float16 path) — automatically and
+  optionally, never as a precondition and never something the user must configure.
 
 ## 2. Background — what QUILL already does
 
@@ -45,22 +65,33 @@ everything *around* the models.
 
 ## 3. Goals
 
-1. Make the installed/disk footprint smaller and more predictable, with large or
+1. **Keep the full feature set usable on CPU-only, modest-RAM machines** — the
+   primary target. AI and speech work without a GPU; a weaker machine gets a
+   smaller/slower model, not a disabled feature.
+2. Make the installed/disk footprint smaller and more predictable, with large or
    rarely-used assets opt-in.
-2. Lower peak runtime RAM, especially with multiple engines (speech + TTS + AI)
-   in play, via an explicit unload policy and an optional low-resource mode.
-3. Default users onto the smallest viable model/quant for their machine, with a
+3. Lower peak runtime RAM, especially with multiple engines (speech + TTS + AI)
+   in play, via an explicit unload policy and an optional low-resource mode that
+   trades speed for fit — without turning features off.
+4. Default users onto the smallest viable model/quant for their machine, with a
    clear, accessible upgrade path.
-4. Give a first-class "cloud-first / minimal local" path for users who don't want
+5. Give a first-class "cloud-first / minimal local" path for users who don't want
    on-device model weight at all.
-5. Do all of the above with **zero** regression to accessibility, output quality,
+6. Auto-use a GPU when one is present (bonus acceleration), with the CPU path as
+   the always-supported default and no required configuration.
+7. Do all of the above with **zero** regression to accessibility, output quality,
    privacy posture, or first-run simplicity.
 
 ## 4. Non-goals
 
 - Re-quantizing or retraining models QUILL ships (already quantized upstream).
 - Changing the privacy model (AI stays opt-in, provider-neutral, consent-gated).
-- GPU/accelerator-specific tuning beyond what the engines already auto-select.
+- Custom GPU kernels or vendor-specific accelerator tuning. The engines' built-in
+  auto-acceleration (e.g. CUDA) is used as-is **when a GPU is present**; the CPU
+  path is the default and is never gated on a GPU. Requiring a GPU for any feature
+  is explicitly out of scope.
+- Disabling or hiding AI/speech features on low-end hardware. Modest machines get
+  smaller/slower models, not fewer features.
 - Dropping macOS support or Windows-primary status.
 
 ## 5. Success metrics (to be baselined in Phase 0)
@@ -71,6 +102,11 @@ everything *around* the models.
 - Cold-start time to first usable editor; time-to-first-token / first-audio per
   engine.
 - Default-model size shipped/recommended per machine tier.
+- **Capability floor:** the full AI + speech feature set runs on a defined low-end,
+  **CPU-only** reference machine (no GPU, modest RAM) with acceptable latency — this
+  is the primary bar.
+- GPU present: features auto-accelerate with no user configuration, and behave
+  identically (only faster) to the CPU path.
 - No regression: transcription WER, TTS intelligibility, and AI task quality stay
   within agreed tolerances; accessibility checks unchanged.
 
@@ -90,9 +126,11 @@ on-demand. **Acceptance:** measurable base-installer reduction with no feature l
 
 ### Phase 2 — Runtime memory
 Add an explicit **unload-idle-models** policy, single-flight model loading, and a
-**Low-resource mode** setting that caps concurrently loaded engines and prefers the
-smallest models. **Acceptance:** peak RSS with multiple engines drops measurably;
-no UI stalls (work stays off the UI thread).
+**Low-resource mode** setting that caps *concurrently loaded* engines and prefers
+the smallest models — trading speed/concurrency for fit, never turning AI or speech
+off. **Acceptance:** peak RSS with multiple engines drops measurably; every AI and
+speech feature still runs (just one-model-at-a-time / smaller) on a CPU-only,
+modest-RAM machine; no UI stalls (work stays off the UI thread).
 
 ### Phase 3 — Model / quant selection
 Default to the smallest viable quant, extend the existing machine-aware recommender
