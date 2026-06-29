@@ -30,7 +30,7 @@ dependencies = [
     # this package to resolve real zone names (publishing schedule dialog).
     "tzdata>=2025.1",
     # Native .docx reading/writing without requiring Pandoc.
-    "python-docx>=1.1.2",
+    "python-docx>=1.2.0",
 ]
 
 [project.optional-dependencies]
@@ -100,7 +100,7 @@ mp3 = ["mutagen>=1.47"]
 # (docs/rich-text-formatting-hidden-codes-design.md). Optional: when absent,
 # write_docx_document falls back to the Pandoc path (which drops those run/
 # paragraph attributes), so docx export still works without this extra.
-docx = ["python-docx>=1.1.0"]
+docx = ["python-docx>=1.2.0"]
 # Premium cloud TTS via the official ElevenLabs SDK (roadmap §4.1, audio export).
 # Optional: the ElevenLabs AI Voice provider is inert unless this is installed and
 # an "ElevenLabs API key" credential is configured. All calls go through the
