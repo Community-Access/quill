@@ -33,11 +33,15 @@ class MastodonComposeDialog:
         accounts: list[account_store.MastodonAccount],
         default_account_id: str | None,
         announce=None,
+        spell_review=None,
     ) -> None:
         import wx
 
         self._wx = wx
         self._announce = announce or (lambda _m: None)
+        # Optional callable(text_ctrl) -> None that runs the F7 spelling review
+        # over the post text. Provided by MainFrame; None in tests / headless use.
+        self._spell_review = spell_review
         self._accounts = accounts
         self.posted_url: str | None = None
 
@@ -117,6 +121,15 @@ class MastodonComposeDialog:
         if account is None:
             self._announce("Add an account first.")
             return
+        # Proofread before sending when this account opts in (off by default).
+        # The review edits the post text in place; re-read it afterwards.
+        if account.spell_check_before_post and self._spell_review is not None:
+            self._spell_review(self._text)
+            text = self._text.GetValue()
+            if not text.strip():
+                self._announce("Cannot post: the text is empty.")
+                self._text.SetFocus()
+                return
         visibility = client.VISIBILITIES[max(0, self._visibility.GetSelection())][0]
         token = account_store.access_token_for(account.id)
         if not token:
@@ -156,6 +169,12 @@ class MastodonAccountsDialog:
         self._list.SetName("Mastodon accounts")
         root.Add(self._list, 1, wx.EXPAND | wx.ALL, 12)
 
+        self._spellcheck_check = wx.CheckBox(
+            self.dialog, label="Spell-check &posts before sending (selected account)"
+        )
+        self._spellcheck_check.SetName("Spell-check posts before sending")
+        root.Add(self._spellcheck_check, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 12)
+
         row = wx.BoxSizer(wx.HORIZONTAL)
         add_button = wx.Button(self.dialog, label="&Add Account...")
         self._remove_button = wx.Button(self.dialog, label="&Remove")
@@ -181,14 +200,36 @@ class MastodonAccountsDialog:
         self._remove_button.Bind(wx.EVT_BUTTON, lambda _e: self._on_remove())
         self._default_button.Bind(wx.EVT_BUTTON, lambda _e: self._on_set_default())
         self._list.Bind(wx.EVT_LISTBOX, lambda _e: self._update_button_states())
+        self._spellcheck_check.Bind(wx.EVT_CHECKBOX, lambda _e: self._on_toggle_spellcheck())
         self._refresh()
         self._list.SetFocus()
 
     def _update_button_states(self) -> None:
-        """Enable Remove / Set as Default only when an account is selected."""
-        has_selection = self._selected_id() is not None
+        """Enable Remove / Set as Default and sync the spell-check box to selection."""
+        account = self._selected_account_obj()
+        has_selection = account is not None
         self._remove_button.Enable(has_selection)
         self._default_button.Enable(has_selection)
+        # Read the flag fresh from the store so it is always correct regardless of
+        # toggles, and never resets the list selection (unlike _refresh).
+        self._spellcheck_check.Enable(has_selection)
+        self._spellcheck_check.SetValue(bool(account and account.spell_check_before_post))
+
+    def _selected_account_obj(self) -> account_store.MastodonAccount | None:
+        account_id = self._selected_id()
+        return account_store.get_account(account_id) if account_id else None
+
+    def _on_toggle_spellcheck(self) -> None:
+        account_id = self._selected_id()
+        if account_id is None:
+            return
+        enabled = bool(self._spellcheck_check.GetValue())
+        account_store.set_spell_check_before_post(account_id, enabled)
+        self._announce(
+            "Spell-check before posting turned on for this account."
+            if enabled
+            else "Spell-check before posting turned off for this account."
+        )
 
     def _refresh(self) -> None:
         accounts = account_store.list_accounts()

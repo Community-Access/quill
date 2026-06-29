@@ -715,6 +715,14 @@ connection, nothing uploaded.
 - **Spell word aloud** — after announcing the misspelling, QUILL reads it
   letter by letter. The pause before spelling starts is configurable.
 
+#### Spell check a document before saving
+
+Turn on **Settings → Editing → Spell check a document before saving** (off by
+default) and QUILL opens the same Spelling Review (F7) automatically whenever you
+save, so you can correct misspellings before the file is written. Review or skip
+the issues as usual; the save then proceeds with your corrections. This applies
+to **Save** and **Save As** for the document you are editing.
+
 **Editor shortcuts** (without opening the dialog):
 
 | Key | Action |
@@ -2549,6 +2557,7 @@ Quill's current settings and customization surface covers the things you are mos
 - system tray mode
 - persistent undo
 - spell check as you type
+- **spell check a document before saving** — when on, saving opens the Spelling Review (F7) first so you can correct the document before it is written. Off by default.
 - line-number visibility
 - whether Quill starts with no document open
 - **suggest a filename from the first line** — when on, saving an untitled document pre-fills the Save dialog with a name taken from the first line (across formats; leading markup like a Markdown heading, quote, or list bullet is stripped). Off by default.
@@ -2651,6 +2660,8 @@ The first time you post, Quill offers to add an account; you can also open **Too
 3. Paste that code back into Quill. Your account is saved.
 
 You can add several accounts, give each its own nickname, **set a default**, or **remove** one (which deletes its saved sign-in from this computer). Your sign-in is stored securely in the Windows Credential Manager, never in a plain file.
+
+**Proofread posts before sending.** In **Mastodon Accounts...**, select an account and tick **Spell-check posts before sending** to turn on per-account proofreading (off by default). When it is on, pressing **Post** for that account first opens the Spelling Review (F7) on the post text so you can fix misspellings, and the post is sent only after you finish or skip the review. The setting is per account, so you can enable it for some accounts and not others; existing accounts are unaffected until you turn it on.
 
 ## Working with Different Document Types
 

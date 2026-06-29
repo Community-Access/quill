@@ -203,6 +203,15 @@ keys line up again.
 
 ### Enhancements
 
+- **Proofread Mastodon posts before sending (per account).** In **Tools → Share
+  → Mastodon Accounts...**, select an account and tick **Spell-check posts before
+  sending**: pressing Post for that account then opens the Spelling Review (F7) on
+  the post text so you can fix misspellings before it goes out. Off by default and
+  per account, so existing accounts are unaffected until you turn it on.
+- **Spell check a document before saving.** A new **Settings → Editing → Spell
+  check a document before saving** option (off by default) opens the Spelling
+  Review (F7) automatically when you Save or Save As, so you can correct the
+  document before the file is written; the save then proceeds.
 - **Hear how deep your indentation is.** Tab / Shift+Tab can now speak the new
   indentation depth — "4 spaces", "8 spaces", "1 tab" — instead of "Indented
   lines", honouring your tabs-vs-spaces and indent-width settings. Toggle with

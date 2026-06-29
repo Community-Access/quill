@@ -9387,6 +9387,10 @@ class MainFrame(
         if self.document.path is None:
             self.save_file_as()
             return
+        # Optional pre-save proofread (off by default): review misspellings in the
+        # editor before the file is written. save_file_as runs its own copy.
+        if getattr(self.settings, "spell_check_before_save", False):
+            self.open_spell_check_dialog()
         if self.document.modified:
             backup_document(self.document)
         self._write_document_to_disk(self.document)
@@ -9604,6 +9608,10 @@ class MainFrame(
             target = self._resolve_save_target(Path(dialog.GetPath()), chosen_filter)
             self._last_file_dir = str(target.parent)
 
+        # Optional pre-save proofread (off by default), after the user has chosen
+        # the destination but before the file is written.
+        if getattr(self.settings, "spell_check_before_save", False):
+            self.open_spell_check_dialog()
         self.document.set_text(self.editor.GetValue())
         if self.document.modified and self.document.path is not None:
             backup_document(self.document)
@@ -13400,6 +13408,7 @@ class MainFrame(
             accounts=accounts,
             default_account_id=_accounts.default_account_id(),
             announce=self._announce_result,
+            spell_review=self._spell_review_textctrl,
         )
         if dialog.show() == self._wx.ID_OK:
             url = dialog.posted_url or ""
@@ -16268,6 +16277,26 @@ class MainFrame(
             f"Spell check: {backend.name}; user dictionaries: personal={personal_count}, "
             f"document={document_count}, project={project_count}"
         )
+
+    def _spell_review_textctrl(self, text_ctrl: object) -> None:
+        """Run the F7 spelling review over a wx text control (e.g. a Mastodon post).
+
+        Mirrors open_spell_check_dialog but targets the given control instead of
+        the editor, so corrections apply to the post text before it is sent (#549
+        Mastodon proofread-before-send).
+        """
+        from quill.ui.spell_review import review_textctrl
+
+        review_textctrl(
+            self._wx,
+            self.frame,
+            text_ctrl,
+            dictionary=self._spell_dictionary(),
+            announce_fn=self._announce,
+            settings=self.settings,
+            show_modal=self._show_modal_dialog,
+        )
+        self._invalidate_spell_dictionary_cache()
 
     def open_spell_check_dialog(self) -> None:
         """Open the guided F7 Spelling Review dialog."""
