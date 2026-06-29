@@ -18,6 +18,18 @@ from typing import Protocol, runtime_checkable
 ProgressCallback = Callable[[float, str], None]
 
 
+def download_progress_percent(fraction: float) -> int:
+    """Clamp a 0.0-1.0 download fraction to a whole-number percent (0-100).
+
+    Download UIs use this to throttle progress updates to one per percent. A
+    chunk-frequent engine (Faster Whisper via huggingface_hub's snapshot_download
+    fires its progress callback per chunk -- thousands of times) would otherwise
+    flood the UI thread's marshalled updates and freeze, then crash, the app
+    (#748). Pure and unit-tested.
+    """
+    return int(max(0.0, min(1.0, fraction)) * 100)
+
+
 @dataclass(frozen=True, slots=True)
 class SpeechModelInfo:
     """A model the provider can offer for download."""

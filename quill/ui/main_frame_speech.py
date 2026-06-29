@@ -806,7 +806,7 @@ class SpeechCommandsMixin:
         """
         import threading
 
-        from quill.core.speech.provider import SpeechError
+        from quill.core.speech.provider import SpeechError, download_progress_percent
         from quill.ui.ai_transcribe_dialog import AIProgressDialog
 
         wx = self._wx
@@ -821,11 +821,19 @@ class SpeechCommandsMixin:
         progress.show()
         self._announce(f"Downloading the {model_id} speech model.")
         last_milestone = {"value": -1}
+        last_percent = {"value": -1}
 
         def _on_chunk(fraction: float, message: str) -> None:
             if cancel.is_set():
                 raise SpeechError("Download cancelled.")
-            percent = int(max(0.0, min(1.0, fraction)) * 100)
+            # Throttle to whole-percent changes: snapshot_download (Faster Whisper)
+            # fires this per chunk and set_progress marshals each update to the UI
+            # thread, so an unthrottled callback floods wx.CallAfter and freezes
+            # then crashes the download (#748). ~100 updates/download instead.
+            percent = download_progress_percent(fraction)
+            if percent == last_percent["value"]:
+                return
+            last_percent["value"] = percent
             progress.set_progress(percent, f"{message} {percent}%")
             milestone = percent - (percent % 25)
             if percent < 100 and milestone != last_milestone["value"]:
