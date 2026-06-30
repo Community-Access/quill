@@ -2441,9 +2441,10 @@ Manager.
   so nothing is ever hidden.
 - **Trim specific cues.** Two announcement toggles under **Preferences >
   Accessibility** tailor what QUILL says. **Announce entering and leaving
-  dialogs** (on by default) speaks "Entered" / "Exited *name* dialog" as dialog
-  boxes open and close — turn it off if your screen reader already announces
-  dialogs. **Announce indentation depth on Tab** (on by default) makes Tab and
+  dialogs** (off by default) speaks "Entered" / "Exited *name* dialog" as dialog
+  boxes open and close — it is off because your screen reader already announces
+  dialogs and reads their titles, so the cue is redundant; turn it on if you
+  want the extra spoken transition. **Announce indentation depth on Tab** (on by default) makes Tab and
   Shift+Tab speak the new depth ("4 spaces", "1 tab") instead of "Indented
   lines". Both affect only speech; the status bar still updates.
 - **Re-read what QUILL just said — the Spoken Echo.** Speech is fleeting: an

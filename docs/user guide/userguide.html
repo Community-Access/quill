@@ -4708,13 +4708,14 @@ affect only what is <em>spoken</em>; the status bar always shows every
 update, so nothing is ever hidden.</li>
 <li><strong>Trim specific cues.</strong> Two announcement toggles under
 <strong>Preferences &gt; Accessibility</strong> tailor what QUILL says.
-<strong>Announce entering and leaving dialogs</strong> (on by default)
+<strong>Announce entering and leaving dialogs</strong> (off by default)
 speaks "Entered" / "Exited <em>name</em> dialog" as dialog boxes open
-and close — turn it off if your screen reader already announces dialogs.
-<strong>Announce indentation depth on Tab</strong> (on by default) makes
-Tab and Shift+Tab speak the new depth ("4 spaces", "1 tab") instead of
-"Indented lines". Both affect only speech; the status bar still
-updates.</li>
+and close — it is off because your screen reader already announces
+dialogs and reads their titles, so the cue is redundant; turn it on if
+you want the extra spoken transition. <strong>Announce indentation depth
+on Tab</strong> (on by default) makes Tab and Shift+Tab speak the new
+depth ("4 spaces", "1 tab") instead of "Indented lines". Both affect
+only speech; the status bar still updates.</li>
 <li><strong>Re-read what QUILL just said — the Spoken Echo.</strong>
 Speech is fleeting: an indent depth, a formatting description, a save
 result, or a "no matches" scrolls past the instant it is spoken. The

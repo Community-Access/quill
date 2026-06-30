@@ -90,7 +90,7 @@ This enables shipping bug fixes and security patches as micro-updates without re
 3. **Speak the result, not the process.** After every meaningful action, Quill announces a short, useful result through the screen reader.
 4. **Originals are read-only by default.** Anything rendered or extracted saves through Save As. Plain-text formats save in place.
 5. **No silent network calls.** Any cloud assistance asks first, shows progress, and reports the outcome.
-6. **Quiet by default.** No surprise toasts. No animated UI. No tabs that announce themselves on every switch.
+6. **Quiet by default.** No surprise toasts. No animated UI. No tabs that announce themselves on every switch. Cues that merely duplicate what the screen reader already says ship **off**: e.g. `announce_dialog_transitions` (the spoken "Entered/Exited *name* dialog") defaults to off, since every supported reader already announces a dialog and reads its title on focus. The lever stays in **Preferences > Accessibility** for anyone who wants the extra cue. Settings reach existing users on upgrade because the on-disk store is a delta from code defaults (see `settings_migration`), so a changed default flows to everyone who never deliberately overrode it.
 7. **Recoverable.** Backups happen on save. Crash recovery on launch. Nothing the user wrote should ever be lost.
 8. **Discoverable.** A searchable command palette lists every action with its current binding.
 

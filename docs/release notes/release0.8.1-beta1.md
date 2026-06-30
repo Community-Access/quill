@@ -195,8 +195,12 @@ guessing whether a key is free.
 
 - **Hear how deep your indentation is** — Tab / Shift+Tab can speak "4 spaces",
   "1 tab", instead of just "Indented lines".
-- **Quieter dialogs, your choice** — turn off the spoken "Entered / Exited *name*
-  dialog" cues if your screen reader already announces them.
+- **Quieter dialogs by default** — the spoken "Entered / Exited *name* dialog"
+  cues are now **off by default**, because every supported screen reader already
+  announces a dialog and reads its title on focus, so the extra cue was just
+  noise. Want them back? **Preferences > Accessibility > Announce entering and
+  leaving dialogs**. Existing users who never deliberately switched them on pick
+  up the quieter default automatically on upgrade.
 - **Jump straight to an open document** — **Alt+1**…**Alt+9** (and **Alt+0** for the
   tenth) go directly to that document instead of cycling.
 - **Quieter Read Aloud** — the follow-along selection is now off by default, so only

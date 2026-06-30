@@ -399,7 +399,16 @@ place.</li>
 <li><strong>No silent network calls.</strong> Any cloud assistance asks
 first, shows progress, and reports the outcome.</li>
 <li><strong>Quiet by default.</strong> No surprise toasts. No animated
-UI. No tabs that announce themselves on every switch.</li>
+UI. No tabs that announce themselves on every switch. Cues that merely
+duplicate what the screen reader already says ship <strong>off</strong>:
+e.g. <code>announce_dialog_transitions</code> (the spoken
+"Entered/Exited <em>name</em> dialog") defaults to off, since every
+supported reader already announces a dialog and reads its title on
+focus. The lever stays in <strong>Preferences &gt;
+Accessibility</strong> for anyone who wants the extra cue. Settings
+reach existing users on upgrade because the on-disk store is a delta
+from code defaults (see <code>settings_migration</code>), so a changed
+default flows to everyone who never deliberately overrode it.</li>
 <li><strong>Recoverable.</strong> Backups happen on save. Crash recovery
 on launch. Nothing the user wrote should ever be lost.</li>
 <li><strong>Discoverable.</strong> A searchable command palette lists
