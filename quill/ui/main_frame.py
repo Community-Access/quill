@@ -4444,7 +4444,7 @@ class MainFrame(
         self.editor = tab.editor
         self.document = tab.document
         # The active document's bookmark set is this tab's own dict (per-document).
-        self._bookmarks = tab.bookmarks
+        self._bookmarks = getattr(tab, "bookmarks", {})
         tab._indent_tone_last_level = -1  # reset per-tab indent tone cache on switch
         if not getattr(tab, "_language_profile_pinned", False):
             tab._language_profile = get_profile_for_path(tab.document.path)
@@ -16457,7 +16457,7 @@ class MainFrame(
         tab = self._active_tab()
         if tab is not None:
             tab.bookmarks = dict(self._bookmarks)
-        key = DocumentMemory.key_for(getattr(self.document, "path", None))
+        key = DocumentMemory.key_for(getattr(getattr(self, "document", None), "path", None))
         if key:
             try:
                 self._doc_memory.set_bookmarks(key, self._bookmarks)
@@ -16466,11 +16466,12 @@ class MainFrame(
 
     def _remember_active_caret(self) -> None:
         """Persist the active document's current caret offset as its last position."""
-        key = DocumentMemory.key_for(getattr(self.document, "path", None))
-        if not key or self.editor is None:
+        key = DocumentMemory.key_for(getattr(getattr(self, "document", None), "path", None))
+        editor = getattr(self, "editor", None)
+        if not key or editor is None:
             return
         try:
-            self._doc_memory.set_last_position(key, self.editor.GetInsertionPoint())
+            self._doc_memory.set_last_position(key, editor.GetInsertionPoint())
         except Exception:  # noqa: BLE001
             pass
 

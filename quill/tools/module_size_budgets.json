@@ -320,7 +320,7 @@
     "quill/ui/crash_report_dialog.py": 337,
     "quill/ui/github_dialogs.py": 661,
     "quill/ui/ai_library_dialog.py": 899,
-    "quill/ui/main_frame.py": 26542,
+    "quill/ui/main_frame.py": 26543,
     "quill/ui/main_frame_abbreviations.py": 205,
     "quill/ui/main_frame_braille.py": 775,
     "quill/ui/main_frame_copy_tray.py": 344,
