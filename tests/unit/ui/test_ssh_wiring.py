@@ -26,7 +26,7 @@ def test_save_uploads_back_over_ssh() -> None:
     # Read a generous window so we can match across the function body even
     # when the file grows; the contract is that save_file triggers the
     # SSH upload helper from SshEditingMixin.
-    body = source[start : start + 1500]
+    body = source[start : start + 1800]
     assert "self.maybe_upload_remote_on_save()" in body
 
 
