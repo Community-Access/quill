@@ -312,22 +312,42 @@ Google passwords (PRD 5 non-goal) and never log tokens (respect
 <li>Gate the whole subsystem under Safe Mode in addition to the feature
 flag, since it is a network + credential feature.</li>
 </ul>
-<h2 id="suggested-first-slice-when-approved">7. Suggested first slice
-(when approved)</h2>
+<h2 id="first-slice">7. First slice</h2>
+<p>Status as of 2026-06-30 (branch
+<code>feature/publishing-google-wp-polish</code>):</p>
 <ol type="1">
-<li><code>future.google_docs</code> flag (locked off) +
-command-to-feature mapping.</li>
-<li><code>quill/core/google_auth.py</code>: OAuth connect/disconnect
-with read scopes, token in credential store, egress entry. No document
-operations yet.</li>
-<li><code>quill/core/google_docs.py</code>: open-by-id read-only -&gt;
-semantic model -&gt; text-first projection; wx-free and
-strict-typed.</li>
-<li>UI: <code>google.connect_account</code>,
+<li>Done: <code>future.google_docs</code> flag added
+(<code>locked_off=True</code>,
+<code>quill/core/feature_catalog.py</code>). It stays locked until the
+OAuth flow and an approved egress entry exist, so nothing is reachable
+yet.</li>
+<li>Done: <code>quill/core/google_docs.py</code> (wx-free, strict-typed,
+fully unit-tested): <code>extract_google_doc_id</code> (URL/id parsing,
+PRD 9.4) and <code>project_google_document</code> (read-only Docs
+<code>documents.get</code> payload -&gt; text-first projection:
+headings, paragraphs, bullets, with tables and inline objects preserved
+as labeled markers). No network, no write path.</li>
+<li>Deferred (needs a Google OAuth client id + an approved
+network-egress entry, cannot be exercised or tested unattended):
+<code>quill/core/google_auth.py</code> (OAuth connect/disconnect with
+read scopes, token in the OS credential store, GATE-9 egress entry,
+persistence-audit registration mirroring publishing secrets), plus the
+network <code>documents.get</code> call that feeds
+<code>project_google_document</code>.</li>
+<li>Deferred: UI - <code>google.connect_account</code>,
 <code>google.open_from_link</code>, and the read-only open into a tab;
-menu built only when the flag is enabled.</li>
+command-to-feature mappings; menu built only when the flag is enabled
+(mirroring the WordPress read split).</li>
 </ol>
 <p>Send (new/save-copy/sync) remains a separate, later, explicitly
 approved phase.</p>
+<h3 id="what-is-needed-to-continue">What is needed to continue</h3>
+<ul>
+<li>A Google Cloud OAuth client (desktop app) id, and confirmation of
+the minimum read scopes (for example <code>documents.readonly</code>
+plus <code>drive.readonly</code> or <code>drive.file</code>).</li>
+<li>Approval to add the Google network call sites to
+<code>quill/tools/network_egress_audit.py</code>.</li>
+</ul>
 </body>
 </html>

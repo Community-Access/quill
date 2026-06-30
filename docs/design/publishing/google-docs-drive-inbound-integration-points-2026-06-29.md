@@ -109,14 +109,33 @@ belong to the later sync (send) phase and are not built here.
 - Gate the whole subsystem under Safe Mode in addition to the feature flag, since
   it is a network + credential feature.
 
-## 7. Suggested first slice (when approved)
+## 7. First slice
 
-1. `future.google_docs` flag (locked off) + command-to-feature mapping.
-2. `quill/core/google_auth.py`: OAuth connect/disconnect with read scopes, token
-   in credential store, egress entry. No document operations yet.
-3. `quill/core/google_docs.py`: open-by-id read-only -> semantic model ->
-   text-first projection; wx-free and strict-typed.
-4. UI: `google.connect_account`, `google.open_from_link`, and the read-only open
-   into a tab; menu built only when the flag is enabled.
+Status as of 2026-06-30 (branch `feature/publishing-google-wp-polish`):
+
+1. Done: `future.google_docs` flag added (`locked_off=True`,
+   `quill/core/feature_catalog.py`). It stays locked until the OAuth flow and an
+   approved egress entry exist, so nothing is reachable yet.
+2. Done: `quill/core/google_docs.py` (wx-free, strict-typed, fully unit-tested):
+   `extract_google_doc_id` (URL/id parsing, PRD 9.4) and
+   `project_google_document` (read-only Docs `documents.get` payload ->
+   text-first projection: headings, paragraphs, bullets, with tables and inline
+   objects preserved as labeled markers). No network, no write path.
+3. Deferred (needs a Google OAuth client id + an approved network-egress entry,
+   cannot be exercised or tested unattended): `quill/core/google_auth.py` (OAuth
+   connect/disconnect with read scopes, token in the OS credential store, GATE-9
+   egress entry, persistence-audit registration mirroring publishing secrets),
+   plus the network `documents.get` call that feeds `project_google_document`.
+4. Deferred: UI - `google.connect_account`, `google.open_from_link`, and the
+   read-only open into a tab; command-to-feature mappings; menu built only when
+   the flag is enabled (mirroring the WordPress read split).
 
 Send (new/save-copy/sync) remains a separate, later, explicitly approved phase.
+
+### What is needed to continue
+
+- A Google Cloud OAuth client (desktop app) id, and confirmation of the minimum
+  read scopes (for example `documents.readonly` plus `drive.readonly` or
+  `drive.file`).
+- Approval to add the Google network call sites to
+  `quill/tools/network_egress_audit.py`.
