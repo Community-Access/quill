@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>quill-story-studio-manuscript-organization-plan</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1
+id="quill-story-studio--organizing-fiction-novels-and-long-form-projects">QUILL
+Story Studio — Organizing Fiction, Novels, and Long-Form Projects</h1>
+<h2
+id="proposed-feature-plan-accessibility-strategy-and-delivery-phases">Proposed
+Feature Plan, Accessibility Strategy, and Delivery Phases</h2>
+<p><strong>Project:</strong> QUILL <strong>Feature area:</strong>
+Long-form / manuscript organization (novels, fiction, non-fiction books,
+research, worldbuilding) <strong>Primary target:</strong> Windows 11
+with wxPython; macOS where QUILL is supported <strong>Primary
+accessibility goal:</strong> A genuinely usable way for a blind keyboard
+user to organize a book-length project — its chapters, characters,
+plots, places, and brainstorming — without a visual corkboard or
+mouse-driven board <strong>Status:</strong> Proposed plan
+(community-requested; not yet scheduled)</p>
+<hr />
+<h2 id="1-where-this-came-from">1. Where this came from</h2>
+<p>A beta tester asked a simple, important question: <em>can QUILL be
+used to organize fiction and novels — character sheets, plots,
+brainstorming — and not just edit one file at a time?</em></p>
+<p>Today the honest answer is "partly." QUILL has strong
+<strong>pieces</strong> for this but no <strong>structure</strong> that
+ties them into a single project. This document proposes that structure:
+a <strong>Story Studio</strong> — a screen-reader-first manuscript
+organizer built entirely on plain-text files and QUILL's existing
+primitives, not a re-implementation of a visual tool like Scrivener.</p>
+<p>The guiding principle matches the rest of QUILL: <strong>optional,
+additive, plain-text-first, and quiet.</strong> A writer who never opens
+Story Studio sees no change. A writer who does gets a binder that a
+screen reader can navigate as naturally as a heading tree.</p>
+<hr />
+<h2 id="2-what-quill-already-gives-a-long-form-writer">2. What QUILL
+already gives a long-form writer</h2>
+<p>Before proposing anything new, the plan must reuse what exists. These
+ship today:</p>
+<ul>
+<li><strong>Headings as structure.</strong> A manuscript file already
+uses <code>#</code> / <code>##</code> for chapters and scenes, and
+QUILL's structural navigation (Quick Nav, heading jumps) moves through
+them. This is the spine of a manuscript.</li>
+<li><strong>Inline notes</strong> (Alt+Shift+I) — sticky,
+content-anchored annotations that follow the text as it is edited and
+return on reopen. Ideal for "check this character's eye color" or a
+margin note on a plot beat.</li>
+<li><strong>Persistent per-document bookmarks</strong> and
+<strong>last-cursor-position memory</strong> — named landmarks that
+survive restarts, per file.</li>
+<li><strong>Multiple open documents / tabs</strong> — one project can
+already be several files open at once (manuscript, outline, a character
+file).</li>
+<li><strong>The AI Library (Prompts, Skills, Agents)</strong> and
+<strong>Ask Quill</strong> — for brainstorming, name generation,
+continuity questions, and "summarize what I know about this character so
+far," all reviewable and optional.</li>
+<li><strong>Atomic JSON sidecars</strong>
+(<code>core.storage.write_json_atomic</code>) — the established, safe
+persistence pattern that Story Studio metadata should follow.</li>
+</ul>
+<p>The gap is not capability. The gap is a <strong>project
+model</strong> that binds these into one navigable whole and adds
+first-class <strong>non-manuscript elements</strong> (characters,
+places, plot threads, brainstorming) with light structured fields.</p>
+<hr />
+<h2 id="3-goals-and-non-goals">3. Goals and non-goals</h2>
+<h3 id="goals">Goals</h3>
+<ul>
+<li>Let a writer group the files of one book into a single
+<strong>project</strong> with a navigable <strong>binder</strong>.</li>
+<li>Provide first-class <strong>element types</strong> beyond prose:
+Character, Location, Plot/Thread, Research note, Brainstorm.</li>
+<li>Give each element a small set of optional <strong>structured
+fields</strong> (e.g. a character's goal, motivation, arc) without
+forcing a rigid template.</li>
+<li>Keep every word the writer types in <strong>plain, portable
+text</strong> — no proprietary database that locks the manuscript
+in.</li>
+<li>Make the entire experience <strong>keyboard- and
+screen-reader-first</strong>: a tree, lists, and forms, never a spatial
+corkboard as the only way in.</li>
+<li>Reuse inline notes, bookmarks, and the AI Library rather than
+re-inventing them.</li>
+</ul>
+<h3 id="non-goals">Non-goals</h3>
+<ul>
+<li>Not a pixel-faithful Scrivener clone; no visual corkboard/freeform
+board as a required surface.</li>
+<li>No DRM, no closed project format. The project is a folder of
+readable files plus a small JSON sidecar.</li>
+<li>No forced templates. Structure is offered, never required; a project
+can be pure prose files with a thin index.</li>
+<li>No new always-on background processing. Story Studio is inert until
+opened.</li>
+</ul>
+<hr />
+<h2 id="4-proposed-design">4. Proposed design</h2>
+<h3 id="41-the-project-is-a-folder">4.1 The project is a folder</h3>
+<p>A <strong>Story project</strong> is an ordinary folder
+containing:</p>
+<ul>
+<li>The writer's <strong>manuscript and element files</strong> as plain
+<code>.md</code>/<code>.txt</code> (e.g. <code>manuscript.md</code>,
+<code>characters/elena.md</code>,
+<code>plots/the-betrayal.md</code>).</li>
+<li>One <strong><code>project.quillstory.json</code></strong> sidecar
+that records the binder order, element types, and structured fields. It
+references files by <strong>relative path</strong> and never duplicates
+their prose — the file on disk stays the single source of truth.</li>
+</ul>
+<p>Because the project is just files, it works with
+Dropbox/OneDrive/git, opens in any editor, and survives QUILL entirely.
+The sidecar is advisory: delete it and you still have all your
+writing.</p>
+<h3 id="42-the-binder-primary-surface">4.2 The Binder (primary
+surface)</h3>
+<p>A <strong>tree view</strong> (native <code>wx.TreeCtrl</code>, fully
+keyboard navigable, each node an announced item) is the home of a
+project:</p>
+<pre><code>The Novel (project)
++-- Manuscript
+|   +-- Part One
+|   |   +-- Chapter 1  (-&gt; manuscript.md#chapter-1)
+|   |   +-- Chapter 2
+|   +-- Part Two
++-- Characters
+|   +-- Elena  (protagonist)
+|   +-- Marcus (antagonist)
++-- Places
+|   +-- The Old Harbor
++-- Plot threads
+|   +-- The Betrayal  (status: unresolved)
++-- Brainstorm
+    +-- Possible endings</code></pre>
+<ul>
+<li>Manuscript chapters/scenes are <strong>derived from the
+headings</strong> of the manuscript file(s), so the binder and the prose
+never drift. Selecting a chapter opens the file at that heading (reusing
+the existing anchor logic in
+<code>browser_preview.preview_anchor_for_text</code> /
+<code>navigation</code>).</li>
+<li>Character/Place/Plot/Brainstorm nodes open their backing file in the
+editor.</li>
+<li>The tree is the screen-reader entry point: arrow keys to move, Enter
+to open, a context menu (and command-palette commands) for
+add/rename/reorder/delete. <strong>No spatial board is required to use
+any of it.</strong></li>
+</ul>
+<h3 id="43-element-types-and-light-structured-fields">4.3 Element types
+and light structured fields</h3>
+<p>Each non-manuscript element has an <strong>optional</strong>
+front-matter block at the top of its plain-text file (YAML-style,
+human-readable), surfaced in an accessible <strong>details
+form</strong>:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="an">type:</span><span class="co"> character</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="an">role:</span><span class="co"> protagonist</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="an">goal:</span><span class="co"> Reclaim her family&#39;s name</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="an">motivation:</span><span class="co"> Guilt over her father&#39;s exile</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="an">arc:</span><span class="co"> From cautious to defiant</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="an">tags:</span><span class="co"> [pov, act-one]</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>Elena is ...</span></code></pre></div>
+<ul>
+<li>The form is a normal stack of labelled fields (each control with an
+accessible name, errors associated with their field — per QUILL's
+accessibility rules). Edit in the form <strong>or</strong> in the file;
+they are the same bytes.</li>
+<li>Field sets per type are a small built-in default the writer can
+extend. Unknown fields are preserved, never dropped.</li>
+<li>A <strong>"What do I know about X?"</strong> action gathers an
+element's fields plus inline notes and (optionally) asks the AI for a
+continuity summary — reviewable, never automatic.</li>
+</ul>
+<h3 id="44-integration-not-reinvention">4.4 Integration, not
+reinvention</h3>
+<ul>
+<li><strong>Brainstorming</strong> = a Brainstorm element file plus the
+existing AI Library. A built-in "Brainstorm" Skill can seed ideas into
+that file as an accept/reject preview.</li>
+<li><strong>Annotations</strong> = existing inline notes, now also
+listed per element in the details form.</li>
+<li><strong>Landmarks</strong> = existing bookmarks.</li>
+<li><strong>Compile/Export</strong> = walk the binder order and
+concatenate manuscript files through the existing export path
+(<code>quill/io/export.py</code>) to produce a single
+<code>.md</code>/<code>.docx</code>/<code>.html</code>/DAISY output. No
+new export engine.</li>
+</ul>
+<h3 id="45-persistence-and-safety">4.5 Persistence and safety</h3>
+<ul>
+<li><code>project.quillstory.json</code> is written with
+<code>write_json_atomic</code> (temp + <code>os.replace</code>),
+schema-validated, and tolerant of a missing/corrupt sidecar (fall back
+to "folder of files," never lose prose).</li>
+<li>Relative paths only; the project is portable and never stores
+machine-specific absolute paths.</li>
+<li>Pure model code (a new <code>quill/core/story/</code> package,
+wx-free, strict-typed) with the wx binder/forms in
+<code>quill/ui/</code>. Respects the layered import boundaries in
+CLAUDE.md.</li>
+</ul>
+<hr />
+<h2 id="5-accessibility-strategy">5. Accessibility strategy</h2>
+<ul>
+<li><strong>Tree + lists + forms</strong>, never a required visual
+board. Every node and field has an accessible name; the tree exposes
+role/level/position.</li>
+<li><strong>Heading-derived manuscript structure</strong> means the
+writer navigates the book the same way they already navigate a document
+— no new mental model.</li>
+<li><strong>Quiet by default</strong> (consistent with the
+dialog-announcement and preview-refresh work): the binder does not
+chatter on every selection beyond the node label; bulk actions summarize
+once.</li>
+<li><strong>Keyboard-complete:</strong> add/move/rename/delete/open all
+reachable from the keyboard and the command palette, with discoverable
+shortcuts.</li>
+<li><strong>No motion, no surprise focus jumps;</strong> opening an
+element moves focus deliberately to the editor or the form, announced
+once.</li>
+</ul>
+<hr />
+<h2 id="6-phased-delivery">6. Phased delivery</h2>
+<ol type="1">
+<li><strong>Phase 1 — Project model + Binder (read-mostly).</strong>
+<code>quill/core/story/</code> model,
+<code>project.quillstory.json</code>, a TreeCtrl binder that groups
+existing files and derives manuscript structure from headings.
+Open-on-select. No new element types yet.</li>
+<li><strong>Phase 2 — Element types + details form.</strong>
+Character/Location/Plot/Brainstorm with optional front-matter fields and
+an accessible form. Add/rename/reorder/delete from the binder.</li>
+<li><strong>Phase 3 — Compile/Export across the binder</strong> using
+the existing export pipeline (single-file
+<code>.md</code>/<code>.docx</code>/<code>.html</code>/DAISY).</li>
+<li><strong>Phase 4 — AI integrations.</strong> Built-in Brainstorm
+Skill and "What do I know about X?" continuity summaries, all
+reviewable, all opt-in.</li>
+<li><strong>Phase 5 (optional) — Saved views / filters</strong> (e.g.
+"all POV-Elena scenes," "unresolved threads") built on tags and
+fields.</li>
+</ol>
+<p>Each phase is independently shippable and additive.</p>
+<hr />
+<h2 id="7-risks-and-open-questions">7. Risks and open questions</h2>
+<ul>
+<li><strong>Scope creep toward a full IDE-for-novels.</strong>
+Mitigation: every phase must justify itself against "could the writer
+already do this with files + headings + notes?" If yes, only build the
+binding, not a new subsystem.</li>
+<li><strong>Heading-derived structure vs. manual reordering.</strong> If
+chapters live as headings in one file, "reorder chapters" means moving
+text. Decide early whether Phase 1 reorders within a file, across files,
+or only reflects file/heading order. Recommendation: reflect order in
+Phase 1; offer move operations in Phase 2.</li>
+<li><strong>Front-matter collision</strong> with other tools that use
+YAML front matter (e.g. static-site generators). Mitigation: namespace
+QUILL-specific keys and preserve unknown keys verbatim.</li>
+<li><strong>Where the binder lives in the UI</strong> (a side panel, a
+dedicated view, or a dialog). Needs a small accessibility spike before
+Phase 1.</li>
+</ul>
+<hr />
+<h2 id="8-summary">8. Summary</h2>
+<p>Story Studio turns QUILL's existing strengths — heading structure,
+inline notes, bookmarks, multiple documents, and the AI Library — into a
+coherent, screen-reader-first way to organize a book. It adds a project
+model and a navigable binder with optional structured elements, while
+keeping every word in plain, portable text. It is optional, additive,
+and quiet, in keeping with the rest of QUILL. The recommended first step
+is a thin Phase 1 (project model + binder over existing files) that
+proves the navigation model before any new element types are built.</p>
+</body>
+</html>
