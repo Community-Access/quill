@@ -9,7 +9,7 @@ import time
 import unicodedata
 import webbrowser
 from collections.abc import Callable, Mapping
-from dataclasses import asdict, dataclass, replace
+from dataclasses import asdict, dataclass, field, replace
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar
@@ -37,6 +37,7 @@ from quill.core.autoformat import EM_DASH, is_dash_merge, smart_quote_for
 from quill.core.autosave import autosave_document
 from quill.core.backups import backup_document, list_backups
 from quill.core.bookmarks import (  # N-13: keep the module as the supported home for these helpers
+    DocumentMemory,
     bookmark_names,
     bookmark_position,
     set_bookmark,
@@ -637,6 +638,10 @@ class _DocumentTab:
     preview: object = None
     source_label: str = ""
     read_only_remote: bool = False
+    # Per-document named bookmarks (loaded from / saved to DocumentMemory for saved
+    # files; in-memory only for untitled documents). The active tab's dict is
+    # aliased to MainFrame._bookmarks while it is the current tab.
+    bookmarks: dict[str, int] = field(default_factory=dict)
     _indent_tone_last_level: int = -1
     _language_profile: object = None
     _language_profile_pinned: bool = False
@@ -1152,6 +1157,12 @@ class MainFrame(
         self._epub_book: EpubBook | None = None
         self._browser_preview_session: _BrowserPreviewSession | None = None
         self._bookmarks: dict[str, int] = {}
+        # Persistent, per-document bookmarks + last cursor position (#300 follow-up).
+        # Forgiving load so a missing/corrupt store never blocks startup.
+        try:
+            self._doc_memory = DocumentMemory.load()
+        except Exception:  # noqa: BLE001 - persistence is best-effort
+            self._doc_memory = DocumentMemory()
         self._tray_icon: object | None = None
         self._is_exiting = False
         # #210: a committed close arms a daemon watchdog that force-exits if the
@@ -4269,6 +4280,8 @@ class MainFrame(
         self._bind_editor_events(editor)
         tab = _DocumentTab(panel=panel, editor=editor, document=document, splitter=splitter)
         tab.source_label = str(document.source_metadata.get("source_label", "")).strip()
+        # Load this document's saved bookmarks and restore its last cursor position.
+        self._restore_document_memory(tab)
         self._document_tabs.append(tab)
         index = self.notebook.GetPageCount()
         self.notebook.AddPage(panel, document.name, select=select)
@@ -4421,12 +4434,17 @@ class MainFrame(
     def _activate_tab(self, index: int) -> None:
         if index < 0 or index >= len(self._document_tabs):
             return
+        # Remember where the cursor was in the document we are leaving, so it is
+        # restored next time that file is opened (last-position memory).
+        self._remember_active_caret()
         self._stop_external_change_watcher()
         tab = self._document_tabs[index]
         self._active_tab_index = index
         self._browse_navigation_cache = None
         self.editor = tab.editor
         self.document = tab.document
+        # The active document's bookmark set is this tab's own dict (per-document).
+        self._bookmarks = tab.bookmarks
         tab._indent_tone_last_level = -1  # reset per-tab indent tone cache on switch
         if not getattr(tab, "_language_profile_pinned", False):
             tab._language_profile = get_profile_for_path(tab.document.path)
@@ -5896,6 +5914,9 @@ class MainFrame(
         import logging
 
         log = logging.getLogger(__name__)
+        # Remember the active document's cursor position before we exit, so it is
+        # restored next time that file is opened (last-position memory).
+        self._remember_active_caret()
         # Tray mode hides instead of closing -- but only for a plain close, and a
         # failure in the tray path must never trap the window open.
         if not self._is_exiting:
@@ -9460,6 +9481,10 @@ class MainFrame(
         if self.document.modified:
             backup_document(self.document)
         self._write_document_to_disk(self.document)
+        # Persist this document's bookmarks + cursor position under its path now that
+        # it is saved (also migrates an untitled document's in-memory bookmarks).
+        self._save_active_bookmarks()
+        self._remember_active_caret()
         # FEAT-19: prime the watcher so our own save is not reported as an external change.
         if self._external_change_watcher is not None and self.document.path is not None:
             self._external_change_watcher.prime(FileSnapshot.of(self.document.path))
@@ -9687,6 +9712,16 @@ class MainFrame(
         self._start_external_change_watcher()
         self._load_persistent_undo_state(target, self.document.text)
         self._record_recent(target)
+        # Persist this document's bookmarks + cursor position under the new path
+        # (keyed on target directly so it is correct regardless of when the
+        # document's own path attribute is updated).
+        _bm_key = DocumentMemory.key_for(target)
+        if _bm_key:
+            try:
+                self._doc_memory.set_bookmarks(_bm_key, self._bookmarks)
+                self._doc_memory.set_last_position(_bm_key, self.editor.GetInsertionPoint())
+            except Exception:  # noqa: BLE001 - persistence is best-effort
+                pass
         self._refresh_title()
         self._refresh_sessions_menu()
         self._set_status(f"Saved as {target.name} ({format_label_for_path(target)})")
@@ -16347,6 +16382,7 @@ class MainFrame(
             return
         position = self.editor.GetInsertionPoint()
         self._bookmarks = set_bookmark(self._bookmarks, name, position)
+        self._save_active_bookmarks()
         self._set_status(f'Set bookmark "{name}"')
 
     def go_to_bookmark(self) -> None:
@@ -16412,6 +16448,54 @@ class MainFrame(
         self._move_point(target)
         self.editor.SetFocus()
         self._set_status(f'Jumped to bookmark "{selected}"')
+
+    # -- persistent per-document bookmarks + last position ------------------ #
+    def _save_active_bookmarks(self) -> None:
+        """Write the active document's bookmarks back to its tab and (if the
+        document is saved to disk) persist them per-document so they survive a
+        restart. Untitled documents stay in memory for the session only."""
+        tab = self._active_tab()
+        if tab is not None:
+            tab.bookmarks = dict(self._bookmarks)
+        key = DocumentMemory.key_for(getattr(self.document, "path", None))
+        if key:
+            try:
+                self._doc_memory.set_bookmarks(key, self._bookmarks)
+            except Exception:  # noqa: BLE001 - persistence is best-effort
+                pass
+
+    def _remember_active_caret(self) -> None:
+        """Persist the active document's current caret offset as its last position."""
+        key = DocumentMemory.key_for(getattr(self.document, "path", None))
+        if not key or self.editor is None:
+            return
+        try:
+            self._doc_memory.set_last_position(key, self.editor.GetInsertionPoint())
+        except Exception:  # noqa: BLE001
+            pass
+
+    def _restore_document_memory(self, tab: object) -> None:
+        """On open, load a saved document's bookmarks into its tab and move the
+        caret to where it last was. No-op for untitled documents."""
+        key = DocumentMemory.key_for(getattr(tab.document, "path", None))
+        if not key:
+            return
+        try:
+            tab.bookmarks = self._doc_memory.bookmarks_for(key)
+            last = self._doc_memory.last_position(key)
+        except Exception:  # noqa: BLE001
+            return
+        if last is None:
+            return
+        editor = tab.editor
+        try:
+            clamped = max(0, min(int(last), editor.GetLastPosition()))
+            editor.SetInsertionPoint(clamped)
+            show = getattr(editor, "ShowPosition", None)
+            if callable(show):
+                show(clamped)
+        except Exception:  # noqa: BLE001
+            pass
 
     def show_word_count(self) -> None:
         wx = self._wx

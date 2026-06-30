@@ -508,6 +508,13 @@ Bookmark and position commands:
 - **First Non-Blank**
 - **Last Non-Blank**
 
+Bookmarks are **per document and persist between sessions**: each named jump point
+is remembered for the specific file it was set in, so when you reopen that document
+its bookmarks are still there. QUILL also remembers your **last cursor position** in
+each saved document and returns you to it when you reopen the file. (Untitled, never-
+saved documents keep their bookmarks for the current session only, since there is no
+file to attach them to yet — saving the document makes them persistent.)
+
 If your work involves transcripts, legal text, long Markdown notes, HTML source, or extracted PDFs, spend time here. This is the menu that turns Quill from a text box into a navigable workspace. (Find Next, Find Previous, and Find All Matches now live in **Edit**, beside Find and Replace.)
 
 ### Search
