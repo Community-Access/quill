@@ -3612,9 +3612,7 @@ class MenuBuilderMixin:
             lambda _e: self.choose_spell_language(),
             id=self._id_spell_language,
         )
-        self.frame.Bind(
-            wx.EVT_MENU, lambda _e: self.add_inline_note(), id=self._id_add_inline_note
-        )
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.add_inline_note(), id=self._id_add_inline_note)
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.next_inline_note(), id=self._id_next_inline_note
         )

@@ -116,6 +116,7 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/ai/style.py::save_style": "content",
     "core/bookmarks.py::save": "content",
     "core/copy_tray.py::_save": "content",
+    "core/inline_notes.py::save": "content",
     "core/macros.py::save": "content",
     "core/notebook_store.py::save_notebook": "content",
     "core/prompt_library.py::_save": "content",
