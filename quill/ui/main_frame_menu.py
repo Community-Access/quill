@@ -199,16 +199,11 @@ class MenuBuilderMixin:
         self._id_publishing_update_remote_item = wx.NewIdRef()
         self._id_publishing_publish_remote_item = wx.NewIdRef()
         self._id_publishing_schedule_publish = wx.NewIdRef()
-        # The Publish submenu is split into two independently gated halves so
-        # the read-only inbound tools can ship without lighting up any
-        # content-send path:
-        #   - future.publishing_read (not locked): add account, verify, browse,
-        #     and open into the editor -- all read-only.
-        #   - future.publishing (locked off, quill/core/feature_catalog.py):
-        #     create/update/publish/schedule (send), which stays dark until it
-        #     is deliberately approved.
-        # IDs above stay unconditional (matching the core.glow precedent) so
-        # binding them below is harmless even when the menu is never built.
+        # The Publish submenu is split into two independently gated halves:
+        # future.publishing_read (not locked) for the read-only inbound tools,
+        # and future.publishing (locked off) for the create/update/publish/
+        # schedule send commands. IDs above stay unconditional (core.glow
+        # precedent) so binding them below is harmless when the menu is unbuilt.
         publishing_read_enabled = self._feature_enabled("future.publishing_read")
         publishing_send_enabled = self._feature_enabled("future.publishing")
         if publishing_read_enabled or publishing_send_enabled:
