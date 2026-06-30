@@ -320,6 +320,10 @@ _SPAN_CODE_RE = re.compile(r"\[([^\]]+)\]\{([^}]*)\}")
 _FENCE_OPEN_CODE_RE = re.compile(r"^:::+\s*\{([^}]*)\}\s*$")
 _FENCE_CLOSE_CODE_RE = re.compile(r"^:::+\s*$")
 _PAGEBREAK_CODE_RE = re.compile(r"^:::+\s*pagebreak\s*$", re.IGNORECASE)
+# Markdown thematic break: a line of 3+ of the same -, *, or _ (spaces allowed,
+# up to 3 leading spaces, CommonMark style). Renders to <hr>. A separator row
+# inside a GFM table contains "|" and is handled by the table path instead.
+_THEMATIC_BREAK_RE = re.compile(r"^ {0,3}([-*_])(?:[ \t]*\1){2,}[ \t]*$")
 _ATTR_PAIR_CODE_RE = re.compile(r'([A-Za-z][\w-]*)\s*=\s*"([^"]*)"|([A-Za-z][\w-]*)')
 _ALIGN_VALUES = {"left", "right", "center", "justify"}
 _LINE_HEIGHTS = {"1": "1", "1.5": "1.5", "2": "2"}
@@ -466,6 +470,12 @@ def _render_markdown(text: str) -> str:
             flush_paragraph()
             flush_list()
             blocks.append("</div>")
+            index += 1
+            continue
+        if _THEMATIC_BREAK_RE.match(stripped):
+            flush_paragraph()
+            flush_list()
+            blocks.append("<hr>")
             index += 1
             continue
         heading = re.match(r"^(#{1,6})\s+(.*)$", stripped)

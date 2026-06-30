@@ -42,3 +42,23 @@ def test_table_does_not_break_headings_and_lists() -> None:
     assert "<h1" in out
     assert "<li>one</li>" in out
     assert "<table>" in out
+
+
+def test_thematic_break_dashes_render_as_hr() -> None:
+    out = render_preview_body("above\n\n---\n\nbelow", "markdown")
+    assert "<hr>" in out
+    # The dashes must not survive as literal paragraph text.
+    assert "<p>---</p>" not in out
+
+
+def test_thematic_break_four_dashes_and_other_markers() -> None:
+    for marker in ("----", "***", "___", "- - -", "* * *"):
+        out = render_preview_body(f"x\n\n{marker}\n\ny", "markdown")
+        assert "<hr>" in out, marker
+
+
+def test_table_separator_row_is_not_a_thematic_break() -> None:
+    md = "| A | B |\n| --- | --- |\n| 1 | 2 |"
+    out = render_preview_body(md, "markdown")
+    assert "<table>" in out
+    assert "<hr>" not in out
