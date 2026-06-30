@@ -1,314 +1,289 @@
-# QUILL — Meet You Where You Are
+# QUILL 0.8.1 Beta 1 — Meet You Where You Are
 
-### The screen-reader-first writing studio, built by the people who depend on it. This is the public beta, build 0.8.1 Beta 1.
+### The screen-reader-first writing studio, built by the people who depend on it.
 
 *From Community Access. Free. Optional by design. Private by default. Yours to make quiet.*
 
-This release document is the narrative companion to the **"0.8.1 Beta 1"**
-section of `CHANGELOG.md` (the canonical, append-as-you-go log). It tracks what
-changes in 0.8.1 Beta 1 on top of the 0.8.0 line.
+This is the narrative companion to the **"0.8.1 Beta 1"** section of `CHANGELOG.md`
+(the canonical, append-as-you-go log). It tells the story of what changes in
+0.8.1 Beta 1 on top of the 0.8.0 line — what each feature is, and, just as
+important, **why it matters** for the way you actually work.
 
 ---
 
-## What 0.8.1 Beta 1 adds over 0.8.0
+## The story of this release
 
-This release carries forward everything through 0.8.0 (private on-device speech,
-document-to-audiobook production, braille proofreading, talking-book export,
-guided proofing, multilingual narration, Mastodon posting, and the upgrade
-hardening that makes betas safe to update). Its headline is a complete,
-screen-reader-first **AI suite** — optional, private by default, and built around
-the provider you choose — that brings a context-aware assistant, audio
-transcription that becomes finished documents, and reviewable AI writing help
-into QUILL. The list below is what is new, fixed, or improved since Beta 1.
+0.8.0 made QUILL a serious writing and document studio. **0.8.1 makes it yours.**
 
-### Features
+Three threads run through this beta. First, a complete, **optional** AI suite that
+stays silent until you invite it in. Second, a wave of **power-user editing tools**
+in the tradition of the editors people still miss — Reveal Codes, classic-editor
+commands, and bookmarks that finally remember where you were. Third, a quieter,
+**lighter, more honest install**: a smaller download, on-demand components you can
+fetch from one place, and clearer, calmer announcements.
 
-**Your writing companion, now built in — optional, and private by default.**
-This release's headline addition is a complete, screen-reader-first AI suite under one
-new top-level **AI** menu. It is **off until you turn it on**, it works with the
-provider *you* choose — a private **on-device** model (Ollama) or an account with
-**OpenAI, Anthropic (Claude), Google Gemini, or OpenRouter** — and nothing leaves
-your machine without your consent. Set it up once and every AI feature below
-shares that one connection.
+Everything new is off, optional, or additive. Nothing here changes how your fingers
+already work — it just gives them more to reach for when you want it.
 
-**Set up AI in seconds, the gentle way.** A short **AI Setup Wizard** (the first
-item in the AI menu, "Set Up AI… — start here") walks you through a single choice
-— on-device, an AI account, or not now — with a one-step connect and a Test
-Connection check. Click any AI action before you have set things up and QUILL
-offers the wizard right there instead of failing. Newcomers can stay in a simpler
-**Basic** mode with a smaller AI menu; "Show advanced AI features" reveals the
-full set whenever you want it.
+---
 
-**Ask Quill — one conversation that knows your document.** A single, context-aware
-chat (**Ask Quill**) replaces the old scattered AI dialogs. Ask about your text,
-have it draft or rewrite, and apply suggestions through a reviewable change
-preview.
+## The AI suite — powerful, and entirely up to you
 
-**Turn recordings into finished documents — the Listening Companion.** Transcribe
-an audio or video file (optionally **translating it to English** or **identifying
-the speakers**), then let QUILL turn the transcript into something useful:
-**Meeting Minutes, Action Items, an Executive Summary, Interview Notes, Study
-Notes, Q&A, a Follow-Up Email, Key Quotes, a Decisions Log, or a clean draft** —
-picked from one context-aware list. You can run those same **Transcript Actions**
-on any open document, build your own with a no-syntax **Action Builder** (a name,
-plain-language instructions, and an optional reference document), and even have a
-watch-folder transcribe new recordings and produce the document automatically.
+### It is off until you turn it on
 
-**One home for Prompts, Skills, and Agents — the AI Library.** Your reusable AI
-know-how lives in a single tabbed manager. Save a **Prompt**, promote it into a
-multi-step **Skill**, and promote that into a first-class **Agent** — a real
-continuum, all reviewable and editable, all running through the connection you set
-up once.
+The headline addition is a complete, screen-reader-first AI suite under one new
+top-level **AI** menu. It works with the provider *you* choose — a private
+**on-device** model (Ollama) or an account with **OpenAI, Anthropic (Claude),
+Google Gemini, or OpenRouter** — and nothing leaves your machine without your
+consent.
+**Why it matters:** AI in QUILL is a tool you pick up, not a thing that happens to
+you. Set it up once and every feature shares that one connection; never set it up
+and QUILL is exactly the editor it always was.
 
-**Everyday writing help, always reviewable.** Rewrite, summarise, expand,
-continue, fix grammar, or generate a table of contents from **Transform
-Selection**; proofread with **AI spell check** and a **grammar-and-style check**;
-**translate** a selection or the whole document; find richer synonyms with the
-**AI Thesaurus**; and put questions to your document with **Document Q&A**. Every
-change QUILL proposes is shown as an accessible accept/reject preview and applied
-as a single, one-step **undo** — nothing is ever silently rewritten.
+### Set up in seconds — the AI Setup Wizard
 
-**Read aloud and export audio in natural AI voices.** Read the selection or the
-whole document aloud, stop on a key, or **export the document as an audio file**
-in your chosen cloud voice — alongside the on-device speech QUILL already shipped.
+A short wizard ("Set Up AI… — start here") offers one choice — on-device, an
+account, or not now — with a one-step connect and a Test Connection check. Click any
+AI action before setup and QUILL offers the wizard right there instead of failing. A
+**Basic** mode keeps the menu small for newcomers.
+**Why it matters:** no dead ends, no jargon wall. You are never punished for trying a
+button before you have configured anything.
 
-**In your control, by design.** AI is optional and off by default,
-provider-neutral, and consent-gated: QUILL shows you what would be sent before it
-sends it, keeps a reviewable record of AI changes you can undo, and never widens
-its own permissions. Organisations can restrict which providers are allowed.
+### Ask Quill — one conversation that knows your document
 
-**Rich formatting that stays out of your way — hidden codes, spoken on demand.**
-This release also lets you apply real document formatting — **bold,
-italic, underline, strikethrough, superscript/subscript, font family and point
-size, text colour and highlight**, plus paragraph **alignment, line spacing,
-indent, and named styles** — without ever seeing markup clutter in your editor.
-The buffer stays clean, fast, plain text; the formatting rides along as invisible
-codes. Apply it from the new **Format** menu (Font / Size / Align / Colour /
-Highlight) or the accessible **Font...** dialog, and ask **"Describe formatting
-at cursor"** to *hear* exactly what is in effect ("Arial, 14 point, centred,
-bold"). An optional setting announces formatting changes as you move the caret.
-The plain-text editor, undo, search, and AI all keep working on the same clean
-text — nothing about your normal editing changes. RTF and Word documents
-round-trip through this clean buffer and materialise back to real formatting on
-export: **Word (.docx)** carries font, size, colour, highlight, and alignment via
-a native writer (graceful Pandoc fallback if the optional `python-docx` extra is
-absent), and **RTF** and **HTML** export carry the same. When a target format
-genuinely cannot hold something, QUILL tells you before you commit rather than
-dropping it silently.
+A single, context-aware chat replaces the old scattered AI dialogs. Ask about your
+text, have it draft or rewrite, and apply suggestions through a **reviewable change
+preview** applied as one undo step.
+**Why it matters:** nothing is ever silently rewritten. You see the change, you
+accept or reject it, and one Undo puts everything back.
 
-**Keep your formatting in a plain-text file — Illuminations.** A plain `.txt` has
-nowhere to store fonts, colours, or alignment, so saving formatted text as plain
-text normally loses them. This release introduces the **Illumination** — named for the
-decorative layer a scribe paints over a manuscript: the clean text is the
-manuscript, and a small companion file, `yourfile.txt.illumination`, holds the
-formatting beside it. The `.txt` stays genuinely plain everywhere else, and
-reopening it *in QUILL* restores every font, colour, and alignment exactly. A new
-**Settings → Editing → Saving formatted text as plain text** option lets you
-choose to be asked each time, to always write an Illumination, or to save plain
-and drop the formatting. If the `.txt` is edited elsewhere, QUILL notices the
-mismatch and opens it plain rather than mis-applying old formatting; for one
-self-contained file that keeps everything, save as Markdown, Word, or RTF.
+### The Listening Companion — recordings become finished documents
 
-**Re-read anything QUILL just said — the Spoken Echo.** Speech is fleeting: an
-indent depth, a formatting description, a save result, a "no matches" — once
-spoken, it is gone. The **Spoken Echo** captures the last twenty things QUILL
-announced and shows them, newest first, in a read-only dialog you can arrow
-through, re-read, and copy. Open it any time with **Alt+Shift+E** (Help → Show
-Spoken Echo), and it works after *every* announcement, including ones produced by
-ordinary editing keys like Tab. For the screen-reader gesture you already know,
-**double-pressing** an informational command — Describe Formatting, Document
-Summary, Context Help, or Announce Contrast — pops the Echo open instead of
-re-speaking; the dedicated key remains the universal path. Toggle the
-double-press behaviour with **Settings → Accessibility → Double-press to show the
-Spoken Echo**.
+Transcribe an audio or video file (optionally translating to English or identifying
+speakers), then turn the transcript into **Meeting Minutes, Action Items, an
+Executive Summary, Interview or Study Notes, Q&A, a Follow-Up Email, Key Quotes, a
+Decisions Log, or a clean draft** — from one context-aware list. Build your own with
+the no-syntax **Action Builder**, or let a watch-folder do it automatically.
+**Why it matters:** the gap between "I recorded it" and "I have the document" closes
+to a couple of keystrokes.
 
-**A Keyboard Manager that meets you halfway.** Customising shortcuts no longer
-means remembering exact syntax or whether a key is free. The **Keymap Editor**
-(Preferences → Keyboard) now searches two ways from a single box: type part of a
-command's name to filter, or type a *shortcut* — `ctrl+alt+m`, `Control + Shift +
-K`, or a QUILL chord like `quill, s` — and it tells you precisely which command
-owns that key, or that it is unassigned and available. Spelling is forgiving:
-`control`, `ctrl`, or `ctl`, modifiers in any order, any case, with macOS `Cmd`
-kept distinct from `Ctrl`. Don't want to type it? Choose **Record Keys** and
-press the combination. Assigning a key that is already taken names the command
-that holds it — by its friendly title — and offers to move the key there for you,
-rather than silently refusing. And **Run Diagnostics** audits your whole keymap
-for duplicate shortcuts, bindings to commands that no longer exist, unreadable
-bindings, and keys that are assigned but cannot actually fire, with a one-click
-**Heal** that clears the bad entries and re-applies your shortcuts so menus and
-keys line up again.
+### The AI Library — Prompts, Skills, and Agents in one place
 
-**Three classic-editor power tools for keyboard-first writers.** In the tradition
-of the WordPerfect Editor, three additions with no prior equivalent in QUILL — all
-unbound by default, so assign keys in the Keymap Editor. **Repeat Next Command**
-(Edit menu): set a count, then the next command runs that many times — down twenty
-lines, delete ten words, insert forty dashes, even replay a macro N times — in one
-gesture; the count applies once and clears. **Restore Deleted Text** (Edit menu):
-QUILL keeps the last three blocks removed by its structured delete commands (delete
-to line start or end, to document start or end, or delete paragraph) and re-inserts
-the one you pick from an accessible list at the cursor — unlike Undo, which reverts
-in place, this can drop recovered text anywhere. **Describe Character at Cursor**
-(Tools → Advanced): the screen-reader descendant of "Reveal Codes" — a read-only
-dialog in the same style as F1 help that names the exact character under the caret:
-its Unicode name, code point (hex and decimal), category, and plain-language notes
-for the invisibles that bite writers (no-break space, zero-width space, smart
-quote, tab, line ending).
+A tabbed manager with a real promotion path: a **Prompt** graduates into a multi-step
+**Skill**, and a Skill into a first-class **Agent** — all reviewable, all running
+through the connection you set up once.
+**Why it matters:** your reusable know-how grows with you instead of scattering
+across dialogs.
 
-**Braille repair tools for files that will not emboss — Braille → Repair.** A new
-submenu brings NLS-style proofreading to QUILL's braille mode. **Read Layout
-Metrics** speaks the diagnostic numbers in one pass: the cursor's cell and current
-line length, the longest line against your cells-per-line limit (with a page-width
-warning), the current and total braille pages, and the longest page against your
-lines-per-page limit (with a page-depth warning). **Go to Longest Line** and **Go
-to Longest Page** jump straight to the worst offender, and **Remove Trailing Spaces**
-(this line, or the whole file) clears the trailing spaces behind most page-width
-problems while preserving every line ending and form feed. The limits come from
-your existing **Cells per line** and **Lines per page** settings (Preferences →
-Braille), so the diagnostics match your page geometry.
+### Everyday writing help, always reviewable
 
-**Reveal Codes — see and hear every hidden formatting code (Alt+F3).** The beloved
-WordPerfect feature, reimagined screen-reader-first. Press **Alt+F3** (or **View →
-Reveal Codes**) to open a pane below the editor that shows your document as a stream
-of bracketed codes and text — `[Bold On]`, `[Font: Arial]`, `[Center]`, `[Tab]`,
-`[¶ Hard Return]`, `[No-Break Space]` — so nothing about your document stays hidden.
-**F6** moves between the editor, the Reveal Codes pane, and the status bar
-(**Shift+F6** goes back); the two carets stay in sync, so moving in the pane moves
-the editor caret and vice versa. Every code is an individually-announced, navigable
-item: arrow code-to-code, jump from a `[Bold On]` to its matching `[Bold Off]`, and
-hear its reach ("bold on, 12 characters"). Choose a **Structured** list (one labeled
-item per code — the most accessible) or a **Flowed** view (codes inline within the
-text, the classic visual/braille layout), with quiet / balanced / detailed
-verbosity. Hidden by default; your clean editing buffer is unchanged.
+Rewrite, summarise, expand, continue, fix grammar, or generate a table of contents;
+AI spell check and grammar-and-style check; translate a selection or document; the
+AI Thesaurus; and Document Q&A. Read the selection or document aloud, or export it as
+audio in a natural cloud voice, alongside QUILL's on-device speech.
+**Why it matters:** every proposed change is an accessible accept/reject preview and
+a single undo step — help you can trust, not magic you have to babysit.
 
-### Fixes
+---
 
-- **The portable build launches again, and opens documents.** Double-clicking
-  `quill.exe` in the portable bundle now starts QUILL (the bundle-root launcher
-  was orphaned from its runtime), and setting QUILL as the default app for Word
-  (or other) documents now opens the file when you press Enter on it in your file
-  manager — previously nothing happened.
-- **The AI Hub opens instead of crashing.** Activating the AI Hub on the 0.7.0
-  line failed with a "lazy string" / lazy-loading error; it now opens to the
-  provider/authorisation screen. (Community-Access/support #51, #53)
-- **Far less double-spoken chatter.** "No misspellings found" was one of many
-  actions QUILL spoke twice — once from the status bar (which already speaks) and
-  again from a separate announcement. Across updates, GitHub, SSH, dictation, the
-  copy tray, and profile switches, these now speak exactly once. (#728)
-- **Report a Bug is keyboard-navigable again, and submitting no longer seems to
-  lose your text** — you can Tab through the form, and QUILL reliably confirms the
-  report was copied to your clipboard on submit for NVDA users. (#729)
-- **No alarming "text-to-speech failed" when your screen reader is running.**
-  QUILL's own SAPI voice is only a fallback for people with no screen reader; if
-  it failed to start, QUILL spoke a scary "TTS engine failed" message (with a
-  wrong "press F8" instruction) even though the screen reader was handling speech.
-  That case is now kept only as a quiet, informational note (not an alarming
-  accessibility alert) and is never spoken — QUILL only speaks up when you
-  genuinely have no other voice, pointing you to the real **Tools → Retry TTS
-  Engine**. The SAPI voice also initialises correctly under a read-only install
-  now (its helper cache moved to a writable per-user folder), so self-voicing
-  works for those who rely on it. Relatedly, the screen-reader detection no longer
-  flashes a brief console window that a braille display could announce.
-- **A control-type choice for braille displays that start each line in cell
-  two.** On a rich-text editor control, some braille displays show every line's
-  first character in cell two — the same quirk long-time Word users will
-  recognise. **Preferences → Accessibility → Editor control type (braille)** can
-  switch the editor to **Plain edit, like Notepad** — a simple control that the
-  rich control was only ever needed in place of for *read-only* views (#616), so
-  an editable plain control still reads correctly. RichEdit 2.0 is offered as a
-  middle option. The control-type change applies to documents opened after it
-  (restart to apply everywhere).
-- **Downloading Kokoro voices now shows its progress instead of dropping you back
-  at the document.** Starting the Kokoro voice-pack download from Manage Voices
-  appeared to do nothing: focus snapped back to the editor and the progress window
-  was never announced, because it opened while the Manage Voices dialog was still
-  closing. The download now opens after that dialog is fully gone, so the progress
-  window presents and your screen reader announces it. Once the Kokoro models are
-  present, the redundant 114 MB download button is hidden rather than offered
-  again.
-- **Offline dictation works out of the box — the speech engine is now bundled.**
-  The private, on-device Whisper engine behind dictation (Ctrl+F9) and **Tools →
-  Speech** was missing from the installer, so QUILL reported "whisper binary not
-  found" even after you downloaded a model (the model and the engine are separate
-  downloads). The engine now ships with every build, so offline dictation works
-  with no extra step. (#742)
-- **Saving a Faster Whisper model no longer freezes at 2% and crashes.** The
-  download refreshed the on-screen progress so often that it flooded QUILL's main
-  thread — the bar appeared stuck near 2% and the app eventually crashed. Progress
-  now updates at most once per percent, so model downloads run smoothly to the
-  end. (#748)
-- **Export speech audio as MP3 (and more), not just WAV.** Generate Speech Audio
-  only ever offered WAV, even with ffmpeg installed. When ffmpeg is present you
-  can now save as **MP3, M4A, M4B, OGG, Opus, or FLAC**; without it, WAV still
-  works exactly as before. (#750)
+## Rich formatting that stays out of your way
 
-### Enhancements
+### Hidden codes, spoken on demand
 
-- **Smaller installer: the offline speech engine downloads on demand.** The
-  private, on-device speech engine (whisper.cpp) is no longer bundled. The first
-  time you use offline dictation or transcription, QUILL **offers to download it
-  right there** (about 8 MB, checksum-verified, cancelable; disabled in Safe Mode),
-  and it's also at **Tools > Speech > Download Offline Speech Engine...**.
-  **Upgrading from a release that bundled the engine? Your copy is kept and keeps
-  working — nothing to re-download.** First piece of the AI footprint/optimization
-  plan — a pinned, SHA-256-verified path for fetching redistributable components
-  from QUILL's own GitHub release assets.
-- **Smaller installer: Kokoro neural voices download on demand.** The ~120 MB
-  Kokoro voice models are no longer bundled in the installer. The first time you
-  pick a Kokoro voice, QUILL downloads it for you (checksum-verified, cancelable);
-  other read-aloud voices (DECtalk, eSpeak NG, Piper, SAPI) work meanwhile.
-  **Upgrading from a release that bundled Kokoro? Your existing copy is kept and
-  keeps working — nothing to re-download.** This is the proof-of-concept for the
-  footprint plan's "host redistributable components as verified release assets."
-- **Smaller installer: DECtalk and eSpeak NG download on demand too.** The classic
-  DECtalk runtime (~2 MB) and the eSpeak NG engine with its voice data (~40 MB) are
-  no longer bundled. When you pick one of these voices, QUILL downloads it for you
-  (checksum-verified, cancelable; disabled in Safe Mode); Windows' built-in SAPI
-  voices remain available immediately as the always-present offline voice.
-  **Upgrading from a release that bundled DECtalk or eSpeak NG? Your existing copies
-  are kept and keep working — nothing to re-download.** Same pinned, SHA-256-verified
-  release-asset path as whisper.cpp and Kokoro.
-- **Proofread Mastodon posts before sending (per account).** In **Tools → Share
-  → Mastodon Accounts...**, select an account and tick **Spell-check posts before
-  sending**: pressing Post for that account then opens the Spelling Review (F7) on
-  the post text so you can fix misspellings before it goes out. Off by default and
-  per account, so existing accounts are unaffected until you turn it on.
-- **Spell check a document before saving.** A new **Settings → Editing → Spell
-  check a document before saving** option (off by default) opens the Spelling
-  Review (F7) automatically when you Save or Save As, so you can correct the
-  document before the file is written; the save then proceeds.
-- **Spell-check in other languages, downloaded on demand.** **Tools → Spell Check
-  Language...** picks the language QUILL checks against. English works out of the
-  box; choosing **Spanish (Spain)** or **French (France)** downloads that dictionary
-  the first time from QUILL's verified source (checksum-checked, cancelable), then
-  works offline. The choice is remembered and applies to the F7 review and
-  check-as-you-type. More languages can follow; this release proves the path with
-  Spanish and French.
-- **Hear how deep your indentation is.** Tab / Shift+Tab can now speak the new
-  indentation depth — "4 spaces", "8 spaces", "1 tab" — instead of "Indented
-  lines", honouring your tabs-vs-spaces and indent-width settings. Toggle with
-  **Announce indentation depth on Tab** (Settings → Accessibility).
-- **Quieter dialogs, your choice.** A new **Announce entering and leaving dialogs**
-  setting (Settings → Accessibility) turns off the spoken "Entered / Exited *name*
-  dialog" cues for people whose screen reader already announces dialogs.
-- **Jump straight to an open document.** With several documents open, press
-  **Alt+1** through **Alt+9** (and **Alt+0** for the tenth) to go directly to that
-  document by its position, instead of cycling with Ctrl+Tab. If nothing is open
-  at that position, QUILL tells you and stays put. The Window menu also lists your
-  open documents with these shortcuts shown beside them, and the keys are
-  remappable in the Keymap Editor.
-- **Quieter Read Aloud for screen-reader users.** While Read Aloud played, QUILL
-  selected each sentence in the editor to follow along — which made your screen
-  reader announce the selection ("...selected") over QUILL's chosen voice. This
-  follow-along is now **off by default**, so the cursor stays put and only the
-  Read Aloud voice is heard. Sighted and low-vision users who want the cursor to
-  track what is being read can turn it back on with the new **Move cursor to
-  follow Read Aloud** setting (Settings → Read Aloud).
-- **Portable installs update to the portable build, not the installer.** Check for
-  Updates now recognises when you are running the portable bundle and offers the
-  portable **.zip** for that release instead of pushing the Windows installer at
-  you. The download lands in your updates folder with an **Open folder** button so
-  you can swap it into place; installed copies keep getting the installer exactly
-  as before.
+Apply real document formatting — **bold, italic, underline, strikethrough,
+super/subscript, font family and point size, colour and highlight**, plus paragraph
+**alignment, line spacing, indent, and named styles** — without ever seeing markup
+clutter. The buffer stays clean, fast, plain text; the formatting rides along as
+invisible codes. Ask **"Describe formatting at cursor"** to *hear* exactly what is in
+effect ("Arial, 14 point, centred, bold").
+**Why it matters:** you get real formatting and a clean editing experience — you no
+longer have to choose between the two.
+
+### Keep your formatting in a plain-text file — Illuminations
+
+A plain `.txt` cannot hold fonts or colours, so saving formatted text as plain text
+used to lose them. Now QUILL can write an **Illumination**: a small companion file
+(`yourfile.txt.illumination`) that stores the formatting beside the clean text. The
+`.txt` stays genuinely plain everywhere else; reopening it *in QUILL* restores every
+font, colour, and alignment exactly.
+**Why it matters:** your text stays portable and plain, and your formatting still
+survives — no lock-in, no surprise loss.
+
+### Faithful round-trips
+
+RTF and Word documents round-trip through the clean buffer and materialise back to
+real formatting on export. **Word (.docx)**, **RTF**, and **HTML** carry font, size,
+colour, highlight, and alignment; when a format genuinely cannot hold something,
+QUILL tells you *before* you commit.
+**Why it matters:** you hand documents back looking the way they came in, and you are
+never silently stripped of work.
+
+---
+
+## Editing and accessibility — the power tools people missed
+
+### Reveal Codes — see and hear every hidden code (Alt+F3)
+
+The beloved WordPerfect feature, reimagined screen-reader-first. Press **Alt+F3** (or
+**View → Reveal Codes**) to open a pane showing your document as a stream of bracketed
+codes and text — `[Bold On]`, `[Font: Arial]`, `[Center]`, `[Tab]`, `[¶ Hard Return]`,
+`[No-Break Space]`. **F6** moves between the editor, the Reveal Codes pane, and the
+status bar (**Shift+F6** back), and the two carets stay in sync. Every code is an
+individually-announced, navigable item; jump from a `[Bold On]` to its matching
+`[Bold Off]` and hear its reach. Choose a **Structured** list or a **Flowed** view,
+with quiet / balanced / detailed verbosity.
+**Why it matters:** nothing about your document is hidden from you. The clean editor
+stays clean; the truth is one keystroke away.
+
+### Bookmarks that remember — per document, across sessions
+
+Named bookmarks now belong to the **specific file** you set them in and **persist
+between sessions**, so reopening a document brings its jump points back. QUILL also
+remembers your **last cursor position** in each saved document and returns you there
+when you reopen it.
+**Why it matters:** close a long document on Friday, reopen it Monday, and you are
+right where you left off — with every named landmark intact. (Set Bookmark, Go To
+Bookmark, List Bookmarks; List Bookmarks is on Alt+Shift+B.)
+
+### Three classic-editor power tools
+
+In the WordPerfect Editor tradition, all unbound by default (assign keys in the
+Keymap Editor):
+- **Repeat Next Command** — set a count, and the next command runs that many times
+  (down twenty lines, delete ten words, insert forty dashes) in one gesture.
+- **Restore Deleted Text** — QUILL keeps the last three blocks removed by its
+  structured delete commands; re-insert any of them at the cursor (distinct from Undo,
+  which only reverts in place).
+- **Describe Character at Cursor** — names the exact character under the caret (Unicode
+  name, code point, category, and notes for invisibles), the screen-reader descendant
+  of "Reveal Codes".
+**Why it matters:** the precise, repeatable, eyes-free moves that long-time editor
+users have been asking QUILL to bring forward.
+
+### Re-read anything QUILL just said — the Spoken Echo
+
+The last twenty announcements are kept and shown newest-first in a read-only dialog
+you can arrow through, re-read, and copy (**Alt+Shift+E**). Double-pressing an
+informational command opens the Echo instead of re-speaking.
+**Why it matters:** speech disappears the instant it is spoken; now you can get it
+back.
+
+### A far richer Keyboard Manager
+
+The Keymap Editor searches two ways from one box — type part of a command name to
+filter, or type a shortcut to reverse-look-up exactly which command owns it. **Record
+Keys** lets you press a combination instead of typing it; assigning a taken key names
+the command that holds it and offers to reassign; **Run Diagnostics** audits the whole
+keymap and heals duplicate, orphaned, or inert bindings.
+**Why it matters:** customising shortcuts no longer means remembering exact syntax or
+guessing whether a key is free.
+
+### Quieter, calmer, and quicker to move
+
+- **Hear how deep your indentation is** — Tab / Shift+Tab can speak "4 spaces",
+  "1 tab", instead of just "Indented lines".
+- **Quieter dialogs, your choice** — turn off the spoken "Entered / Exited *name*
+  dialog" cues if your screen reader already announces them.
+- **Jump straight to an open document** — **Alt+1**…**Alt+9** (and **Alt+0** for the
+  tenth) go directly to that document instead of cycling.
+- **Quieter Read Aloud** — the follow-along selection is now off by default, so only
+  the Read Aloud voice is heard, not "…selected" over it.
+**Why it matters:** less chatter, fewer keystrokes, more signal.
+
+---
+
+## Braille — proofreading for pages that must emboss
+
+A new **Braille → Repair** submenu brings NLS-style proofreading: **Read Layout
+Metrics** (longest line and page against your cells-per-line / lines-per-page limits,
+with width and depth warnings), **Go to Longest Line / Longest Page**, and **Remove
+Trailing Spaces** (this line or the whole file), all honouring your existing braille
+page settings. A new **Editor control type (braille)** choice lets braille displays
+that show the first character of each line in cell two switch to a plain edit control.
+**Why it matters:** the difference between "it looks fine on screen" and "it actually
+embosses cleanly", found and fixed before you send it.
+
+---
+
+## A smaller, friendlier install
+
+### Download only what you need
+
+The base installer is smaller because the heavy, optional pieces now download on
+demand — checksum-verified, with a cancelable progress bar, disabled in Safe Mode:
+- The **offline speech engine** (whisper.cpp), **Kokoro** neural voices, and the
+  classic **eSpeak NG** and **DECtalk** voices.
+- **Spell-check dictionaries for other languages** — pick **Spanish** or **French**
+  under **Tools → Spell Check Language** and QUILL fetches the dictionary the first
+  time.
+- And the audio-export helper, **FFmpeg**.
+
+**One place to get them all: Help → Download Optional Components.** A single dialog
+lists every optional download with **Installed** vs **Available to download** and its
+size, so you never hunt through menus.
+**Why it matters:** a faster first download and install, Windows' built-in voices
+working immediately, and a clear, accessible touch point for everything else.
+**Upgrading?** Any component a previous release bundled is kept and keeps working —
+nothing to re-download.
+
+### Export speech audio as MP3 and more
+
+With FFmpeg present, Generate Speech Audio now saves as **MP3, M4A, M4B, OGG, Opus, or
+FLAC** (WAV still works without it).
+
+---
+
+## A thank-you, and a place to experiment
+
+### Golden Quills
+
+**Help → About QUILL** has a new **Golden Quills** tab recognising the people who
+support the project financially, in alphabetical order, with our heartfelt thanks. It
+includes an optional **Donate** button.
+**Why it matters:** QUILL is free and always will be — donating is completely optional
+and never required. This is simply gratitude, made visible.
+
+### Experimental settings (for testing)
+
+A new **Settings → Experimental** tab lets you test how QUILL feels on different
+editor surfaces — **RichEdit 3.0 / 2.0**, **Notepad** (a plain edit control),
+**Rich text**, or a **native Win32 EDIT** spike. A read-only panel explains each
+choice's user and technical impact as you select it, and the options stay ignored
+until you tick **"I understand features may degrade based on the control selected."**
+A **Hide editor border** toggle is here too. QUILL warns you to restart when you change
+these.
+**Why it matters:** a safe sandbox for power users and testers to help shape the
+editor, with a clear gate so nothing changes by accident.
+
+### Proofread before you publish
+
+- **Proofread Mastodon posts before sending (per account)** — tick it and pressing
+  Post opens the F7 Spelling Review on the post text first.
+- **Spell check a document before saving** — opens F7 automatically on Save / Save As.
+
+---
+
+## Fixes worth calling out
+
+- **Bookmarks now persist** per document and across sessions (see above), and QUILL
+  restores your last cursor position — fixing the old behaviour where bookmarks were
+  forgotten on close and shared across documents.
+- **Opening Word and other documents with QUILL as the default app works** — pressing
+  Enter on a file in your file manager now opens it instead of doing nothing.
+- **Far less double-spoken chatter** — actions like "No misspellings found" were
+  spoken twice; now exactly once (#728).
+- **Report a Bug is keyboard-navigable again** and reliably confirms the report was
+  copied (#729).
+- **No alarming "text-to-speech failed"** when your screen reader is running; the
+  SAPI fallback also initialises correctly under a read-only install (#749).
+- **Offline dictation works out of the box** — the engine is fetched on first use
+  instead of failing with "whisper binary not found" (#742).
+- **Saving a model no longer freezes at 2% and crashes** — download progress is
+  throttled so it cannot flood the UI (#748).
+- **Spell check finds real misspellings again** — when Hunspell is present its verdict
+  is authoritative, instead of a permissive word list waving typos through.
+- **The portable build launches and opens documents**, and the **AI Hub opens**
+  instead of erroring on a lazy-string.
 
 ---
 
@@ -318,6 +293,9 @@ verbosity. Hidden by default; your clean editing buffer is unchanged.
   documents carry forward (see `docs/release/upgrade-path-regression-0.8.0.md`).
 - Fresh install: see `docs/release/fresh-install-regression-0.8.0.md`.
 - Acceptance: `docs/release/user-acceptance-test-plan-0.8.0.md`.
+- New this beta to exercise: **Alt+F3** Reveal Codes; **Set/Go To/List Bookmarks**
+  then reopen the file; **Tools → Spell Check Language**; **Help → Download Optional
+  Components**; **Settings → Experimental**; **Help → About → Golden Quills**.
 
 ## Release mechanics (do not announce yet)
 
