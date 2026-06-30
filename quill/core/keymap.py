@@ -123,6 +123,11 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "tools.previous_misspelling": "Ctrl+Shift+F7",
     "tools.misspelling_list": "Alt+Shift+L",
     "tools.thesaurus": "Shift+F7",
+    # Inline notes (sticky, content-anchored annotations).
+    "notes.add_inline_note": "Alt+Shift+I",
+    "notes.next_inline_note": "Alt+Shift+J",
+    "notes.previous_inline_note": "Alt+Shift+G",
+    "notes.speak_inline_note": "Alt+Shift+H",
     "tools.read_aloud_start_pause": "Ctrl+Shift+Grave, R",  # §10.8.2: P→R
     "tools.read_aloud_stop": "Ctrl+Shift+Grave, Shift+R",  # §10.8.2: Shift+P→Shift+R
     "tools.dictation_toggle": "Ctrl+Shift+Grave, D",

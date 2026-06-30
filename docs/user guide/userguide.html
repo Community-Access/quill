@@ -1181,6 +1181,32 @@ position</strong> in each saved document and returns you to it when you
 reopen the file. (Untitled, never- saved documents keep their bookmarks
 for the current session only, since there is no file to attach them to
 yet — saving the document makes them persistent.)</p>
+<h4 id="inline-notes-sticky-comments">Inline notes (sticky
+comments)</h4>
+<p>Inline notes are private comments you attach to a line or a selection
+— for queries, reminders, and running commentary while you draft. They
+live under <strong>Tools → Writing</strong> and have four commands
+(default keys shown; all remappable in the Keymap Editor):</p>
+<ul>
+<li><strong>Add Inline Note...</strong> (<code>Alt+Shift+I</code>) —
+note the selected text, or the current line if nothing is selected. Type
+the note and Save.</li>
+<li><strong>Next Inline Note</strong> (<code>Alt+Shift+J</code>) and
+<strong>Previous Inline Note</strong> (<code>Alt+Shift+G</code>) — move
+the cursor to the next / previous noted text; QUILL announces the
+note.</li>
+<li><strong>Speak Inline Note</strong> (<code>Alt+Shift+H</code>) — read
+aloud the note at the cursor. <strong>Press it again quickly</strong> (a
+double-press) to open the note to view, edit, or delete it.</li>
+</ul>
+<p>Inline notes are <strong>anchored to your content</strong>: each
+remembers the exact text it was placed on (plus a little surrounding
+context), so it <strong>follows that text as you edit</strong> and is
+<strong>restored when you reopen the document</strong> (per document,
+saved between sessions, just like bookmarks). If the text a note was on
+is later deleted, the note is kept rather than silently lost. Untitled
+documents keep their notes for the session until you save. Notes are
+private to you and never written into the document itself.</p>
 <p>If your work involves transcripts, legal text, long Markdown notes,
 HTML source, or extracted PDFs, spend time here. This is the menu that
 turns Quill from a text box into a navigable workspace. (Find Next, Find

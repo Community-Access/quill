@@ -1591,6 +1591,28 @@ class MenuBuilderMixin:
             self._id_spell_language,
             self._menu_label(_("Spell Check &Language..."), "tools.spell_language"),
         )
+        writing_menu.AppendSeparator()
+        self._id_add_inline_note = wx.NewIdRef()
+        self._id_next_inline_note = wx.NewIdRef()
+        self._id_previous_inline_note = wx.NewIdRef()
+        self._id_speak_inline_note = wx.NewIdRef()
+        writing_menu.Append(
+            self._id_add_inline_note,
+            self._menu_label(_("Add &Inline Note..."), "notes.add_inline_note"),
+        )
+        writing_menu.Append(
+            self._id_next_inline_note,
+            self._menu_label(_("Next Inline &Note"), "notes.next_inline_note"),
+        )
+        writing_menu.Append(
+            self._id_previous_inline_note,
+            self._menu_label(_("Previous Inline No&te"), "notes.previous_inline_note"),
+        )
+        writing_menu.Append(
+            self._id_speak_inline_note,
+            self._menu_label(_("Speak Inline Note (double to &edit)"), "notes.speak_inline_note"),
+        )
+        writing_menu.AppendSeparator()
         self._id_thesaurus = wx.NewIdRef()
         writing_menu.Append(
             self._id_thesaurus,
@@ -3589,6 +3611,18 @@ class MenuBuilderMixin:
             wx.EVT_MENU,
             lambda _e: self.choose_spell_language(),
             id=self._id_spell_language,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.add_inline_note(), id=self._id_add_inline_note
+        )
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.next_inline_note(), id=self._id_next_inline_note
+        )
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.previous_inline_note(), id=self._id_previous_inline_note
+        )
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.speak_inline_note(), id=self._id_speak_inline_note
         )
         self.frame.Bind(
             wx.EVT_MENU,

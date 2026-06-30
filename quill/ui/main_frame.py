@@ -500,6 +500,7 @@ from quill.ui.main_frame_format_codes import FormatCodesMixin
 from quill.ui.main_frame_github import GitHubRemoteMixin
 from quill.ui.main_frame_hygiene import HygieneMixin
 from quill.ui.main_frame_image import ImageCaptureMixin
+from quill.ui.main_frame_inline_notes import InlineNotesMixin
 from quill.ui.main_frame_intellisense import IntellisensePopupMixin
 from quill.ui.main_frame_language_detect import LanguageDetectMixin
 from quill.ui.main_frame_line_commands import LineCommandsMixin
@@ -642,6 +643,9 @@ class _DocumentTab:
     # files; in-memory only for untitled documents). The active tab's dict is
     # aliased to MainFrame._bookmarks while it is the current tab.
     bookmarks: dict[str, int] = field(default_factory=dict)
+    # Per-document inline notes (content-anchored). Loaded from / saved to the
+    # InlineNoteVault for saved files; in-memory only for untitled documents.
+    inline_notes: list = field(default_factory=list)
     _indent_tone_last_level: int = -1
     _language_profile: object = None
     _language_profile_pinned: bool = False
@@ -876,6 +880,7 @@ class MainFrame(
     ClassicEditorMixin,
     PowerToolsMenuMixin,
     RevealCodesMixin,
+    InlineNotesMixin,
     QuillinsMenuMixin,
     ContextHelpMixin,
     WatchProfileDialogMixin,
@@ -1157,6 +1162,8 @@ class MainFrame(
         self._epub_book: EpubBook | None = None
         self._browser_preview_session: _BrowserPreviewSession | None = None
         self._bookmarks: dict[str, int] = {}
+        # Active document's inline notes (aliased to the active tab's list).
+        self._inline_notes: list = []
         # Persistent, per-document bookmarks + last cursor position (#300 follow-up).
         # Forgiving load so a missing/corrupt store never blocks startup.
         try:
@@ -3271,6 +3278,7 @@ class MainFrame(
         )
         self.register_format_codes_commands()
         self.register_reveal_codes_commands()
+        self.register_inline_note_commands()
         self.commands.register(
             "format.heading_1",
             "Insert Heading 1",
@@ -4282,6 +4290,8 @@ class MainFrame(
         tab.source_label = str(document.source_metadata.get("source_label", "")).strip()
         # Load this document's saved bookmarks and restore its last cursor position.
         self._restore_document_memory(tab)
+        # Load this document's saved inline notes.
+        self._load_inline_notes_for(tab)
         self._document_tabs.append(tab)
         index = self.notebook.GetPageCount()
         self.notebook.AddPage(panel, document.name, select=select)
@@ -4445,6 +4455,8 @@ class MainFrame(
         self.document = tab.document
         # The active document's bookmark set is this tab's own dict (per-document).
         self._bookmarks = getattr(tab, "bookmarks", {})
+        # The active document's inline notes are this tab's own list (per-document).
+        self._inline_notes = getattr(tab, "inline_notes", [])
         tab._indent_tone_last_level = -1  # reset per-tab indent tone cache on switch
         if not getattr(tab, "_language_profile_pinned", False):
             tab._language_profile = get_profile_for_path(tab.document.path)
@@ -9484,6 +9496,7 @@ class MainFrame(
         # Persist this document's bookmarks + cursor position under its path now that
         # it is saved (also migrates an untitled document's in-memory bookmarks).
         self._save_active_bookmarks()
+        self._save_inline_notes()
         self._remember_active_caret()
         # FEAT-19: prime the watcher so our own save is not reported as an external change.
         if self._external_change_watcher is not None and self.document.path is not None:
@@ -9720,6 +9733,7 @@ class MainFrame(
             try:
                 self._doc_memory.set_bookmarks(_bm_key, self._bookmarks)
                 self._doc_memory.set_last_position(_bm_key, self.editor.GetInsertionPoint())
+                self._inline_vault().set_notes(_bm_key, self._inline_notes)
             except Exception:  # noqa: BLE001 - persistence is best-effort
                 pass
         self._refresh_title()

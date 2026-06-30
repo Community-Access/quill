@@ -198,7 +198,7 @@ def test_event_hooks_are_wired() -> None:
 
 
 def test_read_only_state_refreshes_on_tab_switch() -> None:
-    activate = _SOURCE[_SOURCE.index("def _activate_tab") :][:1500]
+    activate = _SOURCE[_SOURCE.index("def _activate_tab") :][:1800]
     assert "self._refresh_read_only_state()" in activate
 
 

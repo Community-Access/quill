@@ -145,6 +145,19 @@ when you reopen it.
 right where you left off — with every named landmark intact. (Set Bookmark, Go To
 Bookmark, List Bookmarks; List Bookmarks is on Alt+Shift+B.)
 
+### Inline notes — sticky comments that stay with your content
+
+Jot a private note about the current line or selection with **Alt+Shift+I**. The
+note is **anchored to the text**, so it follows that content as you edit and comes
+back when you reopen the document (per document, like bookmarks). **Alt+Shift+J** /
+**Alt+Shift+G** move to the next / previous note (the cursor jumps to the noted text
+and QUILL reads the note); **Alt+Shift+H** speaks the note at the cursor, and pressing
+it again quickly opens it to view, edit, or delete.
+**Why it matters:** the running commentary, queries, and reminders you keep while
+drafting finally live *with the words they are about* — surviving edits and reloads —
+instead of in a separate file you have to keep in sync. If the noted text is deleted,
+the note is kept rather than silently lost.
+
 ### Three classic-editor power tools
 
 In the WordPerfect Editor tradition, all unbound by default (assign keys in the
