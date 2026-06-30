@@ -456,22 +456,6 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
         privacy="network after confirmation",
         category="future",
     ),
-    "future.google_docs": FeatureDefinition(
-        "future.google_docs",
-        "Google Docs (Read-Only)",
-        aliases=("google docs", "google drive", "open from google docs"),
-        description=(
-            "Read-only Google Docs and Drive: connect a Google account, open a "
-            "document by link or from Drive, and read it in the editor. Locked "
-            "off until the OAuth flow and an approved network-egress path are "
-            "in place; no content-send (new document, save a copy, sync) is "
-            "part of this feature."
-        ),
-        maturity="experimental",
-        privacy="network after confirmation",
-        category="future",
-        locked_off=True,
-    ),
     "future.ai_menu_top_level": FeatureDefinition(
         "future.ai_menu_top_level",
         "AI Top-Level Menu",
