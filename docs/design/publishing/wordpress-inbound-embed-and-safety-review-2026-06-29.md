@@ -106,10 +106,10 @@ build, and this review adds none.
    `publishing.browse_content`, `publishing.open_remote_item`); the send commands
    stay under the locked-off `future.publishing`. The Publish submenu is built in
    two independently gated halves (`main_frame_menu.py`). `future.publishing_read`
-   mirrors publishing's writer-tier distribution (on in Casual Writer, Author or
-   Student, Developer and Power Text, and Full Quill; off elsewhere, individually
-   enableable). This lets a release expose "open my WordPress posts/pages in
-   QUILL" while keeping create/update/publish/schedule locked.
+   is on by default only in the Full Quill profile; off elsewhere, individually
+   enableable via Manage Individual Features. This lets a release expose "open my
+   WordPress posts/pages in QUILL" while keeping create/update/publish/schedule
+   locked.
 2. Consider tightening HTTP allowance. `_is_local_host` currently permits `http`
    to private LAN ranges (10/8, 172.16/12, 192.168/16), which would send the
    Basic application-password header in cleartext across a LAN. Narrowing the

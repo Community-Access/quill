@@ -112,7 +112,7 @@ PROFILE_DEFINITIONS: dict[str, FeatureProfile] = {
             # Writer is one of the writer-tier-and-above profiles with
             # publishing access (see PROFILE_ESSENTIAL's comment above).
             "future.publishing": FEATURE_STATE_ON,
-            "future.publishing_read": FEATURE_STATE_ON,
+            "future.publishing_read": FEATURE_STATE_OFF,
         },
     ),
     PROFILE_AUTHOR_STUDENT: FeatureProfile(
@@ -145,7 +145,7 @@ PROFILE_DEFINITIONS: dict[str, FeatureProfile] = {
             # Author or Student is one of the writer-tier-and-above profiles
             # with publishing access (see PROFILE_ESSENTIAL's comment above).
             "future.publishing": FEATURE_STATE_ON,
-            "future.publishing_read": FEATURE_STATE_ON,
+            "future.publishing_read": FEATURE_STATE_OFF,
         },
     ),
     "reader_and_student": FeatureProfile(
@@ -218,7 +218,7 @@ PROFILE_DEFINITIONS: dict[str, FeatureProfile] = {
             # profiles with publishing access (see PROFILE_ESSENTIAL's
             # comment above).
             "future.publishing": FEATURE_STATE_ON,
-            "future.publishing_read": FEATURE_STATE_ON,
+            "future.publishing_read": FEATURE_STATE_OFF,
         },
     ),
     "low_vision": FeatureProfile(

@@ -447,8 +447,7 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
             "pages, and open one into the editor. Sending content back to the "
             "site (create, update, publish, schedule) stays under the separate "
             "Publishing feature, which remains locked off until it is approved. "
-            "Available by default in the Casual Writer, Author or Student, "
-            "Developer and Power Text, and Full Quill profiles; off by default "
+            "Available by default only in the Full Quill profile; off by default "
             "elsewhere, but any user can turn it on individually via Manage "
             "Individual Features."
         ),

@@ -314,10 +314,9 @@ read-only inbound commands (<code>publishing.connections</code>,
 the locked-off <code>future.publishing</code>. The Publish submenu is
 built in two independently gated halves
 (<code>main_frame_menu.py</code>). <code>future.publishing_read</code>
-mirrors publishing’s writer-tier distribution (on in Casual Writer,
-Author or Student, Developer and Power Text, and Full Quill; off
-elsewhere, individually enableable). This lets a release expose “open my
-WordPress posts/pages in QUILL” while keeping
+is on by default only in the Full Quill profile; off elsewhere,
+individually enableable via Manage Individual Features. This lets a
+release expose “open my WordPress posts/pages in QUILL” while keeping
 create/update/publish/schedule locked.</li>
 <li>Consider tightening HTTP allowance. <code>_is_local_host</code>
 currently permits <code>http</code> to private LAN ranges (10/8,

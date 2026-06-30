@@ -131,18 +131,14 @@ def test_publishing_read_feature_is_not_locked_off() -> None:
     assert definition.locked_on is False
 
 
-def test_publishing_read_is_reachable_in_writer_tier_and_off_elsewhere() -> None:
-    # Read-only inbound mirrors publishing's writer-tier distribution, but
-    # because it is not locked it is genuinely enabled there.
-    included = {
-        PROFILE_WRITER,
-        PROFILE_AUTHOR_STUDENT,
-        PROFILE_DEVELOPER_POWER_TEXT,
-        PROFILE_FULL_QUILL,
-    }
+def test_publishing_read_is_reachable_only_in_full_quill() -> None:
+    # Read-only inbound is enabled by default only in the all-features (Full
+    # Quill) profile; every other profile leaves it off (any user can still
+    # enable it individually). It is not locked, so Full Quill genuinely
+    # reaches it.
     for profile_id in PROFILE_DEFINITIONS:
         manager = FeatureManager(active_profile_id=profile_id)
-        if profile_id in included:
+        if profile_id == PROFILE_FULL_QUILL:
             assert manager.is_enabled("future.publishing_read") is True, profile_id
         else:
             assert manager.is_enabled("future.publishing_read") is False, profile_id
