@@ -16,23 +16,35 @@ from quill.core.features import (
 )
 
 
-def test_publishing_commands_map_to_publishing_feature() -> None:
-    publishing_commands = [
+def test_inbound_publishing_commands_map_to_read_feature() -> None:
+    # Read-only inbound commands are gated by future.publishing_read so they
+    # can ship without lighting up any content-send path.
+    read_commands = [
         "publishing.connections",
         "publishing.verify_connection",
+        "publishing.browse_content",
+        "publishing.open_remote_item",
+    ]
+
+    for command_id in read_commands:
+        assert feature_for_command(command_id) == "future.publishing_read"
+
+
+def test_send_publishing_commands_map_to_locked_publishing_feature() -> None:
+    # Every content-send command stays under the locked-off future.publishing
+    # feature so it never reaches a public release until approved.
+    send_commands = [
         "publishing.create_draft",
         "publishing.publish_current",
         "publishing.create_page_draft",
         "publishing.publish_current_page",
-        "publishing.browse_content",
-        "publishing.open_remote_item",
         "publishing.update_remote_item",
         "publishing.publish_remote_item",
         "publishing.schedule_publish",
         "publishing.compare_remote_item",
     ]
 
-    for command_id in publishing_commands:
+    for command_id in send_commands:
         assert feature_for_command(command_id) == "future.publishing"
 
 
@@ -109,3 +121,28 @@ def test_publishing_profile_states_are_overridden_by_the_lock() -> None:
     for profile_id in PROFILE_DEFINITIONS:
         manager = FeatureManager(active_profile_id=profile_id)
         assert manager.state_for("future.publishing") == FEATURE_STATE_OFF, profile_id
+
+
+def test_publishing_read_feature_is_not_locked_off() -> None:
+    # Unlike future.publishing (send), the read-only inbound feature ships:
+    # it is not locked, so writer-tier profiles can actually reach it.
+    definition = FEATURE_DEFINITIONS["future.publishing_read"]
+    assert definition.locked_off is False
+    assert definition.locked_on is False
+
+
+def test_publishing_read_is_reachable_in_writer_tier_and_off_elsewhere() -> None:
+    # Read-only inbound mirrors publishing's writer-tier distribution, but
+    # because it is not locked it is genuinely enabled there.
+    included = {
+        PROFILE_WRITER,
+        PROFILE_AUTHOR_STUDENT,
+        PROFILE_DEVELOPER_POWER_TEXT,
+        PROFILE_FULL_QUILL,
+    }
+    for profile_id in PROFILE_DEFINITIONS:
+        manager = FeatureManager(active_profile_id=profile_id)
+        if profile_id in included:
+            assert manager.is_enabled("future.publishing_read") is True, profile_id
+        else:
+            assert manager.is_enabled("future.publishing_read") is False, profile_id

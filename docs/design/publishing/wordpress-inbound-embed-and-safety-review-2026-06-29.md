@@ -97,16 +97,19 @@ Outbound commands exist and are registered for keymap/palette stability
 unreachable while it is locked off. No outbound path is exposed in a public
 build, and this review adds none.
 
-## 5. Recommendations (not implemented; require approval)
+## 5. Recommendations
 
-1. Split the feature so inbound can ship without outbound. Today
-   `future.publishing` gates read and write together. To honor "inbound only,"
-   introduce a second feature (for example `future.publishing_read` for browse +
-   open into editor, keeping `future.publishing` for send) and re-map the
-   inbound commands. This lets a release expose "open my WordPress posts/pages in
-   QUILL" while keeping create/update/publish/schedule locked. This is a product
-   decision because it lights up a network + credential feature that was
-   deliberately held back for review.
+1. (Implemented 2026-06-30, on branch `feature/publishing-google-wp-polish`.)
+   Split the feature so inbound can ship without outbound. A new
+   `future.publishing_read` feature (not locked) now gates the read-only inbound
+   commands (`publishing.connections`, `publishing.verify_connection`,
+   `publishing.browse_content`, `publishing.open_remote_item`); the send commands
+   stay under the locked-off `future.publishing`. The Publish submenu is built in
+   two independently gated halves (`main_frame_menu.py`). `future.publishing_read`
+   mirrors publishing's writer-tier distribution (on in Casual Writer, Author or
+   Student, Developer and Power Text, and Full Quill; off elsewhere, individually
+   enableable). This lets a release expose "open my WordPress posts/pages in
+   QUILL" while keeping create/update/publish/schedule locked.
 2. Consider tightening HTTP allowance. `_is_local_host` currently permits `http`
    to private LAN ranges (10/8, 172.16/12, 192.168/16), which would send the
    Basic application-password header in cleartext across a LAN. Narrowing the

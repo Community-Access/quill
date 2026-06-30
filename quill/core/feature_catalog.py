@@ -433,6 +433,29 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
         category="future",
         locked_off=True,
     ),
+    "future.publishing_read": FeatureDefinition(
+        "future.publishing_read",
+        "Publishing (Read-Only)",
+        aliases=(
+            "publishing read",
+            "read only publishing",
+            "open from wordpress",
+            "import from wordpress",
+        ),
+        description=(
+            "Read-only publishing: add a site account, browse its posts and "
+            "pages, and open one into the editor. Sending content back to the "
+            "site (create, update, publish, schedule) stays under the separate "
+            "Publishing feature, which remains locked off until it is approved. "
+            "Available by default in the Casual Writer, Author or Student, "
+            "Developer and Power Text, and Full Quill profiles; off by default "
+            "elsewhere, but any user can turn it on individually via Manage "
+            "Individual Features."
+        ),
+        maturity="advanced",
+        privacy="network after confirmation",
+        category="future",
+    ),
     "future.ai_menu_top_level": FeatureDefinition(
         "future.ai_menu_top_level",
         "AI Top-Level Menu",

@@ -301,18 +301,24 @@ stability (<code>publishing.create_draft</code>,
 all map to <code>future.publishing</code> and are therefore unreachable
 while it is locked off. No outbound path is exposed in a public build,
 and this review adds none.</p>
-<h2 id="recommendations-not-implemented-require-approval">5.
-Recommendations (not implemented; require approval)</h2>
+<h2 id="recommendations">5. Recommendations</h2>
 <ol type="1">
-<li>Split the feature so inbound can ship without outbound. Today
-<code>future.publishing</code> gates read and write together. To honor
-“inbound only,” introduce a second feature (for example
-<code>future.publishing_read</code> for browse + open into editor,
-keeping <code>future.publishing</code> for send) and re-map the inbound
-commands. This lets a release expose “open my WordPress posts/pages in
-QUILL” while keeping create/update/publish/schedule locked. This is a
-product decision because it lights up a network + credential feature
-that was deliberately held back for review.</li>
+<li>(Implemented 2026-06-30, on branch
+<code>feature/publishing-google-wp-polish</code>.) Split the feature so
+inbound can ship without outbound. A new
+<code>future.publishing_read</code> feature (not locked) now gates the
+read-only inbound commands (<code>publishing.connections</code>,
+<code>publishing.verify_connection</code>,
+<code>publishing.browse_content</code>,
+<code>publishing.open_remote_item</code>); the send commands stay under
+the locked-off <code>future.publishing</code>. The Publish submenu is
+built in two independently gated halves
+(<code>main_frame_menu.py</code>). <code>future.publishing_read</code>
+mirrors publishing’s writer-tier distribution (on in Casual Writer,
+Author or Student, Developer and Power Text, and Full Quill; off
+elsewhere, individually enableable). This lets a release expose “open my
+WordPress posts/pages in QUILL” while keeping
+create/update/publish/schedule locked.</li>
 <li>Consider tightening HTTP allowance. <code>_is_local_host</code>
 currently permits <code>http</code> to private LAN ranges (10/8,
 172.16/12, 192.168/16), which would send the Basic application-password

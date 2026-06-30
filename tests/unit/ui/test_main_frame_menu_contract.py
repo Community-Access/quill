@@ -200,19 +200,37 @@ def test_publishing_actions_live_in_file_menu_not_top_level_publishing_menu() ->
     assert "lambda _e: self._compare_publishing_remote_item()" in source
 
 
-def test_publishing_menu_is_gated_behind_its_locked_off_feature_flag() -> None:
-    # The publishing-providers-framework branch is locked off
-    # (future.publishing, quill/core/feature_catalog.py) so it never reaches
-    # a public release until the gate is deliberately lifted. The whole
-    # Publish submenu must be omitted from menu construction, not just
-    # hidden from the Command Palette -- mirroring the existing core.glow
-    # gating pattern (menu ids stay unconditional; only .Append() is gated).
+def test_publishing_menu_is_split_into_read_and_locked_send_halves() -> None:
+    # The Publish submenu is gated in two independent halves so the read-only
+    # inbound tools can ship while the content-send half stays locked off:
+    #   - future.publishing_read (not locked): connections, verify, browse.
+    #   - future.publishing (locked off, quill/core/feature_catalog.py): the
+    #     create/update/publish/schedule send commands.
+    # Construction (not just Command Palette filtering) must honor the split,
+    # mirroring the core.glow pattern (ids stay unconditional; only .Append()
+    # is gated).
     source = _menu_source()
     assert (
-        'if self._feature_enabled("future.publishing"):\n'
+        'publishing_read_enabled = self._feature_enabled("future.publishing_read")' in source
+    )
+    assert 'publishing_send_enabled = self._feature_enabled("future.publishing")' in source
+    assert (
+        "if publishing_read_enabled or publishing_send_enabled:\n"
         "            self._publishing_file_menu = wx.Menu()" in source
     )
+    # Inbound items are gated by the read flag; send items by the locked flag.
     assert (
+        "if publishing_read_enabled:\n"
+        "            self._publishing_file_menu.Append(\n"
+        "                self._id_publishing_connections," in source
+    )
+    assert (
+        "if publishing_send_enabled:\n"
+        "            self._publishing_file_menu.Append(\n"
+        "                self._id_publishing_create_draft," in source
+    )
+    assert (
+        "        if publishing_read_enabled or publishing_send_enabled:\n"
         "            file_menu.AppendSeparator()\n"
         '            file_menu.AppendSubMenu(self._publishing_file_menu, _("P&ublish"))' in source
     )
