@@ -34,9 +34,7 @@ def test_manuscript_headings_nest_by_level() -> None:
 
 def test_heading_nodes_carry_level_and_offset() -> None:
     text = "## Chapter 1\n"
-    root = build_binder(
-        StoryProject(title="B", manuscript=("m.md",)), _reader({"m.md": text})
-    )
+    root = build_binder(StoryProject(title="B", manuscript=("m.md",)), _reader({"m.md": text}))
     heading = root.children[0].children[0].children[0]
     assert heading.node_type == "heading"
     assert heading.level == 2
