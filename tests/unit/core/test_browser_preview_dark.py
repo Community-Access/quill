@@ -36,14 +36,13 @@ def test_render_preview_html_adapts_links_for_dark_browsers() -> None:
     assert "a{color:#6cb6ff;}" in page
 
 
-def test_render_preview_html_has_no_refresh_tag_by_default() -> None:
-    # Issue #46: one-shot pages (the User Guide, keyboard reference, etc.)
-    # must not get the live-preview auto-refresh tag, or they reload forever.
+def test_render_preview_html_never_emits_a_refresh_tag() -> None:
+    # A preview page must never force-reload itself on a timer. The old
+    # <meta http-equiv="refresh"> poll re-rendered the whole page once a
+    # second, which flickered the tab and, for a screen-reader/braille user
+    # reading the preview, re-announced from the top constantly. The external
+    # browser preview now reloads only when the user re-runs the command, and
+    # the in-app preview is updated by pushing fresh HTML to the WebView.
     page = render_preview_html("Doc", "hello", "markdown")
     assert "http-equiv" not in page
-
-
-def test_render_preview_html_live_includes_refresh_tag() -> None:
-    # The live browser preview still needs to poll so an open tab tracks edits.
-    page = render_preview_html("Doc", "hello", "markdown", live=True)
-    assert '<meta http-equiv="refresh" content="1">' in page
+    assert "refresh" not in page.lower()

@@ -149,9 +149,13 @@ def render_preview_body(text: str, kind: str, dark: bool = False) -> str:
     return _maybe_dark(f"<pre>{html.escape(text)}</pre>", dark)
 
 
-def render_preview_html(
-    title: str, text: str, kind: str, start_anchor: str | None = None, *, live: bool = False
-) -> str:
+def render_preview_html(title: str, text: str, kind: str, start_anchor: str | None = None) -> str:
+    # Deliberately no ``<meta http-equiv="refresh">``: a preview page never
+    # force-reloads itself on a timer. Such a poll re-rendered the whole page
+    # once a second, which made the open tab flicker and, for a screen-reader
+    # or braille user reading the preview, re-announced from the top constantly.
+    # The in-app side preview updates by pushing fresh HTML to the WebView; the
+    # external browser preview reloads only when the user re-runs the command.
     body = render_preview_body(text, kind)
     anchor_script = ""
     if start_anchor:
@@ -163,11 +167,9 @@ def render_preview_html(
             "});"
             "</script>"
         )
-    refresh_tag = '<meta http-equiv="refresh" content="1">' if live else ""
     return (
         '<!doctype html><html><head><meta charset="utf-8">'
         '<meta name="viewport" content="width=device-width, initial-scale=1">'
-        f"{refresh_tag}"
         f"<title>{html.escape(title)}</title>"
         "<style>"
         ":root{color-scheme:light dark;}"

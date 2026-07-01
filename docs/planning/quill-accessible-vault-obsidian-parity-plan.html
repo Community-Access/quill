@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>quill-accessible-vault-obsidian-parity-plan</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1
+id="quill-accessible-vault--obsidian-parity-reimagined-for-screen-readers">QUILL
+Accessible Vault — Obsidian Parity, Reimagined for Screen Readers</h1>
+<h2
+id="a-plan-to-make-quill-a-first-class-linked-knowledge-tool-that-a-blind-writer-can-use-better-than-a-sighted-one-uses-obsidian">A
+plan to make QUILL a first-class linked-knowledge tool that a blind
+writer can use better than a sighted one uses Obsidian</h2>
+<p><strong>Project:</strong> QUILL <strong>Feature area:</strong>
+Personal knowledge management (linked notes, backlinks, vault-wide
+search, tags, transclusion, templates, daily notes, sync/publish)
+<strong>Primary target:</strong> Windows 11 with wxPython; macOS where
+QUILL is supported <strong>Primary accessibility goal:</strong> Every
+capability that Obsidian delivers through a <em>visual</em> surface (the
+graph, the canvas, hover-preview, the sidebar panes) is delivered in
+QUILL through a <em>spoken, keyboard-native</em> surface that is faster
+and clearer for a screen-reader user — not a lesser fallback, but the
+primary experience. <strong>Status:</strong> In progress. <strong>Phases
+0–2 are shipped</strong> (a vault you can link and traverse by ear — the
+single biggest gap closed); Phases 3–7 remain proposed. Builds on and
+reshapes <code>quill/core/story</code> (Story Studio). See §6 for the
+per-phase status and §10 for what shipped.</p>
+<hr />
+<h2 id="1-executive-summary">1. Executive summary</h2>
+<p>Obsidian's power is not its looks. It is a small set of ideas —
+<strong>every note is a file, every file can link to every other file,
+and the links are bidirectional and searchable</strong> — wrapped in a
+visual shell. The visual shell (graph view, canvas, hover-preview) is
+where sighted users spend attention; it is also where blind users are
+shut out.</p>
+<p>QUILL can own the <em>ideas</em> and replace the <em>shell</em> with
+something a screen reader makes effortless. A backlinks graph is, to a
+screen-reader user, far more useful as a <strong>spoken, navigable "what
+links here" list</strong> than as a picture. A quick-switcher is more
+useful <strong>announced and filtered as you type</strong> than as a
+floating panel. This is the thesis of this plan: <strong>QUILL should
+not port Obsidian's UI; it should deliver Obsidian's model through
+accessibility-native affordances that are magical precisely because they
+are not visual.</strong></p>
+<p>To get there, one reframe is required: QUILL grows from a
+<em>document editor</em> (one file at a time, plus per-project Story
+Studio binders) into a tool that also understands a
+<strong>Vault</strong> — a persistent, indexed, always-available body of
+linked notes. Story Studio's per-book project becomes one <em>view</em>
+over that vault rather than a separate world. Everything else — links,
+backlinks, search, tags, embeds, templates, daily notes — hangs off the
+vault and its indexes.</p>
+<p>Everything remains <strong>optional, additive, and
+plain-text-first</strong>. A user who never opens a vault sees the
+editor they already have. The vault is a folder of ordinary Markdown
+files with one hidden <code>.quill/</code> cache; delete the cache and
+nothing is lost, delete QUILL and every note still opens in any
+editor.</p>
+<hr />
+<h2 id="2-the-guiding-principle-a-translation-table-not-a-port">2. The
+guiding principle: a translation table, not a port</h2>
+<p>For each Obsidian affordance, we name the accessibility-native
+equivalent that becomes QUILL's <em>primary</em> surface. This table is
+the north star for every feature below.</p>
+<table>
+<thead>
+<tr>
+<th>Obsidian (visual)</th>
+<th>QUILL (accessible-native, primary)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Graph view (global picture of links)</td>
+<td><strong>Backlinks list</strong> + <strong>forward-links
+list</strong> + <strong>"neighborhood" navigator</strong> — spoken,
+counted, keyboard-walkable. The graph is data, and the data is what
+matters.</td>
+</tr>
+<tr>
+<td>Hover-preview of a link</td>
+<td><strong>"Speak linked note"</strong> on a key;
+<strong>"peek"</strong> the target's first lines in the Spoken Echo
+without leaving the note.</td>
+</tr>
+<tr>
+<td>Quick switcher (floating panel)</td>
+<td><strong>Announced fuzzy switcher</strong>: type to filter, result
+count spoken, arrow + Enter.</td>
+</tr>
+<tr>
+<td>Search pane with highlighted hits</td>
+<td><strong>Results as an accessible list</strong> of note + line +
+snippet; Enter opens <em>at the match</em>; result count and "search
+within results" spoken.</td>
+</tr>
+<tr>
+<td>Tag pane</td>
+<td><strong>Tag index list</strong> with counts; select a tag →
+notes/blocks list; <code>#</code> autocomplete while typing.</td>
+</tr>
+<tr>
+<td>Live preview / WYSIWYG</td>
+<td>Unchanged QUILL philosophy: <strong>plain text with hidden
+codes</strong>; links stay as <code>[[text]]</code> and are <em>resolved
+on demand by voice</em> and in preview/export.</td>
+</tr>
+<tr>
+<td>Canvas (freeform board)</td>
+<td><strong>Out of scope</strong> as a visual surface; the accessible
+equivalent (an outline/board of linked notes) is a possible later "Vault
+Outline," not a canvas.</td>
+</tr>
+</tbody>
+</table>
+<p>The rule: <strong>if a feature only makes sense as a picture, we
+deliver the underlying relationship as a list and as navigation, and we
+make that list a joy to move through with a screen reader.</strong></p>
+<hr />
+<h2 id="3-architecture-and-the-one-refactor">3. Architecture and the one
+refactor</h2>
+<h3 id="31-the-vault">3.1 The Vault</h3>
+<p>A <strong>Vault</strong> is a user-chosen root folder of
+Markdown/plain-text notes plus a hidden <code>.quill/</code> directory
+holding regenerable indexes and vault settings (mirrors Obsidian's
+<code>.obsidian/</code>, but everything in it is a cache that can be
+rebuilt from the notes). QUILL remembers the vault(s), can switch
+between them, opens the vault explorer, and keeps its indexes fresh as
+notes change.</p>
+<p>New wx-free package <strong><code>quill/core/vault/</code></strong>
+(strict-typed, IO injected, in <code>mypy</code> scope):</p>
+<ul>
+<li><code>vault.py</code> — the Vault model: root path, note
+enumeration, per-note metadata (title, aliases, out-links, tags,
+headings, block ids).</li>
+<li><code>note.py</code> — a Note view: resolve its title (front-matter
+<code>title</code>/<code>aliases</code>, else H1, else filename), its
+outgoing links, its tags, its heading and block anchors.</li>
+<li><code>links.py</code> — the <strong>wikilink codec</strong>
+(parse/serialize <code>[[Note]]</code>, <code>[[Note|alias]]</code>,
+<code>[[Note#Heading]]</code>, <code>[[Note#^blockid]]</code>, and
+embeds <code>![[...]]</code>), coexisting with Markdown
+<code>[label](url)</code> without clobbering it. Dependency-free, tested
+like the front-matter codec.</li>
+<li><code>index.py</code> — the <strong>indexes</strong>:
+forward/reverse link adjacency (the backlink graph), tag → notes/blocks,
+and a title/alias → note resolver (with duplicate-title disambiguation).
+Incremental: updating one note re-indexes only that note.</li>
+<li><code>search.py</code> — vault-wide full-text search (a
+ripgrep-backed scan and/or a small inverted index), returning ranked
+note+line+snippet hits.</li>
+<li><code>resolve.py</code> — link/embed resolution: name → note
+(case-insensitive, alias-aware, ambiguity-reporting), heading/block
+anchor → offset, and embed expansion for preview/compile.</li>
+<li><code>templates.py</code> — template store and variable substitution
+(<code>{{title}}</code>, <code>{{date:FORMAT}}</code>,
+<code>{{time}}</code>, cursor marker), reusing the Snippet engine's
+substitution where possible.</li>
+<li><code>dailynotes.py</code> — resolve/create today's (or an arbitrary
+date's) note from a configurable path pattern and template.</li>
+<li><code>storage.py</code> — persist/refresh the <code>.quill/</code>
+index cache atomically (<code>write_json_atomic</code>); tolerant,
+regenerable, versioned-stamped.</li>
+</ul>
+<p>All file reads are injected as callables (as in
+<code>quill/core/story</code>), so the model, indexes, and resolvers are
+unit-tested without disk or <code>wx</code>.</p>
+<h3 id="32-the-refactor-story-studio-becomes-a-view-over-the-vault">3.2
+The refactor: Story Studio becomes a view over the vault</h3>
+<p>Today <code>quill/core/story</code> models a <em>project</em> (a
+book) as a folder plus a sidecar. That model is a special case of a
+vault. The refactor:</p>
+<ul>
+<li><strong>Generalize</strong> the folder-of-plain-text +
+advisory-sidecar pattern into <code>quill/core/vault</code>. Story
+Studio's <code>StoryProject</code> becomes a <strong>Collection</strong>
+— a curated, ordered <em>view</em> (manuscript spine +
+character/plot/etc. groups) over notes that live in the vault. A book is
+"a vault, or a folder within a vault, with a manuscript collection on
+top."</li>
+<li>The <strong>binder</strong>
+(<code>quill/ui/story_studio_dialog.py</code>) generalizes into (or
+gains a sibling) <strong>Vault Explorer</strong>: the binder is the
+<em>authored</em> view (chapters, characters); the explorer is the
+<em>whole</em> view (every note, grouped by folder/tag/recency). They
+share the same <code>BinderNode</code>/tree machinery and the same
+"activate → open at offset" seam.</li>
+<li>Existing Story Studio front-matter fields, compile-to-export, and
+details form all keep working; they just operate on notes that are now
+first-class vault citizens with links and backlinks.</li>
+</ul>
+<p>This keeps one mental model and one code path, and means
+links/backlinks/search/tags immediately light up <em>inside</em> a
+manuscript project, not only in a generic notes pile.</p>
+<h3 id="33-keeping-indexes-fresh">3.3 Keeping indexes fresh</h3>
+<ul>
+<li>Indexing runs on the existing background
+<code>stability.task_manager.QuillTaskManager</code>, never on the UI
+thread; results are applied via <code>wx.CallAfter</code>.</li>
+<li>On note save and on <strong>external change</strong> (QUILL already
+watches folders and reloads cleanly), re-index only the changed note and
+patch the adjacency/tag/search structures.</li>
+<li>The <code>.quill/</code> cache lets a large vault open instantly; a
+background re-scan reconciles it. Loss of the cache is harmless (rebuild
+from notes).</li>
+<li>A visible, cancelable "Indexing vault… N of M" status for first-run
+of a big vault (disabled in Safe Mode).</li>
+</ul>
+<hr />
+<h2 id="4-feature-designs-each-with-its-screen-reader-magic">4. Feature
+designs (each with its screen-reader magic)</h2>
+<h3 id="41-the-persistent-vault-and-its-explorer">4.1 The persistent
+vault and its explorer</h3>
+<p><strong>What.</strong> Choose a vault folder once; QUILL remembers it
+and reopens it. Support multiple vaults and switching between them. A
+<strong>Vault Explorer</strong> tree lists every note (by folder, and
+optionally regrouped by tag or recency).</p>
+<p><strong>The magic (SR experience).</strong> Opening a vault announces
+"Vault <name>: 312 notes, 480 links." The explorer is a
+<code>wx.TreeCtrl</code> where every node is an announced item;
+"Recent," "Untagged," and per-tag groups are togglable. A <strong>"Go to
+note…"</strong> command (the quick switcher, §4.4) is the fast path; the
+explorer is the browse path. No visual sidebar required — it is a
+first-class window/pane reachable by key and returned from by Escape/F6,
+exactly like today's preview and binder.</p>
+<p><strong>Model/impl.</strong> <code>quill/core/vault/vault.py</code> +
+a <code>Vault Explorer</code> that reuses the Story Studio binder tree.
+Settings hold the vault list and the active vault. Reuses
+external-change watching and <code>_show_modal_dialog</code>.</p>
+<h3
+id="42-bidirectional-links--wikilinks-that-a-blind-writer-inserts-and-follows-effortlessly">4.2
+Bidirectional links — wikilinks that a blind writer inserts and follows
+effortlessly</h3>
+<p><strong>What.</strong> <code>[[Note]]</code>,
+<code>[[Note|alias shown]]</code>, <code>[[Note#Heading]]</code>,
+<code>[[Note#^blockid]]</code>. Follow a link to open its target; insert
+a link with autocomplete.</p>
+<p><strong>The magic (SR experience).</strong></p>
+<ul>
+<li><strong>Insert:</strong> type <code>[[</code> and an
+<strong>accessible autocomplete</strong> opens — a real listbox that
+filters as you type note titles/aliases, announces the highlighted match
+and the remaining count, and inserts <code>[[Match]]</code> on Enter
+with a spoken "Linked to <note>." Or run <strong>"Insert link to
+note…"</strong> (a quick-switcher-style picker) from the palette/key.
+Heading and block targets appear after you type <code>#</code>.</li>
+<li><strong>Follow:</strong> with the caret on a link, press
+<strong>Follow Link</strong> (a dedicated key) → the target opens at the
+linked heading/block and QUILL announces "Opened <note>" (or, on
+ambiguity, an accessible chooser: "3 notes named Draft — choose one").
+New-tab and same-tab variants.</li>
+<li><strong>Create-on-follow:</strong> following a link to a note that
+does not exist offers "Create <note>?" and makes it (optionally from a
+template) — the Obsidian "just start linking" flow, spoken.</li>
+<li><strong>Rename propagation:</strong> renaming a note offers "Update
+12 inbound links?" with an accessible summary and one-undo
+application.</li>
+</ul>
+<p><strong>Model/impl.</strong> <code>links.py</code> (parser) +
+<code>resolve.py</code> (name→note, anchors, ambiguity). Editor gestures
+wire to Follow Link and to the autocomplete popup (reuse the
+intellisense popup machinery already in
+<code>main_frame_intellisense.py</code>). Links render as real anchors
+in preview/export via the existing <code>browser_preview</code>
+renderer, extended to resolve <code>[[...]]</code>.</p>
+<h3 id="43-backlinks-and-unlinked-mentions--the-graph-spoken">4.3
+Backlinks and unlinked mentions — the graph, spoken</h3>
+<p><strong>What.</strong> For the current note: <strong>Linked
+mentions</strong> ("what links here," with the linking sentence) and
+<strong>Unlinked mentions</strong> (notes that name this note's
+title/alias without linking, offering one-key "link it").</p>
+<p><strong>The magic (SR experience).</strong> <strong>Show
+Backlinks</strong> (a key) opens a pane/dialog: "5 notes link here."
+Each entry is an announced item reading "<Source note> — …the sentence
+containing the link…"; Enter opens the source <em>at that mention</em>.
+Unlinked mentions list the same way with a "Link this mention" action.
+This is the accessible replacement for the graph view and the backlinks
+pane in one: a walkable, counted, contextual list. A
+<strong>"neighborhood"</strong> command reads forward-links and
+backlinks together so you can traverse the web of notes purely by
+keyboard and ear.</p>
+<p><strong>Model/impl.</strong> Reverse adjacency from
+<code>index.py</code>; the "linking sentence" comes from the source
+note's text around the link offset (reuse the sentence-context logic
+already used by the F7 review and inline notes). Unlinked mentions =
+title/alias string search from <code>search.py</code> minus existing
+links.</p>
+<h3 id="44-vault-wide-search-and-the-quick-switcher">4.4 Vault-wide
+search and the quick switcher</h3>
+<p><strong>What.</strong> Instant full-text search across every note,
+and a name-jump quick switcher.</p>
+<p><strong>The magic (SR experience).</strong></p>
+<ul>
+<li><strong>Quick switcher</strong> (a prominent key, e.g. a reimagined
+Go-To-Note): a modal that filters note titles/aliases as you type,
+<strong>announces the result count</strong> ("7 matches"), arrow to move
+(each announced), Enter to open. Fuzzy and forgiving.</li>
+<li><strong>Search:</strong> a vault search that returns an
+<strong>accessible results list</strong> — note title, line number, and
+a snippet with the match — where Enter opens the note <em>at the
+matching line</em>. "Search as you type" announces the running count;
+"search within results" refines; recent searches are remembered. Regex
+and whole-word options are checkboxes with labels.</li>
+</ul>
+<p><strong>Model/impl.</strong> <code>search.py</code> — a
+<code>ripgrep</code>-backed scan when available (fast, no index to
+maintain) with a small in-process fallback; results ranked (title hits
+&gt; body hits, recency tiebreak). The quick switcher uses the
+title/alias resolver. Both surfaces are dialogs through
+<code>_show_modal_dialog</code> with <code>apply_modal_ids</code>.</p>
+<h3 id="45-global-tags--a-spoken-tag-pane">4.5 Global tags — a spoken
+tag pane</h3>
+<p><strong>What.</strong> Inline <code>#tag</code> and front-matter
+<code>tags:</code>, including nested <code>#area/subarea</code>, indexed
+vault-wide.</p>
+<p><strong>The magic (SR experience).</strong> <strong>Show
+Tags</strong> opens a list of every tag with counts ("#project — 24
+notes; #idea — 51"); selecting a tag lists the notes/blocks carrying it
+(Enter opens at the tag). Typing <code>#</code> offers <strong>tag
+autocomplete</strong> (existing tags first, announced). A tag can be
+renamed vault-wide with inbound-count confirmation, like link
+rename.</p>
+<p><strong>Model/impl.</strong> <code>index.py</code> tag map (tag →
+note/block occurrences), nested-tag aware. Autocomplete reuses the same
+popup as wikilinks. Ties into Story Studio element tags so a character's
+<code>#pov</code> shows in the vault tag index.</p>
+<h3 id="46-transclusion-embeds-and-block-references">4.6 Transclusion,
+embeds, and block references</h3>
+<p><strong>What.</strong> <code>![[Note]]</code> embeds a whole note;
+<code>![[Note#Heading]]</code> a section;
+<code>![[Note#^blockid]]</code> a single block. Assign a block id with
+<code>^blockid</code> at a paragraph's end.</p>
+<p><strong>The magic (SR experience).</strong> Because QUILL is plain
+text, an embed stays as <code>![[...]]</code> in the buffer (no silent
+expansion). But:</p>
+<ul>
+<li><strong>In preview and on compile/export</strong>, embeds are
+<strong>expanded</strong> with a spoken/announced "embedded from <note>"
+boundary, so a compiled manuscript or a shared HTML page contains the
+real content.</li>
+<li><strong>"Speak embed at cursor"</strong> reads the transcluded
+content aloud on demand without altering the buffer.</li>
+<li><strong>"Resolve embed inline"</strong> pulls the target's text into
+the document as one undo step, for when you want it materialized.</li>
+<li><strong>Block references:</strong> an <strong>"Add block
+reference"</strong> command mints a <code>^blockid</code> and copies a
+<code>[[Note#^blockid]]</code> link to the clipboard, announced — so
+quoting a specific paragraph elsewhere is one gesture.</li>
+</ul>
+<p><strong>Model/impl.</strong> <code>resolve.py</code> embed expansion
+(with cycle detection) feeds the <code>browser_preview</code> renderer
+and <code>compile_manuscript</code>. Block ids are parsed by
+<code>note.py</code>.</p>
+<h3 id="47-templates-and-daily-notes">4.7 Templates and daily notes</h3>
+<p><strong>What.</strong> Reusable note templates with variables;
+date-stamped daily notes.</p>
+<p><strong>The magic (SR experience).</strong></p>
+<ul>
+<li><strong>Insert template…</strong> — a picker of templates; on
+insert, any prompts (<code>{{prompt:Question}}</code>) are spoken and
+answered inline; <code>{{date}}</code>, <code>{{time}}</code>,
+<code>{{title}}</code>, and a cursor marker resolve automatically; focus
+lands where the cursor marker was, announced.</li>
+<li><strong>New note from template…</strong> — creates a note (name
+prompted or derived) pre-filled.</li>
+<li><strong>Open today's note</strong> — opens (creating from the daily
+template if absent) the note at the configured pattern
+(<code>Journal/{{date:YYYY-MM-DD}}.md</code>); <strong>Previous/Next
+daily note</strong> walk the calendar by key, announcing the date and
+whether it exists.</li>
+</ul>
+<p><strong>Model/impl.</strong> <code>templates.py</code> +
+<code>dailynotes.py</code>, extending the existing Snippet Gallery
+substitution rather than inventing a second engine. Settings hold the
+templates folder, daily-note folder, date format, and default
+templates.</p>
+<h3 id="48-sync-and-publish">4.8 Sync and publish</h3>
+<p><strong>What.</strong> Obsidian sells hosted Sync and Publish. QUILL
+keeps files yours and adds accessible helpers.</p>
+<p><strong>The magic (SR experience).</strong></p>
+<ul>
+<li><strong>Sync:</strong> QUILL does not host sync; the vault is plain
+files, so any sync (OneDrive, Dropbox, git) already works, and QUILL's
+external-change watch reloads safely. We add an optional <strong>Vault
+Git Sync</strong>: "Sync vault" runs commit/pull/push with an
+<strong>accessible conflict resolver</strong> (a spoken, itemized "these
+3 notes changed both places — keep mine / keep theirs / merge") instead
+of a diff view. Reuses the existing SSH/remote and safe-subprocess
+machinery.</li>
+<li><strong>Publish:</strong> extend the publishing framework two ways —
+<strong>Publish note</strong> (push a note to the existing WordPress
+connection, resolving <code>[[links]]</code> and embeds to real HTML),
+and <strong>Export vault as a linked site</strong> (a static HTML site
+with working links and a generated index, via the existing
+export/<code>browser_preview</code> path). Both announce what will be
+sent and ask first (network-egress-audited).</li>
+</ul>
+<p><strong>Model/impl.</strong> Git sync via a thin wx-free
+<code>vault/sync.py</code> over <code>safe_subprocess</code>; publish
+via the existing publishing providers + link/embed resolution.</p>
+<hr />
+<h2 id="5-accessibility-standards-the-consolidated-magic">5.
+Accessibility standards (the consolidated "magic")</h2>
+<p>These apply to every feature and are non-negotiable acceptance
+criteria:</p>
+<ul>
+<li><strong>Keyboard-complete and palette-discoverable.</strong> Insert
+link, follow link, backlinks, quick switcher, search, tags, insert
+template, daily note, sync, publish — each is a registered command with
+a friendly title, listed in the command palette (PRD principle 8) and
+assignable in the keymap editor. No mouse-only paths.</li>
+<li><strong>Spoken counts and outcomes.</strong> "7 matches," "5 notes
+link here," "#idea, 51 notes," "Linked to <note>," "Opened <note> at
+Chapter 3." The user never has to <em>look</em> to know the result.</li>
+<li><strong>Contextual, not just positional.</strong> Backlinks and
+search read the <em>sentence</em> around a hit, so the list is
+meaningful without opening each note.</li>
+<li><strong>Ambiguity is a spoken choice, never a guess.</strong>
+Duplicate titles → an accessible chooser; a broken link → "no note named
+X — create it?"</li>
+<li><strong>Quiet by default.</strong> Indexing, link updates, and
+previews never chatter; they announce on explicit action and summarize
+bulk operations once (consistent with the dialog-transitions and
+preview-refresh work).</li>
+<li><strong>Focus is deliberate.</strong> Every new pane/dialog lands
+focus on its content, returns via Escape/F6, and manages focus per the
+accessibility rules; the Spoken Echo captures any fleeting
+announcement.</li>
+<li><strong>Plain text stays sacred.</strong> The buffer is never
+silently rewritten; links and embeds live as text and are resolved by
+voice/preview/export, preserving QUILL's core invariant.</li>
+</ul>
+<hr />
+<h2 id="6-phased-delivery">6. Phased delivery</h2>
+<p>Each phase is independently shippable, additive, and accessible on
+its own.</p>
+<ol type="1">
+<li><strong>Phase 0 — Vault model + indexing engine. SHIPPED
+(core).</strong> <code>quill/core/vault</code> (model, note parsing,
+resolver, link index). <em>Deferred within this phase:</em> a
+background/incremental indexer (v1 scans on open), a dedicated Vault
+Explorer window, and the full Story-Studio-as-collection refactor (the
+two packages already share the front-matter/heading machinery).</li>
+<li><strong>Phase 1 — Wikilinks. SHIPPED.</strong> Parser, Follow Link
+(open at heading/block), create-on-follow, and an ambiguity chooser.
+<em>Deferred:</em> <code>[[</code> autocomplete and preview/export link
+resolution.</li>
+<li><strong>Phase 2 — Backlinks. SHIPPED.</strong> Reverse index + a
+spoken "What links here" list with linking-line context.
+<em>Deferred:</em> an unlinked-mentions UI (the core
+<code>unlinked_mentions</code> exists), neighborhood navigation, and
+rename-with-link-update.</li>
+<li><strong>Phase 3 — Vault-wide search &amp; quick switcher.</strong>
+ripgrep-backed search results list + fuzzy name switcher.</li>
+<li><strong>Phase 4 — Global tags.</strong> Tag index + tag pane +
+<code>#</code> autocomplete + tag rename.</li>
+<li><strong>Phase 5 — Transclusion/embeds/block refs.</strong> Expansion
+in preview/compile + speak/resolve-inline + block ids.</li>
+<li><strong>Phase 6 — Templates &amp; daily notes.</strong> Template
+engine (extending Snippets) + daily-note navigation.</li>
+<li><strong>Phase 7 — Sync &amp; publish.</strong> Vault Git Sync with
+accessible conflict resolution + Publish note / Export vault as a linked
+site.</li>
+</ol>
+<p>A natural first release milestone is <strong>Phases 0–2</strong> (a
+vault you can link and traverse by ear) — that alone is the "single
+biggest missing piece."</p>
+<hr />
+<h2 id="7-risks-and-open-questions">7. Risks and open questions</h2>
+<ul>
+<li><strong>Link resolution ambiguity.</strong> Title-based links break
+with duplicate titles; path-based links break on move. Recommendation:
+resolve by title/alias with a deterministic disambiguation (folder
+proximity, then a spoken chooser), and offer link-update on rename/move.
+Decide the default early.</li>
+<li><strong>Index scale and performance.</strong> Large vaults (10k+
+notes) need incremental, cached, background indexing; prefer
+<code>ripgrep</code> for search to avoid maintaining a heavy inverted
+index. Benchmark before Phase 3.</li>
+<li><strong>Coexistence with the per-document world.</strong> The
+editor, tabs, bookmarks, and inline notes must keep working unchanged
+when no vault is open. The vault is additive; guard every entry point
+behind "a vault is active."</li>
+<li><strong>Philosophy tension.</strong> We deliberately do
+<strong>not</strong> adopt live-preview/WYSIWYG; links stay as
+<code>[[text]]</code>. Confirm this is the intended stance (it is what
+keeps QUILL's plain-text invariant and screen-reader clarity).</li>
+<li><strong>Wikilink vs Markdown coexistence.</strong> The parser must
+not mangle <code>[label](url)</code>, code spans, or math; needs the
+same care as the front-matter and thematic-break work.</li>
+<li><strong>Rename/move propagation</strong> touches many files at once
+— must be atomic-ish, undoable, and clearly summarized.</li>
+<li><strong>Migration.</strong> Existing Story Studio projects must open
+unchanged as vaults/collections; write a one-time, non-destructive
+adoption path.</li>
+</ul>
+<hr />
+<h2 id="8-non-goals">8. Non-goals</h2>
+<ul>
+<li><strong>Graph view and Canvas as visual surfaces.</strong> We
+deliver the link <em>relationships</em> as accessible lists and
+navigation; we do not build a rendered graph or an infinite visual
+canvas.</li>
+<li><strong>A hosted, paid sync/publish service.</strong> QUILL keeps
+files yours; we add helpers over the user's own sync and the existing
+publishing framework, not a subscription backend.</li>
+<li><strong>A second editing paradigm.</strong> No WYSIWYG/live-preview
+mode; the plain-text, hidden-codes editor remains the one editor.</li>
+<li><strong>A plugin marketplace rivaling Obsidian's.</strong>
+Extensibility rides the existing Quillin system; we are not building a
+new marketplace here.</li>
+</ul>
+<hr />
+<h2 id="9-summary">9. Summary</h2>
+<p>Obsidian's magic is a model — files, links, backlinks, search —
+presented visually. QUILL can take that model and present it <strong>by
+voice and keyboard</strong>, which for a screen-reader user is not a
+compromise but an upgrade: a backlinks <em>list</em> beats a backlinks
+<em>picture</em>, an <em>announced</em> switcher beats a floating one, a
+<em>spoken</em> result count beats a highlighted page. The one real
+prerequisite is a <strong>Vault</strong> — a persistent, indexed body of
+linked notes — into which Story Studio folds as a curated view. Build
+the vault and its indexes first (Phase 0), then links and backlinks
+(Phases 1–2), and QUILL already closes the single biggest gap; the
+remaining phases (search, tags, embeds, templates, daily notes,
+sync/publish) each extend the same backbone. The result is not "Obsidian
+with a screen reader bolted on," but a linked-knowledge tool designed,
+from the first keystroke, to be <strong>magical without a
+screen</strong>.</p>
+<hr />
+<h2 id="10-what-shipped-so-far-phases-02-2026-06-30">10. What shipped so
+far (Phases 0–2, 2026-06-30)</h2>
+<p>The first milestone — a vault you can link and traverse by ear — is
+complete and documented. It is captured for users in
+<strong>CHANGELOG.md</strong>, the <strong>release notes</strong>
+(Accessible Vault), the <strong>user guide</strong> (Tools → Vault), and
+<strong>PRD §5.89d</strong>.</p>
+<p><strong>Core (<code>quill/core/vault</code>, wx-free, strict-typed,
+TDD).</strong></p>
+<ul>
+<li><code>links.py</code> — the wikilink codec (<code>[[Note]]</code>,
+<code>[[Note|alias]]</code>, <code>[[Note#Heading]]</code>,
+<code>[[Note#^block]]</code>, <code>![[embed]]</code>), code-span/fence
+aware, plus <code>link_at_offset</code> (caret → link).</li>
+<li><code>note.py</code> — <code>parse_note</code> → title (front matter
+/ H1 / stem), aliases, tags (front matter + inline <code>#tag</code>),
+headings, block ids, and outgoing links, with file-relative
+offsets.</li>
+<li><code>vault.py</code> — <code>scan_vault</code> walks a folder into
+<code>NoteInfo</code> + raw texts, skipping the <code>.quill</code>
+cache.</li>
+<li><code>resolve.py</code> — name/anchor resolution reporting
+<strong>unresolved</strong> (→ create-on-follow) and
+<strong>ambiguous</strong> (→ a spoken chooser, never a guess).</li>
+<li><code>index.py</code> — forward/reverse adjacency,
+<code>backlinks()</code> with linking-line context, and
+<code>unlinked_mentions()</code>.</li>
+</ul>
+<p><strong>UI (<code>quill/ui/main_frame_vault.py</code>,
+<code>quill/ui/vault_dialogs.py</code>).</strong>
+<code>Tools → Vault</code>: <strong>Open Vault...</strong>,
+<strong>Follow Wikilink</strong>, <strong>Show Backlinks</strong>
+(accessible list, spoken count + context), <strong>Insert Link to
+Note...</strong>. Commands are palette-reachable and assignable;
+<code>Settings.vault_root</code> remembers the active vault.</p>
+<p><strong>Deferred to later phases</strong> (tracked in §6):
+<code>[[</code> autocomplete, preview/export link resolution, an
+unlinked-mentions UI, neighborhood navigation, rename-with-link-update,
+a Vault Explorer window, background/incremental indexing, and the full
+Story-Studio-as-collection refactor — then Phases 3–7 (search + quick
+switcher, tags, embeds, templates + daily notes, sync/publish).</p>
+</body>
+</html>

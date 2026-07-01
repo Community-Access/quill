@@ -520,6 +520,8 @@ from quill.ui.main_frame_simple_open import SimpleOpenMixin
 from quill.ui.main_frame_speech import SpeechCommandsMixin
 from quill.ui.main_frame_ssh import SshEditingMixin
 from quill.ui.main_frame_statusbar import StatusBarMixin, _StatusBarCell
+from quill.ui.main_frame_story_studio import StoryStudioMixin
+from quill.ui.main_frame_vault import VaultMixin
 from quill.ui.main_frame_verbosity import VerbosityCommandsMixin
 from quill.ui.main_frame_watch_profile import WatchProfileDialogMixin
 from quill.ui.notebook_panel import NotebookEntriesPanel
@@ -869,6 +871,8 @@ class MainFrame(
     IntellisensePopupMixin,
     LineCommandsMixin,
     ListStudioMixin,
+    StoryStudioMixin,
+    VaultMixin,
     DictationHotkeysMixin,
     SectionMoveMixin,
     CopyTrayMixin,
@@ -3617,6 +3621,8 @@ class MainFrame(
         self._register_braille_repair_commands()
         self._register_speech_commands()
         self._register_list_studio_commands()
+        self._register_story_studio_commands()
+        self._register_vault_commands()
         self._register_dictation_hotkey_commands()
 
     def _apply_accelerators(self) -> None:
@@ -21676,30 +21682,29 @@ class MainFrame(
             re.sub(r"[^a-zA-Z0-9]+", "-", tab.document.name or "preview").strip("-") or "preview"
         )
         preview_path = preview_dir / f"{tab_index}-{safe_name}.html"
-        payload = render_preview_html(title, text, kind, anchor, live=True)
+        payload = render_preview_html(title, text, kind, anchor)
         temp_path = preview_path.with_suffix(".tmp")
         temp_path.write_text(payload, encoding="utf-8")
         os.replace(temp_path, preview_path)
         browser_choice = normalize_browser_choice(self.settings.preview_browser)
         session = self._browser_preview_session
-        if (
+        is_new = (
             session is None
             or session.tab_index != tab_index
             or session.preview_path != preview_path
             or session.browser_choice != browser_choice
-        ):
-            open_preview_url(preview_path.as_uri(), browser_choice)
-            self._browser_preview_session = _BrowserPreviewSession(
-                tab_index=tab_index,
-                preview_path=preview_path,
-                browser_choice=browser_choice,
-                title=title,
-            )
-            self._set_status(
-                f"Opened browser preview in {browser_choice_label_for_value(browser_choice)}"
-            )
-            return
-        self._set_status("Refreshed browser preview")
+        )
+        # Re-open on each invocation: an explicit, user-initiated refresh that
+        # replaces the old forced <meta refresh> once-a-second poll.
+        open_preview_url(preview_path.as_uri(), browser_choice)
+        self._browser_preview_session = _BrowserPreviewSession(
+            tab_index=tab_index,
+            preview_path=preview_path,
+            browser_choice=browser_choice,
+            title=title,
+        )
+        opened = f"Opened browser preview in {browser_choice_label_for_value(browser_choice)}"
+        self._set_status(opened if is_new else "Refreshed browser preview")
 
     def preview_in_app(self) -> None:
         if not self._document_tabs:
