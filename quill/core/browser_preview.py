@@ -149,9 +149,7 @@ def render_preview_body(text: str, kind: str, dark: bool = False) -> str:
     return _maybe_dark(f"<pre>{html.escape(text)}</pre>", dark)
 
 
-def render_preview_html(
-    title: str, text: str, kind: str, start_anchor: str | None = None
-) -> str:
+def render_preview_html(title: str, text: str, kind: str, start_anchor: str | None = None) -> str:
     # Deliberately no ``<meta http-equiv="refresh">``: a preview page never
     # force-reloads itself on a timer. Such a poll re-rendered the whole page
     # once a second, which made the open tab flicker and, for a screen-reader
