@@ -216,6 +216,7 @@ class Settings:
     watch_folder_enabled: bool = False
     watch_folder_path: str = ""
     startup_folder: str = ""
+    vault_root: str = ""  # active Accessible Vault folder ("" = no vault open)
     # #620: Simple File Open dialog. When true, File > Open... shows a
     # keyboard-friendly picker with a small filter, recent locations, and
     # a hidden-files toggle. The standard Windows file dialog is still
@@ -728,6 +729,7 @@ class Settings:
         watch_folder_enabled = bool(data.get("watch_folder_enabled", False))
         watch_folder_path = str(data.get("watch_folder_path", "")).strip()
         startup_folder = str(data.get("startup_folder", "")).strip()
+        vault_root = str(data.get("vault_root", "")).strip()
         # #620: Simple File Open dialog opt-in.
         use_simple_file_dialog = bool(data.get("use_simple_file_dialog", False))
         watch_folder_include_subfolders = bool(data.get("watch_folder_include_subfolders", False))
@@ -1152,6 +1154,7 @@ class Settings:
             watch_folder_enabled=watch_folder_enabled,
             watch_folder_path=watch_folder_path,
             startup_folder=startup_folder,
+            vault_root=vault_root,
             use_simple_file_dialog=use_simple_file_dialog,
             watch_folder_include_subfolders=watch_folder_include_subfolders,
             watch_folder_process_existing=watch_folder_process_existing,
