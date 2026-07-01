@@ -4,6 +4,8 @@ from pathlib import Path
 
 from quill.core import read_aloud as read_aloud_module
 from quill.core.read_aloud import (
+    KOKORO_VOICE_GRADES,
+    KOKORO_VOICES,
     ReadAloudController,
     ReadAloudUnavailableError,
     discover_espeak_executable,
@@ -361,6 +363,79 @@ def test_synthesize_with_kokoro_raises_when_package_missing(monkeypatch, tmp_pat
         assert "kokoro" in str(exc).lower()
     else:
         raise AssertionError("Expected ReadAloudUnavailableError")
+
+
+_CANONICAL_KOKORO_IDS: set[str] = {
+    # American female (11)
+    "af_heart",
+    "af_alloy",
+    "af_aoede",
+    "af_bella",
+    "af_jessica",
+    "af_kore",
+    "af_nicole",
+    "af_nova",
+    "af_river",
+    "af_sarah",
+    "af_sky",
+    # American male (9)
+    "am_adam",
+    "am_echo",
+    "am_eric",
+    "am_fenrir",
+    "am_liam",
+    "am_michael",
+    "am_onyx",
+    "am_puck",
+    "am_santa",
+    # British female (4)
+    "bf_alice",
+    "bf_emma",
+    "bf_isabella",
+    "bf_lily",
+    # British male (4)
+    "bm_daniel",
+    "bm_fable",
+    "bm_george",
+    "bm_lewis",
+}
+
+
+def test_kokoro_voices_canonical_28() -> None:
+    ids = {vid for vid, _ in KOKORO_VOICES}
+    assert ids == _CANONICAL_KOKORO_IDS, (
+        f"missing={_CANONICAL_KOKORO_IDS - ids}, unexpected={ids - _CANONICAL_KOKORO_IDS}"
+    )
+
+
+def test_kokoro_voices_af_jessica_present() -> None:
+    ids = {vid for vid, _ in KOKORO_VOICES}
+    assert "af_jessica" in ids, "af_jessica is an official Kokoro voice and must not be omitted"
+
+
+def test_kokoro_voices_am_santa_not_zeus() -> None:
+    ids = {vid for vid, _ in KOKORO_VOICES}
+    assert "am_santa" in ids, "canonical American male voice is am_santa"
+    assert "am_zeus" not in ids, "am_zeus is not a canonical Kokoro voice"
+
+
+def test_kokoro_voice_grades_cover_all_28() -> None:
+    ids = {vid for vid, _ in KOKORO_VOICES}
+    assert ids == set(KOKORO_VOICE_GRADES.keys()), (
+        "KOKORO_VOICE_GRADES must cover every voice in KOKORO_VOICES"
+    )
+
+
+def test_kokoro_voice_grade_af_jessica_is_d() -> None:
+    assert KOKORO_VOICE_GRADES["af_jessica"] == "D", (
+        "af_jessica has official grade D — grade must be stored as metadata, never used to filter"
+    )
+
+
+def test_list_kokoro_voices_af_jessica_survives_all_filters() -> None:
+    voices = list_kokoro_voices()
+    ids = [v.id for v in voices]
+    assert "af_jessica" in ids, "af_jessica must appear in list_kokoro_voices() unconditionally"
 
 
 # ---------------------------------------------------------------------------

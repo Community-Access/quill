@@ -210,9 +210,7 @@ def test_publishing_menu_is_split_into_read_and_locked_send_halves() -> None:
     # mirroring the core.glow pattern (ids stay unconditional; only .Append()
     # is gated).
     source = _menu_source()
-    assert (
-        'publishing_read_enabled = self._feature_enabled("future.publishing_read")' in source
-    )
+    assert 'publishing_read_enabled = self._feature_enabled("future.publishing_read")' in source
     assert 'publishing_send_enabled = self._feature_enabled("future.publishing")' in source
     assert (
         "if publishing_read_enabled or publishing_send_enabled:\n"
