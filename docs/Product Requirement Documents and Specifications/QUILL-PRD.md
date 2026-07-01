@@ -3523,7 +3523,7 @@ QUILL keeps formatting codes hidden so the editing buffer stays clean plain text
 
 ### 5.89c Story Studio — manuscript and long-form organization
 
-**Goal.** Give a screen-reader user a first-class way to organize a book-length project — manuscript, characters, places, plot threads, research, and brainstorming — without a visual corkboard, while keeping every word in plain, portable text. Optional and additive; inert until opened. Design plan: `docs/planning/quill-story-studio-manuscript-organization-plan.md`.
+**Goal.** Give a screen-reader user a first-class way to organize a book-length project — manuscript, characters, places, plot threads, research, and brainstorming — without a visual corkboard, while keeping every word in plain, portable text. Optional and additive; inert until opened.
 
 **Model (`quill/core/story`, wx-free, strict-typed).** A *project* is a folder of plain-text files plus an advisory `project.quillstory.json` sidecar recording a title, the ordered manuscript spine (relative POSIX paths), and non-manuscript *elements* (`character`, `location`, `plot`, `research`, `brainstorm`). Loading is corrupt-tolerant in the spirit of the settings-migration delta store (a bad entry is dropped, the rest kept) and the sidecar never duplicates prose: with no sidecar the folder is still a project (its text files become the manuscript spine), so deleting it loses nothing. Persistence uses `write_json_atomic`.
 
