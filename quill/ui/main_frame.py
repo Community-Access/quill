@@ -506,7 +506,6 @@ from quill.ui.main_frame_language_detect import LanguageDetectMixin
 from quill.ui.main_frame_line_commands import LineCommandsMixin
 from quill.ui.main_frame_list_studio import ListStudioMixin
 from quill.ui.main_frame_menu import MenuBuilderMixin
-from quill.ui.main_frame_story_studio import StoryStudioMixin
 from quill.ui.main_frame_notebook import NotebookUIMixin
 from quill.ui.main_frame_power_tools import PowerToolsActionsMixin
 from quill.ui.main_frame_power_tools_menu import PowerToolsMenuMixin
@@ -521,6 +520,7 @@ from quill.ui.main_frame_simple_open import SimpleOpenMixin
 from quill.ui.main_frame_speech import SpeechCommandsMixin
 from quill.ui.main_frame_ssh import SshEditingMixin
 from quill.ui.main_frame_statusbar import StatusBarMixin, _StatusBarCell
+from quill.ui.main_frame_story_studio import StoryStudioMixin
 from quill.ui.main_frame_verbosity import VerbosityCommandsMixin
 from quill.ui.main_frame_watch_profile import WatchProfileDialogMixin
 from quill.ui.notebook_panel import NotebookEntriesPanel
