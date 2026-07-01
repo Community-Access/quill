@@ -30,7 +30,5 @@ def test_empty_manuscript_compiles_to_empty_string() -> None:
 
 def test_custom_separator_is_used() -> None:
     project = StoryProject(title="B", manuscript=("a.md", "b.md"))
-    out = compile_manuscript(
-        project, _reader({"a.md": "A", "b.md": "B"}), separator="\n\n---\n\n"
-    )
+    out = compile_manuscript(project, _reader({"a.md": "A", "b.md": "B"}), separator="\n\n---\n\n")
     assert out == "A\n\n---\n\nB"
