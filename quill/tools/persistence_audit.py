@@ -119,6 +119,7 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/inline_notes.py::save": "content",
     "core/macros.py::save": "content",
     "core/notebook_store.py::save_notebook": "content",
+    "core/story/storage.py::save_project": "content",
     "core/prompt_library.py::_save": "content",
     "core/skill_store.py::_save_state": "content",
     "core/sessions.py::save_session": "content",
