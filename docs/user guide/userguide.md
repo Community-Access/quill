@@ -563,6 +563,31 @@ The palette is one of the fastest ways to learn Quill. It supports query modes:
 
 The palette also learns from usage. Commands you use more often rise naturally.
 
+#### Story Studio — organize a whole book
+
+**Tools → Story Studio...** (also on the command palette as *Story Studio*) opens a **binder** for a project folder — a keyboard-navigable tree of your whole project:
+
+- **Manuscript** — your chapters and scenes, derived from the Markdown headings in your manuscript files. Press Enter on a chapter to open its file at that heading.
+- **Characters, Places, Plot threads, Research, Brainstorm** — one entry per element file. Press Enter to open it.
+
+Two buttons act on the binder:
+
+- **Edit details...** — with an element selected, opens an accessible form for that element's structured fields (a character's Role, Goal, Motivation, Arc; a plot thread's Status; tags). The values are saved as front matter at the top of the element's file; blank fields are dropped and unknown keys you added by hand are preserved.
+- **Compile manuscript...** — concatenates every manuscript file, in order, into a new document (front matter stripped). Use **File → Export** on that document to save it as Markdown, HTML, Word, DAISY, and more.
+
+A Story project is just a folder of plain-text files plus a small `project.quillstory.json` companion that records the binder order and element groups. The companion is advisory, so deleting it never loses any writing. Story Studio is optional and additive — it changes nothing about ordinary editing.
+
+#### Vault — linked notes and backlinks
+
+**Tools → Vault** brings Obsidian-style linked notes to QUILL, built for the keyboard and the ear rather than a visual graph.
+
+- **Open Vault...** — choose a folder of notes; QUILL scans and indexes it, remembers it, and announces "Vault *name*: N notes, M links." Do this once per notes folder.
+- **Follow Wikilink** — put the cursor on a `[[Note]]` link and run this to open that note (a `[[Note#Heading]]` opens at the heading, `[[Note#^block]]` at the block). If the note does not exist yet, QUILL offers to **create** it; if several notes share the name, QUILL asks which one — it never guesses.
+- **Show Backlinks** — lists every note that links to the note you are in, each read aloud with the sentence the link sits in; press Enter on one to open it at that mention. QUILL announces how many notes link here.
+- **Insert Link to Note...** — pick a note by title from a list and QUILL inserts `[[Title]]` at the cursor.
+
+Write links by typing `[[Note Title]]` yourself, or use **Insert Link to Note...**. Links are plain text in your file — nothing is hidden — and resolve when you follow them or preview/export. A vault is just a folder of Markdown files plus a small `.quill` cache; delete the cache and nothing is lost. These commands are on the command palette and can be given keyboard shortcuts in the Keymap Editor. (This is the first instalment; vault-wide search, a tag pane, embeds, templates, and daily notes are planned.)
+
 #### Writing and language
 
 - **Word Count...**
