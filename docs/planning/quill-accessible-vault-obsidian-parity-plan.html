@@ -192,9 +192,11 @@ capability that Obsidian delivers through a <em>visual</em> surface (the
 graph, the canvas, hover-preview, the sidebar panes) is delivered in
 QUILL through a <em>spoken, keyboard-native</em> surface that is faster
 and clearer for a screen-reader user — not a lesser fallback, but the
-primary experience. <strong>Status:</strong> Proposed plan (not
-scheduled). Builds on and reshapes <code>quill/core/story</code> (Story
-Studio).</p>
+primary experience. <strong>Status:</strong> In progress. <strong>Phases
+0–2 are shipped</strong> (a vault you can link and traverse by ear — the
+single biggest gap closed); Phases 3–7 remain proposed. Builds on and
+reshapes <code>quill/core/story</code> (Story Studio). See §6 for the
+per-phase status and §10 for what shipped.</p>
 <hr />
 <h2 id="1-executive-summary">1. Executive summary</h2>
 <p>Obsidian's power is not its looks. It is a small set of ideas —
@@ -605,17 +607,21 @@ voice/preview/export, preserving QUILL's core invariant.</li>
 <p>Each phase is independently shippable, additive, and accessible on
 its own.</p>
 <ol type="1">
-<li><strong>Phase 0 — Vault model + explorer + indexing engine.</strong>
-<code>quill/core/vault</code> (model, indexes, storage, background
-indexer). Refactor Story Studio onto the vault (Collection = view).
-Vault Explorer window. No links yet — but the backbone every later phase
-needs.</li>
-<li><strong>Phase 1 — Wikilinks.</strong> Parser, Follow Link,
-<code>[[</code> autocomplete, create-on-follow, preview/export
-resolution. The single biggest user-visible win.</li>
-<li><strong>Phase 2 — Backlinks &amp; unlinked mentions.</strong>
-Reverse index + "What links here" pane + unlinked-mention linking +
-neighborhood navigation. Rename-with-link-update.</li>
+<li><strong>Phase 0 — Vault model + indexing engine. SHIPPED
+(core).</strong> <code>quill/core/vault</code> (model, note parsing,
+resolver, link index). <em>Deferred within this phase:</em> a
+background/incremental indexer (v1 scans on open), a dedicated Vault
+Explorer window, and the full Story-Studio-as-collection refactor (the
+two packages already share the front-matter/heading machinery).</li>
+<li><strong>Phase 1 — Wikilinks. SHIPPED.</strong> Parser, Follow Link
+(open at heading/block), create-on-follow, and an ambiguity chooser.
+<em>Deferred:</em> <code>[[</code> autocomplete and preview/export link
+resolution.</li>
+<li><strong>Phase 2 — Backlinks. SHIPPED.</strong> Reverse index + a
+spoken "What links here" list with linking-line context.
+<em>Deferred:</em> an unlinked-mentions UI (the core
+<code>unlinked_mentions</code> exists), neighborhood navigation, and
+rename-with-link-update.</li>
 <li><strong>Phase 3 — Vault-wide search &amp; quick switcher.</strong>
 ripgrep-backed search results list + fuzzy name switcher.</li>
 <li><strong>Phase 4 — Global tags.</strong> Tag index + tag pane +
@@ -693,5 +699,47 @@ sync/publish) each extend the same backbone. The result is not "Obsidian
 with a screen reader bolted on," but a linked-knowledge tool designed,
 from the first keystroke, to be <strong>magical without a
 screen</strong>.</p>
+<hr />
+<h2 id="10-what-shipped-so-far-phases-02-2026-06-30">10. What shipped so
+far (Phases 0–2, 2026-06-30)</h2>
+<p>The first milestone — a vault you can link and traverse by ear — is
+complete and documented. It is captured for users in
+<strong>CHANGELOG.md</strong>, the <strong>release notes</strong>
+(Accessible Vault), the <strong>user guide</strong> (Tools → Vault), and
+<strong>PRD §5.89d</strong>.</p>
+<p><strong>Core (<code>quill/core/vault</code>, wx-free, strict-typed,
+TDD).</strong></p>
+<ul>
+<li><code>links.py</code> — the wikilink codec (<code>[[Note]]</code>,
+<code>[[Note|alias]]</code>, <code>[[Note#Heading]]</code>,
+<code>[[Note#^block]]</code>, <code>![[embed]]</code>), code-span/fence
+aware, plus <code>link_at_offset</code> (caret → link).</li>
+<li><code>note.py</code> — <code>parse_note</code> → title (front matter
+/ H1 / stem), aliases, tags (front matter + inline <code>#tag</code>),
+headings, block ids, and outgoing links, with file-relative
+offsets.</li>
+<li><code>vault.py</code> — <code>scan_vault</code> walks a folder into
+<code>NoteInfo</code> + raw texts, skipping the <code>.quill</code>
+cache.</li>
+<li><code>resolve.py</code> — name/anchor resolution reporting
+<strong>unresolved</strong> (→ create-on-follow) and
+<strong>ambiguous</strong> (→ a spoken chooser, never a guess).</li>
+<li><code>index.py</code> — forward/reverse adjacency,
+<code>backlinks()</code> with linking-line context, and
+<code>unlinked_mentions()</code>.</li>
+</ul>
+<p><strong>UI (<code>quill/ui/main_frame_vault.py</code>,
+<code>quill/ui/vault_dialogs.py</code>).</strong>
+<code>Tools → Vault</code>: <strong>Open Vault...</strong>,
+<strong>Follow Wikilink</strong>, <strong>Show Backlinks</strong>
+(accessible list, spoken count + context), <strong>Insert Link to
+Note...</strong>. Commands are palette-reachable and assignable;
+<code>Settings.vault_root</code> remembers the active vault.</p>
+<p><strong>Deferred to later phases</strong> (tracked in §6):
+<code>[[</code> autocomplete, preview/export link resolution, an
+unlinked-mentions UI, neighborhood navigation, rename-with-link-update,
+a Vault Explorer window, background/incremental indexing, and the full
+Story-Studio-as-collection refactor — then Phases 3–7 (search + quick
+switcher, tags, embeds, templates + daily notes, sync/publish).</p>
 </body>
 </html>
