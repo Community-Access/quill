@@ -14,6 +14,7 @@ from __future__ import annotations
 
 from quill.core.story.binder import BinderNode, build_binder
 from quill.core.story.compile import compile_manuscript
+from quill.core.story.fields import FieldRow, FieldSpec, build_rows, collect_fields
 from quill.core.story.frontmatter import join_front_matter, split_front_matter
 from quill.core.story.manuscript import Heading, iter_headings
 from quill.core.story.model import ElementKind, StoryElement, StoryProject, new_element
@@ -23,10 +24,14 @@ __all__ = [
     "PROJECT_FILENAME",
     "BinderNode",
     "ElementKind",
+    "FieldRow",
+    "FieldSpec",
     "Heading",
     "StoryElement",
     "StoryProject",
     "build_binder",
+    "build_rows",
+    "collect_fields",
     "compile_manuscript",
     "iter_headings",
     "join_front_matter",

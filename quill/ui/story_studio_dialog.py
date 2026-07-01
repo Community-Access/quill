@@ -40,12 +40,15 @@ class StoryStudioDialog:
         project: StoryProject,
         read_text: Callable[[str], str],
         on_open: Callable[[str, int | None], None] | None = None,
+        on_edit_details: Callable[[str, str], None] | None = None,
     ) -> None:
         self._wx = wx
         self._project = project
         self._read_text = read_text
         self._on_open = on_open
+        self._on_edit_details = on_edit_details
         self._root_node = build_binder(project, read_text)
+        self._element_by_id = {element.id: element for element in project.elements}
         self._tree: Any = None
         self._dialog: Any = None
         self._node_by_item: dict[Any, BinderNode] = {}
@@ -70,6 +73,17 @@ class StoryStudioDialog:
             self._on_open(*target)
         return True
 
+    def edit_details(self, node: BinderNode) -> bool:
+        """Open the details form for an element node. Returns True if it applied."""
+        if node.node_type != "element" or node.element_id is None:
+            return False
+        element = self._element_by_id.get(node.element_id)
+        if element is None:
+            return False
+        if self._on_edit_details is not None:
+            self._on_edit_details(element.path, element.kind.value)
+        return True
+
     # --- wx construction (no display in unit tests) -----------------------
 
     def populate(self, dialog: Any) -> Any:
@@ -89,8 +103,22 @@ class StoryStudioDialog:
         tree.Expand(root_item)
         tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self._on_item_activated)
         outer.Add(tree, 1, wx.EXPAND | wx.ALL, 8)
+        edit_button = wx.Button(dialog, label="&Edit details...")
+        edit_button.Bind(wx.EVT_BUTTON, self._on_edit_details_button)
+        outer.Add(edit_button, 0, wx.LEFT | wx.BOTTOM, 8)
         dialog.SetSizer(outer)
         return outer
+
+    def _selected_node(self) -> BinderNode | None:
+        if self._tree is None:
+            return None
+        item = self._tree.GetSelection()
+        return self._node_by_item.get(item) if item else None
+
+    def _on_edit_details_button(self, _event: Any) -> None:
+        node = self._selected_node()
+        if node is None or not self.edit_details(node):
+            self._wx.Bell()
 
     def _add_node(self, tree: Any, parent_item: Any, node: BinderNode) -> Any:
         if parent_item is None:

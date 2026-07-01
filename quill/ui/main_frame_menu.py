@@ -1562,10 +1562,15 @@ class MenuBuilderMixin:
         self._id_dev_console_ts = wx.NewIdRef()
         self._id_dev_copy_diagnostic = wx.NewIdRef()
         self._id_dev_restart_ts_worker = wx.NewIdRef()
+        self._id_open_story_studio = wx.NewIdRef()
         tools_menu = wx.Menu()
         tools_menu.Append(
             self._id_palette,
             self._menu_label(_("&Command Palette..."), "app.command_palette"),
+        )
+        tools_menu.Append(
+            self._id_open_story_studio,
+            self._menu_label(_("Story &Studio..."), "story.open_studio"),
         )
         tools_menu.AppendSeparator()
 
@@ -2614,6 +2619,9 @@ class MenuBuilderMixin:
             id=self._id_batch_convert_export,
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_palette(), id=self._id_palette)
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.open_story_studio(), id=self._id_open_story_studio
+        )
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.open_general_preferences(), id=self._id_preferences
         )

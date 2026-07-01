@@ -277,6 +277,7 @@
   "quill/ui/main_frame_speech.py::SpeechCommandsMixin.transcribe_audio_offline::wx.FileDialog": "native",
   "quill/ui/main_frame_ssh.py::SshEditingMixin._request_for_site::wx.PasswordEntryDialog": "native",
   "quill/ui/main_frame_statusbar.py::StatusBarMixin.open_status_bar_settings::wx.Dialog": "hardened_custom",
+  "quill/ui/main_frame_story_studio.py::StoryStudioMixin._edit_story_element_details::wx.Dialog": "hardened_custom",
   "quill/ui/main_frame_story_studio.py::StoryStudioMixin.open_story_studio::wx.Dialog": "hardened_custom",
   "quill/ui/main_frame_story_studio.py::StoryStudioMixin.open_story_studio::wx.DirDialog": "native",
   "quill/ui/main_frame_verbosity.py::VerbosityCommandsMixin.open_verbosity_preferences::wx.Dialog": "hardened_custom",

@@ -64,6 +64,7 @@ class StoryStudioMixin:
             project=project,
             read_text=read_text,
             on_open=lambda rel, offset: self._open_story_node(folder, rel, offset),
+            on_edit_details=lambda rel, kind: self._edit_story_element_details(folder, rel, kind),
         )
         dialog = wx.Dialog(
             self.frame,
@@ -96,6 +97,58 @@ class StoryStudioMixin:
                 text = ""
             line = offset_to_line(text, offset)
         self.open_file(path, line=line)
+
+    def _edit_story_element_details(self, folder: Path, rel_path: str, kind_value: str) -> None:
+        """Open the details form for an element file and save on OK."""
+        from quill.core.story import split_front_matter
+        from quill.core.story.model import ElementKind
+        from quill.ui.dialog_contract import apply_modal_ids
+        from quill.ui.story_element_form_dialog import StoryElementFormDialog
+
+        wx = self._wx
+        path = folder / rel_path
+        try:
+            text = path.read_text(encoding="utf-8")
+        except OSError:
+            text = ""
+        fields, body = split_front_matter(text)
+        form = StoryElementFormDialog(
+            wx,
+            kind=ElementKind.coerce(kind_value),
+            fields=fields,
+            on_save=lambda new_fields: self._write_story_element(path, new_fields, body),
+        )
+        dialog = wx.Dialog(
+            self.frame,
+            title=f"Details - {path.stem}",
+            style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
+        )
+        outer = form.populate(dialog)
+        buttons = dialog.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL)
+        outer.Add(buttons, 0, wx.EXPAND | wx.ALL, 10)
+        apply_modal_ids(
+            dialog,
+            affirmative_id=wx.ID_OK,
+            affirmative_label="&Save",
+            cancel_id=wx.ID_CANCEL,
+            cancel_label="Cancel",
+        )
+        try:
+            if self._show_modal_dialog(dialog, "Element Details") == wx.ID_OK:
+                form.commit()
+                self._set_status(f"Saved details for {path.name}")
+            else:
+                self._set_status("Details unchanged")
+        finally:
+            dialog.Destroy()
+
+    def _write_story_element(self, path: Path, fields: dict, body: str) -> None:
+        from quill.core.story import join_front_matter
+
+        try:
+            path.write_text(join_front_matter(fields, body), encoding="utf-8")
+        except OSError as error:
+            self._set_status(f"Could not save details: {error}")
 
     def _register_story_studio_commands(self) -> None:
         self.commands.try_register(

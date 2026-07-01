@@ -13,11 +13,41 @@ from quill.core.story.model import ElementKind, StoryProject, new_element
 from quill.ui.story_studio_dialog import StoryStudioDialog
 
 
-def _studio(project: StoryProject, files: dict[str, str] | None = None, on_open=None):
+def _studio(
+    project: StoryProject, files: dict[str, str] | None = None, on_open=None, on_edit_details=None
+):
     files = files or {}
     return StoryStudioDialog(
-        wx=object(), project=project, read_text=lambda p: files.get(p, ""), on_open=on_open
+        wx=object(),
+        project=project,
+        read_text=lambda p: files.get(p, ""),
+        on_open=on_open,
+        on_edit_details=on_edit_details,
     )
+
+
+def _element_node(root):
+    characters = next(c for c in root.children if c.label == "Characters")
+    return characters.children[0]
+
+
+def test_edit_details_on_element_invokes_callback_with_path_and_kind() -> None:
+    calls: list[tuple[str, str]] = []
+    project = StoryProject(
+        title="B",
+        elements=(new_element(ElementKind.CHARACTER, "Elena", "characters/elena.md"),),
+    )
+    studio = _studio(project, on_edit_details=lambda path, kind: calls.append((path, kind)))
+    node = _element_node(studio.root_node)
+    assert studio.edit_details(node) is True
+    assert calls == [("characters/elena.md", "character")]
+
+
+def test_edit_details_on_group_returns_false() -> None:
+    calls: list[object] = []
+    studio = _studio(StoryProject(title="B"), on_edit_details=lambda *a: calls.append(a))
+    assert studio.edit_details(BinderNode("Manuscript", "group")) is False
+    assert calls == []
 
 
 def test_root_node_reflects_the_project() -> None:
