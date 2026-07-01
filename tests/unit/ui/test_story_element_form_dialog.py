@@ -12,9 +12,7 @@ from quill.ui.story_element_form_dialog import StoryElementFormDialog
 
 
 def _form(kind: ElementKind, fields: dict | None = None, on_save=None):
-    return StoryElementFormDialog(
-        wx=object(), kind=kind, fields=fields or {}, on_save=on_save
-    )
+    return StoryElementFormDialog(wx=object(), kind=kind, fields=fields or {}, on_save=on_save)
 
 
 def test_rows_match_the_kind_schema() -> None:
