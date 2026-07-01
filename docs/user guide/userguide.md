@@ -577,6 +577,17 @@ Two buttons act on the binder:
 
 A Story project is just a folder of plain-text files plus a small `project.quillstory.json` companion that records the binder order and element groups. The companion is advisory, so deleting it never loses any writing. Story Studio is optional and additive — it changes nothing about ordinary editing.
 
+#### Vault — linked notes and backlinks
+
+**Tools → Vault** brings Obsidian-style linked notes to QUILL, built for the keyboard and the ear rather than a visual graph.
+
+- **Open Vault...** — choose a folder of notes; QUILL scans and indexes it, remembers it, and announces "Vault *name*: N notes, M links." Do this once per notes folder.
+- **Follow Wikilink** — put the cursor on a `[[Note]]` link and run this to open that note (a `[[Note#Heading]]` opens at the heading, `[[Note#^block]]` at the block). If the note does not exist yet, QUILL offers to **create** it; if several notes share the name, QUILL asks which one — it never guesses.
+- **Show Backlinks** — lists every note that links to the note you are in, each read aloud with the sentence the link sits in; press Enter on one to open it at that mention. QUILL announces how many notes link here.
+- **Insert Link to Note...** — pick a note by title from a list and QUILL inserts `[[Title]]` at the cursor.
+
+Write links by typing `[[Note Title]]` yourself, or use **Insert Link to Note...**. Links are plain text in your file — nothing is hidden — and resolve when you follow them or preview/export. A vault is just a folder of Markdown files plus a small `.quill` cache; delete the cache and nothing is lost. These commands are on the command palette and can be given keyboard shortcuts in the Keymap Editor. (This is the first instalment; vault-wide search, a tag pane, embeds, templates, and daily notes are planned.)
+
 #### Writing and language
 
 - **Word Count...**

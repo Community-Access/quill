@@ -249,6 +249,42 @@ additive: if you never open it, nothing about your editing changes.
 
 ---
 
+## Accessible Vault — linked notes, backlinks, and no picture required
+
+### Type [[a link]], follow it by ear
+
+Obsidian's magic is a folder of notes that link to each other. Its *shell* — the
+graph, the hover-previews — is a wall of pixels a screen reader cannot climb.
+QUILL takes the model and drops the wall. **Tools → Vault → Open Vault...** points
+QUILL at a folder of notes; it indexes them and announces "Vault *name*: 312
+notes, 480 links." Type `[[Note Title]]` anywhere, put your cursor on it, and
+**Follow Wikilink** opens that note — at the exact heading or block if you linked
+one. Link to a note that does not exist yet and QUILL offers to **create** it on
+the spot; link to a name two notes share and QUILL **asks which**, never guesses.
+**Why it matters:** the single biggest thing QUILL lacked versus Obsidian —
+note-to-note links — now works, and it works the way a keyboard-and-speech user
+actually moves.
+
+### The graph, spoken: Backlinks
+
+**Show Backlinks** answers "what links here?" as a list you can hear: "5 notes
+link here," each entry read with the sentence its link sits in, Enter to open the
+source right at that mention. That list *is* the graph view — and for a
+screen-reader user it is far more useful than a picture ever was.
+**Why it matters:** you traverse the web of your notes forwards (follow a link)
+and backwards (open a backlink) entirely by keyboard and ear.
+
+### Plain text, yours forever
+
+A vault is an ordinary folder of Markdown files plus one small `.quill` cache you
+can delete without losing a word. Links live as plain `[[text]]` in your files —
+nothing hidden — so every note opens in any editor. It is entirely optional: never
+open a vault and QUILL is the editor it always was. (This is the first
+instalment; vault-wide search, a tag pane, embeds, templates, and daily notes are
+on the way.)
+
+---
+
 ## Braille — proofreading for pages that must emboss
 
 A new **Braille → Repair** submenu brings NLS-style proofreading: **Read Layout

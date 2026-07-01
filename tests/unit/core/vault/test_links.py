@@ -72,3 +72,25 @@ def test_alias_and_heading_together() -> None:
     assert link.target == "Note"
     assert link.heading == "Heading"
     assert link.alias == "Display"
+
+
+def test_link_at_offset_inside_the_link() -> None:
+    from quill.core.vault.links import link_at_offset
+
+    text = "See [[My Note]] here"
+    link = link_at_offset(text, 8)
+    assert link is not None and link.target == "My Note"
+
+
+def test_link_at_offset_none_when_outside() -> None:
+    from quill.core.vault.links import link_at_offset
+
+    assert link_at_offset("See [[X]] here", 1) is None
+    assert link_at_offset("See [[X]] here", 12) is None
+
+
+def test_link_at_offset_at_the_brackets() -> None:
+    from quill.core.vault.links import link_at_offset
+
+    assert link_at_offset("[[X]]", 0) is not None
+    assert link_at_offset("[[X]]", 5) is not None

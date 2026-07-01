@@ -19,7 +19,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
-__all__ = ["WikiLink", "parse_links"]
+__all__ = ["WikiLink", "parse_links", "link_at_offset"]
 
 # ![[...]] or [[...]]; the inner text is captured lazily and dissected below.
 _LINK_RE = re.compile(r"(!?)\[\[([^\[\]]+?)\]\]")
@@ -61,6 +61,18 @@ def parse_links(text: str) -> list[WikiLink]:
             )
         )
     return links
+
+
+def link_at_offset(text: str, offset: int) -> WikiLink | None:
+    """Return the wikilink whose span contains ``offset`` (the caret), or None.
+
+    Used by Follow Link: the caret anywhere on a ``[[link]]`` (including its
+    brackets) resolves to that link.
+    """
+    for link in parse_links(text):
+        if link.start <= offset <= link.end:
+            return link
+    return None
 
 
 def _dissect(inner: str) -> tuple[str, str | None, str | None, str | None]:

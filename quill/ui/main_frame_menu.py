@@ -1563,6 +1563,10 @@ class MenuBuilderMixin:
         self._id_dev_copy_diagnostic = wx.NewIdRef()
         self._id_dev_restart_ts_worker = wx.NewIdRef()
         self._id_open_story_studio = wx.NewIdRef()
+        self._id_vault_open = wx.NewIdRef()
+        self._id_vault_follow_link = wx.NewIdRef()
+        self._id_vault_backlinks = wx.NewIdRef()
+        self._id_vault_insert_link = wx.NewIdRef()
         tools_menu = wx.Menu()
         tools_menu.Append(
             self._id_palette,
@@ -1572,6 +1576,20 @@ class MenuBuilderMixin:
             self._id_open_story_studio,
             self._menu_label(_("Story &Studio..."), "story.open_studio"),
         )
+        vault_menu = wx.Menu()
+        vault_menu.Append(self._id_vault_open, self._menu_label(_("&Open Vault..."), "vault.open"))
+        vault_menu.Append(
+            self._id_vault_follow_link,
+            self._menu_label(_("&Follow Wikilink"), "vault.follow_link"),
+        )
+        vault_menu.Append(
+            self._id_vault_backlinks, self._menu_label(_("Show &Backlinks"), "vault.backlinks")
+        )
+        vault_menu.Append(
+            self._id_vault_insert_link,
+            self._menu_label(_("&Insert Link to Note..."), "vault.insert_link"),
+        )
+        tools_menu.AppendSubMenu(vault_menu, _("&Vault"))
         tools_menu.AppendSeparator()
 
         # Writing & Language -----------------------------------------------
@@ -2619,6 +2637,14 @@ class MenuBuilderMixin:
             id=self._id_batch_convert_export,
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_palette(), id=self._id_palette)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_vault(), id=self._id_vault_open)
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.follow_wikilink(), id=self._id_vault_follow_link
+        )
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.show_backlinks(), id=self._id_vault_backlinks)
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.insert_wikilink(), id=self._id_vault_insert_link
+        )
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.open_story_studio(), id=self._id_open_story_studio
         )

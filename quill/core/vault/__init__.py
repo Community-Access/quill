@@ -20,7 +20,7 @@ from quill.core.vault.index import (
     build_index,
     unlinked_mentions,
 )
-from quill.core.vault.links import WikiLink, parse_links
+from quill.core.vault.links import WikiLink, link_at_offset, parse_links
 from quill.core.vault.note import NoteInfo, parse_note
 from quill.core.vault.resolve import LinkTarget, Resolver, build_resolver, resolve_link
 from quill.core.vault.vault import CACHE_DIRNAME, Vault, scan_vault
@@ -38,6 +38,7 @@ __all__ = [
     "backlinks",
     "build_index",
     "build_resolver",
+    "link_at_offset",
     "parse_links",
     "parse_note",
     "resolve_link",

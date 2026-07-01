@@ -6849,6 +6849,18 @@ QUILL keeps formatting codes hidden so the editing buffer stays clean plain text
 
 ---
 
+### 5.89d Accessible Vault — linked notes, backlinks, and knowledge navigation
+
+**Goal.** Deliver Obsidian&#39;s model — a folder of notes that link to each other, with searchable, bidirectional links — through spoken, keyboard-native surfaces rather than a visual graph. A backlinks *list* read aloud beats a backlinks *picture*. Optional and additive; the editor is unchanged when no vault is open. Full design and roadmap: `docs/planning/quill-accessible-vault-obsidian-parity-plan.md`.
+
+**Model (`quill/core/vault`, wx-free, strict-typed).** A *vault* is a folder of Markdown/plain-text notes plus a `.quill/` cache (regenerable). `scan_vault` parses every note into `NoteInfo` — title (front matter `title`, else H1, else filename), aliases, tags (front-matter `tags:` + inline `#tag`), headings, block ids, and outgoing wikilinks — keeping file-relative offsets so a UI can open at a heading or block. The wikilink codec (`links.py`) parses `[[Note]]`, `[[Note|alias]]`, `[[Note#Heading]]`, `[[Note#^block]]`, and `![[embed]]`, leaving Markdown `[x](y)` and code spans/fences alone. `resolve.py` maps a wikilink to a note + anchor offset, reporting **unresolved** (→ create-on-follow) and **ambiguous** (→ a spoken chooser, never a guess). `index.py` builds forward + reverse adjacency; `backlinks()` quotes each linking line for context, and `unlinked_mentions()` finds plain-text name occurrences not yet linked. Story Studio (§5.89c) is a curated collection view over this vault and shares the front-matter/heading machinery.
+
+**UI (Phases 0-2).** `Tools → Vault`: **Open Vault...** (`vault.open`) picks and indexes a folder and remembers it (`Settings.vault_root`), announcing &quot;Vault X: N notes, M links.&quot; **Follow Wikilink** (`vault.follow_link`) opens the note under the caret&#39;s `[[link]]` at its heading/block; a missing target offers to create the note, an ambiguous name opens an accessible chooser. **Show Backlinks** (`vault.backlinks`) lists the notes that link to the current note — each read with its linking line — in an accessible list (Enter opens the source at the link), announcing the count. **Insert Link to Note...** (`vault.insert_link`) picks a note by title and inserts `[[Title]]`. Commands are palette-reachable and assignable (no default keys); dialogs route through `_show_modal_dialog`/`apply_modal_ids` and are classified in the dialog inventory.
+
+**Non-goals.** No visual graph view or canvas (the link *relationships* are delivered as lists and navigation); no hosted sync/publish. **Deferred (Phases 3-7):** vault-wide full-text search + quick switcher, a global tag pane, transclusion/embeds, templates + daily notes, a Vault Explorer tree, sync/publish, and background/incremental indexing (the first version scans on open).
+
+---
+
 ### 5.90 AI Writing Toolkit: architecture and feature matrix
 
 This section documents the AI writing layer shipped in QUILL 0.6.0, covering provider abstraction, the connection model, per-feature design, and the data-disclosure posture.
