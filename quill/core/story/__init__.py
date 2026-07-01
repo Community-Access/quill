@@ -6,8 +6,8 @@ codec, heading-derived manuscript structure, sidecar persistence, binder-tree
 assembly, and manuscript compilation. It imports no ``wx`` and is strict-typed;
 all file IO is injected as callables so the core stays pure and testable.
 
-Convenience re-exports below; submodules may also be imported directly. See
-``docs/planning/quill-story-studio-manuscript-organization-plan.md``.
+Convenience re-exports below; submodules may also be imported directly. The
+canonical specification is PRD section 5.89c (Story Studio).
 """
 
 from __future__ import annotations
