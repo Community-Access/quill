@@ -1,0 +1,115 @@
+"""Story Studio binder dialog (accessible wx shell over quill.core.story).
+
+A keyboard-operable ``wx.TreeCtrl`` that shows a project's binder — the
+Manuscript group with heading-derived chapters/scenes, then element groups
+(Characters, Places, Plot threads, Research, Brainstorm). Activating a file,
+heading, or element node opens that file (at the heading's offset) and closes
+the binder; activating a group expands or collapses it.
+
+All structure comes from :func:`quill.core.story.build_binder`; this module is
+a wiring layer. ``__init__`` stores its arguments and constructs no wx objects,
+so the wx-free seams (``open_target``/``activate``) are unit-tested without a
+display, exactly like :class:`quill.ui.list_studio_dialog.ListStudioDialog`.
+"""
+
+from __future__ import annotations
+
+from collections.abc import Callable
+from typing import Any
+
+from quill.core.story.binder import BinderNode, build_binder
+from quill.core.story.model import StoryProject
+
+# Node types that open a file when activated; the rest (root/group) just toggle.
+_OPENABLE = {"manuscript", "heading", "element"}
+
+
+class StoryStudioDialog:
+    """Builds the binder tree and routes node activation to an open callback.
+
+    ``on_open(path, offset)`` is called with the relative file path and an
+    optional character offset (set for heading nodes) when the user activates an
+    openable node. ``read_text(path) -> str`` supplies file contents for heading
+    derivation; both are injected so this class stays testable without disk.
+    """
+
+    def __init__(
+        self,
+        wx: Any,
+        *,
+        project: StoryProject,
+        read_text: Callable[[str], str],
+        on_open: Callable[[str, int | None], None] | None = None,
+    ) -> None:
+        self._wx = wx
+        self._project = project
+        self._read_text = read_text
+        self._on_open = on_open
+        self._root_node = build_binder(project, read_text)
+        self._tree: Any = None
+        self._dialog: Any = None
+        self._node_by_item: dict[Any, BinderNode] = {}
+
+    @property
+    def root_node(self) -> BinderNode:
+        return self._root_node
+
+    def open_target(self, node: BinderNode) -> tuple[str, int | None] | None:
+        """Return ``(path, offset)`` for an openable node, else ``None``."""
+        if node.node_type not in _OPENABLE or not node.path:
+            return None
+        return node.path, node.offset
+
+    def activate(self, node: BinderNode) -> bool:
+        """Handle activation. Opens the node's file and returns True (caller
+        closes the binder), or returns False for a non-openable node."""
+        target = self.open_target(node)
+        if target is None:
+            return False
+        if self._on_open is not None:
+            self._on_open(*target)
+        return True
+
+    # --- wx construction (no display in unit tests) -----------------------
+
+    def populate(self, dialog: Any) -> Any:
+        """Build the tree control inside ``dialog`` and return the outer sizer."""
+        wx = self._wx
+        self._dialog = dialog
+        outer = wx.BoxSizer(wx.VERTICAL)
+        heading = wx.StaticText(dialog, label="&Binder")
+        outer.Add(heading, 0, wx.LEFT | wx.TOP | wx.RIGHT, 8)
+        tree = wx.TreeCtrl(
+            dialog,
+            style=wx.TR_HAS_BUTTONS | wx.TR_LINES_AT_ROOT | wx.TR_FULL_ROW_HIGHLIGHT,
+        )
+        tree.SetName("Story binder")
+        self._tree = tree
+        root_item = self._add_node(tree, None, self._root_node)
+        tree.Expand(root_item)
+        tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self._on_item_activated)
+        outer.Add(tree, 1, wx.EXPAND | wx.ALL, 8)
+        dialog.SetSizer(outer)
+        return outer
+
+    def _add_node(self, tree: Any, parent_item: Any, node: BinderNode) -> Any:
+        if parent_item is None:
+            item = tree.AddRoot(node.label)
+        else:
+            item = tree.AppendItem(parent_item, node.label)
+        self._node_by_item[item] = node
+        for child in node.children:
+            self._add_node(tree, item, child)
+        return item
+
+    def _on_item_activated(self, event: Any) -> None:
+        item = event.GetItem()
+        node = self._node_by_item.get(item)
+        if node is None:
+            event.Skip()
+            return
+        if not self.activate(node):
+            event.Skip()  # let the tree expand/collapse a group on activation
+            return
+        if self._dialog is not None:
+            self._dialog.EndModal(self._wx.ID_OK)

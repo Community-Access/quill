@@ -506,6 +506,7 @@ from quill.ui.main_frame_language_detect import LanguageDetectMixin
 from quill.ui.main_frame_line_commands import LineCommandsMixin
 from quill.ui.main_frame_list_studio import ListStudioMixin
 from quill.ui.main_frame_menu import MenuBuilderMixin
+from quill.ui.main_frame_story_studio import StoryStudioMixin
 from quill.ui.main_frame_notebook import NotebookUIMixin
 from quill.ui.main_frame_power_tools import PowerToolsActionsMixin
 from quill.ui.main_frame_power_tools_menu import PowerToolsMenuMixin
@@ -869,6 +870,7 @@ class MainFrame(
     IntellisensePopupMixin,
     LineCommandsMixin,
     ListStudioMixin,
+    StoryStudioMixin,
     DictationHotkeysMixin,
     SectionMoveMixin,
     CopyTrayMixin,
@@ -3617,6 +3619,7 @@ class MainFrame(
         self._register_braille_repair_commands()
         self._register_speech_commands()
         self._register_list_studio_commands()
+        self._register_story_studio_commands()
         self._register_dictation_hotkey_commands()
 
     def _apply_accelerators(self) -> None:

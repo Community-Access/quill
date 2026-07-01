@@ -286,6 +286,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # primary command); Insert Special Character moves to the adjacent Shift+F2.
     "format.list_studio": "F2",
     "format.list_studio_settings": "",  # no default key; assign via keymap editor
+    "story.open_studio": "",  # Story Studio binder; no default key, assign via keymap editor
     "power.insert_special_character": "Shift+F2",  # §4.22 parity; F2 -> List Studio
     "power.number_lines": "Alt+Shift+N",  # §4.22 Number Items parity
     "power.trim_blank_lines": "Ctrl+Shift+Enter",  # §4.22 Trim Blanks parity
