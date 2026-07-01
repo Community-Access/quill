@@ -15,7 +15,10 @@ def test_new_element_mints_a_nonempty_id() -> None:
 
 def test_element_round_trips_through_dict() -> None:
     element = StoryElement(
-        id="x1", kind=ElementKind.PLOT, title="The Betrayal", path="plots/betrayal.md",
+        id="x1",
+        kind=ElementKind.PLOT,
+        title="The Betrayal",
+        path="plots/betrayal.md",
         tags=("act-one", "pov"),
     )
     assert StoryElement.from_dict(element.to_dict()) == element
@@ -50,11 +53,11 @@ def test_project_to_dict_stamps_schema_version() -> None:
 def test_project_from_dict_tolerates_garbage_and_keeps_good_elements() -> None:
     data = {
         "title": "T",
-        "manuscript": ["a.md", 5, "b.md"],          # non-str dropped
+        "manuscript": ["a.md", 5, "b.md"],  # non-str dropped
         "elements": [
             {"id": "ok", "kind": "character", "title": "Good", "path": "g.md"},
-            "not-a-dict",                              # dropped
-            {"kind": "location"},                      # missing id/title/path -> dropped
+            "not-a-dict",  # dropped
+            {"kind": "location"},  # missing id/title/path -> dropped
         ],
     }
     project = StoryProject.from_dict(data)
