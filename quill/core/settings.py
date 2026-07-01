@@ -154,11 +154,9 @@ class Settings:
     # Speak the formatting delta as the caret moves (hidden-codes interrogation);
     # off by default so navigation stays quiet (Describe Formatting is on-demand).
     announce_formatting_on_move: bool = False
-    # Speak "Entered <name> dialog" / "Exited <name> dialog" as dialogs open and
-    # close. Off by default because every supported screen reader already
-    # announces the dialog and reads its title on focus, so the extra cue is
-    # redundant noise; a user who wants the explicit transition cues can turn
-    # them back on.
+    # Speak "Entered/Exited <name> dialog" as dialogs open/close. Off by default:
+    # every supported screen reader already announces the dialog and its title,
+    # so the cue is redundant; turn it back on to hear the explicit transition.
     announce_dialog_transitions: bool = False
     # Speak the new indentation depth ("4 spaces" / "1 tab") when Tab / Shift+Tab
     # indents, instead of the terse "Indented lines". Aware of indent_with_tabs

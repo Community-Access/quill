@@ -7449,7 +7449,7 @@ class MainFrame(
         # announce_dialog_transitions setting; region tracking is unaffected.
         announce_transitions = (
             announce
-            if getattr(getattr(self, "settings", None), "announce_dialog_transitions", False)
+            if getattr(getattr(self, "settings", None), "announce_dialog_transitions", True)
             else None
         )
         result = show_modal_dialog(
@@ -7483,7 +7483,7 @@ class MainFrame(
 
     def _show_message_box(self, message: str, caption: str, style: int) -> int:
         speak_transitions = getattr(
-            getattr(self, "settings", None), "announce_dialog_transitions", False
+            getattr(self, "settings", None), "announce_dialog_transitions", True
         )
         self._region_tracker.enter(caption)
         if speak_transitions:
