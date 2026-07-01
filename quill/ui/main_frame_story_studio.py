@@ -27,8 +27,8 @@ class StoryStudioMixin:
     """The ``story.open_studio`` command handler.
 
     MainFrame provides the attributes/methods used here: ``_wx``, ``frame``,
-    ``commands``, ``_binding_for``, ``_show_modal_dialog``, ``open_file``, and
-    ``_set_status``.
+    ``commands``, ``_binding_for``, ``_show_modal_dialog``, ``open_file``,
+    ``_create_document_tab``, and ``_set_status``.
     """
 
     def open_story_studio(self) -> None:
@@ -65,6 +65,7 @@ class StoryStudioMixin:
             read_text=read_text,
             on_open=lambda rel, offset: self._open_story_node(folder, rel, offset),
             on_edit_details=lambda rel, kind: self._edit_story_element_details(folder, rel, kind),
+            on_compile=lambda text: self._open_compiled_manuscript(project.title, text),
         )
         dialog = wx.Dialog(
             self.frame,
@@ -141,6 +142,21 @@ class StoryStudioMixin:
                 self._set_status("Details unchanged")
         finally:
             dialog.Destroy()
+
+    def _open_compiled_manuscript(self, title: str, text: str) -> None:
+        """Open the compiled manuscript as a new document tab for export/review."""
+        if not text.strip():
+            self._set_status("Story Studio: the manuscript is empty, nothing to compile")
+            return
+        from quill.core.document import Document
+
+        safe = "".join(ch for ch in title if ch.isalnum() or ch in " -_").strip() or "Manuscript"
+        document = Document(text=text, source_metadata={"display_name": f"{safe} (compiled)"})
+        self._create_document_tab(document, select=True)
+        self._set_status(
+            "Compiled manuscript opened in a new tab. Use File > Export to save it "
+            "(Markdown, HTML, Word, DAISY, and more)."
+        )
 
     def _write_story_element(self, path: Path, fields: dict, body: str) -> None:
         from quill.core.story import join_front_matter

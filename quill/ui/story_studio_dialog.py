@@ -18,6 +18,7 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.story.binder import BinderNode, build_binder
+from quill.core.story.compile import compile_manuscript
 from quill.core.story.model import StoryProject
 
 # Node types that open a file when activated; the rest (root/group) just toggle.
@@ -41,12 +42,14 @@ class StoryStudioDialog:
         read_text: Callable[[str], str],
         on_open: Callable[[str, int | None], None] | None = None,
         on_edit_details: Callable[[str, str], None] | None = None,
+        on_compile: Callable[[str], None] | None = None,
     ) -> None:
         self._wx = wx
         self._project = project
         self._read_text = read_text
         self._on_open = on_open
         self._on_edit_details = on_edit_details
+        self._on_compile = on_compile
         self._root_node = build_binder(project, read_text)
         self._element_by_id = {element.id: element for element in project.elements}
         self._tree: Any = None
@@ -84,6 +87,17 @@ class StoryStudioDialog:
             self._on_edit_details(element.path, element.kind.value)
         return True
 
+    def compiled_text(self) -> str:
+        """Return the whole manuscript compiled in spine order (front matter stripped)."""
+        return compile_manuscript(self._project, self._read_text)
+
+    def run_compile(self) -> str:
+        """Compile the manuscript and hand it to ``on_compile``; return the text."""
+        text = self.compiled_text()
+        if self._on_compile is not None:
+            self._on_compile(text)
+        return text
+
     # --- wx construction (no display in unit tests) -----------------------
 
     def populate(self, dialog: Any) -> Any:
@@ -103,9 +117,14 @@ class StoryStudioDialog:
         tree.Expand(root_item)
         tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self._on_item_activated)
         outer.Add(tree, 1, wx.EXPAND | wx.ALL, 8)
+        actions = wx.BoxSizer(wx.HORIZONTAL)
         edit_button = wx.Button(dialog, label="&Edit details...")
         edit_button.Bind(wx.EVT_BUTTON, self._on_edit_details_button)
-        outer.Add(edit_button, 0, wx.LEFT | wx.BOTTOM, 8)
+        actions.Add(edit_button, 0, wx.RIGHT, 8)
+        compile_button = wx.Button(dialog, label="&Compile manuscript...")
+        compile_button.Bind(wx.EVT_BUTTON, self._on_compile_button)
+        actions.Add(compile_button, 0)
+        outer.Add(actions, 0, wx.LEFT | wx.BOTTOM, 8)
         dialog.SetSizer(outer)
         return outer
 
@@ -119,6 +138,13 @@ class StoryStudioDialog:
         node = self._selected_node()
         if node is None or not self.edit_details(node):
             self._wx.Bell()
+
+    def _on_compile_button(self, _event: Any) -> None:
+        self.run_compile()
+        # Close the binder so the compiled document (opened by on_compile) is in
+        # front; the open runs after the modal returns.
+        if self._dialog is not None:
+            self._dialog.EndModal(self._wx.ID_OK)
 
     def _add_node(self, tree: Any, parent_item: Any, node: BinderNode) -> Any:
         if parent_item is None:

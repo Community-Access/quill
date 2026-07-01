@@ -14,7 +14,11 @@ from quill.ui.story_studio_dialog import StoryStudioDialog
 
 
 def _studio(
-    project: StoryProject, files: dict[str, str] | None = None, on_open=None, on_edit_details=None
+    project: StoryProject,
+    files: dict[str, str] | None = None,
+    on_open=None,
+    on_edit_details=None,
+    on_compile=None,
 ):
     files = files or {}
     return StoryStudioDialog(
@@ -23,6 +27,7 @@ def _studio(
         read_text=lambda p: files.get(p, ""),
         on_open=on_open,
         on_edit_details=on_edit_details,
+        on_compile=on_compile,
     )
 
 
@@ -48,6 +53,25 @@ def test_edit_details_on_group_returns_false() -> None:
     studio = _studio(StoryProject(title="B"), on_edit_details=lambda *a: calls.append(a))
     assert studio.edit_details(BinderNode("Manuscript", "group")) is False
     assert calls == []
+
+
+def test_compiled_text_concatenates_the_manuscript_spine() -> None:
+    studio = _studio(
+        StoryProject(title="B", manuscript=("a.md", "b.md")),
+        files={"a.md": "# A\n\nAlpha.", "b.md": "# B\n\nBeta."},
+    )
+    assert studio.compiled_text() == "# A\n\nAlpha.\n\n# B\n\nBeta."
+
+
+def test_run_compile_invokes_callback_with_compiled_text() -> None:
+    captured: list[str] = []
+    studio = _studio(
+        StoryProject(title="B", manuscript=("a.md",)),
+        files={"a.md": "---\ntype: scene\n---\nAlpha."},
+        on_compile=captured.append,
+    )
+    assert studio.run_compile() == "Alpha."  # front matter stripped
+    assert captured == ["Alpha."]
 
 
 def test_root_node_reflects_the_project() -> None:
