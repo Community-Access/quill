@@ -563,6 +563,20 @@ The palette is one of the fastest ways to learn Quill. It supports query modes:
 
 The palette also learns from usage. Commands you use more often rise naturally.
 
+#### Story Studio — organize a whole book
+
+**Tools → Story Studio...** (also on the command palette as *Story Studio*) opens a **binder** for a project folder — a keyboard-navigable tree of your whole project:
+
+- **Manuscript** — your chapters and scenes, derived from the Markdown headings in your manuscript files. Press Enter on a chapter to open its file at that heading.
+- **Characters, Places, Plot threads, Research, Brainstorm** — one entry per element file. Press Enter to open it.
+
+Two buttons act on the binder:
+
+- **Edit details...** — with an element selected, opens an accessible form for that element's structured fields (a character's Role, Goal, Motivation, Arc; a plot thread's Status; tags). The values are saved as front matter at the top of the element's file; blank fields are dropped and unknown keys you added by hand are preserved.
+- **Compile manuscript...** — concatenates every manuscript file, in order, into a new document (front matter stripped). Use **File → Export** on that document to save it as Markdown, HTML, Word, DAISY, and more.
+
+A Story project is just a folder of plain-text files plus a small `project.quillstory.json` companion that records the binder order and element groups. The companion is advisory, so deleting it never loses any writing. Story Studio is optional and additive — it changes nothing about ordinary editing.
+
 #### Writing and language
 
 - **Word Count...**

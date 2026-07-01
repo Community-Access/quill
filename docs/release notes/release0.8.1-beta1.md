@@ -205,6 +205,50 @@ guessing whether a key is free.
 
 ---
 
+## Story Studio — organize a whole book
+
+### The binder: your project, one keystroke away
+
+**Tools → Story Studio...** opens a keyboard-navigable **binder** for a project
+folder. Your **Manuscript** appears with its parts, chapters, and scenes taken
+straight from the Markdown headings you already write, alongside groups for
+**Characters, Places, Plot threads, Research, and Brainstorm**. Arrow through the
+tree; press Enter on any item to open that file — a chapter opens at its heading,
+an element opens its notes.
+**Why it matters:** a novel is more than one long file. Story Studio gives a
+blind writer the same "see the whole book at a glance" a sighted writer gets from
+a corkboard — as a tree a screen reader reads naturally, with no visual board.
+
+### Character sheets and plot threads — a form, not a syntax
+
+Select an element and choose **Edit details...** to fill in a small, accessible
+form: a character's **Role, Goal, Motivation, and Arc**; a plot thread's
+**Status**; **tags**. Your answers are saved as tidy front matter at the top of
+the element's file, so editing the form and editing the file are the same bytes.
+Blank fields are dropped, and anything already in the file that Story Studio does
+not recognise is kept untouched.
+**Why it matters:** structure without a database and without learning any markup
+— and your notes stay in plain, portable text you own.
+
+### Compile the manuscript, then export it your way
+
+Press **Compile manuscript...** and Story Studio stitches every manuscript file
+together, in order, into a new document. From there the ordinary **File →
+Export** takes over — Markdown, HTML, Word, DAISY, and more — because the compiled
+manuscript is just a document like any other.
+**Why it matters:** the gap between "chapters in a folder" and "one finished file
+to send" closes to a single keystroke, and you export it with tools you know.
+
+### Nothing is locked in
+
+A Story project is an ordinary **folder of plain-text files** plus one small
+companion file that remembers the order and the element groupings. Delete the
+companion and you still have every word. Story Studio is entirely optional and
+additive: if you never open it, nothing about your editing changes.
+**Why it matters:** your book is yours, in files any program can read, forever.
+
+---
+
 ## Braille — proofreading for pages that must emboss
 
 A new **Braille → Repair** submenu brings NLS-style proofreading: **Read Layout

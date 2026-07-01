@@ -3521,6 +3521,24 @@ QUILL keeps formatting codes hidden so the editing buffer stays clean plain text
 
 ---
 
+### 5.89c Story Studio — manuscript and long-form organization
+
+**Goal.** Give a screen-reader user a first-class way to organize a book-length project — manuscript, characters, places, plot threads, research, and brainstorming — without a visual corkboard, while keeping every word in plain, portable text. Optional and additive; inert until opened. Design plan: `docs/planning/quill-story-studio-manuscript-organization-plan.md`.
+
+**Model (`quill/core/story`, wx-free, strict-typed).** A *project* is a folder of plain-text files plus an advisory `project.quillstory.json` sidecar recording a title, the ordered manuscript spine (relative POSIX paths), and non-manuscript *elements* (`character`, `location`, `plot`, `research`, `brainstorm`). Loading is corrupt-tolerant in the spirit of the settings-migration delta store (a bad entry is dropped, the rest kept) and the sidecar never duplicates prose: with no sidecar the folder is still a project (its text files become the manuscript spine), so deleting it loses nothing. Persistence uses `write_json_atomic`.
+
+**Binder.** `build_binder(project, read_text)` derives a tree — a Manuscript group whose file nodes carry heading-derived chapter/scene children (nested by level from the files' Markdown ATX headings), then element groups (Characters, Places, Plot threads, Research, Brainstorm). The tree is derived, never stored, so it cannot drift from the prose. File IO is injected as a `read_text` callable, keeping the core pure and unit-tested without a display.
+
+**Front matter and fields.** Each element file may carry an optional leading `---` block of light structured fields, encoded by a small dependency-free codec (`key: value` scalars and `- item` lists; round-trips, preserves field order and unknown keys — deliberately no PyYAML dependency). Per-kind default field sets (`quill/core/story/fields.py`): character → role/goal/motivation/arc; location → significance; plot → status; research → source; plus a universal `tags` list. Empty fields are dropped on save; unknown keys and `type` are preserved.
+
+**Compile.** `compile_manuscript(project, read_text)` concatenates the manuscript spine in order with each file's front matter stripped, producing plain text for the existing export pipeline (`quill/io/export.py`) — no new export engine.
+
+**UI (`quill/ui`).** `Tools → Story Studio...` (command `story.open_studio`, also on the command palette; no default key, assignable in the keymap editor) picks a project folder and opens `StoryStudioDialog`, an accessible `wx.TreeCtrl` binder. Activating a file/heading/element opens it in the editor at the heading offset and closes the binder; activating a group expands/collapses it. **Edit details...** opens `StoryElementFormDialog`, a labelled field-per-row form that writes changes back to the element's front matter. **Compile manuscript...** opens the compiled text as a new untitled document tab for export. Both dialogs route through `_show_modal_dialog`/`apply_modal_ids` and are classified in the dialog inventory.
+
+**Status.** Introduced in the 0.8.1 line. Deferred: richer field types in the details form (choices, dates), saved views and tag filters, and a one-step compile-and-export action.
+
+---
+
 ### 5.90 AI Writing Toolkit: architecture and feature matrix
 
 This section documents the AI writing layer shipped in QUILL 0.6.0, covering provider abstraction, the connection model, per-feature design, and the data-disclosure posture.

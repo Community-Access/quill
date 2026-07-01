@@ -1243,6 +1243,36 @@ query modes:</p>
 </ul>
 <p>The palette also learns from usage. Commands you use more often rise
 naturally.</p>
+<h4 id="story-studio--organize-a-whole-book">Story Studio — organize a
+whole book</h4>
+<p><strong>Tools → Story Studio...</strong> (also on the command palette
+as <em>Story Studio</em>) opens a <strong>binder</strong> for a project
+folder — a keyboard-navigable tree of your whole project:</p>
+<ul>
+<li><strong>Manuscript</strong> — your chapters and scenes, derived from
+the Markdown headings in your manuscript files. Press Enter on a chapter
+to open its file at that heading.</li>
+<li><strong>Characters, Places, Plot threads, Research,
+Brainstorm</strong> — one entry per element file. Press Enter to open
+it.</li>
+</ul>
+<p>Two buttons act on the binder:</p>
+<ul>
+<li><strong>Edit details...</strong> — with an element selected, opens
+an accessible form for that element's structured fields (a character's
+Role, Goal, Motivation, Arc; a plot thread's Status; tags). The values
+are saved as front matter at the top of the element's file; blank fields
+are dropped and unknown keys you added by hand are preserved.</li>
+<li><strong>Compile manuscript...</strong> — concatenates every
+manuscript file, in order, into a new document (front matter stripped).
+Use <strong>File → Export</strong> on that document to save it as
+Markdown, HTML, Word, DAISY, and more.</li>
+</ul>
+<p>A Story project is just a folder of plain-text files plus a small
+<code>project.quillstory.json</code> companion that records the binder
+order and element groups. The companion is advisory, so deleting it
+never loses any writing. Story Studio is optional and additive — it
+changes nothing about ordinary editing.</p>
 <h4 id="writing-and-language">Writing and language</h4>
 <ul>
 <li><strong>Word Count...</strong></li>
