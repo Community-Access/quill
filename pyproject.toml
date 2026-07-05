@@ -168,7 +168,7 @@ macos = [
     "py2app>=0.28.10",
     "setuptools<83",
     "pyobjc>=12.2.1; sys_platform == 'darwin'",
-    "apple-fm-sdk>=0.2.0; sys_platform == 'darwin'",
+    "apple-fm-sdk>=0.2.1; sys_platform == 'darwin'",
 ]
 github = [
     # GitHub repository browser and remote file open/save (File > Open Remote > GitHub).
