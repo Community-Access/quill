@@ -116,7 +116,7 @@ docx = ["python-docx>=1.1.0"]
 # Optional: the ElevenLabs AI Voice provider is inert unless this is installed and
 # an "ElevenLabs API key" credential is configured. All calls go through the
 # host-owned gateway quill/core/ai/elevenlabs_tts.py (the only importer of the SDK).
-elevenlabs = ["elevenlabs>=2.54.0"]
+elevenlabs = ["elevenlabs>=2.56.0"]
 # Native Windows OCR (OCR-1): thin pip wheels projecting the Windows.Media.Ocr
 # WinRT APIs that ship inside Windows 10/11. The OCR engine itself is a built-in
 # OS component, so end users install nothing extra — bundling these wheels makes
