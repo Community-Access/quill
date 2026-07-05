@@ -187,7 +187,7 @@ ai-openai = ["openai-agents>=0.1.0"]
 # Build-time only: compile the optional Table Studio native UIA provider
 # (quill/native/table_uia -> _quill_table_uia.pyd). Also needs MSVC + the
 # Windows 10 SDK + CMake. Not required at runtime (MSAA fallback ships).
-native-build = ["pybind11>=2.12"]
+native-build = ["pybind11>=3.0.4"]
 dev = [
   "pytest>=9.1.1",
   "pytest-xdist>=3.8.0",
