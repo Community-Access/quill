@@ -93,7 +93,7 @@ speech = ["sounddevice>=0.5.5"]
 # fetches its CTranslate2 model repositories. Users opt in via AI > Speech >
 # Manage Speech Models > Speech Engine; the bundled whisper.cpp engine remains
 # the default and needs none of this.
-fasterwhisper = ["faster-whisper>=1.2.1", "huggingface_hub>=1.21.0"]
+fasterwhisper = ["faster-whisper>=1.2.1", "huggingface_hub>=1.22.0"]
 # Optional very-low-resource offline English engine: Vosk (Kaldi) (#669). Tiny
 # CPU-only models (~40 MB) for old/constrained machines. Models download from
 # alphacephei.com via Manage Speech Models; no GPU needed.
