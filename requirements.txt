@@ -4,7 +4,7 @@
 #  pyproject [macos] / [dev] extras, not here, so a runtime install stays clean.)
 
 # Core (always required)
-regex>=2024.0.0
+regex>=2026.6.28
 
 # Hardened XML parsing for untrusted document inputs (DOCX/XLSX/ODT/PPTX/EPUB)
 # — disables entity expansion to block billion-laughs denial-of-service files.

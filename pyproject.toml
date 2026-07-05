@@ -21,7 +21,7 @@ classifiers = [
   "Operating System :: MacOS",
 ]
 dependencies = [
-    "regex>=2026.5.9",
+    "regex>=2026.6.28",
     "defusedxml>=0.7.1",
     # Runtime deps of the vendored autoupdate library (quill/_vendor/autoupdate).
     "requests>=2.34.2",
