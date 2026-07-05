@@ -105,7 +105,7 @@ mp3 = ["mutagen>=1.48.1"]
 # in-app submit dialog, in-app install path). Transitive on systems that
 # already have flask-migrate; promoted to a direct extra so the Hub's deploy
 # install is explicit.
-signing = ["PyNaCl>=1.6.0"]
+signing = ["PyNaCl>=1.6.2"]
 # Native Word (.docx) export with full formatting fidelity (font family, point
 # size, color, highlight, paragraph alignment) for the hidden-codes feature
 # (docs/planning/rich-text-formatting-hidden-codes-design.md). Optional: when absent,
@@ -198,7 +198,7 @@ dev = [
   # I18N: string extraction, .po update, .mo compile
   "Babel>=2.18.0",
   # Quillin Hub artifact signing (quill.tools.signing); CI runs its tests.
-  "PyNaCl>=1.6.0",
+  "PyNaCl>=1.6.2",
   # Windows UI-automation regression tests (tests/uia, marker "uia"): drives
   # the real app through UIA and asserts accessible names, keyboard reach, and
   # spoken output. Windows-only by nature; harmless to install elsewhere.
