@@ -83,7 +83,11 @@ if [[ -n "${IDENTITY:-}" ]]; then
   # Mach-O individually first, then the bundle last. The main executables and
   # the bundle carry the hardened-runtime entitlements the bundled Python
   # interpreter needs (JIT, unsigned executable memory, library validation off).
-  find "$APP" \( -name "*.so" -o -name "*.dylib" \) -print0 \
+  # -type f skips symlinks (e.g. libsqlite3.dylib -> libsqlite3.3.53.3.dylib):
+  # under -P 6 a worker following the symlink can resolve it to its target while
+  # another worker is mid-rewrite of that target, failing with "No such file or
+  # directory". The real targets are regular files and still get signed.
+  find "$APP" -type f \( -name "*.so" -o -name "*.dylib" \) -print0 \
     | xargs -0 -P 6 -I{} codesign --force --timestamp --options runtime --sign "$IDENTITY" "{}"
   if [[ -e "$APP/Contents/Frameworks/Python.framework/Versions/$PYVER/Python" ]]; then
     codesign --force --timestamp --options runtime --sign "$IDENTITY" \
