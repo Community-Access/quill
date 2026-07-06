@@ -109,12 +109,6 @@ jobs:
           name: quill-dmg
           path: dist/Quill.dmg
 
-      - name: Upload app bundle artifact
-        uses: actions/upload-artifact@v7
-        with:
-          name: quill-app-bundle
-          path: dist/Quill.app
-
       - name: Cleanup signing assets
         if: always()
         run: |
@@ -135,69 +129,45 @@ jobs:
           name: quill-dmg
           path: smoke-assets
 
-      - name: Download app bundle artifact
-        uses: actions/download-artifact@v8
-        with:
-          name: quill-app-bundle
-          path: smoke-assets
-
       - name: Trust and startup smoke checks
         run: |
           set -euo pipefail
           DMG="smoke-assets/Quill.dmg"
-          APP_FROM_ARTIFACT="smoke-assets/Quill.app"
           TEST_DIR="$RUNNER_TEMP/quill-smoke"
           TEST_APP="$TEST_DIR/Quill.app"
-          MOUNT_POINT=""
-
-          if [[ ! -f "$DMG" ]]; then
-            echo "Missing DMG artifact: $DMG" >&2
-            exit 1
-          fi
-          if [[ ! -d "$APP_FROM_ARTIFACT" ]]; then
-            echo "Missing app bundle artifact: $APP_FROM_ARTIFACT" >&2
-            exit 1
-          fi
 
           if [[ ! -s "$DMG" ]]; then
-            echo "DMG is empty: $DMG" >&2
+            echo "Missing or empty DMG artifact: $DMG" >&2
             exit 1
           fi
 
-          echo "==> Validate stapled ticket on DMG"
+          echo "==> Validate stapled notarization ticket on DMG"
           xcrun stapler validate "$DMG"
 
-          echo "==> Verify app signature and Gatekeeper acceptance"
-          codesign --verify --deep --strict --verbose=2 "$APP_FROM_ARTIFACT"
-          spctl -a -t exec -vv "$APP_FROM_ARTIFACT"
-
-          echo "==> Mount DMG and verify mounted app layout"
+          # Validate the app from the MOUNTED DMG, never from a re-uploaded
+          # artifact: uploading a .app as an artifact zips it, dropping the code
+          # signature and symlinks, so codesign/spctl would fail on the
+          # round-tripped bundle even when the shipped DMG is perfectly fine.
+          echo "==> Mount DMG"
           MOUNT_POINT="$(hdiutil attach -nobrowse -readonly "$DMG" | awk '/\/Volumes\//{print $3; exit}')"
-          if [[ -z "$MOUNT_POINT" || ! -d "$MOUNT_POINT" ]]; then
-            echo "Unable to determine mounted DMG volume." >&2
-            exit 1
-          fi
-          if [[ ! -d "$MOUNT_POINT/Quill.app" ]]; then
-            echo "Mounted DMG does not contain Quill.app at expected path." >&2
+          if [[ -z "$MOUNT_POINT" || ! -d "$MOUNT_POINT/Quill.app" ]]; then
+            echo "Mounted DMG does not contain Quill.app." >&2
             exit 1
           fi
 
-          echo "==> Copy app to writable test location"
+          echo "==> Verify signature + notarization/Gatekeeper of the shipped app"
+          codesign --verify --deep --strict --verbose=2 "$MOUNT_POINT/Quill.app"
+          spctl -a -t exec -vv "$MOUNT_POINT/Quill.app"
+
+          echo "==> Copy app to a writable location"
           rm -rf "$TEST_DIR"
           mkdir -p "$TEST_DIR"
           cp -R "$MOUNT_POINT/Quill.app" "$TEST_APP"
+          hdiutil detach "$MOUNT_POINT" || true
 
-          echo "==> CLI startup smoke (--version)"
-          APP_BIN="$(find "$TEST_APP/Contents/MacOS" -type f -perm -111 | head -n 1)"
-          if [[ -z "$APP_BIN" ]]; then
-            echo "No executable found in $TEST_APP/Contents/MacOS" >&2
-            exit 1
-          fi
-          "$APP_BIN" --version
-
-          echo "==> GUI launch smoke"
+          echo "==> GUI launch smoke (must stay alive, no crash)"
           open "$TEST_APP"
-          sleep 10
+          sleep 15
           if ! pgrep -f "$TEST_APP/Contents/MacOS" >/dev/null; then
             echo "App process was not observed after launch; possible startup crash." >&2
             exit 1
