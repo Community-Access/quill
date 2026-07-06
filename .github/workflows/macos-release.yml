@@ -86,11 +86,14 @@ jobs:
           set -euo pipefail
           APPLE_API_KEY_PATH="$RUNNER_TEMP/AuthKey.p8"
           echo -n "$APPLE_API_KEY_B64" | base64 --decode > "$APPLE_API_KEY_PATH"
+          # API-key auth uses --key/--key-id/--issuer only. --team-id belongs to
+          # the Apple-ID + app-specific-password mode; passing it alongside the
+          # API key makes notarytool reject the profile as mixing credential
+          # types ("Cannot store both ... credentials in the same profile").
           xcrun notarytool store-credentials "$NOTARY_PROFILE" \
             --key "$APPLE_API_KEY_PATH" \
             --key-id "$APPLE_API_KEY_ID" \
-            --issuer "$APPLE_API_ISSUER" \
-            --team-id "$APPLE_TEAM_ID"
+            --issuer "$APPLE_API_ISSUER"
 
       - name: Build, sign, notarize, and package DMG
         env:
