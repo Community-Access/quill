@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-26
     environment: macos-release
     env:
       NOTARY_PROFILE: quill-notarytool
@@ -124,7 +124,7 @@ jobs:
 
   smoke:
     needs: build
-    runs-on: macos-latest
+    runs-on: macos-26
     steps:
       - name: Download DMG artifact
         uses: actions/download-artifact@v8
