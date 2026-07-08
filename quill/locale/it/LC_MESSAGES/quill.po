@@ -456,12 +456,12 @@ msgstr ""
 #: quill/ui/ai_hub_dialog.py:641
 msgid "The token could not be stored in the credential vault on this system."
 msgstr ""
-"Non è stato possibile memorizzare il token nel gestore delle credenziali "
+"Non è stato possibile memorizzare il token nell'archivio delle credenziali "
 "su questo sistema."
 
 #: quill/ui/ai_hub_dialog.py:645
 msgid "Auphonic token saved to the credential vault."
-msgstr "Token Auphonic salvato nel gestore delle credenziali."
+msgstr "Token Auphonic salvato nell'archivio delle credenziali."
 
 #: quill/ui/ai_hub_dialog.py:647
 msgid "Auphonic token cleared."
@@ -509,8 +509,8 @@ msgid ""
 "Settings saved. The API key could not be stored in the credential vault "
 "on this system; set the DATALAB_API_KEY environment variable instead."
 msgstr ""
-"Impostazioni salvate. Non è stato possibile memorizzare la chiave API nel"
-" gestore delle credenziali di questo sistema; imposta invece la variabile"
+"Impostazioni salvate. Non è stato possibile memorizzare la chiave API nell'archivio"
+" delle credenziali di questo sistema; imposta invece la variabile"
 " d'ambiente DATALAB_API_KEY."
 
 #: quill/ui/ai_hub_dialog.py:740
@@ -2183,7 +2183,6 @@ msgid "Remove &Duplicate Lines"
 msgstr "Rimuovi righe &duplicate"
 
 #: quill/ui/main_frame_menu.py:1152
-#, fuzzy
 msgid "Sort and &Filter"
 msgstr "Ordina e &Filtra"
 
@@ -2208,9 +2207,8 @@ msgid "&Whitespace"
 msgstr "Spazio &bianco"
 
 #: quill/ui/main_frame_menu.py:1186
-#, fuzzy
 msgid "&HTML and Encoding"
-msgstr "&HTML e encoding"
+msgstr "&HTML e codifica"
 
 #: quill/ui/main_frame_menu.py:1191
 msgid "&Markdown"
@@ -2386,11 +2384,11 @@ msgstr "Creatore &Storia..."
 
 #: quill/ui/main_frame_menu.py:1613
 msgid "&Open Vault..."
-msgstr "&Apri gestore..."
+msgstr "&Apri raccolta..."
 
 #: quill/ui/main_frame_menu.py:1615
 msgid "Vault E&xplorer..."
-msgstr "Esplora &Gestori..."
+msgstr "E&splora archivi..."
 
 #: quill/ui/main_frame_menu.py:1619
 msgid "&Follow Wikilink"
@@ -2426,7 +2424,7 @@ msgstr "&Vai alla nota..."
 
 #: quill/ui/main_frame_menu.py:1647
 msgid "&Search Vault..."
-msgstr "&Cerca gestore..."
+msgstr "&Cerca nella raccolta..."
 
 #: quill/ui/main_frame_menu.py:1649
 msgid "Show &Tags..."
@@ -2458,19 +2456,19 @@ msgstr "&Nota giornaliera Successiva"
 
 #: quill/ui/main_frame_menu.py:1676
 msgid "&Export Vault as Website..."
-msgstr "&Esporta gestore come sito web..."
+msgstr "&Esporta raccolta come sito web..."
 
 #: quill/ui/main_frame_menu.py:1678
 msgid "S&ync Vault"
-msgstr "Sincroni&zza gestore"
+msgstr "Sincroni&zza raccolta"
 
 #: quill/ui/main_frame_menu.py:1680
 msgid "Vault Se&ttings..."
-msgstr "Impos&tazioni gestore..."
+msgstr "Impos&tazioni raccolta..."
 
 #: quill/ui/main_frame_menu.py:1682
 msgid "&Vault"
-msgstr "G&estore"
+msgstr "&Raccolta"
 
 #: quill/ui/main_frame_menu.py:1689
 msgid "&Word Count..."
@@ -2557,7 +2555,6 @@ msgid "Quill Eraser on &Selection..."
 msgstr "Quill Eraser su &Selezione..."
 
 #: quill/ui/main_frame_menu.py:1794
-#, fuzzy
 msgid "&Writing and Language"
 msgstr "S&crittura e lingua"
 
@@ -2658,7 +2655,6 @@ msgid "&OCR and Document Conversion"
 msgstr "&OCR e conversione documento"
 
 #: quill/ui/main_frame_menu.py:1908
-#, fuzzy
 msgid "R&eading and Dictation"
 msgstr "L&ettura e dettatura"
 
@@ -3203,7 +3199,6 @@ msgid "Check for &Updates"
 msgstr "Controlla ag&giornamenti"
 
 #: quill/ui/main_frame_menu.py:2547
-#, fuzzy
 msgid "&Customize and Support"
 msgstr "P&ersonalizza e Supporto"
 
