@@ -160,6 +160,10 @@ on by default, right next to your line/column position.
 - **Fixed four crash reports sent in through user feedback:** the Spell Check
   Language chooser, word prediction after recovering from a crash, and the AI
   Hub's Engines tab closing mid-install.
+- **OpenAI Agents SDK and Claude Agent SDK now have a way to add an API key.**
+  Previously, once installed, there was no in-app way to configure either —
+  **Set Up** in the AI Hub's Engines tab now opens a small dialog to paste,
+  save, or remove the key, applied right away with no restart needed.
 
 ## Kinder to screen readers
 

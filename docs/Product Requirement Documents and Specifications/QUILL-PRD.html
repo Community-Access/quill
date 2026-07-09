@@ -4112,6 +4112,27 @@ recreating the popup, leaving a stale reference); and the AI Hub Engines
 tab’s background-install completion callback now tolerates the panel
 having been closed/destroyed before the install finished.</li>
 </ul>
+<h4 id="api-key-onboarding-for-env-var-authenticated-harnesses">API-key
+onboarding for env-var-authenticated harnesses</h4>
+<p><code>openai_agents</code> and <code>claude_agent_sdk</code> both
+declare <code>requires_api_key=True</code> but, unlike GitHub Copilot’s
+OAuth device flow, authenticate by reading
+<code>OPENAI_API_KEY</code>/<code>ANTHROPIC_API_KEY</code> directly from
+the process environment with no QUILL-specific hook — so a successfully
+installed harness previously had no in-app way to add a key at all.
+<code>quill/core/ai/harness_credentials.py</code> bridges this the same
+way <code>copilot_auth.py</code> bridges GitHub tokens: the key is
+persisted in QUILL’s existing per-provider secure store
+(<code>assistant_ai.save_provider_api_key</code>, keyed by
+<code>pack_id</code>) and exported to the environment immediately so the
+SDK picks it up without a restart; <code>apply_all_stored_keys()</code>
+runs at startup so a key saved in an earlier session is already in place
+before anything checks harness availability.
+<code>HarnessApiKeyDialog</code>
+(<code>quill/ui/harness_api_key_dialog.py</code>, modeled on
+<code>CopilotOnboardingDialog</code> but simpler — one pasted key, no
+OAuth) is reached from the AI Hub Engines tab’s <strong>Set Up</strong>
+action once a harness is installed.</p>
 <h3 id="b-watch-folder-automation">5.25b Watch Folder automation</h3>
 <p>Quill provides an optional watch-folder workflow under
 <code>Tools -&gt; Watch Folder</code> for low-friction document intake.
