@@ -1053,6 +1053,19 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("sound", "disable", "mute", "earcon", "events"),
     ),
     SettingSpec(
+        "voice_preview_announce_generating",
+        "Announce \"Generating preview, please wait\" for slow voice previews",
+        "accessibility",
+        "bool",
+        (
+            "When a voice preview (Voice Browser, or Test in Download Optional "
+            "Components) takes a moment to synthesize, speak a short heads-up "
+            "so it's clear something is happening. The matching earcon is "
+            "configured separately in the Sound Events dialog."
+        ),
+        keywords=("voice", "preview", "generating", "please wait", "announce", "sound"),
+    ),
+    SettingSpec(
         "verbosity_collapse_repeats",
         "Collapse repeated announcements",
         "accessibility",

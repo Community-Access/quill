@@ -236,6 +236,17 @@ def test_settings_persists_batch_speech_chapter_fields(
     assert loaded.batch_speech_intro_section_title == "Lead"
 
 
+def test_voice_preview_announce_generating_defaults_true_and_round_trips(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    assert Settings().voice_preview_announce_generating is True
+
+    save_settings(Settings(voice_preview_announce_generating=False))
+    loaded = load_settings()
+    assert loaded.voice_preview_announce_generating is False
+
+
 def test_settings_batch_speech_chapter_defaults_and_clamps(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
@@ -633,6 +644,17 @@ def test_settings_round_trip_announce_screen_reader_detected(
     save_settings(Settings(announce_screen_reader_detected=True))
     loaded = load_settings()
     assert loaded.announce_screen_reader_detected is True
+
+
+def test_settings_round_trip_upgrade_prompt_kokoro_onnx(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # #kokoro-onnx: the one-time startup prompt persists that it has been shown
+    # so it never nags across launches. Defaults off; survives a round trip.
+    assert Settings().upgrade_prompt_kokoro_onnx is False
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    save_settings(Settings(upgrade_prompt_kokoro_onnx=True))
+    assert load_settings().upgrade_prompt_kokoro_onnx is True
 
 
 def test_verbosity_speech_setting_is_registered() -> None:

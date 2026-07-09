@@ -457,6 +457,9 @@ class Settings:
     setup_wizard_wants_automation: bool = False
     # UPGRADE: True once we have shown the post-upgrade braille-pack install prompt.
     upgrade_prompt_braille_pack: bool = False
+    # UPGRADE: True once we have shown the post-upgrade Kokoro-ONNX package prompt
+    # (models present on disk but the kokoro_onnx package not importable).
+    upgrade_prompt_kokoro_onnx: bool = False
     # QDC: Developer Console settings.
     console_enabled: bool = True
     console_python_timeout: int = 30
@@ -466,6 +469,11 @@ class Settings:
     sound_pack_path: str = ""  # empty = bundled Ink pack
     sound_volume: int = 80  # 0-100; passed to sound_lib Output.set_volume()
     sound_events_disabled: str = ""  # comma-separated SoundEvent IDs to silence
+    # Speak "Generating preview, please wait" when a voice preview's synthesis
+    # is still running after the ~400ms cue delay (paired with the
+    # voice_preview_generating earcon, configured independently via the
+    # Sound Events dialog).
+    voice_preview_announce_generating: bool = True
     # Indent tone overlay: "" = off, else one of pentatonic/whole_tone/diatonic/chromatic.
     # When set, moving the caret across indent levels plays a pitched tone per level.
     indent_tone_scale: str = ""
@@ -1056,6 +1064,7 @@ class Settings:
         setup_wizard_wants_braille = bool(data.get("setup_wizard_wants_braille", False))
         setup_wizard_wants_automation = bool(data.get("setup_wizard_wants_automation", False))
         upgrade_prompt_braille_pack = bool(data.get("upgrade_prompt_braille_pack", False))
+        upgrade_prompt_kokoro_onnx = bool(data.get("upgrade_prompt_kokoro_onnx", False))
         console_enabled = bool(data.get("console_enabled", True))
         auto_ask_crash_submit = bool(data.get("auto_ask_crash_submit", True))
         try:
@@ -1078,6 +1087,9 @@ class Settings:
             sound_volume = 80
         sound_volume = max(0, min(100, sound_volume))
         sound_events_disabled = str(data.get("sound_events_disabled", ""))
+        voice_preview_announce_generating = bool(
+            data.get("voice_preview_announce_generating", True)
+        )
         indent_tone_scale = str(data.get("indent_tone_scale", ""))
         if indent_tone_scale not in ("", "pentatonic", "whole_tone", "diatonic", "chromatic"):
             indent_tone_scale = ""
@@ -1458,6 +1470,7 @@ class Settings:
             setup_wizard_wants_braille=setup_wizard_wants_braille,
             setup_wizard_wants_automation=setup_wizard_wants_automation,
             upgrade_prompt_braille_pack=upgrade_prompt_braille_pack,
+            upgrade_prompt_kokoro_onnx=upgrade_prompt_kokoro_onnx,
             console_enabled=console_enabled,
             auto_ask_crash_submit=auto_ask_crash_submit,
             console_python_timeout=console_python_timeout,
@@ -1466,6 +1479,7 @@ class Settings:
             sound_pack_path=sound_pack_path,
             sound_volume=sound_volume,
             sound_events_disabled=sound_events_disabled,
+            voice_preview_announce_generating=voice_preview_announce_generating,
             indent_tone_scale=indent_tone_scale,
             abbreviation_backspace_behavior=abbreviation_backspace_behavior,
             braille_cells_per_line=braille_cells_per_line,
