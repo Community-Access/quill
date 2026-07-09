@@ -321,13 +321,16 @@ on by default, right next to your line/column position.
 
 ## Three fixes that unblock real work
 
-- **PDF and document import works out of the box again.** A tester on a clean
-  install hit "can't extract text from PDFs — no extraction engine available."
-  The free local converter and PDF text extractors were described in-app as
-  built-in, but weren't actually installed by the shipping build. They now ship
-  with QUILL on every install, so File → Import just works — and if a PDF has no
-  selectable text, QUILL now tells you it looks like a scanned document and points
-  you to OCR, instead of a confusing "no engine" message.
+- **PDF and document import works out of the box again — and it's now a
+  one-click download.** A tester on a clean install hit "can't extract text
+  from PDFs — no extraction engine available." The free local converter and
+  PDF text extractors were described in-app as built-in, but weren't actually
+  installed by the shipping build. Rather than bundling them whether or not
+  you ever open a PDF, **Help > Download Optional Components > "PDF and
+  Office text extraction"** (about 30 MB) now fetches them the moment you
+  need them, on any install — and if a PDF has no selectable text, QUILL
+  still tells you it looks like a scanned document and points you to OCR,
+  instead of a confusing "no engine" message.
 - **Report a Bug works even if you never signed in.** After upgrading, some of you
   found the bug reporter saying "no token." The Windows build wasn't including the
   built-in reporting token, so it shipped empty. It's fixed at the source (and the

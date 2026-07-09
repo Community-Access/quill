@@ -1161,9 +1161,13 @@ not need to enable Artificial Intelligence to use these features. They live unde
 To keep the installer small, QUILL fetches several large or optional pieces only
 when you want them. **Help > Download Optional Components...** is the single place
 to see, get, test, and remove them all. It lists each component — most important
-first: **Pandoc** (document conversion for Word, ODT, EPUB, and RTF), the
-**braille translation pack** (liblouis tables and BRF profiles for the Translation
-submenu and BRF/embossing export), **Dictation (offline speech)** (a guided setup
+first: **Pandoc** (document conversion for Word, ODT, EPUB, and RTF), **PDF and
+Office text extraction** (MarkItDown, pdfplumber, and pypdf — lets Import read
+text out of Word, PowerPoint, Excel, and PDF documents natively, without Pandoc
+or LibreOffice installed; scanned/image-only PDFs still need File > Import >
+OCR either way), the **braille translation pack** (liblouis tables and BRF
+profiles for the Translation submenu and BRF/embossing export), **Dictation
+(offline speech)** (a guided setup
 covering Whisper.cpp, Faster Whisper, and Vosk — see below), **Kokoro** and
 **Piper** neural voices, **eSpeak NG** and **DECtalk** voices, **Audio: export,
 playback & chapters** (FFmpeg for exporting compressed audio, the mpv playback

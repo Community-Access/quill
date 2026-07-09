@@ -10258,6 +10258,42 @@ says to confirm that round-trip before committing further, once real
 usage exists to validate against -- this ships the authoring + print-drawn
 half first.
 
+### PDF/Office text extraction unbundled to an on-demand download (#909 refinement, shipped 0.9.0 Beta 2)
+
+#909's original bug: `markitdown`/`pdfplumber`/`pypdf` (the free-first Tier-1
+Office+PDF text extractor, `quill/io/docconvert.py` + `quill/io/pdf.py`)
+lived nowhere the shipping build actually installed — not a base
+dependency, not in the extra a clean install pulled — so a fresh install
+had no PDF/Office text extractor at all. The fix that shipped first made
+them a base runtime dependency (present on every install, whether or not
+that install ever opens a PDF). This refines that to the more honest fix:
+the three packages move to a named pyproject extra (`pdf-ocr`) and become a
+one-click download via **Help > Download Optional Components > "PDF and
+Office text extraction"** (~30 MB) — matching how every other optional
+QUILL component (Kokoro, whisper.cpp, Pandoc, the braille pack, mpv)
+already works, and keeping the minimal-install footprint small for
+installs that never touch a PDF or Office document.
+
+`quill/core/pdf_ocr_install.py` is the on-demand installer, modeled
+directly on `speech/engine_install.py`'s MP3-support pack: wheel-only
+`pip install --target <app data>/engine-packs/pdf-ocr`, Safe Mode gated,
+activated on `sys.path` at startup (`activate_pdf_ocr_pack`, called from
+`__main__.py` alongside the speech-engine and AI-SDK pack activations). No
+import-safety changes were needed anywhere in `quill/` — every existing
+call site (`quill/io/pdf.py`, `markitdown_bridge.py`, `structured.py`,
+`pages.py`, `docconvert.py`, `action_builder_dialog.py`) already imports
+these three packages lazily inside a `try`/`except`, so "these packages
+might not be installed" was already a handled case; only the four stale
+"pip install ..." remedy messages needed updating to point at Download
+Optional Components instead.
+
+`tests/unit/test_packaging_dependencies.py`'s #909 guard now asserts the
+opposite of its original claim (not a base dependency) plus two new
+invariants: the packages are named in exactly one place (the `pdf-ocr`
+extra), and the installer's own pinned requirements are kept in sync with
+that extra — evolving the regression coverage rather than deleting it
+outright when the fix's shape changed.
+
 ### Self-voice fallback is logged, not announced (shipped 0.8.1 Beta 1)
 
 QUILL's SAPI 5 self-voice (``sapi5.py``/``prism_bridge``) is a *fallback* used only

@@ -18240,6 +18240,50 @@ issue’s own text says to confirm that round-trip before committing
 further, once real usage exists to validate against – this ships the
 authoring + print-drawn half first.</p>
 <h3
+id="pdfoffice-text-extraction-unbundled-to-an-on-demand-download-909-refinement-shipped-0.9.0-beta-2">PDF/Office
+text extraction unbundled to an on-demand download (#909 refinement,
+shipped 0.9.0 Beta 2)</h3>
+<p>#909’s original bug:
+<code>markitdown</code>/<code>pdfplumber</code>/<code>pypdf</code> (the
+free-first Tier-1 Office+PDF text extractor,
+<code>quill/io/docconvert.py</code> + <code>quill/io/pdf.py</code>)
+lived nowhere the shipping build actually installed — not a base
+dependency, not in the extra a clean install pulled — so a fresh install
+had no PDF/Office text extractor at all. The fix that shipped first made
+them a base runtime dependency (present on every install, whether or not
+that install ever opens a PDF). This refines that to the more honest
+fix: the three packages move to a named pyproject extra
+(<code>pdf-ocr</code>) and become a one-click download via <strong>Help
+&gt; Download Optional Components &gt; “PDF and Office text
+extraction”</strong> (~30 MB) — matching how every other optional QUILL
+component (Kokoro, whisper.cpp, Pandoc, the braille pack, mpv) already
+works, and keeping the minimal-install footprint small for installs that
+never touch a PDF or Office document.</p>
+<p><code>quill/core/pdf_ocr_install.py</code> is the on-demand
+installer, modeled directly on <code>speech/engine_install.py</code>’s
+MP3-support pack: wheel-only
+<code>pip install --target &lt;app data&gt;/engine-packs/pdf-ocr</code>,
+Safe Mode gated, activated on <code>sys.path</code> at startup
+(<code>activate_pdf_ocr_pack</code>, called from
+<code>__main__.py</code> alongside the speech-engine and AI-SDK pack
+activations). No import-safety changes were needed anywhere in
+<code>quill/</code> — every existing call site
+(<code>quill/io/pdf.py</code>, <code>markitdown_bridge.py</code>,
+<code>structured.py</code>, <code>pages.py</code>,
+<code>docconvert.py</code>, <code>action_builder_dialog.py</code>)
+already imports these three packages lazily inside a
+<code>try</code>/<code>except</code>, so “these packages might not be
+installed” was already a handled case; only the four stale “pip install
+…” remedy messages needed updating to point at Download Optional
+Components instead.</p>
+<p><code>tests/unit/test_packaging_dependencies.py</code>’s #909 guard
+now asserts the opposite of its original claim (not a base dependency)
+plus two new invariants: the packages are named in exactly one place
+(the <code>pdf-ocr</code> extra), and the installer’s own pinned
+requirements are kept in sync with that extra — evolving the regression
+coverage rather than deleting it outright when the fix’s shape
+changed.</p>
+<h3
 id="self-voice-fallback-is-logged-not-announced-shipped-0.8.1-beta-1">Self-voice
 fallback is logged, not announced (shipped 0.8.1 Beta 1)</h3>
 <p>QUILL’s SAPI 5 self-voice
