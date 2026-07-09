@@ -1871,6 +1871,45 @@ The dialog lists all twelve slots. Each row shows the slot number, an optional l
 - Slots survive restarts. Build a small library of recurring fragments you reach for daily.
 - All bindings are reassignable in the Keymap Editor (`Tools > Customize & Support > Preferences > Keyboard`).
 
+### Look Up: dictionary, thesaurus, and encyclopedia
+
+Right-click a word (or select it and open the context menu) for **Look Up**, or **Tools > Thesaurus...** for synonyms. Look Up combines an offline dictionary/thesaurus with online sources when you have consented to online lookups (Free Dictionary and Datamuse for definitions and related words) — and now, a short **Wikipedia** summary alongside them, with a link back to the source article. A disambiguation page or a word with no real Wikipedia entry simply shows no encyclopedia section, rather than a list to sort through. Keep Look Up fully offline any time from its consent setting; nothing about the encyclopedia summary changes that choice.
+
+### Clip Library
+
+Copy Tray's twelve slots are deliberate and curated — things you explicitly chose to keep. **Clip Library** (`Edit` menu) is a second, complementary tier: a much bigger, searchable rolling history, up to 200 clips.
+
+- **Edit > Keep Selection in Clip Library** remembers the current selection. Keeping the same text again (from the same source) is a no-op — it is already there.
+- **Edit > Open Clip Library...** opens the dialog: search as you type, **Favorite** a clip so it is never evicted as the history fills up, **Remove** one you no longer need, **Copy to Clipboard**, or **Promote to Copy Tray...** to give a clip a permanent, labeled slot once it earns one.
+- **Automatic capture.** Turn on **Preferences > Editing > "Automatically keep everything you copy in the Clip Library"** (off by default) and every copy you make inside QUILL — the menu, its shortcut, or a right-click Copy — is remembered with no separate Keep step. It only ever sees copies made from within QUILL, never the system clipboard at large, and never anything copied before you turn it on.
+- **Format.** What "Copy to Clipboard" puts on the clipboard, and what Send/Copy as Email sends, both follow the same **Preferences > Editing > "Kept and sent content format"** setting (plain text, Markdown, or HTML) — change it once, and both features follow.
+
+### Send as Email / Copy as Email Body
+
+`File > Send as Email` opens your default mail client with the current selection — or the whole document if nothing is selected — as the message body. `File > Copy as Email Body` renders the same content and puts it on the clipboard instead, for the common case where a mail client truncates or refuses a very long pre-filled message. Both read the same content-format setting as the Clip Library.
+
+### AutoOutline: numbered headings
+
+`Format > Update Outline Numbering` numbers every heading in your document by its nesting level, written as literal text directly into the heading:
+
+- **Numeric** (default): `1`, `1.1`, `1.2`, `2`, `2.1`...
+- **Legal**: `I`, `I.A`, `I.B`, `II`...
+
+Choose the style in **Preferences > Editing > "AutoOutline numbering style."** Because the number is literal text — not a rendering overlay — it reads aloud, survives copy and paste, and exports cleanly with nothing extra to configure. Add, remove, or reorder headings, then run **Format > Update Outline Numbering** again: it replaces the old numbers rather than piling new ones on top. `Format > Remove Outline Numbering` takes them back out.
+
+### Work Personas
+
+A **Work Persona** is a named bundle: a feature profile, a default working folder, a set of favorite files, and (optionally) a keymap profile — everything that defines one context of your work (school, a freelance client, a novel-in-progress), reachable in one action.
+
+Open **Tools > Work Personas...** to manage them:
+
+- **New Persona**, fill in a name, pick a feature profile, browse to a working folder, add favorite files, and optionally choose a keymap profile, then **Save**.
+- **Apply Now** switches your feature profile, changes your working folder, reopens your favorite files, and applies the keymap (keymap changes take effect on your next restart) — all in the current session.
+- **Generate Shortcut...** writes a double-clickable launcher (a real Windows shortcut when possible, a `.bat` file otherwise) that opens QUILL directly into that persona, so a persona is reachable without QUILL already running.
+- From a terminal or another shortcut, `quill --persona "Persona Name"` does the same thing.
+
+Work Personas are convenience bundles for one person's different contexts — not multi-user accounts, and not a replacement for Story Studio, Notebooks, or Copy Tray, all of which a persona can point to.
+
 ### Saving in Different Formats — what happens to your file
 
 **File > Save As** genuinely converts your document to the format you pick in the "Save as type" list — it never just renames the file. QUILL's editor holds your text in one clean canonical form; choosing a type in Save As re-serializes that text into the chosen format on disk. Here is exactly what each choice does:

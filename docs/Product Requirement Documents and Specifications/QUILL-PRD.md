@@ -10071,6 +10071,79 @@ display owner feedback in the user guide's Experimental Features section, and
 `docs/planning/editor-surface-experiments.md` §8 for the full test protocol
 and the running record of results.
 
+### The Fragment spine, and five features built on it (shipped 0.9.0 Beta 2)
+
+`quill/core/fragment.py` introduces one small object, `Fragment` (`markup`,
+`title`, `source`, `source_url`, `kind`, `created_at`), and one pure function,
+`render_fragment(frag, fmt)`, rendering it as `TEXT` (via the existing
+`io.export.markdown_to_plain_text`), `MARKDOWN` (verbatim), or `HTML` (via
+`browser_preview.render_preview_body`). A new setting, `content_handoff_format`
+(Preferences > Editing > "Kept and sent content format"; text/markdown/html),
+is the one format choice every consumer below reads, so "interchangeable" is
+true in practice, not just in name.
+
+- **#897 — Wikipedia in Look Up.** `WikipediaProvider` (`quill/core/lexical.py`)
+  is a new keyless online `LexicalProvider`, in the same shape as
+  `FreeDictionaryProvider`/`DatamuseProvider`: same consented-online-lookup
+  gate, same HTTPS+verified-TLS `_http_get_json` helper (the existing
+  `network_egress_audit.py` entry for `core/lexical.py` already covers it).
+  `LexicalResult.encyclopedia` carries the summary; a disambiguation page or a
+  missing extract normalizes to no entry (a summary, not a list to sort
+  through). `show_lookup_dialog` is driven entirely by `render_lookup`/
+  `build_lookup_items`, both pure, so the new Encyclopedia section needed no
+  UI changes at all.
+- **#895 — Clip Library.** `ClipLibrary`/`ClipEntry` (`quill/core/clip_library.py`)
+  is a 200-entry ring buffer of Fragments, de-duplicated by
+  `(markup, source)`, with favorites protected from eviction and
+  `promote_to_tray(index, tray, slot)` as the bridge into a specific Copy Tray
+  slot — Copy Tray itself is untouched. `ClipLibraryDialog` (search, favorite,
+  remove, copy, promote) and `ClipLibraryMixin` (`keep_selection_in_clip_library`,
+  `open_clip_library`) follow the Copy Tray dialog/mixin shape exactly.
+  `clip_library_autocapture` (bool, default off) binds `wx.EVT_TEXT_COPY` —
+  the native control's own copy notification, so it fires for any trigger
+  (menu, shortcut, right-click) without guessing at individual call sites —
+  to remember every copy automatically when turned on; the handler always
+  calls `event.Skip()` so the native copy is never affected. Deferred:
+  non-text clips (images/files as described objects); `Fragment.kind` already
+  has a slot for when that becomes real work.
+- **#900 — Send as Email / Copy as Email Body.** `build_mailto(frag, fmt, subject)`
+  (`quill/core/email_handoff.py`) renders a Fragment and percent-encodes it
+  into a `mailto:` URL. File > Send as Email opens it via `webbrowser.open`
+  (the same mechanism `run_target_at_cursor` already uses for an in-document
+  mailto: link); File > Copy as Email Body renders the same content onto the
+  clipboard instead, for mail clients that truncate or reject a long
+  `mailto:` body. Both act on the current selection, or the whole document
+  when nothing is selected.
+- **#894 — Accessible AutoOutline.** `apply_auto_outline`/`remove_outline_numbers`
+  (`quill/core/auto_outline.py`) number every Markdown heading by nesting
+  level — numeric (1, 1.1, 1.1.1) or legal (I, A, 1; `auto_outline_style`
+  setting) — as literal text inserted into the heading line itself, built on
+  the existing `markdown_sections.parse_heading_blocks` (so fenced code
+  blocks are correctly skipped). Idempotent: an existing AutoOutline number
+  is stripped before renumbering, so re-running after adding/removing/
+  reordering headings replaces rather than stacks, and switching styles
+  replaces rather than appends. Format > Update/Remove Outline Numbering are
+  on-demand commands, deliberately not a live continuously-active mode —
+  rewriting the whole document on every keystroke would risk fighting typing
+  and undo in a screen-reader-first editor.
+- **#896 — Work Personas.** `WorkPersona`/`WorkPersonaStore`
+  (`quill/core/work_persona.py`) is a named bundle: a feature profile id, a
+  working folder, favorite files, and an optional keymap profile.
+  `WorkPersonaMixin.apply_persona` (`quill/ui/main_frame_work_persona.py`)
+  switches the feature profile (`self.features.switch_profile`), `os.chdir`s
+  into the working folder, applies the keymap (`save_keymap` +
+  `load_keymap_profile`, effective next restart), and opens every favorite
+  file that still exists — each step independently guarded so one stale
+  piece never blocks the rest. `quill/core/persona_launcher.py` builds the
+  right launch argv (frozen `quill.exe` vs. `python -m quill` from source)
+  and can write a real Windows `.lnk` via `pywin32`'s `WScript.Shell` COM
+  object, falling back to an equivalent `.bat` launcher on any failure —
+  never raising, so a persona always ends up with some double-clickable
+  launcher. `--persona NAME` on the command line applies a saved persona
+  right after `MainFrame` construction. Non-goals (per the issue): no
+  multi-user/access-control, and personas *use* Story Studio/Notebooks/Copy
+  Tray rather than replacing them.
+
 ### Self-voice fallback is logged, not announced (shipped 0.8.1 Beta 1)
 
 QUILL's SAPI 5 self-voice (``sapi5.py``/``prism_bridge``) is a *fallback* used only

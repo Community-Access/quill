@@ -3313,6 +3313,101 @@ you reach for daily.</li>
 <li>All bindings are reassignable in the Keymap Editor
 (<code>Tools &gt; Customize &amp; Support &gt; Preferences &gt; Keyboard</code>).</li>
 </ul>
+<h3 id="look-up-dictionary-thesaurus-and-encyclopedia">Look Up:
+dictionary, thesaurus, and encyclopedia</h3>
+<p>Right-click a word (or select it and open the context menu) for
+<strong>Look Up</strong>, or <strong>Tools &gt; Thesaurus…</strong> for
+synonyms. Look Up combines an offline dictionary/thesaurus with online
+sources when you have consented to online lookups (Free Dictionary and
+Datamuse for definitions and related words) — and now, a short
+<strong>Wikipedia</strong> summary alongside them, with a link back to
+the source article. A disambiguation page or a word with no real
+Wikipedia entry simply shows no encyclopedia section, rather than a list
+to sort through. Keep Look Up fully offline any time from its consent
+setting; nothing about the encyclopedia summary changes that choice.</p>
+<h3 id="clip-library">Clip Library</h3>
+<p>Copy Tray’s twelve slots are deliberate and curated — things you
+explicitly chose to keep. <strong>Clip Library</strong>
+(<code>Edit</code> menu) is a second, complementary tier: a much bigger,
+searchable rolling history, up to 200 clips.</p>
+<ul>
+<li><strong>Edit &gt; Keep Selection in Clip Library</strong> remembers
+the current selection. Keeping the same text again (from the same
+source) is a no-op — it is already there.</li>
+<li><strong>Edit &gt; Open Clip Library…</strong> opens the dialog:
+search as you type, <strong>Favorite</strong> a clip so it is never
+evicted as the history fills up, <strong>Remove</strong> one you no
+longer need, <strong>Copy to Clipboard</strong>, or <strong>Promote to
+Copy Tray…</strong> to give a clip a permanent, labeled slot once it
+earns one.</li>
+<li><strong>Automatic capture.</strong> Turn on <strong>Preferences &gt;
+Editing &gt; “Automatically keep everything you copy in the Clip
+Library”</strong> (off by default) and every copy you make inside QUILL
+— the menu, its shortcut, or a right-click Copy — is remembered with no
+separate Keep step. It only ever sees copies made from within QUILL,
+never the system clipboard at large, and never anything copied before
+you turn it on.</li>
+<li><strong>Format.</strong> What “Copy to Clipboard” puts on the
+clipboard, and what Send/Copy as Email sends, both follow the same
+<strong>Preferences &gt; Editing &gt; “Kept and sent content
+format”</strong> setting (plain text, Markdown, or HTML) — change it
+once, and both features follow.</li>
+</ul>
+<h3 id="send-as-email-copy-as-email-body">Send as Email / Copy as Email
+Body</h3>
+<p><code>File &gt; Send as Email</code> opens your default mail client
+with the current selection — or the whole document if nothing is
+selected — as the message body.
+<code>File &gt; Copy as Email Body</code> renders the same content and
+puts it on the clipboard instead, for the common case where a mail
+client truncates or refuses a very long pre-filled message. Both read
+the same content-format setting as the Clip Library.</p>
+<h3 id="autooutline-numbered-headings">AutoOutline: numbered
+headings</h3>
+<p><code>Format &gt; Update Outline Numbering</code> numbers every
+heading in your document by its nesting level, written as literal text
+directly into the heading:</p>
+<ul>
+<li><strong>Numeric</strong> (default): <code>1</code>,
+<code>1.1</code>, <code>1.2</code>, <code>2</code>,
+<code>2.1</code>…</li>
+<li><strong>Legal</strong>: <code>I</code>, <code>I.A</code>,
+<code>I.B</code>, <code>II</code>…</li>
+</ul>
+<p>Choose the style in <strong>Preferences &gt; Editing &gt;
+“AutoOutline numbering style.”</strong> Because the number is literal
+text — not a rendering overlay — it reads aloud, survives copy and
+paste, and exports cleanly with nothing extra to configure. Add, remove,
+or reorder headings, then run <strong>Format &gt; Update Outline
+Numbering</strong> again: it replaces the old numbers rather than piling
+new ones on top. <code>Format &gt; Remove Outline Numbering</code> takes
+them back out.</p>
+<h3 id="work-personas">Work Personas</h3>
+<p>A <strong>Work Persona</strong> is a named bundle: a feature profile,
+a default working folder, a set of favorite files, and (optionally) a
+keymap profile — everything that defines one context of your work
+(school, a freelance client, a novel-in-progress), reachable in one
+action.</p>
+<p>Open <strong>Tools &gt; Work Personas…</strong> to manage them:</p>
+<ul>
+<li><strong>New Persona</strong>, fill in a name, pick a feature
+profile, browse to a working folder, add favorite files, and optionally
+choose a keymap profile, then <strong>Save</strong>.</li>
+<li><strong>Apply Now</strong> switches your feature profile, changes
+your working folder, reopens your favorite files, and applies the keymap
+(keymap changes take effect on your next restart) — all in the current
+session.</li>
+<li><strong>Generate Shortcut…</strong> writes a double-clickable
+launcher (a real Windows shortcut when possible, a <code>.bat</code>
+file otherwise) that opens QUILL directly into that persona, so a
+persona is reachable without QUILL already running.</li>
+<li>From a terminal or another shortcut,
+<code>quill --persona "Persona Name"</code> does the same thing.</li>
+</ul>
+<p>Work Personas are convenience bundles for one person’s different
+contexts — not multi-user accounts, and not a replacement for Story
+Studio, Notebooks, or Copy Tray, all of which a persona can point
+to.</p>
 <h3 id="saving-in-different-formats-what-happens-to-your-file">Saving in
 Different Formats — what happens to your file</h3>
 <p><strong>File &gt; Save As</strong> genuinely converts your document

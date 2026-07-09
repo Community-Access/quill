@@ -18013,6 +18013,105 @@ braille display owner feedback in the user guide’s Experimental Features
 section, and <code>docs/planning/editor-surface-experiments.md</code> §8
 for the full test protocol and the running record of results.</p>
 <h3
+id="the-fragment-spine-and-five-features-built-on-it-shipped-0.9.0-beta-2">The
+Fragment spine, and five features built on it (shipped 0.9.0 Beta
+2)</h3>
+<p><code>quill/core/fragment.py</code> introduces one small object,
+<code>Fragment</code> (<code>markup</code>, <code>title</code>,
+<code>source</code>, <code>source_url</code>, <code>kind</code>,
+<code>created_at</code>), and one pure function,
+<code>render_fragment(frag, fmt)</code>, rendering it as
+<code>TEXT</code> (via the existing
+<code>io.export.markdown_to_plain_text</code>), <code>MARKDOWN</code>
+(verbatim), or <code>HTML</code> (via
+<code>browser_preview.render_preview_body</code>). A new setting,
+<code>content_handoff_format</code> (Preferences &gt; Editing &gt; “Kept
+and sent content format”; text/markdown/html), is the one format choice
+every consumer below reads, so “interchangeable” is true in practice,
+not just in name.</p>
+<ul>
+<li><strong>#897 — Wikipedia in Look Up.</strong>
+<code>WikipediaProvider</code> (<code>quill/core/lexical.py</code>) is a
+new keyless online <code>LexicalProvider</code>, in the same shape as
+<code>FreeDictionaryProvider</code>/<code>DatamuseProvider</code>: same
+consented-online-lookup gate, same HTTPS+verified-TLS
+<code>_http_get_json</code> helper (the existing
+<code>network_egress_audit.py</code> entry for
+<code>core/lexical.py</code> already covers it).
+<code>LexicalResult.encyclopedia</code> carries the summary; a
+disambiguation page or a missing extract normalizes to no entry (a
+summary, not a list to sort through). <code>show_lookup_dialog</code> is
+driven entirely by <code>render_lookup</code>/
+<code>build_lookup_items</code>, both pure, so the new Encyclopedia
+section needed no UI changes at all.</li>
+<li><strong>#895 — Clip Library.</strong>
+<code>ClipLibrary</code>/<code>ClipEntry</code>
+(<code>quill/core/clip_library.py</code>) is a 200-entry ring buffer of
+Fragments, de-duplicated by <code>(markup, source)</code>, with
+favorites protected from eviction and
+<code>promote_to_tray(index, tray, slot)</code> as the bridge into a
+specific Copy Tray slot — Copy Tray itself is untouched.
+<code>ClipLibraryDialog</code> (search, favorite, remove, copy, promote)
+and <code>ClipLibraryMixin</code>
+(<code>keep_selection_in_clip_library</code>,
+<code>open_clip_library</code>) follow the Copy Tray dialog/mixin shape
+exactly. <code>clip_library_autocapture</code> (bool, default off) binds
+<code>wx.EVT_TEXT_COPY</code> — the native control’s own copy
+notification, so it fires for any trigger (menu, shortcut, right-click)
+without guessing at individual call sites — to remember every copy
+automatically when turned on; the handler always calls
+<code>event.Skip()</code> so the native copy is never affected.
+Deferred: non-text clips (images/files as described objects);
+<code>Fragment.kind</code> already has a slot for when that becomes real
+work.</li>
+<li><strong>#900 — Send as Email / Copy as Email Body.</strong>
+<code>build_mailto(frag, fmt, subject)</code>
+(<code>quill/core/email_handoff.py</code>) renders a Fragment and
+percent-encodes it into a <code>mailto:</code> URL. File &gt; Send as
+Email opens it via <code>webbrowser.open</code> (the same mechanism
+<code>run_target_at_cursor</code> already uses for an in-document
+mailto: link); File &gt; Copy as Email Body renders the same content
+onto the clipboard instead, for mail clients that truncate or reject a
+long <code>mailto:</code> body. Both act on the current selection, or
+the whole document when nothing is selected.</li>
+<li><strong>#894 — Accessible AutoOutline.</strong>
+<code>apply_auto_outline</code>/<code>remove_outline_numbers</code>
+(<code>quill/core/auto_outline.py</code>) number every Markdown heading
+by nesting level — numeric (1, 1.1, 1.1.1) or legal (I, A, 1;
+<code>auto_outline_style</code> setting) — as literal text inserted into
+the heading line itself, built on the existing
+<code>markdown_sections.parse_heading_blocks</code> (so fenced code
+blocks are correctly skipped). Idempotent: an existing AutoOutline
+number is stripped before renumbering, so re-running after
+adding/removing/ reordering headings replaces rather than stacks, and
+switching styles replaces rather than appends. Format &gt; Update/Remove
+Outline Numbering are on-demand commands, deliberately not a live
+continuously-active mode — rewriting the whole document on every
+keystroke would risk fighting typing and undo in a screen-reader-first
+editor.</li>
+<li><strong>#896 — Work Personas.</strong>
+<code>WorkPersona</code>/<code>WorkPersonaStore</code>
+(<code>quill/core/work_persona.py</code>) is a named bundle: a feature
+profile id, a working folder, favorite files, and an optional keymap
+profile. <code>WorkPersonaMixin.apply_persona</code>
+(<code>quill/ui/main_frame_work_persona.py</code>) switches the feature
+profile (<code>self.features.switch_profile</code>),
+<code>os.chdir</code>s into the working folder, applies the keymap
+(<code>save_keymap</code> + <code>load_keymap_profile</code>, effective
+next restart), and opens every favorite file that still exists — each
+step independently guarded so one stale piece never blocks the rest.
+<code>quill/core/persona_launcher.py</code> builds the right launch argv
+(frozen <code>quill.exe</code> vs. <code>python -m quill</code> from
+source) and can write a real Windows <code>.lnk</code> via
+<code>pywin32</code>’s <code>WScript.Shell</code> COM object, falling
+back to an equivalent <code>.bat</code> launcher on any failure — never
+raising, so a persona always ends up with some double-clickable
+launcher. <code>--persona NAME</code> on the command line applies a
+saved persona right after <code>MainFrame</code> construction. Non-goals
+(per the issue): no multi-user/access-control, and personas <em>use</em>
+Story Studio/Notebooks/Copy Tray rather than replacing them.</li>
+</ul>
+<h3
 id="self-voice-fallback-is-logged-not-announced-shipped-0.8.1-beta-1">Self-voice
 fallback is logged, not announced (shipped 0.8.1 Beta 1)</h3>
 <p>QUILL’s SAPI 5 self-voice

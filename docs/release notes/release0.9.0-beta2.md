@@ -45,7 +45,7 @@ and in-place bold/italic/underline/font/alignment formatting — a first step
 toward a lighter rich-text document mode — but the braille question above is
 why it needs you most.
 
-## Four small things that add up
+## Five small things that add up
 
 - **Look Up now includes Wikipedia.** A short encyclopedia summary, with a
   link to the source, appears alongside definitions and synonyms when you're
@@ -54,6 +54,8 @@ why it needs you most.
   aren't going anywhere — **Clip Library** (Edit menu) is a second, rolling
   history of everything you choose to keep, searchable, favoritable, and
   promotable into a specific Copy Tray slot when one earns a permanent home.
+  Turn on automatic capture (off by default) and every copy inside QUILL is
+  remembered with no extra step.
 - **Send as Email, or just Copy as Email Body.** The File menu can now hand
   your selection (or the whole document) straight to your mail client, or
   copy it to the clipboard formatted for pasting into one — useful when a
@@ -62,6 +64,12 @@ why it needs you most.
   Numbering — numeric or legal style, your choice in Preferences > Editing —
   writes the number straight into the heading text, so it reads aloud and
   survives copy/paste and export with nothing extra to configure.
+- **Work Personas: one action into a whole context.** Tools > Work
+  Personas... bundles a feature profile, a working folder, your favorite
+  files, and a keymap profile under a name — "School," "Novel," a client's
+  name. Apply it instantly, launch straight into it with `quill --persona
+  NAME`, or generate a double-clickable shortcut so it's one click away
+  without QUILL already open.
 
 ## Getting the extras you want, reimagined
 
