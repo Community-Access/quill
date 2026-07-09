@@ -5794,6 +5794,23 @@ toggle and the optional networked features (AI alt-text generation, PII
 redaction, WCAG language processing). All networked features are
 <strong>off by default</strong> and each use asks for explicit consent —
 the default GLOW workflow runs entirely on your machine.</p>
+<h3 id="inserting-images-with-alt-text">Inserting images with alt
+text</h3>
+<p>GLOW’s audit above catches missing alt text after the fact.
+<strong>Insert &gt; Image…</strong> is the proactive half: it requires
+you to either write alt text describing the image, or explicitly check
+<strong>“This image is decorative”</strong> — you can’t insert without
+making one of those two deliberate choices. Decorative is the right
+choice for an image with no informational content (a divider line, a
+background flourish); it is not the same as an image nobody ever got
+around to describing, which is the problem this dialog exists to
+prevent.</p>
+<p>For any image already in your document — typed by hand, pasted, or
+brought in from another format — <strong>Tools &gt; Describe Image at
+Cursor</strong> tells you exactly what a screen reader hears there:
+“Image: sunset.png, alt text: a sunset over the lake,” or, just as
+clearly, “Image: sunset.png, alt text MISSING” if none was ever
+given.</p>
 <h2 id="verbosity-and-announcements">Verbosity and Announcements</h2>
 <p>QUILL lets you control what it announces and when, so the editor is
 as quiet or as talkative as you want. Open <strong>Verbosity

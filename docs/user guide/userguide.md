@@ -2839,6 +2839,12 @@ The in-editor checks are always available. Structured-file audit and fix use the
 
 **Preferences > GLOW Accessibility** holds the engine toggle and the optional networked features (AI alt-text generation, PII redaction, WCAG language processing). All networked features are **off by default** and each use asks for explicit consent — the default GLOW workflow runs entirely on your machine.
 
+### Inserting images with alt text
+
+GLOW's audit above catches missing alt text after the fact. **Insert > Image...** is the proactive half: it requires you to either write alt text describing the image, or explicitly check **"This image is decorative"** — you can't insert without making one of those two deliberate choices. Decorative is the right choice for an image with no informational content (a divider line, a background flourish); it is not the same as an image nobody ever got around to describing, which is the problem this dialog exists to prevent.
+
+For any image already in your document — typed by hand, pasted, or brought in from another format — **Tools > Describe Image at Cursor** tells you exactly what a screen reader hears there: "Image: sunset.png, alt text: a sunset over the lake," or, just as clearly, "Image: sunset.png, alt text MISSING" if none was ever given.
+
 ## Verbosity and Announcements
 
 QUILL lets you control what it announces and when, so the editor is as quiet or

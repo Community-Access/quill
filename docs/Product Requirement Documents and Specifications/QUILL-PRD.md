@@ -10144,6 +10144,40 @@ true in practice, not just in name.
   multi-user/access-control, and personas *use* Story Studio/Notebooks/Copy
   Tray rather than replacing them.
 
+### Mandatory alt text at insertion, and inline image descriptions (#899, shipped 0.9.0 Beta 2)
+
+GLOW (`quill/core/glow.py`) already audits missing alt text, auto-fixes it,
+and can generate it via opt-in cloud AI — an accessible image object model
+already existed, but only as an after-the-fact repair pass. #899 asked for
+the proactive half: a document should not be able to *accrue* an
+un-alt-texted image in the first place, and a screen reader should announce
+when one is missing *as the caret passes it*, not just when an audit is run.
+
+`quill/core/inline_image_alt.py` is the pure core: `image_at_position(text, pos)`
+finds the Markdown (`![alt](src)`) or HTML (`<img src=... alt=...>`) image
+reference the caret is inside or touching — the same two patterns
+`link_inventory.py` already parses for GLOW's audit — and `describe_image(record)`
+renders "Image: {filename}, alt text: {alt}" or, just as loudly, "Image:
+{filename}, alt text MISSING". `build_image_markdown(path, alt, decorative=)`
+builds the Markdown for a newly inserted image; a *decorative* image (the
+correct accessible pattern for one with no informational content) gets
+deliberately empty alt text, distinct from an image nobody ever described.
+
+`InsertImageDialog` (`quill/ui/insert_image_dialog.py`) is QUILL's first
+dedicated image-insertion flow (**Insert > Image...**): a file picker, an alt
+text field, and a "this image is decorative" checkbox that disables the alt
+text field when checked. Insert is refused — with a status message, not a
+silent no-op — unless real alt text is present or decorative is explicitly
+checked. `ImageAltMixin` (`quill/ui/main_frame_image_alt.py`) wires this plus
+**Tools > Describe Image at Cursor**, which answers the "what does this image
+say" question for any image already in the document, however it got there
+(typed by hand, pasted, imported).
+
+Deliberately out of scope for this pass: non-image embeds (page breaks,
+equations, removed objects) as accessible placeholders. add.md's own spike
+note said to investigate a shared placeholder model before designing one —
+this covers the object model that already exists (images), not a new one.
+
 ### Self-voice fallback is logged, not announced (shipped 0.8.1 Beta 1)
 
 QUILL's SAPI 5 self-voice (``sapi5.py``/``prism_bridge``) is a *fallback* used only

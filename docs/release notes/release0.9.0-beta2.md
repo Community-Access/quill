@@ -45,6 +45,18 @@ and in-place bold/italic/underline/font/alignment formatting — a first step
 toward a lighter rich-text document mode — but the braille question above is
 why it needs you most.
 
+## Alt text you can't skip, and images that speak up when it's missing
+
+GLOW already catches missing alt text after the fact — this adds the
+proactive half. **Insert > Image...** is QUILL's first dedicated
+image-insertion flow: it won't let you insert without either real alt text
+or an explicit "this image is decorative" choice, so a document can no
+longer quietly pick up an un-alt-texted image. And for any image already
+in your document, however it got there, **Tools > Describe Image at
+Cursor** tells you exactly what's there: "Image: sunset.png, alt text: a
+sunset over the lake" — or just as clearly, "alt text MISSING" if nobody
+ever wrote one.
+
 ## Five small things that add up
 
 - **Look Up now includes Wikipedia.** A short encyclopedia summary, with a
