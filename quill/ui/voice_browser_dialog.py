@@ -554,7 +554,8 @@ class VoiceBrowserDialog:
     def _on_preview_state(self, state: str) -> None:
         """Toggle the Preview button between its idle and Stop labels."""
         self._previewing = state in ("generating", "playing")
-        self._preview_btn.SetLabel("&Stop Preview" if self._previewing else "&Preview Selected Voice")
+        label = "&Stop Preview" if self._previewing else "&Preview Selected Voice"
+        self._preview_btn.SetLabel(label)
 
     def _stop_preview(self) -> None:
         """Cancel the active preview via the same path a new preview would use."""

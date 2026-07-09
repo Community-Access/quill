@@ -17825,7 +17825,11 @@ class MainFrame(
 
             def _play_sample(_progress: Callable[[str, int, int], None]) -> object:
                 _report("playing")
-                self._play_preview_asset(preview_sample)
+                try:
+                    self._play_preview_asset(preview_sample)
+                except Exception:
+                    _report("idle")
+                    raise
                 return None
 
             def _sample_done(_r: object) -> None:
@@ -17861,6 +17865,7 @@ class MainFrame(
                 )
             except Exception as exc:  # noqa: BLE001
                 self._set_status(f"Preview failed: {exc}")
+                _report("idle")
             return
 
         # ElevenLabs previews also cost quota, so gate them on the same per-session
@@ -17928,6 +17933,9 @@ class MainFrame(
                     raise ReadAloudUnavailableError(f"Unknown engine: {engine}")
                 _report("playing")
                 self._play_preview_asset(wav)
+            except Exception:
+                _report("idle")
+                raise
             finally:
                 try:
                     wav.unlink(missing_ok=True)
