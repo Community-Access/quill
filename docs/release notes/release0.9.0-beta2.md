@@ -142,6 +142,24 @@ on by default, right next to your line/column position.
   preview's audio or announcement. Slow voice synthesis now plays a short cue and
   (by default) says "Generating preview, please wait," and the Preview/Test button
   turns into a Stop button while a preview is active.
+- **macOS: earcons are no longer silent.** The app had no audio backend at all on
+  macOS, so sound notifications never played even with the bundled pack selected.
+  Fixed.
+- **macOS: opening a file from Finder, the Dock, or Terminal now actually opens
+  it**, instead of landing you in a blank document. Also fixed: any keyboard
+  shortcut using the Command key silently did nothing, and Ctrl+Tab/Ctrl+Shift+Tab
+  for switching between open documents landed on a toolbar button instead of
+  switching (macOS reserves that combination) — document switching on macOS is
+  now Cmd+Shift+]/[.
+- **The AI Setup Wizard no longer gets stuck** showing an engine like OpenAI as
+  "active" with no way to configure it after an interrupted install. Set Up works
+  again.
+- **"Failed to get data from the clipboard" errors during cut/paste are fixed.**
+  A screen reader or clipboard-history tool briefly holding the clipboard used to
+  show this error immediately; QUILL now gives it a brief moment before giving up.
+- **Fixed four crash reports sent in through user feedback:** the Spell Check
+  Language chooser, word prediction after recovering from a crash, and the AI
+  Hub's Engines tab closing mid-install.
 
 ## Kinder to screen readers
 

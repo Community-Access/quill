@@ -4053,6 +4053,65 @@ Preview/Test button toggles to Stop while a preview is generating or
 playing. No true pause/resume; Stop cancels outright. An in-flight
 external synthesis call that gets superseded is not force-killed — it
 completes in the background and its result is discarded.</p>
+<h4 id="reliability-fixes-2026-07-08">Reliability fixes
+(2026-07-08)</h4>
+<p>A batch of fixes from real user feedback and crash reports, landed
+alongside voice preview feedback:</p>
+<ul>
+<li><strong>Sound backend on macOS.</strong>
+<code>quill/platform/sound_player.py</code>’s
+<code>_detect_backend()</code> previously tried only
+<code>sound_lib</code> (a licensed engine excluded from every build) and
+<code>winsound</code> (Windows-only), so macOS had no audio backend at
+all and every earcon — including the bundled Ink pack, which <em>is</em>
+correctly included in the <code>.app</code> bundle — was silently
+unplayable. Added an AppKit <code>NSSound</code> backend via
+<code>pyobjc</code> (already a <code>macos</code> build extra, used
+elsewhere for screen-reader announcements).</li>
+<li><strong>AI Setup Wizard stuck-active state.</strong>
+<code>SdkHarness.is_available()</code> and
+<code>sdk_install.is_pack_importable()</code> only confirmed
+<code>importlib.util.find_spec()</code>, which a partially-written
+(crash-interrupted) <code>pip install --target</code> still satisfies.
+Both now attempt a real <code>importlib.import_module</code>, so an
+interrupted install correctly reports as not-installed and the existing
+Set Up retry path works.</li>
+<li><strong>macOS file-open + keybinding gaps.</strong>
+<code>run_app()</code> now constructs a <code>MacOpenFileApp</code>
+(<code>quill/ui/mac_open_file_app.py</code>) overriding
+<code>wx.App.MacOpenFile</code>/<code>MacOpenFiles</code>, since
+Finder/Dock/<code>open -a</code> file-open requests arrive via an Apple
+Event, not <code>argv</code>, and QUILL previously never saw them.
+<code>_parse_keybinding</code> gained
+<code>cmd</code>/<code>command</code> as <code>ACCEL_CTRL</code> aliases
+(any <code>Cmd+...</code> binding, including the already-shipped
+back/forward-location shortcuts, previously produced no accelerator
+table entry at all on any platform). Document switching gets a
+darwin-specific default (<code>Cmd+Shift+]</code>/<code>[</code>) since
+<code>Ctrl+Tab</code> maps to macOS’s reserved App Switcher shortcut
+there.</li>
+<li><strong>Clipboard read retry.</strong> The literal “Failed to get
+data from the clipboard (error N: …)” dialog is wxWidgets’ own C++
+<code>wxClipboard::GetData</code> error (<code>wxLogSysError</code>, not
+a Python exception QUILL’s own <code>try</code>/<code>except</code>
+could catch), surfaced on the first transient
+<code>CLIPBRD_E_CANT_OPEN</code> contention with another process/AT
+holding the clipboard. <code>quill/ui/clipboard_retry.py</code>
+(<code>with_clipboard_read_retry</code>/<code>read_clipboard_text</code>)
+retries up to 10 attempts, 20ms apart, suppressing the dialog via
+<code>wx.LogNull()</code> on every attempt but the last; wired into
+every clipboard-read call site (<code>magic_paste</code>, abbreviation
+expansion, Copy Tray, Power Tools plain-text/HTML paste, Quillins).</li>
+<li><strong>Four crash-report fixes (#915–#918):</strong> a missing
+<code>label</code> argument on a <code>_show_modal_dialog</code> call
+(Spell Check Language chooser);
+<code>_IntellisensePopup.is_visible()</code> now catches
+<code>RuntimeError</code> from a deleted C/C++ <code>Frame</code> (a
+crash-recovery restart could rebuild <code>MainFrame</code> without
+recreating the popup, leaving a stale reference); and the AI Hub Engines
+tab’s background-install completion callback now tolerates the panel
+having been closed/destroyed before the install finished.</li>
+</ul>
 <h3 id="b-watch-folder-automation">5.25b Watch Folder automation</h3>
 <p>Quill provides an optional watch-folder workflow under
 <code>Tools -&gt; Watch Folder</code> for low-friction document intake.

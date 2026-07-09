@@ -1700,8 +1700,10 @@ Customize & Support merges the former separate Support and Customize submenus. A
 
 The **Window** menu is small but useful.
 
-- **Next Document** (`Ctrl+Tab`) — move to the next open document.
-- **Previous Document** (`Ctrl+Shift+Tab`) — move to the previous open document.
+- **Next Document** (`Ctrl+Tab`; macOS: `Cmd+Shift+]`) — move to the next open document.
+- **Previous Document** (`Ctrl+Shift+Tab`; macOS: `Cmd+Shift+[`) — move to the
+  previous open document. macOS reserves `Cmd+Tab` for its own App Switcher, so
+  document switching there uses Safari/Xcode's tab-cycling convention instead.
 - **Go to Document 1–10** (`Alt+1` … `Alt+9`, and `Alt+0` for the tenth) — jump
   straight to a document by its position instead of cycling. If no document is
   open at that position, QUILL says so and stays where you are. Like every
