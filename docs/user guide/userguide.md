@@ -345,7 +345,7 @@ What happens when you save formatted text as plain text is set by **Settings →
 A few things worth knowing: the Illumination travels as a *separate file*, so if you copy or e-mail only the `.txt`, the formatting won't come along — keep the pair together (or use Markdown/Word/RTF, which carry formatting inside one file). And if you edit the `.txt` in another program, Quill notices the text no longer matches the Illumination and opens it as plain text rather than re-applying formatting to the wrong words. If you'd rather a single self-contained file that preserves everything, save as **Markdown** (which keeps the formatting inline) or **Word/RTF** (which turn it into native formatting).
 - **Reload from Disk** throws away in-memory edits and reloads the file from storage after confirmation.
 - **Restore Backup...** lets you restore a saved backup version.
-- **Page Setup...** and **Print...** support paper and print workflows.
+- **Page Setup...** and **Print...** support paper and print workflows. **Print Studio...** goes one step further: it reports a spoken/textual preview — "3 pages, Letter, default margins" — the screen-reader equivalent of a visual print preview, then lets you choose **all, odd, or even pages**, **print in reverse order**, or **skip the first page** (handy if page 1 is pre-printed letterhead) before handing off to the same print dialog Print already uses.
 - **Run Current File** executes the saved file with its associated tool, and **Open Target at Cursor** opens the path or link under the caret.
 - **Rename Current File...** and **Delete Current File...** manage the file on disk from inside the editor.
 - **Close Document** closes the current tab.

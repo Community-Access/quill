@@ -18153,6 +18153,50 @@ own spike note said to investigate a shared placeholder model before
 designing one — this covers the object model that already exists
 (images), not a new one.</p>
 <h3
+id="print-studio-accessible-preview-oddevenreverseskip-first-page-891-shipped-0.9.0-beta-2">Print
+Studio: accessible preview, odd/even/reverse/skip-first-page (#891,
+shipped 0.9.0 Beta 2)</h3>
+<p>Real print plumbing already existed – <code>_print_data</code>
+(<code>wx.PrintData</code>), a Page Setup item on
+<code>wx.PageSetupDialogData</code>, and <code>print_document()</code>
+driving <code>wx.Printer</code>. Two things were missing: any preview
+surface at all, and any odd/even/reverse/different-first-page options.
+The existing printout was also single-page-only (<code>HasPage</code>
+always <code>page == 1</code>) – it drew whatever fit on one page and
+silently dropped the rest of the document.</p>
+<p><code>quill/core/print_pagination.py</code> is the pure core:
+<code>paginate_lines(lines, lines_per_page)</code> splits a document
+into pages;
+<code>select_pages(page_count, page_set=, reverse=, skip_first_page=)</code>
+turns a page count and the chosen options into the concrete, ordered
+list of page numbers to print – <code>skip_first_page</code> is computed
+on the <em>original</em> page numbers before odd/even filtering, so “odd
+pages, skip first” on a 7-page document is 3/5/7, not 1/3/5.
+<code>paper_name</code>/<code>margins_text</code>/<code>describe_preview</code>
+build the spoken/textual preview – “3 pages, Letter, default margins” –
+explicitly not a WYSIWYG renderer (the issue’s own non-goal).</p>
+<p><code>quill/ui/main_frame_print.py</code> (<code>PrintMixin</code>,
+extracted from <code>main_frame.py</code> along with the pre-existing
+<code>page_setup</code>/<code>print_document</code> to stay within
+GATE-11): <code>_compute_print_preview</code> uses a throwaway
+<code>wx.PrinterDC</code> for realistic font-metric-based pagination
+without starting an actual print job – the same DC type the real job
+prints through, so Print Studio’s page count matches what actually
+prints. The inner <code>wx.Printout</code> in
+<code>_build_text_printout</code> now paginates for real inside
+<code>OnPreparePrinting</code> (where wx attaches a live DC) and maps a
+requested page-set through an index indirection: wx is told there are
+<code>len(selected_pages)</code> “pages,” and each
+<code>OnPrintPage(n)</code> resolves <code>n</code> back to the real
+document page it represents. This is the standard technique for custom
+page ordering in wx’s printing API, which has no native odd/even/reverse
+concept of its own.</p>
+<p><strong>File &gt; Print Studio…</strong> shows the preview and
+options, then hands off to the identical <code>wx.Printer</code> flow
+<strong>File &gt; Print</strong> already uses – Print Studio is a step
+in front of the existing dialog, not a replacement for it. Header/footer
+authoring stays explicitly out of scope; that is #892.</p>
+<h3
 id="self-voice-fallback-is-logged-not-announced-shipped-0.8.1-beta-1">Self-voice
 fallback is logged, not announced (shipped 0.8.1 Beta 1)</h3>
 <p>QUILL’s SAPI 5 self-voice

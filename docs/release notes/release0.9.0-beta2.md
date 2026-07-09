@@ -57,6 +57,17 @@ Cursor** tells you exactly what's there: "Image: sunset.png, alt text: a
 sunset over the lake" — or just as clearly, "alt text MISSING" if nobody
 ever wrote one.
 
+## Print Studio: finally, a preview
+
+**File > Print Studio...** tells you what you're about to print before you
+print it — "3 pages, Letter, default margins" — read aloud or in braille,
+the way a visual print preview would show a sighted user. Then choose
+**all, odd, or even pages**, **reverse the order**, or **skip the first
+page** if it's pre-printed letterhead, before it hands off to the same
+Print dialog you already know. Printing itself also got more honest along
+the way — it used to draw whatever fit on one page and quietly drop the
+rest of a longer document; now it paginates properly.
+
 ## Five small things that add up
 
 - **Look Up now includes Wikipedia.** A short encyclopedia summary, with a
