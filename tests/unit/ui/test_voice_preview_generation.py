@@ -13,6 +13,13 @@ from quill.ui.main_frame import MainFrame
 @pytest.fixture(scope="module")
 def wx_app():
     app = wx.App()
+    # Without a real wx.App().MainLoop() running (never entered in these unit
+    # tests), wx.Yield()/YieldIfNeeded() is a no-op for wx.Timer-backed
+    # callbacks (wx.CallLater) unless an event loop object is registered as
+    # active -- wx.CallAfter's ProcessPendingEvents path doesn't need this,
+    # but the generating-cue tests below poll for a real CallLater firing.
+    loop = wx.GUIEventLoop()
+    wx.EventLoop.SetActive(loop)
     yield app
     app.Destroy()
 
@@ -52,4 +59,61 @@ def test_second_preview_supersedes_the_first(wx_app, monkeypatch) -> None:
 
     finished_count = sum(1 for c in calls if c == "status:Preview finished")
     assert finished_count == 1, calls
+    frame.frame.Destroy()
+
+
+def test_generating_cue_fires_once_after_the_delay(wx_app, monkeypatch) -> None:
+    from quill.core.sound_events import SoundEvent
+
+    frame = MainFrame.__new__(MainFrame)
+    frame._wx = wx
+    frame.frame = wx.Frame(None)
+    frame.settings = type("S", (), {"voice_preview_announce_generating": True})()
+    posted: list[str] = []
+    announced: list[str] = []
+
+    monkeypatch.setattr(frame, "_set_status", lambda *a, **k: None)
+    monkeypatch.setattr(frame, "_announce", lambda *a, **k: announced.append(a[0]))
+    monkeypatch.setattr(
+        "quill.ui.main_frame.post_sound", lambda event_id: posted.append(event_id)
+    )
+
+    frame._stop_active_voice_preview()
+    my_generation = frame._preview_generation
+    frame._preview_cue_timer = wx.CallLater(50, frame._fire_generating_cue, my_generation)
+
+    for _ in range(30):
+        wx.YieldIfNeeded()
+        time.sleep(0.02)
+        if posted:
+            break
+
+    assert posted == [SoundEvent.VOICE_PREVIEW_GENERATING.value]
+    assert announced == ["Generating preview, please wait."]
+    frame.frame.Destroy()
+
+
+def test_generating_cue_does_not_fire_if_superseded_first(wx_app, monkeypatch) -> None:
+    frame = MainFrame.__new__(MainFrame)
+    frame._wx = wx
+    frame.frame = wx.Frame(None)
+    frame.settings = type("S", (), {"voice_preview_announce_generating": True})()
+    posted: list[str] = []
+    monkeypatch.setattr(frame, "_set_status", lambda *a, **k: None)
+    monkeypatch.setattr(frame, "_announce", lambda *a, **k: None)
+    monkeypatch.setattr(
+        "quill.ui.main_frame.post_sound", lambda event_id: posted.append(event_id)
+    )
+
+    frame._stop_active_voice_preview()
+    stale_generation = frame._preview_generation
+    frame._preview_cue_timer = wx.CallLater(50, frame._fire_generating_cue, stale_generation)
+    # Supersede before the timer fires.
+    frame._stop_active_voice_preview()
+
+    for _ in range(30):
+        wx.YieldIfNeeded()
+        time.sleep(0.02)
+
+    assert posted == []
     frame.frame.Destroy()

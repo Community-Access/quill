@@ -279,6 +279,7 @@ from quill.core.snippets import (
     search_snippets,
     starter_pack_names,
 )
+from quill.core.sound_events import SoundEvent
 from quill.core.spellcheck import (
     Misspelling,
     add_word_to_scope,
@@ -437,6 +438,7 @@ from quill.ui.main_frame_verbosity import VerbosityCommandsMixin
 from quill.ui.main_frame_watch_profile import WatchProfileDialogMixin
 from quill.ui.notebook_panel import NotebookEntriesPanel
 from quill.ui.rich_text_surface import RichTextSurface
+from quill.ui.sound_manager import post_sound
 from quill.ui.word_view import WordDocumentSurface
 
 
@@ -17712,11 +17714,27 @@ class MainFrame(
         discarded when the stale generation check fails.
         """
         self._preview_generation = getattr(self, "_preview_generation", 0) + 1
+        timer = getattr(self, "_preview_cue_timer", None)
+        if timer is not None:
+            try:
+                timer.Stop()
+            except Exception:  # noqa: BLE001
+                pass
+            self._preview_cue_timer = None
         try:
             self._read_aloud.stop()
         except Exception:  # noqa: BLE001
             pass
         self._purge_preview_playback()
+
+    def _fire_generating_cue(self, generation: int) -> None:
+        """One-shot "still generating" cue -- fires only if *generation* is
+        still current (the ~400ms delay elapsed before synthesis finished)."""
+        if getattr(self, "_preview_generation", 0) != generation:
+            return
+        post_sound(SoundEvent.VOICE_PREVIEW_GENERATING)
+        if getattr(self.settings, "voice_preview_announce_generating", True):
+            self._announce("Generating preview, please wait.")
 
     def _play_preview_asset(self, sample_path: Path) -> None:
         suffix = sample_path.suffix.lower()
@@ -17891,6 +17909,7 @@ class MainFrame(
             if _still_current():
                 self._set_status("Preview finished")
 
+        self._preview_cue_timer = self._wx.CallLater(400, self._fire_generating_cue, my_generation)
         self._run_background_task(
             f"Previewing {engine} voice",
             _work,
