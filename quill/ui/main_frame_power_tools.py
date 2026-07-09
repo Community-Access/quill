@@ -653,6 +653,62 @@ class PowerToolsActionsMixin:
             return
         self._set_status(f"Opened {path.name}")
 
+    # ------------------------------------------- Send / Copy as Email (#900)
+
+    def _email_fragment(self) -> object:
+        """Build a Fragment from the current selection, or the whole document
+        when nothing is selected -- #900's "the document, a selection, or a
+        kept fragment" framing."""
+        from quill.core.fragment import Fragment
+
+        start, end = self.editor.GetSelection()
+        text = self.editor.GetValue()
+        markup = text[start:end] if start != end else text
+        title = getattr(self.document, "name", "") or "QUILL document"
+        return Fragment(markup=markup, title=title, source="Document")
+
+    def _email_format(self) -> object:
+        from quill.core.fragment import FragmentFormat
+
+        raw = str(getattr(self.settings, "content_handoff_format", "text"))
+        try:
+            return FragmentFormat(raw)
+        except ValueError:
+            return FragmentFormat.TEXT
+
+    def send_as_email(self) -> None:
+        """Open the user's mail client with the selection (or document) as the body."""
+        from quill.core.email_handoff import build_mailto
+
+        frag = self._email_fragment()
+        if not frag.markup.strip():
+            self._set_status("Nothing to send: the document is empty.")
+            return
+        url = build_mailto(frag, self._email_format(), subject=frag.title)
+        webbrowser.open(url)
+        self._set_status("Opened your mail client with this content as the body.")
+
+    def copy_as_email_body(self) -> None:
+        """Copy the selection (or document), rendered for email, to the clipboard.
+
+        The practical alternative to Send as Email: many mail clients silently
+        truncate or reject a long mailto: body, so this puts the same rendered
+        content straight on the clipboard to paste into a compose window.
+        """
+        import wx
+
+        from quill.core.fragment import render_fragment
+
+        frag = self._email_fragment()
+        if not frag.markup.strip():
+            self._set_status("Nothing to copy: the document is empty.")
+            return
+        text = render_fragment(frag, self._email_format())
+        if wx.TheClipboard.Open():
+            wx.TheClipboard.SetData(wx.TextDataObject(text))
+            wx.TheClipboard.Close()
+        self._set_status("Copied to the clipboard as an email body.")
+
     # ------------------------------------------- EDS-20 rename/delete on disk
     def rename_current_file(self) -> None:
         if self.document.path is None:

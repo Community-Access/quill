@@ -153,6 +153,24 @@ def _build_power_tools_registrar() -> FirstPartyRegistrar:
         label="Dele&te Current File...",
         separator_before=False,
     )
+    # Send / Copy as Email (#900): the selection, or the whole document when
+    # nothing is selected, rendered per the content_handoff_format setting.
+    add(
+        id="power.send_as_email",
+        title="Send as Email",
+        top_level="File",
+        group="file_ops",
+        label="Sen&d as Email...",
+        separator_before=True,
+    )
+    add(
+        id="power.copy_as_email_body",
+        title="Copy as Email Body",
+        top_level="File",
+        group="file_ops",
+        label="Copy as E&mail Body",
+        separator_before=False,
+    )
 
     # Format > Line operations ------------------------------------------
     add(

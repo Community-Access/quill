@@ -60,6 +60,7 @@ class Settings:
     docx_read_engine: str = "auto"
     docx_write_engine: str = "auto"
     plain_text_link_style: str = "text_url"
+    content_handoff_format: str = "text"
     indent_with_tabs: bool = False
     indent_size: int = 4
     # On by default so signed safety advisories (the remote feature kill
@@ -624,6 +625,9 @@ class Settings:
         plain_text_link_style = str(data.get("plain_text_link_style", "text_url")).strip().lower()
         if plain_text_link_style not in {"text", "text_url", "url", "markdown"}:
             plain_text_link_style = "text_url"
+        content_handoff_format = str(data.get("content_handoff_format", "text")).strip().lower()
+        if content_handoff_format not in {"text", "markdown", "html"}:
+            content_handoff_format = "text"
         indent_with_tabs = bool(data.get("indent_with_tabs", False))
         try:
             indent_size = int(data.get("indent_size", 4))
@@ -1261,6 +1265,7 @@ class Settings:
             docx_read_engine=docx_read_engine,
             docx_write_engine=docx_write_engine,
             plain_text_link_style=plain_text_link_style,
+            content_handoff_format=content_handoff_format,
             indent_with_tabs=indent_with_tabs,
             indent_size=indent_size,
             auto_check_updates=auto_check_updates,

@@ -66,6 +66,9 @@ _POWER_TOOLS_COMMAND_IDS = [
     "power.run_target_at_cursor",
     "power.rename_current_file",
     "power.delete_current_file",
+    # Send / Copy as Email (#900)
+    "power.send_as_email",
+    "power.copy_as_email_body",
     # §4.22/§4.23 TextMonkey/EdSharp-parity additions
     "power.trim_blank_lines",
     "power.strip_html_tags",

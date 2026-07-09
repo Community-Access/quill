@@ -595,6 +595,18 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("link", "url", "plain text", "export", "convert"),
     ),
     SettingSpec(
+        "content_handoff_format",
+        "Kept and sent content format",
+        "editing",
+        "choice",
+        "How content is formatted when you keep it in the Clip Library or send "
+        "it by email -- plain text, Markdown, or a rich HTML snippet. "
+        "Interchangeable at any time; nothing is baked in when you keep or "
+        "send it.",
+        choices=(("text", "Plain text"), ("markdown", "Markdown"), ("html", "HTML")),
+        keywords=("clip library", "email", "send", "format", "html", "markdown"),
+    ),
+    SettingSpec(
         "autosave_interval_seconds",
         "Autosave interval (seconds)",
         "editing",

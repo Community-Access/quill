@@ -201,6 +201,25 @@ def test_settings_list_studio_settings_defaults_empty_and_ignores_garbage(
     assert load_settings().list_studio_settings == {}
 
 
+def test_content_handoff_format_defaults_and_round_trips(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    assert Settings().content_handoff_format == "text"
+    save_settings(Settings(content_handoff_format="html"))
+    assert load_settings().content_handoff_format == "html"
+
+
+def test_content_handoff_format_invalid_value_falls_back_to_text(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    (tmp_path / "settings.json").write_text(
+        '{"content_handoff_format": "not-a-format"}', encoding="utf-8"
+    )
+    assert load_settings().content_handoff_format == "text"
+
+
 def test_settings_persists_tts_normalization(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
