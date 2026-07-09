@@ -1397,6 +1397,7 @@ class MainFrame(
             ("first-run onboarding", self._maybe_run_first_run_onboarding),
             ("migration notice", self._surface_migration_notice),
             ("braille pack prompt", self._maybe_prompt_braille_pack_install),
+            ("kokoro package prompt", self._maybe_prompt_kokoro_package_install),
             ("startup profile prompt", self.run_startup_profile_prompt),
             ("watch-folder startup", self._maybe_start_watch_folder),
             # Apply the saved spell-check language before the cache warms so the
@@ -17679,6 +17680,44 @@ class MainFrame(
                     return candidate
         return None
 
+    def _purge_preview_playback(self) -> None:
+        """Best-effort: stop whatever voice-preview audio is currently sounding.
+
+        Covers both playback backends `_play_preview_asset` uses. Never raises --
+        called opportunistically whenever a new preview supersedes an old one.
+        """
+        if _winsound is not None:
+            try:
+                _winsound.PlaySound(None, _winsound.SND_PURGE)
+            except Exception:  # noqa: BLE001
+                pass
+        try:
+            import ctypes as _ct
+
+            _ct.windll.winmm.mciSendStringW("stop quill_preview", None, 0, None)  # type: ignore[attr-defined]
+            _ct.windll.winmm.mciSendStringW("close quill_preview", None, 0, None)  # type: ignore[attr-defined]
+        except Exception:  # noqa: BLE001
+            pass
+
+    def _stop_active_voice_preview(self) -> None:
+        """Stop/supersede whatever voice preview is currently active.
+
+        Bumps the generation counter first (so any in-flight callback from the
+        old generation becomes a no-op the instant it checks), then best-effort
+        stops the old preview's audio: SAPI5 goes through the ReadAloudController
+        it already owns; every other engine plays through `_play_preview_asset`,
+        stopped via `_purge_preview_playback`. Does NOT stop an old preview's
+        synthesis if it is still computing (e.g. a Piper/Kokoro call in
+        progress) -- that finishes in the background and its result is
+        discarded when the stale generation check fails.
+        """
+        self._preview_generation = getattr(self, "_preview_generation", 0) + 1
+        try:
+            self._read_aloud.stop()
+        except Exception:  # noqa: BLE001
+            pass
+        self._purge_preview_playback()
+
     def _play_preview_asset(self, sample_path: Path) -> None:
         suffix = sample_path.suffix.lower()
         if suffix == ".wav" and _winsound is not None:
@@ -17714,9 +17753,20 @@ class MainFrame(
         downloaded) plays the bundled pre-recorded sample instead, so the user
         can still hear what the voice sounds like before downloading; if no
         sample ships for it, we say so rather than failing silently.
+
+        Starting a preview always stops/supersedes whatever preview was
+        previously active (see ``_stop_active_voice_preview``): its playback is
+        cut short and its completion callback becomes a no-op, so two previews
+        started in quick succession never overlap.
         """
         import tempfile as _tmpfile
         from pathlib import Path as _Path
+
+        self._stop_active_voice_preview()
+        my_generation = self._preview_generation
+
+        def _still_current() -> bool:
+            return getattr(self, "_preview_generation", 0) == my_generation
 
         sample = text or self._PREVIEW_TEXT
         s = self.settings
@@ -17733,10 +17783,14 @@ class MainFrame(
                 self._play_preview_asset(preview_sample)
                 return None
 
+            def _sample_done(_r: object) -> None:
+                if _still_current():
+                    self._set_status("Preview finished")
+
             self._run_background_task(
                 f"Previewing {engine} voice",
                 _play_sample,
-                lambda _r: self._set_status("Preview finished"),
+                _sample_done,
             )
             return
 
@@ -17754,7 +17808,7 @@ class MainFrame(
                     pitch=s.read_aloud_pitch,
                     on_state_change=lambda state: (
                         self._wx.CallAfter(self._set_status, "Preview finished")
-                        if state in ("idle", "error")
+                        if state in ("idle", "error") and _still_current()
                         else None
                     ),
                 )
@@ -17833,10 +17887,14 @@ class MainFrame(
                     pass
             return None
 
+        def _synth_done(_r: object) -> None:
+            if _still_current():
+                self._set_status("Preview finished")
+
         self._run_background_task(
             f"Previewing {engine} voice",
             _work,
-            lambda _r: self._set_status("Preview finished"),
+            _synth_done,
         )
 
     def choose_read_aloud_configuration(self) -> None:
@@ -17857,9 +17915,7 @@ class MainFrame(
         )
         from quill.core.speech.engine_install import (
             is_faster_whisper_available,
-            is_kokoro_onnx_available,
             is_vosk_available,
-            kokoro_onnx_install_supported,
             vosk_install_supported,
         )
         from quill.core.speech.ffmpeg import ffmpeg_available
@@ -17947,8 +18003,6 @@ class MainFrame(
             "engine_ok": is_faster_whisper_available(),
             "vosk_ok": is_vosk_available(),
             "vosk_can_install": vosk_install_supported(),
-            "kokoro_ok": is_kokoro_onnx_available(),
-            "kokoro_can_install": kokoro_onnx_install_supported(),
             "all_providers": all_providers,
             "total_ram": total_ram,
             "has_gpu": has_gpu,
@@ -18079,8 +18133,6 @@ class MainFrame(
                 self.download_faster_whisper()
             elif dict_result.action == "vosk":
                 self.download_vosk()
-            elif dict_result.action == "kokoro_engine":
-                self.download_kokoro_engine()
             elif dict_result.action == "hf_token":
                 self.set_huggingface_token()
             elif dict_result.action == "test":
@@ -18370,6 +18422,12 @@ class MainFrame(
         engine = self.settings.read_aloud_engine.strip().lower() or "sapi5"
         s = self.settings
 
+        # Kokoro-only: models on disk but the kokoro_onnx package missing (e.g.
+        # upgraded from a build that bundled Kokoro). Set in the gate below and
+        # honored on the export worker so the small package install happens off
+        # the UI thread. (#kokoro-onnx)
+        kokoro_install_pkg = False
+
         # Resolve / prompt for engine-specific paths before background work
         if engine == "piper":
             exe = discover_piper_executable()
@@ -18423,17 +18481,25 @@ class MainFrame(
             espeak_exe_snap = exe
 
         elif engine == "kokoro":
-            from quill.core.read_aloud import kokoro_engine_ready
+            from quill.core.read_aloud import kokoro_engine_ready, kokoro_onnx_ready
 
             if not kokoro_engine_ready():
-                self._show_message_box(
-                    "Kokoro voices need one more component. Tools > Speech > "
-                    "Install Kokoro ONNX will fetch it before exporting.",
-                    _TITLE,
-                    wx.ICON_ERROR | wx.OK,
-                )
-                self._set_status("Speech generation cancelled")
-                return
+                if kokoro_onnx_ready():
+                    # Model files are present but the kokoro_onnx package is not
+                    # importable. The user already opted into Kokoro (downloaded
+                    # the voices and selected the voice), so onboard the small
+                    # (~20 MB) package on the export worker instead of dead-ending
+                    # with a "go install it yourself" dialog. (#kokoro-onnx)
+                    kokoro_install_pkg = True
+                else:
+                    self._show_message_box(
+                        "Kokoro voices are not installed yet. Use Manage Voices to "
+                        "download the Kokoro voices (~114 MB) before exporting.",
+                        _TITLE,
+                        wx.ICON_ERROR | wx.OK,
+                    )
+                    self._set_status("Speech generation cancelled")
+                    return
 
         save_settings(s)
         task_label = f"Generating speech audio ({output_path.name}) via {engine}"
@@ -18447,6 +18513,7 @@ class MainFrame(
         _dectalk_rate = s.read_aloud_dectalk_rate
         _kokoro_voice = s.read_aloud_kokoro_voice
         _kokoro_speed = s.read_aloud_kokoro_speed
+        _kokoro_install_pkg = kokoro_install_pkg
         _espeak_voice = s.read_aloud_espeak_voice
         _espeak_rate = s.read_aloud_espeak_rate
         _out = output_path
@@ -18486,6 +18553,17 @@ class MainFrame(
                     model_path=piper_model_snap,
                 )
             elif _engine == "kokoro":
+                if _kokoro_install_pkg:
+                    # GATE-40-OK: runs on the export worker (this callback is the
+                    # background task body), so the ~20 MB pip install stays off
+                    # the UI thread. A failure surfaces the real installer error
+                    # via notify_on_error, not the masked fallback. (#kokoro-onnx)
+                    from quill.core.speech.engine_install import install_kokoro_onnx
+
+                    progress("Installing Kokoro component", 0, 1)
+                    install_kokoro_onnx(
+                        progress=lambda frac, msg: progress(msg, int(frac * 100), 100)
+                    )
                 synthesize_with_kokoro(
                     _out_text, wav_target, voice=_kokoro_voice, speed=_kokoro_speed
                 )
@@ -26820,6 +26898,73 @@ class MainFrame(
             wx.ICON_INFORMATION | wx.OK,
         )
         self.open_optional_components(preselect="braille")
+
+    def _maybe_prompt_kokoro_package_install(self) -> None:
+        """One-time prompt when the Kokoro models are present but the kokoro_onnx
+        package is not importable.
+
+        This is the "upgraded from a build that bundled Kokoro" gap: the ~114 MB
+        model files are on disk (so the user clearly set Kokoro up) but the pip
+        package that loads them was never installed in this runtime. Runs only in
+        a real (non-dev) install, never in Safe Mode, only once per user, and only
+        when that exact gap exists. Choosing 'Install Now' routes into the existing
+        Kokoro engine installer without a second confirmation. Declining is fine --
+        export also self-heals this on demand (#kokoro-onnx).
+        """
+        from quill.core.paths import _DEV_BUILD
+        from quill.core.read_aloud import kokoro_onnx_ready
+        from quill.core.speech.engine_install import (
+            is_kokoro_onnx_available,
+            kokoro_onnx_install_supported,
+        )
+
+        if _DEV_BUILD or self._safe_mode:
+            return
+        if getattr(self.settings, "upgrade_prompt_kokoro_onnx", False):
+            return
+        # Only the models-present / package-missing gap is worth a prompt: no
+        # models means the user never set Kokoro up (nothing to complete), and a
+        # present package means there is nothing to install.
+        if not kokoro_onnx_ready() or is_kokoro_onnx_available():
+            return
+        # If this build cannot install it (no pip), a prompt would dead-end.
+        if not kokoro_onnx_install_supported():
+            return
+
+        # Mark shown first so a crash during the dialog doesn't re-show it.
+        self.settings.upgrade_prompt_kokoro_onnx = True
+        save_settings(self.settings)
+
+        wx = self._wx
+        msg = (
+            "Your Kokoro voices are installed, but one small component is missing.\n\n"
+            "The Kokoro neural voices need the Kokoro ONNX engine (~20 MB) to speak. "
+            "Your voice files are already on this computer -- only this component is "
+            "left to install.\n\n"
+            "Choose 'Install Now' to add it (a quick download). Choose 'Not Now' to "
+            "skip; QUILL will install it automatically the next time you export with "
+            "a Kokoro voice, or you can re-download Kokoro any time from Help > "
+            "Download Optional Components."
+        )
+        with wx.MessageDialog(
+            self.frame,
+            msg,
+            "Finish Setting Up Kokoro",
+            wx.YES_NO | wx.NO_DEFAULT | wx.ICON_INFORMATION,
+        ) as dlg:
+            if hasattr(dlg, "SetYesNoLabels"):
+                dlg.SetYesNoLabels("Install Now", "Not Now")
+            apply_modal_ids(dlg, affirmative_id=wx.ID_YES, escape_id=wx.ID_NO)
+            result = self._show_modal_dialog(dlg, "Finish Setting Up Kokoro")
+
+        if result != wx.ID_YES:
+            self._set_status(
+                "Kokoro component skipped. QUILL installs it automatically on your "
+                "next Kokoro export."
+            )
+            return
+        # Consent already given by 'Install Now' -- do not ask again.
+        self.download_kokoro_engine(skip_confirm=True)
 
     def _find_cached_quill_installer(self):
         """Return the Path of a cached Quill-Setup-*.exe in the updates folder, or None."""
