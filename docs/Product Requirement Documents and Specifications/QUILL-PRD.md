@@ -3120,7 +3120,7 @@ Canonical event IDs are defined as a `StrEnum` in `quill/core/sound_events.py` (
 
 #### 5.70.4 Cross-platform backend
 
-`quill/platform/sound_player.py` auto-detects the best backend at startup: (1) `_SoundLibBackend` (BASS via the MIT-licensed `accessibleapps/sound_lib`, all platforms, native mixing); (2) `_WinsoundBackend` (Windows stdlib, serialising queue); (3) `_NullBackend`. `sound_lib` is an optional extra (`pip install quill[audio]`); absent it, QUILL falls back to `winsound` on Windows or stays silent elsewhere. Any object satisfying the `_WavBackend` protocol (`play_wav(bytes)`, `shutdown(timeout)`) can be injected, which is how tests use a synchronous recording backend.
+`quill/platform/sound_player.py` auto-detects the best backend at startup: (1) `_SoundLibBackend` (BASS via the MIT-licensed `accessibleapps/sound_lib`, all platforms, native mixing); (2) `_WinsoundBackend` (Windows stdlib, serialising queue); (3) `_NSSoundBackend` (AppKit `NSSound` via `pyobjc`, macOS fallback); (4) `_NullBackend`. `sound_lib` is an optional, licensed extra (`pip install quill[audio]`) never bundled by default; absent it, QUILL falls back to `winsound` on Windows or `NSSound` on macOS (both ship with their respective build extras already) before going silent. Any object satisfying the `_WavBackend` protocol (`play_wav(bytes)`, `shutdown(timeout)`) can be injected, which is how tests use a synchronous recording backend.
 
 #### 5.70.5 Module layout and posting
 

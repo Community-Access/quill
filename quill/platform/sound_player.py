@@ -5,12 +5,22 @@ Backend selection (in priority order)
 1. ``sound_lib`` (BASS from Un4seen via the accessibleapps/sound_lib package).
    Available on Windows, macOS, and Linux.  BASS mixes streams natively, so
    multiple earcons can play simultaneously with no queue or serialisation
-   thread.  Install with ``pip install sound_lib``.
+   thread.  Install with ``pip install sound_lib``.  This is a *licensed*
+   third-party engine (see the ``audio`` extra in ``pyproject.toml``), so it
+   is deliberately never bundled by default on any platform's build.
 
-2. ``winsound`` (Windows stdlib).  Falls back to this when sound_lib is absent.
-   Serialises playback via a daemon thread because winsound cannot mix.
+2. ``winsound`` (Windows stdlib).  Falls back to this when sound_lib is
+   absent.  Serialises playback via a daemon thread because winsound cannot
+   mix.  Windows-only.
 
-3. Silent no-op.  If neither backend initialises, ``play()`` is a no-op and a
+3. ``NSSound`` (AppKit, via ``pyobjc``).  macOS fallback for when sound_lib is
+   absent -- macOS has no stdlib playback module equivalent to ``winsound``,
+   so without this the macOS app fell straight through to :class:`_NullBackend`
+   and every earcon, including the bundled default pack, was silent out of
+   the box. ``pyobjc`` is already a dependency of the ``macos`` build extra
+   (used for the Foundation Models bridge), so this adds no new dependency.
+
+4. Silent no-op.  If no backend initialises, ``play()`` is a no-op and a
    one-time warning is logged.
 
 Public API
@@ -157,6 +167,58 @@ class _WinsoundBackend:
 
 
 # ---------------------------------------------------------------------------
+# Backend: NSSound (AppKit) — macOS fallback when sound_lib is absent
+# ---------------------------------------------------------------------------
+
+
+class _NSSoundBackend:
+    """AppKit ``NSSound``-backed earcon player for macOS.
+
+    macOS has no stdlib playback module equivalent to Windows' ``winsound``,
+    so when the licensed ``sound_lib`` (BASS) extra is not installed -- the
+    normal case for QUILL's macOS build, see the ``audio`` extra's docstring
+    in ``pyproject.toml`` -- earcons would otherwise be silent. ``pyobjc`` is
+    already a build/runtime dependency of the ``macos`` extra (used for the
+    Foundation Models bridge), so selecting this backend adds no new
+    dependency.
+
+    ``NSSound`` plays asynchronously and must be kept alive until playback
+    finishes or AppKit tears it down mid-sound. Rather than track completion
+    with a delegate, a small bounded list of the most recently started sounds
+    is retained -- earcons are short, so by the time the list wraps around,
+    earlier entries have long finished playing.
+    """
+
+    _MAX_LIVE: int = 16
+
+    def __init__(self) -> None:
+        # Import deferred to keep the module importable without pyobjc.
+        from AppKit import NSSound  # type: ignore[import-not-found]
+
+        self._NSSound = NSSound
+        self._live: list[object] = []
+        logger.debug("SoundPlayer: using NSSound (AppKit) backend")
+
+    def play_wav(self, wav: bytes) -> None:
+        try:
+            from Foundation import NSData  # type: ignore[import-not-found]
+
+            data = NSData.dataWithBytes_length_(wav, len(wav))
+            sound = self._NSSound.alloc().initWithData_(data)
+            if sound is None:
+                return
+            sound.play()
+            self._live.append(sound)
+            if len(self._live) > self._MAX_LIVE:
+                del self._live[: -self._MAX_LIVE]
+        except Exception:  # noqa: BLE001
+            logger.warning("SoundPlayer (NSSound): playback failed", exc_info=True)
+
+    def shutdown(self, timeout: float = 2.0) -> None:
+        self._live.clear()
+
+
+# ---------------------------------------------------------------------------
 # Backend: null — silent no-op
 # ---------------------------------------------------------------------------
 
@@ -186,6 +248,11 @@ def _detect_backend() -> _WavBackend:
         return _WinsoundBackend()
     except Exception:  # noqa: BLE001
         logger.debug("winsound unavailable", exc_info=False)
+
+    try:
+        return _NSSoundBackend()
+    except Exception:  # noqa: BLE001
+        logger.debug("NSSound (AppKit) unavailable", exc_info=False)
 
     logger.warning(
         "SoundPlayer: no audio backend available; earcons will be silent. "
