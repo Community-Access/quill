@@ -4111,6 +4111,19 @@ crash-recovery restart could rebuild <code>MainFrame</code> without
 recreating the popup, leaving a stale reference); and the AI Hub Engines
 tab’s background-install completion callback now tolerates the panel
 having been closed/destroyed before the install finished.</li>
+<li><strong>Crash opening the Quillins Manager when PyNaCl is not
+installed (#919).</strong> PyNaCl is a dev/CI-only dependency (Quillin
+Hub artifact signing/publishing), never a shipping one, but
+<code>quill/tools/signing.py</code> imported it unconditionally at
+module level — so simply viewing a Quillin’s details (which checks its
+signature status) crashed with <code>ModuleNotFoundError</code> on every
+real build. The import is now lazy (<code>TYPE_CHECKING</code> +
+function-local), and
+<code>verify_artifact</code>/<code>signature_status</code> — whose own
+docstrings already promised “fail-closed, never raises” — now catch a
+missing <code>nacl</code> the same way they catch every other
+verification failure, reporting “PyNaCl is not installed” instead of
+crashing.</li>
 </ul>
 <h4 id="api-key-onboarding-for-env-var-authenticated-harnesses">API-key
 onboarding for env-var-authenticated harnesses</h4>

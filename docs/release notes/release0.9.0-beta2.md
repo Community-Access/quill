@@ -319,7 +319,7 @@ on by default, right next to your line/column position.
 
 ---
 
-## Three fixes that unblock real work
+## Four fixes that unblock real work
 
 - **PDF and document import works out of the box again — and it's now a
   one-click download.** A tester on a clean install hit "can't extract text
@@ -344,6 +344,13 @@ on by default, right next to your line/column position.
   dictation, and braille stay right where they are, because a simpler profile
   should never be a less accessible one. Want any of it back? Preferences >
   Profiles and Features, one toggle each.
+- **The Quillins Manager no longer crashes on open.** A reporter hit this
+  right away: just viewing a Quillin's details crashed with a
+  `ModuleNotFoundError`. The signature-status check (is this Quillin
+  publisher-signed?) depended on a library that's only ever installed for
+  QUILL's own development and release process, never in the shipped app —
+  it now reports "signature check unavailable" instead of taking the
+  whole dialog down with it.
 
 ---
 

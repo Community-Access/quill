@@ -545,8 +545,8 @@ the exact cause. Every one of QUILL’s internal error types now has
 one.</li>
 </ul>
 <hr />
-<h2 id="three-fixes-that-unblock-real-work">Three fixes that unblock
-real work</h2>
+<h2 id="four-fixes-that-unblock-real-work">Four fixes that unblock real
+work</h2>
 <ul>
 <li><strong>PDF and document import works out of the box again — and
 it’s now a one-click download.</strong> A tester on a clean install hit
@@ -574,6 +574,13 @@ print, send” workspace — while read aloud, voice commands, dictation,
 and braille stay right where they are, because a simpler profile should
 never be a less accessible one. Want any of it back? Preferences &gt;
 Profiles and Features, one toggle each.</li>
+<li><strong>The Quillins Manager no longer crashes on open.</strong> A
+reporter hit this right away: just viewing a Quillin’s details crashed
+with a <code>ModuleNotFoundError</code>. The signature-status check (is
+this Quillin publisher-signed?) depended on a library that’s only ever
+installed for QUILL’s own development and release process, never in the
+shipped app — it now reports “signature check unavailable” instead of
+taking the whole dialog down with it.</li>
 </ul>
 <hr />
 <h2 id="with-gratitude">With gratitude</h2>
