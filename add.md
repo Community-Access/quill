@@ -1,27 +1,16 @@
 # Backlog review: remaining open issues
 
-Proposals and priorities for the rest of the open backlog. **Already shipped and documented in the CHANGELOG / release notes (removed from this future-facing list):** #909 (the free-first import pipeline is now a base dependency), #890 (Casual Writer tightened to a true "just write" profile), the Report-a-Bug "No token" build regression, #897 (Wikipedia lookup), #895 (Clip Library), #900 (Send/Copy as Email), #894 (Accessible AutoOutline), #896 (Work Personas), #899 (Mandatory alt text + inline image descriptions), and #891 (Print Studio). Closed items (#898 Second View, #901 tablet/low-vision, #905/#906/#907 Convert-Non-ASCII bugs) are excluded.
+Proposals and priorities for the rest of the open backlog. **Already shipped and documented in the CHANGELOG / release notes (removed from this future-facing list):** #909 (the free-first import pipeline is now a base dependency), #890 (Casual Writer tightened to a true "just write" profile), the Report-a-Bug "No token" build regression, #897 (Wikipedia lookup), #895 (Clip Library), #900 (Send/Copy as Email), #894 (Accessible AutoOutline), #896 (Work Personas), #899 (Mandatory alt text + inline image descriptions), #891 (Print Studio), and #892 (Header/Footer Builder). Closed items (#898 Second View, #901 tablet/low-vision, #905/#906/#907 Convert-Non-ASCII bugs) are excluded.
+
+## Follow-up from #892
+
+- **DOCX/RTF native header/footer export**: the Header/Footer Builder authors and saves a spec, and draws it when printing, but does not yet write real header/footer XML into DOCX/RTF exports. Deliberately deferred per the issue's own build order (confirm the round-trip once real usage exists to validate against).
 
 ## Priority ladder (my recommendation)
 
 | Rank | Issue | Title (short) | Impact | Confidence | Why here |
 |------|-------|---------------|--------|-----------|----------|
-| **P2** | #892 | Keyboard-first Header/Footer Builder | High | Medium | Named Jarte-Plus gap; self-contained, but real net-new metadata + export work. Natural sibling to #891 (shipped). |
 | **P3** | #893 | "Rich Document" discoverability | Medium | High (feature exists) | Downgraded per the issue's own re-check: serves a *secondary* audience (low-vision / ex-Word), not QUILL's core keyboard-first user. Low cost, low urgency. |
-
-Rationale for the shape: the two items that are genuinely *mission* work (printing you can't do today, accessibility you can't enforce today) lead, then a band of solid, well-scoped features, with the integration-heavy and secondary-audience items last.
-
----
-
-## #892 — Keyboard-first Header/Footer Builder — **P2**
-
-**State:** No header/footer authoring exists beyond `wx.PageSetupDialogData` margins (which has no header/footer concept at all).
-
-**Proposal:** A keyboard-first builder driven by **named presets** (not a blank canvas): "Title left, page number right", "Filename and date", "Different first page", "Roman numerals for front matter", "Start numbering at page N". Each preset composed from a small fixed token set (title, filename, date, page number [Arabic/Roman], custom text) × position (left/center/right) + first-page-different toggle. Store as **document metadata** (part of the document's identity, survives save/reload), not a one-off print-time setting. Confirm round-trip through DOCX/RTF native header/footer XML before committing to the token model.
-
-**Non-goals:** Not a general macro/field-code system — a curated token set beats an open-ended one for this audience.
-
-**Priority:** P2 — high impact, self-contained, but real net-new UI + metadata + export work. Sequence it right after / alongside #891.
 
 ---
 
@@ -39,10 +28,7 @@ Rationale for the shape: the two items that are genuinely *mission* work (printi
 
 ## Suggested sequencing
 
-1. **#892** -- the remaining half of the "printing & page layout" epic now that #891 (Print Studio) has shipped.
-2. **#893** -- low-urgency discoverability polish; fold into whatever onboarding-wizard work is already happening rather than scheduling standalone.
-
-*(Accessibility note: #892 adds a user-facing surface to a screen-reader-first product. Bake in the non-visual equivalent -- a keyboard-first builder, not a blank canvas -- rather than treating accessibility as a later review pass. Route the new dialog through `_show_modal_dialog` + `apply_modal_ids` and the existing dialog-inventory gate, same as every other QUILL surface.)*
+1. **#893** -- the one remaining item; low-urgency discoverability polish, fold into whatever onboarding-wizard work is already happening rather than scheduling standalone.
 
 ---
 
