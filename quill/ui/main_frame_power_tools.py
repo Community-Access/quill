@@ -709,6 +709,48 @@ class PowerToolsActionsMixin:
             wx.TheClipboard.Close()
         self._set_status("Copied to the clipboard as an email body.")
 
+    # ------------------------------------------- AutoOutline (#894)
+
+    def apply_auto_outline_numbering(self) -> None:
+        """Number every heading by nesting level, as literal text (Format menu).
+
+        Always operates on the whole document -- heading numbering is only
+        meaningful with full document context, unlike most power-tools
+        transforms that fall back to the whole document only when nothing
+        is selected.
+        """
+        from quill.core.auto_outline import OutlineStyle, apply_auto_outline
+
+        if self._document_is_read_only():
+            self._set_status("Document is read-only")
+            return
+        style_raw = str(getattr(self.settings, "auto_outline_style", "numeric"))
+        style = OutlineStyle.LEGAL if style_raw == "legal" else OutlineStyle.NUMERIC
+        text = self.editor.GetValue()
+        updated = apply_auto_outline(text, style)
+        if updated == text:
+            self._set_status("No headings to number.")
+            return
+        self._replace_document_text(updated)
+        self.document.set_text(updated)
+        self._set_status("Outline numbering updated.")
+
+    def remove_auto_outline_numbering(self) -> None:
+        """Strip any AutoOutline numbers from headings (Format menu)."""
+        from quill.core.auto_outline import remove_outline_numbers
+
+        if self._document_is_read_only():
+            self._set_status("Document is read-only")
+            return
+        text = self.editor.GetValue()
+        updated = remove_outline_numbers(text)
+        if updated == text:
+            self._set_status("No outline numbering to remove.")
+            return
+        self._replace_document_text(updated)
+        self.document.set_text(updated)
+        self._set_status("Outline numbering removed.")
+
     # ------------------------------------------- EDS-20 rename/delete on disk
     def rename_current_file(self) -> None:
         if self.document.path is None:

@@ -61,6 +61,7 @@ class Settings:
     docx_write_engine: str = "auto"
     plain_text_link_style: str = "text_url"
     content_handoff_format: str = "text"
+    auto_outline_style: str = "numeric"
     indent_with_tabs: bool = False
     indent_size: int = 4
     # On by default so signed safety advisories (the remote feature kill
@@ -628,6 +629,9 @@ class Settings:
         content_handoff_format = str(data.get("content_handoff_format", "text")).strip().lower()
         if content_handoff_format not in {"text", "markdown", "html"}:
             content_handoff_format = "text"
+        auto_outline_style = str(data.get("auto_outline_style", "numeric")).strip().lower()
+        if auto_outline_style not in {"numeric", "legal"}:
+            auto_outline_style = "numeric"
         indent_with_tabs = bool(data.get("indent_with_tabs", False))
         try:
             indent_size = int(data.get("indent_size", 4))
@@ -1266,6 +1270,7 @@ class Settings:
             docx_write_engine=docx_write_engine,
             plain_text_link_style=plain_text_link_style,
             content_handoff_format=content_handoff_format,
+            auto_outline_style=auto_outline_style,
             indent_with_tabs=indent_with_tabs,
             indent_size=indent_size,
             auto_check_updates=auto_check_updates,

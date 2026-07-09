@@ -237,6 +237,24 @@ def _build_power_tools_registrar() -> FirstPartyRegistrar:
         label="Delete to Document En&d",
         separator_before=False,
     )
+    # AutoOutline (#894): literal-text heading numbering, driven by the
+    # auto_outline_style setting (numeric or legal).
+    add(
+        id="power.apply_auto_outline_numbering",
+        title="Update Outline Numbering",
+        top_level="Format",
+        group="format_line",
+        label="&Update Outline Numbering",
+        separator_before=True,
+    )
+    add(
+        id="power.remove_auto_outline_numbering",
+        title="Remove Outline Numbering",
+        top_level="Format",
+        group="format_line",
+        label="Re&move Outline Numbering",
+        separator_before=False,
+    )
 
     # Format > Sort & Filter -------------------------------------------
     add(

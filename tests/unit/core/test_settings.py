@@ -220,6 +220,25 @@ def test_content_handoff_format_invalid_value_falls_back_to_text(
     assert load_settings().content_handoff_format == "text"
 
 
+def test_auto_outline_style_defaults_and_round_trips(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    assert Settings().auto_outline_style == "numeric"
+    save_settings(Settings(auto_outline_style="legal"))
+    assert load_settings().auto_outline_style == "legal"
+
+
+def test_auto_outline_style_invalid_value_falls_back_to_numeric(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    (tmp_path / "settings.json").write_text(
+        '{"auto_outline_style": "not-a-style"}', encoding="utf-8"
+    )
+    assert load_settings().auto_outline_style == "numeric"
+
+
 def test_settings_persists_tts_normalization(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:

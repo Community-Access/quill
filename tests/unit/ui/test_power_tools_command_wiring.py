@@ -48,6 +48,8 @@ _POWER_TOOLS_COMMAND_IDS = [
     "power.delete_to_line_end",
     "power.delete_to_document_start",
     "power.delete_to_document_end",
+    "power.apply_auto_outline_numbering",
+    "power.remove_auto_outline_numbering",
     "power.delete_paragraph",
     "power.set_lines_first_not_second",
     "power.set_lines_common",
@@ -312,6 +314,8 @@ def test_menu_recirculation_preserves_shipped_group_order() -> None:
             "power.delete_to_line_end",
             "power.delete_to_document_start",
             "power.delete_to_document_end",
+            "power.apply_auto_outline_numbering",
+            "power.remove_auto_outline_numbering",
         ],
         "sort_filter": [
             "power.shuffle_lines",

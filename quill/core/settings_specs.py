@@ -607,6 +607,17 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("clip library", "email", "send", "format", "html", "markdown"),
     ),
     SettingSpec(
+        "auto_outline_style",
+        "AutoOutline numbering style",
+        "editing",
+        "choice",
+        "Numbering style used by Format > Update Outline Numbering: numeric "
+        "(1, 1.1, 1.1.1) or legal (I, A, 1). The number is inserted as literal "
+        "text, so it reads aloud, survives copy/paste, and exports cleanly.",
+        choices=(("numeric", "Numeric (1, 1.1, 1.1.1)"), ("legal", "Legal (I, A, 1)")),
+        keywords=("outline", "heading", "numbering", "legal", "agenda", "policy"),
+    ),
+    SettingSpec(
         "autosave_interval_seconds",
         "Autosave interval (seconds)",
         "editing",
