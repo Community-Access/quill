@@ -2166,7 +2166,9 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
             "'Default' follows the braille Editor control type (Accessibility). "
             "RichEdit 3.0/2.0 are the native Windows rich controls; 'Notepad' is a "
             "plain EDIT control; 'Rich text' is an experimental wx.RichTextCtrl; "
-            "'Notepad++ experiment' is the Scintilla control (wx.stc.StyledTextCtrl). "
+            "'Notepad++ experiment' is the Scintilla control (wx.stc.StyledTextCtrl); "
+            "'QuillRichEdit' wraps the native Rich Edit control and adds RTF "
+            "load/save via its text object model. "
             "RESTART QUILL after changing this so every document uses the new surface."
         ),
         choices=(
@@ -2177,12 +2179,14 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
             ("rtf", "Rich text (wx.RichTextCtrl, experimental)"),
             ("win32", "Native Win32 EDIT (pywin32 spike, Windows only)"),
             ("stc", "Notepad++ experiment (Scintilla, wx.stc.StyledTextCtrl)"),
+            ("richedit_rtf", "QuillRichEdit (native Rich Edit + RTF, experimental)"),
         ),
         keywords=(
             "experimental",
             "editor",
             "surface",
             "richedit",
+            "quillrichedit",
             "notepad",
             "rtf",
             "win32",
@@ -2202,5 +2206,28 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
             "RESTART QUILL after changing this."
         ),
         keywords=("experimental", "border", "margin", "notepad", "frame", "chrome"),
+    ),
+    SettingSpec(
+        "experimental_richedit_emulate_sysedit",
+        "QuillRichEdit: emulate a system edit control (braille test)",
+        "experimental",
+        "bool",
+        (
+            "Only affects the QuillRichEdit editor surface. Puts the native Rich "
+            "Edit control in 'emulate system edit' mode to test whether it fixes "
+            "the braille cell-2 offset and missing selection dots 7-8 that some "
+            "displays show on Rich Edit. Needs a braille display to judge. RESTART "
+            "QUILL after changing this."
+        ),
+        keywords=(
+            "experimental",
+            "braille",
+            "richedit",
+            "quillrichedit",
+            "emulate",
+            "cell",
+            "selection",
+            "dots",
+        ),
     ),
 )

@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -47,6 +48,21 @@ BUNDLED_TOKEN = {token!r}
 """,
         encoding="utf-8",
     )
+
+
+def read_existing_token(output_path: Path) -> str:
+    """Return the non-empty BUNDLED_TOKEN already written to *output_path*, or "".
+
+    Used so a build with no ``QUILL_FEEDBACK_GITHUB_TOKEN`` in its environment
+    does not clobber a working token that was set up earlier -- keeping the bug
+    reporter consistent across repeated dev/test builds (you populate the token
+    once and rebuilds preserve it).
+    """
+    if not output_path.is_file():
+        return ""
+    text = output_path.read_text("utf-8")
+    match = re.search(r"^BUNDLED_TOKEN = (['\"])(.*)\1", text, re.MULTILINE)
+    return match.group(2) if match else ""
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -73,6 +89,15 @@ def main(argv: list[str] | None = None) -> int:
             file=sys.stderr,
         )
         return 2
+    if not token:
+        # No token in the environment: keep any working token already bundled
+        # rather than wiping it to empty, so a dev/test rebuild stays consistent
+        # (the token is populated once, then preserved). A fresh env token always
+        # wins below.
+        existing = read_existing_token(OUTPUT_FILE)
+        if existing:
+            print(f"{ENV_VAR} not set; preserving the existing bundled token in {OUTPUT_FILE}.")
+            return 0
     write_module(token, OUTPUT_FILE)
     if token:
         print(f"Wrote {OUTPUT_FILE} with a bundled token.")

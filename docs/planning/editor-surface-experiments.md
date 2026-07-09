@@ -280,6 +280,108 @@ assertions, run against each surface with real wx) before we lean on it.
   visual spell-check squiggles (Scintilla indicators are good at this), and
   confirm IME/dead-key behavior.
 
+## 8. richedit_rtf -- QuillRichEdit, the native Rich Edit wrapper (added 2026-07-08)
+
+- Classes: Python `wx.TextCtrl`; Win32 window class `RICHEDIT50W` -- the *same*
+  native Rich Edit control as `rich2`/the shipping default. What differs is that
+  the live control is tagged with `surface_kind = "richedit_rtf"` and carries a
+  `QuillRichEdit` wrapper (`quill/ui/richedit_rtf_surface.py`) that reaches the
+  control's `HWND` for things wx's high-level API cannot do.
+- What it is: `wx.TextCtrl` with `TE_RICH2 | TE_NOHIDESEL`, built by
+  `create_richedit_rtf(...)` which falls back to a plain `wx.TextCtrl` on any
+  failure (the proven win32/stc/rtf idiom). Because the inner control is the
+  proven native control, the full editor contract (value/caret/selection/undo/
+  events) is inherited unchanged -- no behavioral risk to existing surfaces.
+- Why it exists: the ladder toward a lightweight, accessible RTF document mode
+  (WordPad/HJPad class), and -- because it gives us a *controlled* handle on the
+  native control we already ship -- the eventual home for the two open braille
+  bugs: **#616 (JAWS cell-2 offset)** and **#813 (JAWS braille not showing dots
+  7-8 on selection)**, driven directly on the native HWND rather than the
+  generic-window bridge that failed for `stc`.
+- **Phase 0 (done):** the surface, `surface_kind`, capability reporting, a
+  read-only class-name diagnostic (confirms a genuine `RICHEDIT50W`), the two
+  Experimental gates, and the settings/combo/explainer wiring + contract tests.
+- **Phase 1 (done, via the TOM path):** native **RTF load/save works** --
+  `QuillRichEdit.load_rtf`/`save_rtf`/`get_rtf`/`set_rtf` reach the control's
+  **Text Object Model**: `EM_GETOLEINTERFACE` -> `IRichEditOle` ->
+  `QueryInterface(ITextDocument)` (via `comtypes` + the tom type library) ->
+  `ITextDocument::Open`/`::Save` with the `tomRTF` format flag. **Verified
+  end-to-end on a real `RICHEDIT50W`** (load an RTF file, formatting applies;
+  save back out is valid RTF with the bold run preserved; live wx edits flow
+  out) -- **no crash.** The first attempt used an `EM_STREAMIN`/`EM_STREAMOUT`
+  ctypes `EDITSTREAM` callback, which hard-crashes msftedit (post-mortem below);
+  TOM avoids a Python callback entirely, which is why it works.
+  `get_plain_text()` returns the control's plain value so search/spell/AI/read
+  aloud keep working.
+- **Phase 2 (done, via TOM):** formatting on the selection --
+  `apply_bold`/`apply_italic`/`apply_underline` (toggle via `ITextFont` +
+  `tomToggle`), `set_font_name`/`set_font_size` (`ITextFont.Name`/`.Size`), and
+  `set_alignment` (`ITextPara.Alignment`). Verified on-device: italic, font
+  (Consolas), size (18pt -> `fs36`), and center (`\qc`) all appear in the saved
+  RTF, no crash. The surface-level methods are wired; **menu/keyboard command
+  routing is the remaining integration** (native RichEdit already handles
+  Ctrl+B/I/U itself).
+- **Phase 3 (instrument + lever landed; needs braille testing):** the braille
+  work for #616 (cell-2) and #813 (dots 7-8 on selection).
+  - *Instrument (measures, safe):* the accessibility diagnostic now reports the
+    control's edit style (`EM_GETEDITSTYLE`) and a **selection localizer** --
+    the selection as the control's TOM (`ITextSelection.Start/End`) sees it vs
+    wx's `GetSelection`, offsets/length only, no text. On-device it reports
+    `wx=(6,15), TOM=(6,15), agree=True`, which **localizes #813**: the control
+    *knows* the selection, so braille not showing dots 7-8 is an AT-rendering
+    gap, not a control-tracking one.
+  - *Lever (the candidate fix, A/B-able):* `QuillRichEdit.set_emulate_system_edit`
+    applies `SES_EMULATESYSEDIT` via `EM_SETEDITSTYLE`, asking the Rich Edit to
+    behave like the classic `EDIT` control -- which the four-way table shows is
+    the one that renders from cell 1 *and* shows selection dots 7-8 -- while
+    staying a Rich Edit so its `IAccessible` value (the reason for #616's default)
+    is unchanged. Verified to apply cleanly on-device (edit style 0x0 -> 0x3, no
+    crash). Exposed as the gated experimental setting
+    `experimental_richedit_emulate_sysedit`, applied at surface creation.
+  - **Test protocol (needs JAWS + a braille display -- cannot be done in CI):**
+    select the QuillRichEdit surface, attach a braille display, and A/B with the
+    emulate-system-edit setting off then on (restart between), checking on each:
+    (a) does text start in cell 1 or cell 2? (#616) (b) do dots 7-8 appear under
+    selected text? (#813) (c) does JAWS still read the editor value correctly
+    (the property the Rich Edit default protects)? Record the result here like
+    the 2026-07-03 four-way table. If emulate-sysedit fixes (a)/(b) without
+    breaking (c), it graduates to the default surface.
+- Risk: Low. Identical native control to the default, gated, with fallback; RTF
+  streaming is guarded off (raises a clear error, never crashes); no existing
+  surface changes.
+
+### 2026-07-08 EM_STREAM ctypes-callback crash: post-mortem
+
+Driving `EM_STREAMOUT`/`EM_STREAMIN` from a Python `ctypes` callback
+**hard-crashes msftedit** (`RICHEDIT50W`) with an access violation the instant
+the control invokes the callback. Reproduced and narrowed on-device:
+
+| Variable | Tried | Result |
+|----------|-------|--------|
+| Control | wx `TextCtrl(TE_RICH2)` and raw `CreateWindowExW('RICHEDIT50W')` | both crash |
+| Format | `SF_TEXT` and `SF_RTF` | both crash |
+| Convention | `WINFUNCTYPE` (stdcall) and `CFUNCTYPE` | both crash |
+| lParam | `byref(stream)` and `addressof(stream)` | both crash |
+| Realization | window shown + `Yield()` and never shown | both crash |
+| OLE | with and without `CoInitialize` | both crash |
+
+Ruled out: **the thunk is valid** (callable directly from Python; the
+`EDITSTREAM` struct is 24 bytes, `pfnCallback` at offset 16, holding the correct
+address), and **ctypes callbacks work here with other guarded system APIs**
+(`EnumWindows` visits 746 windows fine). The crash is specific to msftedit's
+`EM_STREAM` dispatch of a libffi closure -- not a general callback problem, not
+CFG in the blanket sense, not wx, not control state.
+
+Verdict: pure-ctypes `EM_STREAM` is not viable. Two paths were identified, both
+keeping the callback out of Python:
+
+1. A small native helper `.pyd` owning the `EDITSTREAM` callback in compiled C
+   (the `_quill_table_uia` / `scripts/build_table_uia.py` precedent).
+2. **The TOM path (CHOSEN, and now shipping):** `EM_GETOLEINTERFACE` ->
+   `ITextDocument::Open`/`::Save` with `tomRTF` -- no Python callback at all, so
+   no crash surface. Verified end-to-end (see Phase 1 above). It is also the
+   natural home for the Phase 3 selection (#813) work (`ITextSelection`).
+
 ## Preference ranking
 
 Ranked for QUILL's audience (screen-reader-first, data integrity above all):

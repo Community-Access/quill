@@ -49,3 +49,28 @@ def test_require_token_succeeds_when_env_var_present(monkeypatch, tmp_path: Path
     monkeypatch.setattr(gen, "OUTPUT_FILE", output)
     assert gen.main(["--require-token"]) == 0
     assert "github_pat_example123" in output.read_text(encoding="utf-8")
+
+
+def test_missing_env_preserves_an_existing_bundled_token(monkeypatch, tmp_path: Path) -> None:
+    # A dev/test rebuild with no env token must NOT wipe a working token that was
+    # set up earlier -- it keeps the bug reporter consistent across rebuilds.
+    import generate_feedback_token as gen
+
+    output = tmp_path / "_feedback_token.py"
+    gen.write_module("github_pat_previously_set", output)
+    monkeypatch.delenv("QUILL_FEEDBACK_GITHUB_TOKEN", raising=False)
+    monkeypatch.setattr(gen, "OUTPUT_FILE", output)
+    assert gen.main([]) == 0
+    assert "github_pat_previously_set" in output.read_text(encoding="utf-8")
+
+
+def test_env_token_overwrites_an_existing_bundled_token(monkeypatch, tmp_path: Path) -> None:
+    import generate_feedback_token as gen
+
+    output = tmp_path / "_feedback_token.py"
+    gen.write_module("github_pat_old", output)
+    monkeypatch.setenv("QUILL_FEEDBACK_GITHUB_TOKEN", "github_pat_new")
+    monkeypatch.setattr(gen, "OUTPUT_FILE", output)
+    assert gen.main([]) == 0
+    text = output.read_text(encoding="utf-8")
+    assert "github_pat_new" in text and "github_pat_old" not in text

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>editor-surface-experiments</title>
   <style>
@@ -156,12 +156,8 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -181,7 +177,7 @@ Analysis</h1>
 <p>Date: 2026-07-03. Written after the two startup crashes found while
 A/B testing surfaces (the relaunch stdlib-shadowing crash and the
 RichTextCtrl selection crash). This maps each of the six
-<code>experimental_editor_surface</code> choices against QUILL’s feature
+<code>experimental_editor_surface</code> choices against QUILL's feature
 set, the risk each carries, and the changes each would need to be safe.
 File is for review; not linked from docs.</p>
 <h2 id="the-contract-quill-assumes-of-the-editor">The contract QUILL
@@ -190,7 +186,7 @@ assumes of the editor</h2>
 and assumes the wx.TextCtrl API and semantics:</p>
 <ul>
 <li>Value: <code>GetValue</code>, <code>ChangeValue</code>,
-<code>SetValue</code>, <code>GetRange</code>, <code>IsEmpty</code> –
+<code>SetValue</code>, <code>GetRange</code>, <code>IsEmpty</code> --
 LF-only text, offsets that match Python string indices into
 <code>GetValue()</code>.</li>
 <li>Caret and selection: <code>GetInsertionPoint</code>,
@@ -237,27 +233,27 @@ returned a different <code>GetSelection</code> shape took the app down
 before first paint. Anything below rated Medium or higher should get a
 parametrized contract test (same assertions, run against each surface
 with real wx) before we lean on it.</p>
-<h2 id="default-follow-the-accessibility-setting">1. default – follow
-the Accessibility setting</h2>
+<h2 id="1-default----follow-the-accessibility-setting">1. default --
+follow the Accessibility setting</h2>
 <ul>
 <li>Classes: none of its own; delegates to whatever
 <code>editor_control_kind</code> resolves to (rich2, rich, or plain
 below).</li>
 <li>What it is: not a surface. Applies whatever
-<code>editor_control_kind</code> says (rich2, rich, or plain – the
+<code>editor_control_kind</code> says (rich2, rich, or plain -- the
 braille A/B knob from #616/#813).</li>
-<li>Feature impact: none of its own; inherits the target surface’s
+<li>Feature impact: none of its own; inherits the target surface's
 behavior.</li>
 <li>Risk: none beyond the chosen target. This is the correct resting
 state for everyone not actively testing.</li>
 <li>Changes required: none. Keep it first in the choice list and keep
 the explainer text current.</li>
 </ul>
-<h2 id="rich2-richedit-3.0-richedit50w-the-shipping-default">2. rich2 –
-RichEdit 3.0 (RICHEDIT50W), the shipping default</h2>
+<h2 id="2-rich2----richedit-30-richedit50w-the-shipping-default">2.
+rich2 -- RichEdit 3.0 (RICHEDIT50W), the shipping default</h2>
 <ul>
 <li>Classes: Python <code>wx.TextCtrl</code>; Win32 window class
-<code>RICHEDIT50W</code> (msftedit.dll – the modern RichEdit
+<code>RICHEDIT50W</code> (msftedit.dll -- the modern RichEdit
 engine).</li>
 <li>What it is: <code>wx.TextCtrl</code> with
 <code>TE_RICH2 | TE_NOHIDESEL</code>.</li>
@@ -268,18 +264,18 @@ tested on this surface. Multi-level native undo. No practical size
 limit. Correct IAccessible value reporting (#616).</li>
 <li>Known issues: braille cell-two offset on some displays (the
 long-standing Word quirk); #813 (JAWS braille not showing dots 7-8 on
-selection) is suspected to live here – that is the open investigation
+selection) is suspected to live here -- that is the open investigation
 driving this A/B.</li>
 <li>Risk: Low. It is the control everything is calibrated against.</li>
 <li>Changes required: none. If #813 confirms RICHEDIT50W as the cause,
 the fix is likely a UIA/IAccessible selection-reporting workaround here,
 not a default-surface change.</li>
 </ul>
-<h2 id="rich-richedit-2.0-richedit20w">3. rich – RichEdit 2.0
+<h2 id="3-rich----richedit-20-richedit20w">3. rich -- RichEdit 2.0
 (RICHEDIT20W)</h2>
 <ul>
 <li>Classes: Python <code>wx.TextCtrl</code>; Win32 window class
-<code>RICHEDIT20W</code> (riched20.dll – the older RichEdit
+<code>RICHEDIT20W</code> (riched20.dll -- the older RichEdit
 engine).</li>
 <li>What it is: <code>wx.TextCtrl</code> with
 <code>TE_RICH | TE_NOHIDESEL</code>; same wx wrapper, older native
@@ -290,17 +286,17 @@ the same through wx. Differences are engine-internal: older IME
 handling, some formatting/measurement differences we do not use (buffer
 is plain text).</li>
 <li>Risk: Low-Medium. The risk is not breakage but subtle screen-reader
-and braille differences – which is exactly why it exists (a comparison
+and braille differences -- which is exactly why it exists (a comparison
 point for #813). Undo depth and limits match rich2 for our usage.</li>
 <li>Changes required: none to function. Worth capturing
 JAWS/NVDA/braille behavior notes per screen reader once, so the A/B
 results are recorded rather than re-discovered.</li>
 </ul>
-<h2 id="plain-notepad-style-edit-via-wx.textctrl">4. plain –
+<h2 id="4-plain----notepad-style-edit-via-wxtextctrl">4. plain --
 Notepad-style EDIT via wx.TextCtrl</h2>
 <ul>
 <li>Classes: Python <code>wx.TextCtrl</code>; Win32 window class
-<code>EDIT</code> (user32 – the classic multiline edit control, same
+<code>EDIT</code> (user32 -- the classic multiline edit control, same
 class Notepad used for decades).</li>
 <li>What it is: <code>wx.TextCtrl</code> with <code>TE_MULTILINE</code>
 only; wx hosts the classic Win32 EDIT class.</li>
@@ -308,21 +304,21 @@ only; wx hosts the classic Win32 EDIT class.</li>
 Two real semantic differences:
 <ul>
 <li>Undo is single-level and there is NO redo at all. The native EDIT
-control has one undo slot that toggles (undo of the undo is the “redo”),
+control has one undo slot that toggles (undo of the undo is the "redo"),
 and <code>CanRedo</code> reports false on this class.
 <code>MainFrame.undo()</code> routes to <code>editor.Undo()</code>, so
 an AI preview apply followed by any keystroke leaves only the keystroke
 undoable, and nothing is redoable. This is the largest hidden feature
 regression on this surface and users will not expect it. Fixing it
 properly means an app-level undo/redo engine (see the undo/redo note
-after the rankings) – real engineering, not a wrapper.</li>
-<li>No visual rich rendering (QUILL’s hidden-codes design makes this
+after the rankings) -- real engineering, not a wrapper.</li>
+<li>No visual rich rendering (QUILL's hidden-codes design makes this
 mostly moot; formatting still round-trips through
 Illuminations/export).</li>
 <li>wx raises the EDIT text limit for us, so large documents are fine,
 but very large buffers repaint slower than RichEdit.</li>
 </ul></li>
-<li>Accessibility: excellent – native EDIT is the best-understood
+<li>Accessibility: excellent -- native EDIT is the best-understood
 control for every screen reader and avoids the braille cell-two offset
 entirely. That is why it is the #813 A/B candidate.</li>
 <li>Risk: Medium, dominated by the single-level undo. Everything else is
@@ -332,22 +328,22 @@ solid.</li>
 <li>A document-level undo stack in QUILL (or a guard that warns when an
 AI / multi-step change is about to become un-undoable).</li>
 <li>A note in the explainer text about undo depth (it currently says
-“all core editing works” without the undo caveat).</li>
+"all core editing works" without the undo caveat).</li>
 </ul></li>
 </ul>
-<h2 id="rtf-wx.richtextctrl-experimental">5. rtf – wx.RichTextCtrl
+<h2 id="5-rtf----wxrichtextctrl-experimental">5. rtf -- wx.RichTextCtrl
 (experimental)</h2>
 <ul>
 <li>Classes: Python
 <code>quill.ui.rtf_edit_surface.RtfEditorSurface</code>, a subclass of
 <code>wx.richtext.RichTextCtrl</code>. There is no native text-control
-window class underneath – the Win32 class is a generic wx window, which
+window class underneath -- the Win32 class is a generic wx window, which
 is exactly why screen readers do not recognize it as a text field.</li>
-<li>What it is: wx’s own rich text widget. Crucially, it is NOT a native
-Windows control – wx draws the text itself.</li>
-<li>Undo/redo: multi-level via wx’s own command processor, but grouping
+<li>What it is: wx's own rich text widget. Crucially, it is NOT a native
+Windows control -- wx draws the text itself.</li>
+<li>Undo/redo: multi-level via wx's own command processor, but grouping
 semantics differ from RichEdit (AI one-step-undo unverified).</li>
-<li>Feature impact today (after this week’s fix wrapped
+<li>Feature impact today (after this week's fix wrapped
 <code>GetSelection</code>):
 <ul>
 <li>Value/caret basics work
@@ -360,17 +356,17 @@ line-oriented commands are suspect); <code>Replace</code> goes through
 its own command processor (undo grouping of AI previews unverified);
 styling APIs differ entirely.</li>
 <li>Its selection-empty convention was <code>(-2, -2)</code> where
-TextCtrl says <code>(caret, caret)</code> – the class of mismatch that
+TextCtrl says <code>(caret, caret)</code> -- the class of mismatch that
 crashed the status bar. We fixed the one we hit; the remaining API
 surface has not been audited.</li>
 </ul></li>
 <li>Accessibility: this is the disqualifying risk. Because the control
 is wx-drawn, it does not present as a native EDIT/RichEdit to JAWS/NVDA.
-Value, caret, and selection reporting depend on wx’s generic
+Value, caret, and selection reporting depend on wx's generic
 accessibility layer, which is historically weak on Windows. Braille
 tracking is unlikely to work at all. For a screen-reader-first product,
-this surface currently contradicts the product’s core promise.</li>
-<li>Risk: High. Both on the API-contract axis (proven by this week’s
+this surface currently contradicts the product's core promise.</li>
+<li>Risk: High. Both on the API-contract axis (proven by this week's
 crash) and on the accessibility axis (structural, not fixable by a
 wrapper).</li>
 <li>Changes required to make it viable (large):
@@ -378,15 +374,15 @@ wrapper).</li>
 <li>Full contract-shim layer (selection done; PositionToXY/XYToPosition,
 HitTest, undo grouping, modified-state semantics).</li>
 <li>A UIA provider or wxAccessible implementation that reports text
-pattern, caret, and selection – essentially the same class of work as
+pattern, caret, and selection -- essentially the same class of work as
 the Table Studio native provider, but for a text control. Until then it
 should stay double-gated exactly as it is, with the explainer stating
 plainly that screen readers may not track it.</li>
 <li>Parametrized surface contract tests.</li>
 </ul></li>
 </ul>
-<h2 id="win32-raw-win32-edit-hosted-via-pywin32-spike">6. win32 – raw
-Win32 EDIT hosted via pywin32 (spike)</h2>
+<h2 id="6-win32----raw-win32-edit-hosted-via-pywin32-spike">6. win32 --
+raw Win32 EDIT hosted via pywin32 (spike)</h2>
 <ul>
 <li>Classes: Python
 <code>quill.ui.win32_edit_surface._Win32EditHost</code> (a
@@ -396,7 +392,7 @@ SendMessage.</li>
 <li>What it is: a <code>wx.Window</code> hosting a genuine EDIT child
 created with CreateWindowEx; messages bridged by hand
 (<code>win32_edit_surface.py</code>).</li>
-<li>Undo/redo: single-level native undo (WM_UNDO), no redo – same
+<li>Undo/redo: single-level native undo (WM_UNDO), no redo -- same
 EDIT-class limitation as plain, plus the bridge exposes no redo API at
 all.</li>
 <li>Feature impact (documented in the spike, confirmed by reading the
@@ -411,11 +407,11 @@ tuple), clipboard, native single undo.</li>
 QUILL. Describe-key, typography autoformat, Quillin smart triggers,
 typing echo, QUILL key chords, the extend-selection Escape, and the
 context-menu handler are all inert while focus is in the native child.
-Frame accelerators may also be swallowed – untested.</li>
-<li>Offset math: caret/selection offsets are in the control’s CRLF space
-while QUILL’s buffer is LF. Every offset-anchored feature (bookmarks,
+Frame accelerators may also be swallowed -- untested.</li>
+<li>Offset math: caret/selection offsets are in the control's CRLF space
+while QUILL's buffer is LF. Every offset-anchored feature (bookmarks,
 inline notes, hidden codes, wikilinks, spell fix-ups, AI previews) is
-off by one per preceding newline. This corrupts positions silently –
+off by one per preceding newline. This corrupts positions silently --
 worse than crashing.</li>
 <li><code>EM_GETSEL</code> packed return clamps around 64K, so caret
 reporting in large documents is approximate; the spike never raises the
@@ -426,8 +422,8 @@ downgrades dirty tracking.</li>
 </ul></li>
 <li>Accessibility: the child EDIT itself is perfectly readable by screen
 readers (same class as Notepad), but focus handoff between the wx host
-and the native child is hand-rolled – tab order, focus announcements,
-and the editor’s accessible name need real screen-reader
+and the native child is hand-rolled -- tab order, focus announcements,
+and the editor's accessible name need real screen-reader
 validation.</li>
 <li>Risk: High for any real use; acceptable only as the spike it is. The
 offset skew is the dangerous part because it corrupts saved anchors
@@ -445,26 +441,26 @@ and chords work, or explicit in-app messaging that they do not.</li>
 accessibility audit.</li>
 <li>Given that surface 4 (plain) IS the same EDIT control with all of
 this already solved by wx, the honest conclusion is that this spike has
-told us what it cost and “plain” is the better vehicle for everything it
+told us what it cost and "plain" is the better vehicle for everything it
 offers. Recommend keeping win32 only as a reference implementation.</li>
 </ul></li>
 </ul>
-<h2 id="stc-scintilla-the-notepad-experiment-added-2026-07-03">7. stc –
-Scintilla, the “Notepad++ experiment” (added 2026-07-03)</h2>
+<h2 id="7-stc----scintilla-the-notepad-experiment-added-2026-07-03">7.
+stc -- Scintilla, the "Notepad++ experiment" (added 2026-07-03)</h2>
 <ul>
 <li>Classes: Python
 <code>quill.ui.stc_edit_surface.StcEditorSurface</code>, a subclass of
 <code>wx.stc.StyledTextCtrl</code>; Win32 window class
 <code>Scintilla</code> (the Notepad++ engine). Wired into the
-Experimental combo as “Notepad++ experiment (Scintilla,
-wx.stc.StyledTextCtrl)”.</li>
+Experimental combo as "Notepad++ experiment (Scintilla,
+wx.stc.StyledTextCtrl)".</li>
 <li>What it is: a real windowed native-ish control (not wx-drawn like
 rtf), built for editing. The only alternative surface that natively
 answers the multi-level undo/redo concern.</li>
 <li>Undo/redo: full multi-level undo AND redo, native to the
 engine.</li>
 <li>Probe results (2026-07-03, wxPython on this machine): StyledTextCtrl
-implements the whole TextCtrl-compatible API QUILL needs – tuple
+implements the whole TextCtrl-compatible API QUILL needs -- tuple
 <code>GetSelection</code> with <code>(caret, caret)</code> when empty,
 <code>GetRange</code>, <code>Replace</code>, <code>PositionToXY</code>,
 modified-state via save point. Four contract gaps were found and are
@@ -475,7 +471,7 @@ shimmed in <code>stc_edit_surface.py</code>:
 count, and Reveal Codes sync. The wrapper forwards every change as a
 <code>wxEVT_TEXT</code> event.</li>
 <li><code>ChangeValue</code> fires change notifications and leaves the
-buffer reported modified – a freshly opened document would look dirty.
+buffer reported modified -- a freshly opened document would look dirty.
 The wrapper suppresses forwarding and sets the Scintilla save point on
 load.</li>
 <li><code>SetInsertionPoint</code> moves the caret but leaves the
@@ -493,7 +489,7 @@ candidates before any promotion.</li>
 <li>Caret-tracking experiment (2026-07-03, tried and REVERTED): live
 JAWS testing showed Enter advanced the buffer but JAWS stayed on the old
 line. The first fix mirrored an invisible Windows system caret (the
-ScintillaWin technique) – and made things worse: with a caret present,
+ScintillaWin technique) -- and made things worse: with a caret present,
 JAWS switched from its screen-content fallback into live-edit-control
 mode, queried the window for its text, got nothing back, and went
 silent. Reading the real ScintillaWin.cxx (the Scintilla Notepad++
@@ -501,24 +497,24 @@ ships) explains why: the caret mirror is only one third of its
 accessibility story. It also (a) answers WM_GETTEXT, WM_GETTEXTLENGTH,
 EM_GETSEL, EM_EXGETSEL, and EM_LINEFROMCHAR at its window proc, so
 screen readers can pull text and selection through the classic channels,
-and (b) registers the recognizable “Scintilla” window class that
-JAWS/NVDA key dedicated support off. wx’s port provides none of the
+and (b) registers the recognizable "Scintilla" window class that
+JAWS/NVDA key dedicated support off. wx's port provides none of the
 three: its own window class, no system caret, and a window proc that
 answers no text queries. Caret alone = silence. To graduate, this
 surface needs a ctypes window-proc bridge answering those messages PLUS
 the caret mirror, or a UIA TextPattern provider. Licensing is not the
 obstacle (Scintilla is permissively licensed; Notepad++ is GPL-3.0, so
-we learn from it, we do not copy from it) – the effort and JAWS’s
+we learn from it, we do not copy from it) -- the effort and JAWS's
 window-class heuristics are.</li>
 <li>Braille findings (2026-07-03, Jeff, JAWS + braille display, on the
-reverted no-caret-mirror build): two clear wins –
+reverted no-caret-mirror build): two clear wins --
 <ul>
 <li>Braille starts in CELL 1. The long-standing RichEdit cell-two offset
-(#616, “the Word quirk”) does not occur on this surface.</li>
+(#616, "the Word quirk") does not occur on this surface.</li>
 <li>Selection HIGHLIGHTING WORKS on the braille display. This is exactly
 what #813 reports broken on rich2 (no dots 7-8 on selection), so a
 non-RichEdit surface showing correct selection dots is strong evidence
-that #813 lives in RICHEDIT50W’s selection reporting, not in JAWS or the
+that #813 lives in RICHEDIT50W's selection reporting, not in JAWS or the
 display. Net: braille output on stc is currently the best of any
 surface; speech caret tracking remains the weak leg (see the experiment
 note above).</li>
@@ -530,17 +526,181 @@ in speech caret tracking; braille results are positive.</li>
 want visual spell-check squiggles (Scintilla indicators are good at
 this), and confirm IME/dead-key behavior.</li>
 </ul>
+<h2
+id="8-richedit_rtf----quillrichedit-the-native-rich-edit-wrapper-added-2026-07-08">8.
+richedit_rtf -- QuillRichEdit, the native Rich Edit wrapper (added
+2026-07-08)</h2>
+<ul>
+<li>Classes: Python <code>wx.TextCtrl</code>; Win32 window class
+<code>RICHEDIT50W</code> -- the <em>same</em> native Rich Edit control
+as <code>rich2</code>/the shipping default. What differs is that the
+live control is tagged with <code>surface_kind = "richedit_rtf"</code>
+and carries a <code>QuillRichEdit</code> wrapper
+(<code>quill/ui/richedit_rtf_surface.py</code>) that reaches the
+control's <code>HWND</code> for things wx's high-level API cannot
+do.</li>
+<li>What it is: <code>wx.TextCtrl</code> with
+<code>TE_RICH2 | TE_NOHIDESEL</code>, built by
+<code>create_richedit_rtf(...)</code> which falls back to a plain
+<code>wx.TextCtrl</code> on any failure (the proven win32/stc/rtf
+idiom). Because the inner control is the proven native control, the full
+editor contract (value/caret/selection/undo/ events) is inherited
+unchanged -- no behavioral risk to existing surfaces.</li>
+<li>Why it exists: the ladder toward a lightweight, accessible RTF
+document mode (WordPad/HJPad class), and -- because it gives us a
+<em>controlled</em> handle on the native control we already ship -- the
+eventual home for the two open braille bugs: <strong>#616 (JAWS cell-2
+offset)</strong> and <strong>#813 (JAWS braille not showing dots 7-8 on
+selection)</strong>, driven directly on the native HWND rather than the
+generic-window bridge that failed for <code>stc</code>.</li>
+<li><strong>Phase 0 (done):</strong> the surface,
+<code>surface_kind</code>, capability reporting, a read-only class-name
+diagnostic (confirms a genuine <code>RICHEDIT50W</code>), the two
+Experimental gates, and the settings/combo/explainer wiring + contract
+tests.</li>
+<li><strong>Phase 1 (done, via the TOM path):</strong> native
+<strong>RTF load/save works</strong> --
+<code>QuillRichEdit.load_rtf</code>/<code>save_rtf</code>/<code>get_rtf</code>/<code>set_rtf</code>
+reach the control's <strong>Text Object Model</strong>:
+<code>EM_GETOLEINTERFACE</code> -&gt; <code>IRichEditOle</code> -&gt;
+<code>QueryInterface(ITextDocument)</code> (via <code>comtypes</code> +
+the tom type library) -&gt;
+<code>ITextDocument::Open</code>/<code>::Save</code> with the
+<code>tomRTF</code> format flag. <strong>Verified end-to-end on a real
+<code>RICHEDIT50W</code></strong> (load an RTF file, formatting applies;
+save back out is valid RTF with the bold run preserved; live wx edits
+flow out) -- <strong>no crash.</strong> The first attempt used an
+<code>EM_STREAMIN</code>/<code>EM_STREAMOUT</code> ctypes
+<code>EDITSTREAM</code> callback, which hard-crashes msftedit
+(post-mortem below); TOM avoids a Python callback entirely, which is why
+it works. <code>get_plain_text()</code> returns the control's plain
+value so search/spell/AI/read aloud keep working.</li>
+<li><strong>Phase 2 (done, via TOM):</strong> formatting on the
+selection --
+<code>apply_bold</code>/<code>apply_italic</code>/<code>apply_underline</code>
+(toggle via <code>ITextFont</code> + <code>tomToggle</code>),
+<code>set_font_name</code>/<code>set_font_size</code>
+(<code>ITextFont.Name</code>/<code>.Size</code>), and
+<code>set_alignment</code> (<code>ITextPara.Alignment</code>). Verified
+on-device: italic, font (Consolas), size (18pt -&gt; <code>fs36</code>),
+and center (<code>\qc</code>) all appear in the saved RTF, no crash. The
+surface-level methods are wired; <strong>menu/keyboard command routing
+is the remaining integration</strong> (native RichEdit already handles
+Ctrl+B/I/U itself).</li>
+<li><strong>Phase 3 (instrument + lever landed; needs braille
+testing):</strong> the braille work for #616 (cell-2) and #813 (dots 7-8
+on selection).
+<ul>
+<li><em>Instrument (measures, safe):</em> the accessibility diagnostic
+now reports the control's edit style (<code>EM_GETEDITSTYLE</code>) and
+a <strong>selection localizer</strong> -- the selection as the control's
+TOM (<code>ITextSelection.Start/End</code>) sees it vs wx's
+<code>GetSelection</code>, offsets/length only, no text. On-device it
+reports <code>wx=(6,15), TOM=(6,15), agree=True</code>, which
+<strong>localizes #813</strong>: the control <em>knows</em> the
+selection, so braille not showing dots 7-8 is an AT-rendering gap, not a
+control-tracking one.</li>
+<li><em>Lever (the candidate fix, A/B-able):</em>
+<code>QuillRichEdit.set_emulate_system_edit</code> applies
+<code>SES_EMULATESYSEDIT</code> via <code>EM_SETEDITSTYLE</code>, asking
+the Rich Edit to behave like the classic <code>EDIT</code> control --
+which the four-way table shows is the one that renders from cell 1
+<em>and</em> shows selection dots 7-8 -- while staying a Rich Edit so
+its <code>IAccessible</code> value (the reason for #616's default) is
+unchanged. Verified to apply cleanly on-device (edit style 0x0 -&gt;
+0x3, no crash). Exposed as the gated experimental setting
+<code>experimental_richedit_emulate_sysedit</code>, applied at surface
+creation.</li>
+<li><strong>Test protocol (needs JAWS + a braille display -- cannot be
+done in CI):</strong> select the QuillRichEdit surface, attach a braille
+display, and A/B with the emulate-system-edit setting off then on
+(restart between), checking on each: (a) does text start in cell 1 or
+cell 2? (#616) (b) do dots 7-8 appear under selected text? (#813) (c)
+does JAWS still read the editor value correctly (the property the Rich
+Edit default protects)? Record the result here like the 2026-07-03
+four-way table. If emulate-sysedit fixes (a)/(b) without breaking (c),
+it graduates to the default surface.</li>
+</ul></li>
+<li>Risk: Low. Identical native control to the default, gated, with
+fallback; RTF streaming is guarded off (raises a clear error, never
+crashes); no existing surface changes.</li>
+</ul>
+<h3
+id="2026-07-08-em_stream-ctypes-callback-crash-post-mortem">2026-07-08
+EM_STREAM ctypes-callback crash: post-mortem</h3>
+<p>Driving <code>EM_STREAMOUT</code>/<code>EM_STREAMIN</code> from a
+Python <code>ctypes</code> callback <strong>hard-crashes
+msftedit</strong> (<code>RICHEDIT50W</code>) with an access violation
+the instant the control invokes the callback. Reproduced and narrowed
+on-device:</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Tried</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Control</td>
+<td>wx <code>TextCtrl(TE_RICH2)</code> and raw
+<code>CreateWindowExW('RICHEDIT50W')</code></td>
+<td>both crash</td>
+</tr>
+<tr>
+<td>Format</td>
+<td><code>SF_TEXT</code> and <code>SF_RTF</code></td>
+<td>both crash</td>
+</tr>
+<tr>
+<td>Convention</td>
+<td><code>WINFUNCTYPE</code> (stdcall) and <code>CFUNCTYPE</code></td>
+<td>both crash</td>
+</tr>
+<tr>
+<td>lParam</td>
+<td><code>byref(stream)</code> and <code>addressof(stream)</code></td>
+<td>both crash</td>
+</tr>
+<tr>
+<td>Realization</td>
+<td>window shown + <code>Yield()</code> and never shown</td>
+<td>both crash</td>
+</tr>
+<tr>
+<td>OLE</td>
+<td>with and without <code>CoInitialize</code></td>
+<td>both crash</td>
+</tr>
+</tbody>
+</table>
+<p>Ruled out: <strong>the thunk is valid</strong> (callable directly
+from Python; the <code>EDITSTREAM</code> struct is 24 bytes,
+<code>pfnCallback</code> at offset 16, holding the correct address), and
+<strong>ctypes callbacks work here with other guarded system
+APIs</strong> (<code>EnumWindows</code> visits 746 windows fine). The
+crash is specific to msftedit's <code>EM_STREAM</code> dispatch of a
+libffi closure -- not a general callback problem, not CFG in the blanket
+sense, not wx, not control state.</p>
+<p>Verdict: pure-ctypes <code>EM_STREAM</code> is not viable. Two paths
+were identified, both keeping the callback out of Python:</p>
+<ol type="1">
+<li>A small native helper <code>.pyd</code> owning the
+<code>EDITSTREAM</code> callback in compiled C (the
+<code>_quill_table_uia</code> / <code>scripts/build_table_uia.py</code>
+precedent).</li>
+<li><strong>The TOM path (CHOSEN, and now shipping):</strong>
+<code>EM_GETOLEINTERFACE</code> -&gt;
+<code>ITextDocument::Open</code>/<code>::Save</code> with
+<code>tomRTF</code> -- no Python callback at all, so no crash surface.
+Verified end-to-end (see Phase 1 above). It is also the natural home for
+the Phase 3 selection (#813) work (<code>ITextSelection</code>).</li>
+</ol>
 <h2 id="preference-ranking">Preference ranking</h2>
-<p>Ranked for QUILL’s audience (screen-reader-first, data integrity
+<p>Ranked for QUILL's audience (screen-reader-first, data integrity
 above all):</p>
 <table>
-<colgroup>
-<col style="width: 16%" />
-<col style="width: 24%" />
-<col style="width: 18%" />
-<col style="width: 16%" />
-<col style="width: 24%" />
-</colgroup>
 <thead>
 <tr>
 <th>Rank</th>
@@ -604,16 +764,16 @@ above all):</p>
 </table>
 <p>Placement note for stc: it enters at rank 5 pending screen-reader
 evidence. If the JAWS/braille pass comes back clean it arguably belongs
-at rank 3 – it would beat plain by keeping multi-level undo/redo – but
+at rank 3 -- it would beat plain by keeping multi-level undo/redo -- but
 it does not get that rank on promise.</p>
 <p>Reasoning for the close calls:</p>
 <ul>
 <li>plain over rich: rich exists only as an engine-comparison point for
 #813; plain has a genuine end-user story (best braille behavior). If
-#813 lands on “RICHEDIT50W is the culprit,” plain is the realistic
+#813 lands on "RICHEDIT50W is the culprit," plain is the realistic
 fallback, so it outranks rich despite the undo/redo cost.</li>
 <li>rtf over win32: neither is usable, but rtf fails loudly (screen
-readers cannot read it – users notice immediately), while win32 fails
+readers cannot read it -- users notice immediately), while win32 fails
 silently (offsets skew in CRLF space and corrupt bookmarks/notes/codes
 without any error). Silent data corruption is the worse failure mode;
 win32 ranks last.</li>
@@ -626,15 +786,15 @@ engine. This is the only place QUILL gets real redo today, and it is
 free.</li>
 <li>plain / win32: the EDIT class has a single toggling undo slot and no
 redo. <code>CanRedo</code> is false; there is nothing to wire up.</li>
-<li>rtf: multi-level undo/redo exists but lives in wx’s own command
+<li>rtf: multi-level undo/redo exists but lives in wx's own command
 processor with different grouping rules.</li>
 </ul>
 <p>You are right that fixing this outside the control is heavy
 engineering: an app-level undo/redo engine means intercepting every
 mutation path (typing via native WM_CHAR, paste, dictation, AI Replace,
 spell fix-ups, Quillin inserts), snapshotting or delta-encoding each,
-and keeping QUILL’s stack coherent with the native one the control still
-runs internally – plus braille/SR announcements for undo/redo state.
+and keeping QUILL's stack coherent with the native one the control still
+runs internally -- plus braille/SR announcements for undo/redo state.
 Estimate: a dedicated milestone, not a patch. Practical position:
 staying on the RichEdit surfaces preserves multi-level undo/redo for
 free, and that is a strong argument for solving #813 <em>inside</em>
@@ -644,30 +804,30 @@ be scoped as its own project first.</p>
 <h2 id="other-surfaces-worth-considering-not-currently-wired">Other
 surfaces worth considering (not currently wired)</h2>
 <p>Scintilla previously led this list; it is now wired as surface 7
-above (“Notepad++ experiment”). Remaining candidates:</p>
+above ("Notepad++ experiment"). Remaining candidates:</p>
 <ul>
 <li>WebView2 + contenteditable (or a JS editor like ProseMirror) hosted
 in the <code>wx-accessible-webview</code> dependency QUILL already
 ships. Chromium exposes a full UIA text pattern, so JAWS/NVDA/braille
 support is first-class, and editor libraries bring multi-level
-undo/redo. Cost: an IPC boundary between QUILL’s offset-anchored
+undo/redo. Cost: an IPC boundary between QUILL's offset-anchored
 features and the DOM, focus handoff, latency, and a rewrite of the
-editor contract layer. Strategic option, not a knob – but the only path
+editor contract layer. Strategic option, not a knob -- but the only path
 that gives modern rich rendering AND accessibility AND redo.</li>
 <li>WinUI 3 RichEditBox via XAML island. Same msftedit lineage as rich2
 (RichEditD2D), so it likely inherits the same #813 behavior while adding
 heavy hosting machinery. Not recommended; listed for completeness.</li>
 <li>Fully custom surface with a UIA TextPattern provider (the Word / VS
-Code approach). Total control, total cost – months of provider work like
-the Table Studio native provider but far larger. Only justified if every
-native option fails the braille requirement.</li>
+Code approach). Total control, total cost -- months of provider work
+like the Table Studio native provider but far larger. Only justified if
+every native option fails the braille requirement.</li>
 </ul>
 <h2 id="recommended-next-steps">Recommended next steps</h2>
 <ol type="1">
 <li>Add a parametrized surface contract test: one set of assertions
 (selection tuple shape, empty-selection convention, offset round-trip
 through a multi-line buffer, undo after Replace) instantiated against
-rich2, rich, plain, and rtf with real wx. This week’s two crashes would
+rich2, rich, plain, and rtf with real wx. This week's two crashes would
 both have been caught by it.</li>
 <li>Document the single-level undo caveat in the plain surface
 explainer.</li>
@@ -677,9 +837,9 @@ the screen-reader limitation explicitly.</li>
 finding back into <code>editor_control_kind</code> guidance rather than
 growing the experimental list.</li>
 </ol>
-<h2 id="follow-up-stc-jaws-troubleshooting-hook">2026-07-03 follow-up:
-STC JAWS troubleshooting hook</h2>
-<p>After the JAWS test where Enter advanced QUILL’s status line but JAWS
+<h2 id="2026-07-03-follow-up-stc-jaws-troubleshooting-hook">2026-07-03
+follow-up: STC JAWS troubleshooting hook</h2>
+<p>After the JAWS test where Enter advanced QUILL's status line but JAWS
 stayed on the old top line, the next change was deliberately diagnostic
 rather than another caret workaround. <code>StcEditorSurface</code> now
 exposes <code>accessibility_diagnostic_summary()</code>, a
@@ -691,7 +851,7 @@ count, current position, line, column, and selection. On Windows it also
 reports the visible Win32 class name, whether that handle has focus,
 <code>WM_GETTEXTLENGTH</code>, <code>EM_GETSEL</code>, and
 <code>EM_EXGETSEL</code>. This is meant to confirm the suspected root
-cause: STC’s internal caret and line state can be correct while the
+cause: STC's internal caret and line state can be correct while the
 Win32 text-query surface that JAWS relies on is empty, incomplete, or
 not recognized as a real Scintilla text window.</p>
 <p>The existing Tools &gt; Advanced &gt; Developer Console &gt; Copy
@@ -712,17 +872,11 @@ the STC surface exposes the diagnostic method, includes the classic
 Win32 text-query probes, and does not include document content in the
 diagnostic summary path.</p>
 <h2
-id="second-braille-round-cell-2-is-back-with-jaws-analysis">2026-07-03
+id="2026-07-03-second-braille-round-cell-2-is-back-with-jaws-analysis">2026-07-03
 second braille round: cell-2 is back with JAWS; analysis</h2>
 <p>A structured four-way comparison (QUILL vs Notepad++, JAWS vs NVDA,
 braille display attached):</p>
-<table style="width:100%;">
-<colgroup>
-<col style="width: 15%" />
-<col style="width: 20%" />
-<col style="width: 23%" />
-<col style="width: 41%" />
-</colgroup>
+<table>
 <thead>
 <tr>
 <th>App</th>
@@ -761,32 +915,32 @@ braille display attached):</p>
 <p>Two things to note against the earlier round:</p>
 <ul>
 <li>This CONTRADICTS the first braille finding above (stc + JAWS = cell
-1). Confirm which surface the tester actually had selected – cell 2 with
-JAWS is exactly the shipping rich2 behavior (#616), so a run against the
-default surface would produce this table without telling us anything new
-about stc. The Copy Diagnostic Summary output settles it: the “Win32
-class name” line reads the wx class for stc and RICHEDIT50W for the
-default.</li>
+1). Confirm which surface the tester actually had selected -- cell 2
+with JAWS is exactly the shipping rich2 behavior (#616), so a run
+against the default surface would produce this table without telling us
+anything new about stc. The Copy Diagnostic Summary output settles it:
+the "Win32 class name" line reads the wx class for stc and RICHEDIT50W
+for the default.</li>
 <li>Selection dots were visible in ALL four cells of this round,
-including QUILL + JAWS – better than the #813 report. Same caveat:
+including QUILL + JAWS -- better than the #813 report. Same caveat:
 confirm surface.</li>
 </ul>
 <p>Root-cause analysis (assuming the run was stc): there is no Scintilla
-property that fixes this, because the difference is not in Scintilla –
+property that fixes this, because the difference is not in Scintilla --
 it is in which support path JAWS chooses. Notepad++ ships real
-ScintillaWin: window class “Scintilla”, a window proc answering
+ScintillaWin: window class "Scintilla", a window proc answering
 WM_GETTEXT / EM_GETSEL / EM_EXGETSEL and the line-index family, and a
 mirrored system caret. JAWS keys its dedicated handling off that class
-name and those channels, and that path renders from cell 1. wx’s port is
+name and those channels, and that path renders from cell 1. wx's port is
 a from-scratch reimplementation on a generic wx window class with none
 of the three, so JAWS falls back to the same degraded generic path it
-uses elsewhere. NVDA’s generic path is simply more forgiving.</p>
+uses elsewhere. NVDA's generic path is simply more forgiving.</p>
 <p>Zero-code experiments for the next tester session, in cost order:</p>
 <ol type="1">
 <li>Copy Diagnostic Summary on the stc surface; record the Win32 class
 name.</li>
 <li>JAWS window class reassignment (Settings Center / ConfigNames):
-reassign that class to “Scintilla”, retest; then to “Edit”, retest.
+reassign that class to "Scintilla", retest; then to "Edit", retest.
 Fixes cell 2 = the class-name heuristic is confirmed. JAWS goes silent =
 JAWS immediately queries the classic messages (same failure mode as the
 reverted caret mirror), which the bridge below now answers.</li>
@@ -796,21 +950,22 @@ and line mode, and on every line or only the caret line.</li>
 <p>Performance note on the window-proc bridge (asked and answered): the
 classic text queries are demand-driven (a handful per caret move),
 microseconds each. The real overhead is the ctypes trampoline sitting in
-front of every message to that one HWND – a few microseconds per
+front of every message to that one HWND -- a few microseconds per
 message, well under 1% CPU even at mouse-move rates. The one genuine
 hotspot is repeated WM_GETTEXT on a novel-sized buffer, which is why the
 bridge caches an immutable text snapshot invalidated on change, and
 answers line-ranged queries (EM_GETLINE) from it. If profiling ever
 shows the trampoline, the escape hatch is a small native DLL subclass
-using Scintilla’s direct function pointer (SCI_GETDIRECTFUNCTION) – the
-table_uia precedent – with zero Python in the hot path.</p>
-<h2 id="the-accessibility-bridge-implemented-behind-a-flag">2026-07-03
+using Scintilla's direct function pointer (SCI_GETDIRECTFUNCTION) -- the
+table_uia precedent -- with zero Python in the hot path.</p>
+<h2
+id="2026-07-03-the-accessibility-bridge-implemented-behind-a-flag">2026-07-03
 the accessibility bridge, implemented behind a flag</h2>
 <p><code>quill/ui/stc_accessibility_bridge.py</code>, opt-in via the new
 Experimental setting <code>experimental_stc_accessibility_bridge</code>
 (bool, default off, gated behind the master + editor-surfaces
 acknowledgements, restart required, Windows only, stc surface only).
-What it installs – always together, because the caret-only experiment
+What it installs -- always together, because the caret-only experiment
 proved the halves are inseparable:</p>
 <ul>
 <li>A comctl32 <code>SetWindowSubclass</code> window-proc hook (ctypes,
@@ -831,17 +986,17 @@ outside the control): WM_GETTEXTLENGTH/WM_GETTEXT return the exact
 buffer, EM_GETSEL/EM_EXGETSEL return the live selection both packed and
 through the out-pointers, the line family maps offsets to lines and back
 correctly, and window destruction unhooks cleanly. What SendMessage
-cannot prove is JAWS’s reaction – that needs the hardware round: stc
+cannot prove is JAWS's reaction -- that needs the hardware round: stc
 surface + bridge ON vs OFF, checking (a) speech caret tracking on Enter,
 (b) braille start cell, (c) selection dots. The
-<code>accessibility_diagnostic_summary</code> now also reports “Classic
-text bridge: active/inactive”, and with the bridge on its
+<code>accessibility_diagnostic_summary</code> now also reports "Classic
+text bridge: active/inactive", and with the bridge on its
 WM_GETTEXTLENGTH / EM_GETSEL probe lines show real values instead of
 zeros.</p>
 <p>Known limits, deliberate for the experiment: EM_POSFROMCHAR /
 EM_CHARFROMPOS were initially left out until testing said they matter.
-(Both statements in this paragraph were overtaken by round 1 – see the
-next section: the class name turned out to BE “Scintilla”, and the
+(Both statements in this paragraph were overtaken by round 1 -- see the
+next section: the class name turned out to BE "Scintilla", and the
 geometry messages turned out to be the load-bearing gap.)</p>
 <p>How the code is wired, file by file:</p>
 <ul>
@@ -856,9 +1011,9 @@ reinstated verbatim from d4f3f51; the
 hook, the message-handler table, and the snapshot cache; and
 <code>attach_accessibility_bridge(ctrl)</code>, the single entry point,
 which installs the subclass and binds the wx events
-(SET_FOCUS/KILL_FOCUS for the caret’s lifetime, EVT_STC_UPDATEUI for
+(SET_FOCUS/KILL_FOCUS for the caret's lifetime, EVT_STC_UPDATEUI for
 caret moves, EVT_STC_CHANGE for snapshot invalidation,
-EVT_WINDOW_DESTROY for teardown). Returns None on any failure –
+EVT_WINDOW_DESTROY for teardown). Returns None on any failure --
 non-Windows, subclass rejection, anything.</li>
 <li><code>quill/ui/stc_edit_surface.py</code>:
 <code>StcEditorSurface.__init__</code> and
@@ -867,7 +1022,7 @@ non-Windows, subclass rejection, anything.</li>
 true the surface calls <code>attach_accessibility_bridge(self)</code>
 inside try/except and stores the result (or None) on
 <code>self._accessibility_bridge</code>. The diagnostic summary reports
-“Classic text bridge: active/inactive”.</li>
+"Classic text bridge: active/inactive".</li>
 <li><code>quill/core/settings.py</code>: the
 <code>experimental_stc_accessibility_bridge</code> bool field (default
 False) with its from-dict parse and constructor wiring, same pattern as
@@ -887,7 +1042,7 @@ it warns about restart. The stc explainer text mentions the option.</li>
 27288-&gt;27299, settings 1492-&gt;1501, settings_specs
 2185-&gt;2203).</li>
 <li><code>tests/unit/ui/test_stc_edit_surface.py</code>: five new tests
-– settings round-trip + default off, the spec is an experimental bool
+-- settings round-trip + default off, the spec is an experimental bool
 with scope/restart language, the pure helpers map offsets/lines/packing
 correctly (including astral chars and the ASCII fast path), the bridge
 source answers every ScintillaWin message and ships the caret mirror
@@ -895,9 +1050,9 @@ with teardown, and the flag is opt-in at both layers and wired from
 main_frame.</li>
 </ul>
 <h3
-id="bridge-round-1-with-jaws-failed-and-what-the-failure-taught">2026-07-03
+id="2026-07-03-bridge-round-1-with-jaws-failed-and-what-the-failure-taught">2026-07-03
 bridge round 1 with JAWS: FAILED, and what the failure taught</h3>
-<p>Jeff’s live test of the bridge above: JAWS showed no blank line on
+<p>Jeff's live test of the bridge above: JAWS showed no blank line on
 Enter, newly typed text appeared to replace the previous line, and up
 arrow could not review the old line. Classic single-line-edit
 behavior.</p>
@@ -905,16 +1060,16 @@ behavior.</p>
 sent through the bridged window proc as WM_CHAR): the buffer kept both
 lines, line count 2, caret moved freely back to line 0. The bridge
 answers read-only queries and forwards everything else; the document was
-never at risk. What broke was JAWS’s VIEW of the buffer, not the
+never at risk. What broke was JAWS's VIEW of the buffer, not the
 buffer.</p>
 <p>Second, two probe facts that rewrite earlier assumptions in this
 file:</p>
 <ul>
-<li>wx’s StyledTextCtrl window class IS “Scintilla” (GetClassNameW,
+<li>wx's StyledTextCtrl window class IS "Scintilla" (GetClassNameW,
 live). The caret-experiment note above claiming wx lacks the Scintilla
 class was wrong; both screen readers DO key their Scintilla handling off
 this window.</li>
-<li>wx’s window proc answers the real Scintilla API messages natively:
+<li>wx's window proc answers the real Scintilla API messages natively:
 SCI_GETLENGTH, SCI_GETCURRENTPOS, SCI_LINEFROMPOSITION all returned
 correct values by SendMessage, bridge off. It answers NONE of the
 classic edit contract (EM_GETSEL -&gt; 0, EM_GETLINECOUNT -&gt; 0,
@@ -922,18 +1077,18 @@ geometry -&gt; 0), and its native WM_GETTEXTLENGTH returns the window
 label, not the document.</li>
 </ul>
 <p>That pair fully explains the NVDA/JAWS split, no further
-investigation needed: NVDA’s Scintilla support reads through SCI_*
-messages in-process, which work on this control – so NVDA is flawless.
-JAWS’s handling uses the classic edit-control contract (system caret +
+investigation needed: NVDA's Scintilla support reads through SCI_*
+messages in-process, which work on this control -- so NVDA is flawless.
+JAWS's handling uses the classic edit-control contract (system caret +
 WM_GETTEXT/EM_* queries), which this control does not speak natively and
 the bridge only partially supplied.</p>
 <p>The specific gap matching the failure signature: the bridge answered
 text, selection, and line queries but not GEOMETRY. JAWS maps the system
-caret’s screen position back to a character and line via EM_CHARFROMPOS
+caret's screen position back to a character and line via EM_CHARFROMPOS
 / EM_POSFROMCHAR (with EM_GETRECT / EM_GETFIRSTVISIBLELINE for the
 viewport); unanswered, every caret position resolves to char 0 / line 0
-– one permanent line 0, which is exactly what Jeff experienced: no new
-line on Enter, “replaced” text, nothing above to review.</p>
+-- one permanent line 0, which is exactly what Jeff experienced: no new
+line on Enter, "replaced" text, nothing above to review.</p>
 <p>The four geometry messages are now implemented and live-verified
 (EM_POSFROMCHAR(13) -&gt; client coords -&gt; EM_CHARFROMPOS -&gt; char
 13 line 1 round-trip; formatting rect matches the client area;
@@ -945,7 +1100,7 @@ costs a hardware session. Options:</p>
 <ul>
 <li>One final round with the geometry messages in, then a hard stop. The
 failure signature matched the geometry gap precisely, and the fix is in
-and verified mechanically – but JAWS’s actual query pattern has now
+and verified mechanically -- but JAWS's actual query pattern has now
 surprised us twice.</li>
 <li>Park stc as an NVDA-only experimental surface (it is genuinely
 excellent there), leave the bridge off by default as a documented
@@ -958,23 +1113,24 @@ provider.</li>
 <p>Test protocol for the next hardware round (JAWS + braille
 display):</p>
 <ol type="1">
-<li>Settings &gt; Experimental: tick “Enable experimental features”,
+<li>Settings &gt; Experimental: tick "Enable experimental features",
 tick the editor-surfaces acknowledgement, set Editor surface to
-“Notepad++ experiment”, tick “Notepad++ experiment: screen reader text
-bridge (Windows)”. Restart QUILL.</li>
+"Notepad++ experiment", tick "Notepad++ experiment: screen reader text
+bridge (Windows)". Restart QUILL.</li>
 <li>Confirm the bridge took: Tools &gt; Advanced &gt; Developer Console
-&gt; Copy Diagnostic Summary – “Classic text bridge: active”, and the
+&gt; Copy Diagnostic Summary -- "Classic text bridge: active", and the
 WM_GETTEXTLENGTH / EM_GETSEL lines show real values.</li>
 <li>Type two lines, press Enter between them: does JAWS speech follow
 the caret now (the d4f3f51 failure)? Arrow through lines: does braille
 start at cell 1? Select text: dots 7-8?</li>
 <li>Repeat with the bridge checkbox OFF (restart) for the A/B.</li>
 <li>If speech still lags, run the JAWS class-reassignment experiment (wx
-class -&gt; “Scintilla”) ON TOP of the bridge – with the classic
+class -&gt; "Scintilla") ON TOP of the bridge -- with the classic
 messages now answered, the reassignment that previously would have gone
 silent has real answers to read.</li>
 </ol>
-<h2 id="final-bridge-round-2-failed-bridge-removed-verdict">2026-07-03
+<h2
+id="2026-07-03-final-bridge-round-2-failed-bridge-removed-verdict">2026-07-03
 FINAL: bridge round 2 failed; bridge removed; verdict</h2>
 <p>Round 2 (geometry messages included) still failed live JAWS testing.
 Per the decision point above, that was the hard stop. Jeff called it;
@@ -988,26 +1144,26 @@ restored to their pre-bridge values. A regression test
 (<code>test_jaws_bridge_stays_removed_and_the_surface_is_labeled_nvda_only</code>)
 pins the removal so the idea is not casually re-attempted.</li>
 <li>The stc surface itself STAYS, relabeled honestly: the
-Experimental-tab explainer now reads “EXPERIMENTAL, NVDA ONLY: … JAWS
+Experimental-tab explainer now reads "EXPERIMENTAL, NVDA ONLY: ... JAWS
 cannot follow the caret on this surface (verified 2026-07-03; bridging
-attempts failed). Do not use with JAWS.” The surface remains
+attempts failed). Do not use with JAWS." The surface remains
 double-gated and off by default, and it remains the best NVDA braille
 result of any surface.</li>
 </ul>
 <p>Why it stays rather than being ripped out: the surface is committed,
 harmless behind two acknowledgements, genuinely excellent under NVDA,
-and it already earned its keep as an instrument – it isolated #813 to
-RICHEDIT50W’s selection reporting. Removing it buys nothing; the failed
+and it already earned its keep as an instrument -- it isolated #813 to
+RICHEDIT50W's selection reporting. Removing it buys nothing; the failed
 part (the JAWS emulation) is what was removed.</p>
 <p>Final scorecard for making wx.stc acceptable to JAWS, so nobody
-retries the cheap paths: (1) system caret mirror alone – JAWS switched
+retries the cheap paths: (1) system caret mirror alone -- JAWS switched
 into live-edit mode with nothing to read, went silent (d4f3f51,
-reverted). (2) Caret + classic text/selection/line answers – JAWS
+reverted). (2) Caret + classic text/selection/line answers -- JAWS
 rendered a permanent single line; typing appeared to replace prior text
 (view-only; buffer verified intact). (3) All of that + the
 EM_POSFROMCHAR / EM_CHARFROMPOS / EM_GETRECT / EM_GETFIRSTVISIBLELINE
-geometry set, mechanically verified by SendMessage round-trip – still
-failed. JAWS’s Scintilla-class handling evidently depends on more of
+geometry set, mechanically verified by SendMessage round-trip -- still
+failed. JAWS's Scintilla-class handling evidently depends on more of
 real ScintillaWin than its documented message surface (plausibly
 in-process direct-function reads or the character-metrics path);
 emulating it message by message from Python is a dead end.</p>
@@ -1016,40 +1172,42 @@ id="what-jaws-2026-itself-ships-for-notepad-inspected-on-this-machine">What
 JAWS 2026 itself ships for Notepad++ (inspected on this machine)</h3>
 <p>Question raised after the rollback: does JAWS 2026 ship Notepad++
 scripts or settings that might have made the difference? Answer, from
-reading the actual files under C:Scientific\2026: yes it ships them, and
-no, they would not have helped. Three pieces:</p>
+reading the actual files under C:\ProgramData\Freedom
+Scientific\JAWS\2026: yes it ships them, and no, they would not have
+helped. Three pieces:</p>
 <ul>
 <li>GLOBAL, and the one that matters: Default.JCF, [WindowClasses]
-section: <code>Scintilla=MultilineEdit</code> (comment: “Notepad++ and
-new Script Manager”). JAWS’s entire core Scintilla strategy is a global
-class reassignment – treat any window of class “Scintilla” in any
-application as a classic multiline EDIT. Since our surface’s class IS
-“Scintilla”, QUILL received this treatment in every test round. This
-also retro-explains the earlier “reassign the class in JAWS” experiment
+section: <code>Scintilla=MultilineEdit</code> (comment: "Notepad++ and
+new Script Manager"). JAWS's entire core Scintilla strategy is a global
+class reassignment -- treat any window of class "Scintilla" in any
+application as a classic multiline EDIT. Since our surface's class IS
+"Scintilla", QUILL received this treatment in every test round. This
+also retro-explains the earlier "reassign the class in JAWS" experiment
 idea as moot: the mapping we would have created already exists out of
 the box.</li>
-<li>Per-app Scripts++.jss (source ships uncompiled, ~150 lines): handles
-ONLY the autocomplete popup (ListboxX child window speech, braille
-routing, pan left/right), Ctrl+Arrow unit navigation, and one telling
-quirk fix – it suppresses speak-window-name-on-focus because “Scintilla
-windows return the entire text of the document as their name”. Nothing
-about core text reading, caret tracking, or line navigation: all of that
-is the built-in MultilineEdit backend.</li>
-<li>Per-app SETTINGS++.JCF: one line, BrailleMoveActiveCursor=1.</li>
+<li>Per-app Scripts\Notepad++.jss (source ships uncompiled, ~150 lines):
+handles ONLY the autocomplete popup (ListboxX child window speech,
+braille routing, pan left/right), Ctrl+Arrow unit navigation, and one
+telling quirk fix -- it suppresses speak-window-name-on-focus because
+"Scintilla windows return the entire text of the document as their
+name". Nothing about core text reading, caret tracking, or line
+navigation: all of that is the built-in MultilineEdit backend.</li>
+<li>Per-app SETTINGS\enu\NotePad++.JCF: one line,
+BrailleMoveActiveCursor=1.</li>
 </ul>
 <p>So aliasing quill.exe to the NotePad++ config (ConfigNames.ini) would
-have bought autocomplete polish and one braille flag – not caret
+have bought autocomplete polish and one braille flag -- not caret
 tracking. The core handling QUILL already got, and it failed against our
 emulation while succeeding against real ScintillaWin. Conclusion
-sharpened: JAWS’s MultilineEdit backend depends on genuine
+sharpened: JAWS's MultilineEdit backend depends on genuine
 EDIT/ScintillaWin behavior beyond the documented message surface
 (in-process reads, font metrics, or EM_ semantics we did not replicate).
-Freedom Scientific’s own Script Manager is a real embedded Scintilla
-riding the same class map – the mechanism is proven, but only with the
+Freedom Scientific's own Script Manager is a real embedded Scintilla
+riding the same class map -- the mechanism is proven, but only with the
 genuine control behind it.</p>
 <p>One extra confirmation from the .jss comment: with our bridge on,
 WM_GETTEXT returned the whole document, so JAWS ALSO saw the document as
-the window NAME – Notepad++ needs a script just to mute that. A working
+the window NAME -- Notepad++ needs a script just to mute that. A working
 bridge would have needed a per-app QUILL script on top, one more hidden
 cost of the emulation path.</p>
 <p>If a Scintilla surface for JAWS users ever becomes strategic, the two
@@ -1062,8 +1220,8 @@ not knobs.</p>
 the cell-2 offset get decided on the rich2 vs plain A/B as planned, with
 the stc data point (a non-RichEdit surface showing correct selection
 dots under JAWS) as supporting evidence that the fault is in
-RICHEDIT50W’s selection reporting. The undo/redo argument for leaving
-rich2 is gone – rich2 already has native multi-level undo/redo, and it
+RICHEDIT50W's selection reporting. The undo/redo argument for leaving
+rich2 is gone -- rich2 already has native multi-level undo/redo, and it
 remains the shipping default.</p>
 </body>
 </html>
