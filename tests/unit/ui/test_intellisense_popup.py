@@ -86,3 +86,20 @@ def test_tab_without_accept_callback_falls_back_to_dismiss() -> None:
     event = _Event(_WX.WXK_TAB)
     popup._on_listbox_key(event)
     assert calls == ["dismiss"]
+
+
+class _DeletedFrame:
+    """Stands in for a wx.Frame whose C/C++ side has already been destroyed."""
+
+    def IsShown(self) -> bool:
+        raise RuntimeError("wrapped C/C++ object of type Frame has been deleted")
+
+
+def test_is_visible_survives_a_deleted_frame() -> None:
+    """Regression for #917/#918: a stale popup reference (e.g. surviving a
+    crash-recovery restart that tore down and rebuilt the parent frame) must
+    report "not visible" instead of propagating RuntimeError -- that
+    RuntimeError, uncaught, is exactly what crashed _handle_intellisense_key_down."""
+    popup, _calls = _make_popup()
+    popup.frame = _DeletedFrame()
+    assert popup.is_visible() is False

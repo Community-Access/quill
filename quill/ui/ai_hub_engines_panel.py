@@ -165,7 +165,15 @@ class EnginesPanel:
         threading.Thread(target=worker, daemon=True).start()  # GATE-40-OK: install worker
 
     def _after_install(self, message: str) -> None:
-        self.setup_btn.Enable(True)
+        # The install runs on a background thread; if the user closes the AI
+        # Hub before it finishes, this queued wx.CallAfter still fires against
+        # already-destroyed widgets (#915). The install itself already ran (or
+        # failed) in the background regardless -- there's simply no panel left
+        # to update, so treat a dead widget as nothing to do rather than crash.
+        try:
+            self.setup_btn.Enable(True)
+        except RuntimeError:
+            return
         self.status.SetLabel(message)
         self._announce(message)
         self._reload()

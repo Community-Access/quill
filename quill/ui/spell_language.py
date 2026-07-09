@@ -62,7 +62,7 @@ def open_spell_language_chooser(wx: Any, host: Any) -> None:
     except StopIteration:
         pass
     try:
-        if host._show_modal_dialog(dialog) != wx.ID_OK:
+        if host._show_modal_dialog(dialog, "Spell Check Language") != wx.ID_OK:
             return
         index = dialog.GetSelection()
     finally:

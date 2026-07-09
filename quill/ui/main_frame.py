@@ -716,7 +716,14 @@ class _IntellisensePopup:
         self.frame.Hide()
 
     def is_visible(self) -> bool:
-        return bool(self.frame.IsShown())
+        # The popup's frame is a child of MainFrame's own frame; if that parent
+        # was torn down and rebuilt (e.g. a crash-recovery restart) without this
+        # popup object being recreated alongside it, self.frame is a deleted
+        # C/C++ object and IsShown() raises RuntimeError (#917/#918).
+        try:
+            return bool(self.frame.IsShown())
+        except RuntimeError:
+            return False
 
     def selection_index(self) -> int:
         return self.listbox.GetSelection()
