@@ -426,6 +426,14 @@ _REVIEWED_EGRESS: dict[str, str] = {
 #   blocked in Safe Mode, no admin, no silent path. The SDKs are deliberately not
 #   bundled in the installer (large, fast-moving, one-of-three).
 #
+# quill/core/pdf_ocr_install.py::install_pdf_ocr_support
+#   On-demand install of the free PDF/Office text-extraction pack (MarkItDown,
+#   pdfplumber, pypdf; ~30 MB) into <app data>/engine-packs/pdf-ocr, wheel-only,
+#   same gating as the speech engines. Triggered: Help > Download Optional
+#   Components > "PDF and Office text extraction". #909's original bug (a build
+#   with no PDF/Office text extractor anywhere) is fixed by this being one click
+#   away on every install, not by forcing it onto installs that never need it.
+#
 # quill/core/speech/providers/whispercpp.py::_download_to_file
 #   whisper.cpp GGML model download (#617), fetched via
 #   huggingface_hub.hf_hub_download (repo_id/filename/revision), same library

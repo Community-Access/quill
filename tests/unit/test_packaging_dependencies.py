@@ -64,18 +64,48 @@ def test_babel_rides_with_the_kokoro_extra(project: dict) -> None:
 
 
 @pytest.mark.parametrize("dist", ["markitdown", "pdfplumber", "pypdf"])
-def test_free_import_pipeline_is_a_base_runtime_dependency(project: dict, dist: str) -> None:
-    """The free-first import pipeline must be built-in on every install (#909).
+def test_free_import_pipeline_is_the_pdf_ocr_extra(project: dict, dist: str) -> None:
+    """The free-first PDF/Office text extractor lives in one named extra.
 
-    The product advertises MarkItDown as the built-in "free local converter" and
-    PDF text extraction as always-available (`quill/io/docconvert.py`,
-    `quill/io/pdf.py`), but they used to live only in the [pages] extra / nowhere,
-    so a clean `pip install quill[ui]` (and the shipping Windows build, which does
-    not bundle [pages]) had NO PDF/Office text extractor and Import → PDF/OCR
-    failed out of the box. They must be in [project].dependencies so the promise
-    and the manifest agree.
+    #909's original bug was that these packages lived *nowhere* the shipping
+    build actually installed -- not in a base dependency, not in the extra a
+    clean install pulled. The fix that shipped first made them a base
+    dependency (present on every install, whether or not it ever touches a
+    PDF); the fix here instead makes the promise "one click away, every
+    install" via `quill/core/pdf_ocr_install.py` and Help > Download Optional
+    Components, which needs the packages named in exactly one place so the
+    installer and the manifest can never drift apart. If this ever fails
+    because the packages moved elsewhere, update pdf_ocr_install.py's
+    ``_PDF_OCR_REQUIREMENTS`` (and this test's group name) to match.
     """
-    assert dist in _names(project["dependencies"])
+    assert dist in _names(project["optional-dependencies"]["pdf-ocr"])
+
+
+def test_free_import_pipeline_is_not_forced_on_every_install(project: dict) -> None:
+    """The pdf-ocr packages must NOT be a base dependency (the opposite of #909).
+
+    They are pure-Python and downloadable in one click from Help > Download
+    Optional Components (quill/core/pdf_ocr_install.py), so forcing them onto
+    every install -- including ones that never touch a PDF or Office
+    document -- is no longer the fix; being one click away is.
+    """
+    base_names = _names(project["dependencies"])
+    for dist in ("markitdown", "pdfplumber", "pypdf"):
+        assert dist not in base_names
+
+
+def test_free_import_pipeline_installer_requirements_match_the_extra(project: dict) -> None:
+    """quill/core/pdf_ocr_install.py's pinned requirements must track the extra.
+
+    The on-demand installer pins its own requirement strings (so a pip
+    install works even if this repo's manifest changes later); this guards
+    against the two silently drifting apart.
+    """
+    from quill.core.pdf_ocr_install import _PDF_OCR_REQUIREMENTS
+
+    extra_names = _names(project["optional-dependencies"]["pdf-ocr"])
+    installer_names = _names(list(_PDF_OCR_REQUIREMENTS))
+    assert installer_names == extra_names
 
 
 def test_free_import_pipeline_imports_under_the_shipping_set() -> None:

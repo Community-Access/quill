@@ -198,6 +198,10 @@ def _candidate_removable_path(component_id: str) -> Path | None:
             from quill.core.math.mathcat_engine import pack_dir
 
             return pack_dir()
+        if component_id == "pdf_ocr":
+            from quill.core.pdf_ocr_install import pdf_ocr_pack_dir
+
+            return pdf_ocr_pack_dir()
         if component_id.startswith("spell-"):
             from quill.core.spellcheck import managed_hunspell_dir
 
@@ -598,6 +602,12 @@ def _mp3_installed() -> bool:
     return is_mp3_available()
 
 
+def _pdf_ocr_installed() -> bool:
+    from quill.core.pdf_ocr_install import is_pdf_ocr_available
+
+    return is_pdf_ocr_available()
+
+
 def _audio_extras_installed() -> bool:
     """Both halves of the bundled audio-extras download: mpv playback and MP3
     chapter markers. Reports installed only once both are present, since the
@@ -626,6 +636,21 @@ def gather_optional_components() -> list[OptionalComponent]:
             "~45 MB",
             note="Provided by Pandoc (jgm/pandoc); QUILL fetches the official, pinned build.",
             priority=10,
+        ),
+        OptionalComponent(
+            "pdf_ocr",
+            "PDF and Office text extraction",
+            "Reads text out of PDFs and Office documents (Word/PowerPoint/Excel) "
+            "without Pandoc or LibreOffice installed -- MarkItDown for Office and "
+            "PDF, pdfplumber and pypdf as the PDF text floor. Scanned/image-only "
+            "PDFs still need OCR (File > Import > OCR) either way. Plain-text and "
+            "Markdown editing, and any format Pandoc already handles, work without it.",
+            TOOL,
+            _safe(_pdf_ocr_installed),
+            "~30 MB",
+            note="MarkItDown (MIT, microsoft/markitdown), pdfplumber (MIT), and pypdf "
+            "(BSD-3-Clause); fetched via pip from PyPI.",
+            priority=15,
         ),
         OptionalComponent(
             "braille",

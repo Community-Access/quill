@@ -444,6 +444,14 @@ def main() -> int:
         activate_ai_packs()
     except Exception:  # noqa: BLE001 - an optional pack must never break startup
         pass
+    # Add an on-demand-installed PDF/Office text-extraction pack to sys.path
+    # (#909's own optional-extra fix).
+    try:
+        from quill.core.pdf_ocr_install import activate_pdf_ocr_pack
+
+        activate_pdf_ocr_pack()
+    except Exception:  # noqa: BLE001 - an optional pack must never break startup
+        pass
     log_listener = configure_logging(app_data_dir() / "logs")
     setup_fault_handler()
     _install_excepthook()

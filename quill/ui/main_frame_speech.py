@@ -394,6 +394,7 @@ class SpeechCommandsMixin:
             "espeak": lambda: self.download_espeak_exe(on_done=_back),
             "dectalk": lambda: self.download_dectalk_exe(on_done=_back),
             "pandoc": lambda: self.download_pandoc(on_done=_back),
+            "pdf_ocr": lambda: self.download_pdf_ocr_support(on_done=_back),
             "node": lambda: self.download_node_runtime(on_done=_back),
             "braille": lambda: self.download_braille_pack(on_done=_back),
             "audio_extras": lambda: self.download_audio_extras(on_done=_back),
@@ -931,6 +932,68 @@ class SpeechCommandsMixin:
                 on_done(ok)
 
         self._run_background_task("Downloading MathCAT math speech engine", _work, _finished)
+
+    def download_pdf_ocr_support(self, *, on_done: Callable[[bool], None] | None = None) -> None:
+        """Install the free PDF/Office text-extraction pack (MarkItDown, pdfplumber,
+        pypdf) on demand -- the pip-installable "pdf-ocr" extra, wheel-only into
+        a user-writable engine-pack, same shape as MathCAT's download. Import
+        already works for Markdown/plain text and anything Pandoc handles
+        without it; this adds native Word/PowerPoint/Excel/PDF text reading."""
+        from quill.core.optional_components import _pdf_ocr_installed
+        from quill.core.pdf_ocr_install import missing_pdf_ocr_modules
+
+        wx = self._wx
+        if bool(getattr(self, "_safe_mode", False)):
+            self._announce("Downloading components is disabled in Safe Mode.")
+            return
+        if _pdf_ocr_installed():
+            again = self._show_message_box(
+                "PDF and Office text extraction is already installed. Download "
+                "it again anyway?",
+                "PDF and Office Text Extraction",
+                wx.ICON_QUESTION | wx.YES_NO,
+            )
+            if again != wx.YES:
+                if on_done is not None:
+                    on_done(True)
+                return
+        proceed = self._show_message_box(
+            "QUILL will download PDF and Office text extraction (about 30 MB): "
+            "MarkItDown, pdfplumber, and pypdf. This lets Import read text out "
+            "of Word, PowerPoint, Excel, and PDF documents natively. Scanned or "
+            "image-only PDFs still need File > Import > OCR either way. "
+            "Continue?",
+            "Download PDF and Office Text Extraction",
+            wx.ICON_INFORMATION | wx.YES_NO,
+        )
+        if proceed != wx.YES:
+            return
+
+        def _work(progress):
+            from quill.core.pdf_ocr_install import install_pdf_ocr_support
+
+            install_pdf_ocr_support(
+                progress=lambda fraction, message: progress(message, int(fraction * 100), 100)
+            )
+            return True
+
+        def _finished(result: object) -> None:
+            ok = bool(result)
+            if ok:
+                self._announce(
+                    "PDF and Office text extraction installed. Import will use it "
+                    "the next time it runs."
+                )
+            else:
+                still_missing = ", ".join(missing_pdf_ocr_modules())
+                self._announce(
+                    "PDF and Office text extraction could not be installed"
+                    + (f" ({still_missing})." if still_missing else ".")
+                )
+            if on_done is not None:
+                on_done(ok)
+
+        self._run_background_task("Downloading PDF and Office text extraction", _work, _finished)
 
     def download_pandoc(self, *, on_done: Callable[[bool], None] | None = None) -> None:
         """Fetch the official, pinned Pandoc build on demand (footprint unbundle).

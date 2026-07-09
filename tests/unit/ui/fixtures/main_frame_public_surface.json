@@ -141,6 +141,7 @@
   "download_node_runtime",
   "download_offline_speech_engine",
   "download_pandoc",
+  "download_pdf_ocr_support",
   "download_piper_exe",
   "download_vosk",
   "duplicate_line",

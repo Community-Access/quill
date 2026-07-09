@@ -357,8 +357,8 @@ def _missing_spreadsheet_text(path: Path) -> tuple[str, dict[str, object]]:
     return (
         (
             f"(Spreadsheet import not available for {path.name}.)\n\n"
-            "Install MarkItDown support for spreadsheet extraction: "
-            "pip install markitdown[xlsx,xls]\n"
+            'Open Help > Download Optional Components and download "PDF and '
+            'Office text extraction" for spreadsheet extraction.\n'
         ),
         {
             "source_kind": path.suffix.lower().lstrip("."),
@@ -372,7 +372,9 @@ def _missing_legacy_office_text(path: Path, source_kind: str) -> tuple[str, dict
     return (
         (
             f"({source_kind.upper()} import not available for {path.name}.)\n\n"
-            "Install MarkItDown support and LibreOffice for legacy Office extraction.\n"
+            'Open Help > Download Optional Components and download "PDF and '
+            "Office text extraction\", and install LibreOffice, for legacy "
+            "Office extraction.\n"
         ),
         {
             "source_kind": source_kind,

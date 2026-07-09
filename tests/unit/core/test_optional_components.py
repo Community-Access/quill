@@ -129,6 +129,27 @@ def test_mathcat_detector_checks_the_engine_pack(tmp_path, monkeypatch) -> None:
     assert oc._mathcat_installed() is True
 
 
+def test_pdf_ocr_detector_reflects_module_availability(monkeypatch) -> None:
+    import quill.core.pdf_ocr_install as pdf_ocr_install
+
+    monkeypatch.setattr(pdf_ocr_install, "is_pdf_ocr_available", lambda: True)
+    assert oc._pdf_ocr_installed() is True
+    monkeypatch.setattr(pdf_ocr_install, "is_pdf_ocr_available", lambda: False)
+    assert oc._pdf_ocr_installed() is False
+
+
+def test_gather_includes_pdf_ocr() -> None:
+    ids = {c.component_id for c in oc.gather_optional_components()}
+    assert "pdf_ocr" in ids
+
+
+def test_pdf_ocr_removable_path_is_its_engine_pack_dir(tmp_path, monkeypatch) -> None:
+    import quill.core.pdf_ocr_install as pdf_ocr_install
+
+    monkeypatch.setattr(pdf_ocr_install, "pdf_ocr_pack_dir", lambda: tmp_path / "pdf-ocr")
+    assert oc._candidate_removable_path("pdf_ocr") == tmp_path / "pdf-ocr"
+
+
 def test_gather_includes_piper_and_node() -> None:
     """Piper and Node.js are downloadable, so they must have a touch point in the
     dialog (they were missing before the catalog-completeness pass)."""
@@ -140,9 +161,11 @@ def test_gather_includes_piper_and_node() -> None:
 def test_components_are_ordered_by_importance() -> None:
     comps = oc.gather_optional_components()
     ids = [c.component_id for c in comps]
-    # Pandoc leads, braille second (the user-facing importance order).
+    # Pandoc leads, PDF/Office extraction second, braille third (the
+    # user-facing importance order).
     assert ids[0] == "pandoc"
-    assert ids[1] == "braille"
+    assert ids[1] == "pdf_ocr"
+    assert ids[2] == "braille"
     # Spell-check dictionaries are grouped last.
     spell_positions = [i for i, cid in enumerate(ids) if cid.startswith("spell-")]
     non_spell_positions = [i for i, cid in enumerate(ids) if not cid.startswith("spell-")]

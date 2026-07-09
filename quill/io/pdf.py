@@ -41,7 +41,8 @@ def extract_pdf_text(path: Path) -> PdfExtractionResult:
     if not any_extractor_available:
         message = (
             f"(No PDF text extractor is installed, so QUILL could not read "
-            f"{path.name}. Reinstall QUILL, or run: pip install pdfplumber pypdf.)\n"
+            f"{path.name}. Open Help > Download Optional Components and download "
+            f"\"PDF and Office text extraction\".)\n"
         )
         engine = "unavailable"
     else:

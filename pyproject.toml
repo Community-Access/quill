@@ -38,16 +38,6 @@ dependencies = [
     # Faster Whisper extra ([fasterwhisper]) is installed. Keep the floor in sync
     # with that extra.
     "huggingface_hub>=1.22.0",
-    # Free-first document import pipeline (quill/io/docconvert.py Tier 1 +
-    # quill/io/pdf.py). These are advertised in-product as the built-in "free
-    # local converter" and PDF text extractor, so they must be present on EVERY
-    # install -- not tucked in an optional extra the shipping build never pulls.
-    # (Regression #909: they used to live only in the [pages] extra / nowhere,
-    # so a clean install had no PDF/Office text extractor at all.) MarkItDown is
-    # Tier 1 for Office + PDF; pdfplumber/pypdf are the PDF text floor.
-    "markitdown[docx,pptx,xlsx,xls,pdf]>=0.1.6",
-    "pdfplumber>=0.11.9",
-    "pypdf>=6.11.0",
 ]
 
 [project.optional-dependencies]
@@ -169,10 +159,21 @@ kokoro = [
     # ONNX voice path importing a missing 'babel'. Keep in sync with [dev].
     "Babel>=2.18.0",
 ]
-# MarkItDown moved to base dependencies (#909 — it is the built-in free import
-# converter, not an optional extra). This extra now carries only keynote-parser
-# (Apple Keynote .key import), which remains genuinely optional/macOS-oriented.
 pages = ["keynote-parser>=1.14.4.0"]
+# Free-first PDF/Office text extraction (quill/io/docconvert.py Tier 1 +
+# quill/io/pdf.py): MarkItDown for Office + PDF, pdfplumber/pypdf as the PDF
+# text floor. Was briefly a base dependency (#909 fixed a build that shipped
+# with neither this extra nor a base dependency, so a clean install had no
+# PDF/Office text extractor at all). Downloadable on demand via Help > Download
+# Optional Components (quill/core/pdf_ocr_install.py), which keeps the
+# minimal-install footprint small while still fixing #909's actual complaint --
+# every install can get PDF/Office extraction in one click, it just is not
+# forced on installs that never touch it.
+pdf-ocr = [
+    "markitdown[docx,pptx,xlsx,xls,pdf]>=0.1.6",
+    "pdfplumber>=0.11.9",
+    "pypdf>=6.11.0",
+]
 # GLOW document accessibility engine (audit / fix / convert for docx, pptx,
 # xlsx, pdf, epub, md). quill-glow-core is the thin, stable service contract
 # Quill imports; its [glow] extra pulls in the acb-large-print backend. The
