@@ -231,11 +231,29 @@ def activate_ai_packs() -> None:
 
 
 def is_pack_importable(pack_id: str) -> bool:
-    """True when the pack's SDK module can be imported (after activation)."""
+    """True when the pack's SDK module can genuinely be imported (after activation).
+
+    ``find_spec`` alone only proves a module *file* was located, not that it
+    actually loads — a pack install interrupted partway through (e.g. QUILL
+    crashed mid ``pip install --target``) can leave a spec locatable while the
+    module itself fails to import because other files never landed. Attempting
+    the real import here means a crash-interrupted install is reported as not
+    importable (and therefore retryable) instead of getting stuck looking
+    "installed" forever with nothing to recover it.
+    """
     spec = PACK_INSTALLS.get(pack_id)
     if spec is None:
         return False
-    return importlib.util.find_spec(spec.import_name) is not None
+    try:
+        if importlib.util.find_spec(spec.import_name) is None:
+            return False
+    except (ImportError, ValueError):
+        return False
+    try:
+        importlib.import_module(spec.import_name)
+    except Exception:
+        return False
+    return True
 
 
 def install_supported() -> bool:

@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import importlib
+import importlib.util
+import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -12,7 +15,7 @@ from quill.ai_packs._base import SdkHarness
 from quill.core.ai.activity_log import ActivityLog
 from quill.core.ai.context_builder import ContextScope
 from quill.core.ai.events import AgentEvent, AgentEventKind
-from quill.core.ai.harness import AgentSpec, AIContext, HarnessRegistry
+from quill.core.ai.harness import AgentSpec, AIContext, HarnessCapabilities, HarnessRegistry
 from quill.core.ai.permissions import PermissionBroker, RiskLevel, SafetyProfile
 from quill.core.ai.tool_gateway import AgentIdentity, SafeEditorToolGateway
 
@@ -80,6 +83,58 @@ def test_packs_report_status_consistently() -> None:
             assert reason is None
         else:
             assert reason is not None and pack.extra in reason
+
+
+def test_crash_interrupted_install_reports_unavailable_not_stuck(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Regression (support report): "OpenAI shows up as being active; however, I
+    can't actually switch to it or add my existing API key" after Quill crashed
+    "downloading the OpenAI package".
+
+    An on-demand pack install (``sdk_install.install_pack``) writes wheel-only
+    files into a user-writable ``--target`` directory; if the host process
+    crashes partway through, some files land and others don't. Before this fix,
+    ``SdkHarness.is_available()`` used only ``importlib.util.find_spec``, which
+    is satisfied the moment *any* file resolving the module exists — so a
+    package whose ``__init__.py`` landed but whose real body did not would be
+    reported "available" forever. The AI Hub's Engines tab and the AI Setup
+    Wizard both trust ``is_available()`` to decide "Active"/"Available" vs
+    "Not installed"; a false-positive there is exactly the stuck state in the
+    report: the engine looks configured, Set Up short-circuits with "already
+    installed" instead of retrying, and there is no other path back to a
+    working configuration.
+    """
+    pkg_dir = tmp_path / "quill_crashed_pack"
+    pkg_dir.mkdir()
+    # Simulate the crash: __init__.py was written, but it imports a submodule
+    # that never made it to disk before the process died.
+    (pkg_dir / "__init__.py").write_text(
+        "from . import never_written_submodule\n", encoding="utf-8"
+    )
+    monkeypatch.syspath_prepend(str(tmp_path))
+    sys.modules.pop("quill_crashed_pack", None)
+    importlib.invalidate_caches()
+
+    class CrashedInstallPack(SdkHarness):
+        pack_id = "crashed_test_pack"
+        pack_name = "Crashed Test Pack"
+        extra = "ai-crashed-test"
+        sdk_modules = ("quill_crashed_pack",)
+
+        def capabilities(self) -> HarnessCapabilities:
+            return HarnessCapabilities()
+
+    pack = CrashedInstallPack()
+
+    # find_spec alone would say this is present (its file is right there);
+    # the fix must actually attempt the import to see it is broken.
+    assert importlib.util.find_spec("quill_crashed_pack") is not None
+
+    available, reason = pack.is_available()
+
+    assert available is False
+    assert reason is not None and pack.extra in reason
 
 
 def test_copilot_pack_matches_real_sdk() -> None:
