@@ -32,8 +32,12 @@ def test_dialog_uses_a_readonly_multiline_description() -> None:
 
 def test_dialog_gates_download_when_installed() -> None:
     src = _src("optional_components_dialog.py")
-    assert "download_btn.Enable(not comp.installed)" in src
-    assert "test_btn.Enable(comp.installed)" in src
+    # Download/Test key off effective_ready, not installed: most components
+    # agree, but the Dictation row is "installed" as soon as its engine binary
+    # exists even with no model downloaded yet (#kokoro-focus follow-up).
+    assert "download_btn.Enable(not ready)" in src
+    assert "test_btn.Enable(ready)" in src
+    assert "comp.effective_ready" in src
 
 
 def test_dialog_delegates_to_controller_and_uses_the_seam() -> None:
@@ -111,3 +115,16 @@ def test_manage_routes_to_speech_models_and_voices() -> None:
     assert "def _manage_component_models_or_voices" in src
     assert "self.open_speech_models()" in src  # STT engines -> Manage Speech Models
     assert "self.choose_read_aloud_configuration()" in src  # voice engines -> Manage Voices
+
+
+def test_test_button_toggles_to_stop_for_voice_rows() -> None:
+    src = _src("optional_components_dialog.py")
+    assert '"&Stop"' in src
+    assert "controller.stop_test(" in src
+    assert "controller.is_previewable(" in src
+
+
+def test_controller_protocol_supports_preview_state() -> None:
+    src = _src("optional_components_dialog.py")
+    assert "def stop_test(self, component_id: str) -> None:" in src
+    assert "def is_previewable(self, component_id: str) -> bool:" in src

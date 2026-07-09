@@ -17,6 +17,7 @@ supplies (see :class:`ComponentsController`).
 from __future__ import annotations
 
 import threading
+from collections.abc import Callable
 from typing import Any, Protocol
 
 from quill.core.optional_components import OptionalComponent, describe_component, manage_target
@@ -35,8 +36,21 @@ class ComponentsController(Protocol):
     def remove(self, component_id: str) -> bool:
         """Remove the component (delete files, reset dependent state). True on success."""
 
-    def test(self, component_id: str) -> None:
-        """Prove the component works (play a voice sample / self-test); announces."""
+    def test(
+        self, component_id: str, *, on_state_change: Callable[[str], None] | None = None
+    ) -> None:
+        """Prove the component works (play a voice sample / self-test); announces.
+
+        ``on_state_change``, when the component is a voice, reports
+        "generating"/"playing"/"idle" so the caller can toggle a Stop button.
+        Ignored for non-voice components (engine/tool self-tests run to
+        completion quickly and only announce their result)."""
+
+    def stop_test(self, component_id: str) -> None:
+        """Cancel an in-progress voice preview started via test()."""
+
+    def is_previewable(self, component_id: str) -> bool:
+        """True when test() reports state changes (a voice component)."""
 
     def manage(self, component_id: str) -> None:
         """Open the component's own management dialog (models / voices)."""
@@ -97,6 +111,7 @@ def show_optional_components_picker(
     sizer.Add(detail, 0, wx.EXPAND | wx.ALL, 10)
 
     chosen = {"id": ""}
+    testing = {"active": False}
     rows: list[OptionalComponent] = []
 
     def _selected() -> OptionalComponent | None:
@@ -152,10 +167,18 @@ def show_optional_components_picker(
                 btn.Enable(False)
             return
         detail.SetValue(describe_component(comp))
-        # Download only when not installed; Test/Remove/Manage only when installed.
-        download_btn.Enable(not comp.installed)
-        download_btn.SetLabel("Installed" if comp.installed else "&Download")
-        test_btn.Enable(comp.installed)
+        # Download/Test key off effective_ready, not installed: most components
+        # agree, but the Dictation row is "installed" as soon as its engine
+        # binary exists even with no model downloaded yet -- Download must stay
+        # offered (it resumes the guided picker at the model step) and Test must
+        # stay off until the row is truly usable. Manage/Remove still key off
+        # installed so Manage Speech Models is reachable in that partial state.
+        ready = comp.effective_ready
+        download_btn.Enable(not ready)
+        download_btn.SetLabel("Installed" if ready else "&Download")
+        test_btn.Enable(ready)
+        if not testing["active"]:
+            test_btn.SetLabel("&Test")
         remove_btn.Enable(comp.installed and controller.removable(comp.component_id))
         # Manage routes to the component's own models/voices dialog when relevant.
         target = manage_target(comp.component_id)
@@ -168,16 +191,29 @@ def show_optional_components_picker(
 
     def _on_download(_evt: Any = None) -> None:
         comp = _selected()
-        if comp is None or comp.installed:
+        if comp is None or comp.effective_ready:
             return
         chosen["id"] = comp.component_id
         dialog.EndModal(wx.ID_OK)
 
+    def _on_state_change(state: str) -> None:
+        testing["active"] = state in ("generating", "playing")
+        test_btn.SetLabel("&Stop" if testing["active"] else "&Test")
+
     def _on_test(_evt: Any = None) -> None:
         comp = _selected()
-        if comp is None or not comp.installed:
+        if comp is None:
             return
-        controller.test(comp.component_id)  # announces its own result
+        if testing["active"]:
+            controller.stop_test(comp.component_id)
+            _on_state_change("idle")
+            return
+        if not comp.effective_ready:
+            return
+        if controller.is_previewable(comp.component_id):
+            controller.test(comp.component_id, on_state_change=_on_state_change)
+        else:
+            controller.test(comp.component_id)  # announces its own result
 
     def _on_remove(_evt: Any = None) -> None:
         comp = _selected()

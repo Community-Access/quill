@@ -346,8 +346,18 @@ class SpeechCommandsMixin:
             def remove(self, component_id: str) -> bool:
                 return frame._remove_optional_component(component_id)
 
-            def test(self, component_id: str) -> None:
-                frame._test_optional_component(component_id)
+            def test(
+                self, component_id: str, *, on_state_change: Callable[[str], None] | None = None
+            ) -> None:
+                frame._test_optional_component(component_id, on_state_change=on_state_change)
+
+            def stop_test(self, component_id: str) -> None:
+                frame._stop_active_voice_preview()
+
+            def is_previewable(self, component_id: str) -> bool:
+                from quill.core import optional_components as oc
+
+                return oc.read_aloud_engine_for_component(component_id) is not None
 
             def manage(self, component_id: str) -> None:
                 frame._manage_component_models_or_voices(component_id)
@@ -415,7 +425,9 @@ class SpeechCommandsMixin:
         self._set_status(f"Removed {component_id}.")
         return True
 
-    def _test_optional_component(self, component_id: str) -> None:
+    def _test_optional_component(
+        self, component_id: str, *, on_state_change: Callable[[str], None] | None = None
+    ) -> None:
         """Prove *component_id* works: voices play a spoken sample; other
         components run their wx-free self-test on a worker and announce the
         result. Expected "get one more piece" states (no model / no voice) route
@@ -445,7 +457,13 @@ class SpeechCommandsMixin:
                     return
                 chosen = picked
             self._announce(f"Playing {chosen.name}.")
-            self._preview_voice(engine, chosen.id, live=True, text=oc.voice_preview_phrase())
+            self._preview_voice(
+                engine,
+                chosen.id,
+                live=True,
+                text=oc.voice_preview_phrase(),
+                on_state_change=on_state_change,
+            )
             return
 
         def _work(_progress: Callable[[str, int, int], None]) -> object:
@@ -1591,13 +1609,18 @@ class SpeechCommandsMixin:
             target=_run, daemon=True
         ).start()
 
-    def download_kokoro_engine(self) -> None:
+    def download_kokoro_engine(self, *, skip_confirm: bool = False) -> None:
         """Install the optional Kokoro ONNX engine packages on demand.
 
         Installs ``kokoro-onnx`` and ``soundfile`` (~20 MB + onnxruntime) via
         pip into a user-writable engine-pack folder. Use this when the Kokoro
         model files are already downloaded but the Python packages are missing.
         Runs on a worker thread behind a progress dialog.
+
+        ``skip_confirm`` suppresses the built-in "install ~20 MB?" confirmation
+        for callers that already obtained consent (e.g. the one-time startup
+        prompt in :meth:`MainFrame._maybe_prompt_kokoro_package_install`), so the
+        user is not asked twice.
         """
         import threading
 
@@ -1625,16 +1648,17 @@ class SpeechCommandsMixin:
                 wx.ICON_INFORMATION | wx.OK,
             )
             return
-        confirm = self._show_message_box(
-            "Download and install the Kokoro ONNX engine (~20 MB)? "
-            "This enables Kokoro's high-quality neural text-to-speech. "
-            "You will also need to download the Kokoro models (~114 MB) from "
-            "Manage Voices if you have not done so already.",
-            "Install Kokoro ONNX",
-            wx.ICON_QUESTION | wx.YES_NO,
-        )
-        if confirm != wx.YES:
-            return
+        if not skip_confirm:
+            confirm = self._show_message_box(
+                "Download and install the Kokoro ONNX engine (~20 MB)? "
+                "This enables Kokoro's high-quality neural text-to-speech. "
+                "You will also need to download the Kokoro models (~114 MB) from "
+                "Manage Voices if you have not done so already.",
+                "Install Kokoro ONNX",
+                wx.ICON_QUESTION | wx.YES_NO,
+            )
+            if confirm != wx.YES:
+                return
         cancel = threading.Event()
         progress = AIProgressDialog(
             self.frame,
