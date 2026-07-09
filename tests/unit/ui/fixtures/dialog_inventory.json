@@ -94,6 +94,8 @@
   "quill/ui/info_pages.py::show_bw_capability_matrix_native::wx.Dialog": "hardened_custom",
   "quill/ui/info_pages.py::show_whisperer_about_native::wx.Dialog": "hardened_custom",
   "quill/ui/inline_note_dialog.py::show_inline_note_dialog::wx.Dialog": "hardened_custom",
+  "quill/ui/insert_image_dialog.py::InsertImageDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/insert_image_dialog.py::InsertImageDialog._on_browse::wx.FileDialog": "native",
   "quill/ui/keymap_editor.py::KeymapEditorMixin._capture_keybinding::wx.Dialog": "hardened_custom",
   "quill/ui/keymap_editor.py::KeymapEditorMixin.open_keymap_editor.edit_selected::wx.TextEntryDialog": "native",
   "quill/ui/keymap_editor.py::KeymapEditorMixin.open_keymap_editor::wx.Dialog": "hardened_custom",

@@ -77,6 +77,16 @@ def _build_power_tools_registrar() -> FirstPartyRegistrar:
         label="&Table of Contents",
         separator_before=True,
     )
+    # Insert Image (#899): mandatory alt text (or an explicit decorative
+    # flag) at the one insertion path built specifically for it.
+    add(
+        id="power.insert_image",
+        title="Insert Image",
+        top_level="Insert",
+        group="insert",
+        label="&Image...",
+        separator_before=False,
+    )
 
     # Edit menu ----------------------------------------------------------
     add(
@@ -689,6 +699,14 @@ def _build_power_tools_registrar() -> FirstPartyRegistrar:
         group="power_tools",
         label="Describe &Character at Cursor",
         separator_before=True,
+    )
+    add(
+        id="power.describe_image_at_cursor",
+        title="Describe Image at Cursor",
+        top_level="Tools",
+        group="power_tools",
+        label="Describe &Image at Cursor",
+        separator_before=False,
     )
     return registrar
 

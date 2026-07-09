@@ -412,6 +412,7 @@ from quill.ui.main_frame_github import GitHubRemoteMixin
 from quill.ui.main_frame_glow import GlowFileMixin
 from quill.ui.main_frame_hygiene import HygieneMixin
 from quill.ui.main_frame_image import ImageCaptureMixin
+from quill.ui.main_frame_image_alt import ImageAltMixin
 from quill.ui.main_frame_inline_notes import InlineNotesMixin
 from quill.ui.main_frame_intellisense import IntellisensePopupMixin
 from quill.ui.main_frame_language_detect import LanguageDetectMixin
@@ -784,6 +785,7 @@ class MainFrame(
     SectionMoveMixin,
     CopyTrayMixin,
     ClipLibraryMixin,
+    ImageAltMixin,
     WorkPersonaMixin,
     ProfilePickerMixin,
     SshEditingMixin,

@@ -156,10 +156,10 @@ def test_power_tools_manifest_is_consumed_and_conflict_free() -> None:
     # 0.8.1: +3 for the classic-editor parity trio (edit.repeat_command,
     # edit.restore_deletion, power.describe_character).
     # 0.9.0: +2 Clip Library commands (#895), +2 Send/Copy as Email (#900),
-    # +2 AutoOutline commands (#894).
+    # +2 AutoOutline commands (#894), +2 image alt-text commands (#899).
     registry = build_first_party_registry(POWER_TOOLS_COMMANDS)
-    assert len(POWER_TOOLS_COMMANDS) == 76
-    assert len(registry.commands) == 76
+    assert len(POWER_TOOLS_COMMANDS) == 78
+    assert len(registry.commands) == 78
     assert registry.conflicts == ()
     for menu in registry.menus:
         assert menu.parent in FIRST_PARTY_MENU_PARENTS

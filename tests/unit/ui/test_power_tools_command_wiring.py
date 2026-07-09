@@ -34,6 +34,7 @@ _POWER_TOOLS_COMMAND_IDS = [
     "power.insert_special_character",
     "power.insert_file_content",
     "power.insert_table_of_contents",
+    "power.insert_image",
     "power.new_document_from_clipboard",
     "power.expand_abbreviation",
     "power.preview_abbreviation",
@@ -41,6 +42,7 @@ _POWER_TOOLS_COMMAND_IDS = [
     "edit.repeat_command",
     "edit.restore_deletion",
     "power.describe_character",
+    "power.describe_image_at_cursor",
     "power.paste_html_as_markdown",
     "power.number_lines",
     "power.hard_wrap_lines",
@@ -231,6 +233,7 @@ def test_every_table_handler_exists_on_the_actions_mixin() -> None:
     from quill.ui.main_frame_classic_editor import ClassicEditorMixin
     from quill.ui.main_frame_clip_library import ClipLibraryMixin
     from quill.ui.main_frame_copy_tray import CopyTrayMixin
+    from quill.ui.main_frame_image_alt import ImageAltMixin
     from quill.ui.main_frame_power_tools import PowerToolsActionsMixin
     from quill.ui.main_frame_power_tools_menu import _MIGRATED_HANDLERS
 
@@ -241,6 +244,9 @@ def test_every_table_handler_exists_on_the_actions_mixin() -> None:
     # Clip Library (#895) shares the copy_tray menu group but its handlers live
     # on their own mixin, not CopyTrayMixin.
     clip_library_ids = {"edit.keep_selection_in_clip_library", "edit.open_clip_library"}
+    # Image alt-text commands (#899) live on their own mixin, not
+    # PowerToolsActionsMixin.
+    image_alt_ids = {"power.insert_image", "power.describe_image_at_cursor"}
 
     for command in POWER_TOOLS_COMMANDS:
         if command.id in _MIGRATED_HANDLERS:
@@ -252,6 +258,11 @@ def test_every_table_handler_exists_on_the_actions_mixin() -> None:
         if command.id in classic_ids:
             assert hasattr(ClassicEditorMixin, name), (
                 f"missing handler {name} on ClassicEditorMixin for {command.id}"
+            )
+            continue
+        if command.id in image_alt_ids:
+            assert hasattr(ImageAltMixin, name), (
+                f"missing handler {name} on ImageAltMixin for {command.id}"
             )
             continue
         if command.id in clip_library_ids:
@@ -289,6 +300,7 @@ def test_menu_recirculation_preserves_shipped_group_order() -> None:
             "power.insert_special_character",
             "power.insert_file_content",
             "power.insert_table_of_contents",
+            "power.insert_image",
         ],
         "edit": [
             "power.paste_html_as_markdown",
@@ -378,6 +390,7 @@ def test_menu_recirculation_preserves_shipped_group_order() -> None:
             "power.infer_indent",
             "power.compute_line_statistics",
             "power.describe_character",
+            "power.describe_image_at_cursor",
         ],
     }
     for group, ids in expected.items():
