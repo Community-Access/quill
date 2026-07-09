@@ -1115,17 +1115,11 @@ class QuillinsMenuMixin:
 
     def _read_clipboard_text(self) -> str:
         wx = self._wx
-        text = ""
-        clipboard = getattr(wx, "TheClipboard", None)
-        if clipboard is None or not clipboard.Open():
-            return text
-        try:
-            data = wx.TextDataObject()
-            if clipboard.GetData(data):
-                text = str(data.GetText())
-        finally:
-            clipboard.Close()
-        return text
+        if getattr(wx, "TheClipboard", None) is None:
+            return ""
+        from quill.ui.clipboard_retry import read_clipboard_text
+
+        return read_clipboard_text(wx)
 
     def _write_clipboard_text(self, text: str) -> None:
         wx = self._wx

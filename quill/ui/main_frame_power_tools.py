@@ -113,16 +113,11 @@ class PowerToolsActionsMixin:
 
     def _power_tools_clipboard_text(self) -> str:
         wx = self._wx
-        clipboard = getattr(wx, "TheClipboard", None)
-        if clipboard is None or not clipboard.Open():
+        if getattr(wx, "TheClipboard", None) is None:
             return ""
-        try:
-            data = wx.TextDataObject()
-            if clipboard.GetData(data):
-                return str(data.GetText())
-            return ""
-        finally:
-            clipboard.Close()
+        from quill.ui.clipboard_retry import read_clipboard_text
+
+        return read_clipboard_text(wx)
 
     def _power_tools_clipboard_html(self) -> str:
         """Return the clipboard's HTML payload, if any.
@@ -133,25 +128,42 @@ class PowerToolsActionsMixin:
         """
         wx = self._wx
         clipboard = getattr(wx, "TheClipboard", None)
-        if clipboard is None or not clipboard.Open():
+        if clipboard is None:
             return ""
-        try:
-            data_format = wx.DataFormat("HTML Format")
-            if not clipboard.IsSupported(data_format):
-                return ""
-            data = wx.CustomDataObject(data_format)
-            if not clipboard.GetData(data):
-                return ""
-            raw = data.GetData()
+        from quill.ui.clipboard_retry import with_clipboard_read_retry
+
+        payload = ""
+        fragment = ""
+
+        def _attempt() -> bool:
+            nonlocal payload
+            if not clipboard.Open():
+                return False
             try:
-                payload = bytes(raw).decode("utf-8", errors="replace")
-            except (TypeError, ValueError):
-                payload = str(raw)
-            return extract_cf_html_fragment(payload)
+                data_format = wx.DataFormat("HTML Format")
+                if not clipboard.IsSupported(data_format):
+                    # Not a retry-worthy failure: the clipboard opened fine,
+                    # it simply has no HTML flavour on it.
+                    return True
+                data = wx.CustomDataObject(data_format)
+                if not clipboard.GetData(data):
+                    return False
+                raw = data.GetData()
+                try:
+                    payload = bytes(raw).decode("utf-8", errors="replace")
+                except (TypeError, ValueError):
+                    payload = str(raw)
+                return True
+            finally:
+                clipboard.Close()
+
+        try:
+            with_clipboard_read_retry(wx, _attempt)
+            if payload:
+                fragment = extract_cf_html_fragment(payload)
         except Exception:
             return ""
-        finally:
-            clipboard.Close()
+        return fragment
 
     # ------------------------------------------- HTML clipboard -> Markdown
     def paste_html_as_markdown(self) -> None:

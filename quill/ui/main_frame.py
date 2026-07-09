@@ -6896,20 +6896,34 @@ class MainFrame(
         """§8.2: Inspect clipboard and offer format-aware paste options before inserting."""
         wx = self._wx
         clipboard = wx.TheClipboard
-        if not clipboard.Open():
+        from quill.ui.clipboard_retry import with_clipboard_read_retry
+
+        has_text = has_unicode = has_bitmap = False
+        raw_text = ""
+
+        def _attempt() -> bool:
+            nonlocal has_text, has_unicode, has_bitmap, raw_text
+            if not clipboard.Open():
+                return False
+            try:
+                has_text = clipboard.IsSupported(wx.DataFormat(wx.DF_TEXT))
+                has_unicode = clipboard.IsSupported(wx.DataFormat(wx.DF_UNICODETEXT))
+                has_bitmap = clipboard.IsSupported(wx.DataFormat(wx.DF_BITMAP))
+                if has_text or has_unicode:
+                    obj = wx.TextDataObject()
+                    if not clipboard.GetData(obj):
+                        # Clipboard opened but the read itself lost the race
+                        # (e.g. another process/AT briefly holds it) -- worth
+                        # retrying rather than failing this attempt outright.
+                        return False
+                    raw_text = obj.GetText()
+                return True
+            finally:
+                clipboard.Close()
+
+        if not with_clipboard_read_retry(wx, _attempt):
             self._set_status("Clipboard is unavailable")
             return
-        try:
-            has_text = clipboard.IsSupported(wx.DataFormat(wx.DF_TEXT))
-            has_unicode = clipboard.IsSupported(wx.DataFormat(wx.DF_UNICODETEXT))
-            has_bitmap = clipboard.IsSupported(wx.DataFormat(wx.DF_BITMAP))
-            raw_text = ""
-            if has_text or has_unicode:
-                obj = wx.TextDataObject()
-                if clipboard.GetData(obj):
-                    raw_text = obj.GetText()
-        finally:
-            clipboard.Close()
 
         # Detect clipboard content type.
         content_type = "plain text"
