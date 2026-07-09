@@ -1,0 +1,1730 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>2026-07-08-voice-preview-feedback</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1 id="voice-preview-feedback-implementation-plan">Voice Preview
+Feedback Implementation Plan</h1>
+<blockquote>
+<p><strong>For agentic workers:</strong> REQUIRED SUB-SKILL: Use
+superpowers:subagent-driven-development (recommended) or
+superpowers:executing-plans to implement this plan task-by-task. Steps
+use checkbox (<code>- [ ]</code>) syntax for tracking.</p>
+</blockquote>
+<p><strong>Goal:</strong> Voice preview (Voice Browser dialog + Download
+Optional Components hub) gets a “generating, please wait” cue for slow
+synthesis, stops a prior preview instead of overlapping it, and its
+button toggles between Preview/Test and Stop.</p>
+<p><strong>Architecture:</strong> A generation-token counter on
+<code>MainFrame</code> makes <code>_preview_voice</code> the single
+choke point: every call stops whatever was previously active (playback +
+a pending cue timer) and stamps a new generation id, so any late
+callback from the <em>old</em> generation is a silent no-op. An optional
+<code>on_state_change</code> callback reports
+<code>"generating"/"playing"/"idle"</code> so callers can toggle their
+own button label. The cue itself reuses the existing QSP sound-event
+system (one new <code>SoundEvent</code>, mapped to an already-bundled
+WAV — no new audio asset) plus one new boolean setting for the spoken
+half.</p>
+<p><strong>Tech Stack:</strong> Python 3.13, wxPython,
+<code>winsound</code>/Windows MCI (existing playback backend), the
+existing QSP sound-pack system (<code>quill.core.sound_events</code>,
+<code>quill.ui.sound_manager</code>).</p>
+<h2 id="global-constraints">Global Constraints</h2>
+<ul>
+<li>No true pause/resume — the button is Preview/Test ↔︎
+<strong>Stop</strong>; clicking Stop cancels playback outright, the next
+click starts fresh.</li>
+<li>No forced cancellation of in-flight external synthesis
+(Piper/eSpeak/DECtalk subprocess, Kokoro’s Python call) — a
+superseded/stopped generation’s synthesis finishes silently in the
+background; only playback and QUILL’s own announcements are guaranteed
+to stop immediately.</li>
+<li>The cue is one-shot per generation (fires at most once), gated by a
+~400ms delay so instant paths (sample playback, SAPI5) essentially never
+trigger it.</li>
+<li>No new combined “mode” setting — the sound half is configured
+through the existing Sound Events dialog (per-event toggle, already
+built); only the spoken half gets one new boolean, default
+<code>True</code>.</li>
+<li>Every new/changed test must pass; run the smallest relevant test
+file per task, not the full suite, per project convention
+(<code>CLAUDE.md</code>).</li>
+</ul>
+<hr />
+<h3 id="task-1-register-the-voice_preview_generating-sound-event">Task
+1: Register the <code>VOICE_PREVIEW_GENERATING</code> sound event</h3>
+<p><strong>Files:</strong> - Modify:
+<code>quill/core/sound_events.py</code> - Modify:
+<code>quill/assets/sound_packs/ink/manifest.json</code> - Modify:
+<code>quill/ui/sound_events_dialog.py</code> - Test:
+<code>tests/unit/core/test_voice_preview_sound_event.py</code> (new)</p>
+<p><strong>Interfaces:</strong> - Produces:
+<code>SoundEvent.VOICE_PREVIEW_GENERATING</code> (value
+<code>"voice_preview_generating"</code>), usable anywhere via
+<code>from quill.core.sound_events import SoundEvent</code> and
+<code>post_sound(SoundEvent.VOICE_PREVIEW_GENERATING)</code>.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Write the failing
+test</strong></label></li>
+</ul>
+<p>Create
+<code>tests/unit/core/test_voice_preview_sound_event.py</code>:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">&quot;&quot;&quot;The voice-preview &#39;generating&#39; cue must exist as a SoundEvent and ship in the pack.&quot;&quot;&quot;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> __future__ <span class="im">import</span> annotations</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.sound_events <span class="im">import</span> SoundEvent</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>_ROOT <span class="op">=</span> Path(<span class="va">__file__</span>).resolve().parents[<span class="dv">3</span>]</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_voice_preview_generating_is_a_registered_sound_event() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    valid <span class="op">=</span> {e.value <span class="cf">for</span> e <span class="kw">in</span> SoundEvent}</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;voice_preview_generating&quot;</span> <span class="kw">in</span> valid</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_ink_pack_maps_voice_preview_generating() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    pack <span class="op">=</span> _ROOT <span class="op">/</span> <span class="st">&quot;quill&quot;</span> <span class="op">/</span> <span class="st">&quot;assets&quot;</span> <span class="op">/</span> <span class="st">&quot;sound_packs&quot;</span> <span class="op">/</span> <span class="st">&quot;ink&quot;</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    events <span class="op">=</span> json.loads((pack <span class="op">/</span> <span class="st">&quot;manifest.json&quot;</span>).read_text(encoding<span class="op">=</span><span class="st">&quot;utf-8&quot;</span>))[<span class="st">&quot;events&quot;</span>]</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;voice_preview_generating&quot;</span> <span class="kw">in</span> events</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> (pack <span class="op">/</span> events[<span class="st">&quot;voice_preview_generating&quot;</span>]).is_file()</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_voice_preview_generating_is_labeled_in_the_sound_events_dialog() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    src <span class="op">=</span> (_ROOT <span class="op">/</span> <span class="st">&quot;quill&quot;</span> <span class="op">/</span> <span class="st">&quot;ui&quot;</span> <span class="op">/</span> <span class="st">&quot;sound_events_dialog.py&quot;</span>).read_text(encoding<span class="op">=</span><span class="st">&quot;utf-8&quot;</span>)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&#39;&quot;voice_preview_generating&quot;&#39;</span> <span class="kw">in</span> src</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Run test to verify
+it fails</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/core/test_voice_preview_sound_event.py -v</code>
+Expected: FAIL (<code>voice_preview_generating</code> not in
+<code>SoundEvent</code> values; not in manifest; not in dialog
+source).</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Add the enum
+member</strong></label></li>
+</ul>
+<p>In <code>quill/core/sound_events.py</code>, the class ends with:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>    <span class="co"># System</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    ERROR <span class="op">=</span> <span class="st">&quot;error&quot;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    WARNING <span class="op">=</span> <span class="st">&quot;warning&quot;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    SOUND_ON <span class="op">=</span> <span class="st">&quot;sound_on&quot;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    SOUND_OFF <span class="op">=</span> <span class="st">&quot;sound_off&quot;</span></span></code></pre></div>
+<p>Add a new section right before <code># System</code>:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Voice preview (Voice Browser + Download Optional Components hub)</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    VOICE_PREVIEW_GENERATING <span class="op">=</span> <span class="st">&quot;voice_preview_generating&quot;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># System</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    ERROR <span class="op">=</span> <span class="st">&quot;error&quot;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    WARNING <span class="op">=</span> <span class="st">&quot;warning&quot;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    SOUND_ON <span class="op">=</span> <span class="st">&quot;sound_on&quot;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    SOUND_OFF <span class="op">=</span> <span class="st">&quot;sound_off&quot;</span></span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Map it in the
+bundled Ink pack</strong></label></li>
+</ul>
+<p>In <code>quill/assets/sound_packs/ink/manifest.json</code>, the
+<code>"events"</code> object currently ends with:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;conversation_error&quot;</span><span class="er">:</span> <span class="st">&quot;conversation_error.wav&quot;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a> <span class="er">}</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="er">}</span></span></code></pre></div>
+<p>Change to (reusing the existing <code>ai_start.wav</code> — same
+“something is being generated” tone, no new WAV file):</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;conversation_error&quot;</span><span class="er">:</span> <span class="st">&quot;conversation_error.wav&quot;</span><span class="er">,</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;voice_preview_generating&quot;</span><span class="er">:</span> <span class="st">&quot;ai_start.wav&quot;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a> <span class="er">}</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="er">}</span></span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 5: Label it in the
+Sound Events dialog</strong></label></li>
+</ul>
+<p>In <code>quill/ui/sound_events_dialog.py</code>,
+<code>_EARCON_ORDER</code> currently ends its “AI and transcription”
+group with:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;transcription_word_inserted&quot;</span>,</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Voice conversation mode (Hey QUILL Phase 2)</span></span></code></pre></div>
+<p>Add a new entry and group right after it:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;transcription_word_inserted&quot;</span>,</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Voice preview (Voice Browser + Download Optional Components hub)</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;voice_preview_generating&quot;</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Voice conversation mode (Hey QUILL Phase 2)</span></span></code></pre></div>
+<p>And in <code>_EARCON_LABELS</code>, right after the
+<code>"transcription_word_inserted"</code> entry:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;transcription_word_inserted&quot;</span>: <span class="st">&quot;Transcription word inserted&quot;</span>,</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;voice_preview_generating&quot;</span>: <span class="st">&quot;Voice preview: generating, please wait&quot;</span>,</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 6: Run test to verify
+it passes</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/core/test_voice_preview_sound_event.py -v</code>
+Expected: PASS (3 passed)</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 7: Run the existing
+sound-system tests to check for regressions</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/core/test_sound_pack.py tests/unit/core/test_conversation_sound_events.py tests/unit/core/test_compare_sound_events.py tests/unit/ui/test_sound_events_dialog.py tests/unit/ui/test_sound_manager.py -q</code>
+Expected: all PASS</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 8:
+Commit</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/core/sound_events.py quill/assets/sound_packs/ink/manifest.json quill/ui/sound_events_dialog.py tests/unit/core/test_voice_preview_sound_event.py</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(sound): add voice_preview_generating earcon (reuses ai_start.wav)&quot;</span></span></code></pre></div>
+<hr />
+<h3 id="task-2-add-the-voice_preview_announce_generating-setting">Task
+2: Add the <code>voice_preview_announce_generating</code> setting</h3>
+<p><strong>Files:</strong> - Modify: <code>quill/core/settings.py</code>
+- Modify: <code>quill/core/settings_specs.py</code> - Test:
+<code>tests/unit/core/test_settings.py</code></p>
+<p><strong>Interfaces:</strong> - Produces:
+<code>Settings.voice_preview_announce_generating: bool</code> (default
+<code>True</code>), round-tripped through
+<code>save_settings</code>/<code>load_settings</code> like every other
+field.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Write the failing
+test</strong></label></li>
+</ul>
+<p>In <code>tests/unit/core/test_settings.py</code>, add (near the other
+sound-related round-trip tests, e.g. after
+<code>test_settings_persists_batch_speech_chapter_fields</code>):</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_voice_preview_announce_generating_defaults_true_and_round_trips(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    monkeypatch: pytest.MonkeyPatch, tmp_path: Path</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    monkeypatch.setenv(<span class="st">&quot;QUILL_DATA_DIR&quot;</span>, <span class="bu">str</span>(tmp_path))</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> Settings().voice_preview_announce_generating <span class="kw">is</span> <span class="va">True</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    save_settings(Settings(voice_preview_announce_generating<span class="op">=</span><span class="va">False</span>))</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    loaded <span class="op">=</span> load_settings()</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> loaded.voice_preview_announce_generating <span class="kw">is</span> <span class="va">False</span></span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Run test to verify
+it fails</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/core/test_settings.py -k voice_preview_announce_generating -v</code>
+Expected: FAIL
+(<code>TypeError: Settings.__init__() got an unexpected keyword argument 'voice_preview_announce_generating'</code>)</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Add the
+field</strong></label></li>
+</ul>
+<p>In <code>quill/core/settings.py</code>, this block currently
+reads:</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>    sound_enabled: <span class="bu">bool</span> <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    sound_pack_path: <span class="bu">str</span> <span class="op">=</span> <span class="st">&quot;&quot;</span>  <span class="co"># empty = bundled Ink pack</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    sound_volume: <span class="bu">int</span> <span class="op">=</span> <span class="dv">80</span>  <span class="co"># 0-100; passed to sound_lib Output.set_volume()</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    sound_events_disabled: <span class="bu">str</span> <span class="op">=</span> <span class="st">&quot;&quot;</span>  <span class="co"># comma-separated SoundEvent IDs to silence</span></span></code></pre></div>
+<p>Add a new field right after it:</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>    sound_enabled: <span class="bu">bool</span> <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    sound_pack_path: <span class="bu">str</span> <span class="op">=</span> <span class="st">&quot;&quot;</span>  <span class="co"># empty = bundled Ink pack</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    sound_volume: <span class="bu">int</span> <span class="op">=</span> <span class="dv">80</span>  <span class="co"># 0-100; passed to sound_lib Output.set_volume()</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    sound_events_disabled: <span class="bu">str</span> <span class="op">=</span> <span class="st">&quot;&quot;</span>  <span class="co"># comma-separated SoundEvent IDs to silence</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Speak &quot;Generating preview, please wait&quot; when a voice preview&#39;s synthesis</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># is still running after the ~400ms cue delay (paired with the</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># voice_preview_generating earcon, configured independently via the</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Sound Events dialog).</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    voice_preview_announce_generating: <span class="bu">bool</span> <span class="op">=</span> <span class="va">True</span></span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Wire the
+parse</strong></label></li>
+</ul>
+<p>In <code>quill/core/settings.py</code>, this line currently
+reads:</p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>        sound_events_disabled <span class="op">=</span> <span class="bu">str</span>(data.get(<span class="st">&quot;sound_events_disabled&quot;</span>, <span class="st">&quot;&quot;</span>))</span></code></pre></div>
+<p>Add right after it:</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>        sound_events_disabled <span class="op">=</span> <span class="bu">str</span>(data.get(<span class="st">&quot;sound_events_disabled&quot;</span>, <span class="st">&quot;&quot;</span>))</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>        voice_preview_announce_generating <span class="op">=</span> <span class="bu">bool</span>(</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>            data.get(<span class="st">&quot;voice_preview_announce_generating&quot;</span>, <span class="va">True</span>)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>        )</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 5: Wire the constructor
+call</strong></label></li>
+</ul>
+<p>In <code>quill/core/settings.py</code>, this line currently
+reads:</p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>            sound_events_disabled<span class="op">=</span>sound_events_disabled,</span></code></pre></div>
+<p>Add right after it:</p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>            sound_events_disabled<span class="op">=</span>sound_events_disabled,</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>            voice_preview_announce_generating<span class="op">=</span>voice_preview_announce_generating,</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 6: Add the SettingSpec
+entry</strong></label></li>
+</ul>
+<p>In <code>quill/core/settings_specs.py</code>, find the
+<code>"sound_events_disabled"</code> spec (a
+<code>SettingSpec("sound_events_disabled", "Silenced sound events", "accessibility", "text", ...)</code>).
+Add a new spec immediately after its closing <code>),</code>:</p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>    SettingSpec(</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;voice_preview_announce_generating&quot;</span>,</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Announce </span><span class="ch">\&quot;</span><span class="st">Generating preview, please wait</span><span class="ch">\&quot;</span><span class="st"> for slow voice previews&quot;</span>,</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;accessibility&quot;</span>,</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;bool&quot;</span>,</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>        (</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;When a voice preview (Voice Browser, or Test in Download Optional &quot;</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;Components) takes a moment to synthesize, speak a short heads-up &quot;</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;so it&#39;s clear something is happening. The matching earcon is &quot;</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;configured separately in the Sound Events dialog.&quot;</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>        ),</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>        keywords<span class="op">=</span>(<span class="st">&quot;voice&quot;</span>, <span class="st">&quot;preview&quot;</span>, <span class="st">&quot;generating&quot;</span>, <span class="st">&quot;please wait&quot;</span>, <span class="st">&quot;announce&quot;</span>, <span class="st">&quot;sound&quot;</span>),</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    ),</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 7: Run test to verify
+it passes</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/core/test_settings.py -k voice_preview_announce_generating -v</code>
+Expected: PASS (2 passed)</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 8: Run the full
+settings test file to check for regressions</strong></label></li>
+</ul>
+<p>Run: <code>pytest tests/unit/core/test_settings.py -q</code>
+Expected: all PASS</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 9:
+Commit</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/core/settings.py quill/core/settings_specs.py tests/unit/core/test_settings.py</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(settings): add voice_preview_announce_generating (default on)&quot;</span></span></code></pre></div>
+<hr />
+<h3
+id="task-3-generation-token-tracking-stop-a-prior-preview-instead-of-overlapping-it">Task
+3: Generation-token tracking — stop a prior preview instead of
+overlapping it</h3>
+<p><strong>Files:</strong> - Modify:
+<code>quill/ui/main_frame.py:17683-17842</code>
+(<code>_play_preview_asset</code>, <code>_preview_voice</code>) - Test:
+<code>tests/unit/ui/test_voice_preview_generation.py</code> (new)</p>
+<p><strong>Interfaces:</strong> - Consumes: nothing new from other
+tasks. - Produces:
+<code>MainFrame._stop_active_voice_preview() -&gt; None</code>,
+<code>MainFrame._preview_generation: int</code> (an ever-increasing
+counter read by later tasks to decide whether a callback is stale),
+<code>MainFrame._purge_preview_playback() -&gt; None</code>.</p>
+<p>This task does <strong>not</strong> yet add the cue or the
+<code>on_state_change</code> callback (Tasks 4-5) — it only fixes the
+overlap bug: starting a new preview stops the old one’s playback and
+prevents its completion callback from doing anything.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Write the failing
+test</strong></label></li>
+</ul>
+<p>Create
+<code>tests/unit/ui/test_voice_preview_generation.py</code>:</p>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">&quot;&quot;&quot;Starting a new voice preview must stop/supersede the previous one.&quot;&quot;&quot;</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> __future__ <span class="im">import</span> annotations</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytest</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> wx</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.ui.main_frame <span class="im">import</span> MainFrame</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="at">@pytest.fixture</span>(scope<span class="op">=</span><span class="st">&quot;module&quot;</span>)</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> wx_app():</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>    app <span class="op">=</span> wx.App()</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">yield</span> app</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>    app.Destroy()</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_second_preview_supersedes_the_first(wx_app, monkeypatch) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>    frame <span class="op">=</span> MainFrame.<span class="fu">__new__</span>(MainFrame)  <span class="co"># bypass __init__: only exercising _preview_voice</span></span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>    frame._wx <span class="op">=</span> wx</span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>    frame.frame <span class="op">=</span> wx.Frame(<span class="va">None</span>)</span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>    frame.settings <span class="op">=</span> <span class="bu">type</span>(<span class="st">&quot;S&quot;</span>, (), {})()</span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>    calls: <span class="bu">list</span>[<span class="bu">str</span>] <span class="op">=</span> []</span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(frame, <span class="st">&quot;_set_status&quot;</span>, <span class="kw">lambda</span> <span class="op">*</span>a, <span class="op">**</span>k: calls.append(<span class="ss">f&quot;status:</span><span class="sc">{</span>a[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">&quot;</span>))</span>
+<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(frame, <span class="st">&quot;_announce&quot;</span>, <span class="kw">lambda</span> <span class="op">*</span>a, <span class="op">**</span>k: calls.append(<span class="ss">f&quot;announce:</span><span class="sc">{</span>a[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">&quot;</span>))</span>
+<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> fake_play(_self, path):</span>
+<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a>        calls.append(<span class="ss">f&quot;play:</span><span class="sc">{</span>path<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-33"><a href="#cb19-33" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(MainFrame, <span class="st">&quot;_play_preview_asset&quot;</span>, fake_play)</span>
+<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(</span>
+<span id="cb19-35"><a href="#cb19-35" aria-hidden="true" tabindex="-1"></a>        frame, <span class="st">&quot;_voice_preview_sample_path&quot;</span>, <span class="kw">lambda</span> <span class="op">*</span>a, <span class="op">**</span>k: <span class="bu">__import__</span>(<span class="st">&quot;pathlib&quot;</span>).Path(<span class="st">&quot;a.wav&quot;</span>)</span>
+<span id="cb19-36"><a href="#cb19-36" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb19-37"><a href="#cb19-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-38"><a href="#cb19-38" aria-hidden="true" tabindex="-1"></a>    <span class="co"># First preview (sample playback -- runs on a background thread).</span></span>
+<span id="cb19-39"><a href="#cb19-39" aria-hidden="true" tabindex="-1"></a>    frame._preview_voice(<span class="st">&quot;piper&quot;</span>, <span class="st">&quot;voice-a&quot;</span>, live<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb19-40"><a href="#cb19-40" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Immediately start a second preview before the first&#39;s background thread</span></span>
+<span id="cb19-41"><a href="#cb19-41" aria-hidden="true" tabindex="-1"></a>    <span class="co"># has necessarily finished; the first&#39;s generation must now be stale.</span></span>
+<span id="cb19-42"><a href="#cb19-42" aria-hidden="true" tabindex="-1"></a>    frame._preview_voice(<span class="st">&quot;piper&quot;</span>, <span class="st">&quot;voice-b&quot;</span>, live<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb19-43"><a href="#cb19-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-44"><a href="#cb19-44" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Let both background threads (and their wx.CallAfter completions) run.</span></span>
+<span id="cb19-45"><a href="#cb19-45" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">20</span>):</span>
+<span id="cb19-46"><a href="#cb19-46" aria-hidden="true" tabindex="-1"></a>        wx.YieldIfNeeded()</span>
+<span id="cb19-47"><a href="#cb19-47" aria-hidden="true" tabindex="-1"></a>        time.sleep(<span class="fl">0.02</span>)</span>
+<span id="cb19-48"><a href="#cb19-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-49"><a href="#cb19-49" aria-hidden="true" tabindex="-1"></a>    finished_count <span class="op">=</span> <span class="bu">sum</span>(<span class="dv">1</span> <span class="cf">for</span> c <span class="kw">in</span> calls <span class="cf">if</span> c <span class="op">==</span> <span class="st">&quot;status:Preview finished&quot;</span>)</span>
+<span id="cb19-50"><a href="#cb19-50" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> finished_count <span class="op">==</span> <span class="dv">1</span>, calls</span>
+<span id="cb19-51"><a href="#cb19-51" aria-hidden="true" tabindex="-1"></a>    frame.frame.Destroy()</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Run test to verify
+it fails</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/ui/test_voice_preview_generation.py -v</code>
+Expected: FAIL — both previews currently announce “Preview finished” (no
+staleness check exists yet), so <code>finished_count == 2</code>.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Add the stop/purge
+helper and generation tracking</strong></label></li>
+</ul>
+<p>In <code>quill/ui/main_frame.py</code>,
+<code>_play_preview_asset</code> currently reads:</p>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _play_preview_asset(<span class="va">self</span>, sample_path: Path) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>        suffix <span class="op">=</span> sample_path.suffix.lower()</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> suffix <span class="op">==</span> <span class="st">&quot;.wav&quot;</span> <span class="kw">and</span> _winsound <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>            _winsound.PlaySound(<span class="bu">str</span>(sample_path), _winsound.SND_FILENAME)</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span></span></code></pre></div>
+<p>Add a new method right before it:</p>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _purge_preview_playback(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>        <span class="co">&quot;&quot;&quot;Best-effort: stop whatever voice-preview audio is currently sounding.</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co">        Covers both playback backends `_play_preview_asset` uses. Never raises --</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="co">        called opportunistically whenever a new preview supersedes an old one.</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="co">        &quot;&quot;&quot;</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> _winsound <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>            <span class="cf">try</span>:</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>                _winsound.PlaySound(<span class="va">None</span>, _winsound.SND_PURGE)</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>            <span class="cf">except</span> <span class="pp">Exception</span>:  <span class="co"># noqa: BLE001</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>                <span class="cf">pass</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>            <span class="im">import</span> ctypes <span class="im">as</span> _ct</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>            _ct.windll.winmm.mciSendStringW(<span class="st">&quot;stop quill_preview&quot;</span>, <span class="va">None</span>, <span class="dv">0</span>, <span class="va">None</span>)  <span class="co"># type: ignore[attr-defined]</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>            _ct.windll.winmm.mciSendStringW(<span class="st">&quot;close quill_preview&quot;</span>, <span class="va">None</span>, <span class="dv">0</span>, <span class="va">None</span>)  <span class="co"># type: ignore[attr-defined]</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">Exception</span>:  <span class="co"># noqa: BLE001</span></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>            <span class="cf">pass</span></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _stop_active_voice_preview(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>        <span class="co">&quot;&quot;&quot;Stop/supersede whatever voice preview is currently active.</span></span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a><span class="co">        Bumps the generation counter first (so any in-flight callback from the</span></span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a><span class="co">        old generation becomes a no-op the instant it checks), then best-effort</span></span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a><span class="co">        stops the old preview&#39;s audio: SAPI5 goes through the ReadAloudController</span></span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a><span class="co">        it already owns; every other engine plays through `_play_preview_asset`,</span></span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a><span class="co">        stopped via `_purge_preview_playback`. Does NOT stop an old preview&#39;s</span></span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a><span class="co">        synthesis if it is still computing (e.g. a Piper/Kokoro call in</span></span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a><span class="co">        progress) -- that finishes in the background and its result is</span></span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a><span class="co">        discarded when the stale generation check fails.</span></span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a><span class="co">        &quot;&quot;&quot;</span></span>
+<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._preview_generation <span class="op">=</span> <span class="bu">getattr</span>(<span class="va">self</span>, <span class="st">&quot;_preview_generation&quot;</span>, <span class="dv">0</span>) <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>._read_aloud.stop()</span>
+<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">Exception</span>:  <span class="co"># noqa: BLE001</span></span>
+<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>            <span class="cf">pass</span></span>
+<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._purge_preview_playback()</span>
+<span id="cb21-38"><a href="#cb21-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-39"><a href="#cb21-39" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _play_preview_asset(<span class="va">self</span>, sample_path: Path) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb21-40"><a href="#cb21-40" aria-hidden="true" tabindex="-1"></a>        suffix <span class="op">=</span> sample_path.suffix.lower()</span>
+<span id="cb21-41"><a href="#cb21-41" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> suffix <span class="op">==</span> <span class="st">&quot;.wav&quot;</span> <span class="kw">and</span> _winsound <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb21-42"><a href="#cb21-42" aria-hidden="true" tabindex="-1"></a>            _winsound.PlaySound(<span class="bu">str</span>(sample_path), _winsound.SND_FILENAME)</span>
+<span id="cb21-43"><a href="#cb21-43" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span></span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Make
+<code>_preview_voice</code> generation-aware</strong></label></li>
+</ul>
+<p>In <code>quill/ui/main_frame.py</code>, <code>_preview_voice</code>
+currently starts:</p>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _preview_voice(</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>, engine: <span class="bu">str</span>, voice_id: <span class="bu">str</span>, <span class="op">*</span>, live: <span class="bu">bool</span> <span class="op">=</span> <span class="va">False</span>, text: <span class="bu">str</span> <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>        <span class="co">&quot;&quot;&quot;Preview *voice_id* through *engine* on a background thread.</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="co">        ``live`` True means the voice is downloaded and ready, so synthesize the</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="co">        preview phrase with the real model. ``live`` False (the voice is not yet</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="co">        downloaded) plays the bundled pre-recorded sample instead, so the user</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="co">        can still hear what the voice sounds like before downloading; if no</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="co">        sample ships for it, we say so rather than failing silently.</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="co">        &quot;&quot;&quot;</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>        <span class="im">import</span> tempfile <span class="im">as</span> _tmpfile</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>        <span class="im">from</span> pathlib <span class="im">import</span> Path <span class="im">as</span> _Path</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>        sample <span class="op">=</span> text <span class="kw">or</span> <span class="va">self</span>._PREVIEW_TEXT</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>        s <span class="op">=</span> <span class="va">self</span>.settings</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Not downloaded: play the bundled pre-recorded sample (same phrase the</span></span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>        <span class="co"># live synthesis uses), or explain that none is available.</span></span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> live:</span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>            preview_sample <span class="op">=</span> <span class="va">self</span>._voice_preview_sample_path(engine, voice_id)</span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> preview_sample <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>._set_status(<span class="st">&quot;Download this voice to hear a preview.&quot;</span>)</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span></span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>            <span class="kw">def</span> _play_sample(_progress: Callable[[<span class="bu">str</span>, <span class="bu">int</span>, <span class="bu">int</span>], <span class="va">None</span>]) <span class="op">-&gt;</span> <span class="bu">object</span>:</span>
+<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>._play_preview_asset(preview_sample)</span>
+<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span> <span class="va">None</span></span>
+<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>._run_background_task(</span>
+<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a>                <span class="ss">f&quot;Previewing </span><span class="sc">{</span>engine<span class="sc">}</span><span class="ss"> voice&quot;</span>,</span>
+<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a>                _play_sample,</span>
+<span id="cb22-33"><a href="#cb22-33" aria-hidden="true" tabindex="-1"></a>                <span class="kw">lambda</span> _r: <span class="va">self</span>._set_status(<span class="st">&quot;Preview finished&quot;</span>),</span>
+<span id="cb22-34"><a href="#cb22-34" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb22-35"><a href="#cb22-35" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span></span></code></pre></div>
+<p>Replace that whole method opening (through the sample-playback
+<code>return</code>) with:</p>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _preview_voice(</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>, engine: <span class="bu">str</span>, voice_id: <span class="bu">str</span>, <span class="op">*</span>, live: <span class="bu">bool</span> <span class="op">=</span> <span class="va">False</span>, text: <span class="bu">str</span> <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>        <span class="co">&quot;&quot;&quot;Preview *voice_id* through *engine* on a background thread.</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="co">        ``live`` True means the voice is downloaded and ready, so synthesize the</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="co">        preview phrase with the real model. ``live`` False (the voice is not yet</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="co">        downloaded) plays the bundled pre-recorded sample instead, so the user</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a><span class="co">        can still hear what the voice sounds like before downloading; if no</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a><span class="co">        sample ships for it, we say so rather than failing silently.</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a><span class="co">        Starting a preview always stops/supersedes whatever preview was</span></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a><span class="co">        previously active (see ``_stop_active_voice_preview``): its playback is</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a><span class="co">        cut short and its completion callback becomes a no-op, so two previews</span></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a><span class="co">        started in quick succession never overlap.</span></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a><span class="co">        &quot;&quot;&quot;</span></span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>        <span class="im">import</span> tempfile <span class="im">as</span> _tmpfile</span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>        <span class="im">from</span> pathlib <span class="im">import</span> Path <span class="im">as</span> _Path</span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._stop_active_voice_preview()</span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>        my_generation <span class="op">=</span> <span class="va">self</span>._preview_generation</span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>        <span class="kw">def</span> _still_current() <span class="op">-&gt;</span> <span class="bu">bool</span>:</span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="bu">getattr</span>(<span class="va">self</span>, <span class="st">&quot;_preview_generation&quot;</span>, <span class="dv">0</span>) <span class="op">==</span> my_generation</span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a>        sample <span class="op">=</span> text <span class="kw">or</span> <span class="va">self</span>._PREVIEW_TEXT</span>
+<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a>        s <span class="op">=</span> <span class="va">self</span>.settings</span>
+<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Not downloaded: play the bundled pre-recorded sample (same phrase the</span></span>
+<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a>        <span class="co"># live synthesis uses), or explain that none is available.</span></span>
+<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> live:</span>
+<span id="cb23-32"><a href="#cb23-32" aria-hidden="true" tabindex="-1"></a>            preview_sample <span class="op">=</span> <span class="va">self</span>._voice_preview_sample_path(engine, voice_id)</span>
+<span id="cb23-33"><a href="#cb23-33" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> preview_sample <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb23-34"><a href="#cb23-34" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>._set_status(<span class="st">&quot;Download this voice to hear a preview.&quot;</span>)</span>
+<span id="cb23-35"><a href="#cb23-35" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span></span>
+<span id="cb23-36"><a href="#cb23-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-37"><a href="#cb23-37" aria-hidden="true" tabindex="-1"></a>            <span class="kw">def</span> _play_sample(_progress: Callable[[<span class="bu">str</span>, <span class="bu">int</span>, <span class="bu">int</span>], <span class="va">None</span>]) <span class="op">-&gt;</span> <span class="bu">object</span>:</span>
+<span id="cb23-38"><a href="#cb23-38" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>._play_preview_asset(preview_sample)</span>
+<span id="cb23-39"><a href="#cb23-39" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span> <span class="va">None</span></span>
+<span id="cb23-40"><a href="#cb23-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-41"><a href="#cb23-41" aria-hidden="true" tabindex="-1"></a>            <span class="kw">def</span> _sample_done(_r: <span class="bu">object</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb23-42"><a href="#cb23-42" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> _still_current():</span>
+<span id="cb23-43"><a href="#cb23-43" aria-hidden="true" tabindex="-1"></a>                    <span class="va">self</span>._set_status(<span class="st">&quot;Preview finished&quot;</span>)</span>
+<span id="cb23-44"><a href="#cb23-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-45"><a href="#cb23-45" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>._run_background_task(</span>
+<span id="cb23-46"><a href="#cb23-46" aria-hidden="true" tabindex="-1"></a>                <span class="ss">f&quot;Previewing </span><span class="sc">{</span>engine<span class="sc">}</span><span class="ss"> voice&quot;</span>,</span>
+<span id="cb23-47"><a href="#cb23-47" aria-hidden="true" tabindex="-1"></a>                _play_sample,</span>
+<span id="cb23-48"><a href="#cb23-48" aria-hidden="true" tabindex="-1"></a>                _sample_done,</span>
+<span id="cb23-49"><a href="#cb23-49" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb23-50"><a href="#cb23-50" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span></span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 5: Guard the sapi5
+branch’s completion callback</strong></label></li>
+</ul>
+<p>In <code>quill/ui/main_frame.py</code>, the sapi5 branch currently
+reads:</p>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>        <span class="co"># sapi5: delegate to ReadAloudController so SAPI5/COM runs on its own</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>        <span class="co"># dedicated thread, avoiding the &quot;started a loop&quot; error from ThreadPoolExecutor.</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> engine <span class="op">==</span> <span class="st">&quot;sapi5&quot;</span>:</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>            <span class="cf">try</span>:</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>._read_aloud.start(</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>                    sample,</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>                    <span class="dv">0</span>,</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>                    voice_id,</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>                    engine_name<span class="op">=</span><span class="st">&quot;sapi5&quot;</span>,</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>                    rate<span class="op">=</span>s.read_aloud_rate,</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>                    volume<span class="op">=</span>s.read_aloud_volume <span class="op">/</span> <span class="fl">100.0</span>,</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>                    pitch<span class="op">=</span>s.read_aloud_pitch,</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>                    on_state_change<span class="op">=</span><span class="kw">lambda</span> state: (</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>                        <span class="va">self</span>._wx.CallAfter(<span class="va">self</span>._set_status, <span class="st">&quot;Preview finished&quot;</span>)</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>                        <span class="cf">if</span> state <span class="kw">in</span> (<span class="st">&quot;idle&quot;</span>, <span class="st">&quot;error&quot;</span>)</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>                        <span class="cf">else</span> <span class="va">None</span></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>                    ),</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>                )</span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>            <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> exc:  <span class="co"># noqa: BLE001</span></span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>._set_status(<span class="ss">f&quot;Preview failed: </span><span class="sc">{</span>exc<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span></span></code></pre></div>
+<p>Replace the <code>on_state_change</code> lambda’s body so it also
+checks staleness:</p>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>        <span class="co"># sapi5: delegate to ReadAloudController so SAPI5/COM runs on its own</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>        <span class="co"># dedicated thread, avoiding the &quot;started a loop&quot; error from ThreadPoolExecutor.</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> engine <span class="op">==</span> <span class="st">&quot;sapi5&quot;</span>:</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>            <span class="cf">try</span>:</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>._read_aloud.start(</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>                    sample,</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>                    <span class="dv">0</span>,</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>                    voice_id,</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>                    engine_name<span class="op">=</span><span class="st">&quot;sapi5&quot;</span>,</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>                    rate<span class="op">=</span>s.read_aloud_rate,</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>                    volume<span class="op">=</span>s.read_aloud_volume <span class="op">/</span> <span class="fl">100.0</span>,</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>                    pitch<span class="op">=</span>s.read_aloud_pitch,</span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>                    on_state_change<span class="op">=</span><span class="kw">lambda</span> state: (</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>                        <span class="va">self</span>._wx.CallAfter(<span class="va">self</span>._set_status, <span class="st">&quot;Preview finished&quot;</span>)</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>                        <span class="cf">if</span> state <span class="kw">in</span> (<span class="st">&quot;idle&quot;</span>, <span class="st">&quot;error&quot;</span>) <span class="kw">and</span> _still_current()</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>                        <span class="cf">else</span> <span class="va">None</span></span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>                    ),</span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>                )</span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>            <span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> exc:  <span class="co"># noqa: BLE001</span></span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>._set_status(<span class="ss">f&quot;Preview failed: </span><span class="sc">{</span>exc<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span></span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 6: Guard the synthesis
+branches’ completion callback</strong></label></li>
+</ul>
+<p>In <code>quill/ui/main_frame.py</code>, the final block of
+<code>_preview_voice</code> currently reads:</p>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>._play_preview_asset(wav)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>            <span class="cf">finally</span>:</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>                <span class="cf">try</span>:</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>                    wav.unlink(missing_ok<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>                <span class="cf">except</span> <span class="pp">OSError</span>:</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">pass</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="va">None</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._run_background_task(</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f&quot;Previewing </span><span class="sc">{</span>engine<span class="sc">}</span><span class="ss"> voice&quot;</span>,</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>            _work,</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>            <span class="kw">lambda</span> _r: <span class="va">self</span>._set_status(<span class="st">&quot;Preview finished&quot;</span>),</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>        )</span></code></pre></div>
+<p>Replace the final two statements:</p>
+<div class="sourceCode" id="cb27"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>._play_preview_asset(wav)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>            <span class="cf">finally</span>:</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>                <span class="cf">try</span>:</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>                    wav.unlink(missing_ok<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>                <span class="cf">except</span> <span class="pp">OSError</span>:</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">pass</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="va">None</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>        <span class="kw">def</span> _synth_done(_r: <span class="bu">object</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> _still_current():</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>._set_status(<span class="st">&quot;Preview finished&quot;</span>)</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._run_background_task(</span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f&quot;Previewing </span><span class="sc">{</span>engine<span class="sc">}</span><span class="ss"> voice&quot;</span>,</span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>            _work,</span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>            _synth_done,</span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>        )</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 7: Run test to verify
+it passes</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/ui/test_voice_preview_generation.py -v</code>
+Expected: PASS</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 8: Run the broader
+speech/UI test surface to check for regressions</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/ui/test_optional_components_dialog.py tests/unit/core/test_optional_components.py -q</code>
+Expected: all PASS (this task doesn’t touch those files, but
+<code>_preview_voice</code> is shared with the hub’s voice Test
+path)</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 9:
+Commit</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb28"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/ui/main_frame.py tests/unit/ui/test_voice_preview_generation.py</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;fix(speech): stop a prior voice preview instead of overlapping a new one&quot;</span></span></code></pre></div>
+<hr />
+<h3 id="task-4-the-generating-please-wait-cue">Task 4: The “generating,
+please wait” cue</h3>
+<p><strong>Files:</strong> - Modify: <code>quill/ui/main_frame.py</code>
+(<code>_preview_voice</code>) - Test:
+<code>tests/unit/ui/test_voice_preview_generation.py</code></p>
+<p><strong>Interfaces:</strong> - Consumes:
+<code>SoundEvent.VOICE_PREVIEW_GENERATING</code> (Task 1),
+<code>settings.voice_preview_announce_generating</code> (Task 2),
+<code>self._preview_generation</code>/<code>_still_current</code>
+pattern (Task 3). - Produces:
+<code>MainFrame._fire_generating_cue(generation: int) -&gt; None</code>;
+a pending <code>wx.CallLater</code> stored on
+<code>self._preview_cue_timer</code>, cancelled by
+<code>_stop_active_voice_preview</code>.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Write the failing
+test</strong></label></li>
+</ul>
+<p>Add to
+<code>tests/unit/ui/test_voice_preview_generation.py</code>:</p>
+<div class="sourceCode" id="cb29"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_generating_cue_fires_once_after_the_delay(wx_app, monkeypatch) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> quill.core.sound_events <span class="im">import</span> SoundEvent</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    frame <span class="op">=</span> MainFrame.<span class="fu">__new__</span>(MainFrame)</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    frame._wx <span class="op">=</span> wx</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>    frame.frame <span class="op">=</span> wx.Frame(<span class="va">None</span>)</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>    frame.settings <span class="op">=</span> <span class="bu">type</span>(<span class="st">&quot;S&quot;</span>, (), {<span class="st">&quot;voice_preview_announce_generating&quot;</span>: <span class="va">True</span>})()</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>    posted: <span class="bu">list</span>[<span class="bu">str</span>] <span class="op">=</span> []</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>    announced: <span class="bu">list</span>[<span class="bu">str</span>] <span class="op">=</span> []</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(frame, <span class="st">&quot;_set_status&quot;</span>, <span class="kw">lambda</span> <span class="op">*</span>a, <span class="op">**</span>k: <span class="va">None</span>)</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(frame, <span class="st">&quot;_announce&quot;</span>, <span class="kw">lambda</span> <span class="op">*</span>a, <span class="op">**</span>k: announced.append(a[<span class="dv">0</span>]))</span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;quill.ui.main_frame.post_sound&quot;</span>, <span class="kw">lambda</span> event_id: posted.append(event_id)</span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>    frame._stop_active_voice_preview()</span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>    my_generation <span class="op">=</span> frame._preview_generation</span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a>    frame._preview_cue_timer <span class="op">=</span> wx.CallLater(<span class="dv">50</span>, frame._fire_generating_cue, my_generation)</span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">30</span>):</span>
+<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a>        wx.YieldIfNeeded()</span>
+<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a>        time.sleep(<span class="fl">0.02</span>)</span>
+<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> posted:</span>
+<span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span></span>
+<span id="cb29-26"><a href="#cb29-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-27"><a href="#cb29-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> posted <span class="op">==</span> [SoundEvent.VOICE_PREVIEW_GENERATING.value]</span>
+<span id="cb29-28"><a href="#cb29-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> announced <span class="op">==</span> [<span class="st">&quot;Generating preview, please wait.&quot;</span>]</span>
+<span id="cb29-29"><a href="#cb29-29" aria-hidden="true" tabindex="-1"></a>    frame.frame.Destroy()</span>
+<span id="cb29-30"><a href="#cb29-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-31"><a href="#cb29-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-32"><a href="#cb29-32" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_generating_cue_does_not_fire_if_superseded_first(wx_app, monkeypatch) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb29-33"><a href="#cb29-33" aria-hidden="true" tabindex="-1"></a>    frame <span class="op">=</span> MainFrame.<span class="fu">__new__</span>(MainFrame)</span>
+<span id="cb29-34"><a href="#cb29-34" aria-hidden="true" tabindex="-1"></a>    frame._wx <span class="op">=</span> wx</span>
+<span id="cb29-35"><a href="#cb29-35" aria-hidden="true" tabindex="-1"></a>    frame.frame <span class="op">=</span> wx.Frame(<span class="va">None</span>)</span>
+<span id="cb29-36"><a href="#cb29-36" aria-hidden="true" tabindex="-1"></a>    frame.settings <span class="op">=</span> <span class="bu">type</span>(<span class="st">&quot;S&quot;</span>, (), {<span class="st">&quot;voice_preview_announce_generating&quot;</span>: <span class="va">True</span>})()</span>
+<span id="cb29-37"><a href="#cb29-37" aria-hidden="true" tabindex="-1"></a>    posted: <span class="bu">list</span>[<span class="bu">str</span>] <span class="op">=</span> []</span>
+<span id="cb29-38"><a href="#cb29-38" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(frame, <span class="st">&quot;_set_status&quot;</span>, <span class="kw">lambda</span> <span class="op">*</span>a, <span class="op">**</span>k: <span class="va">None</span>)</span>
+<span id="cb29-39"><a href="#cb29-39" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(frame, <span class="st">&quot;_announce&quot;</span>, <span class="kw">lambda</span> <span class="op">*</span>a, <span class="op">**</span>k: <span class="va">None</span>)</span>
+<span id="cb29-40"><a href="#cb29-40" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(</span>
+<span id="cb29-41"><a href="#cb29-41" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;quill.ui.main_frame.post_sound&quot;</span>, <span class="kw">lambda</span> event_id: posted.append(event_id)</span>
+<span id="cb29-42"><a href="#cb29-42" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb29-43"><a href="#cb29-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-44"><a href="#cb29-44" aria-hidden="true" tabindex="-1"></a>    frame._stop_active_voice_preview()</span>
+<span id="cb29-45"><a href="#cb29-45" aria-hidden="true" tabindex="-1"></a>    stale_generation <span class="op">=</span> frame._preview_generation</span>
+<span id="cb29-46"><a href="#cb29-46" aria-hidden="true" tabindex="-1"></a>    frame._preview_cue_timer <span class="op">=</span> wx.CallLater(<span class="dv">50</span>, frame._fire_generating_cue, stale_generation)</span>
+<span id="cb29-47"><a href="#cb29-47" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Supersede before the timer fires.</span></span>
+<span id="cb29-48"><a href="#cb29-48" aria-hidden="true" tabindex="-1"></a>    frame._stop_active_voice_preview()</span>
+<span id="cb29-49"><a href="#cb29-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-50"><a href="#cb29-50" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">30</span>):</span>
+<span id="cb29-51"><a href="#cb29-51" aria-hidden="true" tabindex="-1"></a>        wx.YieldIfNeeded()</span>
+<span id="cb29-52"><a href="#cb29-52" aria-hidden="true" tabindex="-1"></a>        time.sleep(<span class="fl">0.02</span>)</span>
+<span id="cb29-53"><a href="#cb29-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-54"><a href="#cb29-54" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> posted <span class="op">==</span> []</span>
+<span id="cb29-55"><a href="#cb29-55" aria-hidden="true" tabindex="-1"></a>    frame.frame.Destroy()</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Run test to verify
+it fails</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/ui/test_voice_preview_generation.py -k generating_cue -v</code>
+Expected: FAIL
+(<code>AttributeError: 'MainFrame' object has no attribute '_fire_generating_cue'</code>
+/ no <code>post_sound</code> imported in <code>main_frame.py</code>)</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Import
+<code>post_sound</code> and add the cue method</strong></label></li>
+</ul>
+<p>In <code>quill/ui/main_frame.py</code>, add to the imports near the
+other <code>quill.ui</code> imports (alongside existing sound-adjacent
+imports; place near the top-level import block):</p>
+<div class="sourceCode" id="cb30"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.ui.sound_manager <span class="im">import</span> post_sound</span></code></pre></div>
+<p>Add the cue method right after
+<code>_stop_active_voice_preview</code> (defined in Task 3):</p>
+<div class="sourceCode" id="cb31"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _fire_generating_cue(<span class="va">self</span>, generation: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>        <span class="co">&quot;&quot;&quot;One-shot &quot;still generating&quot; cue -- fires only if *generation* is</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="co">        still current (the ~400ms delay elapsed before synthesis finished).&quot;&quot;&quot;</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">getattr</span>(<span class="va">self</span>, <span class="st">&quot;_preview_generation&quot;</span>, <span class="dv">0</span>) <span class="op">!=</span> generation:</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>        post_sound(SoundEvent.VOICE_PREVIEW_GENERATING)</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">getattr</span>(<span class="va">self</span>.settings, <span class="st">&quot;voice_preview_announce_generating&quot;</span>, <span class="va">True</span>):</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>._announce(<span class="st">&quot;Generating preview, please wait.&quot;</span>)</span></code></pre></div>
+<p>Add the <code>SoundEvent</code> import near the top of
+<code>quill/ui/main_frame.py</code>, alongside the new
+<code>post_sound</code> import:</p>
+<div class="sourceCode" id="cb32"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.sound_events <span class="im">import</span> SoundEvent</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Cancel the pending
+timer in <code>_stop_active_voice_preview</code></strong></label></li>
+</ul>
+<p>In <code>quill/ui/main_frame.py</code>,
+<code>_stop_active_voice_preview</code> (added in Task 3) currently
+reads:</p>
+<div class="sourceCode" id="cb33"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._preview_generation <span class="op">=</span> <span class="bu">getattr</span>(<span class="va">self</span>, <span class="st">&quot;_preview_generation&quot;</span>, <span class="dv">0</span>) <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>._read_aloud.stop()</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">Exception</span>:  <span class="co"># noqa: BLE001</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>            <span class="cf">pass</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._purge_preview_playback()</span></code></pre></div>
+<p>Add the timer cancellation right after bumping the generation:</p>
+<div class="sourceCode" id="cb34"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._preview_generation <span class="op">=</span> <span class="bu">getattr</span>(<span class="va">self</span>, <span class="st">&quot;_preview_generation&quot;</span>, <span class="dv">0</span>) <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>        timer <span class="op">=</span> <span class="bu">getattr</span>(<span class="va">self</span>, <span class="st">&quot;_preview_cue_timer&quot;</span>, <span class="va">None</span>)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> timer <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>            <span class="cf">try</span>:</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>                timer.Stop()</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>            <span class="cf">except</span> <span class="pp">Exception</span>:  <span class="co"># noqa: BLE001</span></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>                <span class="cf">pass</span></span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>._preview_cue_timer <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>._read_aloud.stop()</span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">Exception</span>:  <span class="co"># noqa: BLE001</span></span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>            <span class="cf">pass</span></span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._purge_preview_playback()</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 5: Start the timer for
+synthesis branches only</strong></label></li>
+</ul>
+<p>In <code>quill/ui/main_frame.py</code>, the end of
+<code>_preview_voice</code> (from Task 3, Step 6) currently reads:</p>
+<div class="sourceCode" id="cb35"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>        <span class="kw">def</span> _synth_done(_r: <span class="bu">object</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> _still_current():</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>._set_status(<span class="st">&quot;Preview finished&quot;</span>)</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._run_background_task(</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f&quot;Previewing </span><span class="sc">{</span>engine<span class="sc">}</span><span class="ss"> voice&quot;</span>,</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>            _work,</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>            _synth_done,</span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>        )</span></code></pre></div>
+<p>Replace with (starting the cue timer right before dispatch — sample
+playback and the <code>sapi5</code> branch both <code>return</code>
+earlier in the method and never reach this point, matching “nothing to
+wait for” for those two):</p>
+<div class="sourceCode" id="cb36"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>        <span class="kw">def</span> _synth_done(_r: <span class="bu">object</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> _still_current():</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>._set_status(<span class="st">&quot;Preview finished&quot;</span>)</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._preview_cue_timer <span class="op">=</span> <span class="va">self</span>._wx.CallLater(<span class="dv">400</span>, <span class="va">self</span>._fire_generating_cue, my_generation)</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._run_background_task(</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f&quot;Previewing </span><span class="sc">{</span>engine<span class="sc">}</span><span class="ss"> voice&quot;</span>,</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>            _work,</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>            _synth_done,</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>        )</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 6: Run test to verify
+it passes</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/ui/test_voice_preview_generation.py -v</code>
+Expected: PASS (all tests in this file)</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 7: Run the full sound +
+settings + preview test surface to check for
+regressions</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/core/test_sound_pack.py tests/unit/core/test_settings.py tests/unit/ui/test_voice_preview_generation.py tests/unit/core/test_voice_preview_sound_event.py -q</code>
+Expected: all PASS</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 8:
+Commit</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb37"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/ui/main_frame.py tests/unit/ui/test_voice_preview_generation.py</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(speech): play/announce a &#39;generating preview&#39; cue for slow voice previews&quot;</span></span></code></pre></div>
+<hr />
+<h3 id="task-5-play-stop-button-in-the-voice-browser-dialog">Task 5:
+Play ↔︎ Stop button in the Voice Browser dialog</h3>
+<p><strong>Files:</strong> - Modify: <code>quill/ui/main_frame.py</code>
+(<code>_preview_voice</code> signature) - Modify:
+<code>quill/ui/voice_browser_dialog.py</code> - Test:
+<code>tests/unit/ui/test_voice_browser_dialog.py</code></p>
+<p><strong>Interfaces:</strong> - Consumes:
+<code>MainFrame._preview_voice(..., on_state_change: Callable[[str], None] | None = None)</code>;
+<code>MainFrame._stop_active_voice_preview()</code> (Task 3). -
+Produces:
+<code>VoiceBrowserDialog._on_preview_state(state: str) -&gt; None</code>;
+<code>_preview_btn</code> toggles between
+<code>"&amp;Preview Selected Voice"</code> and
+<code>"&amp;Stop Preview"</code>.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Give
+<code>_preview_voice</code> an <code>on_state_change</code>
+parameter</strong></label></li>
+</ul>
+<p>In <code>quill/ui/main_frame.py</code>, <code>_preview_voice</code>’s
+signature (after Task 3/4’s edits) currently reads:</p>
+<div class="sourceCode" id="cb38"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _preview_voice(</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>, engine: <span class="bu">str</span>, voice_id: <span class="bu">str</span>, <span class="op">*</span>, live: <span class="bu">bool</span> <span class="op">=</span> <span class="va">False</span>, text: <span class="bu">str</span> <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">-&gt;</span> <span class="va">None</span>:</span></code></pre></div>
+<p>Change to:</p>
+<div class="sourceCode" id="cb39"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _preview_voice(</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>,</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>        engine: <span class="bu">str</span>,</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>        voice_id: <span class="bu">str</span>,</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>        <span class="op">*</span>,</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>        live: <span class="bu">bool</span> <span class="op">=</span> <span class="va">False</span>,</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>        text: <span class="bu">str</span> <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span>,</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>        on_state_change: Callable[[<span class="bu">str</span>], <span class="va">None</span>] <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span>,</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">-&gt;</span> <span class="va">None</span>:</span></code></pre></div>
+<p>Add a small helper right after the <code>_still_current</code>
+closure (defined in Task 3, Step 4):</p>
+<div class="sourceCode" id="cb40"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>        <span class="kw">def</span> _report(state: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> on_state_change <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span> <span class="kw">and</span> _still_current():</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>._wx.CallAfter(on_state_change, state)</span></code></pre></div>
+<p>Call <code>_report("playing")</code> right before every
+<code>_play_preview_asset</code>/<code>_read_aloud.start</code> call,
+and <code>_report("idle")</code> in each completion path.
+Concretely:</p>
+<ul>
+<li>In the sample-playback branch, <code>_play_sample</code> currently
+reads <code>self._play_preview_asset(preview_sample)</code>; change
+to:</li>
+</ul>
+<div class="sourceCode" id="cb41"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>            <span class="kw">def</span> _play_sample(_progress: Callable[[<span class="bu">str</span>, <span class="bu">int</span>, <span class="bu">int</span>], <span class="va">None</span>]) <span class="op">-&gt;</span> <span class="bu">object</span>:</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>                _report(<span class="st">&quot;playing&quot;</span>)</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>._play_preview_asset(preview_sample)</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span> <span class="va">None</span></span></code></pre></div>
+<p>and <code>_sample_done</code> currently reads:</p>
+<div class="sourceCode" id="cb42"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>            <span class="kw">def</span> _sample_done(_r: <span class="bu">object</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> _still_current():</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>                    <span class="va">self</span>._set_status(<span class="st">&quot;Preview finished&quot;</span>)</span></code></pre></div>
+<p>change to:</p>
+<div class="sourceCode" id="cb43"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>            <span class="kw">def</span> _sample_done(_r: <span class="bu">object</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> _still_current():</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>                    <span class="va">self</span>._set_status(<span class="st">&quot;Preview finished&quot;</span>)</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>                _report(<span class="st">&quot;idle&quot;</span>)</span></code></pre></div>
+<ul>
+<li>In the <code>sapi5</code> branch, call
+<code>_report("playing")</code> immediately before
+<code>self._read_aloud.start(</code>, and inside the existing
+<code>on_state_change</code> lambda passed to
+<code>self._read_aloud.start</code>, add <code>_report("idle")</code>
+alongside the existing <code>_still_current()</code>-guarded call:</li>
+</ul>
+<div class="sourceCode" id="cb44"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>                    on_state_change<span class="op">=</span><span class="kw">lambda</span> state: (</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>                        (<span class="va">self</span>._wx.CallAfter(<span class="va">self</span>._set_status, <span class="st">&quot;Preview finished&quot;</span>), _report(<span class="st">&quot;idle&quot;</span>))</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>                        <span class="cf">if</span> state <span class="kw">in</span> (<span class="st">&quot;idle&quot;</span>, <span class="st">&quot;error&quot;</span>) <span class="kw">and</span> _still_current()</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>                        <span class="cf">else</span> <span class="va">None</span></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>                    ),</span></code></pre></div>
+<ul>
+<li>In the synthesis branches, call <code>_report("generating")</code>
+right before
+<code>self._preview_cue_timer = self._wx.CallLater(...)</code>, change
+<code>self._play_preview_asset(wav)</code> (inside <code>_work</code>)
+to also report:</li>
+</ul>
+<div class="sourceCode" id="cb45"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>                _report(<span class="st">&quot;playing&quot;</span>)</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>._play_preview_asset(wav)</span></code></pre></div>
+<p>and <code>_synth_done</code> currently reads:</p>
+<div class="sourceCode" id="cb46"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>        <span class="kw">def</span> _synth_done(_r: <span class="bu">object</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> _still_current():</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>._set_status(<span class="st">&quot;Preview finished&quot;</span>)</span></code></pre></div>
+<p>change to:</p>
+<div class="sourceCode" id="cb47"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>        <span class="kw">def</span> _synth_done(_r: <span class="bu">object</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> _still_current():</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>._set_status(<span class="st">&quot;Preview finished&quot;</span>)</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>            _report(<span class="st">&quot;idle&quot;</span>)</span></code></pre></div>
+<p>and right before the <code>_preview_cue_timer</code> line, add:</p>
+<div class="sourceCode" id="cb48"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>        _report(<span class="st">&quot;generating&quot;</span>)</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Write the failing UI
+test</strong></label></li>
+</ul>
+<p>In <code>tests/unit/ui/test_voice_browser_dialog.py</code>, add:</p>
+<div class="sourceCode" id="cb49"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_preview_button_toggles_to_stop_while_active(wx_app) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> wx</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> quill.ui.voice_browser_dialog <span class="im">import</span> VoiceBrowserDialog</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>    states: <span class="bu">list</span>[<span class="bu">str</span>] <span class="op">=</span> []</span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> fake_preview(engine, voice_id, <span class="op">*</span>, live<span class="op">=</span><span class="va">False</span>, on_state_change<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a>        states.append(<span class="st">&quot;called&quot;</span>)</span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> on_state_change <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a>            on_state_change(<span class="st">&quot;playing&quot;</span>)</span>
+<span id="cb49-12"><a href="#cb49-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-13"><a href="#cb49-13" aria-hidden="true" tabindex="-1"></a>    frame <span class="op">=</span> wx.Frame(<span class="va">None</span>)</span>
+<span id="cb49-14"><a href="#cb49-14" aria-hidden="true" tabindex="-1"></a>    dlg <span class="op">=</span> VoiceBrowserDialog(</span>
+<span id="cb49-15"><a href="#cb49-15" aria-hidden="true" tabindex="-1"></a>        frame,</span>
+<span id="cb49-16"><a href="#cb49-16" aria-hidden="true" tabindex="-1"></a>        engine_options<span class="op">=</span>[(<span class="st">&quot;SAPI 5&quot;</span>, <span class="st">&quot;sapi5&quot;</span>)],</span>
+<span id="cb49-17"><a href="#cb49-17" aria-hidden="true" tabindex="-1"></a>        current_engine<span class="op">=</span><span class="st">&quot;sapi5&quot;</span>,</span>
+<span id="cb49-18"><a href="#cb49-18" aria-hidden="true" tabindex="-1"></a>        piper_model_dir<span class="op">=</span><span class="bu">__import__</span>(<span class="st">&quot;pathlib&quot;</span>).Path(<span class="st">&quot;.&quot;</span>),</span>
+<span id="cb49-19"><a href="#cb49-19" aria-hidden="true" tabindex="-1"></a>        settings<span class="op">=</span><span class="bu">type</span>(<span class="st">&quot;S&quot;</span>, (), {<span class="st">&quot;read_aloud_rate&quot;</span>: <span class="dv">200</span>, <span class="st">&quot;read_aloud_volume&quot;</span>: <span class="dv">100</span>, <span class="st">&quot;read_aloud_pitch&quot;</span>: <span class="dv">0</span>})(),</span>
+<span id="cb49-20"><a href="#cb49-20" aria-hidden="true" tabindex="-1"></a>        preview_fn<span class="op">=</span>fake_preview,</span>
+<span id="cb49-21"><a href="#cb49-21" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb49-22"><a href="#cb49-22" aria-hidden="true" tabindex="-1"></a>    dlg._all_voices <span class="op">=</span> [<span class="bu">type</span>(<span class="st">&quot;V&quot;</span>, (), {<span class="st">&quot;id&quot;</span>: <span class="st">&quot;v1&quot;</span>, <span class="st">&quot;name&quot;</span>: <span class="st">&quot;Voice 1&quot;</span>, <span class="st">&quot;installed&quot;</span>: <span class="va">True</span>})()]</span>
+<span id="cb49-23"><a href="#cb49-23" aria-hidden="true" tabindex="-1"></a>    dlg._displayed_voices <span class="op">=</span> dlg._all_voices</span>
+<span id="cb49-24"><a href="#cb49-24" aria-hidden="true" tabindex="-1"></a>    dlg._voice_lb.Append(<span class="st">&quot;Voice 1&quot;</span>)</span>
+<span id="cb49-25"><a href="#cb49-25" aria-hidden="true" tabindex="-1"></a>    dlg._voice_lb.SetSelection(<span class="dv">0</span>)</span>
+<span id="cb49-26"><a href="#cb49-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-27"><a href="#cb49-27" aria-hidden="true" tabindex="-1"></a>    dlg._do_preview()</span>
+<span id="cb49-28"><a href="#cb49-28" aria-hidden="true" tabindex="-1"></a>    wx.YieldIfNeeded()</span>
+<span id="cb49-29"><a href="#cb49-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-30"><a href="#cb49-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> dlg._preview_btn.GetLabel() <span class="op">==</span> <span class="st">&quot;&amp;Stop Preview&quot;</span></span>
+<span id="cb49-31"><a href="#cb49-31" aria-hidden="true" tabindex="-1"></a>    frame.Destroy()</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Run test to verify
+it fails</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/ui/test_voice_browser_dialog.py -k toggles_to_stop -v</code>
+Expected: FAIL (button label stays
+<code>"&amp;Preview Selected Voice"</code>; <code>_do_preview</code>
+does not pass <code>on_state_change</code> yet)</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Wire the button
+state in the dialog</strong></label></li>
+</ul>
+<p>In <code>quill/ui/voice_browser_dialog.py</code>,
+<code>_do_preview</code> currently reads:</p>
+<div class="sourceCode" id="cb50"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _do_preview(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>        idx <span class="op">=</span> <span class="va">self</span>._voice_lb.GetSelection()</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>        wx <span class="op">=</span> <span class="va">self</span>._wx</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> idx <span class="op">==</span> wx.NOT_FOUND <span class="kw">or</span> idx <span class="op">&gt;=</span> <span class="bu">len</span>(<span class="va">self</span>._displayed_voices):</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span></span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>        eng <span class="op">=</span> <span class="va">self</span>._current_engine_id()</span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>        v <span class="op">=</span> <span class="va">self</span>._displayed_voices[idx]</span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>        ready <span class="op">=</span> <span class="va">self</span>._voice_is_ready(eng, v)</span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Downloaded -&gt; real synthesis with the model; not downloaded -&gt; the</span></span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>        <span class="co"># bundled pre-recorded sample (if one ships for this voice).</span></span>
+<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> ready <span class="kw">and</span> <span class="kw">not</span> <span class="va">self</span>._has_preview_sample(eng, v.<span class="bu">id</span>):</span>
+<span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span></span>
+<span id="cb50-13"><a href="#cb50-13" aria-hidden="true" tabindex="-1"></a>        voice_id <span class="op">=</span> <span class="va">self</span>._espeak_combined_voice_id(v.<span class="bu">id</span>) <span class="cf">if</span> eng <span class="op">==</span> <span class="st">&quot;espeak&quot;</span> <span class="cf">else</span> v.<span class="bu">id</span></span>
+<span id="cb50-14"><a href="#cb50-14" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._preview_fn(eng, voice_id, live<span class="op">=</span>ready)</span></code></pre></div>
+<p>Replace with:</p>
+<div class="sourceCode" id="cb51"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _do_preview(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="va">self</span>._previewing:</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>._stop_preview()</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span></span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>        idx <span class="op">=</span> <span class="va">self</span>._voice_lb.GetSelection()</span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>        wx <span class="op">=</span> <span class="va">self</span>._wx</span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> idx <span class="op">==</span> wx.NOT_FOUND <span class="kw">or</span> idx <span class="op">&gt;=</span> <span class="bu">len</span>(<span class="va">self</span>._displayed_voices):</span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span></span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a>        eng <span class="op">=</span> <span class="va">self</span>._current_engine_id()</span>
+<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a>        v <span class="op">=</span> <span class="va">self</span>._displayed_voices[idx]</span>
+<span id="cb51-11"><a href="#cb51-11" aria-hidden="true" tabindex="-1"></a>        ready <span class="op">=</span> <span class="va">self</span>._voice_is_ready(eng, v)</span>
+<span id="cb51-12"><a href="#cb51-12" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Downloaded -&gt; real synthesis with the model; not downloaded -&gt; the</span></span>
+<span id="cb51-13"><a href="#cb51-13" aria-hidden="true" tabindex="-1"></a>        <span class="co"># bundled pre-recorded sample (if one ships for this voice).</span></span>
+<span id="cb51-14"><a href="#cb51-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> ready <span class="kw">and</span> <span class="kw">not</span> <span class="va">self</span>._has_preview_sample(eng, v.<span class="bu">id</span>):</span>
+<span id="cb51-15"><a href="#cb51-15" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span></span>
+<span id="cb51-16"><a href="#cb51-16" aria-hidden="true" tabindex="-1"></a>        voice_id <span class="op">=</span> <span class="va">self</span>._espeak_combined_voice_id(v.<span class="bu">id</span>) <span class="cf">if</span> eng <span class="op">==</span> <span class="st">&quot;espeak&quot;</span> <span class="cf">else</span> v.<span class="bu">id</span></span>
+<span id="cb51-17"><a href="#cb51-17" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._preview_fn(eng, voice_id, live<span class="op">=</span>ready, on_state_change<span class="op">=</span><span class="va">self</span>._on_preview_state)</span>
+<span id="cb51-18"><a href="#cb51-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-19"><a href="#cb51-19" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _on_preview_state(<span class="va">self</span>, state: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb51-20"><a href="#cb51-20" aria-hidden="true" tabindex="-1"></a>        <span class="co">&quot;&quot;&quot;Toggle the Preview button between its idle and Stop labels.&quot;&quot;&quot;</span></span>
+<span id="cb51-21"><a href="#cb51-21" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._previewing <span class="op">=</span> state <span class="kw">in</span> (<span class="st">&quot;generating&quot;</span>, <span class="st">&quot;playing&quot;</span>)</span>
+<span id="cb51-22"><a href="#cb51-22" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._preview_btn.SetLabel(<span class="st">&quot;&amp;Stop Preview&quot;</span> <span class="cf">if</span> <span class="va">self</span>._previewing <span class="cf">else</span> <span class="st">&quot;&amp;Preview Selected Voice&quot;</span>)</span>
+<span id="cb51-23"><a href="#cb51-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-24"><a href="#cb51-24" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _stop_preview(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb51-25"><a href="#cb51-25" aria-hidden="true" tabindex="-1"></a>        <span class="co">&quot;&quot;&quot;Cancel the active preview via the same path a new preview would use.&quot;&quot;&quot;</span></span>
+<span id="cb51-26"><a href="#cb51-26" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._preview_stop_fn()</span>
+<span id="cb51-27"><a href="#cb51-27" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._on_preview_state(<span class="st">&quot;idle&quot;</span>)</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 5: Initialize
+<code>_previewing</code>/<code>_preview_stop_fn</code> and pass the stop
+hook</strong></label></li>
+</ul>
+<p>In <code>quill/ui/voice_browser_dialog.py</code>,
+<code>__init__</code> currently reads:</p>
+<div class="sourceCode" id="cb52"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._preview_fn <span class="op">=</span> preview_fn</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._engine_available: <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">bool</span>] <span class="op">=</span> engine_available <span class="kw">or</span> {}</span></code></pre></div>
+<p>Change to:</p>
+<div class="sourceCode" id="cb53"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._preview_fn <span class="op">=</span> preview_fn</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._preview_stop_fn <span class="op">=</span> preview_stop_fn <span class="kw">or</span> (<span class="kw">lambda</span>: <span class="va">None</span>)</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._previewing <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._engine_available: <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">bool</span>] <span class="op">=</span> engine_available <span class="kw">or</span> {}</span></code></pre></div>
+<p>Add the new constructor parameter to <code>__init__</code>’s
+signature, which currently reads:</p>
+<div class="sourceCode" id="cb54"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>        preview_fn: Callable[..., <span class="va">None</span>],</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>        engine_available: <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">bool</span>] <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span>,</span></code></pre></div>
+<p>Change to:</p>
+<div class="sourceCode" id="cb55"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>        preview_fn: Callable[..., <span class="va">None</span>],</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>        preview_stop_fn: Callable[[], <span class="va">None</span>] <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span>,</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>        engine_available: <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">bool</span>] <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span>,</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 6: Pass the stop hook
+from MainFrame</strong></label></li>
+</ul>
+<p>In <code>quill/ui/main_frame.py</code>, find where
+<code>"preview_fn": self._preview_voice,</code> is set (inside the
+kwargs dict built for <code>open_speech_hub</code>). Add right after
+it:</p>
+<div class="sourceCode" id="cb56"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>            <span class="co">&quot;preview_fn&quot;</span>: <span class="va">self</span>._preview_voice,</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>            <span class="co">&quot;preview_stop_fn&quot;</span>: <span class="va">self</span>._stop_active_voice_preview,</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 7: Run test to verify
+it passes</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/ui/test_voice_browser_dialog.py -k toggles_to_stop -v</code>
+Expected: PASS</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 8: Run the full Voice
+Browser + preview test files to check for
+regressions</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/ui/test_voice_browser_dialog.py tests/unit/ui/test_voice_preview_generation.py -q</code>
+Expected: all PASS</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 9:
+Commit</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb57"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/ui/main_frame.py quill/ui/voice_browser_dialog.py tests/unit/ui/test_voice_browser_dialog.py</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(speech): Voice Browser Preview button toggles to Stop while active&quot;</span></span></code></pre></div>
+<hr />
+<h3
+id="task-6-play-stop-button-in-the-download-optional-components-hub-voice-rows">Task
+6: Play ↔︎ Stop button in the Download Optional Components hub (voice
+rows)</h3>
+<p><strong>Files:</strong> - Modify:
+<code>quill/ui/optional_components_dialog.py</code> - Modify:
+<code>quill/ui/main_frame_speech.py</code>
+(<code>_test_optional_component</code>, <code>_Controller</code> in
+<code>open_optional_components</code>) - Test:
+<code>tests/unit/ui/test_optional_components_dialog.py</code></p>
+<p><strong>Interfaces:</strong> - Consumes:
+<code>MainFrame._preview_voice(..., on_state_change=...)</code> (Task
+5), <code>MainFrame._stop_active_voice_preview()</code> (Task 3),
+<code>oc.read_aloud_engine_for_component(component_id) -&gt; str | None</code>
+(existing). - Produces:
+<code>ComponentsController.test(component_id, on_state_change=None)</code>,
+<code>ComponentsController.stop_test(component_id) -&gt; None</code>,
+<code>ComponentsController.is_previewable(component_id) -&gt; bool</code>.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Extend the
+<code>ComponentsController</code> protocol</strong></label></li>
+</ul>
+<p>In <code>quill/ui/optional_components_dialog.py</code>, the protocol
+currently reads:</p>
+<div class="sourceCode" id="cb58"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> test(<span class="va">self</span>, component_id: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>        <span class="co">&quot;&quot;&quot;Prove the component works (play a voice sample / self-test); announces.&quot;&quot;&quot;</span></span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> manage(<span class="va">self</span>, component_id: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>        <span class="co">&quot;&quot;&quot;Open the component&#39;s own management dialog (models / voices).&quot;&quot;&quot;</span></span></code></pre></div>
+<p>Change to:</p>
+<div class="sourceCode" id="cb59"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> test(<span class="va">self</span>, component_id: <span class="bu">str</span>, <span class="op">*</span>, on_state_change: Callable[[<span class="bu">str</span>], <span class="va">None</span>] <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>        <span class="co">&quot;&quot;&quot;Prove the component works (play a voice sample / self-test); announces.</span></span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a><span class="co">        ``on_state_change``, when the component is a voice, reports</span></span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a><span class="co">        &quot;generating&quot;/&quot;playing&quot;/&quot;idle&quot; so the caller can toggle a Stop button.</span></span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a><span class="co">        Ignored for non-voice components (engine/tool self-tests run to</span></span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a><span class="co">        completion quickly and only announce their result).&quot;&quot;&quot;</span></span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> stop_test(<span class="va">self</span>, component_id: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a>        <span class="co">&quot;&quot;&quot;Cancel an in-progress voice preview started via test().&quot;&quot;&quot;</span></span>
+<span id="cb59-11"><a href="#cb59-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-12"><a href="#cb59-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> is_previewable(<span class="va">self</span>, component_id: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">bool</span>:</span>
+<span id="cb59-13"><a href="#cb59-13" aria-hidden="true" tabindex="-1"></a>        <span class="co">&quot;&quot;&quot;True when test() reports state changes (a voice component).&quot;&quot;&quot;</span></span>
+<span id="cb59-14"><a href="#cb59-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-15"><a href="#cb59-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> manage(<span class="va">self</span>, component_id: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb59-16"><a href="#cb59-16" aria-hidden="true" tabindex="-1"></a>        <span class="co">&quot;&quot;&quot;Open the component&#39;s own management dialog (models / voices).&quot;&quot;&quot;</span></span></code></pre></div>
+<p>Add <code>Callable</code> to the imports at the top of the file,
+which currently read:</p>
+<div class="sourceCode" id="cb60"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> Any, Protocol</span></code></pre></div>
+<p>Change to:</p>
+<div class="sourceCode" id="cb61"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections.abc <span class="im">import</span> Callable</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> Any, Protocol</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Wire the Test
+button’s state and click handling</strong></label></li>
+</ul>
+<p>In <code>quill/ui/optional_components_dialog.py</code>,
+<code>_sync_controls</code> currently reads (after the earlier
+<code>effective_ready</code> change):</p>
+<div class="sourceCode" id="cb62"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>        ready <span class="op">=</span> comp.effective_ready</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>        download_btn.Enable(<span class="kw">not</span> ready)</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>        download_btn.SetLabel(<span class="st">&quot;Installed&quot;</span> <span class="cf">if</span> ready <span class="cf">else</span> <span class="st">&quot;&amp;Download&quot;</span>)</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>        test_btn.Enable(ready)</span></code></pre></div>
+<p>Change to:</p>
+<div class="sourceCode" id="cb63"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>        ready <span class="op">=</span> comp.effective_ready</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>        download_btn.Enable(<span class="kw">not</span> ready)</span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>        download_btn.SetLabel(<span class="st">&quot;Installed&quot;</span> <span class="cf">if</span> ready <span class="cf">else</span> <span class="st">&quot;&amp;Download&quot;</span>)</span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a>        test_btn.Enable(ready)</span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> testing[<span class="st">&quot;active&quot;</span>]:</span>
+<span id="cb63-6"><a href="#cb63-6" aria-hidden="true" tabindex="-1"></a>            test_btn.SetLabel(<span class="st">&quot;&amp;Test&quot;</span>)</span></code></pre></div>
+<p>Add a small mutable state cell right where
+<code>chosen = {"id": ""}</code> is declared, which currently reads:</p>
+<div class="sourceCode" id="cb64"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>    chosen <span class="op">=</span> {<span class="st">&quot;id&quot;</span>: <span class="st">&quot;&quot;</span>}</span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>    rows: <span class="bu">list</span>[OptionalComponent] <span class="op">=</span> []</span></code></pre></div>
+<p>Change to:</p>
+<div class="sourceCode" id="cb65"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>    chosen <span class="op">=</span> {<span class="st">&quot;id&quot;</span>: <span class="st">&quot;&quot;</span>}</span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>    testing <span class="op">=</span> {<span class="st">&quot;active&quot;</span>: <span class="va">False</span>}</span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>    rows: <span class="bu">list</span>[OptionalComponent] <span class="op">=</span> []</span></code></pre></div>
+<p><code>_on_test</code> currently reads (after the earlier
+<code>effective_ready</code> change):</p>
+<div class="sourceCode" id="cb66"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _on_test(_evt: Any <span class="op">=</span> <span class="va">None</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>        comp <span class="op">=</span> _selected()</span>
+<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> comp <span class="kw">is</span> <span class="va">None</span> <span class="kw">or</span> <span class="kw">not</span> comp.effective_ready:</span>
+<span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span></span>
+<span id="cb66-5"><a href="#cb66-5" aria-hidden="true" tabindex="-1"></a>        controller.test(comp.component_id)  <span class="co"># announces its own result</span></span></code></pre></div>
+<p>Replace with:</p>
+<div class="sourceCode" id="cb67"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _on_state_change(state: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>        testing[<span class="st">&quot;active&quot;</span>] <span class="op">=</span> state <span class="kw">in</span> (<span class="st">&quot;generating&quot;</span>, <span class="st">&quot;playing&quot;</span>)</span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a>        test_btn.SetLabel(<span class="st">&quot;&amp;Stop&quot;</span> <span class="cf">if</span> testing[<span class="st">&quot;active&quot;</span>] <span class="cf">else</span> <span class="st">&quot;&amp;Test&quot;</span>)</span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _on_test(_evt: Any <span class="op">=</span> <span class="va">None</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb67-6"><a href="#cb67-6" aria-hidden="true" tabindex="-1"></a>        comp <span class="op">=</span> _selected()</span>
+<span id="cb67-7"><a href="#cb67-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> comp <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb67-8"><a href="#cb67-8" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span></span>
+<span id="cb67-9"><a href="#cb67-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> testing[<span class="st">&quot;active&quot;</span>]:</span>
+<span id="cb67-10"><a href="#cb67-10" aria-hidden="true" tabindex="-1"></a>            controller.stop_test(comp.component_id)</span>
+<span id="cb67-11"><a href="#cb67-11" aria-hidden="true" tabindex="-1"></a>            _on_state_change(<span class="st">&quot;idle&quot;</span>)</span>
+<span id="cb67-12"><a href="#cb67-12" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span></span>
+<span id="cb67-13"><a href="#cb67-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> comp.effective_ready:</span>
+<span id="cb67-14"><a href="#cb67-14" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span></span>
+<span id="cb67-15"><a href="#cb67-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> controller.is_previewable(comp.component_id):</span>
+<span id="cb67-16"><a href="#cb67-16" aria-hidden="true" tabindex="-1"></a>            controller.test(comp.component_id, on_state_change<span class="op">=</span>_on_state_change)</span>
+<span id="cb67-17"><a href="#cb67-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb67-18"><a href="#cb67-18" aria-hidden="true" tabindex="-1"></a>            controller.test(comp.component_id)  <span class="co"># announces its own result</span></span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Implement the new
+controller methods</strong></label></li>
+</ul>
+<p>In <code>quill/ui/main_frame_speech.py</code>,
+<code>open_optional_components</code>’s <code>_Controller</code> class
+currently reads:</p>
+<div class="sourceCode" id="cb68"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>            <span class="kw">def</span> test(<span class="va">self</span>, component_id: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>                frame._test_optional_component(component_id)</span></code></pre></div>
+<p>Change to:</p>
+<div class="sourceCode" id="cb69"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>            <span class="kw">def</span> test(</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>, component_id: <span class="bu">str</span>, <span class="op">*</span>, on_state_change: Callable[[<span class="bu">str</span>], <span class="va">None</span>] <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>            ) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>                frame._test_optional_component(component_id, on_state_change<span class="op">=</span>on_state_change)</span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a>            <span class="kw">def</span> stop_test(<span class="va">self</span>, component_id: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb69-7"><a href="#cb69-7" aria-hidden="true" tabindex="-1"></a>                frame._stop_active_voice_preview()</span>
+<span id="cb69-8"><a href="#cb69-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-9"><a href="#cb69-9" aria-hidden="true" tabindex="-1"></a>            <span class="kw">def</span> is_previewable(<span class="va">self</span>, component_id: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">bool</span>:</span>
+<span id="cb69-10"><a href="#cb69-10" aria-hidden="true" tabindex="-1"></a>                <span class="im">from</span> quill.core <span class="im">import</span> optional_components <span class="im">as</span> oc</span>
+<span id="cb69-11"><a href="#cb69-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-12"><a href="#cb69-12" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span> oc.read_aloud_engine_for_component(component_id) <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span></span></code></pre></div>
+<p><code>_test_optional_component</code> currently reads:</p>
+<div class="sourceCode" id="cb70"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _test_optional_component(<span class="va">self</span>, component_id: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>        <span class="co">&quot;&quot;&quot;Prove *component_id* works: voices play a spoken sample; other</span></span>
+<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a><span class="co">        components run their wx-free self-test on a worker and announce the</span></span>
+<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a><span class="co">        result. Expected &quot;get one more piece&quot; states (no model / no voice) route</span></span>
+<span id="cb70-5"><a href="#cb70-5" aria-hidden="true" tabindex="-1"></a><span class="co">        the user to Manage rather than erroring or offering a bug report.&quot;&quot;&quot;</span></span>
+<span id="cb70-6"><a href="#cb70-6" aria-hidden="true" tabindex="-1"></a>        <span class="im">from</span> quill.core <span class="im">import</span> optional_components <span class="im">as</span> oc</span>
+<span id="cb70-7"><a href="#cb70-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb70-8"><a href="#cb70-8" aria-hidden="true" tabindex="-1"></a>        engine <span class="op">=</span> oc.read_aloud_engine_for_component(component_id)</span>
+<span id="cb70-9"><a href="#cb70-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> engine <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb70-10"><a href="#cb70-10" aria-hidden="true" tabindex="-1"></a>            voices <span class="op">=</span> oc.available_live_voices(engine)</span>
+<span id="cb70-11"><a href="#cb70-11" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="kw">not</span> voices:</span>
+<span id="cb70-12"><a href="#cb70-12" aria-hidden="true" tabindex="-1"></a>                <span class="co"># Engine present but no voice to speak yet: route to Manage Voices</span></span>
+<span id="cb70-13"><a href="#cb70-13" aria-hidden="true" tabindex="-1"></a>                <span class="co"># instead of previewing an empty voice (which errors with &quot;model</span></span>
+<span id="cb70-14"><a href="#cb70-14" aria-hidden="true" tabindex="-1"></a>                <span class="co"># file not found&quot; and leaves focus stranded behind the hub).</span></span>
+<span id="cb70-15"><a href="#cb70-15" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>._set_status(</span>
+<span id="cb70-16"><a href="#cb70-16" aria-hidden="true" tabindex="-1"></a>                    <span class="ss">f&quot;No </span><span class="sc">{</span>engine<span class="sc">}</span><span class="ss"> voice is downloaded yet — opening Manage Voices to get one.&quot;</span></span>
+<span id="cb70-17"><a href="#cb70-17" aria-hidden="true" tabindex="-1"></a>                )</span>
+<span id="cb70-18"><a href="#cb70-18" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>._manage_component_models_or_voices(component_id)</span>
+<span id="cb70-19"><a href="#cb70-19" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span></span>
+<span id="cb70-20"><a href="#cb70-20" aria-hidden="true" tabindex="-1"></a>            <span class="co"># One voice: play it straight away (no dialog friction). More than one:</span></span>
+<span id="cb70-21"><a href="#cb70-21" aria-hidden="true" tabindex="-1"></a>            <span class="co"># let the user pick which to hear via an accessible single-select</span></span>
+<span id="cb70-22"><a href="#cb70-22" aria-hidden="true" tabindex="-1"></a>            <span class="co"># dialog, so Test is a small delight rather than always voice #1.</span></span>
+<span id="cb70-23"><a href="#cb70-23" aria-hidden="true" tabindex="-1"></a>            chosen <span class="op">=</span> voices[<span class="dv">0</span>]</span>
+<span id="cb70-24"><a href="#cb70-24" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="bu">len</span>(voices) <span class="op">&gt;</span> <span class="dv">1</span>:</span>
+<span id="cb70-25"><a href="#cb70-25" aria-hidden="true" tabindex="-1"></a>                picked <span class="op">=</span> <span class="va">self</span>._choose_voice_to_preview(engine, voices)</span>
+<span id="cb70-26"><a href="#cb70-26" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> picked <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb70-27"><a href="#cb70-27" aria-hidden="true" tabindex="-1"></a>                    <span class="va">self</span>._set_status(<span class="st">&quot;Voice test cancelled.&quot;</span>)</span>
+<span id="cb70-28"><a href="#cb70-28" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">return</span></span>
+<span id="cb70-29"><a href="#cb70-29" aria-hidden="true" tabindex="-1"></a>                chosen <span class="op">=</span> picked</span>
+<span id="cb70-30"><a href="#cb70-30" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>._announce(<span class="ss">f&quot;Playing </span><span class="sc">{</span>chosen<span class="sc">.</span>name<span class="sc">}</span><span class="ss">.&quot;</span>)</span>
+<span id="cb70-31"><a href="#cb70-31" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>._preview_voice(engine, chosen.<span class="bu">id</span>, live<span class="op">=</span><span class="va">True</span>, text<span class="op">=</span>oc.voice_preview_phrase())</span>
+<span id="cb70-32"><a href="#cb70-32" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span></span></code></pre></div>
+<p>Change the signature and the final call:</p>
+<div class="sourceCode" id="cb71"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _test_optional_component(</span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>, component_id: <span class="bu">str</span>, <span class="op">*</span>, on_state_change: Callable[[<span class="bu">str</span>], <span class="va">None</span>] <span class="op">|</span> <span class="va">None</span> <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a>        <span class="co">&quot;&quot;&quot;Prove *component_id* works: voices play a spoken sample; other</span></span>
+<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a><span class="co">        components run their wx-free self-test on a worker and announce the</span></span>
+<span id="cb71-6"><a href="#cb71-6" aria-hidden="true" tabindex="-1"></a><span class="co">        result. Expected &quot;get one more piece&quot; states (no model / no voice) route</span></span>
+<span id="cb71-7"><a href="#cb71-7" aria-hidden="true" tabindex="-1"></a><span class="co">        the user to Manage rather than erroring or offering a bug report.&quot;&quot;&quot;</span></span>
+<span id="cb71-8"><a href="#cb71-8" aria-hidden="true" tabindex="-1"></a>        <span class="im">from</span> quill.core <span class="im">import</span> optional_components <span class="im">as</span> oc</span>
+<span id="cb71-9"><a href="#cb71-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb71-10"><a href="#cb71-10" aria-hidden="true" tabindex="-1"></a>        engine <span class="op">=</span> oc.read_aloud_engine_for_component(component_id)</span>
+<span id="cb71-11"><a href="#cb71-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> engine <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb71-12"><a href="#cb71-12" aria-hidden="true" tabindex="-1"></a>            voices <span class="op">=</span> oc.available_live_voices(engine)</span>
+<span id="cb71-13"><a href="#cb71-13" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="kw">not</span> voices:</span>
+<span id="cb71-14"><a href="#cb71-14" aria-hidden="true" tabindex="-1"></a>                <span class="co"># Engine present but no voice to speak yet: route to Manage Voices</span></span>
+<span id="cb71-15"><a href="#cb71-15" aria-hidden="true" tabindex="-1"></a>                <span class="co"># instead of previewing an empty voice (which errors with &quot;model</span></span>
+<span id="cb71-16"><a href="#cb71-16" aria-hidden="true" tabindex="-1"></a>                <span class="co"># file not found&quot; and leaves focus stranded behind the hub).</span></span>
+<span id="cb71-17"><a href="#cb71-17" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>._set_status(</span>
+<span id="cb71-18"><a href="#cb71-18" aria-hidden="true" tabindex="-1"></a>                    <span class="ss">f&quot;No </span><span class="sc">{</span>engine<span class="sc">}</span><span class="ss"> voice is downloaded yet — opening Manage Voices to get one.&quot;</span></span>
+<span id="cb71-19"><a href="#cb71-19" aria-hidden="true" tabindex="-1"></a>                )</span>
+<span id="cb71-20"><a href="#cb71-20" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>._manage_component_models_or_voices(component_id)</span>
+<span id="cb71-21"><a href="#cb71-21" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span></span>
+<span id="cb71-22"><a href="#cb71-22" aria-hidden="true" tabindex="-1"></a>            <span class="co"># One voice: play it straight away (no dialog friction). More than one:</span></span>
+<span id="cb71-23"><a href="#cb71-23" aria-hidden="true" tabindex="-1"></a>            <span class="co"># let the user pick which to hear via an accessible single-select</span></span>
+<span id="cb71-24"><a href="#cb71-24" aria-hidden="true" tabindex="-1"></a>            <span class="co"># dialog, so Test is a small delight rather than always voice #1.</span></span>
+<span id="cb71-25"><a href="#cb71-25" aria-hidden="true" tabindex="-1"></a>            chosen <span class="op">=</span> voices[<span class="dv">0</span>]</span>
+<span id="cb71-26"><a href="#cb71-26" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="bu">len</span>(voices) <span class="op">&gt;</span> <span class="dv">1</span>:</span>
+<span id="cb71-27"><a href="#cb71-27" aria-hidden="true" tabindex="-1"></a>                picked <span class="op">=</span> <span class="va">self</span>._choose_voice_to_preview(engine, voices)</span>
+<span id="cb71-28"><a href="#cb71-28" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> picked <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb71-29"><a href="#cb71-29" aria-hidden="true" tabindex="-1"></a>                    <span class="va">self</span>._set_status(<span class="st">&quot;Voice test cancelled.&quot;</span>)</span>
+<span id="cb71-30"><a href="#cb71-30" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">return</span></span>
+<span id="cb71-31"><a href="#cb71-31" aria-hidden="true" tabindex="-1"></a>                chosen <span class="op">=</span> picked</span>
+<span id="cb71-32"><a href="#cb71-32" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>._announce(<span class="ss">f&quot;Playing </span><span class="sc">{</span>chosen<span class="sc">.</span>name<span class="sc">}</span><span class="ss">.&quot;</span>)</span>
+<span id="cb71-33"><a href="#cb71-33" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>._preview_voice(</span>
+<span id="cb71-34"><a href="#cb71-34" aria-hidden="true" tabindex="-1"></a>                engine,</span>
+<span id="cb71-35"><a href="#cb71-35" aria-hidden="true" tabindex="-1"></a>                chosen.<span class="bu">id</span>,</span>
+<span id="cb71-36"><a href="#cb71-36" aria-hidden="true" tabindex="-1"></a>                live<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb71-37"><a href="#cb71-37" aria-hidden="true" tabindex="-1"></a>                text<span class="op">=</span>oc.voice_preview_phrase(),</span>
+<span id="cb71-38"><a href="#cb71-38" aria-hidden="true" tabindex="-1"></a>                on_state_change<span class="op">=</span>on_state_change,</span>
+<span id="cb71-39"><a href="#cb71-39" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb71-40"><a href="#cb71-40" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span></span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Write the failing
+test</strong></label></li>
+</ul>
+<p>In <code>tests/unit/ui/test_optional_components_dialog.py</code>,
+add:</p>
+<div class="sourceCode" id="cb72"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_test_button_toggles_to_stop_for_voice_rows() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>    src <span class="op">=</span> _src(<span class="st">&quot;optional_components_dialog.py&quot;</span>)</span>
+<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&#39;&quot;&amp;Stop&quot;&#39;</span> <span class="kw">in</span> src</span>
+<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;controller.stop_test(&quot;</span> <span class="kw">in</span> src</span>
+<span id="cb72-5"><a href="#cb72-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;controller.is_previewable(&quot;</span> <span class="kw">in</span> src</span>
+<span id="cb72-6"><a href="#cb72-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-7"><a href="#cb72-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-8"><a href="#cb72-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_controller_protocol_supports_preview_state() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb72-9"><a href="#cb72-9" aria-hidden="true" tabindex="-1"></a>    src <span class="op">=</span> _src(<span class="st">&quot;optional_components_dialog.py&quot;</span>)</span>
+<span id="cb72-10"><a href="#cb72-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;def stop_test(self, component_id: str) -&gt; None:&quot;</span> <span class="kw">in</span> src</span>
+<span id="cb72-11"><a href="#cb72-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;def is_previewable(self, component_id: str) -&gt; bool:&quot;</span> <span class="kw">in</span> src</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 5: Run test to verify
+it fails, then passes</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/ui/test_optional_components_dialog.py -k "toggles_to_stop_for_voice or supports_preview_state" -v</code>
+Expected: FAIL before Steps 1-3, PASS after.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 6: Run the full hub +
+speech test files to check for regressions</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/ui/test_optional_components_dialog.py tests/unit/core/test_optional_components.py -q</code>
+Expected: all PASS</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 7:
+Commit</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb73"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/ui/optional_components_dialog.py quill/ui/main_frame_speech.py tests/unit/ui/test_optional_components_dialog.py</span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(speech): hub Test button toggles to Stop for voice components&quot;</span></span></code></pre></div>
+<hr />
+<h3
+id="task-7-documentation-user-guide-prd-changelog-release-notes">Task 7:
+Documentation — user guide, PRD, CHANGELOG, release notes</h3>
+<p><strong>Files:</strong> - Modify:
+<code>docs/user guide/userguide.md</code> - Modify:
+<code>docs/Product Requirement Documents and Specifications/QUILL-PRD.md</code>
+- Modify: <code>CHANGELOG.md</code> - Modify:
+<code>docs/release notes/release0.9.0-beta2.md</code></p>
+<p><strong>Interfaces:</strong> none (prose only).</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: User
+guide</strong></label></li>
+</ul>
+<p>In <code>docs/user guide/userguide.md</code>, find the section
+documenting voice preview (search for “Preview Selected Voice” or the
+Voice Browser section). Add a paragraph:</p>
+<div class="sourceCode" id="cb74"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>When you preview a voice, QUILL stops any preview already playing before</span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>starting the new one, so previews never overlap. If a voice takes a moment</span>
+<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a>to synthesize (some neural voices do), QUILL plays a short earcon and, by</span>
+<span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a>default, says &quot;Generating preview, please wait&quot; so you know it&#39;s working —</span>
+<span id="cb74-5"><a href="#cb74-5" aria-hidden="true" tabindex="-1"></a>turn either off independently in Preferences &gt; Sound (the earcon, via Sound</span>
+<span id="cb74-6"><a href="#cb74-6" aria-hidden="true" tabindex="-1"></a>Events) and Preferences &gt; Accessibility (the announcement). While a preview</span>
+<span id="cb74-7"><a href="#cb74-7" aria-hidden="true" tabindex="-1"></a>is generating or playing, the Preview/Test button becomes a Stop button so</span>
+<span id="cb74-8"><a href="#cb74-8" aria-hidden="true" tabindex="-1"></a>you can cancel it at any time.</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2:
+PRD</strong></label></li>
+</ul>
+<p>In
+<code>docs/Product Requirement Documents and Specifications/QUILL-PRD.md</code>,
+find the Read Aloud / voice preview section (search for “voice preview”
+or “Voice Browser”). Add a subsection:</p>
+<div class="sourceCode" id="cb75"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Voice preview feedback</span></span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a>Voice preview (Voice Browser dialog and the Download Optional Components</span>
+<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a>hub&#39;s Test button) reports its own state: starting a new preview always</span>
+<span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a>stops/supersedes a prior one (no overlapping audio or announcements), a</span>
+<span id="cb75-6"><a href="#cb75-6" aria-hidden="true" tabindex="-1"></a>one-shot &quot;generating, please wait&quot; cue (earcon + optional spoken</span>
+<span id="cb75-7"><a href="#cb75-7" aria-hidden="true" tabindex="-1"></a>announcement, <span class="in">`voice_preview_announce_generating`</span>, default on) fires only</span>
+<span id="cb75-8"><a href="#cb75-8" aria-hidden="true" tabindex="-1"></a>when synthesis is still running after a short delay, and the Preview/Test</span>
+<span id="cb75-9"><a href="#cb75-9" aria-hidden="true" tabindex="-1"></a>button toggles to Stop while a preview is generating or playing. No true</span>
+<span id="cb75-10"><a href="#cb75-10" aria-hidden="true" tabindex="-1"></a>pause/resume; Stop cancels outright. An in-flight external synthesis call</span>
+<span id="cb75-11"><a href="#cb75-11" aria-hidden="true" tabindex="-1"></a>that gets superseded is not force-killed — it completes in the background</span>
+<span id="cb75-12"><a href="#cb75-12" aria-hidden="true" tabindex="-1"></a>and its result is discarded.</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3:
+CHANGELOG</strong></label></li>
+</ul>
+<p>In <code>CHANGELOG.md</code>, add an entry under the current
+unreleased/beta2 heading:</p>
+<div class="sourceCode" id="cb76"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Voice preview (Voice Browser, and Test in Download Optional Components) now</span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>  plays a &quot;generating, please wait&quot; cue for slow voice synthesis, never</span>
+<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a>  overlaps a prior preview with a new one, and its button toggles to Stop</span>
+<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a>  while a preview is generating or playing.</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Release
+notes</strong></label></li>
+</ul>
+<p>In <code>docs/release notes/release0.9.0-beta2.md</code>, add an
+entry in the appropriate features/fixes section:</p>
+<div class="sourceCode" id="cb77"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Voice preview feedback.** Previewing a voice no longer overlaps a</span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>  previous preview&#39;s audio or announcement. Slow voice synthesis now plays a</span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a>  short cue and (by default) says &quot;Generating preview, please wait,&quot; and the</span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>  Preview/Test button turns into a Stop button while a preview is active.</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 5: Regenerate the
+rendered doc artifacts</strong></label></li>
+</ul>
+<p>Run:
+<code>powershell -File scripts/gen.ps1 -RootPath "docs/user guide" -NoPause</code>
+Run:
+<code>powershell -File scripts/gen.ps1 -RootPath "docs/Product Requirement Documents and Specifications" -NoPause</code>
+Run:
+<code>powershell -File scripts/gen.ps1 -RootPath "docs/release notes" -NoPause</code>
+Run:
+<code>powershell -File scripts/gen.ps1 -RootPath "." -NoPause</code>
+(regenerates <code>CHANGELOG.html</code>/<code>.epub</code> —
+<strong>only stage <code>CHANGELOG.html</code>/<code>.epub</code> from
+this run</strong>, since running gen.ps1 over <code>.</code> touches
+every <code>.md</code> in the repo; discard any other incidental diffs
+with <code>git restore --worktree &lt;path&gt;</code> before committing,
+exactly as done when this spec’s own artifacts were generated)</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 6:
+Commit</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb78"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add <span class="st">&quot;docs/user guide/userguide.md&quot;</span> <span class="st">&quot;docs/user guide/userguide.html&quot;</span> <span class="st">&quot;docs/user guide/userguide.epub&quot;</span> <span class="dt">\</span></span>
+<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;docs/Product Requirement Documents and Specifications/QUILL-PRD.md&quot;</span> <span class="dt">\</span></span>
+<span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;docs/Product Requirement Documents and Specifications/QUILL-PRD.html&quot;</span> <span class="dt">\</span></span>
+<span id="cb78-4"><a href="#cb78-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;docs/Product Requirement Documents and Specifications/QUILL-PRD.epub&quot;</span> <span class="dt">\</span></span>
+<span id="cb78-5"><a href="#cb78-5" aria-hidden="true" tabindex="-1"></a>        CHANGELOG.md CHANGELOG.html CHANGELOG.epub <span class="dt">\</span></span>
+<span id="cb78-6"><a href="#cb78-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;docs/release notes/release0.9.0-beta2.md&quot;</span> <span class="dt">\</span></span>
+<span id="cb78-7"><a href="#cb78-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;docs/release notes/release0.9.0-beta2.html&quot;</span> <span class="dt">\</span></span>
+<span id="cb78-8"><a href="#cb78-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;docs/release notes/release0.9.0-beta2.epub&quot;</span></span>
+<span id="cb78-9"><a href="#cb78-9" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;docs: document voice preview feedback (user guide, PRD, CHANGELOG, release notes)&quot;</span></span></code></pre></div>
+<hr />
+<h2 id="final-check">Final check</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Run the full touched-area test
+surface:
+<code>pytest tests/unit/core/test_voice_preview_sound_event.py tests/unit/core/test_settings.py tests/unit/ui/test_voice_preview_generation.py tests/unit/ui/test_voice_browser_dialog.py tests/unit/ui/test_optional_components_dialog.py tests/unit/core/test_optional_components.py tests/unit/core/test_sound_pack.py tests/unit/core/test_conversation_sound_events.py tests/unit/ui/test_sound_events_dialog.py -q</code></label></li>
+<li><label><input
+type="checkbox" /><code>ruff check quill/core/sound_events.py quill/ui/sound_events_dialog.py quill/core/settings.py quill/core/settings_specs.py quill/ui/main_frame.py quill/ui/voice_browser_dialog.py quill/ui/optional_components_dialog.py quill/ui/main_frame_speech.py</code></label></li>
+<li><label><input
+type="checkbox" /><code>mypy quill/core quill/io</code> (scoped, per
+project convention — <code>quill/ui</code> is gradually typed and
+excluded)</label></li>
+<li><label><input type="checkbox" />Report the working tree state (clean
+vs. remaining diffs) and a summary of the 7 commits.</label></li>
+</ul>
+</body>
+</html>
