@@ -1,13 +1,12 @@
 # Backlog review: remaining open issues
 
-Proposals and priorities for the rest of the open backlog. **Already shipped and documented in the CHANGELOG / release notes (removed from this future-facing list):** #909 (the free-first import pipeline is now a base dependency), #890 (Casual Writer tightened to a true "just write" profile), the Report-a-Bug "No token" build regression, #897 (Wikipedia lookup), #895 (Clip Library), #900 (Send/Copy as Email), #894 (Accessible AutoOutline), and #896 (Work Personas). Closed items (#898 Second View, #901 tablet/low-vision, #905/#906/#907 Convert-Non-ASCII bugs) are excluded.
+Proposals and priorities for the rest of the open backlog. **Already shipped and documented in the CHANGELOG / release notes (removed from this future-facing list):** #909 (the free-first import pipeline is now a base dependency), #890 (Casual Writer tightened to a true "just write" profile), the Report-a-Bug "No token" build regression, #897 (Wikipedia lookup), #895 (Clip Library), #900 (Send/Copy as Email), #894 (Accessible AutoOutline), #896 (Work Personas), and #899 (Mandatory alt text + inline image descriptions). Closed items (#898 Second View, #901 tablet/low-vision, #905/#906/#907 Convert-Non-ASCII bugs) are excluded.
 
 ## Priority ladder (my recommendation)
 
 | Rank | Issue | Title (short) | Impact | Confidence | Why here |
 |------|-------|---------------|--------|-----------|----------|
 | **P1** | #891 | Print Studio (preview, margins, odd/even/reverse) | High | Medium | "The biggest concrete gap" in the Jarte comparison; a blind user still prints for sighted colleagues. |
-| **P1** | #899 | Mandatory alt text + inline object placeholders | High | Medium | The one genuine *accessibility* win here (not just parity). Now well-scoped — GLOW already does audit/repair; only insertion-time enforcement + inline announcement remain. |
 | **P2** | #892 | Keyboard-first Header/Footer Builder | High | Medium | Named Jarte-Plus gap; self-contained, but real net-new metadata + export work. Natural sibling to #891. |
 | **P3** | #893 | "Rich Document" discoverability | Medium | High (feature exists) | Downgraded per the issue's own re-check: serves a *secondary* audience (low-vision / ex-Word), not QUILL's core keyboard-first user. Low cost, low urgency. |
 
@@ -24,20 +23,6 @@ Rationale for the shape: the two items that are genuinely *mission* work (printi
 **Non-goals:** No WYSIWYG renderer. Header/footer *authoring* is #892.
 
 **Priority:** P1 — most-flagged gap; medium confidence because it's real net-new UI + print-pipeline work. Pairs naturally with #892 as a "printing & page layout" epic.
-
----
-
-## #899 — Mandatory alt text + accessible inline object placeholders — **P1**
-
-**State (corrected per the issue's own re-check):** GLOW (`quill/core/glow.py`) already *audits* missing alt text, *auto-fixes* it, can *generate* it via opt-in cloud AI, and inventories every image's alt status (`link_inventory.py`, `ImageAltRecord`). So an accessible image object model already exists — as an after-the-fact audit pass.
-
-**The two real gaps this issue should now own:**
-1. **Insertion-time enforcement** — make alt text a *required field* in the Insert Image flow, so a document can't accrue un-alt-texted images in the first place (proactive, vs. GLOW's reactive repair).
-2. **Inline reading experience** — what a screen reader announces as the caret passes an image *in the live document*: "Image: sunset.png, alt text: a sunset over the lake" vs. **"Image: sunset.png, alt text MISSING"** — making absent alt text impossible to *miss*, not just impossible to *see*.
-
-Extend the same idea to non-image embeds as accessible placeholders ("Page break", "Equation", "Embedded object removed for safety"). Equations/OCR content likely reuse MathCAT + OCR infrastructure — investigate before designing. Export must map cleanly onto DOCX/HTML/EPUB alt conventions.
-
-**Priority:** P1 — the strongest *accessibility* item on the list (not mere parity), and now well-scoped since GLOW carries the heavy lifting. Recommend a short spike on the inline-object model (the document is plain-text/Markdown; `![alt](path)` exists but there's no broader placeholder concept yet) before committing to a design.
 
 ---
 
@@ -68,10 +53,9 @@ Extend the same idea to non-image embeds as accessible placeholders ("Page break
 ## Suggested sequencing
 
 1. **Printing epic: #891 then #892** -- the single biggest comparison gap, done as one coherent "printing & page layout" push.
-2. **#899** -- spike the inline-object model, then insertion-time enforcement + inline announcement on top of GLOW.
-3. **#893** -- low-urgency discoverability polish; fold into whatever onboarding-wizard work is already happening rather than scheduling standalone.
+2. **#893** -- low-urgency discoverability polish; fold into whatever onboarding-wizard work is already happening rather than scheduling standalone.
 
-*(Accessibility note: #891, #892, #899 all add user-facing surfaces to a screen-reader-first product. Each proposal above bakes in the non-visual equivalent -- spoken print summaries, keyboard-first builders, inline "alt text MISSING" announcements -- rather than treating accessibility as a later review pass. When these move to implementation, route the new dialogs through `_show_modal_dialog` + `apply_modal_ids` and the existing dialog-inventory gate, same as every other QUILL surface.)*
+*(Accessibility note: #891 and #892 both add user-facing surfaces to a screen-reader-first product. Each proposal above bakes in the non-visual equivalent -- spoken print summaries, keyboard-first builders -- rather than treating accessibility as a later review pass. When these move to implementation, route the new dialogs through `_show_modal_dialog` + `apply_modal_ids` and the existing dialog-inventory gate, same as every other QUILL surface.)*
 
 ---
 
