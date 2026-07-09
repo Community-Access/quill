@@ -176,7 +176,7 @@ def show_optional_components_picker(
         ready = comp.effective_ready
         download_btn.Enable(not ready)
         download_btn.SetLabel("Installed" if ready else "&Download")
-        test_btn.Enable(ready)
+        test_btn.Enable(ready or testing["active"])
         if not testing["active"]:
             test_btn.SetLabel("&Test")
         remove_btn.Enable(comp.installed and controller.removable(comp.component_id))

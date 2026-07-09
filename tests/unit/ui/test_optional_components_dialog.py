@@ -36,7 +36,7 @@ def test_dialog_gates_download_when_installed() -> None:
     # agree, but the Dictation row is "installed" as soon as its engine binary
     # exists even with no model downloaded yet (#kokoro-focus follow-up).
     assert "download_btn.Enable(not ready)" in src
-    assert "test_btn.Enable(ready)" in src
+    assert 'test_btn.Enable(ready or testing["active"])' in src
     assert "comp.effective_ready" in src
 
 
@@ -128,3 +128,14 @@ def test_controller_protocol_supports_preview_state() -> None:
     src = _src("optional_components_dialog.py")
     assert "def stop_test(self, component_id: str) -> None:" in src
     assert "def is_previewable(self, component_id: str) -> bool:" in src
+
+
+def test_test_button_stays_enabled_across_a_selection_change_mid_preview() -> None:
+    """Regression (voice-preview-feedback final review): a running preview must
+    not strand the user with a disabled-but-labeled-Stop button just because
+    they navigated to a not-yet-downloaded row. Enable() has to key off
+    ``testing["active"]`` in addition to the newly-selected row's readiness --
+    keying off ``ready`` alone (the pre-fix expression) meant Stop went
+    unreachable the moment focus moved to a not-ready row."""
+    src = _src("optional_components_dialog.py")
+    assert 'test_btn.Enable(ready or testing["active"])' in src

@@ -1054,7 +1054,7 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
     ),
     SettingSpec(
         "voice_preview_announce_generating",
-        "Announce \"Generating preview, please wait\" for slow voice previews",
+        'Announce "Generating preview, please wait" for slow voice previews',
         "accessibility",
         "bool",
         (

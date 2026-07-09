@@ -516,8 +516,10 @@ class VoiceBrowserDialog:
             detail = f"{detail} — {not_dl}" if detail else not_dl
         self._detail_lbl.SetLabel(detail)
         # Preview works when the voice is ready (real synthesis) or when a
-        # bundled sample clip exists for it.
-        self._preview_btn.Enable(ready or has_sample)
+        # bundled sample clip exists for it. Stays enabled whenever a preview
+        # is actually running, even if the newly-selected row isn't ready --
+        # otherwise the Stop button goes disabled out from under the user.
+        self._preview_btn.Enable(ready or has_sample or self._previewing)
         # Rate/volume/pitch/speed/character apply to real synthesis only.
         self._set_voice_settings_enabled(ready)
 
