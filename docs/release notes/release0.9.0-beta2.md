@@ -138,6 +138,10 @@ on by default, right next to your line/column position.
 - **macOS: Pandoc from the pandoc.org installer is found.** A QUILL window opened
   from Finder doesn't inherit a Terminal's folders, so a real Pandoc install could
   look missing. QUILL now checks the usual locations directly.
+- **Voice preview feedback.** Previewing a voice no longer overlaps a previous
+  preview's audio or announcement. Slow voice synthesis now plays a short cue and
+  (by default) says "Generating preview, please wait," and the Preview/Test button
+  turns into a Stop button while a preview is active.
 
 ## Kinder to screen readers
 
