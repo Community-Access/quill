@@ -444,6 +444,7 @@
   "prewarm_dictation_model",
   "prewarm_kokoro_model",
   "print_document",
+  "print_studio",
   "prune_orphaned_github_temp",
   "publish_current_note",
   "quick_switch_note",

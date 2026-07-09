@@ -422,6 +422,7 @@ from quill.ui.main_frame_menu import MenuBuilderMixin
 from quill.ui.main_frame_notebook import NotebookUIMixin
 from quill.ui.main_frame_power_tools import PowerToolsActionsMixin
 from quill.ui.main_frame_power_tools_menu import PowerToolsMenuMixin
+from quill.ui.main_frame_print import PrintMixin
 from quill.ui.main_frame_profile_picker import ProfilePickerMixin
 from quill.ui.main_frame_quill_key import QuillKeyMixin
 from quill.ui.main_frame_quillins import QuillinsMenuMixin
@@ -786,6 +787,7 @@ class MainFrame(
     CopyTrayMixin,
     ClipLibraryMixin,
     ImageAltMixin,
+    PrintMixin,
     WorkPersonaMixin,
     ProfilePickerMixin,
     SshEditingMixin,
@@ -1668,6 +1670,12 @@ class MainFrame(
             "Print...",
             self.print_document,
             self._binding_for("file.print"),
+        )
+        self.commands.register(
+            "file.print_studio",
+            "Print Studio...",
+            self.print_studio,
+            self._binding_for("file.print_studio"),
         )
         self.commands.register(
             "file.save_as_plain_text",
@@ -3744,6 +3752,7 @@ class MainFrame(
             "file.restore_backup": self._id_restore_backup,
             "file.page_setup": self._id_page_setup,
             "file.print": self._id_print,
+            "file.print_studio": self._id_print_studio,
             "window.next_document": self._id_next_document,
             "window.previous_document": self._id_previous_document,
             "window.go_to_document_1": self._id_go_to_document[0],
@@ -9929,85 +9938,6 @@ class MainFrame(
         self._replace_document_text(restored_text)
         self._refresh_title()
         self._set_status(f"Restored backup {backup_path.name}")
-
-    def _build_text_printout(self, title: str, text: str) -> object:
-        wx = self._wx
-
-        class _TextPrintout(wx.Printout):
-            def __init__(self, print_title: str, print_text: str) -> None:
-                super().__init__(print_title)
-                self._text = print_text
-
-            def OnPrintPage(self, _page: int) -> bool:
-                dc = self.GetDC()
-                if dc is None:
-                    return False
-                dc.SetFont(
-                    wx.Font(
-                        10,
-                        wx.FONTFAMILY_TELETYPE,
-                        wx.FONTSTYLE_NORMAL,
-                        wx.FONTWEIGHT_NORMAL,
-                    )
-                )
-                width, height = dc.GetSize()
-                margin = 50
-                y = margin
-                line_height = dc.GetTextExtent("A")[1] + 2
-                for line in self._text.splitlines() or [""]:
-                    dc.DrawText(line, margin, y)
-                    y += line_height
-                    if y > height - margin:
-                        break
-                return True
-
-            def HasPage(self, page: int) -> bool:
-                return page == 1
-
-            def GetPageInfo(self) -> tuple[int, int, int, int]:
-                return (1, 1, 1, 1)
-
-        return _TextPrintout(title, text)
-
-    def page_setup(self) -> None:
-        wx = self._wx
-        dialog = wx.PageSetupDialog(self.frame, self._page_setup_data)
-        try:
-            if self._show_modal_dialog(dialog, "Page Setup") != wx.ID_OK:
-                self._set_status("Page setup cancelled")
-                return
-            self._page_setup_data = dialog.GetPageSetupData()
-            self._print_data = self._page_setup_data.GetPrintData()
-            self._set_status("Page setup updated")
-        finally:
-            dialog.Destroy()
-
-    def print_document(self) -> None:
-        wx = self._wx
-        text = self.editor.GetValue()
-        printout = self._build_text_printout(self.document.name, text)
-        printer = wx.Printer(wx.PrintDialogData(self._print_data))
-        try:
-            success = bool(printer.Print(self.frame, printout, True))
-        except Exception as error:
-            printout.Destroy()
-            self._show_message_box(f"Printing failed: {error}", "Print", wx.ICON_ERROR | wx.OK)
-            return
-        if not success:
-            read_last_error = getattr(printer, "GetLastError", None)
-            last_error = read_last_error() if callable(read_last_error) else None
-            cancelled_code = getattr(wx, "PRINTER_CANCELLED", None)
-            no_error_code = getattr(wx, "PRINTER_NO_ERROR", None)
-            if last_error == cancelled_code or last_error in {None, no_error_code}:
-                self._set_status("Printing cancelled")
-                printout.Destroy()
-                return
-            self._show_message_box("Printing failed.", "Print", wx.ICON_ERROR | wx.OK)
-            printout.Destroy()
-            return
-        self._print_data = printer.GetPrintDialogData().GetPrintData()
-        printout.Destroy()
-        self._set_status("Printed document")
 
     # Save As wildcard filter index -> the extension that filter implies.
     _SAVE_FILTER_EXTENSIONS = {0: ".txt", 1: ".md", 2: ".html", 3: ".rtf", 4: ".docx"}

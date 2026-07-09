@@ -327,6 +327,7 @@
   "quill/ui/palette.py::CommandPaletteDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/palette.py::GoToAnythingDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/preview_dialog.py::AccessibleHtmlDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/print_studio_dialog.py::PrintStudioDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/profile_picker.py::ProfilePickerDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/prompt_library_dialog.py::PromptLibraryDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/prompt_library_dialog.py::PromptLibraryDialog._on_delete::wx.MessageDialog": "native",
