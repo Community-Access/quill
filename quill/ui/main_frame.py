@@ -17778,7 +17778,13 @@ class MainFrame(
         _os.startfile(str(sample_path))
 
     def _preview_voice(
-        self, engine: str, voice_id: str, *, live: bool = False, text: str | None = None
+        self,
+        engine: str,
+        voice_id: str,
+        *,
+        live: bool = False,
+        text: str | None = None,
+        on_state_change: Callable[[str], None] | None = None,
     ) -> None:
         """Preview *voice_id* through *engine* on a background thread.
 
@@ -17802,6 +17808,10 @@ class MainFrame(
         def _still_current() -> bool:
             return getattr(self, "_preview_generation", 0) == my_generation
 
+        def _report(state: str) -> None:
+            if on_state_change is not None and _still_current():
+                self._wx.CallAfter(on_state_change, state)
+
         sample = text or self._PREVIEW_TEXT
         s = self.settings
 
@@ -17814,12 +17824,14 @@ class MainFrame(
                 return
 
             def _play_sample(_progress: Callable[[str, int, int], None]) -> object:
+                _report("playing")
                 self._play_preview_asset(preview_sample)
                 return None
 
             def _sample_done(_r: object) -> None:
                 if _still_current():
                     self._set_status("Preview finished")
+                _report("idle")
 
             self._run_background_task(
                 f"Previewing {engine} voice",
@@ -17832,6 +17844,7 @@ class MainFrame(
         # dedicated thread, avoiding the "started a loop" error from ThreadPoolExecutor.
         if engine == "sapi5":
             try:
+                _report("playing")
                 self._read_aloud.start(
                     sample,
                     0,
@@ -17841,7 +17854,7 @@ class MainFrame(
                     volume=s.read_aloud_volume / 100.0,
                     pitch=s.read_aloud_pitch,
                     on_state_change=lambda state: (
-                        self._wx.CallAfter(self._set_status, "Preview finished")
+                        (self._wx.CallAfter(self._set_status, "Preview finished"), _report("idle"))
                         if state in ("idle", "error") and _still_current()
                         else None
                     ),
@@ -17913,6 +17926,7 @@ class MainFrame(
                     )
                 else:
                     raise ReadAloudUnavailableError(f"Unknown engine: {engine}")
+                _report("playing")
                 self._play_preview_asset(wav)
             finally:
                 try:
@@ -17928,7 +17942,9 @@ class MainFrame(
             self._cancel_preview_cue_timer()
             if _still_current():
                 self._set_status("Preview finished")
+            _report("idle")
 
+        _report("generating")
         self._preview_cue_timer = self._wx.CallLater(400, self._fire_generating_cue, my_generation)
         self._run_background_task(
             f"Previewing {engine} voice",
@@ -18005,6 +18021,7 @@ class MainFrame(
             "piper_model_dir": default_piper_model_dir(),
             "settings": self.settings,
             "preview_fn": self._preview_voice,
+            "preview_stop_fn": self._stop_active_voice_preview,
             "elevenlabs_api_key": self._get_elevenlabs_api_key() if elevenlabs_ready else "",
             "has_preview_sample": (
                 lambda eng, vid: self._voice_preview_sample_path(eng, vid) is not None
