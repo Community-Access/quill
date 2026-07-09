@@ -402,6 +402,7 @@ from quill.ui.main_frame_braille_phase3 import BrailleProofingCommandsMixin
 from quill.ui.main_frame_braille_repair import BrailleRepairMixin
 from quill.ui.main_frame_browse import BrowseModeMixin
 from quill.ui.main_frame_classic_editor import ClassicEditorMixin
+from quill.ui.main_frame_clip_library import ClipLibraryMixin
 from quill.ui.main_frame_copy_tray import CopyTrayMixin
 from quill.ui.main_frame_devtools import DevToolsMixin
 from quill.ui.main_frame_dictation_hotkeys import DictationHotkeysMixin
@@ -781,6 +782,7 @@ class MainFrame(
     DictationHotkeysMixin,
     SectionMoveMixin,
     CopyTrayMixin,
+    ClipLibraryMixin,
     ProfilePickerMixin,
     SshEditingMixin,
     GitHubRemoteMixin,

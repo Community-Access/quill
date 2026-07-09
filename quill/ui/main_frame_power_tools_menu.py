@@ -565,6 +565,27 @@ def _build_power_tools_registrar() -> FirstPartyRegistrar:
         separator_before=False,
     )
 
+    # Edit > Clip Library (#895) -- a rolling history beneath Copy Tray's
+    # curated 12 slots, sharing the same "copy_tray" menu group/section since
+    # it's the natural neighbor. keep_selection_in_clip_library /
+    # open_clip_library live in main_frame_clip_library.py's ClipLibraryMixin.
+    add(
+        id="edit.keep_selection_in_clip_library",
+        title="Keep Selection in Clip Library",
+        top_level="Edit",
+        group="copy_tray",
+        label="&Keep Selection in Clip Library",
+        separator_before=True,
+    )
+    add(
+        id="edit.open_clip_library",
+        title="Open Clip Library",
+        top_level="Edit",
+        group="copy_tray",
+        label="Open Clip &Library...",
+        separator_before=False,
+    )
+
     # Tools > Advanced (the cohesive remainder) --------------------------
     add(
         id="power.run_current_file",

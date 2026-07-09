@@ -104,6 +104,10 @@ _POWER_TOOLS_COMMAND_IDS = [
     # in MainFrame._build_commands to avoid duplicate menu entries)
     "edit.open_copy_tray",
     "edit.clear_all_tray_slots",
+    # Clip Library (#895) -- shares the copy_tray menu group as its natural
+    # neighbor; handlers live on ClipLibraryMixin, not CopyTrayMixin.
+    "edit.keep_selection_in_clip_library",
+    "edit.open_clip_library",
 ]
 
 
@@ -204,12 +208,10 @@ def test_read_only_state_refreshes_on_tab_switch() -> None:
 
 def test_read_only_state_refreshes_on_open() -> None:
     # Newly opened/selected tabs must re-apply a persisted read-only guard.
-    # #616: the macOS branch and its explanatory comment, the braille
-    # RichEdit-version handling, and the Experimental editor-surface / hide-border
-    # branch (now double-gated: master switch + editor-surfaces acknowledgement)
-    # all add lines to _create_document_tab before the refresh call, so widen
-    # the slice.
-    create_tab = _SOURCE[_SOURCE.index("def _create_document_tab") :][:6500]
+    # This is a fixed-width slice of a large, still-growing method; widen it
+    # generously (rather than to the exact current distance) so the next
+    # unrelated addition to _create_document_tab doesn't retrigger this.
+    create_tab = _SOURCE[_SOURCE.index("def _create_document_tab") :][:9000]
     assert "self._refresh_read_only_state()" in create_tab
 
 
@@ -222,6 +224,7 @@ def test_command_table_is_exactly_the_expected_ids_with_no_duplicates() -> None:
 
 def test_every_table_handler_exists_on_the_actions_mixin() -> None:
     from quill.ui.main_frame_classic_editor import ClassicEditorMixin
+    from quill.ui.main_frame_clip_library import ClipLibraryMixin
     from quill.ui.main_frame_copy_tray import CopyTrayMixin
     from quill.ui.main_frame_power_tools import PowerToolsActionsMixin
     from quill.ui.main_frame_power_tools_menu import _MIGRATED_HANDLERS
@@ -230,6 +233,9 @@ def test_every_table_handler_exists_on_the_actions_mixin() -> None:
     # lives on ClassicEditorMixin, extracted to keep main_frame_power_tools.py
     # within its GATE-11 budget.
     classic_ids = {"edit.repeat_command", "edit.restore_deletion", "power.describe_character"}
+    # Clip Library (#895) shares the copy_tray menu group but its handlers live
+    # on their own mixin, not CopyTrayMixin.
+    clip_library_ids = {"edit.keep_selection_in_clip_library", "edit.open_clip_library"}
 
     for command in POWER_TOOLS_COMMANDS:
         if command.id in _MIGRATED_HANDLERS:
@@ -241,6 +247,11 @@ def test_every_table_handler_exists_on_the_actions_mixin() -> None:
         if command.id in classic_ids:
             assert hasattr(ClassicEditorMixin, name), (
                 f"missing handler {name} on ClassicEditorMixin for {command.id}"
+            )
+            continue
+        if command.id in clip_library_ids:
+            assert hasattr(ClipLibraryMixin, name), (
+                f"missing handler {name} on ClipLibraryMixin for {command.id}"
             )
             continue
         # Copy Tray commands live on CopyTrayMixin, not PowerToolsActionsMixin.
@@ -286,6 +297,8 @@ def test_menu_recirculation_preserves_shipped_group_order() -> None:
         "copy_tray": [
             "edit.open_copy_tray",
             "edit.clear_all_tray_slots",
+            "edit.keep_selection_in_clip_library",
+            "edit.open_clip_library",
         ],
         "format_line": [
             "power.number_lines",
