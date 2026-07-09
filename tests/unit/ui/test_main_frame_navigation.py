@@ -1376,7 +1376,7 @@ def test_profile_choice_label_includes_description() -> None:
 def test_print_document_cancel_reports_cancelled() -> None:
     frame = _build_frame("alpha", insertion_point=0)
     frame._print_data = object()
-    frame._build_text_printout = lambda *_args: type(  # type: ignore[method-assign]
+    frame._build_text_printout = lambda *_args, **_kwargs: type(  # type: ignore[method-assign]
         "_Printout",
         (),
         {"Destroy": lambda self: None},
