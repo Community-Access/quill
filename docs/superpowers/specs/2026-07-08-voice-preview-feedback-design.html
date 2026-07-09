@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>2026-07-08-voice-preview-feedback-design</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1
+id="voice-preview-feedback-generating-cue-stop-the-prior-preview-playstop-button-design">Voice
+preview feedback: generating cue, stop-the-prior-preview, Play/Stop
+button — design</h1>
+<h2 id="problem">Problem</h2>
+<p>Previewing a voice (Voice Browser’s <strong>&amp;Preview Selected
+Voice</strong> button, and the Download Optional Components hub’s
+<strong>&amp;Test</strong> button for voice rows) has three related
+gaps, all traced to the same code path
+(<code>MainFrame._preview_voice</code> /
+<code>_play_preview_asset</code> in
+<code>quill/ui/main_frame.py</code>):</p>
+<ol type="1">
+<li><strong>No feedback while synthesis is slow.</strong>
+Neural/subprocess voices (Kokoro, Piper, eSpeak, DECtalk, ElevenLabs)
+can take a real, human-noticeable amount of time to synthesize before
+anything plays. There is no sound or announcement telling the user
+something is happening.</li>
+<li><strong>Overlapping previews.</strong> <code>_preview_voice</code>
+is dispatched as a fire-and-forget background thread via
+<code>_run_background_task</code> with no shared “currently previewing”
+state anywhere. Triggering a second preview while the first is still
+generating or playing does not stop the first — both its audio and its
+“Preview started”/“Preview finished” status announcements can overlap
+with the new one.</li>
+<li><strong>The button never reflects state.</strong> Both the Voice
+Browser’s Preview button and the hub’s Test button are static labels —
+they never become a Stop affordance while a preview is generating or
+playing, so there is no way to cancel one short of waiting it out.</li>
+</ol>
+<h2 id="non-goals">Non-goals</h2>
+<ul>
+<li><strong>No true pause/resume.</strong> WAV/MP3 preview playback here
+goes through <code>winsound.PlaySound</code> / Windows MCI, both
+blocking calls with no suspend-and-resume capability. The button is
+<strong>Preview ↔︎ Stop</strong>: clicking while active cancels playback
+outright; the next click starts fresh from the beginning. Building real
+pause/resume would mean replacing the blocking playback backend entirely
+— out of scope here.</li>
+<li><strong>No forced cancellation of in-flight external
+synthesis.</strong> If a Piper/ eSpeak/DECtalk subprocess or Kokoro’s
+Python call is still actively computing when the user starts a new
+preview (or hits Stop), QUILL does not kill it. It keeps running in the
+background to completion and its result is discarded silently (never
+played, no callback fires). Only <strong>playback</strong> and
+<strong>QUILL’s own announcements</strong> are guaranteed to stop
+immediately. This is a deliberate scope boundary, not an oversight —
+tracking and terminating arbitrary external processes/Python calls is a
+materially bigger change.</li>
+<li><strong>Not a new “mode” setting.</strong> No combined enum setting
+like <code>voice_preview_cue = sound|announcement|both|none</code>. The
+sound half already has a general, reusable per-event toggle system
+(Sound Events dialog); the announcement half gets one new boolean.
+Configuring “both” means both are independently on by default.</li>
+<li><strong>Not touching the SAPI5 Read Aloud preview’s underlying
+controller.</strong>
+<code>ReadAloudController.start</code>/<code>.stop()</code> already
+exists and already works for the <code>sapi5</code> preview branch; this
+design only adds the generation-token staleness check and Stop-button
+wiring around it, not new controller behavior.</li>
+</ul>
+<h2 id="design">Design</h2>
+<h3 id="single-active-preview-tracking-fixes-overlap">1. Single
+active-preview tracking (fixes overlap)</h3>
+<p><code>MainFrame</code> gains a small piece of state — a monotonically
+increasing generation counter
+(e.g. <code>self._preview_generation: int</code>) plus a reference to
+whatever is needed to stop the current preview.
+<code>_preview_voice</code> becomes the single choke point:</p>
+<ul>
+<li>On entry, increment the counter and capture
+<code>my_generation = self._preview_generation</code>.</li>
+<li>Immediately stop whatever was previously active:
+<ul>
+<li><code>sapi5</code> branch: <code>self._read_aloud.stop()</code>
+(existing method).</li>
+<li>WAV/MP3 branches (bundled sample or a synthesized clip): stop/purge
+the current <code>winsound</code>/MCI playback
+(<code>winsound.PlaySound(None, winsound.SND_PURGE)</code> and an MCI
+<code>stop</code>+<code>close</code> on the <code>quill_preview</code>
+alias, best-effort, never raising).</li>
+<li>Cancel any pending “generating” cue timer (§2).</li>
+</ul></li>
+<li>Every callback that eventually fires for this generation (the
+“generating” cue timer, the background-task completion handler, the
+<code>on_state_change</code> callback in §3) first checks
+<code>my_generation == self._preview_generation</code> and is a no-op if
+stale. This is what prevents a late-finishing old preview from
+announcing “Preview finished” or playing over a newer one, and is also
+the mechanism the non-goal above relies on (a stale generation’s result
+is simply dropped when it does arrive).</li>
+</ul>
+<h3 id="the-generating-please-wait-cue">2. The “generating, please wait”
+cue</h3>
+<ul>
+<li>When <code>_preview_voice</code> starts synthesis (i.e. every branch
+except sample playback, where there is nothing to wait for), it starts a
+one-shot <code>~400ms</code> <code>wx.CallLater</code> timer tagged with
+<code>my_generation</code>.</li>
+<li>If synthesis finishes first, the timer is cancelled and nothing
+fires — this is what keeps fast paths (SAPI5, sample playback, a fast
+Kokoro run) silent.</li>
+<li>If the timer fires first (still the current generation), it fires
+the cue <strong>once</strong>:
+<ul>
+<li><strong>Sound half:</strong>
+<code>post_sound(SoundEvent.VOICE_PREVIEW_GENERATING)</code> (new enum
+member in <code>quill/core/sound_events.py</code>). The bundled Ink pack
+(<code>quill/assets/sound_packs/ink/manifest.json</code>) maps this new
+event key to the <strong>existing</strong> <code>ai_start.wav</code>
+file (no new audio asset needed — same tone already used for “AI
+thinking started”, semantically the same “the system is working on it”
+cue). Because it is a real <code>SoundEvent</code> loaded from the pack,
+it automatically appears in the existing Sound Events dialog as its own
+togglable entry, and already respects the master
+<code>sound_enabled</code> on/off switch and <code>sound_volume</code> —
+no new sound infrastructure required.</li>
+<li><strong>Announcement half:</strong> a new setting,
+<code>voice_preview_announce_generating</code> (<code>bool</code>,
+default <code>True</code>, category <code>accessibility</code> in
+<code>quill/core/settings_specs.py</code> next to the other sound
+settings). When on, speaks “Generating preview, please wait” once via
+the existing <code>_announce</code> path.</li>
+<li>Both halves are independently toggleable through existing mechanisms
+(Sound Events dialog for the sound; the new setting for the
+announcement) — satisfying “configuration available” without a new
+combined setting.</li>
+</ul></li>
+<li>No repetition: this is genuinely one-shot per generation, matching
+the approved answer. If a generation somehow takes much longer, nothing
+further fires until the real preview plays, an error surfaces, or the
+user hits Stop.</li>
+</ul>
+<h3 id="play-stop-button-voice-browser-hub-test-button-for-voices">3.
+Play ↔︎ Stop button (Voice Browser + hub Test button for voices)</h3>
+<ul>
+<li><code>_preview_voice</code> gains an optional keyword-only
+parameter,
+<code>on_state_change: Callable[[str], None] | None = None</code>,
+invoked via <code>wx.CallAfter</code> with one of
+<code>"generating"</code>, <code>"playing"</code>, <code>"idle"</code>
+at the matching lifecycle points (staleness-checked against the
+generation token like everything else in this design).
+<code>"idle"</code> covers both normal completion and being
+stopped/superseded.</li>
+<li><strong>Voice Browser dialog</strong>
+(<code>quill/ui/voice_browser_dialog.py</code>):
+<code>_do_preview</code> passes a closure that relabels
+<code>self._preview_btn</code> between
+<code>"&amp;Preview Selected Voice"</code> (idle) and
+<code>"&amp;Stop Preview"</code> (generating/ playing). The existing
+click handler, when the button is currently in the Stop state, calls the
+new stop path from §1 instead of starting a new preview.</li>
+<li><strong>Download Optional Components hub</strong>
+(<code>quill/ui/optional_components_dialog.py</code>):
+<code>_on_test</code>, when the selected row is a voice component (i.e.
+<code>oc.read_aloud_engine_for_component(component_id) is not None</code>),
+wires the same <code>on_state_change</code> closure onto the shared
+<code>test_btn</code>, relabeling it between <code>"&amp;Test"</code>
+and <code>"&amp;Stop"</code>. Non-voice rows (tool/engine self-tests)
+are unaffected — they already run to completion quickly and announce
+their own result.</li>
+<li>Clicking Stop in either surface routes through the same
+generation-token stop path as starting a new preview (§1), so the two
+entry points share one implementation.</li>
+</ul>
+<h2 id="file-by-file-touch-points">File-by-file touch points</h2>
+<ul>
+<li><code>quill/ui/main_frame.py</code> — <code>_preview_voice</code>
+(generation tracking, cue timer, <code>on_state_change</code> plumbing,
+stop path), <code>_play_preview_asset</code> (purge/stop support).</li>
+<li><code>quill/core/sound_events.py</code> — new
+<code>VOICE_PREVIEW_GENERATING</code> member.</li>
+<li><code>quill/assets/sound_packs/ink/manifest.json</code> — new event
+→ <code>ai_start.wav</code> mapping (reused file, no new binary).</li>
+<li><code>quill/core/settings.py</code> /
+<code>quill/core/settings_specs.py</code> — new
+<code>voice_preview_announce_generating</code> bool (default
+<code>True</code>), parse/ constructor wiring, spec entry (category
+<code>accessibility</code>).</li>
+<li><code>quill/ui/voice_browser_dialog.py</code> —
+<code>_do_preview</code>/<code>_preview_btn</code> state wiring.</li>
+<li><code>quill/ui/optional_components_dialog.py</code> —
+<code>_on_test</code>/<code>test_btn</code> state wiring for voice
+rows.</li>
+</ul>
+<h2 id="testing">Testing</h2>
+<ul>
+<li>Core: settings round-trip + default for
+<code>voice_preview_announce_generating</code>; a wx-free unit test for
+the generation-token staleness logic (start generation N, “finish”
+generation N-1, assert no callback fires); the new
+<code>SoundEvent</code> member resolves through
+<code>sound_manager</code>/the Ink manifest.</li>
+<li>UI: Voice Browser button relabels generating → playing → idle across
+a faked slow preview; the hub’s Test button does the same only for voice
+rows and is unaffected for tool/engine rows; starting a second preview
+while the first is active stops the first’s (faked) playback and does
+not fire its completion callback.</li>
+</ul>
+</body>
+</html>
