@@ -36,6 +36,50 @@ def test_status_reflects_detectors(monkeypatch) -> None:
     assert by_id["kokoro"].status_label == "Available to download"
 
 
+def test_dictation_row_ready_requires_engine_and_model(monkeypatch) -> None:
+    """The Dictation row's Download/Test state must reflect a real model, not
+    just the whisper.cpp binary -- that was the whole point of #kokoro-focus's
+    follow-up: the Test button used to look identical whether or not a model
+    had ever been downloaded."""
+    from quill.core.speech import guided_setup
+    from quill.core.speech import transcribe as tr
+
+    monkeypatch.setattr(oc, "_whisper_installed", lambda: True)
+
+    def fake_options():
+        return [
+            guided_setup.OfflineSpeechEngineOption(
+                engine_id="whispercpp",
+                name="Whisper.cpp",
+                tagline="",
+                summary="",
+                installed=True,
+                install_supported=True,
+                recommended=True,
+            ),
+        ]
+
+    monkeypatch.setattr(guided_setup, "offline_speech_engine_options", fake_options)
+
+    # Engine installed, no model yet: installed is True but not effective_ready.
+    monkeypatch.setattr(tr, "provider_has_installed_model", lambda *a, **k: False)
+    row = next(c for c in oc.gather_optional_components() if c.component_id == "whispercpp")
+    assert row.installed is True
+    assert row.effective_ready is False
+
+    # Model downloaded too: now fully ready.
+    monkeypatch.setattr(tr, "provider_has_installed_model", lambda *a, **k: True)
+    row = next(c for c in oc.gather_optional_components() if c.component_id == "whispercpp")
+    assert row.effective_ready is True
+
+
+def test_effective_ready_defaults_to_installed_for_ordinary_components() -> None:
+    installed = oc.OptionalComponent("x", "X", "d", oc.TOOL, True, "")
+    missing = oc.OptionalComponent("y", "Y", "d", oc.TOOL, False, "")
+    assert installed.effective_ready is True
+    assert missing.effective_ready is False
+
+
 def test_a_broken_detector_never_crashes_the_list(monkeypatch) -> None:
     def boom() -> bool:
         raise RuntimeError("detector exploded")
@@ -320,6 +364,56 @@ def test_verify_component_stt_reports_what_it_heard(monkeypatch) -> None:
     assert "heard" in result.summary.lower()
     # The self-test pins the engine under test, not "first available".
     assert captured.get("provider_id") == "whispercpp"
+
+
+def test_verify_component_stt_closes_the_temp_file_descriptor(monkeypatch) -> None:
+    """Regression: mkstemp's fd must be closed before SAPI can open the same path.
+
+    ``_verify_stt`` used to discard mkstemp's returned fd
+    (``Path(tempfile.mkstemp(...)[1])``), leaving the temp WAV open/locked from
+    this process. SAPI's ``SpFileStream.Open()`` then failed on every real run
+    with a generic COM error (E_INVALIDARG, "The parameter is incorrect")
+    because the file was still exclusively held open -- reproduced directly
+    against the real SAPI 5 backend on 2026-07-08.
+    """
+    import os
+    import tempfile as tempfile_mod
+    import types
+
+    from quill.core import read_aloud
+    from quill.core.speech import transcribe as tr
+
+    monkeypatch.setattr(tr, "provider_has_installed_model", lambda *a, **k: True)
+    monkeypatch.setattr(read_aloud, "synthesize_to_file_with_sapi5", lambda *a, **k: None)
+    monkeypatch.setattr(
+        tr,
+        "transcribe_audio_file",
+        lambda *a, **k: types.SimpleNamespace(
+            full_text="The quick brown fox jumps over the lazy dog."
+        ),
+    )
+
+    seen: dict = {}
+    real_mkstemp = tempfile_mod.mkstemp
+
+    def spying_mkstemp(*a, **k):
+        fd, path = real_mkstemp(*a, **k)
+        seen["fd"] = fd
+        return fd, path
+
+    monkeypatch.setattr(tempfile_mod, "mkstemp", spying_mkstemp)
+
+    result = oc.verify_component("whispercpp")
+    assert result.ok is True
+
+    # Closing an already-closed fd raises OSError -- the only reliable, portable
+    # way to prove _verify_stt itself closed it (not left it for GC to leak).
+    try:
+        os.close(seen["fd"])
+    except OSError:
+        pass
+    else:
+        raise AssertionError("_verify_stt left the mkstemp file descriptor open")
 
 
 def test_verify_component_stt_targets_the_selected_engine(monkeypatch) -> None:
