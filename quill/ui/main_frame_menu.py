@@ -1576,6 +1576,7 @@ class MenuBuilderMixin:
         self._id_dev_copy_diagnostic = wx.NewIdRef()
         self._id_dev_restart_ts_worker = wx.NewIdRef()
         self._id_open_story_studio = wx.NewIdRef()
+        self._id_work_personas = wx.NewIdRef()
         self._id_vault_open = wx.NewIdRef()
         self._id_vault_follow_link = wx.NewIdRef()
         self._id_vault_backlinks = wx.NewIdRef()
@@ -1605,6 +1606,10 @@ class MenuBuilderMixin:
         tools_menu.Append(
             self._id_open_story_studio,
             self._menu_label(_("Story &Studio..."), "story.open_studio"),
+        )
+        tools_menu.Append(
+            self._id_work_personas,
+            self._menu_label(_("Work &Personas..."), "tools.work_personas"),
         )
         vault_menu = wx.Menu()
         vault_menu.Append(self._id_vault_open, self._menu_label(_("&Open Vault..."), "vault.open"))
@@ -2881,6 +2886,9 @@ class MenuBuilderMixin:
         )
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.open_story_studio(), id=self._id_open_story_studio
+        )
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.open_work_personas(), id=self._id_work_personas
         )
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.open_general_preferences(), id=self._id_preferences

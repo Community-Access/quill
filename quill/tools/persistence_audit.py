@@ -127,12 +127,14 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/ai/sessions.py::save_session": "content",
     "core/ai/style.py::save_style": "content",
     "core/bookmarks.py::save": "content",
+    "core/clip_library.py::_save": "content",
     "core/copy_tray.py::_save": "content",
     "core/inline_notes.py::save": "content",
     "core/macros.py::save": "content",
     "core/notebook_store.py::save_notebook": "content",
     "core/story/storage.py::save_project": "content",
     "core/prompt_library.py::_save": "content",
+    "core/work_persona.py::_save": "content",
     # Restore points: content-addressed document snapshots + a per-document
     # index carrying schema_version 1; entries are additive/self-describing and
     # corrupt indexes degrade to empty (tests/unit/core/test_restore_points.py).

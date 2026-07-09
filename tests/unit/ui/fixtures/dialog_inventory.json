@@ -70,6 +70,7 @@
   "quill/ui/audiobook_chapter_editor_dialog.py::ChapterEditorDialog._on_export_titles::wx.FileDialog": "native",
   "quill/ui/audiobook_chapter_editor_dialog.py::ChapterEditorDialog._on_import_titles::wx.FileDialog": "native",
   "quill/ui/batch_wizard_pages.py::BatchWizardDialog::subclass:wx.Dialog": "hardened_custom",
+  "quill/ui/clip_library_dialog.py::ClipLibraryDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/compare_dialog.py::CompareDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/concierge_menu.py::open_concierge::wx.SingleChoiceDialog": "native",
   "quill/ui/context_help.py::ContextHelpDialog::subclass:wx.Dialog": "hardened_custom",
@@ -87,6 +88,7 @@
   "quill/ui/github_dialogs.py::GitHubRepositoryBrowserDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/github_dialogs.py::GitHubSignInDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/guided_speech_dialog.py::show_guided_speech_setup::wx.Dialog": "hardened_custom",
+  "quill/ui/harness_api_key_dialog.py::HarnessApiKeyDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/hygiene_dialog.py::HygieneReviewDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/info_pages.py::show_about_quill_native::wx.Dialog": "hardened_custom",
   "quill/ui/info_pages.py::show_bw_capability_matrix_native::wx.Dialog": "hardened_custom",
@@ -111,6 +113,7 @@
   "quill/ui/main_frame.py::MainFrame._html_info::wx.MessageDialog": "native",
   "quill/ui/main_frame.py::MainFrame._maybe_offer_legacy_data_import::wx.MessageDialog": "native",
   "quill/ui/main_frame.py::MainFrame._maybe_prompt_braille_pack_install::wx.MessageDialog": "native",
+  "quill/ui/main_frame.py::MainFrame._maybe_prompt_kokoro_package_install::wx.MessageDialog": "native",
   "quill/ui/main_frame.py::MainFrame._offer_beta_switch::wx.MessageDialog": "native",
   "quill/ui/main_frame.py::MainFrame._offer_post_download_actions::wx.Dialog": "hardened_custom",
   "quill/ui/main_frame.py::MainFrame._open_find_replace::wx.FindReplaceDialog": "native",
@@ -241,6 +244,7 @@
   "quill/ui/main_frame_braille_phase3.py::BrailleProofingCommandsMixin.add_proofing_note::wx.TextEntryDialog": "native",
   "quill/ui/main_frame_braille_phase3.py::BrailleProofingCommandsMixin.export_proofing_report::wx.FileDialog": "native",
   "quill/ui/main_frame_classic_editor.py::ClassicEditorMixin.restore_deletion::wx.SingleChoiceDialog": "native",
+  "quill/ui/main_frame_clip_library.py::ClipLibraryMixin._promote_clip_to_tray::wx.TextEntryDialog": "native",
   "quill/ui/main_frame_copy_tray.py::CopyTrayMixin.clear_all_tray_slots::wx.MessageDialog": "native",
   "quill/ui/main_frame_copy_tray.py::_TraySearchDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/main_frame_dictation_hotkeys.py::DictationHotkeysMixin.open_dictation_settings::wx.Dialog": "hardened_custom",
@@ -394,5 +398,9 @@
   "quill/ui/vision_prompt_manager_dialog.py::VisionPromptManagerDialog._on_delete::wx.MessageDialog": "native",
   "quill/ui/vision_prompt_manager_dialog.py::VisionPromptManagerDialog._show_prompt_editor::wx.Dialog": "hardened_custom",
   "quill/ui/voice_browser_dialog.py::VoiceBrowserDialog.__init__::wx.Dialog": "hardened_custom",
-  "quill/ui/web_form.py::_WebFormDialog.__init__::wx.Dialog": "hardened_custom"
+  "quill/ui/web_form.py::_WebFormDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/work_persona_dialog.py::WorkPersonaDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/work_persona_dialog.py::WorkPersonaDialog._on_add_file::wx.FileDialog": "native",
+  "quill/ui/work_persona_dialog.py::WorkPersonaDialog._on_browse_folder::wx.DirDialog": "native",
+  "quill/ui/work_persona_dialog.py::WorkPersonaDialog._on_shortcut::wx.DirDialog": "native"
 }

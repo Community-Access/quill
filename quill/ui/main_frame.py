@@ -437,6 +437,7 @@ from quill.ui.main_frame_story_studio import StoryStudioMixin
 from quill.ui.main_frame_vault import VaultMixin
 from quill.ui.main_frame_verbosity import VerbosityCommandsMixin
 from quill.ui.main_frame_watch_profile import WatchProfileDialogMixin
+from quill.ui.main_frame_work_persona import WorkPersonaMixin
 from quill.ui.notebook_panel import NotebookEntriesPanel
 from quill.ui.rich_text_surface import RichTextSurface
 from quill.ui.sound_manager import post_sound
@@ -783,6 +784,7 @@ class MainFrame(
     SectionMoveMixin,
     CopyTrayMixin,
     ClipLibraryMixin,
+    WorkPersonaMixin,
     ProfilePickerMixin,
     SshEditingMixin,
     GitHubRemoteMixin,
@@ -3515,6 +3517,12 @@ class MainFrame(
             "Table Studio (Experimental)",
             self.open_table_studio,
             self._binding_for("tools.table_studio"),
+        )
+        self.commands.register(
+            "tools.work_personas",
+            "Work Personas...",
+            self.open_work_personas,
+            self._binding_for("tools.work_personas"),
         )
         self.commands.register(
             "tools.csv_studio",
@@ -27383,6 +27391,7 @@ def run_app(
     safe_mode: bool = False,
     diagnostics_mode: bool = False,
     cold_import_seconds: float = 0.0,
+    persona_name: str | None = None,
 ) -> None:
     from quill.ui.mac_open_file_app import MacOpenFileApp
 
@@ -27402,6 +27411,11 @@ def run_app(
     _t_construct = time.perf_counter()
     frame = MainFrame(safe_mode=safe_mode)
     _construct_seconds = time.perf_counter() - _t_construct
+    if persona_name:
+        try:
+            frame.apply_persona_by_name(persona_name)
+        except Exception:  # noqa: BLE001 - a bad persona must never block startup
+            pass
     heartbeat_state = HeartbeatState()
     frame._stability_heartbeat_state = heartbeat_state
     frame._stability_heartbeat_timer = WxHeartbeatTimer(frame.frame, heartbeat_state)

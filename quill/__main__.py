@@ -504,6 +504,7 @@ def main() -> int:
                 safe_mode=safe_mode,
                 diagnostics_mode=diagnostics_mode,
                 cold_import_seconds=_import_main_frame_seconds,
+                persona_name=parsed.persona,
             )
         finally:
             release_primary_instance()
@@ -577,6 +578,12 @@ def _parse_cli_arguments(arguments: list[str]) -> Namespace:
         metavar=("LEFT", "RIGHT"),
         default=None,
         help="Open two files in compare mode. Example: --diff old.kt new.kt",
+    )
+    parser.add_argument(
+        "--persona",
+        default=None,
+        metavar="NAME",
+        help="Launch directly into a saved Work Persona (Tools > Work Personas...).",
     )
     return parser.parse_args(arguments)
 

@@ -179,6 +179,21 @@ def test_launch_configuration_diff_missing_file_ignored(tmp_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
+# --persona parsing (#896)
+# ---------------------------------------------------------------------------
+
+
+def test_parse_cli_arguments_persona_flag_captured() -> None:
+    parsed = entry._parse_cli_arguments(["--persona", "School"])
+    assert parsed.persona == "School"
+
+
+def test_parse_cli_arguments_persona_defaults_to_none() -> None:
+    parsed = entry._parse_cli_arguments([])
+    assert parsed.persona is None
+
+
+# ---------------------------------------------------------------------------
 # _propagate_portable_environment: mirror portable-anchor evidence into env
 # ---------------------------------------------------------------------------
 
