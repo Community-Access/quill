@@ -1,28 +1,15 @@
 # Backlog review: remaining open issues
 
-Proposals and priorities for the rest of the open backlog. **Already shipped and documented in the CHANGELOG / release notes (removed from this future-facing list):** #909 (the free-first import pipeline is now a base dependency), #890 (Casual Writer tightened to a true "just write" profile), the Report-a-Bug "No token" build regression, #897 (Wikipedia lookup), #895 (Clip Library), #900 (Send/Copy as Email), #894 (Accessible AutoOutline), #896 (Work Personas), and #899 (Mandatory alt text + inline image descriptions). Closed items (#898 Second View, #901 tablet/low-vision, #905/#906/#907 Convert-Non-ASCII bugs) are excluded.
+Proposals and priorities for the rest of the open backlog. **Already shipped and documented in the CHANGELOG / release notes (removed from this future-facing list):** #909 (the free-first import pipeline is now a base dependency), #890 (Casual Writer tightened to a true "just write" profile), the Report-a-Bug "No token" build regression, #897 (Wikipedia lookup), #895 (Clip Library), #900 (Send/Copy as Email), #894 (Accessible AutoOutline), #896 (Work Personas), #899 (Mandatory alt text + inline image descriptions), and #891 (Print Studio). Closed items (#898 Second View, #901 tablet/low-vision, #905/#906/#907 Convert-Non-ASCII bugs) are excluded.
 
 ## Priority ladder (my recommendation)
 
 | Rank | Issue | Title (short) | Impact | Confidence | Why here |
 |------|-------|---------------|--------|-----------|----------|
-| **P1** | #891 | Print Studio (preview, margins, odd/even/reverse) | High | Medium | "The biggest concrete gap" in the Jarte comparison; a blind user still prints for sighted colleagues. |
-| **P2** | #892 | Keyboard-first Header/Footer Builder | High | Medium | Named Jarte-Plus gap; self-contained, but real net-new metadata + export work. Natural sibling to #891. |
+| **P2** | #892 | Keyboard-first Header/Footer Builder | High | Medium | Named Jarte-Plus gap; self-contained, but real net-new metadata + export work. Natural sibling to #891 (shipped). |
 | **P3** | #893 | "Rich Document" discoverability | Medium | High (feature exists) | Downgraded per the issue's own re-check: serves a *secondary* audience (low-vision / ex-Word), not QUILL's core keyboard-first user. Low cost, low urgency. |
 
 Rationale for the shape: the two items that are genuinely *mission* work (printing you can't do today, accessibility you can't enforce today) lead, then a band of solid, well-scoped features, with the integration-heavy and secondary-audience items last.
-
----
-
-## #891 — Print Studio: accessible preview, margins, odd/even/reverse — **P1**
-
-**State:** Real wx print plumbing already exists — `_print_data` (`main_frame.py:~1143`), a Page Setup item (`~1637`) on `wx.PageSetupDialogData`, and `print_document()` (`~9908`) driving `wx.Printer`. Missing: any preview surface and any odd/even/reverse/first-page-different options.
-
-**Proposal:** A **Print Studio** dialog that, before handing off to `wx.Printer`, gives an *accessible* (spoken/textual, not WYSIWYG) preview summary — "N pages, Letter, 1-inch margins" — the screen-reader equivalent of a visual preview. Add odd-only / even-only / reverse-order / different-first-page as options layered on the existing `wx.Printout.OnPrintPage` pagination once page ranges are computed. Verify the native `wx.PageSetupDialogData` margin dialog with an actual screen reader before deciding a custom margin control is warranted.
-
-**Non-goals:** No WYSIWYG renderer. Header/footer *authoring* is #892.
-
-**Priority:** P1 — most-flagged gap; medium confidence because it's real net-new UI + print-pipeline work. Pairs naturally with #892 as a "printing & page layout" epic.
 
 ---
 
@@ -52,10 +39,10 @@ Rationale for the shape: the two items that are genuinely *mission* work (printi
 
 ## Suggested sequencing
 
-1. **Printing epic: #891 then #892** -- the single biggest comparison gap, done as one coherent "printing & page layout" push.
+1. **#892** -- the remaining half of the "printing & page layout" epic now that #891 (Print Studio) has shipped.
 2. **#893** -- low-urgency discoverability polish; fold into whatever onboarding-wizard work is already happening rather than scheduling standalone.
 
-*(Accessibility note: #891 and #892 both add user-facing surfaces to a screen-reader-first product. Each proposal above bakes in the non-visual equivalent -- spoken print summaries, keyboard-first builders -- rather than treating accessibility as a later review pass. When these move to implementation, route the new dialogs through `_show_modal_dialog` + `apply_modal_ids` and the existing dialog-inventory gate, same as every other QUILL surface.)*
+*(Accessibility note: #892 adds a user-facing surface to a screen-reader-first product. Bake in the non-visual equivalent -- a keyboard-first builder, not a blank canvas -- rather than treating accessibility as a later review pass. Route the new dialog through `_show_modal_dialog` + `apply_modal_ids` and the existing dialog-inventory gate, same as every other QUILL surface.)*
 
 ---
 
