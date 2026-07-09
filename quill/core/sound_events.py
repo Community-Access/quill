@@ -98,6 +98,9 @@ class SoundEvent(StrEnum):
     COMPARE_PREVIOUS_DIFFERENCE = "compare_previous_difference"
     COMPARE_NO_MORE_DIFFERENCES = "compare_no_more_differences"
 
+    # Voice preview (Voice Browser + Download Optional Components hub)
+    VOICE_PREVIEW_GENERATING = "voice_preview_generating"
+
     # System
     ERROR = "error"
     WARNING = "warning"

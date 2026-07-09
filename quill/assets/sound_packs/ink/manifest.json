@@ -46,6 +46,7 @@
   "conversation_ready": "conversation_ready.wav",
   "conversation_idle": "conversation_idle.wav",
   "conversation_thinking_tick": "conversation_thinking_tick.wav",
-  "conversation_error": "conversation_error.wav"
+  "conversation_error": "conversation_error.wav",
+  "voice_preview_generating": "ai_start.wav"
  }
 }

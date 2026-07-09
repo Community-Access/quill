@@ -45,6 +45,8 @@ _EARCON_ORDER: list[str] = [
     "transcription_started",
     "transcription_stopped",
     "transcription_word_inserted",
+    # Voice preview (Voice Browser + Download Optional Components hub)
+    "voice_preview_generating",
     # Voice conversation mode (Hey QUILL Phase 2)
     "conversation_on",
     "conversation_off",
@@ -105,6 +107,7 @@ _EARCON_LABELS: dict[str, str] = {
     "transcription_started": "Transcription started",
     "transcription_stopped": "Transcription stopped",
     "transcription_word_inserted": "Transcription word inserted",
+    "voice_preview_generating": "Voice preview: generating, please wait",
     "conversation_on": "Conversation mode on",
     "conversation_off": "Conversation mode off",
     "conversation_wake": "Conversation: wake word heard",
