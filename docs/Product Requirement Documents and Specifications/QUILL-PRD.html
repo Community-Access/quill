@@ -18197,6 +18197,49 @@ options, then hands off to the identical <code>wx.Printer</code> flow
 in front of the existing dialog, not a replacement for it. Header/footer
 authoring stays explicitly out of scope; that is #892.</p>
 <h3
+id="keyboard-first-headerfooter-builder-892-shipped-0.9.0-beta-2">Keyboard-first
+Header/Footer Builder (#892, shipped 0.9.0 Beta 2)</h3>
+<p>No header/footer authoring existed at all beyond
+<code>wx.PageSetupDialogData</code> margins (which has no header/footer
+concept of its own). Per the issue’s own framing, this is deliberately
+<strong>named presets over a small, fixed token set</strong> – not a
+blank canvas, and not a general macro/field-code system.</p>
+<p><code>quill/core/header_footer.py</code> (pure):
+<code>HeaderFooterSpec</code> holds six zones (header/footer ×
+left/center/right), an optional different-first-page set of six more, a
+page-number style (<code>arabic</code>/<code>roman</code>), and a start
+page number. Each zone is a template string using
+<code>{title}</code>/<code>{filename}</code>/
+<code>{date}</code>/<code>{page}</code> tokens or literal text, rendered
+by <code>render_zone</code>. Four named presets cover the issue’s own
+examples directly: “Title left, page number right,” “Filename and date,”
+“Roman numerals for front matter,” and “Blank.”</p>
+<p><code>quill/core/header_footer_store.py</code> persists a spec as
+<strong>document metadata</strong> – keyed by the document’s normalized
+path, the same <code>DocumentMemory.key_for</code> shape
+<code>core/bookmarks.py</code> already uses – so it is part of the
+document’s identity and survives save/reload; an unsaved document is
+simply never persisted.</p>
+<p><code>quill/ui/header_footer_dialog.py</code> is the keyboard-first
+builder: a preset picker fills the six main zones, each independently
+editable from there; a “different first page” checkbox enables its own
+six fields; page-number style and start-number controls sit below.
+<strong>File &gt; Header and Footer…</strong>
+(<code>quill/ui/main_frame_print.py</code>, extending #891’s
+<code>PrintMixin</code>) opens it for the current document.</p>
+<p>Both <strong>File &gt; Print</strong> and <strong>File &gt; Print
+Studio…</strong> now draw the saved header/footer on every printed page
+– the displayed page number accounts for <code>start_page_number</code>
+and whichever page-set Print Studio’s odd/even/ reverse/skip-first-page
+filtering selected, and a different first page applies correctly to the
+document’s actual first page, not the first page of a filtered print
+run.</p>
+<p><strong>Deliberately out of scope for this pass, per the issue’s own
+build order:</strong> DOCX/RTF native header/footer XML export. The
+issue’s own text says to confirm that round-trip before committing
+further, once real usage exists to validate against – this ships the
+authoring + print-drawn half first.</p>
+<h3
 id="self-voice-fallback-is-logged-not-announced-shipped-0.8.1-beta-1">Self-voice
 fallback is logged, not announced (shipped 0.8.1 Beta 1)</h3>
 <p>QUILL’s SAPI 5 self-voice

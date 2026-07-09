@@ -10215,6 +10215,49 @@ the identical `wx.Printer` flow **File > Print** already uses -- Print
 Studio is a step in front of the existing dialog, not a replacement for
 it. Header/footer authoring stays explicitly out of scope; that is #892.
 
+### Keyboard-first Header/Footer Builder (#892, shipped 0.9.0 Beta 2)
+
+No header/footer authoring existed at all beyond `wx.PageSetupDialogData`
+margins (which has no header/footer concept of its own). Per the issue's
+own framing, this is deliberately **named presets over a small, fixed
+token set** -- not a blank canvas, and not a general macro/field-code
+system.
+
+`quill/core/header_footer.py` (pure): `HeaderFooterSpec` holds six zones
+(header/footer × left/center/right), an optional different-first-page set
+of six more, a page-number style (`arabic`/`roman`), and a start page
+number. Each zone is a template string using `{title}`/`{filename}`/
+`{date}`/`{page}` tokens or literal text, rendered by `render_zone`. Four
+named presets cover the issue's own examples directly: "Title left, page
+number right," "Filename and date," "Roman numerals for front matter,"
+and "Blank."
+
+`quill/core/header_footer_store.py` persists a spec as **document
+metadata** -- keyed by the document's normalized path, the same
+`DocumentMemory.key_for` shape `core/bookmarks.py` already uses -- so it
+is part of the document's identity and survives save/reload; an unsaved
+document is simply never persisted.
+
+`quill/ui/header_footer_dialog.py` is the keyboard-first builder: a preset
+picker fills the six main zones, each independently editable from there; a
+"different first page" checkbox enables its own six fields; page-number
+style and start-number controls sit below. **File > Header and Footer...**
+(`quill/ui/main_frame_print.py`, extending #891's `PrintMixin`) opens it
+for the current document.
+
+Both **File > Print** and **File > Print Studio...** now draw the saved
+header/footer on every printed page -- the displayed page number accounts
+for `start_page_number` and whichever page-set Print Studio's odd/even/
+reverse/skip-first-page filtering selected, and a different first page
+applies correctly to the document's actual first page, not the first page
+of a filtered print run.
+
+**Deliberately out of scope for this pass, per the issue's own build
+order:** DOCX/RTF native header/footer XML export. The issue's own text
+says to confirm that round-trip before committing further, once real
+usage exists to validate against -- this ships the authoring + print-drawn
+half first.
+
 ### Self-voice fallback is logged, not announced (shipped 0.8.1 Beta 1)
 
 QUILL's SAPI 5 self-voice (``sapi5.py``/``prism_bridge``) is a *fallback* used only

@@ -68,6 +68,17 @@ Print dialog you already know. Printing itself also got more honest along
 the way — it used to draw whatever fit on one page and quietly drop the
 rest of a longer document; now it paginates properly.
 
+## And now, headers and footers
+
+**File > Header and Footer...** builds one from named presets — title on
+the left with the page number on the right, filename and date, Roman
+numerals for front matter — or your own mix of a handful of tokens
+(title, filename, date, page number) placed left, center, or right. Want
+a different header on page one? There's a checkbox for that. Numeric or
+Roman page numbers, starting wherever you like. It's saved with the
+document and shows up on every page you print, Print Studio or plain
+Print alike.
+
 ## Five small things that add up
 
 - **Look Up now includes Wikipedia.** A short encyclopedia summary, with a
