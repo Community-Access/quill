@@ -74,8 +74,15 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # Restore points: no default key (assignable); the File menu item is the
     # primary path.
     "file.restore_previous_version": "",
-    "window.next_document": "Ctrl+Tab",
-    "window.previous_document": "Ctrl+Shift+Tab",
+    # On macOS, wx's ACCEL_CTRL maps to Cmd (not the physical Control key) in
+    # the accelerator table, so "Ctrl+Tab" here becomes Cmd+Tab -- macOS's own
+    # reserved App Switcher shortcut, which never reaches the app. A literal
+    # physical Ctrl+Tab press does not match ACCEL_CTRL on macOS either, so it
+    # falls through to generic focus traversal instead of switching documents.
+    # Use the conventional macOS tab-cycling chord (matching Safari/Xcode,
+    # and pairing with the Cmd+[ / Cmd+] back/forward chord above) instead.
+    "window.next_document": "Cmd+Shift+]" if sys.platform == "darwin" else "Ctrl+Tab",
+    "window.previous_document": "Cmd+Shift+[" if sys.platform == "darwin" else "Ctrl+Shift+Tab",
     # Jump straight to the Nth open document. Alt+digit is otherwise unused and,
     # unlike Ctrl+Alt+ chords, is not screen-reader-hostile (§10.8). Alt+0 = 10th.
     "window.go_to_document_1": "Alt+1",
@@ -559,7 +566,8 @@ def merge_keymaps(raw: object) -> dict[str, str]:
         "edit.quote_lines": ("Ctrl+Q", "Ctrl+Shift+Q"),
         "edit.unquote_lines": ("Ctrl+Shift+Q", "Ctrl+Shift+K"),
         # window.next_document / previous_document: Ctrl+Tab restored as default
-        # in #190; no legacy rebinding needed.
+        # in #190; no cross-platform legacy rebinding needed (the macOS-only
+        # rewrite lives in the darwin block below).
         "view.send_to_tray": ("CTRL+ALT+T", "Ctrl+Shift+Grave, T"),
         "view.toggle_tab_control": ("CTRL+ALT+SHIFT+T", "Ctrl+Shift+Grave, Shift+T"),
         "navigate.heading_organizer": ("CTRL+ALT+SHIFT+H", "Ctrl+Shift+Grave, O"),
@@ -602,6 +610,12 @@ def merge_keymaps(raw: object) -> dict[str, str]:
     if sys.platform == "darwin":
         legacy_rebindings["navigate.back_location"] = ("Alt+Left", "Cmd+[")
         legacy_rebindings["navigate.forward_location"] = ("Alt+Right", "Cmd+]")
+        # A macOS user who saved the pre-Mac-fix Ctrl+Tab / Ctrl+Shift+Tab
+        # document-switch bindings has an entry that can never fire (Ctrl+Tab
+        # maps to Cmd+Tab, the reserved App Switcher shortcut). Rewrite it to
+        # the new macOS chord on first load.
+        legacy_rebindings["window.next_document"] = ("Ctrl+Tab", "Cmd+Shift+]")
+        legacy_rebindings["window.previous_document"] = ("Ctrl+Shift+Tab", "Cmd+Shift+[")
     for command_id, binding in raw.items():
         if isinstance(command_id, str) and isinstance(binding, str):
             # Reserved metadata keys (e.g. the epoch stamp) are not bindings.

@@ -3958,6 +3958,17 @@ class MainFrame(
                 flags |= wx.ACCEL_SHIFT
             elif lowered == "alt":
                 flags |= wx.ACCEL_ALT
+            elif lowered in ("cmd", "command"):
+                # "Cmd" is how DEFAULT_KEYMAP spells the macOS-only bindings
+                # (navigate.back_location/forward_location, and
+                # window.next_document/previous_document — see keymap.py).
+                # wx has no separate ACCEL_CMD flag: wx.ACCEL_CTRL is what
+                # already maps to the Command key in a wx.AcceleratorTable on
+                # macOS, so "Cmd" parses to the same flag as "Ctrl". Without
+                # this, a "Cmd+..." binding fell through to the "else: return
+                # None" branch below and silently never got an accelerator
+                # table entry at all on any platform.
+                flags |= wx.ACCEL_CTRL
             else:
                 return None
 
@@ -27341,9 +27352,14 @@ def run_app(
     diagnostics_mode: bool = False,
     cold_import_seconds: float = 0.0,
 ) -> None:
-    import wx
+    from quill.ui.mac_open_file_app import MacOpenFileApp
 
-    app = wx.App(False)
+    # MacOpenFileApp is a plain wx.App subclass on every platform; the
+    # MacOpenFile/MacOpenFiles overrides it adds are only ever invoked by
+    # wx on macOS (Finder "Open With", drag-onto-Dock-icon, `open -a Quill
+    # file.txt` from Terminal all arrive as an Apple Event, not argv --
+    # without this override QUILL silently opened a blank document).
+    app = MacOpenFileApp(False)
     # #27: without an explicit app name, wx falls back to the running
     # executable/script's name for the macOS application-menu Hide/Quit
     # items ("Hide Mac_OS_app" / "Quit Mac_OS_app") instead of "QUILL".
@@ -27365,6 +27381,10 @@ def run_app(
         path = getattr(request, "path", None)
         if isinstance(path, Path) and path.exists() and path.is_file():
             frame._handle_shell_request(request)
+    # Wire up the frame so any Apple Event that arrived (or arrives from
+    # here on) while the frame was still under construction gets dispatched.
+    app.main_frame = frame
+    app.flush_pending()
     # Cold-start timing (import + construction + the synchronous part of
     # show()) is recorded on the instance so _write_startup_timing can
     # prepend it ahead of the deferred-task timings it already collects,

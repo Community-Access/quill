@@ -434,6 +434,62 @@ def test_legacy_macos_alt_right_forward_location_rewritten_to_cmd_close_bracket(
     assert merged["navigate.forward_location"] == "Cmd+]"
 
 
+# ---------------------------------------------------------------------------
+# macOS document-switching: Ctrl+Tab / Ctrl+Shift+Tab never reach the app.
+#
+# wx's ACCEL_CTRL maps to Cmd (not the physical Control key) in a macOS
+# accelerator table, so the Windows default "Ctrl+Tab" becomes Cmd+Tab --
+# macOS's own reserved App Switcher shortcut -- and a literal physical
+# Ctrl+Tab press does not match ACCEL_CTRL there either. Neither variant
+# ever reaches the app, so the key falls through to generic focus
+# traversal (moving focus onto toolbar buttons) instead of switching
+# documents. macOS gets the conventional Safari/Xcode tab-cycling chord.
+# ---------------------------------------------------------------------------
+
+
+def test_default_keymap_uses_ctrl_tab_on_windows() -> None:
+    if sys.platform == "darwin":
+        return
+    assert DEFAULT_KEYMAP["window.next_document"] == "Ctrl+Tab"
+    assert DEFAULT_KEYMAP["window.previous_document"] == "Ctrl+Shift+Tab"
+
+
+def test_default_keymap_uses_cmd_shift_bracket_on_macos_for_document_switch() -> None:
+    if sys.platform != "darwin":
+        return
+    assert DEFAULT_KEYMAP["window.next_document"] == "Cmd+Shift+]"
+    assert DEFAULT_KEYMAP["window.previous_document"] == "Cmd+Shift+["
+
+
+def test_legacy_macos_ctrl_tab_next_document_rewritten_to_cmd_shift_close_bracket(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A macOS user who saved the old Ctrl+Tab next-document binding (which
+    can never fire there -- see above) has it rewritten to Cmd+Shift+]."""
+    monkeypatch.setattr(sys, "platform", "darwin")
+    merged = keymap_module.merge_keymaps({"window.next_document": "Ctrl+Tab"})
+    assert merged["window.next_document"] == "Cmd+Shift+]"
+
+
+def test_legacy_macos_ctrl_shift_tab_previous_document_rewritten_to_cmd_shift_open_bracket(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A macOS user who saved the old Ctrl+Shift+Tab previous-document
+    binding has it rewritten to Cmd+Shift+[."""
+    monkeypatch.setattr(sys, "platform", "darwin")
+    merged = keymap_module.merge_keymaps({"window.previous_document": "Ctrl+Shift+Tab"})
+    assert merged["window.previous_document"] == "Cmd+Shift+["
+
+
+def test_non_macos_ctrl_tab_binding_is_not_rewritten(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The legacy rewrite is macOS-only: Windows/Linux keep Ctrl+Tab as-is."""
+    monkeypatch.setattr(sys, "platform", "win32")
+    merged = keymap_module.merge_keymaps({"window.next_document": "Ctrl+Tab"})
+    assert merged["window.next_document"] == "Ctrl+Tab"
+
+
 def test_default_keymap_has_no_ctrl_q_collision() -> None:
     # #608 pin: no two commands in the default keymap may share Ctrl+Q,
     # because that chord is now reserved for app.exit (which maps to
