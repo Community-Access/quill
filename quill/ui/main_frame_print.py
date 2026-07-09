@@ -1,5 +1,6 @@
-"""Printing commands for MainFrame (#891) -- Page Setup, Print, and Print
-Studio's accessible preview + odd/even/reverse/skip-first-page options.
+"""Printing commands for MainFrame (#891, #892) -- Page Setup, Print, Print
+Studio's accessible preview + odd/even/reverse/skip-first-page options, and
+the Header/Footer Builder.
 
 Extracted into a mixin (CQ-1). ``PrintMixin`` relies on ``self.editor``,
 ``self.document``, ``self.frame``, ``self._wx``, ``self._print_data``,
@@ -11,14 +12,21 @@ Print Studio sits *before* the OS print dialog, not in place of it: no
 WYSIWYG renderer (explicitly out of scope, per #891), just a spoken/textual
 preview -- "3 pages, Letter, default margins" -- and a page-set choice, both
 computed from the pure :mod:`quill.core.print_pagination` before any native
-dialog opens. Header/footer *authoring* is #892, a separate feature.
+dialog opens. Header/footer *authoring* (#892) is a keyboard-first builder
+over a small, fixed token set (:mod:`quill.core.header_footer`), stored per
+document (:mod:`quill.core.header_footer_store`) and drawn on every printed
+page here -- DOCX/RTF native header/footer export is a deliberately
+separate follow-up (add.md's own note: confirm the round-trip before
+committing further, once real usage is in).
 """
 
 from __future__ import annotations
 
+import datetime
+
 
 class PrintMixin:
-    """Page Setup, Print, and Print Studio."""
+    """Page Setup, Print, Print Studio, and the Header/Footer Builder."""
 
     _PRINT_MARGIN_PX = 50
     _PRINT_FONT_POINT_SIZE = 10
@@ -63,12 +71,36 @@ class PrintMixin:
             margins_text=margins_text(top_left, bottom_right),
         )
 
-    def _build_text_printout(self, title: str, text: str, pages: list[int] | None = None) -> object:
+    def _draw_header_footer_row(
+        self, dc: object, left: str, center: str, right: str, y: int, width: int
+    ) -> None:
+        margin = self._PRINT_MARGIN_PX
+        if left:
+            dc.DrawText(left, margin, y)
+        if center:
+            text_width = dc.GetTextExtent(center)[0]
+            dc.DrawText(center, (width - text_width) // 2, y)
+        if right:
+            text_width = dc.GetTextExtent(right)[0]
+            dc.DrawText(right, width - margin - text_width, y)
+
+    def _build_text_printout(
+        self,
+        title: str,
+        text: str,
+        pages: list[int] | None = None,
+        header_footer: object | None = None,
+    ) -> object:
+        from quill.core.header_footer import render_zone
+
         wx = self._wx
         font = self._print_font()
         lines = text.splitlines() or [""]
         margin = self._PRINT_MARGIN_PX
         paginate_for_dc = self._paginate_for_dc
+        draw_row = self._draw_header_footer_row
+        doc_title = title.rsplit(".", 1)[0] if "." in title else title
+        today = datetime.date.today().isoformat()
 
         class _TextPrintout(wx.Printout):
             def __init__(self, print_title: str) -> None:
@@ -90,6 +122,62 @@ class PrintMixin:
                     return False
                 real_page = self._print_order[page_index - 1]
                 dc.SetFont(font)
+                width, height = dc.GetSize()
+
+                if header_footer is not None:
+                    is_first = real_page == 1
+                    use_first = is_first and header_footer.first_page_different
+                    displayed_page = header_footer.start_page_number + (real_page - 1)
+                    ctx = {
+                        "title": doc_title,
+                        "filename": title,
+                        "date": today,
+                        "page_number": displayed_page,
+                        "page_number_style": header_footer.page_number_style,
+                    }
+                    h_left, h_center, h_right = (
+                        (
+                            header_footer.first_page_header_left,
+                            header_footer.first_page_header_center,
+                            header_footer.first_page_header_right,
+                        )
+                        if use_first
+                        else (
+                            header_footer.header_left,
+                            header_footer.header_center,
+                            header_footer.header_right,
+                        )
+                    )
+                    f_left, f_center, f_right = (
+                        (
+                            header_footer.first_page_footer_left,
+                            header_footer.first_page_footer_center,
+                            header_footer.first_page_footer_right,
+                        )
+                        if use_first
+                        else (
+                            header_footer.footer_left,
+                            header_footer.footer_center,
+                            header_footer.footer_right,
+                        )
+                    )
+                    draw_row(
+                        dc,
+                        render_zone(h_left, **ctx) if h_left else "",
+                        render_zone(h_center, **ctx) if h_center else "",
+                        render_zone(h_right, **ctx) if h_right else "",
+                        margin // 4,
+                        width,
+                    )
+                    draw_row(
+                        dc,
+                        render_zone(f_left, **ctx) if f_left else "",
+                        render_zone(f_center, **ctx) if f_center else "",
+                        render_zone(f_right, **ctx) if f_right else "",
+                        height - margin // 2,
+                        width,
+                    )
+
                 y = margin
                 line_height = dc.GetTextExtent("A")[1] + 2
                 for line in self._pages[real_page - 1]:
@@ -119,8 +207,47 @@ class PrintMixin:
         finally:
             dialog.Destroy()
 
+    def _header_footer_store(self) -> object:
+        if not hasattr(self, "_header_footer_store_instance"):
+            from quill.core.header_footer_store import HeaderFooterStore
+            from quill.core.paths import app_data_dir
+
+            self._header_footer_store_instance = HeaderFooterStore.load(
+                app_data_dir() / "header_footer.json"
+            )
+        return self._header_footer_store_instance
+
+    def _current_header_footer_spec(self) -> object | None:
+        from quill.core.header_footer_store import key_for
+
+        return self._header_footer_store().get(key_for(self.document.path))
+
+    def edit_header_footer(self) -> None:
+        """File > Header and Footer...: the keyboard-first builder (#892)."""
+        from quill.core.header_footer_store import key_for
+        from quill.ui.header_footer_dialog import HeaderFooterDialog
+
+        key = key_for(self.document.path)
+        if key is None:
+            self._set_status("Save the document first to set its header and footer.")
+            return
+        dlg = HeaderFooterDialog(
+            self.frame, self._current_header_footer_spec(), announce_cb=self._announce
+        )
+        result = dlg.show()
+        dlg.close()
+        if result is None:
+            self._set_status("Header and footer unchanged")
+            return
+        self._header_footer_store().set(key, result)
+        self._set_status("Header and footer saved")
+
     def print_document(self) -> None:
-        printout = self._build_text_printout(self.document.name, self.editor.GetValue())
+        printout = self._build_text_printout(
+            self.document.name,
+            self.editor.GetValue(),
+            header_footer=self._current_header_footer_spec(),
+        )
         self._run_print_job(printout)
 
     def print_studio(self) -> None:
@@ -153,7 +280,9 @@ class PrintMixin:
         if not pages:
             self._set_status("No pages match the chosen options -- nothing to print.")
             return
-        printout = self._build_text_printout(self.document.name, text, pages=pages)
+        printout = self._build_text_printout(
+            self.document.name, text, pages=pages, header_footer=self._current_header_footer_spec()
+        )
         self._run_print_job(printout)
 
     def _run_print_job(self, printout: object) -> None:

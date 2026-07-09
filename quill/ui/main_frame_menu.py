@@ -85,6 +85,7 @@ class MenuBuilderMixin:
         self._id_page_setup = wx.NewIdRef()
         self._id_print = wx.NewIdRef()
         self._id_print_studio = wx.NewIdRef()
+        self._id_header_footer = wx.NewIdRef()
         self._id_save_plain_text = wx.NewIdRef()
         self._id_clear_recent = wx.NewIdRef()
         # #262: Pandoc Import / Export menu ids (one per Tier-1 format).
@@ -429,6 +430,10 @@ class MenuBuilderMixin:
         file_menu.Append(
             self._id_print_studio,
             self._menu_label(_("Print &Studio..."), "file.print_studio"),
+        )
+        file_menu.Append(
+            self._id_header_footer,
+            self._menu_label(_("&Header and Footer..."), "file.header_footer"),
         )
         file_menu.AppendSeparator()
         # --- Close ---
@@ -2747,6 +2752,9 @@ class MenuBuilderMixin:
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.page_setup(), id=self._id_page_setup)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.print_document(), id=self._id_print)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.print_studio(), id=self._id_print_studio)
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.edit_header_footer(), id=self._id_header_footer
+        )
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.save_as_plain_text(),

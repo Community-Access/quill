@@ -145,6 +145,7 @@
   "download_vosk",
   "duplicate_line",
   "duplicate_selection",
+  "edit_header_footer",
   "enable_braille_mode",
   "encode_all_non_ascii",
   "encode_html_entities",

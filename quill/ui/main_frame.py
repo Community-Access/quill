@@ -1678,6 +1678,12 @@ class MainFrame(
             self._binding_for("file.print_studio"),
         )
         self.commands.register(
+            "file.header_footer",
+            "Header and Footer...",
+            self.edit_header_footer,
+            self._binding_for("file.header_footer"),
+        )
+        self.commands.register(
             "file.save_as_plain_text",
             "Save As Plain Text...",
             self.save_as_plain_text,
@@ -3753,6 +3759,7 @@ class MainFrame(
             "file.page_setup": self._id_page_setup,
             "file.print": self._id_print,
             "file.print_studio": self._id_print_studio,
+            "file.header_footer": self._id_header_footer,
             "window.next_document": self._id_next_document,
             "window.previous_document": self._id_previous_document,
             "window.go_to_document_1": self._id_go_to_document[0],
