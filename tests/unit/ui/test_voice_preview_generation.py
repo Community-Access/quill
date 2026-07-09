@@ -21,6 +21,7 @@ def wx_app():
     loop = wx.GUIEventLoop()
     wx.EventLoop.SetActive(loop)
     yield app
+    wx.EventLoop.SetActive(None)
     app.Destroy()
 
 
@@ -110,6 +111,60 @@ def test_generating_cue_does_not_fire_if_superseded_first(wx_app, monkeypatch) -
     frame._preview_cue_timer = wx.CallLater(50, frame._fire_generating_cue, stale_generation)
     # Supersede before the timer fires.
     frame._stop_active_voice_preview()
+
+    for _ in range(30):
+        wx.YieldIfNeeded()
+        time.sleep(0.02)
+
+    assert posted == []
+    frame.frame.Destroy()
+
+
+def test_generating_cue_is_cancelled_when_synthesis_finishes_first(
+    wx_app, monkeypatch
+) -> None:
+    """A fast preview (e.g. eSpeak) that finishes well within the 400ms cue
+    delay must not leave a stray cue timer behind: ``_synth_done`` must
+    cancel it, or the cue would fire after "Preview finished" was already
+    reported."""
+    from pathlib import Path
+
+    frame = MainFrame.__new__(MainFrame)
+    frame._wx = wx
+    frame.frame = wx.Frame(None)
+    frame.settings = type(
+        "S",
+        (),
+        {
+            "voice_preview_announce_generating": True,
+            "read_aloud_espeak_executable": "",
+            "read_aloud_espeak_rate": 175,
+        },
+    )()
+    # MainFrame.__new__ bypasses __init__, so this __init__-set attribute
+    # (main_frame.py:1098) is missing; without it, _finish_background_task's
+    # completion path raises AttributeError before on_success ever runs.
+    frame._status_page_live_updates = False
+    posted: list[str] = []
+
+    monkeypatch.setattr(frame, "_set_status", lambda *a, **k: None)
+    monkeypatch.setattr(frame, "_announce", lambda *a, **k: None)
+    monkeypatch.setattr(
+        "quill.ui.main_frame.post_sound", lambda event_id: posted.append(event_id)
+    )
+    monkeypatch.setattr(
+        "quill.ui.main_frame.discover_espeak_executable",
+        lambda *_a, **_k: Path("espeak.exe"),
+    )
+    monkeypatch.setattr(
+        "quill.ui.main_frame.synthesize_with_espeak", lambda *a, **k: None
+    )
+    monkeypatch.setattr(MainFrame, "_play_preview_asset", lambda _self, _path: None)
+
+    # A synthesis engine mocked to return instantly: the background thread
+    # (and its wx.CallAfter completion) should race ahead of the 400ms cue
+    # timer started right before dispatch, and _synth_done must cancel it.
+    frame._preview_voice("espeak", "voice-a", live=True)
 
     for _ in range(30):
         wx.YieldIfNeeded()

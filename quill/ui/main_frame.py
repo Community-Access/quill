@@ -7915,6 +7915,12 @@ class MainFrame(
     ) -> None:
         self._background_task_count = max(0, getattr(self, "_background_task_count", 1) - 1)
         if error is not None:
+            # A failed background task never invokes on_success, so if this
+            # was a voice preview's synthesis raising (e.g. missing engine
+            # executable), _synth_done never runs to cancel its pending
+            # "generating preview" cue timer -- cancel it here instead so a
+            # stray cue can't fire after the failure was already reported.
+            self._cancel_preview_cue_timer()
             self._track_background_task_finish(task_id, "failed", str(error))
             # §8.2 Soft error recovery link: file-open and network background tasks get a hint.
             if label.startswith("Opening "):
@@ -17714,6 +17720,21 @@ class MainFrame(
         discarded when the stale generation check fails.
         """
         self._preview_generation = getattr(self, "_preview_generation", 0) + 1
+        self._cancel_preview_cue_timer()
+        try:
+            self._read_aloud.stop()
+        except Exception:  # noqa: BLE001
+            pass
+        self._purge_preview_playback()
+
+    def _cancel_preview_cue_timer(self) -> None:
+        """Stop and clear any pending "generating preview" cue timer.
+
+        Called whenever a preview generation is superseded (Task 3) or
+        whenever its synthesis completes on its own -- success or error --
+        so a stray cue never fires after the preview it belonged to is
+        already over (see ``_synth_done`` and ``_finish_background_task``).
+        """
         timer = getattr(self, "_preview_cue_timer", None)
         if timer is not None:
             try:
@@ -17721,11 +17742,6 @@ class MainFrame(
             except Exception:  # noqa: BLE001
                 pass
             self._preview_cue_timer = None
-        try:
-            self._read_aloud.stop()
-        except Exception:  # noqa: BLE001
-            pass
-        self._purge_preview_playback()
 
     def _fire_generating_cue(self, generation: int) -> None:
         """One-shot "still generating" cue -- fires only if *generation* is
@@ -17906,6 +17922,10 @@ class MainFrame(
             return None
 
         def _synth_done(_r: object) -> None:
+            # Synthesis reported success -- the pending cue is no longer
+            # relevant regardless of whether this generation is still
+            # current, so cancel it before anything else.
+            self._cancel_preview_cue_timer()
             if _still_current():
                 self._set_status("Preview finished")
 
