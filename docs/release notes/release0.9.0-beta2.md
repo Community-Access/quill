@@ -18,6 +18,51 @@ Grazie, thank you, and keep the reports coming. 💙
 
 ---
 
+## A favor to ask: braille display owners, please try QuillRichEdit
+
+We've been chasing two long-standing braille reports — text starting in cell 2
+instead of cell 1 on some displays, and selection dots (7-8) not showing up
+under selected text. This release ships the first real lever for both: a new
+experimental editor surface called **QuillRichEdit**, built on the *same*
+native control QUILL already uses every day, with a switch that asks it to
+behave more like a plain text control for braille purposes while still
+reading correctly to JAWS and NVDA.
+
+**We don't yet know if it actually helps on real hardware — that's genuinely
+what we need you for.** To try it: **Preferences > Experimental**, tick
+**Enable experimental features**, tick **Enable experimental editor
+surfaces**, set **Editor surface** to **QuillRichEdit**, and tick **QuillRichEdit:
+emulate a system edit control (braille test)**. Apply, then **restart QUILL** —
+all three settings need a fresh launch to take effect. Then, with your display
+attached: does text start in cell 1 now? Do selection dots show up? Does
+everything still read correctly? Tell us either way — helped, no difference,
+or worse — through **Help > Report a Bug**, with your screen reader and
+display model. Full walkthrough in the user guide's "QuillRichEdit
+(experimental)" section.
+
+This same surface also quietly picked up QUILL's first native RTF load/save
+and in-place bold/italic/underline/font/alignment formatting — a first step
+toward a lighter rich-text document mode — but the braille question above is
+why it needs you most.
+
+## Four small things that add up
+
+- **Look Up now includes Wikipedia.** A short encyclopedia summary, with a
+  link to the source, appears alongside definitions and synonyms when you're
+  online — same consent and offline fallback as always.
+- **A bigger clip history, alongside Copy Tray.** Copy Tray's curated 12 slots
+  aren't going anywhere — **Clip Library** (Edit menu) is a second, rolling
+  history of everything you choose to keep, searchable, favoritable, and
+  promotable into a specific Copy Tray slot when one earns a permanent home.
+- **Send as Email, or just Copy as Email Body.** The File menu can now hand
+  your selection (or the whole document) straight to your mail client, or
+  copy it to the clipboard formatted for pasting into one — useful when a
+  mail client balks at a long message built the first way.
+- **AutoOutline numbers your headings for you.** Format > Update Outline
+  Numbering — numeric or legal style, your choice in Preferences > Editing —
+  writes the number straight into the heading text, so it reads aloud and
+  survives copy/paste and export with nothing extra to configure.
+
 ## Getting the extras you want, reimagined
 
 QUILL stays small by downloading the big optional pieces only when you ask. Beta

@@ -777,7 +777,11 @@ You choose the engine on the **AI Hub → Engines** tab:
 2. Select **Set Up / Install...**. QUILL installs the small connector on demand
    (the first time only) and, for Copilot, signs you in to GitHub — using a
    short spoken device code in your browser when available, or the Copilot/GitHub
-   CLI sign-in otherwise.
+   CLI sign-in otherwise. **OpenAI Agents** and **Claude Agent** authenticate
+   differently — with your own API key rather than a sign-in — so once the
+   connector is installed, **Set Up** instead opens a small dialog to paste,
+   save, or remove that key. It applies immediately, with no restart, and the
+   dialog also reports whether a key is already saved.
 3. Select **Set as Active Engine**. From then on, Ask Quill and the agents run on
    your chosen engine, and a status line names it.
 
@@ -3117,9 +3121,33 @@ Quill is serious about recovery and user control.
 - **WordPress publishing connections (experimental)** — lights the read-only publishing tools in the **File** menu: save a WordPress connection, verify it, browse your site's posts and pages, and open a remote item in the editor. Strictly inbound: the send/publish half remains locked while the providers framework is reviewed, so nothing can be published from QUILL regardless of this switch.
 - **Read the document aloud in your browser (experimental)** — the browser reader page described under Read Aloud.
 - **Table Studio — accessible table and CSV editing (experimental)** — lights **Table Studio** and **Open CSV in Table Studio** in the **Tools** menu (see "Table Studio" below). Takes effect on Apply, no restart.
-- **Enable experimental editor surfaces** — a *second* safety gate whose label carries its own warning: *features may degrade based on the control selected*. The editor surface is the control your document lives in, so this gate separately governs the **Editor surface** choice and the **Hide editor border** option beneath it, plus the live explainer that describes each surface. Both this gate and the master switch must be on before any surface override is applied, and while it is off those controls are disabled and skipped in the tab order.
+- **Enable experimental editor surfaces** — a *second* safety gate whose label carries its own warning: *features may degrade based on the control selected*. The editor surface is the control your document lives in, so this gate separately governs the **Editor surface** choice and the **Hide editor border** option beneath it, plus the live explainer that describes each surface. Both this gate and the master switch must be on before any surface override is applied, and while it is off those controls are disabled and skipped in the tab order. One of the choices is **QuillRichEdit (native Rich Edit + RTF, experimental)** — see below.
+- **QuillRichEdit: emulate a system edit control (braille test)** — a third checkbox, only meaningful when the Editor surface above is set to QuillRichEdit. See "QuillRichEdit (experimental)" below for what it does and why your feedback matters if you use a braille display.
 
 The pattern to remember: one master switch for the tab, one switch per experiment, and the editor-surface experiments behind a third acknowledgement of their own — consent in layers, never by accident.
+
+### QuillRichEdit (experimental) — and a request for braille display owners
+
+QuillRichEdit is a new experimental editor surface: the *same* native Rich Edit control QUILL already uses as its default editor, wrapped so QUILL can reach a few things underneath it that were previously out of reach — real RTF load/save, and a candidate fix for two long-standing braille reports:
+
+- **The braille "cell-two" offset**, where some displays start the first character of every line in cell 2 instead of cell 1 (a long-standing word-processor-control quirk, not specific to QUILL).
+- **Missing selection dots** — some displays do not show dots 7-8 under selected text when the caret is in QUILL's default editor.
+
+QuillRichEdit adds a switch that asks the same native control to behave more like a plain text-edit control for braille purposes, while keeping everything that makes it read correctly to JAWS and NVDA. **We do not yet know if this fixes the offset or the missing dots on real hardware — that is exactly what we need your help to find out.**
+
+**How to try it and give feedback:**
+
+1. Open **Preferences > Experimental**.
+2. Tick **Enable experimental features** (the master switch).
+3. Tick **Enable experimental editor surfaces**.
+4. Set **Editor surface** to **QuillRichEdit (native Rich Edit + RTF, experimental)**.
+5. Tick **QuillRichEdit: emulate a system edit control (braille test)**.
+6. Apply Settings, then **restart QUILL** — all three of these settings take effect on the next launch, not immediately.
+7. With your braille display attached, open or type into a document and check: Does text now start in cell 1, or still cell 2? Does selecting text now show dots 7-8 underneath it? Does JAWS/NVDA still read the editor's content correctly?
+
+Please tell us what you see — with which screen reader and which braille display — through **Help > Report a Bug** or your usual QUILL feedback channel either way, whether it helped, made no difference, or made things worse. This is genuinely still an open question and real-hardware reports are the only way to answer it.
+
+This surface also carries QUILL's first native RTF load/save and in-place bold/italic/underline/font/alignment formatting, as a first step toward a lighter-weight rich-text document mode — but the braille question above is the reason it needs your feedback most.
 
 ### Table Studio (experimental)
 

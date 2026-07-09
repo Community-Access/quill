@@ -194,6 +194,58 @@ section of <code>CHANGELOG.md</code>. The same words appear in-app under
 Updates</strong>.</p>
 <p>Grazie, thank you, and keep the reports coming. 💙</p>
 <hr />
+<h2
+id="a-favor-to-ask-braille-display-owners-please-try-quillrichedit">A
+favor to ask: braille display owners, please try QuillRichEdit</h2>
+<p>We’ve been chasing two long-standing braille reports — text starting
+in cell 2 instead of cell 1 on some displays, and selection dots (7-8)
+not showing up under selected text. This release ships the first real
+lever for both: a new experimental editor surface called
+<strong>QuillRichEdit</strong>, built on the <em>same</em> native
+control QUILL already uses every day, with a switch that asks it to
+behave more like a plain text control for braille purposes while still
+reading correctly to JAWS and NVDA.</p>
+<p><strong>We don’t yet know if it actually helps on real hardware —
+that’s genuinely what we need you for.</strong> To try it:
+<strong>Preferences &gt; Experimental</strong>, tick <strong>Enable
+experimental features</strong>, tick <strong>Enable experimental editor
+surfaces</strong>, set <strong>Editor surface</strong> to
+<strong>QuillRichEdit</strong>, and tick <strong>QuillRichEdit: emulate
+a system edit control (braille test)</strong>. Apply, then
+<strong>restart QUILL</strong> — all three settings need a fresh launch
+to take effect. Then, with your display attached: does text start in
+cell 1 now? Do selection dots show up? Does everything still read
+correctly? Tell us either way — helped, no difference, or worse —
+through <strong>Help &gt; Report a Bug</strong>, with your screen reader
+and display model. Full walkthrough in the user guide’s “QuillRichEdit
+(experimental)” section.</p>
+<p>This same surface also quietly picked up QUILL’s first native RTF
+load/save and in-place bold/italic/underline/font/alignment formatting —
+a first step toward a lighter rich-text document mode — but the braille
+question above is why it needs you most.</p>
+<h2 id="four-small-things-that-add-up">Four small things that add
+up</h2>
+<ul>
+<li><strong>Look Up now includes Wikipedia.</strong> A short
+encyclopedia summary, with a link to the source, appears alongside
+definitions and synonyms when you’re online — same consent and offline
+fallback as always.</li>
+<li><strong>A bigger clip history, alongside Copy Tray.</strong> Copy
+Tray’s curated 12 slots aren’t going anywhere — <strong>Clip
+Library</strong> (Edit menu) is a second, rolling history of everything
+you choose to keep, searchable, favoritable, and promotable into a
+specific Copy Tray slot when one earns a permanent home.</li>
+<li><strong>Send as Email, or just Copy as Email Body.</strong> The File
+menu can now hand your selection (or the whole document) straight to
+your mail client, or copy it to the clipboard formatted for pasting into
+one — useful when a mail client balks at a long message built the first
+way.</li>
+<li><strong>AutoOutline numbers your headings for you.</strong> Format
+&gt; Update Outline Numbering — numeric or legal style, your choice in
+Preferences &gt; Editing — writes the number straight into the heading
+text, so it reads aloud and survives copy/paste and export with nothing
+extra to configure.</li>
+</ul>
 <h2 id="getting-the-extras-you-want-reimagined">Getting the extras you
 want, reimagined</h2>
 <p>QUILL stays small by downloading the big optional pieces only when

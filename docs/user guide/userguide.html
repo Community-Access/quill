@@ -1649,7 +1649,13 @@ Native).</li>
 <li>Select <strong>Set Up / Install…</strong>. QUILL installs the small
 connector on demand (the first time only) and, for Copilot, signs you in
 to GitHub — using a short spoken device code in your browser when
-available, or the Copilot/GitHub CLI sign-in otherwise.</li>
+available, or the Copilot/GitHub CLI sign-in otherwise. <strong>OpenAI
+Agents</strong> and <strong>Claude Agent</strong> authenticate
+differently — with your own API key rather than a sign-in — so once the
+connector is installed, <strong>Set Up</strong> instead opens a small
+dialog to paste, save, or remove that key. It applies immediately, with
+no restart, and the dialog also reports whether a key is already
+saved.</li>
 <li>Select <strong>Set as Active Engine</strong>. From then on, Ask
 Quill and the agents run on your chosen engine, and a status line names
 it.</li>
@@ -6203,11 +6209,66 @@ governs the <strong>Editor surface</strong> choice and the <strong>Hide
 editor border</strong> option beneath it, plus the live explainer that
 describes each surface. Both this gate and the master switch must be on
 before any surface override is applied, and while it is off those
-controls are disabled and skipped in the tab order.</li>
+controls are disabled and skipped in the tab order. One of the choices
+is <strong>QuillRichEdit (native Rich Edit + RTF, experimental)</strong>
+— see below.</li>
+<li><strong>QuillRichEdit: emulate a system edit control (braille
+test)</strong> — a third checkbox, only meaningful when the Editor
+surface above is set to QuillRichEdit. See “QuillRichEdit
+(experimental)” below for what it does and why your feedback matters if
+you use a braille display.</li>
 </ul>
 <p>The pattern to remember: one master switch for the tab, one switch
 per experiment, and the editor-surface experiments behind a third
 acknowledgement of their own — consent in layers, never by accident.</p>
+<h3
+id="quillrichedit-experimental-and-a-request-for-braille-display-owners">QuillRichEdit
+(experimental) — and a request for braille display owners</h3>
+<p>QuillRichEdit is a new experimental editor surface: the <em>same</em>
+native Rich Edit control QUILL already uses as its default editor,
+wrapped so QUILL can reach a few things underneath it that were
+previously out of reach — real RTF load/save, and a candidate fix for
+two long-standing braille reports:</p>
+<ul>
+<li><strong>The braille “cell-two” offset</strong>, where some displays
+start the first character of every line in cell 2 instead of cell 1 (a
+long-standing word-processor-control quirk, not specific to QUILL).</li>
+<li><strong>Missing selection dots</strong> — some displays do not show
+dots 7-8 under selected text when the caret is in QUILL’s default
+editor.</li>
+</ul>
+<p>QuillRichEdit adds a switch that asks the same native control to
+behave more like a plain text-edit control for braille purposes, while
+keeping everything that makes it read correctly to JAWS and NVDA.
+<strong>We do not yet know if this fixes the offset or the missing dots
+on real hardware — that is exactly what we need your help to find
+out.</strong></p>
+<p><strong>How to try it and give feedback:</strong></p>
+<ol type="1">
+<li>Open <strong>Preferences &gt; Experimental</strong>.</li>
+<li>Tick <strong>Enable experimental features</strong> (the master
+switch).</li>
+<li>Tick <strong>Enable experimental editor surfaces</strong>.</li>
+<li>Set <strong>Editor surface</strong> to <strong>QuillRichEdit (native
+Rich Edit + RTF, experimental)</strong>.</li>
+<li>Tick <strong>QuillRichEdit: emulate a system edit control (braille
+test)</strong>.</li>
+<li>Apply Settings, then <strong>restart QUILL</strong> — all three of
+these settings take effect on the next launch, not immediately.</li>
+<li>With your braille display attached, open or type into a document and
+check: Does text now start in cell 1, or still cell 2? Does selecting
+text now show dots 7-8 underneath it? Does JAWS/NVDA still read the
+editor’s content correctly?</li>
+</ol>
+<p>Please tell us what you see — with which screen reader and which
+braille display — through <strong>Help &gt; Report a Bug</strong> or
+your usual QUILL feedback channel either way, whether it helped, made no
+difference, or made things worse. This is genuinely still an open
+question and real-hardware reports are the only way to answer it.</p>
+<p>This surface also carries QUILL’s first native RTF load/save and
+in-place bold/italic/underline/font/alignment formatting, as a first
+step toward a lighter-weight rich-text document mode — but the braille
+question above is the reason it needs your feedback most.</p>
 <h3 id="table-studio-experimental">Table Studio (experimental)</h3>
 <p>Once you enable it on the Experimental tab, <strong>Tools &gt; Table
 Studio…</strong> opens a table in a fully keyboard-accessible grid — a

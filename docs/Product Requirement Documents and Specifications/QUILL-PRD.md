@@ -10014,6 +10014,63 @@ where the offset reproduces in Notepad itself, the cause is the braille display 
 screen-reader configuration, e.g. left status cells, not the control), and
 shipping docs must not claim the offset is fixed.
 
+### QuillRichEdit: a native Rich Edit wrapper for the cell-two offset and selection-dots investigation (shipped 0.9.0 Beta 2; braille testing pending)
+
+The control-type switch above changes *which* native control QUILL uses but
+gives no leverage *inside* the chosen control. **QuillRichEdit**
+(`quill/ui/richedit_rtf_surface.py`) is a thin wrapper over the *same*
+`RICHEDIT50W` control QUILL already ships as its default editor — same Win32
+window class, same `wx.TextCtrl(TE_RICH2 | TE_NOHIDESEL)`, so the full editor
+contract (value/caret/selection/undo/events) is inherited unchanged and no
+existing surface is affected. What it adds is a controlled handle on the
+control's **Text Object Model** (`ITextDocument`/`ITextSelection`, reached via
+`EM_GETOLEINTERFACE` → `QueryInterface(ITextDocument)`, no Python ctypes
+callback in the hot path — a callback-driven `EM_STREAMIN`/`EM_STREAMOUT`
+attempt was tried first and hard-crashes msftedit; see
+`docs/planning/editor-surface-experiments.md` §8 for the post-mortem) and its
+low-level edit-style messages (`EM_SETEDITSTYLE`/`EM_GETEDITSTYLE`).
+
+Three phases shipped:
+
+- **RTF load/save** through the TOM (`load_rtf`/`save_rtf`/`get_rtf`/`set_rtf`),
+  verified end-to-end against a real `RICHEDIT50W` (a bold run round-trips
+  through save and reload with no crash) — the first rung toward a
+  lightweight, accessible RTF document mode.
+- **Formatting on the selection** — bold/italic/underline (toggled via
+  `ITextFont` + `tomToggle`), font name/size, and paragraph alignment — all
+  through the same TOM, verified on-device (italic, font, size, and center
+  all appear correctly in the saved RTF).
+- **A braille instrument and a candidate fix for #616/#813.** A read-only
+  selection localizer compares the control's own selection
+  (`ITextSelection.Start/End`) against wx's `GetSelection`; on-device they
+  agree, which localizes #813 (JAWS braille not showing dots 7-8 on a
+  selection) to an assistive-technology rendering gap, not a control-tracking
+  one. The candidate fix, `set_emulate_system_edit`, applies
+  `SES_EMULATESYSEDIT` via `EM_SETEDITSTYLE` — asking the Rich Edit to behave
+  like the classic `EDIT` control (which testing showed renders from cell 1
+  *and* shows selection dots 7-8) while remaining a genuine Rich Edit, so its
+  correct `IAccessible` value reporting (the reason RichEdit is the default in
+  the first place, #616) is unchanged.
+
+**Gating (deliberately conservative — this changes the control your whole
+document lives in):** QuillRichEdit only exists when *both*
+`experimental_acknowledged` and `experimental_editor_surfaces_enabled` are on
+and `experimental_editor_surface` is set to `richedit_rtf`; the emulate-sysedit
+braille lever is a further, separate checkbox
+(`experimental_richedit_emulate_sysedit`) under the same double gate. Every
+path falls back to a plain `wx.TextCtrl` on any failure — selecting this
+surface can never brick the editor. All three settings are restart-based (new
+documents/relaunch), matching every other editor-surface option.
+
+**Status: needs on-device JAWS + braille-display testing.** The instrument and
+the lever both verify cleanly by direct `SendMessage`/COM inspection, but
+whether the lever actually fixes what a braille display shows — cell start
+position, selection dots 7-8, and whether JAWS still reads the editor's value
+correctly — can only be judged on real hardware. See the request for braille
+display owner feedback in the user guide's Experimental Features section, and
+`docs/planning/editor-surface-experiments.md` §8 for the full test protocol
+and the running record of results.
+
 ### Self-voice fallback is logged, not announced (shipped 0.8.1 Beta 1)
 
 QUILL's SAPI 5 self-voice (``sapi5.py``/``prism_bridge``) is a *fallback* used only
