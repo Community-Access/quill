@@ -1104,7 +1104,7 @@ class QuillinsMenuMixin:
                 lines.append(f"Signature: invalid ({sig.error or 'does not match publisher key'}).")
             else:
                 lines.append("Signature: unsigned. This Quillin is not publisher-attested.")
-        except (OSError, ValueError) as exc:
+        except (OSError, ValueError, ImportError) as exc:
             lines.append(f"Signature: check failed ({exc}).")
 
         if item.errors:
