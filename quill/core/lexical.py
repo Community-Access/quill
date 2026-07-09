@@ -30,6 +30,7 @@ logger = logging.getLogger(__name__)
 
 FREE_DICTIONARY_HOST = "https://freedictionaryapi.com"
 DATAMUSE_HOST = "https://api.datamuse.com"
+WIKIPEDIA_HOST = "https://{lang}.wikipedia.org"
 
 _DEFAULT_TIMEOUT = 8.0
 _MAX_ITEMS = 40
@@ -45,6 +46,15 @@ class Definition:
 
 
 @dataclass(frozen=True, slots=True)
+class EncyclopediaEntry:
+    """One encyclopedia summary (#897): a title, a short extract, and its URL."""
+
+    title: str
+    summary: str
+    url: str
+
+
+@dataclass(frozen=True, slots=True)
 class LexicalResult:
     """Normalized lexical data for one word, regardless of source."""
 
@@ -54,12 +64,18 @@ class LexicalResult:
     antonyms: tuple[str, ...] = ()
     rhymes: tuple[str, ...] = ()
     related: tuple[str, ...] = ()
+    encyclopedia: tuple[EncyclopediaEntry, ...] = ()
     sources: tuple[str, ...] = ()
 
     @property
     def is_empty(self) -> bool:
         return not (
-            self.definitions or self.synonyms or self.antonyms or self.rhymes or self.related
+            self.definitions
+            or self.synonyms
+            or self.antonyms
+            or self.rhymes
+            or self.related
+            or self.encyclopedia
         )
 
 
@@ -237,6 +253,49 @@ def normalize_datamuse(payload: object) -> tuple[str, ...]:
     return _dedupe(words)
 
 
+class WikipediaProvider(LexicalProvider):
+    """A keyless encyclopedia summary from the Wikipedia REST API (#897)."""
+
+    name = "Wikipedia"
+    online = True
+
+    def __init__(self, host: str = WIKIPEDIA_HOST, *, language: str = "en") -> None:
+        self._host = host.format(lang=language)
+        self._language = language
+
+    def lookup(self, word: str) -> LexicalResult | None:
+        url = f"{self._host}/api/rest_v1/page/summary/{quote(word)}"
+        payload = _http_get_json(url)
+        return normalize_wikipedia(word, payload)
+
+
+def normalize_wikipedia(word: str, payload: object) -> LexicalResult | None:
+    """Normalize a Wikipedia page-summary response into a LexicalResult (pure).
+
+    A disambiguation page or a missing extract is treated as "no entry" --
+    #897 asks for a summary, not a disambiguation list to sort through.
+    """
+    if not isinstance(payload, dict):
+        return None
+    if str(payload.get("type", "")) == "disambiguation":
+        return None
+    title = str(payload.get("title", "")).strip()
+    summary = str(payload.get("extract", "")).strip()
+    if not title or not summary:
+        return None
+    content_urls = payload.get("content_urls")
+    url = ""
+    if isinstance(content_urls, dict):
+        desktop = content_urls.get("desktop")
+        if isinstance(desktop, dict):
+            url = str(desktop.get("page", "")).strip()
+    return LexicalResult(
+        word=word,
+        encyclopedia=(EncyclopediaEntry(title=title, summary=summary, url=url),),
+        sources=("Wikipedia",),
+    )
+
+
 def _union_results(base: LexicalResult, other: LexicalResult) -> LexicalResult:
     """Combine two results, preferring base order and unioning each list."""
     return LexicalResult(
@@ -246,6 +305,7 @@ def _union_results(base: LexicalResult, other: LexicalResult) -> LexicalResult:
         antonyms=_dedupe(list(base.antonyms) + list(other.antonyms)),
         rhymes=_dedupe(list(base.rhymes) + list(other.rhymes)),
         related=_dedupe(list(base.related) + list(other.related)),
+        encyclopedia=tuple(list(base.encyclopedia) + list(other.encyclopedia))[:_MAX_ITEMS],
         sources=_dedupe(list(base.sources) + list(other.sources)),
     )
 
@@ -297,7 +357,7 @@ def default_service(*, include_online: bool = True) -> LexicalService:
     """Build the default service: offline always, online providers optional."""
     online: list[LexicalProvider] = []
     if include_online:
-        online = [FreeDictionaryProvider(), DatamuseProvider()]
+        online = [FreeDictionaryProvider(), DatamuseProvider(), WikipediaProvider()]
     return LexicalService(online=online)
 
 
@@ -399,6 +459,7 @@ ACTION_INSERT = "insert"
 ACTION_PIVOT = "pivot"
 
 # Section kinds, in the order they are presented.
+KIND_ENCYCLOPEDIA = "encyclopedia"
 KIND_DEFINITION = "definition"
 KIND_SYNONYM = "synonym"
 KIND_ANTONYM = "antonym"
@@ -425,6 +486,9 @@ def build_lookup_items(result: LexicalResult) -> tuple[LookupItem, ...]:
     definition example words are not actionable. Every item is reachable.
     """
     items: list[LookupItem] = []
+    for entry in result.encyclopedia:
+        label = f"{entry.title}: {entry.summary}"
+        items.append(LookupItem(KIND_ENCYCLOPEDIA, label, entry.summary, ""))
     for definition in result.definitions:
         pos = f"{definition.part_of_speech}: " if definition.part_of_speech else ""
         items.append(LookupItem(KIND_DEFINITION, f"{pos}{definition.text}", definition.text, ""))
@@ -456,6 +520,14 @@ def render_lookup(result: LexicalResult) -> str:
     if result.is_empty:
         lines.append("No entries found.")
         return "\n".join(lines)
+
+    if result.encyclopedia:
+        lines.append("")
+        lines.append("Encyclopedia:")
+        for entry in result.encyclopedia:
+            lines.append(f"{entry.title}: {entry.summary}")
+            if entry.url:
+                lines.append(f"   Source: {entry.url}")
 
     if result.definitions:
         lines.append("")

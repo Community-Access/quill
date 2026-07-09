@@ -11,6 +11,7 @@ from quill.core.lexical import (
     SOURCE_ONLINE,
     DatamuseProvider,
     Definition,
+    EncyclopediaEntry,
     FreeDictionaryProvider,
     LexicalProvider,
     LexicalResult,
@@ -18,12 +19,14 @@ from quill.core.lexical import (
     LookupItem,
     MergedTerm,
     OfflineLexicalProvider,
+    WikipediaProvider,
     build_lookup_items,
     merge_terms,
     merged_terms_for_mode,
     normalize_datamuse,
     normalize_free_dictionary,
     normalize_source_mode,
+    normalize_wikipedia,
     render_lookup,
 )
 
@@ -207,6 +210,84 @@ def test_datamuse_provider_queries_all_relations(monkeypatch: pytest.MonkeyPatch
     assert any("rel_ant" in u for u in urls)
     assert any("rel_rhy" in u for u in urls)
     assert any("ml=" in u for u in urls)
+
+
+def test_normalize_wikipedia_extracts_title_summary_and_url() -> None:
+    payload = {
+        "title": "Ada Lovelace",
+        "extract": "Ada Lovelace was an English mathematician.",
+        "content_urls": {"desktop": {"page": "https://en.wikipedia.org/wiki/Ada_Lovelace"}},
+    }
+    result = normalize_wikipedia("Ada Lovelace", payload)
+    assert result is not None
+    assert result.encyclopedia == (
+        EncyclopediaEntry(
+            title="Ada Lovelace",
+            summary="Ada Lovelace was an English mathematician.",
+            url="https://en.wikipedia.org/wiki/Ada_Lovelace",
+        ),
+    )
+    assert result.sources == ("Wikipedia",)
+
+
+def test_normalize_wikipedia_returns_none_for_disambiguation() -> None:
+    payload = {"title": "Mercury", "extract": "Mercury may refer to:", "type": "disambiguation"}
+    assert normalize_wikipedia("Mercury", payload) is None
+
+
+def test_normalize_wikipedia_returns_none_for_missing_extract() -> None:
+    assert normalize_wikipedia("x", {"title": "X"}) is None
+    assert normalize_wikipedia("x", None) is None
+    assert normalize_wikipedia("x", "not a dict") is None
+
+
+def test_wikipedia_provider_uses_rest_summary_endpoint(monkeypatch: pytest.MonkeyPatch) -> None:
+    captured: dict[str, str] = {}
+
+    def fake_get(url: str, *, timeout: float = 8.0) -> object:
+        captured["url"] = url
+        return {"title": "Test", "extract": "A test summary."}
+
+    monkeypatch.setattr(lexical, "_http_get_json", fake_get)
+    result = WikipediaProvider().lookup("Test")
+    assert result is not None
+    assert "en.wikipedia.org/api/rest_v1/page/summary/Test" in captured["url"]
+
+
+def test_encyclopedia_included_in_is_empty_and_union() -> None:
+    result = LexicalResult(
+        word="x", encyclopedia=(EncyclopediaEntry(title="T", summary="S", url=""),)
+    )
+    assert result.is_empty is False
+    merged = lexical._union_results(LexicalResult(word="x"), result)
+    assert merged.encyclopedia == result.encyclopedia
+
+
+def test_render_lookup_includes_encyclopedia_section() -> None:
+    result = LexicalResult(
+        word="Ada",
+        encyclopedia=(
+            EncyclopediaEntry(
+                title="Ada Lovelace", summary="A mathematician.", url="https://en.wikipedia.org/x"
+            ),
+        ),
+        sources=("Wikipedia",),
+    )
+    text = render_lookup(result)
+    assert "Encyclopedia:" in text
+    assert "Ada Lovelace: A mathematician." in text
+    assert "https://en.wikipedia.org/x" in text
+
+
+def test_build_lookup_items_includes_encyclopedia_as_readonly() -> None:
+    result = LexicalResult(
+        word="Ada",
+        encyclopedia=(EncyclopediaEntry(title="Ada Lovelace", summary="A mathematician.", url=""),),
+    )
+    items = build_lookup_items(result)
+    assert items[0].kind == "encyclopedia"
+    assert items[0].action == ""
+    assert items[0].value == "A mathematician."
 
 
 def test_normalize_source_mode_defaults_to_offline() -> None:

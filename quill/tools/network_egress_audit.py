@@ -206,9 +206,10 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "User-initiated local AI model download; verified TLS for HTTPS, visible progress callback."
     ),
     "core/lexical.py::_http_get_json": (
-        "Consented online dictionary/thesaurus lookups (DICT-1: Free Dictionary "
-        "and Datamuse). Only runs when the user enables online lexical lookups; "
-        "HTTPS with a verified TLS context, no API key, graceful offline fallback."
+        "Consented online dictionary/thesaurus/encyclopedia lookups (DICT-1: Free "
+        "Dictionary and Datamuse; #897: Wikipedia's keyless REST summary endpoint). "
+        "Only runs when the user enables online lexical lookups; HTTPS with a "
+        "verified TLS context, no API key, graceful offline fallback."
     ),
     "core/publishing_clients.py::verify_connection": (
         "User-initiated publishing connection verification from the Publishing "
