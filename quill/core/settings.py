@@ -62,6 +62,7 @@ class Settings:
     plain_text_link_style: str = "text_url"
     content_handoff_format: str = "text"
     auto_outline_style: str = "numeric"
+    clip_library_autocapture: bool = False
     indent_with_tabs: bool = False
     indent_size: int = 4
     # On by default so signed safety advisories (the remote feature kill
@@ -632,6 +633,7 @@ class Settings:
         auto_outline_style = str(data.get("auto_outline_style", "numeric")).strip().lower()
         if auto_outline_style not in {"numeric", "legal"}:
             auto_outline_style = "numeric"
+        clip_library_autocapture = bool(data.get("clip_library_autocapture", False))
         indent_with_tabs = bool(data.get("indent_with_tabs", False))
         try:
             indent_size = int(data.get("indent_size", 4))
@@ -1271,6 +1273,7 @@ class Settings:
             plain_text_link_style=plain_text_link_style,
             content_handoff_format=content_handoff_format,
             auto_outline_style=auto_outline_style,
+            clip_library_autocapture=clip_library_autocapture,
             indent_with_tabs=indent_with_tabs,
             indent_size=indent_size,
             auto_check_updates=auto_check_updates,

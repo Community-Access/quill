@@ -8,7 +8,7 @@ import pytest
 import wx
 
 from quill.core.clip_library import ClipLibrary
-from quill.core.fragment import Fragment
+from quill.core.fragment import Fragment, FragmentFormat
 from quill.ui.clip_library_dialog import ClipLibraryDialog
 
 
@@ -76,6 +76,40 @@ def test_promote_calls_the_supplied_callback_with_the_real_index(wx_app, tmp_pat
     expected_index = dlg._indices[1]
     dlg._on_promote(None)
     assert calls == [expected_index]
+    dlg.dialog.Destroy()
+    frame.Destroy()
+
+
+def test_copy_uses_the_configured_content_format(wx_app, tmp_path: Path) -> None:
+    library = ClipLibrary(tmp_path)
+    library.remember(Fragment(markup="**bold** clip", title="Formatted"))
+    frame = wx.Frame(None)
+    dlg = ClipLibraryDialog(frame, library, content_format=FragmentFormat.MARKDOWN)
+    dlg._listbox.SetSelection(0)
+    dlg._on_selection_changed(None)
+    dlg._on_copy(None)
+    assert wx.TheClipboard.Open()
+    data = wx.TextDataObject()
+    wx.TheClipboard.GetData(data)
+    wx.TheClipboard.Close()
+    assert data.GetText() == "**bold** clip"
+    dlg.dialog.Destroy()
+    frame.Destroy()
+
+
+def test_copy_defaults_to_plain_text_format(wx_app, tmp_path: Path) -> None:
+    library = ClipLibrary(tmp_path)
+    library.remember(Fragment(markup="**bold** clip", title="Formatted"))
+    frame = wx.Frame(None)
+    dlg = ClipLibraryDialog(frame, library)
+    dlg._listbox.SetSelection(0)
+    dlg._on_selection_changed(None)
+    dlg._on_copy(None)
+    assert wx.TheClipboard.Open()
+    data = wx.TextDataObject()
+    wx.TheClipboard.GetData(data)
+    wx.TheClipboard.Close()
+    assert data.GetText() == "bold clip"
     dlg.dialog.Destroy()
     frame.Destroy()
 

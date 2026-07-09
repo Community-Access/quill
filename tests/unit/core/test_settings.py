@@ -239,6 +239,15 @@ def test_auto_outline_style_invalid_value_falls_back_to_numeric(
     assert load_settings().auto_outline_style == "numeric"
 
 
+def test_clip_library_autocapture_defaults_off_and_round_trips(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    assert Settings().clip_library_autocapture is False
+    save_settings(Settings(clip_library_autocapture=True))
+    assert load_settings().clip_library_autocapture is True
+
+
 def test_settings_persists_tts_normalization(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:

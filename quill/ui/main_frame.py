@@ -4221,6 +4221,7 @@ class MainFrame(
         editor.Bind(wx.EVT_LEFT_UP, self._on_editor_caret_activity)
         editor.Bind(wx.EVT_SET_FOCUS, self._on_editor_caret_activity)
         editor.Bind(wx.EVT_CONTEXT_MENU, self._on_editor_context_menu)
+        editor.Bind(wx.EVT_TEXT_COPY, self._on_editor_text_copy)
 
     def _on_editor_char_hook(self, event: object) -> None:
         wx = self._wx

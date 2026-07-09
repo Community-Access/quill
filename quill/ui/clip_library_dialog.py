@@ -25,10 +25,12 @@ class ClipLibraryDialog:
         library: ClipLibrary,
         announce_cb: Callable[[str], None] | None = None,
         promote_cb: Callable[[int], None] | None = None,
+        content_format: FragmentFormat = FragmentFormat.TEXT,
     ) -> None:
         self._library = library
         self._announce = announce_cb or (lambda _msg: None)
         self._promote_cb = promote_cb
+        self._content_format = content_format
         self._indices: list[int] = []
 
         self.dialog = wx.Dialog(
@@ -164,7 +166,7 @@ class ClipLibraryDialog:
         index = self._selected_index()
         if index is None:
             return
-        text = render_fragment(self._library.entry(index).fragment, FragmentFormat.TEXT)
+        text = render_fragment(self._library.entry(index).fragment, self._content_format)
         if wx.TheClipboard.Open():
             wx.TheClipboard.SetData(wx.TextDataObject(text))
             wx.TheClipboard.Close()

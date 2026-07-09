@@ -618,6 +618,23 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("outline", "heading", "numbering", "legal", "agenda", "policy"),
     ),
     SettingSpec(
+        "clip_library_autocapture",
+        "Automatically keep everything you copy in the Clip Library",
+        "editing",
+        "bool",
+        (
+            "Off by default. When on, every selection you copy inside QUILL "
+            "(Edit > Copy, its keyboard shortcut, or a right-click Copy) is "
+            "remembered in the Clip Library automatically, with no separate "
+            "'Keep' action needed. This only sees copies made from within QUILL, "
+            "never the system clipboard at large, and never anything copied "
+            "before you turn this on. Because it means QUILL keeps a running "
+            "history of your copies rather than just what you explicitly choose "
+            "to keep, it stays off until you decide you want it."
+        ),
+        keywords=("clip library", "copy", "history", "automatic", "clipboard", "privacy"),
+    ),
+    SettingSpec(
         "autosave_interval_seconds",
         "Autosave interval (seconds)",
         "editing",

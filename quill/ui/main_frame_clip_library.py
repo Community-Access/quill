@@ -38,6 +38,24 @@ class ClipLibraryMixin:
         else:
             self._set_status("Already in the Clip Library.")
 
+    def _on_editor_text_copy(self, event: object) -> None:
+        """Auto-capture a copy into the Clip Library, when opted in.
+
+        Bound to ``wx.EVT_TEXT_COPY``, which the native control fires for
+        every copy regardless of trigger (menu, Ctrl+C, or right-click) --
+        the one mechanism that does not require guessing which UI path was
+        used. Off by default (``clip_library_autocapture``); always skips
+        the event so the native copy itself is never affected.
+        """
+        if getattr(self.settings, "clip_library_autocapture", False):
+            start, end = self.editor.GetSelection()
+            if start != end:
+                text = self.editor.GetValue()[start:end]
+                self._clip_library().remember(Fragment(markup=text, source="Document"))
+        skip = getattr(event, "Skip", None)
+        if callable(skip):
+            skip()
+
     def keep_fragment_in_clip_library(self, frag: Fragment) -> None:
         """Remember an already-built Fragment (e.g. a Look Up encyclopedia entry)."""
         if self._clip_library().remember(frag):
@@ -46,15 +64,25 @@ class ClipLibraryMixin:
             self._set_status("Already in the Clip Library.")
 
     def open_clip_library(self) -> None:
+        from quill.core.fragment import FragmentFormat
         from quill.ui.clip_library_dialog import ClipLibraryDialog
 
         library = self._clip_library()
+        raw_format = str(getattr(self.settings, "content_handoff_format", "text"))
+        try:
+            content_format = FragmentFormat(raw_format)
+        except ValueError:
+            content_format = FragmentFormat.TEXT
 
         def _promote(index: int) -> None:
             self._promote_clip_to_tray(index)
 
         dlg = ClipLibraryDialog(
-            self.frame, library, announce_cb=self._announce, promote_cb=_promote
+            self.frame,
+            library,
+            announce_cb=self._announce,
+            promote_cb=_promote,
+            content_format=content_format,
         )
         dlg.show()
         dlg.close()
