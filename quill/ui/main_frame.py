@@ -1295,6 +1295,14 @@ class MainFrame(
                 sound_manager.init(self.settings)
             except Exception:
                 self._report_startup_task_failure("sound manager init")
+            try:
+                from quill.core.ai import harness_credentials
+
+                # Bridges a key saved in an earlier session to the SDK's env-var
+                # auth before anything asks whether that harness is available.
+                harness_credentials.apply_all_stored_keys()
+            except Exception:
+                self._report_startup_task_failure("AI harness credential apply")
         # Construction is complete. Subsequent _refresh_contextual_menu_items
         # calls can read self.editor, self.notebook, etc. safely. Any refreshes
         # deferred from inside _build_menu() (e.g. when the first-run wizard
