@@ -1,12 +1,6 @@
 # Backlog review: remaining open issues
 
-Proposals and priorities for the rest of the open backlog. **Already shipped and documented in the CHANGELOG / release notes (removed from this future-facing list):** #909 (the free-first import pipeline is now a base dependency), #890 (Casual Writer tightened to a true "just write" profile), the Report-a-Bug "No token" build regression, #897 (Wikipedia lookup), #895 (Clip Library), and #900 (Send/Copy as Email). Closed items (#898 Second View, #901 tablet/low-vision, #905/#906/#907 Convert-Non-ASCII bugs) are excluded.
-
-## Small follow-ups from the #897/#895/#900 work
-
-- **Clip Library auto-capture**: the optional "remember everything copied automatically" mode (off by default, its own privacy consent) described in #895's proposal was deliberately deferred. Reliably intercepting every copy (not just QUILL's own explicit "Keep Selection" action) needs its own careful pass.
-- **Clip Library non-text clips**: images/files as described objects (not raw binary) were deferred; `Fragment.kind` already has a slot for this.
-- **Clip Library "Copy to Clipboard" format**: `ClipLibraryDialog._on_copy` always renders `FragmentFormat.TEXT`, not the new `content_handoff_format` setting Email hand-off reads. Small consistency fix: read the setting there too.
+Proposals and priorities for the rest of the open backlog. **Already shipped and documented in the CHANGELOG / release notes (removed from this future-facing list):** #909 (the free-first import pipeline is now a base dependency), #890 (Casual Writer tightened to a true "just write" profile), the Report-a-Bug "No token" build regression, #897 (Wikipedia lookup), #895 (Clip Library), #900 (Send/Copy as Email), #894 (Accessible AutoOutline), and #896 (Work Personas). Closed items (#898 Second View, #901 tablet/low-vision, #905/#906/#907 Convert-Non-ASCII bugs) are excluded.
 
 ## Priority ladder (my recommendation)
 
@@ -15,8 +9,6 @@ Proposals and priorities for the rest of the open backlog. **Already shipped and
 | **P1** | #891 | Print Studio (preview, margins, odd/even/reverse) | High | Medium | "The biggest concrete gap" in the Jarte comparison; a blind user still prints for sighted colleagues. |
 | **P1** | #899 | Mandatory alt text + inline object placeholders | High | Medium | The one genuine *accessibility* win here (not just parity). Now well-scoped — GLOW already does audit/repair; only insertion-time enforcement + inline announcement remain. |
 | **P2** | #892 | Keyboard-first Header/Footer Builder | High | Medium | Named Jarte-Plus gap; self-contained, but real net-new metadata + export work. Natural sibling to #891. |
-| **P2** | #894 | Accessible AutoOutline (heading auto-numbering) | Medium | Med-High | Rides existing `markdown_sections` parsing; useful for agendas/policies/board packets. |
-| **P3** | #896 | Work Personas (launchable profiles) | Med-High | Medium | Strong story, but the most integration-heavy item (profiles + sessions + copy tray + folders at once). Do it after its pieces settle. |
 | **P3** | #893 | "Rich Document" discoverability | Medium | High (feature exists) | Downgraded per the issue's own re-check: serves a *secondary* audience (low-vision / ex-Word), not QUILL's core keyboard-first user. Low cost, low urgency. |
 
 Rationale for the shape: the two items that are genuinely *mission* work (printing you can't do today, accessibility you can't enforce today) lead, then a band of solid, well-scoped features, with the integration-heavy and secondary-audience items last.
@@ -58,30 +50,6 @@ Extend the same idea to non-image embeds as accessible placeholders ("Page break
 **Non-goals:** Not a general macro/field-code system — a curated token set beats an open-ended one for this audience.
 
 **Priority:** P2 — high impact, self-contained, but real net-new UI + metadata + export work. Sequence it right after / alongside #891.
-
----
-
-## #894 — Accessible AutoOutline (heading auto-numbering) — **P2**
-
-**State:** Heading-parsing foundation already exists — `markdown_sections.parse_heading_blocks` / `current_section_at`, already used by the Section status cell and heading navigation. No auto-numbering today (confirmed genuine gap; the power-tools line-numbering feature is unrelated plain line numbers).
-
-**Proposal:** A toggleable AutoOutline mode where heading level drives numbering style (1 / 1.1 / 1.1.1, or I/A/1 legal), renumbering on add/remove/reorder. Insert numbering as **literal text** (survives copy/paste and export, matches "what you see is in the file"), via a reserved prefix pattern the renumber pass can safely find-and-replace — nail this mechanic down before implementation. Verify clean DOCX export with no double-numbering (Word's auto-numbering vs. QUILL's literal text).
-
-**Non-goals:** Not an outline/mind-map view — numbering on existing structure only.
-
-**Priority:** P2 — useful for a common document class (agendas, policies, reports); medium-high confidence since it builds on working parsing infra. Literal numbered text is arguably *more* valuable for screen-reader users (unambiguous read aloud) than a rendering overlay would be.
-
----
-
-## #896 — Work Personas: launchable profiles tied to sessions, favorites, folders — **P3**
-
-**State:** All the raw material exists — feature profiles, sessions, autosave/recovery, notebooks, Story Studio, Copy Tray. Missing: a single launchable identity that *ties them together*.
-
-**Proposal:** A **Work Persona** = a named bundle referencing a feature profile + default working folder + favorite/recent files + a Copy Tray slot set + (optional) keymap profile. Launching restores that persona's session via existing session/recovery machinery, scoped per-persona. Generate a per-persona launch shortcut (`.lnk` / command-line arg) so a persona is reachable without QUILL already running — the way Jarte's separate shortcuts worked.
-
-**Non-goals:** Not multi-user/access-control — convenience bundles for one person's contexts (school/work/hobby). Not a Story Studio/Notebook replacement — personas *use* those.
-
-**Priority:** P3 — meaningful, genuinely differentiated (QUILL's underlying pieces beat Jarte's), but the **most integration-heavy** item here (profiles + sessions + copy tray + folders simultaneously). Ranked below the self-contained wins precisely because the risk is in the integration. Note the natural dependency: it builds on the Copy Tray / Clip Library work (#895) and the now-tightened Casual Writer profile (#890, shipped) — so the Clip Library is the remaining prerequisite.
 
 ---
 
