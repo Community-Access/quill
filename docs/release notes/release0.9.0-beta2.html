@@ -1,479 +1,85 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>release0.9.0-beta2</title>
-  <style>
-    /* Default styles provided by pandoc.
-    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-    */
-    html {
-      color: #1a1a1a;
-      background-color: #fdfdfd;
-    }
-    body {
-      margin: 0 auto;
-      max-width: 36em;
-      padding-left: 50px;
-      padding-right: 50px;
-      padding-top: 50px;
-      padding-bottom: 50px;
-      hyphens: auto;
-      overflow-wrap: break-word;
-      text-rendering: optimizeLegibility;
-      font-kerning: normal;
-    }
-    @media (max-width: 600px) {
-      body {
-        font-size: 0.9em;
-        padding: 12px;
-      }
-      h1 {
-        font-size: 1.8em;
-      }
-    }
-    @media print {
-      html {
-        background-color: white;
-      }
-      body {
-        background-color: transparent;
-        color: black;
-        font-size: 12pt;
-      }
-      p, h2, h3 {
-        orphans: 3;
-        widows: 3;
-      }
-      h2, h3, h4 {
-        page-break-after: avoid;
-      }
-    }
-    p {
-      margin: 1em 0;
-    }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
-    }
-    img {
-      max-width: 100%;
-    }
-    svg {
-      height: auto;
-      max-width: 100%;
-    }
-    h1, h2, h3, h4, h5, h6 {
-      margin-top: 1.4em;
-    }
-    h5, h6 {
-      font-size: 1em;
-      font-style: italic;
-    }
-    h6 {
-      font-weight: normal;
-    }
-    ol, ul {
-      padding-left: 1.7em;
-      margin-top: 1em;
-    }
-    li > ol, li > ul {
-      margin-top: 0;
-    }
-    blockquote {
-      margin: 1em 0 1em 1.7em;
-      padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
-      color: #606060;
-    }
-    code {
-      white-space: pre-wrap;
-      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
-      font-size: 85%;
-      margin: 0;
-      hyphens: manual;
-    }
-    pre {
-      margin: 1em 0;
-      overflow: auto;
-    }
-    pre code {
-      padding: 0;
-      overflow: visible;
-      overflow-wrap: normal;
-    }
-    .sourceCode {
-     background-color: transparent;
-     overflow: visible;
-    }
-    hr {
-      border: none;
-      border-top: 1px solid #1a1a1a;
-      height: 1px;
-      margin: 1em 0;
-    }
-    table {
-      margin: 1em 0;
-      border-collapse: collapse;
-      width: 100%;
-      overflow-x: auto;
-      display: block;
-      font-variant-numeric: lining-nums tabular-nums;
-    }
-    table caption {
-      margin-bottom: 0.75em;
-    }
-    tbody {
-      margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
-    }
-    th {
-      border-top: 1px solid #1a1a1a;
-      padding: 0.25em 0.5em 0.25em 0.5em;
-    }
-    td {
-      padding: 0.125em 0.5em 0.25em 0.5em;
-    }
-    header {
-      margin-bottom: 4em;
-      text-align: center;
-    }
-    #TOC li {
-      list-style: none;
-    }
-    #TOC ul {
-      padding-left: 1.3em;
-    }
-    #TOC > ul {
-      padding-left: 0;
-    }
-    #TOC a:not(:hover) {
-      text-decoration: none;
-    }
-    span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
-    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    /* The extra [class] is a hack that increases specificity enough to
-       override a similar rule in reveal.js */
-    ul.task-list[class]{list-style: none;}
-    ul.task-list li input[type="checkbox"] {
-      font-size: inherit;
-      width: 0.8em;
-      margin: 0 0.8em 0.2em -1.6em;
-      vertical-align: middle;
-    }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
-  </style>
-</head>
-<body>
-<h1 id="quill-090-beta-2">QUILL 0.9.0 Beta 2</h1>
-<h2 id="polished-by-the-people-who-use-it">Polished by the people who
+<h1 id="quill-0.9.0-beta-2">QUILL 0.9.0 Beta 2</h1>
+<h2 id="polished-by-the-people-who-use-it.">Polished by the people who
 use it.</h2>
 <p><em>From Community Access. Free. Optional by design. Private by
 default. Yours to make quiet.</em></p>
 <p>Every single line below started life as a message from a beta tester
-— a crash report, a "this felt weird," a voice that wouldn't speak, a
-language that wasn't there. You wrote in; we listened; this is the
+— a crash report, a “this felt weird,” a voice that wouldn’t speak, a
+language that wasn’t there. You wrote in; we listened; this is the
 result. Keeping the promise made at Beta 1, this is overwhelmingly your
 reports, turned into fixes and polish, especially around getting the
-optional pieces you want — with <strong>one exception</strong>: a page
-indicator, because enough of you asked for it that it couldn't wait.</p>
-<p>This is the friendly companion to the <strong>"0.9.0 Beta 2"</strong>
-section of <code>CHANGELOG.md</code>. The same words appear in-app under
-<strong>Help &gt; What's New</strong> and on <strong>Check for
-Updates</strong>.</p>
-<p>Grazie, thank you, and keep the reports coming. 💙</p>
+optional pieces you want. A handful of things we’d been meaning to ship
+ride along — most notably a page indicator, because enough of you asked
+for it that it couldn’t wait.</p>
+<p>This is the long-form companion to the <strong>“0.9.0 Beta
+2”</strong> section of <code>CHANGELOG.md</code>. The in-app text under
+<strong>Help &gt; What’s New</strong> and on <strong>Check for
+Updates</strong> is drawn from that CHANGELOG section; this document is
+its friendlier, longer telling.</p>
+<p>Grazie, thank you, and keep the reports coming.</p>
 <hr />
 <h2
 id="a-favor-to-ask-braille-display-owners-please-try-quillrichedit">A
 favor to ask: braille display owners, please try QuillRichEdit</h2>
-<p>We've been chasing two long-standing braille reports — text starting
-in cell 2 instead of cell 1 on some displays, and selection dots (7-8)
-not showing up under selected text. This release ships the first real
-lever for both: a new experimental editor surface called
-<strong>QuillRichEdit</strong>, built on the <em>same</em> native
-control QUILL already uses every day, with a switch that asks it to
-behave more like a plain text control for braille purposes while still
-reading correctly to JAWS and NVDA.</p>
-<p><strong>We don't yet know if it actually helps on real hardware —
-that's genuinely what we need you for.</strong> To try it:
-<strong>Preferences &gt; Experimental</strong>, tick <strong>Enable
-experimental features</strong>, tick <strong>Enable experimental editor
-surfaces</strong>, set <strong>Editor surface</strong> to
-<strong>QuillRichEdit</strong>, and tick <strong>QuillRichEdit: emulate
-a system edit control (braille test)</strong>. Apply, then
-<strong>restart QUILL</strong> — all three settings need a fresh launch
-to take effect. Then, with your display attached: does text start in
-cell 1 now? Do selection dots show up? Does everything still read
-correctly? Tell us either way — helped, no difference, or worse —
-through <strong>Help &gt; Report a Bug</strong>, with your screen reader
-and display model. Full walkthrough in the user guide's "QuillRichEdit
-(experimental)" section.</p>
-<p>This same surface also quietly picked up QUILL's first native RTF
-load/save and in-place bold/italic/underline/font/alignment formatting —
-a first step toward a lighter rich-text document mode — but the braille
-question above is why it needs you most.</p>
-<h2
-id="alt-text-you-cant-skip-and-images-that-speak-up-when-its-missing">Alt
-text you can't skip, and images that speak up when it's missing</h2>
-<p>GLOW already catches missing alt text after the fact — this adds the
-proactive half. <strong>Insert &gt; Image...</strong> is QUILL's first
-dedicated image-insertion flow: it won't let you insert without either
-real alt text or an explicit "this image is decorative" choice, so a
-document can no longer quietly pick up an un-alt-texted image. And for
-any image already in your document, however it got there, <strong>Tools
-&gt; Describe Image at Cursor</strong> tells you exactly what's there:
-"Image: sunset.png, alt text: a sunset over the lake" — or just as
-clearly, "alt text MISSING" if nobody ever wrote one.</p>
-<h2 id="print-studio-finally-a-preview">Print Studio: finally, a
-preview</h2>
-<p><strong>File &gt; Print Studio...</strong> tells you what you're
-about to print before you print it — "3 pages, Letter, default margins"
-— read aloud or in braille, the way a visual print preview would show a
-sighted user. Then choose <strong>all, odd, or even pages</strong>,
-<strong>reverse the order</strong>, or <strong>skip the first
-page</strong> if it's pre-printed letterhead, before it hands off to the
-same Print dialog you already know. Printing itself also got more honest
-along the way — it used to draw whatever fit on one page and quietly
-drop the rest of a longer document; now it paginates properly.</p>
-<h2 id="and-now-headers-and-footers">And now, headers and footers</h2>
-<p><strong>File &gt; Header and Footer...</strong> builds one from named
-presets — title on the left with the page number on the right, filename
-and date, Roman numerals for front matter — or your own mix of a handful
-of tokens (title, filename, date, page number) placed left, center, or
-right. Want a different header on page one? There's a checkbox for that.
-Numeric or Roman page numbers, starting wherever you like. It's saved
-with the document and shows up on every page you print, Print Studio or
-plain Print alike.</p>
-<h2 id="five-small-things-that-add-up">Five small things that add
-up</h2>
+<p>We’ve been chasing two long-standing braille reports, and this
+release ships the first real lever for both. They are:</p>
 <ul>
-<li><strong>Look Up now includes Wikipedia.</strong> A short
-encyclopedia summary, with a link to the source, appears alongside
-definitions and synonyms when you're online — same consent and offline
-fallback as always.</li>
-<li><strong>A bigger clip history, alongside Copy Tray.</strong> Copy
-Tray's curated 12 slots aren't going anywhere — <strong>Clip
-Library</strong> (Edit menu) is a second, rolling history of everything
-you choose to keep, searchable, favoritable, and promotable into a
-specific Copy Tray slot when one earns a permanent home. Turn on
-automatic capture (off by default) and every copy inside QUILL is
-remembered with no extra step.</li>
-<li><strong>Send as Email, or just Copy as Email Body.</strong> The File
-menu can now hand your selection (or the whole document) straight to
-your mail client, or copy it to the clipboard formatted for pasting into
-one — useful when a mail client balks at a long message built the first
-way.</li>
-<li><strong>AutoOutline numbers your headings for you.</strong> Format
-&gt; Update Outline Numbering — numeric or legal style, your choice in
-Preferences &gt; Editing — writes the number straight into the heading
-text, so it reads aloud and survives copy/paste and export with nothing
-extra to configure.</li>
-<li><strong>Work Personas: one action into a whole context.</strong>
-Tools &gt; Work Personas... bundles a feature profile, a working folder,
-your favorite files, and a keymap profile under a name — "School,"
-"Novel," a client's name. Apply it instantly, launch straight into it
-with <code>quill --persona NAME</code>, or generate a double-clickable
-shortcut so it's one click away without QUILL already open.</li>
+<li><strong>The “cell-two” offset</strong> — some displays start the
+first character of every line in cell 2 instead of cell 1 (a
+long-standing word-processor-control quirk, not specific to QUILL).</li>
+<li><strong>Missing selection dots</strong> — some displays do not show
+dots 7-8 under selected text when the caret is in QUILL’s default
+editor.</li>
 </ul>
-<h2 id="getting-the-extras-you-want-reimagined">Getting the extras you
-want, reimagined</h2>
-<p>QUILL stays small by downloading the big optional pieces only when
-you ask. Beta testers told us that experience was confusing — so
-<strong>Help &gt; Download Optional Components</strong> was rebuilt into
-one warm, guided place.</p>
-<ul>
-<li><strong>One hub for everything optional.</strong> Every component in
-a single list, the ones most people reach for first (Pandoc, then the
-braille pack), each row saying in plain language what it does and how
-big it is. The window opens instantly now instead of pausing to check
-what you already have.</li>
-<li><strong>Prove it works before you rely on it.</strong> Anything
-installed gets a <strong>Test</strong> button: a voice reads you a
-sample so you actually hear it, the offline speech engine listens to a
-spoken phrase and tells you what it heard, and tools report their
-version. There's a <strong>Remove</strong> button too, and a
-<strong>Manage</strong> button that jumps you straight to the right
-picker (Manage Speech Models or Manage Voices).</li>
-<li><strong>A guided, step-by-step setup for offline dictation.</strong>
-Choosing offline dictation used to mean hunting through menus. Now the
-row is simply called <strong>Dictation (offline speech)</strong>, and it
-walks you through it one step at a time — a banner at the top always
-tells you which step you're on and the single next thing to do:
-<strong>1.</strong> pick and install your engine —
-<strong>Whisper.cpp</strong> (light and fast, works on any computer),
-<strong>Faster Whisper</strong> (most accurate), or
-<strong>Vosk</strong> (tiny, for old or low-memory machines);
-<strong>2.</strong> pick a model, with the best fit for your computer
-already selected so it's one click; <strong>3.</strong> press
-<strong>Test dictation</strong> to hear it prove itself, and it becomes
-your default. QUILL remembers the engine you chose, so you come back to
-where you left off instead of it resetting to the built-in engine. Vosk
-used to sit as its own separate row further down the list; it's simply a
-third choice here now, so there's exactly one place to set up offline
-dictation.</li>
-<li><strong>You always land back where you started — on the row you were
-just on.</strong> Downloading something used to fling you off into the
-editor or another tab, or reset the list to the top. Now every download
-— voices, engines, Pandoc, the braille pack, audio extras, Node.js,
-MathCAT, spell-check dictionaries — finishes, returns you to the hub,
-and reselects exactly the row you were working with.</li>
-<li><strong>A gentler helping hand.</strong> If you Test a piece before
-it's fully set up, QUILL walks you over to finish rather than treating a
-perfectly normal situation as an error — for offline speech
-specifically, that now means reopening the same guided engine-and-model
-picker above, not a bigger settings dialog. And if a download genuinely
-fails, it offers to send a report with the details.</li>
-<li><strong>Runs portable, stays portable.</strong> Everything installs
-into your portable data folder when you run QUILL from a drive, so your
-whole setup travels with you.</li>
-<li><strong>Audio export, playback, and chapters live in one
-place.</strong> FFmpeg (for exporting compressed audio like MP3 and
-M4B), the mpv playback engine, and MP3 audiobook chapter markers are now
-a single <strong>"Audio: export, playback &amp; chapters"</strong> row
-instead of three scattered entries — and each piece is still fetched
-only when you first use its feature, so nothing large downloads until
-it's actually needed. <strong>Node.js</strong> now sits at the very
-bottom of the list, as the least-used extra.</li>
-<li><strong>"Set as Default" is now a real, findable button.</strong>
-Pick your favorite offline speech model, or your favorite Read Aloud
-voice, and tell QUILL to use it from now on — a button and a right-click
-option, right where you already are, instead of a side effect of closing
-a dialog a particular way.</li>
-<li><strong>Speech Settings now separates offline from online.</strong>
-The Speech and Dictation tabs each split into <strong>Offline</strong>
-and <strong>Online</strong>, so your installed-once local engines and
-voices aren't mixed in with API-key cloud services in one long
-list.</li>
-</ul>
-<h2 id="small-but-meaningful-polish">Small but meaningful polish</h2>
-<ul>
-<li><strong>QUILL no longer thinks it crashed when Windows shuts down or
-logs off with it open.</strong> The OS session-end event now records a
-clean exit, so your next launch doesn't offer crash recovery for a
-session that ended normally. (#920)</li>
-<li><strong>Windows shell-integration registration no longer crashes on
-the Python 3.13 runtime.</strong> An empty binary registry value (the
-<code>OpenWithProgids</code> entry) that older Pythons silently accepted
-now gets the right type, so file associations register cleanly again.
-(#921)</li>
-<li><strong>Posting to Mastodon: set a post's language, and the counter
-respects your instance's limit.</strong> A post written in Italian can
-be filed under the Italian preset instead of your account default; and
-if your instance allows more (or fewer) than 500 characters, the live
-counter now knows — via a one-time lookup of the instance's own limit.
-(#922)</li>
-</ul>
-<h2 id="a-page-number-honestly-presented">A page number, honestly
-presented</h2>
-<p>A tester asked directly: "Are we going to be able to see proper page
-numbers with QUILL?" Now every document shows one, in the status bar, on
-by default, right next to your line/column position.</p>
-<ul>
-<li><strong>PDFs get a real page count.</strong> QUILL now preserves
-each PDF's actual page boundaries when you open it, so you see an exact
-"3 of 12" and <code>Ctrl+Shift+G</code> (Go To Page) jumps exactly.</li>
-<li><strong>Everything else gets an honest estimate.</strong> Plain
-text, Markdown, and Word documents don't have a real "page" until you
-print or export -- it depends on font, margins, and paper size, none of
-which QUILL tracks while you write. So for these, the same cell shows
-"~3 of ~12 (estimated)" -- the tilde and the word "estimated" always
-travel together, on purpose, so you never mistake a guess for a fact.
-Tune the words-per-page assumption in Preferences &gt; Navigation and
-QUILL Key if your pages run long or short.</li>
-<li>Braille documents are untouched -- they keep their own, richer page
-system.</li>
-</ul>
-<h2 id="a-simpler-installer-and-a-lighter-one">A simpler installer, and
-a lighter one</h2>
-<ul>
-<li><strong>No more component checkboxes.</strong> Beta 1's installer
-asked you to pick optional parts — several of which did nothing, because
-they're fetched on demand anyway. The installer now just installs QUILL;
-everything optional arrives when you first reach for it.</li>
-<li><strong>A smaller download.</strong> Kokoro's neural-voice engine is
-now fetched on demand with everything it needs, trimming the installer
-noticeably — you download Kokoro only if and when you want those
-voices.</li>
-</ul>
-<h2 id="speech-that-just-works">Speech that just works</h2>
-<ul>
-<li><strong>Kokoro voices really speak now.</strong> Richard reported
-that after downloading Kokoro, previewing a voice failed with a baffling
-"needs one more component" message. His diagnostics log pointed straight
-at the culprit: a small support library Kokoro quietly needs was being
-left out of the build. It's back — and when anything speech-related does
-go wrong, the real reason is now written to the diagnostics log
-(<strong>Help &gt; Save Diagnostics</strong>) instead of vanishing
-behind a vague message. Thank you, Richard.</li>
-<li><strong>Piper voices preview cleanly.</strong> Also from Richard:
-previewing a freshly downloaded Piper voice failed with an internal
-error. Fixed — preview and saving audio both work.</li>
-<li><strong>Testing a downloaded Piper voice no longer says the model
-file is missing.</strong> A second, separate Piper bug: the
-voice-preview code was looking in the wrong place for the file it had
-just downloaded. Fixed.</li>
-<li><strong>Offline speech-model downloads no longer crash with a
-cryptic Python error.</strong> Downloading a whisper.cpp or Faster
-Whisper model could fail partway through with
-<code>'NoneType' object has no attribute 'write'</code> — an internal
-progress-bar library trying to write status to a console QUILL doesn't
-have. Fixed.</li>
-<li><strong>The braille pack's Test button now actually reports the
-installed LibLouis version</strong>, instead of always saying
-"unknown."</li>
-<li><strong>DECtalk speaks instead of opening a file.</strong> Testing a
-DECtalk voice in the installed app used to pop open a program file
-rather than talk. It speaks as it should now.</li>
-<li><strong>Read Aloud stops reading the punctuation.</strong> Headings,
-bold text, and links in a Markdown document were being read aloud as
-literal <code>#</code> and <code>*</code> symbols (especially garbled
-with Piper). They're turned into plain, speakable text first now — live
-and on export.</li>
-<li><strong>Whisper model downloads are sturdier</strong>, going through
-the same well-tested library Faster Whisper already uses, so a hiccup on
-the model host's side gives you a clear message instead of a mystery
-failure.</li>
-<li><strong>Voice preview feedback.</strong> Previewing a voice no
-longer overlaps a previous preview's audio or announcement. Slow voice
-synthesis now plays a short cue and (by default) says "Generating
-preview, please wait," and the Preview/Test button turns into a Stop
-button while a preview is active.</li>
-<li><strong>The AI Setup Wizard no longer gets stuck</strong> showing an
-engine like OpenAI as "active" with no way to configure it after an
-interrupted install. Set Up works again.</li>
-<li><strong>"Failed to get data from the clipboard" errors during
-cut/paste are fixed.</strong> A screen reader or clipboard-history tool
-briefly holding the clipboard used to show this error immediately; QUILL
-now gives it a brief moment before giving up.</li>
-<li><strong>Fixed four crash reports sent in through user
-feedback:</strong> the Spell Check Language chooser, word prediction
-after recovering from a crash, and the AI Hub's Engines tab closing
-mid-install.</li>
-<li><strong>OpenAI Agents SDK and Claude Agent SDK now have a way to add
-an API key.</strong> Previously, once installed, there was no in-app way
-to configure either — <strong>Set Up</strong> in the AI Hub's Engines
-tab now opens a small dialog to paste, save, or remove the key, applied
-right away with no restart needed.</li>
-</ul>
+<p>The lever is a new experimental editor surface called
+<strong>QuillRichEdit</strong> — the <em>same</em> native Rich Edit
+control QUILL already uses as its default editor, wrapped so QUILL can
+reach underneath it. It adds a switch that asks that same control to
+behave more like a plain text-edit control for braille purposes, while
+keeping everything that makes it read correctly to JAWS and NVDA.
+<strong>We do not yet know if this fixes the offset or the missing dots
+on real hardware — that is genuinely what we need you to find
+out.</strong></p>
+<p><strong>How to try it, step by step:</strong></p>
+<ol type="1">
+<li>Open <strong>Preferences &gt; Experimental</strong>.</li>
+<li>Tick <strong>Enable experimental features</strong> (the master
+switch).</li>
+<li>Tick <strong>Enable experimental editor surfaces</strong>.</li>
+<li>Set <strong>Editor surface</strong> to
+<strong>QuillRichEdit</strong>.</li>
+<li>Tick <strong>QuillRichEdit: emulate a system edit control (braille
+test)</strong>.</li>
+<li><strong>Apply Settings, then restart QUILL</strong> — all three of
+these settings take effect on the next launch, not immediately.</li>
+<li>With your braille display attached, open or type into a document and
+check: does text now start in cell 1, or still cell 2? Does selecting
+text now show dots 7-8 underneath it? Does JAWS or NVDA still read the
+editor’s content correctly?</li>
+</ol>
+<p>If you can, please test under <strong>both NVDA and JAWS</strong> —
+braille rendering can differ between screen readers, so a result under
+one does not guarantee the same under the other. Tell us what you see,
+for each screen reader you tried, along with your braille display model,
+through <strong>Help &gt; Report a Bug</strong>, either way: helped, no
+difference, or worse. This is still an open question, and real-hardware
+reports are the only way to answer it. <strong>To go back</strong>,
+untick the two experimental-editor checkboxes (or set <strong>Editor
+surface</strong> back to its default) and restart QUILL.</p>
+<p>This same surface also carries QUILL’s first native RTF load/save and
+in-place bold/italic/underline/font/alignment formatting, as a first
+step toward a lighter-weight rich-text document mode — but the braille
+question above is the reason it needs your feedback most.</p>
 <h2 id="macos">macOS</h2>
-<p>QUILL's macOS support got a top-to-bottom review across several
-passes this release. Everything Mac-specific lives here in one place:
-the polish that touches the whole app, the four review passes, and —
-most importantly — a short list of things we'd love Mac users to help us
-confirm on real hardware. We develop on Windows, so every Mac fix below
-was made without a Mac in front of us, and a few genuinely need your
-eyes to close out.</p>
+<p>QUILL’s macOS support got a top-to-bottom review across several
+passes this release. Everything Mac-specific lives here in one place. We
+develop on Windows, so every Mac fix below was made without a Mac in
+front of us, and a few genuinely need your eyes to close out. Items
+marked <strong>(tester results wanted)</strong> are code-complete and
+unit-tested here but only show their real effect on a Mac — please try
+the fix and tell us through <strong>Help &gt; Report a Bug</strong> (or
+the linked support issue) if a symptom persists, so we can close it out
+or reopen it.</p>
 <h3 id="a-favor-to-ask-mac-users">A favor to ask Mac users</h3>
 <p>If you use QUILL on macOS, three things would help us enormously.
 Each is fixed in code in this release but needs a Mac to confirm, so
@@ -491,84 +97,89 @@ VoiceOver.</strong> The Rate, Volume, and Pitch number boxes now
 announce their label alongside their value. Does VoiceOver read them
 clearly? Please comment on <a
 href="https://github.com/Community-Access/support/issues/69">support#69</a>.</li>
-<li><strong>Are the new Mac shortcuts comfortable?</strong> Three old
-shortcuts collided with macOS system ones (Cmd+H hides, Cmd+M minimizes,
-Cmd+Space is Spotlight), so we moved them to Cmd+Alt+F, Cmd+Alt+M, and
-Cmd+Alt+Space, and Find Next/Previous now use Cmd+G / Cmd+Shift+G. These
-are our best guess from a Windows box — if any collides with something
-on your setup or just feels awkward, tell us and we'll pick a better
-chord together.</li>
+<li><strong>Are the new Mac shortcuts comfortable?</strong> We moved
+three shortcuts that collided with macOS system ones (see “Three Mac
+keyboard collisions fixed” below for the details). These are our best
+guess from a Windows box — if any collides with something on your setup
+or just feels awkward, tell us and we’ll pick a better chord
+together.</li>
 </ul>
-<p>A handful of other fixes are marked <em>tester results wanted</em> in
-the passes below — each says exactly what to check and asks you to tell
-us through <strong>Help &gt; Report a Bug</strong> if a symptom
-persists. Thank you for being our Mac eyes.</p>
-<h3 id="other-macos-polish">Other macOS polish</h3>
+<h3 id="other-macos-fixes">Other macOS fixes</h3>
 <ul>
-<li><strong>Built-in keymap profiles now stay platform-aware.</strong>
-The shipped keymap profiles no longer override the platform-specific
-defaults for quit, back/forward location, and document switching, so
-macOS users get the correct Cmd-based shortcuts instead of Windows-only
-overrides.</li>
-<li><strong>AI, compare, and dark-mode shortcuts now fire as
+<li><p><strong>Built-in keymap profiles now stay
+platform-aware.</strong> The shipped keymap profiles no longer override
+the platform-specific defaults for quit, back/forward location, and
+document switching, so macOS users get the correct Cmd-based shortcuts
+instead of Windows-only overrides.</p></li>
+<li><p><strong>AI, compare, and dark-mode shortcuts now fire as
 advertised.</strong> The proofread, translate, compare-navigation, and
 dark-mode commands now honor the keybindings shown in the UI and the
-keymap editor instead of silently ignoring them.</li>
-<li><strong>Preferences now appears in the standard macOS app-menu
+keymap editor instead of silently ignoring them.</p></li>
+<li><p><strong>Preferences now appears in the standard macOS app-menu
 location.</strong> The Preferences command is wired to the stock macOS
 menu id, making it reachable in the Quill app menu alongside About and
-Quit.</li>
-<li><strong>macOS launch paths are now platform-safe.</strong> Opening a
-file, revealing a folder, launching an installer, or previewing a voice
-sample no longer relies on Windows-only <code>os.startfile</code>
-behavior on macOS; those flows use the native macOS launch path
-instead.</li>
-<li><strong>macOS: Pandoc from the pandoc.org installer is
-found.</strong> A QUILL window opened from Finder doesn't inherit a
-Terminal's folders, so a real Pandoc install could look missing. QUILL
-now checks the usual locations directly.</li>
-<li><strong>macOS: earcons are no longer silent.</strong> The app had no
-audio backend at all on macOS, so sound notifications never played even
-with the bundled pack selected. Fixed.</li>
-<li><strong>macOS: opening a file from Finder, the Dock, or Terminal now
-actually opens it</strong>, instead of landing you in a blank document.
-Also fixed: any keyboard shortcut using the Command key silently did
-nothing, and Ctrl+Tab/Ctrl+Shift+Tab for switching between open
-documents landed on a toolbar button instead of switching (macOS
+Quit.</p></li>
+<li><p><strong>macOS launch paths are now platform-safe.</strong>
+Opening a file, revealing a folder, launching an installer, or
+previewing a voice sample no longer relies on Windows-only
+<code>os.startfile</code> behavior on macOS; those flows use the native
+macOS launch path instead.</p></li>
+<li><p><strong>macOS: Pandoc from the pandoc.org installer is
+found.</strong> A QUILL window opened from Finder doesn’t inherit a
+Terminal’s folders, so a real Pandoc install could look missing. QUILL
+now checks the usual locations directly.</p></li>
+<li><p><strong>macOS: LibreOffice import works on a standard
+install.</strong> The three LibreOffice call sites (XLS, legacy Office,
+and Apple Pages import) used a bare <code>soffice</code> command that is
+never on PATH on a Mac, so a genuine LibreOffice install looked missing.
+QUILL now resolves
+<code>/Applications/LibreOffice.app/Contents/MacOS/soffice</code>
+directly (with a Homebrew/installer hint when it’s missing).
+(#41)</p></li>
+<li><p><strong>macOS: a Homebrew or nvm-installed Node is found from a
+Finder-launched app.</strong> A QUILL window opened from Finder gets a
+minimal PATH and never sources your shell profile, so a real on-disk
+Node install was invisible to the external-engine allowlist. The lookup
+now checks <code>/usr/local/bin</code>, <code>/opt/homebrew/bin</code>,
+<code>/opt/local/bin</code>, and the highest version under
+<code>~/.nvm/versions/node</code>. (#48)</p></li>
+<li><p><strong>macOS: earcons are no longer silent.</strong> The app had
+no audio backend at all on macOS, so sound notifications never played
+even with the bundled pack selected. Fixed.</p></li>
+<li><p><strong>macOS: opening a file from Finder, the Dock, or Terminal
+now actually opens it</strong>, instead of landing you in a blank
+document. Also fixed: any keyboard shortcut using the Command key
+silently did nothing, and Ctrl+Tab/Ctrl+Shift+Tab for switching between
+open documents landed on a toolbar button instead of switching (macOS
 reserves that combination) — document switching on macOS is now
-Cmd+Shift+]/[.</li>
-<li>**macOS: the QUILL key answers to a real
-Ctrl+Shift+<code> press.** macOS reports the Cmd key, not the physical Control key, through the check QUILL was using — so a literal Ctrl+Shift+</code>
-press went unrecognized. It's recognized now. (Cmd+Shift+` is macOS's
-own "cycle windows" shortcut and will keep going to the OS first;
-reassign it in System Settings &gt; Keyboard Shortcuts if you'd rather
-use Cmd.)</li>
-<li><strong>Windows-only UI strings no longer render verbatim on macOS
-(#37).</strong> Strings that named a Windows-only mechanism now adapt to
-the platform: the credential vault is "macOS Keychain" instead of
-"Windows Credential Manager" in API-key, publish, and forget-key
-messages; the dictation status says "System dictation" instead of
-"Windows dictation"; the setup wizard says "In my user profile" instead
-of "In my Windows user profile"; and help text that examples a
-"Ctrl+Alt" chord says "Cmd+Alt" on macOS.</li>
-</ul>
-<h3 id="a-full-platform-review">A full platform review</h3>
-<p>A top-to-bottom audit of QUILL's macOS support landed ~24 fixes. The
-highlights for Mac users:</p>
-<ul>
-<li><strong>Read Aloud finally speaks on macOS.</strong> Every WAV-based
-voice engine (Piper, Kokoro, ElevenLabs, SAPI5, DECtalk) was silent on
-macOS — the live playback path only knew about Windows'
+Cmd+Shift+]/[.</p></li>
+<li><p>**macOS: the QUILL key answers to a real
+Ctrl+Shift+<code>press.** macOS reports the Cmd key, not the physical Control key, through the check QUILL was using — so a literal Ctrl+Shift+</code>
+press went unrecognized. It’s recognized now. (Cmd+Shift+` is macOS’s
+own “cycle windows” shortcut and will keep going to the OS first;
+reassign it in System Settings &gt; Keyboard Shortcuts if you’d rather
+use Cmd.)</p></li>
+<li><p><strong>Windows-only UI strings no longer render verbatim on
+macOS (#37).</strong> Strings that named a Windows-only mechanism now
+adapt to the platform: the credential vault is “macOS Keychain” instead
+of “Windows Credential Manager” in API-key, publish, and forget-key
+messages; the dictation status says “System dictation” instead of
+“Windows dictation”; the setup wizard says “In my user profile” instead
+of “In my Windows user profile”; and help text that examples a
+“Ctrl+Alt” chord says “Cmd+Alt” on macOS.</p></li>
+<li><p><strong>Read Aloud finally speaks on macOS.</strong> Every
+WAV-based voice engine (Piper, Kokoro, ElevenLabs, SAPI5, DECtalk) was
+silent on macOS — the live playback path only knew about Windows’
 <code>winsound</code> and silently threw each synthesized clip away. It
-now plays through macOS's <code>afplay</code>.</li>
-<li><strong>The earcon volume slider now works on macOS.</strong>
+now plays through macOS’s <code>afplay</code>.</p></li>
+<li><p><strong>The earcon volume slider now works on macOS.</strong>
 <code>NSSound</code> had no volume control wired, so the slider was a
-silent no-op. It now sets the volume on each played sound.</li>
-<li><strong>Whisper recommends the right model for your Mac's actual
+silent no-op. It now sets the volume on each played sound.</p></li>
+<li><p><strong>Whisper recommends the right model for your Mac’s actual
 RAM.</strong> QUILL reported a flat 8 GB on every Mac, so a 32 GB
 machine was told to use the small model. It now reads real memory via
-<code>sysctl</code>.</li>
-<li><strong>Three Mac keyboard collisions fixed.</strong>
+<code>sysctl</code>.</p></li>
+<li><p><strong>Three Mac keyboard collisions fixed.</strong>
 <code>Ctrl+H</code> (Replace) became <code>Cmd+H</code> (macOS Hide),
 <code>Ctrl+M</code> (pop mark) became <code>Cmd+M</code> (Minimize), and
 <code>Ctrl+Space</code> (select chunk) became <code>Cmd+Space</code>
@@ -576,194 +187,180 @@ machine was told to use the small model. It now reads real memory via
 <code>Cmd+Alt+F</code>, <code>Cmd+Alt+M</code>, and
 <code>Cmd+Alt+Space</code>, and Find Next/Previous now use the
 macOS-standard <code>Cmd+G</code> / <code>Cmd+Shift+G</code> (so you
-don't have to hold Fn for F3). Provisional picks — tell us if a chord
-collides with something on your setup.</li>
-<li><strong>DECtalk and MathCAT are no longer offered as downloads on
+don’t have to hold Fn for F3). Provisional picks — tell us if a chord
+collides with something on your setup.</p></li>
+<li><p><strong>DECtalk and MathCAT are no longer offered as downloads on
 macOS</strong> (their only backends are Windows <code>.dll</code>s that
 can never load on a Mac), and the Dictation description no longer
-promises SAPI 5 on macOS (it doesn't exist there — Whisper is the
-path).</li>
-<li><strong>No more duplicate "About Quill," and no stray
+promises SAPI 5 on macOS (it doesn’t exist there — Whisper is the
+path).</p></li>
+<li><p><strong>The braille pack download is Windows-only on macOS, which
+now points you to Homebrew liblouis instead.</strong> The bundled pack
+ships a Windows <code>lou_translate</code> binary that could never run
+on a Mac, so offering it there was misleading. On macOS, QUILL now
+detects a Homebrew liblouis install (<code>brew install liblouis</code>)
+automatically and uses it. (#47)</p></li>
+<li><p><strong>No more duplicate “About Quill,” and no stray
 <code>Cmd+F4</code>.</strong> macOS showed two About entries (the
 Application menu and Help); the Help copy is gone. The redundant
 <code>Cmd+F4</code> close shortcut was Windows-only and never idiomatic
-on Mac.</li>
-<li><strong>VoiceOver announcements are gentler and bounded.</strong> A
-runaway status message is now capped so it can't become an unreadable
-wall of text, and routine status no longer interrupts what you're
-already hearing (only narration that has to interrupt does).</li>
-<li><strong>Your documents are safer on a crash.</strong> Saving a
+on Mac.</p></li>
+<li><p><strong>VoiceOver announcements are gentler and bounded.</strong>
+A runaway status message is now capped so it can’t become an unreadable
+wall of text, and routine status no longer interrupts what you’re
+already hearing (only narration that has to interrupt does).</p></li>
+<li><p><strong>Your documents are safer on a crash.</strong> Saving a
 document and writing an autosave recovery snapshot are now atomic (write
 to a temp file, fsync, then rename) — a crash mid-write can no longer
 corrupt your real file or leave a truncated snapshot as the thing you
-recover.</li>
-<li><strong>The macOS build doesn't drag Windows-only packaging tools
-onto other platforms</strong>, the dictation "microphone unavailable"
-message no longer says "Windows microphone permissions" verbatim, and
+recover.</p></li>
+<li><p><strong>The macOS build doesn’t drag Windows-only packaging tools
+onto other platforms</strong>, the dictation “microphone unavailable”
+message no longer says “Windows microphone permissions” verbatim, and
 the macOS release build now actually runs the test suite in CI — so the
 macOS-only tests (Keychain, high-contrast, screen-reader detection)
-finally run somewhere.</li>
-<li><strong>Launch QUILL from source by double-clicking in
+finally run somewhere.</p></li>
+<li><p><strong>Launch QUILL from source by double-clicking in
 Finder.</strong> A new <code>run-from-source.command</code> wrapper runs
 in Terminal on double-click (a <code>.sh</code> would only open in a
 text editor), forwarding to <code>run-from-source.sh</code> — no
 terminal needed. The first-run Gatekeeper prompt and its right-click →
-Open workaround are documented in the file header. (#923)</li>
-<li><strong>Tray status messages say the right thing on macOS.</strong>
-QUILL's six minimize-to-tray / restore messages ("Quill is running in
-the system tray", "Minimized to system tray", etc.) used Windows
-terminology verbatim, but on macOS the feature renders as a menu-bar
-status item. They now say "menu bar" on macOS (and keep saying "system
-tray" on Windows).</li>
-<li><strong>The Settings default-folder hint no longer shows a Windows
-path on macOS.</strong> The blank-default hint used to read
+Open workaround are documented in the file header. (#923)</p></li>
+<li><p><strong>Tray status messages say the right thing on
+macOS.</strong> QUILL’s six minimize-to-tray / restore messages (“Quill
+is running in the system tray”, “Minimized to system tray”, etc.) used
+Windows terminology verbatim, but on macOS the feature renders as a
+menu-bar status item. They now say “menu bar” on macOS (and keep saying
+“system tray” on Windows).</p></li>
+<li><p><strong>The Settings default-folder hint no longer shows a
+Windows path on macOS.</strong> The blank-default hint used to read
 <code>e.g. C:\Users\YourName\Documents</code> even on a Mac, where that
-path doesn't exist. It now shows
-<code>e.g. /Users/YourName/Documents</code> on macOS.</li>
-<li><strong>A background engine install can no longer crash a closed AI
-Hub.</strong> The install-complete callback in the AI Hub Engines tab
+path doesn’t exist. It now shows
+<code>e.g. /Users/YourName/Documents</code> on macOS.</p></li>
+<li><p><strong>A background engine install can no longer crash a closed
+AI Hub.</strong> The install-complete callback in the AI Hub Engines tab
 already guarded the re-enable of its Set Up button against a destroyed
 panel (an earlier fix), but the three calls after it were unguarded —
 closing the Hub before an install finished could still raise. All four
 post-install calls are now guarded, so a late callback against an
-already-closed Hub is a clean no-op.</li>
-<li><strong>Bundled tool paths are found on macOS.</strong> QUILL's
+already-closed Hub is a clean no-op.</p></li>
+<li><p><strong>Bundled tool paths are found on macOS.</strong> QUILL’s
 bundled-tool lookup used Windows backslashes in the relative path
 (<code>pandoc\pandoc.exe</code>); on macOS a backslash is a literal
 filename character, so the bundled binary was never found even when it
 genuinely exists. The paths now use forward slashes, which compose
-correctly on both platforms.</li>
-</ul>
-<h3 id="a-second-pass-of-small-fixes">A second pass of small fixes</h3>
-<p>A follow-up sweep over the platform review closed a few more items.
-Two are fully fixed; three are code-complete and unit-tested here but
-only show their real effect on a Mac, so they're marked <strong>tester
-results wanted</strong> — please tell us through Help &gt; Report a Bug
-if a symptom persists and we'll reopen it.</p>
-<ul>
-<li><strong>Short keychain secrets no longer leak into logs.</strong>
+correctly on both platforms.</p></li>
+<li><p><strong>Short keychain secrets no longer leak into logs.</strong>
 The macOS <code>security</code> CLI takes a secret as
 <code>-w &lt;secret&gt;</code> in separate arguments, and a short or
 non-hex secret slipped past the redaction that guards the diagnostics
 log. The value that follows <code>-w</code> is now redacted explicitly
-before logging, so a key passed to Keychain can't appear in a submitted
-report. (#60/#73)</li>
-</ul>
-<p><em>Tester results wanted:</em></p>
-<ul>
-<li><strong>Work Persona launchers are real on macOS.</strong>
-Generating a shortcut for a persona used to write a Windows
-<code>.bat</code> file on macOS — useless on a Mac. It now writes a
-Finder-launchable <code>.command</code> shell script (with the
-executable bit set), so double-clicking it in Finder opens QUILL
+before logging, so a key passed to Keychain can’t appear in a submitted
+report. (#60/#73)</p></li>
+<li><p><strong>Work Persona launchers are real on macOS.</strong>
+(tester results wanted) Generating a shortcut for a persona used to
+write a Windows <code>.bat</code> file on macOS — useless on a Mac. It
+now writes a Finder-launchable <code>.command</code> shell script (with
+the executable bit set), so double-clicking it in Finder opens QUILL
 straight into the persona. Please confirm a generated persona shortcut
 opens QUILL into the right persona when double-clicked in Finder.
-(#38)</li>
-<li><strong>"Toggle hidden files" is Cmd+Shift+. on macOS.</strong> In
-the Simple File Open dialog, the hidden-files toggle was bound to Ctrl+H
-— which is macOS's system Hide-window shortcut, so it hid QUILL instead.
-It now uses the Finder convention Cmd+Shift+. on macOS (and stays Ctrl+H
-on Windows). Please confirm Cmd+Shift+. toggles hidden files in the
-simple open dialog. (#51)</li>
-<li><strong>Very long Read Aloud spans no longer risk command-line
-overflow.</strong> eSpeak synthesis passed the whole utterance as a
-command-line argument, which can overflow the OS command-line length
-(Windows ~32,767 chars) on a very long span and truncate or abort with
-no clear error. Long input (over 8,000 characters) is now piped to
-eSpeak via <code>--stdin</code> instead. Please confirm a very long Read
-Aloud span synthesizes fully without truncation. (#64/#77)</li>
-</ul>
-<h3 id="a-third-pass-of-small-fixes">A third pass of small fixes</h3>
-<p>The platform review's third sweep closed seven more items. Four are
-fully fixed and unit-tested here; three are code-complete but only show
-their real effect on a Mac, so they're marked <strong>tester results
-wanted</strong> — please tell us through Help &gt; Report a Bug if a
-symptom persists and we'll reopen it.</p>
-<ul>
-<li><strong>PDF import now tells you what actually went wrong.</strong>
-A PDF that couldn't be read used to collapse every failure into one
-"this looks like a scanned PDF — use OCR" message, even when the real
-problem was a password, a corrupt file, or a missing extractor. It now
-distinguishes four cases — <em>encrypted</em> (supply or remove the
-password; suggests <code>qpdf --decrypt</code>), <em>damaged</em>
-(repair or re-export; suggests <code>qpdf --check</code>, and notes OCR
-won't help a corrupt file), <em>scanned/image-only</em> (genuinely
-points at OCR), and <em>no extractor installed</em> (points at Help &gt;
-Download Optional Components) — each with its own remedy. (#58)</li>
-<li><strong>Keymap packs no longer silently steal macOS system
-shortcuts.</strong> Applying a keymap pack (VS Code, Word, Notepad++...)
+(#38)</p></li>
+<li><p><strong>“Toggle hidden files” is Cmd+Shift+. on macOS.</strong>
+(tester results wanted) In the Simple File Open dialog, the hidden-files
+toggle was bound to Ctrl+H — which is macOS’s system Hide-window
+shortcut, so it hid QUILL instead. It now uses the Finder convention
+Cmd+Shift+. on macOS (and stays Ctrl+H on Windows). Please confirm
+Cmd+Shift+. toggles hidden files in the simple open dialog.
+(#51)</p></li>
+<li><p><strong>Very long Read Aloud spans no longer risk command-line
+overflow.</strong> (tester results wanted) eSpeak synthesis passed the
+whole utterance as a command-line argument, which can overflow the OS
+command-line length (Windows ~32,767 chars) on a very long span and
+truncate or abort with no clear error. Long input (over 8,000
+characters) is now piped to eSpeak via <code>--stdin</code> instead.
+Please confirm a very long Read Aloud span synthesizes fully without
+truncation. (#64/#77)</p></li>
+<li><p><strong>PDF import now tells you what actually went
+wrong.</strong> A PDF that couldn’t be read used to collapse every
+failure into one “this looks like a scanned PDF — use OCR” message, even
+when the real problem was a password, a corrupt file, or a missing
+extractor. It now distinguishes four cases — <em>encrypted</em> (supply
+or remove the password; suggests <code>qpdf --decrypt</code>),
+<em>damaged</em> (repair or re-export; suggests
+<code>qpdf --check</code>, and notes OCR won’t help a corrupt file),
+<em>scanned/image-only</em> (genuinely points at OCR), and <em>no
+extractor installed</em> (points at Help &gt; Download Optional
+Components) — each with its own remedy. (#58)</p></li>
+<li><p><strong>Keymap packs no longer silently steal macOS system
+shortcuts.</strong> Applying a keymap pack (VS Code, Word, Notepad++…)
 on macOS used to apply its bindings verbatim, so a pack chord could
 quietly land on a macOS system shortcut (Cmd+H hides, Cmd+M minimizes,
 Cmd+Space is Spotlight, F9-F12 are Mission Control) or collide with
 another command — because wx maps Ctrl to Cmd at runtime, a stored
-"Ctrl+G" and a default "Cmd+G" are the <em>same</em> shortcut on a Mac
+“Ctrl+G” and a default “Cmd+G” are the <em>same</em> shortcut on a Mac
 even though they read as different strings. Pack overrides are now
 checked on macOS against the runtime chord (with Ctrl folded to Cmd for
 the comparison only), and any override that lands on a system-reserved
 chord or collides with an existing binding is quietly dropped instead of
-stealing it. (#4)</li>
-<li><strong>Screen capture's "not available" message now says
-why.</strong> On macOS, the bare "only available on Windows" message now
-names the macOS Screen Recording permission you'd need to grant (System
+stealing it. (#4)</p></li>
+<li><p><strong>Screen capture’s “not available” message now says
+why.</strong> On macOS, the bare “only available on Windows” message now
+names the macOS Screen Recording permission you’d need to grant (System
 Settings &gt; Privacy &amp; Security &gt; Screen Recording) and points
 at the built-in Cmd+Shift+3/4/5 shortcuts as the in-the-meantime path.
-(#5)</li>
-<li><strong>"Set as default editor" no longer looks successful when it
-did nothing.</strong> On macOS, setting QUILL as the default editor runs
-through <code>duti</code>, a third-party Homebrew tool that isn't
+(#5)</p></li>
+<li><p><strong>“Set as default editor” no longer looks successful when
+it did nothing.</strong> On macOS, setting QUILL as the default editor
+runs through <code>duti</code>, a third-party Homebrew tool that isn’t
 preinstalled — so the action was a complete no-op in the common case,
 with no signal. It now reports exactly what happened: success when
-<code>duti</code> set the associations, or a clear "duti isn't
-installed, install it with <code>brew install duti</code>" message
-(noting the app bundle's own Info.plist associations still apply) when
-it isn't. (#8)</li>
-</ul>
-<p><em>Tester results wanted:</em></p>
-<ul>
-<li><strong>Dark Mode and high-contrast detection use the right source
-(#6).</strong> QUILL reads Dark Mode through wx's system-appearance API
+<code>duti</code> set the associations, or a clear “duti isn’t
+installed, install it with <code>brew install duti</code>” message
+(noting the app bundle’s own Info.plist associations still apply) when
+it isn’t. (#8)</p></li>
+<li><p><strong>Dark Mode and high-contrast detection use the right
+source.</strong> (tester results wanted) QUILL reads Dark Mode through
+wx’s system-appearance API
 (<code>SystemSettings.GetAppearance().IsDark()</code>), which modern wx
 reports correctly on macOS, and detects Increase Contrast through the OS
 default — so a theme can follow the system instead of being manual-only.
 The earlier custom <code>defaults read</code>-based Dark Mode and Reduce
 Motion helpers had no UI consumer (dead code) and were removed. Please
-confirm QUILL's theme follows Dark Mode when you toggle it in System
-Settings.</li>
-<li><strong>The speech self-test works on macOS.</strong> Verifying a
-downloaded speech engine used to depend on Windows SAPI 5 to synthesize
-a test clip — so "Test" always failed on a Mac. It now synthesizes the
-test clip with the built-in <code>say</code> command on macOS (and SAPI
-5 on Windows), so the speak-to-transcribe confidence loop can actually
-run. Please confirm Test reports OK for a Whisper or Vosk engine on your
-Mac. (#29)</li>
-<li><strong>Pausing Read Aloud mid-sentence no longer skips the
-sentence.</strong> When you paused eSpeak (or a WAV-based engine)
-partway through a sentence, the cursor advanced as if the whole sentence
-had been spoken, so resume skipped it. The cursor now stays at the
-sentence start when you pause mid-sentence, so resume re-reads the
-partial sentence. (#65/#78)</li>
-</ul>
-<h3 id="a-fourth-pass-of-small-fixes">A fourth pass of small fixes</h3>
-<p>The platform review's fourth sweep closed six more items. Three are
-fully fixed and unit-tested here; three are code-complete but only show
-their real effect on a Mac, so they're marked <strong>tester results
-wanted</strong> — please tell us through Help &gt; Report a Bug if a
-symptom persists and we'll reopen it.</p>
-<ul>
-<li><strong>Keychain secrets never reach the command line on
+confirm QUILL’s theme follows Dark Mode when you toggle it in System
+Settings. (#6)</p></li>
+<li><p><strong>The speech self-test works on macOS.</strong> (tester
+results wanted) Verifying a downloaded speech engine used to depend on
+Windows SAPI 5 to synthesize a test clip — so “Test” always failed on a
+Mac. It now synthesizes the test clip with the built-in <code>say</code>
+command on macOS (and SAPI 5 on Windows), so the speak-to-transcribe
+confidence loop can actually run. Please confirm Test reports OK for a
+Whisper or Vosk engine on your Mac. (#29)</p></li>
+<li><p><strong>Pausing Read Aloud mid-sentence no longer skips the
+sentence.</strong> (tester results wanted) When you paused eSpeak (or a
+WAV-based engine) partway through a sentence, the cursor advanced as if
+the whole sentence had been spoken, so resume skipped it. The cursor now
+stays at the sentence start when you pause mid-sentence, so resume
+re-reads the partial sentence. (#65/#78)</p></li>
+<li><p><strong>Keychain secrets never reach the command line on
 macOS.</strong> Storing a secret (an AI API key, an SSH passphrase) used
 to fall back to the <code>security</code> CLI, which takes the value as
 a command-line argument — visible to any process on the machine and to
 the diagnostics log. QUILL now talks to Keychain through the native
 Security framework (pyobjc) first, passing the secret only in the
-Keychain item's data field where it never becomes an argument. The leaky
+Keychain item’s data field where it never becomes an argument. The leaky
 CLI fallback still exists for machines without pyobjc, but it now warns
-the first time it's used that the secret will touch the command line.
+the first time it’s used that the secret will touch the command line.
 The no-leak guarantee is pinned by cross-platform unit tests.
-(#1/#16/#43)</li>
-<li><strong>"Set as default editor" refreshes LaunchServices on
+(#1/#16/#43)</p></li>
+<li><p><strong>Portable mode no longer silently loses your credentials
+on macOS.</strong> Off Windows there’s no portable single-folder
+credential store, so a portable Mac build used to drop your keys with no
+signal. It now routes load/save/delete to the login Keychain (the best
+available store) and logs a warning that Keychain storage is
+system-level, not portable. (#35)</p></li>
+<li><p><strong>“Set as default editor” refreshes LaunchServices on
 macOS.</strong> Registering QUILL as the default editor used to write
-the <code>duti</code> associations but leave macOS's LaunchServices
+the <code>duti</code> associations but leave macOS’s LaunchServices
 database stale, so Finder still opened files in the old app until a
 reboot or a manual <code>lsregister</code>. The action now
 force-registers the app bundle with LaunchServices
@@ -771,69 +368,370 @@ force-registers the app bundle with LaunchServices
 the new default takes effect immediately. The app-bundle detection was
 also fixed: it walks up from the running executable to find the
 enclosing <code>.app</code> instead of only recognizing a bundle when
-launched from inside one. (#74)</li>
-<li><strong>macOS announcements now speak when VoiceOver is
-off.</strong> Every status announcement ("Saved," "Ln 12, Col 7," the
-QUILL-key chord...) is posted to VoiceOver, which is a no-op unless
+launched from inside one. (#74)</p></li>
+<li><p><strong>macOS announcements now speak when VoiceOver is
+off.</strong> Every status announcement (“Saved,” “Ln 12, Col 7,” the
+QUILL-key chord…) is posted to VoiceOver, which is a no-op unless
 VoiceOver is running — so a low-vision Mac user running without
 VoiceOver heard nothing. QUILL now detects whether VoiceOver is running
-and, when it isn't, speaks the announcement through the native macOS
+and, when it isn’t, speaks the announcement through the native macOS
 speech synthesizer (<code>NSSpeechSynthesizer</code>), mirroring the
 Windows SAPI self-voice fallback. The native voice catalog is also wired
-so the system voice list is available to the app. (#2)</li>
-</ul>
-<p><em>Tester results wanted:</em></p>
-<ul>
-<li><strong>The Window menu behaves like a real macOS Window
-menu.</strong> QUILL's Window menu
+so the system voice list is available to the app. (#2)</p></li>
+<li><p><strong>The Window menu behaves like a real macOS Window
+menu.</strong> (tester results wanted) QUILL’s Window menu
 (Next/Previous/Close-Other/Send-to-Tray) is now registered with the
 system as the Window menu, so AppKit moves it to its conventional slot
 (just left of Help) and merges in the standard items a Mac user expects
 — Minimize (Cmd+M), Zoom, Bring All to Front, and the live window list —
-alongside QUILL's own entries. Please confirm the Window menu sits in
-the right place and shows the standard Mac items. (#76)</li>
-<li><strong>"macOS (system voice)" is now a first-class Read Aloud
-engine (#21/#75).</strong> The native TTS backend that powers the
-self-voicing fallback (#2) is now wired as a selectable engine: it
-appears in the Speech Hub engine list and the settings engine-choices on
-macOS, the voice picker lists system voices, the Preview button speaks a
-sample, Read Aloud reads with pause/stop, and batch export produces
-audio — all through the built-in <code>say</code> command, so it works
-even on a Mac without pyobjc. Please confirm the voice picker lists your
-system voices, Preview speaks, Read Aloud reads with pause/stop, and
-export-to-file produces audio.</li>
+alongside QUILL’s own entries. Please confirm the Window menu sits in
+the right place and shows the standard Mac items. (#76)</p></li>
+<li><p><strong>“macOS (system voice)” is now a first-class Read Aloud
+engine.</strong> (tester results wanted) The native TTS backend that
+powers the self-voicing fallback (#2) is now wired as a selectable
+engine: it appears in the Speech Hub engine list and the settings
+engine-choices on macOS, the voice picker lists system voices, the
+Preview button speaks a sample, Read Aloud reads with pause/stop, and
+batch export produces audio — all through the built-in <code>say</code>
+command, so it works even on a Mac without pyobjc. Please confirm the
+voice picker lists your system voices, Preview speaks, Read Aloud reads
+with pause/stop, and export-to-file produces audio. (#21/#75)</p></li>
+<li><p><strong>Extend-selection follows native Mac semantics.</strong>
+On macOS, Option now extends the selection by word and Cmd by
+line/document, matching what Mac users expect (it used to apply
+Windows-oriented modifiers).</p></li>
+<li><p><strong>More macOS polish from the completion pass.</strong>
+Dialog OK/Cancel buttons use the native Mac order; paste-as-Markdown
+tries the macOS <code>public.html</code> clipboard flavor; the New
+Sticky Note hotkey speaks a clear status on macOS; the close handler no
+longer calls Hide+Veto with no tray icon present; and the diagnostics
+bundle now collects macOS <code>~/Library/Logs/DiagnosticReports</code>
+crash logs alongside the Windows ones.</p></li>
+</ul>
+<h2 id="bug-reporting-that-actually-reaches-us">Bug reporting that
+actually reaches us</h2>
+<p>After upgrading, some of you found the bug reporter saying “no
+token.” The Windows build wasn’t including the built-in reporting token,
+so it shipped empty. It’s fixed at the source, and now <strong>every
+build refuses to ship without it — release, beta, or a local test build,
+on Windows and macOS alike, with no opt-out</strong> — so a tokenless
+bug reporter can never reach anyone again. If the token is ever missing
+at runtime, QUILL opens the online bug form for you — reading the
+instructions aloud — instead of leaving you stuck. And if an
+already-running build is found to be missing the token, <strong>Check
+for Updates</strong> offers to reinstall the latest release even at the
+same version — with a dialog that says it restores the bug-report token,
+so “update to the version you already have” is not confusing. A silent
+background check only records a notification (it never auto-reinstalls
+the running version); use <strong>Skip this version</strong> to silence
+it, and it stops the moment the token is back.</p>
+<p>This is the fix behind every “please try this and tell us” ask in
+these notes — it’s what makes Report a Bug dependable on every install,
+Mac included.</p>
+<h2
+id="alt-text-you-cant-skip-and-images-that-speak-up-when-its-missing">Alt
+text you can’t skip, and images that speak up when it’s missing</h2>
+<p>GLOW already catches missing alt text after the fact — this adds the
+proactive half. <strong>Insert &gt; Image…</strong> is QUILL’s first
+dedicated image-insertion flow: it won’t let you insert without either
+real alt text or an explicit “this image is decorative” choice, so a
+document can no longer quietly pick up an un-alt-texted image. And for
+any image already in your document, however it got there, <strong>Tools
+&gt; Describe Image at Cursor</strong> tells you exactly what’s there:
+“Image: sunset.png, alt text: a sunset over the lake” — or just as
+clearly, “alt text MISSING” if nobody ever wrote one.</p>
+<h2 id="print-studio-finally-a-preview">Print Studio: finally, a
+preview</h2>
+<p><strong>File &gt; Print Studio…</strong> tells you what you’re about
+to print before you print it — “3 pages, Letter, default margins” — read
+aloud or in braille, the way a visual print preview would show a sighted
+user. Then choose <strong>all, odd, or even pages</strong>,
+<strong>reverse the order</strong>, or <strong>skip the first
+page</strong> if it’s pre-printed letterhead, before it hands off to the
+same Print dialog you already know. Printing itself also got more honest
+along the way — it used to draw whatever fit on one page and quietly
+drop the rest of a longer document; now it paginates properly.</p>
+<h2 id="and-now-headers-and-footers">And now, headers and footers</h2>
+<p><strong>File &gt; Header and Footer…</strong> builds one from named
+presets — title on the left with the page number on the right, filename
+and date, Roman numerals for front matter — or your own mix of a handful
+of tokens (title, filename, date, page number) placed left, center, or
+right. Want a different header on page one? There’s a checkbox for that.
+Numeric or Roman page numbers, starting wherever you like. It’s saved
+with the document and shows up on every page you print, Print Studio or
+plain Print alike.</p>
+<h2 id="five-small-things-that-add-up">Five small things that add
+up</h2>
+<ul>
+<li><strong>Look Up now includes Wikipedia.</strong> A short
+encyclopedia summary, with a link to the source, appears alongside
+definitions and synonyms when you’re online — same consent and offline
+fallback as always.</li>
+<li><strong>A bigger clip history, alongside Copy Tray.</strong> Copy
+Tray’s curated 12 slots aren’t going anywhere — <strong>Clip
+Library</strong> (Edit menu) is a second, rolling history of everything
+you choose to keep, searchable, favoritable, and promotable into a
+specific Copy Tray slot when one earns a permanent home. Turn on
+automatic capture (off by default) and every copy inside QUILL is
+remembered with no extra step.</li>
+<li><strong>Send as Email, or just Copy as Email Body.</strong> The File
+menu can now hand your selection (or the whole document) straight to
+your mail client, or copy it to the clipboard formatted for pasting into
+one — useful when a mail client balks at a long message built the first
+way.</li>
+<li><strong>AutoOutline numbers your headings for you.</strong> Format
+&gt; Update Outline Numbering — numeric or legal style, your choice in
+Preferences &gt; Editing — writes the number straight into the heading
+text, so it reads aloud and survives copy/paste and export with nothing
+extra to configure.</li>
+<li><strong>Work Personas: one action into a whole context.</strong>
+Tools &gt; Work Personas… bundles a feature profile, a working folder,
+your favorite files, and a keymap profile under a name — “School,”
+“Novel,” a client’s name. Apply it instantly, launch straight into it
+with <code>quill --persona NAME</code>, or generate a double-clickable
+shortcut so it’s one click away without QUILL already open.</li>
+</ul>
+<h2 id="getting-the-extras-you-want-reimagined">Getting the extras you
+want, reimagined</h2>
+<p>QUILL stays small by downloading the big optional pieces only when
+you ask. Beta testers told us that experience was confusing — so
+<strong>Help &gt; Download Optional Components</strong> was rebuilt into
+one warm, guided place.</p>
+<ul>
+<li><strong>One hub for everything optional.</strong> Every component in
+a single list, the ones most people reach for first (Pandoc, then the
+braille pack), each row saying in plain language what it does and how
+big it is. The window opens instantly now instead of pausing to check
+what you already have.</li>
+<li><strong>Prove it works before you rely on it.</strong> Anything
+installed gets a <strong>Test</strong> button: a voice reads you a
+sample so you actually hear it, the offline speech engine listens to a
+spoken phrase and tells you what it heard, and tools report their
+version. There’s a <strong>Remove</strong> button too, and a
+<strong>Manage</strong> button that jumps you straight to the right
+picker (Manage Speech Models or Manage Voices).</li>
+<li><strong>A guided, step-by-step setup for offline dictation.</strong>
+Choosing offline dictation used to mean hunting through menus. Now the
+row is simply called <strong>Dictation (offline speech)</strong>, and it
+walks you through it one step at a time — a banner at the top always
+tells you which step you’re on and the single next thing to do:
+<strong>1.</strong> pick and install your engine —
+<strong>Whisper.cpp</strong> (light and fast, works on any computer),
+<strong>Faster Whisper</strong> (most accurate), or
+<strong>Vosk</strong> (tiny, for old or low-memory machines);
+<strong>2.</strong> pick a model, with the best fit for your computer
+already selected so it’s one click; <strong>3.</strong> press
+<strong>Test dictation</strong> to hear it prove itself, and it becomes
+your default. QUILL remembers the engine you chose, so you come back to
+where you left off instead of it resetting to the built-in engine. Vosk
+used to sit as its own separate row further down the list; it’s simply a
+third choice here now, so there’s exactly one place to set up offline
+dictation.</li>
+<li><strong>You always land back where you started — on the row you were
+just on.</strong> Downloading something used to fling you off into the
+editor or another tab, or reset the list to the top. Now every download
+— voices, engines, Pandoc, the braille pack, audio extras, Node.js,
+MathCAT, spell-check dictionaries — finishes, returns you to the hub,
+and reselects exactly the row you were working with.</li>
+<li><strong>A gentler helping hand.</strong> If you Test a piece before
+it’s fully set up, QUILL walks you over to finish rather than treating a
+perfectly normal situation as an error — for offline speech
+specifically, that now means reopening the same guided engine-and-model
+picker above, not a bigger settings dialog. And if a download genuinely
+fails, it offers to send a report with the details.</li>
+<li><strong>Runs portable, stays portable.</strong> Everything installs
+into your portable data folder when you run QUILL from a drive, so your
+whole setup travels with you.</li>
+<li><strong>Audio export, playback, and chapters live in one
+place.</strong> FFmpeg (for exporting compressed audio like MP3 and
+M4B), the mpv playback engine, and MP3 audiobook chapter markers are now
+a single <strong>“Audio: export, playback &amp; chapters”</strong> row
+instead of three scattered entries — and each piece is still fetched
+only when you first use its feature, so nothing large downloads until
+it’s actually needed. <strong>Node.js</strong> now sits at the very
+bottom of the list, as the least-used extra.</li>
+<li><strong>“Set as Default” is now a real, findable button.</strong>
+Pick your favorite offline speech model, or your favorite Read Aloud
+voice, and tell QUILL to use it from now on — a button and a right-click
+option, right where you already are, instead of a side effect of closing
+a dialog a particular way.</li>
+<li><strong>Speech Settings now separates offline from online.</strong>
+The Speech and Dictation tabs each split into <strong>Offline</strong>
+and <strong>Online</strong>, so your installed-once local engines and
+voices aren’t mixed in with API-key cloud services in one long
+list.</li>
+</ul>
+<h2 id="small-but-meaningful-polish">Small but meaningful polish</h2>
+<ul>
+<li><strong>QUILL no longer thinks it crashed when Windows shuts down or
+logs off with it open.</strong> The OS session-end event now records a
+clean exit, so your next launch doesn’t offer crash recovery for a
+session that ended normally. (#920)</li>
+<li><strong>Windows shell-integration registration no longer crashes on
+the Python 3.13 runtime.</strong> An empty binary registry value (the
+<code>OpenWithProgids</code> entry) that older Pythons silently accepted
+now gets the right type, so file associations register cleanly again.
+(#921)</li>
+<li><strong>Posting to Mastodon: set a post’s language, and the counter
+respects your instance’s limit.</strong> A post written in Italian can
+be filed under the Italian preset instead of your account default; and
+if your instance allows more (or fewer) than 500 characters, the live
+counter now knows — via a one-time lookup of the instance’s own limit
+(#922), including non-Mastodon forks like GoToSocial and Pleroma that
+don’t implement the v2 lookup QUILL tries first.</li>
+</ul>
+<h2 id="the-quill-key-is-yours-to-reassign">The QUILL key is yours to
+reassign</h2>
+<p>A new <strong>Change QUILL Key…</strong> button in the Keymap Editor
+(<strong>Preferences &gt; Keyboard &gt; Keymap Editor</strong>) lets you
+reassign the QUILL-key prefix itself — the key every
+<code>QUILL Key + ...</code> chord starts with. Pick a new one and QUILL
+validates it, warns you about conflicts with other bindings (and with
+OS-reserved chords), then rewrites your stored chords to follow the new
+prefix, so <code>QUILL Key + S</code>, <code>QUILL Key + V</code>, and
+the rest all move together instead of you rebinding them one at a time.
+And typing <code>quill</code> in the Keymap Editor’s search box now
+lists every QUILL-key-chord command in one place, so you can see — and
+rebind — the whole chord set at once. It works the same on Windows and
+macOS.</p>
+<h2 id="a-page-number-honestly-presented">A page number, honestly
+presented</h2>
+<p>A tester asked directly: “Are we going to be able to see proper page
+numbers with QUILL?” Now every document shows one, in the status bar, on
+by default, right next to your line/column position.</p>
+<ul>
+<li><strong>PDFs get a real page count.</strong> QUILL now preserves
+each PDF’s actual page boundaries when you open it, so you see an exact
+“3 of 12” and <code>Ctrl+Shift+G</code> (Go To Page) jumps exactly.</li>
+<li><strong>Everything else gets an honest estimate.</strong> Plain
+text, Markdown, and Word documents don’t have a real “page” until you
+print or export – it depends on font, margins, and paper size, none of
+which QUILL tracks while you write. So for these, the same cell shows
+“~3 of ~12 (estimated)” – the tilde and the word “estimated” always
+travel together, on purpose, so you never mistake a guess for a fact.
+Tune the words-per-page assumption in Preferences &gt; Navigation and
+QUILL Key if your pages run long or short.</li>
+<li>Braille documents are untouched – they keep their own, richer page
+system.</li>
+</ul>
+<h2 id="a-simpler-installer-and-a-lighter-one">A simpler installer, and
+a lighter one</h2>
+<ul>
+<li><strong>No more component checkboxes.</strong> Beta 1’s installer
+asked you to pick optional parts — several of which did nothing, because
+they’re fetched on demand anyway. The installer now just installs QUILL;
+everything optional arrives when you first reach for it.</li>
+<li><strong>A smaller download.</strong> Kokoro’s neural-voice engine is
+now fetched on demand with everything it needs, trimming the installer
+noticeably — you download Kokoro only if and when you want those
+voices.</li>
+</ul>
+<h2 id="speech-that-just-works">Speech that just works</h2>
+<ul>
+<li><strong>Kokoro voices really speak now.</strong> Richard reported
+that after downloading Kokoro, previewing a voice failed with a baffling
+“needs one more component” message. His diagnostics log pointed straight
+at the culprit: a small support library Kokoro quietly needs was being
+left out of the build. It’s back — and when anything speech-related does
+go wrong, the real reason is now written to the diagnostics log
+(<strong>Help &gt; Save Diagnostics</strong>) instead of vanishing
+behind a vague message. Thank you, Richard.</li>
+<li><strong>Piper voices preview cleanly.</strong> Also from Richard:
+previewing a freshly downloaded Piper voice failed with an internal
+error. Fixed — preview and saving audio both work.</li>
+<li><strong>Testing a downloaded Piper voice no longer says the model
+file is missing.</strong> A second, separate Piper bug: the
+voice-preview code was looking in the wrong place for the file it had
+just downloaded. Fixed.</li>
+<li><strong>Offline speech-model downloads no longer crash with a
+cryptic Python error.</strong> Downloading a whisper.cpp or Faster
+Whisper model could fail partway through with
+<code>'NoneType' object has no attribute 'write'</code> — an internal
+progress-bar library trying to write status to a console QUILL doesn’t
+have. Fixed.</li>
+<li><strong>The braille pack’s Test button now actually reports the
+installed LibLouis version</strong>, instead of always saying
+“unknown.”</li>
+<li><strong>DECtalk speaks instead of opening a file.</strong> Testing a
+DECtalk voice in the installed app used to pop open a program file
+rather than talk. It speaks as it should now.</li>
+<li><strong>Read Aloud stops reading the punctuation.</strong> Headings,
+bold text, and links in a Markdown document were being read aloud as
+literal <code>#</code> and <code>*</code> symbols (especially garbled
+with Piper). They’re turned into plain, speakable text first now — live
+and on export.</li>
+<li><strong>Whisper model downloads are sturdier</strong>, going through
+the same well-tested library Faster Whisper already uses, so a hiccup on
+the model host’s side gives you a clear message instead of a mystery
+failure.</li>
+<li><strong>Offline transcription no longer mistakes the
+<code>openai-whisper</code> CLI for whisper.cpp.</strong> If you had the
+<code>openai-whisper</code> PyPI package installed, QUILL could grab its
+<code>whisper</code> command and run it with whisper.cpp flags, failing
+with a confusing error. It now requires the real whisper.cpp binary name
+(<code>whisper-cli</code>/<code>main</code>), so your genuine
+whisper.cpp install is used and the OpenAI CLI is left alone.
+(#931)</li>
+<li><strong>Voice preview feedback.</strong> Previewing a voice no
+longer overlaps a previous preview’s audio or announcement. Slow voice
+synthesis now plays a short cue and (by default) says “Generating
+preview, please wait,” and the Preview/Test button turns into a Stop
+button while a preview is active.</li>
+<li><strong>The AI Setup Wizard no longer gets stuck</strong> showing an
+engine like OpenAI as “active” with no way to configure it after an
+interrupted install. Set Up works again.</li>
+<li><strong>“Failed to get data from the clipboard” errors during
+cut/paste are fixed.</strong> A screen reader or clipboard-history tool
+briefly holding the clipboard used to show this error immediately; QUILL
+now gives it a brief moment before giving up.</li>
+<li><strong>Fixed four crash reports sent in through user
+feedback:</strong> the Spell Check Language chooser, word prediction
+after recovering from a crash, and the AI Hub’s Engines tab closing
+mid-install.</li>
+<li><strong>OpenAI Agents SDK and Claude Agent SDK now have a way to add
+an API key.</strong> Previously, once installed, there was no in-app way
+to configure either — <strong>Set Up</strong> in the AI Hub’s Engines
+tab now opens a small dialog to paste, save, or remove the key, applied
+right away with no restart needed.</li>
+<li><strong>The AI Hub now reads your Ollama models for real.</strong>
+Each Ollama model shows its actual abilities (Vision, Tools) discovered
+via <code>/api/show</code> instead of a hardcoded list, and picking the
+Ollama provider auto-probes whether Ollama is running and how many
+models you have — so you know at a glance whether local AI is
+reachable.</li>
 </ul>
 <h2 id="quillin-signatures-verified-for-real">Quillin signatures,
 verified for real</h2>
 <ul>
-<li><p><strong>The "Signature" line in the Quillins Manager now actually
+<li><p><strong>The “Signature” line in the Quillins Manager now actually
 verifies.</strong> It was always there — <code>verified</code>,
 <code>invalid</code>, or <code>unsigned</code> — but the cryptography
 library it needs (PyNaCl) was a developer-only dependency that no
-shipping build included, so on your install it always read "PyNaCl is
-not installed" and could never tell a publisher-signed Quillin from a
+shipping build included, so on your install it always read “PyNaCl is
+not installed” and could never tell a publisher-signed Quillin from a
 tampered one. PyNaCl is now bundled with Quill, so the signature check
 is real on every install. The <code>.minisig</code> sidecars shipped
 with signed Quillins finally mean something at the detail view.</p></li>
 <li><p><strong>Dialogs open on the first real control</strong>, not the
 OK/Cancel button or a tab strip. The Speech Hub, Manage Speech Models,
-Manage Voices, the AI Hub, About, and Quillin preferences all land you
-where you can start working — and because the fix lives in the shared
-dialog machinery, every tabbed dialog behaves.</p></li>
+Manage Voices, the AI Hub, About, About Whisperer, the Help status
+dialogs, and Quillin preferences all land you where you can start
+working — and because the fix lives in the shared dialog machinery,
+every tabbed dialog behaves.</p></li>
 <li><p><strong>The status bar stopped repeating itself.</strong>
 Pressing F6 into the status bar and arrowing across it made your screen
-reader say "Status Bar" before every cell. Now you hear it once, on
+reader say “Status Bar” before every cell. Now you hear it once, on
 arrival; after that each cell just tells you what it is and what it says
-— for example, "Position, Ln 12, Col 7."</p></li>
+— for example, “Position, Ln 12, Col 7.”</p></li>
 <li><p><strong>The status bar stopped repeating itself, take
 two.</strong> The general Message cell could end up showing the exact
 same text as another cell right next to it — a tester noticed it
 happening with the Page cell. Message now goes quiet whenever another
 visible cell is already saying the same thing, instead of saying it
 twice.</p></li>
-<li><p><strong>No more doubled ampersands.</strong> "Writing &amp;
-Language," "Reading &amp; Dictation," and friends sometimes read back as
-"Writing &amp;&amp; Language." They spell out "and" now.</p></li>
+<li><p><strong>No more doubled ampersands.</strong> “Writing &amp;
+Language,” “Reading &amp; Dictation,” and friends sometimes read back as
+“Writing &amp;&amp; Language.” They spell out “and” now.</p></li>
 <li><p><strong>AI Hub: choosing a provider stays where you put
 it.</strong> Arrowing through the Provider list without opening its
 dropdown could bounce focus over to the Model field the moment its
@@ -842,66 +740,71 @@ suggestions refreshed. Focus now stays put.</p></li>
 <h2 id="language-stability-and-support">Language, stability, and
 support</h2>
 <ul>
-<li><strong>Italian is here to switch to.</strong> Elena Brescacin's
+<li><strong>Italian is here to switch to.</strong> Elena Brescacin’s
 beautiful, complete Italian translation shipped in Beta 1 — but a build
 step meant it never actually appeared under Change Display Language. It
 does now, all 1,100-plus phrases of it. Grazie mille, Elena. (Tools &gt;
 Writing and Language &gt; Change Display Language.)</li>
+<li><strong>Italian no longer blurs two “vaults” into one.</strong> The
+OS credential vault and QUILL’s document vault had landed on the same
+Italian word; they’re now distinct — credential store “archivio delle
+credenziali,” document vault “raccolta” — with stale fuzzy markers
+cleared and “encoding” corrected to “codifica.” (#913)</li>
 <li><strong>Danish joins the Braille Translation menu.</strong> The
 grade 1 and grade 2 tables shipped with the engine all along; Danish
-just never made it onto QUILL's list.</li>
+just never made it onto QUILL’s list.</li>
 <li><strong>Opening Profiles and Features no longer crashes</strong> — a
-translated profile name wasn't being fully resolved before the list was
+translated profile name wasn’t being fully resolved before the list was
 built.</li>
 <li><strong>Non-UTF-8 text files open cleanly.</strong> A
 <code>.txt</code> or <code>.md</code> saved in an older Windows encoding
 (a curly quote or en-dash, no UTF-8 marker) used to crash on open. QUILL
 now falls back gracefully and tells you in the status bar.</li>
-<li><strong>A stalled graphics-card check can't freeze the app.</strong>
-The speech options' hardware probe ran with no timeout on the main
-thread every time you opened the dialog; it's timeout-guarded and runs
+<li><strong>A stalled graphics-card check can’t freeze the app.</strong>
+The speech options’ hardware probe ran with no timeout on the main
+thread every time you opened the dialog; it’s timeout-guarded and runs
 once per session now.</li>
 <li><strong>Convert Non-ASCII to HTML Entities no longer freezes QUILL
 on a large file.</strong> On a document over a megabyte, this could take
 the better part of a minute — and QUILL, along with your screen reader,
 went unresponsive for the whole time. It now runs in the background
 instead.</li>
-<li><strong>Converting a UTF-8 file's non-ASCII characters no longer
+<li><strong>Converting a UTF-8 file’s non-ASCII characters no longer
 leaves a pointless byte-order mark behind.</strong> Once every non-ASCII
 character becomes an HTML entity, the file is pure ASCII — but it still
 saved with a three-byte UTF-8 marker at the start. That marker is
 dropped when nothing in the file needs it anymore.</li>
-<li><strong>First-run "Personalise QUILL" now offers to restart</strong>
+<li><strong>First-run “Personalise QUILL” now offers to restart</strong>
 when your choice of where to store data needs one to take effect — the
 same prompt Preferences already gives, instead of the choice silently
 waiting for your next launch.</li>
 <li><strong>The Outline Navigator (Ctrl+Shift+O) opens again.</strong>
 It — and the EPUB and Quick Nav surfaces that share the same dialog —
 could crash instead of opening, because of an invalid call on the tree
-control's hidden root. Fixed.</li>
+control’s hidden root. Fixed.</li>
 <li><strong>Crash reports no longer carry your Windows
 username.</strong> If your portable copy lived inside your home folder,
 the local crash-report file path was included verbatim in a submitted
-report's metadata — the one place that path wasn't already being
-scrubbed. It's redacted the same way as everywhere else now.</li>
+report’s metadata — the one place that path wasn’t already being
+scrubbed. It’s redacted the same way as everywhere else now.</li>
 <li><strong>Errors carry a short support code</strong> (like
 <code>[QUILL-SPEECH-WHISPER-DL-404]</code>), and it rides along in crash
 reports automatically — so if you paste an error to us, we can pinpoint
-the exact cause. Every one of QUILL's internal error types now has
+the exact cause. Every one of QUILL’s internal error types now has
 one.</li>
 </ul>
 <hr />
 <h2 id="browse-a-repository-without-leaving-your-editor">Browse a
 repository without leaving your editor</h2>
 <p>QUILL could already open and save files from a GitHub repository. Now
-it can also <strong>show you what's going on in one</strong> — the
+it can also <strong>show you what’s going on in one</strong> — the
 issues, pull requests, branches, commits, tags, releases, and workflow
 runs — without leaving the editor or firing up a browser. <strong>File
-&gt; Open from Remote &gt; GitHub Items...</strong> opens a read-only
+&gt; Open from Remote &gt; GitHub Items…</strong> opens a read-only
 viewer modeled on the open-source <a
 href="https://github.com/kellylford/GHManage">GHManage</a> viewer, built
 keyboard- and screen-reader-first.</p>
-<p>Type <code>owner/repo</code> and load (if you're already editing a
+<p>Type <code>owner/repo</code> and load (if you’re already editing a
 file you opened from GitHub, the repository is filled in for you). Pick
 a view — the combined Issues &amp; PRs inbox, Branches, Commits, Tags,
 Releases, or Workflow Runs — and the list shows one row per item while a
@@ -915,61 +818,45 @@ shows compact cells, and <strong>Full</strong> spells each one as
 announces a self-describing line per row instead of bare values. Select
 an issue or PR and the comment thread loads beneath it;
 <strong>Alt+N</strong> and <strong>Alt+P</strong> jump between comments,
-announcing "Comment N of M." <strong>Enter</strong> opens a row in your
-browser — and on a branch row, it drills into that branch's commits.
+announcing “Comment N of M.” <strong>Enter</strong> opens a row in your
+browser — and on a branch row, it drills into that branch’s commits.
 <strong>Ctrl+R</strong> refreshes, <strong>Ctrl+O</strong> opens in the
 browser, <strong>Ctrl+G</strong> jumps to an issue or PR by number, and
 <strong>View More</strong> loads the next page.</p>
-<p>It's read-only for now — you can browse and open, but not close,
+<p>It’s read-only for now — you can browse and open, but not close,
 reopen, or comment from inside QUILL. The same gates apply as the other
 GitHub commands: disabled in Safe Mode, first-run consent, and anonymous
 access for public repositories (lower rate limit) or your stored token
 for private ones. (#924)</p>
 <hr />
-<h2 id="four-fixes-that-unblock-real-work">Four fixes that unblock real
-work</h2>
+<h2 id="three-fixes-that-unblock-real-work">Three fixes that unblock
+real work</h2>
 <ul>
 <li><strong>PDF and document import works out of the box again — and
-it's now a one-click download.</strong> A tester on a clean install hit
-"can't extract text from PDFs — no extraction engine available." The
+it’s now a one-click download.</strong> A tester on a clean install hit
+“can’t extract text from PDFs — no extraction engine available.” The
 free local converter and PDF text extractors were described in-app as
-built-in, but weren't actually installed by the shipping build. Rather
+built-in, but weren’t actually installed by the shipping build. Rather
 than bundling them whether or not you ever open a PDF, <strong>Help &gt;
-Download Optional Components &gt; "PDF and Office text
-extraction"</strong> (about 30 MB) now fetches them the moment you need
+Download Optional Components &gt; “PDF and Office text
+extraction”</strong> (about 30 MB) now fetches them the moment you need
 them, on any install — and if a PDF has no selectable text, QUILL still
 tells you it looks like a scanned document and points you to OCR,
-instead of a confusing "no engine" message.</li>
-<li><strong>Report a Bug works even if you never signed in.</strong>
-After upgrading, some of you found the bug reporter saying "no token."
-The Windows build wasn't including the built-in reporting token, so it
-shipped empty. It's fixed at the source, and now <strong>every build
-refuses to ship without it — release, beta, or a local test build, on
-Windows and macOS alike, with no opt-out</strong> — so a tokenless bug
-reporter can never reach anyone again. If the token is ever missing at
-runtime, QUILL opens the online bug form for you — reading the
-instructions aloud — instead of leaving you stuck. And if an
-already-running build is found to be missing the token, <strong>Check
-for Updates</strong> offers to reinstall the latest release even at the
-same version — with a dialog that says it restores the bug-report token,
-so "update to the version you already have" is not confusing. A silent
-background check only records a notification (it never auto-reinstalls
-the running version); use <strong>Skip this version</strong> to silence
-it, and it stops the moment the token is back.</li>
-<li><strong>"Casual Writer" finally just lets you write.</strong> The
+instead of a confusing “no engine” message.</li>
+<li><strong>“Casual Writer” finally just lets you write.</strong> The
 profile was quietly leaving AI, GLOW review, remote files, analysis,
 watch folders, notebooks, and developer tools switched on. Choose Casual
-Writer now and those step out of the way, for a clean "write, format,
-print, send" workspace — while read aloud, voice commands, dictation,
+Writer now and those step out of the way, for a clean “write, format,
+print, send” workspace — while read aloud, voice commands, dictation,
 and braille stay right where they are, because a simpler profile should
 never be a less accessible one. Want any of it back? Preferences &gt;
 Profiles and Features, one toggle each.</li>
 <li><strong>The Quillins Manager no longer crashes on open.</strong> A
-reporter hit this right away: just viewing a Quillin's details crashed
+reporter hit this right away: just viewing a Quillin’s details crashed
 with a <code>ModuleNotFoundError</code>. The signature-status check (is
-this Quillin publisher-signed?) depended on a library that's only ever
-installed for QUILL's own development and release process, never in the
-shipped app — it now reports "signature check unavailable" instead of
+this Quillin publisher-signed?) depended on a library that’s only ever
+installed for QUILL’s own development and release process, never in the
+shipped app — it now reports “signature check unavailable” instead of
 taking the whole dialog down with it.</li>
 </ul>
 <hr />
@@ -982,5 +869,3 @@ and Piper voice issues with patient, detailed reports and diagnostics.
 And every tester who hit an odd crash, a stuck focus, a missing
 language, or a confusing download and took the time to tell us — this
 release is yours. Please keep it coming.</p>
-</body>
-</html>

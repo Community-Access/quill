@@ -28,6 +28,54 @@ echo "==> Building .app with py2app"
 python scripts/setup_macos.py py2app
 
 APP="dist/Quill.app"
+
+# Refuse to ship a tokenless .app, unconditionally. Mirrors the Windows build's
+# _assert_bundled_token_nonempty: after py2app assembles the bundle, re-read the
+# quill/_feedback_token.py that actually landed inside the .app and hard-fail if
+# it is missing or its BUNDLED_TOKEN is empty. py2app packs the pure-Python
+# quill package (including the generated _feedback_token.py from the step above)
+# into python{PYTAG}.zip; packages carrying native binaries get lifted to the
+# on-disk site dir by the step below, so check both locations. This is the exact
+# "upgrade and get No token" symptom (#919), locked out on macOS too.
+echo "==> Asserting bundled feedback token is non-empty in the .app"
+python - <<'PY'
+import re, sys, zipfile
+from pathlib import Path
+app = Path("dist/Quill.app")
+reslib = app / "Contents/Resources/lib"
+if not reslib.is_dir():
+    sys.exit(f"No Resources/lib in {app} -- py2app did not produce a complete .app; cannot verify the bundled feedback token (#919).")
+def token_from_text(text):
+    m = re.search(r"""^BUNDLED_TOKEN\s*=\s*['"]([^'"]*)['"]""", text, re.MULTILINE)
+    return m.group(1) if m else ""
+# On-disk site dir (native-lifted packages live here as real files).
+for f in sorted(reslib.rglob("quill/_feedback_token.py")):
+    tok = token_from_text(f.read_text("utf-8"))
+    if not tok:
+        sys.exit(f"Bundled quill/_feedback_token.py has an empty BUNDLED_TOKEN ({f.relative_to(app)}) -- the .app would ship a broken Report a Bug (no GitHub token). Set QUILL_FEEDBACK_GITHUB_TOKEN before building; there is no opt-out (#919).")
+    print(f"    bundled feedback token verified non-empty ({f.relative_to(app)})")
+    sys.exit(0)
+# Inside python*.zip (py2app packs pure-Python packages like quill here).
+found_zip = False
+for zp in sorted(reslib.glob("python*.zip")):
+    found_zip = True
+    try:
+        with zipfile.ZipFile(zp) as z:
+            names = z.namelist()
+    except zipfile.BadZipFile:
+        continue
+    if "quill/_feedback_token.py" in names:
+        with zipfile.ZipFile(zp) as z:
+            data = z.read("quill/_feedback_token.py").decode("utf-8", "replace")
+        tok = token_from_text(data)
+        if not tok:
+            sys.exit(f"Bundled quill/_feedback_token.py has an empty BUNDLED_TOKEN (in {zp.name}) -- the .app would ship a broken Report a Bug (no GitHub token). Set QUILL_FEEDBACK_GITHUB_TOKEN before building; there is no opt-out (#919).")
+        print(f"    bundled feedback token verified non-empty (in {zp.name})")
+        sys.exit(0)
+if not found_zip:
+    sys.exit(f"No python*.zip and no on-disk quill/_feedback_token.py under {reslib} -- cannot verify the bundled feedback token (#919).")
+sys.exit("Bundled quill/_feedback_token.py is missing from the .app -- the feedback-hub token never made it into the distributable. A build must always bake the QUILL_FEEDBACK_GITHUB_TOKEN; there is no opt-out (#919).")
+PY
 DMG="dist/Quill.dmg"
 
 # Lift native binaries out of python311.zip. py2app packs pure-Python packages
