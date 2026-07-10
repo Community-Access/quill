@@ -63,6 +63,15 @@ def _build_frame() -> MainFrame:
 def test_report_bug_feedback_hub_path_goes_through_show_modal_dialog(monkeypatch) -> None:
     import sys
 
+    # report_bug() short-circuits to the online fallback (a real
+    # webbrowser.open) when no token is present, and CI has no bundled
+    # token -- so without this patch the test dead-ends in the fallback
+    # instead of exercising the feedback-hub success path it is meant to
+    # cover. Force a token present so report_bug() proceeds to the hub.
+    import quill.core.feedback_token as feedback_token_module
+
+    monkeypatch.setattr(feedback_token_module, "github_token_present", lambda: True)
+
     frame = _build_frame()
     frame._wx = type("Wx", (), {"version": staticmethod(lambda: "4.2-test"), "ID_OK": 5100})()
 
