@@ -2673,6 +2673,21 @@ class MenuBuilderMixin:
         menu_bar.Append(window_menu, _("&Window"))
         menu_bar.Append(help_menu, _("&Help"))
 
+        # #76: on macOS, tell wx this is the system Window menu. AppKit then
+        # moves it to its conventional slot (just left of Help) and merges in
+        # the standard items a Mac user expects -- Minimize (Cmd+M), Zoom,
+        # Bring All to Front, and the live window list -- alongside Quill's own
+        # Next/Previous/Close-Other/Send-to-Tray entries. Without SetWindowMenu
+        # the Window menu is an ordinary menu missing all the standard items.
+        # Guarded like the SetHelpMenu hint below so a wx build without the API
+        # degrades gracefully.
+        if sys.platform == "darwin":
+            try:
+                if hasattr(menu_bar, "SetWindowMenu"):
+                    menu_bar.SetWindowMenu(window_menu)
+            except Exception:  # noqa: BLE001
+                pass
+
         # #613: on macOS, tell wx that the "Help" menu is the system
         # Help menu so the OS moves it to the rightmost position (where
         # macOS users expect it) instead of leaving it in the slot wx

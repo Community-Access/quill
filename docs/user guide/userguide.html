@@ -6088,10 +6088,33 @@ enable and disable event for sighted and low-vision users.</p>
 <p>Quill runs on <strong>macOS</strong> as well as Windows, from one
 codebase, with feature parity as the goal.</p>
 <ul>
-<li><strong>VoiceOver-first.</strong> On macOS, Quill routes its
-announcements to <strong>VoiceOver</strong> and never speaks over it.
-Headings, regions, and result messages behave the way they do on Windows
-with NVDA/JAWS.</li>
+<li><strong>VoiceOver-first, with a self-voice fallback.</strong> On
+macOS, Quill routes its announcements to <strong>VoiceOver</strong> and
+never speaks over it. Headings, regions, and result messages behave the
+way they do on Windows with NVDA/JAWS. If you run Quill on a Mac
+<em>without</em> VoiceOver, Quill now speaks those same announcements
+through the native macOS speech synthesizer instead of going silent —
+the same self-voicing fallback Windows uses with SAPI when no screen
+reader is detected (#2).</li>
+<li><strong>A real macOS Window menu.</strong> The Window menu
+(Next/Previous/Close-Other/Send-to-Tray) is registered with the system
+as the macOS Window menu, so AppKit places it in its conventional slot
+(just left of Help) and merges in the standard Mac items — Minimize
+(Cmd+M), Zoom, Bring All to Front, and the live window list — alongside
+Quill's own entries (#76).</li>
+<li><strong>Setting Quill as your default editor takes effect
+immediately.</strong> On macOS, after registering the file associations
+(via <code>duti</code> if you have it installed —
+<code>brew install duti</code>), Quill also refreshes the system's
+LaunchServices database, so Finder opens files in Quill right away
+instead of keeping the old default until a reboot (#74).</li>
+<li><strong>Your secrets stay off the command line.</strong> API keys,
+SSH passphrases, and other secrets Quill stores on your behalf go into
+the macOS Keychain through the native Security framework, where the
+value never becomes a command-line argument visible to other processes.
+(On a Mac without the native binding, Quill falls back to the
+<code>security</code> CLI and warns the first time it does, since that
+path does pass the value on the command line.) (#1/#16/#43)</li>
 <li><strong>On-device AI.</strong> Ask Quill uses <strong>Apple
 Foundation Models</strong> (Apple Intelligence) on a supported Mac — no
 model download and no cloud. The on-device GGUF/llama.cpp picker is

@@ -15070,6 +15070,86 @@ Also <strong>#40 closed (premise false)</strong> — the
 actively routed (to the AI/compare command class and
 <code>view.toggle_dark_mode</code> respectively), not dead. The live
 backlog is <code>docs/planning/review.md</code>.</li>
+<li><strong>macOS review batch 3c (2026-07-10).</strong> Six more fixes
+from the platform review backlog, all code-complete and unit-tested on
+this Windows dev box (no Mac hardware required for the code or the
+tests); the full first-class Read Aloud macOS engine (#21/#75) is
+deferred for Mac-hardware validation. Four are fully fixed here: (1)
+<strong>#1/#16/#43 closed</strong> —
+<code>quill/platform/macos/keychain.py</code> now talks to Keychain
+through the native Security framework (pyobjc) first —
+<code>SecItemAdd</code>/<code>SecItemCopyMatching</code>/<code>SecItemUpdate</code>/<code>SecItemDelete</code>,
+with the secret passed only in the Keychain item's
+<code>kSecValueData</code> field where it never becomes a process
+argument — instead of the <code>security</code> CLI that takes the value
+as <code>-w &lt;secret&gt;</code> argv (visible to other processes and
+to the diagnostics log). The leaky CLI fallback still exists for
+machines without pyobjc, but <code>_warn_cli_secret_leak</code> warns
+the first time it's used that the secret will touch the command line.
+The no-argv-leak guarantee is pinned by cross-platform branching unit
+tests
+(<code>tests/unit/platform/macos/test_keychain_branching.py</code>:
+SecItemAdd used with no <code>subprocess.run</code>, secret in
+<code>kSecValueData</code>, duplicate-&gt;SecItemUpdate,
+missing-&gt;None, CLI fallback warns once, <code>_sec_call</code>
+normalizes both the (out,status) and bare-int return conventions). (2)
+<strong>#74 closed</strong> — <code>install_shell_integration</code> now
+refreshes LaunchServices after registering associations:
+<code>_app_path</code> walks up from the running executable
+(<code>Path(sys.executable).resolve()</code> and parents) to find the
+enclosing <code>.app</code> (recognizing a bundle from a Finder/Dock
+launch, not only when launched from inside one), and
+<code>refresh_launch_services(app_path)</code> force-registers the
+bundle with <code>lsregister -f</code> so the new default takes effect
+immediately instead of leaving the LaunchServices database stale until a
+reboot; gated off-darwin / missing-bundle / missing-tool. (3)
+<strong>#76 closed (pending tester validation)</strong> —
+<code>quill/ui/main_frame_menu.py</code> now calls
+<code>menu_bar.SetWindowMenu(window_menu)</code> on darwin (guarded like
+the existing <code>SetHelpMenu</code> hint) so AppKit treats the Window
+menu as the system Window menu, moves it to its conventional slot just
+left of Help, and merges in the standard Minimize
+(Cmd+M)/Zoom/Bring-All-to-Front items and the live window list alongside
+QUILL's own Next/Previous/Close-Other/Send-to-Tray entries. (4)
+<strong>#2 closed (self-voicing fallback)</strong> — a new
+<code>quill/platform/macos/tts.py</code> native TTS backend exposes
+<code>available()</code>/<code>list_voices()</code> (an
+<code>NSSpeechSynthesizer.availableVoices()</code> +
+<code>attributesForVoice_()</code> catalog of
+<code>MacosVoice(id,name,language)</code>) and
+<code>speak_announcement(text,*,voice,rate)</code>/<code>stop_announcement()</code>
+(a main-thread-affined <code>NSSpeechSynthesizer</code> singleton,
+<code>startSpeakingString_</code>), all with lazy function-local pyobjc
+imports that degrade to <code>False</code>/<code>[]</code>/no-op
+off-mac. The darwin announce branch in <code>prism_bridge.py</code>
+(<code>AnnouncementEngine.announce</code>) now routes via a cached
+<code>_macos_screen_reader_active()</code> (30s TTL, probes
+<code>quill.platform.macos.sr_detect.detect_screen_reader</code>): to
+VoiceOver when a screen reader is running (unchanged, never self-voices
+over it), and to the native <code>macos_tts.speak_announcement</code>
+when none is — mirroring the Windows SAPI self-voice fallback so a
+low-vision Mac user without VoiceOver hears "Saved"/"Ln 12, Col 7"/the
+QUILL-key chord instead of silence, with state
+<code>active_backend="speech"</code>/<code>backend_name="System Speech"</code>.
+The routing is pinned by cross-platform branching tests
+(<code>tests/unit/platform/test_announce_voiceover.py</code>: both
+darwin branches exercised deterministically via a
+<code>_macos_screen_reader_active</code> monkeypatch; VoiceOver-off path
+reaches <code>speak_announcement</code> and never VoiceOver;
+VoiceOver-on path never builds the SAPI voice; both swallow errors) plus
+darwin-gated live tests
+(<code>tests/unit/platform/macos/test_tts.py</code>:
+<code>available()</code>/<code>list_voices()</code> assert on macOS CI;
+off-mac branching asserts everywhere). <strong>Deferred (still open in
+<code>docs/planning/review.md</code>): #21/#75</strong> — wiring "macOS
+(system voice)" as a first-class Read Aloud <em>engine</em> in Speech
+Hub (settings choices, voice picker, preview, export-to-file across the
+~6 dispatch sites, including <code>NSSpeechSynthesizer</code>-to-WAV
+file synthesis). The native TTS backend that powers the self-voicing
+fallback is in place, but the full engine UX is deferred rather than
+shipped half-wired; the <code>read_aloud_engine</code> settings choices
+list still shows the Windows-era options on macOS for now. The live
+backlog is <code>docs/planning/review.md</code>.</li>
 </ul>
 <hr />
 <!-- Source: docs/engineering/security-advisory-workflow.md -->

@@ -262,6 +262,13 @@ def test_macos_announce_error_logged(monkeypatch, caplog) -> None:
     import logging
 
     monkeypatch.setattr("quill.platform.windows.prism_bridge.sys.platform", "darwin")
+    # VoiceOver is running, so the darwin branch routes to the VoiceOver path
+    # whose failure is the subject of this test (not the VoiceOver-off self-voice path).
+    monkeypatch.setattr(
+        "quill.platform.windows.prism_bridge._macos_screen_reader_active",
+        lambda: True,
+        raising=False,
+    )
     monkeypatch.setattr(
         "quill.platform.windows.prism_bridge.import_module",
         lambda _name: (_ for _ in ()).throw(ImportError),

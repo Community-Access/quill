@@ -423,6 +423,60 @@ Help > Report a Bug if a symptom persists and we'll reopen it.
   cursor now stays at the sentence start when you pause mid-sentence, so resume
   re-reads the partial sentence. (#65/#78)
 
+## macOS: a fourth pass of small fixes
+
+The platform review's fourth sweep closed six more items. Three are fully fixed
+and unit-tested here; three are code-complete but only show their real effect on
+a Mac, so they're marked **tester results wanted** — please tell us through
+Help > Report a Bug if a symptom persists and we'll reopen it.
+
+- **Keychain secrets never reach the command line on macOS.** Storing a secret
+  (an AI API key, an SSH passphrase) used to fall back to the `security` CLI,
+  which takes the value as a command-line argument — visible to any process on
+  the machine and to the diagnostics log. QUILL now talks to Keychain through
+  the native Security framework (pyobjc) first, passing the secret only in the
+  Keychain item's data field where it never becomes an argument. The leaky CLI
+  fallback still exists for machines without pyobjc, but it now warns the first
+  time it's used that the secret will touch the command line. The no-leak
+  guarantee is pinned by cross-platform unit tests. (#1/#16/#43)
+- **"Set as default editor" refreshes LaunchServices on macOS.** Registering
+  QUILL as the default editor used to write the `duti` associations but leave
+  macOS's LaunchServices database stale, so Finder still opened files in the old
+  app until a reboot or a manual `lsregister`. The action now force-registers
+  the app bundle with LaunchServices (`lsregister -f`) right after setting the
+  associations, so the new default takes effect immediately. The app-bundle
+  detection was also fixed: it walks up from the running executable to find the
+  enclosing `.app` instead of only recognizing a bundle when launched from
+  inside one. (#74)
+- **macOS announcements now speak when VoiceOver is off.** Every status
+  announcement ("Saved," "Ln 12, Col 7," the QUILL-key chord...) is posted to
+  VoiceOver, which is a no-op unless VoiceOver is running — so a low-vision Mac
+  user running without VoiceOver heard nothing. QUILL now detects whether
+  VoiceOver is running and, when it isn't, speaks the announcement through the
+  native macOS speech synthesizer (`NSSpeechSynthesizer`), mirroring the Windows
+  SAPI self-voice fallback. The native voice catalog is also wired so the system
+  voice list is available to the app. (#2)
+
+*Tester results wanted:*
+
+- **The Window menu behaves like a real macOS Window menu.** QUILL's Window menu
+  (Next/Previous/Close-Other/Send-to-Tray) is now registered with the system as
+  the Window menu, so AppKit moves it to its conventional slot (just left of
+  Help) and merges in the standard items a Mac user expects — Minimize (Cmd+M),
+  Zoom, Bring All to Front, and the live window list — alongside QUILL's own
+  entries. Please confirm the Window menu sits in the right place and shows the
+  standard Mac items. (#76)
+
+*Help wanted (deferred for Mac-hardware validation):*
+
+- **A first-class "macOS (system voice)" Read Aloud engine.** The native TTS
+  backend that powers the self-voicing fallback (#2) is in place, but wiring it
+  as a selectable engine in Speech Hub — the voice picker, preview, and
+  export-to-file across the Read Aloud dispatch sites — is deferred until it can
+  be validated on real Mac hardware rather than shipped half-wired. The
+  settings engine-choices list still shows the Windows-era options on macOS for
+  now. (#21/#75)
+
 ## Quillin signatures, verified for real
 
 - **The "Signature" line in the Quillins Manager now actually verifies.** It was always there — `verified`, `invalid`, or `unsigned` — but the cryptography library it needs (PyNaCl) was a developer-only dependency that no shipping build included, so on your install it always read "PyNaCl is not installed" and could never tell a publisher-signed Quillin from a tampered one. PyNaCl is now bundled with Quill, so the signature check is real on every install. The `.minisig` sidecars shipped with signed Quillins finally mean something at the detail view.

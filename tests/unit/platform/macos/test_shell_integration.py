@@ -54,9 +54,23 @@ def test_remove_shell_integration_is_noop():
     assert si.remove_shell_integration() is None
 
 
-def test_app_path_stub_returns_none():
-    # Packaging helper; currently a stub. Documented behavior: returns None.
+def test_app_path_none_when_not_in_a_bundle(monkeypatch: pytest.MonkeyPatch, tmp_path):
+    # From-source run: the interpreter is not inside a .app, and (on macOS) the
+    # mainBundle identifier is not Quill's, so _app_path returns None.
+    exe = tmp_path / "python"
+    exe.write_text("")
+    monkeypatch.setattr(si.sys, "executable", str(exe))
     assert si._app_path() is None
+
+
+def test_app_path_walks_up_to_dot_app(monkeypatch: pytest.MonkeyPatch, tmp_path):
+    # py2app layout: Quill.app/Contents/MacOS/Quill. The walk-up finds the .app.
+    fake_app = tmp_path / "Quill.app"
+    exe = fake_app / "Contents" / "MacOS" / "Quill"
+    exe.parent.mkdir(parents=True)
+    exe.write_text("")
+    monkeypatch.setattr(si.sys, "executable", str(exe))
+    assert si._app_path() == fake_app.resolve()
 
 
 # ---------------------------------------------------------------------------
@@ -109,3 +123,59 @@ def test_install_shell_integration_invokes_duti_once_per_extension(
     assert len(calls) == len(expected_exts)
     for call, ext in zip(calls, expected_exts, strict=False):
         assert call == ["duti", "-s", si.BUNDLE_IDENTIFIER, f".{ext}", "all"]
+
+
+# ---------------------------------------------------------------------------
+# refresh_launch_services (#74)
+# ---------------------------------------------------------------------------
+
+
+def test_refresh_launch_services_off_darwin_is_false(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(si.sys, "platform", "win32")
+    assert si.refresh_launch_services() is False
+
+
+def test_refresh_launch_services_none_when_out_of_bundle(monkeypatch: pytest.MonkeyPatch, tmp_path):
+    monkeypatch.setattr(si.sys, "platform", "darwin")
+    exe = tmp_path / "python"
+    exe.write_text("")
+    monkeypatch.setattr(si.sys, "executable", str(exe))
+    assert si.refresh_launch_services() is False
+
+
+def test_refresh_launch_services_invokes_lsregister(monkeypatch: pytest.MonkeyPatch, tmp_path):
+    monkeypatch.setattr(si.sys, "platform", "darwin")
+    fake_app = tmp_path / "Quill.app"
+    fake_app.mkdir()
+    calls: list[list[str]] = []
+
+    def _record(args, **kwargs):
+        calls.append(list(args))
+        return type("R", (), {"returncode": 0, "stdout": "", "stderr": ""})()
+
+    monkeypatch.setattr(si.subprocess, "run", _record)
+    monkeypatch.setattr(si, "_LSREGISTER", tmp_path / "lsregister")  # exists() -> False
+    # _LSREGISTER doesn't exist -> short-circuits to False even with a valid app.
+    assert si.refresh_launch_services(fake_app) is False
+    assert calls == []
+
+
+def test_refresh_launch_services_runs_when_tool_present(monkeypatch: pytest.MonkeyPatch, tmp_path):
+    monkeypatch.setattr(si.sys, "platform", "darwin")
+    fake_app = tmp_path / "Quill.app"
+    fake_app.mkdir()
+    tool = tmp_path / "lsregister"
+    tool.write_text("")
+    calls: list[list[str]] = []
+
+    def _record(args, **kwargs):
+        calls.append(list(args))
+        return type("R", (), {"returncode": 0, "stdout": "", "stderr": ""})()
+
+    monkeypatch.setattr(si.subprocess, "run", _record)
+    monkeypatch.setattr(si, "_LSREGISTER", tool)
+    assert si.refresh_launch_services(fake_app) is True
+    assert len(calls) == 1
+    assert calls[0][0] == str(tool)
+    assert calls[0][1] == "-f"
+    assert calls[0][2] == str(fake_app)
