@@ -70,18 +70,22 @@ def test_install_shell_integration_noop_off_darwin(monkeypatch: pytest.MonkeyPat
     monkeypatch.setattr(
         si.subprocess, "run", lambda *a, **k: calls.append(a[0] if a else k.get("args"))
     )
-    assert si.install_shell_integration() is None
+    status = si.install_shell_integration()
+    assert status.installed is False
     assert calls == []
 
 
-def test_install_shell_integration_noop_when_duti_missing(monkeypatch: pytest.MonkeyPatch):
+def test_install_shell_integration_reports_missing_duti(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(si.sys, "platform", "darwin")
     monkeypatch.setattr(si.shutil, "which", lambda name: None)
     calls: list[list[str]] = []
     monkeypatch.setattr(
         si.subprocess, "run", lambda *a, **k: calls.append(a[0] if a else k.get("args"))
     )
-    assert si.install_shell_integration() is None
+    status = si.install_shell_integration()
+    assert status.installed is False
+    assert "duti" in status.message
+    assert "brew install duti" in status.message
     assert calls == []
 
 
@@ -99,7 +103,8 @@ def test_install_shell_integration_invokes_duti_once_per_extension(
         return None
 
     monkeypatch.setattr(si.subprocess, "run", _record)
-    assert si.install_shell_integration() is None
+    status = si.install_shell_integration()
+    assert status.installed is True
     expected_exts = list(si.TEXT_EXTENSIONS + si.MARKUP_EXTENSIONS + si.HTML_EXTENSIONS)
     assert len(calls) == len(expected_exts)
     for call, ext in zip(calls, expected_exts, strict=False):

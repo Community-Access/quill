@@ -1205,3 +1205,76 @@ def test_live_wav_player_no_backend_is_silent_noop(tmp_path) -> None:
     assert player.available is False
     player.play(tmp_path / "none.wav")  # must not raise
     player.stop()
+
+
+def test_espeak_pause_mid_sentence_keeps_cursor_at_start(monkeypatch, tmp_path) -> None:
+    """#65/#78: pausing mid-sentence must not advance the cursor to span.end --
+    otherwise the partially-spoken sentence is skipped on resume."""
+    from quill.core.sentence_split import SentenceSpan
+
+    controller = ReadAloudController()
+
+    class _FakeProc:
+        def __init__(self) -> None:
+            self._polls = 0
+
+        def poll(self) -> int | None:
+            self._polls += 1
+            if self._polls >= 2:
+                # Simulate the user pausing after speech has started.
+                controller._pause_event.set()
+            return None  # "still running" until terminated
+
+        def terminate(self) -> None: ...
+
+        def wait(self, timeout: float | None = None) -> int:
+            return 0
+
+    fake_proc = _FakeProc()
+    monkeypatch.setattr(read_aloud_module.subprocess, "Popen", lambda *a, **k: fake_proc)
+
+    controller._run_espeak_live(
+        [SentenceSpan(start=0, end=12)],
+        "Hello world.",
+        executable=tmp_path / "espeak-ng",
+        voice="en",
+        rate=175,
+        on_progress=None,
+    )
+    # Paused mid-sentence -> cursor stays at the sentence start, not span.end.
+    assert controller._cursor == 0
+
+
+def test_espeak_completed_sentence_advances_cursor(monkeypatch, tmp_path) -> None:
+    """A sentence that finishes normally still advances the cursor to span.end."""
+    from quill.core.sentence_split import SentenceSpan
+
+    controller = ReadAloudController()
+
+    class _FakeProc:
+        def __init__(self) -> None:
+            self._polls = 0
+
+        def poll(self) -> int | None:
+            self._polls += 1
+            if self._polls >= 3:
+                return 0  # process exited cleanly
+            return None
+
+        def terminate(self) -> None: ...
+
+        def wait(self, timeout: float | None = None) -> int:
+            return 0
+
+    fake_proc = _FakeProc()
+    monkeypatch.setattr(read_aloud_module.subprocess, "Popen", lambda *a, **k: fake_proc)
+
+    controller._run_espeak_live(
+        [SentenceSpan(start=0, end=12)],
+        "Hello world.",
+        executable=tmp_path / "espeak-ng",
+        voice="en",
+        rate=175,
+        on_progress=None,
+    )
+    assert controller._cursor == 12

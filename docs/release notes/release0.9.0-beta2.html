@@ -620,6 +620,76 @@ no clear error. Long input (over 8,000 characters) is now piped to
 eSpeak via <code>--stdin</code> instead. Please confirm a very long Read
 Aloud span synthesizes fully without truncation. (#64/#77)</li>
 </ul>
+<h2 id="macos-a-third-pass-of-small-fixes">macOS: a third pass of small
+fixes</h2>
+<p>The platform review's third sweep closed seven more items. Four are
+fully fixed and unit-tested here; three are code-complete but only show
+their real effect on a Mac, so they're marked <strong>tester results
+wanted</strong> — please tell us through Help &gt; Report a Bug if a
+symptom persists and we'll reopen it.</p>
+<ul>
+<li><strong>PDF import now tells you what actually went wrong.</strong>
+A PDF that couldn't be read used to collapse every failure into one
+"this looks like a scanned PDF — use OCR" message, even when the real
+problem was a password, a corrupt file, or a missing extractor. It now
+distinguishes four cases — <em>encrypted</em> (supply or remove the
+password; suggests <code>qpdf --decrypt</code>), <em>damaged</em>
+(repair or re-export; suggests <code>qpdf --check</code>, and notes OCR
+won't help a corrupt file), <em>scanned/image-only</em> (genuinely
+points at OCR), and <em>no extractor installed</em> (points at Help &gt;
+Download Optional Components) — each with its own remedy. (#58)</li>
+<li><strong>Keymap packs no longer silently steal macOS system
+shortcuts.</strong> Applying a keymap pack (VS Code, Word, Notepad++...)
+on macOS used to apply its bindings verbatim, so a pack chord could
+quietly land on a macOS system shortcut (Cmd+H hides, Cmd+M minimizes,
+Cmd+Space is Spotlight, F9-F12 are Mission Control) or collide with
+another command — because wx maps Ctrl to Cmd at runtime, a stored
+"Ctrl+G" and a default "Cmd+G" are the <em>same</em> shortcut on a Mac
+even though they read as different strings. Pack overrides are now
+checked on macOS against the runtime chord (with Ctrl folded to Cmd for
+the comparison only), and any override that lands on a system-reserved
+chord or collides with an existing binding is quietly dropped instead of
+stealing it. (#4)</li>
+<li><strong>Screen capture's "not available" message now says
+why.</strong> On macOS, the bare "only available on Windows" message now
+names the macOS Screen Recording permission you'd need to grant (System
+Settings &gt; Privacy &amp; Security &gt; Screen Recording) and points
+at the built-in Cmd+Shift+3/4/5 shortcuts as the in-the-meantime path.
+(#5)</li>
+<li><strong>"Set as default editor" no longer looks successful when it
+did nothing.</strong> On macOS, setting QUILL as the default editor runs
+through <code>duti</code>, a third-party Homebrew tool that isn't
+preinstalled — so the action was a complete no-op in the common case,
+with no signal. It now reports exactly what happened: success when
+<code>duti</code> set the associations, or a clear "duti isn't
+installed, install it with <code>brew install duti</code>" message
+(noting the app bundle's own Info.plist associations still apply) when
+it isn't. (#8)</li>
+</ul>
+<p><em>Tester results wanted:</em></p>
+<ul>
+<li><strong>Dark Mode and Reduce Motion are now detected from the
+OS.</strong> QUILL can now read macOS's <em>Increase Contrast</em>,
+<em>Reduce Motion</em>, and <em>Dark Mode</em> (the
+<code>AppleInterfaceStyle</code> default) settings via
+<code>defaults read</code>, so a future theme sync can follow the system
+instead of being manual-only. Please confirm QUILL reports the right
+state when you toggle Dark Mode / Increase Contrast / Reduce Motion in
+System Settings. (#6)</li>
+<li><strong>The speech self-test works on macOS.</strong> Verifying a
+downloaded speech engine used to depend on Windows SAPI 5 to synthesize
+a test clip — so "Test" always failed on a Mac. It now synthesizes the
+test clip with the built-in <code>say</code> command on macOS (and SAPI
+5 on Windows), so the speak-to-transcribe confidence loop can actually
+run. Please confirm Test reports OK for a Whisper or Vosk engine on your
+Mac. (#29)</li>
+<li><strong>Pausing Read Aloud mid-sentence no longer skips the
+sentence.</strong> When you paused eSpeak (or a WAV-based engine)
+partway through a sentence, the cursor advanced as if the whole sentence
+had been spoken, so resume skipped it. The cursor now stays at the
+sentence start when you pause mid-sentence, so resume re-reads the
+partial sentence. (#65/#78)</li>
+</ul>
 <h2 id="quillin-signatures-verified-for-real">Quillin signatures,
 verified for real</h2>
 <ul>

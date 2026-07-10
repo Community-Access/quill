@@ -364,6 +364,65 @@ tell us through Help > Report a Bug if a symptom persists and we'll reopen it.
   characters) is now piped to eSpeak via `--stdin` instead. Please confirm a
   very long Read Aloud span synthesizes fully without truncation. (#64/#77)
 
+## macOS: a third pass of small fixes
+
+The platform review's third sweep closed seven more items. Four are fully fixed
+and unit-tested here; three are code-complete but only show their real effect on
+a Mac, so they're marked **tester results wanted** — please tell us through
+Help > Report a Bug if a symptom persists and we'll reopen it.
+
+- **PDF import now tells you what actually went wrong.** A PDF that couldn't be
+  read used to collapse every failure into one "this looks like a scanned PDF —
+  use OCR" message, even when the real problem was a password, a corrupt file, or
+  a missing extractor. It now distinguishes four cases — *encrypted* (supply or
+  remove the password; suggests `qpdf --decrypt`), *damaged* (repair or re-export;
+  suggests `qpdf --check`, and notes OCR won't help a corrupt file),
+  *scanned/image-only* (genuinely points at OCR), and *no extractor installed*
+  (points at Help > Download Optional Components) — each with its own remedy.
+  (#58)
+- **Keymap packs no longer silently steal macOS system shortcuts.** Applying a
+  keymap pack (VS Code, Word, Notepad++...) on macOS used to apply its bindings
+  verbatim, so a pack chord could quietly land on a macOS system shortcut (Cmd+H
+  hides, Cmd+M minimizes, Cmd+Space is Spotlight, F9-F12 are Mission Control) or
+  collide with another command — because wx maps Ctrl to Cmd at runtime, a stored
+  "Ctrl+G" and a default "Cmd+G" are the *same* shortcut on a Mac even though they
+  read as different strings. Pack overrides are now checked on macOS against the
+  runtime chord (with Ctrl folded to Cmd for the comparison only), and any
+  override that lands on a system-reserved chord or collides with an existing
+  binding is quietly dropped instead of stealing it. (#4)
+- **Screen capture's "not available" message now says why.** On macOS, the bare
+  "only available on Windows" message now names the macOS Screen Recording
+  permission you'd need to grant (System Settings > Privacy & Security > Screen
+  Recording) and points at the built-in Cmd+Shift+3/4/5 shortcuts as the
+  in-the-meantime path. (#5)
+- **"Set as default editor" no longer looks successful when it did nothing.** On
+  macOS, setting QUILL as the default editor runs through `duti`, a third-party
+  Homebrew tool that isn't preinstalled — so the action was a complete no-op in the
+  common case, with no signal. It now reports exactly what happened: success when
+  `duti` set the associations, or a clear "duti isn't installed, install it with
+  `brew install duti`" message (noting the app bundle's own Info.plist
+  associations still apply) when it isn't. (#8)
+
+*Tester results wanted:*
+
+- **Dark Mode and Reduce Motion are now detected from the OS.** QUILL can now read
+  macOS's *Increase Contrast*, *Reduce Motion*, and *Dark Mode* (the
+  `AppleInterfaceStyle` default) settings via `defaults read`, so a future theme
+  sync can follow the system instead of being manual-only. Please confirm QUILL
+  reports the right state when you toggle Dark Mode / Increase Contrast / Reduce
+  Motion in System Settings. (#6)
+- **The speech self-test works on macOS.** Verifying a downloaded speech engine
+  used to depend on Windows SAPI 5 to synthesize a test clip — so "Test" always
+  failed on a Mac. It now synthesizes the test clip with the built-in `say`
+  command on macOS (and SAPI 5 on Windows), so the speak-to-transcribe confidence
+  loop can actually run. Please confirm Test reports OK for a Whisper or Vosk
+  engine on your Mac. (#29)
+- **Pausing Read Aloud mid-sentence no longer skips the sentence.** When you
+  paused eSpeak (or a WAV-based engine) partway through a sentence, the cursor
+  advanced as if the whole sentence had been spoken, so resume skipped it. The
+  cursor now stays at the sentence start when you pause mid-sentence, so resume
+  re-reads the partial sentence. (#65/#78)
+
 ## Quillin signatures, verified for real
 
 - **The "Signature" line in the Quillins Manager now actually verifies.** It was always there — `verified`, `invalid`, or `unsigned` — but the cryptography library it needs (PyNaCl) was a developer-only dependency that no shipping build included, so on your install it always read "PyNaCl is not installed" and could never tell a publisher-signed Quillin from a tampered one. PyNaCl is now bundled with Quill, so the signature check is real on every install. The `.minisig` sidecars shipped with signed Quillins finally mean something at the detail view.

@@ -363,8 +363,9 @@ def verify_component(component_id: str) -> VerifyResult:
 
     Voice engines are handled by the dialog (it plays a spoken sample via the
     existing voice preview); here they just confirm readiness. STT engines run
-    the SAPI->transcribe loop; tools report their version/response; the rest do a
-    presence/load check. Never raises -- any failure becomes ``ok=False``.
+    a speak->transcribe loop (SAPI 5 on Windows, the built-in ``say`` command on
+    macOS); tools report their version/response; the rest do a presence/load
+    check. Never raises -- any failure becomes ``ok=False``.
     """
     try:
         if component_id in ("whispercpp", "fasterwhisper", "vosk"):
@@ -392,11 +393,47 @@ def verify_component(component_id: str) -> VerifyResult:
     return result
 
 
+def _synthesize_test_clip(text: str, audio_path: Path) -> None:
+    """Synthesize the STT self-test clip on the current platform (#29).
+
+    Windows uses SAPI 5 (the system voice); macOS uses the built-in ``say``
+    command so the self-test is not a hard Windows-only dependency that always
+    fails on a Mac. Raises on any failure; the caller reports ``ok=False``.
+    """
+    if sys.platform == "darwin":
+        _synthesize_test_clip_with_say(text, audio_path)
+        return
+    from quill.core.read_aloud import synthesize_to_file_with_sapi5
+
+    synthesize_to_file_with_sapi5(text, audio_path)
+
+
+def _synthesize_test_clip_with_say(text: str, audio_path: Path) -> None:
+    """macOS test clip via the built-in ``say`` command (#29).
+
+    ``say -o <path>`` writes AIFF by default, which the STT providers read via
+    soundfile/ffmpeg. No new dependency: ``say`` ships with macOS.
+    """
+    import subprocess
+
+    completed = subprocess.run(
+        ["say", "-o", str(audio_path), text],
+        check=False,
+        capture_output=True,
+        text=True,
+        errors="replace",
+    )
+    if completed.returncode != 0 or not audio_path.exists():
+        raise RuntimeError(
+            "macOS `say` could not synthesize the test clip: "
+            f"{completed.stderr.strip() or 'unknown error'}"
+        )
+
+
 def _verify_stt(component_id: str) -> VerifyResult:
     import os
     import tempfile
 
-    from quill.core.read_aloud import synthesize_to_file_with_sapi5
     from quill.core.speech.transcribe import provider_has_installed_model, transcribe_audio_file
 
     # Gate on the *selected* engine, not any engine, so testing Faster Whisper
@@ -407,20 +444,23 @@ def _verify_stt(component_id: str) -> VerifyResult:
             "The engine is installed, but no speech model has been downloaded yet.",
             remedy="models",
         )
-    fd, wav_path = tempfile.mkstemp(prefix="quill_stt_test_", suffix=".wav")
+    # macOS `say` writes AIFF; SAPI 5 writes WAV. Match the suffix to the platform
+    # so the clip is written in a format the synth path actually produces (#29).
+    suffix = ".aiff" if sys.platform == "darwin" else ".wav"
+    fd, audio_path_str = tempfile.mkstemp(prefix="quill_stt_test_", suffix=suffix)
     os.close(fd)  # mkstemp's fd must be closed or SAPI's own Open() of the same path fails
-    wav = Path(wav_path)
+    audio = Path(audio_path_str)
     try:
-        synthesize_to_file_with_sapi5(_STT_TEST_PHRASE, wav)
-        result = transcribe_audio_file(wav, provider_id=component_id)
+        _synthesize_test_clip(_STT_TEST_PHRASE, audio)
+        result = transcribe_audio_file(audio, provider_id=component_id)
         heard = (getattr(result, "full_text", "") or "").strip()
     except Exception as exc:  # noqa: BLE001
         return VerifyResult(False, "The speech engine could not transcribe a test clip.", str(exc))
     finally:
         try:
-            wav.unlink(missing_ok=True)
+            audio.unlink(missing_ok=True)
         except OSError:
-            # Best-effort cleanup of the temp WAV; a leftover temp file is
+            # Best-effort cleanup of the temp clip; a leftover temp file is
             # harmless and must never mask the transcription result above.
             pass
     if _fuzzy_match(_STT_TEST_PHRASE, heard):

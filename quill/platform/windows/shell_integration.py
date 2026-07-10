@@ -3,8 +3,12 @@ from __future__ import annotations
 import sys
 from dataclasses import dataclass
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from quill.core.shell_verbs import ShellVerb, default_shell_verbs, verb_actions
+
+if TYPE_CHECKING:  # noqa: I001 - deferred to avoid a circular import at runtime
+    from quill.platform.shell_integration import ShellIntegrationStatus
 
 try:  # pragma: no cover - Windows-only module
     import winreg
@@ -228,11 +232,16 @@ def build_shell_integration_plan(command: str | None = None) -> list[RegistryEnt
     return entries
 
 
-def install_shell_integration(command: str | None = None) -> None:
+def install_shell_integration(command: str | None = None) -> ShellIntegrationStatus:
     if winreg is None:  # pragma: no cover - non-Windows fallback
         raise RuntimeError("Windows registry access is unavailable")
     for entry in build_shell_integration_plan(command):
         _write_entry(entry)
+    from quill.platform.shell_integration import ShellIntegrationStatus  # noqa: I001 - deferred to avoid a circular import (neutral re-exports this module)
+
+    return ShellIntegrationStatus(
+        True, "Installed per-user Open-with associations and shell verbs for Quill."
+    )
 
 
 def remove_shell_integration() -> None:

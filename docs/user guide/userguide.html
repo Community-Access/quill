@@ -6823,8 +6823,15 @@ no key, no upload, no cost.</li>
 PDF comes back nearly empty, QUILL says so — "It looks scanned or
 image-based" — and <em>asks</em> whether to run free on-device OCR. Yes
 runs it; No opens the empty result anyway; Cancel imports nothing. QUILL
-never silently opens a blank result and never runs OCR without
-asking.</li>
+never silently opens a blank result and never runs OCR without asking.
+Other read failures get their own honest message instead of the
+scanned-PDF prompt: a password-protected PDF says it's
+<em>encrypted</em> (and suggests <code>qpdf --decrypt</code>), a
+genuinely corrupt file says it's <em>damaged</em> (and notes OCR won't
+help a corrupt file — repair or re-export it), and a PDF with no text
+extractor installed points you at <strong>Help &gt; Download Optional
+Components &gt; "PDF and Office text extraction"</strong> rather than
+claiming it's scanned.</li>
 <li><strong>On-device OCR rescues the scan.</strong> The local Tesseract
 engine recognizes each page on your computer (CPU-only, works offline),
 keeps page boundaries as searchable <code>&lt;!-- Page N --&gt;</code>

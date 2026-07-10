@@ -19997,17 +19997,27 @@ class MainFrame(
         if result != wx.YES:
             self._set_status("Shell integration install cancelled")
             return
-        install_shell_integration(command)
+        status = install_shell_integration(command)
         try:
             apply_shell_verb_settings(self.settings)
         except Exception:  # pragma: no cover - registry best-effort
             pass
-        self._show_message_box(
-            f"Installed shell integration for:\n{summary}",
-            "Shell Integration",
-            wx.ICON_INFORMATION | wx.OK,
-        )
-        self._set_status("Installed shell integration")
+        if status.installed:
+            self._show_message_box(
+                f"Installed shell integration for:\n{summary}",
+                "Shell Integration",
+                wx.ICON_INFORMATION | wx.OK,
+            )
+            self._set_status("Installed shell integration")
+        else:
+            # #8: macOS best-effort install can be a no-op (duti missing). Tell the
+            # user why instead of reporting a false success.
+            self._show_message_box(
+                status.message,
+                "Shell Integration",
+                wx.ICON_WARNING | wx.OK,
+            )
+            self._set_status("Shell integration not fully applied")
 
     def remove_shell_integration(self) -> None:
         wx = self._wx

@@ -21,19 +21,25 @@ class PdfExtractionResult:
 
 
 def extract_pdf_text(path: Path) -> PdfExtractionResult:
-    # Distinguish "no extractor installed" from "an extractor ran but found no
-    # text" (#909). They are different problems with different remedies: the
-    # former is a broken/partial install, the latter is almost always a scanned
-    # or image-only PDF that needs OCR. Collapsing both into one message sent
-    # users chasing the wrong fix.
+    # Distinguish four outcomes (#909, #58): (1) no extractor installed, (2) an
+    # encrypted/password-protected PDF, (3) a damaged/corrupt PDF that parse-fails
+    # in the extractor, and (4) a scanned/image-only PDF with no text layer. They
+    # are different problems with different remedies, and the previous broad
+    # ``except Exception`` collapsed 2/3 into 4 -- telling users with a corrupt or
+    # password-locked file to run OCR (the wrong fix).
     any_extractor_available = False
+    parse_error = False
     for extractor in (_extract_with_pdfplumber, _extract_with_pypdf):
         try:
             result = extractor(path)
         except ModuleNotFoundError:
             continue  # this extractor's package is absent; try the next
         except Exception:
-            any_extractor_available = True  # it imported, it just failed on this file
+            # It imported but failed on this file: a real parse failure (corrupt
+            # xref, password-required, malformed object, ...). Record it so the
+            # fallthrough can tell a damaged file from a scanned one (#58).
+            any_extractor_available = True
+            parse_error = True
             continue
         any_extractor_available = True
         if result.text.strip():
@@ -45,6 +51,22 @@ def extract_pdf_text(path: Path) -> PdfExtractionResult:
             f'"PDF and Office text extraction".)\n'
         )
         engine = "unavailable"
+    elif _is_encrypted_pdf(path):
+        message = (
+            f"({path.name} is encrypted. QUILL cannot read password-protected "
+            f"PDFs. Remove the password (for example `qpdf --decrypt in.pdf out.pdf`) "
+            f"and open the decrypted copy, or export it unlocked from the original "
+            f"application.)\n"
+        )
+        engine = "encrypted"
+    elif parse_error:
+        message = (
+            f"({path.name} could not be parsed -- it is likely damaged or corrupt. "
+            f"OCR will not help a corrupt file. Try re-downloading or re-exporting it "
+            f"from the original application; a tool like `qpdf --check` can confirm "
+            f"whether the file is still valid.)\n"
+        )
+        engine = "damaged"
     else:
         message = (
             f"(No selectable text was found in {path.name}. It is likely a scanned "
@@ -59,6 +81,32 @@ def extract_pdf_text(path: Path) -> PdfExtractionResult:
         extracted_pages=0,
         page_scores=[],
     )
+
+
+def _is_encrypted_pdf(path: Path) -> bool:
+    """Return True when *path* is a password-protected PDF (#58).
+
+    Uses pypdf's ``is_encrypted`` flag and attempts an empty-user-password decrypt:
+    a permissions-only "encrypted" PDF (empty password, common) is still readable
+    and must not be reported as encrypted, so only treat it as locked when the
+    empty password fails to unlock it. Any construction/parse failure reads as
+    "not encrypted" (a corrupt file is handled by the ``damaged`` branch instead).
+    """
+    try:
+        from pypdf import PdfReader  # type: ignore[import-not-found]
+    except ModuleNotFoundError:
+        return False
+    try:
+        reader = PdfReader(str(path))
+    except Exception:  # noqa: BLE001 - corrupt/unreadable -> not our encryption path
+        return False
+    if not getattr(reader, "is_encrypted", False):
+        return False
+    try:
+        matched = reader.decrypt("")
+    except Exception:  # noqa: BLE001 - decrypt API differs across pypdf versions
+        return True
+    return not bool(matched)
 
 
 def format_pdf_document(path: Path | PdfExtractionResult) -> str:

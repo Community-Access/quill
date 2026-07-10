@@ -14999,6 +14999,77 @@ and no behavioral change, deferred for a dedicated churn-controlled
 pass) and #13 (add an optional <code>platform</code> field to the
 dialog-inventory/egress-audit scan schemas — a broad snapshot-reshape,
 deferred separately).</li>
+<li><strong>macOS review batch 3b (2026-07-09).</strong> Seven more
+fixes from the platform review backlog, all code-complete and
+unit-tested on this Windows dev box (no Mac hardware required for the
+code or the tests); #2 (native macOS TTS backend — the single biggest
+lever, which also closes #62/#75 and gives a self-voicing fallback) is
+deferred to batch 3c as a focused build. Four are fully fixed here: (1)
+<strong>#58 closed</strong> — <code>extract_pdf_text</code> no longer
+collapses every PDF read failure into "this looks like a scanned PDF —
+use OCR"; it now classifies four distinct cases with their own engine
+tags and remedies: <em>encrypted</em> (password-protected; suggests
+<code>qpdf --decrypt</code>), <em>damaged</em> (a real parse failure;
+suggests <code>qpdf --check</code> and notes OCR won't help a corrupt
+file), <em>scanned/image-only</em> (genuinely points at OCR), and
+<em>unavailable</em> (no extractor installed; points at Help &gt;
+Download Optional Components). A new <code>_is_encrypted_pdf</code>
+reads <code>pypdf</code>'s <code>is_encrypted</code> and probes the
+empty user password, so a permissions-only lock (empty password opens
+it) is not misreported as encrypted. (2) <strong>#4 closed</strong> —
+keymap packs are no longer applied verbatim on macOS;
+<code>build_keymap_for_pack</code> now routes darwin pack overrides
+through <code>_apply_darwin_pack_overrides</code>, which folds
+Ctrl-&gt;Cmd for <em>comparison only</em> (wx maps ACCEL_CTRL to Cmd at
+runtime, so a pack's stored "Ctrl+G" and DEFAULT_KEYMAP's darwin "Cmd+G"
+are the same runtime shortcut even though they compare as different
+strings), drops any override whose runtime chord is
+macOS-system-reserved (Cmd+H/M/Q/W/Space/Tab/Grave, F9-F12, and the
+Alt+letter deadkeys), and drops any override that collides with another
+command's runtime chord — so no pack silently steals a system shortcut
+or a sibling binding. Storage is unchanged; only the comparison folds.
+(3) <strong>#5 closed</strong> — the screen-capture off-Windows message
+now names the macOS Screen Recording permission (System Settings &gt;
+Privacy &amp; Security &gt; Screen Recording) and the built-in
+Cmd+Shift+3/4/5 shortcuts as the in-the-meantime path, instead of the
+bare "only available on Windows." (4) <strong>#8 closed</strong> —
+<code>install_shell_integration</code> now returns a
+<code>ShellIntegrationStatus</code> (installed, message) dataclass
+hosted in the platform-neutral
+<code>quill/platform/shell_integration.py</code>, so the caller reports
+<em>why</em> nothing happened on macOS when <code>duti</code> (a
+third-party Homebrew tool, not preinstalled) is missing — a clear
+"install it with <code>brew install duti</code>; the app bundle's
+Info.plist associations still apply" message — instead of a false
+success. Three are code-complete and unit-tested here but only show
+their real effect on real macOS hardware, so they're closed <em>pending
+tester validation</em> (reopenable via Help &gt; Report a Bug if a
+symptom persists): (5) <strong>#6</strong> —
+<code>quill/platform/macos/high_contrast.py</code> now also reads Dark
+Mode (<code>defaults read -g AppleInterfaceStyle</code>) and Reduce
+Motion
+(<code>defaults read com.apple.universalaccess reduceMotion</code>)
+alongside the existing Increase Contrast query, exposed via
+<code>is_dark_mode_enabled</code>/<code>is_reduce_motion_enabled</code>/<code>macos_appearance()</code>
+and re-exported through the neutral
+<code>quill/platform/high_contrast.py</code>; (6) <strong>#29</strong> —
+the STT self-test (<code>verify_component</code>) now synthesizes its
+test clip via the built-in macOS <code>say</code> command on darwin (and
+SAPI 5 on Windows) via
+<code>_synthesize_test_clip</code>/<code>_synthesize_test_clip_with_say</code>,
+so the speak-&gt;transcribe confidence loop can run on a Mac without a
+SAPI dependency; (7) <strong>#65/#78</strong> — pausing Read Aloud
+mid-sentence now keeps the cursor at the sentence start (re-reads the
+partial sentence on resume) instead of advancing to
+<code>span.end</code> as if the whole sentence had been spoken, for both
+the live eSpeak runner and the WAV-sentence runner, via an
+<code>interrupted = stop_event.is_set() or pause_event.is_set()</code>
+guard that chooses <code>span.start</code> vs <code>span.end</code>.
+Also <strong>#40 closed (premise false)</strong> — the
+<code>Ctrl+Alt+Shift+</code> chords and <code>Alt+Shift+D</code> are
+actively routed (to the AI/compare command class and
+<code>view.toggle_dark_mode</code> respectively), not dead. The live
+backlog is <code>docs/planning/review.md</code>.</li>
 </ul>
 <hr />
 <!-- Source: docs/engineering/security-advisory-workflow.md -->

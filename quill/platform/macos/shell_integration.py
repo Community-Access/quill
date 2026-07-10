@@ -15,6 +15,10 @@ import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:  # noqa: I001 - deferred to avoid a circular import at runtime
+    from quill.platform.shell_integration import ShellIntegrationStatus
 
 APP_DISPLAY_NAME = "Quill"
 BUNDLE_IDENTIFIER = "org.communityaccess.quill"
@@ -62,15 +66,29 @@ def build_shell_integration_plan(command: str | None = None) -> list[ShellIntegr
     ]
 
 
-def install_shell_integration(command: str | None = None) -> None:
+def install_shell_integration(command: str | None = None) -> ShellIntegrationStatus:
     """Best-effort runtime association via ``duti`` (optional, non-raising).
 
     The primary mechanism is the app's Info.plist; this only helps when Quill
-    is already installed as a bundle and ``duti`` is available.
+    is already installed as a bundle and ``duti`` is available. Returns a
+    :class:`ShellIntegrationStatus` so the caller can tell the user *why* nothing
+    happened when ``duti`` is missing (#8) instead of reporting a false success.
     """
+    from quill.platform.shell_integration import (  # noqa: I001 - deferred to avoid a circular import (neutral re-exports this module)
+        ShellIntegrationStatus,
+    )
+
     _ = command
-    if sys.platform != "darwin" or shutil.which("duti") is None:
-        return None
+    if sys.platform != "darwin":
+        return ShellIntegrationStatus(False, "File associations are only set on macOS.")
+    if shutil.which("duti") is None:
+        return ShellIntegrationStatus(
+            False,
+            "duti (the file-association helper) is not installed, so the runtime "
+            "Open-with associations were not set. Install it with `brew install duti`. "
+            "The app bundle's Info.plist associations still apply once Quill is "
+            "installed as a .app.",
+        )
     for extension in TEXT_EXTENSIONS + MARKUP_EXTENSIONS + HTML_EXTENSIONS:
         subprocess.run(
             ["duti", "-s", BUNDLE_IDENTIFIER, f".{extension}", "all"],
@@ -78,7 +96,7 @@ def install_shell_integration(command: str | None = None) -> None:
             capture_output=True,
             text=True,
         )
-    return None
+    return ShellIntegrationStatus(True, "Set per-user Open-with associations for Quill via duti.")
 
 
 def remove_shell_integration() -> None:

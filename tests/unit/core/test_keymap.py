@@ -548,3 +548,86 @@ def test_corrupt_keymap_file_is_quarantined_then_defaults(
     backups = list((tmp_path / "migration-backups").glob("keymap-corrupt-*.json"))
     assert len(backups) == 1
     assert backups[0].read_text(encoding="utf-8") == "not json at all"
+
+
+# ---------------------------------------------------------------------------
+# #4: macOS keyboard-pack collision guard
+# ---------------------------------------------------------------------------
+
+
+def test_darwin_runtime_chord_folds_ctrl_to_cmd() -> None:
+    # On macOS wx maps ACCEL_CTRL to Cmd, so a stored "Ctrl+G" fires as Cmd+G.
+    assert keymap_module._darwin_runtime_chord("Ctrl+G") == "Cmd+G"
+    assert keymap_module._darwin_runtime_chord("Ctrl+Shift+S") == "Cmd+Shift+S"
+    # An explicit Cmd chord is left as-is; F-keys have no Ctrl to fold.
+    assert keymap_module._darwin_runtime_chord("Cmd+G") == "Cmd+G"
+    assert keymap_module._darwin_runtime_chord("F12") == "F12"
+    assert keymap_module._darwin_runtime_chord("not-a-chord??") is None
+
+
+def test_is_macos_reserved_runtime_chord() -> None:
+    assert keymap_module._is_macos_reserved_runtime_chord("F12") is True
+    assert keymap_module._is_macos_reserved_runtime_chord("F11") is True
+    assert keymap_module._is_macos_reserved_runtime_chord("Cmd+H") is True
+    assert keymap_module._is_macos_reserved_runtime_chord("Cmd+Q") is True
+    # Option+<single letter> is a dead-key/diacritical (support#67).
+    assert keymap_module._is_macos_reserved_runtime_chord("Alt+A") is True
+    # Shift+F12 and Alt+Shift+A are NOT reserved.
+    assert keymap_module._is_macos_reserved_runtime_chord("Shift+F12") is False
+    assert keymap_module._is_macos_reserved_runtime_chord("Alt+Shift+A") is False
+    assert keymap_module._is_macos_reserved_runtime_chord("Cmd+G") is False
+
+
+def test_apply_darwin_pack_overrides_drops_runtime_collision() -> None:
+    # Simulate a darwin DEFAULT_KEYMAP where edit.find_next is Cmd+G (the real Mac
+    # default). A pack binding navigate.go_to_line to "Ctrl+G" fires as Cmd+G and
+    # must be dropped so it does not clobber find_next.
+    merged = {"edit.find_next": "Cmd+G", "navigate.go_to_line": "Ctrl+L"}
+    keymap_module._apply_darwin_pack_overrides(dict(merged), {"navigate.go_to_line": "Ctrl+G"})
+    # The override is dropped; the darwin default for go_to_line is preserved.
+    result = dict(merged)
+    keymap_module._apply_darwin_pack_overrides(result, {"navigate.go_to_line": "Ctrl+G"})
+    assert result["navigate.go_to_line"] == "Ctrl+L"
+
+
+def test_apply_darwin_pack_overrides_drops_reserved_f12() -> None:
+    base = {"file.save_as": "Ctrl+Shift+S"}
+    keymap_module._apply_darwin_pack_overrides(base, {"file.save_as": "F12"})
+    assert base["file.save_as"] == "Ctrl+Shift+S"
+
+
+def test_apply_darwin_pack_overrides_drops_option_letter_deadkey() -> None:
+    base = {"edit.insert_link": "Ctrl+K"}
+    keymap_module._apply_darwin_pack_overrides(base, {"edit.insert_link": "Alt+A"})
+    assert base["edit.insert_link"] == "Ctrl+K"
+
+
+def test_apply_darwin_pack_overrides_applies_safe_override() -> None:
+    base = {"edit.select_line": "Ctrl+L"}
+    keymap_module._apply_darwin_pack_overrides(base, {"edit.select_line": "Cmd+L"})
+    assert base["edit.select_line"] == "Cmd+L"
+
+
+def test_build_keymap_for_pack_darwin_drops_reserved_f12(monkeypatch) -> None:
+    monkeypatch.setattr(keymap_module.sys, "platform", "darwin")
+    for pack_name in ("Quill Writer", "Microsoft Word"):
+        keymap = build_keymap_for_pack(pack_name)
+        # The pack overrides file.save_as to F12; on macOS F12 is the Mission
+        # Control default and must not be bound. The darwin default wins.
+        assert keymap["file.save_as"] != "F12"
+
+
+def test_build_keymap_for_pack_darwin_drops_vscode_open_collision(monkeypatch) -> None:
+    # VS Code binds file.open to Ctrl+P, which fires as Cmd+P on macOS and collides
+    # with file.print (Ctrl+P -> Cmd+P). The guard drops it; the darwin default wins.
+    monkeypatch.setattr(keymap_module.sys, "platform", "darwin")
+    keymap = build_keymap_for_pack("VS Code")
+    assert keymap["file.open"] == DEFAULT_KEYMAP["file.open"]
+    assert keymap["file.open"] != "Ctrl+P"
+
+
+def test_build_keymap_for_pack_off_darwin_is_verbatim(monkeypatch) -> None:
+    # Regression: on Windows the pack overlay is applied verbatim (no guard).
+    monkeypatch.setattr(keymap_module.sys, "platform", "win32")
+    keymap = build_keymap_for_pack("VS Code")
+    assert keymap["file.open"] == "Ctrl+P"

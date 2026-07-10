@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import sys
+from collections.abc import Mapping
 from pathlib import Path
 
 from quill.core.keymap_format import (
@@ -551,8 +552,120 @@ def build_keymap_for_pack(name: str) -> dict[str, str]:
     merged = DEFAULT_KEYMAP.copy()
     if pack is None:
         return merged
-    merged.update(pack.bindings)
+    if sys.platform == "darwin":
+        # #4: packs are written Windows-flavored (Ctrl+.../Alt+...) and applied
+        # verbatim on Windows, but on macOS wx maps ACCEL_CTRL to Cmd, so a pack's
+        # literal chord can land on a macOS system-reserved shortcut or collide
+        # with a darwin-aware DEFAULT_KEYMAP binding the curated defaults chose.
+        # DEFAULT_KEYMAP was hand-audited for Mac; the packs were not. Apply the
+        # pack on macOS through the collision guard so a system-reserved or
+        # colliding override is dropped (the darwin default wins) rather than
+        # silently clobbering another command.
+        _apply_darwin_pack_overrides(merged, pack.bindings)
+    else:
+        merged.update(pack.bindings)
     return merged
+
+
+# macOS system-reserved chords a Quill binding must never steal on the Mac side
+# of the Ctrl->Cmd accelerator mapping (#4). F9-F12 are the stock Mission
+# Control / Spaces / Dashboard defaults; the Cmd+ chords are app-level ones
+# (hide / minimize / quit / close / Spotlight / app switcher / window cycle).
+_MACOS_RESERVED_RUNTIME_CHORDS: frozenset[str] = frozenset({
+    "Cmd+H",
+    "Cmd+M",
+    "Cmd+Q",
+    "Cmd+W",
+    "Cmd+Space",
+    "Cmd+Tab",
+    "Cmd+Grave",
+    "F9",
+    "F10",
+    "F11",
+    "F12",
+})
+
+
+def _darwin_runtime_chord(chord: str) -> str | None:
+    """The chord as it fires on macOS, where wx maps ACCEL_CTRL to Cmd (#4).
+
+    A pack stores ``"Ctrl+G"``; on macOS that fires as Cmd+G. To detect
+    collisions against DEFAULT_KEYMAP's darwin ``"Cmd+G"`` entries, fold a
+    leading Ctrl token to Cmd for comparison only. Storage is unchanged -- this
+    is a comparison-time view, not a rewrite of the binding.
+    """
+    canonical = canonical_binding(chord, quill_key_prefix=_QUILL_LEADER_PREFIX)
+    if canonical is None:
+        return None
+    if canonical.startswith("Ctrl+"):
+        return "Cmd+" + canonical[len("Ctrl+") :]
+    return canonical
+
+
+def _is_macos_reserved_runtime_chord(runtime_chord: str) -> bool:
+    """True when *runtime_chord* (already Ctrl->Cmd folded) is macOS-reserved.
+
+    Also flags ``Option+<single letter>`` (Alt with no other modifier): on macOS
+    that is a dead-key / diacritical (Alt+A = å, Alt+E = acute accent, ...), so a
+    pack binding there would steal a character the user types (support#67).
+    """
+    if runtime_chord in _MACOS_RESERVED_RUNTIME_CHORDS:
+        return True
+    if runtime_chord.startswith("Alt+") and runtime_chord.count("+") == 1:
+        key = runtime_chord[len("Alt+") :]
+        if len(key) == 1 and key.isalpha():
+            return True
+    return False
+
+
+def _apply_darwin_pack_overrides(merged: dict[str, str], pack_bindings: Mapping[str, str]) -> None:
+    """Apply a keyboard pack's bindings on macOS with collision review (#4).
+
+    Drops a pack override (keeping the darwin-aware DEFAULT_KEYMAP value for that
+    command) when it would land on a macOS system-reserved chord or collide with a
+    binding already present in *merged* once both are viewed at Mac runtime
+    (Ctrl->Cmd). A user who wants the Windows app's exact chord can still rebind it
+    explicitly via the keymap editor, which runs the full conflict review in
+    :func:`merge_keymaps`.
+    """
+    runtime_merged: dict[str, str | None] = {
+        command: _darwin_runtime_chord(chord) for command, chord in merged.items()
+    }
+    for command_id, raw_chord in pack_bindings.items():
+        chord = raw_chord.strip()
+        if not chord:
+            # Empty pack binding means "use the default"; keep DEFAULT_KEYMAP.
+            continue
+        runtime = _darwin_runtime_chord(chord)
+        if runtime is None:
+            logger.debug(
+                "Pack override %r -> %r dropped on macOS: unparseable chord (#4).",
+                command_id,
+                raw_chord,
+            )
+            continue
+        if _is_macos_reserved_runtime_chord(runtime):
+            logger.debug(
+                "Pack override %r -> %r dropped on macOS: system-reserved chord (#4).",
+                command_id,
+                raw_chord,
+            )
+            continue
+        collides = any(
+            other != command_id and other_runtime == runtime
+            for other, other_runtime in runtime_merged.items()
+            if other_runtime is not None
+        )
+        if collides:
+            logger.debug(
+                "Pack override %r -> %r dropped on macOS: collides with a "
+                "darwin-aware default (#4).",
+                command_id,
+                raw_chord,
+            )
+            continue
+        merged[command_id] = chord
+        runtime_merged[command_id] = runtime
 
 
 def merge_keymaps(raw: object) -> dict[str, str]:

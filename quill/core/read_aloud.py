@@ -1273,8 +1273,13 @@ class ReadAloudController:
                     wav_path.unlink(missing_ok=True)
                 except OSError:
                     pass
+            interrupted = self._stop_event.is_set() or self._pause_event.is_set()
             with self._lock:
-                self._cursor = span.end
+                # #65/#78: only advance past a sentence that actually finished.
+                # On pause/stop mid-sentence, leave the cursor at the sentence
+                # start so a resume re-reads it instead of skipping the part that
+                # was never spoken.
+                self._cursor = span.start if interrupted else span.end
 
     def _run_piper_live(
         self,
@@ -1392,8 +1397,13 @@ class ReadAloudController:
             exit_code = process.wait(timeout=2)
             if exit_code != 0 and not (self._stop_event.is_set() or self._pause_event.is_set()):
                 raise ReadAloudUnavailableError(f"eSpeak-NG exited with code {exit_code}.")
+            interrupted = self._stop_event.is_set() or self._pause_event.is_set()
             with self._lock:
-                self._cursor = span.end
+                # #65/#78: only advance past a sentence that actually finished.
+                # On pause/stop mid-sentence, leave the cursor at the sentence
+                # start so a resume re-reads it instead of skipping the part that
+                # was never spoken.
+                self._cursor = span.start if interrupted else span.end
 
     def pause(self) -> None:
         with self._lock:

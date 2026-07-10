@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+from pathlib import Path
 
 import quill.core.optional_components as oc
 
@@ -503,6 +504,61 @@ def test_verify_component_stt_flags_no_model(monkeypatch) -> None:
     # Speech Models via this remedy signal instead of offering a bug report.
     assert result.remedy == "models"
     assert not result.detail  # nothing to bug-report
+
+
+def test_verify_component_stt_uses_say_on_macos(monkeypatch) -> None:
+    """#29: on macOS the self-test synthesizes the clip with the built-in `say`
+    command (not the Windows-only SAPI 5 path), so it no longer always fails."""
+    import subprocess
+    import types
+
+    from quill.core.speech import transcribe as tr
+
+    monkeypatch.setattr(oc.sys, "platform", "darwin")
+    monkeypatch.setattr(tr, "provider_has_installed_model", lambda *a, **k: True)
+
+    say_calls: list[list[str]] = []
+
+    def fake_run(args, **kwargs):
+        say_calls.append(list(args))
+        # `say -o <path> <text>` -- write a stub audio file so the existence check passes.
+        out = next((args[i + 1] for i, a in enumerate(args) if a == "-o"), None)
+        if out is not None:
+            Path(out).write_bytes(b"fake-aiff")
+        return types.SimpleNamespace(returncode=0, stdout="", stderr="")
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+
+    def fake_transcribe(*_a, **k):
+        return types.SimpleNamespace(full_text="The quick brown fox jumps over the lazy dog.")
+
+    monkeypatch.setattr(tr, "transcribe_audio_file", fake_transcribe)
+
+    result = oc.verify_component("whispercpp")
+    assert result.ok is True
+    assert say_calls, "the macOS `say` path must be used to synthesize the clip"
+    assert say_calls[0][0] == "say"
+    assert "-o" in say_calls[0]
+
+
+def test_verify_component_stt_macos_say_failure_reports_not_ok(monkeypatch) -> None:
+    """When `say` itself fails (missing/broken), the self-test reports a
+    transcription failure rather than crashing."""
+    import subprocess
+    import types
+
+    from quill.core.speech import transcribe as tr
+
+    monkeypatch.setattr(oc.sys, "platform", "darwin")
+    monkeypatch.setattr(tr, "provider_has_installed_model", lambda *a, **k: True)
+    monkeypatch.setattr(
+        subprocess,
+        "run",
+        lambda *a, **k: types.SimpleNamespace(returncode=1, stdout="", stderr="say: not found"),
+    )
+    result = oc.verify_component("whispercpp")
+    assert result.ok is False
+    assert "transcribe" in result.summary.lower()
 
 
 def test_verify_component_tool_uses_availability(monkeypatch) -> None:
