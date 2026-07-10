@@ -948,8 +948,7 @@ class SpeechCommandsMixin:
             return
         if _pdf_ocr_installed():
             again = self._show_message_box(
-                "PDF and Office text extraction is already installed. Download "
-                "it again anyway?",
+                "PDF and Office text extraction is already installed. Download it again anyway?",
                 "PDF and Office Text Extraction",
                 wx.ICON_QUESTION | wx.YES_NO,
             )

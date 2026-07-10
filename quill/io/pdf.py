@@ -42,7 +42,7 @@ def extract_pdf_text(path: Path) -> PdfExtractionResult:
         message = (
             f"(No PDF text extractor is installed, so QUILL could not read "
             f"{path.name}. Open Help > Download Optional Components and download "
-            f"\"PDF and Office text extraction\".)\n"
+            f'"PDF and Office text extraction".)\n'
         )
         engine = "unavailable"
     else:

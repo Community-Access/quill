@@ -32,7 +32,7 @@ def _write_bat_shortcut(persona_name: str, target_dir: Path) -> Path:
     quoted = " ".join(f'"{part}"' if " " in part else part for part in argv)
     safe_name = "".join(c if c.isalnum() or c in " -_" else "_" for c in persona_name).strip()
     path = target_dir / f"QUILL - {safe_name}.bat"
-    path.write_text(f"@echo off\r\nstart \"\" {quoted}\r\n", encoding="utf-8")
+    path.write_text(f'@echo off\r\nstart "" {quoted}\r\n', encoding="utf-8")
     return path
 
 
@@ -50,9 +50,7 @@ def write_launch_shortcut(persona_name: str, target_dir: Path) -> Path:
         import win32com.client  # type: ignore[import-untyped]
 
         argv = build_launch_argv(persona_name)
-        safe_name = "".join(
-            c if c.isalnum() or c in " -_" else "_" for c in persona_name
-        ).strip()
+        safe_name = "".join(c if c.isalnum() or c in " -_" else "_" for c in persona_name).strip()
         lnk_path = target_dir / f"QUILL - {safe_name}.lnk"
         shell = win32com.client.Dispatch("WScript.Shell")
         shortcut = shell.CreateShortCut(str(lnk_path))

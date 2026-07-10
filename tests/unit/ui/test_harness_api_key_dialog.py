@@ -25,9 +25,7 @@ def _make_dialog(wx_app, monkeypatch, *, existing_key: str = ""):
         "quill.core.assistant_ai.save_provider_api_key",
         lambda p, k: store.__setitem__(p, k) or True,
     )
-    monkeypatch.setattr(
-        "quill.core.assistant_ai.load_provider_api_key", lambda p: store.get(p, "")
-    )
+    monkeypatch.setattr("quill.core.assistant_ai.load_provider_api_key", lambda p: store.get(p, ""))
     monkeypatch.setattr(
         "quill.core.assistant_ai.clear_provider_api_key", lambda p: store.pop(p, None)
     )

@@ -373,7 +373,7 @@ def _missing_legacy_office_text(path: Path, source_kind: str) -> tuple[str, dict
         (
             f"({source_kind.upper()} import not available for {path.name}.)\n\n"
             'Open Help > Download Optional Components and download "PDF and '
-            "Office text extraction\", and install LibreOffice, for legacy "
+            'Office text extraction", and install LibreOffice, for legacy '
             "Office extraction.\n"
         ),
         {

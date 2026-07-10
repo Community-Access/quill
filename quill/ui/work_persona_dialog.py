@@ -49,9 +49,7 @@ class WorkPersonaDialog:
         self._listbox = wx.ListBox(self.dialog, style=wx.LB_SINGLE)
         self._listbox.SetName("Work Personas")
         left.Add(self._listbox, 1, wx.EXPAND)
-        left.Add(
-            wx.Button(self.dialog, wx.ID_ADD, label="&New Persona"), 0, wx.EXPAND | wx.TOP, 4
-        )
+        left.Add(wx.Button(self.dialog, wx.ID_ADD, label="&New Persona"), 0, wx.EXPAND | wx.TOP, 4)
         body.Add(left, 1, wx.EXPAND | wx.RIGHT, 8)
         self._btn_new = self.dialog.FindWindow(wx.ID_ADD)
 

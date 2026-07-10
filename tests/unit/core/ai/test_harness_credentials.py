@@ -55,9 +55,7 @@ def test_persist_stored_apply_and_forget_round_trip(monkeypatch) -> None:
 
 def test_apply_all_stored_keys_applies_every_supported_pack(monkeypatch) -> None:
     store = {"openai_agents": "sk-a", "claude_agent_sdk": "sk-b"}
-    monkeypatch.setattr(
-        "quill.core.assistant_ai.load_provider_api_key", lambda p: store.get(p, "")
-    )
+    monkeypatch.setattr("quill.core.assistant_ai.load_provider_api_key", lambda p: store.get(p, ""))
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
 

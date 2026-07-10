@@ -135,9 +135,7 @@ class InsertImageDialog:
         decorative = self._decorative_check.GetValue()
         alt_text = self._alt_ctrl.GetValue().strip()
         if not decorative and not alt_text:
-            self._status.SetLabel(
-                "Enter alt text describing this image, or mark it decorative."
-            )
+            self._status.SetLabel("Enter alt text describing this image, or mark it decorative.")
             self._announce("Enter alt text describing this image, or mark it decorative.")
             return
         self._result = build_image_markdown(path, alt_text, decorative=decorative)

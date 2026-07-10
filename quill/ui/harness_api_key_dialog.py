@@ -114,9 +114,7 @@ class HarnessApiKeyDialog:
                 announce=False,
             )
         else:
-            self._set_status(
-                f"No key saved yet for {self._display_name}.", announce=False
-            )
+            self._set_status(f"No key saved yet for {self._display_name}.", announce=False)
 
     # ------------------------------------------------------------------
     # Actions

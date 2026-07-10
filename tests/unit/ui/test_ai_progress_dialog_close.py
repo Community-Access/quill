@@ -61,8 +61,12 @@ def test_clicking_ok_still_runs_on_ok_exactly_once(wx_app) -> None:
 def test_close_box_before_completion_does_not_call_on_ok(wx_app) -> None:
     frame = wx.Frame(None)
     cancelled = []
-    progress = AIProgressDialog(frame, "Downloading Thing", "Preparing download...",
-                                 on_cancel=lambda: cancelled.append(True))
+    progress = AIProgressDialog(
+        frame,
+        "Downloading Thing",
+        "Preparing download...",
+        on_cancel=lambda: cancelled.append(True),
+    )
 
     progress.dialog.Close()
 

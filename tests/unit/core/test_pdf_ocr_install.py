@@ -133,9 +133,7 @@ def test_install_still_missing_after_success_raises(
         return SimpleNamespace(returncode=0, stdout="", stderr="")
 
     monkeypatch.setattr(install_module, "is_pdf_ocr_available", lambda: False)
-    monkeypatch.setattr(
-        install_module, "missing_pdf_ocr_modules", lambda: ("pypdf",)
-    )
+    monkeypatch.setattr(install_module, "missing_pdf_ocr_modules", lambda: ("pypdf",))
     with pytest.raises(PdfOcrInstallError, match="could not be fully imported"):
         install_pdf_ocr_support(
             dest_dir=tmp_path / "dest", python_executable="python", runner=fake_runner

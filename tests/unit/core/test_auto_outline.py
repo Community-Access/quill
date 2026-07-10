@@ -13,13 +13,7 @@ from quill.core.auto_outline import (
 def test_numeric_style_numbers_nested_headings() -> None:
     text = "# Intro\n## Background\n## Scope\n# Methods\n## Data\n"
     result = apply_auto_outline(text, OutlineStyle.NUMERIC)
-    assert result == (
-        "# 1. Intro\n"
-        "## 1.1. Background\n"
-        "## 1.2. Scope\n"
-        "# 2. Methods\n"
-        "## 2.1. Data\n"
-    )
+    assert result == ("# 1. Intro\n## 1.1. Background\n## 1.2. Scope\n# 2. Methods\n## 2.1. Data\n")
 
 
 def test_numbering_resets_on_shallower_heading() -> None:
