@@ -3,8 +3,30 @@ from __future__ import annotations
 import sys
 from types import SimpleNamespace
 
+import pytest
+
 from quill.core.commands import CommandRegistry
 from quill.ui.palette import CommandPaletteDialog
+
+
+@pytest.fixture(autouse=True, scope="module")
+def _restore_real_wx_after_fake_install():
+    """``_install_fake_wx`` swaps ``sys.modules['wx']`` for a ``SimpleNamespace``
+    stand-in and never puts the real module back. That leak is invisible inside
+    this module (every test re-installs the fake via ``_build_dialog``), but it
+    poisons later test modules that ``import wx`` at call time instead of at
+    module load -- notably ``test_voice_browser_dialog``, whose in-function
+    ``import wx`` then raises ``'SimpleNamespace' has no attribute 'Frame'`` in
+    the full suite (and in CI). Snapshot the real module and restore it once
+    this module's tests are done.
+    """
+    saved = sys.modules.get("wx")
+    saved_present = "wx" in sys.modules
+    yield
+    if saved_present:
+        sys.modules["wx"] = saved
+    else:
+        sys.modules.pop("wx", None)
 
 
 class _Event:
