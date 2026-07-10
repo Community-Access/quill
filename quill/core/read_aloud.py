@@ -693,10 +693,17 @@ def synthesize_with_espeak(
     # so point it explicitly at the co-located data directory when present.
     if (executable_path.parent / "espeak-ng-data").is_dir():
         command.append(f"--path={executable_path.parent}")
-    command.append(text)
+    # Pipe very long input via --stdin: a long utterance as a trailing argv
+    # element can overflow the OS command-line length (Windows ~32,767) (#64/#77).
+    use_stdin = len(text) > 8000
+    if use_stdin:
+        command.append("--stdin")
+    else:
+        command.append(text)
     try:
         completed = subprocess.run(
             command,
+            input=text.encode("utf-8") if use_stdin else None,
             capture_output=True,
             check=False,
             timeout=_MAX_SYNTHESIS_SECONDS,

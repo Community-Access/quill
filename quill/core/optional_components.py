@@ -744,21 +744,9 @@ def gather_optional_components() -> list[OptionalComponent]:
             note="Provided by the OpenJS Foundation; QUILL fetches the official build.",
             priority=110,
         ),
-        OptionalComponent(
-            "mathcat",
-            "MathCAT math speech engine",
-            "Real natural-language speech for equations — used by Insert > Explore "
-            'Equation Structure...\'s "Read this part aloud". Equations are still '
-            "readable without it, via a simpler built-in template reading.",
-            SPEECH_ENGINE,
-            _safe(_mathcat_installed),
-            "~3 MB",
-            note="MathCAT (MIT, daisy/MathCATForC); fetched from QUILL's pinned release.",
-            priority=100,
-        ),
     ]
-    # DECtalk's only backend is DECtalk.dll (Windows-only), so offering it as an
-    # installable component on macOS advertised a download that could never work.
+    # DECtalk and MathCAT ship only Windows .dll's (DECtalk.dll / libmathcat_c.dll),
+    # so offering either on macOS advertised a download that could never work (#46).
     if sys.platform.startswith("win"):
         out.append(
             OptionalComponent(
@@ -769,6 +757,20 @@ def gather_optional_components() -> list[OptionalComponent]:
                 _safe(_dectalk_installed),
                 "~2 MB",
                 priority=70,
+            )
+        )
+        out.append(
+            OptionalComponent(
+                "mathcat",
+                "MathCAT math speech engine",
+                "Real natural-language speech for equations — used by Insert > Explore "
+                'Equation Structure...\'s "Read this part aloud". Equations are still '
+                "readable without it, via a simpler built-in template reading.",
+                SPEECH_ENGINE,
+                _safe(_mathcat_installed),
+                "~3 MB",
+                note="MathCAT (MIT, daisy/MathCATForC); fetched from QUILL's pinned release.",
+                priority=100,
             )
         )
     out.extend(_dictionary_components())

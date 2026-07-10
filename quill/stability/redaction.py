@@ -129,7 +129,17 @@ def format_args_for_log(args: Sequence[str]) -> str:
     # Use only the basename, never a full path, to avoid leaking the
     # install location.
     exe_base = exe.rsplit("/", 1)[-1].rsplit("\\", 1)[-1]
-    rest = [redact_command_arg(a) for a in args[1:]]
+    rest = list(args[1:])
+    # The macOS ``security`` CLI takes the secret as ``-w <secret>`` in
+    # separate argv elements (#60/#73). ``-w`` itself has no secret-shaped
+    # keyword, and a short/non-hex secret slips past redact_command_arg's
+    # token regexes and leaks into the log. Redact the value that follows
+    # ``-w`` before the generic per-arg pass so it can never appear.
+    if exe_base == "security":
+        for i, a in enumerate(rest):
+            if a == "-w" and i + 1 < len(rest):
+                rest[i + 1] = "[REDACTED]"
+    rest = [redact_command_arg(a) for a in rest]
     if not rest:
         return f"{exe_base} — 0 args"
     return f"{exe_base} {' '.join(rest)} — {len(rest)} args"

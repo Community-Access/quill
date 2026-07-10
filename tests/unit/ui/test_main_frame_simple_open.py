@@ -373,3 +373,53 @@ def test_use_simple_file_dialog_setting_spec_is_registered():
     assert "simple" in spec.label.lower()
     # Confirm the spec is in the global tuple (so the audit can find it).
     assert any(s.key == "use_simple_file_dialog" for s in SETTING_SPECS)
+
+
+# ---------------------------------------------------------------------------
+# Hidden-files toggle chord (platform-aware) -- #51
+# ---------------------------------------------------------------------------
+
+
+class _FakeKeyEvent:
+    """Minimal stand-in for wx.KeyEvent: only the chord probe methods are read."""
+
+    def __init__(self, *, control=False, cmd=False, shift=False, key=0):
+        self._control = control
+        self._cmd = cmd
+        self._shift = shift
+        self._key = key
+
+    def ControlDown(self):
+        return self._control
+
+    def CmdDown(self):
+        return self._cmd
+
+    def ShiftDown(self):
+        return self._shift
+
+    def GetKeyCode(self):
+        return self._key
+
+
+def test_toggle_hidden_chord_is_ctrl_h_on_windows(monkeypatch):
+    import quill.ui.simple_open_dialog as sod
+
+    monkeypatch.setattr(sod.sys, "platform", "win32")
+    assert sod._toggle_hidden_key_pressed(_FakeKeyEvent(control=True, key=ord("H")))
+    assert sod._toggle_hidden_key_pressed(_FakeKeyEvent(control=True, key=ord("h")))
+    # Ctrl+Shift+. is NOT the Windows chord.
+    assert not sod._toggle_hidden_key_pressed(_FakeKeyEvent(control=True, shift=True, key=ord(".")))
+
+
+def test_toggle_hidden_chord_is_cmd_shift_dot_on_macos(monkeypatch):
+    """#51: macOS reuses the Finder convention (Cmd+Shift+.) because Cmd+H is
+    the system Hide-window shortcut and would hide QUILL instead."""
+    import quill.ui.simple_open_dialog as sod
+
+    monkeypatch.setattr(sod.sys, "platform", "darwin")
+    assert sod._toggle_hidden_key_pressed(_FakeKeyEvent(cmd=True, shift=True, key=ord(".")))
+    # Cmd+H must NOT toggle on macOS (it would hide the app).
+    assert not sod._toggle_hidden_key_pressed(_FakeKeyEvent(cmd=True, key=ord("H")))
+    # Ctrl+H is the Windows chord, not macOS's.
+    assert not sod._toggle_hidden_key_pressed(_FakeKeyEvent(control=True, key=ord("H")))
