@@ -308,6 +308,26 @@ for Mac users:
   would only open in a text editor), forwarding to `run-from-source.sh` — no
   terminal needed. The first-run Gatekeeper prompt and its right-click → Open
   workaround are documented in the file header. (#923)
+- **Tray status messages say the right thing on macOS.** QUILL's six
+  minimize-to-tray / restore messages ("Quill is running in the system tray",
+  "Minimized to system tray", etc.) used Windows terminology verbatim, but on
+  macOS the feature renders as a menu-bar status item. They now say "menu bar"
+  on macOS (and keep saying "system tray" on Windows).
+- **The Settings default-folder hint no longer shows a Windows path on macOS.**
+  The blank-default hint used to read `e.g. C:\Users\YourName\Documents` even on
+  a Mac, where that path doesn't exist. It now shows `e.g.
+  /Users/YourName/Documents` on macOS.
+- **A background engine install can no longer crash a closed AI Hub.** The
+  install-complete callback in the AI Hub Engines tab already guarded the
+  re-enable of its Set Up button against a destroyed panel (an earlier fix),
+  but the three calls after it were unguarded — closing the Hub before an
+  install finished could still raise. All four post-install calls are now
+  guarded, so a late callback against an already-closed Hub is a clean no-op.
+- **Bundled tool paths are found on macOS.** QUILL's bundled-tool lookup used
+  Windows backslashes in the relative path (`pandoc\pandoc.exe`); on macOS a
+  backslash is a literal filename character, so the bundled binary was never
+  found even when it genuinely exists. The paths now use forward slashes, which
+  compose correctly on both platforms.
 
 ## Quillin signatures, verified for real
 

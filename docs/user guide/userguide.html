@@ -6086,6 +6086,16 @@ the standard macOS menu locations (<code>Quill -&gt; Settings</code>,
 <code>Quill -&gt; About Quill</code>). The Preferences command is wired
 to the stock macOS menu entry so it appears in the Quill app menu as
 expected.</li>
+<li><strong>Tray status messages say "menu bar" on macOS.</strong> When
+Quill minimizes to the background, restores, or toggles tray mode, its
+status message names the surface you actually see — "menu bar" on macOS
+(where the feature is a menu-bar status item) and "system tray" on
+Windows. It used to say "system tray" verbatim on both.</li>
+<li><strong>The default-folder hint shows a Mac path on macOS.</strong>
+In Settings, the blank default-folder hint now reads
+<code>e.g. /Users/YourName/Documents (blank = last used)</code> on macOS
+instead of a Windows <code>C:\Users\...</code> path that doesn't exist
+on a Mac.</li>
 <li><strong>macOS-safe launch paths.</strong> Opening a file, revealing
 an enclosing folder, launching an installer, or previewing a voice
 sample now uses macOS-native launch behavior instead of relying on

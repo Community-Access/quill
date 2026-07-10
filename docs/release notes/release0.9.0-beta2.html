@@ -554,6 +554,30 @@ in Terminal on double-click (a <code>.sh</code> would only open in a
 text editor), forwarding to <code>run-from-source.sh</code> — no
 terminal needed. The first-run Gatekeeper prompt and its right-click →
 Open workaround are documented in the file header. (#923)</li>
+<li><strong>Tray status messages say the right thing on macOS.</strong>
+QUILL's six minimize-to-tray / restore messages ("Quill is running in
+the system tray", "Minimized to system tray", etc.) used Windows
+terminology verbatim, but on macOS the feature renders as a menu-bar
+status item. They now say "menu bar" on macOS (and keep saying "system
+tray" on Windows).</li>
+<li><strong>The Settings default-folder hint no longer shows a Windows
+path on macOS.</strong> The blank-default hint used to read
+<code>e.g. C:\Users\YourName\Documents</code> even on a Mac, where that
+path doesn't exist. It now shows
+<code>e.g. /Users/YourName/Documents</code> on macOS.</li>
+<li><strong>A background engine install can no longer crash a closed AI
+Hub.</strong> The install-complete callback in the AI Hub Engines tab
+already guarded the re-enable of its Set Up button against a destroyed
+panel (an earlier fix), but the three calls after it were unguarded —
+closing the Hub before an install finished could still raise. All four
+post-install calls are now guarded, so a late callback against an
+already-closed Hub is a clean no-op.</li>
+<li><strong>Bundled tool paths are found on macOS.</strong> QUILL's
+bundled-tool lookup used Windows backslashes in the relative path
+(<code>pandoc\pandoc.exe</code>); on macOS a backslash is a literal
+filename character, so the bundled binary was never found even when it
+genuinely exists. The paths now use forward slashes, which compose
+correctly on both platforms.</li>
 </ul>
 <h2 id="quillin-signatures-verified-for-real">Quillin signatures,
 verified for real</h2>

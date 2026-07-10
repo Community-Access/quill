@@ -754,6 +754,10 @@ class _IntellisensePopup:
 # does not have.
 _APP_TITLE_VERSION = f"QUILL for All {build_info.get_short_version()}"
 
+# #11: name the background-indicator surface what the user actually sees -- the
+# Windows system tray, or the macOS menu-bar status item. Read once at import.
+_TRAY_NOUN = "menu bar" if sys.platform == "darwin" else "system tray"
+
 
 class MainFrame(
     AbbreviationsMixin,
@@ -6159,7 +6163,7 @@ class MainFrame(
                 if self.settings.tray_enabled:
                     self._ensure_tray_icon()
                     self.frame.Hide()
-                    self._set_status("Quill is running in the system tray")
+                    self._set_status(f"Quill is running in the {_TRAY_NOUN}")
                     event.Veto()
                     return
             except Exception:  # noqa: BLE001 - a tray failure must not block exit
@@ -6288,7 +6292,7 @@ class MainFrame(
         if self.settings.tray_enabled and event.IsIconized():
             self._ensure_tray_icon()
             self.frame.Hide()
-            self._set_status("Minimized to system tray")
+            self._set_status(f"Minimized to {_TRAY_NOUN}")
         event.Skip()
 
     def _on_toggle_tray_mode(self, event: object) -> None:
@@ -6296,10 +6300,10 @@ class MainFrame(
         self.settings.tray_enabled = enabled
         if enabled:
             self._ensure_tray_icon()
-            self._set_status("System tray mode enabled")
+            self._set_status(f"{_TRAY_NOUN.capitalize()} mode enabled")
             return
         self._remove_tray_icon()
-        self._set_status("System tray mode disabled")
+        self._set_status(f"{_TRAY_NOUN.capitalize()} mode disabled")
 
     def _on_toggle_soft_wrap(self, event: object) -> None:
         enabled = bool(event.IsChecked())
@@ -9355,7 +9359,7 @@ class MainFrame(
         self._ensure_tray_icon()
         self.settings.tray_enabled = True
         self.frame.Hide()
-        self._set_status("Sent Quill to system tray")
+        self._set_status(f"Sent Quill to {_TRAY_NOUN}")
 
     def toggle_soft_wrap(self, enabled: bool | None = None) -> None:
         next_state = (not self.settings.soft_wrap) if enabled is None else enabled
@@ -9768,7 +9772,7 @@ class MainFrame(
         self.frame.Iconize(False)
         self.frame.Raise()
         self.frame.RequestUserAttention()
-        self._set_status("Restored from system tray")
+        self._set_status(f"Restored from {_TRAY_NOUN}")
 
     def _on_tray_right_click(self, _event: object) -> None:
         wx = self._wx
@@ -12183,7 +12187,11 @@ class MainFrame(
                         _t = wx.TextCtrl(_pp)
                         _t.SetValue(_cur)
                         _t.SetName(_sl)
-                        _t.SetHint("e.g. C:\\Users\\YourName\\Documents (blank = last used)")
+                        _t.SetHint(
+                            "e.g. /Users/YourName/Documents (blank = last used)"
+                            if sys.platform == "darwin"
+                            else "e.g. C:\\Users\\YourName\\Documents (blank = last used)"
+                        )
                         _b = wx.Button(_pp, label="Choose Default Folder...")
                         _b.SetName(f"Choose default folder for {_sl}")
 

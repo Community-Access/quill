@@ -189,8 +189,8 @@ class EnginesPanel:
         # to update, so treat a dead widget as nothing to do rather than crash.
         try:
             self.setup_btn.Enable(True)
+            self.status.SetLabel(message)
+            self._announce(message)
+            self._reload()
         except RuntimeError:
             return
-        self.status.SetLabel(message)
-        self._announce(message)
-        self._reload()

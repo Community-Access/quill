@@ -64,6 +64,26 @@ def test_detect_tool_macos_fallback_is_a_noop_on_windows(monkeypatch, tmp_path: 
     assert status.installed is False
 
 
+def test_bundled_subpaths_use_forward_slashes_for_cross_platform_path_composition() -> None:
+    """#59: bundled_subpath used to be Windows raw strings (``pandoc\\pandoc.exe``).
+    On macOS, ``Path(app_root) / "tools" / "pandoc\\pandoc.exe"`` treats the
+    backslash as a literal filename character (one component named
+    ``pandoc\\pandoc.exe``), so the bundled binary is never found even when
+    it genuinely exists. Forward slashes compose correctly on both platforms.
+    """
+    from quill.core.external_tools import TOOL_DEFINITIONS
+
+    for definition in TOOL_DEFINITIONS:
+        assert "\\" not in definition.bundled_subpath, (
+            f"{definition.tool_id} bundled_subpath must use forward slashes: "
+            f"{definition.bundled_subpath!r}"
+        )
+        composed = Path("tools") / definition.bundled_subpath
+        # Forward-slash composition yields separate parts (tools/, subdir/, exe);
+        # a backslash would collapse to a single literal component.
+        assert composed.parts == ("tools", *definition.bundled_subpath.split("/"))
+
+
 def test_format_tool_status_report_mentions_install_command(monkeypatch) -> None:
     monkeypatch.delenv("QUILL_APP_ROOT", raising=False)
     monkeypatch.setattr("quill.core.external_tools.shutil.which", lambda _name: None)

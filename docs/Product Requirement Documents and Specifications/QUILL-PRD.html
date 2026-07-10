@@ -14869,6 +14869,33 @@ are darwin-marked and Windows-only deps never appear in the
 <code>[macos]</code> extra; <code>test_high_contrast.py</code> now tests
 true/false/missing-CLI behavior rather than a bare
 <code>isinstance(bool)</code>.</li>
+<li><strong>macOS low-hanging-fruit pass (2026-07-09).</strong> Five
+no-Mac-hardware-safe fixes from the platform review backlog: (1) tray
+minimize/restore status messages now say "menu bar" on macOS instead of
+"system tray" (the surface renders as a menu-bar status item there), via
+a module-level <code>_TRAY_NOUN</code> constant read once at import and
+applied at six <code>_set_status</code> call sites; (2) the Settings
+default-folder hint shows a <code>/Users/...</code> example on macOS
+instead of a Windows <code>C:\Users\...</code> path (the only
+<code>C:\Users</code> hint in the tree); (3) the AI Hub Engines tab's
+install-complete callback (<code>_after_install</code>) now guards all
+four post-install widget calls against a destroyed-panel
+<code>RuntimeError</code>, not just the Set Up button re-enable, so
+closing the Hub before a background pack install finishes is a clean
+no-op rather than a crash on whichever widget happened to tear down
+last; (4) bundled-tool relative paths
+(<code>external_tools.bundled_subpath</code>) use forward slashes so the
+bundled binary is actually found on macOS, where a backslash is a
+literal filename character rather than a separator; (5) the zero-caller
+Windows HTML/RTF email-clipboard module is flagged as dead code with a
+note that a revival needs a macOS <code>NSPasteboard</code> counterpart
+(it degrades to plain text on macOS today). #11, #12, #55, and #59 are
+closed; #37 is partially closed (the path-hint instance, with a broader
+"dialog terminology" sweep remaining); #38 and #51 are deferred pending
+real Mac hardware; #40's premise was false and is closed (the
+<code>Ctrl+Alt+Shift+</code> chords and <code>Alt+Shift+D</code> are
+actively routed to the AI/compare command class and
+<code>view.toggle_dark_mode</code> respectively).</li>
 </ul>
 <hr />
 <!-- Source: docs/engineering/security-advisory-workflow.md -->
