@@ -429,7 +429,13 @@ repositories (lower rate limit) or your stored token for private ones. (#924)
   on Windows and macOS alike, with no opt-out** — so a tokenless bug reporter can
   never reach anyone again. If the token is ever missing at runtime, QUILL opens
   the online bug form for you — reading the instructions aloud — instead of
-  leaving you stuck.
+  leaving you stuck. And if an already-running build is found to be missing the
+  token, **Check for Updates** offers to reinstall the latest release even at the
+  same version — with a dialog that says it restores the bug-report token, so
+  "update to the version you already have" is not confusing. A silent background
+  check only records a notification (it never auto-reinstalls the running version);
+  use **Skip this version** to silence it, and it stops the moment the token is
+  back.
 - **"Casual Writer" finally just lets you write.** The profile was quietly leaving
   AI, GLOW review, remote files, analysis, watch folders, notebooks, and developer
   tools switched on. Choose Casual Writer now and those step out of the way, for a

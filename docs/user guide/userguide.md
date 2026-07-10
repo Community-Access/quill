@@ -1762,6 +1762,8 @@ If the form ever cannot be opened, QUILL copies a link to the online support for
 
 The in-app submit works on every install, including right after an upgrade: every build (Windows and macOS, release or beta) now bundles the reporting token, with no opt-out, so the "no token" message some of you saw after upgrading an earlier beta cannot recur.
 
+If a build that is already running is found to be missing the bundled token, **Check for Updates** offers to reinstall the latest release even when it is the same version you already have — the dialog explains that the install restores the bug-report token, so reinstalling the same version is not confusing. A silent background update check only records a notification instead of auto-reinstalling the running version; choose **Skip this version** to silence it, and the offer stops the moment the token is present again.
+
 ### When QUILL crashes: the new crash-submit dialog
 
 When an unhandled exception closes QUILL, a dialog now appears during the beta phase so you can review a redacted summary and choose whether to send it to the developers.

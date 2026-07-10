@@ -24,6 +24,7 @@ installer-smoke*/
 
 # Local working files (scratch notes, profiling output, one-off logs)
 /local/
+/dev.md
 
 *.log
 .quill-reqs.sha256

@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>macos-review-backlog</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="macos-platform-review--2026-07-09">macOS platform review —
+2026-07-09</h1>
+<p>Full-codebase audit of QUILL's macOS support: platform bridges
+(<code>quill/platform/macos</code> vs. <code>windows</code>), the
+keymap/accelerator system, voice/dictation/Whisper, Mac UI conventions
+and packaging, and macOS test coverage. Cross-referenced against the
+live macOS bug reports in <code>Community-Access/support</code> and used
+them to validate which issues still need follow-up. This file is a
+living backlog of the remaining open work. Already-tracked open Mac
+items (NSSound hardware confirmation, <code>MacOpenFileApp</code> Apple
+Event race + Cmd+Shift+]/[ chord, AI Hub tab group accessible-name
+verification) are not repeated here.</p>
+<p><strong>Note on numbering:</strong> Earlier drafts of this file
+double-listed the second-sweep findings (the block numbered 67-78 was a
+re-statement of #22-#27 and #60-#65), and the header/body counts
+disagreed ("62" vs "65"). That was a listing artifact, not 13 new
+findings. This version is deduplicated: every finding appears once. The
+active backlog count below is the real one.</p>
+<p>Active backlog: 40 unresolved items (down from the 65 unique findings
+in the original audit; the rest were closed this pass — see "Completed
+this pass").</p>
+<h2 id="priority-ladder">Priority ladder</h2>
+<table>
+<thead>
+<tr>
+<th>Rank</th>
+<th>Area</th>
+<th>Finding</th>
+<th>Confirmed by live report</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P1</td>
+<td>Security</td>
+<td>Keychain secrets passed as CLI argv, visible via
+<code>ps</code></td>
+<td></td>
+</tr>
+<tr>
+<td>P1</td>
+<td>Accessibility</td>
+<td>No self-voicing fallback when VoiceOver is off (needs native macOS
+TTS)</td>
+<td></td>
+</tr>
+<tr>
+<td>P1</td>
+<td>Mac conventions</td>
+<td>Third-party engine installers (eSpeak, Piper, Tesseract, Pandoc,
+Node) are Windows-only flows with unclear Mac gating</td>
+<td></td>
+</tr>
+<tr>
+<td>P2</td>
+<td>6 findings — keymap pack, screen capture, dark mode sync,
+platform-dispatch drift, duti silent failure, F8 Mac semantics</td>
+<td>see below</td>
+<td></td>
+</tr>
+<tr>
+<td>P3</td>
+<td>4 findings — module ownership, tray terminology, dead clipboard
+module, gate blind spots</td>
+<td>see below</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="completed-this-pass">Completed this pass</h2>
+<ul>
+<li><strong>#3 <code>total_ram_gb()</code> macOS branch.</strong> Added
+a <code>sysctl -n hw.memsize</code> branch so macOS reports real RAM
+instead of a flat 8.0 GB, fixing Whisper model recommendations on every
+Mac.</li>
+<li><strong>#4 Mic-permission guidance OS-neutral.</strong> The
+dictation "microphone unavailable" message no longer says "Windows
+microphone permissions" verbatim on macOS; it branches to a macOS System
+Settings path.</li>
+<li><strong>#5 DECtalk gated to Windows.</strong> DECtalk's only backend
+is <code>DECtalk.dll</code> (Windows-only), so it is no longer offered
+as an installable component on macOS (matching the Pandoc Mac-note
+pattern).</li>
+<li><strong>#6 Bare F-keys / Fn-key accommodation (partial).</strong>
+Find Next/Previous now have macOS alternates (<code>Cmd+G</code> /
+<code>Cmd+Shift+G</code>, the macOS HIG standard) so the highest-traffic
+find bindings work without holding Fn. The Fn-key requirement is
+documented in the user guide. The remaining bare F-key bindings
+(selection F8, spell/thesaurus F7, region F6, dictation F9) are
+deliberately left as-is pending real Mac validation rather than
+rebinding blind.</li>
+<li><strong>#7 Duplicate "About" menu entry.</strong> The Help-menu
+"About Quill" is now hidden on macOS (the Application menu already shows
+it via <code>wx.ID_ABOUT</code>); Windows keeps the Help entry.</li>
+<li><strong>#9 macOS CI runs the test suite.</strong> Added a
+<code>test</code> job to <code>macos-release.yml</code> that runs
+<code>pytest -m "not slow"</code> on <code>macos-26</code>, so the
+<code>skipif(sys.platform != "darwin")</code> tests (Keychain,
+high-contrast, sr_detect) finally execute somewhere.</li>
+<li><strong>#10 Earcon volume on macOS.</strong>
+<code>_NSSoundBackend</code> now implements a real
+<code>set_volume</code> (applies <code>NSSound.setVolume_()</code> per
+active sound); the volume slider is no longer a no-op on macOS.</li>
+<li><strong>#12 Cmd+F4 accelerator guarded.</strong> The redundant
+<code>Cmd+F4</code> close-document accelerator is now non-darwin-only
+(Cmd+W already closes documents); macOS no longer gets a non-idiomatic
+chord.</li>
+<li><strong>#15 SAPI5 guidance platform-conditional.</strong> The
+"Dictation (offline speech)" description no longer claims "SAPI 5
+dictation works without any of this" on macOS (where there is no SAPI
+5); it states Whisper is the only dictation path on macOS.</li>
+<li><strong>#16 Dependency tests guard macOS packaging.</strong> Added
+<code>test_macos_packaging_deps_are_platform_marked_for_darwin</code>
+(py2app/setuptools/pyobjc/apple-fm-sdk carry
+<code>sys_platform == 'darwin'</code>) and
+<code>test_windows_only_deps_are_excluded_from_macos_install</code>
+(comtypes/prismatoid/accessible-output2 carry <code>win32</code> and
+never appear in the <code>[macos]</code> extra).</li>
+<li><strong>#17 <code>test_high_contrast.py</code> tests
+behavior.</strong> Replaced the lone
+<code>isinstance(result, bool)</code> assertion with
+true/false/missing-CLI cases via <code>subprocess.run</code> fakes, so a
+hardcoded-wrong detector would actually fail.</li>
+<li><strong>#19 AppKit announce main-thread guard.</strong>
+<code>macos/announce.py</code> now checks
+<code>NSThread.isMainThread()</code> and marshals off-main calls onto
+the main queue via libdispatch (defense in depth for a future background
+callback).</li>
+<li><strong>#25 Duplicate
+<code>_file_dialog_default_dir</code>.</strong> Removed the second,
+shadowing definition in <code>main_frame.py</code>.</li>
+<li><strong>#26 <code>list_dictation_devices()</code> dead
+code.</strong> Removed the always-<code>[]</code> placeholder and its
+placeholder test.</li>
+<li><strong>#28 Read Aloud silent on macOS.</strong> Live WAV playback
+(<code>_run_wav_sentences</code>) fell through a
+<code>winsound</code>-only guard and silently deleted every synthesized
+WAV on macOS. Replaced with a cross-platform <code>_LiveWavPlayer</code>
+that uses <code>afplay</code> on macOS, so
+Piper/Kokoro/ElevenLabs/SAPI5/DECtalk Read Aloud actually speaks on
+macOS.</li>
+<li><strong>#30/#31/#32 macOS keymap collisions.</strong>
+<code>edit.replace</code> (Ctrl+H → Cmd+H = Hide),
+<code>edit.pop_mark</code> (Ctrl+M → Cmd+M = Minimize), and
+<code>edit.select_chunk</code> (Ctrl+Space → Cmd+Space = Spotlight) now
+have darwin alternates: <code>Cmd+Alt+F</code>, <code>Cmd+Alt+M</code>,
+<code>Cmd+Alt+Space</code>. Provisional pending real-Mac validation
+(same caveat as the doc-switch chord).</li>
+<li><strong>#33/#34 closed as non-issues.</strong> The audit claimed
+JSON keymap profiles hardcode
+<code>Alt+Left</code>/<code>Alt+Right</code> (back/forward) and
+doc-switch chords. They do not — no JSON profile contains those entries,
+so they inherit the already-darwin-aware <code>DEFAULT_KEYMAP</code>. No
+fix needed.</li>
+<li><strong>#44 VoiceOver announcement length cap.</strong>
+<code>macos/announce.py</code> caps the payload at 4096 chars (with
+ellipsis) so a runaway status string can't become an unreadable wall of
+text under VoiceOver.</li>
+<li><strong>#45 VoiceOver announcement interrupt control.</strong>
+<code>announce(message, *, interrupt=True)</code> now maps to
+NSAccessibility priority: high (interrupt, for internal narration) vs
+low (routine status, non-interrupting). <code>prism_bridge</code> passes
+<code>force_speech</code> as the interrupt flag, matching Windows
+semantics.</li>
+<li><strong>#49 <code>[macos]</code> extra platform markers.</strong>
+<code>py2app</code> and <code>setuptools&lt;83</code> now carry
+<code>sys_platform == 'darwin'</code> so a non-Mac
+<code>pip install .[macos]</code> no longer pulls macOS-only packaging
+deps.</li>
+<li><strong>#56/#57 Atomic document writes.</strong> Added
+<code>write_text_atomic</code> (temp + <code>fsync</code> +
+<code>os.replace</code>, mirroring <code>write_json_atomic</code>) and
+applied it to <code>autosave_document</code> (the recovery snapshot can
+no longer be a truncated half-write) and
+<code>write_text_document</code> / <code>_write_brf_document</code> (a
+crash mid-save no longer corrupts the user's document at its real
+location).</li>
+</ul>
+<hr />
+<h2 id="p1--high-remaining">P1 — high (remaining)</h2>
+<ol type="1">
+<li><strong>Keychain secrets exposed via process listing.</strong>
+<code>quill/platform/macos/keychain.py:33</code>
+(<code>set_secret</code>) calls
+<code>security add-generic-password ... -w &lt;secret&gt;</code> via
+<code>subprocess.run</code>, putting the plaintext API key/token in
+argv, visible to any local process via <code>ps -ww</code> for the
+call's duration. Fix: use PyObjC's <code>Security</code> framework
+(<code>SecItemAdd</code>) directly instead of shelling out with
+<code>-w</code>. (Also covers #43/#60 — the CLI-only path and the
+redaction gap.)</li>
+<li><strong>No self-voicing fallback when VoiceOver is off.</strong>
+<code>quill/platform/macos/announce.py</code> only posts an
+<code>NSAccessibilityAnnouncementRequestedNotification</code>, a no-op
+unless VoiceOver is listening. Windows falls back to SAPI5 self-voicing
+when no screen reader is detected
+(<code>prism_bridge.py:276-288</code>); no
+AVSpeechSynthesizer/NSSpeechSynthesizer equivalent exists on Mac, so
+every <code>self._announce(...)</code> call is silently swallowed for a
+low-vision Mac user running without VoiceOver. Fix: a native macOS TTS
+backend is the single biggest lever — it also closes #62/#75 (read-aloud
+engine choices list) and gives a default engine. Do it early.</li>
+<li><strong>Third-party engine installers are Windows-only flows with
+unclear Mac gating.</strong> <code>espeak_install.py</code>,
+<code>piper_install.py</code>, <code>tesseract_install.py</code>,
+<code>pandoc_install.py</code>, <code>node_install.py</code> are all
+annotated Windows-only in <code>network_egress_audit.py</code>; not
+confirmed whether the menu items that trigger them are actually hidden
+on macOS, or whether Mac users hit a dead end with no Homebrew-based
+guidance. Fix: confirm/enforce <code>sys.platform</code> gating in the
+menu builder, and point to Homebrew equivalents where one exists.</li>
+</ol>
+<hr />
+<h2 id="p2--medium-remaining">P2 — medium (remaining)</h2>
+<ol start="4" type="1">
+<li><strong>No macOS-oriented keymap pack.</strong> All 8 packs in
+<code>keymap_packs.py</code> are Windows-flavored (Notepad, Notepad++,
+VS Code, Word) or generic; only one binding in one pack has a
+<code>darwin</code> branch. Overrides apply as-is on Mac with none of
+the collision review <code>DEFAULT_KEYMAP</code> itself received. Fix:
+ship a VoiceOver-oriented pack, or explicitly document the existing ones
+as Windows-emulation-only and audit each for Mac system-reserved
+collisions.</li>
+<li><strong>Screen capture/OCR-from-screen has no macOS
+backend.</strong>
+<code>quill/platform/windows/screen_capture.py:46-47,109-110</code>
+raises "only available on Windows" on any non-<code>nt</code> platform;
+no <code>quill/platform/macos/screen_capture.py</code> exists, and no
+path handles macOS's separate Screen Recording permission. Fix:
+implement via <code>Quartz</code>/<code>screencapture</code> with
+<code>CGRequestScreenCaptureAccess()</code> handling, or make the
+unsupported message explain why rather than reading as a bare
+omission.</li>
+<li><strong>Dark Mode / Reduce Motion are never synced from the
+OS.</strong> <code>quill/platform/macos/high_contrast.py</code> queries
+<code>defaults read com.apple.universalaccess increaseContrast</code>
+but nothing queries Dark Mode (<code>AppleInterfaceStyle</code>) or
+Reduce Motion; the in-app dark-mode toggle is manual-only on every
+platform. Fix: extend the existing <code>defaults</code>-shelling module
+to also report dark-mode/reduce-motion state and offer to sync QUILL's
+theme to it.</li>
+<li><strong>Two independent, drift-prone platform-dispatch
+mechanisms.</strong> <code>quill/platform/dispatch.py</code> does a lazy
+<code>current_platform()</code> check per function while sibling modules
+(<code>high_contrast.py</code>, <code>sr_detect.py</code>,
+<code>shell_integration.py</code>) do a module-level
+<code>sys.platform</code> gate. A future macOS-routing change only
+applied to one surface would silently miss the other. Fix: consolidate
+on the module-level gate; have <code>dispatch.py</code> delegate rather
+than re-implement.</li>
+<li><strong><code>duti</code>-based file-association helper fails
+silently.</strong>
+<code>quill/platform/macos/shell_integration.py:65-81</code> is a
+complete no-op whenever <code>duti</code> (a third-party Homebrew tool,
+not preinstalled) is missing — the common case — with no error or UI
+signal, so a "Set QUILL as default editor" action can appear to succeed
+while doing nothing. Fix: return a status so calling UI code can tell
+the user why it didn't work. (Also #61/#74 — <code>_app_path()</code> is
+a stub; no <code>lsregister</code> refresh or Dock badge.)</li>
+<li><strong>F8 extend-selection caret movement doesn't match native Mac
+text semantics.</strong> <code>main_frame.py</code>
+(<code>_move_extend_selection_caret</code>) uses Cmd (via
+<code>ControlDown()</code>) for word movement and document bounds, where
+native macOS convention is Option for word and Cmd for line/document
+bounds. Internally consistent, but diverges from Mac muscle memory. Fix:
+consider Option-based word movement for parity; low urgency since
+nothing is broken or colliding.</li>
+</ol>
+<hr />
+<h2 id="p3--low-remaining">P3 — low (remaining)</h2>
+<ol start="10" type="1">
+<li><strong>Misleading module ownership.</strong>
+<code>quill/platform/sr_announce.py</code> and
+<code>announce_engine.py</code> are platform-neutral (unconditionally
+re-export
+<code>quill.platform.windows.sr_announce</code>/<code>prism_bridge</code>)
+but live under <code>windows/</code>, inviting a future contributor to
+assume they're Windows-only and skip Mac testing. Fix: relocate to a
+platform-neutral path.</li>
+<li><strong>"System tray" terminology applied unchanged to the Mac
+menu-bar item.</strong> <code>main_frame.py</code> tray strings ("Quill
+is running in the system tray") use Windows terminology even though the
+feature renders as a menu-bar status item on Mac. Low cost,
+cosmetic.</li>
+<li><strong>Dead Windows-only clipboard module with no Mac
+counterpart.</strong> <code>quill/platform/windows/clipboard.py</code>
+(HTML/RTF email-clipboard payload) has zero callers today; if ever wired
+up there's no <code>NSPasteboard</code> equivalent. Flag as tech debt.
+(Related: #52 — HTML-clipboard paste-as-Markdown only reads the Windows
+<code>CF_HTML</code> flavour, degrading to plain text on macOS.)</li>
+<li><strong>Gate tooling doesn't tag Mac-only surfaces.</strong>
+<code>dialog_inventory.py</code>/<code>network_egress_audit.py</code>
+are platform-agnostic AST scans with no <code>platform</code> field, so
+a Mac-only dialog/egress site never exercised on real hardware can't be
+distinguished in gate output. Fix: add an optional <code>platform</code>
+field to the scan schema for targeted manual Mac QA.</li>
+</ol>
+<hr />
+<h2
+id="additional-unresolved-items-mac-specific-and-cross-platform">Additional
+unresolved items (mac-specific and cross-platform)</h2>
+<p>These continue the macOS audit. Findings already closed this pass
+(#28 Read Aloud, #30/#31/#32 collisions, #33/#34 non-issues, #44/#45
+VoiceOver, #49 markers, #56/#57 atomic writes) are removed.</p>
+<ul>
+<li><strong>#29 STT self-test always fails on macOS — hard SAPI5
+dependency.</strong> The test harness still depends on a Windows-only
+SAPI5 clip path.</li>
+<li><strong>#35 Portable mode silently drops credentials on
+macOS.</strong> Non-Windows portable mode still provides no usable
+persistence path and no warning.</li>
+<li><strong>#36 macOS <code>.app</code> ships without
+<code>feedback-hub</code> — Report a Bug is broken despite the token
+being present.</strong> The release build still omits the feedback extra
+from the macOS bundle install path.</li>
+<li><strong>#37 Windows-specific UI strings render verbatim on
+macOS.</strong> Several setup and connection dialogs still mention
+Windows-specific storage or dialog terminology.</li>
+<li><strong>#38 <code>persona_launcher</code> writes a useless
+<code>.bat</code> file on macOS.</strong> The macOS fallback still
+writes a Windows batch file instead of a macOS-launchable script.</li>
+<li><strong>#39 Tray mode on macOS hides the window with no restore
+path.</strong> The app can disappear into a non-restorable hide state on
+macOS.</li>
+<li><strong>#40 The advertised <code>Ctrl+Alt+Shift+</code> /
+<code>Alt+Shift+D</code> shortcuts are dead.</strong> No longer routed
+to anything.</li>
+<li><strong>#41 LibreOffice import route never works on a standard macOS
+install.</strong> The import path still relies on an executable that is
+not normally on PATH on macOS.</li>
+<li><strong>#42 Crash-report bundle collects no macOS-native forensic
+data.</strong> The diagnostic bundle still lacks native macOS capture
+data for hangs and crashes.</li>
+<li><strong>#43 Keychain access relies solely on the
+<code>security</code> CLI — no pyobjc fallback, no sandbox
+path.</strong> Same root as #1; the keychain path has no fallback and no
+warning for sandboxed or missing-CLI cases.</li>
+<li><strong>#46 MathCAT is offered on macOS but ships only a Windows
+<code>.dll</code>.</strong> The optional component is still
+misrepresented on macOS.</li>
+<li><strong>#47 Braille pack download ships
+<code>lou_translate.exe</code> with no platform gate.</strong> The
+install path still treats the Windows binary as usable on macOS.</li>
+<li><strong>#48 External-engine resolution misses Homebrew/nvm on a
+Finder-launched macOS app; <code>node.exe</code> hardcoded.</strong>
+Finder-launched apps still miss shell-profile paths for engines and
+Node.</li>
+<li><strong>#50 macOS <code>shell_integration</code> module has zero
+test coverage.</strong> The Mac-specific shell integration surface lacks
+direct tests.</li>
+<li><strong>#51 "Toggle hidden files" (<code>Ctrl+H</code>) in the
+simple open dialog collides with macOS Hide.</strong> The shortcut is
+still bound to the system Hide shortcut on macOS.</li>
+<li><strong>#53 Manual OK/Cancel button sizers use Windows order (OK
+left, Cancel right) — backwards on macOS.</strong> Several dialogs still
+use the Windows button order on macOS.</li>
+<li><strong>#54 System-wide "sticky note capture" hotkey is a silent
+no-op on macOS.</strong> The global hotkey path is still silently
+dropped on macOS.</li>
+<li><strong>#55 The #915 crash fix in
+<code>EnginesPanel._after_install</code> only guards the first widget
+call.</strong> The install-complete callback still risks widget teardown
+crashes after the first guard.</li>
+<li><strong>#58 PDF extractor swallows all errors and misreports
+corrupt/encrypted files as "scanned/image-only."</strong> The error
+classification still collapses real parse failures into the wrong user
+message.</li>
+<li><strong>#59 <code>external_tools.bundled_subpath</code> values use
+Windows backslashes.</strong> The bundled subpath handling still assumes
+Windows separators.</li>
+<li><strong>#60/#73 Redaction misses the <code>security</code> CLI
+<code>-w</code> short-secret form.</strong> Short secrets passed via the
+keychain CLI can still leak into logs. (Same root as #1.)</li>
+<li><strong>#61/#74 <code>shell_integration._app_path()</code> is a
+stub; no <code>lsregister</code> refresh or Dock-badge surface.</strong>
+The macOS shell integration path still lacks app-path and registration
+handling. (Same root as #8/duti.)</li>
+<li><strong>#62/#75 <code>read_aloud_engine</code> settings choices list
+no macOS-native TTS option.</strong> The settings UI still exposes only
+Windows-era voice-engine choices on macOS. (Closed by the native macOS
+TTS backend lever — see #2.)</li>
+<li><strong>#63/#76 The Window menu lacks standard macOS items and isn't
+registered as the system Window menu.</strong> The macOS Window menu
+still lacks the standard stock items and registration wiring.</li>
+<li><strong>#64/#77 eSpeak synthesis passes the sentence as CLI argv,
+risking Windows command-line length overflow.</strong> The Windows
+eSpeak path still risks overflow on long input spans.</li>
+<li><strong>#65/#78 eSpeak live pause advances the cursor to
+<code>span.end</code> even though only part was spoken.</strong> Pause
+handling still reports the sentence as fully spoken even when it was
+only partially read.</li>
+</ul>
+<hr />
+<h2
+id="community-support-inbox--macos-reports-community-accesssupport">Community
+support inbox — macOS reports (Community-Access/support)</h2>
+<p>Two of the three previously-reported QUILL macOS issues in
+<code>Community-Access/support</code> still need follow-up; the
+preview-path crash in support#68 has now been addressed and is no longer
+in the active backlog.</p>
+<table>
+<thead>
+<tr>
+<th>Issue</th>
+<th>Title</th>
+<th>Root-caused to</th>
+<th>Priority</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a
+href="https://github.com/Community-Access/support/issues/69">support#69</a></td>
+<td>Disconnected controls/labels in Settings on macOS</td>
+<td>Finding 4 (<code>voice_browser_dialog.py:184-212</code>)</td>
+<td>P0</td>
+</tr>
+<tr>
+<td><a
+href="https://github.com/Community-Access/support/issues/67">support#67</a></td>
+<td>Keyboard shortcuts replace Polish diacritical marks</td>
+<td>Finding 7 (<code>keymap.py</code> bare Option+letter bindings)</td>
+<td>P0</td>
+</tr>
+</tbody>
+</table>
+<p><strong><a
+href="https://github.com/Community-Access/support/issues/66">support#66</a></strong>
+("product-feedback") is filed against the <em>Git Going with GitHub</em>
+workshop, not QUILL — out of scope; route to that project's own
+backlog.</p>
+<p>No other open issues exist in <code>Community-Access/support</code>
+as of this review (checked 2026-07-09).</p>
+<hr />
+<h1 id="backlog-review-remaining-open-issues">Backlog review: remaining
+open issues</h1>
+<p><strong>Already shipped and documented in the CHANGELOG / release
+notes (removed from this future-facing list):</strong> #909 (the
+free-first import pipeline is now a base dependency), #890 (Casual
+Writer tightened to a true "just write" profile), the Report-a-Bug "No
+token" build regression, #897 (Wikipedia lookup), #895 (Clip Library),
+#900 (Send/Copy as Email), #894 (Accessible AutoOutline), #896 (Work
+Personas), #899 (Mandatory alt text + inline image descriptions), #891
+(Print Studio), and #892 (Header/Footer Builder). Closed items (#898
+Second View, #901 tablet/low-vision, #905/#906/#907 Convert-Non-ASCII
+bugs) are excluded.</p>
+<h2 id="follow-up-from-892">Follow-up from #892</h2>
+<ul>
+<li><strong>DOCX/RTF native header/footer export</strong>: the
+Header/Footer Builder authors and saves a spec, and draws it when
+printing, but does not yet write real header/footer XML into DOCX/RTF
+exports. Deliberately deferred per the issue's own build order (confirm
+the round-trip once real usage exists to validate against).</li>
+</ul>
+<h2 id="priority-ladder-my-recommendation">Priority ladder (my
+recommendation)</h2>
+<table>
+<thead>
+<tr>
+<th>Rank</th>
+<th>Issue</th>
+<th>Title (short)</th>
+<th>Impact</th>
+<th>Confidence</th>
+<th>Why here</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>P3</strong></td>
+<td>#893</td>
+<td>"Rich Document" discoverability</td>
+<td>Medium</td>
+<td>High (feature exists)</td>
+<td>Downgraded per the issue's own re-check: serves a <em>secondary</em>
+audience (low-vision / ex-Word), not QUILL's core keyboard-first user.
+Low cost, low urgency.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="893--rich-document-workflow-discoverability--p3">#893 — "Rich
+Document" workflow discoverability — <strong>P3</strong></h2>
+<p><strong>State:</strong> The Rich Text lens already exists and works —
+<code>core.rich_text_lens</code> (<code>feature_catalog.py:~149</code>),
+wired to <code>view.switch_editing_lens</code>, locked_off under at
+least one profile (<code>settings.py:~595</code>). This is
+discoverability/framing, not a build.</p>
+<p><strong>Proposal:</strong> Surface "Rich Document" as a
+plain-language onboarding choice (first-run wizard and/or
+profile-adjacent setting) for users who want WordPad-like editing
+without learning Markdown — framed as an experience, not as "enable the
+Rich Text lens flag." Add an in-context "Switch to Rich Document view"
+affordance (menu + command palette) for users mid-session. Audit which
+profiles lock the lens off and confirm that's still right if it's being
+promoted.</p>
+<p><strong>Non-goals:</strong> Not changing the underlying
+Markdown-with-invisible-codes architecture; not making Rich Text the
+default for everyone.</p>
+<p><strong>Priority:</strong> P3 — <strong>explicitly downgraded per the
+issue's own re-check.</strong> QUILL's plain-text/Markdown default
+<em>is</em> the screen-reader-optimized design, not a way-station to a
+"real" rich mode. This mainly serves a secondary audience (low-vision,
+sighted co-authors, ex-Word/WordPad users). Real and worth doing — the
+feature already exists so the cost is low — but it's a "nice for a
+secondary audience," not a core-mission gap like #891 or #899.</p>
+<h2 id="suggested-sequencing">Suggested sequencing</h2>
+<ol type="1">
+<li><strong>#893</strong> — the one remaining item; low-urgency
+discoverability polish, fold into whatever onboarding-wizard work is
+already happening rather than scheduling standalone.</li>
+</ol>
+<hr />
+<h1
+id="outstanding-from-the-2026-07-08-session-unresolved-reports--follow-ups-needing-hardware">Outstanding
+from the 2026-07-08 session: unresolved reports + follow-ups needing
+hardware</h1>
+<p>The earlier-session items already shipped in this pass (the
+macOS-safe file-open/launch flows, the voice-preview playback fix, and
+the AI dialog guidance changes) are omitted from the remaining backlog
+below. The items that still need real hardware or a fresh repro
+remain:</p>
+<h2 id="1-nssound-macos-backend--needs-real-hardware-to-confirm">1.
+NSSound macOS backend — needs real hardware to confirm</h2>
+<p>The <code>_NSSoundBackend</code> (AppKit <code>NSSound</code> via
+<code>pyobjc</code>) in <code>quill/platform/sound_player.py</code> is
+unit-tested with fakes only (this dev box is Windows). Two things still
+need a real Mac: (a) that <code>NSSound.alloc().initWithData_()</code>
+actually produces audible output for QUILL's WAV format, and (b) that
+the bounded live-sound retention (16 entries) is generous enough under
+real earcon firing rates without AppKit tearing down a sound
+mid-playback. (Now also: confirm the new <code>_LiveWavPlayer</code>
+afplay path in <code>read_aloud.py</code> produces audible Read Aloud on
+a real Mac.)</p>
+<h2
+id="2-macos-file-open--document-switch-chord--needs-real-hardware-to-confirm">2.
+macOS file-open + document-switch chord — needs real hardware to
+confirm</h2>
+<p><code>MacOpenFileApp</code>'s
+<code>MacOpenFile</code>/<code>MacOpenFiles</code> override
+(Finder/Dock/<code>open -a</code> file-open handling) is standard wx API
+usage but the exact Apple Event delivery timing (especially the
+cold-launch race where a file-open event arrives before
+<code>MainFrame</code> finishes constructing) needs a real Mac to
+confirm end-to-end. Separately, the default document-switching chord
+(<code>Cmd+Shift+]</code>/<code>[</code>, chosen to match Safari/Xcode's
+tab-cycling convention) is a UX pick, not mechanically forced — worth
+confirming with an actual Mac user it doesn't collide with anything on
+their setup before calling it final. (Same provisional-validation caveat
+now applies to the new #30/#31/#32 darwin alternates:
+<code>Cmd+Alt+F</code>, <code>Cmd+Alt+M</code>,
+<code>Cmd+Alt+Space</code>.)</p>
+<h2
+id="3-latent-risk-not-yet-reproduced-_show_intellisense_popup-could-still-crash-on-a-dead-popup">3.
+Latent risk (not yet reproduced): <code>_show_intellisense_popup</code>
+could still crash on a dead popup</h2>
+<p>The #917/#918 fix made <code>_IntellisensePopup.is_visible()</code>
+tolerate a deleted C/C++ <code>Frame</code> (from
+<code>main_frame_intellisense.py</code>'s
+<code>_handle_intellisense_key_down</code>). But
+<code>_show_intellisense_popup</code> (same mixin) still calls
+<code>popup.update(...)</code> / <code>popup.show(...)</code> on the
+same popup object after checking <code>is_visible()</code> — if a
+<em>future</em> keystroke reaches that path with the same dead-frame
+condition instead of the key-down handler, those calls are unguarded and
+could raise the same class of <code>RuntimeError</code> somewhere new.
+No crash report evidences this path is actually reached (the two filed
+crashes were both in <code>is_visible()</code> specifically, called from
+the key-down handler), so this is a documented risk, not a confirmed bug
+— revisit if a similar crash resurfaces with a different traceback
+location.</p>
+<hr />
+<h2 id="sequencing-notes">Sequencing notes</h2>
+<ul>
+<li><strong>Single biggest lever:</strong> Finding #2 (native macOS TTS
+backend) collapses three other findings — #62/#75 (read-aloud choices
+list), the self-voicing fallback, and gives a default engine — into one
+build. Do it early.</li>
+<li><strong>Keymap sweep:</strong> The remaining Windows-flavored chords
+persisted/accelerated unchanged on <code>darwin</code> are now mostly
+darwin-overridden in <code>DEFAULT_KEYMAP</code> (Find Next/Prev,
+replace, pop_mark, select_chunk, doc-switch, back/forward). The open
+residue is the keymap <em>packs</em> (#4) — audit each for Mac
+system-reserved collisions rather than one pack at a time.</li>
+<li><strong>Atomic-write sweep:</strong> DONE this pass (#56/#57) via
+the new <code>write_text_atomic</code> helper; no remaining non-atomic
+document writers known.</li>
+<li><strong>CI gap:</strong> Finding #9 (no Mac pytest) is now closed;
+the macOS test job is what will catch #39, #40, #44, #45, #50, #54, #61,
+#63, and several others going forward.</li>
+</ul>
+</body>
+</html>

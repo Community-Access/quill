@@ -20359,6 +20359,7 @@ class MainFrame(
         beta: bool,
     ) -> None:
         """UI-thread callback once the background update-network fetch finishes."""
+        from quill.core.feedback_token import github_token_present
         from quill.core.updates import (
             find_release,
             is_newer_version,
@@ -20430,7 +20431,13 @@ class MainFrame(
             )
 
         target = latest_any if beta else latest_stable
-        if target is not None and is_newer_version(current_version, target.version):
+        newer = target is not None and is_newer_version(current_version, target.version)
+        # #919 self-heal: a build running without its bundled bug-report token
+        # can't file in-app issues. Offer the latest release even at the same
+        # version, so installing it restores the token. This stops the moment
+        # the token is back, and the user can silence it with "Skip this version".
+        token_selfheal = target is not None and not github_token_present()
+        if target is not None and (newer or token_selfheal):
             if silent_no_update and target.version == getattr(
                 self.settings, "skipped_update_version", ""
             ):
@@ -20439,10 +20446,25 @@ class MainFrame(
                 )
                 return
             if silent_no_update:
-                self._record_notification(f"Update {target.version} found; downloading", "update")
-                self._download_update_release(target)
+                if newer:
+                    self._record_notification(
+                        f"Update {target.version} found; downloading", "update"
+                    )
+                    self._download_update_release(target)
+                else:
+                    # Self-heal at the same version: don't auto-download in the
+                    # background. Surface a notification so the user chooses to
+                    # reinstall via Check for Updates.
+                    self._record_notification(
+                        "A build that restores the bug-report token is available. "
+                        "Use Check for Updates to install it.",
+                        "update",
+                    )
+                    self._set_status("Update available (restores bug-report token)")
                 return
-            action = self._show_update_available_dialog(current_version, target)
+            action = self._show_update_available_dialog(
+                current_version, target, self_heal=token_selfheal and not newer
+            )
             if action == "download":
                 self._download_update_release(target)
             elif action == "skip":
@@ -20685,9 +20707,17 @@ class MainFrame(
         finally:
             dialog.Destroy()
 
-    def _show_update_available_dialog(self, current_version: str, release: GitHubRelease) -> str:
+    def _show_update_available_dialog(
+        self, current_version: str, release: GitHubRelease, *, self_heal: bool = False
+    ) -> str:
         """Present an available update. Returns one of ``"download"``,
-        ``"skip"`` (don't offer this version again) or ``"later"``."""
+        ``"skip"`` (don't offer this version again) or ``"later"``.
+
+        When ``self_heal`` is set, the offered release is the *same* version the
+        user already runs, reinstalled to restore the bundled bug-report token
+        (#919). The dialog says so explicitly so "update to the version you
+        already have" is not confusing.
+        """
         wx = self._wx
         self._announce(f"Update available: {release.version}")
         channel = "Beta / prerelease" if release.prerelease else "Stable"
@@ -20696,12 +20726,25 @@ class MainFrame(
             _strip_md_to_plain(raw) if raw else "(No release notes were provided for this version.)"
         )
         published = f"Published: {release.published_at}\n" if release.published_at else ""
-        header = (
-            f"Update available: {release.version}\n"
-            f"Channel: {channel}\n"
-            f"{published}"
-            f"Current version: {current_version}"
-        )
+        if self_heal:
+            header = (
+                f"Restore the bug-report token: {release.version}\n"
+                f"Channel: {channel}\n"
+                f"{published}"
+                f"Current version: {current_version}"
+            )
+            notes = (
+                "Your build is missing its bundled bug-report token, so the in-app "
+                "Report a Bug dialog can't file issues. Installing this build (the "
+                "same version) restores the token.\n\n" + notes
+            )
+        else:
+            header = (
+                f"Update available: {release.version}\n"
+                f"Channel: {channel}\n"
+                f"{published}"
+                f"Current version: {current_version}"
+            )
         result = self._present_release_notes(
             title="Check for Updates",
             header=header,
