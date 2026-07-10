@@ -1180,6 +1180,8 @@ interface — listed last, as the least-used extra), and any non-English
 **Available to download** and its size, and selecting a row fills a plain-language
 description of what it enables and its impact.
 
+**On macOS, several of these come from Homebrew rather than a QUILL download.** The braille translation pack download ships a Windows `lou_translate` binary, so on macOS it points you to `brew install liblouis` instead — QUILL detects a Homebrew liblouis automatically, so no download is needed there. Pandoc and Tesseract work the same way: install them with Homebrew (`brew install pandoc`, `brew install tesseract`) and QUILL finds them. LibreOffice — used to import legacy Office formats and Apple Pages — is found automatically at its standard `/Applications/LibreOffice.app` install on macOS (it is never on PATH there); install it from libreoffice.org or with `brew install --cask libreoffice` if you need those import routes.
+
 - **Download** fetches a not-yet-installed component — checksum-verified, with its
   own progress. The **Dictation (offline speech)** row opens a guided setup
   instead of a bare download, and walks you through one step at a time — a banner

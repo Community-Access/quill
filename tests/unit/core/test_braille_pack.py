@@ -39,6 +39,15 @@ def test_installed_from_managed_download(monkeypatch, tmp_path: Path) -> None:
     assert pack.get_brf_profiles() == [{"id": "p1"}]
 
 
+def test_braille_install_supported_only_on_windows(monkeypatch) -> None:
+    """#47: the managed pack download ships the Windows lou_translate.exe binary,
+    so the download is gated Windows-only; macOS uses Homebrew liblouis instead."""
+    monkeypatch.setattr(pack.sys, "platform", "win32")
+    assert pack.braille_install_supported() is True
+    monkeypatch.setattr(pack.sys, "platform", "darwin")
+    assert pack.braille_install_supported() is False
+
+
 def test_version_reads_liblouis_version_from_manifest(monkeypatch, tmp_path: Path) -> None:
     # braille_pack.py never imports liblouis in-process (BR-020); the version
     # comes from the pack's own manifest.json (baked in at build time by

@@ -14935,6 +14935,70 @@ a trailing argv element that can overflow the OS command-line length
 no clear error. The live backlog is
 <code>docs/planning/review.md</code>, which now carries the three
 tester-pending items in a dedicated reopenable section.</li>
+<li><strong>macOS review batch 3a (2026-07-09).</strong> Six more fixes
+from the platform review backlog, all code-complete and unit-tested on
+this Windows dev box (no Mac hardware required for the code or the
+tests): (1) <strong>#47 closed</strong> — the braille pack download is
+now gated Windows-only via a new
+<code>braille_pack.braille_install_supported()</code> (mirroring the
+espeak/piper/pandoc/node/tesseract <code>*_install_supported()</code>
+gates); on macOS <code>download_braille_pack</code> shows a
+"Windows-only, install liblouis with Homebrew
+(<code>brew install liblouis</code>); QUILL will detect it
+automatically" message instead of attempting to fetch the pinned
+<code>lou_translate.exe</code> (a Windows binary that can never run on a
+Mac). <code>is_braille_pack_installed()</code> already detects a
+Homebrew liblouis via PATH/module lookup, so no download is needed
+there. (2) <strong>#48 closed</strong> —
+<code>external_engine._resolve_which</code> now consults macOS
+well-known dirs (<code>/usr/local/bin</code>,
+<code>/opt/homebrew/bin</code>, <code>/opt/local/bin</code>) and, for
+Node, the highest version under <code>~/.nvm/versions/node/*/bin</code>,
+because a Finder-launched <code>.app</code> gets a minimal PATH that
+never sources the user's login shell profile — so a real Homebrew/nvm
+install was on disk yet invisible to the engine allowlist. (3)
+<strong>#41 closed</strong> — the three LibreOffice conversion call
+sites (<code>_read_spreadsheet_via_libreoffice</code>,
+<code>_read_legacy_office_via_libreoffice</code> in
+<code>quill/io/structured.py</code>, and
+<code>_read_pages_via_libreoffice</code> in
+<code>quill/io/pages.py</code>) now resolve <code>soffice</code> via a
+new <code>external_tools.libreoffice_executable()</code> that finds
+<code>/Applications/LibreOffice.app/Contents/MacOS/soffice</code> (where
+a standard macOS install puts it, never on PATH) instead of the bare
+<code>"soffice"</code> argv that missed every standard Mac; a missing
+install raises an ImportError with a
+<code>brew install --cask libreoffice</code>/libreoffice.org hint. (4)
+<strong>#35 closed</strong> — portable mode no longer silently drops
+credentials on macOS; with no DPAPI-equivalent single-folder store off
+Windows, a portable Mac build now routes load/save/delete to the login
+Keychain (the best available store) via extracted
+<code>_macos_keychain_*</code> helpers and logs a warning that Keychain
+storage is system-level, not portable, instead of losing the key with no
+signal. The non-portable macOS path was already Keychain-backed (#160)
+and now shares the same helpers. (5) <strong>#7 closed</strong> — the
+two drift-prone platform-dispatch mechanisms are consolidated:
+<code>quill.platform.dispatch</code>'s
+<code>is_high_contrast_enabled</code>/<code>detect_screen_reader</code>
+now delegate to the module-level-gated root helpers
+(<code>quill.platform.high_contrast</code>,
+<code>quill.platform.sr_detect</code>) instead of carrying their own
+copy of the platform branch, so a future macOS-routing change applied in
+one place is picked up everywhere. (6) <strong>#50 closed</strong> — the
+macOS <code>shell_integration</code> module
+(<code>launcher_command</code>, <code>document_types_plist</code>,
+<code>build_shell_integration_plan</code>, the best-effort
+<code>duti</code> association path, and its off-darwin/missing-duti
+no-op branches) now has direct test coverage in
+<code>tests/unit/platform/macos/test_shell_integration.py</code>.
+Deferred this batch (still open in
+<code>docs/planning/review.md</code>): #10 (relocate the
+platform-neutral <code>sr_announce</code>/<code>announce_engine</code>
+out of <code>windows/</code> — a pure refactor with many import sites
+and no behavioral change, deferred for a dedicated churn-controlled
+pass) and #13 (add an optional <code>platform</code> field to the
+dialog-inventory/egress-audit scan schemas — a broad snapshot-reshape,
+deferred separately).</li>
 </ul>
 <hr />
 <!-- Source: docs/engineering/security-advisory-workflow.md -->

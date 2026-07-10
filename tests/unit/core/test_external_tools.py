@@ -94,3 +94,46 @@ def test_format_tool_status_report_mentions_install_command(monkeypatch) -> None
     assert "Install command:" in report
     assert "HTML Tidy" in report
     assert "PyMarkdown" in report
+
+
+# ---------------------------------------------------------------------------
+# LibreOffice soffice resolution, including the macOS .app install (#41)
+# ---------------------------------------------------------------------------
+
+
+def test_libreoffice_executable_finds_macos_app_install(monkeypatch, tmp_path):
+    """A standard macOS install puts soffice inside the .app bundle, never on
+    PATH; the bare 'soffice' argv used to miss it on every standard Mac."""
+    from quill.core.external_tools import libreoffice_executable
+
+    monkeypatch.setattr("quill.core.external_tools.shutil.which", lambda _n: None)
+    monkeypatch.setattr("quill.core.external_tools.sys.platform", "darwin")
+    app_dir = tmp_path / "LibreOffice.app" / "Contents" / "MacOS"
+    app_dir.mkdir(parents=True)
+    soffice = app_dir / "soffice"
+    soffice.write_text("x", encoding="utf-8")
+    monkeypatch.setattr("quill.core.external_tools._MACOS_LIBREOFFICE_APP_DIR", str(app_dir))
+    monkeypatch.setattr("quill.core.external_tools._MACOS_FALLBACK_DIRS", ())
+    assert libreoffice_executable() == str(soffice)
+
+
+def test_libreoffice_executable_returns_none_when_absent_on_macos(monkeypatch, tmp_path):
+    from quill.core.external_tools import libreoffice_executable
+
+    monkeypatch.setattr("quill.core.external_tools.shutil.which", lambda _n: None)
+    monkeypatch.setattr("quill.core.external_tools.sys.platform", "darwin")
+    monkeypatch.setattr(
+        "quill.core.external_tools._MACOS_LIBREOFFICE_APP_DIR", str(tmp_path / "nope")
+    )
+    monkeypatch.setattr("quill.core.external_tools._MACOS_FALLBACK_DIRS", ())
+    assert libreoffice_executable() is None
+
+
+def test_libreoffice_executable_prefers_path_when_available(monkeypatch):
+    from quill.core.external_tools import libreoffice_executable
+
+    monkeypatch.setattr(
+        "quill.core.external_tools.shutil.which", lambda _n: "/usr/local/bin/soffice"
+    )
+    monkeypatch.setattr("quill.core.external_tools.sys.platform", "darwin")
+    assert libreoffice_executable() == "/usr/local/bin/soffice"

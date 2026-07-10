@@ -827,11 +827,27 @@ class SpeechCommandsMixin:
         live status progress (no cancel affordance — the fetch is ~9 MB),
         blocked in Safe Mode. Refreshes the menu on success so Translation
         appears without a restart."""
-        from quill.core.braille_pack import install_braille_pack, is_braille_pack_installed
+        from quill.core.braille_pack import (
+            braille_install_supported,
+            install_braille_pack,
+            is_braille_pack_installed,
+        )
 
         wx = self._wx
         if bool(getattr(self, "_safe_mode", False)):
             self._announce("Downloading the braille pack is disabled in Safe Mode.")
+            return
+        if not braille_install_supported():
+            # The pinned pack ships the Windows lou_translate.exe binary; on
+            # macOS the managed download cannot run. Point to Homebrew, which
+            # is_braille_pack_installed() detects via PATH/module lookup (#47).
+            self._show_message_box(
+                "The managed braille pack download is Windows-only. On macOS "
+                "install liblouis with Homebrew (brew install liblouis); QUILL "
+                "will detect it automatically.",
+                "Braille Pack",
+                wx.ICON_INFORMATION | wx.OK,
+            )
             return
         if is_braille_pack_installed():
             again = self._show_message_box(

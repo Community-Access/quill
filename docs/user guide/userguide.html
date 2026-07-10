@@ -2176,6 +2176,19 @@ dictionaries</strong>. Each row shows whether it is
 <strong>Installed</strong> or <strong>Available to download</strong> and
 its size, and selecting a row fills a plain-language description of what
 it enables and its impact.</p>
+<p><strong>On macOS, several of these come from Homebrew rather than a
+QUILL download.</strong> The braille translation pack download ships a
+Windows <code>lou_translate</code> binary, so on macOS it points you to
+<code>brew install liblouis</code> instead — QUILL detects a Homebrew
+liblouis automatically, so no download is needed there. Pandoc and
+Tesseract work the same way: install them with Homebrew
+(<code>brew install pandoc</code>, <code>brew install tesseract</code>)
+and QUILL finds them. LibreOffice — used to import legacy Office formats
+and Apple Pages — is found automatically at its standard
+<code>/Applications/LibreOffice.app</code> install on macOS (it is never
+on PATH there); install it from libreoffice.org or with
+<code>brew install --cask libreoffice</code> if you need those import
+routes.</p>
 <ul>
 <li><strong>Download</strong> fetches a not-yet-installed component —
 checksum-verified, with its own progress. The <strong>Dictation (offline

@@ -232,3 +232,54 @@ def test_unresolvable_executable_rejected():
     """M-3: a short name that is not on PATH must be rejected at configure time."""
     with pytest.raises(ValueError, match="not found on PATH"):
         ee.configure_engine("a11y", "node engine.js", enabled=True, which=lambda _: None)
+
+
+# ---------------------------------------------------------------------------
+# macOS engine-path resolution: Homebrew dirs + nvm (#48)
+# ---------------------------------------------------------------------------
+
+
+def test_resolve_which_finds_homebrew_node_on_macos(monkeypatch, tmp_path):
+    """A Finder-launched .app gets a minimal PATH, so a Homebrew node install
+    at /opt/homebrew/bin is invisible to shutil.which but resolvable here."""
+    monkeypatch.setattr(ee.sys, "platform", "darwin")
+    monkeypatch.setattr(ee.shutil, "which", lambda _name: None)
+    bin_dir = tmp_path / "opt-homebrew-bin"
+    bin_dir.mkdir()
+    (bin_dir / "node").write_text("#!/bin/sh\n", encoding="utf-8")
+    monkeypatch.setattr(ee, "_MACOS_FALLBACK_DIRS", (str(bin_dir),))
+    assert ee._resolve_which("node") == str(bin_dir / "node")
+
+
+def test_resolve_which_finds_nvm_node_on_macos(monkeypatch, tmp_path):
+    """nvm keeps per-version node binaries under ~/.nvm/versions/node/<ver>/bin;
+    the highest installed version wins."""
+    import quill.core.node_install as ni
+
+    monkeypatch.setattr(ee.sys, "platform", "darwin")
+    monkeypatch.setattr(ee.shutil, "which", lambda _name: None)
+    monkeypatch.setattr(ee, "_MACOS_FALLBACK_DIRS", ())
+    monkeypatch.setattr(ni, "node_executable_path", lambda: None)
+    nvm_root = tmp_path / ".nvm" / "versions" / "node"
+    v18 = nvm_root / "v18.20.0" / "bin"
+    v20 = nvm_root / "v20.10.0" / "bin"
+    v20.mkdir(parents=True)
+    v18.mkdir(parents=True)
+    (v20 / "node").write_text("x", encoding="utf-8")
+    (v18 / "node").write_text("x", encoding="utf-8")
+    monkeypatch.setattr(ee.Path, "home", lambda: tmp_path)
+    assert ee._resolve_which("node") == str(v20 / "node")
+
+
+def test_resolve_which_skips_macos_fallback_on_windows(monkeypatch, tmp_path):
+    """On Windows the macOS well-known dirs are not consulted (#48)."""
+    import quill.core.node_install as ni
+
+    monkeypatch.setattr(ee.sys, "platform", "win32")
+    monkeypatch.setattr(ee.shutil, "which", lambda _name: None)
+    bin_dir = tmp_path / "usr-local-bin"
+    bin_dir.mkdir()
+    (bin_dir / "node").write_text("x", encoding="utf-8")
+    monkeypatch.setattr(ee, "_MACOS_FALLBACK_DIRS", (str(bin_dir),))
+    monkeypatch.setattr(ni, "node_executable_path", lambda: None)
+    assert ee._resolve_which("node") is None

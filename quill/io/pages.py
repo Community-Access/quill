@@ -274,6 +274,14 @@ def _read_pages_via_libreoffice(path: Path) -> Document:
 
     Requires LibreOffice (soffice) and the markitdown Python package.
     """
+    from quill.core.external_tools import libreoffice_executable
+
+    soffice = libreoffice_executable()
+    if soffice is None:
+        raise ImportError(
+            "LibreOffice (soffice) was not found. On macOS install it from "
+            "libreoffice.org or with `brew install --cask libreoffice`."
+        )
     with tempfile.TemporaryDirectory() as tmpdir:
         tmpdir_path = Path(tmpdir)
         docx_path = tmpdir_path / "converted.docx"
@@ -281,7 +289,7 @@ def _read_pages_via_libreoffice(path: Path) -> Document:
         try:
             subprocess.run(
                 [
-                    "soffice",
+                    soffice,
                     "--headless",
                     "--convert-to",
                     "docx",

@@ -19,6 +19,9 @@ _MACOS_FALLBACK_DIRS: tuple[str, ...] = (
     "/opt/local/bin",  # MacPorts
 )
 
+# Where a standard macOS install puts the LibreOffice launcher (never on PATH).
+_MACOS_LIBREOFFICE_APP_DIR = "/Applications/LibreOffice.app/Contents/MacOS"
+
 
 @dataclass(frozen=True, slots=True)
 class ExternalToolDefinition:
@@ -223,6 +226,26 @@ def _macos_path_fallback(executable_name: str) -> str | None:
         candidate = Path(directory) / executable_name
         if candidate.is_file():
             return str(candidate)
+    return None
+
+
+def libreoffice_executable() -> str | None:
+    """Resolve the LibreOffice ``soffice`` launcher, including the standard
+    macOS ``.app`` install that is neither on PATH nor in the Homebrew dirs.
+
+    A standard macOS install puts ``soffice`` at
+    ``/Applications/LibreOffice.app/Contents/MacOS/soffice`` -- never on PATH --
+    so the bare ``"soffice"`` argv used to fail on every standard Mac (#41).
+    Returns the executable path, or None when LibreOffice is not installed.
+    """
+    found = shutil.which("soffice")
+    if found:
+        return found
+    if sys.platform == "darwin":
+        for directory in (_MACOS_LIBREOFFICE_APP_DIR, *_MACOS_FALLBACK_DIRS):
+            candidate = Path(directory) / "soffice"
+            if candidate.is_file():
+                return str(candidate)
     return None
 
 

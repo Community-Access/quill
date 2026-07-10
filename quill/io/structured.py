@@ -194,13 +194,18 @@ def _read_spreadsheet_via_markitdown(path: Path) -> Document | None:
 
 
 def _read_spreadsheet_via_libreoffice(path: Path) -> Document | None:
+    from quill.core.external_tools import libreoffice_executable
+
+    soffice = libreoffice_executable()
+    if soffice is None:
+        return None
     try:
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir_path = Path(tmpdir)
             converted_path = tmpdir_path / f"{path.stem}.xlsx"
             subprocess.run(
                 [
-                    "soffice",
+                    soffice,
                     "--headless",
                     "--convert-to",
                     "xlsx",
@@ -230,13 +235,18 @@ def _read_legacy_office_via_libreoffice(
     source_kind: str,
     fallback_engine: str,
 ) -> tuple[str, dict[str, object]]:
+    from quill.core.external_tools import libreoffice_executable
+
+    soffice = libreoffice_executable()
+    if soffice is None:
+        return _missing_legacy_office_text(path, source_kind)
     try:
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir_path = Path(tmpdir)
             converted_path = tmpdir_path / f"{path.stem}{converted_suffix}"
             subprocess.run(
                 [
-                    "soffice",
+                    soffice,
                     "--headless",
                     "--convert-to",
                     converted_suffix.lstrip("."),

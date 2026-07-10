@@ -3,6 +3,12 @@
 Selects the Windows or macOS implementation lazily at call time, so importing
 this module never triggers platform-specific imports. Call sites can migrate
 from ``quill.platform.windows.*`` to these helpers over time (see issue #42).
+
+The per-surface helpers delegate to the platform-neutral root modules
+(:mod:`quill.platform.high_contrast` and :mod:`quill.platform.sr_detect`), which
+gate on ``sys.platform`` once at import time. There is no second copy of the
+platform-routing logic here, so a future macOS-routing change applied in the
+root module is picked up automatically instead of drifting out of sync (#7).
 """
 
 from __future__ import annotations
@@ -20,16 +26,11 @@ def current_platform() -> str:
 
 
 def is_high_contrast_enabled() -> bool:
-    platform = current_platform()
-    if platform == "macos":
-        from quill.platform.macos.high_contrast import is_high_contrast_enabled as impl
+    # Delegate to the module-level-gated helper rather than re-branching on
+    # current_platform() here, so there is one routing site to maintain (#7).
+    from quill.platform.high_contrast import is_high_contrast_enabled as impl
 
-        return impl()
-    if platform == "windows":
-        from quill.platform.windows.high_contrast import is_high_contrast_enabled as impl
-
-        return impl()
-    return False
+    return impl()
 
 
 @dataclass(frozen=True, slots=True)
@@ -40,12 +41,9 @@ class ScreenReaderDetection:
 
 
 def detect_screen_reader() -> ScreenReaderDetection:
-    platform = current_platform()
-    if platform == "macos":
-        from quill.platform.macos.sr_detect import detect_screen_reader as impl
-    elif platform == "windows":
-        from quill.platform.windows.sr_detect import detect_screen_reader as impl
-    else:
-        return ScreenReaderDetection(detected=False, name="none", source="")
+    # Same delegation rationale as is_high_contrast_enabled(): the root
+    # quill.platform.sr_detect module already gates on sys.platform once.
+    from quill.platform.sr_detect import detect_screen_reader as impl
+
     result = impl()
     return ScreenReaderDetection(detected=result.detected, name=result.name, source=result.source)
