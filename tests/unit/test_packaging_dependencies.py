@@ -53,6 +53,26 @@ def test_huggingface_hub_is_a_base_runtime_dependency(project: dict) -> None:
     assert "huggingface-hub" in _names(project["dependencies"])
 
 
+def test_pynacl_is_bundled_in_the_ui_extra_for_quillin_signature_verification(
+    project: dict,
+) -> None:
+    """End users must be able to verify publisher-signed Quillins (#919 follow-up).
+
+    PyNaCl was previously dev/CI-only (the [signing]/[dev] extras), so every
+    real shipping build -- which installs [ui] -- shipped without it and the
+    Quillins Manager always reported "PyNaCl is not installed" instead of
+    "verified". The [ui] extra is one of the Windows build's
+    DEFAULT_BUNDLED_DEPENDENCY_GROUPS and is installed by the macOS build
+    (``pip install -e ".[ui,macos]"``), so listing PyNaCl there is what gets it
+    into both shipping builds. Keep it unmarked (no ``sys_platform`` marker) so
+    signature verification ships on Windows and macOS alike.
+    """
+    ui_reqs = project["optional-dependencies"]["ui"]
+    assert "pynacl" in _names(ui_reqs)
+    # Must NOT carry a win32-only marker -- macOS users verify Quillins too.
+    assert not any("win32" in req for req in ui_reqs if "pynacl" in req.lower())
+
+
 def test_babel_rides_with_the_kokoro_extra(project: dict) -> None:
     """The Kokoro ONNX voice chain imports babel.numbers transitively via csvw.
 
@@ -125,3 +145,60 @@ def test_free_import_pipeline_imports_under_the_shipping_set() -> None:
     import markitdown  # noqa: F401
     import pdfplumber  # noqa: F401
     import pypdf  # noqa: F401
+
+
+def _marker(req: str) -> str:
+    """Return the PEP 508 environment-marker portion of *req* (after ';'), or ''."""
+    if ";" in req:
+        return req.split(";", 1)[1].strip()
+    return ""
+
+
+def _requirement_strings(project: dict, extra: str | None) -> list[str]:
+    """All requirement strings in a named extra, or base dependencies if None."""
+    if extra is None:
+        return list(project["dependencies"])
+    return list(project["optional-dependencies"][extra])
+
+
+@pytest.mark.parametrize("dist", ["pyobjc", "py2app", "apple-fm-sdk"])
+def test_macos_packaging_deps_are_platform_marked_for_darwin(project: dict, dist: str) -> None:
+    """macOS-only packaging/runtime deps must carry a `sys_platform == 'darwin'`
+    marker so a `pip install .[macos]` on Windows/Linux doesn't pull them.
+
+    Regression guard for the class of drift where py2app/setuptools<83/pyobjc
+    were declared bare in the [macos] extra and got installed on every platform,
+    polluting non-Mac environments with macOS-only build tooling.
+    """
+    macos_reqs = _requirement_strings(project, "macos")
+    matches = [r for r in macos_reqs if _names([r]) == {dist}]
+    assert matches, f"{dist} is not declared in the [macos] extra"
+    for req in matches:
+        marker = _marker(req)
+        assert "darwin" in marker, f"{dist} in [macos] lacks a darwin platform marker: {req!r}"
+
+
+@pytest.mark.parametrize("dist", ["comtypes", "prismatoid", "accessible-output2"])
+def test_windows_only_deps_are_excluded_from_macos_install(project: dict, dist: str) -> None:
+    """Windows-only runtime deps must carry a `sys_platform == 'win32'` marker
+    (and never appear in the [macos] extra), so a Mac install never pulls them.
+
+    The beta-2 add.md drift bug: Windows-only deps declared without a marker get
+    installed on macOS where they're useless (and sometimes fail to build),
+    exactly the failure mode this file exists to catch.
+    """
+    # They must never appear unmarked in the macos extra.
+    macos_reqs = _requirement_strings(project, "macos")
+    for req in macos_reqs:
+        assert _names([r for r in [req]]) != {dist}, (
+            f"Windows-only {dist} leaked into the [macos] extra: {req!r}"
+        )
+    # Wherever they are declared (base or any extra), they must be win32-marked.
+    all_reqs: list[str] = list(project["dependencies"])
+    for group in project["optional-dependencies"].values():
+        all_reqs.extend(group)
+    matches = [r for r in all_reqs if _names([r]) == {dist}]
+    assert matches, f"{dist} is not declared anywhere in the manifest"
+    for req in matches:
+        marker = _marker(req)
+        assert "win32" in marker, f"Windows-only {dist} is declared without a win32 marker: {req!r}"

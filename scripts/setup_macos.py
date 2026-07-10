@@ -79,7 +79,14 @@ OPTIONS = {
     # finder cannot resolve, so it cannot be listed here. build_macos.sh instead
     # lifts any native binary out of python311.zip before signing.
     "packages": ["quill", "PIL"],
-    "includes": ["wx"],
+    # nacl (PyNaCl) is imported lazily/function-locally by quill.tools.signing
+    # (and under TYPE_CHECKING only), so py2app's import tracer can miss it --
+    # list it explicitly so the macOS build bundles Quillin signature
+    # verification (see pyproject [ui] / requirements.txt). nacl ships a
+    # native libsodium binding (cffi); if notarization fails on its .so,
+    # build_macos.sh's native-binary-out-of-zip lift (the protobuf path)
+    # should cover it -- verify on a real build.
+    "includes": ["wx", "nacl"],
     "plist": {
         "CFBundleName": APP_DISPLAY_NAME,
         "CFBundleDisplayName": APP_DISPLAY_NAME,

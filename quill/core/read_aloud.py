@@ -44,6 +44,78 @@ except ImportError:  # pragma: no cover - non-Windows
     _winsound = None  # type: ignore[assignment]
 
 
+def _detect_live_wav_backend() -> str:
+    """Return the live WAV playback backend: ``'winsound'``, ``'afplay'``, or ``''``.
+
+    Read Aloud plays generated per-sentence WAVs through this. ``winsound`` is
+    Windows-only; on macOS there is no stdlib equivalent, so without an
+    ``afplay`` fallback Piper/Kokoro/ElevenLabs synthesized a WAV and then
+    silently deleted it without ever playing it (finding #28). ``afplay`` ships
+    with macOS, so no new dependency is added.
+    """
+    if _winsound is not None:
+        return "winsound"
+    if sys.platform == "darwin" and shutil.which("afplay"):
+        return "afplay"
+    return ""
+
+
+class _LiveWavPlayer:
+    """Play one WAV file at a time, blocking, with cross-thread interrupt.
+
+    Wraps the platform's synchronous WAV playback so :meth:`_run_wav_sentences`
+    can stay platform-neutral: ``play(path)`` blocks until the sound finishes
+    (or is stopped), and ``stop()`` interrupts an in-progress playback from
+    another thread.
+    """
+
+    def __init__(self, backend: str | None = None) -> None:
+        self._backend = backend if backend is not None else _detect_live_wav_backend()
+        self._proc: subprocess.Popen[bytes] | None = None
+        self._lock = threading.Lock()
+
+    @property
+    def available(self) -> bool:
+        return self._backend != ""
+
+    def play(self, path: Path) -> None:
+        if self._backend == "winsound" and _winsound is not None:
+            _winsound.PlaySound(  # type: ignore[union-attr]
+                str(path),
+                _winsound.SND_FILENAME | _winsound.SND_NODEFAULT,
+            )
+        elif self._backend == "afplay":
+            try:
+                with self._lock:
+                    self._proc = subprocess.Popen(  # noqa: S603
+                        ["afplay", str(path)]
+                    )
+                try:
+                    self._proc.wait()
+                finally:
+                    with self._lock:
+                        self._proc = None
+            except OSError:
+                pass
+        # No backend: play() is a silent no-op (matches the prior winsound-None
+        # behavior, but now _detect_live_wav_backend makes that an edge case
+        # rather than the entire macOS platform).
+
+    def stop(self) -> None:
+        if self._backend == "winsound" and _winsound is not None:
+            try:
+                _winsound.PlaySound(None, _winsound.SND_PURGE)
+            except Exception:  # noqa: BLE001
+                pass
+        with self._lock:
+            proc = self._proc
+        if proc is not None:
+            try:
+                proc.terminate()
+            except Exception:  # noqa: BLE001
+                pass
+
+
 @dataclass(frozen=True, slots=True)
 class VoiceOption:
     id: str
@@ -842,6 +914,7 @@ class ReadAloudController:
         self._thread: threading.Thread | None = None
         self._active_process: subprocess.Popen[bytes] | None = None
         self._active_wav_thread: threading.Thread | None = None
+        self._wav_player = _LiveWavPlayer()
         self._stop_event = threading.Event()
         self._pause_event = threading.Event()
         self._lock = threading.Lock()
@@ -1126,12 +1199,8 @@ class ReadAloudController:
             return sentence
 
     def _interrupt_wav(self) -> None:
-        """Stop any in-progress winsound WAV playback immediately."""
-        if _winsound is not None:
-            try:
-                _winsound.PlaySound(None, _winsound.SND_PURGE)
-            except Exception:  # noqa: BLE001
-                pass
+        """Stop any in-progress WAV playback immediately (winsound or afplay)."""
+        self._wav_player.stop()
 
     def _run_wav_sentences(
         self,
@@ -1169,7 +1238,7 @@ class ReadAloudController:
                 generate_sentence_wav(sentence, wav_path)
                 if self._stop_event.is_set() or self._pause_event.is_set():
                     break
-                if _winsound is not None and wav_path.exists():
+                if self._wav_player.available and wav_path.exists():
                     play_done = threading.Event()
 
                     def _play(
@@ -1177,10 +1246,7 @@ class ReadAloudController:
                         done: threading.Event = play_done,
                     ) -> None:
                         try:
-                            _winsound.PlaySound(  # type: ignore[union-attr]
-                                str(p),
-                                _winsound.SND_FILENAME | _winsound.SND_NODEFAULT,
-                            )
+                            self._wav_player.play(p)
                         except Exception:  # noqa: BLE001
                             pass
                         finally:

@@ -60,7 +60,7 @@ class MenuBuilderMixin:
         self._id_save_as = wx.ID_SAVEAS
         self._id_exit = wx.ID_EXIT
         self._id_palette = wx.NewIdRef()
-        self._id_preferences = wx.NewIdRef()
+        self._id_preferences = wx.ID_PREFERENCES
         self._id_menu_editor = wx.NewIdRef()
         self._id_open_url = wx.NewIdRef()
         self._id_open_remote = wx.NewIdRef()
@@ -71,6 +71,7 @@ class MenuBuilderMixin:
         self._id_github_file_url = wx.NewIdRef()
         self._id_github_save_back = wx.NewIdRef()
         self._id_github_manage_accounts = wx.NewIdRef()
+        self._id_github_items = wx.NewIdRef()
         self._id_ssh_quick_connect = wx.NewIdRef()
         self._id_ssh_site_manager = wx.NewIdRef()
         self._id_close_document = wx.NewIdRef()
@@ -177,6 +178,10 @@ class MenuBuilderMixin:
         remote_menu.Append(
             self._id_github_save_back,
             self._menu_label(_("&Save to GitHub..."), "file.github_save_back"),
+        )
+        remote_menu.Append(
+            self._id_github_items,
+            self._menu_label(_("GitHub &Items..."), "file.open_github_items"),
         )
         remote_menu.AppendSeparator()
         remote_menu.Append(
@@ -2646,7 +2651,11 @@ class MenuBuilderMixin:
         help_menu.Append(self._id_whats_new, _("&What's New..."))
         if self._feature_enabled("core.glow"):
             help_menu.Append(self._id_check_glow_updates, _("Check for &GLOW Updates..."))
-        help_menu.Append(self._id_about_quill, _("&About Quill"))
+        # On macOS the Application menu already shows "About Quill" via the
+        # wx.ID_ABOUT binding below, so appending it to Help too produced a
+        # duplicate entry. Windows has no Application menu, so it stays here.
+        if sys.platform != "darwin":
+            help_menu.Append(self._id_about_quill, _("&About Quill"))
 
         # MENU-REORDER (menus.md Phase 1): every top-level menu is attached to the
         # bar here, in one place, in the conventional Windows order. Menu *content*

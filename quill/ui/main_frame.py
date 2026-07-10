@@ -409,6 +409,7 @@ from quill.ui.main_frame_dictation_hotkeys import DictationHotkeysMixin
 from quill.ui.main_frame_docconvert import DocConvertMixin
 from quill.ui.main_frame_format_codes import FormatCodesMixin
 from quill.ui.main_frame_github import GitHubRemoteMixin
+from quill.ui.main_frame_github_items import GitHubItemsMixin
 from quill.ui.main_frame_glow import GlowFileMixin
 from quill.ui.main_frame_hygiene import HygieneMixin
 from quill.ui.main_frame_image import ImageCaptureMixin
@@ -792,6 +793,7 @@ class MainFrame(
     ProfilePickerMixin,
     SshEditingMixin,
     GitHubRemoteMixin,
+    GitHubItemsMixin,
     DevToolsMixin,
     PowerToolsActionsMixin,
     ClassicEditorMixin,
@@ -1600,6 +1602,12 @@ class MainFrame(
             None,
         )
         self.commands.register(
+            "file.open_github_items",
+            "Open GitHub Items...",
+            self.open_github_items_viewer,
+            None,
+        )
+        self.commands.register(
             "tools.open_python_console",
             "Open Python Console...",
             self.open_python_console,
@@ -1865,7 +1873,7 @@ class MainFrame(
             "view.toggle_dark_mode",
             "Toggle Dark Mode",
             self.toggle_dark_mode,
-            None,
+            self._binding_for("view.toggle_dark_mode"),
         )
         self.commands.register(
             "view.toggle_persistent_undo",
@@ -2089,7 +2097,42 @@ class MainFrame(
             self.open_ai_toc,
             None,
         )
-        self.commands.register("tools.ai_thesaurus", "AI Thesaurus", self.open_ai_thesaurus, None)
+        self.commands.register(
+            "tools.ai_switch_engine",
+            "Switch AI Engine",
+            self.cycle_ai_engine,
+            self._binding_for("tools.ai_switch_engine"),
+        )
+        self.commands.register(
+            "tools.ai_spell_check",
+            "AI Spell Check...",
+            self.ai_spell_check,
+            self._binding_for("tools.ai_spell_check"),
+        )
+        self.commands.register(
+            "tools.ai_spell_check_interactive",
+            "AI Spell Check Interactive...",
+            self.ai_spell_check_interactive,
+            self._binding_for("tools.ai_spell_check_interactive"),
+        )
+        self.commands.register(
+            "tools.ai_grammar_style",
+            "AI Grammar and Style Check...",
+            self.ai_grammar_style_check,
+            self._binding_for("tools.ai_grammar_style"),
+        )
+        self.commands.register(
+            "tools.ai_translate_selection",
+            "Translate Selection...",
+            self.ai_translate_selection,
+            self._binding_for("tools.ai_translate_selection"),
+        )
+        self.commands.register(
+            "tools.ai_thesaurus",
+            "AI Thesaurus",
+            self.open_ai_thesaurus,
+            self._binding_for("tools.ai_thesaurus"),
+        )
         from quill.ui.agent_editor_host import register_agent_commands
 
         register_agent_commands(self)  # Run Agent palette entries (one per catalog agent)
@@ -2658,19 +2701,19 @@ class MainFrame(
             "tools.compare_next_difference",
             "Next Difference",
             self.compare_next_difference,
-            None,
+            self._binding_for("tools.compare_next_difference"),
         )
         self.commands.register(
             "tools.compare_previous_difference",
             "Previous Difference",
             self.compare_previous_difference,
-            None,
+            self._binding_for("tools.compare_previous_difference"),
         )
         self.commands.register(
             "tools.compare_announce_difference",
             "Announce Current Difference",
             self.compare_announce_difference,
-            None,
+            self._binding_for("tools.compare_announce_difference"),
         )
         self.commands.register(
             "tools.compare_difference_list",
@@ -3714,7 +3757,11 @@ class MainFrame(
                 continue
             flags, key_code = parsed
             entries.append(wx.AcceleratorEntry(flags, key_code, menu_id))
-        entries.append(wx.AcceleratorEntry(wx.ACCEL_CTRL, wx.WXK_F4, self._id_close_document))
+        # Cmd+F4 close-document accelerator is a Windows convention; on macOS it
+        # becomes Cmd+F4 (not idiomatic) and Cmd+W already closes documents. Gate
+        # it to non-darwin so the Mac build doesn't get a redundant chord.
+        if sys.platform != "darwin":
+            entries.append(wx.AcceleratorEntry(wx.ACCEL_CTRL, wx.WXK_F4, self._id_close_document))
 
         self.frame.SetAcceleratorTable(wx.AcceleratorTable(entries))
 
@@ -3795,6 +3842,11 @@ class MainFrame(
             "tools.ask_quill_conversation": self._id_ask_quill_voice,
             "tools.ai_model": self._id_ai_model,
             "tools.ai_switch_engine": self._id_ai_switch_engine,
+            "tools.ai_spell_check": self._id_ai_spell_check,
+            "tools.ai_spell_check_interactive": self._id_ai_spell_check_interactive,
+            "tools.ai_grammar_style": self._id_ai_grammar_style,
+            "tools.ai_translate_selection": self._id_ai_translate_selection,
+            "tools.ai_thesaurus": self._id_ai_thesaurus,
             "tools.copilot_onboarding": self._id_ai_copilot_setup,
             "tools.validate_agents": self._id_ai_validate_agents,
             "tools.ai_session_browser": self._id_ai_session_browser,
@@ -4058,6 +4110,16 @@ class MainFrame(
         self.statusbar.Bind(wx.EVT_CONTEXT_MENU, self._on_statusbar_context_menu)
         self.frame.Bind(wx.EVT_CONTEXT_MENU, self._on_frame_context_menu)
         self.frame.Bind(wx.EVT_CLOSE, self._on_close)
+        # #920: bind the OS session-end events to the clean-exit marker handler
+        # so a Windows shutdown/restart/logoff (which can end the process without
+        # the EVT_CLOSE path running) is recorded as a clean exit, not a crash.
+        # Guarded by getattr: not every wx build exposes these session events.
+        for _session_evt in (
+            getattr(wx, "EVT_QUERY_END_SESSION", None),
+            getattr(wx, "EVT_END_SESSION", None),
+        ):
+            if _session_evt is not None:
+                self.frame.Bind(_session_evt, self._on_session_end)
         self.frame.Bind(wx.EVT_ICONIZE, self._on_iconize)
         self.frame.Bind(wx.EVT_HOTKEY, self._on_global_hotkey)
         self._apply_soft_wrap(self.settings.soft_wrap)
@@ -5992,6 +6054,19 @@ class MainFrame(
             self._select_tab(self._document_tabs.index(anchor_tab))
         self._set_status(f"Closed {closed} tab(s) to the right")
 
+    def _open_with_default_app(self, path: Path) -> None:
+        import subprocess
+
+        try:
+            if sys.platform.startswith("win"):
+                os.startfile(str(path))  # type: ignore[attr-defined]
+            elif sys.platform == "darwin":
+                subprocess.Popen(["open", str(path)])  # noqa: S603,S607
+            else:
+                subprocess.Popen(["xdg-open", str(path)])  # noqa: S603,S607
+        except OSError as error:
+            self._set_status(f"Could not open {path.name}: {error}")
+
     def _reveal_in_explorer(self, path: Path) -> None:
         # #25: this used to unconditionally shell out to "explorer", which
         # doesn't exist on macOS/Linux. Mirror _reveal_in_folder's platform
@@ -6181,6 +6256,33 @@ class MainFrame(
         call_after = getattr(wx, "CallAfter", None)
         if callable(exit_loop) and callable(call_after):
             call_after(exit_loop)
+
+    def _on_session_end(self, event: object) -> None:
+        """Mark the session clean on an OS-initiated session end (#920).
+
+        Windows fires ``EVT_QUERY_END_SESSION`` (whose default handler calls
+        ``Close()`` on top-level windows, so the full ``_on_close`` teardown
+        runs) and then the non-vetoable ``EVT_END_SESSION`` -- which has NO
+        default ``Close()``, so the process can end here without ``_on_close``
+        ever running. Either way an OS shutdown / restart / logoff is a CLEAN
+        exit, not a crash, but the crash-recovery marker (``recovery_state.json``
+        ``clean_exit``) is only ever set to True inside ``_on_close``. So a
+        normal shutdown that bypassed ``_on_close`` left the marker stale, and
+        the next launch falsely offered "Quill detected an unclean exit" with no
+        traceback in the prior log -- the exact #920 report. Mark the session
+        clean here, best-effort, so an OS shutdown is never misreported as a
+        crash. Never raise: during shutdown any error must be swallowed so the
+        process can still end; ``event.Skip()`` always runs.
+        """
+        try:
+            mark_clean_exit(self.session_id)
+        except Exception:  # noqa: BLE001 - shutdown-path best effort, never block
+            import logging
+
+            logging.getLogger(__name__).warning(
+                "Session-end clean-exit marker write failed", exc_info=True
+            )
+        event.Skip()
 
     def _on_iconize(self, event: object) -> None:
         if self.settings.tray_enabled and event.IsIconized():
@@ -8637,27 +8739,6 @@ class MainFrame(
             pass
         return ""
 
-    def _file_dialog_default_dir(self) -> str:
-        """Return the best initial directory for a file open/save dialog (#168).
-
-        Priority: session last-used dir → startup_folder setting → Documents → "".
-        startup_folder is the persistent user preference; _last_file_dir tracks the
-        most recent location within the current session and overrides it once set.
-        """
-        last = self._last_file_dir
-        if last and Path(last).is_dir():
-            return last
-        configured = getattr(self.settings, "startup_folder", "")
-        if configured and Path(configured).is_dir():
-            return configured
-        try:
-            docs = self._wx.StandardPaths.Get().GetDocumentsDir()
-            if docs and Path(docs).is_dir():
-                return docs
-        except Exception:
-            pass
-        return ""
-
     def open_file(
         self,
         path: Path | None = None,
@@ -9575,7 +9656,7 @@ class MainFrame(
         if self.document.path is None:
             self.save_file_as()
             return
-        os.startfile(str(self.document.path.parent))
+        self._reveal_in_explorer(self.document.path.parent)
         self._set_status(f"Opened folder for {self.document.name}")
 
     def undo(self) -> None:
@@ -17763,6 +17844,11 @@ class MainFrame(
             return
         except (AttributeError, OSError):
             pass
+        if sys.platform == "darwin":
+            import subprocess as _subprocess
+
+            _subprocess.Popen(["afplay", str(sample_path)])  # noqa: S603,S607
+            return
         import os as _os
 
         _os.startfile(str(sample_path))
@@ -20895,7 +20981,7 @@ class MainFrame(
             self._record_notification("Update install cancelled before closing documents", "update")
             return
         try:
-            os.startfile(str(target))  # type: ignore[attr-defined]  # noqa: S606
+            self._open_with_default_app(target)
         except Exception as exc:  # noqa: BLE001
             self._record_notification(f"Could not launch installer: {exc}", "update")
             self._set_status("Could not launch installer")

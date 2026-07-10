@@ -16,6 +16,7 @@ consent), keyed by :attr:`OptionalComponent.component_id`.
 from __future__ import annotations
 
 import logging
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -671,8 +672,12 @@ def gather_optional_components() -> list[OptionalComponent]:
             "Dictation (offline speech)",
             "Private, on-device dictation and transcription. Opens a guided setup "
             "where you choose an engine (Whisper, Faster Whisper, or Vosk) and a "
-            "model to match your computer, then test it. SAPI 5 dictation works "
-            "without any of this.",
+            "model to match your computer, then test it. "
+            + (
+                "SAPI 5 dictation works without any of this."
+                if sys.platform.startswith("win")
+                else "This is the only dictation path on macOS (there is no SAPI 5)."
+            ),
             SPEECH_ENGINE,
             _safe(_whisper_installed),
             "~8 MB",
@@ -707,15 +712,6 @@ def gather_optional_components() -> list[OptionalComponent]:
             _safe(_espeak_installed),
             "~40 MB",
             priority=60,
-        ),
-        OptionalComponent(
-            "dectalk",
-            "DECtalk voices",
-            "The classic DECtalk Read Aloud voices.",
-            VOICES,
-            _safe(_dectalk_installed),
-            "~2 MB",
-            priority=70,
         ),
         OptionalComponent(
             "audio_extras",
@@ -761,6 +757,20 @@ def gather_optional_components() -> list[OptionalComponent]:
             priority=100,
         ),
     ]
+    # DECtalk's only backend is DECtalk.dll (Windows-only), so offering it as an
+    # installable component on macOS advertised a download that could never work.
+    if sys.platform.startswith("win"):
+        out.append(
+            OptionalComponent(
+                "dectalk",
+                "DECtalk voices",
+                "The classic DECtalk Read Aloud voices.",
+                VOICES,
+                _safe(_dectalk_installed),
+                "~2 MB",
+                priority=70,
+            )
+        )
     out.extend(_dictionary_components())
     out.sort(key=lambda c: (c.priority, c.name))
     return out

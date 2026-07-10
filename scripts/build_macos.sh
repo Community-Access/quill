@@ -14,15 +14,15 @@ echo "==> Generating build-identity module (quill/_build_info.py)"
 python tools/generate_build_info.py || echo "!! build/version.toml not found - shipping without a channel-annotated version label"
 
 echo "==> Generating bundled feedback-hub token (quill/_feedback_token.py)"
-# Best-effort for local builds: an unset QUILL_FEEDBACK_GITHUB_TOKEN just means
-# Report a Bug falls back to the user's own token, if any. But a RELEASE build
-# (QUILL_REQUIRE_FEEDBACK_TOKEN=1, set by the release workflow) must HARD-FAIL on
-# a missing token so it can never silently ship a broken bug reporter.
-if [ -n "${QUILL_REQUIRE_FEEDBACK_TOKEN:-}" ]; then
-  python tools/generate_feedback_token.py --require-token
-else
-  python tools/generate_feedback_token.py
-fi
+# A distributable must ALWAYS ship a working Report a Bug. The bundled GitHub
+# token is what makes the rich bug-reporter fire instead of falling back to a
+# bare web link. An unset QUILL_FEEDBACK_GITHUB_TOKEN hard-fails the build,
+# unconditionally -- there is no opt-out. This was once opt-in
+# (QUILL_REQUIRE_FEEDBACK_TOKEN=1, still set by the release workflow and now
+# redundant) and then fail-by-default with an escape hatch; both still silently
+# let an ad-hoc build ship a tokenless bundle, so every beta-2 upgrade user got
+# "No token" (#919). It is now mandatory for every build, period.
+python tools/generate_feedback_token.py --require-token
 
 echo "==> Building .app with py2app"
 python scripts/setup_macos.py py2app

@@ -67,9 +67,12 @@ _REVIEWED_EGRESS: dict[str, str] = {
     "core/mastodon/client.py::_http_json": (
         "Single egress site for the 'Post to Mastodon' feature. Reached only by an "
         "explicit user action -- adding an account (app registration + OAuth token "
-        "exchange) or pressing Post -- to the user's own instance. HTTPS-only over a "
-        "verified TLS context; the access token travels in the Authorization header, "
-        "never the URL."
+        "exchange), opening the compose dialog or switching accounts (a one-time "
+        "GET /api/v2/instance to read that instance's per-post character limit, "
+        "cached for the process lifetime), or pressing Post -- to the user's own "
+        "instance. HTTPS-only over a verified TLS context; the access token travels "
+        "in the Authorization header, never the URL. The instance-limit lookup is "
+        "unauthenticated and falls back to the default 500 on any failure."
     ),
     "core/dectalk_runtime.py::download_dectalk_runtime": (
         "User explicitly installs the optional DECTALK voice runtime; download "

@@ -66,6 +66,11 @@ class _WavBackend(Protocol):
         """Play *wav* bytes.  Must return promptly; never raises."""
         ...
 
+    def set_volume(self, volume: float) -> None:
+        """Set the master output volume in ``[0.0, 1.0]``.  Never raises;
+        backends without a volume control silently ignore the call."""
+        ...
+
     def shutdown(self, timeout: float = 2.0) -> None:
         """Release resources.  Called once at player teardown."""
         ...
@@ -106,6 +111,12 @@ class _SoundLibBackend:
         except Exception:  # noqa: BLE001
             logger.warning("SoundPlayer (sound_lib): playback failed", exc_info=True)
 
+    def set_volume(self, volume: float) -> None:
+        try:
+            self._output.set_volume(volume)
+        except Exception:  # noqa: BLE001
+            pass
+
     def shutdown(self, timeout: float = 2.0) -> None:
         try:
             self._output.free()
@@ -144,6 +155,10 @@ class _WinsoundBackend:
             self._queue.put_nowait(wav)
         except queue.Full:
             pass  # player busy; drop this earcon
+
+    def set_volume(self, volume: float) -> None:
+        # winsound has no per-stream volume control; ignored by design.
+        pass
 
     def shutdown(self, timeout: float = 2.0) -> None:
         try:
@@ -197,22 +212,36 @@ class _NSSoundBackend:
 
         self._NSSound = NSSound
         self._live: list[object] = []
+        self._volume: float = 1.0
         logger.debug("SoundPlayer: using NSSound (AppKit) backend")
 
     def play_wav(self, wav: bytes) -> None:
         try:
-            from Foundation import NSData  # type: ignore[import-not-found]
+            from Foundation import NSData  # type: ignore[import-not-found]  # noqa: F401
 
             data = NSData.dataWithBytes_length_(wav, len(wav))
             sound = self._NSSound.alloc().initWithData_(data)
             if sound is None:
                 return
+            # Apply the current master volume to this sound. NSSound has no global
+            # volume; each played sound must be set individually, so without this
+            # the earcon volume slider had no effect on macOS.
+            try:
+                sound.setVolume_(self._volume)
+            except Exception:  # noqa: BLE001
+                pass
             sound.play()
             self._live.append(sound)
             if len(self._live) > self._MAX_LIVE:
                 del self._live[: -self._MAX_LIVE]
         except Exception:  # noqa: BLE001
             logger.warning("SoundPlayer (NSSound): playback failed", exc_info=True)
+
+    def set_volume(self, volume: float) -> None:
+        try:
+            self._volume = max(0.0, min(1.0, float(volume)))
+        except (TypeError, ValueError):
+            pass
 
     def shutdown(self, timeout: float = 2.0) -> None:
         self._live.clear()
@@ -225,6 +254,9 @@ class _NSSoundBackend:
 
 class _NullBackend:
     def play_wav(self, wav: bytes) -> None:
+        pass
+
+    def set_volume(self, volume: float) -> None:
         pass
 
     def shutdown(self, timeout: float = 2.0) -> None:
@@ -342,12 +374,8 @@ class SoundPlayer:
             clamped = max(0.0, min(1.0, float(volume)))
         except (TypeError, ValueError):
             return
-        backend = self._backend
-        output = getattr(backend, "_output", None)
-        if output is None:
-            return
         try:
-            output.set_volume(clamped)
+            self._backend.set_volume(clamped)
         except Exception:  # noqa: BLE001
             pass
 

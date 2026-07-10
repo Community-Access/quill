@@ -153,10 +153,12 @@ def verify_artifact(
 ) -> SignatureStatus:
     """Verify a sidecar signature. Fail-closed: never raises.
 
-    PyNaCl is a dev/CI dependency (Quillin Hub artifact signing/publishing),
-    not a shipping runtime one -- a build that never bundles it must still
-    report signature status without crashing (#919), so a missing/broken
-    ``nacl`` install is treated the same as any other verification failure.
+    PyNaCl is bundled as a runtime dependency (the [ui] extra, mirrored in
+    requirements.txt) so every shipping build can verify publisher-signed
+    Quillins in the Quillins Manager. A missing/broken ``nacl`` is still
+    treated as any other verification failure and reported as "PyNaCl is not
+    installed" rather than crashing (#919) -- defense in depth that now
+    almost never triggers, kept so a corrupted install degrades gracefully.
     """
     sidecar_path_resolved = sidecar if sidecar is not None else sidecar_path(artifact_path)
     if not sidecar_path_resolved.exists():

@@ -470,6 +470,11 @@ class GitHubRemoteMixin:
             lambda _e: self.manage_github_accounts(),
             id=self._id_github_manage_accounts,
         )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.open_github_items_viewer(),
+            id=self._id_github_items,
+        )
 
 
 # ---------------------------------------------------------------------------

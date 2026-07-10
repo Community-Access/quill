@@ -61,6 +61,13 @@ SpeechRecognition>=3.17.0
 # 1.0.1 fixes the wx sizer-parenting crash that broke the dialog on wx 4.2.5+.
 feedback-hub>=1.0.1
 
+# Quillin signature verification (Ed25519 / minisign-shaped). Bundled at runtime
+# so every shipping build can verify publisher-signed Quillins in the Quillins
+# Manager; previously this was dev/CI-only ([signing]/[dev] extras), so real
+# users always saw "PyNaCl is not installed" and could never verify a Quillin
+# (#919 follow-up). Mirrors pyproject.toml's [ui] extra.
+PyNaCl>=1.6.2
+
 # Structured document import (Word/PowerPoint/Excel/Pages/PDF fallback).
 # Only the converters Quill actually routes through MarkItDown are pulled in
 # (docx, pptx, xlsx, xls, pdf). The `[all]` extra additionally bundles audio

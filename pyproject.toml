@@ -67,6 +67,14 @@ ui = [
     "pillow-heif>=1.4.0",
     # HTML-to-text converter for intelligent paste cleaning (AccessibleApps, MIT).
     "html_to_text>=1.0.0",
+    # Ed25519 / minisign-shaped Quillin signature verification (PyNaCl). Bundled
+    # at runtime so every shipping build can verify publisher-signed Quillins
+    # in the Quillins Manager -- the signature check was previously dev/CI-only
+    # (the [signing]/[dev] extras), which meant real users always saw "PyNaCl is
+    # not installed" and could never verify a Quillin (#919 follow-up). The
+    # graceful missing-nacl path in quill.tools.signing stays as defense in
+    # depth; it just almost never triggers now.
+    "PyNaCl>=1.6.2",
 ]
 spellcheck = ["pyenchant>=3.3.0"]
 # Direct GitHub issue submission for Report a Bug (#210): feedback_hub provides
@@ -196,8 +204,8 @@ math = ["latex2mathml>=3.81.0"]
 # pyobjc powers the macOS platform layer; apple-fm-sdk is the Foundation Models
 # backend used by Ask Quill on macOS.
 macos = [
-    "py2app>=0.28.10",
-    "setuptools<83",
+    "py2app>=0.28.10; sys_platform == 'darwin'",
+    "setuptools<83; sys_platform == 'darwin'",
     "pyobjc>=12.2.1; sys_platform == 'darwin'",
     "apple-fm-sdk>=0.2.1; sys_platform == 'darwin'",
 ]

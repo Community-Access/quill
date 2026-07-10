@@ -266,6 +266,7 @@ Feature profiles must be safe, explainable, reversible, and recoverable.
 - **Profile health check** validates feature IDs, dependencies, visibility paths, and profile JSON integrity.
 - **Feature-coverage gate** fails CI when commands, menus, cells, pages, or help topics lack a valid feature ID.
 - **Profile-aware keyboard reference** can filter to current profile, quiet features, off features, or diff views.
+- **Shortcut wiring is consistent across the product.** Commands exposed in menus, the command palette, and the keymap editor must all resolve to the same accelerator path, including proofread, translate, compare-navigation, and dark-mode commands.
 - **Profile-aware welcome guide** adapts onboarding to the active profile.
 - **Privacy and network labels** declare local-only, external-helper, metadata-only, and network-sending features.
 - **Feature maturity labels** distinguish core, stable, advanced, helper-required, and unavailable features.
@@ -2038,7 +2039,9 @@ A batch of fixes from real user feedback and crash reports, landed alongside voi
 - **macOS file-open + keybinding gaps.** `run_app()` now constructs a `MacOpenFileApp` (`quill/ui/mac_open_file_app.py`) overriding `wx.App.MacOpenFile`/`MacOpenFiles`, since Finder/Dock/`open -a` file-open requests arrive via an Apple Event, not `argv`, and QUILL previously never saw them. `_parse_keybinding` gained `cmd`/`command` as `ACCEL_CTRL` aliases (any `Cmd+...` binding, including the already-shipped back/forward-location shortcuts, previously produced no accelerator table entry at all on any platform). Document switching gets a darwin-specific default (`Cmd+Shift+]`/`[`) since `Ctrl+Tab` maps to macOS's reserved App Switcher shortcut there.
 - **Clipboard read retry.** The literal "Failed to get data from the clipboard (error N: ...)" dialog is wxWidgets' own C++ `wxClipboard::GetData` error (`wxLogSysError`, not a Python exception QUILL's own `try`/`except` could catch), surfaced on the first transient `CLIPBRD_E_CANT_OPEN` contention with another process/AT holding the clipboard. `quill/ui/clipboard_retry.py` (`with_clipboard_read_retry`/`read_clipboard_text`) retries up to 10 attempts, 20ms apart, suppressing the dialog via `wx.LogNull()` on every attempt but the last; wired into every clipboard-read call site (`magic_paste`, abbreviation expansion, Copy Tray, Power Tools plain-text/HTML paste, Quillins).
 - **Four crash-report fixes (#915–#918):** a missing `label` argument on a `_show_modal_dialog` call (Spell Check Language chooser); `_IntellisensePopup.is_visible()` now catches `RuntimeError` from a deleted C/C++ `Frame` (a crash-recovery restart could rebuild `MainFrame` without recreating the popup, leaving a stale reference); and the AI Hub Engines tab's background-install completion callback now tolerates the panel having been closed/destroyed before the install finished.
-- **Crash opening the Quillins Manager when PyNaCl is not installed (#919).** PyNaCl is a dev/CI-only dependency (Quillin Hub artifact signing/publishing), never a shipping one, but `quill/tools/signing.py` imported it unconditionally at module level — so simply viewing a Quillin's details (which checks its signature status) crashed with `ModuleNotFoundError` on every real build. The import is now lazy (`TYPE_CHECKING` + function-local), and `verify_artifact`/`signature_status` — whose own docstrings already promised "fail-closed, never raises" — now catch a missing `nacl` the same way they catch every other verification failure, reporting "PyNaCl is not installed" instead of crashing.
+- **Crash opening the Quillins Manager when PyNaCl is not installed (#919).** PyNaCl is a dev/CI-only dependency (Quillin Hub artifact signing/publishing), never a shipping one, but `quill/tools/signing.py` imported it unconditionally at module level — so simply viewing a Quillin’s details (which checks its signature status) crashed with `ModuleNotFoundError` on every real build. The import is now lazy (`TYPE_CHECKING` + function-local), and `verify_artifact`/`signature_status` — whose own docstrings already promised "fail-closed, never raises" — now catch a missing `nacl` the same way they catch every other verification failure, reporting "PyNaCl is not installed" instead of crashing.
+- **Quillin signature verification is now real on shipping builds (#919 follow-up).** The #919 fix stopped the crash but left the feature inert: PyNaCl stayed a `[signing]`/`[dev]` extra no shipping build installed, so the Quillins Manager's "Signature: verified/unsigned" lines never ran for end users — only the "PyNaCl is not installed" fallback did. PyNaCl is now a runtime dependency (the `[ui]` extra, mirrored in `requirements.txt` and the macOS py2app `includes`), so `verify_artifact`/`signature_status` run on every install. The graceful missing-nacl path in `quill/tools/signing.py` stays as defense in depth. A regression guard (`test_pynacl_is_bundled_in_the_ui_extra_for_quillin_signature_verification`) locks PyNaCl into the bundled `[ui]` set so it can't silently revert to dev-only.
+- **The Report a Bug token is mandatory on every build (#919, hardened).** The bundled issues-only GitHub token (`quill/_feedback_token.py`, baked from `QUILL_FEEDBACK_GITHUB_TOKEN` by `tools/generate_feedback_token.py`) is what lets the in-app bug reporter file straight to the issue tracker instead of dead-ending. An earlier beta shipped it empty on Windows (only macOS baked it), so upgrades showed "no token"; a first fix made a missing token hard-fail the *release* build, but still left an `--allow-missing-feedback-token` escape hatch so an ad-hoc local or beta build could silently ship tokenless. The token is now required on **every** build, Windows and macOS, with no opt-out: `scripts/build_windows_distribution.py` always passes `--require-token` to the generator and `_assert_bundled_token_nonempty` asserts the file that actually lands in the bundled `quill/` package is non-empty (the exact "upgraded and got No token" symptom, locked out); `scripts/build_macos.sh` always runs the generator with `--require-token`. The `--require-feedback-token` flag is kept as an accepted no-op so the release workflow is unchanged. Regression guards in `tests/unit/scripts/test_build_windows_distribution.py` (`test_build_guard_refuses_an_empty_token`, `test_build_guard_refuses_a_missing_token_file`, `test_build_guard_accepts_a_real_token`) lock the guard.
 
 #### API-key onboarding for env-var-authenticated harnesses
 
@@ -3165,7 +3168,8 @@ A deliberately small way to publish a status to Mastodon from the editor — not
 
 - **Compose flow.** `tools.post_to_mastodon` (default **QUILL Key + Shift+P**, also **Tools → Share → Post to Mastodon...**) takes the editor selection, or the whole document when nothing is selected, and opens `MastodonComposeDialog`: editable text, an account picker (by nickname), a visibility choice (public/unlisted/private/direct), a live character count, and Post. Disabled in Safe Mode. If no account exists, the accounts manager is offered first, then compose continues if one was added.
 - **Accounts.** `tools.manage_mastodon_accounts` opens `MastodonAccountsDialog` (add/remove/set-default). Adding registers an app named **QUILL** on the user's instance (so posts read "via QUILL") and uses the OAuth out-of-band flow: open the browser to authorize, paste the code back. Non-secret metadata (nickname, instance, `@handle`, client id) is stored in `mastodon-accounts.json`; the access token and client secret go to the Windows Credential Manager / DPAPI via `credential_store`, never the JSON.
-- **Implementation.** All API + account logic is wx-free in `quill/core/mastodon/` — `client.py` (a single audited `urllib` egress site `_http_json`, HTTPS-only over a verified TLS context: app registration, OAuth token exchange, `verify_credentials`, and status post) and `accounts.py`. Dialogs in `quill/ui/mastodon_dialogs.py`. The one egress site is recorded in `network_egress_audit.py`.
+- **Post language and per-instance character limit (#922).** `post_status` accepts an optional `language` (an ISO 639-1 code such as `"en"` or `"it"`); when given it is sent as the post's `language` field so the instance files the post under the right language preset instead of the account's default, and `None` omits the field. The compose dialog exposes this as a **Post language** `wx.Choice` next to visibility; the first entry ("Default (instance)") maps to `None`, the rest send their code. The live counter uses `instance_character_limit(instance_url)`, which fetches `GET /api/v2/instance`, reads `configuration.statuses.max_characters`, and falls back to `DEFAULT_CHARACTER_LIMIT`; the result is cached in-process per normalized instance URL (`clear_character_limit_cache` is the test hook) so the counter reflects an instance like one with a 9999-character limit without re-querying on every keystroke. `LANGUAGES` in `mastodon_dialogs.py` lists the presets, "Default (instance)" first.
+- **Implementation.** All API + account logic is wx-free in `quill/core/mastodon/` — `client.py` (a single audited `urllib` egress site `_http_json`, HTTPS-only over a verified TLS context: app registration, OAuth token exchange, `verify_credentials`, status post, and the `GET /api/v2/instance` character-limit lookup) and `accounts.py`. Dialogs in `quill/ui/mastodon_dialogs.py`. The egress sites are recorded in `network_egress_audit.py`.
 
 ### 5.71 Quiet mode
 
@@ -6775,12 +6779,13 @@ File > Open from Remote
   GitHub Repository...
   GitHub File URL...
   Save to GitHub...
+  GitHub Items...
   ---
   Manage Remote Sites...   (existing)
   Manage GitHub Accounts...
 ```
 
-All four GitHub commands are also available through the Command Palette.
+All five GitHub commands are also available through the Command Palette.
 
 ### §25.3 Feature Flag
 
@@ -6790,7 +6795,7 @@ Privacy: `network after confirmation`
 Dependencies: `core.remote`  
 Optional dep: `pip install "quill[github]"` (installs PyGithub >= 2.0)
 
-When the flag is off, all four GitHub menu items are absent. When PyGithub is not installed, QUILL shows a friendly message with the install command.
+When the flag is off, all five GitHub menu items are absent. When PyGithub is not installed, QUILL shows a friendly message with the install command.
 
 ### §25.4 Authentication
 
@@ -6873,6 +6878,10 @@ The tab's `source_label` is set to `GitHub: owner/repo (branch)` and shown in th
 | `quill/core/github/consent.py` | One-time consent state |
 | `quill/ui/github_dialogs.py` | Consent, sign-in, manage-accounts, repository browser dialogs |
 | `quill/ui/main_frame_github.py` | `GitHubRemoteMixin` — orchestration and threading |
+| `quill/core/github/items_provider.py` | `GitHubItemsProvider` (PyGithub) + read-only item models (#924) |
+| `quill/ui/github_items_view.py` | Wx-free view-model formatting: list cells, details, comment positions (#924) |
+| `quill/ui/github_items_dialog.py` | `GitHubItemsDialog` — modal list-over-detail viewer (#924) |
+| `quill/ui/main_frame_github_items.py` | `GitHubItemsMixin` — Safe Mode + consent + token gate (#924) |
 
 ### §25.11 Implementation Status
 
@@ -6882,6 +6891,88 @@ The tab's `source_label` is set to `GitHub: owner/repo (branch)` and shown in th
 - Phase 3: Repository browser dialog.
 - Phase 4: Remote document integration (origin metadata, title, save-back).
 - Phase 5: Gate compliance (banned patterns, dialog inventory, module size budget, mypy overrides).
+
+
+---
+
+### §25.12 GitHub Items Viewer (read-only repository browser, #924)
+
+**File > Open from Remote > GitHub Items...** opens a read-only, screen-reader-first
+browser for a repository's issues, pull requests, branches, commits, tags,
+releases, and workflow runs. It is modeled on the [GHManage](https://github.com/kellylford/GHManage)
+reference viewer (the same field set, list modes, and per-comment navigation),
+adapted to QUILL's PyGithub transport and dialog conventions. v1 is **read-only**;
+mutating actions (close / reopen / comment) are out of scope.
+
+**Views.** A single **View** switcher selects one of:
+
+| View | Columns | Detail pane |
+|------|---------|-------------|
+| Issues & PRs | number, type, state, title, author, updated, labels, comments | full issue/PR body + comment thread |
+| Branches | name, protected, author, date, commit | branch metadata; Enter drills into that branch's commits |
+| Commits | short_sha, author, date, message | full sha, author, date, diff stats, message |
+| Tags | name, commit_sha | tag + commit |
+| Releases | tag, name, draft, prerelease, created | release name, flags, body (release notes) |
+| Workflow Runs | name, status, conclusion, branch, event, run_number | run status + conclusion |
+
+The **Issues & PRs** view is the combined inbox from GHManage: two PyGithub
+calls (issues + pulls) merged and sorted in one place. It adds three filters the
+other views do not need: **Show** (Both / Issues / PRs), **State** (Open /
+Closed / All), and **Sort** (number, title, updated, comments — asc/desc).
+
+**List mode (accessibility, GHManage parity).** **Quick** shows compact cells
+exactly as they appear in the columns. **Full** spells each non-empty cell as
+`col: value` (e.g. `number: 208, type: ISSUE, state: OPEN`) so a screen reader
+reads a self-describing line per row instead of bare values with no field
+names. Toggle with the **List mode** choice or `M` in the list.
+
+**Detail pane + comment navigation.** Selecting an issue/PR shows the metadata
+and body immediately, then fetches the comment thread off-thread and appends it.
+**Alt+N** / **Alt+P** jump between comments, selecting and scrolling to each;
+the navigator announces "Comment N of M" and "first/last" at the bounds.
+
+**Repository field.** Prefilled from the active document's GitHub origin when
+the document was opened from GitHub (`RemoteOrigin.repository`), so a user
+editing a file from a repo can review that repo in one step. Otherwise the user
+types `owner/repo` and clicks Load.
+
+**Keyboard shortcuts.**
+
+- `Enter` on a row: open the item in the browser; on a **Branch** row, drill
+  into that branch's commits (switches the view to Commits scoped to it).
+- `Ctrl+R`: refresh the current view.
+- `Ctrl+O`: open the selected item in the browser.
+- `Ctrl+G`: go to an issue/PR by number (Issues & PRs view only).
+- `Alt+N` / `Alt+P`: next / previous comment in the details pane.
+- `M` (in the list): toggle Quick / Full list mode.
+- **View More**: load the next page (page cap = page * 30).
+
+**Threading and accessibility.** All fetches (list load, comment thread) run on
+daemon threads and update the UI via `wx.CallAfter` (`# GATE-40-OK`); the UI
+thread never blocks on the network. Every control has a `SetName`; the status
+label announces load state, counts, and the keyboard map. The dialog is shown
+through `show_modal_dialog` + `apply_modal_ids` (never `ShowModal`).
+
+**Gates (same as every GitHub entry point).**
+
+- **Safe Mode** refuses before any network or consent work
+  (`refuse_in_safe_mode` -> `GitHubItemsError` `QUILL-GITHUB-ITEMS-ERROR`).
+- **Consent + PyGithub availability** via the shared `_ensure_github_ready`
+  (first-run consent dialog; friendly message + install hint when PyGithub is
+  absent).
+- **Token** from the OS credential store (`quill-github-token`); the provider
+  is constructed in the mixin and handed to the dialog so the dialog never
+  touches secrets or consent. Anonymous (tokenless) access works for public
+  repositories at the lower rate limit.
+
+**Feature flag.** `core.github_remote` (off by default) gates the command via
+`feature_command_map` (`file.open_github_items`). When off, the menu item is
+absent.
+
+**Error mapping.** 404 -> "not found", 401 -> "invalid or expired token",
+403 -> "Access denied (check the token's `repo` scope)"; all surfaced as
+`GitHubItemsError(CodedError)` with the `QUILL-GITHUB-ITEMS-ERROR` code so they
+are greppable and never crash the dialog.
 
 
 ---
@@ -7714,6 +7805,19 @@ export NOTARY_PROFILE="quill-notary"
 - Route the app's announce handler to `macos.announce.announce` on macOS (ties to #29).
 - Migrate secret/high-contrast/screen-reader call sites to `quill.platform.dispatch`.
 - Verify the app launches under VoiceOver; keyboard-only QA.
+
+## macOS platform review (2026-07-09)
+
+A full-codebase audit of QUILL's macOS support landed a batch of fixes that close the highest-traffic macOS gaps without rebinding the still-unvalidated bare-F-key chords. The live backlog of remaining work is tracked in `add.md`. Completed this pass:
+
+- **Earcon volume on macOS.** `_NSSoundBackend` now applies `NSSound.setVolume_()` per active sound; the volume slider is no longer a no-op.
+- **Read Aloud speaks on macOS.** Live WAV playback now uses `afplay` on macOS (via a cross-platform `_LiveWavPlayer`) instead of falling through a `winsound`-only guard and silently deleting every synthesized WAV.
+- **VoiceOver announcements hardened.** `macos/announce.py` adds a main-thread guard (marshals off-main calls onto the main queue via libdispatch), a 4096-char payload cap with ellipsis truncation, and `interrupt=True/False` mapped to NSAccessibility priority high/low (matching `prism_bridge` `force_speech` semantics).
+- **macOS keymap chords.** Find Next/Previous (`Cmd+G`/`Cmd+Shift+G`), Replace (`Cmd+Alt+F`), Pop Mark (`Cmd+Alt+M`), and Select Chunk (`Cmd+Alt+Space`) now have darwin alternates that avoid collisions with Hide/Minimize/Spotlight. Provisional pending real-Mac validation (same caveat as the doc-switch chord).
+- **Atomic document writes.** `write_text_atomic` (temp + `fsync` + `os.replace`, mirroring `write_json_atomic`) now backs `autosave_document`, `write_text_document`, and `_write_brf_document`, so a crash mid-save can no longer corrupt the user's document or the recovery snapshot.
+- **Mac conventions.** The redundant `Cmd+F4` close-document accelerator and the Help-menu "About Quill" entry are hidden on macOS (the Application menu shows it via `wx.ID_ABOUT`); `Cmd+W` already closes documents.
+- **Cross-platform messaging.** The dictation "microphone unavailable" message and the "Dictation (offline speech)" component description now branch for macOS instead of citing Windows-only SAPI 5 / permission paths; `total_ram_gb()` reads real RAM via `sysctl` on macOS.
+- **Packaging and tests.** The `[macos]` extra's `py2app`/`setuptools<83` deps carry `sys_platform == 'darwin'` markers; a `test` job in `macos-release.yml` runs `pytest -m "not slow"` on `macos-26`; dependency tests assert macOS packaging deps are darwin-marked and Windows-only deps never appear in the `[macos]` extra; `test_high_contrast.py` now tests true/false/missing-CLI behavior rather than a bare `isinstance(bool)`.
 
 
 ---
@@ -10258,6 +10362,18 @@ order:** DOCX/RTF native header/footer XML export. The issue's own text
 says to confirm that round-trip before committing further, once real
 usage exists to validate against -- this ships the authoring + print-drawn
 half first.
+
+### Platform-aware keymap profiles and macOS Preferences placement (shipped 0.9.0 Beta 2)
+
+The built-in keymap profiles now defer to the platform-aware defaults for
+quit, back/forward navigation, and document switching rather than forcing
+Windows-style overrides into the shipped profile JSON. This keeps macOS users
+on the correct Cmd-based shortcuts while leaving Windows and other platforms
+unchanged. The Preferences command also uses the stock macOS app-menu id so it
+appears in the standard Quill app-menu location on macOS. The same pass also
+routes macOS file-open, folder-reveal, installer-launch, and voice-preview
+playback through native macOS launch behavior instead of Windows-only
+`os.startfile` assumptions.
 
 ### PDF/Office text extraction unbundled to an on-demand download (#909 refinement, shipped 0.9.0 Beta 2)
 

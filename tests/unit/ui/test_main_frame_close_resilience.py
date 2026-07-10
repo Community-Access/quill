@@ -398,3 +398,61 @@ def test_on_editor_caret_activity_swallows_runtime_error() -> None:
     # Drive the caret handler directly. It must return without raising,
     # even though the dead editor raises from _maybe_play_indent_tone.
     MainFrame._on_editor_caret_activity(frame, event)  # type: ignore[arg-type]
+
+
+# ---------------------------------------------------------------------------
+# #920: an OS-initiated session end (Windows shutdown/restart/logoff) must be
+# recorded as a clean exit, not a crash. The crash-recovery clean-exit marker
+# is only ever set inside _on_close; an OS session end can end the process
+# without _on_close running, so _on_session_end marks it clean best-effort.
+# ---------------------------------------------------------------------------
+
+
+def test_on_session_end_marks_clean_exit_and_skips(monkeypatch: pytest.MonkeyPatch) -> None:
+    """#920: an OS session end is a clean exit -- mark the session clean so the
+    next launch does not falsely offer crash recovery, then Skip() so the
+    process can end."""
+    marked: list[str] = []
+    monkeypatch.setattr(mf, "mark_clean_exit", lambda sid: marked.append(sid))
+    frame = MainFrame.__new__(MainFrame)
+    frame.session_id = "os-shutdown-session"
+    skipped: list[bool] = []
+    event = SimpleNamespace(Skip=lambda: skipped.append(True))
+
+    frame._on_session_end(event)
+
+    assert marked == ["os-shutdown-session"], "the session must be marked clean"
+    assert skipped == [True], "the OS session end must be allowed to proceed"
+
+
+def test_on_session_end_swallows_marker_failure_and_still_skips(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """#920: if the marker write itself raises (a transient FS error during
+    shutdown), the handler must still Skip() so the OS shutdown is never
+    blocked by a recovery-marker write."""
+
+    def _raise(*_a: object, **_k: object) -> None:
+        raise OSError("disk unavailable during shutdown")
+
+    monkeypatch.setattr(mf, "mark_clean_exit", _raise)
+    frame = MainFrame.__new__(MainFrame)
+    frame.session_id = "os-shutdown-session"
+    skipped: list[bool] = []
+    event = SimpleNamespace(Skip=lambda: skipped.append(True))
+
+    frame._on_session_end(event)  # must not raise
+
+    assert skipped == [True], "a failed marker write must not block the session end"
+
+
+def test_main_frame_binds_os_session_end_events() -> None:
+    """#920 source-contract guard: the OS session-end events must be bound to
+    the clean-exit marker handler, so an OS shutdown is never misreported as a
+    crash. Reads main_frame.py as text (the UI test bar; no real wx needed)."""
+    import pathlib
+
+    src = pathlib.Path(mf.__file__).read_text("utf-8")
+    assert "EVT_QUERY_END_SESSION" in src, "must bind EVT_QUERY_END_SESSION (#920)"
+    assert "EVT_END_SESSION" in src, "must bind EVT_END_SESSION (#920)"
+    assert "_on_session_end" in src, "must wire the session-end handler (#920)"

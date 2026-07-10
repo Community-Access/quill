@@ -4,11 +4,10 @@
 system's built-in dictation panel (the Win+H experience) via
 ``launch_windows_dictation``. QUILL does not yet capture or transcribe audio
 itself. The ``engine``/``model``/``language`` fields on :class:`DictationSettings`
-and the ``list_dictation_devices`` helper are forward-looking placeholders from
-the offline speech engine work (issue #617); the controller currently ignores
-them and always drives the OS panel. Keeping this module truthful — rather than
-pretending a local vosk/whisper recognizer is wired up — is deliberate (Speech
-wave S0).
+are forward-looking placeholders from the offline speech engine work (issue
+#617); the controller currently ignores them and always drives the OS panel.
+Keeping this module truthful — rather than pretending a local vosk/whisper
+recognizer is wired up — is deliberate (Speech wave S0).
 """
 
 from __future__ import annotations
@@ -91,13 +90,3 @@ class DictationController:
         if on_state_change is not None:
             on_state_change(self._state)
         return transcript
-
-
-def list_dictation_devices() -> list[str]:
-    """Return available microphone device names.
-
-    Placeholder until in-app audio capture lands with the offline speech engine
-    (#617, Speech wave S3). Today dictation uses the OS panel, which manages its
-    own device selection, so this returns an empty list.
-    """
-    return []

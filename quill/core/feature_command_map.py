@@ -36,6 +36,7 @@ COMMAND_FEATURE_MAP: dict[str, str] = {
     "file.open_github_file_url": "core.github_remote",
     "file.github_save_back": "core.github_remote",
     "file.github_manage_accounts": "core.github_remote",
+    "file.open_github_items": "core.github_remote",
     "braille.read_status": "core.braille",
     "braille.read_detailed_status": "core.braille",
     "braille.read_line_and_cell": "core.braille",

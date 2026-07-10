@@ -1,181 +1,3 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>release0.9.0-beta2</title>
-  <style>
-    /* Default styles provided by pandoc.
-    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-    */
-    html {
-      color: #1a1a1a;
-      background-color: #fdfdfd;
-    }
-    body {
-      margin: 0 auto;
-      max-width: 36em;
-      padding-left: 50px;
-      padding-right: 50px;
-      padding-top: 50px;
-      padding-bottom: 50px;
-      hyphens: auto;
-      overflow-wrap: break-word;
-      text-rendering: optimizeLegibility;
-      font-kerning: normal;
-    }
-    @media (max-width: 600px) {
-      body {
-        font-size: 0.9em;
-        padding: 12px;
-      }
-      h1 {
-        font-size: 1.8em;
-      }
-    }
-    @media print {
-      html {
-        background-color: white;
-      }
-      body {
-        background-color: transparent;
-        color: black;
-        font-size: 12pt;
-      }
-      p, h2, h3 {
-        orphans: 3;
-        widows: 3;
-      }
-      h2, h3, h4 {
-        page-break-after: avoid;
-      }
-    }
-    p {
-      margin: 1em 0;
-    }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
-    }
-    img {
-      max-width: 100%;
-    }
-    svg {
-      height: auto;
-      max-width: 100%;
-    }
-    h1, h2, h3, h4, h5, h6 {
-      margin-top: 1.4em;
-    }
-    h5, h6 {
-      font-size: 1em;
-      font-style: italic;
-    }
-    h6 {
-      font-weight: normal;
-    }
-    ol, ul {
-      padding-left: 1.7em;
-      margin-top: 1em;
-    }
-    li > ol, li > ul {
-      margin-top: 0;
-    }
-    blockquote {
-      margin: 1em 0 1em 1.7em;
-      padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
-      color: #606060;
-    }
-    code {
-      white-space: pre-wrap;
-      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
-      font-size: 85%;
-      margin: 0;
-      hyphens: manual;
-    }
-    pre {
-      margin: 1em 0;
-      overflow: auto;
-    }
-    pre code {
-      padding: 0;
-      overflow: visible;
-      overflow-wrap: normal;
-    }
-    .sourceCode {
-     background-color: transparent;
-     overflow: visible;
-    }
-    hr {
-      border: none;
-      border-top: 1px solid #1a1a1a;
-      height: 1px;
-      margin: 1em 0;
-    }
-    table {
-      margin: 1em 0;
-      border-collapse: collapse;
-      width: 100%;
-      overflow-x: auto;
-      display: block;
-      font-variant-numeric: lining-nums tabular-nums;
-    }
-    table caption {
-      margin-bottom: 0.75em;
-    }
-    tbody {
-      margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
-    }
-    th {
-      border-top: 1px solid #1a1a1a;
-      padding: 0.25em 0.5em 0.25em 0.5em;
-    }
-    td {
-      padding: 0.125em 0.5em 0.25em 0.5em;
-    }
-    header {
-      margin-bottom: 4em;
-      text-align: center;
-    }
-    #TOC li {
-      list-style: none;
-    }
-    #TOC ul {
-      padding-left: 1.3em;
-    }
-    #TOC > ul {
-      padding-left: 0;
-    }
-    #TOC a:not(:hover) {
-      text-decoration: none;
-    }
-    span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: 1.5em;}
-    div.column{flex: auto;}
-    @media screen {
-    div.columns{gap: min(4vw, 1.5em);}
-    div.column{overflow-x: auto;}
-    }
-    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    /* The extra [class] is a hack that increases specificity enough to
-       override a similar rule in reveal.js */
-    ul.task-list[class]{list-style: none;}
-    ul.task-list li input[type="checkbox"] {
-      font-size: inherit;
-      width: 0.8em;
-      margin: 0 0.8em 0.2em -1.6em;
-      vertical-align: middle;
-    }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
-  </style>
-</head>
-<body>
 <h1 id="quill-0.9.0-beta-2">QUILL 0.9.0 Beta 2</h1>
 <h2 id="polished-by-the-people-who-use-it.">Polished by the people who
 use it.</h2>
@@ -356,6 +178,42 @@ and <strong>Online</strong>, so your installed-once local engines and
 voices aren’t mixed in with API-key cloud services in one long
 list.</li>
 </ul>
+<h2 id="small-but-meaningful-polish">Small but meaningful polish</h2>
+<ul>
+<li><strong>Built-in keymap profiles now stay platform-aware.</strong>
+The shipped keymap profiles no longer override the platform-specific
+defaults for quit, back/forward location, and document switching, so
+macOS users get the correct Cmd-based shortcuts instead of Windows-only
+overrides.</li>
+<li><strong>AI, compare, and dark-mode shortcuts now fire as
+advertised.</strong> The proofread, translate, compare-navigation, and
+dark-mode commands now honor the keybindings shown in the UI and the
+keymap editor instead of silently ignoring them.</li>
+<li><strong>Preferences now appears in the standard macOS app-menu
+location.</strong> The Preferences command is wired to the stock macOS
+menu id, making it reachable in the Quill app menu alongside About and
+Quit.</li>
+<li><strong>macOS launch paths are now platform-safe.</strong> Opening a
+file, revealing a folder, launching an installer, or previewing a voice
+sample no longer relies on Windows-only <code>os.startfile</code>
+behavior on macOS; those flows use the native macOS launch path
+instead.</li>
+<li><strong>QUILL no longer thinks it crashed when Windows shuts down or
+logs off with it open.</strong> The OS session-end event now records a
+clean exit, so your next launch doesn’t offer crash recovery for a
+session that ended normally. (#920)</li>
+<li><strong>Windows shell-integration registration no longer crashes on
+the Python 3.13 runtime.</strong> An empty binary registry value (the
+<code>OpenWithProgids</code> entry) that older Pythons silently accepted
+now gets the right type, so file associations register cleanly again.
+(#921)</li>
+<li><strong>Posting to Mastodon: set a post’s language, and the counter
+respects your instance’s limit.</strong> A post written in Italian can
+be filed under the Italian preset instead of your account default; and
+if your instance allows more (or fewer) than 500 characters, the live
+counter now knows — via a one-time lookup of the instance’s own limit.
+(#922)</li>
+</ul>
 <h2 id="a-page-number-honestly-presented">A page number, honestly
 presented</h2>
 <p>A tester asked directly: “Are we going to be able to see proper page
@@ -462,36 +320,104 @@ to configure either — <strong>Set Up</strong> in the AI Hub’s Engines
 tab now opens a small dialog to paste, save, or remove the key, applied
 right away with no restart needed.</li>
 </ul>
-<h2 id="kinder-to-screen-readers">Kinder to screen readers</h2>
+<h2 id="macos-a-full-platform-review">macOS: a full platform review</h2>
+<p>A top-to-bottom audit of QUILL’s macOS support landed ~24 fixes. The
+highlights for Mac users:</p>
 <ul>
-<li><strong>Dialogs open on the first real control</strong>, not the
+<li><strong>Read Aloud finally speaks on macOS.</strong> Every WAV-based
+voice engine (Piper, Kokoro, ElevenLabs, SAPI5, DECtalk) was silent on
+macOS — the live playback path only knew about Windows’
+<code>winsound</code> and silently threw each synthesized clip away. It
+now plays through macOS’s <code>afplay</code>.</li>
+<li><strong>The earcon volume slider now works on macOS.</strong>
+<code>NSSound</code> had no volume control wired, so the slider was a
+silent no-op. It now sets the volume on each played sound.</li>
+<li><strong>Whisper recommends the right model for your Mac’s actual
+RAM.</strong> QUILL reported a flat 8 GB on every Mac, so a 32 GB
+machine was told to use the small model. It now reads real memory via
+<code>sysctl</code>.</li>
+<li><strong>Three Mac keyboard collisions fixed.</strong>
+<code>Ctrl+H</code> (Replace) became <code>Cmd+H</code> (macOS Hide),
+<code>Ctrl+M</code> (pop mark) became <code>Cmd+M</code> (Minimize), and
+<code>Ctrl+Space</code> (select chunk) became <code>Cmd+Space</code>
+(Spotlight) — all dead by default on macOS. They now default to
+<code>Cmd+Alt+F</code>, <code>Cmd+Alt+M</code>, and
+<code>Cmd+Alt+Space</code>, and Find Next/Previous now use the
+macOS-standard <code>Cmd+G</code> / <code>Cmd+Shift+G</code> (so you
+don’t have to hold Fn for F3). Provisional picks — tell us if a chord
+collides with something on your setup.</li>
+<li><strong>DECtalk is no longer offered as a download on macOS</strong>
+(its only backend is a Windows <code>.dll</code>), and the Dictation
+description no longer promises SAPI 5 on macOS (it doesn’t exist there —
+Whisper is the path).</li>
+<li><strong>No more duplicate “About Quill,” and no stray
+<code>Cmd+F4</code>.</strong> macOS showed two About entries (the
+Application menu and Help); the Help copy is gone. The redundant
+<code>Cmd+F4</code> close shortcut was Windows-only and never idiomatic
+on Mac.</li>
+<li><strong>VoiceOver announcements are gentler and bounded.</strong> A
+runaway status message is now capped so it can’t become an unreadable
+wall of text, and routine status no longer interrupts what you’re
+already hearing (only narration that has to interrupt does).</li>
+<li><strong>Your documents are safer on a crash.</strong> Saving a
+document and writing an autosave recovery snapshot are now atomic (write
+to a temp file, fsync, then rename) — a crash mid-write can no longer
+corrupt your real file or leave a truncated snapshot as the thing you
+recover.</li>
+<li><strong>The macOS build doesn’t drag Windows-only packaging tools
+onto other platforms</strong>, the dictation “microphone unavailable”
+message no longer says “Windows microphone permissions” verbatim, and
+the macOS release build now actually runs the test suite in CI — so the
+macOS-only tests (Keychain, high-contrast, screen-reader detection)
+finally run somewhere.</li>
+<li><strong>Launch QUILL from source by double-clicking in
+Finder.</strong> A new <code>run-from-source.command</code> wrapper runs
+in Terminal on double-click (a <code>.sh</code> would only open in a
+text editor), forwarding to <code>run-from-source.sh</code> — no
+terminal needed. The first-run Gatekeeper prompt and its right-click →
+Open workaround are documented in the file header. (#923)</li>
+</ul>
+<h2 id="quillin-signatures-verified-for-real">Quillin signatures,
+verified for real</h2>
+<ul>
+<li><p><strong>The “Signature” line in the Quillins Manager now actually
+verifies.</strong> It was always there — <code>verified</code>,
+<code>invalid</code>, or <code>unsigned</code> — but the cryptography
+library it needs (PyNaCl) was a developer-only dependency that no
+shipping build included, so on your install it always read “PyNaCl is
+not installed” and could never tell a publisher-signed Quillin from a
+tampered one. PyNaCl is now bundled with Quill, so the signature check
+is real on every install. The <code>.minisig</code> sidecars shipped
+with signed Quillins finally mean something at the detail view.</p></li>
+<li><p><strong>Dialogs open on the first real control</strong>, not the
 OK/Cancel button or a tab strip. The Speech Hub, Manage Speech Models,
 Manage Voices, the AI Hub, About, and Quillin preferences all land you
 where you can start working — and because the fix lives in the shared
-dialog machinery, every tabbed dialog behaves.</li>
-<li><strong>The status bar stopped repeating itself.</strong> Pressing
-F6 into the status bar and arrowing across it made your screen reader
-say “Status Bar” before every cell. Now you hear it once, on arrival;
-after that each cell just tells you what it is and what it says — for
-example, “Position, Ln 12, Col 7.”</li>
-<li><strong>The status bar stopped repeating itself, take two.</strong>
-The general Message cell could end up showing the exact same text as
-another cell right next to it — a tester noticed it happening with the
-Page cell. Message now goes quiet whenever another visible cell is
-already saying the same thing, instead of saying it twice.</li>
-<li><strong>No more doubled ampersands.</strong> “Writing &amp;
+dialog machinery, every tabbed dialog behaves.</p></li>
+<li><p><strong>The status bar stopped repeating itself.</strong>
+Pressing F6 into the status bar and arrowing across it made your screen
+reader say “Status Bar” before every cell. Now you hear it once, on
+arrival; after that each cell just tells you what it is and what it says
+— for example, “Position, Ln 12, Col 7.”</p></li>
+<li><p><strong>The status bar stopped repeating itself, take
+two.</strong> The general Message cell could end up showing the exact
+same text as another cell right next to it — a tester noticed it
+happening with the Page cell. Message now goes quiet whenever another
+visible cell is already saying the same thing, instead of saying it
+twice.</p></li>
+<li><p><strong>No more doubled ampersands.</strong> “Writing &amp;
 Language,” “Reading &amp; Dictation,” and friends sometimes read back as
-“Writing &amp;&amp; Language.” They spell out “and” now.</li>
-<li><strong>AI Hub: choosing a provider stays where you put it.</strong>
-Arrowing through the Provider list without opening its dropdown could
-bounce focus over to the Model field the moment its suggestions
-refreshed. Focus now stays put.</li>
-<li>**macOS: the QUILL key answers to a real
+“Writing &amp;&amp; Language.” They spell out “and” now.</p></li>
+<li><p><strong>AI Hub: choosing a provider stays where you put
+it.</strong> Arrowing through the Provider list without opening its
+dropdown could bounce focus over to the Model field the moment its
+suggestions refreshed. Focus now stays put.</p></li>
+<li><p>**macOS: the QUILL key answers to a real
 Ctrl+Shift+<code>press.** macOS reports the Cmd key, not the physical Control key, through the check QUILL was using — so a literal Ctrl+Shift+</code>
 press went unrecognized. It’s recognized now. (Cmd+Shift+` is macOS’s
 own “cycle windows” shortcut and will keep going to the OS first;
 reassign it in System Settings &gt; Keyboard Shortcuts if you’d rather
-use Cmd.)</li>
+use Cmd.)</p></li>
 </ul>
 <h2 id="language-stability-and-support">Language, stability, and
 support</h2>
@@ -545,6 +471,41 @@ the exact cause. Every one of QUILL’s internal error types now has
 one.</li>
 </ul>
 <hr />
+<h2 id="browse-a-repository-without-leaving-your-editor">Browse a
+repository without leaving your editor</h2>
+<p>QUILL could already open and save files from a GitHub repository. Now
+it can also <strong>show you what’s going on in one</strong> — the
+issues, pull requests, branches, commits, tags, releases, and workflow
+runs — without leaving the editor or firing up a browser. <strong>File
+&gt; Open from Remote &gt; GitHub Items…</strong> opens a read-only
+viewer modeled on the open-source <a
+href="https://github.com/kellylford/GHManage">GHManage</a> viewer, built
+keyboard- and screen-reader-first.</p>
+<p>Type <code>owner/repo</code> and load (if you’re already editing a
+file you opened from GitHub, the repository is filled in for you). Pick
+a view — the combined Issues &amp; PRs inbox, Branches, Commits, Tags,
+Releases, or Workflow Runs — and the list shows one row per item while a
+details box below shows the full text. In the Issues &amp; PRs view you
+can also filter by issues/PRs/both, by open/closed/ all, and sort by
+number, title, last-updated, or comment count.</p>
+<p>Two list modes matter for screen readers: <strong>Quick</strong>
+shows compact cells, and <strong>Full</strong> spells each one as
+<code>field: value</code>
+(<code>number: 208, type: ISSUE, state: OPEN</code>) so your reader
+announces a self-describing line per row instead of bare values. Select
+an issue or PR and the comment thread loads beneath it;
+<strong>Alt+N</strong> and <strong>Alt+P</strong> jump between comments,
+announcing “Comment N of M.” <strong>Enter</strong> opens a row in your
+browser — and on a branch row, it drills into that branch’s commits.
+<strong>Ctrl+R</strong> refreshes, <strong>Ctrl+O</strong> opens in the
+browser, <strong>Ctrl+G</strong> jumps to an issue or PR by number, and
+<strong>View More</strong> loads the next page.</p>
+<p>It’s read-only for now — you can browse and open, but not close,
+reopen, or comment from inside QUILL. The same gates apply as the other
+GitHub commands: disabled in Safe Mode, first-run consent, and anonymous
+access for public repositories (lower rate limit) or your stored token
+for private ones. (#924)</p>
+<hr />
 <h2 id="four-fixes-that-unblock-real-work">Four fixes that unblock real
 work</h2>
 <ul>
@@ -562,9 +523,11 @@ instead of a confusing “no engine” message.</li>
 <li><strong>Report a Bug works even if you never signed in.</strong>
 After upgrading, some of you found the bug reporter saying “no token.”
 The Windows build wasn’t including the built-in reporting token, so it
-shipped empty. It’s fixed at the source (and the release now refuses to
-build without it, so this can’t happen again), and if the token is ever
-missing, QUILL now opens the online bug form for you — reading the
+shipped empty. It’s fixed at the source, and now <strong>every build
+refuses to ship without it — release, beta, or a local test build, on
+Windows and macOS alike, with no opt-out</strong> — so a tokenless bug
+reporter can never reach anyone again. If the token is ever missing at
+runtime, QUILL opens the online bug form for you — reading the
 instructions aloud — instead of leaving you stuck.</li>
 <li><strong>“Casual Writer” finally just lets you write.</strong> The
 profile was quietly leaving AI, GLOW review, remote files, analysis,
@@ -592,5 +555,3 @@ and Piper voice issues with patient, detailed reports and diagnostics.
 And every tester who hit an odd crash, a stuck focus, a missing
 language, or a confusing download and took the time to tell us — this
 release is yours. Please keep it coming.</p>
-</body>
-</html>

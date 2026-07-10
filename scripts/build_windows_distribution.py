@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import re
 import shutil
 import subprocess
 import sys
@@ -52,6 +53,49 @@ from quill.branding import APP_DISPLAY_NAME, APP_ORGANIZATION  # noqa: E402
 _DEV_CACHE_IGNORE = shutil.ignore_patterns(
     "__pycache__", ".mypy_cache", ".pytest_cache", ".ruff_cache"
 )
+
+
+def _bundled_token_value(path: Path) -> str:
+    """Read ``quill/_feedback_token.py``'s ``BUNDLED_TOKEN`` without importing quill.
+
+    The build runs under a bare embedded interpreter with the QUILL source not
+    yet on ``sys.path``, so it must not import the app it is packaging. Parse the
+    module text instead. Returns the token string, or "" when the file is absent
+    or has no ``BUNDLED_TOKEN = "..."`` assignment (the empty-token case the
+    build refuses to ship).
+    """
+    if not path.is_file():
+        return ""
+    match = re.search(
+        r"""^BUNDLED_TOKEN\s*=\s*['"]([^'"]*)['"]""", path.read_text("utf-8"), re.MULTILINE
+    )
+    return match.group(1) if match else ""
+
+
+def _assert_bundled_token_nonempty(site_packages: Path) -> None:
+    """Refuse to ship a tokenless distributable, unconditionally.
+
+    Guards the true end-user invariant -- the ``_feedback_token.py`` inside the
+    bundled ``quill/`` package that Report a Bug reads at runtime (via
+    ``quill.core.feedback_token._bundled_token``) -- against any path that bakes
+    an empty token or fails to copy it into the bundle. This is the exact
+    "upgrade beta 2 and get No token" symptom (#919), locked out. There is no
+    opt-out: every build must bake a real token.
+    """
+    bundled_token_file = site_packages / "quill" / "_feedback_token.py"
+    if not bundled_token_file.is_file():
+        raise RuntimeError(
+            "Bundled quill/_feedback_token.py is missing from the runtime -- the "
+            "feedback-hub token never made it into the distributable. A build must "
+            "always bake the QUILL_FEEDBACK_GITHUB_TOKEN; there is no opt-out (#919)."
+        )
+    if not _bundled_token_value(bundled_token_file):
+        raise RuntimeError(
+            "Bundled quill/_feedback_token.py has an empty BUNDLED_TOKEN -- the "
+            "distributable would ship a broken Report a Bug (no GitHub token). Set "
+            "QUILL_FEEDBACK_GITHUB_TOKEN before building; there is no opt-out (#919)."
+        )
+
 
 # Pinned Windows embeddable Python. Bumping these values is the only
 # thing needed to ship on a new Python point release.
@@ -241,9 +285,11 @@ def main() -> int:
         "--require-feedback-token",
         action="store_true",
         help=(
-            "Fail the build if QUILL_FEEDBACK_GITHUB_TOKEN is unset (release/beta/"
-            "preview packaging), so a distributable can never silently ship with a "
-            "broken Report a Bug. Omit for local test builds."
+            "Accepted for backward compatibility (the CI release workflow passes "
+            "it) but now a NO-OP: the feedback-hub token is ALWAYS required. A "
+            "distributable must never ship a broken Report a Bug, so a build with "
+            "an unset QUILL_FEEDBACK_GITHUB_TOKEN always fails. There is no opt-out "
+            "(#919: beta-2 upgrades shipped a tokenless bug reporter)."
         ),
     )
     parser.add_argument(
@@ -273,7 +319,6 @@ def main() -> int:
         kokoro_dir=args.kokoro_dir,
         compile_installer=args.compile_installer,
         iscc_path=args.iscc_path,
-        require_feedback_token=args.require_feedback_token,
     )
     print(f"Wrote portable bundle to {bundle['portable_dir']}")
     print(f"Wrote installer template to {bundle['installer_script']}")
@@ -294,7 +339,6 @@ def build_windows_distribution(
     braille_pack_dir: Path | None = None,
     compile_installer: bool = False,
     iscc_path: Path | None = None,
-    require_feedback_token: bool = False,
 ) -> dict[str, str]:
     identity = _build_identity(pyproject.parent)
     version = identity.display_version
@@ -424,7 +468,6 @@ def build_windows_distribution(
             identity=identity,
             launcher_file_version=iss_numeric_version,
             build_cache_dir=output_dir / "_build-tools",
-            require_feedback_token=require_feedback_token,
         )
         # Flatten the runtime to the bundle root. quill.exe (a VERSIONINFO-stamped
         # pythonw.exe) can only bootstrap when its python313.dll/zip/_pth sit next
@@ -1135,7 +1178,6 @@ def bundle_embedded_python(
     build_cache_dir: Path | None = None,
     download_url: str = EMBEDDED_PYTHON_URL,
     expected_sha256: str | None = EMBEDDED_PYTHON_SHA256,
-    require_feedback_token: bool = False,
 ) -> Path:
     """Download the official Windows embeddable Python and prepare it for use.
 
@@ -1232,15 +1274,21 @@ def bundle_embedded_python(
         check=True,
     )
 
+    # A distributable must ALWAYS ship a working Report a Bug. The bundled
+    # GitHub token is what makes the rich bug-reporter fire instead of falling
+    # back to a bare web link. An unset QUILL_FEEDBACK_GITHUB_TOKEN HARD-FAILS
+    # the build, unconditionally -- there is no opt-out. This guard was once
+    # opt-in (--require-feedback-token) and then fail-by-default with an
+    # --allow-missing-feedback-token escape hatch; both still silently let an
+    # ad-hoc build ship a tokenless bundle, so every beta-2 upgrade user got
+    # "No token" (#919). It is now mandatory for every build, period.
     print("Generating bundled feedback-hub token (quill/_feedback_token.py)...")
-    token_cmd = [str(python_exe), str(source_root / "tools" / "generate_feedback_token.py")]
-    if require_feedback_token:
-        # Release/beta/preview builds: an unset QUILL_FEEDBACK_GITHUB_TOKEN must
-        # HARD-FAIL the build, so a distributable can never silently ship with a
-        # broken bug reporter (the "No token" field regression). Local test builds
-        # leave this off and keep the lenient, empty-token behavior.
-        token_cmd.append("--require-token")
-    subprocess.run(token_cmd, check=require_feedback_token)
+    token_cmd = [
+        str(python_exe),
+        str(source_root / "tools" / "generate_feedback_token.py"),
+        "--require-token",
+    ]
+    subprocess.run(token_cmd, check=True)
 
     # Copy the Quill package source into site-packages so `python -m quill`
     # works without requiring a separate wheel build.
@@ -1253,6 +1301,15 @@ def bundle_embedded_python(
     shutil.copytree(
         quill_source, site_packages / "quill", dirs_exist_ok=True, ignore=_DEV_CACHE_IGNORE
     )
+
+    # Belt-and-suspenders: assert the token that ACTUALLY ships is non-empty.
+    # The generation step above already fails on an unset secret, but this
+    # guards the true end-user invariant -- the file inside the bundled quill/
+    # package that Report a Bug reads at runtime (via
+    # quill.core.feedback_token._bundled_token) -- against any future path that
+    # bakes an empty token or fails to copy it into the bundle. This is the
+    # exact "Michael upgrades beta 2 and gets no token" symptom, locked out.
+    _assert_bundled_token_nonempty(site_packages)
 
     # Stage the changelog inside the package so the running build can show
     # abbreviated "What's New" / Check-for-Updates release notes offline

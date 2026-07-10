@@ -200,10 +200,15 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "edit.say_selected": "",  # Shift+Space — conditional intercept in _on_editor_key_down
     "edit.read_all": "Alt+F8",
     "edit.find": "Ctrl+F",
-    "edit.find_next": "F3",
-    "edit.find_previous": "Shift+F3",
+    # macOS HIG: Find Next/Previous are Cmd+G / Cmd+Shift+G. The bare F3 /
+    # Shift+F3 defaults need the Fn key held on a stock MacBook (F-keys default
+    # to brightness/media), so the darwin alternates give a no-Fn path (#6).
+    "edit.find_next": "Cmd+G" if sys.platform == "darwin" else "F3",
+    "edit.find_previous": "Cmd+Shift+G" if sys.platform == "darwin" else "Shift+F3",
     "edit.find_all_matches": "Ctrl+Shift+F3",  # was Alt+F3 (now Reveal Codes)
-    "edit.replace": "Ctrl+H",
+    # Ctrl+H becomes Cmd+H on macOS (system Hide) -- dead by default. The darwin
+    # alternate Cmd+Alt+F mirrors the Mac/VS Code Replace convention (#30).
+    "edit.replace": "Cmd+Alt+F" if sys.platform == "darwin" else "Ctrl+H",
     "tools.search_in_files": "Ctrl+Shift+F",
     "tools.replace_in_files": "Ctrl+Shift+R",
     # Bare "N" after the QUILL-key prefix is intercepted for browse mode in
@@ -222,14 +227,20 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "edit.insert_link": "Ctrl+K",
     "edit.follow_link": "Ctrl+Enter",
     "edit.word_prediction": "Ctrl+.",  # freed Ctrl+Space for select_chunk (§4.22)
-    "edit.select_chunk": "Ctrl+Space",  # §4.22 advanced-editor parity
+    # Ctrl+Space becomes Cmd+Space on macOS (Spotlight) -- dead by default. The
+    # darwin alternate Cmd+Alt+Space avoids the system shortcuts (#32).
+    "edit.select_chunk": "Cmd+Alt+Space"
+    if sys.platform == "darwin"
+    else "Ctrl+Space",  # §4.22 advanced-editor parity
     "view.preview": "Ctrl+Shift+V",
     "view.browser_preview": "Ctrl+Shift+Grave, V",  # §10.8.2: QUILL-key chord
     "view.split_preview": "Ctrl+Shift+Backslash",
     "view.focus_preview": "Ctrl+F6",
     "view.switch_editing_lens": "Ctrl+Shift+Grave, K",
     "edit.set_mark": "Ctrl+Shift+M",
-    "edit.pop_mark": "Ctrl+M",
+    # Ctrl+M becomes Cmd+M on macOS (system Minimize) -- dead by default. The
+    # darwin alternate Cmd+Alt+M avoids Minimize (#31).
+    "edit.pop_mark": "Cmd+Alt+M" if sys.platform == "darwin" else "Ctrl+M",
     "edit.exchange_point_mark": "Ctrl+Shift+X",
     "edit.list_marks": "Alt+M",
     "edit.select_paragraph": "",  # Ctrl+Alt+P removed (§10.8 screen-reader-hostile)

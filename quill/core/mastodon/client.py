@@ -53,6 +53,12 @@ _VISIBILITY_VALUES = frozenset(value for value, _ in VISIBILITIES)
 #: Mastodon's classic per-post character ceiling (instances may allow more).
 DEFAULT_CHARACTER_LIMIT = 500
 
+#: Per-instance fetched character limits, keyed by normalized base URL, so the
+#: compose dialog's live counter can reflect an instance like poliversity.it
+#: that allows 9999 characters instead of the classic 500 (#922). Fetched once
+#: per instance per process and reused; cleared only by a fresh process.
+_CHARACTER_LIMIT_CACHE: dict[str, int] = {}
+
 _USER_AGENT = f"{CLIENT_NAME}/{__version__}"
 _TIMEOUT_SECONDS = 30
 
@@ -202,24 +208,76 @@ def verify_credentials(instance_url: str, token: str) -> str:
     return f"@{username}@{host}"
 
 
-def post_status(instance_url: str, token: str, text: str, visibility: str = "public") -> str:
+def post_status(
+    instance_url: str,
+    token: str,
+    text: str,
+    visibility: str = "public",
+    language: str | None = None,
+) -> str:
     """Publish *text* and return the new post's URL.
 
     Raises :class:`MastodonError` for empty text, an unknown visibility, or any
     API failure.
+
+    *language*, when given, is sent as the post's ``language`` (an ISO 639-1 code
+    such as ``"en"`` or ``"it"``) so the instance files the post under the right
+    language preset instead of the account's default (#922). ``None`` omits the
+    field and lets the instance choose.
     """
     if not text.strip():
         raise MastodonError("Nothing to post: the text is empty.")
     if visibility not in _VISIBILITY_VALUES:
         raise MastodonError(f"Unknown visibility: {visibility!r}")
     base = normalize_instance_url(instance_url)
+    data: dict[str, str] = {"status": text, "visibility": visibility}
+    if language:
+        data["language"] = language
     result = _http_json(
         "POST",
         f"{base}/api/v1/statuses",
-        data={"status": text, "visibility": visibility},
+        data=data,
         token=token,
     )
     return str(result.get("url") or result.get("uri") or "")
+
+
+def instance_character_limit(instance_url: str) -> int:
+    """Return the per-instance max post length, falling back to the default.
+
+    Fetches ``GET /api/v2/instance`` and reads
+    ``configuration.statuses.max_characters`` (#922). The result is cached per
+    normalized base URL for the process lifetime, so the compose dialog's live
+    counter reflects an instance like poliversity.it (9999) without re-querying
+    on every keystroke. Any network/API/parse failure falls back to
+    :data:`DEFAULT_CHARACTER_LIMIT` so posting never breaks because the limit
+    lookup failed.
+    """
+    base = normalize_instance_url(instance_url)
+    cached = _CHARACTER_LIMIT_CACHE.get(base)
+    if cached is not None:
+        return cached
+    try:
+        result = _http_json("GET", f"{base}/api/v2/instance")
+    except MastodonError:
+        _CHARACTER_LIMIT_CACHE[base] = DEFAULT_CHARACTER_LIMIT
+        return DEFAULT_CHARACTER_LIMIT
+    limit = DEFAULT_CHARACTER_LIMIT
+    configuration = result.get("configuration")
+    if isinstance(configuration, dict):
+        statuses = configuration.get("statuses")
+        if isinstance(statuses, dict):
+            try:
+                limit = int(statuses.get("max_characters") or DEFAULT_CHARACTER_LIMIT)
+            except (TypeError, ValueError):
+                limit = DEFAULT_CHARACTER_LIMIT
+    _CHARACTER_LIMIT_CACHE[base] = limit
+    return limit
+
+
+def clear_character_limit_cache() -> None:
+    """Clear the in-memory per-instance character-limit cache (test hook)."""
+    _CHARACTER_LIMIT_CACHE.clear()
 
 
 __all__ = [
@@ -228,7 +286,9 @@ __all__ = [
     "AppCredentials",
     "MastodonError",
     "authorize_url",
+    "clear_character_limit_cache",
     "exchange_code",
+    "instance_character_limit",
     "normalize_instance_url",
     "post_status",
     "register_app",

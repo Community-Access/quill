@@ -84,3 +84,66 @@ def test_post_status_rejects_empty_text_and_bad_visibility(monkeypatch: pytest.M
         client.post_status("mastodon.social", "tok", "   ", "public")
     with pytest.raises(client.MastodonError):
         client.post_status("mastodon.social", "tok", "hi", "bogus")
+
+
+def test_post_status_omits_language_when_default(monkeypatch: pytest.MonkeyPatch) -> None:
+    # #922: language=None (the compose dialog's "Default (instance)") must NOT
+    # add a language field, so the instance keeps its own default preset.
+    calls = _stub_http(monkeypatch, {"url": "x"})
+    client.post_status("mastodon.social", "tok", "hi", "public", language=None)
+    assert "language" not in calls[0]["data"]
+
+
+def test_post_status_sends_language_when_given(monkeypatch: pytest.MonkeyPatch) -> None:
+    # #922: an explicit ISO 639-1 code is sent as the post's language so a post
+    # written in Italian is filed under the Italian preset, not the account default.
+    calls = _stub_http(monkeypatch, {"url": "x"})
+    client.post_status("mastodon.social", "tok", "ciao", "public", language="it")
+    assert calls[0]["data"]["language"] == "it"
+
+
+def test_instance_character_limit_reads_v2_instance_max(monkeypatch: pytest.MonkeyPatch) -> None:
+    # #922: poliversity.it allows 9999; the compose counter must reflect that.
+    client.clear_character_limit_cache()
+    _stub_http(
+        monkeypatch,
+        {"configuration": {"statuses": {"max_characters": 9999}}},
+    )
+    assert client.instance_character_limit("poliversity.it") == 9999
+
+
+def test_instance_character_limit_falls_back_on_api_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    # #922: a failed lookup must never block posting -- fall back to the default.
+    client.clear_character_limit_cache()
+
+    def _fail(*_a, **_k):
+        raise client.MastodonError("unreachable")
+
+    monkeypatch.setattr(client, "_http_json", _fail)
+    assert client.instance_character_limit("broken.example") == client.DEFAULT_CHARACTER_LIMIT
+
+
+def test_instance_character_limit_caches_per_instance(monkeypatch: pytest.MonkeyPatch) -> None:
+    # #922: the second lookup for the same instance must reuse the cached value
+    # and NOT hit the network again (the counter refreshes on every keystroke
+    # indirectly via account switches; the fetch itself is one-time).
+    client.clear_character_limit_cache()
+    calls = _stub_http(
+        monkeypatch,
+        {"configuration": {"statuses": {"max_characters": 9999}}},
+    )
+    client.instance_character_limit("poliversity.it")
+    client.instance_character_limit("poliversity.it")
+    client.instance_character_limit("poliversity.it")
+    # One normalized base URL -> one network call across three lookups.
+    assert len(calls) == 1
+
+
+def test_instance_character_limit_falls_back_on_missing_configuration(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # #922: an instance response without the configuration.statuses object must
+    # fall back to the default rather than raise or return a nonsense limit.
+    client.clear_character_limit_cache()
+    _stub_http(monkeypatch, {"domain": "weird.example"})
+    assert client.instance_character_limit("weird.example") == client.DEFAULT_CHARACTER_LIMIT

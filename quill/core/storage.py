@@ -132,3 +132,48 @@ def write_json_atomic(path: Path, data: Any, *, base: Path | None = None) -> Non
     except BaseException:
         temp_path.unlink(missing_ok=True)
         raise
+
+
+def write_text_atomic(
+    path: Path,
+    text: str,
+    *,
+    encoding: str = "utf-8",
+    newline: str = "",
+    base: Path | None = None,
+) -> None:
+    """Atomically write *text* to *path* (temp file + ``os.replace``).
+
+    The text/binary-document counterpart to :func:`write_json_atomic`. A crash or
+    interruption mid-write leaves the previous file intact rather than a
+    truncated file at the final path — important both for the user's real
+    document (``write_text_document``) and for the autosave snapshot that
+    recovery scans as the newest ``.snap`` (``autosave_document``), where a
+    partial write would otherwise become the recovery source.
+
+    *newline* is passed straight to the open file (``""`` disables Python's
+    universal-newline translation so the caller's already-normalized text is
+    written byte-for-byte).
+    """
+    if base is not None:
+        resolve_within(base, path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, raw_temp = tempfile.mkstemp(
+        prefix=f".{path.name}.",
+        suffix=f".{uuid.uuid4().hex}.tmp",
+        dir=path.parent,
+    )
+    temp_path = Path(raw_temp)
+    try:
+        with os.fdopen(fd, "w", encoding=encoding, newline=newline) as file_handle:
+            file_handle.write(text)
+            file_handle.flush()
+            os.fsync(file_handle.fileno())
+    except BaseException:
+        temp_path.unlink(missing_ok=True)
+        raise
+    try:
+        _atomic_replace(temp_path, path)
+    except BaseException:
+        temp_path.unlink(missing_ok=True)
+        raise

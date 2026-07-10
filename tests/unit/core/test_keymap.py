@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -198,6 +199,22 @@ def test_previous_misspelling_shortcut_is_available() -> None:
 
 def test_replace_shortcut_is_available() -> None:
     assert DEFAULT_KEYMAP["edit.replace"] == "Ctrl+H"
+
+
+def test_bundled_profiles_do_not_override_platform_aware_defaults() -> None:
+    profiles = ("profile_default.json", "profile_minimal.json", "profile_sr_friendly.json")
+    for profile_name in profiles:
+        path = Path("quill/core/keymap") / profile_name
+        data = json.loads(path.read_text(encoding="utf-8"))
+        bindings = data.get("bindings", {})
+        for command_id in (
+            "app.exit",
+            "navigate.back_location",
+            "navigate.forward_location",
+            "window.next_document",
+            "window.previous_document",
+        ):
+            assert command_id not in bindings, f"{profile_name} should not override {command_id}"
 
 
 def test_snippet_shortcuts_are_available() -> None:

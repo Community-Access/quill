@@ -10,6 +10,28 @@ permissions:
   contents: write
 
 jobs:
+  # Run the Python test suite on macOS so the skipif(sys.platform != "darwin")
+  # tests (Keychain, high-contrast, sr_detect, etc.) actually execute somewhere.
+  # Before this, every darwin-gated test had never run in CI, letting Mac-only
+  # regressions ship undetected. Runs in parallel with the build so it never
+  # blocks signing/packaging, but surfaces failures on every tag and dispatch.
+  test:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[ui,spellcheck,macos,dev]"
+
+      - name: Run test suite (excluding slow tests)
+        run: pytest -m "not slow" -q
+
   build:
     runs-on: macos-26
     environment: macos-release

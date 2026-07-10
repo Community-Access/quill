@@ -8,6 +8,8 @@ import pytest
 
 from quill.core.shell_verbs import default_shell_verbs
 from scripts.build_windows_distribution import (
+    _assert_bundled_token_nonempty,
+    _bundled_token_value,
     _prune_embedded_runtime,
     build_inno_setup_script,
     build_shell_verb_registry_lines,
@@ -848,3 +850,53 @@ def test_dev_cache_ignore_excludes_local_tool_caches_but_keeps_real_source(
     assert not (dest / "io" / ".mypy_cache").exists()
     assert not (dest / ".pytest_cache").exists()
     assert not (dest / ".ruff_cache").exists()
+
+
+# ---------------------------------------------------------------------------
+# Feedback-token build guard (#919: beta-2 upgrades shipped a tokenless
+# Report a Bug). The token is now ALWAYS required -- a distributable must bake
+# a non-empty BUNDLED_TOKEN on every build, with no opt-out. These lock the
+# helper that enforces it at the point that matters -- the file that actually
+# ships inside the bundled quill/ package.
+# ---------------------------------------------------------------------------
+
+
+def test_bundled_token_value_reads_a_real_token(tmp_path: Path) -> None:
+    token_file = tmp_path / "_feedback_token.py"
+    token_file.write_text('BUNDLED_TOKEN = "ghp_secretvalue"\n', encoding="utf-8")
+    assert _bundled_token_value(token_file) == "ghp_secretvalue"
+
+
+def test_bundled_token_value_treats_empty_and_missing_as_empty(tmp_path: Path) -> None:
+    empty = tmp_path / "_feedback_token.py"
+    empty.write_text('BUNDLED_TOKEN = ""\n', encoding="utf-8")
+    assert _bundled_token_value(empty) == ""
+    # The committed repo default IS the empty token (the file is gitignored-but-
+    # tracked empty); this is exactly the tokenless state the build must refuse
+    # to ship, so a missing file must also read as empty, never as "present".
+    assert _bundled_token_value(tmp_path / "does_not_exist.py") == ""
+
+
+def test_build_guard_refuses_an_empty_token(tmp_path: Path) -> None:
+    # The guard must fail when the bundled token file is empty -- the exact
+    # "No token" upgrade symptom. There is no opt-out.
+    (tmp_path / "quill").mkdir()
+    (tmp_path / "quill" / "_feedback_token.py").write_text('BUNDLED_TOKEN = ""\n', encoding="utf-8")
+    with pytest.raises(RuntimeError, match="empty BUNDLED_TOKEN"):
+        _assert_bundled_token_nonempty(tmp_path)
+
+
+def test_build_guard_refuses_a_missing_token_file(tmp_path: Path) -> None:
+    # A build that never copied the token into the bundle is just as broken as
+    # an empty one; the guard must catch it (not silently ship tokenless).
+    with pytest.raises(RuntimeError, match="missing from the runtime"):
+        _assert_bundled_token_nonempty(tmp_path)
+
+
+def test_build_guard_accepts_a_real_token(tmp_path: Path) -> None:
+    (tmp_path / "quill").mkdir()
+    (tmp_path / "quill" / "_feedback_token.py").write_text(
+        'BUNDLED_TOKEN = "ghp_realtoken"\n', encoding="utf-8"
+    )
+    # Must not raise -- a real token ships fine.
+    _assert_bundled_token_nonempty(tmp_path)

@@ -26,8 +26,13 @@ def autosave_document(document: Document, session_id: str, max_snapshots: int = 
     while target.exists():
         counter += 1
         target = autosave_root / f"{key}-{stamp}-{counter:03d}.snap"
-    with target.open("w", encoding=document.encoding, newline="") as file_handle:
-        file_handle.write(document.text)
+    # Write atomically (temp + os.replace) so a crash or interruption mid-write
+    # can't leave a truncated snapshot at the final path — that partial file
+    # would sort as the newest .snap and become the recovery source, so the
+    # user would recover a half-written document instead of the last good one.
+    from quill.core.storage import write_text_atomic
+
+    write_text_atomic(target, document.text, encoding=document.encoding, newline="")
 
     snapshots = sorted(autosave_root.glob(f"{key}-*.snap"), reverse=True)
     for stale in snapshots[max_snapshots:]:

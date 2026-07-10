@@ -87,6 +87,8 @@
   "quill/ui/github_dialogs.py::GitHubManageAccountsDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/github_dialogs.py::GitHubRepositoryBrowserDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/github_dialogs.py::GitHubSignInDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/github_items_dialog.py::GitHubItemsDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/github_items_dialog.py::GitHubItemsDialog._on_goto::wx.NumberEntryDialog": "native",
   "quill/ui/guided_speech_dialog.py::show_guided_speech_setup::wx.Dialog": "hardened_custom",
   "quill/ui/harness_api_key_dialog.py::HarnessApiKeyDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/header_footer_dialog.py::HeaderFooterDialog.__init__::wx.Dialog": "hardened_custom",

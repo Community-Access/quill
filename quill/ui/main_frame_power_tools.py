@@ -24,7 +24,6 @@ session metadata).
 
 from __future__ import annotations
 
-import os
 import webbrowser
 from collections.abc import Callable
 from pathlib import Path
@@ -616,7 +615,7 @@ class PowerToolsActionsMixin:
             self._set_status("Refusing to launch an executable or script for safety")
             return
         try:
-            os.startfile(str(path))  # type: ignore[attr-defined]  # noqa: S606
+            self._open_with_default_app(path)
         except OSError as error:
             self._set_status(f"Could not run file: {error}")
             return
@@ -647,7 +646,7 @@ class PowerToolsActionsMixin:
             self._set_status(f"Path does not exist: {target.value}")
             return
         try:
-            os.startfile(str(path))  # type: ignore[attr-defined]  # noqa: S606
+            self._open_with_default_app(path)
         except OSError as error:
             self._set_status(f"Could not open path: {error}")
             return

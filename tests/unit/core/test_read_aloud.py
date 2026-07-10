@@ -1037,3 +1037,117 @@ def test_worker_python_uses_sys_executable_when_it_is_python(tmp_path, monkeypat
     py.write_bytes(b"MZ")
     monkeypatch.setattr(_sys, "executable", str(py))
     assert read_aloud._worker_python_executable() == str(py)
+
+
+# ---------------------------------------------------------------------------
+# #28: live WAV playback must work on macOS (afplay), not just Windows
+# (winsound). Before the cross-platform _LiveWavPlayer, the playback path gated
+# on `if _winsound is not None` and silently dropped every synthesized WAV on
+# macOS -- Piper/Kokoro/ElevenLabs Read Aloud was mute.
+# ---------------------------------------------------------------------------
+
+
+def test_detect_live_wav_backend_prefers_winsound(monkeypatch) -> None:
+    monkeypatch.setattr(read_aloud_module, "_winsound", object())  # non-None sentinel
+    assert read_aloud_module._detect_live_wav_backend() == "winsound"
+
+
+def test_detect_live_wav_backend_falls_back_to_afplay_on_macos(monkeypatch) -> None:
+    import sys as _sys
+
+    monkeypatch.setattr(read_aloud_module, "_winsound", None)
+    monkeypatch.setattr(_sys, "platform", "darwin")
+    monkeypatch.setattr(read_aloud_module.shutil, "which", lambda name: "/usr/bin/afplay")
+    assert read_aloud_module._detect_live_wav_backend() == "afplay"
+
+
+def test_detect_live_wav_backend_empty_when_nothing_available(monkeypatch) -> None:
+    import sys as _sys
+
+    monkeypatch.setattr(read_aloud_module, "_winsound", None)
+    monkeypatch.setattr(_sys, "platform", "linux")
+    assert read_aloud_module._detect_live_wav_backend() == ""
+
+
+def test_live_wav_player_afplay_invokes_subprocess(monkeypatch, tmp_path) -> None:
+    """On the afplay backend, play() runs `afplay <path>` and blocks until it
+    exits; stop() terminates a running process."""
+
+    started: list[list[str]] = []
+
+    class _FakeProc:
+        def __init__(self) -> None:
+            self._terminated = False
+
+        def wait(self) -> int:
+            return 0
+
+        def terminate(self) -> None:
+            self._terminated = True
+
+    proc = _FakeProc()
+
+    def fake_popen(cmd, *args, **kwargs):  # noqa: ANN001
+        started.append(cmd)
+        return proc
+
+    monkeypatch.setattr(read_aloud_module.subprocess, "Popen", fake_popen)
+
+    player = read_aloud_module._LiveWavPlayer(backend="afplay")
+    wav = tmp_path / "sentence.wav"
+    wav.write_bytes(b"fake-wav")
+
+    player.play(wav)
+    assert started == [["afplay", str(wav)]]
+
+    # stop() on an idle player (proc already cleared after wait) is a no-op.
+    player.stop()
+
+
+def test_live_wav_player_stop_terminates_running_afplay(monkeypatch, tmp_path) -> None:
+    import threading
+
+    class _FakeProc:
+        def __init__(self) -> None:
+            self.terminated = False
+            self._wait_ready = threading.Event()
+            self._wait_release = threading.Event()
+
+        def wait(self) -> int:
+            self._wait_ready.set()
+            self._wait_release.wait(timeout=5)
+            return 0
+
+        def terminate(self) -> None:
+            self.terminated = True
+            self._wait_release.set()
+
+    proc = _FakeProc()
+
+    monkeypatch.setattr(read_aloud_module.subprocess, "Popen", lambda *a, **k: proc)
+
+    player = read_aloud_module._LiveWavPlayer(backend="afplay")
+    wav = tmp_path / "s.wav"
+    wav.write_bytes(b"x")
+
+    play_done = threading.Event()
+
+    def _play() -> None:
+        player.play(wav)
+        play_done.set()
+
+    t = threading.Thread(target=_play, daemon=True)
+    t.start()
+    # Wait until the player's wait() is blocking on the running proc, then stop()
+    # must terminate it (and unblock wait()).
+    proc._wait_ready.wait(timeout=2)
+    player.stop()
+    t.join(timeout=2)
+    assert proc.terminated
+
+
+def test_live_wav_player_no_backend_is_silent_noop(tmp_path) -> None:
+    player = read_aloud_module._LiveWavPlayer(backend="")
+    assert player.available is False
+    player.play(tmp_path / "none.wav")  # must not raise
+    player.stop()

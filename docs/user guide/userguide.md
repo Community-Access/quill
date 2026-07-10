@@ -892,7 +892,8 @@ no text is sent until you invoke the command.
 
 `AI > AI Grammar and Style Check...` (`Ctrl+Alt+Shift+G`) analyses the document for grammar,
 punctuation, clarity, style, and word choice. Issues appear in a list grouped
-by category. You can:
+by category. The same proofread, translate, compare-navigation, and dark-mode
+shortcuts now reach the command they advertise instead of appearing inert. You can:
 
 - Filter to a single category (Grammar, Punctuation, Clarity, Style, Word Choice).
 - Accept or skip individual issues.
@@ -1758,6 +1759,8 @@ Use this path when Quill is behaving unexpectedly or when you want to send the t
 4. Choose **Submit Issue**. The report is filed directly on the Community Access issue tracker — no browser, no copy-and-paste — and no account is required. Escape cancels without sending anything.
 
 If the form ever cannot be opened, QUILL copies a link to the online support form to your clipboard and tells you so, so you always have a path. Need to share more detail? **Help -> Save Diagnostics...** remains available as a standalone export you can attach to any issue.
+
+The in-app submit works on every install, including right after an upgrade: every build (Windows and macOS, release or beta) now bundles the reporting token, with no opt-out, so the "no token" message some of you saw after upgrading an earlier beta cannot recur.
 
 ### When QUILL crashes: the new crash-submit dialog
 
@@ -3015,9 +3018,14 @@ Quill runs on **macOS** as well as Windows, from one codebase, with feature pari
 
 - **VoiceOver-first.** On macOS, Quill routes its announcements to **VoiceOver** and never speaks over it. Headings, regions, and result messages behave the way they do on Windows with NVDA/JAWS.
 - **On-device AI.** Ask Quill uses **Apple Foundation Models** (Apple Intelligence) on a supported Mac — no model download and no cloud. The on-device GGUF/llama.cpp picker is hidden on macOS because Apple's model is used instead; you can still connect Ollama or a cloud endpoint if you prefer.
-- **Standard Mac behaviors.** Preferences and About use the standard macOS menu locations (`Quill -> Settings`, `Quill -> About Quill`).
+- **Standard Mac behaviors.** Preferences and About use the standard macOS menu locations (`Quill -> Settings`, `Quill -> About Quill`). The Preferences command is wired to the stock macOS menu entry so it appears in the Quill app menu as expected.
+- **macOS-safe launch paths.** Opening a file, revealing an enclosing folder, launching an installer, or previewing a voice sample now uses macOS-native launch behavior instead of relying on Windows-only `os.startfile` assumptions.
 - **Help menu registered as system Help.** The Help menu is registered as the macOS system Help menu, so the conventional `Cmd+?` Help shortcut works as expected (#613).
 - **Back / Forward Location on macOS** uses `Cmd+[` and `Cmd+]` so it does not collide with VoiceOver's word-by-word `Option+Left` / `Option+Right` reading (#609). Windows keeps `Alt+Left` / `Alt+Right`.
+- **Keymap profiles stay platform-aware.** The built-in keymap profiles no longer override the platform-aware defaults for quit, back/forward navigation, or document switching, so macOS users inherit the correct Cmd-based bindings instead of Windows-only overrides.
+- **Function keys and the Fn key.** Many of Quill's default shortcuts use the F-keys (F3 for Find Next, F7 for spell check, F8 for selection, F6 for region navigation). On a stock MacBook these keys default to system actions (brightness, Mission Control, media) unless you either hold **Fn** while pressing them, or enable **Use F1, F2, etc. keys as standard function keys** in **System Settings → Keyboard**. To spare you that, Find Next and Find Previous also bind to the macOS-standard **Cmd+G** and **Cmd+Shift+G**, which need no Fn key. You can reassign any binding in **Preferences → Keyboard → Keymap Editor**.
+- **macOS-specific shortcut defaults.** A few Windows defaults would have collided with macOS system shortcuts, so they have Mac-specific alternates: **Replace** is `Cmd+Alt+F` (not `Cmd+H`, which is Hide), **Pop Mark** is `Cmd+Alt+M` (not `Cmd+M`, which is Minimize), and **Select Chunk** is `Cmd+Alt+Space` (not `Cmd+Space`, which is Spotlight). These are provisional — if one collides with something on your setup, reassign it in the Keymap Editor and tell us via Help > Report a Bug.
+- **Read Aloud and earcons work on macOS.** Live Read Aloud plays through `afplay`, so Piper, Kokoro, ElevenLabs, and the system voices actually speak; the earcon volume slider also works on macOS (it was a silent no-op before).
 - **Signed and notarized.** Release Mac builds are code-signed with a Developer ID certificate and notarized by Apple, so Gatekeeper opens them without warnings. The app ships as a `.app` (and disk image).
 - **The accessible WebView** that powers the chat, the Markdown/HTML preview, the About box, and the update dialogs reads correctly under VoiceOver, just as it does under NVDA and JAWS on Windows.
 
@@ -3324,6 +3332,8 @@ You can add several accounts, give each its own nickname, **set a default**, or 
 
 **Proofread posts before sending.** In **Mastodon Accounts...**, select an account and tick **Spell-check posts before sending** to turn on per-account proofreading (off by default). When it is on, pressing **Post** for that account first opens the Spelling Review (F7) on the post text so you can fix misspellings, and the post is sent only after you finish or skip the review. The setting is per account, so you can enable it for some accounts and not others; existing accounts are unaffected until you turn it on.
 
+**Post language and per-instance length (#922).** The compose window has a **Post language** picker next to the visibility choice. The default, "Default (instance)", sends no language field so your instance files the post under your account's default language; pick a language such as English or Italian to send its ISO 639-1 code, which keeps a post written in one language from being mis-shelved under another. The live character counter now reflects the selected account's real per-instance limit rather than the classic ceiling: Quill queries the instance once per session and reuses the result, so an instance that allows more (for example one with a 9999-character limit) shows the correct count and does not block a longer post.
+
 ## Working with Different Document Types
 
 Quill is strongest today with plain text, Markdown, HTML, RTF, EPUB, and extracted text workflows. It also has intake and extraction review features for imported material such as PDF/OCR sources and structured import support for Office-style formats.
@@ -3472,6 +3482,26 @@ Use **File > Open from Remote > Manage GitHub Accounts...** to:
 - See your current GitHub identity.
 - Add or replace a token.
 - Sign out and clear your stored token.
+
+**Browsing a repository's issues, PRs, and history (#924)**
+
+**File > Open from Remote > GitHub Items...** opens a read-only viewer for a repository's issues, pull requests, branches, commits, tags, releases, and workflow runs — the same kind of overview the GitHub website gives you, but keyboard- and screen-reader-first. It is modeled on the open-source [GHManage](https://github.com/kellylford/GHManage) viewer. v1 is read-only: you can browse and open items in your browser, but you cannot close, reopen, or comment from inside QUILL.
+
+Type a repository in `owner/repo` form and press **Load**. If the document you are editing was itself opened from GitHub, the repository is already filled in, so you can review that repo in one step.
+
+Pick a **View** — Issues & PRs (the combined inbox), Branches, Commits, Tags, Releases, or Workflow Runs. The list shows one row per item; the **Details** box below shows the full text of the selected row. In the Issues & PRs view you can also filter by **Show** (Both / Issues / PRs), **State** (Open / Closed / All), and **Sort** (by number, title, last-updated, or comment count).
+
+**List mode (for screen readers).** Two ways to read the list: **Quick** shows compact cells as they appear in the columns. **Full** spells each cell as `field: value` (for example `number: 208, type: ISSUE, state: OPEN, title: Fix the thing`) so your screen reader reads a self-describing line per row instead of bare values with no field names. Switch with the **List mode** choice or by pressing **M** while in the list.
+
+**Reading comments.** When you select an issue or PR, the details show the body and then load the comment thread. Press **Alt+N** to jump to the next comment and **Alt+P** for the previous one; QUILL selects and scrolls to each and announces "Comment N of M" (and "first" / "last" at the bounds).
+
+**Keyboard shortcuts.**
+
+- **Enter** on a row opens it in your browser. On a **Branch** row, Enter drills into that branch's commits.
+- **Ctrl+R** refreshes the current view. **Ctrl+O** opens the selected item in the browser. **Ctrl+G** jumps to an issue or PR by number (in the Issues & PRs view).
+- **View More** loads the next page of results.
+
+The same gates apply as the other GitHub commands: it is disabled in Safe Mode, asks for first-run consent, and works anonymously for public repositories (with a lower rate limit) or with your stored token for private ones.
 
 **File size limit**
 
@@ -3971,7 +4001,7 @@ Everything you build in QUILL can be shared with the community through the **Qui
 
 Publication is handled through GitHub pull requests, so every submission is reviewed in the open. The Hub re-runs the same validation, scans any extension code for security and capability honesty, reads your manifest so you never retype your name, version, or description, and verifies the publisher signature on every sidecar uploaded with the submission.
 
-**Verifying installed Quillins.** The Quillin Manager shows a **Signature** line in the details pane for every Quillin — `verified` for a sidecar next to the manifest that matches the publisher key, `invalid` for a sidecar that does not match, or `unsigned` if no sidecar is shipped. The line is read aloud with the rest of the manifest details, so you can hear whether a Quillin is publisher-attested before enabling it. See `docs/signing.md` for the signing protocol.
+**Verifying installed Quillins.** The Quillin Manager shows a **Signature** line in the details pane for every Quillin — `verified` for a sidecar next to the manifest that matches the publisher key, `invalid` for a sidecar that does not match, or `unsigned` if no sidecar is shipped. The line is read aloud with the rest of the manifest details, so you can hear whether a Quillin is publisher-attested before enabling it. This check now works on every install (the PyNaCl cryptography library it needs is bundled with Quill, where it used to be a developer-only dependency that shipping builds never included — so the line used to always read "PyNaCl is not installed"). See `docs/signing.md` for the signing protocol.
 
 ### Authoring Quillins
 
