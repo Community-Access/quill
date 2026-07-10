@@ -36,16 +36,37 @@ def _write_bat_shortcut(persona_name: str, target_dir: Path) -> Path:
     return path
 
 
+def _write_command_shortcut(persona_name: str, target_dir: Path) -> Path:
+    """Write a macOS-launchable ``.command`` file for *persona_name* (#38).
+
+    Finder runs ``.command`` files in Terminal (unlike ``.sh``, which opens
+    in a text editor), so a double-click launches the persona -- but only
+    when the file has a shell shebang and the executable bit set.
+    """
+    import os
+
+    argv = build_launch_argv(persona_name)
+    quoted = " ".join(f'"{part}"' if " " in part else part for part in argv)
+    safe_name = "".join(c if c.isalnum() or c in " -_" else "_" for c in persona_name).strip()
+    path = target_dir / f"QUILL - {safe_name}.command"
+    path.write_text(f"#!/bin/sh\nexec {quoted}\n", encoding="utf-8")
+    os.chmod(path, 0o755)
+    return path
+
+
 def write_launch_shortcut(persona_name: str, target_dir: Path) -> Path:
     """Write a launcher for *persona_name* into *target_dir*, returning its path.
 
-    Tries a real Windows ``.lnk`` (via ``pywin32``'s ``WScript.Shell`` COM
-    object, the standard way to build one); any failure -- not on Windows,
-    ``pywin32`` missing, COM unavailable -- falls back to a ``.bat`` file
-    that runs the exact same command. Never raises: a persona is always
-    left with *some* double-clickable launcher.
+    On macOS a double-clickable ``.command`` shell script (Finder runs it in
+    Terminal). On Windows, tries a real ``.lnk`` (via ``pywin32``'s
+    ``WScript.Shell`` COM object, the standard way to build one); any failure
+    -- not on Windows, ``pywin32`` missing, COM unavailable -- falls back to a
+    ``.bat`` file that runs the exact same command. Never raises: a persona is
+    always left with *some* double-clickable launcher.
     """
     target_dir.mkdir(parents=True, exist_ok=True)
+    if sys.platform == "darwin":
+        return _write_command_shortcut(persona_name, target_dir)
     try:
         import win32com.client  # type: ignore[import-untyped]
 

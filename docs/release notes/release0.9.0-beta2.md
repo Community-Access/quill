@@ -284,9 +284,10 @@ for Mac users:
   Next/Previous now use the macOS-standard `Cmd+G` / `Cmd+Shift+G` (so you don't
   have to hold Fn for F3). Provisional picks — tell us if a chord collides with
   something on your setup.
-- **DECtalk is no longer offered as a download on macOS** (its only backend is
-  a Windows `.dll`), and the Dictation description no longer promises SAPI 5 on
-  macOS (it doesn't exist there — Whisper is the path).
+- **DECtalk and MathCAT are no longer offered as downloads on macOS** (their
+  only backends are Windows `.dll`s that can never load on a Mac), and the
+  Dictation description no longer promises SAPI 5 on macOS (it doesn't exist
+  there — Whisper is the path).
 - **No more duplicate "About Quill," and no stray `Cmd+F4`.** macOS showed two
   About entries (the Application menu and Help); the Help copy is gone. The
   redundant `Cmd+F4` close shortcut was Windows-only and never idiomatic on Mac.
@@ -328,6 +329,40 @@ for Mac users:
   backslash is a literal filename character, so the bundled binary was never
   found even when it genuinely exists. The paths now use forward slashes, which
   compose correctly on both platforms.
+
+## macOS: a second pass of small fixes
+
+A follow-up sweep over the platform review closed a few more items. Two are
+fully fixed; three are code-complete and unit-tested here but only show their
+real effect on a Mac, so they're marked **tester results wanted** — please
+tell us through Help > Report a Bug if a symptom persists and we'll reopen it.
+
+- **Short keychain secrets no longer leak into logs.** The macOS `security`
+  CLI takes a secret as `-w <secret>` in separate arguments, and a short or
+  non-hex secret slipped past the redaction that guards the diagnostics log.
+  The value that follows `-w` is now redacted explicitly before logging, so a
+  key passed to Keychain can't appear in a submitted report. (#60/#73)
+
+*Tester results wanted:*
+
+- **Work Persona launchers are real on macOS.** Generating a shortcut for a
+  persona used to write a Windows `.bat` file on macOS — useless on a Mac.
+  It now writes a Finder-launchable `.command` shell script (with the
+  executable bit set), so double-clicking it in Finder opens QUILL straight
+  into the persona. Please confirm a generated persona shortcut opens QUILL
+  into the right persona when double-clicked in Finder. (#38)
+- **"Toggle hidden files" is Cmd+Shift+. on macOS.** In the Simple File Open
+  dialog, the hidden-files toggle was bound to Ctrl+H — which is macOS's
+  system Hide-window shortcut, so it hid QUILL instead. It now uses the
+  Finder convention Cmd+Shift+. on macOS (and stays Ctrl+H on Windows).
+  Please confirm Cmd+Shift+. toggles hidden files in the simple open dialog.
+  (#51)
+- **Very long Read Aloud spans no longer risk command-line overflow.** eSpeak
+  synthesis passed the whole utterance as a command-line argument, which can
+  overflow the OS command-line length (Windows ~32,767 chars) on a very long
+  span and truncate or abort with no clear error. Long input (over 8,000
+  characters) is now piped to eSpeak via `--stdin` instead. Please confirm a
+  very long Read Aloud span synthesizes fully without truncation. (#64/#77)
 
 ## Quillin signatures, verified for real
 

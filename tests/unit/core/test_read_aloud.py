@@ -399,6 +399,60 @@ def test_synthesize_with_espeak_calls_process(monkeypatch, tmp_path: Path) -> No
     assert "-w" in cmd and str(output) in cmd
 
 
+def test_synthesize_with_espeak_pipes_long_text_via_stdin(monkeypatch, tmp_path: Path) -> None:
+    """#64/#77: a long utterance as a trailing argv element can overflow the OS
+    command-line length (Windows ~32,767), so long input is piped via --stdin
+    instead of appended as an argv element."""
+    exe = tmp_path / "espeak-ng.exe"
+    exe.write_text("binary", encoding="utf-8")
+    output = tmp_path / "speech.wav"
+    long_text = "word " * 4000  # ~20k chars, well over the 8000 threshold
+
+    class Completed:
+        returncode = 0
+
+    called: dict[str, object] = {}
+
+    def fake_run(command, **kwargs):
+        called["command"] = command
+        called["kwargs"] = kwargs
+        return Completed()
+
+    monkeypatch.setattr(read_aloud_module.subprocess, "run", fake_run)
+    synthesize_with_espeak(long_text, output, executable_path=exe, voice="en", rate=175)
+    cmd = called["command"]
+    kwargs = called["kwargs"]
+    assert "--stdin" in cmd
+    # the long text must NOT be passed as an argv element
+    assert long_text not in cmd
+    # it is piped via stdin instead
+    assert kwargs.get("input") == long_text.encode("utf-8")
+
+
+def test_synthesize_with_espeak_short_text_stays_in_argv(monkeypatch, tmp_path: Path) -> None:
+    exe = tmp_path / "espeak-ng.exe"
+    exe.write_text("binary", encoding="utf-8")
+    output = tmp_path / "speech.wav"
+
+    class Completed:
+        returncode = 0
+
+    called: dict[str, object] = {}
+
+    def fake_run(command, **kwargs):
+        called["command"] = command
+        called["kwargs"] = kwargs
+        return Completed()
+
+    monkeypatch.setattr(read_aloud_module.subprocess, "run", fake_run)
+    synthesize_with_espeak("Hello world", output, executable_path=exe, voice="en", rate=175)
+    cmd = called["command"]
+    kwargs = called["kwargs"]
+    assert "--stdin" not in cmd
+    assert "Hello world" in cmd
+    assert kwargs.get("input") is None
+
+
 def test_synthesize_with_espeak_raises_on_failure(monkeypatch, tmp_path: Path) -> None:
     exe = tmp_path / "espeak-ng.exe"
     exe.write_text("binary", encoding="utf-8")

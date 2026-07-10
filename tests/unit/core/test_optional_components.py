@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import sys
+
 import quill.core.optional_components as oc
 
 
@@ -9,10 +11,16 @@ def test_gather_includes_the_core_optional_components() -> None:
         "whispercpp",
         "kokoro",
         "espeak",
-        "dectalk",
         "audio_extras",
-        "mathcat",
     }.issubset(ids)
+    # DECtalk and MathCAT ship only Windows .dll's, so they are offered only on
+    # Windows and hidden on macOS (offering them on macOS advertised a download
+    # that could never work) -- see the win-only gate in gather_optional_components.
+    if sys.platform.startswith("win"):
+        assert {"dectalk", "mathcat"}.issubset(ids)
+    else:
+        assert "dectalk" not in ids
+        assert "mathcat" not in ids
     # Vosk is a third engine choice inside the guided offline-speech picker
     # (the "whispercpp" row), not its own hub row -- no separate "vosk" entry.
     assert "vosk" not in ids
@@ -21,6 +29,23 @@ def test_gather_includes_the_core_optional_components() -> None:
     # FFmpeg is no longer its own row: it is folded into the single "audio_extras"
     # row (Audio: export, playback & chapters) and fetched on demand.
     assert "ffmpeg" not in ids
+
+
+def test_dectalk_and_mathcat_are_hidden_on_macos(monkeypatch) -> None:
+    """#46: MathCAT (like DECtalk) ships only a Windows .dll, so neither should
+    be offered as a download on macOS -- offering them advertised a download
+    that could never work there."""
+    monkeypatch.setattr(oc.sys, "platform", "darwin")
+    ids = {c.component_id for c in oc.gather_optional_components()}
+    assert "mathcat" not in ids
+    assert "dectalk" not in ids
+
+
+def test_dectalk_and_mathcat_are_offered_on_windows(monkeypatch) -> None:
+    monkeypatch.setattr(oc.sys, "platform", "win32")
+    ids = {c.component_id for c in oc.gather_optional_components()}
+    assert "mathcat" in ids
+    assert "dectalk" in ids
 
 
 def test_status_reflects_detectors(monkeypatch) -> None:

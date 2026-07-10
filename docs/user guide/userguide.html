@@ -612,7 +612,8 @@ parent folder.</li>
 <li>A <strong>Hidden</strong> toggle to show or hide files whose names
 start with a dot or whose Windows hidden attribute is set.
 <strong>Ctrl+H</strong> toggles this from the path field or the file
-list.</li>
+list (on macOS, use <strong>Cmd+Shift+.</strong> — the Finder convention
+— since Ctrl+H is the system Hide shortcut).</li>
 <li>A <strong>Recent</strong> button that opens a popup listing recently
 opened files for one-click re-open.</li>
 <li>A <strong>Use Windows Dialog</strong> button that opens the standard
@@ -3453,9 +3454,11 @@ your working folder, reopens your favorite files, and applies the keymap
 (keymap changes take effect on your next restart) — all in the current
 session.</li>
 <li><strong>Generate Shortcut...</strong> writes a double-clickable
-launcher (a real Windows shortcut when possible, a <code>.bat</code>
-file otherwise) that opens QUILL directly into that persona, so a
-persona is reachable without QUILL already running.</li>
+launcher that opens QUILL directly into that persona, so a persona is
+reachable without QUILL already running — a real Windows shortcut when
+possible, a <code>.bat</code> file otherwise on Windows, or a
+Finder-launchable <code>.command</code> shell script on macOS
+(double-clicking it opens QUILL in Terminal).</li>
 <li>From a terminal or another shortcut,
 <code>quill --persona "Persona Name"</code> does the same thing.</li>
 </ul>

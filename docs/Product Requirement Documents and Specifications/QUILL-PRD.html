@@ -14896,6 +14896,45 @@ real Mac hardware; #40's premise was false and is closed (the
 <code>Ctrl+Alt+Shift+</code> chords and <code>Alt+Shift+D</code> are
 actively routed to the AI/compare command class and
 <code>view.toggle_dark_mode</code> respectively).</li>
+<li><strong>macOS review batch 2 (2026-07-09).</strong> Five more fixes
+from the platform review backlog, worked lowest-to-highest priority, all
+verifiable on this Windows dev box via unit tests: (1) <strong>#46
+closed</strong> — MathCAT is no longer offered as a download on macOS;
+like DECtalk, its only backend is a Windows <code>.dll</code>
+(<code>libmathcat_c.dll</code>) that can never load on a Mac, so the
+optional-component catalog now gates it Windows-only inside the existing
+<code>if sys.platform.startswith("win"):</code> block alongside DECtalk
+(a pure platform-branch relocation; no new public surface). (2)
+<strong>#60/#73 closed</strong> — the macOS <code>security</code> CLI
+takes a keychain secret as <code>-w &lt;secret&gt;</code> in separate
+argv elements, and a short or non-hex secret slipped past
+<code>redact_command_arg</code>'s token regexes into the diagnostics
+log; <code>format_args_for_log</code> now redacts the value that follows
+<code>-w</code> explicitly before the generic per-arg pass, so a key
+passed to Keychain can never appear in a submitted report. Three fixes
+are code-complete and unit-tested here but only show their real effect
+on real macOS hardware, so they're closed <em>pending tester
+validation</em> (reopenable via Help &gt; Report a Bug if a symptom
+persists): (3) <strong>#38</strong> —
+<code>persona_launcher.write_launch_shortcut</code> now writes a
+Finder-launchable <code>.command</code> shell script
+(<code>#!/bin/sh</code> + <code>exec</code> +
+<code>os.chmod 0o755</code>) on darwin instead of a useless Windows
+<code>.bat</code> (Finder runs <code>.command</code> files in Terminal,
+unlike <code>.sh</code>, which opens in a text editor); (4)
+<strong>#51</strong> — the Simple File Open dialog's "toggle hidden
+files" chord is now <code>Cmd+Shift+.</code> on macOS (the Finder
+convention) instead of <code>Ctrl+H</code> (which is macOS's system
+Hide-window shortcut and would hide QUILL), via a small platform-aware
+<code>_toggle_hidden_key_pressed</code> helper shared by the path-field
+and list key handlers; (5) <strong>#64/#77</strong> —
+<code>synthesize_with_espeak</code> pipes very long input (over 8,000
+characters) to eSpeak via <code>--stdin</code> instead of passing it as
+a trailing argv element that can overflow the OS command-line length
+(Windows ~32,767) and truncate or abort a very long Read Aloud span with
+no clear error. The live backlog is
+<code>docs/planning/review.md</code>, which now carries the three
+tester-pending items in a dedicated reopenable section.</li>
 </ul>
 <hr />
 <!-- Source: docs/engineering/security-advisory-workflow.md -->

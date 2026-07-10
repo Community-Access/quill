@@ -56,3 +56,37 @@ def test_shortcut_filename_strips_unsafe_characters(tmp_path: Path) -> None:
     assert "/" not in path.name
     assert ":" not in path.name.replace(".lnk", "").replace(".bat", "")
     assert "?" not in path.name
+
+
+def test_write_launch_shortcut_writes_command_file_on_macos(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """#38: on macOS the launcher must be a Finder-launchable .command file
+    (with a shell shebang and the executable bit), not a Windows .bat."""
+    import os
+
+    import quill.core.persona_launcher as pl
+
+    monkeypatch.setattr(pl.sys, "platform", "darwin")
+    chmod_calls: list[tuple[str, int]] = []
+
+    real_chmod = os.chmod
+
+    def _spy_chmod(path_arg, mode):
+        chmod_calls.append((str(path_arg), mode))
+        return real_chmod(path_arg, mode)
+
+    monkeypatch.setattr(os, "chmod", _spy_chmod)
+    path = write_launch_shortcut("Novel Writing", tmp_path)
+    assert path.suffix == ".command"
+    content = path.read_text(encoding="utf-8")
+    assert content.startswith("#!/bin/sh\n")
+    assert "exec " in content
+    assert "--persona" in content
+    assert "Novel Writing" in content
+    # Finder requires the executable bit to run a .command file. Windows
+    # os.chmod does not store Unix exec bits, so assert the call was made
+    # with 0o755 rather than reading the bit back from the filesystem.
+    assert any(mode == 0o755 for _p, mode in chmod_calls), (
+        ".command file must be chmod'd 0o755 for Finder"
+    )

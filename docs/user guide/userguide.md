@@ -189,7 +189,7 @@ The Simple File Open dialog has:
 - A **Path** field at the top showing the current folder. Type a path and press Enter to navigate (folders) or open (files). Use **Ctrl+L** to focus the path field from anywhere in the dialog.
 - A **Filter** dropdown with the file types the dialog will show. The default, **Supported files**, includes plain text, Markdown, HTML, and Rich Text. Switch to **Plain text**, **Markdown**, **HTML**, or **Rich Text** to narrow further, or to **All files** to see everything.
 - A **Files** list of folders and files in the current directory. Folders are prefixed with `[dir]`. Use the **Up** button (or press Backspace in the list) to go to the parent folder.
-- A **Hidden** toggle to show or hide files whose names start with a dot or whose Windows hidden attribute is set. **Ctrl+H** toggles this from the path field or the file list.
+- A **Hidden** toggle to show or hide files whose names start with a dot or whose Windows hidden attribute is set. **Ctrl+H** toggles this from the path field or the file list (on macOS, use **Cmd+Shift+.** — the Finder convention — since Ctrl+H is the system Hide shortcut).
 - A **Recent** button that opens a popup listing recently opened files for one-click re-open.
 - A **Use Windows Dialog** button that opens the standard Windows file dialog for one invocation. The setting does not change; the next time you press `Ctrl+O` you are back in the simple dialog. Use this when an edge case (a long file path, a custom file association) calls for the native picker.
 - An **Open** button and a **Cancel** button. Press Enter to open the selected file, Escape to cancel.
@@ -1915,7 +1915,7 @@ Open **Tools > Work Personas...** to manage them:
 
 - **New Persona**, fill in a name, pick a feature profile, browse to a working folder, add favorite files, and optionally choose a keymap profile, then **Save**.
 - **Apply Now** switches your feature profile, changes your working folder, reopens your favorite files, and applies the keymap (keymap changes take effect on your next restart) — all in the current session.
-- **Generate Shortcut...** writes a double-clickable launcher (a real Windows shortcut when possible, a `.bat` file otherwise) that opens QUILL directly into that persona, so a persona is reachable without QUILL already running.
+- **Generate Shortcut...** writes a double-clickable launcher that opens QUILL directly into that persona, so a persona is reachable without QUILL already running — a real Windows shortcut when possible, a `.bat` file otherwise on Windows, or a Finder-launchable `.command` shell script on macOS (double-clicking it opens QUILL in Terminal).
 - From a terminal or another shortcut, `quill --persona "Persona Name"` does the same thing.
 
 Work Personas are convenience bundles for one person's different contexts — not multi-user accounts, and not a replacement for Story Studio, Notebooks, or Copy Tray, all of which a persona can point to.
