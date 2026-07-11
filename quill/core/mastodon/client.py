@@ -310,9 +310,12 @@ def instance_character_limit(instance_url: str) -> int:
         if isinstance(v1, dict):
             raw = v1.get("max_toot_chars")
             if raw is not None:
-                try:
-                    parsed = int(raw)
-                except (TypeError, ValueError):
+                if isinstance(raw, int | float | str):
+                    try:
+                        parsed = int(raw)
+                    except (TypeError, ValueError):
+                        parsed = 0
+                else:
                     parsed = 0
                 if parsed > 0:
                     limit = parsed
