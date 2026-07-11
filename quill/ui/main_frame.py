@@ -6221,6 +6221,20 @@ class MainFrame(
         except Exception:  # noqa: BLE001 - never trap the window open on a prompt bug
             log.warning("Save-on-close prompt failed; closing anyway (#210)", exc_info=True)
 
+        # Warn before silently abandoning real, hard-to-redo background work (an
+        # Audio Studio export in progress, for example) -- only tasks that opted
+        # in via _run_background_task(protect_on_close=True) count, so this never
+        # fires for routine background activity (search/replace, dictation, pack
+        # downloads, ...).
+        try:
+            protected = getattr(self, "_protected_background_jobs", None)
+            if protected:
+                if not self._confirm_close_with_busy_jobs(list(protected.values())):
+                    event.Veto()
+                    return
+        except Exception:  # noqa: BLE001 - never trap the window open on a prompt bug
+            log.warning("Busy-close prompt failed; closing anyway", exc_info=True)
+
         # #210: the close is committed. Arm the daemon hard-exit BEFORE any
         # cleanup so a blocking/throwing step -- or a wx main loop that never
         # returns -- can never leave the process running with no closable window.
@@ -8053,6 +8067,38 @@ class MainFrame(
         finally:
             dialog.Destroy()
 
+    def _confirm_close_with_busy_jobs(self, labels: list[str]) -> bool:
+        """Ask whether to close now (stopping *labels*) or leave QUILL open.
+
+        Returns True to proceed with closing, False to veto it. Native Yes/No
+        (not a custom-labelled dialog) for the same keyboard-accelerator reason
+        as ``_prompt_unsaved_changes_action`` (#23); the button meanings are
+        spelled out in the message instead. Mentions Send to Tray as the
+        alternative to keep the work running out of the way, rather than
+        folding a third action into this dialog's buttons.
+        """
+        wx = self._wx
+        what = labels[0] if len(labels) == 1 else f"{len(labels)} background jobs"
+        message = (
+            f"QUILL is still working: {what}.\n\n"
+            "Yes closes QUILL now and stops it immediately -- anything it hasn't "
+            "finished yet will be incomplete.\n"
+            "No keeps QUILL open so it can finish.\n\n"
+            f"Tip: File > Send to Tray keeps {what} running in the background "
+            "and gets the window out of your way without stopping it."
+        )
+        dialog = wx.MessageDialog(
+            self.frame,
+            message,
+            "QUILL is still working",
+            wx.YES_NO | wx.ICON_WARNING | wx.NO_DEFAULT,
+        )
+        try:
+            result = self._show_modal_dialog(dialog, "QUILL is still working")
+        finally:
+            dialog.Destroy()
+        return result == wx.ID_YES
+
     def _confirm_discard_changes(self) -> bool:
         wx = self._wx
         if not getattr(self.settings, "confirm_destructive_actions", True):
@@ -8072,10 +8118,21 @@ class MainFrame(
         notify_on_success: bool = False,
         notify_on_error: bool = False,
         notification_category: str = "info",
+        protect_on_close: bool = False,
     ) -> None:
         self._background_task_count = getattr(self, "_background_task_count", 0) + 1
         task_id = self._track_background_task_start(label)
         self._set_status(f"{label} started")
+        # Opt-in: most background tasks (search/replace, dictation, pack downloads,
+        # ...) are trivial to lose and would make a close-time warning noisy and
+        # untrustworthy. Only tasks that explicitly ask to be protected -- real,
+        # hard-to-redo work like an Audio Studio export -- gate the close prompt.
+        if protect_on_close:
+            jobs = getattr(self, "_protected_background_jobs", None)
+            if jobs is None:
+                jobs = {}
+                self._protected_background_jobs = jobs
+            jobs[task_id] = label
 
         def progress(message: str, current: int, total: int) -> None:
             self._wx.CallAfter(
@@ -8131,6 +8188,8 @@ class MainFrame(
         notification_category: str,
     ) -> None:
         self._background_task_count = max(0, getattr(self, "_background_task_count", 1) - 1)
+        # A no-op when this task was never protected (or the registry doesn't exist yet).
+        getattr(self, "_protected_background_jobs", {}).pop(task_id, None)
         if error is not None:
             # A failed background task never invokes on_success, so if this
             # was a voice preview's synthesis raising (e.g. missing engine
@@ -13045,6 +13104,11 @@ class MainFrame(
 
             def _on_page_changed(_evt: object) -> None:
                 _build_page(notebook.GetSelection())
+                # Switching pages (Ctrl+Tab/Ctrl+Shift+Tab or clicking a tab) otherwise
+                # leaves focus on the tab strip or wherever it was, so a screen reader
+                # announces only "Panel" instead of landing on the new page's first
+                # control -- reuse the same routing the dialog's own initial focus uses.
+                focus_primary_control(dialog)
 
             notebook.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, _on_page_changed)
 

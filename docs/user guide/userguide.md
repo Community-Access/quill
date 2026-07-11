@@ -215,13 +215,15 @@ Supported options:
 - `--new-window`: force a new process instead of forwarding to an existing instance.
 - `--wait`: when forwarding to an existing instance, wait for that instance to close.
 
+Use `quill.exe` (the bundled launcher — installed or portable, this is what you actually have) as the command. During setup, the installer offers an "Add Quill to PATH" option; turn it on and `quill` works from any Command Prompt or PowerShell window without typing the full install path. If you skipped that option, use the full path instead (typically `"%LOCALAPPDATA%\Programs\Quill for All\quill.exe"` for a per-user install), or a source checkout, where the equivalent command is `python -m quill`.
+
 Examples:
 
-- `python -m quill --version`
-- `python -m quill notes.md --line 40 --column 5`
-- `python -m quill --goto main.kt:27:5`
-- `python -m quill --diff old-draft.md new-draft.md`
-- `python -m quill --new-window notes.md`
+- `quill --version`
+- `quill notes.md --line 40 --column 5`
+- `quill --goto main.kt:27:5`
+- `quill --diff old-draft.md new-draft.md`
+- `quill --new-window notes.md`
 
 ## The Main Window
 

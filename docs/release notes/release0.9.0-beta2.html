@@ -1,26 +1,61 @@
 <h1 id="quill-0.9.0-beta-2">QUILL 0.9.0 Beta 2</h1>
-<h2 id="polished-by-the-people-who-use-it.">Polished by the people who
-use it.</h2>
+<h2 id="built-with-you.-polished-for-all-of-us.">Built with you.
+Polished for all of us.</h2>
 <p><em>From Community Access. Free. Optional by design. Private by
-default. Yours to make quiet.</em></p>
-<p>Every single line below started life as a message from a beta tester
-— a crash report, a “this felt weird,” a voice that wouldn’t speak, a
-language that wasn’t there. You wrote in; we listened; this is the
-result. Keeping the promise made at Beta 1, this is overwhelmingly your
-reports, turned into fixes and polish, especially around getting the
-optional pieces you want. A handful of things we’d been meaning to ship
-ride along — most notably a page indicator, because enough of you asked
-for it that it couldn’t wait.</p>
-<p>This is the long-form companion to the <strong>“0.9.0 Beta
-2”</strong> section of <code>CHANGELOG.md</code>. The in-app text under
-<strong>Help &gt; What’s New</strong> and on <strong>Check for
-Updates</strong> is drawn from that CHANGELOG section; this document is
-its friendlier, longer telling.</p>
-<p>Grazie, thank you, and keep the reports coming.</p>
+default. Yours to make quiet — and yours to help shape.</em></p>
+<p>This release is what happens when a community does more than test
+software: it <strong>builds it together</strong>. Every crash report,
+every “this felt strange,” every missing label, every voice that would
+not speak, every shortcut that collided, and every idea that made QUILL
+more useful has helped move the project forward.</p>
+<p>Beta 2 is not software created somewhere else and handed to the
+people who use it. It is the result of people speaking up, developers
+listening closely, testers trying again, and the whole community making
+QUILL better <strong>by and for each and every one of us</strong>.</p>
+<p>The promise from Beta 1 continues here: this release is
+overwhelmingly your reports turned into fixes, clarity, polish,
+confidence, and new possibility. A few features we had been eager to
+ship joined the celebration too — including the long-requested page
+indicator, because when enough of you ask for something that matters, it
+deserves to move.</p>
+<p>This is the friendly, long-form companion to the <strong>“0.9.0 Beta
+2”</strong> section of <code>CHANGELOG.md</code>. The shorter text shown
+under <strong>Help &gt; What’s New</strong> and <strong>Check for
+Updates</strong> comes from that changelog; this document tells the
+fuller story of what changed, why it matters, and where your feedback
+can guide the next step.</p>
+<p><strong>Grazie. Thank you. Keep testing, keep imagining, and keep the
+reports coming. This release belongs to you.</strong></p>
+<h3 id="the-beta-2-celebration-at-a-glance">The Beta 2 celebration, at a
+glance</h3>
+<ul>
+<li>A new experimental <strong>QuillRichEdit</strong> surface invites
+real-world braille testing and begins a lightweight rich-text
+future.</li>
+<li>A top-to-bottom <strong>macOS completion pass</strong> makes QUILL
+dramatically more native, useful, secure, and testable on the Mac.</li>
+<li>A fully self-contained <strong>Offline Edition</strong> brings every
+optional component along for air-gapped and locked-down
+environments.</li>
+<li>New page awareness, <strong>Print Studio</strong>, headers and
+footers, image alt-text enforcement, Work Personas, Clip Library,
+AutoOutline, email flows, and more make everyday work feel richer and
+more intentional.</li>
+<li>Speech, dictation, audio export, AI setup, Ollama support,
+optional-component management, GitHub browsing, privacy, diagnostics,
+stability, and platform integration all received meaningful
+community-driven improvements.</li>
+</ul>
 <hr />
-<h2
-id="a-favor-to-ask-braille-display-owners-please-try-quillrichedit">A
-favor to ask: braille display owners, please try QuillRichEdit</h2>
+<h2 id="help-us-finish-the-next-chapter">Help us finish the next
+chapter</h2>
+<p>Some of the most important work in this release can only be proven on
+the hardware and platforms you use every day. These are not ceremonial
+requests. Your results decide what becomes the dependable default
+next.</p>
+<h3
+id="braille-display-owners-please-put-quillrichedit-to-the-test">Braille
+display owners: please put QuillRichEdit to the test</h3>
 <p>We’ve been chasing two long-standing braille reports, and this
 release ships the first real lever for both. They are:</p>
 <ul>
@@ -70,7 +105,500 @@ surface</strong> back to its default) and restart QUILL.</p>
 in-place bold/italic/underline/font/alignment formatting, as a first
 step toward a lighter-weight rich-text document mode — but the braille
 question above is the reason it needs your feedback most.</p>
-<h2 id="macos">macOS</h2>
+<h3 id="mac-users-three-quick-checks-that-can-close-the-loop">Mac users:
+three quick checks that can close the loop</h3>
+<p>If you use QUILL on macOS, three things would help us enormously.
+Each is fixed in code in this release but needs a Mac to confirm, so
+please try the fix and leave a short comment — <em>helped</em>, <em>no
+difference</em>, or <em>worse</em> — so we can close it out or reopen
+it.</p>
+<ul>
+<li><p><strong>Diacriticals no longer stolen by shortcuts.</strong> In a
+Polish or other diacritical layout, Option+Z / +Q / +M / +I now type
+their character instead of firing a QUILL command. Does typing those
+characters work for you now? Please comment on <a
+href="https://github.com/Community-Access/support/issues/67">support#67</a>.</p></li>
+<li><p><strong>Settings speech controls are labelled for
+VoiceOver.</strong> The Rate, Volume, and Pitch number boxes now
+announce their label alongside their value. Does VoiceOver read them
+clearly? Please comment on <a
+href="https://github.com/Community-Access/support/issues/69">support#69</a>.</p></li>
+<li><p><strong>Are the new Mac shortcuts comfortable?</strong> We moved
+three shortcuts that collided with macOS system ones (see “Three Mac
+keyboard collisions fixed” below for the details). These are our best
+guess from a Windows box — if any collides with something on your setup
+or just feels awkward, tell us and we’ll pick a better chord
+together.</p></li>
+</ul>
+<hr />
+<h2 id="everyday-writing-now-feels-more-alive">Everyday writing now
+feels more alive</h2>
+<p>These are the changes you can feel immediately: clearer navigation,
+stronger document accessibility, smarter printing, less friction, and
+more ways to make QUILL fit the way you work.</p>
+<h3 id="a-page-number-honestly-presented">A page number — honestly
+presented</h3>
+<p>A tester asked directly: “Are we going to be able to see proper page
+numbers with QUILL?” Now every document shows one, in the status bar, on
+by default, right next to your line/column position.</p>
+<ul>
+<li><strong>PDFs get a real page count.</strong> QUILL now preserves
+each PDF’s actual page boundaries when you open it, so you see an exact
+“3 of 12” and <code>Ctrl+Shift+G</code> (Go To Page) jumps exactly.</li>
+<li><strong>Everything else gets an honest estimate.</strong> Plain
+text, Markdown, and Word documents don’t have a real “page” until you
+print or export – it depends on font, margins, and paper size, none of
+which QUILL tracks while you write. So for these, the same cell shows
+“~3 of ~12 (estimated)” – the tilde and the word “estimated” always
+travel together, on purpose, so you never mistake a guess for a fact.
+Tune the words-per-page assumption in Preferences &gt; Navigation and
+QUILL Key if your pages run long or short.</li>
+<li>Braille documents are untouched – they keep their own, richer page
+system.</li>
+</ul>
+<h3 id="alt-text-you-cannot-accidentally-skip">Alt text you cannot
+accidentally skip</h3>
+<p>GLOW already catches missing alt text after the fact — this adds the
+proactive half. <strong>Insert &gt; Image…</strong> is QUILL’s first
+dedicated image-insertion flow: it won’t let you insert without either
+real alt text or an explicit “this image is decorative” choice, so a
+document can no longer quietly pick up an un-alt-texted image. And for
+any image already in your document, however it got there, <strong>Tools
+&gt; Describe Image at Cursor</strong> tells you exactly what’s there:
+“Image: sunset.png, alt text: a sunset over the lake” — or just as
+clearly, “alt text MISSING” if nobody ever wrote one.</p>
+<h3 id="print-studio-know-before-you-print">Print Studio: know before
+you print</h3>
+<p><strong>File &gt; Print Studio…</strong> tells you what you’re about
+to print before you print it — “3 pages, Letter, default margins” — read
+aloud or in braille, the way a visual print preview would show a sighted
+user. Then choose <strong>all, odd, or even pages</strong>,
+<strong>reverse the order</strong>, or <strong>skip the first
+page</strong> if it’s pre-printed letterhead, before it hands off to the
+same Print dialog you already know. Printing itself also got more honest
+along the way — it used to draw whatever fit on one page and quietly
+drop the rest of a longer document; now it paginates properly.</p>
+<h3 id="headers-and-footers-built-for-real-documents">Headers and
+footers, built for real documents</h3>
+<p><strong>File &gt; Header and Footer…</strong> builds one from named
+presets — title on the left with the page number on the right, filename
+and date, Roman numerals for front matter — or your own mix of a handful
+of tokens (title, filename, date, page number) placed left, center, or
+right. Want a different header on page one? There’s a checkbox for that.
+Numeric or Roman page numbers, starting wherever you like. It’s saved
+with the document and shows up on every page you print, Print Studio or
+plain Print alike.</p>
+<h3 id="five-joyful-upgrades-for-the-work-between-the-big-moments">Five
+joyful upgrades for the work between the big moments</h3>
+<ul>
+<li><p><strong>Look Up now includes Wikipedia.</strong> A short
+encyclopedia summary, with a link to the source, appears alongside
+definitions and synonyms when you’re online — same consent and offline
+fallback as always.</p></li>
+<li><p><strong>A bigger clip history, alongside Copy Tray.</strong> Copy
+Tray’s curated 12 slots aren’t going anywhere — <strong>Clip
+Library</strong> (Edit menu) is a second, rolling history of everything
+you choose to keep, searchable, favoritable, and promotable into a
+specific Copy Tray slot when one earns a permanent home. Turn on
+automatic capture (off by default) and every copy inside QUILL is
+remembered with no extra step.</p></li>
+<li><p><strong>Send as Email, or just Copy as Email Body.</strong> The
+File menu can now hand your selection (or the whole document) straight
+to your mail client, or copy it to the clipboard formatted for pasting
+into one — useful when a mail client balks at a long message built the
+first way.</p></li>
+<li><p><strong>AutoOutline numbers your headings for you.</strong>
+Format &gt; Update Outline Numbering — numeric or legal style, your
+choice in Preferences &gt; Editing — writes the number straight into the
+heading text, so it reads aloud and survives copy/paste and export with
+nothing extra to configure.</p></li>
+<li><p><strong>Work Personas: one action into a whole context.</strong>
+Tools &gt; Work Personas… bundles a feature profile, a working folder,
+your favorite files, and a keymap profile under a name — “School,”
+“Novel,” a client’s name. Apply it instantly, launch straight into it
+with <code>quill --persona NAME</code>, or generate a double-clickable
+shortcut so it’s one click away without QUILL already open.</p></li>
+</ul>
+<h3 id="make-the-quill-key-truly-yours">Make the QUILL key truly
+yours</h3>
+<p>A new <strong>Change QUILL Key…</strong> button in the Keymap Editor
+(<strong>Preferences &gt; Keyboard &gt; Keymap Editor</strong>) lets you
+reassign the QUILL-key prefix itself — the key every
+<code>QUILL Key + ...</code> chord starts with. Pick a new one and QUILL
+validates it, warns you about conflicts with other bindings (and with
+OS-reserved chords), then rewrites your stored chords to follow the new
+prefix, so <code>QUILL Key + S</code>, <code>QUILL Key + V</code>, and
+the rest all move together instead of you rebinding them one at a time.
+And typing <code>quill</code> in the Keymap Editor’s search box now
+lists every QUILL-key-chord command in one place, so you can see — and
+rebind — the whole chord set at once. It works the same on Windows and
+macOS.</p>
+<h3 id="casual-writer-finally-gets-out-of-your-way">“Casual Writer”
+finally gets out of your way</h3>
+<ul>
+<li><strong>“Casual Writer” finally just lets you write.</strong> The
+profile was quietly leaving AI, GLOW review, remote files, analysis,
+watch folders, notebooks, and developer tools switched on. Choose Casual
+Writer now and those step out of the way, for a clean “write, format,
+print, send” workspace — while read aloud, voice commands, dictation,
+and braille stay right where they are, because a simpler profile should
+never be a less accessible one. Want any of it back? Preferences &gt;
+Profiles and Features, one toggle each.</li>
+</ul>
+<h3 id="focus-status-and-labels-that-tell-the-truth">Focus, status, and
+labels that tell the truth</h3>
+<ul>
+<li><p><strong>Dialogs open on the first real control</strong>, not the
+OK/Cancel button or a tab strip. The Speech Hub, Manage Speech Models,
+Manage Voices, the AI Hub, About, About Whisperer, the Help status
+dialogs, and Quillin preferences all land you where you can start
+working — and because the fix lives in the shared dialog machinery,
+every tabbed dialog behaves.</p></li>
+<li><p><strong>The status bar stopped repeating itself.</strong>
+Pressing F6 into the status bar and arrowing across it made your screen
+reader say “Status Bar” before every cell. Now you hear it once, on
+arrival; after that each cell just tells you what it is and what it says
+— for example, “Position, Ln 12, Col 7.”</p></li>
+<li><p><strong>The status bar stopped repeating itself, take
+two.</strong> The general Message cell could end up showing the exact
+same text as another cell right next to it — a tester noticed it
+happening with the Page cell. Message now goes quiet whenever another
+visible cell is already saying the same thing, instead of saying it
+twice.</p></li>
+<li><p><strong>No more doubled ampersands.</strong> “Writing &amp;
+Language,” “Reading &amp; Dictation,” and friends sometimes read back as
+“Writing &amp;&amp; Language.” They spell out “and” now.</p></li>
+<li><p><strong>AI Hub: choosing a provider stays where you put
+it.</strong> Arrowing through the Provider list without opening its
+dropdown could bounce focus over to the Model field the moment its
+suggestions refreshed. Focus now stays put.</p></li>
+<li><p><strong>Preferences now lands you on the right control when you
+switch tabs.</strong> Ctrl+Tab, Ctrl+Shift+Tab, or clicking a different
+Preferences tab moved the visible page but left focus wherever it had
+been, so a screen reader sometimes announced only “Panel” instead of the
+new tab’s first field. Switching tabs now always moves focus to that
+tab’s first real control.</p></li>
+</ul>
+<hr />
+<h2 id="your-language-your-braille-your-way-of-working">Your language,
+your braille, your way of working</h2>
+<p>Accessibility grows when more people can arrive as themselves. Beta 2
+expands QUILL’s language reach, restores features that translations
+exposed, and keeps braille and screen-reader use at the center rather
+than at the edge.</p>
+<ul>
+<li><p><strong>Italian is here to switch to.</strong> Elena Brescacin’s
+beautiful, complete Italian translation shipped in Beta 1 — but a build
+step meant it never actually appeared under Change Display Language. It
+does now, all 1,100-plus phrases of it. Grazie mille, Elena. (Tools &gt;
+Writing and Language &gt; Change Display Language.)</p></li>
+<li><p><strong>Italian no longer blurs two “vaults” into one.</strong>
+The OS credential vault and QUILL’s document vault had landed on the
+same Italian word; they’re now distinct — credential store “archivio
+delle credenziali,” document vault “raccolta” — with stale fuzzy markers
+cleared and “encoding” corrected to “codifica.” (#913)</p></li>
+<li><p><strong>Danish joins the Braille Translation menu.</strong> The
+grade 1 and grade 2 tables shipped with the engine all along; Danish
+just never made it onto QUILL’s list.</p></li>
+</ul>
+<hr />
+<h2 id="optional-power-without-optional-confusion">Optional power,
+without optional confusion</h2>
+<p>QUILL remains small on purpose. The larger pieces arrive only when
+you choose them — but choosing, installing, testing, removing, and
+returning to your work should feel welcoming, predictable, and
+complete.</p>
+<h3 id="getting-the-extras-you-want-completely-reimagined">Getting the
+extras you want, completely reimagined</h3>
+<p>QUILL stays small by downloading the big optional pieces only when
+you ask. Beta testers told us that experience was confusing — so
+<strong>Help &gt; Download Optional Components</strong> was rebuilt into
+one warm, guided place.</p>
+<ul>
+<li><p><strong>One hub for everything optional.</strong> Every component
+in a single list, the ones most people reach for first (Pandoc, then the
+braille pack), each row saying in plain language what it does and how
+big it is. The window opens instantly now instead of pausing to check
+what you already have.</p></li>
+<li><p><strong>Prove it works before you rely on it.</strong> Anything
+installed gets a <strong>Test</strong> button: a voice reads you a
+sample so you actually hear it, the offline speech engine listens to a
+spoken phrase and tells you what it heard, and tools report their
+version. There’s a <strong>Remove</strong> button too, and a
+<strong>Manage</strong> button that jumps you straight to the right
+picker (Manage Speech Models or Manage Voices).</p></li>
+<li><p><strong>A guided, step-by-step setup for offline
+dictation.</strong> Choosing offline dictation used to mean hunting
+through menus. Now the row is simply called <strong>Dictation (offline
+speech)</strong>, and it walks you through it one step at a time — a
+banner at the top always tells you which step you’re on and the single
+next thing to do: <strong>1.</strong> pick and install your engine —
+<strong>Whisper.cpp</strong> (light and fast, works on any computer),
+<strong>Faster Whisper</strong> (most accurate), or
+<strong>Vosk</strong> (tiny, for old or low-memory machines);
+<strong>2.</strong> pick a model, with the best fit for your computer
+already selected so it’s one click; <strong>3.</strong> press
+<strong>Test dictation</strong> to hear it prove itself, and it becomes
+your default. QUILL remembers the engine you chose, so you come back to
+where you left off instead of it resetting to the built-in engine. Vosk
+used to sit as its own separate row further down the list; it’s simply a
+third choice here now, so there’s exactly one place to set up offline
+dictation.</p></li>
+<li><p><strong>You always land back where you started — on the row you
+were just on.</strong> Downloading something used to fling you off into
+the editor or another tab, or reset the list to the top. Now every
+download — voices, engines, Pandoc, the braille pack, audio extras,
+Node.js, MathCAT, spell-check dictionaries — finishes, returns you to
+the hub, and reselects exactly the row you were working with.</p></li>
+<li><p><strong>A gentler helping hand.</strong> If you Test a piece
+before it’s fully set up, QUILL walks you over to finish rather than
+treating a perfectly normal situation as an error — for offline speech
+specifically, that now means reopening the same guided engine-and-model
+picker above, not a bigger settings dialog. And if a download genuinely
+fails, it offers to send a report with the details.</p></li>
+<li><p><strong>Runs portable, stays portable.</strong> Everything
+installs into your portable data folder when you run QUILL from a drive,
+so your whole setup travels with you.</p></li>
+<li><p><strong>Audio export, playback, and chapters live in one
+place.</strong> FFmpeg (for exporting compressed audio like MP3 and
+M4B), the mpv playback engine, and MP3 audiobook chapter markers are now
+a single <strong>“Audio: export, playback &amp; chapters”</strong> row
+instead of three scattered entries — and each piece is still fetched
+only when you first use its feature, so nothing large downloads until
+it’s actually needed. <strong>Node.js</strong> now sits at the very
+bottom of the list, as the least-used extra.</p></li>
+<li><p><strong>“Set as Default” is now a real, findable button.</strong>
+Pick your favorite offline speech model, or your favorite Read Aloud
+voice, and tell QUILL to use it from now on — a button and a right-click
+option, right where you already are, instead of a side effect of closing
+a dialog a particular way.</p></li>
+<li><p><strong>Speech Settings now separates offline from
+online.</strong> The Speech and Dictation tabs each split into
+<strong>Offline</strong> and <strong>Online</strong>, so your
+installed-once local engines and voices aren’t mixed in with API-key
+cloud services in one long list.</p></li>
+</ul>
+<h3 id="pdf-and-office-extraction-is-one-clear-download-away">PDF and
+Office extraction is one clear download away</h3>
+<ul>
+<li><strong>PDF and document import works out of the box again — and
+it’s now a one-click download.</strong> A tester on a clean install hit
+“can’t extract text from PDFs — no extraction engine available.” The
+free local converter and PDF text extractors were described in-app as
+built-in, but weren’t actually installed by the shipping build. Rather
+than bundling them whether or not you ever open a PDF, <strong>Help &gt;
+Download Optional Components &gt; “PDF and Office text
+extraction”</strong> (about 30 MB) now fetches them the moment you need
+them, on any install — and if a PDF has no selectable text, QUILL still
+tells you it looks like a scanned document and points you to OCR,
+instead of a confusing “no engine” message.</li>
+</ul>
+<hr />
+<h2
+id="speech-that-speaks-dictation-that-listens-and-audio-that-respects-your-time">Speech
+that speaks, dictation that listens, and audio that respects your
+time</h2>
+<p>The speech stack received one of the deepest practical passes in Beta
+2. Voices now prove they work, previews behave like previews,
+transcription is more dependable, and long-running audio work gives you
+control instead of holding QUILL hostage.</p>
+<h3 id="voices-read-aloud-and-offline-transcription">Voices, Read Aloud,
+and offline transcription</h3>
+<ul>
+<li><p><strong>Kokoro voices really speak now.</strong> Richard reported
+that after downloading Kokoro, previewing a voice failed with a baffling
+“needs one more component” message. His diagnostics log pointed straight
+at the culprit: a small support library Kokoro quietly needs was being
+left out of the build. It’s back — and when anything speech-related does
+go wrong, the real reason is now written to the diagnostics log
+(<strong>Help &gt; Save Diagnostics</strong>) instead of vanishing
+behind a vague message. Thank you, Richard.</p></li>
+<li><p><strong>Piper voices preview cleanly.</strong> Also from Richard:
+previewing a freshly downloaded Piper voice failed with an internal
+error. Fixed — preview and saving audio both work.</p></li>
+<li><p><strong>Testing a downloaded Piper voice no longer says the model
+file is missing.</strong> A second, separate Piper bug: the
+voice-preview code was looking in the wrong place for the file it had
+just downloaded. Fixed.</p></li>
+<li><p><strong>Offline speech-model downloads no longer crash with a
+cryptic Python error.</strong> Downloading a whisper.cpp or Faster
+Whisper model could fail partway through with
+<code>'NoneType' object has no attribute 'write'</code> — an internal
+progress-bar library trying to write status to a console QUILL doesn’t
+have. Fixed.</p></li>
+<li><p><strong>The braille pack’s Test button now actually reports the
+installed LibLouis version</strong>, instead of always saying
+“unknown.”</p></li>
+<li><p><strong>DECtalk speaks instead of opening a file.</strong>
+Testing a DECtalk voice in the installed app used to pop open a program
+file rather than talk. It speaks as it should now.</p></li>
+<li><p><strong>Read Aloud stops reading the punctuation.</strong>
+Headings, bold text, and links in a Markdown document were being read
+aloud as literal <code>#</code> and <code>*</code> symbols (especially
+garbled with Piper). They’re turned into plain, speakable text first now
+— live and on export.</p></li>
+<li><p><strong>Whisper model downloads are sturdier</strong>, going
+through the same well-tested library Faster Whisper already uses, so a
+hiccup on the model host’s side gives you a clear message instead of a
+mystery failure.</p></li>
+<li><p><strong>Offline transcription no longer mistakes the
+<code>openai-whisper</code> CLI for whisper.cpp.</strong> If you had the
+<code>openai-whisper</code> PyPI package installed, QUILL could grab its
+<code>whisper</code> command and run it with whisper.cpp flags, failing
+with a confusing error. It now requires the real whisper.cpp binary name
+(<code>whisper-cli</code>/<code>main</code>), so your genuine
+whisper.cpp install is used and the OpenAI CLI is left alone.
+(#931)</p></li>
+<li><p><strong>Voice preview feedback.</strong> Previewing a voice no
+longer overlaps a previous preview’s audio or announcement. Slow voice
+synthesis now plays a short cue and (by default) says “Generating
+preview, please wait,” and the Preview/Test button turns into a Stop
+button while a preview is active.</p></li>
+</ul>
+<h3
+id="audio-studio-progress-cancellation-safer-closing-and-cleaner-output">Audio
+Studio: progress, cancellation, safer closing, and cleaner output</h3>
+<ul>
+<li><p><strong>Audio Studio’s batch export finally has a working Cancel
+button.</strong> There was no way to stop a run in progress short of
+killing QUILL — no Cancel button, and Escape just dinged. Both now work:
+whatever file is currently synthesizing finishes normally first (no
+half-written audio files), then the run stops before the next one
+starts.</p></li>
+<li><p><strong>Audio Studio’s log file now shows the same chunk-by-chunk
+progress you see on screen</strong>, not just which document is up next
+— useful for checking on (or diagnosing) a run without watching the
+screen.</p></li>
+<li><p><strong>Audio Studio: WAV exports get their own subfolder; MP3
+still lands beside your document.</strong> WAV output now goes into an
+<strong>Audio Output</strong> subfolder next to the document it came
+from, instead of landing right beside it the way MP3 does. Exporting
+recursively through nested folders gives each subfolder its own Audio
+Output folder rather than funneling everything into one shared top-level
+folder.</p></li>
+<li><p><strong>QUILL now warns before Alt+F4 (or the window’s close
+button) silently abandons a running Audio Studio export.</strong>
+Closing used to just exit immediately, mid-job, with no warning. QUILL
+now asks first — close and stop it now, or leave QUILL open to finish —
+and points at <strong>File &gt; Send to Tray</strong> as a way to keep
+it running quietly in the background instead. Routine background
+activity (search/replace, dictation, downloads) is unaffected; the
+warning is reserved for real, hard-to-redo work.</p></li>
+</ul>
+<hr />
+<h2
+id="ai-that-is-understandable-local-friendly-and-actually-configurable">AI
+that is understandable, local-friendly, and actually configurable</h2>
+<p>AI setup should never imply that a local provider needs a cloud key,
+hide a working Ollama installation, or send you to a terminal for
+routine setup. Beta 2 turns those rough edges into a guided path that
+respects local, remote, and cloud choices.</p>
+<h3 id="ollama-and-the-ai-setup-wizard">Ollama and the AI Setup
+Wizard</h3>
+<ul>
+<li><p><strong>The AI Setup Wizard no longer treats a working local
+Ollama as “not there.”</strong> A never-configured install’s saved
+settings default to “Ollama,” which the wizard’s “remember what you
+already set up” step mistook for proof you’d deliberately added it — so
+on a brand-new install, Ollama was silently marked already-added and
+dropped out of the Provider list, leaving only key-requiring cloud
+options to pick from. It now confirms a local Ollama server actually
+answers before treating it as configured.</p></li>
+<li><p><strong>The AI Setup Wizard’s Connect step no longer lands you in
+the API key field, and Remove no longer looks clickable before you’ve
+selected anything.</strong> Reaching “Connect your AI providers” (or
+removing a provider) could jump focus into an API key field when the
+next provider in line needed one — easy to mistake for “Ollama needs a
+key too.” Focus now always starts on the Provider list. Remove selected
+also stays disabled until you’ve actually picked something in the Added
+list.</p></li>
+<li><p><strong>Ollama’s server address is now a real, editable
+field.</strong> The wizard always checked <code>localhost</code> only,
+even though pointing it at Ollama running on another computer on your
+network was meant to work. A new <strong>Ollama server address</strong>
+field (shown only when Ollama is selected) is now used everywhere the
+wizard talks to Ollama — verify, model listing, and Finish — so a remote
+or self-hosted Ollama is a genuine, working choice.</p></li>
+<li><p><strong>Pull an Ollama model right from the Setup Wizard — no
+terminal required.</strong> Choosing your default model used to just
+tell you to run <code>ollama pull &lt;model&gt;</code> yourself in a
+terminal. The Model step now shows which recommended models are already
+installed and offers a <strong>Pull model</strong> button for the rest,
+with live download progress, selecting the model for you the moment it’s
+ready.</p></li>
+<li><p><strong>The AI Hub’s API key field now correctly greys out for
+local Ollama.</strong> It stayed active for every provider regardless of
+whether a key was actually needed, which is why Ollama’s key field
+looked required even though nothing ever enforced it.</p></li>
+</ul>
+<h3 id="agent-sdks-model-discovery-and-interrupted-installs">Agent SDKs,
+model discovery, and interrupted installs</h3>
+<ul>
+<li><p><strong>The AI Setup Wizard no longer gets stuck</strong> showing
+an engine like OpenAI as “active” with no way to configure it after an
+interrupted install. Set Up works again.</p></li>
+<li><p><strong>OpenAI Agents SDK and Claude Agent SDK now have a way to
+add an API key.</strong> Previously, once installed, there was no in-app
+way to configure either — <strong>Set Up</strong> in the AI Hub’s
+Engines tab now opens a small dialog to paste, save, or remove the key,
+applied right away with no restart needed.</p></li>
+<li><p><strong>The AI Hub now reads your Ollama models for
+real.</strong> Each Ollama model shows its actual abilities (Vision,
+Tools) discovered via <code>/api/show</code> instead of a hardcoded
+list, and picking the Ollama provider auto-probes whether Ollama is
+running and how many models you have — so you know at a glance whether
+local AI is reachable.</p></li>
+</ul>
+<hr />
+<h2 id="explore-github-without-leaving-your-editor">Explore GitHub
+without leaving your editor</h2>
+<p>QUILL could already open and save files from a GitHub repository. Now
+it can also <strong>show you what’s going on in one</strong> — the
+issues, pull requests, branches, commits, tags, releases, and workflow
+runs — without leaving the editor or firing up a browser. <strong>File
+&gt; Open from Remote &gt; GitHub Items…</strong> opens a read-only
+viewer modeled on the open-source <a
+href="https://github.com/kellylford/GHManage">GHManage</a> viewer, built
+keyboard- and screen-reader-first.</p>
+<p>Type <code>owner/repo</code> and load (if you’re already editing a
+file you opened from GitHub, the repository is filled in for you). Pick
+a view — the combined Issues &amp; PRs inbox, Branches, Commits, Tags,
+Releases, or Workflow Runs — and the list shows one row per item while a
+details box below shows the full text. In the Issues &amp; PRs view you
+can also filter by issues/PRs/both, by open/closed/ all, and sort by
+number, title, last-updated, or comment count.</p>
+<p>Two list modes matter for screen readers: <strong>Quick</strong>
+shows compact cells, and <strong>Full</strong> spells each one as
+<code>field: value</code>
+(<code>number: 208, type: ISSUE, state: OPEN</code>) so your reader
+announces a self-describing line per row instead of bare values. Select
+an issue or PR and the comment thread loads beneath it;
+<strong>Alt+N</strong> and <strong>Alt+P</strong> jump between comments,
+announcing “Comment N of M.” <strong>Enter</strong> opens a row in your
+browser — and on a branch row, it drills into that branch’s commits.
+<strong>Ctrl+R</strong> refreshes, <strong>Ctrl+O</strong> opens in the
+browser, <strong>Ctrl+G</strong> jumps to an issue or PR by number, and
+<strong>View More</strong> loads the next page.</p>
+<p>It’s read-only for now — you can browse and open, but not close,
+reopen, or comment from inside QUILL. The same gates apply as the other
+GitHub commands: disabled in Safe Mode, first-run consent, and anonymous
+access for public repositories (lower rate limit) or your stored token
+for private ones. (#924)</p>
+<h3
+id="mastodon-posts-now-respect-language-and-instance-limits">Mastodon
+posts now respect language and instance limits</h3>
+<ul>
+<li><strong>Posting to Mastodon: set a post’s language, and the counter
+respects your instance’s limit.</strong> A post written in Italian can
+be filed under the Italian preset instead of your account default; and
+if your instance allows more (or fewer) than 500 characters, the live
+counter now knows — via a one-time lookup of the instance’s own limit
+(#922), including non-Mastodon forks like GoToSocial and Pleroma that
+don’t implement the v2 lookup QUILL tries first.</li>
+</ul>
+<hr />
+<h2 id="macos-a-top-to-bottom-platform-transformation">macOS: a
+top-to-bottom platform transformation</h2>
 <p>QUILL’s macOS support got a top-to-bottom review across several
 passes this release. Everything Mac-specific lives here in one place. We
 develop on Windows, so every Mac fix below was made without a Mac in
@@ -80,31 +608,13 @@ unit-tested here but only show their real effect on a Mac — please try
 the fix and tell us through <strong>Help &gt; Report a Bug</strong> (or
 the linked support issue) if a symptom persists, so we can close it out
 or reopen it.</p>
-<h3 id="a-favor-to-ask-mac-users">A favor to ask Mac users</h3>
-<p>If you use QUILL on macOS, three things would help us enormously.
-Each is fixed in code in this release but needs a Mac to confirm, so
-please try the fix and leave a short comment — <em>helped</em>, <em>no
-difference</em>, or <em>worse</em> — so we can close it out or reopen
-it.</p>
-<ul>
-<li><strong>Diacriticals no longer stolen by shortcuts.</strong> In a
-Polish or other diacritical layout, Option+Z / +Q / +M / +I now type
-their character instead of firing a QUILL command. Does typing those
-characters work for you now? Please comment on <a
-href="https://github.com/Community-Access/support/issues/67">support#67</a>.</li>
-<li><strong>Settings speech controls are labelled for
-VoiceOver.</strong> The Rate, Volume, and Pitch number boxes now
-announce their label alongside their value. Does VoiceOver read them
-clearly? Please comment on <a
-href="https://github.com/Community-Access/support/issues/69">support#69</a>.</li>
-<li><strong>Are the new Mac shortcuts comfortable?</strong> We moved
-three shortcuts that collided with macOS system ones (see “Three Mac
-keyboard collisions fixed” below for the details). These are our best
-guess from a Windows box — if any collides with something on your setup
-or just feels awkward, tell us and we’ll pick a better chord
-together.</li>
-</ul>
-<h3 id="other-macos-fixes">Other macOS fixes</h3>
+<p>This work reaches far beyond a handful of compatibility patches. It
+makes QUILL more recognizably Mac-like in its menus, shortcuts,
+launching, voices, Keychain behavior, portable mode, Finder integration,
+security, theming, clipboard use, announcements, and build
+discipline.</p>
+<h3 id="the-complete-macos-improvement-pass">The complete macOS
+improvement pass</h3>
 <ul>
 <li><p><strong>Built-in keymap profiles now stay
 platform-aware.</strong> The shipped keymap profiles no longer override
@@ -408,8 +918,62 @@ longer calls Hide+Veto with no tray icon present; and the diagnostics
 bundle now collects macOS <code>~/Library/Logs/DiagnosticReports</code>
 crash logs alongside the Windows ones.</p></li>
 </ul>
-<h2 id="bug-reporting-that-actually-reaches-us">Bug reporting that
-actually reaches us</h2>
+<hr />
+<h2 id="install-quill-your-way">Install QUILL your way</h2>
+<p>Whether you want the smallest regular installer, a portable copy that
+carries its optional pieces with it, a command available from every
+terminal, or a machine that must never touch the internet, Beta 2 gives
+you a clearer path.</p>
+<h3 id="fully-offline-when-you-need-it">Fully offline, when you need
+it</h3>
+<p>QUILL normally keeps its installer small by downloading the bigger
+optional pieces — Pandoc, offline speech engines, neural voices, the
+braille pack, and more — only when you first reach for them. That’s the
+right default for most people, but it assumes you have an internet
+connection at some point after install. A new <strong>Offline
+Edition</strong> build removes that assumption entirely: every optional
+component ships inside the installer and the portable bundle up front,
+so QUILL is fully functional the moment it’s installed, with no internet
+connection ever needed — right for an air-gapped machine, a locked-down
+work laptop, or anywhere your first login can’t reach the internet.</p>
+<p><strong>Help &gt; Download Optional Components</strong> knows the
+difference: in the Offline Edition, every bundled piece shows as
+<strong>Bundled</strong> instead of offering a Download button, since
+there’s nothing left to fetch. The regular, smaller installer and
+portable download you already know are unchanged and remain the default
+choice for everyone else.</p>
+<h3 id="a-simpler-installer-and-a-lighter-one">A simpler installer — and
+a lighter one</h3>
+<ul>
+<li><p><strong>No more component checkboxes.</strong> Beta 1’s installer
+asked you to pick optional parts — several of which did nothing, because
+they’re fetched on demand anyway. The installer now just installs QUILL;
+everything optional arrives when you first reach for it.</p></li>
+<li><p><strong>A smaller download.</strong> Kokoro’s neural-voice engine
+is now fetched on demand with everything it needs, trimming the
+installer noticeably — you download Kokoro only if and when you want
+those voices.</p></li>
+</ul>
+<h3 id="add-quill-to-path-when-that-fits-your-workflow">Add QUILL to
+PATH when that fits your workflow</h3>
+<ul>
+<li><strong>Quill can add itself to PATH, so
+<code>quill &lt;file&gt;</code> works from any Command Prompt or
+PowerShell window.</strong> The installer now offers an opt-in
+<strong>“Add Quill to PATH”</strong> task (off by default, cleanly
+removed on uninstall), and the user guide’s command-line examples now
+lead with <code>quill.exe</code> — the command every install and
+portable copy actually has — instead of <code>python -m quill</code>,
+which only works from a source checkout. (#941)</li>
+</ul>
+<hr />
+<h2 id="trust-is-a-feature">Trust is a feature</h2>
+<p>A community-built editor must be dependable not only when everything
+works, but also when something fails. Beta 2 strengthens the path from
+error to report, protects more personal information, verifies extension
+signatures for real, and makes support details far more actionable.</p>
+<h3 id="bug-reporting-that-actually-reaches-us">Bug reporting that
+actually reaches us</h3>
 <p>After upgrading, some of you found the bug reporter saying “no
 token.” The Windows build wasn’t including the built-in reporting token,
 so it shipped empty. It’s fixed at the source, and now <strong>every
@@ -428,282 +992,10 @@ it, and it stops the moment the token is back.</p>
 <p>This is the fix behind every “please try this and tell us” ask in
 these notes — it’s what makes Report a Bug dependable on every install,
 Mac included.</p>
-<h2
-id="alt-text-you-cant-skip-and-images-that-speak-up-when-its-missing">Alt
-text you can’t skip, and images that speak up when it’s missing</h2>
-<p>GLOW already catches missing alt text after the fact — this adds the
-proactive half. <strong>Insert &gt; Image…</strong> is QUILL’s first
-dedicated image-insertion flow: it won’t let you insert without either
-real alt text or an explicit “this image is decorative” choice, so a
-document can no longer quietly pick up an un-alt-texted image. And for
-any image already in your document, however it got there, <strong>Tools
-&gt; Describe Image at Cursor</strong> tells you exactly what’s there:
-“Image: sunset.png, alt text: a sunset over the lake” — or just as
-clearly, “alt text MISSING” if nobody ever wrote one.</p>
-<h2 id="print-studio-finally-a-preview">Print Studio: finally, a
-preview</h2>
-<p><strong>File &gt; Print Studio…</strong> tells you what you’re about
-to print before you print it — “3 pages, Letter, default margins” — read
-aloud or in braille, the way a visual print preview would show a sighted
-user. Then choose <strong>all, odd, or even pages</strong>,
-<strong>reverse the order</strong>, or <strong>skip the first
-page</strong> if it’s pre-printed letterhead, before it hands off to the
-same Print dialog you already know. Printing itself also got more honest
-along the way — it used to draw whatever fit on one page and quietly
-drop the rest of a longer document; now it paginates properly.</p>
-<h2 id="and-now-headers-and-footers">And now, headers and footers</h2>
-<p><strong>File &gt; Header and Footer…</strong> builds one from named
-presets — title on the left with the page number on the right, filename
-and date, Roman numerals for front matter — or your own mix of a handful
-of tokens (title, filename, date, page number) placed left, center, or
-right. Want a different header on page one? There’s a checkbox for that.
-Numeric or Roman page numbers, starting wherever you like. It’s saved
-with the document and shows up on every page you print, Print Studio or
-plain Print alike.</p>
-<h2 id="five-small-things-that-add-up">Five small things that add
-up</h2>
+<h3 id="quillin-signatures-are-now-genuinely-verified">Quillin
+signatures are now genuinely verified</h3>
 <ul>
-<li><strong>Look Up now includes Wikipedia.</strong> A short
-encyclopedia summary, with a link to the source, appears alongside
-definitions and synonyms when you’re online — same consent and offline
-fallback as always.</li>
-<li><strong>A bigger clip history, alongside Copy Tray.</strong> Copy
-Tray’s curated 12 slots aren’t going anywhere — <strong>Clip
-Library</strong> (Edit menu) is a second, rolling history of everything
-you choose to keep, searchable, favoritable, and promotable into a
-specific Copy Tray slot when one earns a permanent home. Turn on
-automatic capture (off by default) and every copy inside QUILL is
-remembered with no extra step.</li>
-<li><strong>Send as Email, or just Copy as Email Body.</strong> The File
-menu can now hand your selection (or the whole document) straight to
-your mail client, or copy it to the clipboard formatted for pasting into
-one — useful when a mail client balks at a long message built the first
-way.</li>
-<li><strong>AutoOutline numbers your headings for you.</strong> Format
-&gt; Update Outline Numbering — numeric or legal style, your choice in
-Preferences &gt; Editing — writes the number straight into the heading
-text, so it reads aloud and survives copy/paste and export with nothing
-extra to configure.</li>
-<li><strong>Work Personas: one action into a whole context.</strong>
-Tools &gt; Work Personas… bundles a feature profile, a working folder,
-your favorite files, and a keymap profile under a name — “School,”
-“Novel,” a client’s name. Apply it instantly, launch straight into it
-with <code>quill --persona NAME</code>, or generate a double-clickable
-shortcut so it’s one click away without QUILL already open.</li>
-</ul>
-<h2 id="getting-the-extras-you-want-reimagined">Getting the extras you
-want, reimagined</h2>
-<p>QUILL stays small by downloading the big optional pieces only when
-you ask. Beta testers told us that experience was confusing — so
-<strong>Help &gt; Download Optional Components</strong> was rebuilt into
-one warm, guided place.</p>
-<ul>
-<li><strong>One hub for everything optional.</strong> Every component in
-a single list, the ones most people reach for first (Pandoc, then the
-braille pack), each row saying in plain language what it does and how
-big it is. The window opens instantly now instead of pausing to check
-what you already have.</li>
-<li><strong>Prove it works before you rely on it.</strong> Anything
-installed gets a <strong>Test</strong> button: a voice reads you a
-sample so you actually hear it, the offline speech engine listens to a
-spoken phrase and tells you what it heard, and tools report their
-version. There’s a <strong>Remove</strong> button too, and a
-<strong>Manage</strong> button that jumps you straight to the right
-picker (Manage Speech Models or Manage Voices).</li>
-<li><strong>A guided, step-by-step setup for offline dictation.</strong>
-Choosing offline dictation used to mean hunting through menus. Now the
-row is simply called <strong>Dictation (offline speech)</strong>, and it
-walks you through it one step at a time — a banner at the top always
-tells you which step you’re on and the single next thing to do:
-<strong>1.</strong> pick and install your engine —
-<strong>Whisper.cpp</strong> (light and fast, works on any computer),
-<strong>Faster Whisper</strong> (most accurate), or
-<strong>Vosk</strong> (tiny, for old or low-memory machines);
-<strong>2.</strong> pick a model, with the best fit for your computer
-already selected so it’s one click; <strong>3.</strong> press
-<strong>Test dictation</strong> to hear it prove itself, and it becomes
-your default. QUILL remembers the engine you chose, so you come back to
-where you left off instead of it resetting to the built-in engine. Vosk
-used to sit as its own separate row further down the list; it’s simply a
-third choice here now, so there’s exactly one place to set up offline
-dictation.</li>
-<li><strong>You always land back where you started — on the row you were
-just on.</strong> Downloading something used to fling you off into the
-editor or another tab, or reset the list to the top. Now every download
-— voices, engines, Pandoc, the braille pack, audio extras, Node.js,
-MathCAT, spell-check dictionaries — finishes, returns you to the hub,
-and reselects exactly the row you were working with.</li>
-<li><strong>A gentler helping hand.</strong> If you Test a piece before
-it’s fully set up, QUILL walks you over to finish rather than treating a
-perfectly normal situation as an error — for offline speech
-specifically, that now means reopening the same guided engine-and-model
-picker above, not a bigger settings dialog. And if a download genuinely
-fails, it offers to send a report with the details.</li>
-<li><strong>Runs portable, stays portable.</strong> Everything installs
-into your portable data folder when you run QUILL from a drive, so your
-whole setup travels with you.</li>
-<li><strong>Audio export, playback, and chapters live in one
-place.</strong> FFmpeg (for exporting compressed audio like MP3 and
-M4B), the mpv playback engine, and MP3 audiobook chapter markers are now
-a single <strong>“Audio: export, playback &amp; chapters”</strong> row
-instead of three scattered entries — and each piece is still fetched
-only when you first use its feature, so nothing large downloads until
-it’s actually needed. <strong>Node.js</strong> now sits at the very
-bottom of the list, as the least-used extra.</li>
-<li><strong>“Set as Default” is now a real, findable button.</strong>
-Pick your favorite offline speech model, or your favorite Read Aloud
-voice, and tell QUILL to use it from now on — a button and a right-click
-option, right where you already are, instead of a side effect of closing
-a dialog a particular way.</li>
-<li><strong>Speech Settings now separates offline from online.</strong>
-The Speech and Dictation tabs each split into <strong>Offline</strong>
-and <strong>Online</strong>, so your installed-once local engines and
-voices aren’t mixed in with API-key cloud services in one long
-list.</li>
-</ul>
-<h2 id="small-but-meaningful-polish">Small but meaningful polish</h2>
-<ul>
-<li><strong>QUILL no longer thinks it crashed when Windows shuts down or
-logs off with it open.</strong> The OS session-end event now records a
-clean exit, so your next launch doesn’t offer crash recovery for a
-session that ended normally. (#920)</li>
-<li><strong>Windows shell-integration registration no longer crashes on
-the Python 3.13 runtime.</strong> An empty binary registry value (the
-<code>OpenWithProgids</code> entry) that older Pythons silently accepted
-now gets the right type, so file associations register cleanly again.
-(#921)</li>
-<li><strong>Posting to Mastodon: set a post’s language, and the counter
-respects your instance’s limit.</strong> A post written in Italian can
-be filed under the Italian preset instead of your account default; and
-if your instance allows more (or fewer) than 500 characters, the live
-counter now knows — via a one-time lookup of the instance’s own limit
-(#922), including non-Mastodon forks like GoToSocial and Pleroma that
-don’t implement the v2 lookup QUILL tries first.</li>
-</ul>
-<h2 id="the-quill-key-is-yours-to-reassign">The QUILL key is yours to
-reassign</h2>
-<p>A new <strong>Change QUILL Key…</strong> button in the Keymap Editor
-(<strong>Preferences &gt; Keyboard &gt; Keymap Editor</strong>) lets you
-reassign the QUILL-key prefix itself — the key every
-<code>QUILL Key + ...</code> chord starts with. Pick a new one and QUILL
-validates it, warns you about conflicts with other bindings (and with
-OS-reserved chords), then rewrites your stored chords to follow the new
-prefix, so <code>QUILL Key + S</code>, <code>QUILL Key + V</code>, and
-the rest all move together instead of you rebinding them one at a time.
-And typing <code>quill</code> in the Keymap Editor’s search box now
-lists every QUILL-key-chord command in one place, so you can see — and
-rebind — the whole chord set at once. It works the same on Windows and
-macOS.</p>
-<h2 id="a-page-number-honestly-presented">A page number, honestly
-presented</h2>
-<p>A tester asked directly: “Are we going to be able to see proper page
-numbers with QUILL?” Now every document shows one, in the status bar, on
-by default, right next to your line/column position.</p>
-<ul>
-<li><strong>PDFs get a real page count.</strong> QUILL now preserves
-each PDF’s actual page boundaries when you open it, so you see an exact
-“3 of 12” and <code>Ctrl+Shift+G</code> (Go To Page) jumps exactly.</li>
-<li><strong>Everything else gets an honest estimate.</strong> Plain
-text, Markdown, and Word documents don’t have a real “page” until you
-print or export – it depends on font, margins, and paper size, none of
-which QUILL tracks while you write. So for these, the same cell shows
-“~3 of ~12 (estimated)” – the tilde and the word “estimated” always
-travel together, on purpose, so you never mistake a guess for a fact.
-Tune the words-per-page assumption in Preferences &gt; Navigation and
-QUILL Key if your pages run long or short.</li>
-<li>Braille documents are untouched – they keep their own, richer page
-system.</li>
-</ul>
-<h2 id="a-simpler-installer-and-a-lighter-one">A simpler installer, and
-a lighter one</h2>
-<ul>
-<li><strong>No more component checkboxes.</strong> Beta 1’s installer
-asked you to pick optional parts — several of which did nothing, because
-they’re fetched on demand anyway. The installer now just installs QUILL;
-everything optional arrives when you first reach for it.</li>
-<li><strong>A smaller download.</strong> Kokoro’s neural-voice engine is
-now fetched on demand with everything it needs, trimming the installer
-noticeably — you download Kokoro only if and when you want those
-voices.</li>
-</ul>
-<h2 id="speech-that-just-works">Speech that just works</h2>
-<ul>
-<li><strong>Kokoro voices really speak now.</strong> Richard reported
-that after downloading Kokoro, previewing a voice failed with a baffling
-“needs one more component” message. His diagnostics log pointed straight
-at the culprit: a small support library Kokoro quietly needs was being
-left out of the build. It’s back — and when anything speech-related does
-go wrong, the real reason is now written to the diagnostics log
-(<strong>Help &gt; Save Diagnostics</strong>) instead of vanishing
-behind a vague message. Thank you, Richard.</li>
-<li><strong>Piper voices preview cleanly.</strong> Also from Richard:
-previewing a freshly downloaded Piper voice failed with an internal
-error. Fixed — preview and saving audio both work.</li>
-<li><strong>Testing a downloaded Piper voice no longer says the model
-file is missing.</strong> A second, separate Piper bug: the
-voice-preview code was looking in the wrong place for the file it had
-just downloaded. Fixed.</li>
-<li><strong>Offline speech-model downloads no longer crash with a
-cryptic Python error.</strong> Downloading a whisper.cpp or Faster
-Whisper model could fail partway through with
-<code>'NoneType' object has no attribute 'write'</code> — an internal
-progress-bar library trying to write status to a console QUILL doesn’t
-have. Fixed.</li>
-<li><strong>The braille pack’s Test button now actually reports the
-installed LibLouis version</strong>, instead of always saying
-“unknown.”</li>
-<li><strong>DECtalk speaks instead of opening a file.</strong> Testing a
-DECtalk voice in the installed app used to pop open a program file
-rather than talk. It speaks as it should now.</li>
-<li><strong>Read Aloud stops reading the punctuation.</strong> Headings,
-bold text, and links in a Markdown document were being read aloud as
-literal <code>#</code> and <code>*</code> symbols (especially garbled
-with Piper). They’re turned into plain, speakable text first now — live
-and on export.</li>
-<li><strong>Whisper model downloads are sturdier</strong>, going through
-the same well-tested library Faster Whisper already uses, so a hiccup on
-the model host’s side gives you a clear message instead of a mystery
-failure.</li>
-<li><strong>Offline transcription no longer mistakes the
-<code>openai-whisper</code> CLI for whisper.cpp.</strong> If you had the
-<code>openai-whisper</code> PyPI package installed, QUILL could grab its
-<code>whisper</code> command and run it with whisper.cpp flags, failing
-with a confusing error. It now requires the real whisper.cpp binary name
-(<code>whisper-cli</code>/<code>main</code>), so your genuine
-whisper.cpp install is used and the OpenAI CLI is left alone.
-(#931)</li>
-<li><strong>Voice preview feedback.</strong> Previewing a voice no
-longer overlaps a previous preview’s audio or announcement. Slow voice
-synthesis now plays a short cue and (by default) says “Generating
-preview, please wait,” and the Preview/Test button turns into a Stop
-button while a preview is active.</li>
-<li><strong>The AI Setup Wizard no longer gets stuck</strong> showing an
-engine like OpenAI as “active” with no way to configure it after an
-interrupted install. Set Up works again.</li>
-<li><strong>“Failed to get data from the clipboard” errors during
-cut/paste are fixed.</strong> A screen reader or clipboard-history tool
-briefly holding the clipboard used to show this error immediately; QUILL
-now gives it a brief moment before giving up.</li>
-<li><strong>Fixed four crash reports sent in through user
-feedback:</strong> the Spell Check Language chooser, word prediction
-after recovering from a crash, and the AI Hub’s Engines tab closing
-mid-install.</li>
-<li><strong>OpenAI Agents SDK and Claude Agent SDK now have a way to add
-an API key.</strong> Previously, once installed, there was no in-app way
-to configure either — <strong>Set Up</strong> in the AI Hub’s Engines
-tab now opens a small dialog to paste, save, or remove the key, applied
-right away with no restart needed.</li>
-<li><strong>The AI Hub now reads your Ollama models for real.</strong>
-Each Ollama model shows its actual abilities (Vision, Tools) discovered
-via <code>/api/show</code> instead of a hardcoded list, and picking the
-Ollama provider auto-probes whether Ollama is running and how many
-models you have — so you know at a glance whether local AI is
-reachable.</li>
-</ul>
-<h2 id="quillin-signatures-verified-for-real">Quillin signatures,
-verified for real</h2>
-<ul>
-<li><p><strong>The “Signature” line in the Quillins Manager now actually
+<li><strong>The “Signature” line in the Quillins Manager now actually
 verifies.</strong> It was always there — <code>verified</code>,
 <code>invalid</code>, or <code>unsigned</code> — but the cryptography
 library it needs (PyNaCl) was a developer-only dependency that no
@@ -711,146 +1003,15 @@ shipping build included, so on your install it always read “PyNaCl is
 not installed” and could never tell a publisher-signed Quillin from a
 tampered one. PyNaCl is now bundled with Quill, so the signature check
 is real on every install. The <code>.minisig</code> sidecars shipped
-with signed Quillins finally mean something at the detail view.</p></li>
-<li><p><strong>Dialogs open on the first real control</strong>, not the
-OK/Cancel button or a tab strip. The Speech Hub, Manage Speech Models,
-Manage Voices, the AI Hub, About, About Whisperer, the Help status
-dialogs, and Quillin preferences all land you where you can start
-working — and because the fix lives in the shared dialog machinery,
-every tabbed dialog behaves.</p></li>
-<li><p><strong>The status bar stopped repeating itself.</strong>
-Pressing F6 into the status bar and arrowing across it made your screen
-reader say “Status Bar” before every cell. Now you hear it once, on
-arrival; after that each cell just tells you what it is and what it says
-— for example, “Position, Ln 12, Col 7.”</p></li>
-<li><p><strong>The status bar stopped repeating itself, take
-two.</strong> The general Message cell could end up showing the exact
-same text as another cell right next to it — a tester noticed it
-happening with the Page cell. Message now goes quiet whenever another
-visible cell is already saying the same thing, instead of saying it
-twice.</p></li>
-<li><p><strong>No more doubled ampersands.</strong> “Writing &amp;
-Language,” “Reading &amp; Dictation,” and friends sometimes read back as
-“Writing &amp;&amp; Language.” They spell out “and” now.</p></li>
-<li><p><strong>AI Hub: choosing a provider stays where you put
-it.</strong> Arrowing through the Provider list without opening its
-dropdown could bounce focus over to the Model field the moment its
-suggestions refreshed. Focus now stays put.</p></li>
+with signed Quillins finally mean something at the detail view.</li>
 </ul>
-<h2 id="language-stability-and-support">Language, stability, and
-support</h2>
+<p>Together, these two changes cover both sides of trust: normal
+shipping builds now perform the real cryptographic check, while an
+unusual or incomplete environment fails gracefully instead of taking the
+manager down with it.</p>
+<h3 id="the-quillins-manager-stays-open-when-you-need-it">The Quillins
+Manager stays open when you need it</h3>
 <ul>
-<li><strong>Italian is here to switch to.</strong> Elena Brescacin’s
-beautiful, complete Italian translation shipped in Beta 1 — but a build
-step meant it never actually appeared under Change Display Language. It
-does now, all 1,100-plus phrases of it. Grazie mille, Elena. (Tools &gt;
-Writing and Language &gt; Change Display Language.)</li>
-<li><strong>Italian no longer blurs two “vaults” into one.</strong> The
-OS credential vault and QUILL’s document vault had landed on the same
-Italian word; they’re now distinct — credential store “archivio delle
-credenziali,” document vault “raccolta” — with stale fuzzy markers
-cleared and “encoding” corrected to “codifica.” (#913)</li>
-<li><strong>Danish joins the Braille Translation menu.</strong> The
-grade 1 and grade 2 tables shipped with the engine all along; Danish
-just never made it onto QUILL’s list.</li>
-<li><strong>Opening Profiles and Features no longer crashes</strong> — a
-translated profile name wasn’t being fully resolved before the list was
-built.</li>
-<li><strong>Non-UTF-8 text files open cleanly.</strong> A
-<code>.txt</code> or <code>.md</code> saved in an older Windows encoding
-(a curly quote or en-dash, no UTF-8 marker) used to crash on open. QUILL
-now falls back gracefully and tells you in the status bar.</li>
-<li><strong>A stalled graphics-card check can’t freeze the app.</strong>
-The speech options’ hardware probe ran with no timeout on the main
-thread every time you opened the dialog; it’s timeout-guarded and runs
-once per session now.</li>
-<li><strong>Convert Non-ASCII to HTML Entities no longer freezes QUILL
-on a large file.</strong> On a document over a megabyte, this could take
-the better part of a minute — and QUILL, along with your screen reader,
-went unresponsive for the whole time. It now runs in the background
-instead.</li>
-<li><strong>Converting a UTF-8 file’s non-ASCII characters no longer
-leaves a pointless byte-order mark behind.</strong> Once every non-ASCII
-character becomes an HTML entity, the file is pure ASCII — but it still
-saved with a three-byte UTF-8 marker at the start. That marker is
-dropped when nothing in the file needs it anymore.</li>
-<li><strong>First-run “Personalise QUILL” now offers to restart</strong>
-when your choice of where to store data needs one to take effect — the
-same prompt Preferences already gives, instead of the choice silently
-waiting for your next launch.</li>
-<li><strong>The Outline Navigator (Ctrl+Shift+O) opens again.</strong>
-It — and the EPUB and Quick Nav surfaces that share the same dialog —
-could crash instead of opening, because of an invalid call on the tree
-control’s hidden root. Fixed.</li>
-<li><strong>Crash reports no longer carry your Windows
-username.</strong> If your portable copy lived inside your home folder,
-the local crash-report file path was included verbatim in a submitted
-report’s metadata — the one place that path wasn’t already being
-scrubbed. It’s redacted the same way as everywhere else now.</li>
-<li><strong>Errors carry a short support code</strong> (like
-<code>[QUILL-SPEECH-WHISPER-DL-404]</code>), and it rides along in crash
-reports automatically — so if you paste an error to us, we can pinpoint
-the exact cause. Every one of QUILL’s internal error types now has
-one.</li>
-</ul>
-<hr />
-<h2 id="browse-a-repository-without-leaving-your-editor">Browse a
-repository without leaving your editor</h2>
-<p>QUILL could already open and save files from a GitHub repository. Now
-it can also <strong>show you what’s going on in one</strong> — the
-issues, pull requests, branches, commits, tags, releases, and workflow
-runs — without leaving the editor or firing up a browser. <strong>File
-&gt; Open from Remote &gt; GitHub Items…</strong> opens a read-only
-viewer modeled on the open-source <a
-href="https://github.com/kellylford/GHManage">GHManage</a> viewer, built
-keyboard- and screen-reader-first.</p>
-<p>Type <code>owner/repo</code> and load (if you’re already editing a
-file you opened from GitHub, the repository is filled in for you). Pick
-a view — the combined Issues &amp; PRs inbox, Branches, Commits, Tags,
-Releases, or Workflow Runs — and the list shows one row per item while a
-details box below shows the full text. In the Issues &amp; PRs view you
-can also filter by issues/PRs/both, by open/closed/ all, and sort by
-number, title, last-updated, or comment count.</p>
-<p>Two list modes matter for screen readers: <strong>Quick</strong>
-shows compact cells, and <strong>Full</strong> spells each one as
-<code>field: value</code>
-(<code>number: 208, type: ISSUE, state: OPEN</code>) so your reader
-announces a self-describing line per row instead of bare values. Select
-an issue or PR and the comment thread loads beneath it;
-<strong>Alt+N</strong> and <strong>Alt+P</strong> jump between comments,
-announcing “Comment N of M.” <strong>Enter</strong> opens a row in your
-browser — and on a branch row, it drills into that branch’s commits.
-<strong>Ctrl+R</strong> refreshes, <strong>Ctrl+O</strong> opens in the
-browser, <strong>Ctrl+G</strong> jumps to an issue or PR by number, and
-<strong>View More</strong> loads the next page.</p>
-<p>It’s read-only for now — you can browse and open, but not close,
-reopen, or comment from inside QUILL. The same gates apply as the other
-GitHub commands: disabled in Safe Mode, first-run consent, and anonymous
-access for public repositories (lower rate limit) or your stored token
-for private ones. (#924)</p>
-<hr />
-<h2 id="three-fixes-that-unblock-real-work">Three fixes that unblock
-real work</h2>
-<ul>
-<li><strong>PDF and document import works out of the box again — and
-it’s now a one-click download.</strong> A tester on a clean install hit
-“can’t extract text from PDFs — no extraction engine available.” The
-free local converter and PDF text extractors were described in-app as
-built-in, but weren’t actually installed by the shipping build. Rather
-than bundling them whether or not you ever open a PDF, <strong>Help &gt;
-Download Optional Components &gt; “PDF and Office text
-extraction”</strong> (about 30 MB) now fetches them the moment you need
-them, on any install — and if a PDF has no selectable text, QUILL still
-tells you it looks like a scanned document and points you to OCR,
-instead of a confusing “no engine” message.</li>
-<li><strong>“Casual Writer” finally just lets you write.</strong> The
-profile was quietly leaving AI, GLOW review, remote files, analysis,
-watch folders, notebooks, and developer tools switched on. Choose Casual
-Writer now and those step out of the way, for a clean “write, format,
-print, send” workspace — while read aloud, voice commands, dictation,
-and braille stay right where they are, because a simpler profile should
-never be a less accessible one. Want any of it back? Preferences &gt;
-Profiles and Features, one toggle each.</li>
 <li><strong>The Quillins Manager no longer crashes on open.</strong> A
 reporter hit this right away: just viewing a Quillin’s details crashed
 with a <code>ModuleNotFoundError</code>. The signature-status check (is
@@ -860,7 +1021,83 @@ shipped app — it now reports “signature check unavailable” instead of
 taking the whole dialog down with it.</li>
 </ul>
 <hr />
-<h2 id="with-gratitude">With gratitude</h2>
+<h2 id="reliability-work-that-protects-real-work">Reliability work that
+protects real work</h2>
+<p>Many of the fixes below are quiet by design. They remove freezes,
+false crash recovery, stale focus, clipboard races, encoding failures,
+and diagnostics gaps — the kinds of problems that disappear when the
+software is doing its job well.</p>
+<h3 id="windows-shutdown-shell-integration-and-clean-exits">Windows
+shutdown, shell integration, and clean exits</h3>
+<ul>
+<li><p><strong>QUILL no longer thinks it crashed when Windows shuts down
+or logs off with it open.</strong> The OS session-end event now records
+a clean exit, so your next launch doesn’t offer crash recovery for a
+session that ended normally. (#920)</p></li>
+<li><p><strong>Windows shell-integration registration no longer crashes
+on the Python 3.13 runtime.</strong> An empty binary registry value (the
+<code>OpenWithProgids</code> entry) that older Pythons silently accepted
+now gets the right type, so file associations register cleanly again.
+(#921)</p></li>
+</ul>
+<h3 id="clipboard-and-community-reported-crashes">Clipboard and
+community-reported crashes</h3>
+<ul>
+<li><p><strong>“Failed to get data from the clipboard” errors during
+cut/paste are fixed.</strong> A screen reader or clipboard-history tool
+briefly holding the clipboard used to show this error immediately; QUILL
+now gives it a brief moment before giving up.</p></li>
+<li><p><strong>Fixed four crash reports sent in through user
+feedback:</strong> the Spell Check Language chooser, word prediction
+after recovering from a crash, and the AI Hub’s Engines tab closing
+mid-install.</p></li>
+</ul>
+<h3 id="files-encodings-conversions-startup-and-support-codes">Files,
+encodings, conversions, startup, and support codes</h3>
+<ul>
+<li><p><strong>Opening Profiles and Features no longer crashes</strong>
+— a translated profile name wasn’t being fully resolved before the list
+was built.</p></li>
+<li><p><strong>Non-UTF-8 text files open cleanly.</strong> A
+<code>.txt</code> or <code>.md</code> saved in an older Windows encoding
+(a curly quote or en-dash, no UTF-8 marker) used to crash on open. QUILL
+now falls back gracefully and tells you in the status bar.</p></li>
+<li><p><strong>A stalled graphics-card check can’t freeze the
+app.</strong> The speech options’ hardware probe ran with no timeout on
+the main thread every time you opened the dialog; it’s timeout-guarded
+and runs once per session now.</p></li>
+<li><p><strong>Convert Non-ASCII to HTML Entities no longer freezes
+QUILL on a large file.</strong> On a document over a megabyte, this
+could take the better part of a minute — and QUILL, along with your
+screen reader, went unresponsive for the whole time. It now runs in the
+background instead.</p></li>
+<li><p><strong>Converting a UTF-8 file’s non-ASCII characters no longer
+leaves a pointless byte-order mark behind.</strong> Once every non-ASCII
+character becomes an HTML entity, the file is pure ASCII — but it still
+saved with a three-byte UTF-8 marker at the start. That marker is
+dropped when nothing in the file needs it anymore.</p></li>
+<li><p><strong>First-run “Personalise QUILL” now offers to
+restart</strong> when your choice of where to store data needs one to
+take effect — the same prompt Preferences already gives, instead of the
+choice silently waiting for your next launch.</p></li>
+<li><p><strong>The Outline Navigator (Ctrl+Shift+O) opens
+again.</strong> It — and the EPUB and Quick Nav surfaces that share the
+same dialog — could crash instead of opening, because of an invalid call
+on the tree control’s hidden root. Fixed.</p></li>
+<li><p><strong>Crash reports no longer carry your Windows
+username.</strong> If your portable copy lived inside your home folder,
+the local crash-report file path was included verbatim in a submitted
+report’s metadata — the one place that path wasn’t already being
+scrubbed. It’s redacted the same way as everywhere else now.</p></li>
+<li><p><strong>Errors carry a short support code</strong> (like
+<code>[QUILL-SPEECH-WHISPER-DL-404]</code>), and it rides along in crash
+reports automatically — so if you paste an error to us, we can pinpoint
+the exact cause. Every one of QUILL’s internal error types now has
+one.</p></li>
+</ul>
+<hr />
+<h2 id="with-gratitude-and-with-momentum">With gratitude — and with
+momentum</h2>
 <p>Beta 2 is a community release in the truest sense. <strong>Elena
 Brescacin</strong> (<a
 href="https://github.com/elettrona">elettrona</a>) gave QUILL its first
@@ -869,3 +1106,10 @@ and Piper voice issues with patient, detailed reports and diagnostics.
 And every tester who hit an odd crash, a stuck focus, a missing
 language, or a confusing download and took the time to tell us — this
 release is yours. Please keep it coming.</p>
+<p>Beta 2 proves something bigger than any single feature: when people
+are heard, when feedback is treated as design input, and when
+accessibility is understood as a shared responsibility, software can
+become more useful, more humane, and more joyful with every pass.</p>
+<p><strong>This is how QUILL grows: openly, thoughtfully, stubbornly,
+and together. Built by the community. Built for the community. Built for
+every one of us.</strong></p>

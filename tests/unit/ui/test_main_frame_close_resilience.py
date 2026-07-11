@@ -456,3 +456,124 @@ def test_main_frame_binds_os_session_end_events() -> None:
     assert "EVT_QUERY_END_SESSION" in src, "must bind EVT_QUERY_END_SESSION (#920)"
     assert "EVT_END_SESSION" in src, "must bind EVT_END_SESSION (#920)"
     assert "_on_session_end" in src, "must wire the session-end handler (#920)"
+
+
+# ---------------------------------------------------------------------------
+# Close-while-busy: Alt+F4 / the window X must not silently abandon a
+# protected background job (e.g. an Audio Studio export) without asking.
+# ---------------------------------------------------------------------------
+
+
+def test_on_close_does_not_prompt_when_nothing_is_protected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    frame = _frame_for_close(monkeypatch)
+    prompted: list[object] = []
+    frame._confirm_close_with_busy_jobs = lambda labels: prompted.append(labels) or True  # type: ignore[method-assign]
+    event = SimpleNamespace(Skip=lambda: None, Veto=lambda: None)
+
+    frame._on_close(event)
+
+    assert prompted == [], "no protected job registered -> no busy-close prompt at all"
+
+
+def test_on_close_vetoes_when_user_declines_to_close_while_busy(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    frame = _frame_for_close(monkeypatch)
+    frame._protected_background_jobs = {1: "Batch speech export (3 file(s))"}
+    frame._confirm_close_with_busy_jobs = lambda labels: False  # type: ignore[method-assign]
+    skipped: list[bool] = []
+    vetoed: list[bool] = []
+    event = SimpleNamespace(Skip=lambda: skipped.append(True), Veto=lambda: vetoed.append(True))
+
+    frame._on_close(event)
+
+    assert vetoed == [True], "declining the busy-close prompt must veto the close"
+    assert skipped == []
+
+
+def test_on_close_proceeds_when_user_confirms_close_while_busy(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    frame = _frame_for_close(monkeypatch)
+    frame._protected_background_jobs = {1: "Batch speech export (3 file(s))"}
+    seen_labels: list[list[str]] = []
+
+    def _confirm(labels: list[str]) -> bool:
+        seen_labels.append(labels)
+        return True
+
+    frame._confirm_close_with_busy_jobs = _confirm  # type: ignore[method-assign]
+    skipped: list[bool] = []
+    vetoed: list[bool] = []
+    event = SimpleNamespace(Skip=lambda: skipped.append(True), Veto=lambda: vetoed.append(True))
+
+    frame._on_close(event)
+
+    assert seen_labels == [["Batch speech export (3 file(s))"]]
+    assert skipped == [True], "confirming must let the close proceed normally"
+    assert vetoed == []
+
+
+def test_on_close_survives_a_raising_busy_prompt(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Mirrors the existing #210 guarantee for the save prompt: a bug in the
+    # busy-close prompt must never trap the window open.
+    frame = _frame_for_close(monkeypatch)
+    frame._protected_background_jobs = {1: "Batch speech export (3 file(s))"}
+    frame._confirm_close_with_busy_jobs = _raise  # type: ignore[method-assign]
+    skipped: list[bool] = []
+    vetoed: list[bool] = []
+    event = SimpleNamespace(Skip=lambda: skipped.append(True), Veto=lambda: vetoed.append(True))
+
+    frame._on_close(event)
+
+    assert skipped == [True]
+    assert vetoed == []
+
+
+class _SyncThread:
+    """Runs its target immediately on .start() instead of on a real thread,
+    so a test doesn't race the background worker."""
+
+    def __init__(self, target=None, daemon=None, **kw):
+        self._target = target
+
+    def start(self) -> None:
+        if self._target:
+            self._target()
+
+
+def test_run_background_task_registers_and_clears_protected_jobs(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """protect_on_close=True registers the job while it runs and removes it
+    when it finishes; an ordinary (non-protected) task never touches the
+    registry at all -- this is what keeps the close-prompt precise instead of
+    firing for routine background activity."""
+    monkeypatch.setattr(mf.threading, "Thread", _SyncThread)
+    frame = MainFrame.__new__(MainFrame)
+    frame._wx = SimpleNamespace(CallAfter=lambda fn, *a: fn(*a))
+    frame._set_status = lambda _msg: None  # type: ignore[method-assign]
+    frame._track_background_task_start = lambda _label: 1  # type: ignore[method-assign]
+    frame._track_background_task_progress = lambda *a, **k: None  # type: ignore[method-assign]
+    frame._track_background_task_finish = lambda *a, **k: None  # type: ignore[method-assign]
+    frame._cancel_preview_cue_timer = lambda: None  # type: ignore[method-assign]
+
+    seen_mid_run: dict[int, str] = {}
+
+    def _work(_progress: object) -> str:
+        # The job must already be registered by the time work() runs.
+        seen_mid_run.update(getattr(frame, "_protected_background_jobs", {}))
+        return "done"
+
+    frame._run_background_task(
+        "Batch speech export (1 file(s))", _work, lambda _r: None, protect_on_close=True
+    )
+
+    assert seen_mid_run == {1: "Batch speech export (1 file(s))"}
+    assert frame._protected_background_jobs == {}, "must be cleared once the job finishes"
+
+    # An ordinary task never registers anything.
+    frame._run_background_task("Find and Replace", lambda _p: "ok", lambda _r: None)
+    assert frame._protected_background_jobs == {}

@@ -659,13 +659,22 @@ to an existing instance.</li>
 <li><code>--wait</code>: when forwarding to an existing instance, wait
 for that instance to close.</li>
 </ul>
+<p>Use <code>quill.exe</code> (the bundled launcher — installed or
+portable, this is what you actually have) as the command. During setup,
+the installer offers an "Add Quill to PATH" option; turn it on and
+<code>quill</code> works from any Command Prompt or PowerShell window
+without typing the full install path. If you skipped that option, use
+the full path instead (typically
+<code>"%LOCALAPPDATA%\Programs\Quill for All\quill.exe"</code> for a
+per-user install), or a source checkout, where the equivalent command is
+<code>python -m quill</code>.</p>
 <p>Examples:</p>
 <ul>
-<li><code>python -m quill --version</code></li>
-<li><code>python -m quill notes.md --line 40 --column 5</code></li>
-<li><code>python -m quill --goto main.kt:27:5</code></li>
-<li><code>python -m quill --diff old-draft.md new-draft.md</code></li>
-<li><code>python -m quill --new-window notes.md</code></li>
+<li><code>quill --version</code></li>
+<li><code>quill notes.md --line 40 --column 5</code></li>
+<li><code>quill --goto main.kt:27:5</code></li>
+<li><code>quill --diff old-draft.md new-draft.md</code></li>
+<li><code>quill --new-window notes.md</code></li>
 </ul>
 <h2 id="the-main-window">The Main Window</h2>
 <p>Quill keeps its main window intentionally simple.</p>

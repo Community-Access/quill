@@ -86,6 +86,34 @@ def is_release_build() -> bool:
     return _BUILD_INFO is not None and _BUILD_INFO.CHANNEL == "stable"
 
 
+def _load_offline_marker() -> ModuleType | None:
+    """Import the generated offline-edition marker, or None if absent.
+
+    The marker (``quill/_offline_edition.py``) is written at build time by
+    ``scripts/build_windows_distribution.py`` and is gitignored. Its absence
+    (a source/dev checkout, or a slim install built before the marker existed)
+    means a normal install where optional components download on demand.
+    """
+    try:
+        from quill import _offline_edition  # type: ignore[attr-defined]
+
+        return cast(ModuleType, _offline_edition)
+    except Exception:
+        return None
+
+
+def is_offline_edition() -> bool:
+    """True when this running build is the self-contained Offline Edition.
+
+    The Offline Edition bundles every optional component and suppresses the
+    Download action in Download Optional Components (the extras are already
+    present, and the target machine is expected to have no internet). Always
+    False for a normal install or a development checkout.
+    """
+    marker = _load_offline_marker()
+    return bool(marker is not None and getattr(marker, "OFFLINE_EDITION", False))
+
+
 def resolve_running_version(*, override: str | None = None) -> str:
     """Pick the version string the running build should report.
 
@@ -112,5 +140,6 @@ __all__ = [
     "get_short_version",
     "get_support_info",
     "is_release_build",
+    "is_offline_edition",
     "resolve_running_version",
 ]

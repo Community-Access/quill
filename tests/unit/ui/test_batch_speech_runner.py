@@ -9,6 +9,7 @@ from quill.ui.audio_studio.request import BatchSpeechRequest
 from quill.ui.batch_speech_runner import (
     _book_output_path,
     _build_translator,
+    _chaptered_output_path,
     _export_translations,
     _make_temp_root,
     _resolve_chapter_sound_path,
@@ -343,3 +344,187 @@ def test_apply_project_profile_no_profile_keeps_defaults(tmp_path: Path) -> None
     defaults = _req(tmp_path, engine="sapi5", output_format="mp3")
     applied = _apply_project_profile(frame, defaults)
     assert applied.engine == "sapi5" and applied.output_format == "mp3"
+
+
+class _FakeProgressDialog:
+    """Stands in for AIProgressDialog: captures on_cancel so a test can invoke
+    it, and records every message pushed to it (mirrors what the real dialog
+    would show on screen)."""
+
+    instances: list[_FakeProgressDialog] = []
+
+    def __init__(self, parent, title, message, on_cancel=None, status_fn=None):
+        self.on_cancel = on_cancel
+        self.messages: list[str] = []
+        _FakeProgressDialog.instances.append(self)
+
+    def set_progress(self, percent, message=None):
+        if message is not None:
+            self.messages.append(message)
+
+    def update_message(self, message):
+        self.messages.append(message)
+
+    def show(self):
+        pass
+
+    def close(self):
+        pass
+
+
+def _cancel_test_frame() -> SimpleNamespace:
+    return SimpleNamespace(
+        settings=SimpleNamespace(pronunciation_enabled=False),
+        _wx=SimpleNamespace(CallAfter=lambda fn, *a: fn(*a)),
+        _set_status=lambda _msg: None,
+        _run_background_task=lambda label, work, on_success, **kw: on_success(
+            work(lambda *a: None)
+        ),
+        frame=None,
+    )
+
+
+def test_cancel_finishes_the_current_file_then_stops_and_logs_it(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """Clicking Cancel (or Escape) must not corrupt the file in flight -- it
+    finishes normally -- and the run must stop before the next file, with the
+    stop recorded in the log (the batch-generation Cancel button fix)."""
+    import quill.core.speech.chapter_assemble as chapter_assemble
+    import quill.core.speech.document_speech as document_speech
+    import quill.ui.ai_transcribe_dialog as ai_transcribe_dialog
+    from quill.ui.batch_speech_runner import _run
+
+    (tmp_path / "a.md").write_text("# A\n\nFirst document.\n", encoding="utf-8")
+    (tmp_path / "b.md").write_text("# B\n\nSecond document.\n", encoding="utf-8")
+
+    _FakeProgressDialog.instances = []
+    monkeypatch.setattr(ai_transcribe_dialog, "AIProgressDialog", _FakeProgressDialog)
+
+    started: list[str] = []
+
+    def _fake_synth(src, staged, spec, opts, *, on_progress=None, **kw):
+        started.append(src.name)
+        staged.parent.mkdir(parents=True, exist_ok=True)
+        staged.write_bytes(b"fake-audio")
+        if on_progress is not None:
+            # Chunk-by-chunk progress, exactly like the real synthesizer reports it.
+            on_progress(1, 2)
+            on_progress(2, 2)
+        # Simulate the user clicking Cancel (or pressing Escape) while this first
+        # file is still "in flight" -- it must be allowed to finish normally, and
+        # only the *next* file must be skipped.
+        _FakeProgressDialog.instances[-1].on_cancel()
+        return chapter_assemble.ChapterAssembleResult(
+            output_path=staged, chapters=[], section_count=0
+        )
+
+    monkeypatch.setattr(document_speech, "synthesize_document_to_chaptered_file", _fake_synth)
+
+    frame = _cancel_test_frame()
+    req = _req(tmp_path, extensions=(".md",))
+    _run(frame, req)
+
+    # The first file completed (its output exists); the second was never started.
+    assert started == ["a.md"]
+    assert (tmp_path / "a.mp3").is_file()
+    assert not (tmp_path / "b.mp3").is_file()
+
+    log_files = list(tmp_path.glob("quill-batch-speech-*.log"))
+    assert len(log_files) == 1
+    log_text = log_files[0].read_text(encoding="utf-8")
+    # Chunk-level progress reached the log file, not just the on-screen dialog.
+    assert "chunk 1/2" in log_text
+    assert "chunk 2/2" in log_text
+    assert "Cancelled after 1/2 file(s)." in log_text
+
+
+def test_no_cancel_button_when_generation_has_not_started(tmp_path: Path, monkeypatch) -> None:
+    """Regression guard for the original bug: the progress dialog must always
+    be given on_cancel now, so a Cancel button (and working Escape) exists."""
+    import quill.core.speech.chapter_assemble as chapter_assemble
+    import quill.core.speech.document_speech as document_speech
+    import quill.ui.ai_transcribe_dialog as ai_transcribe_dialog
+    from quill.ui.batch_speech_runner import _run
+
+    (tmp_path / "a.md").write_text("# A\n\nOnly document.\n", encoding="utf-8")
+
+    _FakeProgressDialog.instances = []
+    monkeypatch.setattr(ai_transcribe_dialog, "AIProgressDialog", _FakeProgressDialog)
+
+    def _fake_synth(src, staged, spec, opts, *, on_progress=None, **kw):
+        staged.parent.mkdir(parents=True, exist_ok=True)
+        staged.write_bytes(b"fake-audio")
+        return chapter_assemble.ChapterAssembleResult(
+            output_path=staged, chapters=[], section_count=0
+        )
+
+    monkeypatch.setattr(document_speech, "synthesize_document_to_chaptered_file", _fake_synth)
+
+    frame = _cancel_test_frame()
+    req = _req(tmp_path, extensions=(".md",))
+    _run(frame, req)
+
+    assert len(_FakeProgressDialog.instances) == 1
+    assert _FakeProgressDialog.instances[0].on_cancel is not None
+
+
+def test_chaptered_output_path_wav_goes_to_a_subfolder_mp3_stays_beside_source(
+    tmp_path: Path,
+) -> None:
+    src = tmp_path / "chapter one" / "notes.md"
+
+    mp3_path = _chaptered_output_path(src, ".mp3", book_mode=False)
+    assert mp3_path == src.with_suffix(".mp3")  # unchanged: beside the source document
+
+    wav_path = _chaptered_output_path(src, ".wav", book_mode=False)
+    assert wav_path == src.parent / "Audio Output" / "notes.wav"
+    assert wav_path.parent == src.parent / "Audio Output"  # local to this doc's own folder
+
+    # Book-mode WAV chapters are intermediate inputs to audiobook assembly's flat
+    # folder scan and must stay beside the source document, not redirected.
+    book_wav_path = _chaptered_output_path(src, ".wav", book_mode=True)
+    assert book_wav_path == src.with_suffix(".wav")
+
+
+def test_chaptered_output_path_recursion_stays_local_to_each_document(tmp_path: Path) -> None:
+    # Two documents in different subfolders of a recursive run each get their own
+    # Audio Output subfolder, never a single shared top-level one.
+    top_doc = tmp_path / "top.md"
+    nested_doc = tmp_path / "sub" / "nested.md"
+
+    top_wav = _chaptered_output_path(top_doc, ".wav", book_mode=False)
+    nested_wav = _chaptered_output_path(nested_doc, ".wav", book_mode=False)
+
+    assert top_wav == tmp_path / "Audio Output" / "top.wav"
+    assert nested_wav == tmp_path / "sub" / "Audio Output" / "nested.wav"
+
+
+def test_wav_output_actually_lands_in_audio_output_subfolder(tmp_path: Path, monkeypatch) -> None:
+    """End-to-end: choosing WAV as the output format writes into <source>/Audio
+    Output/, while the default MP3 format still writes beside the document."""
+    import quill.core.speech.chapter_assemble as chapter_assemble
+    import quill.core.speech.document_speech as document_speech
+    import quill.ui.ai_transcribe_dialog as ai_transcribe_dialog
+    from quill.ui.batch_speech_runner import _run
+
+    (tmp_path / "a.md").write_text("# A\n\nDocument.\n", encoding="utf-8")
+
+    _FakeProgressDialog.instances = []
+    monkeypatch.setattr(ai_transcribe_dialog, "AIProgressDialog", _FakeProgressDialog)
+
+    def _fake_synth(src, staged, spec, opts, *, on_progress=None, **kw):
+        staged.parent.mkdir(parents=True, exist_ok=True)
+        staged.write_bytes(b"fake-audio")
+        return chapter_assemble.ChapterAssembleResult(
+            output_path=staged, chapters=[], section_count=0
+        )
+
+    monkeypatch.setattr(document_speech, "synthesize_document_to_chaptered_file", _fake_synth)
+
+    frame = _cancel_test_frame()
+    req = _req(tmp_path, extensions=(".md",), output_format="wav")
+    _run(frame, req)
+
+    assert (tmp_path / "Audio Output" / "a.wav").is_file()
+    assert not (tmp_path / "a.wav").exists()

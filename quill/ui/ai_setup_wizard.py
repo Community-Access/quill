@@ -50,6 +50,11 @@ class AISetupWizard:
         self._provider = ob.CLOUD_PROVIDER_OPTIONS[0].id
         self._provider_name = ob.CLOUD_PROVIDER_OPTIONS[0].name
         self._model = ""  # the model chosen for the default provider on the model step
+        # The local Ollama server address last verified against -- defaults to localhost
+        # but can point at another machine on the network (see the Config step's host
+        # field). Threaded through verify/finish/model-pull so the whole wizard talks to
+        # the same server the user actually confirmed, not a silently different default.
+        self._ollama_host = "http://localhost:11434"
         # Providers verified and added during this run, as (id, name). Primed from any
         # already-configured providers so relaunching "Set Up AI" remembers them.
         self._added: list[tuple[str, str]] = []
@@ -132,12 +137,23 @@ class AISetupWizard:
             active_id, active_model = ob.active_cloud_selection()
             if not active_id:
                 # A local Ollama active connection isn't a "cloud" selection; detect it so
-                # an on-device setup is remembered on relaunch too.
+                # an on-device setup is remembered on relaunch too. But the connection
+                # settings default to provider="ollama" even when AI has never been
+                # configured at all (AssistantConnectionSettings.provider defaults to
+                # "ollama", and that default is what a fresh/never-touched settings file
+                # loads as) -- so this field alone doesn't prove the user set up Ollama.
+                # Confirm a local server actually answers before treating it as already
+                # added; otherwise Ollama silently vanishes from the picker on every
+                # first run, leaving only key-requiring cloud providers to choose from.
                 from quill.core.assistant_ai import load_assistant_connection_settings
 
                 conn = load_assistant_connection_settings()
                 if conn.provider.strip().lower() == "ollama":
-                    active_id, active_model = "ollama", conn.model.strip()
+                    primed_host = conn.host or self._ollama_host
+                    reachable, _message, _model = ob.ollama_status(primed_host)
+                    if reachable:
+                        active_id, active_model = "ollama", conn.model.strip()
+                        self._ollama_host = primed_host
             if active_id == "ollama":
                 entry = ("ollama", ob.ONDEVICE_PROVIDER_OPTION.name)
                 if entry not in self._added:
@@ -283,6 +299,19 @@ class AISetupWizard:
         self._get_key_btn.SetName("Get an API key for the selected provider")
         self._body_sizer.Add(self._get_key_btn, 0, wx.BOTTOM, 8)
         self._get_key_btn.Bind(wx.EVT_BUTTON, lambda _e: self._open_get_api_key())
+        # Ollama's counterpart to the key field: where to reach it. Shown/enabled only
+        # for the local, on-device option -- cloud providers have a fixed host. Defaults
+        # to localhost but is editable, so Ollama running on another machine on your
+        # network is a first-class, discoverable option instead of a hidden capability.
+        self._body_sizer.Add(
+            wx.StaticText(self._body, label="Ollama &server address:"), 0, wx.BOTTOM, 2
+        )
+        self._ollama_host_ctrl = wx.TextCtrl(self._body, value=self._ollama_host)
+        self._ollama_host_ctrl.SetName(
+            "Ollama server address — localhost for this computer, or another "
+            "computer's address on your network"
+        )
+        self._body_sizer.Add(self._ollama_host_ctrl, 0, wx.EXPAND | wx.BOTTOM, 8)
         # Per-provider share consent. Required to add the provider: without it QUILL will
         # not use that provider (no per-chat nagging later — this is the one-time ask).
         self._consent_cb = wx.CheckBox(
@@ -298,25 +327,38 @@ class AISetupWizard:
             self._consent_cb.Enable(False)
             self._add_btn.Enable(False)
             self._get_key_btn.Enable(False)
+            self._ollama_host_ctrl.Enable(False)
         elif available[0].local:
             self._key_ctrl.Enable(False)  # on-device needs no key
             self._get_key_btn.Enable(False)  # on-device needs no key
+        else:
+            self._ollama_host_ctrl.Enable(False)  # cloud providers have a fixed host
 
         self._body_sizer.Add(wx.StaticText(self._body, label="A&dded providers:"), 0, wx.BOTTOM, 2)
         self._added_list = wx.ListBox(self._body, choices=[name for _id, name in self._added])
         self._added_list.SetName("Added AI providers")
         self._body_sizer.Add(self._added_list, 1, wx.EXPAND | wx.BOTTOM, 8)
         self._remove_btn = wx.Button(self._body, label="&Remove selected")
-        self._remove_btn.Enable(bool(self._added))
+        # Nothing is selected in a freshly built list, so there is nothing to remove yet;
+        # enablement tracks the list's actual selection (see _on_added_list_selection),
+        # not merely whether the list is non-empty.
+        self._remove_btn.Enable(False)
         self._body_sizer.Add(self._remove_btn, 0, wx.BOTTOM, 8)
 
         self._provider_choice.Bind(wx.EVT_CHOICE, self._on_provider_changed)
         self._add_btn.Bind(wx.EVT_BUTTON, lambda _e: self._verify_and_add())
         self._remove_btn.Bind(wx.EVT_BUTTON, lambda _e: self._remove_selected())
+        self._added_list.Bind(wx.EVT_LISTBOX, self._on_added_list_selection)
+        # Always land on the Provider combo, never the API key field: jumping straight
+        # into a key field (when the first available provider happens to need one) is
+        # disorienting -- the provider choice is the step's actual starting point.
         if available:
-            (self._provider_choice if available[0].local else self._key_ctrl).SetFocus()
+            self._provider_choice.SetFocus()
         else:
             self._added_list.SetFocus()
+
+    def _on_added_list_selection(self, _event: object) -> None:
+        self._remove_btn.Enable(self._added_list.GetSelection() != wx.NOT_FOUND)
 
     def _available_providers(self) -> list[Any]:
         """Providers not yet added (on-device Ollama first, then cloud), in catalog order."""
@@ -346,8 +388,12 @@ class AISetupWizard:
             # On-device Ollama needs no key; cloud providers do.
             self._key_ctrl.Enable(not opt.local)
             self._get_key_btn.Enable(not opt.local)
+            # The reverse for the host field: only on-device Ollama's address is editable.
+            self._ollama_host_ctrl.Enable(opt.local)
             if opt.local:
                 self._key_ctrl.SetValue("")
+            else:
+                self._ollama_host_ctrl.SetValue(self._ollama_host)
             # Consent is per provider: re-label and clear when the choice changes.
             self._consent_cb.SetLabel(self._consent_label(opt))
             self._consent_cb.SetValue(False)
@@ -394,13 +440,15 @@ class AISetupWizard:
             self._consent_cb.SetFocus()
             return
         if opt.local:
-            # On-device Ollama: no key; confirm a local server with a model is reachable.
+            # On-device Ollama: no key; confirm a server is reachable at the entered
+            # address (localhost by default, or another machine on the network).
+            host = self._ollama_host_ctrl.GetValue().strip() or self._ollama_host
             self._busy = True
-            self._set_status(f"Checking for {name}...")
+            self._set_status(f"Checking for {name} at {host}...")
 
             def local_worker() -> None:
-                ok, message, _model = ob.ollama_status()
-                wx.CallAfter(self._on_verify_result, provider_id, name, "", ok, message)
+                ok, message, _model = ob.ollama_status(host)
+                wx.CallAfter(self._on_verify_result, provider_id, name, "", ok, message, host)
 
             threading.Thread(target=local_worker, daemon=True).start()  # GATE-40-OK: local check.
             return
@@ -419,7 +467,7 @@ class AISetupWizard:
         threading.Thread(target=worker, daemon=True).start()  # GATE-40-OK: connection probe.
 
     def _on_verify_result(
-        self, provider_id: str, name: str, key: str, ok: bool, detail: str
+        self, provider_id: str, name: str, key: str, ok: bool, detail: str, host: str = ""
     ) -> None:
         self._busy = False
         if not ok:
@@ -427,6 +475,10 @@ class AISetupWizard:
             # provider's error. Lead with the failing provider either way.
             self._set_status(detail or f"Couldn't verify {name}.")
             return
+        if provider_id == "ollama" and host:
+            # Remember the address that actually answered -- Finish and the model-pull
+            # step must keep talking to this server, not silently fall back to localhost.
+            self._ollama_host = host
         ob.remember_provider_key(provider_id, key)  # no-op for an empty (on-device) key
         ob.grant_provider_consent(provider_id)  # the allow checkbox was required to get here
         self._added.append((provider_id, name))
@@ -486,6 +538,80 @@ class AISetupWizard:
         self._populate_models(select=self._model)
         self._model_combo.SetFocus()
 
+        if self._provider == "ollama":
+            self._build_ollama_pull_section()
+
+    def _build_ollama_pull_section(self) -> None:
+        """Let a local-Ollama user pull a model right here, instead of a terminal.
+
+        Shows the curated recommendations (``recommended_model_guidance``) not yet
+        installed on the server at ``self._ollama_host``; picking one and clicking Pull
+        downloads it via Ollama's own streaming API (``ob.pull_ollama_model``) with live
+        progress, then rebuilds the step so the Model combo above offers it directly.
+        """
+        from quill.core.ai.providers import recommended_model_guidance
+
+        installed = set(ob.ollama_installed_models(self._ollama_host))
+        pullable = [g for g in recommended_model_guidance("ollama") if g.model not in installed]
+
+        self._body_sizer.Add(
+            wx.StaticText(self._body, label="&Pull a model (downloads it to this computer):"),
+            0,
+            wx.TOP | wx.BOTTOM,
+            2,
+        )
+        if not pullable:
+            self._add_text(
+                "Every recommended model is already installed."
+                if installed
+                else "Could not reach Ollama to check installed models.",
+                name="Pull a model",
+            )
+            return
+        self._pull_models = [g.model for g in pullable]
+        self._pull_choice = wx.Choice(
+            self._body, choices=[f"{g.model} — {g.framing}" for g in pullable]
+        )
+        self._pull_choice.SetName("Model to pull")
+        self._pull_choice.SetSelection(0)
+        self._body_sizer.Add(self._pull_choice, 0, wx.EXPAND | wx.BOTTOM, 4)
+        self._pull_btn = wx.Button(self._body, label="Pu&ll model")
+        self._body_sizer.Add(self._pull_btn, 0, wx.BOTTOM, 8)
+        self._pull_btn.Bind(wx.EVT_BUTTON, lambda _e: self._pull_selected_model())
+
+    def _pull_selected_model(self) -> None:
+        if self._busy:
+            return
+        idx = self._pull_choice.GetSelection()
+        if not (0 <= idx < len(self._pull_models)):
+            return
+        model = self._pull_models[idx]
+        host = self._ollama_host
+        self._busy = True
+        self._pull_btn.Enable(False)
+        self._set_status(f"Pulling {model}... this can take a while for larger models.")
+
+        def on_progress(text: str) -> None:
+            wx.CallAfter(self._status.SetLabel, f"Pulling {model}: {text}")
+
+        def worker() -> None:
+            ok, message = ob.pull_ollama_model(model, host=host, on_progress=on_progress)
+            wx.CallAfter(self._on_model_pulled, model, ok, message)
+
+        threading.Thread(target=worker, daemon=True).start()  # GATE-40-OK: model download.
+
+    def _on_model_pulled(self, model: str, ok: bool, message: str) -> None:
+        self._busy = False
+        if not ok:
+            self._set_status(f"Could not pull {model}: {message}")
+            if getattr(self, "_pull_btn", None) is not None:
+                self._pull_btn.Enable(True)
+            return
+        self._model = model
+        self._render()  # rebuild: the pulled model is now installed and preselected
+        # Announce after the rebuild so the success line is the last thing spoken.
+        self._set_status(f"{model} is ready and selected.")
+
     def _list_models(self) -> None:
         """Fetch every model the chosen provider exposes and load them into the combo.
 
@@ -496,11 +622,12 @@ class AISetupWizard:
         if self._busy:
             return
         provider_id, name = self._provider, self._provider_name
+        host = self._ollama_host if provider_id == "ollama" else ""
         self._busy = True
         self._set_status(f"Listing models for {name}...")
 
         def worker() -> None:
-            models, error = ob.list_provider_models(provider_id)
+            models, error = ob.list_provider_models(provider_id, host=host)
             wx.CallAfter(self._on_models_listed, models, error)
 
         threading.Thread(target=worker, daemon=True).start()  # GATE-40-OK: model discovery.
@@ -687,8 +814,10 @@ class AISetupWizard:
         self._busy = True
         self._set_status(f"Checking that {model} responds on {name}...")
 
+        host = self._ollama_host if provider_id == "ollama" else ""
+
         def worker() -> None:
-            ok, detail = ob.verify_model(provider_id, model)
+            ok, detail = ob.verify_model(provider_id, model, host=host)
             wx.CallAfter(self._on_model_verified, ok, detail)
 
         threading.Thread(target=worker, daemon=True).start()  # GATE-40-OK: model check.
@@ -702,7 +831,7 @@ class AISetupWizard:
             )
             return
         if self._provider == "ollama":
-            ob.apply_on_device_setup(model=self._model)
+            ob.apply_on_device_setup(host=self._ollama_host, model=self._model)
         else:
             ob.apply_cloud_setup(
                 self._provider, ob.stored_provider_key(self._provider), model=self._model

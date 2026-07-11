@@ -8,7 +8,7 @@
 #define AppExeName "quill.exe"
 
 [Setup]
-AppId={{6E0A1C52-4A90-4C6E-A8A1-3C2A16E2B7F2}
+AppId={{6E0A1C52-4A90-4C6E-A8A1-3C2A16E2B7F2}}
 AppName={#AppName}
 AppVersion={#AppVersion}
 AppPublisher={#AppPublisher}
@@ -64,6 +64,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 [Tasks]
 Name: "fileassoc"; Description: "Register Quill in the Open With menu for common text formats (.txt, .md, .rst, .log, .csv, .json)"; GroupDescription: "File associations:"; Flags: unchecked
 Name: "shellverbs"; Description: "Add ""Send to Quill"" actions (OCR, Open, Read aloud) to the file right-click menu"; GroupDescription: "File associations:"; Flags: unchecked
+Name: "addtopath"; Description: "Add Quill to PATH, so ""quill <file>"" works from a Command Prompt or PowerShell window"; GroupDescription: "Command line:"; Flags: unchecked
 
 ; No [Types] or [Components] section: every optional component is fetched
 ; on demand from its verified source, so the installer shows no setup-type
@@ -113,13 +114,7 @@ Type: filesandordirs; Name: "{app}\python"
 
 [Files]
 Source: "..\portable\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "docs\QUILL-PRD.md,tools\pandoc\*,tools\speech\dectalk\*,tools\speech\espeak-ng\*,tools\speech\piper\*,tools\speech\whispercpp\*,tools\nodejs\*,vendor\braille-pack\*,kokoro-models\*,_tool-download\*,_speech-download\*,*\__pycache__\*"
-; Only Quill's core bundle is installed. Every optional component --
-; Pandoc, Piper, Node.js, the braille pack, whisper.cpp, Kokoro, DECtalk,
-; and eSpeak-NG -- is fetched on demand to %APPDATA%\Quill (verified,
-; pinned release assets or official builds), which the app's resolvers
-; prefer. The Excludes above keep any locally staged copy (from a --*-dir
-; dev build) out of the shipped installer; [InstallDelete] never touches
-; an upgrader's existing {app} copies.
+; Only Quill's core bundle is installed. Every optional component --; Pandoc, Piper, Node.js, the braille pack, whisper.cpp, Kokoro, DECtalk,; and eSpeak-NG -- is fetched on demand to %APPDATA%\Quill (verified,; pinned release assets or official builds), which the app's resolvers; prefer. The Excludes above keep any locally staged copy (from a --*-dir; dev build) out of the shipped installer; [InstallDelete] never touches; an upgrader's existing {app} copies.
 
 [Icons]
 Name: "{group}\{#AppName}"; Filename: "{code:BundledLauncherPath}"; Parameters: "-m quill"; WorkingDir: "{app}"; Check: HasBundledLauncher
@@ -331,6 +326,94 @@ begin
   Result := BundledLauncherPath('') <> '';
 end;
 
+// -- PATH management (opt-in 'addtopath' task, #941) -----------------------
+// Adds/removes {app} in HKCU\Environment\Path (per-user, no admin needed --
+// matches PrivilegesRequired=lowest) so 'quill <file>' works from a shell
+// without typing the full install path. TStringList does the split/join so
+// there is no fragile substring-offset arithmetic on a system-important value.
+const
+  EnvHWND_BROADCAST = $FFFF;
+  EnvWM_SETTINGCHANGE = $001A;
+  EnvSMTO_ABORTIFHUNG = $0002;
+
+function SendMessageTimeoutA(hWnd: Longint; Msg: Longint; wParam: Longint;
+  lParam: String; fuFlags: Longint; uTimeout: Longint; var lpdwResult: Longint): Longint;
+  external 'SendMessageTimeoutA@user32.dll stdcall';
+
+procedure EnvBroadcastChange();
+var
+  ResultCode: Longint;
+begin
+  // Lets already-running Explorer pick up the new PATH so a freshly opened
+  // Command Prompt/PowerShell sees it without a full sign-out; a 5s timeout
+  // keeps a hung listener from blocking the installer.
+  SendMessageTimeoutA(EnvHWND_BROADCAST, EnvWM_SETTINGCHANGE, 0, 'Environment',
+    EnvSMTO_ABORTIFHUNG, 5000, ResultCode);
+end;
+
+function EnvIndexOfPath(Paths, Dir: String): Integer;
+var
+  List: TStringList;
+  I: Integer;
+begin
+  Result := -1;
+  List := TStringList.Create;
+  try
+    List.Delimiter := ';';
+    List.StrictDelimiter := True;
+    List.DelimitedText := Paths;
+    for I := 0 to List.Count - 1 do
+    begin
+      if Lowercase(Trim(List[I])) = Lowercase(Trim(Dir)) then
+      begin
+        Result := I;
+        Break;
+      end;
+    end;
+  finally
+    List.Free;
+  end;
+end;
+
+procedure EnvAddToPath(Dir: String);
+var
+  Paths: String;
+begin
+  if not RegQueryStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', Paths) then
+    Paths := '';
+  if EnvIndexOfPath(Paths, Dir) >= 0 then
+    Exit;  // already present -- an upgrade or a re-run of the task
+  if (Paths <> '') and (Paths[Length(Paths)] <> ';') then
+    Paths := Paths + ';';
+  Paths := Paths + Dir;
+  RegWriteExpandStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', Paths);
+  EnvBroadcastChange();
+end;
+
+procedure EnvRemoveFromPath(Dir: String);
+var
+  Paths: String;
+  List: TStringList;
+  Idx: Integer;
+begin
+  if not RegQueryStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', Paths) then
+    Exit;
+  Idx := EnvIndexOfPath(Paths, Dir);
+  if Idx < 0 then
+    Exit;  // never added, or already removed
+  List := TStringList.Create;
+  try
+    List.Delimiter := ';';
+    List.StrictDelimiter := True;
+    List.DelimitedText := Paths;
+    List.Delete(Idx);
+    RegWriteExpandStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', List.DelimitedText);
+  finally
+    List.Free;
+  end;
+  EnvBroadcastChange();
+end;
+
 // -- Post-install: write the new-install marker -----------------------------
 // The new-install marker tells the app to re-run the setup wizard on first
 // launch even when %APPDATA% settings from a prior install say it completed.
@@ -357,6 +440,8 @@ begin
   if CurStep = ssPostInstall then
   begin
     SaveStringToFile(ExpandConstant('{app}\quill-new-install.txt'), 'new-install', False);
+    if WizardIsTaskSelected('addtopath') then
+      EnvAddToPath(ExpandConstant('{app}'));
   end;
 end;
 
@@ -446,6 +531,8 @@ var
 begin
   if CurUninstallStep = usUninstall then
   begin
+    // Safe no-op if the addtopath task was never selected (not found -> Exit).
+    EnvRemoveFromPath(ExpandConstant('{app}'));
     DataDir := ExpandConstant('{userappdata}\Quill');
     // Read the custom-location pointer BEFORE DataDir is deleted below.
     CustomDir := ReadCustomDataDir();

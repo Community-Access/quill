@@ -298,11 +298,30 @@ def main() -> int:
         default=None,
         help="Optional explicit path to ISCC.exe for installer compilation.",
     )
+    parser.add_argument(
+        "--offline-edition",
+        action="store_true",
+        help=(
+            "Build the self-contained Offline Edition: stage every optional "
+            "component (Pandoc, whisper.cpp, Kokoro, braille pack, Piper, eSpeak-NG, "
+            "DECtalk, FFmpeg, Node) into the portable bundle and ship them inside the "
+            "installer (no on-demand downloads). Writes the quill/_offline_edition.py "
+            "marker so the running app suppresses Download Optional Components and "
+            "shows each component as Bundled. Leaves the default slim build untouched."
+        ),
+    )
     args = parser.parse_args()
+
+    output_dir = args.output_dir
+    # The offline edition must never clobber a slim build's windows-distribution/
+    # output. When the caller did not override --output-dir, land it in its own
+    # windows-distribution-offline/ tree so both can coexist.
+    if args.offline_edition and output_dir == Path("windows-distribution"):
+        output_dir = Path("windows-distribution-offline")
 
     bundle = build_windows_distribution(
         args.pyproject,
-        args.output_dir,
+        output_dir,
         bundle_python=args.bundle_python,
         source_root=args.source_root,
         braille_pack_dir=args.braille_pack_dir,
@@ -319,6 +338,7 @@ def main() -> int:
         kokoro_dir=args.kokoro_dir,
         compile_installer=args.compile_installer,
         iscc_path=args.iscc_path,
+        offline_edition=args.offline_edition,
     )
     print(f"Wrote portable bundle to {bundle['portable_dir']}")
     print(f"Wrote installer template to {bundle['installer_script']}")
@@ -339,6 +359,7 @@ def build_windows_distribution(
     braille_pack_dir: Path | None = None,
     compile_installer: bool = False,
     iscc_path: Path | None = None,
+    offline_edition: bool = False,
 ) -> dict[str, str]:
     identity = _build_identity(pyproject.parent)
     version = identity.display_version
@@ -425,12 +446,31 @@ def build_windows_distribution(
         "bundledTools": bundled_tools,
         "docs": [str(path.relative_to(portable_dir)) for path in staged_docs],
         "speechAssets": _speech_asset_manifest(portable_dir, bundled_tools),
+        "offlineEdition": bool(offline_edition),
     }
     write_json_atomic(manifest_path, manifest)
 
     braille_pack_staged = _stage_braille_pack(
         portable_dir, braille_pack_dir, source_root=resolved_source_root
     )
+
+    # The Offline Edition stages every optional component into the portable bundle
+    # so the installer ships them (no on-demand downloads) and writes the marker the
+    # running app reads to suppress Download Optional Components. The slim build
+    # (offline_edition=False) skips this entirely -- its behaviour is unchanged.
+    offline_staged: list[str] = []
+    if offline_edition:
+        offline_staged = _stage_offline_extras(
+            portable_dir,
+            source_root=resolved_source_root,
+            kokoro_dir=kokoro_dir,
+            braille_pack_dir=braille_pack_dir,
+            bundled_tool_dirs=effective_bundled_tools,
+        )
+        print(
+            "Offline Edition staged components: "
+            f"{', '.join(offline_staged) if offline_staged else '(none)'}"
+        )
 
     iss_numeric_version = _iss_numeric_version(
         identity.base_version, identity.channel, identity.prerelease_number
@@ -443,6 +483,7 @@ def build_windows_distribution(
         publisher=identity.publisher,
         bundle_braille_pack=braille_pack_staged,
         numeric_version=iss_numeric_version,
+        offline_edition=offline_edition,
     )
     installer_script.write_text(installer_script_text, encoding="utf-8")
     reference_installer_script.write_text(installer_script_text, encoding="utf-8")
@@ -468,6 +509,7 @@ def build_windows_distribution(
             identity=identity,
             launcher_file_version=iss_numeric_version,
             build_cache_dir=output_dir / "_build-tools",
+            offline_edition=offline_edition,
         )
         # Flatten the runtime to the bundle root. quill.exe (a VERSIONINFO-stamped
         # pythonw.exe) can only bootstrap when its python313.dll/zip/_pth sit next
@@ -502,6 +544,7 @@ def build_windows_distribution(
             installer_script,
             version=version,
             iscc_path=iscc_path,
+            offline_edition=offline_edition,
         )
         result["installer_exe"] = str(installer_exe)
     return result
@@ -749,6 +792,7 @@ def build_inno_setup_script(
     publisher: str = APP_ORGANIZATION,
     bundle_braille_pack: bool = False,
     numeric_version: str | None = None,
+    offline_edition: bool = False,
 ) -> str:
     """Return a production-quality Inno Setup script for the portable bundle.
 
@@ -759,20 +803,38 @@ def build_inno_setup_script(
     ``product_name`` and ``publisher`` come from ``build/version.toml``
     (via :func:`_build_identity`) so the installer's Add/Remove Programs
     metadata, Start Menu shortcut, and About dialog never drift apart.
+
+    ``offline_edition`` ships the self-contained Offline Edition: a distinct
+    AppId + display name so it coexists with (never upgrades) a slim install,
+    an ``Offline-Setup`` filename, and -- critically -- the optional
+    components are NOT excluded from ``[Files]`` so they install alongside
+    the core and the app's resolvers find them bundled (no on-demand fetch).
     """
+    # The Offline Edition is a separate app: a distinct AppId means Inno never
+    # treats installing it as an upgrade of a slim QUILL (which would reuse the
+    # slim install dir and clobber it). The "(Offline Edition)" suffix on the
+    # display name gives it its own Program Files folder, Start Menu group, and
+    # Add/Remove Programs entry, so it can live on a thumb drive / air-gapped
+    # machine next to a regular install without touching it.
+    display_name = f"{product_name} (Offline Edition)" if offline_edition else product_name
+    app_id = (
+        "{{B7F23E91-7A4E-4F2B-9C6D-1E8A0F52B3C7}}"
+        if offline_edition
+        else "{{6E0A1C52-4A90-4C6E-A8A1-3C2A16E2B7F2}}"
+    )
 
     lines: list[str] = [
         "; Generated by scripts/build_windows_distribution.py",
         "; Edit build_inno_setup_script(), not this file, to change packaging.",
         "",
-        f'#define AppName "{product_name}"',
+        f'#define AppName "{display_name}"',
         f'#define AppVersion "{version}"',
         f'#define AppPublisher "{publisher}"',
         '#define AppURL "https://github.com/Community-Access/quill"',
         '#define AppExeName "quill.exe"',
         "",
         "[Setup]",
-        "AppId={{6E0A1C52-4A90-4C6E-A8A1-3C2A16E2B7F2}",
+        f"AppId={app_id}",
         "AppName={#AppName}",
         "AppVersion={#AppVersion}",
         "AppPublisher={#AppPublisher}",
@@ -807,7 +869,11 @@ def build_inno_setup_script(
         "; The file-association and Send-to-Quill tasks write Explorer keys, so",
         "; tell Windows to refresh association/icon caches after install.",
         "ChangesAssociations=yes",
-        f"OutputBaseFilename=Quill-for-All-Setup-{version}",
+        (
+            f"OutputBaseFilename=Quill-Offline-Setup-{version}"
+            if offline_edition
+            else f"OutputBaseFilename=Quill-for-All-Setup-{version}"
+        ),
         "Compression=lzma2/ultra",
         "SolidCompression=yes",
         "WizardStyle=modern",
@@ -837,6 +903,9 @@ def build_inno_setup_script(
         'Name: "shellverbs"; Description: "Add ""Send to Quill"" actions'
         ' (OCR, Open, Read aloud) to the file right-click menu";'
         ' GroupDescription: "File associations:"; Flags: unchecked',
+        'Name: "addtopath"; Description: "Add Quill to PATH, so ""quill <file>"" works'
+        ' from a Command Prompt or PowerShell window";'
+        ' GroupDescription: "Command line:"; Flags: unchecked',
         "",
         "; No [Types] or [Components] section: every optional component is fetched",
         "; on demand from its verified source, so the installer shows no setup-type",
@@ -887,14 +956,30 @@ def build_inno_setup_script(
         "[Files]",
         'Source: "..\\portable\\*"; DestDir: "{app}";'
         " Flags: ignoreversion recursesubdirs createallsubdirs;"
-        ' Excludes: "docs\\QUILL-PRD.md,tools\\pandoc\\*,tools\\speech\\dectalk\\*,tools\\speech\\espeak-ng\\*,tools\\speech\\piper\\*,tools\\speech\\whispercpp\\*,tools\\nodejs\\*,vendor\\braille-pack\\*,kokoro-models\\*,_tool-download\\*,_speech-download\\*,*\\__pycache__\\*"',
-        "; Only Quill's core bundle is installed. Every optional component --",
-        "; Pandoc, Piper, Node.js, the braille pack, whisper.cpp, Kokoro, DECtalk,",
-        "; and eSpeak-NG -- is fetched on demand to %APPDATA%\\Quill (verified,",
-        "; pinned release assets or official builds), which the app's resolvers",
-        "; prefer. The Excludes above keep any locally staged copy (from a --*-dir",
-        "; dev build) out of the shipped installer; [InstallDelete] never touches",
-        "; an upgrader's existing {app} copies.",
+        + (
+            # Offline Edition: the staged tools/voices/braille/kokoro ship inside
+            # the installer so the app finds them bundled (QUILL_APP_ROOT/tools/...)
+            # and never needs to download them. Only dev-only scratch dirs and the
+            # PRD (too large for an installer) stay excluded.
+            ' Excludes: "docs\\QUILL-PRD.md,_tool-download\\*,_speech-download\\*,*\\__pycache__\\*"'
+            if offline_edition
+            else ' Excludes: "docs\\QUILL-PRD.md,tools\\pandoc\\*,tools\\speech\\dectalk\\*,tools\\speech\\espeak-ng\\*,tools\\speech\\piper\\*,tools\\speech\\whispercpp\\*,tools\\nodejs\\*,vendor\\braille-pack\\*,kokoro-models\\*,_tool-download\\*,_speech-download\\*,*\\__pycache__\\*"'
+        ),
+        (
+            "; Offline Edition: every optional component -- Pandoc, Piper, Node.js,"
+            "; the braille pack, whisper.cpp, Kokoro, DECtalk, eSpeak-NG, and FFmpeg"
+            "; -- is staged into the portable bundle and shipped inside the installer,"
+            "; so the app's resolvers find them under {app}\\tools / {app}\\vendor and"
+            "; Report a Bug's Download Optional Components dialog shows each as Bundled."
+            if offline_edition
+            else "; Only Quill's core bundle is installed. Every optional component --"
+            "; Pandoc, Piper, Node.js, the braille pack, whisper.cpp, Kokoro, DECtalk,"
+            "; and eSpeak-NG -- is fetched on demand to %APPDATA%\\Quill (verified,"
+            "; pinned release assets or official builds), which the app's resolvers"
+            "; prefer. The Excludes above keep any locally staged copy (from a --*-dir"
+            "; dev build) out of the shipped installer; [InstallDelete] never touches"
+            "; an upgrader's existing {app} copies."
+        ),
         "",
         "[Icons]",
         'Name: "{group}\\{#AppName}"; Filename: "{code:BundledLauncherPath}"; Parameters: "-m quill"; WorkingDir: "{app}"; Check: HasBundledLauncher',
@@ -984,6 +1069,94 @@ def build_inno_setup_script(
         "  Result := BundledLauncherPath('') <> '';",
         "end;",
         "",
+        "// -- PATH management (opt-in 'addtopath' task, #941) -----------------------",
+        "// Adds/removes {app} in HKCU\\Environment\\Path (per-user, no admin needed --",
+        "// matches PrivilegesRequired=lowest) so 'quill <file>' works from a shell",
+        "// without typing the full install path. TStringList does the split/join so",
+        "// there is no fragile substring-offset arithmetic on a system-important value.",
+        "const",
+        "  EnvHWND_BROADCAST = $FFFF;",
+        "  EnvWM_SETTINGCHANGE = $001A;",
+        "  EnvSMTO_ABORTIFHUNG = $0002;",
+        "",
+        "function SendMessageTimeoutA(hWnd: Longint; Msg: Longint; wParam: Longint;",
+        "  lParam: String; fuFlags: Longint; uTimeout: Longint; var lpdwResult: Longint): Longint;",
+        "  external 'SendMessageTimeoutA@user32.dll stdcall';",
+        "",
+        "procedure EnvBroadcastChange();",
+        "var",
+        "  ResultCode: Longint;",
+        "begin",
+        "  // Lets already-running Explorer pick up the new PATH so a freshly opened",
+        "  // Command Prompt/PowerShell sees it without a full sign-out; a 5s timeout",
+        "  // keeps a hung listener from blocking the installer.",
+        "  SendMessageTimeoutA(EnvHWND_BROADCAST, EnvWM_SETTINGCHANGE, 0, 'Environment',",
+        "    EnvSMTO_ABORTIFHUNG, 5000, ResultCode);",
+        "end;",
+        "",
+        "function EnvIndexOfPath(Paths, Dir: String): Integer;",
+        "var",
+        "  List: TStringList;",
+        "  I: Integer;",
+        "begin",
+        "  Result := -1;",
+        "  List := TStringList.Create;",
+        "  try",
+        "    List.Delimiter := ';';",
+        "    List.StrictDelimiter := True;",
+        "    List.DelimitedText := Paths;",
+        "    for I := 0 to List.Count - 1 do",
+        "    begin",
+        "      if Lowercase(Trim(List[I])) = Lowercase(Trim(Dir)) then",
+        "      begin",
+        "        Result := I;",
+        "        Break;",
+        "      end;",
+        "    end;",
+        "  finally",
+        "    List.Free;",
+        "  end;",
+        "end;",
+        "",
+        "procedure EnvAddToPath(Dir: String);",
+        "var",
+        "  Paths: String;",
+        "begin",
+        "  if not RegQueryStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', Paths) then",
+        "    Paths := '';",
+        "  if EnvIndexOfPath(Paths, Dir) >= 0 then",
+        "    Exit;  // already present -- an upgrade or a re-run of the task",
+        "  if (Paths <> '') and (Paths[Length(Paths)] <> ';') then",
+        "    Paths := Paths + ';';",
+        "  Paths := Paths + Dir;",
+        "  RegWriteExpandStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', Paths);",
+        "  EnvBroadcastChange();",
+        "end;",
+        "",
+        "procedure EnvRemoveFromPath(Dir: String);",
+        "var",
+        "  Paths: String;",
+        "  List: TStringList;",
+        "  Idx: Integer;",
+        "begin",
+        "  if not RegQueryStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', Paths) then",
+        "    Exit;",
+        "  Idx := EnvIndexOfPath(Paths, Dir);",
+        "  if Idx < 0 then",
+        "    Exit;  // never added, or already removed",
+        "  List := TStringList.Create;",
+        "  try",
+        "    List.Delimiter := ';';",
+        "    List.StrictDelimiter := True;",
+        "    List.DelimitedText := Paths;",
+        "    List.Delete(Idx);",
+        "    RegWriteExpandStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', List.DelimitedText);",
+        "  finally",
+        "    List.Free;",
+        "  end;",
+        "  EnvBroadcastChange();",
+        "end;",
+        "",
         "// -- Post-install: write the new-install marker -----------------------------",
         "// The new-install marker tells the app to re-run the setup wizard on first",
         "// launch even when %APPDATA% settings from a prior install say it completed.",
@@ -1010,6 +1183,8 @@ def build_inno_setup_script(
         "  if CurStep = ssPostInstall then",
         "  begin",
         "    SaveStringToFile(ExpandConstant('{app}\\quill-new-install.txt'), 'new-install', False);",
+        "    if WizardIsTaskSelected('addtopath') then",
+        "      EnvAddToPath(ExpandConstant('{app}'));",
         "  end;",
         "end;",
         "",
@@ -1099,6 +1274,8 @@ def build_inno_setup_script(
         "begin",
         "  if CurUninstallStep = usUninstall then",
         "  begin",
+        "    // Safe no-op if the addtopath task was never selected (not found -> Exit).",
+        "    EnvRemoveFromPath(ExpandConstant('{app}'));",
         "    DataDir := ExpandConstant('{userappdata}\\Quill');",
         "    // Read the custom-location pointer BEFORE DataDir is deleted below.",
         "    CustomDir := ReadCustomDataDir();",
@@ -1134,6 +1311,7 @@ def compile_inno_setup_installer(
     *,
     version: str,
     iscc_path: Path | None = None,
+    offline_edition: bool = False,
 ) -> Path:
     compiler = iscc_path or find_inno_setup_compiler()
     if compiler is None:
@@ -1141,7 +1319,11 @@ def compile_inno_setup_installer(
             "Inno Setup compiler not found. Install Inno Setup 6 or pass --iscc-path."
         )
     subprocess.run([str(compiler), str(installer_script)], check=True)
-    expected_name = f"Quill-for-All-Setup-{version}.exe"
+    # The Offline Edition uses a distinct OutputBaseFilename (Quill-Offline-Setup)
+    # so it never overwrites a coexisting slim installer; the slim build keeps the
+    # long-standing Quill-for-All-Setup name.
+    base = "Quill-Offline-Setup" if offline_edition else "Quill-for-All-Setup"
+    expected_name = f"{base}-{version}.exe"
     for installer_exe in (
         installer_script.parent / expected_name,
         installer_script.parent / "Output" / expected_name,
@@ -1178,6 +1360,7 @@ def bundle_embedded_python(
     build_cache_dir: Path | None = None,
     download_url: str = EMBEDDED_PYTHON_URL,
     expected_sha256: str | None = EMBEDDED_PYTHON_SHA256,
+    offline_edition: bool = False,
 ) -> Path:
     """Download the official Windows embeddable Python and prepare it for use.
 
@@ -1274,6 +1457,34 @@ def bundle_embedded_python(
         check=True,
     )
 
+    # Offline Edition: pip-install the pure-Python optional packs (PDF/Office
+    # text extraction + MP3 chapter markers) straight into the bundled runtime's
+    # site-packages so their modules are importable via find_spec at run time with
+    # no on-demand download and no app-data engine-pack activation. The resolvers
+    # (is_pdf_ocr_available / is_mp3_available) check importability, so installing
+    # into site-packages (already on sys.path) makes both read as Bundled. Kept in
+    # sync with the pdf-ocr / mp3 extras in pyproject.toml.
+    if offline_edition:
+        offline_pip_extras = [
+            "markitdown[docx,pptx,xlsx,xls,pdf]>=0.1.6",
+            "pdfplumber>=0.11.9",
+            "pypdf>=6.11.0",
+            "mutagen>=1.48.1",
+        ]
+        print(f"Installing offline-edition optional packs ({', '.join(offline_pip_extras)})...")
+        subprocess.run(
+            [
+                str(python_exe),
+                "-m",
+                "pip",
+                "install",
+                "--no-warn-script-location",
+                "--no-compile",
+                *offline_pip_extras,
+            ],
+            check=True,
+        )
+
     # A distributable must ALWAYS ship a working Report a Bug. The bundled
     # GitHub token is what makes the rich bug-reporter fire instead of falling
     # back to a bare web link. An unset QUILL_FEEDBACK_GITHUB_TOKEN HARD-FAILS
@@ -1289,6 +1500,26 @@ def bundle_embedded_python(
         "--require-token",
     ]
     subprocess.run(token_cmd, check=True)
+
+    # Offline Edition marker. A build-time-generated module read by
+    # quill.build_info.is_offline_edition() so the running app knows it is the
+    # self-contained Offline Edition and suppresses Download Optional Components
+    # (the extras are bundled, not downloadable). Written here -- next to the
+    # feedback token and before the quill package copytree below bakes it into the
+    # bundle -- and ALWAYS written (True for the offline build, False otherwise) so a
+    # slim build following an offline build can never accidentally ship a stale True
+    # marker. Like _feedback_token.py / _build_info.py it is gitignored, never in src.
+    offline_marker = source_root / "quill" / "_offline_edition.py"
+    offline_marker.write_text(
+        '"""Build-time marker: is this the Offline Edition? (generated, do not edit).\n\n'
+        "Read by quill.build_info.is_offline_edition(). True only for the\n"
+        "--offline-edition build, where every optional component is bundled and the\n"
+        "Download Optional Components dialog suppresses the Download action. False\n"
+        "(or absent, for a source/dev run) means a normal install where extras fetch\n"
+        'on demand.\n"""\n'
+        f"OFFLINE_EDITION = {bool(offline_edition)}\n",
+        encoding="utf-8",
+    )
 
     # Copy the Quill package source into site-packages so `python -m quill`
     # works without requiring a separate wheel build.
@@ -1310,6 +1541,32 @@ def bundle_embedded_python(
     # bakes an empty token or fails to copy it into the bundle. This is the
     # exact "Michael upgrades beta 2 and gets no token" symptom, locked out.
     _assert_bundled_token_nonempty(site_packages)
+
+    # The offline-edition marker is copied into the bundled quill/ package by the
+    # copytree above (so the running app reads is_offline_edition() correctly), but
+    # the build also wrote it into source_root/quill/. Remove that source-tree copy
+    # so a developer who runs the offline build and then launches QUILL from source
+    # (python -m quill) does not see a stale OFFLINE_EDITION = True leak into dev
+    # runs and tests -- the marker is a build artifact that belongs only in the
+    # bundle, never in the source tree. (Mirrors how _build_info.py / _feedback_token
+    # are regenerated per-build and gitignored, but those don't affect runtime
+    # behavior in a dev checkout the way a stale True marker does.)
+    if offline_edition:
+        shipped_marker = site_packages / "quill" / "_offline_edition.py"
+        if not shipped_marker.is_file():
+            raise RuntimeError(
+                "Offline Edition marker did not land in the bundled quill package; "
+                "is_offline_edition() would read False at runtime and the Download "
+                "Optional Components dialog would offer downloads it cannot fulfill."
+            )
+    # Always clean the source-tree marker (True from an offline build, or False
+    # from a slim build that wrote it to clear a stale True) so the source tree
+    # stays a clean dev state.
+    source_marker = source_root / "quill" / "_offline_edition.py"
+    try:
+        source_marker.unlink()
+    except FileNotFoundError:
+        pass
 
     # Stage the changelog inside the package so the running build can show
     # abbreviated "What's New" / Check-for-Updates release notes offline
@@ -1619,6 +1876,191 @@ def _stage_bundled_tools(portable_dir: Path, bundled_tool_dirs: dict[str, Path])
         shutil.copytree(source, target, dirs_exist_ok=True)
         bundled.append(tool_id)
     return sorted(bundled)
+
+
+def _stage_offline_extras(
+    portable_dir: Path,
+    *,
+    source_root: Path,
+    kokoro_dir: Path | None,
+    braille_pack_dir: Path | None,
+    bundled_tool_dirs: dict[str, Path],
+) -> list[str]:
+    """Stage every optional component into the portable bundle for the Offline Edition.
+
+    Each component lands in the location its runtime resolver checks via
+    ``QUILL_APP_ROOT`` (``tools/speech/<x>``, ``tools/pandoc``, ``tools/ffmpeg``,
+    ``vendor/braille-pack``, ``kokoro-models``), so the bundled detectors in
+    :mod:`quill.core.optional_components` report Installed and the Download Optional
+    Components dialog shows each as Bundled -- no on-demand fetch, no internet
+    needed to use them.
+
+    Reuses the app's own install helpers (``install_piper`` / ``install_espeak`` /
+    ``install_ffmpeg``, which accept ``dest_dir``) and the build's existing
+    pandoc/whisper/kokoro/braille stagers. Components already staged by a ``--*-dir``
+    flag are left in place. Each component is staged independently: a transient
+    network or asset failure is logged and skipped rather than aborting the whole
+    offline build, and the returned list names exactly what landed so the build log
+    is honest about coverage. Any component that did not stage reads as "requires
+    internet" in the offline-edition dialog rather than silently shipping absent.
+    """
+    tools = portable_dir / "tools"
+    tools.mkdir(parents=True, exist_ok=True)
+    staged: list[str] = []
+
+    def _try(label: str, fn) -> None:  # type: ignore[no-untyped-def]
+        try:
+            fn()
+            staged.append(label)
+            print(f"  [offline] staged {label}")
+        except Exception as exc:  # noqa: BLE001 - one component must not kill the build
+            print(f"  [offline] WARNING: could not stage {label}: {exc}")
+
+    # Pandoc -> tools/pandoc/pandoc.exe (resolver: external_tools._bundled_tool_path).
+    def _do_pandoc() -> None:
+        if (tools / "pandoc" / "pandoc.exe").exists():
+            return
+        stage = _download_and_stage_pandoc(portable_dir)
+        _stage_bundled_tools(portable_dir, {"pandoc": stage})
+
+    _try("pandoc", _do_pandoc)
+
+    # whisper.cpp -> tools/speech/whispercpp (resolver: whispercpp.engine_search_dirs).
+    def _do_whisper() -> None:
+        if (tools / "speech" / "whispercpp" / "whisper-cli.exe").exists() or (
+            tools / "speech" / "whispercpp" / "main.exe"
+        ).exists():
+            return
+        stage = _download_and_stage_whisper(portable_dir)
+        _stage_bundled_tools(portable_dir, {"speech/whispercpp": stage})
+
+    _try("whispercpp", _do_whisper)
+
+    # Kokoro models -> kokoro-models (resolver: read_aloud._bundled_kokoro_model_dir).
+    def _do_kokoro() -> None:
+        if not _stage_kokoro(portable_dir, kokoro_dir):
+            raise RuntimeError("Kokoro model files could not be staged")
+
+    _try("kokoro", _do_kokoro)
+
+    # braille pack -> vendor/braille-pack (resolver: braille_pack._pack_file_candidates).
+    def _do_braille() -> None:
+        if (portable_dir / "vendor" / "braille-pack" / "lou_translate.exe").exists():
+            return
+        pack_dir = braille_pack_dir or (source_root / "liblouis" / "vendor" / "braille" / "pack")
+        if not Path(pack_dir).is_dir():
+            raise RuntimeError(
+                f"no braille pack at {pack_dir}; run scripts/build_braille_pack.py "
+                f"or pass --braille-pack-dir"
+            )
+        if not _stage_braille_pack(portable_dir, Path(pack_dir), source_root=source_root):
+            raise RuntimeError("braille pack staging reported nothing")
+
+    _try("braille", _do_braille)
+
+    # DECtalk -> tools/speech/dectalk (resolver: read_aloud.discover_dectalk_executable,
+    # case-insensitive dectalk.dll search under the root). A local source tree is
+    # required -- DECtalk is licensed for redistribution but has no pinned public
+    # download, so the build stages it from source_root/tools/speech/dectalk (the
+    # same path --dectalk-dir stages) rather than fetching it.
+    def _do_dectalk() -> None:
+        dest = tools / "speech" / "dectalk"
+        if any(dest.rglob("dectalk.dll")) or any(dest.rglob("DECtalk.dll")):
+            return
+        source = source_root / "tools" / "speech" / "dectalk"
+        if not source.is_dir():
+            raise RuntimeError(
+                f"no DECtalk source at {source}; pass --dectalk-dir or place the "
+                "DECtalk .dll tree at tools/speech/dectalk"
+            )
+        _stage_bundled_tools(portable_dir, {"speech/dectalk": source})
+
+    _try("dectalk", _do_dectalk)
+
+    # Piper -> tools/speech/piper (resolver: read_aloud.discover_piper_executable).
+    def _do_piper() -> None:
+        from quill.core.speech.piper_install import install_piper
+
+        install_piper(dest_dir=tools / "speech" / "piper")
+
+    _try("piper", _do_piper)
+
+    # eSpeak-NG -> tools/speech/espeak-ng (resolver: read_aloud.discover_espeak_executable).
+    def _do_espeak() -> None:
+        from quill.core.speech.espeak_install import install_espeak
+
+        install_espeak(dest_dir=tools / "speech" / "espeak-ng")
+
+    _try("espeak", _do_espeak)
+
+    # FFmpeg -> tools/ffmpeg (resolver: speech.ffmpeg.ffmpeg_search_dirs).
+    def _do_ffmpeg() -> None:
+        from quill.core.speech.ffmpeg_install import install_ffmpeg
+
+        install_ffmpeg(dest_dir=tools / "ffmpeg")
+
+    _try("ffmpeg", _do_ffmpeg)
+
+    # Node.js -> tools/nodejs (resolver: node_install.bundled_node_dir). Downloads
+    # the official Node LTS build via the app's own installer, the same artifact
+    # the on-demand flow fetches, so a Node Quillin runs with no internet.
+    def _do_node() -> None:
+        from quill.core.node_install import install_node_runtime
+
+        dest = tools / "nodejs"
+        if (dest / "node.exe").is_file():
+            return
+        install_node_runtime(dest_dir=dest)
+
+    _try("node", _do_node)
+
+    # MathCAT -> tools/mathcat (resolver: mathcat_engine.pack_dir). The pinned,
+    # SHA-256-verified release asset (libmathcat_c.dll + Rules/).
+    def _do_mathcat() -> None:
+        from quill.core.release_assets import fetch_component
+
+        dest = tools / "mathcat"
+        if (dest / "libmathcat_c.dll").is_file():
+            return
+        fetch_component("mathcat", dest, label="Staging MathCAT (math speech)...")
+
+    _try("mathcat", _do_mathcat)
+
+    # libmpv -> tools/mpv (resolver: mpv_engine.find_libmpv + the _libmpv_installed
+    # detector). The pinned, SHA-256-verified mpv playback library.
+    def _do_libmpv() -> None:
+        from quill.core.release_assets import fetch_component
+
+        dest = tools / "mpv"
+        if any((dest / name).is_file() for name in ("libmpv-2.dll", "mpv-2.dll", "libmpv.dll")):
+            return
+        fetch_component("libmpv", dest, label="Staging libmpv (Audio Studio player)...")
+
+    _try("libmpv", _do_libmpv)
+
+    # Spell-check dictionaries -> dictionaries/hunspell (resolver:
+    # spellcheck.managed_spell_dir -> {app}/dictionaries when present). Stage every
+    # pinned Hunspell language asset so spell-check works offline for each.
+    def _do_spell_dicts() -> None:
+        from quill.core.release_assets import ASSETS, fetch_component
+
+        hunspell = portable_dir / "dictionaries" / "hunspell"
+        hunspell.mkdir(parents=True, exist_ok=True)
+        langs = sorted(k for k in ASSETS if k.startswith("spell-"))
+        if not langs:
+            raise RuntimeError("no pinned spell-check dictionary assets to stage")
+        for key in langs:
+            lang = key[len("spell-") :]
+            if (hunspell / f"{lang}.dic").is_file():
+                continue
+            fetch_component(key, hunspell, label=f"Staging {lang} spell-check dictionary...")
+
+    _try("spell-dicts", _do_spell_dicts)
+
+    print(
+        f"  [offline] staged {len(staged)} components: {', '.join(staged) if staged else '(none)'}"
+    )
+    return staged
 
 
 def _stage_kokoro(portable_dir: Path, source_dir: Path | None) -> bool:

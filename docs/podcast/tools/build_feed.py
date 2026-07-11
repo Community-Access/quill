@@ -86,6 +86,41 @@ def _audio_player(slug: str, title: str, audio_url: str) -> str:
     )
 
 
+def _cover_figure(show: dict[str, object]) -> str:
+    cover_url = str(show.get("cover_url") or show["site_url"] + "cover.png")
+    cover_alt = str(show.get("cover_alt") or f"{show['title']} cover art.")
+    cover_description = str(show.get("cover_description") or "")
+    description = ""
+    if cover_description:
+        description = (
+            '<details class="cover-description">\n'
+            "<summary>Full cover description</summary>\n"
+            f"<p>{html.escape(cover_description)}</p>\n"
+            "</details>\n"
+        )
+    return (
+        '<figure class="podcast-cover">\n'
+        '<img src="cover.png" '
+        f'alt="{html.escape(cover_alt)}" width="3000" height="3000" '
+        'loading="eager" decoding="async">\n'
+        f"<figcaption>{html.escape(show['title'])} cover art.</figcaption>\n"
+        "</figure>\n"
+        f"{description}"
+    )
+
+
+def _rss_image_tags(show: dict[str, object]) -> str:
+    cover_url = str(show.get("cover_url") or show["site_url"] + "cover.png")
+    return (
+        "    <image>\n"
+        f"      <url>{html.escape(cover_url)}</url>\n"
+        f"      <title>{html.escape(show['title'])}</title>\n"
+        f"      <link>{html.escape(show['site_url'])}</link>\n"
+        "    </image>\n"
+        f'    <itunes:image href="{html.escape(cover_url)}"/>\n'
+    )
+
+
 def _rfc2822(iso: str) -> str:
     moment = datetime.fromisoformat(iso.replace("Z", "+00:00"))
     return email.utils.format_datetime(moment)
@@ -214,6 +249,7 @@ def main() -> int:
         f'    <itunes:category text="{html.escape(show["category"])}"/>\n'
         f"    <itunes:owner><itunes:name>{html.escape(show['author'])}</itunes:name>"
         f"<itunes:email>{html.escape(show['email'])}</itunes:email></itunes:owner>\n"
+        + _rss_image_tags(show)
         + "\n".join(items)
         + "\n  </channel>\n</rss>\n"
     )
@@ -243,12 +279,14 @@ def main() -> int:
 
     body = (
         f"<h1>{html.escape(show['title'])}</h1>\n"
-        f"<p>{html.escape(show['subtitle'])}.</p>\n"
+        + _cover_figure(show)
+        + f"<p>{html.escape(show['subtitle'])}.</p>\n"
         f"<p>{html.escape(show['description'])}</p>\n"
-        '<section aria-label="Subscribe">\n'
-        f"<h2>Subscribe</h2>\n"
-        f'<p><a href="feed.xml">Subscribe with the RSS feed</a> in any podcast '
-        f"app, or copy the feed address: "
+        "<section>\n"
+        f'<h2 id="subscribe">Subscribe</h2>\n'
+        '<p class="podcast-subscribe"><a class="btn" href="feed.xml">Subscribe with RSS</a> '
+        f'<a class="btn secondary" href="{html.escape(show["site_url"] + "feed.xml")}">Open the feed URL</a></p>\n'
+        f"<p>Use the RSS feed in any podcast app, or copy this feed address: "
         f"<code>{html.escape(show['site_url'] + 'feed.xml')}</code></p>\n"
         f"<p>{len(index_rows)} episodes, about {total_minutes} minutes in total. "
         "Every episode has a built-in player below, a download link, and a full "

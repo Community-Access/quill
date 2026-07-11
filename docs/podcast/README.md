@@ -42,6 +42,8 @@ docs/podcast/
                         text and double as the published transcripts.
   tools/generate_kokoro.py
                         Synthesizes every episode to WAV + MP3 with Kokoro.
+   tools/make_cover.py   Draws the 3000x3000 podcast cover PNG locally with
+                                    Pillow; no network service is used.
   tools/build_feed.py   Builds the RSS feed, the accessible episode index
                         page, and per-episode transcript pages under
                         docs/site/podcast/ (served by GitHub Pages).
@@ -77,15 +79,19 @@ override with the CLI flags if a different feel is wanted.
 gh release upload podcast-v1 docs/podcast/audio/*.mp3 --repo Community-Access/quill
 ```
 
-2. Rebuild the feed and site pages, then commit `docs/site/podcast/`:
+2. Rebuild the cover art, feed, and site pages, then commit
+   `docs/site/podcast/`:
 
 ```powershell
+python docs/podcast/tools/make_cover.py
 python docs/podcast/tools/build_feed.py
 ```
 
 The feed lands at `https://community-access.github.io/quill/podcast/feed.xml`
-with enclosures pointing at the release assets; the episode index and full
-transcripts are plain accessible HTML alongside it.
+with enclosures pointing at the release assets and the 3000x3000 cover attached
+through RSS `<image>` and iTunes `<itunes:image>` tags. The episode index and
+full transcripts are plain accessible HTML alongside it, including the cover alt
+text and long description from `episodes.json`.
 
 ## Writing more episodes
 

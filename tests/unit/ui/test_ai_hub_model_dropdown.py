@@ -66,11 +66,15 @@ class _Stub:
         self._model_ctrl = _FakeCombo()
         self._test_label = _FakeLabel()
         self._list_models_btn = _FakeButton()
+        self._key_ctrl = _FakeButton()
+        self._reveal_btn = _FakeButton()
         # Real instance methods bound onto the stub so higher-level methods
         # (e.g. _on_hub_provider_changed) can call self._populate_hub_models
-        # / self._hub_provider through it, same as on the real dialog.
+        # / self._hub_provider / self._set_key_field_enabled through it, same
+        # as on the real dialog.
         self._populate_hub_models = MethodType(AIHubDialog._populate_hub_models, self)
         self._hub_provider = MethodType(AIHubDialog._hub_provider, self)
+        self._set_key_field_enabled = MethodType(AIHubDialog._set_key_field_enabled, self)
         # Auto-probe is a live network call on the real dialog; stub it out so
         # provider-change tests stay hermetic.
         self._auto_probe_ollama = lambda: None
@@ -156,3 +160,20 @@ def test_provider_changed_does_not_force_focus_when_choice_was_not_focused() -> 
     stub._model_ctrl = _FakeCombo()
     AIHubDialog._on_hub_provider_changed(stub, None)
     assert provider_choice.focus_calls == 0
+
+
+def test_local_ollama_does_not_require_api_key() -> None:
+    # Local Ollama needs no credential; the key field must read as disabled,
+    # not as an unmet requirement.
+    stub = _Stub()
+    AIHubDialog._set_key_field_enabled(stub, "ollama")
+    assert stub._key_ctrl.enabled is False
+    assert stub._reveal_btn.enabled is False
+
+
+def test_ollama_cloud_requires_api_key() -> None:
+    # Ollama Cloud is a distinct, key-requiring provider from local Ollama.
+    stub = _Stub()
+    AIHubDialog._set_key_field_enabled(stub, "ollama_cloud")
+    assert stub._key_ctrl.enabled is True
+    assert stub._reveal_btn.enabled is True

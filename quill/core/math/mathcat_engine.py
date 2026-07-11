@@ -28,6 +28,7 @@ to read it, then frees that same address.
 from __future__ import annotations
 
 import ctypes
+import os
 import threading
 from pathlib import Path
 
@@ -51,7 +52,17 @@ _dll: ctypes.CDLL | None = None
 
 
 def pack_dir() -> Path:
-    """The folder a downloaded MathCAT engine pack is installed into."""
+    """The folder the MathCAT engine pack (DLL + Rules data) lives in.
+
+    Prefers the Offline Edition's bundled copy under ``{app}/tools/mathcat``
+    (present when QUILL_APP_ROOT is set and the pack is staged there), falling
+    back to the on-demand download location in the app-data engine-packs root.
+    """
+    app_root = os.environ.get("QUILL_APP_ROOT", "").strip()
+    if app_root:
+        bundled = Path(app_root) / "tools" / "mathcat"
+        if (bundled / "libmathcat_c.dll").is_file() or (bundled / "Rules").is_dir():
+            return bundled
     from quill.core.speech.engine_install import engine_packs_dir
 
     return engine_packs_dir() / "mathcat"

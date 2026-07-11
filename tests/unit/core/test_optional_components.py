@@ -621,3 +621,35 @@ def test_audio_extras_installed_only_when_both_halves_present(monkeypatch) -> No
     assert oc._audio_extras_installed() is False
     monkeypatch.setattr(oc, "_mp3_installed", lambda: True)
     assert oc._audio_extras_installed() is True
+
+
+def _comp(installed: bool) -> oc.OptionalComponent:
+    return oc.OptionalComponent("x", "Name", "desc", "Tool", installed, "1 MB")
+
+
+def test_status_label_and_download_allowed_normal_install(monkeypatch) -> None:
+    """In a normal install (no offline marker) labels read Installed/Available."""
+    monkeypatch.setattr(oc, "_offline_edition", lambda: False)
+    assert oc.status_label_for(_comp(True)) == "Installed"
+    assert oc.status_label_for(_comp(False)) == "Available to download"
+    # Download is offered for not-yet-ready components, suppressed when ready.
+    assert oc.download_allowed(_comp(False)) is True
+    assert oc.download_allowed(_comp(True)) is False
+
+
+def test_status_label_and_download_allowed_offline_edition(monkeypatch) -> None:
+    """In the Offline Edition Download is always suppressed and labels say why."""
+    monkeypatch.setattr(oc, "_offline_edition", lambda: True)
+    assert oc.status_label_for(_comp(True)) == "Bundled (offline edition)"
+    assert oc.status_label_for(_comp(False)) == "Not included (needs internet)"
+    # No internet -> never offer Download, even for a missing component.
+    assert oc.download_allowed(_comp(True)) is False
+    assert oc.download_allowed(_comp(False)) is False
+
+
+def test_describe_component_offline_edition(monkeypatch) -> None:
+    monkeypatch.setattr(oc, "_offline_edition", lambda: True)
+    bundled = oc.describe_component(_comp(True))
+    missing = oc.describe_component(_comp(False))
+    assert "Bundled" in bundled and "offline edition" in bundled
+    assert "Not included in this offline edition" in missing

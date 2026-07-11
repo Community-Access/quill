@@ -166,6 +166,52 @@ def test_cloud_add_then_remove_provider(wx_app, monkeypatch):
         frame.Destroy()
 
 
+def test_config_step_focus_always_lands_on_provider_combo(wx_app, monkeypatch):
+    # Landing in the API key field (because the first available-to-add provider happened
+    # to need a key) was disorienting -- the provider combo is the step's actual starting
+    # point, regardless of whether that provider needs a key.
+    frame, dlg = _wizard(wx_app)
+    monkeypatch.setattr(ob, "forget_provider_key", lambda *a, **k: None)
+    try:
+        # Ollama already added (e.g. a reachable local server), so the first available
+        # provider to pick from the combo is a keyed cloud one.
+        dlg._added = [("ollama", ob.ONDEVICE_PROVIDER_OPTION.name)]
+        dlg._path = "cloud"
+        dlg._step = _STEP_CONFIG
+        dlg._render()
+        assert not dlg._key_ctrl.HasFocus()
+        assert dlg._provider_choice.HasFocus()
+
+        # Same expectation after a remove-triggered re-render.
+        dlg._added_list.SetSelection(0)
+        dlg._remove_selected()
+        assert dlg._provider_choice.HasFocus()
+    finally:
+        dlg.close()
+        frame.Destroy()
+
+
+def test_remove_button_disabled_until_something_is_selected(wx_app, monkeypatch):
+    frame, dlg = _wizard(wx_app)
+    monkeypatch.setattr(ob, "remember_provider_key", lambda *a, **k: None)
+    try:
+        dlg._added = []
+        dlg._path = "cloud"
+        dlg._step = _STEP_CONFIG
+        dlg._render()
+        opt = ob.CLOUD_PROVIDER_OPTIONS[0]
+        dlg._on_verify_result(opt.id, opt.name, "sk-test", True, "")
+        # A non-empty Added list must not enable Remove until an entry is selected.
+        assert dlg._added
+        assert not dlg._remove_btn.IsEnabled()
+        dlg._added_list.SetSelection(0)
+        dlg._on_added_list_selection(None)
+        assert dlg._remove_btn.IsEnabled()
+    finally:
+        dlg.close()
+        frame.Destroy()
+
+
 def test_model_step_list_all_models_repopulates_combo(wx_app):
     frame, dlg = _wizard(wx_app)
     try:
@@ -215,6 +261,7 @@ def test_local_ollama_add_then_finish_uses_on_device_setup(wx_app, monkeypatch):
 
     monkeypatch.setattr(ob, "apply_on_device_setup", _on_device)
     monkeypatch.setattr(ob, "apply_cloud_setup", lambda *a, **k: applied.update(cloud=True))
+    monkeypatch.setattr(ob, "ollama_installed_models", lambda host="": [])
     try:
         dlg._added = []
         dlg._path = "cloud"
@@ -235,6 +282,269 @@ def test_local_ollama_add_then_finish_uses_on_device_setup(wx_app, monkeypatch):
         dlg._on_model_verified(True, "")
         assert dlg._step == _STEP_DONE
         assert applied.get("model") and "cloud" not in applied
+    finally:
+        dlg.close()
+        frame.Destroy()
+
+
+def test_ollama_host_field_enabled_only_for_local_and_is_verified_against(wx_app, monkeypatch):
+    # The host field is Ollama's counterpart to the API key field: editable only for
+    # the on-device option, and a custom (e.g. remote/LAN) address must actually be
+    # used when verifying -- not silently ignored in favor of localhost.
+    import quill.ui.ai_setup_wizard as wizard_mod
+
+    class _SyncThread:
+        def __init__(self, target=None, **kw):
+            self._target = target
+
+        def start(self) -> None:
+            if self._target:
+                self._target()
+
+    monkeypatch.setattr(wizard_mod.threading, "Thread", _SyncThread)
+    monkeypatch.setattr(wizard_mod.wx, "CallAfter", lambda fn, *a, **k: fn(*a, **k))
+    seen_hosts: list[str] = []
+    monkeypatch.setattr(
+        ob,
+        "ollama_status",
+        lambda host="http://localhost:11434": (seen_hosts.append(host), (True, "", "m"))[1],
+    )
+    monkeypatch.setattr(ob, "remember_provider_key", lambda *a, **k: None)
+    monkeypatch.setattr(ob, "grant_provider_consent", lambda *a, **k: None)
+
+    frame, dlg = _wizard(wx_app)
+    try:
+        dlg._added = []
+        dlg._path = "cloud"
+        dlg._step = _STEP_CONFIG
+        dlg._render()
+        available = dlg._available_providers()
+        local_idx = next(i for i, o in enumerate(available) if o.local)
+        dlg._provider_choice.SetSelection(local_idx)
+        dlg._on_provider_changed(None)
+        assert dlg._ollama_host_ctrl.IsEnabled()
+
+        # A cloud provider disables the host field again.
+        cloud_idx = next(i for i, o in enumerate(available) if not o.local)
+        dlg._provider_choice.SetSelection(cloud_idx)
+        dlg._on_provider_changed(None)
+        assert not dlg._ollama_host_ctrl.IsEnabled()
+
+        # Back to local, type a remote address, and verify -- the network call must
+        # receive exactly what was typed, not a silently-ignored localhost default.
+        dlg._provider_choice.SetSelection(local_idx)
+        dlg._on_provider_changed(None)
+        dlg._ollama_host_ctrl.SetValue("http://192.168.1.50:11434")
+        dlg._consent_cb.SetValue(True)
+        dlg._verify_and_add()
+        assert seen_hosts == ["http://192.168.1.50:11434"]
+        assert dlg._ollama_host == "http://192.168.1.50:11434"
+    finally:
+        dlg.close()
+        frame.Destroy()
+
+
+def test_pull_section_offers_only_uninstalled_recommendations(wx_app, monkeypatch):
+    from quill.core.ai.providers import recommended_model_guidance
+
+    frame, dlg = _wizard(wx_app)
+    guidance = recommended_model_guidance("ollama")
+    assert len(guidance) >= 2  # the fixture below assumes at least two curated models
+    already_installed = guidance[0].model
+    monkeypatch.setattr(ob, "ollama_installed_models", lambda host="": [already_installed])
+    try:
+        dlg._added = [("ollama", ob.ONDEVICE_PROVIDER_OPTION.name)]
+        dlg._provider, dlg._provider_name = "ollama", ob.ONDEVICE_PROVIDER_OPTION.name
+        dlg._path = "cloud"
+        dlg._step = _STEP_MODEL
+        dlg._render()
+        assert already_installed not in dlg._pull_models
+        assert set(dlg._pull_models) == {g.model for g in guidance if g.model != already_installed}
+    finally:
+        dlg.close()
+        frame.Destroy()
+
+
+def test_pull_model_success_selects_it_as_the_model(wx_app, monkeypatch):
+    frame, dlg = _wizard(wx_app)
+
+    class _SyncThread:
+        def __init__(self, target=None, **kw):
+            self._target = target
+
+        def start(self) -> None:
+            if self._target:
+                self._target()
+
+    import quill.ui.ai_setup_wizard as wizard_mod
+
+    monkeypatch.setattr(wizard_mod.threading, "Thread", _SyncThread)
+    monkeypatch.setattr(wizard_mod.wx, "CallAfter", lambda fn, *a, **k: fn(*a, **k))
+    monkeypatch.setattr(ob, "ollama_installed_models", lambda host="": [])
+    pulled: dict[str, str] = {}
+
+    def _fake_pull(model, *, host, on_progress=None, **kw):
+        pulled["model"] = model
+        if on_progress is not None:
+            on_progress("downloading -- 50%")
+        return True, ""
+
+    monkeypatch.setattr(ob, "pull_ollama_model", _fake_pull)
+    try:
+        dlg._added = [("ollama", ob.ONDEVICE_PROVIDER_OPTION.name)]
+        dlg._provider, dlg._provider_name = "ollama", ob.ONDEVICE_PROVIDER_OPTION.name
+        dlg._path = "cloud"
+        dlg._step = _STEP_MODEL
+        dlg._render()
+        target_model = dlg._pull_models[0]
+        dlg._pull_choice.SetSelection(0)
+        dlg._pull_selected_model()
+        assert pulled["model"] == target_model
+        assert dlg._model == target_model
+        assert dlg._model_combo.GetValue() == target_model
+    finally:
+        dlg.close()
+        frame.Destroy()
+
+
+def test_pull_model_failure_reenables_button_and_reports_status(wx_app, monkeypatch):
+    frame, dlg = _wizard(wx_app)
+
+    class _SyncThread:
+        def __init__(self, target=None, **kw):
+            self._target = target
+
+        def start(self) -> None:
+            if self._target:
+                self._target()
+
+    import quill.ui.ai_setup_wizard as wizard_mod
+
+    monkeypatch.setattr(wizard_mod.threading, "Thread", _SyncThread)
+    monkeypatch.setattr(wizard_mod.wx, "CallAfter", lambda fn, *a, **k: fn(*a, **k))
+    monkeypatch.setattr(ob, "ollama_installed_models", lambda host="": [])
+    monkeypatch.setattr(
+        ob, "pull_ollama_model", lambda model, *, host, on_progress=None, **kw: (False, "disk full")
+    )
+    try:
+        dlg._added = [("ollama", ob.ONDEVICE_PROVIDER_OPTION.name)]
+        dlg._provider, dlg._provider_name = "ollama", ob.ONDEVICE_PROVIDER_OPTION.name
+        dlg._path = "cloud"
+        dlg._step = _STEP_MODEL
+        dlg._render()
+        dlg._pull_choice.SetSelection(0)
+        dlg._pull_selected_model()
+        assert "disk full" in dlg._status.GetLabel()
+        assert dlg._pull_btn.IsEnabled()
+    finally:
+        dlg.close()
+        frame.Destroy()
+
+
+def test_never_configured_default_does_not_hide_ollama(wx_app, monkeypatch):
+    # The connection settings default to provider="ollama" even when AI has never
+    # been touched (a fresh/never-saved settings file loads that default), and this
+    # is what a brand-new install looks like. Priming must not mistake that default
+    # for "the user already added Ollama" when no local server actually answers --
+    # otherwise Ollama silently disappears from the picker and only key-requiring
+    # cloud providers remain, forcing a key entry for a user who has Ollama locally
+    # (or hasn't installed it yet and just wants to see the option).
+    import quill.core.assistant_ai as assistant_ai
+    from quill.core.assistant_ai import AssistantConnectionSettings
+
+    monkeypatch.setattr(ob, "configured_cloud_providers", lambda: [])
+    monkeypatch.setattr(ob, "active_cloud_selection", lambda: ("", ""))
+    monkeypatch.setattr(
+        assistant_ai,
+        "load_assistant_connection_settings",
+        lambda: AssistantConnectionSettings(),  # the untouched default: provider="ollama"
+    )
+    monkeypatch.setattr(ob, "ollama_status", lambda host: (False, "not reachable", ""))
+    frame, dlg = _wizard(wx_app)
+    try:
+        assert dlg._added == []
+        ids = {opt.id for opt in dlg._available_providers()}
+        assert "ollama" in ids
+    finally:
+        dlg.close()
+        frame.Destroy()
+
+
+def test_reachable_ollama_default_is_primed_as_added(wx_app, monkeypatch):
+    # The mirror case: when a local Ollama server genuinely answers, the default
+    # connection settings pointing at it IS meaningful, and priming should still
+    # pre-add it so a relaunch of the wizard remembers a real on-device setup.
+    import quill.core.assistant_ai as assistant_ai
+    from quill.core.assistant_ai import AssistantConnectionSettings
+
+    monkeypatch.setattr(ob, "configured_cloud_providers", lambda: [])
+    monkeypatch.setattr(ob, "active_cloud_selection", lambda: ("", ""))
+    monkeypatch.setattr(
+        assistant_ai,
+        "load_assistant_connection_settings",
+        lambda: AssistantConnectionSettings(),
+    )
+    monkeypatch.setattr(ob, "ollama_status", lambda host: (True, "", "llama3.2:1b"))
+    frame, dlg = _wizard(wx_app)
+    try:
+        assert ("ollama", ob.ONDEVICE_PROVIDER_OPTION.name) in dlg._added
+    finally:
+        dlg.close()
+        frame.Destroy()
+
+
+def test_remove_then_readd_ollama_never_asks_for_a_key(wx_app, monkeypatch):
+    # Reported symptom: after removing Ollama from Added and trying to add it again,
+    # the key field kept demanding an API key. Exercise the REAL _verify_and_add()
+    # path (not the _on_verify_result shortcut the other tests use) so a bug in how
+    # opt.local is resolved on the second pass would actually surface.
+    import quill.ui.ai_setup_wizard as wizard_mod
+
+    class _SyncThread:
+        def __init__(self, target=None, **kw):
+            self._target = target
+
+        def start(self) -> None:
+            if self._target:
+                self._target()
+
+    monkeypatch.setattr(wizard_mod.threading, "Thread", _SyncThread)
+    monkeypatch.setattr(wizard_mod.wx, "CallAfter", lambda fn, *a, **k: fn(*a, **k))
+    monkeypatch.setattr(ob, "ollama_status", lambda host="http://localhost:11434": (True, "", "m"))
+    monkeypatch.setattr(ob, "remember_provider_key", lambda *a, **k: None)
+    monkeypatch.setattr(ob, "grant_provider_consent", lambda *a, **k: None)
+    monkeypatch.setattr(ob, "forget_provider_key", lambda *a, **k: None)
+
+    frame, dlg = _wizard(wx_app)
+    try:
+        dlg._added = []
+        dlg._path = "cloud"
+        dlg._step = _STEP_CONFIG
+        dlg._render()
+
+        def _add_ollama_via_real_button() -> None:
+            available = dlg._available_providers()
+            local_idx = next(i for i, o in enumerate(available) if o.local)
+            dlg._provider_choice.SetSelection(local_idx)
+            dlg._on_provider_changed(None)
+            assert not dlg._key_ctrl.IsEnabled(), "key field must stay disabled for local Ollama"
+            dlg._consent_cb.SetValue(True)
+            dlg._verify_and_add()  # the actual "Verify and add provider" button handler
+
+        _add_ollama_via_real_button()
+        assert ("ollama", ob.ONDEVICE_PROVIDER_OPTION.name) in dlg._added
+
+        # Remove it via the real button path (select in the list first, like a user would).
+        idx = dlg._added_list.FindString(ob.ONDEVICE_PROVIDER_OPTION.name)
+        assert idx != wx.NOT_FOUND
+        dlg._added_list.SetSelection(idx)
+        dlg._remove_selected()
+        assert dlg._added == []
+
+        # Add it again -- must not require a key this second time either.
+        _add_ollama_via_real_button()
+        assert ("ollama", ob.ONDEVICE_PROVIDER_OPTION.name) in dlg._added
+        assert "api key" not in dlg._status.GetLabel().lower()
     finally:
         dlg.close()
         frame.Destroy()

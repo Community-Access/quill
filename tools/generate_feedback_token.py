@@ -36,6 +36,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT_FILE = ROOT / "quill" / "_feedback_token.py"
 ENV_VAR = "QUILL_FEEDBACK_GITHUB_TOKEN"
+# Local-file fallback env var: points at a file on disk holding the token for a
+# local build that has no QUILL_FEEDBACK_GITHUB_TOKEN in its environment (e.g. a
+# developer machine that keeps the PAT in a file rather than an env var). Never
+# read from the network; this is a filesystem-only fallback below the env var.
+TOKEN_FILE_ENV = "QUILL_FEEDBACK_TOKEN_FILE"
+# Windows Credential Manager target for the same fallback (DPAPI-backed). A
+# developer can stash the PAT once with `cmdkey /generic:QUILL:FeedbackToken`
+# (or the credential_manager helper) and every local build picks it up without
+# an env var or a file on disk.
+CRED_TARGET = "QUILL:FeedbackToken"
 
 
 def write_module(token: str, output_path: Path) -> None:
@@ -65,6 +75,87 @@ def read_existing_token(output_path: Path) -> str:
     return match.group(2) if match else ""
 
 
+def _read_token_file(path: Path) -> str:
+    """Read a token from *path* (stripped). Never raises; "" on any problem."""
+    try:
+        return path.read_text(encoding="utf-8").strip()
+    except OSError:
+        return ""
+
+
+def _read_credential_manager(target: str) -> str:
+    """Read a generic credential from Windows Credential Manager via DPAPI.
+
+    Best-effort, no-network, Windows-only: returns "" on any failure or on
+    non-Windows. The credential is looked up by *target* name; only the password
+    field (which holds the PAT) is returned, stripped.
+    """
+    if not sys.platform.startswith("win"):
+        return ""
+    try:
+        import ctypes
+        from ctypes import wintypes
+
+        advapi32 = ctypes.WinDLL("Advapi32", use_last_error=True)
+        CRED_TYPE_GENERIC = 1
+        advapi32.CredReadW.restype = wintypes.BOOL
+        advapi32.CredReadW.argtypes = (
+            wintypes.LPCWSTR,
+            wintypes.DWORD,
+            wintypes.DWORD,
+            ctypes.POINTER(ctypes.c_void_p),
+        )
+        advapi32.CredFreeW.argtypes = (ctypes.c_void_p,)
+
+        cred_ptr = ctypes.c_void_p()
+        ok = advapi32.CredReadW(target, CRED_TYPE_GENERIC, 0, ctypes.byref(cred_ptr))
+        if not ok or not cred_ptr.value:
+            return ""
+        try:
+            # CREDENTIALA/W: CredentialBlob is a LPBYTE + CredentialBlobSize (DWORD).
+            # offsetof for W: 0 Flags, 4 Type, 8 TargetName*, 16 Comment*, 24 LastWritten
+            # (FILETIME), 32 CredentialBlob, 40 CredentialBlobSize, ...
+            blob_ptr = ctypes.c_void_p.from_address(cred_ptr.value + 32).value
+            blob_size = wintypes.DWORD.from_address(cred_ptr.value + 40).value
+            if not blob_ptr or not blob_size:
+                return ""
+            raw = ctypes.string_at(blob_ptr, blob_size)
+            return raw.decode("utf-16-le", errors="replace").strip()
+        finally:
+            advapi32.CredFreeW(cred_ptr)
+    except Exception:  # noqa: BLE001 - credential read is best-effort only
+        return ""
+
+
+def resolve_token() -> str:
+    """Find the feedback token without any network access.
+
+    Order:
+      1. ``QUILL_FEEDBACK_GITHUB_TOKEN`` env var (CI GitHub Actions secret, or an
+         explicit env var on any machine) -- the primary, established path.
+      2. ``QUILL_FEEDBACK_TOKEN_FILE`` env var -> a file on disk holding the PAT
+         (a developer machine that keeps the token in a file, not an env var).
+      3. Windows Credential Manager generic credential ``QUILL:FeedbackToken``
+         (DPAPI-backed; stash once, every local build picks it up).
+      4. A previously bundled token already in ``_feedback_token.py`` (preserved
+         across rebuilds by the caller).
+
+    Returns "" when none of the above yields a token. Never raises.
+    """
+    token = os.environ.get(ENV_VAR, "").strip()
+    if token:
+        return token
+    file_env = os.environ.get(TOKEN_FILE_ENV, "").strip()
+    if file_env:
+        token = _read_token_file(Path(file_env))
+        if token:
+            return token
+    token = _read_credential_manager(CRED_TARGET)
+    if token:
+        return token
+    return ""
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -77,32 +168,39 @@ def main(argv: list[str] | None = None) -> int:
         ),
     )
     args = parser.parse_args(argv)
-    token = os.environ.get(ENV_VAR, "").strip()
+    token = resolve_token()
     if not token and args.require_token:
         print(
-            f"ERROR: {ENV_VAR} is not set, but --require-token was given.\n"
+            f"ERROR: no feedback token found, but --require-token was given.\n"
             "A release/beta build must bundle a working issues-only token so users "
             "who never configured a personal GitHub token can still Report a Bug.\n"
-            "Set the secret in the build environment and re-run, or drop "
+            "Provide one via any of (no network is used):\n"
+            f"  - the {ENV_VAR} env var (CI secret or explicit env var);\n"
+            f"  - the {TOKEN_FILE_ENV} env var pointing at a file holding the PAT;\n"
+            f"  - a Windows Credential Manager generic credential '{CRED_TARGET}'.\n"
+            "Set one of these in the build environment and re-run, or drop "
             "--require-token for a local test build (its bug reporter will be "
             "unavailable).",
             file=sys.stderr,
         )
         return 2
     if not token:
-        # No token in the environment: keep any working token already bundled
+        # No token from any source: keep any working token already bundled
         # rather than wiping it to empty, so a dev/test rebuild stays consistent
-        # (the token is populated once, then preserved). A fresh env token always
-        # wins below.
+        # (the token is populated once, then preserved). A fresh source token
+        # always wins via resolve_token above.
         existing = read_existing_token(OUTPUT_FILE)
         if existing:
-            print(f"{ENV_VAR} not set; preserving the existing bundled token in {OUTPUT_FILE}.")
+            print(
+                "No token found in env/credential/file; preserving the existing "
+                f"bundled token in {OUTPUT_FILE}."
+            )
             return 0
     write_module(token, OUTPUT_FILE)
     if token:
         print(f"Wrote {OUTPUT_FILE} with a bundled token.")
     else:
-        print(f"{ENV_VAR} not set; wrote {OUTPUT_FILE} with an empty token.")
+        print(f"No token found; wrote {OUTPUT_FILE} with an empty token.")
     return 0
 
 

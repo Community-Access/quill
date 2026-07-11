@@ -253,6 +253,7 @@ class AIHubDialog:
         key_row.Add(self._key_ctrl, 1, wx.RIGHT, 4)
         key_row.Add(self._reveal_btn, 0)
         sizer.Add(key_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
+        self._set_key_field_enabled(self._settings.provider or "ollama")
 
         # Host (shown only for Ollama / custom)
         sizer.Add(
@@ -306,6 +307,20 @@ class AIHubDialog:
         idx = self._provider_choice.GetSelection()
         return _PROVIDER_CHOICES[idx][0] if idx >= 0 else "ollama"
 
+    def _set_key_field_enabled(self, provider: str) -> None:
+        """Grey out the API key field for providers that don't need one.
+
+        Local Ollama (and any future no-key provider) needs no credential, so
+        the field must not read as a required prompt (#883-adjacent gap: this
+        dialog never consulted provider_requires_api_key, unlike the older
+        AssistantConnectionDialog).
+        """
+        from quill.core.ai.providers import provider_requires_api_key
+
+        requires_key = provider_requires_api_key(provider)
+        self._key_ctrl.Enable(requires_key)
+        self._reveal_btn.Enable(requires_key)
+
     def _populate_hub_models(self, provider: str, *, select: str = "") -> None:
         """Fill the model dropdown with recommended (free-first) ids for a provider."""
         from quill.core.ai.providers import (
@@ -327,6 +342,7 @@ class AIHubDialog:
         provider = self._hub_provider()
         had_focus = self._provider_choice.HasFocus()
         self._populate_hub_models(provider)
+        self._set_key_field_enabled(provider)
         if had_focus and not self._provider_choice.HasFocus():
             self._provider_choice.SetFocus()
         # Auto-probe Ollama on selection: a consented localhost /api/tags ping

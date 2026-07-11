@@ -68,6 +68,48 @@ class OptionalComponent:
         return self.installed if self.ready is None else self.ready
 
 
+def _offline_edition() -> bool:
+    """True when this running build is the self-contained Offline Edition.
+
+    Lazy import so the core status model stays wx-free and import-cycle-free;
+    a missing marker (source/dev checkout, or a slim install built before the
+    marker existed) means a normal install where extras fetch on demand.
+    """
+    try:
+        from quill.build_info import is_offline_edition
+
+        return bool(is_offline_edition())
+    except Exception:  # noqa: BLE001 - never let build-info lookup break the list
+        return False
+
+
+def status_label_for(component: OptionalComponent) -> str:
+    """The Status-column text for *component*, offline-edition aware.
+
+    In a normal install this is just ``component.status_label``. In the Offline
+    Edition every component is bundled, so a present one reads "Bundled" rather
+    than "Installed", and a missing one (a stager failed at build time, or a
+    component with no offline bundler) reads "Not included" rather than
+    "Available to download" -- the Download action is suppressed either way
+    (no internet to fetch it).
+    """
+    if not _offline_edition():
+        return component.status_label
+    return "Bundled (offline edition)" if component.installed else "Not included (needs internet)"
+
+
+def download_allowed(component: OptionalComponent) -> bool:
+    """Whether the Download action should be offered for *component*.
+
+    Always False in the Offline Edition (extras are already bundled or not
+    included, and the target machine is expected to have no internet). In a
+    normal install, True unless the component is already effectively ready
+    (Download resumes/refreshes; Test stays off until truly usable)."""
+    if _offline_edition():
+        return False
+    return not component.effective_ready
+
+
 # Read Aloud engine id a voice component provides, so removing it can reset the
 # active engine to the always-present SAPI 5 floor (the UI does the reset +
 # menu refresh; see the design's "remove closes the loop" decision).
@@ -619,6 +661,14 @@ def _braille_pack_installed() -> bool:
 
 
 def _libmpv_installed() -> bool:
+    import os
+
+    # Offline Edition bundles libmpv under {app}/tools/mpv.
+    app_root = os.environ.get("QUILL_APP_ROOT", "").strip()
+    if app_root:
+        for name in ("libmpv-2.dll", "mpv-2.dll", "libmpv.dll"):
+            if (Path(app_root) / "tools" / "mpv" / name).is_file():
+                return True
     from quill.core.speech.engine_install import engine_packs_dir
 
     pack = engine_packs_dir() / "mpv"
@@ -862,6 +912,20 @@ def describe_component(component: OptionalComponent) -> str:
     if component.note:
         lines.append(component.note)
     size = component.size_hint or "size varies"
+    offline = _offline_edition()
+    if offline:
+        lines.append("")
+        if component.installed:
+            lines.append(
+                f"Status: Bundled — included in this offline edition ({size}). Use "
+                "Test to confirm it works."
+            )
+        else:
+            lines.append(
+                "Status: Not included in this offline edition (requires internet to "
+                "add). The base app works without it."
+            )
+        return "\n".join(lines)
     if component.installed:
         lines.append("")
         lines.append(

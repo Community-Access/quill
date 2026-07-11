@@ -16,6 +16,7 @@ from __future__ import annotations
 import shutil
 import sys
 import tempfile
+import threading
 from pathlib import Path
 from typing import Any
 
@@ -515,6 +516,31 @@ def _book_output_path(req: BatchSpeechRequest) -> Path:
     return folder / f"{folder.name}.{req.book_format}"
 
 
+_WAV_OUTPUT_SUBFOLDER = "Audio Output"
+
+
+def _chaptered_output_path(src: Path, suffix: str, *, book_mode: bool) -> Path:
+    """Where one document's chaptered output file is written.
+
+    MP3 (and M4B) land right beside the source document, as always -- that is
+    the deliverable a user expects to find next to the file they wrote. A plain
+    WAV output instead goes into an ``Audio Output`` subfolder of the document's
+    *own* folder (not the top-level selected folder), so a folder full of source
+    documents doesn't also fill up with large raw WAV siblings -- and because
+    this is keyed off ``src.parent``, a recursive run naturally gets one such
+    subfolder per source folder, never one shared top-level dumping ground.
+
+    ``book_mode`` is always excluded: its per-document files are WAV *chapters*
+    consumed immediately by audiobook assembly, which (in the common
+    non-recursive case) scans for them flat in the source folder -- redirecting
+    them into a subfolder would make the book silently unable to find its own
+    chapters.
+    """
+    if suffix == ".wav" and not book_mode:
+        return src.parent / _WAV_OUTPUT_SUBFOLDER / (src.stem + suffix)
+    return src.with_suffix(suffix)
+
+
 def _make_temp_root(req: BatchSpeechRequest) -> Path:
     """Create and return this run's scratch root under the chosen (or system) temp dir."""
     import tempfile
@@ -768,12 +794,22 @@ def _run(frame: Any, req: BatchSpeechRequest) -> None:
         f"per-document format={effective_format}, book={book_mode}, dry_run={req.dry_run}"
     )
 
+    # Cooperative cancellation: Cancel/Escape sets this rather than tearing anything
+    # down immediately. The loop below only checks it between documents, so whatever
+    # file is currently synthesizing always finishes -- no partial/corrupt output.
+    cancel_event = threading.Event()
+
+    def _on_cancel_clicked() -> None:
+        cancel_event.set()
+        progress_dialog.update_message("Cancelling after the current file finishes...")
+
     # A focused, non-modal progress dialog (screen reader announces it on open) that
     # can be minimized to the status bar; percentage = words processed / total words.
     progress_dialog = AIProgressDialog(
         frame.frame,
         "Batch Export to Speech Audio",
         "Preparing...",
+        on_cancel=_on_cancel_clicked,
         status_fn=frame._set_status,
     )
     # Defer the show so it runs *after* the modal config dialog has finished tearing
@@ -834,6 +870,7 @@ def _run(frame: Any, req: BatchSpeechRequest) -> None:
         chapter_sound = _resolve_chapter_sound_path(frame, sound_dir) if req.sound_enabled else None
         done = skipped = errors = total_chapters = total_subs = 0
         book_summary = ""
+        cancelled = False
 
         # Pre-count words so progress is reported as a percentage of the corpus.
         log.log("Counting words...")
@@ -853,6 +890,10 @@ def _run(frame: Any, req: BatchSpeechRequest) -> None:
 
         try:
             for i, src in enumerate(files, start=1):
+                if cancel_event.is_set():
+                    cancelled = True
+                    log.log(f"Cancelled after {i - 1}/{total} file(s).")
+                    break
                 words = word_counts[i - 1]
                 log.log(f"[{i}/{total}] start {src.name} ({words} words)")
                 # Leave the "Preparing..." label immediately so a single long file
@@ -919,7 +960,7 @@ def _run(frame: Any, req: BatchSpeechRequest) -> None:
                     finally:
                         shutil.rmtree(sep_work, ignore_errors=True)
                     continue
-                final = src.with_suffix(suffix)
+                final = _chaptered_output_path(src, suffix, book_mode=book_mode)
                 try:
                     cache_key = src.relative_to(req.source_folder).as_posix()
                 except ValueError:
@@ -955,9 +996,12 @@ def _run(frame: Any, req: BatchSpeechRequest) -> None:
                         if total_words
                         else -1
                     )
-                    progress_dialog.set_progress(
-                        pct, f"[{_i}/{total}] {_src.name}: chunk {parts_done}/{parts_total}"
-                    )
+                    message = f"[{_i}/{total}] {_src.name}: chunk {parts_done}/{parts_total}"
+                    progress_dialog.set_progress(pct, message)
+                    # Mirror the on-screen chunk-by-chunk progress into the log file too --
+                    # advance() already does this for per-document milestones, but this
+                    # finer-grained callback previously only ever updated the dialog.
+                    log.log(message)
 
                 try:
                     result = synthesize_document_to_chaptered_file(
@@ -974,6 +1018,7 @@ def _run(frame: Any, req: BatchSpeechRequest) -> None:
                         on_progress=_file_progress,
                     )
                     deliverable = result.with_tones_path or result.output_path
+                    final.parent.mkdir(parents=True, exist_ok=True)
                     shutil.copyfile(deliverable, final)
                     if reuse_enabled:
                         try:
@@ -1008,7 +1053,7 @@ def _run(frame: Any, req: BatchSpeechRequest) -> None:
 
             # Audiobook assembly: combine the produced (and any pre-recorded) audio
             # in the folder into one chaptered book.
-            if book_mode and not req.dry_run:
+            if book_mode and not req.dry_run and not cancelled:
                 from quill.core.speech.audiobook import scan_audio_folder
 
                 try:
@@ -1088,17 +1133,19 @@ def _run(frame: Any, req: BatchSpeechRequest) -> None:
             if reuse_enabled and cache_entries:
                 save_cache(req.source_folder, cache_entries)
             log.log(
-                f"Done: {done} done, {skipped} skipped, {errors} error(s), "
-                f"{total_chapters} chapter(s). {book_summary}".strip()
+                f"{'Cancelled' if cancelled else 'Done'}: {done} done, {skipped} skipped, "
+                f"{errors} error(s), {total_chapters} chapter(s). {book_summary}".strip()
             )
-            return (done, skipped, errors, total_chapters, total_subs, book_summary)
+            return (done, skipped, errors, total_chapters, total_subs, book_summary, cancelled)
         finally:
             progress_dialog.close()
             log.close()
             shutil.rmtree(temp_root, ignore_errors=True)
 
     def on_success(result: object) -> None:
-        done, skipped, errors, total_chapters, total_subs, book_summary = result  # type: ignore[misc]
+        done, skipped, errors, total_chapters, total_subs, book_summary, cancelled = (
+            result  # type: ignore[misc]
+        )
         if req.dry_run:
             frame._set_status(
                 f"Dry run complete: {done} preview(s) written, {total_subs} "
@@ -1106,8 +1153,9 @@ def _run(frame: Any, req: BatchSpeechRequest) -> None:
             )
             return
         tail = f"; {book_summary}" if book_summary else ""
+        lead = "Batch speech export cancelled" if cancelled else "Batch speech export complete"
         frame._set_status(
-            f"Batch speech export complete: {done} done ({total_chapters} chapters), "
+            f"{lead}: {done} done ({total_chapters} chapters), "
             f"{skipped} skipped, {errors} error(s){tail}"
         )
 
@@ -1118,6 +1166,7 @@ def _run(frame: Any, req: BatchSpeechRequest) -> None:
         notify_on_success=True,
         notify_on_error=True,
         notification_category="speech",
+        protect_on_close=True,
     )
 
 

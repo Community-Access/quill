@@ -9,6 +9,9 @@
     "site_url": "https://community-access.github.io/quill/podcast/",
     "audio_base_url": "https://github.com/Community-Access/quill/releases/download/podcast-v1/",
     "category": "Technology",
+    "cover_url": "https://community-access.github.io/quill/podcast/cover.png",
+    "cover_alt": "Dark blue QUILL Cast cover with large gold QUILL text, a faint quill watermark, and a teal, gold, and pink audio waveform.",
+    "cover_description": "The square cover uses a deep indigo-to-near-black background. Centered near the top, small pale letters spell THE above large gold QUILL text; CAST appears in white below. Behind the title is a faint oversized gold quill angled from upper left to lower right. Across the middle is a horizontal audio waveform made of rounded bars that shift from teal on the left through yellow and gold to coral pink on the right. Under the waveform, white text says A screen-reader-first audio course, followed by Liam & Jessica in gold. The site address appears along the bottom in muted gray.",
     "explicit": false
   },
   "episodes": [

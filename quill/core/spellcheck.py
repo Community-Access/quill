@@ -117,7 +117,20 @@ _ACTIVE_LANGUAGE = _DEFAULT_LANGUAGE
 
 
 def managed_spell_dir() -> Path:
-    """The ENCHANT_CONFIG_DIR root holding downloaded dictionaries."""
+    """The ENCHANT_CONFIG_DIR root holding Hunspell dictionaries.
+
+    Prefers the Offline Edition's bundled dictionaries under
+    ``{app}/dictionaries`` (when QUILL_APP_ROOT is set and a ``hunspell/``
+    subdir of translated dictionaries is staged there), so the bundled
+    languages are discoverable by both ``installed_languages`` and enchant on
+    an air-gapped machine. Falls back to the user-writable app-data dir, where
+    on-demand downloads land on a slim install.
+    """
+    app_root = os.environ.get("QUILL_APP_ROOT", "").strip()
+    if app_root:
+        bundled = Path(app_root) / "dictionaries"
+        if (bundled / "hunspell").is_dir():
+            return bundled
     return app_data_dir() / "spell"
 
 

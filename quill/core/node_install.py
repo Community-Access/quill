@@ -61,16 +61,33 @@ def managed_node_dir() -> Path:
     return app_data_dir() / "tools" / "node"
 
 
+def bundled_node_dir() -> Path | None:
+    """The Offline Edition's bundled Node under ``{app}/tools/nodejs``, or None.
+
+    None when no ``QUILL_APP_ROOT`` is set (a source/dev run, or a slim install
+    that fetches Node on demand). The Offline Edition stages the official Node
+    build here so the resolver finds it without internet or a managed download.
+    """
+    app_root = os.environ.get("QUILL_APP_ROOT", "").strip()
+    if not app_root:
+        return None
+    return Path(app_root) / "tools" / "nodejs"
+
+
 def node_executable_path() -> Path | None:
     """Return the node executable to use, or None if Node is not available.
 
     Probe order:
     1. QUILL-managed path (``<app data>/tools/node/node.exe``)
-    2. System PATH (``shutil.which("node")``)
+    2. Bundled Offline Edition copy (``{app}/tools/nodejs/node.exe``)
+    3. System PATH (``shutil.which("node")``)
     """
     managed = managed_node_dir() / "node.exe"
     if managed.is_file():
         return managed
+    bundled = bundled_node_dir()
+    if bundled is not None and (bundled / "node.exe").is_file():
+        return bundled
     found = shutil.which("node")
     return Path(found) if found else None
 
