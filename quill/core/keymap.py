@@ -171,6 +171,9 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "tools.dictation_toggle": "Ctrl+Shift+Grave, D",
     "tools.speech_dictate": "Ctrl+Shift+Grave, Shift+D",
     "tools.speech_batch_export": "Ctrl+Shift+Grave, Y",  # Audio Studio
+    "radio.play_pause": "Ctrl+Shift+Grave, N",  # Internet Radio (N = the last free plain letter)
+    "radio.stop": "Ctrl+Shift+Grave, 0",  # Internet Radio
+    "radio.mute_toggle": "Ctrl+Shift+Grave, 9",  # Internet Radio
     # Locked Dictation (offline Whisper). All remappable; the
     # these are matched in the editor key handlers rather than the accelerator
     # table (no menu accelerators) so Escape can be consumed only while recording.

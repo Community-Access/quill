@@ -81,6 +81,23 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "HTTPS-only over a verified TLS context with a bounded timeout. Disabled "
         "in Safe Mode with the rest of the Studio's network surfaces."
     ),
+    "core/radio/link_finder.py::_fetch_html": (
+        "Single egress site for 'Find Streams from a Website...': fetches the "
+        "one page the user typed to look for a station's own stream link "
+        "(audio/source tags, playlist-shaped hrefs). Reached only by the "
+        "explicit Scan button, which states the exact URL before fetching. "
+        "HTTPS-only over a verified TLS context, bounded timeout and response "
+        "size. Disabled in Safe Mode via link_finder.refuse_in_safe_mode."
+    ),
+    "core/radio/radio_browser.py::_http_json": (
+        "Single egress site for the Internet Radio feature: station search, "
+        "tag/country lists, and click-through vote registration against "
+        "radio-browser.info, a free, keyless, community-run station directory. "
+        "Reached only by explicit user actions (search box submit, opening the "
+        "station browser, playing a station) -- never a background poll. "
+        "HTTPS-only over a verified TLS context with a bounded timeout. "
+        "Disabled in Safe Mode via radio_browser.refuse_in_safe_mode."
+    ),
     "core/mastodon/client.py::_http_json": (
         "Single egress site for the 'Post to Mastodon' feature. Reached only by an "
         "explicit user action -- adding an account (app registration + OAuth token "

@@ -345,6 +345,8 @@ class StatusBarMixin:
             # (see _default_status_bar_hidden); the cell silently returns
             # "" for plain-text documents and for carets not on a heading.
             return self._statusbar_section_heading_text()
+        if item == "radio_player":
+            return self._radio_status_text()
         return ""
 
     def _statusbar_section_heading_text(self) -> str:
@@ -498,7 +500,7 @@ class StatusBarMixin:
             return value or label
         # These cells show only the value — the label is carried by SetName / announce,
         # not repeated in the visible button text.
-        if item in {"line_column", "mode"}:
+        if item in {"line_column", "mode", "radio_player"}:
             return value or label
         if value:
             return f"{label}: {value}"
@@ -545,6 +547,10 @@ class StatusBarMixin:
             "suggestion": "Frequently used command. Press Enter to run it.",
             "braille": "Braille position. Press Enter for Read Braille Status.",
             "ai_engine": "Active AI engine. Press Enter to switch engines.",
+            "radio_player": (
+                "Internet Radio. Press Enter to play or pause; right-click for "
+                "Stop, Mute, and Favorite Stations."
+            ),
         }
         return labels.get(item, self._STATUS_BAR_LABELS.get(item, item))
 
@@ -726,6 +732,9 @@ class StatusBarMixin:
         if item == "copy_tray_slots":
             self.open_copy_tray()
             return
+        if item == "radio_player":
+            self.radio_toggle_play_pause()
+            return
         actions: dict[str, Callable[[], None]] = {
             "message": self.open_notifications,
             "line_column": self.go_to_line,
@@ -805,6 +814,8 @@ class StatusBarMixin:
                 lambda _e: self.clear_all_notifications(),
                 id=clear_notifications_id,
             )
+        if item == "radio_player":
+            self._build_radio_status_bar_menu(menu)
         menu.Append(hide_id, "Hide this item")
         menu.Append(settings_id, "Status bar settings...")
         menu.Bind(wx.EVT_MENU, lambda _e: self._activate_statusbar_cell(item), id=activate_id)

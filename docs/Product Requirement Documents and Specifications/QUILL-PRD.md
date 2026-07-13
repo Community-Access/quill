@@ -4001,6 +4001,82 @@ on demand so the base app stays lean.
 
 ---
 
+### 5.84f Internet Radio (shipped)
+
+**Goal.** Let a QUILL user listen to live internet radio in the background
+while writing, without ever leaving the keyboard or the editor, and without
+depending on an undocumented commercial API.
+
+**Station discovery (`quill/core/radio/radio_browser.py`).** Search, tag, and
+country lookups against [RadioBrowser](https://api.radio-browser.info), a
+free, keyless, community-run station directory — chosen deliberately over
+FastPlay's other two backends (TuneIn's OPML search, iHeartRadio's v2/v3
+APIs), both undocumented, reverse-engineered commercial APIs with no public
+terms. The client resolves a shuffled list of RadioBrowser's own mirror hosts
+once per process and fails over across them on request failure, per
+RadioBrowser's own documented recipe, rather than hammering one hardcoded
+host. `core/radio/acb_media.py` bundles the American Council of the Blind's
+ten Live365 stations as a static, always-available category (no network call
+needed to see it) — researched from BITS's own `acb_link_desktop` project.
+`core/radio/link_finder.py` fetches one user-typed page and parses it
+(`html.parser`, no embedded browser) for stream-shaped links, for stations
+not in RadioBrowser's directory.
+
+**Playback (`quill/ui/radio/player_controller.py`).** One
+`RadioPlayerController`, owned by `MainFrame` for the process's lifetime,
+wraps the Audio Studio's `WxMediaEngine` (never libmpv — `MpvAudioEngine`'s
+poll loop gates "loaded" on a positive `duration`, which a live stream never
+reports, so mpv cannot currently drive radio; this is a named, deliberately
+deferred follow-up, not an oversight). Every dialog (station browser, add
+custom station, website link finder) drives this same controller, so closing
+any of them never stops playback — the mechanism that makes "listen in the
+background while editing" work with zero new non-modal-panel architecture.
+Radio's own volume (`set_volume`/`toggle_mute`) is independent of the system
+volume mixer and of screen-reader speech volume.
+
+**Surfaces.** `Tools > Media > Internet Radio` (Browse Stations, Add Custom
+Station, Find Streams from a Website, Play/Pause, Stop, Mute, Volume Up/Down)
+registers every command in `CommandRegistry` (command-palette visible, unlike
+the Audio Studio's `tools.speech_batch_export`, found during this feature's
+research to bypass the registry). A `radio_player` status-bar cell
+(auto-surfaces on first play) and a system-tray right-click section
+(Play/Pause, Stop, Mute, Favorite Stations, Now Playing) both drive the same
+controller. Three in-app QUILL-key chords (`Ctrl+Shift+Grave, N/0/9` for
+play-pause/stop/mute) cover the explicit "hotkeys from the editor" ask —
+scoped to app-focused, matching every QUILL-key chord except the one
+existing OS-level `RegisterHotKey` precedent (sticky notes), which stays a
+narrow, Windows-only exception.
+
+**Persistence.** `core/radio/favorites.py` — atomic JSON via
+`core.storage.write_json_atomic`, the standard settings-surface pattern (no
+SQLite, unlike both FastPlay and ACB Link). Each favorite carries an unused
+`folder` field, present only so the planned podcasts feature (§5.84g, not yet
+scoped) can grow real folders out of the same on-disk shape.
+
+**Non-goals (deliberate).** TuneIn, iHeartRadio, YouTube audio (any form) —
+`requirements.txt` already excludes `yt-dlp`/`youtube-transcript-api` to keep
+the installed surface small, and this feature does not reopen that call. A
+DSP effects rack (reverb/EQ/tempo-pitch/spatial audio, FastPlay's largest
+single investment) — a media-player feature, not a writing-tool-with-audio
+feature. A full embedded interactive browser for the website link finder —
+QUILL has no general-purpose accessible WebView for arbitrary-site
+navigation, and `core/browser_reader.py` already shows a house preference for
+the user's real browser over an embedded one on accessibility-sensitive
+tasks; a static fetch-and-parse covers the real case (station pages list
+literal stream links).
+
+**Planned next, not yet built.** Podcasts (subscribe, folders of shows, OPML
+import/export, playlists generated from a folder), stream recording, and
+scheduled recording — see `docs/planning/radio.md` for the working plan.
+
+**Value.** A genuine, on-mission "why QUILL and not a dedicated player"
+answer for a screen-reader-first audience: the ACB Media category exists
+nowhere else this convenient, and once podcasts land, a downloaded episode
+chains directly into the Listening Companion (§5.84b) for transcribe-and-
+summarize, which no standalone radio/podcast app offers.
+
+---
+
 ### 5.85 Portable API key store
 
 By default QUILL stores AI provider keys in the Windows Credential Manager, which ties them to the current Windows user account. Portable mode offers an alternative: a DPAPI-encrypted file (`keys.enc`) in the QUILL data directory, activated by the presence of a `data/` folder next to `quill.exe` in the portable bundle.

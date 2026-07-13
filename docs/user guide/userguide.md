@@ -47,6 +47,7 @@ Quill is also in beta. Expect polish, depth, and real daily utility. Also expect
   - [Import / Convert Document — free-first conversion and OCR](#import--convert-document--free-first-conversion-and-ocr)
   - [Remote files (FTP, SFTP, HTTPS, WebDAV, S3)](#remote-files-ftp-sftp-https-webdav-s3)
   - [GitHub Remote Files](#github-remote-files)
+- [Internet Radio](#internet-radio)
 - [Braille Mode (BRF, BRL, PEF, UEB)](#braille-mode-brf-brl-pef-ueb)
 - [Help, Learning, and Daily Confidence](#help-learning-and-daily-confidence)
   - [Context-Sensitive Help (F1)](#context-sensitive-help-f1)
@@ -7643,6 +7644,44 @@ None of these commands have a default keyboard shortcut — every letter on the 
 Tools > Local Git and Tools > GitHub's Codespaces/Copilot commands need `git` and `gh` (the GitHub CLI) to actually be present on your computer. QUILL always looks for a copy you already have installed first — if `git` or `gh` is already on your system PATH, QUILL uses it directly and nothing more is needed.
 
 If you don't have them, **Help > Download Optional Components** has two rows for exactly this: **Git** (Windows only — a portable copy of Git for Windows, about 40 MB) and **GitHub CLI** (Windows and macOS, about 14 MB). Both are byte-identical re-publishes of the official releases, checksum-verified the same way every other optional component is. Download either one and the matching commands work immediately, with nothing else to configure — no separate install, no PATH changes, no restart. Remove either independently later from the same dialog; removing one never affects the other, even though they share a storage location.
+
+## Internet Radio
+
+**Tools > Media > Internet Radio** plays live internet radio streams in the background while you keep editing. It is disabled entirely in Safe Mode, since it is a network feature.
+
+### Finding and playing a station
+
+**Browse Stations...** opens a search-and-browse dialog:
+
+- A **Category** list on the left offers two instantly available options that need no network call to show: **Favorites** (stations you've saved) and **ACB Media** (the American Council of the Blind's ten Live365 stations, bundled directly into QUILL). Choosing either fills the results list immediately.
+- The **Search RadioBrowser** row above searches [RadioBrowser](https://api.radio-browser.info), a free, keyless, community-run station directory — type a station name, and optionally narrow by tag/genre or country, then press **Search**. Results appear under a third category, **Search Results**.
+- Arrow through the results list and a read-only **Station details** pane reports everything QUILL knows about the selected station: country, language, tags, codec and bitrate, community vote count, homepage, and the stream URL itself.
+- **Play** starts the selected station. **Add to Favorites** (relabels to **Remove from Favorites** once it's saved) keeps it in your Favorites category for next time.
+
+Closing the Browse Stations dialog does not stop playback — the station keeps playing in the background exactly like it would if you'd left the dialog open.
+
+### Adding your own stations
+
+Not every station is in RadioBrowser's directory. Two more buttons in the Browse Stations dialog cover that:
+
+- **Add Custom Station...** takes a name and any http or https stream URL directly, plus an optional homepage and tags. A **Test** button plays the link right there so you can confirm it works before pressing **Save**.
+- **Find Streams from a Website...** takes a website address you type, fetches that one page, and lists every stream-shaped link it finds on it (an audio tag, a `.pls`/`.m3u` playlist link, a URL that looks like a Shoutcast or Icecast mount point), each with a plain-language reason. Select a candidate, **Test** to preview it, then **Use This Link...** to carry the guessed name and URL straight into Add Custom Station. This fetches and reads one page you explicitly typed — it does not open an interactive browser inside QUILL.
+
+### Controlling playback without opening a dialog
+
+Once something is playing, three ways to control it without opening Browse Stations:
+
+- **The status bar.** A **Radio** cell appears showing the station and state (hidden until you first play something). Press Enter on it, or click it, to play or pause. Its context menu (right-click, or Menu/Shift+F10) adds Stop, Mute/Unmute, a **Favorite Stations** quick-switch submenu, and a shortcut back to Browse Stations.
+- **The system tray.** Minimize QUILL to the tray and its right-click menu carries the same Play/Pause, Stop, Mute, and Favorite Stations controls, plus a Now Playing line.
+- **Keyboard shortcuts.** With QUILL focused, **Ctrl+Shift+Grave** (the QUILL Key), then **N**, toggles play/pause; then **0** stops; then **9** mutes. Like every QUILL Key chord, these are remappable in **Preferences > Keyboard Shortcuts**.
+
+### Volume
+
+The Browse Stations dialog has its own **Radio volume** slider and a **Mute** button. This volume is entirely separate from your Windows system volume and from your screen reader's own speech volume — turning radio down (or muting it) never touches either of those.
+
+### What's not in Internet Radio
+
+TuneIn and iHeartRadio are not supported — both are undocumented, reverse-engineered commercial APIs with no public terms, and RadioBrowser covers the same need without that risk. YouTube audio is not supported either. Podcasts (subscribing to shows, organizing them into folders, downloading episodes) and stream recording or scheduled recording are planned as follow-up work, not part of this release — see `docs/planning/radio.md` if you're curious about the roadmap.
 
 ## Braille Mode (BRF, BRL, PEF, UEB)
 

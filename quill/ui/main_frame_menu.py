@@ -2272,6 +2272,69 @@ class MenuBuilderMixin:
         )
         tools_menu.AppendSubMenu(speech_menu, _("&Speech"))
 
+        # Media (Internet Radio; podcasts planned, see docs/planning/radio.md) --
+        if self._feature_enabled("core.radio"):
+            media_menu = wx.Menu()
+            id_radio_browse = wx.NewIdRef()
+            id_radio_add_custom = wx.NewIdRef()
+            id_radio_find_streams = wx.NewIdRef()
+            id_radio_play_pause = wx.NewIdRef()
+            id_radio_stop = wx.NewIdRef()
+            id_radio_mute = wx.NewIdRef()
+            id_radio_volume_up = wx.NewIdRef()
+            id_radio_volume_down = wx.NewIdRef()
+            media_menu.Append(
+                id_radio_browse, self._menu_label(_("&Browse Stations..."), "radio.browse")
+            )
+            media_menu.Append(
+                id_radio_add_custom,
+                self._menu_label(_("Add &Custom Station..."), "radio.add_custom_station"),
+            )
+            media_menu.Append(
+                id_radio_find_streams,
+                self._menu_label(
+                    _("&Find Streams from a Website..."), "radio.find_streams"
+                ),
+            )
+            media_menu.AppendSeparator()
+            media_menu.Append(
+                id_radio_play_pause, self._menu_label(_("&Play/Pause"), "radio.play_pause")
+            )
+            media_menu.Append(id_radio_stop, self._menu_label(_("&Stop"), "radio.stop"))
+            media_menu.Append(
+                id_radio_mute, self._menu_label(_("&Mute/Unmute"), "radio.mute_toggle")
+            )
+            media_menu.AppendSeparator()
+            media_menu.Append(
+                id_radio_volume_up, self._menu_label(_("Volume &Up"), "radio.volume_up")
+            )
+            media_menu.Append(
+                id_radio_volume_down, self._menu_label(_("Volume &Down"), "radio.volume_down")
+            )
+            self.frame.Bind(
+                wx.EVT_MENU, lambda _e: self.open_internet_radio(), id=id_radio_browse
+            )
+            self.frame.Bind(
+                wx.EVT_MENU,
+                lambda _e: self._radio_open_add_custom(None),
+                id=id_radio_add_custom,
+            )
+            self.frame.Bind(
+                wx.EVT_MENU, lambda _e: self._radio_open_link_finder(), id=id_radio_find_streams
+            )
+            self.frame.Bind(
+                wx.EVT_MENU, lambda _e: self.radio_toggle_play_pause(), id=id_radio_play_pause
+            )
+            self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_stop(), id=id_radio_stop)
+            self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_mute_toggle(), id=id_radio_mute)
+            self.frame.Bind(
+                wx.EVT_MENU, lambda _e: self.radio_volume_up(), id=id_radio_volume_up
+            )
+            self.frame.Bind(
+                wx.EVT_MENU, lambda _e: self.radio_volume_down(), id=id_radio_volume_down
+            )
+            tools_menu.AppendSubMenu(media_menu, _("&Media"))
+
         # Comparison (was Compare Documents) ----------------------------------
         compare_menu = wx.Menu()
         compare_menu.Append(self._id_compare_with_file, _("Compare with &File..."))

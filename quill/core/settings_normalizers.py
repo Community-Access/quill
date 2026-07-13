@@ -65,6 +65,9 @@ STATUS_BAR_ITEMS: tuple[str, ...] = (
     # default; auto-surfaces once the user picks a non-Native agentic engine,
     # and is the click target for the quick engine switcher.
     "ai_engine",
+    # Internet Radio mini-player: station + play/pause/stopped state. Hidden
+    # by default; auto-surfaces the first time a station is played.
+    "radio_player",
 )
 
 
@@ -97,6 +100,7 @@ def _default_status_bar_hidden() -> list[str]:
         "braille",
         "section_heading",
         "ai_engine",
+        "radio_player",
     ]
 
 

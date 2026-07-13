@@ -456,6 +456,7 @@ from quill.ui.main_frame_print import PrintMixin
 from quill.ui.main_frame_profile_picker import ProfilePickerMixin
 from quill.ui.main_frame_quill_key import QuillKeyMixin
 from quill.ui.main_frame_quillins import QuillinsMenuMixin
+from quill.ui.main_frame_radio import RadioMixin
 from quill.ui.main_frame_restore_points import RestorePointsMixin
 from quill.ui.main_frame_reveal_codes import RevealCodesMixin
 from quill.ui.main_frame_rich_mode import RichModeMixin
@@ -828,6 +829,7 @@ class MainFrame(
     AbbreviationsMixin,
     AiActionsMixin,
     EmojiPickerMixin,
+    RadioMixin,
     FormatCodesMixin,
     SpeechCommandsMixin,
     VerbosityCommandsMixin,
@@ -920,6 +922,7 @@ class MainFrame(
         "braille": "Braille",
         "section_heading": "Section",
         "ai_engine": "AI Engine",
+        "radio_player": "Radio",
     }
     _STATUS_BAR_WIDTHS: dict[str, int] = {
         "message": -1,
@@ -954,6 +957,7 @@ class MainFrame(
         "braille": 320,
         "section_heading": 220,
         "ai_engine": 200,
+        "radio_player": 260,
     }
     _STATUS_BAR_FEATURES: dict[str, str] = {
         "message": "core.app",
@@ -987,6 +991,7 @@ class MainFrame(
         "notebook_goal": "core.notebook",
         "braille": "core.braille",
         "section_heading": "core.format",
+        "radio_player": "core.radio",
     }
     _MACRO_CONTROL_COMMANDS: frozenset[str] = frozenset({
         "tools.start_macro_recording",
@@ -1253,6 +1258,7 @@ class MainFrame(
         )
         self._snippet_expansion_guard = False
         self._init_abbreviations()
+        self._init_radio()
         self._intellisense_popup: _IntellisensePopup | None = None
         self._intellisense_context: IntellisenseContext | None = None
         self._intellisense_fragment_text = ""
@@ -3860,6 +3866,7 @@ class MainFrame(
         self._register_local_git_commands()
         self._register_dictation_hotkey_commands()
         self._register_emoji_picker_commands()
+        self._register_radio_commands()
 
     def _apply_accelerators(self) -> None:
         wx = self._wx
@@ -6413,6 +6420,9 @@ class MainFrame(
         _safely("model lifecycle timer", self._stop_lifecycle_sweep_timer)
         _safely("global hotkeys", self._unregister_global_hotkeys)
         _safely("tray icon", self._remove_tray_icon)
+        radio_controller = getattr(self, "_radio_controller", None)
+        if radio_controller is not None:
+            _safely("radio player", radio_controller.shutdown)
         _safely("ssh connections", self.close_ssh_connections)
         # #32: drop GitHub-temp files no longer referenced by an open tab so
         # the user's app-data directory does not accumulate copies of files
@@ -10023,6 +10033,9 @@ class MainFrame(
             menu.Append(new_sticky_id, "New Sticky Note...")
             menu.Bind(wx.EVT_MENU, lambda _e: self.manage_sticky_notes(), id=sticky_id)
             menu.Bind(wx.EVT_MENU, lambda _e: self.create_sticky_note(), id=new_sticky_id)
+        if self._feature_enabled("core.radio"):
+            menu.AppendSeparator()
+            self._build_radio_tray_menu(menu)
         menu.AppendSeparator()
         menu.Append(exit_id, "Exit Quill")
         menu.Bind(wx.EVT_MENU, lambda _e: self._exit_from_tray(), id=exit_id)
