@@ -67,9 +67,7 @@ def _comparison(**overrides: Any) -> GitHubBranchComparison:
         commits=(
             GitHubCommit(sha="a" * 40, short_sha="aaaaaaa", message="Fix thing", author="Alice"),
         ),
-        files=(
-            GitHubPullFile(filename="a.py", status="modified", additions=3, deletions=1),
-        ),
+        files=(GitHubPullFile(filename="a.py", status="modified", additions=3, deletions=1),),
         permalink_url="https://github.com/owner/repo/compare/main...feature",
     )
     defaults.update(overrides)

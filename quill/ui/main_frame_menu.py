@@ -2292,9 +2292,7 @@ class MenuBuilderMixin:
             )
             media_menu.Append(
                 id_radio_find_streams,
-                self._menu_label(
-                    _("&Find Streams from a Website..."), "radio.find_streams"
-                ),
+                self._menu_label(_("&Find Streams from a Website..."), "radio.find_streams"),
             )
             media_menu.AppendSeparator()
             media_menu.Append(
@@ -2311,9 +2309,7 @@ class MenuBuilderMixin:
             media_menu.Append(
                 id_radio_volume_down, self._menu_label(_("Volume &Down"), "radio.volume_down")
             )
-            self.frame.Bind(
-                wx.EVT_MENU, lambda _e: self.open_internet_radio(), id=id_radio_browse
-            )
+            self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_internet_radio(), id=id_radio_browse)
             self.frame.Bind(
                 wx.EVT_MENU,
                 lambda _e: self._radio_open_add_custom(None),
@@ -2327,9 +2323,7 @@ class MenuBuilderMixin:
             )
             self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_stop(), id=id_radio_stop)
             self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_mute_toggle(), id=id_radio_mute)
-            self.frame.Bind(
-                wx.EVT_MENU, lambda _e: self.radio_volume_up(), id=id_radio_volume_up
-            )
+            self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_volume_up(), id=id_radio_volume_up)
             self.frame.Bind(
                 wx.EVT_MENU, lambda _e: self.radio_volume_down(), id=id_radio_volume_down
             )

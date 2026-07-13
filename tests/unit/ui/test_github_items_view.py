@@ -240,9 +240,7 @@ def test_model_label_describes_each_kind() -> None:
     )
     assert model_label(GitHubTag(name="v1", commit_sha="s", url="u")) == "tag v1"
     assert model_label(GitHubRelease(tag="v2", name="R", url="u")) == "release v2"
-    assert (
-        model_label(GitHubWorkflow(id=1, name="CI", path="p", state="active")) == "workflow CI"
-    )
+    assert model_label(GitHubWorkflow(id=1, name="CI", path="p", state="active")) == "workflow CI"
     assert model_label(GitHubWorkflowRun(name="CI", status="completed", url="u")) == "run CI"
 
 

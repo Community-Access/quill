@@ -84,8 +84,8 @@ def dlg(wx_app, monkeypatch: pytest.MonkeyPatch):
     dialog._repo = "owner/repo"
     statuses: list[str] = []
     announcements: list[str] = []
-    dialog._set_status = (
-        lambda message, **_kw: statuses.append(message) or announcements.append(message)
+    dialog._set_status = lambda message, **_kw: (
+        statuses.append(message) or announcements.append(message)
     )
     dialog._announce = lambda message: announcements.append(message)
     dialog._reload = lambda: None

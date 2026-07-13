@@ -530,9 +530,7 @@ def _maybe_fetch_vosk_wheel(progress: ProgressCallback | None) -> Path | None:
             "vosk", _vosk_download_dir(), progress=progress, label="Downloading Vosk..."
         )
     except Exception:
-        _LOG.warning(
-            "Vosk wheel fetch from assets-v1 failed; falling back to PyPI.", exc_info=True
-        )
+        _LOG.warning("Vosk wheel fetch from assets-v1 failed; falling back to PyPI.", exc_info=True)
         return None
 
 

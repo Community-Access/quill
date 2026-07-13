@@ -176,9 +176,8 @@
   </style>
 </head>
 <body>
-<h1 id="quill-0.9.0-beta-3">QUILL 0.9.0 Beta 3</h1>
-<h2
-id="one-editor.-every-format.-a-community-moving-forward-together.">One
+<h1 id="quill-090-beta-3">QUILL 0.9.0 Beta 3</h1>
+<h2 id="one-editor-every-format-a-community-moving-forward-together">One
 Editor. Every Format. A Community Moving Forward Together.</h2>
 <p><em>From Community Access. Free. Optional by design. Private by
 default. Built with you.</em></p>
@@ -205,7 +204,7 @@ Every limitation is stated honestly. Nothing here asks you to discover
 essential behavior by accident.</p>
 <p>This is the full, friendly companion to the <strong>“0.9.0 Beta
 3”</strong> section of <code>CHANGELOG.md</code>. The shorter summaries
-shown under <strong>Help &gt; What’s New</strong> and <strong>Check for
+shown under <strong>Help &gt; What's New</strong> and <strong>Check for
 Updates</strong> come from that changelog. This document tells the
 complete story: what changed, why it matters, how to use it, and how the
 community helped make it real.</p>
@@ -216,7 +215,7 @@ community helped make it real.</p>
 tool for plain text, another for Markdown, another for rich text,
 another for Word. Beta 3 turns that relationship around. The format now
 serves the writer. The editor remains familiar.</p>
-<h3 id="the-braille-fix-graduates-enabled-for-everyone-by-default">The
+<h3 id="the-braille-fix-graduates--enabled-for-everyone-by-default">The
 braille fix graduates — enabled for everyone by default</h3>
 <p>In Beta 2, we asked braille display users to step into an
 experimental space, test a proposed correction, and tell us exactly what
@@ -292,7 +291,7 @@ what you intend:</p>
 <p>Choose <strong>stay plain</strong>, and QUILL remembers the answer
 instead of asking repeatedly.</p>
 <h3
-id="word-documents-become-editable-without-pretending-nothing-can-be-lost">Word
+id="word-documents-become-editable--without-pretending-nothing-can-be-lost">Word
 documents become editable — without pretending nothing can be lost</h3>
 <p>A <code>.docx</code> file can now open for genuine rich editing and
 save back as a real Word document.</p>
@@ -320,7 +319,7 @@ formats</h3>
 together.</p>
 <p>Open it through any of these paths:</p>
 <ul>
-<li><strong>Format &gt; Document Format…</strong></li>
+<li><strong>Format &gt; Document Format...</strong></li>
 <li><strong>Ctrl+Shift+Grave, K</strong></li>
 <li>The Command Palette</li>
 <li>The new <strong>Format</strong> cell on the status bar, which
@@ -343,7 +342,7 @@ anything that will not survive the conversion.</p>
 save proposes a filename with the correct extension — for example,
 <code>notes.md</code> becomes <code>notes.rtf</code> — so the file on
 disk always tells the truth about the format inside it.</p>
-<h3 id="rich-editing-on-macos-ready-from-the-first-launch">Rich editing
+<h3 id="rich-editing-on-macos--ready-from-the-first-launch">Rich editing
 on macOS — ready from the first launch</h3>
 <p>Rich mode ships ready to use on the Mac. The macOS editor remains the
 same native text view VoiceOver users already know, and the application
@@ -601,8 +600,8 @@ exactly as before.</p>
 It remains on disk either way. The only change is whether QUILL asks you
 to recover after an exit for which the log contains no evidence of a
 crash.</p>
-<h3 id="insert-date-and-times-submenu-now-actually-opens">Insert &gt;
-Date and Time’s submenu now actually opens</h3>
+<h3 id="insert--date-and-times-submenu-now-actually-opens">Insert &gt;
+Date and Time's submenu now actually opens</h3>
 <p>Jayson Smith reported it precisely: open the Insert menu, arrow up to
 <strong>Date and Time</strong>, press Right Arrow to open the submenu,
 and land in the <strong>Format</strong> menu instead.</p>
@@ -610,7 +609,7 @@ and land in the <strong>Format</strong> menu instead.</p>
 QUILL builds its menu bar before Quillins finish loading — deliberately,
 so a slow or misbehaving Quillin can never delay the window appearing or
 bring the whole launch down. But nothing rebuilt the menu bar afterward,
-so the bundled <code>insert-tools</code> Quillin’s three contributions
+so the bundled <code>insert-tools</code> Quillin's three contributions
 (Insert Date, Insert Time, Insert Date and Time) never actually landed
 inside the <strong>Date and Time</strong> submenu. The submenu itself
 was still there — created unconditionally — just permanently empty. With
@@ -643,16 +642,16 @@ instead of per-user, and noticed something specific: startup was several
 seconds faster the first time he ran it as administrator than it was
 running normally afterward.</p>
 <p>The cause was a gap in a fix QUILL already had. comtypes — the
-library behind SAPI speech, Narrator’s UIA announcement bridge, and the
+library behind SAPI speech, Narrator's UIA announcement bridge, and the
 Rich Edit rich-text object model — writes a generated wrapper file to
 disk the first time it touches each of those three COM interfaces. Its
 default location is inside its own package folder, which a per-machine
 install makes read-only without elevation. QUILL already redirected this
 cache to a writable per-user folder, but only did the redirecting once,
-from inside the SAPI code path — Narrator’s and Rich Edit’s own comtypes
+from inside the SAPI code path — Narrator's and Rich Edit's own comtypes
 calls only inherited that redirect if SAPI happened to run first in the
 same session. Whichever one ran first without that accident of ordering
-fell back to comtypes’ own read-only default and degraded silently.</p>
+fell back to comtypes' own read-only default and degraded silently.</p>
 <p>Every comtypes call site now requests the redirect itself before
 touching comtypes, rather than counting on another feature to have
 already done it. None of the three depends on session ordering anymore,
@@ -663,7 +662,7 @@ Viewer into a Workspace</h2>
 <p>Beta 2 introduced the read-only GitHub Items viewer. Beta 3 begins
 unifying the best ideas from <a
 href="https://github.com/kellylford/GHManage">GHManage</a> — Kelly
-Ford’s open-source, screen-reader-first GitHub browser, QUILL’s
+Ford's open-source, screen-reader-first GitHub browser, QUILL's
 reference viewer for this entire integration — and fastgh, and moves
 QUILL toward something much bigger: a keyboard-first GitHub environment
 where information can be found, understood, and — with explicit consent
@@ -675,14 +674,14 @@ Items gains pins, favorites, real search, automatic repository
 awareness, and View Upstream</h3>
 <p>The first group of improvements adds five everyday capabilities:</p>
 <ul>
-<li><strong>Pinned repositories.</strong> The <strong>Pinned…</strong>
+<li><strong>Pinned repositories.</strong> The <strong>Pinned...</strong>
 button holds a short, intentional list of the repositories you use most.
 Select one to load it immediately, or pin and unpin the currently loaded
 repository from the same menu. You no longer need to retype
 <code>owner/repo</code> every time.</li>
 <li><strong>Favorites.</strong> Press <strong>Ctrl+D</strong> on any
 selected issue, pull request, branch, or release to bookmark it.
-<strong>Favorites…</strong> lists bookmarks from every repository and
+<strong>Favorites...</strong> lists bookmarks from every repository and
 opens the selected item in your browser. These bookmarks remain entirely
 on your machine.</li>
 <li><strong>Full GitHub search syntax.</strong> Press
@@ -695,24 +694,25 @@ editing lives inside a git clone whose <code>origin</code> points to
 GitHub, the repository field fills itself in automatically. This works
 for any file regardless of how it was opened, not only files reached
 through QUILL’s GitHub commands.</li>
-<li><strong>View Upstream.</strong> Load a repository that’s a fork, and
+<li><strong>View Upstream.</strong> Load a repository that's a fork, and
 the <strong>View Upstream</strong> button enables itself the moment
 QUILL confirms it. Press it and the parent repository loads in its place
-— the only path there before was retyping the parent’s name by
+— the only path there before was retyping the parent's name by
 hand.</li>
 </ul>
 <h3
 id="pull-request-differences-become-something-you-can-understand-not-a-wall-of-symbols">Pull-request
 differences become something you can understand, not a wall of
 symbols</h3>
-<p>Select a pull request and choose <strong>Diff…</strong> to browse its
-changed files in an accessible list.</p>
+<p>Select a pull request and choose <strong>Diff...</strong> to browse
+its changed files in an accessible list.</p>
 <p>QUILL sends each file’s before-and-after content through the same
 comparison engine used by <strong>Compare Documents</strong>. Instead of
 forcing you through a dense stream of plus and minus signs, it presents
 a numbered walk through meaningful changes, such as:</p>
 <blockquote>
-<p>Difference 2 of 5. Text changed at line 41. main: … this PR: …</p>
+<p>Difference 2 of 5. Text changed at line 41. main: ... this PR:
+...</p>
 </blockquote>
 <p>The changed words are described directly.</p>
 <ul>
@@ -722,10 +722,10 @@ a numbered walk through meaningful changes, such as:</p>
 change counts.</li>
 </ul>
 <h3
-id="batch-operations-are-powerful-and-deliberately-fenced-by-consent">Batch
+id="batch-operations-are-powerful--and-deliberately-fenced-by-consent">Batch
 operations are powerful — and deliberately fenced by consent</h3>
 <p>The GitHub Items list now supports multi-selection. Select several
-rows, press <strong>Batch…</strong>, and close, reopen, or add a label
+rows, press <strong>Batch...</strong>, and close, reopen, or add a label
 to all selected items at once.</p>
 <p>This is the deliberate exception to the viewer’s read-only
 foundation, so the boundaries are explicit:</p>
@@ -757,34 +757,34 @@ feature. Nothing is transmitted or generated until you choose
 <h3 id="compare-two-branches-without-leaving-the-list">Compare two
 branches without leaving the list</h3>
 <p>Switch the Items viewer to the <strong>Branches</strong> view, select
-one, and press <strong>Compare…</strong> (or
+one, and press <strong>Compare...</strong> (or
 <strong>Ctrl+Shift+B</strong>). Unlike Batch and Actions, this needs no
 signed-in account — it never writes to GitHub. Type a base branch, then
 the branch to compare against it (the selected row prefills the second
 prompt), and QUILL reports how far the two have diverged, lists every
-commit between them, and walks each changed file’s differences the same
-accessible way <strong>Diff…</strong> does on a pull request.</p>
+commit between them, and walks each changed file's differences the same
+accessible way <strong>Diff...</strong> does on a pull request.</p>
 <h3 id="run-a-workflow-straight-from-the-list">Run a workflow straight
 from the list</h3>
 <p>A new <strong>Workflows</strong> view sits alongside Workflow Runs —
 it shows the workflow <em>definitions</em> in the repository (the
 <code>.yml</code> files) rather than their run history. Select one and
-press <strong>Enter</strong>, or use <strong>Actions… &gt; Run … on
-Branch…</strong>, and QUILL asks for a branch, confirms, and dispatches
-the run. This needs a signed-in account; if the workflow doesn’t accept
-manual (<code>workflow_dispatch</code>) runs, GitHub’s own refusal is
-reported plainly instead of QUILL guessing.</p>
-<h3 id="filter-what-youve-already-loaded-instantly">Filter what you’ve
+press <strong>Enter</strong>, or use <strong>Actions... &gt; Run ... on
+Branch...</strong>, and QUILL asks for a branch, confirms, and
+dispatches the run. This needs a signed-in account; if the workflow
+doesn't accept manual (<code>workflow_dispatch</code>) runs, GitHub's
+own refusal is reported plainly instead of QUILL guessing.</p>
+<h3 id="filter-what-youve-already-loaded-instantly">Filter what you've
 already loaded, instantly</h3>
 <p><strong>Quick filter</strong> (Ctrl+Shift+F) is a second, different
 kind of narrowing from Search: it filters the rows already sitting in
 the list, live as you type, with no network round trip. It never steals
-keyboard focus away from the box you’re typing in, and — since
-re-announcing “12 items” on every keystroke would fight a screen
-reader’s own character echo — it stays silent while you type and only
+keyboard focus away from the box you're typing in, and — since
+re-announcing "12 items" on every keystroke would fight a screen
+reader's own character echo — it stays silent while you type and only
 speaks the result count once you stop. Escape clears it.</p>
 <p>Three smaller navigation additions round this out:
-<strong>Columns…</strong> lets you choose which fields appear as list
+<strong>Columns...</strong> lets you choose which fields appear as list
 columns for the current view, and remembers your choice the next time
 you open the viewer; <strong>Backspace</strong> in the Commits view
 (reached by pressing Enter on a branch) steps straight back to the
@@ -797,13 +797,13 @@ the broader unification review remain on the roadmap; notifications move
 from roadmap to reality later in this release.</p>
 <p><strong>With thanks.</strong> Every feature in this section traces
 back to <a href="https://github.com/kellylford/GHManage">GHManage</a>,
-Kelly Ford’s open-source GitHub browser — pinned repositories,
+Kelly Ford's open-source GitHub browser — pinned repositories,
 favorites, real search, local git awareness, View Upstream, the PR diff
 viewer, Compare Branches, the Workflows view, and Quick Filter all
-started as ideas GHManage shipped first. QUILL’s job in each case was to
+started as ideas GHManage shipped first. QUILL's job in each case was to
 extend that idea with something the rest of the app already had to offer
-— routing differences through QUILL’s own compare engine, or keeping
-Quick Filter quiet enough not to fight a screen reader’s character echo
+— routing differences through QUILL's own compare engine, or keeping
+Quick Filter quiet enough not to fight a screen reader's character echo
 — not to reinvent it. This integration would not exist in its current
 form without GHManage to learn from.</p>
 <hr />
@@ -821,67 +821,68 @@ examines how far QUILL can go without adding a dependency on the
 confidently: repository administration, richer item actions,
 organization browsing, releases, workflow dispatch, notifications, and
 security alerts.</p>
-<h3 id="a-new-tools-github-command-center">A new Tools &gt; GitHub
+<h3 id="a-new-tools--github-command-center">A new Tools &gt; GitHub
 command center</h3>
 <p><strong>Tools &gt; GitHub</strong> is a new submenu containing eight
 repository commands:</p>
 <ul>
-<li><strong>Create Repository…</strong> — provide a name and
+<li><strong>Create Repository...</strong> — provide a name and
 description, choose public or private visibility, and optionally select
 an organization. After creation, QUILL offers to synchronize a local
 folder immediately. Say yes and move directly from “no repository” to “a
 local folder pushing to GitHub” without opening a browser.</li>
-<li><strong>Fork Repository…</strong> — fork the repository and receive
-the same offer to create or connect a local synchronized folder.</li>
-<li><strong>Rename Repository…</strong> — change the repository name
+<li><strong>Fork Repository...</strong> — fork the repository and
+receive the same offer to create or connect a local synchronized
+folder.</li>
+<li><strong>Rename Repository...</strong> — change the repository name
 from within QUILL.</li>
-<li><strong>Change Repository Visibility…</strong> — move between public
-and private visibility with an explicit confirmation.</li>
-<li><strong>Change Default Branch…</strong> — select the branch GitHub
+<li><strong>Change Repository Visibility...</strong> — move between
+public and private visibility with an explicit confirmation.</li>
+<li><strong>Change Default Branch...</strong> — select the branch GitHub
 should treat as the default.</li>
-<li><strong>Delete Branch…</strong> — remove a branch through a guarded
-workflow.</li>
-<li><strong>Configure Branch Protection…</strong> — choose a branch, set
-the number of required approving reviews, specify required status
+<li><strong>Delete Branch...</strong> — remove a branch through a
+guarded workflow.</li>
+<li><strong>Configure Branch Protection...</strong> — choose a branch,
+set the number of required approving reviews, specify required status
 checks, or select an option to clear existing protection.</li>
-<li><strong>Commit Multiple Files…</strong> — choose several local files
-and commit them together in one atomic commit. This is intentionally
-different from <strong>Save to GitHub</strong>, which handles only the
-currently open document.</li>
+<li><strong>Commit Multiple Files...</strong> — choose several local
+files and commit them together in one atomic commit. This is
+intentionally different from <strong>Save to GitHub</strong>, which
+handles only the currently open document.</li>
 </ul>
 <h3 id="the-items-viewer-gains-an-actions-menu">The Items viewer gains
 an Actions menu</h3>
-<p>Alongside <strong>Batch…</strong>, the Issues, Pull Requests,
-Branches, and Commits viewer now includes <strong>Actions…</strong> with
-commands for:</p>
+<p>Alongside <strong>Batch...</strong>, the Issues, Pull Requests,
+Branches, and Commits viewer now includes <strong>Actions...</strong>
+with commands for:</p>
 <ul>
-<li><strong>New Issue…</strong></li>
-<li><strong>New Pull Request…</strong></li>
-<li><strong>Merge Pull Request…</strong> when a pull request is
+<li><strong>New Issue...</strong></li>
+<li><strong>New Pull Request...</strong></li>
+<li><strong>Merge Pull Request...</strong> when a pull request is
 selected</li>
-<li><strong>Delete Branch…</strong> when a branch is selected</li>
+<li><strong>Delete Branch...</strong> when a branch is selected</li>
 <li><strong>Re-run Workflow</strong> when a workflow run is
 selected</li>
-<li><strong>View Artifacts…</strong> when a workflow run is
+<li><strong>View Artifacts...</strong> when a workflow run is
 selected</li>
-<li><strong>Reply to Thread…</strong></li>
-<li><strong>Edit This Comment…</strong></li>
-<li><strong>Delete This Comment…</strong></li>
+<li><strong>Reply to Thread...</strong></li>
+<li><strong>Edit This Comment...</strong></li>
+<li><strong>Delete This Comment...</strong></li>
 </ul>
 <p>The comment actions build on the existing <strong>Alt+N</strong> and
 <strong>Alt+P</strong> navigation. Move to the relevant comment, then
 reply to, edit, or delete that specific comment.</p>
 <h3
 id="download-a-workflow-runs-build-artifacts-without-your-token-leaking-to-a-third-party">Download
-a workflow run’s build artifacts, without your token leaking to a third
+a workflow run's build artifacts, without your token leaking to a third
 party</h3>
-<p>Choosing <strong>View Artifacts…</strong> on a workflow run opens a
-small list of that run’s build artifacts — name, size, and whether
+<p>Choosing <strong>View Artifacts...</strong> on a workflow run opens a
+small list of that run's build artifacts — name, size, and whether
 GitHub has already let it expire. From there:</p>
 <ul>
-<li><strong>Download Selected…</strong> or <strong>Download
-All…</strong> ask for a destination folder, then save each artifact as a
-zip file.</li>
+<li><strong>Download Selected...</strong> or <strong>Download
+All...</strong> ask for a destination folder, then save each artifact as
+a zip file.</li>
 <li>If a file of that name already exists, QUILL asks before overwriting
 it.</li>
 <li>A progress dialog with <strong>Cancel</strong> tracks the download;
@@ -890,11 +891,11 @@ you can stop it at any point.</li>
 on GitHub.</li>
 </ul>
 <p>The download itself needed a deliberate design decision, not a
-default one. GitHub’s artifact download link redirects to a short-lived,
+default one. GitHub's artifact download link redirects to a short-lived,
 signed URL hosted elsewhere (Azure Blob Storage in production) — and
 your GitHub token must never travel to that second host. Standard
 redirect-following would send it there anyway, and reaching into
-PyGithub’s private internals to work around that felt like the wrong
+PyGithub's private internals to work around that felt like the wrong
 kind of shortcut. QUILL instead follows the redirect itself: it blocks
 the automatic follow, reads the redirect target, and makes exactly one
 more request to that address with no <code>Authorization</code> header
@@ -928,40 +929,41 @@ releases, workflows, notifications, and security alerts</h3>
 <p>Five additional commands complete the read-mostly side of the
 plan:</p>
 <ul>
-<li><strong>Browse Organization Repositories…</strong> — choose from the
-organizations associated with your account and then browse that
+<li><strong>Browse Organization Repositories...</strong> — choose from
+the organizations associated with your account and then browse that
 organization’s repositories. Teams remain intentionally out of
 scope.</li>
-<li><strong>Create Release…</strong> — choose a tag, supply optional
+<li><strong>Create Release...</strong> — choose a tag, supply optional
 release notes or use GitHub’s automatically generated notes from merged
 pull requests, and create the release as a draft or publish it.</li>
-<li><strong>Dispatch Workflow…</strong> — run a workflow against a
+<li><strong>Dispatch Workflow...</strong> — run a workflow against a
 branch or tag, equivalent to choosing <strong>Run workflow</strong> on
 GitHub’s website.</li>
-<li><strong>Notifications…</strong> — open a genuine inbox spanning all
-repositories rather than only the repository currently loaded.</li>
-<li><strong>Security Alerts…</strong> — review a repository’s open
+<li><strong>Notifications...</strong> — open a genuine inbox spanning
+all repositories rather than only the repository currently loaded.</li>
+<li><strong>Security Alerts...</strong> — review a repository’s open
 Dependabot alerts.</li>
 </ul>
 <h3
-id="codespaces-and-copilot-cli-needs-your-help-to-confirm-it-actually-works">Codespaces
+id="codespaces-and-copilot-cli--needs-your-help-to-confirm-it-actually-works">Codespaces
 and Copilot CLI — needs your help to confirm it actually works</h3>
-<p>Four more Tools &gt; GitHub commands round out this release’s GitHub
+<p>Four more Tools &gt; GitHub commands round out this release's GitHub
 work, and they work a little differently from everything above: instead
-of talking to GitHub’s API directly, they run your own installed
+of talking to GitHub's API directly, they run your own installed
 <code>gh</code> command-line tool.</p>
-<p><strong>Codespaces…</strong> lists your active Codespaces — name,
+<p><strong>Codespaces...</strong> lists your active Codespaces — name,
 repository, current state — and lets you Stop or Delete one from a menu.
-<strong>Create Codespace…</strong> asks for a repository and an optional
-branch and creates a new one. This is the one command in QUILL’s entire
-GitHub integration that carries a real cost: Codespaces consume GitHub
-compute and storage minutes, and the confirmation dialog says exactly
-that before anything happens, rather than the general “this changes
-something on GitHub” wording every other GitHub command uses.</p>
-<p><strong>Ask Copilot for a Command…</strong> and <strong>Explain a
-Command…</strong> are small but genuinely useful: describe what you’re
+<strong>Create Codespace...</strong> asks for a repository and an
+optional branch and creates a new one. This is the one command in
+QUILL's entire GitHub integration that carries a real cost: Codespaces
+consume GitHub compute and storage minutes, and the confirmation dialog
+says exactly that before anything happens, rather than the general "this
+changes something on GitHub" wording every other GitHub command
+uses.</p>
+<p><strong>Ask Copilot for a Command...</strong> and <strong>Explain a
+Command...</strong> are small but genuinely useful: describe what you're
 trying to do in plain language and get a suggested git or
-<code>gh</code> command back, or paste in a command you don’t recognize
+<code>gh</code> command back, or paste in a command you don't recognize
 and get a plain-language explanation of what it does.</p>
 <p>We are asking for your help here specifically. These four commands
 are thoroughly unit-tested against a simulated <code>gh</code> tool —
@@ -970,7 +972,7 @@ it has been exercised against a real Codespaces-enabled repository or
 real Copilot CLI access on an actual device. If you use Codespaces or
 Copilot CLI, please try these commands and tell us what happened through
 <strong>Help &gt; Report a Bug</strong>, good or bad.</p>
-<p><strong>Don’t have <code>git</code> or <code>gh</code>
+<p><strong>Don't have <code>git</code> or <code>gh</code>
 installed?</strong> Both are now available right from <strong>Help &gt;
 Download Optional Components</strong> — a portable copy of Git for
 Windows, and the GitHub CLI for Windows and macOS, each
@@ -979,7 +981,7 @@ always prefers a copy you already have on your system first; these exist
 purely so Tools &gt; Local Git and these four Codespaces/Copilot
 commands work for someone who has never installed either.</p>
 <h3
-id="what-is-not-included-because-confidence-matters-more-than-pretending">What
+id="what-is-not-included--because-confidence-matters-more-than-pretending">What
 is not included — because confidence matters more than pretending</h3>
 <p>Before implementing these commands, we checked the actual boundaries
 of PyGithub instead of assuming that every GitHub capability had a
@@ -1024,7 +1026,7 @@ GitHub Desktop, and most graphical merge tools were not designed around
 that experience. None of them is also the trusted editor in which a
 screen reader user already writes.</p>
 <p>QUILL is.</p>
-<p>Open <strong>Tools &gt; Local Git &gt; Resolve Conflicts…</strong>
+<p>Open <strong>Tools &gt; Local Git &gt; Resolve Conflicts...</strong>
 and QUILL parses each conflicted file into meaningful parts. It then
 walks through the conflicts one at a time, announcing language such
 as:</p>
@@ -1047,7 +1049,7 @@ rebase becomes an accessible list instead of editable syntax</h3>
 expects you to reorder commits and change commands such as
 <code>pick</code>, <code>squash</code>, <code>reword</code>, or
 <code>drop</code> without damaging the syntax.</p>
-<p><strong>Interactive Rebase…</strong> replaces that fragile visual
+<p><strong>Interactive Rebase...</strong> replaces that fragile visual
 editing task with a real dialog:</p>
 <ul>
 <li>One commit appears on each row.</li>
@@ -1066,15 +1068,16 @@ rebase.</p>
 toolkit</h3>
 <p>The new local git experience also includes:</p>
 <ul>
-<li><strong>Uncommitted Changes…</strong> — stage or unstage work
+<li><strong>Uncommitted Changes...</strong> — stage or unstage work
 through an accessible comparison rather than a raw diff.</li>
-<li><strong>Switch Branch…</strong> — change branches with a guard that
-prevents uncommitted work from following you unexpectedly.</li>
-<li><strong>Stash Changes…</strong> and <strong>Manage Stashes…</strong>
-— create and manage stashes through guided interfaces.</li>
-<li><strong>Who Wrote This Line…</strong> — make git blame useful by
+<li><strong>Switch Branch...</strong> — change branches with a guard
+that prevents uncommitted work from following you unexpectedly.</li>
+<li><strong>Stash Changes...</strong> and <strong>Manage
+Stashes...</strong> — create and manage stashes through guided
+interfaces.</li>
+<li><strong>Who Wrote This Line...</strong> — make git blame useful by
 speaking the result for the current line.</li>
-<li><strong>Start Bisect…</strong> and <strong>End Bisect</strong> —
+<li><strong>Start Bisect...</strong> and <strong>End Bisect</strong> —
 turn <code>git bisect</code> into a plain conversation asking whether
 the current version is good or bad.</li>
 </ul>
@@ -1140,7 +1143,7 @@ that share the same synchronized data folder. This path has no
 cross-device conflict-resolution system.</p>
 <h3 id="synchronize-any-folder-with-github">Synchronize any folder with
 GitHub</h3>
-<p><strong>Tools &gt; Sync Folder with GitHub…</strong> works with any
+<p><strong>Tools &gt; Sync Folder with GitHub...</strong> works with any
 folder: notes, a writing project, source code, or an entire body of
 work.</p>
 <p>When the selected folder is already a git repository with a remote,
@@ -1237,9 +1240,9 @@ prompting. Only one exists at a time.</p>
 <p>It does <strong>not</strong> persist across sessions. Closing and
 reopening QUILL clears it. That is deliberate: this is disposable
 working memory for the next few minutes, not a replacement for the
-existing unlimited, persistent <strong>Set Bookmark…</strong>,
-<strong>Go To Bookmark…</strong>, and <strong>List Bookmarks…</strong>
-commands.</p>
+existing unlimited, persistent <strong>Set Bookmark...</strong>,
+<strong>Go To Bookmark...</strong>, and <strong>List
+Bookmarks...</strong> commands.</p>
 <h3 id="ten-numbered-quick-bookmarks-each-one-keystroke-away">Ten
 numbered quick bookmarks, each one keystroke away</h3>
 <p>Beta 3 also adds ten fixed bookmark slots numbered 0 through 9.</p>
@@ -1337,10 +1340,11 @@ valued Kurzweil 1000 workflow.</p>
 <li><strong>Ctrl+Alt+Shift+A — Add Favorite Folder.</strong> Adds the
 folder containing the current document. An untitled document must be
 saved first because QUILL needs a real folder path.</li>
-<li><strong>Ctrl+Alt+Shift+R — Remove Favorite Folder…</strong> Opens
+<li><strong>Ctrl+Alt+Shift+R — Remove Favorite Folder...</strong> Opens
 the favorites list and lets you choose one to remove.</li>
-<li><strong>Ctrl+Alt+Shift+O — Open From Favorite Folder…</strong> Opens
-the new Quick Open experience scoped to your favorite folders.</li>
+<li><strong>Ctrl+Alt+Shift+O — Open From Favorite Folder...</strong>
+Opens the new Quick Open experience scoped to your favorite
+folders.</li>
 </ul>
 <p>All three commands also appear under <strong>File &gt; Favorite
 Folders</strong> for users who prefer menu navigation.</p>
@@ -1383,7 +1387,7 @@ boundary, whether expanded or folded, and announces the label, state,
 and line count: “‘Chapter Three,’ expanded, 22 lines.”</li>
 <li><strong>Alt+Shift+[ — Previous Fold.</strong> Performs the same
 navigation in reverse.</li>
-<li><strong>Ctrl+Alt+Shift+L — List Folds…</strong> Opens a complete
+<li><strong>Ctrl+Alt+Shift+L — List Folds...</strong> Opens a complete
 list of foldable regions, each with its current state and line count.
 Select one to jump to it directly.</li>
 </ul>
@@ -1402,20 +1406,20 @@ though the region were expanded.</p>
 <p>Folding changes the behavior of fold-specific jump commands. It never
 makes reachable content silently unreachable.</p>
 <h3
-id="insert-emoji-3781-emoji-findable-by-ear-described-in-words">Insert
+id="insert-emoji--3781-emoji-findable-by-ear-described-in-words">Insert
 Emoji — 3,781 emoji, findable by ear, described in words</h3>
 <p>QUILL already has Insert Special Character for the case where you
 know exactly which Unicode code point you want. Emoji are the opposite
-problem: you don’t know the code point, you might not even remember the
+problem: you don't know the code point, you might not even remember the
 exact name, and you cannot see a picture grid to recognize one by eye.
 Every mainstream emoji picker is built around that grid — rows of small
 pictures meant to be scanned visually — which makes the entire category
 of feature effectively unusable without sight. Insert Emoji is built the
 other way around, from the ground up, for browsing and finding by
 ear.</p>
-<p><strong>Insert &gt; Insert Emoji… (Alt+Period)</strong> opens on
+<p><strong>Insert &gt; Insert Emoji... (Alt+Period)</strong> opens on
 every complete, standard emoji Unicode currently defines — 3,781 of
-them, current as of Unicode’s 16.0 emoji release — organized into the
+them, current as of Unicode's 16.0 emoji release — organized into the
 same nine categories Unicode itself uses:</p>
 <table>
 <thead>
@@ -1471,10 +1475,10 @@ at the top, live-filters as you type and matches in order of confidence:
 the emoji symbol itself, if you paste or type one in; a legacy typed
 alias like <code>:)</code>, <code>:D</code>, or <code>&lt;3</code>, for
 the smiley shorthand habit many people already have; a match against the
-emoji’s official Unicode name or one of its keywords; and, as a last
-resort, a match inside the emoji’s own written description — so a
+emoji's official Unicode name or one of its keywords; and, as a last
+resort, a match inside the emoji's own written description — so a
 half-remembered phrase like “melting” or “puddle” can still surface the
-right result even when that word never appears in the emoji’s official
+right result even when that word never appears in the emoji's official
 name or keyword list. <strong>Category</strong>, a list on the left, is
 the browse path: pick a category and its emoji fill the results list,
 for exploring rather than searching.</p>
@@ -1488,26 +1492,95 @@ expression, pose. Press <strong>Insert</strong>, or press Enter directly
 on a result, and it lands at your cursor; <strong>Cancel</strong> or
 Escape backs out with nothing inserted.</p>
 <p>Two more entries sit at the very top of the category list, ahead of
-Unicode’s nine groupings: <strong>Favorites</strong> and
+Unicode's nine groupings: <strong>Favorites</strong> and
 <strong>Recent</strong>. Select any emoji and press <strong>Add to
 Favorites</strong> to star it for one-step access from then on — the
 button relabels to <strong>Remove from Favorites</strong> once it is,
 and works from any view, search results included.
 <strong>Recent</strong> fills itself in automatically: the last 30 emoji
-you’ve actually inserted, most-recently-used first, so the ones you
+you've actually inserted, most-recently-used first, so the ones you
 reach for constantly never need a search or a category dig again.
 Removing something from Favorites, or clearing out Recent, only changes
 what shows up in those two shortcuts — the emoji itself is never touched
 and is still exactly as findable under its normal category or by search
 as it always was.</p>
 <p>Every one of those 3,781 descriptions is text QUILL generated itself,
-purpose-built for this feature — from Unicode’s own official names,
-categories, and keywords, through an AI model, in QUILL’s own words —
-rather than copied or scraped from another picker’s site, which would
+purpose-built for this feature — from Unicode's own official names,
+categories, and keywords, through an AI model, in QUILL's own words —
+rather than copied or scraped from another picker's site, which would
 have carried real licensing risk. The whole catalog, descriptions
 included, ships as a single bundled file built entirely offline ahead of
 time; using the picker itself makes no network connection at all, in
 Safe Mode or anywhere else.</p>
+<h3
+id="internet-radio--listen-in-the-background-while-you-write">Internet
+Radio — listen in the background while you write</h3>
+<p><strong>Tools &gt; Media &gt; Internet Radio</strong> brings live
+internet radio into QUILL itself, built to keep playing quietly in the
+background while you keep typing, not to pull focus away from your
+document.</p>
+<p><strong>Browse Stations...</strong> searches <a
+href="https://api.radio-browser.info">RadioBrowser</a>, a free, keyless,
+community-run directory of internet radio streams — no account, no
+advertising, and no commercial API terms to depend on or lose access to
+later. A search box takes a station name, and two optional fields narrow
+it further by tag/genre or by country. Alongside search sits a category
+list with two entries that need no network call at all to see:
+<strong>Favorites</strong>, your own saved stations, and <strong>ACB
+Media</strong>, the American Council of the Blind's ten Live365
+stations, bundled directly into QUILL because the mission overlap is
+direct and immediate access matters. Whatever station you've selected, a
+read-only details pane reports everything QUILL knows about it —
+country, language, tags, codec and bitrate, community vote count,
+homepage, and the stream URL itself — so you know what you're about to
+listen to before you press Play.</p>
+<p>Not every station worth listening to is in RadioBrowser's directory.
+<strong>Add Custom Station...</strong> takes any stream link directly —
+name, URL, an optional homepage and tags — with a <strong>Test</strong>
+button that plays it right there in the dialog before you commit to
+saving it. And when all you have is a station's own website,
+<strong>Find Streams from a Website...</strong> takes the address you
+type, fetches that one page, and lists every stream-shaped link it finds
+(an <code>&lt;audio&gt;</code> tag, a
+<code>.pls</code>/<code>.m3u</code> playlist link, a URL that looks like
+a Shoutcast or Icecast mount point) with a plain-language reason for
+each — Test to preview, then <strong>Use This Link...</strong> to carry
+the guessed name and stream URL straight into Add Custom Station. This
+deliberately fetches and reads one page rather than opening a full
+interactive browser inside QUILL: station pages almost always list their
+stream as a plain link, and a screen-reader-native results list beats
+navigating an embedded browser for this particular job.</p>
+<p>Every one of these dialogs shares the same single player, which is
+what makes "listen while you keep writing" work at all: closing the
+station browser, the custom-station dialog, or the link finder never
+stops the music, because playback lives independently of any of them.
+Once something is playing, a <strong>Radio</strong> cell appears on the
+status bar showing the station and state — click it, or press Enter on
+it, to play or pause; right-click (or open its context menu from the
+keyboard) for Stop, Mute, a <strong>Favorite Stations</strong>
+quick-switch, and a shortcut back into the full browser. Minimize QUILL
+to the system tray and the same controls follow you there, in the tray
+icon's right-click menu, alongside a live Now Playing line. And you
+never have to leave the editor to reach for any of it:
+<strong>Ctrl+Shift+Grave</strong>, then <strong>N</strong>, toggles
+play/pause; then <strong>0</strong> stops; then <strong>9</strong> mutes
+— all fully remappable, like every other QUILL Key chord.</p>
+<p>Radio volume is QUILL's own — a slider right in the station browser,
+separate entirely from your Windows system volume and separate from your
+screen reader's own speech volume, so you can set the music quietly
+under your speech without touching either of those.</p>
+<p>Two things worth naming plainly. First,
+<code>docs/planning/radio.md</code> compares QUILL's approach against
+FastPlay and ACB Link, the two existing accessible radio players this
+feature learned from, and explains a deliberate scope decision: TuneIn
+and iHeartRadio (both undocumented, reverse-engineered commercial APIs
+with no public terms) and YouTube audio are not in QUILL and are not
+planned — RadioBrowser alone covers the real need without that risk.
+Second, this release is Internet Radio only. Podcasts — folders of
+shows, OPML import/export, episode playlists — and stream recording and
+scheduled recording are real, planned next steps, tracked in that same
+planning document, not something this beta silently promises and doesn't
+deliver.</p>
 <hr />
 <h2
 id="introducing-the-offline-edition-and-real-polish-for-the-ai-setup-wizard-and-audio-studio">Introducing
@@ -1520,44 +1593,44 @@ bigger optional pieces — Pandoc, offline speech engines, neural voices,
 the braille pack, and more — only when you actually reach for them.</p>
 <p>The new <strong>Offline Edition</strong> build inverts that: every
 optional component ships inside the installer and the portable bundle up
-front. QUILL is fully functional the moment it’s installed, with no
+front. QUILL is fully functional the moment it's installed, with no
 internet connection ever needed. That makes it the right choice for an
 air-gapped machine, a locked-down work laptop, or anywhere your first
-login can’t reach the internet.</p>
+login can't reach the internet.</p>
 <p><strong>Help &gt; Download Optional Components</strong> reflects the
 difference honestly: under the Offline Edition, each component shows as
 already <strong>Bundled</strong> — or, for the handful the offline build
-doesn’t carry, <strong>Not included</strong> — instead of offering a
+doesn't carry, <strong>Not included</strong> — instead of offering a
 Download button that has nothing left to fetch. The regular, smaller
 installer and portable download are unchanged and remain the default for
 everyone else.</p>
 <p>The section right after this one covers a real gap a community member
-found in the Offline Edition’s first pass, and how it was closed.</p>
+found in the Offline Edition's first pass, and how it was closed.</p>
 <h3 id="the-ai-setup-wizard-treats-ollama-fairly">The AI Setup Wizard
 treats Ollama fairly</h3>
-<p>A never-configured install’s saved settings default to provider
-“Ollama” — a reasonable default, but the wizard’s “remember what you
-already set up” logic mistook that default for proof you’d deliberately
+<p>A never-configured install's saved settings default to provider
+"Ollama" — a reasonable default, but the wizard's "remember what you
+already set up" logic mistook that default for proof you'd deliberately
 added Ollama. The result: on first run, the wizard silently marked
 Ollama as already configured, quietly dropped it from the Provider list,
 and left only key-requiring cloud providers to choose from — even on a
 machine where Ollama had never been touched.</p>
 <p>The wizard now confirms a local Ollama server actually answers before
-treating it as configured. A related, simpler bug in the AI Hub’s
+treating it as configured. A related, simpler bug in the AI Hub's
 Provider tab is fixed alongside it: the API key field stayed active for
 every provider regardless of whether one was actually needed, making
-Ollama’s key field look required when nothing ever enforced it. It now
+Ollama's key field look required when nothing ever enforced it. It now
 greys out correctly for Ollama and any other no-key provider.</p>
 <p>Two smaller Setup Wizard rough edges are fixed in the same pass.
 Reaching the Connect step (or removing a provider from the Added list)
 could land focus straight in an API key field instead of the Provider
-list — jarring, and easy to misread as “Ollama needs a key too.” Focus
+list — jarring, and easy to misread as "Ollama needs a key too." Focus
 now always starts on the Provider list itself. The Remove button also
 used to look clickable the instant anything was added, whether or not
-you’d actually selected an entry; it now stays disabled until a real
+you'd actually selected an entry; it now stays disabled until a real
 selection exists.</p>
 <h3
-id="ollama-wherever-it-actually-runs-and-pull-a-model-without-a-terminal">Ollama,
+id="ollama-wherever-it-actually-runs--and-pull-a-model-without-a-terminal">Ollama,
 wherever it actually runs — and pull a model without a terminal</h3>
 <p>The Setup Wizard always assumed Ollama lived at
 <code>localhost</code>, even though reaching an Ollama server on another
@@ -1570,15 +1643,15 @@ Ollama is a real, working choice.</p>
 typing <code>ollama pull &lt;model&gt;</code> yourself. The Model step
 now shows which recommended models are already installed and offers a
 <strong>Pull model</strong> button on the rest, with live download
-progress, selecting the model for you the moment it’s ready.</p>
+progress, selecting the model for you the moment it's ready.</p>
 <h3
 id="preferences-lands-you-on-the-right-control-when-you-switch-tabs">Preferences
 lands you on the right control when you switch tabs</h3>
 <p>Using Ctrl+Tab or Ctrl+Shift+Tab to move between Preferences tabs —
 or clicking a different one — moved the visible page but left keyboard
 focus wherever it had been, so a screen reader sometimes announced just
-“Panel” instead of the new tab’s first real field. Switching tabs now
-always moves focus to that tab’s first control, matching the routing
+"Panel" instead of the new tab's first real field. Switching tabs now
+always moves focus to that tab's first control, matching the routing
 every other tabbed dialog in QUILL already uses.</p>
 <h3
 id="audio-studio-gets-a-working-cancel-button-an-honest-log-and-a-tidier-wav-output">Audio
@@ -1639,7 +1712,7 @@ now installs and speaks entirely from local files</h3>
 <p>The Offline Edition now contains everything required to install
 Kokoro neural voices. No connection is needed during first use or any
 later use.</p>
-<h3 id="whisper.cpp-now-includes-its-starter-model">whisper.cpp now
+<h3 id="whispercpp-now-includes-its-starter-model">whisper.cpp now
 includes its starter model</h3>
 <p>QUILL’s default speech-to-text engine, <strong>whisper.cpp</strong>,
 now ships with its starter model already present.</p>
@@ -1663,7 +1736,7 @@ without a network connection.</p>
 supporting library that previously came only from the internet even when
 the verified Vosk package itself was available locally. That final
 external dependency is now bundled.</p>
-<p>A second, more fundamental Vosk problem surfaced during this beta’s
+<p>A second, more fundamental Vosk problem surfaced during this beta's
 own build process: Vosk also lists a subtitle-file helper library as a
 dependency that QUILL never actually uses, and that library has never
 published a ready-to-install package — only its source code. Because the
@@ -1672,7 +1745,7 @@ packages (never source code that would need to be compiled), it rejected
 that one unused dependency every time, which meant the Offline Edition
 installer could not be built at all until this was found and fixed. It
 now fetches exactly what Vosk actually needs and skips the one piece it
-doesn’t.</p>
+doesn't.</p>
 <h3 id="piper-arrives-with-an-engine-and-a-ready-to-speak-voice">Piper
 arrives with an engine and a ready-to-speak voice</h3>
 <p>Piper is now fully prepared for offline use as well.</p>
@@ -1720,7 +1793,7 @@ member tested its promise rather than assuming the label was enough.</p>
 <p>This is not simply how QUILL improves. <strong>This is how QUILL is
 built.</strong></p>
 <hr />
-<h2 id="toward-1.0-together">Toward 1.0 — Together</h2>
+<h2 id="toward-10--together">Toward 1.0 — Together</h2>
 <p>Beta 3 moves the 0.9.0 cycle closer to 1.0 with a stronger editor,
 clearer safeguards, deeper accessibility, and a growing set of workflows
 shaped by the people who use them.</p>
