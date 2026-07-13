@@ -237,7 +237,7 @@ github = [
 # always works without any of these.
 ai-copilot = ["github-copilot-sdk>=1.0"]  # PyPI package; imports as `copilot`
 ai-claude = ["claude-agent-sdk>=0.2.110"]
-ai-openai = ["openai-agents>=0.17.7"]
+ai-openai = ["openai-agents>=0.18.2"]
 # Build-time only: compile the optional Table Studio native UIA provider
 # (quill/native/table_uia -> _quill_table_uia.pyd). Also needs MSVC + the
 # Windows 10 SDK + CMake. Not required at runtime (MSAA fallback ships).
