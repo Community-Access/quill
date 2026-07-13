@@ -347,6 +347,8 @@ class StatusBarMixin:
             return self._statusbar_section_heading_text()
         if item == "radio_player":
             return self._radio_status_text()
+        if item == "podcast_player":
+            return self._podcast_status_text()
         return ""
 
     def _statusbar_section_heading_text(self) -> str:
@@ -500,7 +502,7 @@ class StatusBarMixin:
             return value or label
         # These cells show only the value — the label is carried by SetName / announce,
         # not repeated in the visible button text.
-        if item in {"line_column", "mode", "radio_player"}:
+        if item in {"line_column", "mode", "radio_player", "podcast_player"}:
             return value or label
         if value:
             return f"{label}: {value}"
@@ -550,6 +552,10 @@ class StatusBarMixin:
             "radio_player": (
                 "Internet Radio. Press Enter to play or pause; right-click for "
                 "Stop, Mute, and Favorite Stations."
+            ),
+            "podcast_player": (
+                "Podcasts. Press Enter to play or pause; right-click for Stop "
+                "and download controls."
             ),
         }
         return labels.get(item, self._STATUS_BAR_LABELS.get(item, item))
@@ -735,6 +741,9 @@ class StatusBarMixin:
         if item == "radio_player":
             self.radio_toggle_play_pause()
             return
+        if item == "podcast_player":
+            self.podcast_toggle_play_pause()
+            return
         actions: dict[str, Callable[[], None]] = {
             "message": self.open_notifications,
             "line_column": self.go_to_line,
@@ -816,6 +825,8 @@ class StatusBarMixin:
             )
         if item == "radio_player":
             self._build_radio_status_bar_menu(menu)
+        if item == "podcast_player":
+            self._build_podcast_status_bar_menu(menu)
         menu.Append(hide_id, "Hide this item")
         menu.Append(settings_id, "Status bar settings...")
         menu.Bind(wx.EVT_MENU, lambda _e: self._activate_statusbar_cell(item), id=activate_id)

@@ -2272,9 +2272,12 @@ class MenuBuilderMixin:
         )
         tools_menu.AppendSubMenu(speech_menu, _("&Speech"))
 
-        # Media (Internet Radio; podcasts planned, see docs/planning/radio.md) --
-        if self._feature_enabled("core.radio"):
+        # Media (Internet Radio, Podcasts) -------------------------------------
+        radio_enabled = self._feature_enabled("core.radio")
+        podcasts_enabled = self._feature_enabled("core.podcasts")
+        if radio_enabled or podcasts_enabled:
             media_menu = wx.Menu()
+        if radio_enabled:
             id_radio_browse = wx.NewIdRef()
             id_radio_add_custom = wx.NewIdRef()
             id_radio_find_streams = wx.NewIdRef()
@@ -2327,6 +2330,79 @@ class MenuBuilderMixin:
             self.frame.Bind(
                 wx.EVT_MENU, lambda _e: self.radio_volume_down(), id=id_radio_volume_down
             )
+        if podcasts_enabled:
+            if radio_enabled:
+                media_menu.AppendSeparator()
+            id_podcasts_open = wx.NewIdRef()
+            id_podcasts_add = wx.NewIdRef()
+            id_podcasts_import_opml = wx.NewIdRef()
+            id_podcasts_export_opml = wx.NewIdRef()
+            id_podcasts_play_pause = wx.NewIdRef()
+            id_podcasts_stop = wx.NewIdRef()
+            id_podcasts_pause_downloads = wx.NewIdRef()
+            id_podcasts_resume_downloads = wx.NewIdRef()
+            media_menu.Append(
+                id_podcasts_open, self._menu_label(_("&Podcasts..."), "podcasts.open_manager")
+            )
+            media_menu.Append(
+                id_podcasts_add, self._menu_label(_("&Add Podcast..."), "podcasts.add")
+            )
+            media_menu.Append(
+                id_podcasts_import_opml,
+                self._menu_label(_("&Import OPML..."), "podcasts.import_opml"),
+            )
+            media_menu.Append(
+                id_podcasts_export_opml,
+                self._menu_label(_("&Export OPML..."), "podcasts.export_opml"),
+            )
+            media_menu.AppendSeparator()
+            media_menu.Append(
+                id_podcasts_play_pause,
+                self._menu_label(_("Podcast Play/Pa&use"), "podcasts.play_pause"),
+            )
+            media_menu.Append(
+                id_podcasts_stop, self._menu_label(_("Podcast &Stop"), "podcasts.stop")
+            )
+            media_menu.AppendSeparator()
+            media_menu.Append(
+                id_podcasts_pause_downloads,
+                self._menu_label(_("Pause All &Downloads"), "podcasts.pause_all_downloads"),
+            )
+            media_menu.Append(
+                id_podcasts_resume_downloads,
+                self._menu_label(_("Resume All D&ownloads"), "podcasts.resume_all_downloads"),
+            )
+            self.frame.Bind(
+                wx.EVT_MENU, lambda _e: self.open_podcast_manager(), id=id_podcasts_open
+            )
+            self.frame.Bind(
+                wx.EVT_MENU, lambda _e: self._podcast_open_add_dialog(), id=id_podcasts_add
+            )
+            self.frame.Bind(
+                wx.EVT_MENU,
+                lambda _e: self._podcast_open_import_opml(),
+                id=id_podcasts_import_opml,
+            )
+            self.frame.Bind(
+                wx.EVT_MENU, lambda _e: self._podcast_export_opml(), id=id_podcasts_export_opml
+            )
+            self.frame.Bind(
+                wx.EVT_MENU,
+                lambda _e: self.podcast_toggle_play_pause(),
+                id=id_podcasts_play_pause,
+            )
+            self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_stop(), id=id_podcasts_stop)
+            self.frame.Bind(
+                wx.EVT_MENU,
+                lambda _e: self.podcast_pause_all_downloads(),
+                id=id_podcasts_pause_downloads,
+            )
+            self.frame.Bind(
+                wx.EVT_MENU,
+                lambda _e: self.podcast_resume_all_downloads(),
+                id=id_podcasts_resume_downloads,
+            )
+        if radio_enabled or podcasts_enabled:
             tools_menu.AppendSubMenu(media_menu, _("&Media"))
 
         # Comparison (was Compare Documents) ----------------------------------

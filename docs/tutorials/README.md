@@ -29,6 +29,12 @@ ground by ear).
    save files; work issues and pull requests; administer a repository
    (create, fork, rename, branch protection); and resolve merge conflicts
    and run an interactive rebase without ever leaving QUILL.
+9. [Internet Radio](09-internet-radio.md) — find a station, save
+   favorites, add your own custom streams, and control playback from the
+   status bar, the tray, or the keyboard while you keep writing.
+10. [Podcasts](10-podcasts.md) — subscribe, organize into folders,
+    download with two independent pause controls, and play with per-show
+    speed and resume-where-you-left-off, all without leaving QUILL.
 
 Every tutorial assumes only a default QUILL install and a screen reader (or
 none — everything here works identically by sight).

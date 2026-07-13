@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>09-internet-radio</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="tutorial-9-internet-radio">Tutorial 9: Internet Radio</h1>
+<p><strong>Goal:</strong> find a station, play it in the background
+while you keep writing, save your favorites, and control it without ever
+opening a dialog.</p>
+<p>Internet Radio needs a network connection and is disabled entirely in
+Safe Mode. Everything below lives under <strong>Tools &gt; Media &gt;
+Internet Radio</strong>.</p>
+<h2 id="1-play-something-right-away">1. Play something right away</h2>
+<ol type="1">
+<li><strong>Tools &gt; Media &gt; Internet Radio &gt; Browse
+Stations...</strong></li>
+<li>The <strong>Category</strong> list opens on two options that need no
+network call to show: <strong>Favorites</strong> (empty your first time)
+and <strong>ACB Media</strong> — the American Council of the Blind's ten
+Live365 stations, bundled directly into QUILL. Arrow to one and press
+<strong>Play</strong>.</li>
+<li>Close the dialog. The station keeps playing — closing Browse
+Stations never stops playback, the same way closing a document doesn't
+stop Read Aloud.</li>
+</ol>
+<h2 id="2-search-a-real-directory">2. Search a real directory</h2>
+<p>Back in Browse Stations, use the <strong>Search RadioBrowser</strong>
+row above the category list: type a station name (try <code>jazz</code>
+or a city you know has a station), optionally narrow by tag/genre or
+country, and press <strong>Search</strong>. Results land under a new
+<strong>Search Results</strong> category. Arrow through them — a
+read-only <strong>Station details</strong> pane below reports everything
+QUILL knows about the selected station: country, language, tags, codec
+and bitrate, community vote count, homepage, and the stream URL itself,
+so you know what you're about to hear before you press Play.</p>
+<p>Found one you'll want again? <strong>Add to Favorites</strong> saves
+it; the button relabels to <strong>Remove from Favorites</strong> once
+it's there.</p>
+<h2 id="3-add-a-station-radiobrowser-doesnt-have">3. Add a station
+RadioBrowser doesn't have</h2>
+<p>Two more buttons in Browse Stations cover the rest:</p>
+<ul>
+<li><strong>Add Custom Station...</strong> — a name and any http/https
+stream URL, plus an optional homepage and tags. Press
+<strong>Test</strong> to play it right there before
+<strong>Save</strong>.</li>
+<li><strong>Find Streams from a Website...</strong> — type a station's
+own website address. QUILL fetches that one page and lists every
+stream-shaped link it finds (an audio tag, a
+<code>.pls</code>/<code>.m3u</code> playlist, a Shoutcast/Icecast mount
+point), each with a plain-language reason. Select one,
+<strong>Test</strong> it, then <strong>Use This Link...</strong> to
+carry the guessed name and URL straight into Add Custom Station. This
+reads the one page you typed — it does not open a browser inside
+QUILL.</li>
+</ul>
+<h2 id="4-control-it-without-opening-a-dialog">4. Control it without
+opening a dialog</h2>
+<p>Once something is playing, three ways to reach it without Browse
+Stations:</p>
+<ul>
+<li><strong>The status bar.</strong> A <strong>Radio</strong> cell
+appears the first time you play something. Press Enter on it, or click
+it, to play/pause. Open its context menu (right-click, or
+Menu/Shift+F10) for Stop, Mute/Unmute, a <strong>Favorite
+Stations</strong> quick-switch, and a shortcut straight back to Browse
+Stations.</li>
+<li><strong>The system tray.</strong> Send QUILL to the tray and its
+right-click menu carries the same Play/Pause, Stop, Mute, and Favorite
+Stations controls, plus a Now Playing line.</li>
+<li><strong>The keyboard, from anywhere in the editor.</strong> Press
+your QUILL Key (<strong>Ctrl+Shift+Grave</strong>), then
+<strong>N</strong> to toggle play/pause; then <strong>0</strong> to
+stop; then <strong>9</strong> to mute. Remap any of these in
+<strong>Preferences &gt; Keyboard Shortcuts</strong> like any other
+QUILL Key chord.</li>
+</ul>
+<p>Try it now: start a station, switch back to your document, and press
+Ctrl+Shift+Grave, then 9 — the music mutes without you ever leaving the
+paragraph you were editing.</p>
+<h2 id="5-set-the-volume-once-and-forget-it">5. Set the volume once and
+forget it</h2>
+<p>Browse Stations has its own <strong>Radio volume</strong> slider and
+<strong>Mute</strong> button. This is entirely separate from your
+Windows system volume and from your screen reader's own speech volume —
+turn the music down (or mute it) without ever touching how loud your
+screen reader talks.</p>
+<h2 id="whats-not-here">What's not here</h2>
+<p>TuneIn and iHeartRadio aren't supported — both are undocumented,
+reverse-engineered commercial APIs with no public terms, and
+RadioBrowser covers the same need without that risk. YouTube audio isn't
+supported either. Stream recording and scheduled recording are real,
+planned follow-ups — see <code>docs/planning/radio.md</code> if you're
+curious. Podcasts are a separate, already-shipped feature — see <a
+href="10-podcasts.md">Tutorial 10</a>.</p>
+<h2 id="the-shape-of-it">The shape of it</h2>
+<p>One player, several doors into it: Browse Stations to find something
+new, the status bar or tray for everyday control, and QUILL Key chords
+when you'd rather not leave the keyboard at all. Closing any dialog
+never stops the music.</p>
+</body>
+</html>

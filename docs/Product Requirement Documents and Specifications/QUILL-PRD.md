@@ -4050,8 +4050,10 @@ narrow, Windows-only exception.
 **Persistence.** `core/radio/favorites.py` — atomic JSON via
 `core.storage.write_json_atomic`, the standard settings-surface pattern (no
 SQLite, unlike both FastPlay and ACB Link). Each favorite carries an unused
-`folder` field, present only so the planned podcasts feature (§5.84g, not yet
-scoped) can grow real folders out of the same on-disk shape.
+`folder` field, present only so the podcasts feature (§5.84g) could grow real
+folders out of the same on-disk shape — it ended up with its own dedicated
+`PodcastFolder` model instead, since a show belongs to exactly one folder
+while a radio favorite's `folder` is a looser, unenforced tag.
 
 **Non-goals (deliberate).** TuneIn, iHeartRadio, YouTube audio (any form) —
 `requirements.txt` already excludes `yt-dlp`/`youtube-transcript-api` to keep
@@ -4065,15 +4067,135 @@ the user's real browser over an embedded one on accessibility-sensitive
 tasks; a static fetch-and-parse covers the real case (station pages list
 literal stream links).
 
-**Planned next, not yet built.** Podcasts (subscribe, folders of shows, OPML
-import/export, playlists generated from a folder), stream recording, and
-scheduled recording — see `docs/planning/radio.md` for the working plan.
+**Planned next, not yet built.** Stream recording and scheduled recording —
+see `docs/planning/radio.md` for the working plan.
 
 **Value.** A genuine, on-mission "why QUILL and not a dedicated player"
 answer for a screen-reader-first audience: the ACB Media category exists
-nowhere else this convenient, and once podcasts land, a downloaded episode
-chains directly into the Listening Companion (§5.84b) for transcribe-and-
+nowhere else this convenient, and podcasts (§5.84g) chain a downloaded
+episode directly into the Listening Companion (§5.84b) for transcribe-and-
 summarize, which no standalone radio/podcast app offers.
+
+---
+
+### 5.84g Podcasts (Phase 1, shipped)
+
+**Goal.** Subscribe to, organize, download, and play podcasts inside QUILL,
+sharing Internet Radio's (§5.84f) proven "one player that outlives any
+dialog" architecture rather than inventing a second one. Phase 1 of the
+5-phase plan in `docs/planning/podcasts.md`: discovery, subscriptions,
+nested folders, OPML, two-control downloads, retention, and playback with
+per-show speed and resume position. Chapters/transcript UI, the Inbox, the
+Play Queue, local (imported-file) podcasts, and rich sorting/filtering are
+later phases in that same document.
+
+**Data model (`quill/core/podcasts/models.py`).** `PodcastShow` (one per
+subscription, or one `is_local` show for a later phase) owns a flat list of
+`PodcastEpisode` and an optional `PodcastSettings` override; `PodcastFolder`
+is a plain adjacency-list node (`parent_folder_id`), letting a show nest
+arbitrarily deep. `PodcastEpisode` carries `chapters_url`/`transcript_url`/
+`transcript_type` today as forward schema the feed reader already populates,
+even though Phase 1 has no UI that reads them yet — landing the on-disk
+shape now means the later chapters/transcript phase needs no migration.
+`position_ms` is the resume-position field the plan's sync design (§5.84f's
+persistence note) already anticipated.
+
+**Discovery and subscription.** `core/podcasts/itunes_search.py` queries
+Apple's free, keyless iTunes Search API — the same starting point FastPlay
+uses — for `search_podcasts()`. `core/podcasts/feed_reader.py` is a
+deliberate two-step design: QUILL fetches feed bytes itself
+(`_fetch_feed_bytes`, the one reviewed egress site, HTTPS-only, optional
+HTTP Basic auth for private feeds sent preemptively), then hands those bytes
+to `feedparser` for parsing only — never letting `feedparser`'s own fetch
+path make the network call, which would move it outside QUILL's audited
+egress surface. Podcasting 2.0's `<podcast:chapters>`/`<podcast:transcript>`
+tags aren't reliably exposed by `feedparser` across versions, so those two
+are extracted with a tolerant regex pass scoped per-`<item>` fragment as a
+fallback that doesn't depend on guessing `feedparser`'s internal key
+mapping. `core/podcasts/subscriptions.py`'s `PodcastLibrary` is the one
+atomic-JSON store (shows, folders, global settings); `merge_episodes()`
+refreshes a known episode's feed-supplied metadata but never drops one just
+because a refreshed feed no longer lists it, and never resets its local
+state (played, position, downloaded file, mode override) — an old episode
+scrolling off a feed's live listing must not erase what you already did
+with it.
+
+**OPML (`core/podcasts/opml.py`).** Export walks the folder tree into nested
+`<outline>` elements (local shows excluded — they have no feed URL to
+export); import reconstructs that same tree from the nesting and reuses
+`PodcastLibrary.add_show`'s existing duplicate-feed-URL detection, so
+re-importing a list you already have adds nothing twice. Untrusted OPML is
+parsed through `quill.core.safe_xml` (entity-expansion attacks disabled),
+never the bare stdlib parser; exporting uses plain `ElementTree`
+construction, which is not a parsing-of-untrusted-input operation.
+
+**Downloads (`core/podcasts/download_queue.py`).** One dedicated worker
+thread per process (not the shared `QuillTaskManager` pool), so a backlog of
+podcast downloads never competes with AI calls or transcription for a pool
+slot. Two independent pause controls, matching the plan's explicit
+requirement that this not be one setting wearing two hats:
+`pause_all`/`resume_all` stop the worker from *starting* new transfers,
+letting anything mid-transfer finish; `pause_item`/`resume_item` halt one
+specific transfer immediately via a per-item `threading.Event`, checked
+between each bounded chunk read so pause takes effect within a chunk, not
+only between whole-file attempts. Resuming reads the partial file's size and
+sends an HTTP `Range` request, falling back to a clean restart when the
+server doesn't honor it. `core/podcasts/retention.py` applies
+`keep_last_n` pruning after every completed download and
+`delete_after_play` after every finished episode — pure functions, testable
+without a real download or a real file.
+
+**Playback (`quill/ui/podcasts/player_controller.py`).** One
+`PodcastPlayerController`, owned by `MainFrame` for the process's lifetime —
+the exact same shape as `RadioPlayerController` (§5.84f), including the
+"every dialog drives the shared controller, none of them own it" rule that
+makes closing the Podcasts dialog never stop playback, and makes starting a
+new episode always replace whatever was playing rather than layering two
+streams. Unlike Radio, podcast episodes are bounded files (even mid-stream,
+the enclosure reports a real `Content-Length`), so this uses Audio Studio's
+normal `create_engine()` (mpv-preferred, `WxMediaEngine` fallback) rather
+than being restricted to Radio's wx.media-only backend. Per-show playback
+speed (`PodcastSettings.speed`, 0.75x-2.0x in the UI) is applied via
+`set_rate()` once the engine reports loaded, not before — some backends
+only accept a rate change after a file is open. Finishing an episode marks
+it played and applies `delete_after_play` before the state resets.
+
+**Surfaces.** `Tools > Media > Podcasts...` (Podcast Manager: folder tree +
+episode list, Add Podcast/New Folder/Import/Export OPML, Download/Pause
+Download/Remove Download, Unsubscribe) registers eight commands in
+`CommandRegistry` (`feature_id="core.podcasts"`), command-palette visible.
+Rich context menus close the plan's explicit "even playback and pause, etc."
+requirement: the episode list's menu covers Play/Pause, Stop, Download,
+Pause/Resume Download, Remove Downloaded Copy, Mark as Played/Unplayed, and
+Copy Episode Link; the folder tree's menu covers Refresh Feed, Pause/Resume
+Downloads for This Podcast (keeps the show and its episodes in the library
+while stopping new fetches — the plan's "mark a podcast to not download but
+keep in the library" ask), Unsubscribe, and New Folder. A `podcast_player`
+status-bar cell (auto-surfaces on first play, same pattern as Radio's cell)
+and a system-tray section (Play/Pause, Stop, Pause/Resume All Downloads)
+both drive the shared controller. Two QUILL-key chords
+(`Ctrl+Shift+Grave, 8/7` for play-pause/stop) sit adjacent to, not
+overlapping, Radio's `N/0/9`.
+
+**Non-goals (deliberate).** Video podcasts, in any form — audio only,
+matching every other QUILL playback surface; this was an explicit,
+repeated constraint during planning, not an oversight. TuneIn/iHeartRadio
+apply to Radio, not here; podcast feeds are an open standard (RSS/Atom),
+so there is no equivalent commercial-API question for this feature.
+
+**Planned next (Phase 2+), not yet built.** Chapter navigation and
+transcript viewing/export/QUILL-transcription (the feed already parses the
+URLs; §5.84b's transcription engines are the intended target), a separate
+Inbox view with its own folder tree, a cross-show reorderable Play Queue,
+local (imported-file) podcasts and watched folders, and rich
+sorting/filtering — see `docs/planning/podcasts.md` for the full phased
+plan.
+
+**Value.** Closes the other half of the "why QUILL and not a dedicated
+player" answer §5.84f opened: a downloaded episode chains directly into the
+Listening Companion (§5.84b) for transcribe-and-summarize, something no
+standalone podcast app offers, and the same QUILL Sync story that already
+carries settings between machines now carries listening position too.
 
 ---
 

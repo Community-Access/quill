@@ -48,6 +48,7 @@ Quill is also in beta. Expect polish, depth, and real daily utility. Also expect
   - [Remote files (FTP, SFTP, HTTPS, WebDAV, S3)](#remote-files-ftp-sftp-https-webdav-s3)
   - [GitHub Remote Files](#github-remote-files)
 - [Internet Radio](#internet-radio)
+- [Podcasts](#podcasts)
 - [Braille Mode (BRF, BRL, PEF, UEB)](#braille-mode-brf-brl-pef-ueb)
 - [Help, Learning, and Daily Confidence](#help-learning-and-daily-confidence)
   - [Context-Sensitive Help (F1)](#context-sensitive-help-f1)
@@ -7681,7 +7682,60 @@ The Browse Stations dialog has its own **Radio volume** slider and a **Mute** bu
 
 ### What's not in Internet Radio
 
-TuneIn and iHeartRadio are not supported — both are undocumented, reverse-engineered commercial APIs with no public terms, and RadioBrowser covers the same need without that risk. YouTube audio is not supported either. Podcasts (subscribing to shows, organizing them into folders, downloading episodes) and stream recording or scheduled recording are planned as follow-up work, not part of this release — see `docs/planning/radio.md` if you're curious about the roadmap.
+TuneIn and iHeartRadio are not supported — both are undocumented, reverse-engineered commercial APIs with no public terms, and RadioBrowser covers the same need without that risk. YouTube audio is not supported either. Stream recording or scheduled recording is planned as follow-up work, not part of this release — see `docs/planning/radio.md` if you're curious about the roadmap. Podcasts, described next, are a separate feature that ships alongside Internet Radio.
+
+## Podcasts
+
+**Tools > Media > Podcasts...** is QUILL's podcast client: subscribe to shows, organize them into folders, download episodes for offline listening, and resume exactly where you left off. It shares Internet Radio's core idea — one player that keeps going after you close the dialog — and is disabled entirely in Safe Mode, since it is a network feature.
+
+### Subscribing to a podcast
+
+The Podcasts dialog's **Add Podcast...** button opens a dialog with three ways in:
+
+- **Search.** Type a show name and press **Search** to query Apple's free, keyless iTunes Search directory. Arrow to a result and press **Subscribe to Selected**.
+- **Add by Feed URL.** If you already know a show's RSS/Atom feed address (or it isn't in iTunes' directory), paste it into the URL field and press **Add**.
+- **Import OPML...** reads a whole subscription list — including its folder structure — exported from another podcast app, so switching to QUILL doesn't mean starting over. **Export OPML...**, back on the main Podcasts dialog, writes your library out the same way.
+
+### Organizing your library
+
+The Podcasts dialog shows a folder tree on the left and, for whatever folder or show is selected, an episode list on the right — the same tree-and-list shape Internet Radio's dialogs use.
+
+- **New Folder...** creates a folder, nested under whatever's currently selected in the tree.
+- A show's right-click context menu (or Menu/Shift+F10) offers **Refresh Feed** (check for new episodes now), **Pause/Resume Downloads for This Podcast** (keeps the show, its episodes, and any downloads in your library, but stops fetching or downloading anything new until you resume it), and **Unsubscribe**.
+- **Unsubscribe** also works with the **Delete** key on a selected show. Downloaded episode files are kept on disk unless you separately remove them.
+
+### Downloading episodes
+
+Select an episode and press **Download**, or use its context menu. Downloads run on their own dedicated background thread, so a large backlog never slows down AI calls, transcription, or anything else QUILL is doing in the background.
+
+Pausing a download is two separate controls, not one setting doing two jobs:
+
+- **Pause All Downloads** / **Resume All Downloads** (from the tray menu, the status bar's Podcasts cell, or the Podcasts dialog) stops the queue from *starting* anything new. Anything already mid-transfer keeps running to completion.
+- Pausing **one specific episode** (its context menu, or the **Pause Download** button) halts that transfer immediately, wherever it is. Resuming it later continues from the exact byte it left off, rather than starting over.
+
+**Retention** — what happens to a downloaded file over time — is a setting per podcast, or a global default: keep every episode, keep only the most recent few, or delete a file automatically once you finish listening to it.
+
+### Playing an episode
+
+Select an episode and press **Play/Pause**, double-click it, or use its context menu. Playing a different episode always replaces whatever was playing — QUILL never plays two things at once, the same rule Internet Radio follows. Closing the Podcasts dialog never stops playback.
+
+Your position within an episode is saved automatically, so returning to it later — even from a different session — resumes exactly where you stopped. That position is stored the same way QUILL Sync already carries your settings between machines, so it travels with you if you sync your data folder.
+
+A **Speed** control on the Podcasts dialog's player row sets playback rate for the selected podcast, from 0.75x to 2.0x, remembered the next time you open that show.
+
+### Controlling playback without opening a dialog
+
+- **The status bar.** A **Podcasts** cell appears the first time you play an episode (hidden until then). Press Enter on it, or click it, to play or pause. Its context menu adds Stop and Pause/Resume All Downloads.
+- **The system tray.** Minimize QUILL to the tray and its right-click menu carries the same Play/Pause, Stop, and download-pause controls.
+- **Keyboard shortcuts.** With QUILL focused, **Ctrl+Shift+Grave** (the QUILL Key), then **8**, toggles play/pause; then **7** stops. Like every QUILL Key chord, these are remappable in **Preferences > Keyboard Shortcuts**.
+
+### Rich context menus
+
+Right-click an episode (or open its context menu from the keyboard) for: Play/Pause, Stop, Download, Pause/Resume Download, Remove Downloaded Copy, Mark as Played/Unplayed, and Copy Episode Link. Right-click a show in the tree for: Refresh Feed, Pause/Resume This Podcast's Downloads, and Unsubscribe. Right-click a folder for: New Folder.
+
+### What's not in Podcasts yet
+
+No video podcasts — QUILL plays audio only, on every platform. Chapter navigation and transcript viewing/export (the feed already reads Podcasting 2.0 chapter and transcript URLs, ready for this), a separate Inbox view, a cross-show Play Queue, local (imported-file) podcasts, and rich sorting/filtering are planned next — see `docs/planning/podcasts.md` for the full phased plan.
 
 ## Braille Mode (BRF, BRL, PEF, UEB)
 

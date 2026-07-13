@@ -1576,11 +1576,94 @@ feature learned from, and explains a deliberate scope decision: TuneIn
 and iHeartRadio (both undocumented, reverse-engineered commercial APIs
 with no public terms) and YouTube audio are not in QUILL and are not
 planned — RadioBrowser alone covers the real need without that risk.
-Second, this release is Internet Radio only. Podcasts — folders of
-shows, OPML import/export, episode playlists — and stream recording and
-scheduled recording are real, planned next steps, tracked in that same
-planning document, not something this beta silently promises and doesn't
-deliver.</p>
+Second, stream recording and scheduled recording are real, planned next
+steps, tracked in that same planning document, not something this beta
+silently promises and doesn't deliver. Podcasts, described next, ship in
+this same release.</p>
+<hr />
+<h3
+id="podcasts--subscribe-organize-download-and-never-lose-your-place">Podcasts
+— subscribe, organize, download, and never lose your place</h3>
+<p><strong>Tools &gt; Media &gt; Podcasts...</strong> is QUILL's own
+podcast client: subscribe to shows, organize them into folders, download
+episodes for offline listening, and pick up exactly where you left off —
+all without ever pulling focus away from your writing any more than
+Internet Radio does, and sharing that feature's central design idea of
+one player that outlives any dialog you close.</p>
+<p><strong>Finding and adding shows.</strong> The Podcasts dialog's
+<strong>Add Podcast...</strong> button opens a search box against
+Apple's free, keyless iTunes Search directory — the same starting point
+most podcast apps use — with a results list and a <strong>Subscribe to
+Selected</strong> button. If a show isn't in that directory, or you
+already know its feed address, <strong>Add by Feed URL</strong> takes it
+directly. And if you're moving from another podcast app, <strong>Import
+OPML...</strong> reads that app's whole subscription list in one step,
+folder structure included, so switching to QUILL doesn't mean
+re-subscribing to everything by hand; <strong>Export OPML...</strong>
+writes the same structure back out, so you're never locked in.</p>
+<p><strong>Organizing your library.</strong> Shows live in a folder tree
+on the left of the Podcasts dialog — genuinely nested, as deep as you
+like — with an episode list on the right for whatever show or folder is
+selected, the same tree-and-list shape Radio's own dialogs already
+established. <strong>New Folder...</strong> creates a folder (nested
+under whatever's currently selected), and a show's context menu can
+pause it — keeping it, its episodes, and any downloads fully in your
+library while it stops fetching or downloading anything new, for a show
+you want to keep without actively following right now.</p>
+<p><strong>Downloads, and two pause controls that mean different
+things.</strong> Every download runs on its own dedicated background
+thread, separate from QUILL's shared task pool, so a big backlog of
+episodes never slows down AI calls, transcription, or anything else
+running in the background. Pausing downloads is two genuinely
+independent controls, not one setting doing double duty: <strong>Pause
+All Downloads</strong> (from the tray, the status bar, or the Podcasts
+dialog) stops the queue from <em>starting</em> anything new, while
+whatever's already mid-transfer keeps running to completion; pausing one
+specific episode halts that transfer immediately, wherever it is, and
+resuming it later continues from the exact byte it left off via an HTTP
+Range request rather than starting over. Retention — what happens to a
+downloaded file over time — is a setting per podcast (or a global
+default): keep every episode forever, keep only the most recent few, or
+delete a file automatically the moment you finish listening to it.</p>
+<p><strong>Playback that behaves like Radio's.</strong> The Podcasts
+dialog drives the same kind of single, app-owned player Radio uses:
+closing the dialog never stops an episode that's playing, and starting a
+different episode always replaces whatever was playing rather than
+layering two streams — QUILL never plays two things at once. Your
+position within an episode is saved automatically, so returning to a
+podcast — even much later — resumes exactly where you stopped, and that
+position is stored the same way QUILL Sync already carries your settings
+between machines, so the sync story here is "already works" rather than
+"planned." A <strong>Speed</strong> control in the dialog sets playback
+rate per podcast from 0.75x to 2.0x, remembered the next time you open
+that show — read faster through a familiar host's cadence, or slow down
+a dense interview, independently per show.</p>
+<p><strong>Rich context menus, everywhere you'd expect one.</strong>
+Right-click (or open the context menu from the keyboard) on an episode
+for Play/Pause, Stop, Download, Pause/Resume Download, Remove Downloaded
+Copy, Mark as Played/Unplayed, and Copy Episode Link — every action
+reachable without leaving the list. Right-click a show in the folder
+tree for Refresh Feed, Pause/Resume This Podcast's Downloads, and
+Unsubscribe; right-click a folder for New Folder. Unsubscribing also
+works with the plain Delete key on a selected show — downloaded files
+are kept on disk unless you separately remove them.</p>
+<p><strong>Everywhere Radio already lives, Podcasts lives too.</strong>
+A <strong>Podcasts</strong> status bar cell appears the first time you
+play something, mirroring Radio's cell exactly: click or press Enter to
+play/pause, open its context menu for Stop and Pause/Resume All
+Downloads. The system tray's right-click menu gets the same controls for
+when QUILL is minimized. <strong>Ctrl+Shift+Grave</strong>, then
+<strong>8</strong>, toggles play/pause; then <strong>7</strong> stops —
+both remappable QUILL Key chords, and deliberately adjacent to Radio's
+own N/0/9 chords rather than colliding with them.</p>
+<p>No video podcasts, ever — audio only, matching every other playback
+surface in QUILL. This release is Phase 1 of the plan in
+<code>docs/planning/podcasts.md</code>: chapter navigation and
+transcript viewing/export (the feed already parses Podcasting 2.0
+chapter and transcript URLs as forward schema for this), a separate
+Inbox view, a cross-show Play Queue, local (imported-file) podcasts, and
+rich sorting/filtering are the real, planned next phases — tracked in
+that same document, not silently promised here.</p>
 <hr />
 <h2
 id="introducing-the-offline-edition-and-real-polish-for-the-ai-setup-wizard-and-audio-studio">Introducing

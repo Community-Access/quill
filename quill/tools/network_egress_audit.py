@@ -81,6 +81,33 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "HTTPS-only over a verified TLS context with a bounded timeout. Disabled "
         "in Safe Mode with the rest of the Studio's network surfaces."
     ),
+    "core/podcasts/download_queue.py::_fetch_chunked": (
+        "Single egress site for downloading a podcast episode's audio file. "
+        "Reached only via the dedicated download worker, itself only fed by "
+        "explicit user actions (Download, auto-download on a show the user "
+        "set to download mode) -- never a silent background fetch the user "
+        "didn't opt into for that show. HTTPS-only over a verified TLS "
+        "context with a bounded timeout; supports resumable Range requests "
+        "for the per-item pause/resume controls (podcasts.md §4)."
+    ),
+    "core/podcasts/feed_reader.py::_fetch_feed_bytes": (
+        "Single egress site for podcast subscribing/refreshing: fetches one "
+        "feed's raw RSS/Atom bytes (feedparser then parses locally, no "
+        "further network activity). Reached only by explicit user actions "
+        "(Add by Feed URL, iTunes search result subscribe, a scheduled/"
+        "manual feed refresh for an already-subscribed show). HTTPS-only "
+        "over a verified TLS context with a bounded timeout and response "
+        "size. Private-feed Basic-auth credentials come from the OS "
+        "credential store, sent only to that feed's own host. Disabled in "
+        "Safe Mode via feed_reader.refuse_in_safe_mode."
+    ),
+    "core/podcasts/itunes_search.py::_http_json": (
+        "Single egress site for Add Podcast's search: iTunes' free, keyless "
+        "podcast search API. Reached only by the explicit Search action in "
+        "the Add Podcast dialog. HTTPS-only over a verified TLS context with "
+        "a bounded timeout. Disabled in Safe Mode via "
+        "itunes_search.refuse_in_safe_mode."
+    ),
     "core/radio/link_finder.py::_fetch_html": (
         "Single egress site for 'Find Streams from a Website...': fetches the "
         "one page the user typed to look for a station's own stream link "

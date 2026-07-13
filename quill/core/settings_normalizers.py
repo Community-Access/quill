@@ -68,6 +68,9 @@ STATUS_BAR_ITEMS: tuple[str, ...] = (
     # Internet Radio mini-player: station + play/pause/stopped state. Hidden
     # by default; auto-surfaces the first time a station is played.
     "radio_player",
+    # Podcasts mini-player + download activity. Hidden by default;
+    # auto-surfaces the first time an episode plays or downloads.
+    "podcast_player",
 )
 
 
@@ -101,6 +104,7 @@ def _default_status_bar_hidden() -> list[str]:
         "section_heading",
         "ai_engine",
         "radio_player",
+        "podcast_player",
     ]
 
 

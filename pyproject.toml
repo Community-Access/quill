@@ -23,6 +23,12 @@ classifiers = [
 dependencies = [
     "regex>=2026.6.28",
     "defusedxml>=0.7.1",
+    # Podcast RSS/Atom feed parsing (Tools > Media > Podcasts). Real-world feeds
+    # are too messy (malformed XML, mixed RSS/Atom/iTunes/Podcasting-2.0
+    # namespaces) for a hand-rolled ElementTree walk to handle reliably; this is
+    # the standard Python choice. Pure Python, no C extension, tiny -- a normal
+    # dependency, not an on-demand optional component like Pandoc/speech engines.
+    "feedparser>=6.0.11",
     # Runtime deps of the vendored autoupdate library (quill/_vendor/autoupdate).
     "requests>=2.34.2",
     "platform_utils>=1.6.2",
@@ -379,6 +385,7 @@ exclude = ["quill/ui/"]
 [[tool.mypy.overrides]]
 module = [
     "defusedxml.*",
+    "feedparser",
     "regex",
     "enchant",
     "keynote_parser.*",

@@ -450,6 +450,7 @@ from quill.ui.main_frame_list_studio import ListStudioMixin
 from quill.ui.main_frame_local_git import LocalGitMixin
 from quill.ui.main_frame_menu import MenuBuilderMixin
 from quill.ui.main_frame_notebook import NotebookUIMixin
+from quill.ui.main_frame_podcasts import PodcastsMixin
 from quill.ui.main_frame_power_tools import PowerToolsActionsMixin
 from quill.ui.main_frame_power_tools_menu import PowerToolsMenuMixin
 from quill.ui.main_frame_print import PrintMixin
@@ -830,6 +831,7 @@ class MainFrame(
     AiActionsMixin,
     EmojiPickerMixin,
     RadioMixin,
+    PodcastsMixin,
     FormatCodesMixin,
     SpeechCommandsMixin,
     VerbosityCommandsMixin,
@@ -923,6 +925,7 @@ class MainFrame(
         "section_heading": "Section",
         "ai_engine": "AI Engine",
         "radio_player": "Radio",
+        "podcast_player": "Podcasts",
     }
     _STATUS_BAR_WIDTHS: dict[str, int] = {
         "message": -1,
@@ -958,6 +961,7 @@ class MainFrame(
         "section_heading": 220,
         "ai_engine": 200,
         "radio_player": 260,
+        "podcast_player": 280,
     }
     _STATUS_BAR_FEATURES: dict[str, str] = {
         "message": "core.app",
@@ -992,6 +996,7 @@ class MainFrame(
         "braille": "core.braille",
         "section_heading": "core.format",
         "radio_player": "core.radio",
+        "podcast_player": "core.podcasts",
     }
     _MACRO_CONTROL_COMMANDS: frozenset[str] = frozenset({
         "tools.start_macro_recording",
@@ -1259,6 +1264,7 @@ class MainFrame(
         self._snippet_expansion_guard = False
         self._init_abbreviations()
         self._init_radio()
+        self._init_podcasts()
         self._intellisense_popup: _IntellisensePopup | None = None
         self._intellisense_context: IntellisenseContext | None = None
         self._intellisense_fragment_text = ""
@@ -3867,6 +3873,7 @@ class MainFrame(
         self._register_dictation_hotkey_commands()
         self._register_emoji_picker_commands()
         self._register_radio_commands()
+        self._register_podcasts_commands()
 
     def _apply_accelerators(self) -> None:
         wx = self._wx
@@ -6423,6 +6430,12 @@ class MainFrame(
         radio_controller = getattr(self, "_radio_controller", None)
         if radio_controller is not None:
             _safely("radio player", radio_controller.shutdown)
+        podcast_controller = getattr(self, "_podcast_controller", None)
+        if podcast_controller is not None:
+            _safely("podcast player", podcast_controller.shutdown)
+        podcast_queue = getattr(self, "_podcast_download_queue", None)
+        if podcast_queue is not None:
+            _safely("podcast downloads", podcast_queue.shutdown)
         _safely("ssh connections", self.close_ssh_connections)
         # #32: drop GitHub-temp files no longer referenced by an open tab so
         # the user's app-data directory does not accumulate copies of files
@@ -10036,6 +10049,9 @@ class MainFrame(
         if self._feature_enabled("core.radio"):
             menu.AppendSeparator()
             self._build_radio_tray_menu(menu)
+        if self._feature_enabled("core.podcasts"):
+            menu.AppendSeparator()
+            self._build_podcast_tray_menu(menu)
         menu.AppendSeparator()
         menu.Append(exit_id, "Exit Quill")
         menu.Bind(wx.EVT_MENU, lambda _e: self._exit_from_tray(), id=exit_id)

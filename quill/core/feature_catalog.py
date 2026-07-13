@@ -270,6 +270,18 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
         ),
         category="core",
     ),
+    "core.podcasts": FeatureDefinition(
+        "core.podcasts",
+        "Podcasts",
+        aliases=("podcasts", "podcast manager", "opml"),
+        description=(
+            "Subscribe to podcasts (iTunes search, feed URL, or OPML import), "
+            "download or stream episodes with pause/resume, organize shows "
+            "into nested folders, and play through a shared player with a "
+            "status bar mini-player and system tray controls."
+        ),
+        category="core",
+    ),
     "core.notebook": FeatureDefinition(
         "core.notebook",
         "Notebook (Workspace)",
