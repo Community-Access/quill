@@ -150,6 +150,7 @@ Three pinned nodes at the top of the library folder tree, alongside the real fol
 
 - **Add Local Podcast...** — pick one or more audio files (mp3/wav/m4b/m4a), or a whole folder of them. QUILL copies them into the podcast storage location under a new show, one episode per file, title guessed from the filename (reusing `core/speech/audiobook.py::title_from_filename`). A file's own chapters (an m4b's, or an mp3's ID3 chapters) populate that episode's chapter list exactly like a downloaded feed episode's would — no new chapter machinery.
 - `is_local: true`, `feed_url: None`. Not exported to OPML (§3). **Not synced**: since QUILL Sync works by pointing the entire configured data directory at a synced folder, "not synced" has to be structural, not a promise — local-podcast records need to live in a path that is never inside that user-configured (possibly-synced) data directory, so it's impossible for them to end up in Dropbox/OneDrive by construction. Exact path TBD at implementation time (likely alongside any other existing genuinely-machine-local QUILL state, if a precedent exists).
+- **Watched folder** (Downcast-inspired): optionally point a local podcast at a watched folder (reusing QUILL's existing watch-folder infrastructure, `core/watch_audiobook.py`'s pattern) so any audio file dropped there automatically becomes a new episode of that local show — no manual re-import needed for an ongoing local source (e.g. a folder your own recording workflow already drops files into).
 
 ## 13. Episode notes/annotations
 
@@ -195,8 +196,8 @@ A View/Sort toolbar above both the show list and the episode list, remembered be
 
 ```
 quill/core/podcasts/
-  __init__.py          # existing stubs (PodcastFolder/Show/Episode) -- to be
-                        # replaced with the real dataclasses from §1
+  models.py             # the real dataclasses from §1 (PodcastFolder, Show,
+                        # Episode, Settings)
   itunes_search.py     # discovery client -- mirrors core/radio/radio_browser.py
   feed_reader.py         # RSS/Atom parsing via feedparser (§2), chapters/
                          # transcript tag extraction
@@ -219,12 +220,23 @@ quill/ui/main_frame_podcasts.py   # mixin: menu, commands, keymap, status bar,
                                    # tray -- follows main_frame_radio.py exactly
 ```
 
-## 19. Suggested phasing
+## 19. Explicitly out of scope (this spec)
+
+- Skip-intro/outro beyond the optional silence-trim already in §4 (no dedicated "detect and skip the sponsor read" feature).
+- Video podcasts (audio only, matching QUILL's existing audio-only scope everywhere else) — confirmed again during a later pass over Overcast/Downcast/Castro/Apple Podcasts; none of their ideas change this.
+- Social features (comments, sharing to other users, public playlists).
+- A bespoke QUILL-hosted sync service — sync is entirely QUILL Sync's existing folder mechanism (§8), never a new server.
+- **Considered from the Earshot research and explicitly declined for this spec** (not oversights — real ideas, deliberately left out): a whole listening-stats/analytics feature area (time listened, time saved, streaks, year-in-review, CSV export), and reorderable user-configurable "Quick Actions" that redefine the default per-content-type action — both would be sizable scope additions on top of an already-large spec; either could become its own follow-up spec later if wanted.
+- Queue/Inbox freshness expiration with a "Recently Expired" undo buffer — considered, not added; file-retention policy (§4) covers the "don't keep everything forever" need for downloaded files, and this spec's Inbox (§9) has no separate staleness-expiry mechanism of its own.
+- Mono audio mode — considered, not added.
+- **Considered from a pass over Overcast/Downcast/Castro/Apple Podcasts, explicitly declined**: Overcast-style **Smart Speed** (continuously detecting and skipping silence *during live playback*, not just trimming dead air at an episode's start/end) — a real, different, and meaningfully bigger feature than the download-time silence-trim already in §4 (needs real-time audio analysis while playing, not a one-time ffmpeg pass); **rule-based smart playlists** (e.g. "all unplayed episodes from these three shows, newest first, auto-updating") beyond the manual Play Queue in §11; and an AI-based noise-reduction/"enhance" filter for poor-quality recordings (Apple Podcasts' Enhance Recording). All three are real ideas worth a future spec of their own, not silently folded into this one this late.
+
+## 20. Suggested phasing
 
 Everything above (through §17) is in scope; this is a build order, not a cut list.
 
-1. **Phase 1 — core loop**: data model, iTunes search + Add by Feed URL, RSS parsing, dedicated-thread download queue, library folders (nested), OPML import/export, playback via the reused PlayerPanel.
-2. **Phase 2**: chapters, speed, skip intervals, transcripts + export, resume position and the durable/synced episode catalog.
+1. **Phase 1 — core loop**: data model, iTunes search + Add by Feed URL, RSS parsing, dedicated-thread download queue (incl. pause/resume, §4), library folders (nested), OPML import/export, playback via the reused PlayerPanel, configurable speed.
+2. **Phase 2**: chapters, skip intervals, transcripts + export, resume position and the durable/synced episode catalog.
 3. **Phase 3**: Favorites/New Episodes/Continue Listening virtual views, sorting/filtering (incl. Search Everywhere), rich context menus, local search.
-4. **Phase 4**: Play Queue (reorderable), the Inbox (separate tree + remembered routing), local/imported podcasts.
+4. **Phase 4**: Play Queue (reorderable), the Inbox (separate tree + remembered routing), local/imported podcasts, watched-folder auto-import.
 5. **Phase 5**: sleep timer, auto-trim silence, loudness normalization, volume boost, episode notes/annotations, Always Sync.
