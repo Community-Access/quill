@@ -4,7 +4,7 @@
 
 Flask>=3.0
 Flask-SQLAlchemy>=3.1
-psycopg2-binary>=2.9      # PostgreSQL driver
+psycopg2-binary>=2.9.12      # PostgreSQL driver
 redis>=5.0                 # rate limiting + config cache (app/limits.py)
 requests>=2.32             # OpenAI HTTP calls + alert webhooks
 gunicorn>=22.0             # production WSGI server (matches quillin-hub)

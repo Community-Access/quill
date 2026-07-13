@@ -3,7 +3,7 @@ flask==3.0.3
 flask-sqlalchemy==3.1.1
 flask-migrate==4.0.7
 flask-limiter==3.8.0
-psycopg2-binary==2.9.9
+psycopg2-binary==2.9.12
 flask-cors==4.0.1
 pygithub==2.3.0
 python-dotenv==1.0.1
