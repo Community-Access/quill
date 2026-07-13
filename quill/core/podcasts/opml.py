@@ -2,9 +2,9 @@
 
 Exports the library only (subscribed, non-local shows, nested inside
 ``<outline>`` elements that mirror the library's folder tree exactly) --
-local/imported podcasts have no feed URL to export (podcasts.md §12), and the
-Inbox and its folder tree are pure local curation with no OPML equivalent
-(podcasts.md §9). Import reconstructs that same folder tree from the
+local/imported podcasts have no feed URL to export, and the planned Inbox
+and its folder tree (`docs/planning/podcasts.md`) are pure local curation
+with no OPML equivalent. Import reconstructs that same folder tree from the
 nesting and merges into existing subscriptions (``PodcastLibrary.add_show``
 already refuses a duplicate feed URL).
 

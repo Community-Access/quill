@@ -448,6 +448,7 @@ from quill.ui.main_frame_language_detect import LanguageDetectMixin
 from quill.ui.main_frame_line_commands import LineCommandsMixin
 from quill.ui.main_frame_list_studio import ListStudioMixin
 from quill.ui.main_frame_local_git import LocalGitMixin
+from quill.ui.main_frame_media_sleep_timer import MediaSleepTimerMixin
 from quill.ui.main_frame_menu import MenuBuilderMixin
 from quill.ui.main_frame_notebook import NotebookUIMixin
 from quill.ui.main_frame_podcasts import PodcastsMixin
@@ -832,6 +833,7 @@ class MainFrame(
     EmojiPickerMixin,
     RadioMixin,
     PodcastsMixin,
+    MediaSleepTimerMixin,
     FormatCodesMixin,
     SpeechCommandsMixin,
     VerbosityCommandsMixin,
@@ -1265,6 +1267,7 @@ class MainFrame(
         self._init_abbreviations()
         self._init_radio()
         self._init_podcasts()
+        self._init_media_sleep_timer()
         self._intellisense_popup: _IntellisensePopup | None = None
         self._intellisense_context: IntellisenseContext | None = None
         self._intellisense_fragment_text = ""
@@ -3874,6 +3877,7 @@ class MainFrame(
         self._register_emoji_picker_commands()
         self._register_radio_commands()
         self._register_podcasts_commands()
+        self._register_media_sleep_timer_commands()
 
     def _apply_accelerators(self) -> None:
         wx = self._wx
@@ -6430,12 +6434,21 @@ class MainFrame(
         radio_controller = getattr(self, "_radio_controller", None)
         if radio_controller is not None:
             _safely("radio player", radio_controller.shutdown)
+        radio_recorder = getattr(self, "_radio_recorder", None)
+        if radio_recorder is not None:
+            _safely("radio recorder", radio_recorder.shutdown)
+        radio_scheduler = getattr(self, "_radio_scheduler", None)
+        if radio_scheduler is not None:
+            _safely("radio recording scheduler", radio_scheduler.shutdown)
         podcast_controller = getattr(self, "_podcast_controller", None)
         if podcast_controller is not None:
             _safely("podcast player", podcast_controller.shutdown)
         podcast_queue = getattr(self, "_podcast_download_queue", None)
         if podcast_queue is not None:
             _safely("podcast downloads", podcast_queue.shutdown)
+        sleep_timer = getattr(self, "_sleep_timer_controller", None)
+        if sleep_timer is not None:
+            _safely("media sleep timer", sleep_timer.shutdown)
         _safely("ssh connections", self.close_ssh_connections)
         # #32: drop GitHub-temp files no longer referenced by an open tab so
         # the user's app-data directory does not accumulate copies of files
@@ -11427,6 +11440,14 @@ class MainFrame(
         Shared by the OK, Reset to Factory Defaults, and Import paths of the
         tabbed Settings dialog so each one leaves the app in a consistent state.
         """
+        if self.settings.launch_at_windows_startup and not self.settings.tray_enabled:
+            self.settings.tray_enabled = True
+        try:
+            from quill.platform.windows.startup import set_launch_at_startup
+
+            set_launch_at_startup(self.settings.launch_at_windows_startup)
+        except Exception:  # noqa: BLE001 - a settings-apply side effect must never raise
+            pass
         save_settings(self.settings)
         self._apply_theme(self.settings.theme)
         self.toggle_spellcheck_as_you_type(self.settings.spellcheck_as_you_type)

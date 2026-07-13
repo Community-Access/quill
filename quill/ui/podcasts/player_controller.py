@@ -76,6 +76,7 @@ class PodcastPlayerController:
         self._on_episode_finished = on_episode_finished
         self._resume_ms = 0
         self._pending_rate = 1.0
+        self._volume_percent = 100
         self._engine: AudioEngine | None = create_engine(
             parent,
             on_loaded=self._on_loaded,
@@ -138,8 +139,13 @@ class PodcastPlayerController:
             self._engine.set_rate(rate)
 
     def set_volume(self, percent: int) -> None:
+        self._volume_percent = max(0, min(100, percent))
         if self._engine is not None:
-            self._engine.set_volume(percent)
+            self._engine.set_volume(self._volume_percent)
+
+    @property
+    def volume_percent(self) -> int:
+        return self._volume_percent
 
     def position_ms(self) -> int:
         return self._engine.position_ms() if self._engine is not None else 0

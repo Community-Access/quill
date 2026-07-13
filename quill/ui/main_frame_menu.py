@@ -2312,6 +2312,38 @@ class MenuBuilderMixin:
             media_menu.Append(
                 id_radio_volume_down, self._menu_label(_("Volume &Down"), "radio.volume_down")
             )
+            from quill.core.speech.ffmpeg import ffmpeg_available
+
+            if ffmpeg_available():
+                media_menu.AppendSeparator()
+                id_radio_record = wx.NewIdRef()
+                id_radio_schedule = wx.NewIdRef()
+                id_radio_rec_settings = wx.NewIdRef()
+                media_menu.Append(
+                    id_radio_record,
+                    self._menu_label(_("&Record Now / Stop Recording"), "radio.record_toggle"),
+                )
+                media_menu.Append(
+                    id_radio_schedule,
+                    self._menu_label(_("&Schedule Recording..."), "radio.schedule_recording"),
+                )
+                media_menu.Append(
+                    id_radio_rec_settings,
+                    self._menu_label(_("Recording &Settings..."), "radio.recording_settings"),
+                )
+                self.frame.Bind(
+                    wx.EVT_MENU, lambda _e: self.radio_record_toggle(), id=id_radio_record
+                )
+                self.frame.Bind(
+                    wx.EVT_MENU,
+                    lambda _e: self._radio_open_schedule_recording(),
+                    id=id_radio_schedule,
+                )
+                self.frame.Bind(
+                    wx.EVT_MENU,
+                    lambda _e: self._radio_open_recording_settings(),
+                    id=id_radio_rec_settings,
+                )
             self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_internet_radio(), id=id_radio_browse)
             self.frame.Bind(
                 wx.EVT_MENU,
@@ -2403,6 +2435,14 @@ class MenuBuilderMixin:
                 id=id_podcasts_resume_downloads,
             )
         if radio_enabled or podcasts_enabled:
+            media_menu.AppendSeparator()
+            id_sleep_timer = wx.NewIdRef()
+            media_menu.Append(
+                id_sleep_timer, self._menu_label(_("Sleep &Timer..."), "media.sleep_timer")
+            )
+            self.frame.Bind(
+                wx.EVT_MENU, lambda _e: self.open_sleep_timer_dialog(), id=id_sleep_timer
+            )
             tools_menu.AppendSubMenu(media_menu, _("&Media"))
 
         # Comparison (was Compare Documents) ----------------------------------
