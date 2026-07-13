@@ -41,25 +41,31 @@ class AddStationDialog:
         grid = wx.FlexGridSizer(cols=2, gap=(6, 8))
         grid.AddGrowableCol(1, 1)
 
-        def _field(label: str, name: str, value: str = "") -> wx.TextCtrl:
+        def _field(label: str, *, accessible_name: str, value: str = "") -> wx.TextCtrl:
             grid.Add(wx.StaticText(self.dialog, label=label), 0, wx.ALIGN_CENTER_VERTICAL)
             ctrl = wx.TextCtrl(self.dialog, value=value)
-            ctrl.SetName(name)
+            ctrl.SetName(accessible_name)
             grid.Add(ctrl, 1, wx.EXPAND)
             return ctrl
 
         prefill = prefill or RadioStation(name="", stream_url="")
-        self._name_ctrl = _field("Station &name:", "Name for this station", prefill.name)
+        self._name_ctrl = _field(
+            "Station &name:", accessible_name="Name for this station", value=prefill.name
+        )
         self._url_ctrl = _field(
-            "Stream &URL:", "The direct stream link (http or https)", prefill.stream_url
+            "Stream &URL:",
+            accessible_name="The direct stream link (http or https)",
+            value=prefill.stream_url,
         )
         self._homepage_ctrl = _field(
-            "&Homepage (optional):", "The station's website, optional", prefill.homepage
+            "&Homepage (optional):",
+            accessible_name="The station's website, optional",
+            value=prefill.homepage,
         )
         self._tags_ctrl = _field(
             "&Tags (optional, comma-separated):",
-            "Optional tags or genres, comma-separated",
-            ", ".join(prefill.tags),
+            accessible_name="Optional tags or genres, comma-separated",
+            value=", ".join(prefill.tags),
         )
         root.Add(grid, 0, wx.EXPAND | wx.ALL, 10)
 

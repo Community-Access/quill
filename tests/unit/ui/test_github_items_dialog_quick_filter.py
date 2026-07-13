@@ -5,8 +5,6 @@ keyboard-focus theft, and no per-keystroke screen-reader interruption.
 
 from __future__ import annotations
 
-from typing import Any
-
 import pytest
 import wx
 

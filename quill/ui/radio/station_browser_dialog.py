@@ -69,21 +69,23 @@ class StationBrowserDialog:
         search_grid = wx.FlexGridSizer(cols=2, gap=(6, 4))
         search_grid.AddGrowableCol(1, 1)
 
-        def _labeled_field(label: str, name: str) -> wx.TextCtrl:
+        def _labeled_field(label: str, *, accessible_name: str) -> wx.TextCtrl:
             search_grid.Add(wx.StaticText(self.dialog, label=label), 0, wx.ALIGN_CENTER_VERTICAL)
             ctrl = wx.TextCtrl(self.dialog, style=wx.TE_PROCESS_ENTER)
-            ctrl.SetName(name)
+            ctrl.SetName(accessible_name)
             search_grid.Add(ctrl, 1, wx.EXPAND)
             return ctrl
 
         self._name_ctrl = _labeled_field(
-            "Station &name:", "Station name to search for on RadioBrowser"
+            "Station &name:", accessible_name="Station name to search for on RadioBrowser"
         )
         self._tag_ctrl = _labeled_field(
-            "&Tag/genre (optional):", "Optional tag or genre to narrow the search, e.g. jazz"
+            "&Tag/genre (optional):",
+            accessible_name="Optional tag or genre to narrow the search, e.g. jazz",
         )
         self._country_ctrl = _labeled_field(
-            "&Country (optional):", "Optional country to narrow the search, e.g. Canada"
+            "&Country (optional):",
+            accessible_name="Optional country to narrow the search, e.g. Canada",
         )
         search_box.Add(search_grid, 1, wx.EXPAND | wx.ALL, 6)
         search_col = wx.BoxSizer(wx.VERTICAL)

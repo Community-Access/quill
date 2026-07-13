@@ -258,6 +258,18 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
         dependencies=("core.editor",),
         category="core",
     ),
+    "core.radio": FeatureDefinition(
+        "core.radio",
+        "Internet Radio",
+        aliases=("internet radio", "radio", "radio browser", "acb media"),
+        description=(
+            "Browse and play internet radio stations (RadioBrowser search, "
+            "bundled ACB Media stations, custom stations, and the website "
+            "link finder), with a status bar mini-player and system tray "
+            "controls."
+        ),
+        category="core",
+    ),
     "core.notebook": FeatureDefinition(
         "core.notebook",
         "Notebook (Workspace)",

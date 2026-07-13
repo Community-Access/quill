@@ -89,6 +89,7 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # incremental-rebuild fingerprints are regenerable.
     "core/publish/destinations.py::save_destinations": "content",
     "core/publish/feed_folder.py::save_feed_config": "content",
+    "core/radio/favorites.py::save_favorites": "content",
     "core/speech/listening_positions.py::save_position_ms": "cache",
     "core/speech/synth_cache.py::save_cache": "cache",
     "core/palette.py::save_palette_usage": "cache",
