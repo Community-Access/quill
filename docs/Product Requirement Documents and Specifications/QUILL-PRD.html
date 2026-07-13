@@ -15904,6 +15904,42 @@ the download URL, and signs the payload. The
 <code>windows-release.yml</code> workflow runs it on every tagged
 release and commits the resulting JSON back to
 <code>docs/site/updates/</code>.</p>
+<h3
+id="334-cross-platform-asset-safety-github-releases-path-090-beta-3">§33.4
+Cross-platform asset safety (GitHub Releases path, 0.9.0 Beta 3)</h3>
+<p>The manifest above only ever carries the Windows installer URL, so
+non-portable, non-Windows clients — and every portable client, which
+skips the manifest by design (§ portable updates use the releases path
+so the prompt offers the <code>.zip</code>, not the installer) — rely on
+<code>fetch_releases()</code> / <code>fetch_latest_release()</code> in
+<code>quill/core/updates.py</code>, which reads every asset GitHub
+attached to a tag and picks one via <code>_pick_asset()</code>.</p>
+<p>That picker used to fall back to <em>any</em> remaining asset when
+nothing matched the running platform's extension. Windows and macOS
+release workflows both tag-push to the same <code>v*</code> tag and can
+land in the same GitHub release; when the Windows Beta 3 build failed in
+CI and only the macOS build published, the release's sole asset was a
+<code>.dmg</code> — and the old fallback handed that <code>.dmg</code>
+to Windows clients. Fixed two ways, both in
+<code>quill/core/updates.py</code>:</p>
+<ul>
+<li><code>_pick_asset()</code> drops every asset whose extension is
+exclusive to another platform (<code>.exe</code>/<code>.msi</code>
+off-Windows, <code>.dmg</code>/<code>.pkg</code> off-macOS,
+<code>.appimage</code>/<code>.tar.gz</code> off-Linux) before any suffix
+matching, and returns <code>""</code> — never a foreign asset — when
+nothing platform-appropriate remains.</li>
+<li><code>GitHubRelease.has_platform_asset</code> records whether a
+release had any real (non-provenance/checksum) asset that survived that
+filter. <code>select_latest()</code> skips releases where it is
+<code>False</code>, so Check for Updates falls back to the newest
+release that <em>is</em> installable here instead of surfacing one with
+nothing this client can use.</li>
+</ul>
+<p>A release with zero real assets at all (only provenance/checksum
+artifacts, or none) is still treated as usable and falls back to the
+release's <code>html_url</code> — that case has nothing
+platform-specific to get wrong.</p>
 <hr />
 <h2 id="34-accessible-emoji-picker-090-beta-3">§34. Accessible Emoji
 Picker (0.9.0 Beta 3)</h2>

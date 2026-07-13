@@ -656,6 +656,20 @@ fell back to comtypes' own read-only default and degraded silently.</p>
 touching comtypes, rather than counting on another feature to have
 already done it. None of the three depends on session ordering anymore,
 on any install type, with or without administrator elevation.</p>
+<h3
+id="check-for-updates-could-hand-a-windows-user-the-macos-download">Check
+for Updates could hand a Windows user the macOS download</h3>
+<p>A release that only publishes assets for one platform — which is
+exactly what happened when a Beta 3 Windows build failed in CI while the
+macOS build succeeded — used to fall through to whatever asset
+<em>was</em> published, regardless of platform. A Windows client
+checking for updates against that release got pointed at the release's
+only file: a <code>.dmg</code>.</p>
+<p>Asset selection now excludes every other platform's installer
+extensions outright, and a release with nothing installable for the
+running platform is skipped entirely, so Check for Updates falls back to
+the newest release that actually has a matching build for you rather
+than ever offering a foreign-platform link.</p>
 <hr />
 <h2 id="github-grows-from-a-viewer-into-a-workspace">GitHub Grows from a
 Viewer into a Workspace</h2>

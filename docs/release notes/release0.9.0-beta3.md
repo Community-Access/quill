@@ -269,6 +269,12 @@ The cause was a gap in a fix QUILL already had. comtypes — the library behind 
 
 Every comtypes call site now requests the redirect itself before touching comtypes, rather than counting on another feature to have already done it. None of the three depends on session ordering anymore, on any install type, with or without administrator elevation.
 
+### Check for Updates could hand a Windows user the macOS download
+
+A release that only publishes assets for one platform — which is exactly what happened when a Beta 3 Windows build failed in CI while the macOS build succeeded — used to fall through to whatever asset *was* published, regardless of platform. A Windows client checking for updates against that release got pointed at the release's only file: a `.dmg`.
+
+Asset selection now excludes every other platform's installer extensions outright, and a release with nothing installable for the running platform is skipped entirely, so Check for Updates falls back to the newest release that actually has a matching build for you rather than ever offering a foreign-platform link.
+
 ---
 
 ## GitHub Grows from a Viewer into a Workspace

@@ -120,6 +120,12 @@ class GitHubRelease:
     published_at: str
     notes: str
     prerelease: bool
+    # False when this release published assets but none of them install on the
+    # running platform (e.g. a release with only a macOS .dmg, seen from a
+    # Windows client). select_latest() skips these so Check for Updates falls
+    # back to the newest release that *is* installable here, instead of
+    # offering a release with nothing this client can actually use.
+    has_platform_asset: bool = True
 
 
 def fetch_latest_release(
@@ -171,6 +177,14 @@ _SKIP_ASSET_SUFFIXES = (
 )
 _SKIP_ASSET_KEYWORDS = ("provenance", "checksum", "sbom", "signature")
 
+# Extensions that only ever mean "installer for this other platform" — never a
+# legitimate asset for the running client. Unlike ``.zip`` (shared by every
+# platform's portable/bundle format), these are exclusive, so they're safe to
+# drop outright before any suffix matching runs.
+_WINDOWS_ONLY_SUFFIXES = (".exe", ".msi")
+_MACOS_ONLY_SUFFIXES = (".dmg", ".pkg")
+_LINUX_ONLY_SUFFIXES = (".appimage", ".tar.gz")
+
 
 def _platform_asset_suffixes() -> tuple[str, ...]:
     if sys.platform == "darwin":
@@ -178,6 +192,18 @@ def _platform_asset_suffixes() -> tuple[str, ...]:
     if sys.platform.startswith("win"):
         return (".exe", ".msi", ".zip")
     return (".appimage", ".tar.gz", ".zip")
+
+
+def _foreign_platform_suffixes() -> tuple[str, ...]:
+    """Installer extensions that unambiguously belong to a platform other than
+    this one, so an asset ending in one is never a candidate here (a Windows
+    a Windows client was handed a release's only asset, a macOS .dmg, because
+    the old fallback picked *any* asset when nothing matched this platform)."""
+    if sys.platform == "darwin":
+        return _WINDOWS_ONLY_SUFFIXES + _LINUX_ONLY_SUFFIXES
+    if sys.platform.startswith("win"):
+        return _MACOS_ONLY_SUFFIXES + _LINUX_ONLY_SUFFIXES
+    return _WINDOWS_ONLY_SUFFIXES + _MACOS_ONLY_SUFFIXES
 
 
 def running_portable() -> bool:
@@ -204,6 +230,10 @@ def _pick_asset(assets: list, *, prefer_portable: bool | None = None) -> str:
     Updates does not push the installer onto a portable user. The portable bundle
     is matched by name ("portable") so the unrelated delta ``*-update-windows.zip``
     artifact is never mistaken for it.
+
+    Returns ``""`` when the release has no asset for this platform at all,
+    rather than falling back to *any* remaining asset — a release that only
+    published, say, a macOS .dmg must never be handed to a Windows client.
     """
     if prefer_portable is None:
         prefer_portable = running_portable()
@@ -219,6 +249,8 @@ def _pick_asset(assets: list, *, prefer_portable: bool | None = None) -> str:
             continue
         if any(keyword in name for keyword in _SKIP_ASSET_KEYWORDS):
             continue
+        if name.endswith(_foreign_platform_suffixes()):
+            continue
         usable.append((name, str(url)))
     # Portable installs: prefer the portable bundle .zip over the installer.
     if prefer_portable:
@@ -231,14 +263,22 @@ def _pick_asset(assets: list, *, prefer_portable: bool | None = None) -> str:
         for name, url in usable:
             if name.endswith(suffix):
                 return url
-    # Otherwise the first non-artifact asset (if any).
-    return usable[0][1] if usable else ""
+    # Nothing matched this platform — this release has nothing installable
+    # here, even though ``usable`` may still hold other platforms' assets.
+    return ""
 
 
 def _release_from_json(data: dict) -> GitHubRelease:
     # Pick the platform installer asset; fall back to the release page when the
     # release has no real installer (e.g. only provenance/checksum artifacts).
-    download_url = _pick_asset(data.get("assets") or [])
+    raw_assets = data.get("assets") or []
+    download_url = _pick_asset(raw_assets)
+    # A release with zero real assets (nothing but provenance/checksums, or
+    # nothing at all) is treated as usable — the html_url fallback below is
+    # the best we can offer. A release with real assets none of which match
+    # this platform (e.g. only a macOS .dmg) is not: mark it ineligible so
+    # select_latest() skips it rather than offering a foreign-platform link.
+    has_platform_asset = bool(download_url) or not _has_any_real_asset(raw_assets)
     if not download_url:
         download_url = str(data.get("html_url") or "")
     return GitHubRelease(
@@ -247,7 +287,25 @@ def _release_from_json(data: dict) -> GitHubRelease:
         published_at=str(data.get("published_at") or "").strip(),
         notes=str(data.get("body") or "").strip(),
         prerelease=bool(data.get("prerelease")),
+        has_platform_asset=has_platform_asset,
     )
+
+
+def _has_any_real_asset(assets: list) -> bool:
+    """True when ``assets`` has at least one entry that isn't provenance/
+    checksum noise — regardless of which platform it installs on."""
+    for asset in assets:
+        if not isinstance(asset, dict):
+            continue
+        name = str(asset.get("name") or "").lower()
+        if not asset.get("browser_download_url"):
+            continue
+        if name.endswith(_SKIP_ASSET_SUFFIXES):
+            continue
+        if any(keyword in name for keyword in _SKIP_ASSET_KEYWORDS):
+            continue
+        return True
+    return False
 
 
 def fetch_releases(api_url: str | None = None, timeout: int = 10) -> list[GitHubRelease]:
@@ -268,7 +326,19 @@ def fetch_releases(api_url: str | None = None, timeout: int = 10) -> list[GitHub
 def select_latest(
     releases: list[GitHubRelease], include_prereleases: bool = False
 ) -> GitHubRelease | None:
-    candidates = [r for r in releases if include_prereleases or not r.prerelease]
+    """The newest release the user is eligible for and can actually install.
+
+    A release with no asset for this platform (``has_platform_asset=False``,
+    e.g. a build whose Windows asset failed and only a macOS one published) is
+    skipped entirely, so this falls back to the newest older release that
+    *does* have something installable here — never a release with nothing
+    this client can use.
+    """
+    candidates = [
+        r
+        for r in releases
+        if (include_prereleases or not r.prerelease) and r.has_platform_asset
+    ]
     if not candidates:
         return None
     return max(candidates, key=lambda r: _version_tuple(r.version))

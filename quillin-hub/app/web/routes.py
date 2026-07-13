@@ -47,7 +47,7 @@ def index():
 @web_bp.route("/plugin/<int:artifact_id>")  # legacy bookmarks
 def artifact_detail(artifact_id):
     """Deep-dive artifact page with reviews."""
-    artifact = Artifact.query.get_or_404(artifact_id)
+    artifact = Artifact.query.filter_by(id=artifact_id, status="Verified").first_or_404()
     reviews = Interaction.query.filter_by(artifact_id=artifact_id, type="Comment").all()
     return render_template(
         "plugin.html",

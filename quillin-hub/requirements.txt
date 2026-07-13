@@ -1,12 +1,14 @@
 # Quillin Hub Requirements
-flask
-flask-sqlalchemy
-flask-migrate
-psycopg2-binary
-flask-cors
-pygithub
-python-dotenv
-Werkzeug
-bandit
+flask==3.0.3
+flask-sqlalchemy==3.1.1
+flask-migrate==4.0.7
+flask-limiter==3.8.0
+psycopg2-binary==2.9.9
+flask-cors==4.0.1
+pygithub==2.3.0
+python-dotenv==1.0.1
+Werkzeug==3.0.3
+bandit==1.7.9
+gunicorn==22.0.0
 # Direct requirement: quill.tools.signing uses nacl.signing for Ed25519.
 PyNaCl>=1.6.2

@@ -8,7 +8,9 @@ GitHub-Native model.
 """
 
 import json
+import logging
 import os
+import shutil
 import uuid
 import zipfile
 from urllib.parse import quote
@@ -16,15 +18,17 @@ from urllib.parse import quote
 from flask import Blueprint, current_app, redirect, render_template, request, url_for
 from werkzeug.utils import secure_filename
 
-from .. import db
+from .. import db, limiter
 from ..artifacts.registry import ARTIFACT_TYPES, accepted_suffixes, get_type
 from ..models.database import Submission
 from .linter import audit_submission
 
 forge_bp = Blueprint("forge", __name__, template_folder="templates")
+logger = logging.getLogger(__name__)
 
 _REPO = "Community-Access/quill"
 _MAX_UPLOAD_BYTES = 32 * 1024 * 1024
+_MAX_UPLOAD_ENTRIES = 2000
 
 
 def _allowed_upload(filename: str) -> bool:
@@ -57,7 +61,10 @@ def _prepare_upload(file_storage, signature_storage=None) -> tuple[str, str, str
         extract_dir = os.path.join(upload_dir, "extracted")
         os.makedirs(extract_dir, exist_ok=True)
         with zipfile.ZipFile(saved_path) as archive:
-            total = sum(info.file_size for info in archive.infolist())
+            infolist = archive.infolist()
+            if len(infolist) > _MAX_UPLOAD_ENTRIES:
+                raise ValueError(f"archive has more than {_MAX_UPLOAD_ENTRIES} entries")
+            total = sum(info.file_size for info in infolist)
             if total > _MAX_UPLOAD_BYTES:
                 raise ValueError("archive expands beyond the 32 MB submission limit")
             archive.extractall(extract_dir)
@@ -92,6 +99,7 @@ def index():
 
 
 @forge_bp.route("/submit", methods=["GET", "POST"])
+@limiter.limit("10 per hour", methods=["POST"])
 def submit():
     if request.method == "GET":
         return render_template(
@@ -139,31 +147,45 @@ def submit():
             error=f"Could not read the upload: {exc}",
         ), 400
 
-    results = audit_submission(
-        audit_path,
-        requested_type,
-        sidecar_path=sidecar_path,
-        sign_target=_saved_path,
-    )
+    upload_dir = os.path.dirname(_saved_path)
+    try:
+        try:
+            results = audit_submission(
+                audit_path,
+                requested_type,
+                sidecar_path=sidecar_path,
+                sign_target=_saved_path,
+            )
+        except Exception:  # noqa: BLE001 - never let a scanner bug crash the Forge
+            logger.exception("audit_submission failed for %s", upload.filename)
+            return render_template(
+                "submit_form.html",
+                artifact_types=ARTIFACT_TYPES,
+                accept=",".join(accepted_suffixes()),
+                preselected=requested_type or "",
+                error="The audit could not complete. Please try again or contact a maintainer.",
+            ), 500
 
-    submission = Submission(
-        artifact_type=results.get("artifact_type"),
-        original_filename=secure_filename(upload.filename),
-        extracted=results.get("metadata") or {},
-        lint_report=json.loads(json.dumps(results["reports"], default=str)),
-        status="Passed" if results["status"] == "PASS" else "Failed",
-    )
-    db.session.add(submission)
-    db.session.commit()
+        submission = Submission(
+            artifact_type=results.get("artifact_type"),
+            original_filename=secure_filename(upload.filename),
+            extracted=results.get("metadata") or {},
+            lint_report=json.loads(json.dumps(results["reports"], default=str)),
+            status="Passed" if results["status"] == "PASS" else "Failed",
+        )
+        db.session.add(submission)
+        db.session.commit()
 
-    hub_type = get_type(results.get("artifact_type") or "")
-    return render_template(
-        "forge_report.html",
-        results=results,
-        hub_type=hub_type,
-        submission=submission,
-        github=_github_links(results.get("metadata") or {}, results.get("artifact_type")),
-    )
+        hub_type = get_type(results.get("artifact_type") or "")
+        return render_template(
+            "forge_report.html",
+            results=results,
+            hub_type=hub_type,
+            submission=submission,
+            github=_github_links(results.get("metadata") or {}, results.get("artifact_type")),
+        )
+    finally:
+        shutil.rmtree(upload_dir, ignore_errors=True)
 
 
 @forge_bp.route("/legacy-submit", methods=["POST"])

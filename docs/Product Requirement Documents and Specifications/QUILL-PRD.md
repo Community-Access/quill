@@ -8451,6 +8451,36 @@ from `installer/quill.iss` for the download URL, and signs the payload.
 The `windows-release.yml` workflow runs it on every tagged release and
 commits the resulting JSON back to `docs/site/updates/`.
 
+### §33.4 Cross-platform asset safety (GitHub Releases path, 0.9.0 Beta 3)
+
+The manifest above only ever carries the Windows installer URL, so
+non-portable, non-Windows clients — and every portable client, which skips
+the manifest by design (§ portable updates use the releases path so the
+prompt offers the `.zip`, not the installer) — rely on `fetch_releases()` /
+`fetch_latest_release()` in `quill/core/updates.py`, which reads every asset
+GitHub attached to a tag and picks one via `_pick_asset()`.
+
+That picker used to fall back to *any* remaining asset when nothing matched
+the running platform's extension. Windows and macOS release workflows both
+tag-push to the same `v*` tag and can land in the same GitHub release; when
+the Windows Beta 3 build failed in CI and only the macOS build published, the
+release's sole asset was a `.dmg` — and the old fallback handed that `.dmg`
+to Windows clients. Fixed two ways, both in `quill/core/updates.py`:
+
+- `_pick_asset()` drops every asset whose extension is exclusive to another
+  platform (`.exe`/`.msi` off-Windows, `.dmg`/`.pkg` off-macOS,
+  `.appimage`/`.tar.gz` off-Linux) before any suffix matching, and returns
+  `""` — never a foreign asset — when nothing platform-appropriate remains.
+- `GitHubRelease.has_platform_asset` records whether a release had any real
+  (non-provenance/checksum) asset that survived that filter.
+  `select_latest()` skips releases where it is `False`, so Check for Updates
+  falls back to the newest release that *is* installable here instead of
+  surfacing one with nothing this client can use.
+
+A release with zero real assets at all (only provenance/checksum artifacts,
+or none) is still treated as usable and falls back to the release's `html_url`
+— that case has nothing platform-specific to get wrong.
+
 ---
 
 ## §34. Accessible Emoji Picker (0.9.0 Beta 3)
