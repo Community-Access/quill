@@ -335,9 +335,7 @@ def select_latest(
     this client can use.
     """
     candidates = [
-        r
-        for r in releases
-        if (include_prereleases or not r.prerelease) and r.has_platform_asset
+        r for r in releases if (include_prereleases or not r.prerelease) and r.has_platform_asset
     ]
     if not candidates:
         return None
