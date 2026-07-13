@@ -34,7 +34,7 @@ dependencies = [
     "platform_utils>=1.6.2",
     # Windows has no system IANA timezone database, so stdlib zoneinfo needs
     # this package to resolve real zone names (publishing schedule dialog).
-    "tzdata>=2026.2",
+    "tzdata>=2026.3",
     # Native .docx reading/writing without requiring Pandoc.
     "python-docx>=1.2.0",
     # Hugging Face Hub client. NOT optional: the default, out-of-the-box
