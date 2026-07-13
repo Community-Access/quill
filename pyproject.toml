@@ -194,7 +194,7 @@ pages = ["keynote-parser>=1.14.4.0"]
 # forced on installs that never touch it.
 pdf-ocr = [
     "markitdown[docx,pptx,xlsx,xls,pdf]>=0.1.6",
-    "pdfplumber>=0.11.9",
+    "pdfplumber>=0.11.10",
     "pypdf>=6.11.0",
 ]
 # GLOW document accessibility engine (audit / fix / convert for docx, pptx,
