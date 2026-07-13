@@ -341,14 +341,28 @@ Streaming-mode shows never auto-download. A per-episode
 <code>mode_override</code> lets any single episode go against its show's
 default in either direction (e.g. keep one episode of a
 normally-streamed show offline for a flight).</li>
-<li><strong>Pause / Resume Downloads</strong>, two levels: a global
-<strong>Pause All Downloads</strong> toggle (status bar/queue-view
-control) stops the worker from starting new transfers without cancelling
-anything already queued; and pausing one specific in-progress download
-keeps its partial bytes on disk and resumes via an HTTP
-<code>Range</code> request when the server supports it (most podcast
-hosts do), falling back to a clean restart-from-scratch on hosts that
-don't support ranged requests rather than failing outright.</li>
+<li><strong>Pause / Resume Downloads</strong> — two genuinely
+independent controls, not one setting wearing two hats:
+<ol type="1">
+<li><strong>Pause All Downloads / Resume All Downloads</strong> (global,
+status bar/queue-view control): stops the worker from <em>starting</em>
+any new transfer. Anything already mid-transfer when this is pressed
+keeps running to completion — this toggle only affects what starts next,
+not what's already in flight.</li>
+<li><strong>Pause This Download / Resume This Download</strong>
+(per-item, in the queue view and the episode context menu): immediately
+halts that one transfer's byte stream mid-flight, wherever it currently
+is — queued-but-not-started (trivially, just don't start it) or actively
+downloading (stop reading from the connection right now, don't wait for
+it to finish). Either way the partial bytes already written stay on
+disk. Resuming that item issues an HTTP <code>Range</code> request to
+continue from that exact byte offset when the server supports it (most
+podcast hosts do), falling back to a clean restart-from-scratch on hosts
+that don't support ranged requests rather than failing outright. Both
+controls compose normally: All-Paused doesn't erase a per-item Pause's
+state, and resuming one specific item while All Downloads is still
+paused simply re-queues it to run once All Downloads resumes.</li>
+</ol></li>
 <li><strong>Retention</strong> runs after each successful download:
 <code>keep_last_n</code> prunes the oldest kept episode(s) past the
 count; <code>delete_after_play</code> removes the local file once an
@@ -382,9 +396,19 @@ from the enclosure URL, through the same engine — unlike Radio, this
 works fine with the duration-gated mpv backend too, since a podcast
 episode is a bounded file with real
 <code>Content-Length</code>/duration, not an infinite live stream.</li>
-<li><strong>Speed</strong>: applies the show's remembered speed (or the
-global default) on open; adjusting it in the player updates that show's
-stored setting.</li>
+<li><strong>Configurable playback speed</strong>: <strong>0.5x-3.0x in
+0.1x steps</strong>, exposed on the PlayerPanel's existing speed control
+(<code>set_rate</code>, already part of the audio engine protocol — no
+new engine work) plus dedicated Speed Up/Speed Down hotkeys. Two-level
+setting, same global-default-with-per-show-override pattern as
+everything else in <code>PodcastSettings</code>:
+<code>PodcastSettings.speed</code> is the global default every show
+starts at; adjusting speed while an episode is playing updates <em>that
+show's</em> remembered speed (not the global default), so a
+normally-fast-talking show and a normally-slow one can each keep their
+own comfortable rate without fighting each other every time you switch
+between them. A <strong>Reset to Global Default</strong> action on the
+per-show settings clears the override.</li>
 <li><strong>Configurable skip intervals</strong> (global setting, e.g.
 default 30s forward / 15s back): the Prev/Next-style skip
 buttons/hotkeys use these instead of one fixed value.</li>
@@ -606,11 +630,13 @@ Rename, Move..., Delete (asks what happens to shows/episodes inside —
 move to parent or Uncategorized), Export as OPML... (library folders
 only).</li>
 <li><strong>Episode</strong>: Play/Pause, Stop, Play/Stream, Download,
-Remove Download, Mark Played/Unplayed, Play Next / Add to Queue, View
-Chapters..., View/Add Notes..., Transcribe Episode... / View Transcript,
-Save Transcript As..., Open Transcript in Editor, Export..., Show Notes
-(description), Copy Episode Link, multi-select bulk variants (download
-all selected, export all selected, mark all selected
+Pause Download / Resume Download (only enabled while this episode is
+queued or actively downloading — see §4's two independent pause
+controls), Remove Download, Mark Played/Unplayed, Play Next / Add to
+Queue, View Chapters..., View/Add Notes..., Transcribe Episode... / View
+Transcript, Save Transcript As..., Open Transcript in Editor, Export...,
+Show Notes (description), Copy Episode Link, multi-select bulk variants
+(download all selected, export all selected, mark all selected
 played/unplayed).</li>
 <li><strong>Queue item</strong>: Play Now, Play/Pause, Remove from
 Queue, Mark for Move, Move Marked Item Above/Below, Move Up, Move Down
@@ -637,15 +663,18 @@ normalize).</li>
 pattern Radio used.</li>
 <li><strong>Status bar + hotkeys</strong>: play/pause/stop mirroring
 Radio's pattern, plus the sleep-timer control, for background listening
-while writing.</li>
+while writing. Speed Up/Speed Down hotkeys adjust the current show's
+remembered speed live.</li>
+<li><strong>System tray</strong>: extends the tray section Radio already
+created with a Podcasts block — Play/Pause, Stop, and both download
+controls (<strong>Pause All Downloads / Resume All Downloads</strong>,
+plus <strong>Pause/Resume</strong> for whichever single download is
+currently active) — so you can manage downloads without restoring the
+window.</li>
 </ul>
 <h2
 id="17-accessibility-engineering-notes-from-the-earshot-research">17.
 Accessibility engineering notes (from the Earshot research)</h2>
-<p>Earshot is a mobile (VoiceOver/TalkBack) accessibility-first podcast
-app with a real, hard-won bug-fix history; several of its lessons are
-platform-agnostic and apply directly to how this feature's dialogs get
-built, independent of any single UI decision above:</p>
 <ul>
 <li><strong>Name every dismiss action explicitly.</strong> A
 modal/dialog's close control should announce what closing it does
@@ -703,33 +732,7 @@ quill/ui/podcasts/
 
 quill/ui/main_frame_podcasts.py   # mixin: menu, commands, keymap, status bar,
                                    # tray -- follows main_frame_radio.py exactly</code></pre>
-<h2 id="19-explicitly-out-of-scope-this-spec">19. Explicitly out of
-scope (this spec)</h2>
-<ul>
-<li>Skip-intro/outro beyond the optional silence-trim already in §4 (no
-dedicated "detect and skip the sponsor read" feature).</li>
-<li>Video podcasts (audio only, matching QUILL's existing audio-only
-scope everywhere else).</li>
-<li>Social features (comments, sharing to other users, public
-playlists).</li>
-<li>A bespoke QUILL-hosted sync service — sync is entirely QUILL Sync's
-existing folder mechanism (§8), never a new server.</li>
-<li><strong>Considered from the Earshot research and explicitly declined
-for this spec</strong> (not oversights — real ideas, deliberately left
-out): a whole listening-stats/analytics feature area (time listened,
-time saved, streaks, year-in-review, CSV export), and reorderable
-user-configurable "Quick Actions" that redefine the default
-per-content-type action — both would be sizable scope additions on top
-of an already-large spec; either could become its own follow-up spec
-later if wanted.</li>
-<li>Queue/Inbox freshness expiration with a "Recently Expired" undo
-buffer — considered, not added; file-retention policy (§4) covers the
-"don't keep everything forever" need for downloaded files, and this
-spec's Inbox (§9) has no separate staleness-expiry mechanism of its
-own.</li>
-<li>Mono audio mode — considered, not added.</li>
-</ul>
-<h2 id="20-suggested-phasing">20. Suggested phasing</h2>
+<h2 id="19-suggested-phasing">19. Suggested phasing</h2>
 <p>Everything above (through §17) is in scope; this is a build order,
 not a cut list.</p>
 <ol type="1">

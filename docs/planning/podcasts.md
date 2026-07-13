@@ -83,7 +83,10 @@ PlayQueue                            # cross-show, ordered (§11)
 - Files land at `<podcast storage location>/<show-slug>/<episode-file>.<ext>` plus a `chapters.json` sidecar when the feed doesn't already point at one — mirrors the audiobook-build sidecar convention in `core/speech/audiobook.py`.
 - **Storage location is a global setting** (`PodcastSettings.download_root`), defaulting to `<data_dir>/podcasts` but pointable anywhere, same pattern as QUILL's existing data-location setting.
 - **Auto-download**: a show set to `playback_mode: "download"` auto-queues new episodes as soon as a feed refresh finds them (periodic + on-launch refresh). Streaming-mode shows never auto-download. A per-episode `mode_override` lets any single episode go against its show's default in either direction (e.g. keep one episode of a normally-streamed show offline for a flight).
-- **Pause / Resume Downloads**, two levels: a global **Pause All Downloads** toggle (status bar/queue-view control) stops the worker from starting new transfers without cancelling anything already queued; and pausing one specific in-progress download keeps its partial bytes on disk and resumes via an HTTP `Range` request when the server supports it (most podcast hosts do), falling back to a clean restart-from-scratch on hosts that don't support ranged requests rather than failing outright.
+- **Pause / Resume Downloads** — two genuinely independent controls, not one setting wearing two hats:
+  1. **Pause All Downloads / Resume All Downloads** (global, status bar/queue-view control): stops the worker from *starting* any new transfer. Anything already mid-transfer when this is pressed keeps running to completion — this toggle only affects what starts next, not what's already in flight.
+  2. **Pause This Download / Resume This Download** (per-item, in the queue view and the episode context menu): immediately halts that one transfer's byte stream mid-flight, wherever it currently is — queued-but-not-started (trivially, just don't start it) or actively downloading (stop reading from the connection right now, don't wait for it to finish). Either way the partial bytes already written stay on disk. Resuming that item issues an HTTP `Range` request to continue from that exact byte offset when the server supports it (most podcast hosts do), falling back to a clean restart-from-scratch on hosts that don't support ranged requests rather than failing outright.
+  Both controls compose normally: All-Paused doesn't erase a per-item Pause's state, and resuming one specific item while All Downloads is still paused simply re-queues it to run once All Downloads resumes.
 - **Retention** runs after each successful download: `keep_last_n` prunes the oldest kept episode(s) past the count; `delete_after_play` removes the local file once an episode is marked played (by finishing playback or by an explicit "Mark as Played"); `keep_all` never prunes.
 - **Always Sync** (`always_sync_full_catalog`, per show): in addition to the routine "check for episodes newer than what I have" refresh every show gets, a show with this on also backfills every older episode the live feed still exposes into the local catalog — and downloads them too, if that show is in download mode. Note for implementation: this is in tension with `keep_last_n` (backfilling the whole catalog while immediately pruning to N fights itself), so the settings UI should nudge toward `keep_all` when Always Sync is on rather than silently contradict itself.
 - **Auto-trim silence** (optional, per show): trims dead air from a downloaded episode's start/end using the exact same silence-trim function (`core/speech/audio_edit.py`) the audiobook builder already uses.
@@ -93,7 +96,7 @@ PlayQueue                            # cross-show, ordered (§11)
 
 - Downloaded episodes reuse Audio Studio's existing chapter-aware `PlayerPanel` (Play/Pause/Stop/Prev/Next chapter, position slider, speed, chapter-crossing announcements) — no new transport UI.
 - Streaming (not-yet-downloaded) episodes play the same way, straight from the enclosure URL, through the same engine — unlike Radio, this works fine with the duration-gated mpv backend too, since a podcast episode is a bounded file with real `Content-Length`/duration, not an infinite live stream.
-- **Speed**: applies the show's remembered speed (or the global default) on open; adjusting it in the player updates that show's stored setting.
+- **Configurable playback speed**: **0.5x-3.0x in 0.1x steps**, exposed on the PlayerPanel's existing speed control (`set_rate`, already part of the audio engine protocol — no new engine work) plus dedicated Speed Up/Speed Down hotkeys. Two-level setting, same global-default-with-per-show-override pattern as everything else in `PodcastSettings`: `PodcastSettings.speed` is the global default every show starts at; adjusting speed while an episode is playing updates *that show's* remembered speed (not the global default), so a normally-fast-talking show and a normally-slow one can each keep their own comfortable rate without fighting each other every time you switch between them. A **Reset to Global Default** action on the per-show settings clears the override.
 - **Configurable skip intervals** (global setting, e.g. default 30s forward / 15s back): the Prev/Next-style skip buttons/hotkeys use these instead of one fixed value.
 - **Volume boost**: a separate live-playback gain control (distinct from the download-time loudness normalization in §4) for pushing quiet audio louder on the fly, without reprocessing the file.
 - **Sleep timer**: stop after N minutes, or at the end of the current episode/chapter — a control on the PlayerPanel/status bar, no new playback engine work. Radio should get the same control for parity (tracked in `docs/planning/radio.md`'s follow-ups, not part of this spec's build).
@@ -166,7 +169,7 @@ A View/Sort toolbar above both the show list and the episode list, remembered be
 
 - **Show**: Play/Pause (acts on whatever's currently playing from this show, or starts the latest episode if nothing is), Play Latest Episode, Stop, Move to Folder..., Edit Settings... (mode/retention/speed/Always-Sync/trim/normalize overrides), Toggle Favorite, Toggle Route to Inbox, Forget Remembered Inbox Folder, Pause/Resume Subscription, Unsubscribe (also: **Delete** key), Open Homepage, multi-select bulk variants (mark all played, move several to a folder at once, pause/resume several at once).
 - **Folder** (library or Inbox): New Subfolder..., Rename, Move..., Delete (asks what happens to shows/episodes inside — move to parent or Uncategorized), Export as OPML... (library folders only).
-- **Episode**: Play/Pause, Stop, Play/Stream, Download, Remove Download, Mark Played/Unplayed, Play Next / Add to Queue, View Chapters..., View/Add Notes..., Transcribe Episode... / View Transcript, Save Transcript As..., Open Transcript in Editor, Export..., Show Notes (description), Copy Episode Link, multi-select bulk variants (download all selected, export all selected, mark all selected played/unplayed).
+- **Episode**: Play/Pause, Stop, Play/Stream, Download, Pause Download / Resume Download (only enabled while this episode is queued or actively downloading — see §4's two independent pause controls), Remove Download, Mark Played/Unplayed, Play Next / Add to Queue, View Chapters..., View/Add Notes..., Transcribe Episode... / View Transcript, Save Transcript As..., Open Transcript in Editor, Export..., Show Notes (description), Copy Episode Link, multi-select bulk variants (download all selected, export all selected, mark all selected played/unplayed).
 - **Queue item**: Play Now, Play/Pause, Remove from Queue, Mark for Move, Move Marked Item Above/Below, Move Up, Move Down (§11).
 
 ## 16. UI surfaces summary
@@ -175,11 +178,10 @@ A View/Sort toolbar above both the show list and the episode list, remembered be
 - **Add Podcast**: search (iTunes), Add by Feed URL..., Import OPML..., Add Local Podcast... all reachable from one place.
 - **Preferences > Podcasts**: the global defaults (mode, retention, count, speed, storage location, auto-trim, normalize).
 - **Command palette**: `podcasts.open_manager`, `podcasts.add_by_url`, `podcasts.import_opml`, `podcasts.export_opml`, `podcasts.add_local`, following the same `try_register` + `feature_id="core.podcasts"` pattern Radio used.
-- **Status bar + hotkeys**: play/pause/stop mirroring Radio's pattern, plus the sleep-timer control, for background listening while writing.
+- **Status bar + hotkeys**: play/pause/stop mirroring Radio's pattern, plus the sleep-timer control, for background listening while writing. Speed Up/Speed Down hotkeys adjust the current show's remembered speed live.
+- **System tray**: extends the tray section Radio already created with a Podcasts block — Play/Pause, Stop, and both download controls (**Pause All Downloads / Resume All Downloads**, plus **Pause/Resume** for whichever single download is currently active) — so you can manage downloads without restoring the window.
 
 ## 17. Accessibility engineering notes (from the Earshot research)
-
-Earshot is a mobile (VoiceOver/TalkBack) accessibility-first podcast app with a real, hard-won bug-fix history; several of its lessons are platform-agnostic and apply directly to how this feature's dialogs get built, independent of any single UI decision above:
 
 - **Name every dismiss action explicitly.** A modal/dialog's close control should announce what closing it does ("Dismiss folder queue sheet"), not a bare generic "Close" — already QUILL convention, worth holding to deliberately here given how many new dialogs this spec adds (§16).
 - **Don't wrap a whole panel's contents in one auto-focused container.** Focus should land on a heading, with the panel's actual controls individually navigable — an eagerly-summarized container can look fine visually and read terribly. Test every new dialog in this spec individually with a screen reader rather than assuming one dialog's pattern generalizes to the next.
@@ -217,17 +219,7 @@ quill/ui/main_frame_podcasts.py   # mixin: menu, commands, keymap, status bar,
                                    # tray -- follows main_frame_radio.py exactly
 ```
 
-## 19. Explicitly out of scope (this spec)
-
-- Skip-intro/outro beyond the optional silence-trim already in §4 (no dedicated "detect and skip the sponsor read" feature).
-- Video podcasts (audio only, matching QUILL's existing audio-only scope everywhere else).
-- Social features (comments, sharing to other users, public playlists).
-- A bespoke QUILL-hosted sync service — sync is entirely QUILL Sync's existing folder mechanism (§8), never a new server.
-- **Considered from the Earshot research and explicitly declined for this spec** (not oversights — real ideas, deliberately left out): a whole listening-stats/analytics feature area (time listened, time saved, streaks, year-in-review, CSV export), and reorderable user-configurable "Quick Actions" that redefine the default per-content-type action — both would be sizable scope additions on top of an already-large spec; either could become its own follow-up spec later if wanted.
-- Queue/Inbox freshness expiration with a "Recently Expired" undo buffer — considered, not added; file-retention policy (§4) covers the "don't keep everything forever" need for downloaded files, and this spec's Inbox (§9) has no separate staleness-expiry mechanism of its own.
-- Mono audio mode — considered, not added.
-
-## 20. Suggested phasing
+## 19. Suggested phasing
 
 Everything above (through §17) is in scope; this is a build order, not a cut list.
 
