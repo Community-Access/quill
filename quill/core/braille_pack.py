@@ -146,6 +146,52 @@ def _pack_file_candidates(filename: str) -> list[Path]:
     return candidates
 
 
+def find_lou_translate() -> Path | None:
+    """Return the pack's ``lou_translate`` binary, or one on PATH, or None.
+
+    This is the no-Python-binding translation path: the pack has always
+    shipped ``lou_translate.exe`` + tables, but the worker only ever tried
+    ``import louis`` -- so translation silently required a separately
+    pip-installed binding that nothing installs. Resolving the bundled CLI
+    makes translation work out of the box from source, portable, and
+    installed builds alike.
+    """
+    exe_name = "lou_translate.exe" if sys.platform == "win32" else "lou_translate"
+    for path in _pack_file_candidates(exe_name):
+        if path.exists():
+            return path
+    which = shutil.which("lou_translate")
+    return Path(which) if which else None
+
+
+def tables_dir() -> Path | None:
+    """Return the pack's liblouis tables directory, or None when absent."""
+    for path in _pack_file_candidates("tables"):
+        if path.is_dir():
+            return path
+    return None
+
+
+def find_table_file(table: str) -> Path | None:
+    """Resolve a bare table name (e.g. ``en-ueb-g2``) to its file in the pack.
+
+    Accepts names with or without an extension. Returns None when the pack
+    (or the named table) is not available -- callers fall back to passing the
+    bare name through and letting liblouis resolve it via its own search path.
+    """
+    directory = tables_dir()
+    if directory is None:
+        return None
+    candidate = directory / table
+    if candidate.exists():
+        return candidate
+    for suffix in (".ctb", ".utb", ".uti", ".tbl"):
+        candidate = directory / f"{table}{suffix}"
+        if candidate.exists():
+            return candidate
+    return None
+
+
 def get_brf_profiles() -> list[dict]:
     """Return the list of BRF profiles from the installed pack's brf_profiles.json.
 

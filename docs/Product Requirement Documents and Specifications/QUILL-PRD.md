@@ -8072,6 +8072,45 @@ that planning section.
   translation output is always labelled a *draft*. On worker failure QUILL
   announces the reason and opens no empty document.
 
+- **Two translation backends, one contract (BR-021a).** Inside the worker
+  subprocess, translation tries the python `louis` binding first (fastest,
+  when someone installed it) and falls back to the pack's own
+  `lou_translate` CLI (text over stdin/stdout, tables resolved to absolute
+  paths inside the pack). The pack has always shipped that binary; the CLI
+  fallback is what makes translation work identically from an installed
+  build, the portable build, and a source checkout, with no separately
+  installed binding. A per-invocation timeout inside the worker guarantees a
+  wedged CLI can never wedge the worker (whose caller enforces its own
+  timeout on top).
+
+- **Braille-code auto-detection (BR-025).** The user is never asked which
+  braille code a file is in. `quill/core/braille_detect.py` back-translates a
+  sample of the document through every candidate table — UEB Grade 2, UEB
+  Grade 1, EBAE (legacy American) Grade 2 and Grade 1, and 8-dot computer
+  braille — in **one** worker launch (the worker's `detect` command), scores
+  each result for English-likeness (common-word hit rate, weight 0.7, plus
+  clean-character ratio, weight 0.3), and picks the winner. Tie rule:
+  uncontracted braille back-translates identically through the contracted
+  table, so when the Grade 1 and Grade 2 outputs are byte-identical the
+  detection reports Grade 1 — the honest label. The detection (table, label,
+  score, full ranking) is announced to the user ("Detected UEB Grade 2
+  (contracted)"), so detection teaches rather than asks. Scoring is pure and
+  unit-tested without any subprocess.
+
+- **Magical back-translation and BRF conversion (BR-026).**
+  - **Back-Translate to Text (Auto-Detect Code)** (`braille.back_translate_auto`)
+    leads the Translation submenu: detects the code of the selection (or the
+    whole document), back-translates with the winning table, and opens the
+    draft with the detection named in the announcement.
+  - **Convert BRF File to Document...** (`braille.convert_brf_file`) is the
+    one-shot file path: pick any `.brf`/`.brl` file on disk, QUILL detects
+    its code, back-translates the whole file, and opens the result as a
+    draft — the file never has to be opened in Braille Mode first. Because
+    the draft is a normal document, **Save As** exports it to Markdown,
+    HTML, Word (`.docx`), or plain text: BRF in, any format out.
+  - The explicit per-table commands (UEB G1/G2, EBAE G1/G2, Back-Translate
+    UEB) remain for users who know exactly what they want.
+
 - **Layout diagnostics and repair (BR-024, NLS-BRT parity).** A **Braille →
   Repair** submenu brings the NLS Braille Repair Tool's proofreading workflow to
   QUILL for the two classic problems: *page width exceeded* (a line over the cell
