@@ -101,7 +101,14 @@ OPTIONS = {
     # bundles the Report-a-Bug direct-submission dialog (#11; the [feedback]
     # extra is installed in macos-release.yml). Without this, a Mac .app falls
     # back to the bare web-link path even though the bundled token is present.
-    "includes": ["wx", "nacl", "feedback_hub", "objc", "AppKit", "Foundation"],
+    # PyGithub (top-level module `github`) is imported function-locally by
+    # quill.core.github.github_provider, guarded by require_pygithub(). The
+    # File > Open > GitHub Repository... menu item is always shown, so without
+    # bundling PyGithub the shipped .app raises GitHubDependencyError ("pip
+    # install quill[github]") -- useless advice inside a packaged app. List it
+    # explicitly and install the [github] extra in macos-release.yml so the
+    # feature actually works in the DMG.
+    "includes": ["wx", "nacl", "github", "feedback_hub", "objc", "AppKit", "Foundation"],
     "plist": {
         "CFBundleName": APP_DISPLAY_NAME,
         "CFBundleDisplayName": APP_DISPLAY_NAME,
