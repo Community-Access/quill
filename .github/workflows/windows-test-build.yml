@@ -1,0 +1,50 @@
+name: windows-test-build
+
+# On-demand, UNSIGNED Windows portable build for manual testing — the
+# Windows counterpart of macos-test-build.yml (e.g. NVDA/JAWS regression
+# passes on accessibility fixes like #1012). No installer is compiled and
+# no feedback-token secret is required, so it can be dispatched on any
+# branch straight from the Actions tab. Release builds still come from
+# windows-release.yml only.
+#
+# The artifact is the portable bundle: unzip and run the launcher inside
+# (no install needed).
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install build dependencies
+        run: python -m pip install -e .[ui,spellcheck,dev]
+
+      - name: Build portable distribution (no installer, tokenless)
+        # Without --require-feedback-token a missing QUILL_FEEDBACK_GITHUB_TOKEN
+        # ships an empty bundled token: fine for a test build (Report a Bug
+        # falls back to a web link), never acceptable for a release.
+        run: python scripts/build_windows_distribution.py --bundle-python --output-dir windows-distribution
+
+      - name: Sanity-check the portable bundle
+        shell: pwsh
+        run: |
+          $portable = "windows-distribution/portable"
+          if (-not (Test-Path $portable)) { throw "Portable bundle missing at $portable" }
+          Get-ChildItem $portable | Select-Object -First 10 | Format-Table Name
+
+      - name: Upload portable test artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: quill-windows-test-portable
+          path: windows-distribution/portable
+          retention-days: 14
