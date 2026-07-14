@@ -379,6 +379,45 @@ every bit as valuable as a failure report. Real-hardware evidence in
 both directions is the promotion gate, just as braille users’ Beta 2
 reports made the Windows correction ready for everyone.</p>
 <hr />
+<h2
+id="radio-and-podcasts-step-out-on-their-own-quill-radio-and-quill-cast">Radio
+and Podcasts Step Out On Their Own: Quill Radio and QUILL Cast</h2>
+<p>Internet Radio and Podcasts arrived inside QUILL this release cycle —
+but not everyone wants to launch a full document editor to turn the
+radio on. Beta 3 introduces <strong>Quill Radio</strong> and
+<strong>QUILL Cast</strong>: small standalone apps with their own
+window, their own menu bar, and their own system tray icon.</p>
+<p>The important word is <em>same</em>. These are not stripped-down
+copies or forks. Each app runs the exact same feature code QUILL itself
+uses — the same station browser, the same podcast manager, the same
+download queue with pause and resume, the same recording scheduler, the
+same dialogs with the same keyboard behavior your screen reader already
+knows. They read and write the same settings, favorites, and
+subscriptions from the same place on disk. Subscribe to a show in QUILL
+Cast tonight, and it is there in QUILL tomorrow morning. Fix a radio bug
+in QUILL, and Quill Radio has the fix too, automatically, because there
+is only one copy of the code.</p>
+<p><strong>Quill Radio</strong> gives you a Station menu (Browse
+Stations, Add Custom Station, Find Streams from a Website, and your
+Favorite Stations listed right in the menu for one-keystroke switching),
+a Playback menu with a live now-playing line, and a Record menu (Record
+Now, Schedule Recording, Recording Settings). <strong>QUILL
+Cast</strong> gives you Subscriptions (the full Podcast Manager, Add
+Podcast, OPML import and export, Podcast Settings), an Episode menu with
+play/pause and chapter navigation, and a Downloads menu to pause or
+resume everything at once.</p>
+<p>Both apps put an icon in the system tray with the same radio and
+podcast controls QUILL's own tray icon carries, plus Show and Exit. And
+both include <strong>Help &gt; Open in Quill</strong> for the moment you
+decide you <em>do</em> want the full editor after all — say, to paste a
+podcast's show notes into a document. (Speaking of which: QUILL Cast's
+"Send Show Notes to Editor" copies them to the clipboard instead, and
+says so, since there is no editor standing by.)</p>
+<p>For this beta, launch them from a source checkout or portable folder
+with <code>run-quill-radio.bat</code> and
+<code>run-quill-cast.bat</code>. Installer shortcuts come once the apps
+have been validated in the wild — tell us how they behave with your
+screen reader.</p>
 <h2 id="community-reports-real-repairs">Community Reports, Real
 Repairs</h2>
 <p>Every bug report is a person encountering friction while trying to
@@ -600,6 +639,91 @@ exactly as before.</p>
 It remains on disk either way. The only change is whether QUILL asks you
 to recover after an exit for which the log contains no evidence of a
 crash.</p>
+<h3
+id="crash-recovery-reports-now-show-their-own-evidence">Crash-recovery
+reports now show their own evidence</h3>
+<p>A follow-up report showed the gap in that fix from the reporter's
+side: filing a crash-recovery report from the dialog bundled only the
+last few thousand characters of the log, while the check above scans a
+much larger window near the end of the file. A genuine error early in
+that window could justify the recovery offer without ever appearing in
+what got filed, leaving a report that looked unexplained even when the
+underlying decision was correct.</p>
+<p>Filed crash-recovery reports now include the actual log lines that
+triggered the offer, wherever they fall in the scanned window, so a
+report is self-explanatory instead of a mystery to whoever triages
+it.</p>
+<h3
+id="macos-voiceover-now-hears-what-a-control-is-for-not-just-its-value">macOS
+VoiceOver now hears what a control is for, not just its value</h3>
+<p>A community accessibility audit found that many QUILL dialogs relied
+on a Windows-only convention: a visible label sitting next to a control,
+with nothing else connecting the two. Windows screen readers infer the
+connection from that layout; VoiceOver does not; it needs an explicit
+accessible name, and without one it announces a bare value — a number
+with no unit, an empty edit field with no hint what belongs there.</p>
+<p>Two related patterns caused this. Plain fields and lists in a number
+of hand-built dialogs never received a name at all. Separately, every
+<code>SpinCtrl</code>/<code>SpinCtrlDouble</code> — the numeric steppers
+used throughout Preferences and elsewhere — is a composite control on
+macOS: naming the stepper itself doesn't reach the inner text field
+VoiceOver actually focuses, so even a named spinner could still read as
+a bare number.</p>
+<p>Both patterns are fixed with one small shared helper that names a
+control and, for spinners, its inner field too. The fix was swept across
+every affected dialog identified by the audit — Preferences, Watch
+Folder profiles, the Export/Import and GitHub dialogs, Quick Nav, the
+Heading Organizer, List Manager, the Regular Expression Helper, and
+dozens more — so a VoiceOver user hears what each control is, not just
+what it currently holds.</p>
+<h3 id="a-live-crash-report-traced-a-unicodeencodeerror-to-autosave">A
+live crash report traced a UnicodeEncodeError to autosave</h3>
+<p>Autosave was writing each snapshot using the source document's own
+encoding rather than UTF-8. A document read as Braille Ready Format
+defaults to an ASCII encoding; the moment its in-memory text picked up a
+character outside that range — in the reported case, a U+2004 space
+introduced through abbreviation expansion — the write crashed
+outright.</p>
+<p>Recovery always reads a snapshot back as UTF-8, regardless of what
+encoding the source document itself uses, so the writer now always
+writes UTF-8 too. A defensive try/except around the autosave call also
+means a future write failure, whatever the cause, interrupts a snapshot
+rather than the editing session.</p>
+<h3
+id="radio-and-podcasts-could-crash-quill-on-every-single-launch">Radio
+and Podcasts could crash QUILL on every single launch</h3>
+<p>The Radio and Podcast player controllers were built before
+<code>self.frame</code> existed inside <code>MainFrame.__init__</code>,
+so parenting either controller on the not-yet-created frame raised
+<code>AttributeError</code> immediately. Both now initialize right after
+the frame itself is created.</p>
+<h3
+id="the-braille-translation-pack-now-appears-the-moment-it-finishes-downloading">The
+Braille Translation Pack now appears the moment it finishes
+downloading</h3>
+<p>Downloading the pack correctly installed it, but the Tools &gt;
+Braille menu didn't know to look again — the Translation submenu only
+exists once the pack is present, and refreshing menu-item state isn't
+the same as rebuilding the menu's structure. This is the same root cause
+as #974, the Quillin menu-contributions bug earlier in this release: a
+structural menu change needs a structural rebuild, not a state refresh.
+The direct "Download Braille Translation Pack..." menu item also now
+opens the Download Optional Components hub instead of running the
+download on its own and dropping you back into the editor when it
+finishes — matching the guided flow "Set Up Braille" already used.</p>
+<h3
+id="back-translating-a-large-brf-file-failed-instantly-with-no-clear-reason-why">Back-translating
+a large BRF file failed instantly, with no clear reason why</h3>
+<p>A community member reported back-translation appearing to do nothing
+at all on a real hymnal-sized BRF file. The cause: the whole document's
+text was packed into a single command-line argument to the liblouis
+worker subprocess, and Windows caps a process's total command-line
+length at roughly 32,000 characters — so a file of any real size failed
+to even launch the worker. Reproduced live on a ~450 KB file.</p>
+<p>The request now travels over the worker's standard input instead,
+which carries no such limit. A translation failure now also opens a
+visible dialog, not just a spoken announcement that was easy to miss
+entirely if you weren't listening for it at that exact moment.</p>
 <h3 id="insert--date-and-times-submenu-now-actually-opens">Insert &gt;
 Date and Time's submenu now actually opens</h3>
 <p>Jayson Smith reported it precisely: open the Insert menu, arrow up to
