@@ -28,7 +28,7 @@ from quill.core.podcasts.sorting import (
     sort_shows,
 )
 from quill.core.podcasts.subscriptions import PodcastLibrary
-from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dialog_contract import apply_modal_ids, show_message_box
 from quill.ui.podcasts.player_controller import PodcastPlayerController
 
 _FOLDER_ROOT_LABEL = "All Podcasts"
@@ -53,6 +53,20 @@ def episode_destination(download_root: Path, show: PodcastShow, episode: Podcast
     """Where a downloaded episode's file lands: ``<root>/<show-slug>/<episode-slug><ext>``."""
     suffix = Path(episode.audio_url.split("?", 1)[0]).suffix or ".mp3"
     return download_root / _slug(show.title) / f"{_slug(episode.title)}{suffix}"
+
+
+def _shows_in_folder_subtree(library: PodcastLibrary, folder_id: str) -> list[PodcastShow]:
+    """Every show in *folder_id* or any folder nested under it, tree order.
+
+    Powers the per-folder bulk actions (set the whole folder's shows to
+    stream/download) where "the folder" always means the whole subtree a
+    user sees under that node, never just its direct children.
+    """
+    shows = [show for show in library.shows if show.folder_id == folder_id]
+    for folder in library.folders:
+        if folder.parent_folder_id == folder_id:
+            shows.extend(_shows_in_folder_subtree(library, folder.id))
+    return shows
 
 
 def _shows_episodes(library: PodcastLibrary, folder_id: str) -> list[PodcastEpisode]:
@@ -387,7 +401,188 @@ class PodcastManagerDialog:
         if event.GetKeyCode() == self._wx.WXK_DELETE:
             self._on_unsubscribe(event)
             return
+        if event.GetKeyCode() == self._wx.WXK_F2:
+            # F2 renames whatever is selected: a folder or a show.
+            folder_id = self._selected_folder_id()
+            if folder_id:
+                folder = self._library.find_folder(folder_id)
+                if folder is not None:
+                    self._on_rename_folder(folder)
+                    return
+            show_id = self._selected_show_id()
+            show = self._library.find_show(show_id) if show_id else None
+            if show is not None:
+                self._on_rename_show(show)
+            return
         event.Skip()
+
+    # -- selection anchors (move/delete keep you near where you were) --------
+
+    def _neighbor_anchor_for_show(self, show_id: str) -> tuple[str, str] | None:
+        """What to select after *show_id* leaves its current tree spot: the
+        next sibling show, else the previous one, else the containing folder.
+        Never the tree top -- a move must not dump you back at the root."""
+        show = self._library.find_show(show_id)
+        if show is None:
+            return None
+        siblings = sort_shows(
+            [s for s in self._library.shows if s.folder_id == show.folder_id],
+            self._selected_show_sort_mode(),
+        )
+        ids = [s.id for s in siblings]
+        if show_id in ids:
+            index = ids.index(show_id)
+            for candidate in (index + 1, index - 1):
+                if 0 <= candidate < len(ids) and ids[candidate] != show_id:
+                    return ("show", ids[candidate])
+        if show.folder_id:
+            return ("folder", show.folder_id)
+        return None
+
+    def _restore_tree_anchor(self, anchor: tuple[str, str] | None) -> None:
+        """Select the remembered neighbor after a refresh (best-effort)."""
+        if anchor is None:
+            return
+        kind, target_id = anchor
+        mapping = self._tree_item_show if kind == "show" else self._tree_item_folder
+        item = self._tree.GetRootItem()
+        stack = [item]
+        while stack:
+            current = stack.pop()
+            key = current.GetID() if hasattr(current, "GetID") else id(current)
+            if mapping.get(key) == target_id:
+                self._tree.SelectItem(current)
+                return
+            child, cookie = self._tree.GetFirstChild(current)
+            while child.IsOk():
+                stack.append(child)
+                child, cookie = self._tree.GetNextChild(current, cookie)
+
+    # -- move / rename / delete ----------------------------------------------
+
+    def _on_move_show_to_folder(self, show: PodcastShow) -> None:
+        from quill.ui.podcasts.folder_picker_dialog import FolderPickerDialog
+
+        picker = FolderPickerDialog(
+            self.dialog,
+            library=self._library,
+            title=f"Move {show.title} to Folder",
+            announce_cb=self._announce,
+        )
+        result = picker.show()
+        if not result.confirmed:
+            return
+        chosen = result.folder_id
+        anchor = self._neighbor_anchor_for_show(show.id)
+        show.folder_id = chosen or None
+        self._on_library_changed()
+        self.refresh_tree()
+        self._restore_tree_anchor(anchor)
+        destination = self._library.find_folder(chosen) if chosen else None
+        where = destination.name if destination is not None else "the top level"
+        self._announce(f"Moved {show.title} to {where}")
+
+    def _prompt_rename(self, title: str, current: str) -> str | None:
+        wx = self._wx
+        with wx.TextEntryDialog(  # dialog_button_contract: exempt
+            self.dialog, "New name:", title, value=current
+        ) as dialog:
+            if dialog.ShowModal() != wx.ID_OK:
+                return None
+            name = dialog.GetValue().strip()
+        return name or None
+
+    def _on_rename_folder(self, folder: object) -> None:
+        name = self._prompt_rename("Rename Folder", folder.name)
+        if name is None:
+            return
+        folder.name = name
+        self._on_library_changed()
+        self.refresh_tree()
+        self._announce(f"Folder renamed to {name}")
+
+    def _on_rename_show(self, show: PodcastShow) -> None:
+        name = self._prompt_rename("Rename Podcast", show.title)
+        if name is None:
+            return
+        show.title = name
+        self._on_library_changed()
+        self.refresh_tree()
+        self._announce(f"Podcast renamed to {name}")
+
+    def _on_rename_episode(self, episode: PodcastEpisode) -> None:
+        name = self._prompt_rename("Rename Episode", episode.title)
+        if name is None:
+            return
+        episode.title = name
+        self._on_library_changed()
+        self._fill_episodes(self._current_show)
+        self._announce(f"Episode renamed to {name}")
+
+    def _delete_downloaded_files_for_removed_shows(self, removed: list[PodcastShow]) -> int:
+        """Best-effort removal of downloaded files for unsubscribed shows;
+        returns how many files were deleted. Never the reason a delete fails."""
+        deleted = 0
+        for show in removed:
+            for episode in show.episodes:
+                if not episode.downloaded_path:
+                    continue
+                path = Path(episode.downloaded_path)
+                try:
+                    if path.exists():
+                        path.unlink()
+                        deleted += 1
+                except OSError:
+                    continue
+        return deleted
+
+    def _on_delete_folder(self, folder: object) -> None:
+        wx = self._wx
+        with wx.SingleChoiceDialog(  # dialog_button_contract: exempt
+            self.dialog,
+            f'What should happen to the podcasts inside "{folder.name}"?',
+            "Delete Folder",
+            [
+                "Move them up to the parent folder (safe)",
+                "Unsubscribe them too",
+            ],
+        ) as picker:
+            if picker.ShowModal() != wx.ID_OK:
+                return
+            contents = "promote" if picker.GetSelection() == 0 else "remove"
+        removed = self._library.delete_folder(folder.id, contents=contents)
+        deleted_files = 0
+        if removed:
+            confirm = show_message_box(
+                f"Also delete the downloaded episode files of the "
+                f"{len(removed)} unsubscribed show(s)?",
+                "Delete Downloaded Files",
+                wx.YES_NO | wx.ICON_QUESTION,
+                self.dialog,
+                announce=self._announce,
+            )
+            if confirm == wx.YES:
+                deleted_files = self._delete_downloaded_files_for_removed_shows(removed)
+        self._on_library_changed()
+        self.refresh_tree()
+        if removed:
+            suffix = f" and {deleted_files} downloaded file(s) deleted" if deleted_files else ""
+            self._announce(
+                f"Folder {folder.name} deleted; {len(removed)} show(s) unsubscribed{suffix}"
+            )
+        else:
+            self._announce(f"Folder {folder.name} deleted; its contents moved up")
+
+    def _on_delete_inbox_folder(self, folder: object) -> None:
+        from quill.core.podcasts.inbox import delete_inbox_folder
+
+        if delete_inbox_folder(self._library, folder.id):
+            self._on_library_changed()
+            self.refresh_tree()
+            self._announce(
+                f"Inbox folder {folder.name} deleted; its episodes moved up. "
+                "Episodes are never removed by Inbox actions."
+            )
 
     def _show_tree_context_menu(self) -> None:
         wx = self._wx
@@ -411,10 +606,23 @@ class PodcastManagerDialog:
             )
             menu.Bind(wx.EVT_MENU, lambda _e: self._on_toggle_show_paused(show), pause_item)
 
+            move_item = menu.Append(wx.ID_ANY, "&Move to Folder...")
+            menu.Bind(wx.EVT_MENU, lambda _e, s=show: self._on_move_show_to_folder(s), move_item)
+            rename_show_item = menu.Append(wx.ID_ANY, "Rena&me...\tF2")
+            menu.Bind(wx.EVT_MENU, lambda _e, s=show: self._on_rename_show(s), rename_show_item)
+
             menu.AppendSeparator()
             unsubscribe_item = menu.Append(wx.ID_ANY, "&Unsubscribe")
             menu.Bind(wx.EVT_MENU, self._on_unsubscribe, unsubscribe_item)
         else:
+            folder_id = self._selected_folder_id()
+            folder = self._library.find_folder(folder_id) if folder_id else None
+            if folder is not None:
+                rename_item = menu.Append(wx.ID_ANY, "Rena&me Folder...\tF2")
+                menu.Bind(wx.EVT_MENU, lambda _e, f=folder: self._on_rename_folder(f), rename_item)
+                delete_item = menu.Append(wx.ID_ANY, "&Delete Folder...")
+                menu.Bind(wx.EVT_MENU, lambda _e, f=folder: self._on_delete_folder(f), delete_item)
+                menu.AppendSeparator()
             new_folder_item = menu.Append(wx.ID_ANY, "&New Folder...")
             menu.Bind(wx.EVT_MENU, self._on_new_folder, new_folder_item)
         self._tree.PopupMenu(menu)

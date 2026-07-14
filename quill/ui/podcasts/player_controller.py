@@ -69,14 +69,24 @@ class PodcastPlayerController:
         *,
         on_state_changed: Callable[[PodcastPlaybackState], None] | None = None,
         on_episode_finished: Callable[[str, str], None] | None = None,
+        on_position_checkpoint: Callable[[str, str, int], None] | None = None,
     ) -> None:
         self._on_state_changed = on_state_changed
         #: (show_id, episode_guid) -- fired when an episode plays to the end,
         #: so the caller can mark it played / apply delete-after-play.
         self._on_episode_finished = on_episode_finished
+        #: (show_id, episode_guid, position_ms) -- fired with the *outgoing*
+        #: episode's position at pause/stop/switch/shutdown (never on natural
+        #: finish; that is on_episode_finished's job). The fix for a real gap:
+        #: episode.position_ms was read to resume but never written.
+        self._on_position_checkpoint = on_position_checkpoint
         self._resume_ms = 0
         self._pending_rate = 1.0
         self._volume_percent = 100
+        #: Live playback gain (Phase 4): scales what the engine hears without
+        #: touching volume_percent, which the sleep timer restores -- boosting
+        #: must never make "restore the volume" restore a boosted number.
+        self._volume_boost = 1.0
         self._engine: AudioEngine | None = create_engine(
             parent,
             on_loaded=self._on_loaded,
@@ -103,6 +113,7 @@ class PodcastPlayerController:
     ) -> None:
         """Start (or switch to) playing one episode; replaces whatever this
         controller was already playing, so only one thing ever plays."""
+        self._checkpoint_current()
         self._resume_ms = max(0, int(resume_ms))
         self._pending_rate = rate if rate > 0 else 1.0
         self._state.show_id = show_id
@@ -116,6 +127,7 @@ class PodcastPlayerController:
         if self._engine is None:
             return
         if self._state.state is PodcastPlayerState.PLAYING:
+            self._checkpoint_current()
             self._engine.pause()
             self._set_state(PodcastPlayerState.PAUSED)
         elif self._state.state is PodcastPlayerState.PAUSED:
@@ -123,6 +135,7 @@ class PodcastPlayerController:
             self._set_state(PodcastPlayerState.PLAYING)
 
     def stop(self) -> None:
+        self._checkpoint_current()
         if self._engine is not None:
             self._engine.close()
         self._state.show_id = None
@@ -140,8 +153,19 @@ class PodcastPlayerController:
 
     def set_volume(self, percent: int) -> None:
         self._volume_percent = max(0, min(100, percent))
+        self._apply_engine_volume()
+
+    def set_volume_boost(self, factor: float) -> None:
+        """Live playback gain (0.5x - 3.0x, clamped) for quiet audio; scales
+        the engine volume only. ``volume_percent`` keeps reporting the
+        unboosted value so the sleep timer's restore stays honest."""
+        self._volume_boost = max(0.5, min(3.0, float(factor)))
+        self._apply_engine_volume()
+
+    def _apply_engine_volume(self) -> None:
         if self._engine is not None:
-            self._engine.set_volume(self._volume_percent)
+            boosted = round(self._volume_percent * self._volume_boost)
+            self._engine.set_volume(min(100, boosted))
 
     @property
     def volume_percent(self) -> int:
@@ -158,11 +182,22 @@ class PodcastPlayerController:
 
     def shutdown(self) -> None:
         """Release the engine; called once, from the frame's close path."""
+        self._checkpoint_current()
         try:
             if self._engine is not None:
                 self._engine.close()
         except Exception:  # noqa: BLE001 - never block app close
             _log.exception("podcast engine close failed during shutdown")
+
+    def _checkpoint_current(self) -> None:
+        """Report the current episode's position to the checkpoint callback
+        (no-op when nothing is loaded or nothing listens)."""
+        if self._on_position_checkpoint is None:
+            return
+        show_id, episode_guid = self._state.show_id, self._state.episode_guid
+        if not show_id or not episode_guid or self._engine is None:
+            return
+        self._on_position_checkpoint(show_id, episode_guid, self._engine.position_ms())
 
     # -- engine callbacks -------------------------------------------------
 
