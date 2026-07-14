@@ -2443,6 +2443,7 @@ class MenuBuilderMixin:
             self.frame.Bind(
                 wx.EVT_MENU, lambda _e: self.open_sleep_timer_dialog(), id=id_sleep_timer
             )
+            self._append_adp_media_items(media_menu)
             tools_menu.AppendSubMenu(media_menu, _("&Media"))
 
         # Comparison (was Compare Documents) ----------------------------------
@@ -2817,6 +2818,16 @@ class MenuBuilderMixin:
         tools_menu.Append(
             self._id_new_sticky_note,
             self._menu_label(_("New Sticky &Note..."), "tools.sticky_note_capture"),
+        )
+        self._id_sticky_browser = wx.NewIdRef()
+        tools_menu.Append(
+            self._id_sticky_browser,
+            self._menu_label(_("Sticky Notes &Browser..."), "notes.sticky_browser"),
+        )
+        self._id_global_hotkeys = wx.NewIdRef()
+        tools_menu.Append(
+            self._id_global_hotkeys,
+            self._menu_label(_("&Global Hotkeys..."), "tools.global_hotkeys"),
         )
 
         # Advanced (expanded: power-tool utilities + Macros + Authoring +
@@ -4469,6 +4480,16 @@ class MenuBuilderMixin:
             wx.EVT_MENU,
             lambda _e: self.manage_sticky_notes(),
             id=self._id_sticky_notes,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.open_sticky_notes_browser(),
+            id=self._id_sticky_browser,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.open_global_hotkeys_manager(),
+            id=self._id_global_hotkeys,
         )
         self.frame.Bind(
             wx.EVT_MENU,

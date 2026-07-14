@@ -10789,6 +10789,30 @@ typing speed, with standard modifier+number chords.
 
 ---
 
+## Sticky Notes: capture, browse, and the keys that work everywhere
+
+Sticky notes are QUILL's quickest capture surface: **Tools > New Sticky Note...** (or its system-wide hotkey) opens a small title-and-body editor from anywhere, and **Tools > Sticky Notes...** manages the whole collection.
+
+### The Sticky Notes Browser
+
+**Tools > Sticky Notes Browser...** is the fast way back to a note you wrote last week. It opens with focus in a **search field** — type anything and the list below filters live, matching titles and bodies case-insensitively, newest note first. Press **Down** to move into the results and arrow through them; press **Tab** to reach a **read-only multi-line preview** of the selected note, so you can read the whole thing without opening it. **Edit** (or Enter on a note, or double-click) opens the full editor; **Close** (or Escape) dismisses. Every control announces itself by name.
+
+Assign the browser a global hotkey (next section) and it opens from anywhere in Windows — QUILL restores its own window first, so the browser always appears even when QUILL was minimized to the tray.
+
+### Global Hotkeys (Tools > Global Hotkeys...)
+
+Global hotkeys let a key combination work **system-wide** — in your browser, your mail client, anywhere — without switching to QUILL first. Open **Tools > Global Hotkeys...**, arrow to a command, press **Assign...**, then press the combination you want. It must include **Ctrl or Alt** (a bare key would swallow normal typing everywhere). **Clear** removes an assignment; assigning a key that another QUILL command already holds moves it cleanly; and if another *application* owns the key, Windows refuses it — QUILL tells you which binding failed and it simply stays inactive until you pick something else.
+
+**What can go global is deliberately limited.** Only these commands can be bound, and the list is enforced in code:
+
+- Radio: Play/Pause, Stop, Mute/Unmute, Volume Up, Volume Down
+- Podcasts: Play/Pause, Stop
+- New Sticky Note
+- Sticky Notes Browser
+- Post to Mastodon — this opens the compose window; nothing is ever sent by the hotkey itself
+
+Nothing that edits a document, deletes anything, or acts invisibly can ever be a global hotkey, no matter what a settings file says. Commands that open a window restore QUILL first; media commands act right where you are; and every press speaks its result ("Radio paused", "Note saved") so you always know what happened even when QUILL isn't visible. Your existing system-wide sticky-note hotkey keeps working exactly as it always has unless you reassign it here. Global hotkeys are Windows-only — macOS offers no equivalent mechanism — but every one of these commands remains available from the menus and the command palette on every platform.
+
 ## Future Directions: Double-Tap and Beyond
 
 The user asked whether pressing a key twice quickly could trigger an alternative

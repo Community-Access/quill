@@ -417,6 +417,15 @@ class Settings:
     quick_nav_include_lists: bool = True
     status_bar_order: list[str] = field(default_factory=_default_status_bar_order)
     status_bar_hidden: list[str] = field(default_factory=_default_status_bar_hidden)
+    #: User-defined system-wide hotkeys: command_id -> "Ctrl+Alt+X". Only
+    #: commands on main_frame_hotkeys.GLOBAL_HOTKEY_SAFE_COMMANDS ever
+    #: register, whatever this dict says (the allowlist is the boundary).
+    global_hotkeys: dict[str, str] = field(default_factory=dict)
+    # ADP Assistant (pre-release, unlock-gated; deliberately undocumented).
+    adp_base_url: str = ""
+    adp_user_name: str = ""
+    adp_speak_answers: bool = True
+    adp_route_voice_questions: bool = False
     # GLOW: the shared accessibility engine is on by default; its optional
     # networked features stay off until the user gives explicit consent (GLOW-7).
     glow_enabled: bool = True
@@ -1034,6 +1043,16 @@ class Settings:
         status_bar_hidden = _normalize_status_bar_hidden(
             data.get("status_bar_hidden"), status_bar_order
         )
+        adp_base_url = str(data.get("adp_base_url", ""))
+        adp_user_name = str(data.get("adp_user_name", ""))
+        adp_speak_answers = bool(data.get("adp_speak_answers", True))
+        adp_route_voice_questions = bool(data.get("adp_route_voice_questions", False))
+        raw_global_hotkeys = data.get("global_hotkeys")
+        global_hotkeys = (
+            {str(k): str(v) for k, v in raw_global_hotkeys.items() if str(v).strip()}
+            if isinstance(raw_global_hotkeys, dict)
+            else {}
+        )
         # GLOW engine defaults on; networked features default off (GLOW-7).
         glow_enabled = bool(data.get("glow_enabled", True))
         glow_ai_alt_text_consent = bool(data.get("glow_ai_alt_text_consent", False))
@@ -1441,6 +1460,11 @@ class Settings:
             quick_nav_include_lists=quick_nav_include_lists,
             status_bar_order=status_bar_order,
             status_bar_hidden=status_bar_hidden,
+            global_hotkeys=global_hotkeys,
+            adp_base_url=adp_base_url,
+            adp_user_name=adp_user_name,
+            adp_speak_answers=adp_speak_answers,
+            adp_route_voice_questions=adp_route_voice_questions,
             glow_enabled=glow_enabled,
             glow_ai_alt_text_consent=glow_ai_alt_text_consent,
             glow_pii_redaction_consent=glow_pii_redaction_consent,

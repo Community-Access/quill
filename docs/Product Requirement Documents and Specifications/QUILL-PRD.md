@@ -4408,6 +4408,48 @@ the unlocked feature (from `FEATURE_DEFINITIONS`) or speaks the specific
 rejection reason. Absent PyNaCl, redemption reports the missing extra rather
 than failing silently.
 
+### 5.84z2 Sticky Notes Browser and user-definable global hotkeys
+
+**Goal.** Two connected capture-and-recall features: find any sticky note in
+seconds from anywhere in Windows, and let users put their own keys on the
+handful of commands that are genuinely safe to trigger without QUILL having
+focus.
+
+**Sticky Notes Browser (`quill/ui/sticky_notes_browser.py`).** A modal
+finder: search field (live substring filter over title + body,
+case-insensitive, newest first — `filter_notes` is pure and unit-tested),
+Down moves from search into the results list, Tab reaches a read-only
+multi-line preview, Edit/Enter/double-click opens the existing
+`StickyNoteEditorDialog` for the selected note, Escape closes. Every control
+is named via `dialog_contract.set_accessible_name`. Command id
+`notes.sticky_browser` (Tools menu + palette + global-hotkey allowlist).
+
+**Global hotkeys (`quill/ui/main_frame_hotkeys.py`).** Generalizes the
+original single hardcoded sticky-note `RegisterHotKey` into a
+user-configurable table with one hard rule: **only
+`GLOBAL_HOTKEY_SAFE_COMMANDS` can ever register**, whatever
+`Settings.global_hotkeys` contains — the allowlist is the enforcement
+boundary, not the settings file, and a meta-test pins the list's shape
+(media transport / notes / the Mastodon *compose* dialog only; nothing
+document-editing or destructive). Requirements:
+
+- Dispatch goes through `CommandRegistry.run`, so feature gating and the
+  remote kill switch govern global presses exactly as they do menus and the
+  palette.
+- Commands flagged needs-window restore the frame from the tray before
+  running; transport commands act in place. Every outcome routes through
+  the announcement engine, so a press from another app is always spoken.
+- The manager (`quill/ui/global_hotkeys_dialog.py`): per-command Assign
+  (captures the next combination; must include Ctrl or Alt so a bare key is
+  never swallowed system-wide), Clear, cross-command steal on reassign;
+  nothing applies until Save. `RegisterHotKey` refusal (another app owns
+  the key) is reported naming the failed binding, which stays inactive.
+- `Settings.global_hotkeys: dict[str, str]` persists command_id → binding
+  with defensive load; the legacy `tools.sticky_note_capture` keymap
+  binding keeps registering unless overridden by the table.
+- Windows-only (`RegisterHotKey`); macOS states the limitation once via the
+  status bar, and every allowlisted command remains reachable in-app.
+
 ### 5.85 Portable API key store
 
 By default QUILL stores AI provider keys in the Windows Credential Manager, which ties them to the current Windows user account. Portable mode offers an alternative: a DPAPI-encrypted file (`keys.enc`) in the QUILL data directory, activated by the presence of a `data/` folder next to `quill.exe` in the portable bundle.
