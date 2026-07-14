@@ -133,7 +133,7 @@ drag-and-drop). Transcript viewing/export is parsed from the feed already
 but has no UI of its own yet; a separate Inbox view, a cross-show
 reorderable Play Queue, local (imported-file) podcasts, and richer
 filtering (beyond the sorting above) are the next planned phases — see
-`docs/planning/podcasts.md` if you want the full list.
+the PRD's Podcasts section (5.84g) if you want the full list — the once-planned next phases (Inbox, Play Queue, transcripts, local podcasts, Search Everywhere) have since shipped.
 
 ## The shape of it
 

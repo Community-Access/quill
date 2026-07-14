@@ -1,0 +1,98 @@
+From:	development@bits.groups.io on behalf of Rms Danaraj via groups.io 
+<salorajan=gmail.com@groups.io>
+Sent:	Tuesday, July 14, 2026 10:16 AM
+To:	development@bits.groups.io
+Subject:	[BITS-Development] Exciting news: 'mathml_to_omml' published to PyPI! ?? (Plus a 
+sample of 10 famous equations in OMML)
+Attachments:	famous_equations.docx
+
+Dear Friends , 
+ 
+I am thrilled to announce that I have successfully published my new 
+Python module, `mathml_to_omml`, to PyPI!  
+ 
+This module is a pure Python library designed to convert MathML, 
+LaTeX, and UnicodeMath (linear math) into Office Math Markup 
+Language (OMML)—the native mathematical format used by Microsoft 
+Word and PowerPoint to render equations.  
+ 
+To showcase what this library can do, I have attached a sample Word 
+document, `famous_equations.docx`, which contains 10 famous 
+equations from algebra, calculus, and physics, all compiled 
+dynamically into native, accessible OMML equations using this 
+package. 
+ 
+### Acknowledgments & Inspiration 
+This project would not have been possible without the collaboration 
+and support of this community. I would like to extend my heartfelt 
+thanks to: 
+* **Mr. George** of the **DAISY Consortium**, for his guidance and 
+support in the field of document accessibility. 
+* **Mr. Jeff**, **BITS President**, for his leadership and 
+encouragement. 
+* **All the developers in the BITS development email group** for their 
+valuable discussions, feedback, and insights in the forum, which 
+directly inspired and encouraged me to develop this module. 
+ 
+This library is a first step toward making mathematical equations fully 
+accessible to everyone. By compiling LaTeX and MathML into native 
+Word OMML, we ensure that equations can be read aloud by screen 
+readers and properly navigated by assistive technologies. 
+ 
+### Getting Started: 
+You can install the package now via pip: 
+```bash 
+pip install mathml_to_omml 
+``` 
+ 
+And here is a simple script to start using it in your own Python 
+projects: 
+```python 
+import math_ml2omml 
+ 
+# 1. Convert MathML to OMML 
+mathml = "<math><mfrac><mi>a</mi><mi>b</mi></mfrac></math>" 
+omml = math_ml2omml.convert(mathml) 
+print("--- MathML to OMML ---") 
+print(omml) 
+ 
+# 2. Convert LaTeX to UnicodeMath 
+latex_str = r"f(x) = \frac{x^2 + \sin(x)}{\sqrt{y}}" 
+unicode_math = math_ml2omml.to_linear_math(latex_str) 
+print("\n--- LaTeX to UnicodeMath ---") 
+print(unicode_math) 
+ 
+# 3. Convert UnicodeMath to OMML 
+linear_math = "a/b + c^2" 
+omml_from_linear = math_ml2omml.linear_to_omml(linear_math) 
+print("\n--- UnicodeMath to OMML ---") 
+print(omml_from_linear) 
+``` 
+ 
+You can view the package on PyPI here: 
+https://pypi.org/project/mathml-to-omml/ 
+ 
+Or check out the GitHub repository at: 
+https://github.com/salorajan/math_2omml 
+ 
+Thank you again for all the support, discussions, and inspiration. I look 
+forward to hearing your thoughts and feedback! 
+ 
+Warm regards, 
+Robert Danaraj
+_._,_._,_
+ 
+Groups.io Links:
+You receive all messages sent to this group. 
+View/Reply Online (#941) | Reply to Sender | Reply to Group | Mute This Topic | New Topic 
+ 
+Find great gift ideas or treat yourself while supporting BITS at the same time with Blind Girl 
+Designs! 
+• https://blind-girl-designs.myshopify.com/collections/bits-blind-information-technology-
+solutions 
+ 
+And the BITS website is always here for you with information and resources: 
+https://www.bits-acb.org/
+ 
+Your Subscription | Contact Group Owner | Unsubscribe [jeff@jeffbishop.com]
+_._,_._,_

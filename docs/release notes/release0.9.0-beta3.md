@@ -196,7 +196,23 @@ Two things worth naming plainly. First, a deliberate scope decision, learned fro
 
 **Everywhere Radio already lives, Podcasts lives too.** A **Podcasts** status bar cell appears the first time you play something, mirroring Radio's cell exactly: click or press Enter to play/pause, open its context menu for Stop and Pause/Resume All Downloads. The system tray's right-click menu gets the same controls for when QUILL is minimized. **Ctrl+Shift+Grave**, then **8**, toggles play/pause; then **7** stops — both remappable QUILL Key chords, and deliberately adjacent to Radio's own N/0/9 chords rather than colliding with them.
 
-No video podcasts, ever — audio only, matching every other playback surface in QUILL. This release covers most of Phase 1 and 2 of the plan in `docs/planning/podcasts.md`: transcript viewing/export, a separate Inbox view, a cross-show Play Queue, and local (imported-file) podcasts are the real, planned next phases — tracked in that same document, not silently promised here.
+No video podcasts, ever — audio only, matching every other playback surface in QUILL.
+
+### Podcasts Phase 4: the promised next phases, delivered in this same beta
+
+Those "real, planned next phases" didn't wait for the next release. Every one of them ships here.
+
+**Four pinned views crown the folder tree.** **Favorites** gathers every show you've starred; **New Episodes** collects every unplayed episode across every subscription; **Continue Listening** lists everything you're partway through, most useful first; and the **Inbox** is something genuinely new — a triage layer that organizes *episodes* instead of shows. Route a show to the Inbox and its new episodes surface there no matter which library folder the show lives in. File episodes into your own nested Inbox folders; QUILL remembers the first folder you choose per show and auto-files that show's future episodes there, announcing that it will — with a Forget command when you change your mind. Inbox actions never delete an episode, and none of this local curation leaks into OPML.
+
+**A real Play Queue.** Right-click any episode: **Play Next** or **Add to Queue**. When an episode ends, the next queued one starts — across shows. The queue dialog reorders entirely from the keyboard: Move Up and Move Down for nudges, and Mark for Move plus Move Marked Above/Below for long-distance placement, the same pattern Interactive Rebase's commit list uses. The queue survives restarts, and a queued episode that has since vanished simply skips.
+
+**Search Everywhere, filter anything.** One search box covers shows, episodes, your episode notes, and every transcript you've already fetched — grouped by type, Enter jumps to the hit. Episode filters (Unplayed, Downloaded, and friends) and show filters (Favorites only, Has unplayed) narrow the manager live.
+
+**Transcripts, notes, and your own audio.** Feed-provided transcripts (Podcasting 2.0 — VTT, SRT, or JSON) save to a file or open straight in the editor, cached so the next open is instant and searchable. **Add Episode Note** stamps a note at the current position of whatever's playing; opening an episode's notes and pressing Enter jumps playback to that exact moment. **Add Local Podcast** turns a folder of your own audio files into a show — stored outside your synced data directory *by construction*, so QUILL Sync never tries to carry gigabytes of audio — and a **watched folder** turns any file you drop there into a new episode on the next scan. **Subscribe to ACB Media Podcasts** imports ACB's entire live directory in one idempotent command, every show arriving stream-only so nothing mass-downloads.
+
+**Quality-of-listening, handled honestly.** **Always Sync** backfills and downloads a show's whole catalog — and because that fights keep-last-N retention, ticking it nudges retention to keep-all and says so out loud. **Auto-trim silence** and **normalize loudness** run the audiobook builder's own ffmpeg passes on each finished download. A live **volume boost** (1.5x/2x/3x) pushes quiet audio louder without touching your saved volume, so the Sleep Timer still restores the true level. And a long-standing quiet gap is closed: pausing, stopping, or switching episodes now *writes* your resume position — it was always read, and now it is reliably saved.
+
+Standalone **QUILL Cast** inherits all of it automatically — same code, remember — and its menus grow the matching entries.
 
 ---
 
