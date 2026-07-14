@@ -24,10 +24,17 @@ import wx.adv
 
 from quill.core.a11y_regions import RegionTracker
 from quill.core.commands import CommandRegistry
+from quill.core.features import FeatureManager
 from quill.core.keymap import DEFAULT_KEYMAP, load_keymap
+from quill.core.safety.feature_lock import load_feature_locks
 from quill.core.settings import load_settings
 from quill.platform.announce_engine import AnnouncementEngine
 from quill.stability.task_manager import TaskManager
+from quill.ui.dialog_contract import (
+    focus_primary_control,
+    set_accessible_name,
+    show_modal_dialog,
+)
 
 
 class AppShellFrame:
@@ -45,6 +52,11 @@ class AppShellFrame:
         self.commands = CommandRegistry()
         self._task_manager = TaskManager()
         self._region_tracker = RegionTracker()
+        # Same unlock store and kill-switch cache MainFrame consults, so a
+        # feature unlocked in QUILL (Help > Redeem Unlock Code...) is unlocked
+        # in the companion apps too, and a safety advisory locks it everywhere.
+        self.features = FeatureManager.load(persistent=not safe_mode)
+        self._feature_locks = load_feature_locks()
         self._announcement_engine = AnnouncementEngine(self.settings.announcement_backend)
         self._tray_icon: wx.adv.TaskBarIcon | None = None
         self._status_message = ""
@@ -79,6 +91,35 @@ class AppShellFrame:
 
     def _refresh_statusbar(self) -> None:
         """Subclasses override to compose their app's own status text."""
+
+    def _feature_enabled(self, feature_id: str) -> bool:
+        locks = getattr(self, "_feature_locks", None)
+        if locks is not None and locks.is_locked(feature_id):
+            return False
+        features = getattr(self, "features", None)
+        return True if features is None else features.is_enabled(feature_id)
+
+    def _menu_label(self, title: str, command_id: str) -> str:
+        binding = self._binding_for(command_id)
+        # A comma means a chord binding; wx would misparse the text after the
+        # tab as a bare accelerator (#612), so chords stay off shell labels.
+        if not binding or "," in binding:
+            return title
+        return f"{title}\t{binding}"
+
+    def _show_modal_dialog(
+        self, dialog: object, label: str, *, restore_editor_focus: bool = True
+    ) -> int:
+        del restore_editor_focus  # no editor in a companion app
+        dialog_cls = getattr(self._wx, "Dialog", None)
+        if dialog_cls is not None and type(dialog) is dialog_cls:
+            focus_primary_control(dialog)
+        return show_modal_dialog(
+            dialog,
+            label,
+            enter_region=self._region_tracker.enter,
+            exit_region=self._region_tracker.exit,
+        )
 
     # -- system tray (mirrors MainFrame._ensure_tray_icon) -------------------
 
@@ -126,6 +167,160 @@ class AppShellFrame:
         menu.Bind(wx.EVT_MENU, lambda _e: self.frame.Close(), id=exit_id)
         self._tray_icon.PopupMenu(menu)
         menu.Destroy()
+
+    # -- per-app update check (Help > Check for Updates...) ------------------
+
+    def check_for_app_updates(self, *, repo_slug: str, current_version: str) -> None:
+        """The same in-app experience QUILL gives: check this app's own GitHub
+        releases, download the installer in-app with spoken progress
+        milestones, then offer Install now / Open folder. Only QUILL's extras
+        (signed manifest feed, portable zip swaps, version skipping) stay in
+        QUILL itself."""
+        from quill.core.updates import fetch_releases, is_newer_version
+
+        api_url = f"https://api.github.com/repos/{repo_slug}/releases"
+        self._announce("Checking for updates")
+
+        def _fetch() -> object:
+            return fetch_releases(api_url)
+
+        def _report(_name: str, releases: object) -> None:
+            def _show() -> None:
+                stable = [r for r in releases if not r.prerelease]
+                newest = stable[0] if stable else None
+                if newest is None or not is_newer_version(current_version, newest.version):
+                    self._announce(f"You are up to date ({current_version}).")
+                    return
+                title = self.frame.GetTitle()
+                answer = self._show_message_box(
+                    f"{title} {newest.version} is available (you have "
+                    f"{current_version}).\n\nDownload it now?",
+                    "Update Available",
+                    wx.ICON_INFORMATION | wx.YES_NO,
+                )
+                if answer in (wx.YES, wx.ID_YES):
+                    self._download_app_update(newest)
+
+            wx.CallAfter(_show)
+
+        def _failed(_name: str, error: BaseException) -> None:
+            wx.CallAfter(
+                self._show_message_box,
+                f"Could not check for updates: {error}",
+                "Check for Updates",
+                wx.ICON_ERROR | wx.OK,
+            )
+
+        self._task_manager.submit(
+            "app-update-check", _fetch, on_success=_report, on_failure=_failed
+        )
+
+    def _download_app_update(self, release: object) -> None:
+        """Download the release asset off-thread to <app data>/updates with
+        coarse spoken progress (25/50/75 percent), then offer install actions.
+        A release with no downloadable asset falls back to its web page."""
+        from quill.core.paths import app_data_dir
+        from quill.core.updates import download_release_asset
+
+        url = str(getattr(release, "download_url", "") or "")
+        if "/releases/download/" not in url:
+            import webbrowser
+
+            if url and webbrowser.open(url):
+                self._announce(f"Opened download page for {release.version}")
+            else:
+                self._announce("No downloadable update asset found.")
+            return
+
+        target_dir = app_data_dir() / "updates"
+        target_dir.mkdir(parents=True, exist_ok=True)
+        target = target_dir / (url.rsplit("/", 1)[-1] or f"update-{release.version}")
+        self._announce(f"Downloading update {release.version}")
+        last_milestone = {"value": -1}
+
+        def _progress(done: int, total: int) -> None:
+            if total <= 0:
+                return
+            percent = int(done * 100 / total)
+            milestone = percent - (percent % 25)
+            if milestone > last_milestone["value"] and milestone in (25, 50, 75):
+                last_milestone["value"] = milestone
+                wx.CallAfter(self._announce, f"Update download {milestone} percent")
+
+        def _download() -> None:
+            download_release_asset(url, target, progress=_progress)
+
+        def _downloaded(_name: str, _result: object) -> None:
+            wx.CallAfter(self._offer_app_update_install, release, target)
+
+        def _failed(_name: str, error: BaseException) -> None:
+            wx.CallAfter(
+                self._show_message_box,
+                f"Update download failed: {error}",
+                "Check for Updates",
+                wx.ICON_ERROR | wx.OK,
+            )
+
+        self._task_manager.submit(
+            "app-update-download", _download, on_success=_downloaded, on_failure=_failed
+        )
+
+    def _offer_app_update_install(self, release: object, target: object) -> None:
+        """Post-download: Install now (closes this app and runs the installer),
+        Open folder, or Close -- the same shape as QUILL's own dialog."""
+        from quill.ui.dialog_contract import apply_modal_ids
+
+        self._announce(f"Update {release.version} downloaded")
+        runnable = str(target).lower().endswith((".exe", ".msi")) and sys.platform.startswith("win")
+        action_line = (
+            "Select 'Install now' to close this app and run the installer, or " if runnable else ""
+        )
+        dialog = wx.Dialog(
+            self.frame, title="Update downloaded", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
+        )
+        dialog.SetSize((500, 240))
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        body = wx.TextCtrl(
+            dialog,
+            value=(
+                f"Update {release.version} downloaded.\n\n"
+                f"Saved to: {target}\n\n"
+                f"{action_line}Select 'Open folder' to find it."
+            ),
+            style=wx.TE_MULTILINE | wx.TE_READONLY,
+            name="update_body",
+        )
+        set_accessible_name(body, "Update details, read-only")
+        sizer.Add(body, 1, wx.EXPAND | wx.ALL, 12)
+        buttons = wx.BoxSizer(wx.HORIZONTAL)
+        buttons.AddStretchSpacer()
+        close_btn = wx.Button(dialog, wx.ID_CANCEL, label="Close")
+        folder_btn = wx.Button(dialog, wx.ID_OPEN, label="Open folder")
+        close_btn.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_CANCEL))
+        folder_btn.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_OPEN))
+        buttons.Add(close_btn, 0, wx.RIGHT, 6)
+        buttons.Add(folder_btn, 0, wx.RIGHT, 6)
+        if runnable:
+            install_btn = wx.Button(dialog, wx.ID_OK, label="Install now...")
+            install_btn.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_OK))
+            install_btn.SetDefault()
+            buttons.Add(install_btn, 0)
+        else:
+            close_btn.SetDefault()
+        sizer.Add(buttons, 0, wx.EXPAND | wx.ALL, 12)
+        dialog.SetSizer(sizer)
+        apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
+        dialog.CentreOnParent()
+        result = self._show_modal_dialog(dialog, "Update downloaded")
+        dialog.Destroy()
+        if result == wx.ID_OPEN:
+            subprocess.Popen(["explorer", "/select,", str(target)])  # noqa: S603,S607
+            return
+        if result == wx.ID_OK and runnable:
+            import os
+
+            os.startfile(str(target))  # noqa: S606 - user chose Install now
+            self.frame.Close()
 
     # -- calling back into full QUILL ----------------------------------------
 

@@ -39,6 +39,22 @@ class AdpMixin:
         media_menu.Append(settings_id, "ADP Se&ttings...")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_adp_settings(), id=settings_id)
 
+    def _build_adp_menu(self) -> object | None:
+        """Top-level Audio Description Project menu for the companion apps
+        (Quill Radio, QUILL Cast); ``None`` while the feature is locked, so
+        nothing appears on the menu bar at all."""
+        if not self._feature_enabled("future.adp_assistant"):
+            return None
+        wx = self._wx
+        menu = wx.Menu()
+        ask_id = wx.NewIdRef()
+        menu.Append(ask_id, self._menu_label("&Ask ADP...", "adp.ask"))
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_ask_adp(), id=ask_id)
+        settings_id = wx.NewIdRef()
+        menu.Append(settings_id, "ADP Se&ttings...")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_adp_settings(), id=settings_id)
+        return menu
+
     def _register_adp_commands(self) -> None:
         self.commands.try_register(
             "adp.ask",

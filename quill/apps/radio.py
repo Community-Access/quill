@@ -14,18 +14,24 @@ import wx
 
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.dialog_contract import set_accessible_name
+from quill.ui.main_frame_adp import AdpMixin
 from quill.ui.main_frame_radio import RadioMixin
+from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 
 _TITLE = "Quill Radio"
+_VERSION = "1.0.0"
+_REPO = "Community-Access/quill-radio"
 
 
-class RadioAppFrame(AppShellFrame, RadioMixin):
+class RadioAppFrame(AppShellFrame, RadioMixin, AdpMixin, UnlockCodesMixin):
     def __init__(self, *, safe_mode: bool = False) -> None:
         self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(460, 360))
         self._init_radio()
         self._build_menu_bar()
         self._build_main_panel()
         self._register_radio_commands()
+        self._register_adp_commands()
+        self._register_unlock_code_commands()
         self._ensure_tray_icon(self._build_radio_tray_menu, tooltip=_TITLE)
         self._refresh_statusbar()
         self.frame.Bind(wx.EVT_CLOSE, self._on_radio_app_close)
@@ -144,11 +150,32 @@ class RadioAppFrame(AppShellFrame, RadioMixin):
         )
         menu_bar.Append(record_menu, "&Record")
 
+        # Unlock-gated: a top-level Audio Description Project menu, absent
+        # entirely until future.adp_assistant is unlocked (Help > Redeem
+        # Unlock Code..., here or in QUILL -- they share one unlock store).
+        adp_menu = self._build_adp_menu()
+        if adp_menu is not None:
+            menu_bar.Append(adp_menu, "A&udio Description Project")
+
         help_menu = wx.Menu()
-        open_quill_id, about_id = wx.NewIdRef(), wx.NewIdRef()
+        open_quill_id, redeem_id, updates_id, about_id = (
+            wx.NewIdRef(),
+            wx.NewIdRef(),
+            wx.NewIdRef(),
+            wx.NewIdRef(),
+        )
         help_menu.Append(open_quill_id, "&Open in Quill")
+        help_menu.Append(redeem_id, "Redeem &Unlock Code...")
+        help_menu.Append(updates_id, "Check for Up&dates...")
+        help_menu.AppendSeparator()
         help_menu.Append(about_id, "&About Quill Radio")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_in_quill(), id=open_quill_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_redeem_unlock_code_dialog(), id=redeem_id)
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.check_for_app_updates(repo_slug=_REPO, current_version=_VERSION),
+            id=updates_id,
+        )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._show_about(), id=about_id)
         menu_bar.Append(help_menu, "&Help")
 
@@ -156,8 +183,12 @@ class RadioAppFrame(AppShellFrame, RadioMixin):
 
     def _show_about(self) -> None:
         self._show_message_box(
-            f"{_TITLE}\nInternet Radio from Quill, as a standalone app.",
-            _TITLE,
+            f"{_TITLE} {_VERSION}\n"
+            "Internet Radio from Quill, as a standalone app.\n\n"
+            "Runs the same radio feature code as QUILL itself and shares its "
+            "settings, favorites, and recordings.\n"
+            f"https://github.com/{_REPO}",
+            f"About {_TITLE}",
             wx.ICON_INFORMATION | wx.OK,
         )
 
