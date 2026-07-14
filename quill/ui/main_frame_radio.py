@@ -29,6 +29,9 @@ class RadioMixin:
     # -- setup --------------------------------------------------------------
 
     def _init_radio(self) -> None:
+        # Parents the player controller on self.frame: MainFrame.__init__ must
+        # only call this (and _init_podcasts) after the frame is constructed,
+        # or startup dies with AttributeError('frame').
         self._radio_favorites = radio_favorites.load_favorites(app_data_dir())
         self._radio_ever_played = False
         self._radio_controller = RadioPlayerController(

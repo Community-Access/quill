@@ -1263,8 +1263,6 @@ class MainFrame(
         )
         self._snippet_expansion_guard = False
         self._init_abbreviations()
-        self._init_radio()
-        self._init_podcasts()
         self._intellisense_popup: _IntellisensePopup | None = None
         self._intellisense_context: IntellisenseContext | None = None
         self._intellisense_fragment_text = ""
@@ -1300,6 +1298,8 @@ class MainFrame(
         # "Untitled" combined with any transient status-bar text. _refresh_title()
         # sets the real document-name title as soon as the editor is ready.
         self.frame = wx.Frame(None, title="Quill", size=(1000, 700))
+        self._init_radio()
+        self._init_podcasts()
         self._intellisense_popup = _IntellisensePopup(wx, self.frame)
         self._intellisense_popup.set_accept_callback(self._apply_intellisense_selection)
         self._intellisense_popup.set_dismiss_callback(self._dismiss_intellisense_popup)
