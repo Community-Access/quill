@@ -2,7 +2,7 @@
 # Pin exact versions before a real deploy; ranges here are for initial
 # development. See docs/planning/openai.md §16 for why each is chosen.
 
-Flask>=3.0
+Flask>=3.1.3
 Flask-SQLAlchemy>=3.1
 psycopg2-binary>=2.9      # PostgreSQL driver
 redis>=8.0.1                 # rate limiting + config cache (app/limits.py)

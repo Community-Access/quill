@@ -7763,6 +7763,23 @@ Right-click an episode (or open its context menu from the keyboard) for: Play/Pa
 
 No video podcasts — QUILL plays audio only, on every platform. Transcript viewing/export (the feed already reads Podcasting 2.0 transcript URLs, ready for this), a separate Inbox view, a cross-show Play Queue, and local (imported-file) podcasts are planned next — see `docs/planning/podcasts.md` for the full phased plan.
 
+## Quill Radio and QUILL Cast: the standalone apps
+
+You don't have to open the full QUILL editor to listen. **Quill Radio** and **QUILL Cast** run Internet Radio and Podcasts as small standalone apps — their own window, their own menu bar, their own system tray icon.
+
+They are the same features, not copies: both apps run the exact same code QUILL itself uses, and read the same settings, favorites, and podcast subscriptions from the same place on disk. A station you favorite in Quill Radio is a favorite in QUILL; a show you subscribe to in QUILL Cast is subscribed everywhere. Everything described in the Internet Radio and Podcasts chapters above — the station browser, the link finder, recording and scheduled recording, the Podcast Manager, OPML import/export, downloads with pause/resume, chapter navigation — works identically here.
+
+**Starting the apps.** On an installed QUILL, both apps are in the Start Menu — **Quill Radio** and **QUILL Cast**, right next to QUILL itself. The installer also offers optional desktop icons for them (a checkbox during setup; unchecked by default so your desktop stays yours). From a source checkout or the portable build, use `run-quill-radio.bat` and `run-quill-cast.bat`, or `python -m quill.apps.radio` / `python -m quill.apps.podcasts`.
+
+**Everything is keyboard-first.** Each app opens on a real main panel, not an empty window: focus lands on the app's most important list the moment it opens.
+
+- **Quill Radio** — focus starts in your **Favorite stations** list: arrow to a station and press **Enter** to play it. Tab reaches Play/Pause, Stop, Record, and Browse Stations buttons, with a live now-playing line above. Menus: **Station** (Browse Stations, Add Custom Station, Find Streams from a Website, and your Favorite Stations listed inline so switching is one keystroke), **Playback** (a live now-playing line, Play/Pause with Ctrl+P, Stop, Mute, volume), **Record** (Record Now / Stop, Schedule Recording, Recording Settings), and **Help**.
+- **QUILL Cast** — focus starts in your **Subscribed shows** list: press **Enter** on a show to open the full Podcast Manager, where all episode-level work happens. Tab reaches Open Manager, Add Podcast, Play/Pause, and Stop buttons, with the live now-playing line above. Menus: **Subscriptions** (Open Podcast Manager with Ctrl+M, Add Podcast, Import/Export OPML, Podcast Settings), **Episode** (a live now-playing line, Play/Pause, Stop, Next/Previous Chapter), **Downloads** (Pause All / Resume All), and **Help**. One difference from inside QUILL: "Send Show Notes to Editor" copies the notes to the clipboard instead — there is no editor buffer standalone — and announces that it did.
+
+Both apps put an icon in the system tray with the same radio or podcast controls QUILL's own tray icon offers, plus **Show** (double-click also works) and **Exit**. And when you decide you want the full editor after all, **Help > Open in Quill** launches it.
+
+The apps respect Safe Mode (`QUILL_SAFE_MODE=1`) and skip the tray icon on macOS, where the system has no equivalent notification-area icon (the same rule QUILL itself follows).
+
 ## Sleep Timer
 
 **Tools > Media > Sleep Timer...** covers both Internet Radio and Podcasts from one place, since it isn't specific to either. Choose a preset (15, 30, 45, 60, or 90 minutes) or type a custom number of minutes, then press **Start**. Over the final 20 seconds, whichever of Radio or Podcasts is currently playing fades gently down rather than cutting off abruptly, then stops; your volume is set back to what it was before the fade started, so pressing play again later isn't unexpectedly quiet. Open the dialog again while a timer is running to see how much time is left, or press **Cancel Sleep Timer** (also in the Command Palette as **Media: Cancel Sleep Timer**) to stop the countdown early. Since Radio and Podcasts are independent players, the timer fades and stops whichever of the two is actually active.
@@ -7796,13 +7813,19 @@ Every status, navigation, and layout command is safe to run on a non-braille doc
 
 **Translation (Universal BRF Pack).** Forward and back translation between print text and braille require the optional **QUILL Braille Pack**. Instead of a simple set of tables, the pack uses a three-layer architecture: a full technical catalog of every available liblouis table, a set of user-facing profiles that map friendly names to the correct tables, and the translation runtime itself.
 
-The pack is not bundled by default. When it is absent, the **Translation** submenu is hidden so you never see disabled items. When the pack is installed, the Translation submenu is dynamic and organized into sections:
+The pack is not bundled by default. When it is absent, the **Translation** submenu is hidden so you never see disabled items. When the pack is installed, the Translation submenu leads with the two commands most people actually want, then the explicit sections underneath:
 
-- **UEB (Unified English Braille)** — Contracted (Grade 2), Uncontracted (Grade 1), Translate Selection to UEB, and Back-Translate UEB.
+- **Back-Translate to Text (Auto-Detect Code)** — the magical path. You do not need to know whether your braille is UEB Grade 2, UEB Grade 1, legacy American (EBAE) Grade 1 or 2, or computer braille: QUILL back-translates a sample of the document (or your selection) through every candidate code, scores how much each result reads like real English, and picks the winner. It announces what it found — for example, "Detected UEB Grade 2 (contracted)" — so you learn what your file is instead of being asked. When a file is uncontracted, QUILL says Grade 1 even though the Grade 2 table would also have worked; the honest answer wins ties.
+- **Convert BRF File to Document...** — one command from a braille file on disk to a readable document. Pick any `.brf` or `.brl` file; QUILL detects its code, back-translates the whole file, and opens the result as a draft — without you opening the braille file first. Because the draft is a normal document, **Save As** then exports it to Markdown, HTML, Word (`.docx`), or plain text. BRF in, any format out.
+- **UEB (Unified English Braille)** — Contracted (Grade 2), Uncontracted (Grade 1), Translate Selection to UEB, and Back-Translate UEB (the explicit, no-detection variant).
 - **Standard American English (Legacy)** — Contracted (Grade 2) and Uncontracted (Grade 1) using the traditional North American English tables.
 - **More Languages** — a submenu populated automatically from the installed pack's profile catalog. Languages with multiple profiles (for example, contracted and uncontracted variants) appear as their own sub-group. Examples include German, French, Spanish, Russian, Korean, and dozens more.
 
 Forward translation opens the BRF result in a new document and tells you how many braille pages it produced. Back-translation always opens its result as a clearly labeled **draft** because no automatic back-translation is authoritative; it back-translates your **selection** when you have one selected (so you can recover the source text of a single passage) and the whole document otherwise, telling you which it used ("Back-translation draft from selection. N words. Review against the BRF."). Translation runs entirely out of process, so a liblouis failure can never take QUILL down; if it fails, QUILL announces the reason and does not open an empty document. The Translation submenu is also hidden in Safe Mode.
+
+Translation works the same from an installed build, the portable build, or a source checkout: the pack ships its own translation engine (the `lou_translate` tool alongside the tables), and QUILL uses it directly — no separately installed Python liblouis binding is required (though one is used automatically when present, as it is slightly faster).
+
+**Braille files in File > Convert File.** The general-purpose converter accepts `.brf` and `.brl` sources too — they appear in its file picker alongside every other supported document. Pick a braille file, pick any output format (Markdown, Word, HTML, EPUB, plain text, and the rest), and QUILL detects the braille code, back-translates, and writes the result — announcing which code it found. There is no separate braille converter to hunt for: the one Convert File dialog handles braille the same way it handles everything else.
 
 ## Help, Learning, and Daily Confidence
 
@@ -7816,8 +7839,11 @@ Quill includes several layers of help because confidence does not come from memo
 - **Open Keyboard Reference** when you want exact current bindings.
 - **What Can I Do Here?** when you need immediate, contextual guidance.
 - **Why Don't I See a Feature?** when a command seems to have disappeared.
+- **Redeem Unlock Code...** when you have been given a QUILL unlock code.
 
-That last command matters more than it first appears. It turns feature visibility from a mystery into an explanation.
+That "Why Don't I See a Feature?" command matters more than it first appears. It turns feature visibility from a mystery into an explanation.
+
+**Redeem Unlock Code... (Help menu).** Some QUILL capabilities ship locked until they are ready for general use, and are switched on selectively — for early testers, partners, or staged rollouts — with a signed unlock code. If you have one, choose **Help > Redeem Unlock Code...**, paste or type the code (it starts with `QUILL-`), and press OK. The code is verified by digital signature entirely on your machine — no network call, nothing sent anywhere — and QUILL announces exactly what was unlocked. Redeemed codes persist across restarts; a mistyped or expired code is rejected with a spoken reason. If you don't have a code, nothing here affects you: every standard feature is available without one.
 
 ### Context-Sensitive Help (F1)
 

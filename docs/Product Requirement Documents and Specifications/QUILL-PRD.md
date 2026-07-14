@@ -4321,6 +4321,33 @@ existing pattern).
 
 ---
 
+### 5.84z Signed offline unlock codes (Help > Redeem Unlock Code...)
+
+**Goal.** Enable a locked feature (`FeatureDefinition.locked_off`) for a
+specific user — early testers, partners, staged rollouts — without a build,
+a server, or an account. A code is a signed capability, not a serial number.
+
+**Model (`quill/core/unlock_codes.py`, wx-free).** A code is
+`QUILL-<base32(payload || Ed25519 signature)>` where the payload is
+`feature_id|expiry` (expiry optional, ISO date). Verification uses a bundled
+Ed25519 public key (PyNaCl, the optional `[signing]` extra) entirely
+offline; `quill/tools/mint_unlock_code.py` mints codes with the private key,
+which never ships. Redeemed codes persist in an atomic JSON store
+(`UnlockCodeStore`), and `unlocked_feature_ids()` re-verifies every stored
+code on each read — a tampered or expired stored code silently stops
+unlocking, it is never trusted from disk.
+
+**Feature-gate integration.** `FeatureManager.unlocked_feature_ids` is
+populated from the store at load and refreshed after a successful
+redemption; `state_for` treats an unlocked id as ON where `locked_off`
+would otherwise force OFF. This is the single sanctioned path past a lock.
+
+**UI.** **Help > Redeem Unlock Code...** (`help.redeem_unlock_code`, also in
+the command palette) opens a one-field dialog; the result announcement names
+the unlocked feature (from `FEATURE_DEFINITIONS`) or speaks the specific
+rejection reason. Absent PyNaCl, redemption reports the missing extra rather
+than failing silently.
+
 ### 5.85 Portable API key store
 
 By default QUILL stores AI provider keys in the Windows Credential Manager, which ties them to the current Windows user account. Portable mode offers an alternative: a DPAPI-encrypted file (`keys.enc`) in the QUILL data directory, activated by the presence of a `data/` folder next to `quill.exe` in the portable bundle.
@@ -4501,6 +4528,84 @@ QUILL keeps formatting codes hidden so the editing buffer stays clean plain text
 **Preview & freshness.** Previewing a note that lives in the open vault resolves it (`preview.resolve_for_preview`: `[[links]]` as titled inert anchors, `![[embeds]]` inlined) via a defensive passthrough that leaves every other document untouched. Saving an in-vault note re-parses just that note into the cached index (`apply_note_change`), so backlinks, search, tags, and the neighborhood stay fresh without reopening the vault.
 
 **Non-goals.** No visual graph view or canvas (the link *relationships* are delivered as lists and navigation); no *hosted* sync/publish — Sync is the user's own git remote, and Publish is gated off. The Accessible Vault is **complete for 0.9.0** with no open work.
+
+---
+
+### 5.89e Standalone companion apps — Quill Radio and QUILL Cast
+
+**Goal.** Radio and Podcasts are useful without the editor: someone who wants
+to listen to internet radio or manage a podcast queue should not have to load
+all of QUILL to do it. Quill Radio and QUILL Cast are small standalone
+executables — their own window, their own menu bar, their own system tray
+icon — that reuse QUILL's feature code *unchanged* rather than forking it.
+
+**Architecture (`quill/ui/app_shell.py` + `quill/apps/`).** The feature
+mixins `MainFrame` already uses (`RadioMixin`, `PodcastsMixin`) only ever
+touch a small, fixed host protocol on their owner: `self.frame`, `self._wx`,
+`self._safe_mode`, `self._task_manager`, `self._announce`,
+`self._show_message_box`, `self._set_status`, `self.settings`,
+`self.commands`, `self._binding_for`, `self._refresh_statusbar`.
+`AppShellFrame` implements exactly that protocol over a plain `wx.Frame`, so
+`class RadioAppFrame(AppShellFrame, RadioMixin)` gets the entire feature —
+commands, dialogs, favorites, recording, scheduling — with zero changes to
+the mixin. Consequences that matter:
+
+- **No fork, ever.** A bug fix or feature added to `quill/core/radio`,
+  `quill/core/podcasts`, or the shared dialogs lands in the standalone apps
+  automatically — same modules, same imports.
+- **One data store.** The apps load the same `core.settings`/`core.keymap`
+  and read/write the same favorites, subscription library, and download
+  state under `app_data_dir()` — what you subscribe to in QUILL Cast is
+  subscribed in QUILL, with no sync layer.
+- **Same accessibility contract.** Announcements route through the same
+  `AnnouncementEngine`; dialogs keep their existing keyboard/naming
+  behavior because they are the same dialog classes.
+
+**Per-app surfaces.**
+
+- **Quill Radio** (`python -m quill.apps.radio`; `run-quill-radio.bat` from
+  source). Menu bar: Station (Browse Stations, Add Custom Station, Find
+  Streams from a Website, Favorite Stations inline), Playback (disabled
+  now-playing status line, Play/Pause, Stop, Mute, Volume Up/Down), Record
+  (Record Now/Stop, Schedule Recording, Recording Settings), Help (Open in
+  Quill, About). Tray icon: Show/Exit plus the same radio section
+  (`_build_radio_tray_menu`) QUILL's own tray shows.
+- **QUILL Cast** (`python -m quill.apps.podcasts`; `run-quill-cast.bat`).
+  Menu bar: Subscriptions (Open Podcast Manager, Add Podcast, Import/Export
+  OPML, Podcast Settings), Episode (now-playing line, Play/Pause, Stop,
+  Next/Previous Chapter), Downloads (Pause All / Resume All), Help. Tray
+  icon mirrors QUILL's podcast tray section. One behavioral override: "Send
+  Show Notes to Editor" copies to the clipboard instead (there is no editor
+  buffer standalone), announced as such.
+
+**Open in Quill.** Both apps carry a Help > Open in Quill command that
+launches the full editor as a separate process (v1: always a new process; a
+focus-existing-instance IPC variant is deliberately deferred — see
+`docs/planning/apps.md`).
+
+**Platform notes.** The tray icon follows `MainFrame`'s own rule: on macOS,
+`wx.adv.TaskBarIcon` produces a Dock tile rather than a menu-bar extra, so
+the apps skip the tray there instead of misrepresenting it. `QUILL_SAFE_MODE`
+is honored on launch.
+
+**Installer integration.** The Windows installer creates Start Menu entries
+for both companion apps ("Quill Radio", "QUILL Cast") alongside QUILL's own,
+launching them via the bundled Python runtime (`-m quill.apps.radio` /
+`-m quill.apps.podcasts`), with both launcher variants (bundled runtime and
+exe) covered. Desktop icons for the companions are an opt-in installer task
+(`companionicons`, unchecked by default) so a default install never adds
+desktop clutter unasked. Defined in the `.iss` generator
+(`scripts/build_windows_distribution.py`), never the generated script.
+
+**Keyboard-first main panel.** Each app opens on a real, tabbable main
+surface — never a bare frame: a live now-playing line, the app's primary
+list (favorite stations / subscribed shows) focused on launch with Enter to
+act, and its core action buttons, every control named via
+`dialog_contract.set_accessible_name`.
+
+**Non-goals (v1).** No single-instance enforcement; no Audio Studio
+standalone app yet — the phased plan, including those, lives in
+`docs/planning/apps.md`.
 
 ---
 
@@ -8071,6 +8176,54 @@ that planning section.
   QUILL is not in Safe Mode; otherwise it is hidden (never disabled). Back-
   translation output is always labelled a *draft*. On worker failure QUILL
   announces the reason and opens no empty document.
+
+- **Two translation backends, one contract (BR-021a).** Inside the worker
+  subprocess, translation tries the python `louis` binding first (fastest,
+  when someone installed it) and falls back to the pack's own
+  `lou_translate` CLI (text over stdin/stdout, tables resolved to absolute
+  paths inside the pack). The pack has always shipped that binary; the CLI
+  fallback is what makes translation work identically from an installed
+  build, the portable build, and a source checkout, with no separately
+  installed binding. A per-invocation timeout inside the worker guarantees a
+  wedged CLI can never wedge the worker (whose caller enforces its own
+  timeout on top).
+
+- **Braille-code auto-detection (BR-025).** The user is never asked which
+  braille code a file is in. `quill/core/braille_detect.py` back-translates a
+  sample of the document through every candidate table — UEB Grade 2, UEB
+  Grade 1, EBAE (legacy American) Grade 2 and Grade 1, and 8-dot computer
+  braille — in **one** worker launch (the worker's `detect` command), scores
+  each result for English-likeness (common-word hit rate, weight 0.7, plus
+  clean-character ratio, weight 0.3), and picks the winner. Tie rule:
+  uncontracted braille back-translates identically through the contracted
+  table, so when the Grade 1 and Grade 2 outputs are byte-identical the
+  detection reports Grade 1 — the honest label. The detection (table, label,
+  score, full ranking) is announced to the user ("Detected UEB Grade 2
+  (contracted)"), so detection teaches rather than asks. Scoring is pure and
+  unit-tested without any subprocess.
+
+- **Magical back-translation and BRF conversion (BR-026).**
+  - **Back-Translate to Text (Auto-Detect Code)** (`braille.back_translate_auto`)
+    leads the Translation submenu: detects the code of the selection (or the
+    whole document), back-translates with the winning table, and opens the
+    draft with the detection named in the announcement.
+  - **Convert BRF File to Document...** (`braille.convert_brf_file`) is the
+    one-shot file path: pick any `.brf`/`.brl` file on disk, QUILL detects
+    its code, back-translates the whole file, and opens the result as a
+    draft — the file never has to be opened in Braille Mode first. Because
+    the draft is a normal document, **Save As** exports it to Markdown,
+    HTML, Word (`.docx`), or plain text: BRF in, any format out.
+  - **File > Convert File... accepts braille sources (BR-026a).** `.brf`/
+    `.brl` appear in the Convert File picker's supported-documents pattern
+    (`convert_formats.BRAILLE_INPUT_SUFFIXES`) and dispatch to the braille
+    path instead of Pandoc, which has no braille reader: detect the code,
+    back-translate, then write the chosen output — text-like formats
+    (Markdown/plain) directly, everything else (Word, HTML, EPUB, ...) via
+    Pandoc from a Markdown intermediate. The completion announcement names
+    the detected code. One converter dialog for every document type, braille
+    included.
+  - The explicit per-table commands (UEB G1/G2, EBAE G1/G2, Back-Translate
+    UEB) remain for users who know exactly what they want.
 
 - **Layout diagnostics and repair (BR-024, NLS-BRT parity).** A **Braille →
   Repair** submenu brings the NLS Braille Repair Tool's proofreading workflow to
