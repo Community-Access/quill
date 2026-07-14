@@ -21,12 +21,27 @@ from pathlib import Path
 
 from quill.core.podcasts.download_queue import DownloadItem, PodcastDownloadQueue
 from quill.core.podcasts.models import PodcastEpisode, PodcastSettings, PodcastShow
+from quill.core.podcasts.sorting import (
+    EPISODE_SORT_MODES,
+    SHOW_SORT_MODES,
+    sort_episodes,
+    sort_shows,
+)
 from quill.core.podcasts.subscriptions import PodcastLibrary
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.podcasts.player_controller import PodcastPlayerController
 
 _FOLDER_ROOT_LABEL = "All Podcasts"
 _SPEED_CHOICES = ("0.75x", "1.0x", "1.25x", "1.5x", "1.75x", "2.0x")
+_EPISODE_SORT_LABELS = (
+    "Newest first",
+    "Oldest first",
+    "Title A-Z",
+    "Longest first",
+    "Shortest first",
+    "Unplayed first",
+)
+_SHOW_SORT_LABELS = ("Title A-Z", "Most unheard first", "Recently updated first")
 
 
 def _slug(text: str) -> str:
@@ -38,6 +53,16 @@ def episode_destination(download_root: Path, show: PodcastShow, episode: Podcast
     """Where a downloaded episode's file lands: ``<root>/<show-slug>/<episode-slug><ext>``."""
     suffix = Path(episode.audio_url.split("?", 1)[0]).suffix or ".mp3"
     return download_root / _slug(show.title) / f"{_slug(episode.title)}{suffix}"
+
+
+def _shows_episodes(library: PodcastLibrary, folder_id: str) -> list[PodcastEpisode]:
+    """Every episode belonging to a show directly in *folder_id* (not
+    subfolders -- the caller recurses those separately)."""
+    episodes: list[PodcastEpisode] = []
+    for show in library.shows:
+        if show.folder_id == folder_id:
+            episodes.extend(show.episodes)
+    return episodes
 
 
 class PodcastManagerDialog:
@@ -52,12 +77,15 @@ class PodcastManagerDialog:
         controller: PodcastPlayerController,
         download_root: Path,
         safe_mode: bool,
+        task_manager: object = None,
         announce_cb: Callable[[str], None] | None = None,
         on_library_changed: Callable[[], None] | None = None,
         on_open_add_podcast: Callable[[], None] | None = None,
         on_open_import_opml: Callable[[], None] | None = None,
         on_export_opml: Callable[[], None] | None = None,
         on_refresh_feed: Callable[[str], None] | None = None,
+        on_open_settings: Callable[[], None] | None = None,
+        on_send_show_notes: Callable[[str], None] | None = None,
     ) -> None:
         import wx
 
@@ -67,12 +95,15 @@ class PodcastManagerDialog:
         self._controller = controller
         self._download_root = download_root
         self._safe_mode = safe_mode
+        self._task_manager = task_manager
         self._announce = announce_cb or (lambda _m: None)
         self._on_library_changed = on_library_changed or (lambda: None)
         self._on_open_add_podcast = on_open_add_podcast
         self._on_open_import_opml = on_open_import_opml
         self._on_export_opml = on_export_opml
         self._refresh_feed_cb = on_refresh_feed
+        self._on_open_settings = on_open_settings
+        self._on_send_show_notes = on_send_show_notes
 
         self._current_show: PodcastShow | None = None
         self._current_episodes: list[PodcastEpisode] = []
@@ -90,6 +121,18 @@ class PodcastManagerDialog:
 
         tree_col = wx.BoxSizer(wx.VERTICAL)
         tree_col.Add(wx.StaticText(self.dialog, label="&Folders and Podcasts"), 0, wx.BOTTOM, 4)
+        show_sort_row = wx.BoxSizer(wx.HORIZONTAL)
+        show_sort_row.Add(
+            wx.StaticText(self.dialog, label="Sort sho&ws:"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
+            4,
+        )
+        self._show_sort_choice = wx.Choice(self.dialog, choices=list(_SHOW_SORT_LABELS))
+        self._show_sort_choice.SetName("How podcasts are ordered within each folder")
+        self._show_sort_choice.SetSelection(0)
+        show_sort_row.Add(self._show_sort_choice, 1, wx.EXPAND)
+        tree_col.Add(show_sort_row, 0, wx.EXPAND | wx.BOTTOM, 4)
         self._tree = wx.TreeCtrl(
             self.dialog,
             style=wx.TR_HAS_BUTTONS | wx.TR_LINES_AT_ROOT | wx.TR_SINGLE | wx.BORDER_SIMPLE,
@@ -103,6 +146,18 @@ class PodcastManagerDialog:
 
         episode_col = wx.BoxSizer(wx.VERTICAL)
         episode_col.Add(wx.StaticText(self.dialog, label="&Episodes"), 0, wx.BOTTOM, 4)
+        episode_sort_row = wx.BoxSizer(wx.HORIZONTAL)
+        episode_sort_row.Add(
+            wx.StaticText(self.dialog, label="Sort &episodes:"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
+            4,
+        )
+        self._episode_sort_choice = wx.Choice(self.dialog, choices=list(_EPISODE_SORT_LABELS))
+        self._episode_sort_choice.SetName("How episodes are ordered in the list below")
+        self._episode_sort_choice.SetSelection(0)
+        episode_sort_row.Add(self._episode_sort_choice, 1, wx.EXPAND)
+        episode_col.Add(episode_sort_row, 0, wx.EXPAND | wx.BOTTOM, 4)
         self._episodes = wx.ListCtrl(self.dialog, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
         self._episodes.SetName("Episodes of the selected show; arrow through for details")
         self._episodes.InsertColumn(0, "Title", width=280)
@@ -142,6 +197,8 @@ class PodcastManagerDialog:
         new_folder_btn.SetName("Create a new folder, nested under the selected folder if any")
         import_opml_btn = wx.Button(self.dialog, label="&Import OPML...")
         export_opml_btn = wx.Button(self.dialog, label="&Export OPML...")
+        settings_btn = wx.Button(self.dialog, label="Podcast &Settings...")
+        settings_btn.SetName("Global defaults for playback mode, retention, speed, and downloads")
         self._download_btn = wx.Button(self.dialog, label="&Download")
         self._download_btn.SetName("Download the selected episode")
         self._download_btn.Enable(False)
@@ -150,6 +207,9 @@ class PodcastManagerDialog:
         self._pause_btn.Enable(False)
         self._remove_download_btn = wx.Button(self.dialog, label="&Remove Download")
         self._remove_download_btn.Enable(False)
+        self._chapters_btn = wx.Button(self.dialog, label="C&hapters...")
+        self._chapters_btn.SetName("Browse and jump to this episode's chapter markers")
+        self._chapters_btn.Enable(False)
         unsubscribe_btn = wx.Button(self.dialog, label="&Unsubscribe")
         unsubscribe_btn.SetName("Unsubscribe from the selected show (Delete key also works)")
         close_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Close")
@@ -159,9 +219,11 @@ class PodcastManagerDialog:
             new_folder_btn,
             import_opml_btn,
             export_opml_btn,
+            settings_btn,
             self._download_btn,
             self._pause_btn,
             self._remove_download_btn,
+            self._chapters_btn,
             unsubscribe_btn,
         ):
             btn_row.Add(widget, 0, wx.RIGHT, 6)
@@ -181,13 +243,19 @@ class PodcastManagerDialog:
         new_folder_btn.Bind(wx.EVT_BUTTON, self._on_new_folder)
         import_opml_btn.Bind(wx.EVT_BUTTON, self._on_import_opml)
         export_opml_btn.Bind(wx.EVT_BUTTON, self._on_export_opml_click)
+        settings_btn.Bind(wx.EVT_BUTTON, self._on_open_settings_click)
         self._download_btn.Bind(wx.EVT_BUTTON, self._on_download)
         self._pause_btn.Bind(wx.EVT_BUTTON, self._on_pause_resume_download)
         self._remove_download_btn.Bind(wx.EVT_BUTTON, self._on_remove_download)
+        self._chapters_btn.Bind(wx.EVT_BUTTON, self._on_chapters_click)
         unsubscribe_btn.Bind(wx.EVT_BUTTON, self._on_unsubscribe)
         self._play_pause_btn.Bind(wx.EVT_BUTTON, self._on_play_pause)
         self._stop_btn.Bind(wx.EVT_BUTTON, self._on_stop)
         self._speed_choice.Bind(wx.EVT_CHOICE, self._on_speed_choice)
+        self._show_sort_choice.Bind(wx.EVT_CHOICE, lambda _e: self.refresh_tree())
+        self._episode_sort_choice.Bind(
+            wx.EVT_CHOICE, lambda _e: self._fill_episodes(self._current_show)
+        )
 
         self.refresh_tree()
         self._update_now_playing()
@@ -213,17 +281,37 @@ class PodcastManagerDialog:
     # ------------------------------------------------------------------
     # Tree
 
+    def _selected_show_sort_mode(self) -> str:
+        index = self._show_sort_choice.GetSelection()
+        return SHOW_SORT_MODES[index] if index >= 0 else "title_az"
+
+    def _selected_episode_sort_mode(self) -> str:
+        index = self._episode_sort_choice.GetSelection()
+        return EPISODE_SORT_MODES[index] if index >= 0 else "date_newest"
+
+    def _unheard_count_for_folder(self, folder_id: str) -> int:
+        total = sum(1 for e in _shows_episodes(self._library, folder_id) if not e.played)
+        for folder in self._library.folders:
+            if folder.parent_folder_id == folder_id:
+                total += self._unheard_count_for_folder(folder.id)
+        return total
+
     def refresh_tree(self) -> None:
         self._tree.DeleteAllItems()
         self._tree_item_show.clear()
         self._tree_item_folder.clear()
         root = self._tree.AddRoot(_FOLDER_ROOT_LABEL)
+        show_sort_mode = self._selected_show_sort_mode()
 
         def add_folder_children(parent_item: object, folder_id: str | None) -> None:
-            for folder in self._library.folders:
-                if folder.parent_folder_id != folder_id:
-                    continue
-                item = self._tree.AppendItem(parent_item, folder.name)
+            child_folders = sorted(
+                (f for f in self._library.folders if f.parent_folder_id == folder_id),
+                key=lambda f: f.name.casefold(),
+            )
+            for folder in child_folders:
+                unheard = self._unheard_count_for_folder(folder.id)
+                label = f"{folder.name} ({unheard} unheard)" if unheard else folder.name
+                item = self._tree.AppendItem(parent_item, label)
                 self._tree_item_folder[item.GetID() if hasattr(item, "GetID") else id(item)] = (
                     folder.id
                 )
@@ -232,10 +320,11 @@ class PodcastManagerDialog:
             add_shows(parent_item, folder_id)
 
         def add_shows(parent_item: object, folder_id: str | None) -> None:
-            for show in self._library.shows:
-                if show.folder_id != folder_id:
-                    continue
-                item = self._tree.AppendItem(parent_item, show.title)
+            matching = [s for s in self._library.shows if s.folder_id == folder_id]
+            for show in sort_shows(matching, show_sort_mode):
+                unheard = sum(1 for e in show.episodes if not e.played)
+                label = f"{show.title} ({unheard} unheard)" if unheard else show.title
+                item = self._tree.AppendItem(parent_item, label)
                 self._tree_item_show[item.GetID() if hasattr(item, "GetID") else id(item)] = show.id
 
         add_folder_children(root, None)
@@ -351,7 +440,8 @@ class PodcastManagerDialog:
 
     def _fill_episodes(self, show: PodcastShow | None) -> None:
         self._episodes.DeleteAllItems()
-        self._current_episodes = list(show.episodes) if show is not None else []
+        episodes = list(show.episodes) if show is not None else []
+        self._current_episodes = sort_episodes(episodes, self._selected_episode_sort_mode())
         for row, episode in enumerate(self._current_episodes):
             self._episodes.InsertItem(row, episode.title)
             self._episodes.SetItem(row, 1, episode.published[:16])
@@ -362,6 +452,7 @@ class PodcastManagerDialog:
         self._download_btn.Enable(False)
         self._pause_btn.Enable(False)
         self._remove_download_btn.Enable(False)
+        self._chapters_btn.Enable(False)
         if show is not None:
             self._status.SetLabel(f"{len(self._current_episodes)} episode(s) for {show.title}.")
         if self._current_episodes:
@@ -399,15 +490,65 @@ class PodcastManagerDialog:
         else:
             self._pause_btn.SetLabel("&Pause Download")
         self._remove_download_btn.Enable(already_downloaded)
+        self._chapters_btn.Enable(bool(episode.chapters_url))
 
     def _on_episode_activate(self, _event: object) -> None:
         self._play_selected()
+
+    def _on_chapters_click(self, _event: object) -> None:
+        show = self._current_show
+        episode = self._selected_episode()
+        if show is None or episode is None or not episode.chapters_url:
+            return
+        if self._task_manager is None:
+            return
+
+        from quill.core.podcasts import chapters as chapters_module
+
+        def _do_fetch(**_kwargs: object):
+            return chapters_module.fetch_and_parse_chapters(
+                episode.chapters_url, safe_mode=self._safe_mode
+            )
+
+        def _on_success(_op: str, result: list) -> None:
+            self._open_chapters_dialog(show, episode, result)
+
+        def _on_failure(_op: str, error: Exception) -> None:
+            self._announce(f"Could not load chapters: {error}")
+
+        self._announce("Loading chapters...")
+        self._task_manager.submit(
+            "podcast-chapters-dialog", _do_fetch, on_success=_on_success, on_failure=_on_failure
+        )
+
+    def _open_chapters_dialog(
+        self, show: PodcastShow, episode: PodcastEpisode, chapters: list
+    ) -> None:
+        from quill.ui.podcasts.chapters_dialog import ChaptersDialog
+
+        if not chapters:
+            self._announce("This episode has no chapters.")
+            return
+        dialog = ChaptersDialog(
+            self.dialog, episode_title=episode.title, chapters=chapters, announce_cb=self._announce
+        )
+        start_ms = dialog.show()
+        if start_ms is None:
+            return
+        state = self._controller.state
+        if state.show_id == show.id and state.episode_guid == episode.guid:
+            self._controller.seek(start_ms)
+        else:
+            self._play_episode(show, episode, resume_ms=start_ms)
 
     def _play_selected(self) -> None:
         show = self._current_show
         episode = self._selected_episode()
         if show is None or episode is None:
             return
+        self._play_episode(show, episode, resume_ms=episode.position_ms)
+
+    def _play_episode(self, show: PodcastShow, episode: PodcastEpisode, *, resume_ms: int) -> None:
         source = episode.downloaded_path or episode.audio_url
         if not source:
             return
@@ -416,7 +557,7 @@ class PodcastManagerDialog:
             episode_guid=episode.guid,
             title=episode.title,
             source=source,
-            resume_ms=episode.position_ms,
+            resume_ms=resume_ms,
             rate=self._library.effective_settings(show).speed,
         )
         self._update_now_playing()
@@ -481,8 +622,37 @@ class PodcastManagerDialog:
         copy_item = menu.Append(wx.ID_ANY, "&Copy Episode Link")
         menu.Bind(wx.EVT_MENU, lambda _e: self._on_copy_episode_link(episode), copy_item)
 
+        menu.AppendSeparator()
+        notes_item = menu.Append(wx.ID_ANY, "&View Show Notes...")
+        notes_item.Enable(bool(episode.description))
+        menu.Bind(wx.EVT_MENU, lambda _e: self._on_view_show_notes(episode), notes_item)
+
+        send_notes_item = menu.Append(wx.ID_ANY, "Sen&d Show Notes to Editor")
+        send_notes_item.Enable(bool(episode.description) and self._on_send_show_notes is not None)
+        menu.Bind(wx.EVT_MENU, lambda _e: self._on_send_show_notes_click(episode), send_notes_item)
+
         self._episodes.PopupMenu(menu)
         menu.Destroy()
+
+    def _on_view_show_notes(self, episode: PodcastEpisode) -> None:
+        from quill.ui.podcasts.show_notes_dialog import ShowNotesDialog
+
+        dialog = ShowNotesDialog(
+            self.dialog,
+            episode_title=episode.title,
+            description_html=episode.description,
+            on_send_to_editor=self._on_send_show_notes,
+            announce_cb=self._announce,
+        )
+        dialog.show()
+
+    def _on_send_show_notes_click(self, episode: PodcastEpisode) -> None:
+        if self._on_send_show_notes is None:
+            return
+        from quill.core.podcasts.show_notes import html_to_plain_text
+
+        self._on_send_show_notes(html_to_plain_text(episode.description))
+        self._announce("Sent show notes to a new document")
 
     def _on_toggle_played(self, episode: PodcastEpisode) -> None:
         episode.played = not episode.played
@@ -612,6 +782,10 @@ class PodcastManagerDialog:
         if self._on_export_opml is not None:
             self._on_export_opml()
 
+    def _on_open_settings_click(self, _event: object) -> None:
+        if self._on_open_settings is not None:
+            self._on_open_settings()
+
     def _on_unsubscribe(self, _event: object) -> None:
         show_id = self._selected_show_id()
         show = self._library.find_show(show_id) if show_id else None
@@ -620,9 +794,12 @@ class PodcastManagerDialog:
         wx = self._wx
         from quill.ui.dialog_contract import show_message_box
 
+        downloaded = [e for e in show.episodes if e.downloaded_path]
+        policy = self._library.effective_settings(show).delete_files_on_remove
+
         confirmed = (
             show_message_box(
-                f"Unsubscribe from {show.title}? Downloaded episodes are not deleted.",
+                f"Unsubscribe from {show.title}?",
                 "Unsubscribe",
                 wx.YES_NO | wx.ICON_QUESTION,
                 self.dialog,
@@ -632,7 +809,29 @@ class PodcastManagerDialog:
         )
         if not confirmed:
             return
+
+        delete_files = policy == "always"
+        if downloaded and policy == "ask":
+            delete_files = (
+                show_message_box(
+                    f"Also delete the {len(downloaded)} downloaded episode file(s)?",
+                    "Delete Downloaded Files",
+                    wx.YES_NO | wx.ICON_QUESTION,
+                    self.dialog,
+                    announce=self._announce,
+                )
+                == wx.YES
+            )
+        if delete_files:
+            for episode in downloaded:
+                path = Path(episode.downloaded_path)
+                if path.exists():
+                    path.unlink(missing_ok=True)
+
         self._library.remove_show(show.id)
         self._on_library_changed()
         self.refresh_tree()
-        self._announce(f"Unsubscribed from {show.title}")
+        if delete_files and downloaded:
+            self._announce(f"Unsubscribed from {show.title} and deleted its downloaded episodes")
+        else:
+            self._announce(f"Unsubscribed from {show.title}")

@@ -3,10 +3,11 @@ custom links) persisted as atomic JSON, the standard QUILL settings-surface
 pattern (see ``core/publish/destinations.py`` for the sibling example).
 
 Every favorite carries an optional ``folder`` name. Radio itself only ever
-uses the default (unfoldered) list today, but the field exists now so the
-planned podcasts feature -- folders of shows, each with episodes, per
-``docs/planning/radio.md`` -- can grow out of the same on-disk shape instead
-of inventing a second one later. wx-free, strict-typed.
+uses the default (unfoldered) list today. Podcasts (`quill/core/podcasts/`)
+shipped its own atomic-JSON store (`subscriptions.py`) with a real nested
+folder tree rather than reusing this shape -- a show's folder placement
+needed arbitrary nesting, which this flat `folder` field doesn't support.
+wx-free, strict-typed.
 """
 
 from __future__ import annotations

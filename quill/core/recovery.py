@@ -101,6 +101,21 @@ _LOG_ERROR_MARKERS = ("ERROR", "CRITICAL", "Traceback (most recent call last):")
 _LOG_TAIL_SCAN_BYTES = 262_144
 
 
+def _read_log_tail(logs_dir: Path) -> str | None:
+    """Return the scanned tail of ``quill.log``, or ``None`` if unreadable."""
+    log_path = logs_dir / "quill.log"
+    if not log_path.is_file():
+        return None
+    try:
+        size = log_path.stat().st_size
+        with log_path.open("rb") as handle:
+            if size > _LOG_TAIL_SCAN_BYTES:
+                handle.seek(size - _LOG_TAIL_SCAN_BYTES)
+            return handle.read().decode("utf-8", errors="replace")
+    except OSError:
+        return None
+
+
 def _log_shows_actionable_error(logs_dir: Path) -> bool:
     """True when ``quill.log`` has real error evidence near its end.
 
@@ -114,21 +129,44 @@ def _log_shows_actionable_error(logs_dir: Path) -> bool:
     a clean exit for recovery-offer purposes (the autosave snapshot itself
     is untouched by this -- only the *offer* is suppressed).
     """
-    log_path = logs_dir / "quill.log"
-    if not log_path.is_file():
+    tail = _read_log_tail(logs_dir)
+    if tail is None:
         # No log at all is itself unusual/inconclusive; err toward still
         # offering recovery rather than silently discarding a real crash
         # whose log write failed.
         return True
-    try:
-        size = log_path.stat().st_size
-        with log_path.open("rb") as handle:
-            if size > _LOG_TAIL_SCAN_BYTES:
-                handle.seek(size - _LOG_TAIL_SCAN_BYTES)
-            tail = handle.read().decode("utf-8", errors="replace")
-    except OSError:
-        return True
     return any(marker in tail for marker in _LOG_ERROR_MARKERS)
+
+
+def find_error_evidence(logs_dir: Path, *, context_lines: int = 3) -> str | None:
+    """Return the ``quill.log`` lines (with context) that justify an
+    unclean-exit offer, or ``None`` when no error marker is present.
+
+    #1013: a filed crash-recovery report showed only a routine log tail
+    with no visible justification for the offer -- because the *filed
+    report* only bundles the last few thousand characters of the log
+    (``issue_submit.build_log_summary``), while the offer decision above
+    scans a much larger window (``_LOG_TAIL_SCAN_BYTES``). Real error
+    evidence earlier in that window never made it into the report, making
+    a correctly-justified offer look like a false positive. Callers that
+    file a crash-recovery report should include this excerpt explicitly so
+    the report is self-explanatory regardless of where the evidence falls.
+    """
+    tail = _read_log_tail(logs_dir)
+    if tail is None:
+        return None
+    lines = tail.splitlines()
+    hit_indexes = [i for i, line in enumerate(lines) if any(m in line for m in _LOG_ERROR_MARKERS)]
+    if not hit_indexes:
+        return None
+    ranges: list[list[int]] = []
+    for i in hit_indexes:
+        start, end = max(0, i - context_lines), min(len(lines), i + context_lines + 1)
+        if ranges and start <= ranges[-1][1]:
+            ranges[-1][1] = max(ranges[-1][1], end)
+        else:
+            ranges.append([start, end])
+    return "\n...\n".join("\n".join(lines[start:end]) for start, end in ranges)
 
 
 def begin_session(session_id: str) -> list[RecoveryOffer]:

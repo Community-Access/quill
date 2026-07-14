@@ -176,648 +176,99 @@
   </style>
 </head>
 <body>
-<h1 id="podcasts-in-quill--design-spec">Podcasts in QUILL — Design
-Spec</h1>
-<ul>
-<li>Status: Phase 1 shipped (0.9.0 Beta 3) — brainstormed 2026-07-13;
-Phase 2-5 (§20) remain planned, not yet built.</li>
-<li>Sources: <code>docs/planning/radio.md</code> §3 (the original,
-lighter sketch this supersedes), the ACB Link research from that same
-session (its ~37-show OPML subscription list was the concrete example
-for the OPML shape), QUILL's existing Audio Studio/publish stack
-(<code>core/speech/audiobook.py</code>,
-<code>core/speech/audio_edit.py</code>, <code>core/publish/*</code>),
-and a live Q&amp;A session with Jeff.</li>
-<li>Companion feature: Internet Radio (already shipped, PR #987).
-Podcasts follows the same architectural instincts — reviewed egress per
-external call, atomic JSON persistence, dedicated background work
-instead of ad hoc threads, reuse over reinvention — but is a
-substantially larger feature, closer in size to Radio-plus-Audio-Studio
-than to Radio alone.</li>
-</ul>
-<h2 id="1-data-model">1. Data model</h2>
-<pre><code>PodcastFolder                        # organizes SHOWS; a show lives in exactly
-  id, name                           # one folder (or none = top level).
-  parent_folder_id: str | None       # arbitrarily deep nesting (adjacency list;
-                                      # no fixed depth limit).
-
-InboxFolder                          # a SECOND, independent nested tree, only
-  id, name                           # for organizing episodes inside the Inbox
-  parent_folder_id: str | None       # (see §9). Unrelated to PodcastFolder.
-
-PodcastShow
-  id, title, feed_url: str | None    # None only for is_local shows
-  homepage, artwork_url
-  is_local: bool                     # true = imported from local files (§12)
-  folder_id: str | None              # library placement (PodcastFolder)
-  is_favorite: bool                  # §10
-  paused: bool                       # subscription paused (§2): no feed
-                                      # refresh, no new episodes, no
-                                      # auto-download -- show and its full
-                                      # existing catalog/history stay in the
-                                      # library exactly as they are
-  route_to_inbox: bool               # §9
-  inbox_default_folder_id: str | None  # &quot;remembered&quot; auto-file target (§9)
-  settings: PodcastSettings | None   # None = inherit the global defaults
-
-PodcastEpisode
-  guid, title, audio_url, published, duration_seconds, description
-  chapters_url: str | None           # Podcasting 2.0 &lt;podcast:chapters&gt;
-  transcript_url: str | None         # Podcasting 2.0 &lt;podcast:transcript&gt;
-  transcript_type: str | None        # text/vtt, application/json, text/srt, ...
-  downloaded_path: str | None        # local file, once downloaded
-  mode_override: &quot;stream&quot; | &quot;download&quot; | None   # None = follow the show setting
-  played: bool
-  position_ms: int                   # resume position (§8)
-  inbox_folder_id: str | None        # only meaningful if the owning show
-                                      # routes to the Inbox (§9)
-
-PodcastSettings                      # one global record; a show only stores
-  playback_mode: &quot;stream&quot; | &quot;download&quot;   # the fields it overrides
-  retention: &quot;keep_all&quot; | &quot;keep_last_n&quot; | &quot;delete_after_play&quot;
-  retention_count: int               # used only when retention == keep_last_n
-  speed: float                       # 0.5-3.0x, default 1.0
-  always_sync_full_catalog: bool     # §14 -- backfill the whole feed, not just new
-  auto_trim_silence: bool            # §15
-  normalize_loudness: bool           # §15
-  download_root: Path                # global only, not per-show (§13)
-  skip_forward_s: int                # global only (§5), default 30
-  skip_back_s: int                   # global only (§5), default 15
-  volume_boost: float                # global only (§5), live-playback gain
-
-PlayQueue                            # cross-show, ordered (§11)
-  entries: [(show_id, episode_guid), ...]</code></pre>
-<h2 id="2-discovery-subscription-manual-add">2. Discovery, subscription,
-manual add</h2>
-<ul>
-<li><strong>Discovery</strong>: iTunes Search API
-(<code>itunes.apple.com/search?media=podcast</code>) — free, keyless,
-same reviewed-egress pattern as <code>core/radio/radio_browser.py</code>
-(a new <code>core/podcasts/itunes_search.py::_http_json</code>,
-HTTPS-only, Safe-Mode gated, registered in
-<code>network_egress_audit.py</code>).</li>
-<li><strong>Add by Feed URL...</strong> — paste any RSS URL directly,
-same shape as Radio's Add Custom Station. Covers shows iTunes doesn't
-index and self-hosted feeds.</li>
-<li><strong>Subscribing</strong>: fetch the feed and parse it with
-<strong><code>feedparser</code></strong> (a new, small, pure-Python
-dependency — MIT-licensed, no C extensions) rather than hand-rolled
-<code>ElementTree</code>. Real-world podcast feeds are messier than the
-simple HTML link-scanning <code>link_finder.py</code> handles (malformed
-XML, encoding quirks, mixed RSS/Atom/iTunes/Podcasting-2.0 namespaces),
-and getting "rich episode data" — <code>itunes:duration</code>,
-<code>itunes:image</code>,
-<code>itunes:episode</code>/<code>season</code>,
-<code>itunes:explicit</code>, <code>itunes:summary</code>, plus the
-<code>podcast:chapters</code>/<code>podcast:transcript</code> tags —
-reliably needs a real feed parser's tolerance and namespace handling,
-not a second hand-rolled XML walker. <code>feedparser</code> is the
-standard choice for exactly this in the Python ecosystem. Add as a
-normal (always-installed) dependency in <code>pyproject.toml</code>, not
-an on-demand optional component — it's pure Python and tiny, unlike the
-heavier optional pieces (Pandoc, speech engines) QUILL downloads on
-demand.</li>
-<li><strong>Private feeds</strong>: HTTP Basic auth, credentials in the
-OS credential store via the same pattern as
-<code>core/publish/destinations.py</code> (never plaintext, unlike
-FastPlay's SQLite columns).</li>
-<li><strong>Duplicate detection</strong>: subscribing to (or
-OPML-importing) a feed URL that's already subscribed updates/merges
-rather than creating a second show.</li>
-<li><strong>Defensive feed parsing</strong> (two real-world edge cases
-worth guarding against explicitly): a single episode with a bad
-future-dated <code>&lt;pubDate&gt;</code> must not poison the "what's
-new since last check" high-water mark and silently blackhole every
-subsequent real episode; and if a feed republishes an old episode under
-its same GUID with a newer date, it should only resurface in New
-Episodes/Inbox if it was untouched backlog — anything already
-played/started/queued/cleared stays exactly as it was, never resurrected
-by a feed's own misbehavior.</li>
-<li><strong>Pause / Resume Subscription</strong>: stops feed refresh and
-auto-download for a show entirely while keeping it, its full episode
-catalog, and all history exactly as-is in the library — distinct from
-<code>playback_mode</code> (which governs <em>how</em> an
-actively-syncing show's episodes are obtained, not whether it syncs at
-all).</li>
-<li><strong>Unsubscribe</strong> removes a show from the library;
-reachable from the context menu and via the <strong>Delete</strong> key
-when a show is focused in the tree/list (with the same confirmation as
-the context menu action — Delete is a shortcut to the same guarded
-action, not a silent bypass of it).</li>
-</ul>
-<h2 id="3-opml-importexport">3. OPML import/export</h2>
-<ul>
-<li>Exports the <strong>library only</strong>: every non-local show,
-nested inside <code>&lt;outline text="Folder Name"&gt;</code> elements
-that mirror the <code>PodcastFolder</code> tree exactly (a
-folder-in-a-folder becomes a nested <code>&lt;outline&gt;</code>).</li>
-<li>Import reconstructs that same folder tree from the nesting, creating
-any folder that doesn't already exist by name, and merges into existing
-subscriptions rather than duplicating.</li>
-<li><strong>Excluded from OPML, both directions</strong>: local/imported
-podcasts (§12, no feed URL to export) and the Inbox and its folder tree
-(§9, a local curation layer with no OPML equivalent).</li>
-</ul>
-<h2 id="4-downloads">4. Downloads</h2>
-<ul>
-<li>A dedicated <code>PodcastDownloadQueue</code> — its own background
-worker thread (not the shared <code>QuillTaskManager</code> pool),
-modest concurrency cap (~3 at a time, matching FastPlay's own choice),
-so a backlog of podcast downloads never competes with or slows down
-other QUILL background work (AI calls, transcription, etc.).</li>
-<li>Files land at
-<code>&lt;podcast storage location&gt;/&lt;show-slug&gt;/&lt;episode-file&gt;.&lt;ext&gt;</code>
-plus a <code>chapters.json</code> sidecar when the feed doesn't already
-point at one — mirrors the audiobook-build sidecar convention in
-<code>core/speech/audiobook.py</code>.</li>
-<li><strong>Storage location is a global setting</strong>
-(<code>PodcastSettings.download_root</code>), defaulting to
-<code>&lt;data_dir&gt;/podcasts</code> but pointable anywhere, same
-pattern as QUILL's existing data-location setting.</li>
-<li><strong>Auto-download</strong>: a show set to
-<code>playback_mode: "download"</code> auto-queues new episodes as soon
-as a feed refresh finds them (periodic + on-launch refresh).
-Streaming-mode shows never auto-download. A per-episode
-<code>mode_override</code> lets any single episode go against its show's
-default in either direction (e.g. keep one episode of a
-normally-streamed show offline for a flight).</li>
-<li><strong>Pause / Resume Downloads</strong> — two genuinely
-independent controls, not one setting wearing two hats:
-<ol type="1">
-<li><strong>Pause All Downloads / Resume All Downloads</strong> (global,
-status bar/queue-view control): stops the worker from <em>starting</em>
-any new transfer. Anything already mid-transfer when this is pressed
-keeps running to completion — this toggle only affects what starts next,
-not what's already in flight.</li>
-<li><strong>Pause This Download / Resume This Download</strong>
-(per-item, in the queue view and the episode context menu): immediately
-halts that one transfer's byte stream mid-flight, wherever it currently
-is — queued-but-not-started (trivially, just don't start it) or actively
-downloading (stop reading from the connection right now, don't wait for
-it to finish). Either way the partial bytes already written stay on
-disk. Resuming that item issues an HTTP <code>Range</code> request to
-continue from that exact byte offset when the server supports it (most
-podcast hosts do), falling back to a clean restart-from-scratch on hosts
-that don't support ranged requests rather than failing outright. Both
-controls compose normally: All-Paused doesn't erase a per-item Pause's
-state, and resuming one specific item while All Downloads is still
-paused simply re-queues it to run once All Downloads resumes.</li>
-</ol></li>
-<li><strong>Retention</strong> runs after each successful download:
-<code>keep_last_n</code> prunes the oldest kept episode(s) past the
-count; <code>delete_after_play</code> removes the local file once an
-episode is marked played (by finishing playback or by an explicit "Mark
-as Played"); <code>keep_all</code> never prunes.</li>
-<li><strong>Always Sync</strong> (<code>always_sync_full_catalog</code>,
-per show): in addition to the routine "check for episodes newer than
-what I have" refresh every show gets, a show with this on also backfills
-every older episode the live feed still exposes into the local catalog —
-and downloads them too, if that show is in download mode. Note for
-implementation: this is in tension with <code>keep_last_n</code>
-(backfilling the whole catalog while immediately pruning to N fights
-itself), so the settings UI should nudge toward <code>keep_all</code>
-when Always Sync is on rather than silently contradict itself.</li>
-<li><strong>Auto-trim silence</strong> (optional, per show): trims dead
-air from a downloaded episode's start/end using the exact same
-silence-trim function (<code>core/speech/audio_edit.py</code>) the
-audiobook builder already uses.</li>
-<li><strong>Loudness normalization</strong> (optional, per show): levels
-out volume using the same ACX loudness-normalization ffmpeg pass the
-audiobook builder already runs.</li>
-</ul>
-<h2 id="5-playback">5. Playback</h2>
-<ul>
-<li>Downloaded episodes reuse Audio Studio's existing chapter-aware
-<code>PlayerPanel</code> (Play/Pause/Stop/Prev/Next chapter, position
-slider, speed, chapter-crossing announcements) — no new transport
-UI.</li>
-<li>Streaming (not-yet-downloaded) episodes play the same way, straight
-from the enclosure URL, through the same engine — unlike Radio, this
-works fine with the duration-gated mpv backend too, since a podcast
-episode is a bounded file with real
-<code>Content-Length</code>/duration, not an infinite live stream.</li>
-<li><strong>Configurable playback speed</strong>: <strong>0.5x-3.0x in
-0.1x steps</strong>, exposed on the PlayerPanel's existing speed control
-(<code>set_rate</code>, already part of the audio engine protocol — no
-new engine work) plus dedicated Speed Up/Speed Down hotkeys. Two-level
-setting, same global-default-with-per-show-override pattern as
-everything else in <code>PodcastSettings</code>:
-<code>PodcastSettings.speed</code> is the global default every show
-starts at; adjusting speed while an episode is playing updates <em>that
-show's</em> remembered speed (not the global default), so a
-normally-fast-talking show and a normally-slow one can each keep their
-own comfortable rate without fighting each other every time you switch
-between them. A <strong>Reset to Global Default</strong> action on the
-per-show settings clears the override.</li>
-<li><strong>Configurable skip intervals</strong> (global setting, e.g.
-default 30s forward / 15s back): the Prev/Next-style skip
-buttons/hotkeys use these instead of one fixed value.</li>
-<li><strong>Volume boost</strong>: a separate live-playback gain control
-(distinct from the download-time loudness normalization in §4) for
-pushing quiet audio louder on the fly, without reprocessing the
-file.</li>
-<li><strong>Sleep timer</strong>: stop after N minutes, or at the end of
-the current episode/chapter — a control on the PlayerPanel/status bar,
-no new playback engine work. Radio should get the same control for
-parity (tracked in <code>docs/planning/radio.md</code>'s follow-ups, not
-part of this spec's build).</li>
-<li><strong>Audio backend dependency, addressed directly</strong>: both
-this feature and Radio ultimately depend on <code>wx.media</code>, which
-ships with wxPython itself — not an optional/downloadable component,
-always present on a normal QUILL install. mpv (gapless/exact-seek) is a
-pure enhancement layered on top when the on-demand
-<code>engine-packs/mpv</code> component is installed, with automatic
-fallback to <code>wx.media</code> already built into
-<code>create_engine()</code>. So there is no real "component might be
-missing" gap for basic playback on a supported OS. The one genuine edge
-case (a stripped Windows install with no Media Player component at all)
-is handled with a <strong>startup capability check</strong>: if
-constructing any audio engine fails outright,
-<code>Tools &gt; Media</code> (both Radio and Podcasts entries) is
-disabled with an explanatory message, rather than presenting a feature
-that only fails when you try to use it.</li>
-</ul>
-<h2 id="6-chapters">6. Chapters</h2>
-<ul>
-<li>Read the Podcasting 2.0 <code>chapters.json</code> link when present
-(works even while streaming, before download) — the read-side companion
-to the same sidecar format
-<code>core/speech/audiobook.py::write_book_sidecars</code> already
-writes.</li>
-<li>Falls back to ID3 chapter frames (CHAP/CTOC) read via
-<code>mutagen</code> once a file is downloaded, for the many shows that
-only embed chapters in the file itself.</li>
-<li><strong>View Chapters...</strong> lists title/start-time/duration
-per chapter; selecting one jumps playback there.</li>
-</ul>
-<h2 id="7-transcripts--export">7. Transcripts &amp; export</h2>
-<ul>
-<li>If the feed carries a <code>&lt;podcast:transcript&gt;</code> link:
-<strong>Save Transcript As...</strong> (to a file) and <strong>Open
-Transcript in Editor</strong> (opens as a new QUILL document — the
-transcript is never overwritten, matching how the Listening Companion
-already handles results).</li>
-<li>If absent (the common case today): <strong>Transcribe
-Episode...</strong> routes the downloaded audio through QUILL's existing
-transcription engines (whatever's installed/configured — Whisper,
-faster-whisper, Vosk, cloud providers), the same
-<code>core/ai/transcription.py</code> path the Listening Companion
-already uses. Requires the episode downloaded first (offers to download
-if it isn't).</li>
-<li>Either way, the resulting transcript can chain straight into
-<strong>Transcript Actions</strong> (Executive Summary, Show Notes, Key
-Quotes, etc.) — the real "why QUILL and not a standalone podcast app"
-story.</li>
-<li><strong>Export...</strong> on one or more selected episodes copies
-the downloaded audio file(s) to a folder you choose; offers to download
-first if an episode isn't downloaded yet. Exported files are named from
-the real show/episode title ("Show Name - Episode Title.mp3"), never
-QUILL's internal filename.</li>
-</ul>
-<h2 id="8-resume-position--cross-device-sync">8. Resume position &amp;
-cross-device sync</h2>
-<p>QUILL Sync (shipped Beta 3) is "point your data directory at a
-Dropbox/OneDrive/Google Drive folder" — QUILL just writes JSON there,
-the sync client does the rest, no bespoke sync engine to build. The
-design work here is entirely about making sure the <em>right</em> things
-are small, JSON, and keyed correctly:</p>
-<ul>
-<li><strong>The episode catalog is durable, not an ephemeral
-re-fetch.</strong> Each show's known-episode list is persisted locally
-(small text metadata only) and merged on every feed refresh, never
-wholesale-replaced — an episode is never silently dropped from your
-catalog just because it scrolled off the live feed. This is what makes
-"see the same state on a different machine" possible at all.</li>
-<li><strong>Resume position and played state are keyed by
-<code>(feed_url, episode_guid)</code></strong>, never by
-<code>downloaded_path</code> — so a position recorded on a machine that
-has the file downloaded is still meaningful on a machine that doesn't;
-QUILL offers to stream or download starting from that point.</li>
-<li><strong>What travels through the sync folder</strong>:
-subscriptions, library folders, per-show settings, the episode catalog
-metadata, played/position/queued/favorited state. <strong>What never
-does</strong>: the audio files themselves (too large) and anything
-local-only (§12).</li>
-<li>Honest limit: "loading older episodes" is bounded by what the source
-feed actually exposes. Some hosts paginate their full archive, most
-don't. QUILL keeps everything it's ever seen forever once seen, but
-can't invent episodes a feed has genuinely stopped listing
-anywhere.</li>
-</ul>
-<h2 id="9-organization-library-folders-vs-the-inbox-vs-favorites">9.
-Organization: library folders vs. the Inbox vs. Favorites</h2>
-<p>Three independent ways to organize, deliberately not unified into one
-tree:</p>
-<ul>
-<li><strong>Library folders</strong> (<code>PodcastFolder</code>)
-organize <em>shows</em>. A show lives in exactly one folder (or none),
-arbitrarily nested. This is "where the show is filed."</li>
-<li><strong>The Inbox</strong> (<code>InboxFolder</code>, a second,
-independent nested tree) organizes <em>episodes</em>, cutting across
-library folders entirely. A show marked <code>route_to_inbox</code> has
-all its new episodes appear in the Inbox regardless of its library
-folder. Inside the Inbox, episodes can be manually filed into Inbox-only
-folders unrelated to the library structure. The first time you manually
-move an episode from a given show into an Inbox folder, QUILL remembers
-that folder for that show (<code>inbox_default_folder_id</code>) and
-auto-files future episodes from it there — "last manual placement wins,"
-with a <strong>Forget Remembered Folder</strong> action to go back to
-manual filing. Inbox and its folders are excluded from OPML export (§3)
-and are pure local curation.</li>
-<li><strong>Favorites</strong> is not a folder at all — a boolean flag
-(<code>is_favorite</code>) on a show, surfaced as a pinned virtual node
-(§10) so favoriting never forces a choice between "properly filed" and
-"starred."</li>
-</ul>
-<h2 id="10-virtual-views">10. Virtual views</h2>
-<p>Three pinned nodes at the top of the library folder tree, alongside
-the real folders:</p>
-<ul>
-<li><strong>Favorites</strong> — every show with
-<code>is_favorite</code>, regardless of real folder.</li>
-<li><strong>New Episodes</strong> — every unplayed episode across all
-subscriptions, newest first (an inbox-style aggregate; distinct from the
-curated Inbox in §9). Surfaces through QUILL's existing notification
-system (<code>core/notifications.py</code>) the same way other
-background-produced events already do — <strong>off by default, opt-in
-per show</strong> ("notify me about new episodes of this show"), and
-never a nag: exactly one notification per new episode, never a
-digest/reminder/inactivity ping. This mirrors the discipline Earshot's
-research surfaced as worth copying literally: notifications inform, they
-don't pester.</li>
-<li><strong>Continue Listening</strong> — in-progress episodes (partial
-<code>position_ms</code>, not yet played) across all shows,
-most-recently-listened first. Pairs directly with §8's resume-position
-data; no new state needed to populate it.</li>
-</ul>
-<h2 id="11-play-queue">11. Play Queue</h2>
-<ul>
-<li>Cross-show, ordered list (<code>PlayQueue</code>) — <strong>Play
-Next</strong> / <strong>Add to Queue</strong> on any episode; plays
-through in sequence.</li>
-<li>Reordering is two-tier: <strong>Move Up / Move Down</strong> for
-single-slot nudges, plus <strong>Mark for Move</strong> on one item
-followed by <strong>Move Marked Item Above/Below</strong> on a target
-item for long-distance moves without repeated nudging — matches QUILL's
+<h1 id="podcasts-in-quill--remaining-work">Podcasts in QUILL — Remaining
+Work</h1>
+<h2 id="still-to-build">Still to build</h2>
+<p><strong>Transcripts &amp; export.</strong> If a feed carries a
+<code>&lt;podcast:transcript&gt;</code> link: Save Transcript As... and
+Open Transcript in Editor (as a new QUILL document, never overwriting
+the source). If absent: Transcribe Episode... routes the downloaded
+audio through QUILL's existing transcription engines
+(<code>core/ai/transcription.py</code>, the same path the Listening
+Companion uses), offering to download first if needed. Either way, the
+transcript should chain into Transcript Actions (Executive Summary, Show
+Notes, Key Quotes). Export... copies downloaded audio file(s) to a
+chosen folder, named from the real show/episode title, offering to
+download first if needed.</p>
+<p><strong>The Inbox.</strong> A second, independent nested folder tree
+(<code>InboxFolder</code>, separate from the library folder tree) that
+organizes <em>episodes</em> rather than shows, cutting across library
+placement entirely. A show marked <code>route_to_inbox</code> (the field
+already exists on <code>PodcastShow</code>, unsurfaced) has its new
+episodes appear in the Inbox regardless of library folder; episodes can
+be manually filed into Inbox-only folders. The first manual placement of
+an episode from a given show should be remembered
+(<code>inbox_default_folder_id</code>, also already on the model) and
+auto-file future episodes from that show there, with a Forget Remembered
+Folder action to revert to manual filing. Excluded from OPML both
+directions (no OPML equivalent for a local curation layer).</p>
+<p><strong>Virtual views.</strong> Three pinned nodes at the top of the
+library folder tree: <strong>Favorites</strong> (every show with
+<code>is_favorite</code> — the field exists, unsurfaced), <strong>New
+Episodes</strong> (every unplayed episode across all subscriptions,
+newest first; wire through <code>core/notifications.py</code>, off by
+default and opt-in per show, exactly one notification per new episode,
+never a digest/reminder), and <strong>Continue Listening</strong>
+(in-progress episodes by <code>position_ms</code>,
+most-recently-listened first — no new state needed, resume position
+already persists).</p>
+<p><strong>Play Queue.</strong> Cross-show, ordered list
+(<code>PlayQueue</code>) with Play Next / Add to Queue on any episode.
+Reordering: Move Up/Down for single-slot nudges, plus Mark for Move +
+Move Marked Item Above/Below for long-distance moves — matches QUILL's
 existing accessible-reordering pattern (e.g. Interactive Rebase's commit
-list).</li>
-<li><strong>Remove from Queue</strong> / <strong>Clear
-Queue</strong>.</li>
-</ul>
-<h2 id="12-local-imported-podcasts">12. Local (imported) podcasts</h2>
-<ul>
-<li><strong>Add Local Podcast...</strong> — pick one or more audio files
-(mp3/wav/m4b/m4a), or a whole folder of them. QUILL copies them into the
-podcast storage location under a new show, one episode per file, title
-guessed from the filename (reusing
-<code>core/speech/audiobook.py::title_from_filename</code>). A file's
-own chapters (an m4b's, or an mp3's ID3 chapters) populate that
-episode's chapter list exactly like a downloaded feed episode's would —
-no new chapter machinery.</li>
-<li><code>is_local: true</code>, <code>feed_url: None</code>. Not
-exported to OPML (§3). <strong>Not synced</strong>: since QUILL Sync
-works by pointing the entire configured data directory at a synced
-folder, "not synced" has to be structural, not a promise — local-podcast
-records need to live in a path that is never inside that user-configured
-(possibly-synced) data directory, so it's impossible for them to end up
-in Dropbox/OneDrive by construction. Exact path TBD at implementation
-time (likely alongside any other existing genuinely-machine-local QUILL
-state, if a precedent exists).</li>
-<li><strong>Watched folder</strong> (Downcast-inspired): optionally
-point a local podcast at a watched folder (reusing QUILL's existing
-watch-folder infrastructure, <code>core/watch_audiobook.py</code>'s
-pattern) so any audio file dropped there automatically becomes a new
-episode of that local show — no manual re-import needed for an ongoing
-local source (e.g. a folder your own recording workflow already drops
-files into).</li>
-</ul>
-<h2 id="13-episode-notesannotations">13. Episode notes/annotations</h2>
-<ul>
-<li>Attach a timestamped note to a moment in an episode, reusing QUILL's
-existing Sticky Notes / Inline Notes system rather than building a
-parallel one.</li>
-<li>A <strong>My Notes in this Episode</strong> list on the episode view
-jumps to any note's timestamp.</li>
-<li>The most QUILL-native idea in this spec — no mainstream podcast app
-does this, and it directly follows from QUILL already being a
-notes-and-writing tool, not just a player.</li>
-</ul>
-<h2 id="14-sorting--filtering">14. Sorting &amp; filtering</h2>
-<p>A View/Sort toolbar above both the show list and the episode list,
-remembered between sessions (same pattern GitHub Items' Columns...
-already uses):</p>
-<ul>
-<li><strong>Shows</strong>: sort by Title A-Z, Date Subscribed, Latest
-Episode Date, Unplayed Count. Filter: All / Favorites Only / Has
-Unplayed Episodes.</li>
-<li><strong>Episodes</strong>: sort by Publish Date (newest/oldest),
-Title A-Z, Duration. Filter: All / Unplayed / Played / Downloaded / Not
-Downloaded.</li>
-<li><strong>Local search</strong>: context-aware by default — searching
-from the episode list searches only that show's episodes, searching from
-the show list searches only shows, etc. — plus an always-visible
-<strong>Search Everywhere</strong> action that broadens to every
-subscription/episode/transcript/note at once, grouped by type. Avoids
-the common failure mode where a scoped search silently misses something
-because you searched from the wrong screen. Separate from the iTunes
-discovery search used for finding new shows.</li>
-</ul>
-<h2 id="15-rich-context-menus">15. Rich context menus</h2>
-<ul>
-<li><strong>Show</strong>: Play/Pause (acts on whatever's currently
-playing from this show, or starts the latest episode if nothing is),
-Play Latest Episode, Stop, Move to Folder..., Edit Settings...
-(mode/retention/speed/Always-Sync/trim/normalize overrides), Toggle
-Favorite, Toggle Route to Inbox, Forget Remembered Inbox Folder,
-Pause/Resume Subscription, Unsubscribe (also: <strong>Delete</strong>
-key), Open Homepage, multi-select bulk variants (mark all played, move
-several to a folder at once, pause/resume several at once).</li>
-<li><strong>Folder</strong> (library or Inbox): New Subfolder...,
-Rename, Move..., Delete (asks what happens to shows/episodes inside —
-move to parent or Uncategorized), Export as OPML... (library folders
-only).</li>
-<li><strong>Episode</strong>: Play/Pause, Stop, Play/Stream, Download,
-Pause Download / Resume Download (only enabled while this episode is
-queued or actively downloading — see §4's two independent pause
-controls), Remove Download, Mark Played/Unplayed, Play Next / Add to
-Queue, View Chapters..., View/Add Notes..., Transcribe Episode... / View
-Transcript, Save Transcript As..., Open Transcript in Editor, Export...,
-Show Notes (description), Copy Episode Link, multi-select bulk variants
-(download all selected, export all selected, mark all selected
-played/unplayed).</li>
-<li><strong>Queue item</strong>: Play Now, Play/Pause, Remove from
-Queue, Mark for Move, Move Marked Item Above/Below, Move Up, Move Down
-(§11).</li>
-</ul>
-<h2 id="16-ui-surfaces-summary">16. UI surfaces summary</h2>
-<ul>
-<li><strong>Podcast Manager</strong>
-(<code>Tools &gt; Media &gt; Podcasts...</code>, extending the submenu
-Radio already created) — a folder tree (<code>wx.TreeCtrl</code>, the
-one place in this feature a real tree fits, since folders genuinely
-nest) on the left, episode/show list with the sort/filter toolbar on the
-right.</li>
-<li><strong>Add Podcast</strong>: search (iTunes), Add by Feed URL...,
-Import OPML..., Add Local Podcast... all reachable from one place.</li>
-<li><strong>Preferences &gt; Podcasts</strong>: the global defaults
-(mode, retention, count, speed, storage location, auto-trim,
-normalize).</li>
-<li><strong>Command palette</strong>:
-<code>podcasts.open_manager</code>, <code>podcasts.add_by_url</code>,
-<code>podcasts.import_opml</code>, <code>podcasts.export_opml</code>,
-<code>podcasts.add_local</code>, following the same
-<code>try_register</code> + <code>feature_id="core.podcasts"</code>
-pattern Radio used.</li>
-<li><strong>Status bar + hotkeys</strong>: play/pause/stop mirroring
-Radio's pattern, plus the sleep-timer control, for background listening
-while writing. Speed Up/Speed Down hotkeys adjust the current show's
-remembered speed live.</li>
-<li><strong>System tray</strong>: extends the tray section Radio already
-created with a Podcasts block — Play/Pause, Stop, and both download
-controls (<strong>Pause All Downloads / Resume All Downloads</strong>,
-plus <strong>Pause/Resume</strong> for whichever single download is
-currently active) — so you can manage downloads without restoring the
-window.</li>
-</ul>
-<h2
-id="17-accessibility-engineering-notes-from-the-earshot-research">17.
-Accessibility engineering notes (from the Earshot research)</h2>
-<ul>
-<li><strong>Name every dismiss action explicitly.</strong> A
-modal/dialog's close control should announce what closing it does
-("Dismiss folder queue sheet"), not a bare generic "Close" — already
-QUILL convention, worth holding to deliberately here given how many new
-dialogs this spec adds (§16).</li>
-<li><strong>Don't wrap a whole panel's contents in one auto-focused
-container.</strong> Focus should land on a heading, with the panel's
-actual controls individually navigable — an eagerly-summarized container
-can look fine visually and read terribly. Test every new dialog in this
-spec individually with a screen reader rather than assuming one dialog's
-pattern generalizes to the next.</li>
-<li><strong>Trust native controls over hand-rolled semantics.</strong>
-Prefer real wx controls (checkbox, radio, slider) over custom-drawn
-equivalents with manually-attached accessible roles — the native control
-gets the role/state right for free.</li>
-<li><strong>Give list rows a meaningful preview, not just a
-title.</strong> An episode row in the Inbox/Queue/show list should read
-a short show-notes preview after the title, so browsing the list tells
-you what an episode is about without drilling in — directly applicable
-to the show/episode lists in §16.</li>
-<li><strong>Destination screens should announce themselves on
-open</strong> (e.g. opening chapters announces "Chapters" and exposes
-that as a heading), so navigating somewhere is audibly confirmed, not
-just visually apparent.</li>
-<li><strong>Every reorderable list needs a non-drag path.</strong> The
-Play Queue's Move Up/Down + Mark-for-Move design (§11) already satisfies
-this by construction — no drag gesture required anywhere in this
-spec.</li>
-<li><strong>Long operations get live-region progress
-announcements</strong>, not silent progress bars — applies to OPML
-import (§3), downloads (§4), and transcription (§7).</li>
-</ul>
-<h2 id="18-architecture-sketch">18. Architecture sketch</h2>
+list). Remove from Queue / Clear Queue.</p>
+<p><strong>Local (imported) podcasts.</strong> Add Local Podcast... —
+pick audio file(s) or a folder; QUILL copies them into the podcast
+storage location as a new <code>is_local: true</code> show, one episode
+per file, title guessed from the filename
+(<code>core/speech/audiobook.py::title_from_filename</code>). A file's
+own chapters (m4b, or ID3) populate its chapter list through the
+existing chapters machinery — no new chapter code needed. Not exported
+to OPML. <strong>Not synced</strong>: since QUILL Sync works by pointing
+the whole configured data directory at a synced folder, local-podcast
+records need to live outside that directory by construction, not by a
+"please don't sync this" promise — exact path TBD at implementation
+time. <strong>Watched folder</strong> (optional, Downcast-inspired):
+point a local podcast at a watched folder (reusing
+<code>core/watch_audiobook.py</code>'s pattern) so a dropped audio file
+becomes a new episode automatically.</p>
+<p><strong>Episode notes/annotations.</strong> A timestamped note on a
+moment in an episode, reusing QUILL's existing Sticky Notes / Inline
+Notes system rather than a parallel one. A "My Notes in this Episode"
+list jumps to any note's timestamp.</p>
+<p><strong>Rich filtering.</strong> A View/Sort toolbar already ships
+sorting; still needed: episode filters (All / Unplayed / Played /
+Downloaded / Not Downloaded), show filters (All / Favorites Only / Has
+Unplayed Episodes), and an always-visible <strong>Search
+Everywhere</strong> action that broadens local search to every
+subscription/episode/transcript/note at once, grouped by type (distinct
+from the existing context-aware scoped search and from the separate
+iTunes discovery search).</p>
+<p><strong>Auto-trim silence / loudness normalization / volume
+boost.</strong> Auto-trim and loudness-normalize (optional, per show)
+reuse the exact functions the audiobook builder already uses
+(<code>core/speech/audio_edit.py</code>, ACX-normalization ffmpeg pass)
+— download-time processing, not live. Volume boost is a separate
+live-playback gain control for pushing quiet audio louder on the fly
+without reprocessing the file.</p>
+<p><strong>Always Sync.</strong> <code>always_sync_full_catalog</code>
+(per show): beyond the routine "newer than what I have" refresh every
+show gets, backfills every older episode the live feed still exposes
+into the local catalog (and downloads it too, if that show is in
+download mode). Implementation note: this is in tension with
+<code>keep_last_n</code> retention (backfilling the whole catalog while
+immediately pruning to N fights itself) — nudge toward
+<code>keep_all</code> in the settings UI when Always Sync is on.</p>
+<h2 id="not-yet-built-modules">Not-yet-built modules</h2>
+<p>From the original architecture sketch, still to add:</p>
 <pre><code>quill/core/podcasts/
-  models.py             # the real dataclasses from §1 (PodcastFolder, Show,
-                        # Episode, Settings)
-  itunes_search.py     # discovery client -- mirrors core/radio/radio_browser.py
-  feed_reader.py         # RSS/Atom parsing via feedparser (§2), chapters/
-                         # transcript tag extraction
-  opml.py               # import/export, folder-tree &lt;-&gt; nested &lt;outline&gt;
-  subscriptions.py      # atomic-JSON store: shows, folders, settings, catalog,
-                         # resume/played state -- the syncable half (§8)
-  local_store.py        # atomic-JSON store for is_local shows -- the
-                         # deliberately non-synced half (§12)
-  download_queue.py     # PodcastDownloadQueue, its own thread (§4)
-  inbox.py              # InboxFolder tree + routing/remembered-folder logic (§9)
-  queue.py              # PlayQueue (§11)
+  local_store.py   # atomic-JSON store for is_local shows -- deliberately
+                    # outside the syncable data directory
+  inbox.py          # InboxFolder tree + routing/remembered-folder logic
+  queue.py           # PlayQueue
 
 quill/ui/podcasts/
-  manager_dialog.py      # the Podcast Manager (§16)
-  add_podcast_dialog.py  # search/URL/OPML/local-import entry points
-  settings_dialog.py     # per-show settings override
-  episode_notes_panel.py # §13
-
-quill/ui/main_frame_podcasts.py   # mixin: menu, commands, keymap, status bar,
-                                   # tray -- follows main_frame_radio.py exactly</code></pre>
-<h2 id="19-explicitly-out-of-scope-this-spec">19. Explicitly out of
-scope (this spec)</h2>
-<ul>
-<li>Skip-intro/outro beyond the optional silence-trim already in §4 (no
-dedicated "detect and skip the sponsor read" feature).</li>
-<li>Video podcasts (audio only, matching QUILL's existing audio-only
-scope everywhere else) — confirmed again during a later pass over
-Overcast/Downcast/Castro/Apple Podcasts; none of their ideas change
-this.</li>
-<li>Social features (comments, sharing to other users, public
-playlists).</li>
-<li>A bespoke QUILL-hosted sync service — sync is entirely QUILL Sync's
-existing folder mechanism (§8), never a new server.</li>
-<li><strong>Considered from the Earshot research and explicitly declined
-for this spec</strong> (not oversights — real ideas, deliberately left
-out): a whole listening-stats/analytics feature area (time listened,
-time saved, streaks, year-in-review, CSV export), and reorderable
-user-configurable "Quick Actions" that redefine the default
-per-content-type action — both would be sizable scope additions on top
-of an already-large spec; either could become its own follow-up spec
-later if wanted.</li>
-<li>Queue/Inbox freshness expiration with a "Recently Expired" undo
-buffer — considered, not added; file-retention policy (§4) covers the
-"don't keep everything forever" need for downloaded files, and this
-spec's Inbox (§9) has no separate staleness-expiry mechanism of its
-own.</li>
-<li>Mono audio mode — considered, not added.</li>
-<li><strong>Considered from a pass over Overcast/Downcast/Castro/Apple
-Podcasts, explicitly declined</strong>: Overcast-style <strong>Smart
-Speed</strong> (continuously detecting and skipping silence <em>during
-live playback</em>, not just trimming dead air at an episode's
-start/end) — a real, different, and meaningfully bigger feature than the
-download-time silence-trim already in §4 (needs real-time audio analysis
-while playing, not a one-time ffmpeg pass); <strong>rule-based smart
-playlists</strong> (e.g. "all unplayed episodes from these three shows,
-newest first, auto-updating") beyond the manual Play Queue in §11; and
-an AI-based noise-reduction/"enhance" filter for poor-quality recordings
-(Apple Podcasts' Enhance Recording). All three are real ideas worth a
-future spec of their own, not silently folded into this one this
-late.</li>
-</ul>
-<h2 id="20-suggested-phasing">20. Suggested phasing</h2>
-<p>Everything above (through §17) is in scope; this is a build order,
-not a cut list.</p>
-<ol type="1">
-<li><strong>Phase 1 — core loop</strong>: data model, iTunes search +
-Add by Feed URL, RSS parsing, dedicated-thread download queue (incl.
-pause/resume, §4), library folders (nested), OPML import/export,
-playback via the reused PlayerPanel, configurable speed.</li>
-<li><strong>Phase 2</strong>: chapters, skip intervals, transcripts +
-export, resume position and the durable/synced episode catalog.</li>
-<li><strong>Phase 3</strong>: Favorites/New Episodes/Continue Listening
-virtual views, sorting/filtering (incl. Search Everywhere), rich context
-menus, local search.</li>
-<li><strong>Phase 4</strong>: Play Queue (reorderable), the Inbox
-(separate tree + remembered routing), local/imported podcasts,
-watched-folder auto-import.</li>
-<li><strong>Phase 5</strong>: sleep timer, auto-trim silence, loudness
-normalization, volume boost, episode notes/annotations, Always
-Sync.</li>
-</ol>
-<p><strong>Phase 1, as shipped — two deviations from the sketch above,
-both deliberate.</strong> Playback does <em>not</em> reuse the
-embeddable <code>PlayerPanel</code>: that panel is owned by whatever
-dialog holds it, which would tie playback lifetime to the Podcast
-Manager dialog and violate the single-active-playback rule ("if I start
-playing another episode it should stop and start the new episode
-automatically, no two things playing at once"). Playback instead uses a
-new <code>quill/ui/podcasts/player_controller.py</code>
-(<code>PodcastPlayerController</code>), mirroring
-<code>core/radio/player_controller.py</code>'s shape exactly: one
-instance, owned by <code>MainFrame</code> for the process's lifetime,
-that every dialog drives but none of them own. Rich context menus (§15)
-and configurable per-show speed (§5) — both listed as Phase 3/Phase 1
-items respectively above — were pulled forward and shipped in this same
-Phase 1 pass rather than split out, since the underlying UI surfaces
-(the episode list, the tree, the player row) already existed and the
-marginal cost of wiring them in was small. <code>local_store.py</code>,
-<code>inbox.py</code>, and <code>queue.py</code> from §18's sketch are
-not yet built — they land with Phases 3-4 as planned.</p>
+  episode_notes_panel.py</code></pre>
 </body>
 </html>

@@ -36,7 +36,7 @@ from quill.core.keymap_query import (
     rewrite_chord_prefixes,
 )
 from quill.core.platform_nouns import primary_command_chord_label
-from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 
 #: Commands that take part in the QUILL Quick Nav single-key browse layer. They
 #: are appended to the editable command list even though they are not registry
@@ -139,6 +139,7 @@ class KeymapEditorMixin:
         root.Add(feedback, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         listbox = wx.ListBox(dialog, style=wx.LB_SINGLE)
+        set_accessible_name(listbox, "Keyboard shortcuts")
         root.Add(listbox, 1, wx.ALL | wx.EXPAND, 8)
 
         controls = wx.BoxSizer(wx.HORIZONTAL)

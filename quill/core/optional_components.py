@@ -854,12 +854,15 @@ def gather_optional_components() -> list[OptionalComponent]:
             "audio_extras",
             "Audio: export, playback & chapters",
             "Everything for richer speech audio, in one place. FFmpeg lets QUILL "
-            "export speech as MP3, M4A/M4B, OGG, Opus, or FLAC; the mpv engine adds "
-            "gapless playback, exact seeking, and instant chapter jumps in the Audio "
-            "Studio player; MP3 chapter markers embed a jumpable chapter list in MP3 "
-            "audiobook exports. Each piece is fetched only when you first use its "
-            "feature, so nothing large downloads until it is needed. WAV export and "
-            "basic playback work without any of them.",
+            "export speech as MP3, M4A/M4B, OGG, Opus, or FLAC and record Internet "
+            "Radio streams to a file (Record Now and Schedule Recording); the mpv "
+            "engine adds gapless playback, exact seeking, and instant chapter jumps "
+            "in the Audio Studio player; MP3 chapter markers embed a jumpable "
+            "chapter list in MP3 audiobook exports. Each piece is fetched only when "
+            "you first use its feature, so nothing large downloads until it is "
+            "needed. WAV export, and Internet Radio/Podcasts playback and "
+            "subscribing, all work without any of them -- only recording needs "
+            "FFmpeg.",
             TOOL,
             _safe(_audio_extras_installed),
             "~46 MB (+ FFmpeg ~90 MB when first exporting compressed audio)",

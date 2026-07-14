@@ -413,6 +413,7 @@ from quill.ui.dialog_contract import (
     apply_modal_ids,
     focus_primary_control,
     ok_cancel_platform_order,
+    set_accessible_name,
     show_modal_dialog,
 )
 from quill.ui.html_paste_cleaner import analyze_paste
@@ -448,6 +449,7 @@ from quill.ui.main_frame_language_detect import LanguageDetectMixin
 from quill.ui.main_frame_line_commands import LineCommandsMixin
 from quill.ui.main_frame_list_studio import ListStudioMixin
 from quill.ui.main_frame_local_git import LocalGitMixin
+from quill.ui.main_frame_media_sleep_timer import MediaSleepTimerMixin
 from quill.ui.main_frame_menu import MenuBuilderMixin
 from quill.ui.main_frame_notebook import NotebookUIMixin
 from quill.ui.main_frame_podcasts import PodcastsMixin
@@ -832,6 +834,7 @@ class MainFrame(
     EmojiPickerMixin,
     RadioMixin,
     PodcastsMixin,
+    MediaSleepTimerMixin,
     FormatCodesMixin,
     SpeechCommandsMixin,
     VerbosityCommandsMixin,
@@ -1263,8 +1266,6 @@ class MainFrame(
         )
         self._snippet_expansion_guard = False
         self._init_abbreviations()
-        self._init_radio()
-        self._init_podcasts()
         self._intellisense_popup: _IntellisensePopup | None = None
         self._intellisense_context: IntellisenseContext | None = None
         self._intellisense_fragment_text = ""
@@ -1300,6 +1301,11 @@ class MainFrame(
         # "Untitled" combined with any transient status-bar text. _refresh_title()
         # sets the real document-name title as soon as the editor is ready.
         self.frame = wx.Frame(None, title="Quill", size=(1000, 700))
+        # Radio/podcast player controllers parent themselves on self.frame, so
+        # they must be built after the frame exists (AttributeError otherwise).
+        self._init_radio()
+        self._init_podcasts()
+        self._init_media_sleep_timer()
         self._intellisense_popup = _IntellisensePopup(wx, self.frame)
         self._intellisense_popup.set_accept_callback(self._apply_intellisense_selection)
         self._intellisense_popup.set_dismiss_callback(self._dismiss_intellisense_popup)
@@ -1502,13 +1508,17 @@ class MainFrame(
                     else:
                         self._wx.CallAfter(self._set_status_quiet, message)
                 # No-SR path: "Ready" was already announced in __init__; suppress the repeat.
+                if _profile:
+                    self._wx.CallAfter(
+                        _times.append,
+                        ("screen-reader detection (bg)", time.perf_counter() - t_worker),
+                    )
             except Exception:
+                # Nothing this one-shot probe does may ever escape the thread:
+                # an unhandled exception here (e.g. a test double standing in
+                # for wx without CallAfter, outliving its test) surfaces as an
+                # async error in whatever code happens to be running later.
                 pass
-            if _profile:
-                self._wx.CallAfter(
-                    _times.append,
-                    ("screen-reader detection (bg)", time.perf_counter() - t_worker),
-                )
 
         import threading
 
@@ -3874,6 +3884,7 @@ class MainFrame(
         self._register_emoji_picker_commands()
         self._register_radio_commands()
         self._register_podcasts_commands()
+        self._register_media_sleep_timer_commands()
 
     def _apply_accelerators(self) -> None:
         wx = self._wx
@@ -5486,6 +5497,7 @@ class MainFrame(
             value=text,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP,
         )
+        set_accessible_name(text_ctrl, f"Look up result for {word}")
         text_ctrl.SetMinSize((500, 300))
         sizer.Add(text_ctrl, 1, wx.EXPAND | wx.ALL, 8)
 
@@ -5494,6 +5506,7 @@ class MainFrame(
             list_label = wx.StaticText(dialog, label="Select a word to insert:")
             sizer.Add(list_label, 0, wx.LEFT | wx.RIGHT, 8)
             list_box = wx.ListBox(dialog, choices=[item.label for item in items])
+            set_accessible_name(list_box, "Select a word to insert")
             list_box.SetMinSize((500, 150))
             sizer.Add(list_box, 0, wx.EXPAND | wx.ALL, 8)
 
@@ -6430,12 +6443,21 @@ class MainFrame(
         radio_controller = getattr(self, "_radio_controller", None)
         if radio_controller is not None:
             _safely("radio player", radio_controller.shutdown)
+        radio_recorder = getattr(self, "_radio_recorder", None)
+        if radio_recorder is not None:
+            _safely("radio recorder", radio_recorder.shutdown)
+        radio_scheduler = getattr(self, "_radio_scheduler", None)
+        if radio_scheduler is not None:
+            _safely("radio recording scheduler", radio_scheduler.shutdown)
         podcast_controller = getattr(self, "_podcast_controller", None)
         if podcast_controller is not None:
             _safely("podcast player", podcast_controller.shutdown)
         podcast_queue = getattr(self, "_podcast_download_queue", None)
         if podcast_queue is not None:
             _safely("podcast downloads", podcast_queue.shutdown)
+        sleep_timer = getattr(self, "_sleep_timer_controller", None)
+        if sleep_timer is not None:
+            _safely("media sleep timer", sleep_timer.shutdown)
         _safely("ssh connections", self.close_ssh_connections)
         # #32: drop GitHub-temp files no longer referenced by an open tab so
         # the user's app-data directory does not accumulate copies of files
@@ -6614,6 +6636,7 @@ class MainFrame(
         wx = self._wx
         from quill.core.feedback_token import effective_github_token
         from quill.core.issue_submit import build_log_summary, submit_crash_issue
+        from quill.core.recovery import find_error_evidence
 
         with wx.MessageDialog(
             self.frame,
@@ -6635,9 +6658,20 @@ class MainFrame(
             self.report_bug()
             return False
 
+        # #1013: the report's log summary is a short tail (issue_submit's
+        # _MAX_LOG_CHARS) that can miss the error evidence which actually
+        # justified this offer, since the offer decision scans a much larger
+        # window (recovery._LOG_TAIL_SCAN_BYTES). Include that evidence
+        # explicitly so the filed report is self-explanatory.
+        evidence = find_error_evidence(logs_path)
+        evidence_section = (
+            f"Error evidence that triggered this offer:\n{evidence}\n\n" if evidence else ""
+        )
         body = (
             "Quill offered crash recovery after an unclean exit. Submitted "
-            "automatically from the Crash Recovery dialog.\n\n" + build_log_summary(logs_path)
+            "automatically from the Crash Recovery dialog.\n\n"
+            + evidence_section
+            + build_log_summary(logs_path)
         )
         issue_url, error = submit_crash_issue(
             summary="Crash recovery: Quill detected an unclean exit",
@@ -6816,6 +6850,7 @@ class MainFrame(
 
         root.Add(wx.StaticText(dialog, label="Logs folder"), 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
         logs_field = wx.TextCtrl(dialog, style=wx.TE_READONLY)
+        set_accessible_name(logs_field, "Logs folder")
         logs_field.SetValue(str(logs_path))
         root.Add(logs_field, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
 
@@ -7145,12 +7180,14 @@ class MainFrame(
 
         search = wx.SearchCtrl(dialog, style=wx.TE_PROCESS_ENTER)
         search.SetDescriptiveText("Search by command name or key binding")
+        set_accessible_name(search, "Search by command name or key binding")
         root.Add(search, 0, wx.EXPAND | wx.ALL, 8)
 
         cheatsheet_ctrl = wx.TextCtrl(
             dialog,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP,
         )
+        set_accessible_name(cheatsheet_ctrl, "Key cheatsheet")
         root.Add(cheatsheet_ctrl, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         close_btn = wx.Button(dialog, id=wx.ID_CANCEL, label="Close")
@@ -8149,6 +8186,7 @@ class MainFrame(
                 value=hint,
                 style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP,
             )
+            set_accessible_name(hint_ctrl, "What to try next")
             hint_ctrl.SetMinSize((-1, 80))
             hint_ctrl.Hide()
             root.Add(hint_ctrl, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 12)
@@ -10938,7 +10976,10 @@ class MainFrame(
         if last_revision == revision:
             self._last_autosave_at = now
             return
-        autosave_document(self.document, self.session_id)
+        try:
+            autosave_document(self.document, self.session_id)
+        except Exception:  # noqa: BLE001 - autosave must never break editing
+            pass
         # Rich tabs also snapshot the RTF bytes: TOM formatting never changes
         # the plain text, so a text-only snapshot would lose formatting in a
         # crash. Best-effort by the same contract as the text snapshot.
@@ -11427,6 +11468,14 @@ class MainFrame(
         Shared by the OK, Reset to Factory Defaults, and Import paths of the
         tabbed Settings dialog so each one leaves the app in a consistent state.
         """
+        if self.settings.launch_at_windows_startup and not self.settings.tray_enabled:
+            self.settings.tray_enabled = True
+        try:
+            from quill.platform.windows.startup import set_launch_at_startup
+
+            set_launch_at_startup(self.settings.launch_at_windows_startup)
+        except Exception:  # noqa: BLE001 - a settings-apply side effect must never raise
+            pass
         save_settings(self.settings)
         self._apply_theme(self.settings.theme)
         self.toggle_spellcheck_as_you_type(self.settings.spellcheck_as_you_type)
@@ -12508,7 +12557,7 @@ class MainFrame(
                         c.SetName(_sl)
                         c.SetStringSelection(_lv.get(_cv, _ls[0]))
                         spin = wx.SpinCtrl(_pp, min=_cmin, max=_cmax, value=str(_cur))
-                        spin.SetName(_custom_sl)
+                        set_accessible_name(spin, _custom_sl)
                         ms_label = wx.StaticText(_pp, label="ms")
                         ms_label.SetName(_custom_sl + " (milliseconds)")
                         # Wire enable/disable of the spin to the chooser.
@@ -13957,6 +14006,7 @@ class MainFrame(
         root.Add(kind_choice, 0, wx.ALL | wx.EXPAND, 8)
         root.Add(wx.StaticText(dialog, label="&Name:"), 0, wx.LEFT | wx.RIGHT, 8)
         name_field = wx.TextCtrl(dialog, value="My QUILL setup")
+        set_accessible_name(name_field, "Name")
         root.Add(name_field, 0, wx.ALL | wx.EXPAND, 8)
         root.Add(
             wx.StaticText(dialog, label="Include these sections:"),
@@ -13968,6 +14018,7 @@ class MainFrame(
             dialog,
             choices=[f"{offer.title} - {offer.summary}" for offer in offers],
         )
+        set_accessible_name(chooser, "Include these sections")
         for index in range(len(offers)):
             chooser.Check(index, True)
         root.Add(chooser, 1, wx.ALL | wx.EXPAND, 8)
@@ -14108,12 +14159,14 @@ class MainFrame(
             value=package_summary(package),
             style=wx.TE_MULTILINE | wx.TE_READONLY,
         )
+        set_accessible_name(preview, "File contents")
         root.Add(preview, 1, wx.ALL | wx.EXPAND, 8)
         root.Add(wx.StaticText(dialog, label="Apply these sections:"), 0, wx.LEFT | wx.RIGHT, 8)
         chooser = wx.CheckListBox(  # A11Y-SR-1-OK: import picker; pending CheckBox conversion
             dialog,
             choices=[f"{title} - {summary}" for _id, title, summary in sections],
         )
+        set_accessible_name(chooser, "Apply these sections")
         for index in range(len(sections)):
             chooser.Check(index, True)
         root.Add(chooser, 1, wx.ALL | wx.EXPAND, 8)
@@ -14184,11 +14237,13 @@ class MainFrame(
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(wx.StaticText(dlg, label="Pack &name:"), 0, wx.ALL, 8)
         name_ctrl = wx.TextCtrl(dlg, value=pack_name)
+        set_accessible_name(name_ctrl, "Pack name")
         root.Add(name_ctrl, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 8)
         root.Add(
             wx.StaticText(dlg, label="&Description (optional):"), 0, wx.LEFT | wx.RIGHT | wx.TOP, 8
         )
         desc_ctrl = wx.TextCtrl(dlg, value=pack_desc if pack_desc else "")
+        set_accessible_name(desc_ctrl, "Description, optional")
         root.Add(desc_ctrl, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 8)
         buttons = dlg.CreateButtonSizer(wx.OK | wx.CANCEL)
         if buttons is not None:
@@ -14695,8 +14750,10 @@ class MainFrame(
         )
         choices = [status.name for status in statuses]
         chooser = wx.ListBox(dialog, choices=choices)
+        set_accessible_name(chooser, "External tools")
         chooser.SetSelection(0 if choices else wx.NOT_FOUND)
         details = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
+        set_accessible_name(details, "Tool details")
         copy_button = wx.Button(dialog, label="Copy Install Command")
         website_button = wx.Button(dialog, label="Open Website")
         wizard_button = wx.Button(dialog, label="Open Wizard")
@@ -15126,6 +15183,7 @@ class MainFrame(
         root = wx.BoxSizer(wx.VERTICAL)
         include_paths = wx.CheckBox(dialog, label="Include plain file paths in the bundle")
         review = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
+        set_accessible_name(review, "Diagnostics review")
         copy_button = wx.Button(dialog, label="Copy Summary")
         continue_button = wx.Button(dialog, id=wx.ID_OK, label="Continue")
         cancel_button = wx.Button(dialog, id=wx.ID_CANCEL, label="Cancel")
@@ -15169,6 +15227,7 @@ class MainFrame(
         )
         root.Add(wx.StaticText(dialog, label="Logs folder"), 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
         logs_field = wx.TextCtrl(dialog, style=wx.TE_READONLY)
+        set_accessible_name(logs_field, "Logs folder")
         logs_field.SetValue(str(app_data_dir() / "logs"))
         root.Add(logs_field, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
         root.Add(
@@ -15178,6 +15237,7 @@ class MainFrame(
             8,
         )
         diagnostics_field = wx.TextCtrl(dialog, style=wx.TE_READONLY)
+        set_accessible_name(diagnostics_field, "Diagnostics folder")
         diagnostics_field.SetValue(str(app_data_dir() / "diagnostics"))
         root.Add(diagnostics_field, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
         root.Add(include_paths, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
@@ -15649,6 +15709,7 @@ class MainFrame(
                 8,
             )
             search = wx.TextCtrl(dialog)
+            set_accessible_name(search, "Type to filter")
             inner.Add(search, 0, wx.ALL | wx.EXPAND, 8)
             summary = nav_type_summary(items)
             category_labels = [f"All ({len(items)})"] + [
@@ -15656,9 +15717,11 @@ class MainFrame(
             ]
             category_values: list[str | None] = [None] + [name for name, _ in summary]
             category_box = wx.ListBox(dialog, choices=category_labels)
+            set_accessible_name(category_box, "Category")
             category_box.SetSelection(0)
             inner.Add(category_box, 0, wx.ALL | wx.EXPAND, 8)
             results = wx.ListBox(dialog)
+            set_accessible_name(results, "Results")
             inner.Add(results, 1, wx.ALL | wx.EXPAND, 8)
             go_button = wx.Button(dialog, id=wx.ID_OK, label="Go")
             cancel_button = wx.Button(dialog, id=wx.ID_CANCEL, label="Cancel")
@@ -15779,7 +15842,9 @@ class MainFrame(
         originals = {heading.source_index: heading for heading in headings}
         selected_index = 0
         list_box = wx.ListBox(dialog)
+        set_accessible_name(list_box, "Headings")
         preview = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
+        set_accessible_name(preview, "Heading preview")
         instructions = wx.StaticText(
             dialog,
             label=(
@@ -16429,7 +16494,9 @@ class MainFrame(
             splitter,
             style=wx.TR_HAS_BUTTONS | wx.TR_LINES_AT_ROOT | wx.TR_HAS_VARIABLE_ROW_HEIGHT,
         )
+        set_accessible_name(tree, "YAML structure")
         preview = wx.TextCtrl(splitter, style=wx.TE_MULTILINE | wx.TE_READONLY)
+        set_accessible_name(preview, "Node preview")
         splitter.SplitVertically(tree, preview, 360)
         splitter.SetMinimumPaneSize(240)
 
@@ -16757,7 +16824,9 @@ class MainFrame(
         dialog = wx.Dialog(self.frame, title=title, size=(900, 620))
         splitter = wx.SplitterWindow(dialog, style=wx.SP_LIVE_UPDATE)
         tree = wx.TreeCtrl(splitter, style=wx.TR_HAS_BUTTONS | wx.TR_HIDE_ROOT)
+        set_accessible_name(tree, root_label)
         preview = wx.TextCtrl(splitter, style=wx.TE_MULTILINE | wx.TE_READONLY)
+        set_accessible_name(preview, f"{root_label} preview")
         splitter.SplitVertically(tree, preview, 300)
         splitter.SetMinimumPaneSize(200)
 
@@ -17451,6 +17520,7 @@ class MainFrame(
             line, column = line_column_for_position(text, item.start)
             choices.append(f"{item.word} (Ln {line}, Col {column})")
         chooser = wx.ListBox(dialog, choices=choices)
+        set_accessible_name(chooser, "Misspelled words")
         chooser.SetSelection(0 if choices else wx.NOT_FOUND)
         root.Add(chooser, 1, wx.LEFT | wx.RIGHT | wx.EXPAND, 8)
         root.Add(wx.StaticText(dialog, label="Context"), 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
@@ -17458,6 +17528,7 @@ class MainFrame(
             dialog,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP,
         )
+        set_accessible_name(context_field, "Context")
         root.Add(context_field, 1, wx.ALL | wx.EXPAND, 8)
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         speak_button = wx.Button(dialog, label="Speak Word")
@@ -20576,6 +20647,7 @@ class MainFrame(
             for entry in self._notifications[-200:]
         ]
         chooser = wx.ListBox(dialog, choices=lines)
+        set_accessible_name(chooser, "Notifications")
         root.Add(chooser, 1, wx.ALL | wx.EXPAND, 8)
         button_row = wx.BoxSizer(wx.HORIZONTAL)
         copy_button = wx.Button(dialog, label="Copy Selected")
@@ -25229,7 +25301,9 @@ class MainFrame(
             splitter,
             style=wx.TR_HAS_BUTTONS | wx.TR_LINES_AT_ROOT | wx.TR_HAS_VARIABLE_ROW_HEIGHT,
         )
+        set_accessible_name(tree, "List items")
         preview = wx.TextCtrl(splitter, style=wx.TE_MULTILINE | wx.TE_READONLY)
+        set_accessible_name(preview, "List item preview")
         splitter.SplitVertically(tree, preview, 420)
         splitter.SetMinimumPaneSize(260)
         item_indexes: dict[object, int] = {}
@@ -25955,12 +26029,14 @@ class MainFrame(
             search = wx.SearchCtrl(dialog, style=wx.TE_PROCESS_ENTER)
             search.ShowSearchButton(True)
             search.SetDescriptiveText(prompt)
+            set_accessible_name(search, prompt)
             root.Add(search, 0, wx.EXPAND | wx.ALL, 8)
 
             status = wx.StaticText(dialog, label="")
             root.Add(status, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
             results = wx.ListBox(dialog)
+            set_accessible_name(results, dialog_label)
             root.Add(results, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
             buttons = dialog.CreateButtonSizer(wx.OK | wx.CANCEL)
@@ -26832,7 +26908,9 @@ class MainFrame(
         )
         names = list(self.macros.macros)
         chooser = wx.ListBox(dialog, choices=names)
+        set_accessible_name(chooser, "Recorded macros")
         details = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
+        set_accessible_name(details, "Macro details")
         if names:
             chooser.SetSelection(0)
 
@@ -26954,8 +27032,10 @@ class MainFrame(
             8,
         )
         chooser = wx.ListBox(dialog, choices=[])
+        set_accessible_name(chooser, "Feature profiles")
         entries: list[tuple[str, str, str]] = []
         summary = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
+        set_accessible_name(summary, "Profile summary")
         # keyboard_pack_choices, keyboard_pack_choice, and keyboard_preview are
         # created in the layout section below so their StaticText labels are
         # created first in Z-order (required for JAWS label-buddy association).
@@ -27337,6 +27417,7 @@ class MainFrame(
         current_pack = self.settings.keyboard_pack
         if current_pack not in keyboard_pack_choices:
             current_pack = KEYBOARD_PACK_DEFAULT
+        set_accessible_name(keyboard_pack_choice, "Keyboard pack")
         keyboard_pack_choice.SetStringSelection(current_pack)
         keyboard_pack_choice.Bind(wx.EVT_CHOICE, lambda _e: refresh_keyboard_preview())
         root.Add(keyboard_pack_choice, 0, wx.ALL | wx.EXPAND, 8)
@@ -27345,6 +27426,7 @@ class MainFrame(
             style=wx.TE_MULTILINE | wx.TE_READONLY,
             size=(-1, 160),
         )
+        set_accessible_name(keyboard_preview, "Keyboard pack preview")
         root.Add(keyboard_preview, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         buttons.Add(switch_button, 0, wx.RIGHT, 6)
@@ -27943,27 +28025,32 @@ class MainFrame(
         left = wx.BoxSizer(wx.VERTICAL)
         left.Add(wx.StaticText(dialog, label="Recipes"), 0, wx.BOTTOM, 6)
         recipe_list = wx.ListBox(dialog, choices=[item[0] for item in recipes])
+        set_accessible_name(recipe_list, "Recipes")
         left.Add(recipe_list, 1, wx.EXPAND)
         content.Add(left, 0, wx.EXPAND | wx.ALL, 10)
 
         right = wx.BoxSizer(wx.VERTICAL)
         right.Add(wx.StaticText(dialog, label="Pattern"), 0, wx.BOTTOM, 4)
         pattern_ctrl = wx.TextCtrl(dialog, style=wx.TE_PROCESS_ENTER)
+        set_accessible_name(pattern_ctrl, "Pattern")
         right.Add(pattern_ctrl, 0, wx.EXPAND | wx.BOTTOM, 8)
 
         right.Add(wx.StaticText(dialog, label="What this pattern means"), 0, wx.BOTTOM, 4)
         explanation_ctrl = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
+        set_accessible_name(explanation_ctrl, "What this pattern means")
         explanation_ctrl.SetMinSize((480, 80))
         right.Add(explanation_ctrl, 0, wx.EXPAND | wx.BOTTOM, 8)
 
         right.Add(wx.StaticText(dialog, label="Sample text"), 0, wx.BOTTOM, 4)
         default_sample = self.editor.GetStringSelection().strip() or self.editor.GetValue()[:1200]
         sample_ctrl = wx.TextCtrl(dialog, value=default_sample, style=wx.TE_MULTILINE)
+        set_accessible_name(sample_ctrl, "Sample text")
         sample_ctrl.SetMinSize((480, 170))
         right.Add(sample_ctrl, 1, wx.EXPAND | wx.BOTTOM, 8)
 
         right.Add(wx.StaticText(dialog, label="Preview results"), 0, wx.BOTTOM, 4)
         results_ctrl = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
+        set_accessible_name(results_ctrl, "Preview results")
         results_ctrl.SetMinSize((480, 170))
         right.Add(results_ctrl, 1, wx.EXPAND)
 
