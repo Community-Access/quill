@@ -1,6 +1,11 @@
 # macOS VoiceOver accessible names (#1012)
 
-**Status:** implemented, awaiting live VoiceOver validation on macOS.
+**Status:** implemented and live-validated under VoiceOver (2026-07-14):
+labels announce across the Settings dialog, hand-rolled dialogs, and the
+editor. One known limitation: the stepper half of a spin composite still
+announces nameless despite receiving the propagated name — deliberately
+deferred, since the stepper always follows its labeled edit field and this
+is no worse than the pre-fix behaviour.
 
 ## The problem
 
