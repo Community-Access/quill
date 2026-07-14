@@ -131,6 +131,10 @@ _FALLBACK_DEFAULT_NAMES: frozenset[str] = frozenset({
     "button",
     "staticText",
     "spinButton",
+    "radioBox",
+    "radioButton",
+    "toggle",
+    "hyperlink",
 })
 
 #: A StaticText longer than this is prose (instructions, descriptions), not a
@@ -445,6 +449,14 @@ def _walk(widget: object, unnamed: list[object], pending: str | None) -> str | N
             pending = None
             continue
         if _class_matches(child, _SELF_LABELED_CLASSES):
+            # Self-labeled controls announce their own titles natively, but
+            # several carry a deliberately richer explicit wx name — Settings
+            # checkboxes append their description ("Label. Description"),
+            # the sound-row buttons say what they browse for. Windows screen
+            # readers hear those via MSAA; push them natively so macOS does
+            # too (machine-key names are skipped inside the helper).
+            if not _has_default_name(child):
+                _macos_native_label(child, _get_name(child))
             pending = None
             continue
         if _is_book(child):

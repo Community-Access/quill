@@ -470,6 +470,43 @@ def test_walker_pushes_native_label_for_already_named_controls(monkeypatch) -> N
     assert view.label == "Theme"  # but now audible
 
 
+class CheckBox(_FakeWindow):
+    """Self-labeled; class name matters for the walker's branch choice."""
+
+    def GetHandle(self) -> int:  # noqa: N802
+        return 0xCAFE
+
+
+def test_walker_pushes_enriched_names_of_self_labeled_controls(monkeypatch) -> None:
+    """Settings checkboxes carry "Label. Description" wx names; Windows
+    hears them via MSAA, so macOS must get the same via the native push."""
+    import quill.ui.accessible_names as an
+
+    view = _FakeNSView()
+    monkeypatch.setattr(an.sys, "platform", "darwin")
+    monkeypatch.setattr(an, "_objc_cache", _FakeObjc(view))
+    cb = CheckBox(name="Beta updates. Get prerelease builds first")
+    dialog = Dialog(children=[cb])
+
+    ensure_accessible_names(dialog)
+
+    assert view.label == "Beta updates. Get prerelease builds first"
+
+
+def test_walker_leaves_default_named_self_labeled_controls_alone(monkeypatch) -> None:
+    """A plain checkbox announces its own title natively; no push needed."""
+    import quill.ui.accessible_names as an
+
+    view = _FakeNSView()
+    monkeypatch.setattr(an.sys, "platform", "darwin")
+    monkeypatch.setattr(an, "_objc_cache", _FakeObjc(view))
+    dialog = Dialog(children=[CheckBox(name="check")])
+
+    ensure_accessible_names(dialog)
+
+    assert view.label is None
+
+
 def test_walker_never_speaks_machine_key_names(monkeypatch) -> None:
     """Help-topic keys ("wizard.kb_pack_choice") must stay silent: speaking
     them would be worse than the current nameless announcement."""
