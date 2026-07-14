@@ -19,6 +19,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from quill.ui.accessible_names import set_accessible_name
 from quill.ui.dialog_contract import (
     apply_modal_ids,
     focus_primary_control,
@@ -191,14 +192,10 @@ class VoiceBrowserDialog:
         self._rate_spin = wx.SpinCtrl(
             sb, min=75, max=650, initial=getattr(s, "read_aloud_rate", 175)
         )
-        self._rate_spin.SetName("Rate (words per minute)")
         # support#69: a wx.SpinCtrl is a composite; VoiceOver focuses the inner
-        # TextCtrl, which does not inherit the parent's SetName. Name the child
-        # too so the number box is announced with its label (mirrors kok_spin).
-        for _child in self._rate_spin.GetChildren():
-            if isinstance(_child, wx.TextCtrl):
-                _child.SetName("Rate (words per minute)")
-                break
+        # TextCtrl, which does not inherit the parent's SetName. The helper
+        # names both so the number box is announced with its label.
+        set_accessible_name(self._rate_spin, "Rate (words per minute)")
         rate_row.Add(self._rate_lbl, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
         rate_row.Add(self._rate_spin, 1, wx.EXPAND)
         settings_box.Add(rate_row, 0, wx.EXPAND | wx.ALL, 4)
@@ -208,11 +205,7 @@ class VoiceBrowserDialog:
         self._vol_spin = wx.SpinCtrl(
             sb, min=0, max=100, initial=getattr(s, "read_aloud_volume", 100)
         )
-        self._vol_spin.SetName("Volume (0 to 100)")
-        for _child in self._vol_spin.GetChildren():
-            if isinstance(_child, wx.TextCtrl):
-                _child.SetName("Volume (0 to 100)")
-                break
+        set_accessible_name(self._vol_spin, "Volume (0 to 100)")
         vol_row.Add(self._vol_lbl, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
         vol_row.Add(self._vol_spin, 1, wx.EXPAND)
         settings_box.Add(vol_row, 0, wx.EXPAND | wx.ALL, 4)
@@ -222,11 +215,7 @@ class VoiceBrowserDialog:
         self._pitch_spin = wx.SpinCtrl(
             sb, min=0, max=100, initial=getattr(s, "read_aloud_pitch", 50)
         )
-        self._pitch_spin.SetName("Pitch (0 to 100)")
-        for _child in self._pitch_spin.GetChildren():
-            if isinstance(_child, wx.TextCtrl):
-                _child.SetName("Pitch (0 to 100)")
-                break
+        set_accessible_name(self._pitch_spin, "Pitch (0 to 100)")
         pitch_row.Add(self._pitch_lbl, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
         pitch_row.Add(self._pitch_spin, 1, wx.EXPAND)
         settings_box.Add(pitch_row, 0, wx.EXPAND | wx.ALL, 4)
@@ -236,11 +225,7 @@ class VoiceBrowserDialog:
         self._kok_spin = wx.SpinCtrlDouble(
             sb, min=0.5, max=2.0, initial=getattr(s, "read_aloud_kokoro_speed", 1.0), inc=0.1
         )
-        self._kok_spin.SetName("Speed multiplier")
-        for _child in self._kok_spin.GetChildren():
-            if isinstance(_child, wx.TextCtrl):
-                _child.SetName("Speed multiplier")
-                break
+        set_accessible_name(self._kok_spin, "Speed multiplier")
         kok_row.Add(self._kok_lbl, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
         kok_row.Add(self._kok_spin, 1, wx.EXPAND)
         settings_box.Add(kok_row, 0, wx.EXPAND | wx.ALL, 4)

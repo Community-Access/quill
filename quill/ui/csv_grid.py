@@ -75,6 +75,11 @@ class CsvGridSurface:
             self._text_page,
             style=wx.TE_MULTILINE | wx.TE_RICH2 | wx.TE_NOHIDESEL,
         )
+        # Non-modal editor surface: never shown via show_modal_dialog, so the
+        # #1012 show-time naming pass cannot reach it — name explicitly or
+        # macOS VoiceOver announces the cell/text content with no label.
+        self.grid.SetName("CSV grid")
+        self.text_ctrl.SetName("CSV text")
 
         grid_sizer = wx.BoxSizer(wx.VERTICAL)
         grid_sizer.Add(self.grid, 1, wx.EXPAND)

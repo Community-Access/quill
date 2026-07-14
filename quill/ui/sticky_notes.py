@@ -212,6 +212,10 @@ class StickyNotesVaultDialog:
             self.dialog,
             style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.BORDER_SIMPLE,
         )
+        # No visible label row precedes the list or the preview (the text
+        # above is instructions, not a label), so the #1012 show-time naming
+        # pass has nothing to infer from — name them explicitly for VoiceOver.
+        self.list.SetName("Sticky notes")
         self.list.AppendColumn("Title", width=260)
         self.list.AppendColumn("Updated", width=180)
         self.list.AppendColumn("Preview", width=420)
@@ -222,6 +226,7 @@ class StickyNotesVaultDialog:
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.BORDER_SIMPLE,
             size=(-1, 140),
         )
+        self.preview.SetName("Note preview")
         root.Add(self.preview, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)

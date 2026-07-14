@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Sequence
 
+from quill.ui.accessible_names import ensure_accessible_names
+
 # Control classes that should receive initial keyboard focus when a custom
 # dialog opens, in priority order. These are the "content" controls a user came
 # to interact with — lists, trees, text fields, choices. Buttons (OK/Cancel)
@@ -291,6 +293,15 @@ def show_modal_dialog(
     exit_region: Callable[[str], None] | None = None,
 ) -> int:
     """Show a modal dialog with optional region and announcement hooks."""
+    # macOS VoiceOver announces a control only by its own accessible name;
+    # the neighbouring StaticText that Windows screen readers use is not
+    # linked (#1012). Every modal dialog routes through here, so inferring
+    # names at show time fixes all of them globally. Guarded: a naming
+    # failure must never block a dialog from opening.
+    try:
+        ensure_accessible_names(dialog)
+    except Exception:  # noqa: BLE001
+        pass
     speak_transitions = announce is not None and _transition_cues_enabled()
     if enter_region is not None:
         enter_region(label)

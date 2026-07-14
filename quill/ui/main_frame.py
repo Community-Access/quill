@@ -407,6 +407,7 @@ from quill.stability.memory_watch import should_trace_memory, start_memory_traci
 from quill.stability.task_manager import TaskManager
 from quill.stability.ui_responsiveness import mark_wx_main_thread
 from quill.stability.wx_heartbeat import HeartbeatState, WxHeartbeatTimer, WxHeartbeatWatchdog
+from quill.ui.accessible_names import ensure_accessible_names, set_accessible_name
 from quill.ui.context_help import ContextHelpMixin, warm_help_topics
 from quill.ui.csv_grid import CsvGridSurface
 from quill.ui.dialog_contract import (
@@ -12588,17 +12589,11 @@ class MainFrame(
                         if _spec.minimum is not None and _spec.maximum is not None:
                             s.SetRange(int(_spec.minimum), int(_spec.maximum))
                         s.SetValue(_cur)
-                        s.SetName(_spec.label)
                         # support#69: VoiceOver reads a SpinCtrl's inner TextCtrl
-                        # child, not the outer control's Name -- naming only the
-                        # outer control (as this did) left every "int" setting
-                        # (Read Aloud rate/volume/pitch and friends) announced with
-                        # no label on macOS. Mirrors the "float" kind's fix below
-                        # and voice_browser_dialog.py's Rate/Volume/Pitch fix.
-                        for _child in s.GetChildren():
-                            if isinstance(_child, wx.TextCtrl):
-                                _child.SetName(_spec.label)
-                                break
+                        # child, not the outer control's Name -- the helper names
+                        # both so every "int" setting (Read Aloud rate/volume/
+                        # pitch and friends) is announced with its label on macOS.
+                        set_accessible_name(s, _spec.label)
                         return s
 
                     spin = _add_field_row(parent_panel, sizer, spec.label, _make_spin_int)
@@ -12614,11 +12609,7 @@ class MainFrame(
                         if _spec.minimum is not None and _spec.maximum is not None:
                             s.SetRange(float(_spec.minimum), float(_spec.maximum))
                         s.SetValue(_cur)
-                        s.SetName(_spec.label)
-                        for _child in s.GetChildren():
-                            if isinstance(_child, wx.TextCtrl):
-                                _child.SetName(_spec.label)
-                                break
+                        set_accessible_name(s, _spec.label)
                         return s
 
                     spin = _add_field_row(parent_panel, sizer, spec.label, _make_spin_float)
@@ -13066,6 +13057,10 @@ class MainFrame(
                     return
                 _built_pages.add(idx)
                 _page_build_fns[idx]()
+                # Pages are built lazily, after show_modal_dialog's show-time
+                # naming pass already ran, so each freshly built page needs its
+                # own pass or its controls read as bare values on macOS (#1012).
+                ensure_accessible_names(dialog)
 
             if _page_build_fns:
                 _build_page(0)
