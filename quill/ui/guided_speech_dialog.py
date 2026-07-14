@@ -17,7 +17,7 @@ from collections.abc import Callable
 from typing import Any, Protocol
 
 from quill.core.speech.guided_setup import ModelChoice, OfflineSpeechEngineOption
-from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 
 
 class GuidedSpeechData(Protocol):
@@ -103,6 +103,7 @@ def show_guided_speech_setup(
     engine_detail = wx.TextCtrl(
         dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_NO_VSCROLL, size=(-1, 60)
     )
+    set_accessible_name(engine_detail, "Speech engine details")
     root.Add(engine_detail, 0, wx.ALL | wx.EXPAND, 8)
 
     root.Add(wx.StaticText(dialog, label="&Model"), 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)

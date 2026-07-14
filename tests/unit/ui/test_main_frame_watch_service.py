@@ -94,8 +94,11 @@ def test_watch_profile_editor_exposes_filters_and_schedule() -> None:
     # WATCH-5: per-profile suffix/name-pattern/min-size/min-age filters and schedule.
     assert 'suffix_input.SetName("File type suffixes, comma separated")' in WATCH_UI_SOURCE
     assert 'pattern_input.SetName("File name patterns, comma separated")' in WATCH_UI_SOURCE
-    assert 'size_input.SetName("Minimum file size in bytes")' in WATCH_UI_SOURCE
-    assert 'age_input.SetName("Minimum file age in seconds")' in WATCH_UI_SOURCE
+    # #1012: these two are SpinCtrl/SpinCtrlDouble, so they route through
+    # set_accessible_name (also names the composite's inner TextCtrl on
+    # macOS) instead of a bare .SetName(...) call.
+    assert 'set_accessible_name(size_input, "Minimum file size in bytes")' in WATCH_UI_SOURCE
+    assert 'set_accessible_name(age_input, "Minimum file age in seconds")' in WATCH_UI_SOURCE
     assert 'sched_choice.SetName("Schedule mode")' in WATCH_UI_SOURCE
     assert "sched_modes = [SCHED_ALWAYS, SCHED_WINDOW, SCHED_QUIET]" in WATCH_UI_SOURCE
     assert "name_patterns=name_patterns," in WATCH_UI_SOURCE

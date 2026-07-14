@@ -17,6 +17,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from quill.ui.dialog_contract import set_accessible_name
+
 # The community store for every shareable QUILL artifact type.
 QUILLIN_HUB_URL = "https://hub.quillforall.org"
 QUILLIN_HUB_SUBMIT_URL = QUILLIN_HUB_URL + "/forge/submit"
@@ -106,6 +108,7 @@ def open_hub_submission(
         style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP,
         size=(560, 300),
     )
+    set_accessible_name(text, "Submission check results")
     sizer.Add(text, 1, wx.EXPAND | wx.ALL, 8)
 
     buttons = wx.BoxSizer(wx.HORIZONTAL)

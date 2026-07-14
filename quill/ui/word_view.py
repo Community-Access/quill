@@ -10,6 +10,7 @@ from quill.io.pandoc import (
     PandocUnavailableError,
     convert_document_with_pandoc,
 )
+from quill.ui.dialog_contract import set_accessible_name
 
 
 def _normalize_whitespace(value: str) -> str:
@@ -235,10 +236,12 @@ class WordDocumentSurface:
             self._preview_page,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2,
         )
+        set_accessible_name(self.preview, "Word view preview")
         self.text_ctrl = wx.TextCtrl(
             self._text_page,
             style=wx.TE_MULTILINE | wx.TE_RICH2 | wx.TE_NOHIDESEL,
         )
+        set_accessible_name(self.text_ctrl, "Word document as text")
 
         preview_sizer = wx.BoxSizer(wx.VERTICAL)
         preview_sizer.Add(self.preview, 1, wx.EXPAND)

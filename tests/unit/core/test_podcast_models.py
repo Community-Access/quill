@@ -24,6 +24,18 @@ def test_settings_from_dict_defaults_on_missing_fields() -> None:
     assert settings.retention_count == 5
     assert settings.speed == 1.0
     assert settings.download_root == ""
+    assert settings.delete_files_on_remove == "ask"
+
+
+def test_settings_from_dict_rejects_unknown_delete_policy() -> None:
+    settings = PodcastSettings.from_dict({"delete_files_on_remove": "sometimes"})
+    assert settings.delete_files_on_remove == "ask"
+
+
+def test_settings_from_dict_accepts_known_delete_policies() -> None:
+    for policy in ("ask", "always", "never"):
+        settings = PodcastSettings.from_dict({"delete_files_on_remove": policy})
+        assert settings.delete_files_on_remove == policy
 
 
 def test_settings_from_dict_coerces_junk_numeric_fields() -> None:

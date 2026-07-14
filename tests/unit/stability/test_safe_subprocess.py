@@ -54,3 +54,26 @@ def test_empty_args_raises_value_error() -> None:
 def test_missing_cwd_raises_value_error(tmp_path) -> None:
     with pytest.raises(ValueError, match="existing directory"):
         run_subprocess_safely([sys.executable, "--version"], cwd=str(tmp_path / "nope"))
+
+
+def test_input_is_piped_to_child_stdin() -> None:
+    # A payload delivered on stdin has no OS command-line length limit, unlike
+    # an argv entry (Windows' ~32K CreateProcess limit) -- callers with large
+    # or unbounded-size payloads (e.g. a whole document's text) must be able
+    # to avoid ever building an oversized command line.
+    result = run_subprocess_safely(
+        [sys.executable, "-c", "import sys; print(sys.stdin.read())"],
+        input="hello from stdin",
+    )
+    assert result.stdout.strip() == "hello from stdin"
+    assert result.returncode == 0
+
+
+def test_large_input_exceeding_argv_limit_still_succeeds() -> None:
+    large_payload = "x" * 200_000  # far beyond Windows' ~32K argv limit
+    result = run_subprocess_safely(
+        [sys.executable, "-c", "import sys; sys.stdout.write(str(len(sys.stdin.read())))"],
+        input=large_payload,
+    )
+    assert result.stdout.strip() == str(len(large_payload))
+    assert result.returncode == 0

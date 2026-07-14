@@ -32,7 +32,13 @@ def autosave_document(document: Document, session_id: str, max_snapshots: int = 
     # user would recover a half-written document instead of the last good one.
     from quill.core.storage import write_text_atomic
 
-    write_text_atomic(target, document.text, encoding=document.encoding, newline="")
+    # Always UTF-8, never document.encoding: a snapshot is a recovery-only
+    # artifact with no round-trip-fidelity requirement (unlike the real save
+    # path's BRF byte-for-byte contract), and recovery.read_recovery_snapshot
+    # always decodes it as UTF-8. A narrower document.encoding (e.g. "ascii"
+    # for a BRF read) would raise UnicodeEncodeError the moment the in-memory
+    # text gained a character outside that range -- crashing autosave itself.
+    write_text_atomic(target, document.text, encoding="utf-8", newline="")
 
     snapshots = sorted(autosave_root.glob(f"{key}-*.snap"), reverse=True)
     for stale in snapshots[max_snapshots:]:
