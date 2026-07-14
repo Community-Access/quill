@@ -31012,12 +31012,31 @@ friendly names to the correct tables, and the translation runtime
 itself.</p>
 <p>The pack is not bundled by default. When it is absent, the
 <strong>Translation</strong> submenu is hidden so you never see disabled
-items. When the pack is installed, the Translation submenu is dynamic
-and organized into sections:</p>
+items. When the pack is installed, the Translation submenu leads with
+the two commands most people actually want, then the explicit sections
+underneath:</p>
 <ul>
+<li><strong>Back-Translate to Text (Auto-Detect Code)</strong> — the
+magical path. You do not need to know whether your braille is UEB Grade
+2, UEB Grade 1, legacy American (EBAE) Grade 1 or 2, or computer
+braille: QUILL back-translates a sample of the document (or your
+selection) through every candidate code, scores how much each result
+reads like real English, and picks the winner. It announces what it
+found — for example, "Detected UEB Grade 2 (contracted)" — so you learn
+what your file is instead of being asked. When a file is uncontracted,
+QUILL says Grade 1 even though the Grade 2 table would also have worked;
+the honest answer wins ties.</li>
+<li><strong>Convert BRF File to Document...</strong> — one command from
+a braille file on disk to a readable document. Pick any
+<code>.brf</code> or <code>.brl</code> file; QUILL detects its code,
+back-translates the whole file, and opens the result as a draft —
+without you opening the braille file first. Because the draft is a
+normal document, <strong>Save As</strong> then exports it to Markdown,
+HTML, Word (<code>.docx</code>), or plain text. BRF in, any format
+out.</li>
 <li><strong>UEB (Unified English Braille)</strong> — Contracted (Grade
 2), Uncontracted (Grade 1), Translate Selection to UEB, and
-Back-Translate UEB.</li>
+Back-Translate UEB (the explicit, no-detection variant).</li>
 <li><strong>Standard American English (Legacy)</strong> — Contracted
 (Grade 2) and Uncontracted (Grade 1) using the traditional North
 American English tables.</li>
@@ -31038,6 +31057,12 @@ selection. N words. Review against the BRF."). Translation runs entirely
 out of process, so a liblouis failure can never take QUILL down; if it
 fails, QUILL announces the reason and does not open an empty document.
 The Translation submenu is also hidden in Safe Mode.</p>
+<p>Translation works the same from an installed build, the portable
+build, or a source checkout: the pack ships its own translation engine
+(the <code>lou_translate</code> tool alongside the tables), and QUILL
+uses it directly — no separately installed Python liblouis binding is
+required (though one is used automatically when present, as it is
+slightly faster).</p>
 <h2 id="help-learning-and-daily-confidence">Help, Learning, and Daily
 Confidence</h2>
 <p>Quill includes several layers of help because confidence does not
