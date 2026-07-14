@@ -34,7 +34,7 @@ dependencies = [
     "platform_utils>=1.6.2",
     # Windows has no system IANA timezone database, so stdlib zoneinfo needs
     # this package to resolve real zone names (publishing schedule dialog).
-    "tzdata>=2026.2",
+    "tzdata>=2026.3",
     # Native .docx reading/writing without requiring Pandoc.
     "python-docx>=1.2.0",
     # Hugging Face Hub client. NOT optional: the default, out-of-the-box
@@ -194,7 +194,7 @@ pages = ["keynote-parser>=1.14.4.0"]
 # forced on installs that never touch it.
 pdf-ocr = [
     "markitdown[docx,pptx,xlsx,xls,pdf]>=0.1.6",
-    "pdfplumber>=0.11.9",
+    "pdfplumber>=0.11.10",
     "pypdf>=6.11.0",
 ]
 # GLOW document accessibility engine (audit / fix / convert for docx, pptx,
@@ -237,7 +237,7 @@ github = [
 # always works without any of these.
 ai-copilot = ["github-copilot-sdk>=1.0"]  # PyPI package; imports as `copilot`
 ai-claude = ["claude-agent-sdk>=0.2.110"]
-ai-openai = ["openai-agents>=0.17.7"]
+ai-openai = ["openai-agents>=0.18.2"]
 # Build-time only: compile the optional Table Studio native UIA provider
 # (quill/native/table_uia -> _quill_table_uia.pyd). Also needs MSVC + the
 # Windows 10 SDK + CMake. Not required at runtime (MSAA fallback ships).
@@ -247,7 +247,7 @@ dev = [
   "pytest-xdist>=3.8.0",
   "pytest-timeout>=2.4.0",
   "pytest-cov>=7.1.0",
-  "ruff>=0.15.20",
+  "ruff>=0.15.21",
   "mypy>=2.1.0",
   # I18N: string extraction, .po update, .mo compile
   "Babel>=2.18.0",

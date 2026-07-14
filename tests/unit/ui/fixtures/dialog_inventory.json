@@ -271,6 +271,7 @@
   "quill/ui/main_frame.py::MainFrame.show_watch_folder_status::wx.Dialog": "hardened_custom",
   "quill/ui/main_frame.py::MainFrame.spell_check_word_at_cursor::wx.SingleChoiceDialog": "native",
   "quill/ui/main_frame.py::MainFrame.start_macro_recording::wx.TextEntryDialog": "native",
+  "quill/ui/main_frame_braille.py::BrailleCommandsMixin.convert_brf_file::wx.FileDialog": "native",
   "quill/ui/main_frame_braille.py::BrailleCommandsMixin.go_to_braille_page::wx.TextEntryDialog": "native",
   "quill/ui/main_frame_braille_phase2.py::BraillePhase2CommandsMixin.go_to_print_page::wx.TextEntryDialog": "native",
   "quill/ui/main_frame_braille_phase3.py::BrailleProofingCommandsMixin._show_pages_list::wx.SingleChoiceDialog": "native",

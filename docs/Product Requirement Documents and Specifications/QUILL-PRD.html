@@ -8775,70 +8775,6 @@ QUILL keeps formatting codes hidden so the editing buffer stays clean plain text
 
 ---
 
-### 5.89e Standalone companion apps — Quill Radio and QUILL Cast
-
-**Goal.** Radio and Podcasts are useful without the editor: someone who wants
-to listen to internet radio or manage a podcast queue should not have to load
-all of QUILL to do it. Quill Radio and QUILL Cast are small standalone
-executables — their own window, their own menu bar, their own system tray
-icon — that reuse QUILL&#39;s feature code *unchanged* rather than forking it.
-
-**Architecture (`quill/ui/app_shell.py` + `quill/apps/`).** The feature
-mixins `MainFrame` already uses (`RadioMixin`, `PodcastsMixin`) only ever
-touch a small, fixed host protocol on their owner: `self.frame`, `self._wx`,
-`self._safe_mode`, `self._task_manager`, `self._announce`,
-`self._show_message_box`, `self._set_status`, `self.settings`,
-`self.commands`, `self._binding_for`, `self._refresh_statusbar`.
-`AppShellFrame` implements exactly that protocol over a plain `wx.Frame`, so
-`class RadioAppFrame(AppShellFrame, RadioMixin)` gets the entire feature —
-commands, dialogs, favorites, recording, scheduling — with zero changes to
-the mixin. Consequences that matter:
-
-- **No fork, ever.** A bug fix or feature added to `quill/core/radio`,
-  `quill/core/podcasts`, or the shared dialogs lands in the standalone apps
-  automatically — same modules, same imports.
-- **One data store.** The apps load the same `core.settings`/`core.keymap`
-  and read/write the same favorites, subscription library, and download
-  state under `app_data_dir()` — what you subscribe to in QUILL Cast is
-  subscribed in QUILL, with no sync layer.
-- **Same accessibility contract.** Announcements route through the same
-  `AnnouncementEngine`; dialogs keep their existing keyboard/naming
-  behavior because they are the same dialog classes.
-
-**Per-app surfaces.**
-
-- **Quill Radio** (`python -m quill.apps.radio`; `run-quill-radio.bat` from
-  source). Menu bar: Station (Browse Stations, Add Custom Station, Find
-  Streams from a Website, Favorite Stations inline), Playback (disabled
-  now-playing status line, Play/Pause, Stop, Mute, Volume Up/Down), Record
-  (Record Now/Stop, Schedule Recording, Recording Settings), Help (Open in
-  Quill, About). Tray icon: Show/Exit plus the same radio section
-  (`_build_radio_tray_menu`) QUILL&#39;s own tray shows.
-- **QUILL Cast** (`python -m quill.apps.podcasts`; `run-quill-cast.bat`).
-  Menu bar: Subscriptions (Open Podcast Manager, Add Podcast, Import/Export
-  OPML, Podcast Settings), Episode (now-playing line, Play/Pause, Stop,
-  Next/Previous Chapter), Downloads (Pause All / Resume All), Help. Tray
-  icon mirrors QUILL&#39;s podcast tray section. One behavioral override: &quot;Send
-  Show Notes to Editor&quot; copies to the clipboard instead (there is no editor
-  buffer standalone), announced as such.
-
-**Open in Quill.** Both apps carry a Help &gt; Open in Quill command that
-launches the full editor as a separate process (v1: always a new process; a
-focus-existing-instance IPC variant is deliberately deferred — see
-`docs/planning/apps.md`).
-
-**Platform notes.** The tray icon follows `MainFrame`&#39;s own rule: on macOS,
-`wx.adv.TaskBarIcon` produces a Dock tile rather than a menu-bar extra, so
-the apps skip the tray there instead of misrepresenting it. `QUILL_SAFE_MODE`
-is honored on launch.
-
-**Non-goals (v1).** No installer Start-Menu shortcuts yet (run from source
-or the batch launchers while the apps are validated); no single-instance
-enforcement; no Audio Studio standalone app yet — the phased plan, including
-those, lives in `docs/planning/apps.md`.
-
----
-
 ### 5.90 AI Writing Toolkit: architecture and feature matrix
 
 This section documents the AI writing layer shipped in QUILL 0.6.0, covering provider abstraction, the connection model, per-feature design, and the data-disclosure posture.
@@ -15493,6 +15429,51 @@ The Translation submenu is shown only when the pack is detected and
 QUILL is not in Safe Mode; otherwise it is hidden (never disabled).
 Back- translation output is always labelled a <em>draft</em>. On worker
 failure QUILL announces the reason and opens no empty document.</p></li>
+<li><p><strong>Two translation backends, one contract
+(BR-021a).</strong> Inside the worker subprocess, translation tries the
+python <code>louis</code> binding first (fastest, when someone installed
+it) and falls back to the pack's own <code>lou_translate</code> CLI
+(text over stdin/stdout, tables resolved to absolute paths inside the
+pack). The pack has always shipped that binary; the CLI fallback is what
+makes translation work identically from an installed build, the portable
+build, and a source checkout, with no separately installed binding. A
+per-invocation timeout inside the worker guarantees a wedged CLI can
+never wedge the worker (whose caller enforces its own timeout on
+top).</p></li>
+<li><p><strong>Braille-code auto-detection (BR-025).</strong> The user
+is never asked which braille code a file is in.
+<code>quill/core/braille_detect.py</code> back-translates a sample of
+the document through every candidate table — UEB Grade 2, UEB Grade 1,
+EBAE (legacy American) Grade 2 and Grade 1, and 8-dot computer braille —
+in <strong>one</strong> worker launch (the worker's <code>detect</code>
+command), scores each result for English-likeness (common-word hit rate,
+weight 0.7, plus clean-character ratio, weight 0.3), and picks the
+winner. Tie rule: uncontracted braille back-translates identically
+through the contracted table, so when the Grade 1 and Grade 2 outputs
+are byte-identical the detection reports Grade 1 — the honest label. The
+detection (table, label, score, full ranking) is announced to the user
+("Detected UEB Grade 2 (contracted)"), so detection teaches rather than
+asks. Scoring is pure and unit-tested without any subprocess.</p></li>
+<li><p><strong>Magical back-translation and BRF conversion
+(BR-026).</strong></p>
+<ul>
+<li><strong>Back-Translate to Text (Auto-Detect Code)</strong>
+(<code>braille.back_translate_auto</code>) leads the Translation
+submenu: detects the code of the selection (or the whole document),
+back-translates with the winning table, and opens the draft with the
+detection named in the announcement.</li>
+<li><strong>Convert BRF File to Document...</strong>
+(<code>braille.convert_brf_file</code>) is the one-shot file path: pick
+any <code>.brf</code>/<code>.brl</code> file on disk, QUILL detects its
+code, back-translates the whole file, and opens the result as a draft —
+the file never has to be opened in Braille Mode first. Because the draft
+is a normal document, <strong>Save As</strong> exports it to Markdown,
+HTML, Word (<code>.docx</code>), or plain text: BRF in, any format
+out.</li>
+<li>The explicit per-table commands (UEB G1/G2, EBAE G1/G2,
+Back-Translate UEB) remain for users who know exactly what they
+want.</li>
+</ul></li>
 <li><p><strong>Layout diagnostics and repair (BR-024, NLS-BRT
 parity).</strong> A <strong>Braille → Repair</strong> submenu brings the
 NLS Braille Repair Tool's proofreading workflow to QUILL for the two

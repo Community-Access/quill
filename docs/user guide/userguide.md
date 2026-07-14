@@ -7809,13 +7809,17 @@ Every status, navigation, and layout command is safe to run on a non-braille doc
 
 **Translation (Universal BRF Pack).** Forward and back translation between print text and braille require the optional **QUILL Braille Pack**. Instead of a simple set of tables, the pack uses a three-layer architecture: a full technical catalog of every available liblouis table, a set of user-facing profiles that map friendly names to the correct tables, and the translation runtime itself.
 
-The pack is not bundled by default. When it is absent, the **Translation** submenu is hidden so you never see disabled items. When the pack is installed, the Translation submenu is dynamic and organized into sections:
+The pack is not bundled by default. When it is absent, the **Translation** submenu is hidden so you never see disabled items. When the pack is installed, the Translation submenu leads with the two commands most people actually want, then the explicit sections underneath:
 
-- **UEB (Unified English Braille)** — Contracted (Grade 2), Uncontracted (Grade 1), Translate Selection to UEB, and Back-Translate UEB.
+- **Back-Translate to Text (Auto-Detect Code)** — the magical path. You do not need to know whether your braille is UEB Grade 2, UEB Grade 1, legacy American (EBAE) Grade 1 or 2, or computer braille: QUILL back-translates a sample of the document (or your selection) through every candidate code, scores how much each result reads like real English, and picks the winner. It announces what it found — for example, "Detected UEB Grade 2 (contracted)" — so you learn what your file is instead of being asked. When a file is uncontracted, QUILL says Grade 1 even though the Grade 2 table would also have worked; the honest answer wins ties.
+- **Convert BRF File to Document...** — one command from a braille file on disk to a readable document. Pick any `.brf` or `.brl` file; QUILL detects its code, back-translates the whole file, and opens the result as a draft — without you opening the braille file first. Because the draft is a normal document, **Save As** then exports it to Markdown, HTML, Word (`.docx`), or plain text. BRF in, any format out.
+- **UEB (Unified English Braille)** — Contracted (Grade 2), Uncontracted (Grade 1), Translate Selection to UEB, and Back-Translate UEB (the explicit, no-detection variant).
 - **Standard American English (Legacy)** — Contracted (Grade 2) and Uncontracted (Grade 1) using the traditional North American English tables.
 - **More Languages** — a submenu populated automatically from the installed pack's profile catalog. Languages with multiple profiles (for example, contracted and uncontracted variants) appear as their own sub-group. Examples include German, French, Spanish, Russian, Korean, and dozens more.
 
 Forward translation opens the BRF result in a new document and tells you how many braille pages it produced. Back-translation always opens its result as a clearly labeled **draft** because no automatic back-translation is authoritative; it back-translates your **selection** when you have one selected (so you can recover the source text of a single passage) and the whole document otherwise, telling you which it used ("Back-translation draft from selection. N words. Review against the BRF."). Translation runs entirely out of process, so a liblouis failure can never take QUILL down; if it fails, QUILL announces the reason and does not open an empty document. The Translation submenu is also hidden in Safe Mode.
+
+Translation works the same from an installed build, the portable build, or a source checkout: the pack ships its own translation engine (the `lou_translate` tool alongside the tables), and QUILL uses it directly — no separately installed Python liblouis binding is required (though one is used automatically when present, as it is slightly faster).
 
 ## Help, Learning, and Daily Confidence
 

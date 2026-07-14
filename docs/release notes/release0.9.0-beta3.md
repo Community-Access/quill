@@ -293,6 +293,16 @@ A community member reported back-translation appearing to do nothing at all on a
 
 The request now travels over the worker's standard input instead, which carries no such limit. A translation failure now also opens a visible dialog, not just a spoken announcement that was easy to miss entirely if you weren't listening for it at that exact moment.
 
+### Braille translation becomes magical: your file's code is detected, never asked
+
+The same community conversation surfaced a bigger truth: back-translation demanded that you already know which braille code your file uses — UEB or the legacy American tables, Grade 1 or Grade 2 — and importing or exporting a BRF file felt like assembling the pieces yourself. That knowledge burden is now gone.
+
+**Back-Translate to Text (Auto-Detect Code)** leads the Translation submenu. QUILL samples your document (or just your selection), tries every English braille code it knows — UEB Grade 2, UEB Grade 1, Standard American (EBAE) Grade 1 and 2, and 8-dot computer braille — scores how much each attempt reads like real English, and announces the winner: "Detected UEB Grade 2 (contracted)." You learn what your file is; you are never quizzed about it. And when a file is uncontracted, QUILL tells you Grade 1 even though the Grade 2 table would also have decoded it, because the honest answer wins ties.
+
+**Convert BRF File to Document...** is the new one-command path from a braille file on disk to something you can read, edit, and share. Pick any `.brf` or `.brl` file — QUILL detects its code, back-translates the whole file, and opens the result as a clearly labeled draft. From there, **Save As** exports it to Markdown, HTML, Word, or plain text. BRF in, any format out.
+
+Underneath both: the translation engine now works from **every** kind of install. Previously, the worker required a Python liblouis binding that no QUILL installer, portable build, or source checkout actually installs — so translation could fail with "liblouis is not installed" even when the braille pack was sitting right there. The worker now uses the pack's own bundled `lou_translate` engine directly whenever the binding is absent. Same pack, same tables, no extra installation step, on every platform QUILL ships for.
+
 ### Insert > Date and Time's submenu now actually opens
 
 Jayson Smith reported it precisely: open the Insert menu, arrow up to **Date and Time**, press Right Arrow to open the submenu, and land in the **Format** menu instead.

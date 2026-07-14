@@ -30870,50 +30870,6 @@ Transcript viewing/export (the feed already reads Podcasting 2.0
 transcript URLs, ready for this), a separate Inbox view, a cross-show
 Play Queue, and local (imported-file) podcasts are planned next — see
 <code>docs/planning/podcasts.md</code> for the full phased plan.</p>
-<h2 id="quill-radio-and-quill-cast-the-standalone-apps">Quill Radio and
-QUILL Cast: the standalone apps</h2>
-<p>You don't have to open the full QUILL editor to listen. <strong>Quill
-Radio</strong> and <strong>QUILL Cast</strong> run Internet Radio and
-Podcasts as small standalone apps — their own window, their own menu
-bar, their own system tray icon.</p>
-<p>They are the same features, not copies: both apps run the exact same
-code QUILL itself uses, and read the same settings, favorites, and
-podcast subscriptions from the same place on disk. A station you
-favorite in Quill Radio is a favorite in QUILL; a show you subscribe to
-in QUILL Cast is subscribed everywhere. Everything described in the
-Internet Radio and Podcasts chapters above — the station browser, the
-link finder, recording and scheduled recording, the Podcast Manager,
-OPML import/export, downloads with pause/resume, chapter navigation —
-works identically here.</p>
-<ul>
-<li><strong>Quill Radio</strong> — launch with
-<code>run-quill-radio.bat</code> (or
-<code>python -m quill.apps.radio</code>). Menus:
-<strong>Station</strong> (Browse Stations, Add Custom Station, Find
-Streams from a Website, and your Favorite Stations listed inline so
-switching is one keystroke), <strong>Playback</strong> (a live
-now-playing line, Play/Pause with Ctrl+P, Stop, Mute, volume),
-<strong>Record</strong> (Record Now / Stop, Schedule Recording,
-Recording Settings), and <strong>Help</strong>.</li>
-<li><strong>QUILL Cast</strong> — launch with
-<code>run-quill-cast.bat</code> (or
-<code>python -m quill.apps.podcasts</code>). Menus:
-<strong>Subscriptions</strong> (Open Podcast Manager with Ctrl+M, Add
-Podcast, Import/Export OPML, Podcast Settings), <strong>Episode</strong>
-(a live now-playing line, Play/Pause, Stop, Next/Previous Chapter),
-<strong>Downloads</strong> (Pause All / Resume All), and
-<strong>Help</strong>. One difference from inside QUILL: "Send Show
-Notes to Editor" copies the notes to the clipboard instead — there is no
-editor buffer standalone — and announces that it did.</li>
-</ul>
-<p>Both apps put an icon in the system tray with the same radio or
-podcast controls QUILL's own tray icon offers, plus
-<strong>Show</strong> (double-click also works) and
-<strong>Exit</strong>. And when you decide you want the full editor
-after all, <strong>Help &gt; Open in Quill</strong> launches it.</p>
-<p>The apps respect Safe Mode (<code>QUILL_SAFE_MODE=1</code>) and skip
-the tray icon on macOS, where the system has no equivalent
-notification-area icon (the same rule QUILL itself follows).</p>
 <h2 id="sleep-timer">Sleep Timer</h2>
 <p><strong>Tools &gt; Media &gt; Sleep Timer...</strong> covers both
 Internet Radio and Podcasts from one place, since it isn't specific to
@@ -31056,12 +31012,31 @@ friendly names to the correct tables, and the translation runtime
 itself.</p>
 <p>The pack is not bundled by default. When it is absent, the
 <strong>Translation</strong> submenu is hidden so you never see disabled
-items. When the pack is installed, the Translation submenu is dynamic
-and organized into sections:</p>
+items. When the pack is installed, the Translation submenu leads with
+the two commands most people actually want, then the explicit sections
+underneath:</p>
 <ul>
+<li><strong>Back-Translate to Text (Auto-Detect Code)</strong> — the
+magical path. You do not need to know whether your braille is UEB Grade
+2, UEB Grade 1, legacy American (EBAE) Grade 1 or 2, or computer
+braille: QUILL back-translates a sample of the document (or your
+selection) through every candidate code, scores how much each result
+reads like real English, and picks the winner. It announces what it
+found — for example, "Detected UEB Grade 2 (contracted)" — so you learn
+what your file is instead of being asked. When a file is uncontracted,
+QUILL says Grade 1 even though the Grade 2 table would also have worked;
+the honest answer wins ties.</li>
+<li><strong>Convert BRF File to Document...</strong> — one command from
+a braille file on disk to a readable document. Pick any
+<code>.brf</code> or <code>.brl</code> file; QUILL detects its code,
+back-translates the whole file, and opens the result as a draft —
+without you opening the braille file first. Because the draft is a
+normal document, <strong>Save As</strong> then exports it to Markdown,
+HTML, Word (<code>.docx</code>), or plain text. BRF in, any format
+out.</li>
 <li><strong>UEB (Unified English Braille)</strong> — Contracted (Grade
 2), Uncontracted (Grade 1), Translate Selection to UEB, and
-Back-Translate UEB.</li>
+Back-Translate UEB (the explicit, no-detection variant).</li>
 <li><strong>Standard American English (Legacy)</strong> — Contracted
 (Grade 2) and Uncontracted (Grade 1) using the traditional North
 American English tables.</li>
@@ -31082,6 +31057,12 @@ selection. N words. Review against the BRF."). Translation runs entirely
 out of process, so a liblouis failure can never take QUILL down; if it
 fails, QUILL announces the reason and does not open an empty document.
 The Translation submenu is also hidden in Safe Mode.</p>
+<p>Translation works the same from an installed build, the portable
+build, or a source checkout: the pack ships its own translation engine
+(the <code>lou_translate</code> tool alongside the tables), and QUILL
+uses it directly — no separately installed Python liblouis binding is
+required (though one is used automatically when present, as it is
+slightly faster).</p>
 <h2 id="help-learning-and-daily-confidence">Help, Learning, and Daily
 Confidence</h2>
 <p>Quill includes several layers of help because confidence does not
