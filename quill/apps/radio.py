@@ -60,9 +60,13 @@ class RadioAppFrame(AppShellFrame, RadioMixin, AdpMixin, UnlockCodesMixin):
         self._favorites_list.Bind(wx.EVT_KEY_DOWN, self._on_favorites_key)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
+        # One transport button, not two: it reads Play when idle and Stop
+        # while connecting/playing, so the panel never shows a dead button.
+        self._play_stop_btn = wx.Button(panel, label="&Play")
+        set_accessible_name(self._play_stop_btn, "Play")
+        self._play_stop_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_play_stop_button())
+        buttons.Add(self._play_stop_btn, 0, wx.RIGHT, 6)
         for label, handler in (
-            ("&Play/Pause", lambda _e: self.radio_toggle_play_pause()),
-            ("&Stop", lambda _e: self.radio_stop()),
             ("&Record", lambda _e: self.radio_record_toggle()),
             ("&Browse Stations...", lambda _e: self.open_internet_radio()),
         ):
@@ -82,6 +86,30 @@ class RadioAppFrame(AppShellFrame, RadioMixin, AdpMixin, UnlockCodesMixin):
             self._play_selected_favorite()
             return
         event.Skip()
+
+    def _on_play_stop_button(self) -> None:
+        from quill.ui.radio.player_controller import RadioPlayerState
+
+        state = self._radio_controller.state.state
+        if state in (RadioPlayerState.PLAYING, RadioPlayerState.CONNECTING):
+            self.radio_stop()
+        elif state is RadioPlayerState.PAUSED:
+            self.radio_toggle_play_pause()
+        else:
+            self._play_selected_favorite()
+
+    def _refresh_play_stop_button(self) -> None:
+        from quill.ui.radio.player_controller import RadioPlayerState
+
+        button = getattr(self, "_play_stop_btn", None)
+        if button is None:
+            return
+        state = self._radio_controller.state.state
+        stopping = state in (RadioPlayerState.PLAYING, RadioPlayerState.CONNECTING)
+        label = "&Stop" if stopping else "&Play"
+        if button.GetLabel() != label:
+            button.SetLabel(label)
+            set_accessible_name(button, "Stop" if stopping else "Play")
 
     def _play_selected_favorite(self) -> None:
         index = self._favorites_list.GetSelection()
@@ -203,6 +231,7 @@ class RadioAppFrame(AppShellFrame, RadioMixin, AdpMixin, UnlockCodesMixin):
         now_playing = getattr(self, "_now_playing_text", None)
         if now_playing is not None:
             now_playing.SetLabel(text)
+        self._refresh_play_stop_button()
         if getattr(self, "_favorites_list", None) is not None:
             self._reload_favorites_list()
 
