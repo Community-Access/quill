@@ -226,8 +226,7 @@ def test_find_error_evidence_returns_marker_with_context(tmp_path: Path) -> None
         "Traceback (most recent call last):\n"
         '  File "main_frame.py", line 42, in on_click\n'
         "ValueError: boom\n"
-        "2026-07-10 10:22:42 INFO after\n"
-        + ("2026-07-10 10:22:43 INFO padding line\n" * 50),
+        "2026-07-10 10:22:42 INFO after\n" + ("2026-07-10 10:22:43 INFO padding line\n" * 50),
         encoding="utf-8",
     )
     excerpt = find_error_evidence(logs_dir)

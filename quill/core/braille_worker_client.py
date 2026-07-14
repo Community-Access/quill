@@ -69,9 +69,7 @@ def _invoke(request: dict[str, str], *, timeout: float) -> dict[str, str]:
         # command-line-length limit, which made back/forward-translating any
         # sizeable document fail to launch at all (silently, from the user's
         # perspective -- confirmed by a live report on a ~450KB BRF file).
-        completed = run_subprocess_safely(
-            _worker_command(), timeout_seconds=timeout, input=payload
-        )
+        completed = run_subprocess_safely(_worker_command(), timeout_seconds=timeout, input=payload)
     except subprocess.TimeoutExpired as exc:
         _last_error = "worker timed out"
         raise WorkerTimeoutError("liblouis worker timed out") from exc
