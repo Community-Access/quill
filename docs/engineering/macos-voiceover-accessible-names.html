@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>macos-voiceover-accessible-names</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="macos-voiceover-accessible-names-1012">macOS VoiceOver
+accessible names (#1012)</h1>
+<p><strong>Status:</strong> implemented and live-validated under
+VoiceOver (2026-07-14): labels announce across the Settings dialog,
+hand-rolled dialogs, and the editor. One known limitation: the stepper
+half of a spin composite still announces nameless despite receiving the
+propagated name — deliberately deferred, since the stepper always
+follows its labeled edit field and this is no worse than the pre-fix
+behaviour.</p>
+<h2 id="the-problem">The problem</h2>
+<p>On macOS, most input controls in Settings and other dialogs were
+announced by VoiceOver with only their <em>value</em> — the Font size
+spin box read "0", the SSH port read "22" — with no indication of what
+the value was for.</p>
+<p>The same controls read correctly on Windows because NVDA/JAWS infer a
+control's name from the neighbouring <code>wx.StaticText</code> (and the
+<code>&amp;</code>-mnemonic), and wxMSW exposes that association through
+MSAA/UIA. <strong>VoiceOver does not synthesize that
+association</strong>: a control is announced only by its own
+<code>NSAccessibility</code> label — and wxOSX never sets one. Two root
+causes:</p>
+<ul>
+<li><strong>Cause A</strong> — the control relies on a neighbouring
+<code>StaticText</code> and never calls <code>SetName()</code>.</li>
+<li><strong>Cause B</strong> — <code>wx.SpinCtrl</code> /
+<code>wx.SpinCtrlDouble</code> on macOS is a composite (inner
+<code>NSTextField</code> + stepper). VoiceOver lands on the inner text
+field, which does <strong>not</strong> inherit the composite's name, so
+even spin controls that set a name read as a bare number
+(support#69).</li>
+</ul>
+<h3 id="the-mechanism-learned-the-hard-way">The mechanism (learned the
+hard way)</h3>
+<p>Issue #1012 assumed wxOSX maps <code>wx.Window.SetName</code> to the
+NSAccessibility label. <strong>Live VoiceOver testing disproved
+that</strong>: wx's accessibility plumbing (<code>wxAccessible</code>)
+is MSW-only, and wxOSX bridges <em>nothing</em> into NSAccessibility —
+every <code>SetName</code> in the codebase (including the two "working"
+workarounds the issue cited) was inaudible on macOS. The existing #616
+editor role pin was likewise a silent no-op: on macOS
+<code>GetHandle()</code> returns the <code>NSView</code> as a bare
+<em>integer</em>, and calling
+<code>getattr(int, "setAccessibilityRole_")</code> finds nothing.</p>
+<p>What actually talks to VoiceOver: wrap the handle with PyObjC —
+<code>objc.objc_object(c_void_p=ctrl.GetHandle())</code> — and call
+<code>setAccessibilityLabel_(name)</code> on the resulting
+<code>NSView</code> (for multiline text controls, also on the scroll
+view's <code>documentView</code>, which is what VoiceOver focuses).
+PyObjC is already bundled by the <code>[macos]</code> extra.
+<code>SetName</code> is still applied everywhere (it feeds the label
+inference, tests, and the Alt+F1 announcer), but the native push is the
+part macOS hears.</p>
+<p>Second-round VoiceOver findings folded in: controls that were
+<em>already</em> explicitly named (the Settings Theme choice etc.) get
+their existing wx name pushed natively during the show-time walk (a
+direct <code>SetName</code> call alone never reaches NSAccessibility),
+and composite propagation covers the spin control's
+<code>SpinButton</code> stepper — VoiceOver walks it as its own object
+right after the edit field.</p>
+<h2 id="the-fix--one-global-mechanism-not-per-site-edits">The fix — one
+global mechanism, not per-site edits</h2>
+<p>Everything lives in <code>quill/ui/accessible_names.py</code>:</p>
+<ul>
+<li><code>ensure_accessible_names(root)</code> walks a widget tree in
+creation order and gives every <em>labelable</em> control (text fields,
+choices, combos, lists, trees, spins, sliders, gauges, pickers — see
+<code>_LABELABLE_CLASSES</code>) that still has wx's <em>default</em>
+window name an accessible name inferred from the nearest preceding
+<code>StaticText</code> — the same association Windows already makes.
+Mnemonics (<code>&amp;</code>), trailing <code>:</code> and ellipses are
+stripped. Composite controls (Cause B) propagate their name onto their
+default-named inner children — including spins that were already named
+composite-only.</li>
+<li><code>set_accessible_name(ctrl, label)</code> is the explicit
+per-control helper for surfaces the walker cannot reach; it performs the
+same cleanup and inner child propagation.</li>
+</ul>
+<h3 id="where-the-walker-runs">Where the walker runs</h3>
+<ol type="1">
+<li><strong><code>quill.ui.dialog_contract.show_modal_dialog</code></strong>
+— the choke point every modal dialog already routes through
+(<code>MainFrame._show_modal_dialog</code> delegates here; standalone
+dialogs call it directly). This fixes all ~120 previously unnamed dialog
+controls at show time with no per-site edits, and covers future dialogs
+automatically. The call is guarded — a naming failure can never block a
+dialog from opening.</li>
+<li><strong>Settings lazy pages</strong> — the Settings dialog builds
+pages on first selection, <em>after</em> the show-time pass, so
+<code>_build_page</code> in
+<code>main_frame.open_general_preferences</code> re-runs the walker
+after each page builds (idempotent).</li>
+</ol>
+<h3 id="hard-safety-rules">Hard safety rules</h3>
+<ul>
+<li><strong>Explicit names are never overwritten.</strong> Window names
+are overloaded in QUILL: F1 context help uses <code>GetName()</code> as
+its topic key (<code>quill/ui/context_help.py</code>, e.g.
+<code>name="wizard.kb_pack_choice"</code>), and
+<code>quill/ui/audio_studio/wizard.py</code> locates widgets with
+<code>FindWindowByName</code>. The walker touches only controls whose
+name is still a wx default (<code>"text"</code>, <code>"choice"</code>,
+<code>"wxSpinCtrl"</code>, ...).</li>
+<li><strong>Prose is not a label.</strong> A <code>StaticText</code>
+longer than 60 characters or containing a sentence break is treated as
+instructions: it never becomes a control name, and it clears any pending
+label.</li>
+<li><strong>Names are applied on all platforms.</strong> wxMSW stores
+the window name as an inert string — MSAA/UIA never read it — so Windows
+screen-reader behaviour is unchanged (verified: NVDA/JAWS names come
+from the native label association, not the wx name). Running everywhere
+keeps the walker exercised by Windows CI.</li>
+</ul>
+<h2 id="the-gate--new-controls-cannot-regress">The gate — new controls
+cannot regress</h2>
+<p><code>quill/tools/accessible_name_audit.py</code> AST-scans every
+<code>quill/**/*.py</code> for labelable-control constructions and
+compares against the committed snapshot
+<code>tests/unit/ui/fixtures/accessible_name_inventory.json</code>
+(gate: <code>tests/unit/ui/test_accessible_name_inventory.py</code>).
+Each site is classified:</p>
+<table>
+<thead>
+<tr>
+<th>Status</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>named</code></td>
+<td>Names itself inline (constructor <code>name=</code>,
+<code>SetName</code>, or <code>set_accessible_name</code>) —
+auto-verified by the scan.</td>
+</tr>
+<tr>
+<td><code>modal-hook</code></td>
+<td>Lives in a dialog shown via <code>show_modal_dialog</code>; named at
+show time by the walker.</td>
+</tr>
+<tr>
+<td><code>named-elsewhere</code></td>
+<td>Named by code the inline scan cannot see.</td>
+</tr>
+<tr>
+<td><code>opt-out</code></td>
+<td>Deliberately nameless (justify in the diff).</td>
+</tr>
+</tbody>
+</table>
+<p>Adding a labelable control fails the gate until
+<code>python -m quill.tools.accessible_name_audit --write</code> is run
+and the diff is reviewed — a control on a <em>non-modal</em> surface
+must not be left <code>modal-hook</code>. The snapshot is therefore also
+the authoritative list of deviations.</p>
+<h2 id="deviations-from-the-global-fix">Deviations from the global
+fix</h2>
+<ul>
+<li><strong>Non-modal surfaces</strong> (never pass through
+<code>show_modal_dialog</code>) are named explicitly: the document
+editor (<code>SetName("Document")</code>, pre-existing), the CSV surface
+(<code>CSV grid</code> / <code>CSV text</code>), the Word structure
+surface (<code>Word view</code> / <code>Document text</code>), and the
+sticky-notes vault list/preview (<code>Sticky notes</code> /
+<code>Note preview</code> — its only preceding text is prose).</li>
+<li><strong>Machine-key names stay silent on macOS.</strong> Controls
+named for F1 help topics (<code>info_pages.py</code>,
+<code>setup_wizard_pages.py</code>, ...) keep their wx names for the
+help system, and the walker pushes an <em>existing</em> explicit name to
+NSAccessibility only when it is human-shaped (contains a space or an
+uppercase letter — see <code>_speakable_name</code>). Speaking
+"wizard.kb_pack_choice" would be worse than the nameless status quo.
+Giving those controls real labels means a separate help-topic key
+channel (follow-up candidate).</li>
+<li><strong>Controls with no visible label anywhere</strong> stay
+unnamed unless a site names them (the walker returns them as leftovers;
+the audit keeps them visible). Fixed-by-hand cases so far: sticky-notes
+vault.</li>
+</ul>
+<h2 id="voiceover-test-surface">VoiceOver test surface</h2>
+<p>The fix is one shared code path, so testing does not require visiting
+all ~570 control sites. Verify the mechanism once per <em>pattern</em>,
+then spot-check. Expected result everywhere: VoiceOver announces
+<strong>"<label>, <value>"</strong> (e.g. "Font size, 12"), not a bare
+value.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Pattern exercised</th>
+<th>Where to test</th>
+<th>What to check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Settings <strong>eager page</strong> (page 0) text/choice
+fields</td>
+<td>Settings, first page</td>
+<td>Fields announce their label</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Settings <strong>lazy page</strong> + <code>int</code> spin (Cause
+B)</td>
+<td>Settings → a later page with a number field, e.g. Font size / Read
+Aloud rate</td>
+<td>Spin announces label + number; arrows still adjust</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Hand-rolled dialog, label + <code>TextCtrl</code> (Cause A)</td>
+<td>Pronunciation dictionary → Add entry ("Word or phrase")</td>
+<td>Text field announces "Word or phrase"</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Composite-only-named spin, <code>StaticBoxSizer</code> contents</td>
+<td>Voice Browser (Read Aloud voices): Rate / Volume / Pitch /
+Speed</td>
+<td>Each spin announces its label</td>
+</tr>
+<tr>
+<td>5</td>
+<td>SSH port spin (named composite, previously bare "22")</td>
+<td>SSH Quick Connect dialog</td>
+<td>"Port, 22"</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Label + row-panel field (label outside the row container)</td>
+<td>Settings → sound pack / abbreviation sound rows</td>
+<td>Field announces its label</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Non-modal editor surfaces</td>
+<td>Open a .csv and a .docx</td>
+<td>Grid/text announce "CSV grid"/"CSV text"; Word view announces "Word
+view"/"Document text"; main editor announces "Document"</td>
+</tr>
+<tr>
+<td>8</td>
+<td>No-label controls (explicit names)</td>
+<td>Sticky Notes vault</td>
+<td>List announces "Sticky notes", preview "Note preview"</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Explicit-name preservation (F1 keys)</td>
+<td>Setup wizard; F1 on a wizard field</td>
+<td>F1 help still resolves; names unchanged (reads the machine key —
+known deviation)</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Windows regression check (NVDA/JAWS)</td>
+<td>Same dialogs as 1–5 on Windows</td>
+<td>Announcements unchanged from before the fix</td>
+</tr>
+</tbody>
+</table>
+<p>If a specific control still reads as a bare value on macOS, it is
+either explicitly machine-named (deviation 2), has no preceding
+<code>StaticText</code> (deviation 3 — name it with
+<code>set_accessible_name</code>), or is built lazily after its dialog
+was shown (re-run <code>ensure_accessible_names</code> after building,
+as Settings does).</p>
+<h2 id="build-for-testing">Build for testing</h2>
+<p>No Mac is needed to produce a test build: dispatch the
+<strong>macos-test-build</strong> GitHub Actions workflow (Actions tab →
+macos-test-build → Run workflow on the fix branch). It produces an
+unsigned, ad-hoc-signed <code>Quill-test-unsigned.zip</code> artifact —
+on the test Mac, unzip and either right-click → Open (twice) or
+<code>xattr -dr com.apple.quarantine Quill.app</code>, then launch and
+test with VoiceOver (Cmd+F5). Signed builds still come from
+<code>macos-release.yml</code> only.</p>
+</body>
+</html>

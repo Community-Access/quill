@@ -365,14 +365,33 @@ def test_set_accessible_name_names_a_plain_control() -> None:
 
 def test_set_accessible_name_names_composite_spin_inner_child() -> None:
     """macOS wx.SpinCtrl is a composite: naming only the composite leaves
-    VoiceOver announcing the bare inner TextCtrl's value with no label."""
-    inner = _FakeNamedControl()
-    spin = _FakeNamedControl(children=[inner])
+    VoiceOver announcing the bare inner TextCtrl's value with no label.
+
+    Propagation is class-targeted (see accessible_names._PROPAGATE_CLASSES,
+    the implementation behind this module's re-export): the inner
+    TextCtrl/SpinButton get the name, while self-labeled children — a
+    picker's Browse *button* — must keep their own labels, which the
+    original name-every-child version of this helper clobbered.
+    """
+
+    class TextCtrl(_FakeNamedControl):
+        def GetName(self) -> str:  # noqa: N802 - wx spelling
+            return self.name or "text"
+
+    class Button(_FakeNamedControl):
+        def GetName(self) -> str:  # noqa: N802 - wx spelling
+            return self.name or "button"
+
+    inner = TextCtrl()
+    browse = Button()
+    browse.SetName("Browse")
+    spin = _FakeNamedControl(children=[inner, browse])
 
     set_accessible_name(spin, "Font size")
 
     assert spin.name == "Font size"
     assert inner.name == "Font size"
+    assert browse.name == "Browse"  # self-labeled child left alone
 
 
 def test_set_accessible_name_ignores_controls_without_setname() -> None:

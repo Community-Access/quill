@@ -2,6 +2,15 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Sequence
 
+# accessible_label / set_accessible_name are re-exported here because the
+# #994 naming sweep imports them from this module at its ~100 call sites.
+# The implementation lives in accessible_names: its native NSAccessibility
+# push is the part VoiceOver actually hears — the SetName-only versions
+# these re-exports replace were live-verified inaudible on macOS (#1012).
+from quill.ui.accessible_names import accessible_label as accessible_label
+from quill.ui.accessible_names import ensure_accessible_names
+from quill.ui.accessible_names import set_accessible_name as set_accessible_name
+
 # Control classes that should receive initial keyboard focus when a custom
 # dialog opens, in priority order. These are the "content" controls a user came
 # to interact with — lists, trees, text fields, choices. Buttons (OK/Cancel)
@@ -65,51 +74,6 @@ def apply_modal_ids(
         button = dialog.FindWindowById(cancel_id) if cancel_id is not None else None
         if button is not None and hasattr(button, "SetLabel"):
             button.SetLabel(cancel_label)
-
-
-def accessible_label(label: str) -> str:
-    """Strip a wx keyboard-mnemonic marker and trailing colon from *label*.
-
-    Hand-rolled dialogs write labels like ``"&Word or phrase:"`` for a
-    ``StaticText`` sitting next to a control; that raw string is not a fit
-    spoken name. A literal ``&&`` (wx's escape for a real ampersand) is
-    preserved as a single ``&``; a lone ``&`` (the mnemonic marker) is
-    dropped.
-    """
-    text = label.replace("&&", "\0").replace("&", "").replace("\0", "&")
-    return text.strip().rstrip(":").strip()
-
-
-def set_accessible_name(control: object, label: str) -> None:
-    """Give *control* an accessible name derived from its visible *label*.
-
-    macOS VoiceOver does not synthesize a control's name from a neighbouring
-    ``StaticText`` the way Windows screen readers do (#1012): with nothing
-    set explicitly, VoiceOver announces only the control's raw value -- a
-    bare number for a spin control, nothing at all for a text field. Call
-    this once, right after building the control, instead of relying on the
-    Windows-only label/mnemonic association.
-
-    ``wx.SpinCtrl``/``wx.SpinCtrlDouble`` are composites on macOS: an inner
-    ``TextCtrl`` (what VoiceOver actually lands on) plus a stepper button.
-    Naming the composite alone does not propagate to the inner field, so
-    this also names every immediate child -- a no-op for controls with none.
-    """
-    name = accessible_label(label)
-    set_name = getattr(control, "SetName", None)
-    if callable(set_name):
-        set_name(name)
-    get_children = getattr(control, "GetChildren", None)
-    if not callable(get_children):
-        return
-    try:
-        children = list(get_children())
-    except Exception:
-        return
-    for child in children:
-        child_set_name = getattr(child, "SetName", None)
-        if callable(child_set_name):
-            child_set_name(name)
 
 
 def ok_cancel_platform_order(ok_btn: object, cancel_btn: object) -> tuple[object, object]:
@@ -336,6 +300,15 @@ def show_modal_dialog(
     exit_region: Callable[[str], None] | None = None,
 ) -> int:
     """Show a modal dialog with optional region and announcement hooks."""
+    # macOS VoiceOver announces a control only by its own accessible name;
+    # the neighbouring StaticText that Windows screen readers use is not
+    # linked (#1012). Every modal dialog routes through here, so inferring
+    # names at show time fixes all of them globally. Guarded: a naming
+    # failure must never block a dialog from opening.
+    try:
+        ensure_accessible_names(dialog)
+    except Exception:  # noqa: BLE001
+        pass
     speak_transitions = announce is not None and _transition_cues_enabled()
     if enter_region is not None:
         enter_region(label)
