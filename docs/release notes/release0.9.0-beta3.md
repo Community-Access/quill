@@ -719,6 +719,18 @@ Some features change an architecture. Others remove one interruption, one unnece
 
 These accessibility-first additions came from real workflows and direct requests. They are small enough to feel natural and powerful enough to become habits.
 
+### The Sticky Notes Browser: every note, one hotkey away
+
+Sticky notes are only as useful as your ability to find the right one later. **Tools > Sticky Notes Browser...** opens a fast, keyboard-first finder: start typing and the list filters live — titles and bodies, case-insensitive, newest first. Press Down to drop into the results, arrow to a note, and Tab to a read-only multi-line preview so you can skim the whole note without opening anything. **Edit** (or just Enter on a note) opens the full editor.
+
+The best part: assign it a global hotkey (below) and the browser opens from *anywhere in Windows* — reading email, mid-browser, wherever — with QUILL's window restored first so it always genuinely appears.
+
+### Global Hotkeys: your keys, working everywhere — inside a hard safety boundary
+
+**Tools > Global Hotkeys...** lets you wire system-wide key combinations to QUILL commands, so pausing a podcast or capturing a thought never requires switching windows first. Press **Assign**, then press the combination you want (it must include Ctrl or Alt — a bare letter would swallow normal typing everywhere); **Clear** removes one; conflicts with keys another app already owns are reported by name and simply stay inactive until you choose differently.
+
+The safety design is the point. Only a curated allowlist can ever go global: Radio and Podcasts transport (play/pause, stop, mute, volume up/down), New Sticky Note, the Sticky Notes Browser, and Post to Mastodon — which opens the compose dialog and *never* auto-sends. Nothing that edits a document, deletes anything, or acts invisibly can be bound, no matter what's in the settings file — the allowlist is enforced in code and guarded by its own test. Commands that need a window restore QUILL first; pure transport commands act in place; and every global press announces its outcome through speech, so you always hear what happened even with QUILL minimized to the tray. Your long-standing sticky-note hotkey keeps working exactly as before unless you override it here. Windows-only, because the operating system offers no macOS equivalent — the same commands remain available from menus and the command palette everywhere.
+
 ### Unlock codes: staged features, switched on with a signed code
 
 Some QUILL capabilities ship locked until they are ready for everyone, then roll out gradually — to early testers, partners, or pilots. **Help > Redeem Unlock Code...** is how one gets switched on: paste a code (it starts with `QUILL-`), and QUILL verifies its digital signature entirely on your machine — no network call, no account, nothing transmitted — then announces exactly which feature was unlocked. Codes persist across restarts and re-verify on every launch; an expired or tampered code stops working and says why. If you never receive a code, nothing changes for you: every standard feature works without one.
