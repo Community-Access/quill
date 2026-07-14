@@ -24,10 +24,13 @@ import wx.adv
 
 from quill.core.a11y_regions import RegionTracker
 from quill.core.commands import CommandRegistry
+from quill.core.features import FeatureManager
 from quill.core.keymap import DEFAULT_KEYMAP, load_keymap
+from quill.core.safety.feature_lock import load_feature_locks
 from quill.core.settings import load_settings
 from quill.platform.announce_engine import AnnouncementEngine
 from quill.stability.task_manager import TaskManager
+from quill.ui.dialog_contract import focus_primary_control, show_modal_dialog
 
 
 class AppShellFrame:
@@ -45,6 +48,11 @@ class AppShellFrame:
         self.commands = CommandRegistry()
         self._task_manager = TaskManager()
         self._region_tracker = RegionTracker()
+        # Same unlock store and kill-switch cache MainFrame consults, so a
+        # feature unlocked in QUILL (Help > Redeem Unlock Code...) is unlocked
+        # in the companion apps too, and a safety advisory locks it everywhere.
+        self.features = FeatureManager.load(persistent=not safe_mode)
+        self._feature_locks = load_feature_locks()
         self._announcement_engine = AnnouncementEngine(self.settings.announcement_backend)
         self._tray_icon: wx.adv.TaskBarIcon | None = None
         self._status_message = ""
@@ -79,6 +87,35 @@ class AppShellFrame:
 
     def _refresh_statusbar(self) -> None:
         """Subclasses override to compose their app's own status text."""
+
+    def _feature_enabled(self, feature_id: str) -> bool:
+        locks = getattr(self, "_feature_locks", None)
+        if locks is not None and locks.is_locked(feature_id):
+            return False
+        features = getattr(self, "features", None)
+        return True if features is None else features.is_enabled(feature_id)
+
+    def _menu_label(self, title: str, command_id: str) -> str:
+        binding = self._binding_for(command_id)
+        # A comma means a chord binding; wx would misparse the text after the
+        # tab as a bare accelerator (#612), so chords stay off shell labels.
+        if not binding or "," in binding:
+            return title
+        return f"{title}\t{binding}"
+
+    def _show_modal_dialog(
+        self, dialog: object, label: str, *, restore_editor_focus: bool = True
+    ) -> int:
+        del restore_editor_focus  # no editor in a companion app
+        dialog_cls = getattr(self._wx, "Dialog", None)
+        if dialog_cls is not None and type(dialog) is dialog_cls:
+            focus_primary_control(dialog)
+        return show_modal_dialog(
+            dialog,
+            label,
+            enter_region=self._region_tracker.enter,
+            exit_region=self._region_tracker.exit,
+        )
 
     # -- system tray (mirrors MainFrame._ensure_tray_icon) -------------------
 

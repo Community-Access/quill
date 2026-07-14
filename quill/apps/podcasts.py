@@ -14,18 +14,20 @@ import wx
 
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.dialog_contract import set_accessible_name
+from quill.ui.main_frame_adp import AdpMixin
 from quill.ui.main_frame_podcasts import PodcastsMixin
 
 _TITLE = "QUILL Cast"
 
 
-class PodcastsAppFrame(AppShellFrame, PodcastsMixin):
+class PodcastsAppFrame(AppShellFrame, PodcastsMixin, AdpMixin):
     def __init__(self, *, safe_mode: bool = False) -> None:
         self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(460, 360))
         self._init_podcasts()
         self._build_menu_bar()
         self._build_main_panel()
         self._register_podcasts_commands()
+        self._register_adp_commands()
         self._ensure_tray_icon(self._build_podcast_tray_menu, tooltip=_TITLE)
         self._refresh_statusbar()
         self.frame.Bind(wx.EVT_CLOSE, self._on_cast_app_close)
@@ -140,6 +142,9 @@ class PodcastsAppFrame(AppShellFrame, PodcastsMixin):
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_next_chapter(), id=next_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_previous_chapter(), id=prev_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.add_podcast_note(), id=note_id)
+        # Unlock-gated ADP Assistant (no-op until future.adp_assistant is
+        # unlocked), same items MainFrame's Media submenu carries.
+        self._append_adp_media_items(episode_menu)
         menu_bar.Append(episode_menu, "&Episode")
 
         downloads_menu = wx.Menu()

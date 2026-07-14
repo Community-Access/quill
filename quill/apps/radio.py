@@ -14,18 +14,20 @@ import wx
 
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.dialog_contract import set_accessible_name
+from quill.ui.main_frame_adp import AdpMixin
 from quill.ui.main_frame_radio import RadioMixin
 
 _TITLE = "Quill Radio"
 
 
-class RadioAppFrame(AppShellFrame, RadioMixin):
+class RadioAppFrame(AppShellFrame, RadioMixin, AdpMixin):
     def __init__(self, *, safe_mode: bool = False) -> None:
         self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(460, 360))
         self._init_radio()
         self._build_menu_bar()
         self._build_main_panel()
         self._register_radio_commands()
+        self._register_adp_commands()
         self._ensure_tray_icon(self._build_radio_tray_menu, tooltip=_TITLE)
         self._refresh_statusbar()
         self.frame.Bind(wx.EVT_CLOSE, self._on_radio_app_close)
@@ -128,6 +130,9 @@ class RadioAppFrame(AppShellFrame, RadioMixin):
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_mute_toggle(), id=mute_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_volume_up(), id=vol_up_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_volume_down(), id=vol_down_id)
+        # Unlock-gated ADP Assistant (no-op until future.adp_assistant is
+        # unlocked), same items MainFrame's Media submenu carries.
+        self._append_adp_media_items(playback_menu)
         menu_bar.Append(playback_menu, "&Playback")
 
         record_menu = wx.Menu()
