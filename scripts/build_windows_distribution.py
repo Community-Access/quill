@@ -1000,6 +1000,9 @@ def build_inno_setup_script(
         'Name: "shellverbs"; Description: "Add ""Send to Quill"" actions'
         ' (OCR, Open, Read aloud) to the file right-click menu";'
         ' GroupDescription: "File associations:"; Flags: unchecked',
+        'Name: "companionicons"; Description: "Create desktop icons for'
+        ' Quill Radio and QUILL Cast (the standalone radio and podcast apps)";'
+        ' GroupDescription: "Companion apps:"; Flags: unchecked',
         # community#941: launching "quill" from a terminal or a shortcut's Target
         # field needs the install directory on PATH. Opt-in (unchecked), same as
         # the other Tasks above -- PATH is shared system/user state, so this is
@@ -1126,6 +1129,29 @@ def build_inno_setup_script(
         ' WorkingDir: "{app}"; Check: HasBundledLauncher',
         'Name: "{autodesktop}\\{#AppName}"; Filename: "{app}\\{#AppExeName}";'
         ' WorkingDir: "{app}"; Check: not HasBundledLauncher',
+        "; Companion apps: Quill Radio and QUILL Cast run Radio/Podcasts standalone",
+        "; (quill/apps/*; PRD 5.89e). Start Menu entries always; desktop icons are",
+        "; the opt-in companionicons task above.",
+        'Name: "{group}\\Quill Radio"; Filename: "{code:BundledLauncherPath}";'
+        ' Parameters: "-m quill.apps.radio"; WorkingDir: "{app}"; Check: HasBundledLauncher',
+        'Name: "{group}\\Quill Radio"; Filename: "{app}\\{#AppExeName}";'
+        ' Parameters: "-m quill.apps.radio"; WorkingDir: "{app}"; Check: not HasBundledLauncher',
+        'Name: "{group}\\QUILL Cast"; Filename: "{code:BundledLauncherPath}";'
+        ' Parameters: "-m quill.apps.podcasts"; WorkingDir: "{app}"; Check: HasBundledLauncher',
+        'Name: "{group}\\QUILL Cast"; Filename: "{app}\\{#AppExeName}";'
+        ' Parameters: "-m quill.apps.podcasts"; WorkingDir: "{app}"; Check: not HasBundledLauncher',
+        'Name: "{autodesktop}\\Quill Radio"; Filename: "{code:BundledLauncherPath}";'
+        ' Parameters: "-m quill.apps.radio"; WorkingDir: "{app}";'
+        " Tasks: companionicons; Check: HasBundledLauncher",
+        'Name: "{autodesktop}\\Quill Radio"; Filename: "{app}\\{#AppExeName}";'
+        ' Parameters: "-m quill.apps.radio"; WorkingDir: "{app}";'
+        " Tasks: companionicons; Check: not HasBundledLauncher",
+        'Name: "{autodesktop}\\QUILL Cast"; Filename: "{code:BundledLauncherPath}";'
+        ' Parameters: "-m quill.apps.podcasts"; WorkingDir: "{app}";'
+        " Tasks: companionicons; Check: HasBundledLauncher",
+        'Name: "{autodesktop}\\QUILL Cast"; Filename: "{app}\\{#AppExeName}";'
+        ' Parameters: "-m quill.apps.podcasts"; WorkingDir: "{app}";'
+        " Tasks: companionicons; Check: not HasBundledLauncher",
         "",
         "[Registry]",
         "; Register Quill in the OpenWithList for common text formats. We",

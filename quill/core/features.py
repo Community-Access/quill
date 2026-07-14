@@ -442,6 +442,22 @@ class FeatureManager:
     previous_profile_id: str | None = None
     overrides: dict[str, str] = field(default_factory=dict)
     show_quiet_features: bool = True
+    #: Feature ids proven by a redeemed, signed unlock code
+    #: (:mod:`quill.core.unlock_codes`). Populated at load time and refreshed
+    #: after a successful redemption; an unlocked id escapes its definition's
+    #: ``locked_off`` gate -- that override is the entire point of a code.
+    unlocked_feature_ids: frozenset[str] = frozenset()
+
+    @staticmethod
+    def _load_unlocked_feature_ids() -> frozenset[str]:
+        try:
+            from quill.core.unlock_codes import UnlockCodeStore
+        except Exception:  # noqa: BLE001 - the signing extra (PyNaCl) is optional
+            return frozenset()
+        try:
+            return UnlockCodeStore.load().unlocked_feature_ids()
+        except Exception:  # noqa: BLE001 - a bad store must never block startup
+            return frozenset()
 
     @classmethod
     def load(cls, *, persistent: bool = True) -> FeatureManager:
@@ -463,6 +479,7 @@ class FeatureManager:
             previous_profile_id=previous_profile_id,
             overrides=overrides,
             show_quiet_features=show_quiet_features,
+            unlocked_feature_ids=cls._load_unlocked_feature_ids(),
         )
 
     def save(self) -> None:
@@ -505,6 +522,10 @@ class FeatureManager:
         if definition.locked_on:
             return FEATURE_STATE_ON
         if definition.locked_off:
+            # A redeemed, signature-verified unlock code is the one sanctioned
+            # way past locked_off (Help > Redeem Unlock Code...).
+            if feature_id in self.unlocked_feature_ids:
+                return FEATURE_STATE_ON
             return FEATURE_STATE_OFF
         if feature_id in self.overrides:
             return self.overrides[feature_id]

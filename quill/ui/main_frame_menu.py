@@ -2988,6 +2988,11 @@ class MenuBuilderMixin:
             self._id_download_components,
             self._menu_label(_("&Download Optional Components..."), "help.download_components"),
         )
+        self._id_redeem_unlock_code = wx.NewIdRef()
+        help_menu.Append(
+            self._id_redeem_unlock_code,
+            self._menu_label(_("Redeem &Unlock Code..."), "help.redeem_unlock_code"),
+        )
         help_menu.AppendSeparator()
         self._id_open_user_guide = wx.NewIdRef()
         self._id_open_third_party_notices = wx.NewIdRef()
@@ -3587,6 +3592,11 @@ class MenuBuilderMixin:
             wx.EVT_MENU,
             lambda _e: self.open_optional_components(),
             id=self._id_download_components,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.open_redeem_unlock_code_dialog(),
+            id=self._id_redeem_unlock_code,
         )
         self.frame.Bind(
             wx.EVT_MENU,

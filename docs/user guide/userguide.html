@@ -30870,6 +30870,65 @@ Transcript viewing/export (the feed already reads Podcasting 2.0
 transcript URLs, ready for this), a separate Inbox view, a cross-show
 Play Queue, and local (imported-file) podcasts are planned next — see
 <code>docs/planning/podcasts.md</code> for the full phased plan.</p>
+<h2 id="quill-radio-and-quill-cast-the-standalone-apps">Quill Radio and
+QUILL Cast: the standalone apps</h2>
+<p>You don't have to open the full QUILL editor to listen. <strong>Quill
+Radio</strong> and <strong>QUILL Cast</strong> run Internet Radio and
+Podcasts as small standalone apps — their own window, their own menu
+bar, their own system tray icon.</p>
+<p>They are the same features, not copies: both apps run the exact same
+code QUILL itself uses, and read the same settings, favorites, and
+podcast subscriptions from the same place on disk. A station you
+favorite in Quill Radio is a favorite in QUILL; a show you subscribe to
+in QUILL Cast is subscribed everywhere. Everything described in the
+Internet Radio and Podcasts chapters above — the station browser, the
+link finder, recording and scheduled recording, the Podcast Manager,
+OPML import/export, downloads with pause/resume, chapter navigation —
+works identically here.</p>
+<p><strong>Starting the apps.</strong> On an installed QUILL, both apps
+are in the Start Menu — <strong>Quill Radio</strong> and <strong>QUILL
+Cast</strong>, right next to QUILL itself. The installer also offers
+optional desktop icons for them (a checkbox during setup; unchecked by
+default so your desktop stays yours). From a source checkout or the
+portable build, use <code>run-quill-radio.bat</code> and
+<code>run-quill-cast.bat</code>, or
+<code>python -m quill.apps.radio</code> /
+<code>python -m quill.apps.podcasts</code>.</p>
+<p><strong>Everything is keyboard-first.</strong> Each app opens on a
+real main panel, not an empty window: focus lands on the app's most
+important list the moment it opens.</p>
+<ul>
+<li><strong>Quill Radio</strong> — focus starts in your <strong>Favorite
+stations</strong> list: arrow to a station and press
+<strong>Enter</strong> to play it. Tab reaches Play/Pause, Stop, Record,
+and Browse Stations buttons, with a live now-playing line above. Menus:
+<strong>Station</strong> (Browse Stations, Add Custom Station, Find
+Streams from a Website, and your Favorite Stations listed inline so
+switching is one keystroke), <strong>Playback</strong> (a live
+now-playing line, Play/Pause with Ctrl+P, Stop, Mute, volume),
+<strong>Record</strong> (Record Now / Stop, Schedule Recording,
+Recording Settings), and <strong>Help</strong>.</li>
+<li><strong>QUILL Cast</strong> — focus starts in your
+<strong>Subscribed shows</strong> list: press <strong>Enter</strong> on
+a show to open the full Podcast Manager, where all episode-level work
+happens. Tab reaches Open Manager, Add Podcast, Play/Pause, and Stop
+buttons, with the live now-playing line above. Menus:
+<strong>Subscriptions</strong> (Open Podcast Manager with Ctrl+M, Add
+Podcast, Import/Export OPML, Podcast Settings), <strong>Episode</strong>
+(a live now-playing line, Play/Pause, Stop, Next/Previous Chapter),
+<strong>Downloads</strong> (Pause All / Resume All), and
+<strong>Help</strong>. One difference from inside QUILL: "Send Show
+Notes to Editor" copies the notes to the clipboard instead — there is no
+editor buffer standalone — and announces that it did.</li>
+</ul>
+<p>Both apps put an icon in the system tray with the same radio or
+podcast controls QUILL's own tray icon offers, plus
+<strong>Show</strong> (double-click also works) and
+<strong>Exit</strong>. And when you decide you want the full editor
+after all, <strong>Help &gt; Open in Quill</strong> launches it.</p>
+<p>The apps respect Safe Mode (<code>QUILL_SAFE_MODE=1</code>) and skip
+the tray icon on macOS, where the system has no equivalent
+notification-area icon (the same rule QUILL itself follows).</p>
 <h2 id="sleep-timer">Sleep Timer</h2>
 <p><strong>Tools &gt; Media &gt; Sleep Timer...</strong> covers both
 Internet Radio and Podcasts from one place, since it isn't specific to
@@ -31063,6 +31122,15 @@ build, or a source checkout: the pack ships its own translation engine
 uses it directly — no separately installed Python liblouis binding is
 required (though one is used automatically when present, as it is
 slightly faster).</p>
+<p><strong>Braille files in File &gt; Convert File.</strong> The
+general-purpose converter accepts <code>.brf</code> and
+<code>.brl</code> sources too — they appear in its file picker alongside
+every other supported document. Pick a braille file, pick any output
+format (Markdown, Word, HTML, EPUB, plain text, and the rest), and QUILL
+detects the braille code, back-translates, and writes the result —
+announcing which code it found. There is no separate braille converter
+to hunt for: the one Convert File dialog handles braille the same way it
+handles everything else.</p>
 <h2 id="help-learning-and-daily-confidence">Help, Learning, and Daily
 Confidence</h2>
 <p>Quill includes several layers of help because confidence does not
@@ -31082,9 +31150,23 @@ bindings.</li>
 contextual guidance.</li>
 <li><strong>Why Don't I See a Feature?</strong> when a command seems to
 have disappeared.</li>
+<li><strong>Redeem Unlock Code...</strong> when you have been given a
+QUILL unlock code.</li>
 </ul>
-<p>That last command matters more than it first appears. It turns
-feature visibility from a mystery into an explanation.</p>
+<p>That "Why Don't I See a Feature?" command matters more than it first
+appears. It turns feature visibility from a mystery into an
+explanation.</p>
+<p><strong>Redeem Unlock Code... (Help menu).</strong> Some QUILL
+capabilities ship locked until they are ready for general use, and are
+switched on selectively — for early testers, partners, or staged
+rollouts — with a signed unlock code. If you have one, choose
+<strong>Help &gt; Redeem Unlock Code...</strong>, paste or type the code
+(it starts with <code>QUILL-</code>), and press OK. The code is verified
+by digital signature entirely on your machine — no network call, nothing
+sent anywhere — and QUILL announces exactly what was unlocked. Redeemed
+codes persist across restarts; a mistyped or expired code is rejected
+with a spoken reason. If you don't have a code, nothing here affects
+you: every standard feature is available without one.</p>
 <h3 id="context-sensitive-help-f1">Context-Sensitive Help (F1)</h3>
 <p>Press <code>F1</code> on any focusable control in QUILL and a small
 dialog opens that describes:</p>

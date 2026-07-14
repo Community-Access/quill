@@ -232,10 +232,19 @@ def reader_for_path(path: str) -> str:
     return _READER_BY_EXTENSION.get(lowered[dot:], "")
 
 
+#: Braille files convert via QUILL's own auto-detected back-translation
+#: (quill.core.braille_detect), never Pandoc, which has no braille reader --
+#: listed here so the Convert File picker's "Supported documents" pattern
+#: includes them and the UI can dispatch them to the braille path.
+BRAILLE_INPUT_SUFFIXES: frozenset[str] = frozenset({".brf", ".brl"})
+
+
 def input_wildcard() -> str:
     """Return a wx file-dialog wildcard for Convert File source selection."""
 
-    exts = sorted({f.extension for f in CURATED_INPUTS} | set(_READER_BY_EXTENSION))
+    exts = sorted(
+        {f.extension for f in CURATED_INPUTS} | set(_READER_BY_EXTENSION) | BRAILLE_INPUT_SUFFIXES
+    )
     patterns = ";".join(f"*{ext}" for ext in exts)
     return f"Supported documents ({patterns})|{patterns}|All files (*.*)|*.*"
 
