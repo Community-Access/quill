@@ -261,6 +261,26 @@ Two related patterns caused this. Plain fields and lists in a number of hand-bui
 
 Both patterns are fixed with one small shared helper that names a control and, for spinners, its inner field too. The fix was swept across every affected dialog identified by the audit — Preferences, Watch Folder profiles, the Export/Import and GitHub dialogs, Quick Nav, the Heading Organizer, List Manager, the Regular Expression Helper, and dozens more — so a VoiceOver user hears what each control is, not just what it currently holds.
 
+### A live crash report traced a UnicodeEncodeError to autosave
+
+Autosave was writing each snapshot using the source document's own encoding rather than UTF-8. A document read as Braille Ready Format defaults to an ASCII encoding; the moment its in-memory text picked up a character outside that range — in the reported case, a U+2004 space introduced through abbreviation expansion — the write crashed outright.
+
+Recovery always reads a snapshot back as UTF-8, regardless of what encoding the source document itself uses, so the writer now always writes UTF-8 too. A defensive try/except around the autosave call also means a future write failure, whatever the cause, interrupts a snapshot rather than the editing session.
+
+### Radio and Podcasts could crash QUILL on every single launch
+
+The Radio and Podcast player controllers were built before `self.frame` existed inside `MainFrame.__init__`, so parenting either controller on the not-yet-created frame raised `AttributeError` immediately. Both now initialize right after the frame itself is created.
+
+### The Braille Translation Pack now appears the moment it finishes downloading
+
+Downloading the pack correctly installed it, but the Tools > Braille menu didn't know to look again — the Translation submenu only exists once the pack is present, and refreshing menu-item state isn't the same as rebuilding the menu's structure. This is the same root cause as #974, the Quillin menu-contributions bug earlier in this release: a structural menu change needs a structural rebuild, not a state refresh. The direct "Download Braille Translation Pack..." menu item also now opens the Download Optional Components hub instead of running the download on its own and dropping you back into the editor when it finishes — matching the guided flow "Set Up Braille" already used.
+
+### Back-translating a large BRF file failed instantly, with no clear reason why
+
+A community member reported back-translation appearing to do nothing at all on a real hymnal-sized BRF file. The cause: the whole document's text was packed into a single command-line argument to the liblouis worker subprocess, and Windows caps a process's total command-line length at roughly 32,000 characters — so a file of any real size failed to even launch the worker. Reproduced live on a ~450 KB file.
+
+The request now travels over the worker's standard input instead, which carries no such limit. A translation failure now also opens a visible dialog, not just a spoken announcement that was easy to miss entirely if you weren't listening for it at that exact moment.
+
 ### Insert > Date and Time's submenu now actually opens
 
 Jayson Smith reported it precisely: open the Insert menu, arrow up to **Date and Time**, press Right Arrow to open the submenu, and land in the **Format** menu instead.
