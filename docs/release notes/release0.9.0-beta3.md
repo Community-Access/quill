@@ -120,6 +120,18 @@ Send the result through **Help > Report a Bug** and include your macOS version. 
 
 ---
 
+## Radio and Podcasts Step Out On Their Own: Quill Radio and QUILL Cast
+
+Internet Radio and Podcasts arrived inside QUILL this release cycle — but not everyone wants to launch a full document editor to turn the radio on. Beta 3 introduces **Quill Radio** and **QUILL Cast**: small standalone apps with their own window, their own menu bar, and their own system tray icon.
+
+The important word is *same*. These are not stripped-down copies or forks. Each app runs the exact same feature code QUILL itself uses — the same station browser, the same podcast manager, the same download queue with pause and resume, the same recording scheduler, the same dialogs with the same keyboard behavior your screen reader already knows. They read and write the same settings, favorites, and subscriptions from the same place on disk. Subscribe to a show in QUILL Cast tonight, and it is there in QUILL tomorrow morning. Fix a radio bug in QUILL, and Quill Radio has the fix too, automatically, because there is only one copy of the code.
+
+**Quill Radio** gives you a Station menu (Browse Stations, Add Custom Station, Find Streams from a Website, and your Favorite Stations listed right in the menu for one-keystroke switching), a Playback menu with a live now-playing line, and a Record menu (Record Now, Schedule Recording, Recording Settings). **QUILL Cast** gives you Subscriptions (the full Podcast Manager, Add Podcast, OPML import and export, Podcast Settings), an Episode menu with play/pause and chapter navigation, and a Downloads menu to pause or resume everything at once.
+
+Both apps put an icon in the system tray with the same radio and podcast controls QUILL's own tray icon carries, plus Show and Exit. And both include **Help > Open in Quill** for the moment you decide you *do* want the full editor after all — say, to paste a podcast's show notes into a document. (Speaking of which: QUILL Cast's "Send Show Notes to Editor" copies them to the clipboard instead, and says so, since there is no editor standing by.)
+
+For this beta, launch them from a source checkout or portable folder with `run-quill-radio.bat` and `run-quill-cast.bat`. Installer shortcuts come once the apps have been validated in the wild — tell us how they behave with your screen reader.
+
 ## Community Reports, Real Repairs
 
 Every bug report is a person encountering friction while trying to create, read, learn, or contribute. Beta 3 treats those reports accordingly: not as loose tickets to close, but as invitations to make QUILL more trustworthy.

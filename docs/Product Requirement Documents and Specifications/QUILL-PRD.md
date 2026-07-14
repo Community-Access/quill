@@ -4504,6 +4504,70 @@ QUILL keeps formatting codes hidden so the editing buffer stays clean plain text
 
 ---
 
+### 5.89e Standalone companion apps — Quill Radio and QUILL Cast
+
+**Goal.** Radio and Podcasts are useful without the editor: someone who wants
+to listen to internet radio or manage a podcast queue should not have to load
+all of QUILL to do it. Quill Radio and QUILL Cast are small standalone
+executables — their own window, their own menu bar, their own system tray
+icon — that reuse QUILL's feature code *unchanged* rather than forking it.
+
+**Architecture (`quill/ui/app_shell.py` + `quill/apps/`).** The feature
+mixins `MainFrame` already uses (`RadioMixin`, `PodcastsMixin`) only ever
+touch a small, fixed host protocol on their owner: `self.frame`, `self._wx`,
+`self._safe_mode`, `self._task_manager`, `self._announce`,
+`self._show_message_box`, `self._set_status`, `self.settings`,
+`self.commands`, `self._binding_for`, `self._refresh_statusbar`.
+`AppShellFrame` implements exactly that protocol over a plain `wx.Frame`, so
+`class RadioAppFrame(AppShellFrame, RadioMixin)` gets the entire feature —
+commands, dialogs, favorites, recording, scheduling — with zero changes to
+the mixin. Consequences that matter:
+
+- **No fork, ever.** A bug fix or feature added to `quill/core/radio`,
+  `quill/core/podcasts`, or the shared dialogs lands in the standalone apps
+  automatically — same modules, same imports.
+- **One data store.** The apps load the same `core.settings`/`core.keymap`
+  and read/write the same favorites, subscription library, and download
+  state under `app_data_dir()` — what you subscribe to in QUILL Cast is
+  subscribed in QUILL, with no sync layer.
+- **Same accessibility contract.** Announcements route through the same
+  `AnnouncementEngine`; dialogs keep their existing keyboard/naming
+  behavior because they are the same dialog classes.
+
+**Per-app surfaces.**
+
+- **Quill Radio** (`python -m quill.apps.radio`; `run-quill-radio.bat` from
+  source). Menu bar: Station (Browse Stations, Add Custom Station, Find
+  Streams from a Website, Favorite Stations inline), Playback (disabled
+  now-playing status line, Play/Pause, Stop, Mute, Volume Up/Down), Record
+  (Record Now/Stop, Schedule Recording, Recording Settings), Help (Open in
+  Quill, About). Tray icon: Show/Exit plus the same radio section
+  (`_build_radio_tray_menu`) QUILL's own tray shows.
+- **QUILL Cast** (`python -m quill.apps.podcasts`; `run-quill-cast.bat`).
+  Menu bar: Subscriptions (Open Podcast Manager, Add Podcast, Import/Export
+  OPML, Podcast Settings), Episode (now-playing line, Play/Pause, Stop,
+  Next/Previous Chapter), Downloads (Pause All / Resume All), Help. Tray
+  icon mirrors QUILL's podcast tray section. One behavioral override: "Send
+  Show Notes to Editor" copies to the clipboard instead (there is no editor
+  buffer standalone), announced as such.
+
+**Open in Quill.** Both apps carry a Help > Open in Quill command that
+launches the full editor as a separate process (v1: always a new process; a
+focus-existing-instance IPC variant is deliberately deferred — see
+`docs/planning/apps.md`).
+
+**Platform notes.** The tray icon follows `MainFrame`'s own rule: on macOS,
+`wx.adv.TaskBarIcon` produces a Dock tile rather than a menu-bar extra, so
+the apps skip the tray there instead of misrepresenting it. `QUILL_SAFE_MODE`
+is honored on launch.
+
+**Non-goals (v1).** No installer Start-Menu shortcuts yet (run from source
+or the batch launchers while the apps are validated); no single-instance
+enforcement; no Audio Studio standalone app yet — the phased plan, including
+those, lives in `docs/planning/apps.md`.
+
+---
+
 ### 5.90 AI Writing Toolkit: architecture and feature matrix
 
 This section documents the AI writing layer shipped in QUILL 0.6.0, covering provider abstraction, the connection model, per-feature design, and the data-disclosure posture.
