@@ -42,6 +42,16 @@ deviations from the global fix.
 
 Run directly to print the inventory, ``--write`` to regenerate the snapshot,
 ``--list <status>`` to list keys with one status.
+
+Known precision limits (review the ``--write`` diff with these in mind):
+
+* Inline-naming detection is *textual* within the enclosing function: if a
+  variable is rebound to a second control and only the second is named, both
+  construction sites scan as ``named``.
+* The ``#n`` key suffix is a per-scope creation index: inserting or deleting a
+  same-class construction shifts later keys, so a prior human classification
+  can reattach to a different site on the next ``--write`` — check shifted
+  keys in the diff, not just added/removed ones.
 """
 
 from __future__ import annotations

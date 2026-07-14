@@ -106,26 +106,24 @@ _FALLBACK_DEFAULT_NAMES: frozenset[str] = frozenset({
     "comboBox",
     "listBox",
     "listCtrl",
-    "listCtrlNameStr",
     "treeCtrl",
-    "treelistctrl",
+    "wxTreeListCtrl",
     "dataviewCtrl",
     "gauge",
     "slider",
     "searchCtrl",
-    "SearchCtrl",
     "wxSpinCtrl",
     "wxSpinCtrlDouble",
     "grid",
     "stcwindow",
     "richTextCtrl",
     "editableListBox",
-    "filepickerctrl",
-    "dirpickerctrl",
+    "filepicker",
+    "dirpicker",
     "datectrl",
     "timectrl",
-    "colourpickerctrl",
-    "fontpickerctrl",
+    "colourpicker",
+    "fontpicker",
     "panel",
     "check",
     "button",
@@ -158,6 +156,9 @@ def _default_control_names() -> frozenset[str]:
             for attr in dir(wx):
                 if attr.endswith("NameStr"):
                     value = getattr(wx, attr, None)
+                    # wxPython Phoenix exports these as bytes (b"text").
+                    if isinstance(value, bytes):
+                        value = value.decode("ascii", "ignore")
                     if isinstance(value, str) and value:
                         names.add(value)
         except Exception:  # noqa: BLE001 - no wx in fakes-based tests
@@ -176,8 +177,12 @@ def _class_matches(control: object, class_names: frozenset[str]) -> bool:
 
 
 def _is_book(control: object) -> bool:
-    """Notebook/Listbook/Treebook/... — page containers, per dialog_contract."""
-    return type(control).__name__.lower().endswith("book")
+    """Notebook/Listbook/Treebook/... — page containers, per dialog_contract.
+
+    MRO-walked like :func:`_class_matches` so project subclasses of a book
+    control keep the page boundary.
+    """
+    return any(base.__name__.lower().endswith("book") for base in type(control).__mro__)
 
 
 def accessible_label(label: object) -> str:
@@ -315,6 +320,16 @@ def _walk(widget: object, unnamed: list[object], pending: str | None) -> str | N
         if _class_matches(child, _SELF_LABELED_CLASSES):
             pending = None
             continue
+        if _is_book(child):
+            # A book's pages are isolated contexts: a page must neither
+            # inherit a label from before the book nor from the previous
+            # page's trailing label, and a label dangling at the end of the
+            # last page must not name the sibling after the book. Walk every
+            # page (book child) with its own clean slate.
+            for page in _get_children(child):
+                _walk(page, unnamed, None)
+            pending = None
+            continue
         if _class_matches(child, frozenset({"StaticBox"})):
             # A StaticBox is a *container* (StaticBoxSizer contents are its
             # children) whose label names the group, not any single field:
@@ -322,8 +337,9 @@ def _walk(widget: object, unnamed: list[object], pending: str | None) -> str | N
             _walk(child, unnamed, None)
             pending = None
             continue
-        # Plain container (Panel, splitter, book page, ...): descend.
-        pending = _walk(child, unnamed, None if _is_book(child) else pending)
+        # Plain container (Panel, splitter, ...): descend, pending flows in
+        # and any unconsumed label flows back out to later siblings.
+        pending = _walk(child, unnamed, pending)
     return pending
 
 

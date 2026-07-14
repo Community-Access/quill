@@ -183,6 +183,56 @@ def test_prose_static_text_is_not_a_label(wx_app) -> None:
         frame.Destroy()
 
 
+def test_picker_composites_are_named_from_label(wx_app) -> None:
+    """Review finding #1012-r1: wx exports ``*NameStr`` as bytes and the
+    picker family's defaults are "filepicker"/"dirpicker"/... — with the
+    wrong default set the walker treated a default-named DirPickerCtrl as
+    explicitly named and stamped "dirpicker" onto its inner TextCtrl."""
+    frame = wx.Frame(None)
+    try:
+        panel = wx.Panel(frame)
+        wx.StaticText(panel, label="Starting folder:")
+        picker = wx.DirPickerCtrl(panel)
+
+        ensure_accessible_names(frame)
+
+        assert picker.GetName() == "Starting folder"
+        for child in picker.GetChildren():
+            if isinstance(child, wx.TextCtrl):
+                assert child.GetName() == "Starting folder"
+    finally:
+        frame.Destroy()
+
+
+def test_pending_label_never_crosses_notebook_boundaries(wx_app) -> None:
+    """Review finding #1012-r2: a trailing label on one page must not name
+    the next page's first control, a label before the book must not name
+    page one's first control, and a label dangling at the end of the book
+    must not name the next sibling after it."""
+    frame = wx.Frame(None)
+    try:
+        panel = wx.Panel(frame)
+        wx.StaticText(panel, label="Before the book:")
+        book = wx.Notebook(panel)
+        page1 = wx.Panel(book)
+        first_field = wx.TextCtrl(page1)
+        wx.StaticText(page1, label="Restart required")
+        page2 = wx.Panel(book)
+        second_page_list = wx.ListBox(page2)
+        book.AddPage(page1, "One")
+        book.AddPage(page2, "Two")
+        after = wx.TextCtrl(panel)
+
+        leftovers = ensure_accessible_names(frame)
+
+        assert first_field.GetName() == "text"
+        assert second_page_list.GetName() == "listBox"
+        assert after.GetName() == "text"
+        assert {first_field, second_page_list, after} <= set(leftovers)
+    finally:
+        frame.Destroy()
+
+
 def test_idempotent_second_pass_changes_nothing(wx_app) -> None:
     frame = wx.Frame(None)
     try:

@@ -13060,7 +13060,12 @@ class MainFrame(
                 # Pages are built lazily, after show_modal_dialog's show-time
                 # naming pass already ran, so each freshly built page needs its
                 # own pass or its controls read as bare values on macOS (#1012).
-                ensure_accessible_names(dialog)
+                # Guarded like the dialog_contract wiring: a naming failure
+                # must never break switching Settings pages.
+                try:
+                    ensure_accessible_names(dialog)
+                except Exception:  # noqa: BLE001
+                    pass
 
             if _page_build_fns:
                 _build_page(0)
