@@ -254,9 +254,55 @@ def test_macos_release_workflow_installs_the_feedback_extra() -> None:
     yml = (
         pathlib.Path(__file__).resolve().parents[2] / ".github" / "workflows" / "macos-release.yml"
     ).read_text("utf-8")
-    assert ".[ui,spellcheck,macos,feedback]" in yml, (
+    assert ".[ui,spellcheck,macos,feedback,github]" in yml, (
         "macos-release.yml build job must install the [feedback] extra (#11)"
     )
-    assert ".[ui,spellcheck,macos,dev,feedback]" in yml, (
+    assert ".[ui,spellcheck,macos,dev,feedback,github]" in yml, (
         "macos-release.yml test job must install the [feedback] extra (#11)"
+    )
+
+
+def test_macos_bundle_includes_github_for_open_from_github() -> None:
+    """PyGithub (top-level module ``github``) is imported function-locally by
+    ``quill.core.github.github_provider`` (guarded by ``require_pygithub``), so
+    py2app's import tracer cannot discover it -- exactly like ``feedback_hub``.
+    The File > Open > GitHub Repository... / GitHub File URL... menu items are
+    added unconditionally, so without ``github`` in ``OPTIONS["includes"]`` the
+    shipped ``.app`` raises ``GitHubDependencyError`` ("pip install
+    quill[github]") -- advice that cannot be acted on inside a packaged app."""
+    includes = _macos_bundle_includes()
+    assert "github" in includes, (
+        "github (PyGithub) must be in setup_macos.py OPTIONS['includes'] so the "
+        "macOS .app bundles the Open-from-GitHub feature; it is imported lazily "
+        "so py2app's import tracer cannot find it."
+    )
+
+
+def test_macos_release_workflow_installs_the_github_extra() -> None:
+    """The [github] extra (PyGithub) must be installed in the macOS build and
+    test jobs, or there is nothing for py2app to trace/include and the shipped
+    .app cannot open documents from GitHub."""
+    yml = (
+        pathlib.Path(__file__).resolve().parents[2] / ".github" / "workflows" / "macos-release.yml"
+    ).read_text("utf-8")
+    # Both the build and test install specs end in ",github]".
+    assert yml.count(",github]") >= 2, (
+        "macos-release.yml build and test jobs must both install the [github] "
+        "extra so PyGithub is bundled into the .app"
+    )
+
+
+def test_github_extra_is_bundled_in_the_windows_installer() -> None:
+    """The Windows installer pip-installs
+    ``DEFAULT_BUNDLED_DEPENDENCY_GROUPS`` into the embedded runtime. ``github``
+    must be among them or the installer ships without PyGithub and the
+    Open-from-GitHub menu items die the same way the macOS .app did."""
+    distribution_script = (
+        pathlib.Path(__file__).resolve().parents[2] / "scripts" / "build_windows_distribution.py"
+    )
+    src = distribution_script.read_text("utf-8")
+    groups_line = src.split("DEFAULT_BUNDLED_DEPENDENCY_GROUPS", 1)[1].split(")", 1)[0]
+    assert '"github"' in groups_line, (
+        "build_windows_distribution.py DEFAULT_BUNDLED_DEPENDENCY_GROUPS must "
+        "include 'github' so PyGithub ships in the Windows installer"
     )
