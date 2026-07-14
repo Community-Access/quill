@@ -8,7 +8,7 @@ psycopg2-binary>=2.9      # PostgreSQL driver
 redis>=5.0                 # rate limiting + config cache (app/limits.py)
 requests>=2.32             # OpenAI HTTP calls + alert webhooks
 gunicorn>=22.0             # production WSGI server (matches quillin-hub)
-python-dotenv>=1.0         # local-dev-only .env loading (see run.py)
+python-dotenv>=1.2.2         # local-dev-only .env loading (see run.py)
 
 # Optional upgrade, not required for correctness: app/limits.py's
 # count_tokens() uses a conservative ~4-chars-per-token heuristic that is

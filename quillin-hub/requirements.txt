@@ -6,7 +6,7 @@ flask-limiter==3.8.0
 psycopg2-binary==2.9.9
 flask-cors==4.0.1
 pygithub==2.3.0
-python-dotenv==1.0.1
+python-dotenv==1.2.2
 Werkzeug==3.0.3
 bandit==1.7.9
 gunicorn==22.0.0
