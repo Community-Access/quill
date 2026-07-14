@@ -830,6 +830,69 @@ class BrailleCommandsMixin:
             )
             return None
 
+    def _convert_brf_file_request(self, request: object, target) -> None:
+        """File > Convert File with a .brf/.brl source (auto-detected code).
+
+        Detects the braille code, back-translates the whole file, and writes
+        the chosen output format: text-like formats directly, everything else
+        via Pandoc from a Markdown intermediate. The user picked BRF in the
+        same Convert File dialog as any other document -- no braille-specific
+        dialog to find.
+        """
+        from pathlib import Path
+
+        source_path = Path(request.source_path)
+        try:
+            text = source_path.read_text(encoding="utf-8", errors="replace")
+        except OSError as error:
+            message = f"Could not read {source_path.name}: {error}"
+            self._say(message)
+            self._show_message_box(message, "Convert File", self._wx.ICON_ERROR | self._wx.OK)
+            return
+        detection = self._detect_braille_code(text)
+        if detection is None:
+            return
+        from quill.core import braille_worker_client as worker
+
+        try:
+            draft = worker.back_translate(text, table=detection.table, timeout=60.0)
+        except worker.WorkerError as exc:
+            message = f"Back-translation failed: {exc}"
+            self._say(message)
+            self._show_message_box(message, "Convert File", self._wx.ICON_ERROR | self._wx.OK)
+            return
+        token = str(request.output_token)
+        if token in ("gfm", "markdown", "commonmark", "plain"):
+            try:
+                target.write_text(draft, encoding="utf-8", newline="\n")
+            except OSError as error:
+                self._show_message_box(
+                    f"Could not write {target.name}: {error}",
+                    "Convert File",
+                    self._wx.ICON_ERROR | self._wx.OK,
+                )
+                return
+        else:
+            import tempfile
+
+            from quill.io.pandoc import PandocError, convert_file_with_pandoc
+
+            try:
+                with tempfile.TemporaryDirectory() as tmp:
+                    intermediate = Path(tmp) / (source_path.stem + ".md")
+                    intermediate.write_text(draft, encoding="utf-8", newline="\n")
+                    convert_file_with_pandoc(
+                        intermediate, target, from_format="markdown", to_format=token
+                    )
+            except (PandocError, OSError) as error:
+                self._show_message_box(
+                    f"Conversion failed: {error}",
+                    "Convert File",
+                    self._wx.ICON_ERROR | self._wx.OK,
+                )
+                return
+        self._say(f"Converted {source_path.name}. Detected {detection.label}. Saved {target.name}.")
+
     def translate_to_standard_g2(self) -> None:
         editor = getattr(self, "editor", None)
         if editor is None:

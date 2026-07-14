@@ -14986,6 +14986,13 @@ class MainFrame(
                 self._set_status("Convert File cancelled (file already exists)")
                 return
 
+        # Braille sources take QUILL's own path: Pandoc has no braille reader,
+        # but the auto-detecting back-translation (braille_detect) does exactly
+        # this job -- detect the code, back-translate, write the chosen format.
+        if request.source_path.suffix.lower() in convert_formats.BRAILLE_INPUT_SUFFIXES:
+            self._convert_brf_file_request(request, target)
+            return
+
         engine = getattr(request, "engine", "auto")
         if engine == "markitdown" and not self._markitdown_convert_applies(request):
             proceed = self._show_message_box(

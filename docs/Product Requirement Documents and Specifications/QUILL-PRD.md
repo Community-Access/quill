@@ -4561,10 +4561,24 @@ focus-existing-instance IPC variant is deliberately deferred — see
 the apps skip the tray there instead of misrepresenting it. `QUILL_SAFE_MODE`
 is honored on launch.
 
-**Non-goals (v1).** No installer Start-Menu shortcuts yet (run from source
-or the batch launchers while the apps are validated); no single-instance
-enforcement; no Audio Studio standalone app yet — the phased plan, including
-those, lives in `docs/planning/apps.md`.
+**Installer integration.** The Windows installer creates Start Menu entries
+for both companion apps ("Quill Radio", "QUILL Cast") alongside QUILL's own,
+launching them via the bundled Python runtime (`-m quill.apps.radio` /
+`-m quill.apps.podcasts`), with both launcher variants (bundled runtime and
+exe) covered. Desktop icons for the companions are an opt-in installer task
+(`companionicons`, unchecked by default) so a default install never adds
+desktop clutter unasked. Defined in the `.iss` generator
+(`scripts/build_windows_distribution.py`), never the generated script.
+
+**Keyboard-first main panel.** Each app opens on a real, tabbable main
+surface — never a bare frame: a live now-playing line, the app's primary
+list (favorite stations / subscribed shows) focused on launch with Enter to
+act, and its core action buttons, every control named via
+`dialog_contract.set_accessible_name`.
+
+**Non-goals (v1).** No single-instance enforcement; no Audio Studio
+standalone app yet — the phased plan, including those, lives in
+`docs/planning/apps.md`.
 
 ---
 
@@ -8172,6 +8186,15 @@ that planning section.
     draft — the file never has to be opened in Braille Mode first. Because
     the draft is a normal document, **Save As** exports it to Markdown,
     HTML, Word (`.docx`), or plain text: BRF in, any format out.
+  - **File > Convert File... accepts braille sources (BR-026a).** `.brf`/
+    `.brl` appear in the Convert File picker's supported-documents pattern
+    (`convert_formats.BRAILLE_INPUT_SUFFIXES`) and dispatch to the braille
+    path instead of Pandoc, which has no braille reader: detect the code,
+    back-translate, then write the chosen output — text-like formats
+    (Markdown/plain) directly, everything else (Word, HTML, EPUB, ...) via
+    Pandoc from a Markdown intermediate. The completion announcement names
+    the detected code. One converter dialog for every document type, braille
+    included.
   - The explicit per-table commands (UEB G1/G2, EBAE G1/G2, Back-Translate
     UEB) remain for users who know exactly what they want.
 
