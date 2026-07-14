@@ -43,6 +43,7 @@ class _CaptureDialog:
         set_accessible_name(self._sink, "Press the key combination to assign")
         root.Add(self._sink, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 12)
         self.dialog.SetSizerAndFit(root)
+        apply_modal_ids(self.dialog, escape_id=wx.ID_CANCEL)
         self._sink.Bind(wx.EVT_KEY_DOWN, self._on_key)
         self._sink.SetFocus()
 
@@ -77,6 +78,16 @@ class _CaptureDialog:
         if 32 < code < 127:
             return chr(code).upper()
         return None
+
+    def show(self) -> str | None:
+        """Capture one combination; None when cancelled."""
+        from quill.ui.dialog_contract import show_modal_dialog
+
+        self.dialog.CentreOnParent()
+        result = show_modal_dialog(self.dialog, "Assign Hotkey")
+        binding = self.result if result == self._wx.ID_OK else None
+        self.dialog.Destroy()
+        return binding
 
 
 class GlobalHotkeysDialog:
@@ -157,19 +168,16 @@ class GlobalHotkeysDialog:
             return
         command_id, label, _needs = self._commands[index]
         capture = _CaptureDialog(self.dialog, label=label)
-        result = capture.dialog.ShowModal()  # dialog_button_contract: exempt
-        capture.dialog.Destroy()
-        if result != self._wx.ID_OK or not capture.result:
+        binding = capture.show()
+        if not binding:
             return
-        taken = [
-            cid for cid, b in self._bindings.items() if b == capture.result and cid != command_id
-        ]
+        taken = [cid for cid, b in self._bindings.items() if b == binding and cid != command_id]
         for cid in taken:
             self._bindings.pop(cid, None)
-        self._bindings[command_id] = capture.result
+        self._bindings[command_id] = binding
         self._reload(select=index)
         suffix = " (reassigned from another command)" if taken else ""
-        self._announce(f"{label} set to {capture.result}{suffix}")
+        self._announce(f"{label} set to {binding}{suffix}")
 
     def _on_clear(self) -> None:
         index = self._list.GetSelection()

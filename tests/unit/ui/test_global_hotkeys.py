@@ -51,13 +51,11 @@ class _Host(GlobalHotkeysMixin):
 
 
 def test_allowlist_is_the_boundary() -> None:
-    host = _Host(
-        {
-            "radio.play_pause": "Ctrl+Alt+P",
-            "file.save": "Ctrl+Alt+S",  # NOT on the allowlist: must be dropped
-            "edit.select_all": "Ctrl+Alt+A",  # ditto
-        }
-    )
+    host = _Host({
+        "radio.play_pause": "Ctrl+Alt+P",
+        "file.save": "Ctrl+Alt+S",  # NOT on the allowlist: must be dropped
+        "edit.select_all": "Ctrl+Alt+A",  # ditto
+    })
     bindings = host._global_hotkey_bindings()
     assert bindings["radio.play_pause"] == "Ctrl+Alt+P"
     assert "file.save" not in bindings
