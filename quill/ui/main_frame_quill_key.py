@@ -25,7 +25,7 @@ from quill.core.quill_key_help import (
     format_cheat_sheet,
     summarize_cheat_sheet,
 )
-from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 
 #: Named presets for the browse-mode follow-on timeout (seconds).
 #: Tokens match the values in ``settings_specs.SETTING_SPECS`` for
@@ -696,6 +696,7 @@ class QuillKeyMixin:
                 value=text,
                 style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP,
             )
+            set_accessible_name(review, title)
             inner.Add(review, 1, wx.ALL | wx.EXPAND, 8)
             close_button = wx.Button(dialog, id=wx.ID_OK, label="Close")
             buttons = wx.StdDialogButtonSizer()

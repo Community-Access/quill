@@ -12,6 +12,7 @@ from quill.core.recovery import (
     _MAX_CURSOR_POSITION,
     RecoveryOffer,
     begin_session,
+    find_error_evidence,
     latest_session_snapshot,
     mark_clean_exit,
     mark_recovery_offer_dismissed,
@@ -191,6 +192,49 @@ def test_begin_session_still_offers_when_log_is_missing(
     begin_session(previous)
     offers = begin_session(current)
     assert len(offers) == 1
+
+
+def test_find_error_evidence_returns_none_without_markers(tmp_path: Path) -> None:
+    logs_dir = tmp_path / "logs"
+    logs_dir.mkdir()
+    (logs_dir / "quill.log").write_text(
+        "2026-07-10 10:22:41 INFO quill.stability.task_manager: "
+        "Task finished operation_id=abc name=lifecycle-idle-sweep duration_ms=0.1\n",
+        encoding="utf-8",
+    )
+    assert find_error_evidence(logs_dir) is None
+
+
+def test_find_error_evidence_returns_none_when_log_missing(tmp_path: Path) -> None:
+    assert find_error_evidence(tmp_path / "logs") is None
+
+
+def test_find_error_evidence_returns_marker_with_context(tmp_path: Path) -> None:
+    # #1013: a filed crash-recovery report showed only a routine log tail
+    # with no visible justification for the offer, because the report
+    # bundler's tail (issue_submit._MAX_LOG_CHARS, 6000 chars) is far
+    # smaller than the window that actually gates the offer (262,144
+    # bytes) -- real error evidence earlier in that window never made it
+    # into the filed report. find_error_evidence() lets the report
+    # include the actual evidence regardless of where it falls in the
+    # scanned window.
+    logs_dir = tmp_path / "logs"
+    logs_dir.mkdir()
+    (logs_dir / "quill.log").write_text(
+        "2026-07-10 10:22:40 INFO before\n"
+        "2026-07-10 10:22:41 ERROR quill.ui.main_frame: Unhandled exception\n"
+        "Traceback (most recent call last):\n"
+        '  File "main_frame.py", line 42, in on_click\n'
+        "ValueError: boom\n"
+        "2026-07-10 10:22:42 INFO after\n" + ("2026-07-10 10:22:43 INFO padding line\n" * 50),
+        encoding="utf-8",
+    )
+    excerpt = find_error_evidence(logs_dir)
+    assert excerpt is not None
+    assert "ERROR quill.ui.main_frame" in excerpt
+    assert "ValueError: boom" in excerpt
+    # Bounded: does not include every padding line appended after the error.
+    assert excerpt.count("padding line") < 5
 
 
 def test_concurrent_begin_session_serialize_via_lock(

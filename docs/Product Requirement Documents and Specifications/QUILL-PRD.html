@@ -8326,6 +8326,29 @@ folders out of the same on-disk shape — it ended up with its own dedicated
 `PodcastFolder` model instead, since a show belongs to exactly one folder
 while a radio favorite&#39;s `folder` is a looser, unenforced tag.
 
+**Recording and scheduled recording (`quill/core/radio/recording.py`,
+`recording_schedule.py`).** `RadioRecorder` launches ffmpeg via
+`subprocess.Popen` (not `stability.safe_subprocess.run_subprocess_safely`,
+which blocks until the process exits — a live stream recording needs a
+controllable start/stop instead) and stops it by writing the `q` keypress
+ffmpeg&#39;s own stdin-driven quit handler reads, the same graceful stop a
+person pressing &quot;q&quot; in a terminal gets, so the output file&#39;s container
+closes properly rather than a hard kill truncating it. `RecordingSettings`
+(format, bitrate, destination, filename pattern, and a `max_duration_minutes`
+safety cap applied via ffmpeg&#39;s own `-t` flag, so a forgotten recording
+cannot grow unbounded even if `stop()` is never called) is a global,
+persisted default. `RecordingScheduler` is an in-process polling thread
+(`_POLL_SECONDS = 20`) — deliberately not an OS-level scheduled task; &quot;while
+QUILL is running&quot; is the explicit, simpler scope requested, with no
+catch-up if QUILL wasn&#39;t open at the scheduled moment. Schedule entries
+support `once`/`daily`/`weekly` recurrence, guarded by a `last_fired_date`
+so the same occurrence never double-fires. Recording reuses the existing,
+already-optional `ffmpeg` component (`quill.core.speech.ffmpeg`) rather than
+introducing a second ffmpeg dependency path, and the Media submenu&#39;s
+Record Now/Schedule Recording/Recording Settings items are hidden outright
+(not merely disabled) when `ffmpeg_available()` is false — closing a
+gap from the original Phase 1 ship where recording did not yet exist to gate.
+
 **Non-goals (deliberate).** TuneIn, iHeartRadio, YouTube audio (any form) —
 `requirements.txt` already excludes `yt-dlp`/`youtube-transcript-api` to keep
 the installed surface small, and this feature does not reopen that call. A
@@ -8338,8 +8361,14 @@ the user&#39;s real browser over an embedded one on accessibility-sensitive
 tasks; a static fetch-and-parse covers the real case (station pages list
 literal stream links).
 
-**Planned next, not yet built.** Stream recording and scheduled recording —
-see `docs/planning/radio.md` for the working plan.
+**Planned next, not yet built.** Recording and scheduled recording, above,
+close out the two biggest items, but not everything: a read-only ACB Media
+events/meetings calendar view (a new, not-yet-verified egress site against
+`link.acb.org`), a working mpv backend for live streams (needed before
+gapless/exact-seek playback can apply to Radio, not just Podcasts), ICY
+&quot;now playing&quot; metadata, a live-refresh fetcher for the currently
+static/hand-maintained ACB Media station list, and optional OS-level
+global hotkeys remain — see `docs/planning/roadmap.md` §1.7.
 
 **Value.** A genuine, on-mission &quot;why QUILL and not a dedicated player&quot;
 answer for a screen-reader-first audience: the ACB Media category exists
@@ -8349,16 +8378,17 @@ summarize, which no standalone radio/podcast app offers.
 
 ---
 
-### 5.84g Podcasts (Phase 1, shipped)
+### 5.84g Podcasts (Phase 1-2, shipped)
 
 **Goal.** Subscribe to, organize, download, and play podcasts inside QUILL,
 sharing Internet Radio&#39;s (§5.84f) proven &quot;one player that outlives any
-dialog&quot; architecture rather than inventing a second one. Phase 1 of the
-5-phase plan in `docs/planning/podcasts.md`: discovery, subscriptions,
-nested folders, OPML, two-control downloads, retention, and playback with
-per-show speed and resume position. Chapters/transcript UI, the Inbox, the
-Play Queue, local (imported-file) podcasts, and rich sorting/filtering are
-later phases in that same document.
+dialog&quot; architecture rather than inventing a second one. Covers Phase 1 of
+the 5-phase plan in `docs/planning/podcasts.md` (discovery, subscriptions,
+nested folders, OPML, two-control downloads, retention, playback with
+per-show speed and resume position) plus chapters, sorting, and rich
+context menus pulled forward from Phase 3. Transcript UI, the Inbox, the
+Play Queue, and local (imported-file) podcasts remain later phases in that
+same document.
 
 **Data model (`quill/core/podcasts/models.py`).** `PodcastShow` (one per
 subscription, or one `is_local` show for a later phase) owns a flat list of
@@ -8448,18 +8478,66 @@ both drive the shared controller. Two QUILL-key chords
 (`Ctrl+Shift+Grave, 8/7` for play-pause/stop) sit adjacent to, not
 overlapping, Radio&#39;s `N/0/9`.
 
+**Chapters (`core/podcasts/chapters.py`).** Fetches and parses the
+Podcasting 2.0 JSON chapters format the feed&#39;s `&lt;podcast:chapters&gt;` tag
+points at, the same fetch-then-parse split `feed_reader.py` uses (one
+reviewed egress site, pure parsing). `chapter_at_position()`/
+`next_chapter()`/`previous_chapter()` are pure functions over a sorted
+chapter list, driving both the Chapters dialog&#39;s jump action and the
+global `podcasts.next_chapter`/`podcasts.previous_chapter` commands.
+Chapters for the currently-playing episode are fetched once per episode
+change (tracked by a `(show_id, episode_guid)` key, not re-fetched on every
+play/pause toggle) via a background `_task_manager.submit()` call, never
+blocking playback.
+
+**Sorting and unheard counts (`core/podcasts/sorting.py`).** Pure
+`sort_episodes()`/`sort_shows()` functions — six episode sort modes
+(newest/oldest/title/duration-longest/duration-shortest/unplayed-first) and
+three show sort modes (title/most-unheard-first/recently-updated-first),
+each with a sensible fallback for an unrecognized mode rather than raising.
+Publish dates are parsed via `email.utils.parsedate_to_datetime` (the
+typical RSS `pubDate` format), falling back to the oldest possible sort
+position for an unparseable or missing date rather than erroring. Unheard
+counts are computed recursively per folder (a folder&#39;s count includes every
+subfolder&#39;s shows) and per show, rendered as `&quot;{name} (N unheard)&quot;` in the
+tree only when non-zero.
+
+**Show notes (`core/podcasts/show_notes.py`).** `html_to_plain_text()`
+converts an episode&#39;s HTML description to plain text with real paragraph
+line breaks (block-level tag ends become newlines) so a screen reader&#39;s
+line-by-line navigation moves by line, not by wrapping a single giant line
+word by word — the specific, named failure mode this was built to avoid.
+Links become `text (url)` rather than being silently dropped.
+`strip_html_images()` removes every `&lt;img&gt;` tag before any HTML is handed
+to the &quot;rich&quot; `wx.html.HtmlWindow` view: an HTML renderer that itself
+fetches `&lt;img src=&quot;...&quot;&gt;` would be a silent, unreviewed network egress site
+invisible to a static audit of QUILL&#39;s own `urlopen` call sites, so images
+are removed rather than rendered. **Send Show Notes to Editor** reuses the
+existing `_power_tools_open_text_in_new_buffer()` new-document path (the
+same one AI transcribe/translate use).
+
+**Global settings and delete-on-remove (`PodcastSettings.
+delete_files_on_remove`).** A new `&quot;ask&quot;`/`&quot;always&quot;`/`&quot;never&quot;` field,
+consulted in the Unsubscribe flow via `effective_settings()` (so a show&#39;s
+own override wins over the library global): `&quot;ask&quot;` prompts a second
+confirmation naming the downloaded-episode count only when there are any to
+delete; `&quot;always&quot;`/`&quot;never&quot;` act without asking. `PodcastLibrary.settings`
+(playback mode, retention, speed, download root) existed in the data model
+since Phase 1 but had no UI until this pass&#39;s Podcast Settings dialog.
+
 **Non-goals (deliberate).** Video podcasts, in any form — audio only,
 matching every other QUILL playback surface; this was an explicit,
 repeated constraint during planning, not an oversight. TuneIn/iHeartRadio
 apply to Radio, not here; podcast feeds are an open standard (RSS/Atom),
 so there is no equivalent commercial-API question for this feature.
 
-**Planned next (Phase 2+), not yet built.** Chapter navigation and
-transcript viewing/export/QUILL-transcription (the feed already parses the
-URLs; §5.84b&#39;s transcription engines are the intended target), a separate
-Inbox view with its own folder tree, a cross-show reorderable Play Queue,
-local (imported-file) podcasts and watched folders, and rich
-sorting/filtering — see `docs/planning/podcasts.md` for the full phased
+**Planned next (Phase 3+), not yet built.** Transcript viewing/export/
+QUILL-transcription (the feed already parses the URL; §5.84b&#39;s
+transcription engines are the intended target), a separate Inbox view with
+its own folder tree, a cross-show reorderable Play Queue, local
+(imported-file) podcasts and watched folders, virtual views
+(Favorites/New Episodes/Continue Listening), and rich filtering (including
+Search Everywhere) — see `docs/planning/podcasts.md` for the full phased
 plan.
 
 **Value.** Closes the other half of the &quot;why QUILL and not a dedicated
@@ -8467,6 +8545,50 @@ player&quot; answer §5.84f opened: a downloaded episode chains directly into th
 Listening Companion (§5.84b) for transcribe-and-summarize, something no
 standalone podcast app offers, and the same QUILL Sync story that already
 carries settings between machines now carries listening position too.
+
+---
+
+### 5.84h Shared media Sleep Timer, and start-at-Windows-login
+
+**Goal.** A sleep timer that covers both Internet Radio (§5.84f) and
+Podcasts (§5.84g) from one place, since duplicating it per-feature would
+mean two timers, two dialogs, and no guarantee they agree on what &quot;active&quot;
+means; and a way to launch QUILL automatically at login, requested
+alongside the media work though unrelated to it in scope.
+
+**Sleep timer (`quill/ui/media_sleep_timer.py`).** `SleepTimerController`
+is owned by `MainFrame`, not either media mixin, and takes `get_radio_
+controller`/`get_podcast_controller` callables rather than direct
+references, so it works whether one, both, or neither feature is enabled.
+A single `wx.Timer` ticks every second; over the final `_FADE_WINDOW_
+SECONDS` (20) of the countdown, every controller currently in a
+`PLAYING`/`PAUSED` state has its volume faded linearly toward zero
+(captured once at fade-start per controller, so a mid-fade cancel restores
+the pre-fade level exactly, not whatever the fade had reached). At zero,
+every active controller is stopped, then every faded controller&#39;s volume is
+restored — stopping first, then restoring, so the fade-out is never briefly
+audible again between &quot;stopped&quot; and &quot;volume restored.&quot; Radio and Podcasts
+are independent players (nothing stops one when the other starts), so both
+are faded/stopped if both happen to be active at once. `PodcastPlayerController`
+gained a `volume_percent` property/tracked field for this — Phase 1 shipped
+with a `set_volume()` method but no readable state, since nothing needed to
+read it back before the sleep timer did.
+
+**Start at Windows login (`quill/platform/windows/startup.py`).**
+`set_launch_at_startup()`/`is_launch_at_startup_enabled()` read/write a
+per-user `HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run`
+value — the same no-elevation, easily-reversible mechanism most everyday
+Windows apps use, not an installer or Task Scheduler change. A new
+`Settings.launch_at_windows_startup` field, rendered automatically by the
+generic Preferences dialog from its `SettingSpec` entry (placed immediately
+after `tray_enabled`&#39;s), is applied in `_settings_dialog_apply_refresh()` —
+the same shared hook every Settings-apply path (OK, Apply, Reset, Import)
+already funnels through. Checking it also forces `tray_enabled` on: a QUILL
+that launches silently at login with no tray icon would leave no visible
+way back into a hidden window, so the two settings are kept consistent
+rather than left to conflict. A no-op, never-raising module on non-Windows
+platforms (`winreg` import guarded, mirroring `shell_integration.py`&#39;s
+existing pattern).
 
 ---
 

@@ -19,7 +19,7 @@ import time
 from collections.abc import Callable
 from typing import Any
 
-from quill.ui.dialog_contract import apply_modal_ids, show_message_box
+from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name, show_message_box
 
 
 class DictationHistoryDialog:
@@ -55,6 +55,7 @@ class DictationHistoryDialog:
             8,
         )
         self._list = wx.ListCtrl(self.dialog, style=wx.LC_REPORT | wx.LC_SINGLE_SEL)
+        set_accessible_name(self._list, "Dictation recordings awaiting review")
         self._list.InsertColumn(0, "When", width=150)
         self._list.InsertColumn(1, "State", width=140)
         self._list.InsertColumn(2, "Transcript preview", width=300)

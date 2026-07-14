@@ -1,9 +1,8 @@
 """Retention policy: what happens to a downloaded episode's file over time.
 
 Applied after every successful download (``keep_last_n`` pruning) and when
-an episode finishes playing (``delete_after_play``) -- see
-``docs/planning/podcasts.md`` §4. Pure/wx-free so the policy logic is
-testable without a real download or a real file.
+an episode finishes playing (``delete_after_play``). Pure/wx-free so the
+policy logic is testable without a real download or a real file.
 """
 
 from __future__ import annotations

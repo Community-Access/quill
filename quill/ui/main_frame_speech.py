@@ -881,7 +881,10 @@ class SpeechCommandsMixin:
             ok = bool(result)
             if ok:
                 self._announce("Braille pack installed. Translation is ready.")
-                self._request_menu_refresh()
+                # A structural change (Tools > Braille gains the Translation
+                # submenu), not a menu-item state change -- _request_menu_refresh()
+                # only refreshes existing item state and never adds submenus.
+                self._build_menu()
             else:
                 self._announce("The braille pack could not be installed.")
             if on_done is not None:

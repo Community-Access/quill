@@ -2,7 +2,14 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Sequence
 
+# accessible_label / set_accessible_name are re-exported here because the
+# #994 naming sweep imports them from this module at its ~100 call sites.
+# The implementation lives in accessible_names: its native NSAccessibility
+# push is the part VoiceOver actually hears — the SetName-only versions
+# these re-exports replace were live-verified inaudible on macOS (#1012).
+from quill.ui.accessible_names import accessible_label as accessible_label
 from quill.ui.accessible_names import ensure_accessible_names
+from quill.ui.accessible_names import set_accessible_name as set_accessible_name
 
 # Control classes that should receive initial keyboard focus when a custom
 # dialog opens, in priority order. These are the "content" controls a user came

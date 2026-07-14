@@ -81,3 +81,28 @@ def test_worker_status_reports_health(monkeypatch) -> None:
     status = worker.worker_status()
     assert status.healthy is True
     assert status.last_alive is not None
+
+
+def test_back_translate_survives_a_document_too_large_for_argv() -> None:
+    """Regression: a live crash report showed a ~450KB BRF file's
+    back-translation failing outright (WinError 206, "The filename or
+    extension is too long") because the whole document text was packed into
+    a single command-line argument to the worker subprocess -- past
+    Windows' ~32K CreateProcess command-line-length limit. The payload now
+    travels on stdin (no such limit), so a document this size must actually
+    launch the real worker subprocess and get a real result, not raise.
+    This is a real (unmocked) subprocess call -- liblouis must be installed
+    in this environment for it to exercise the actual translation; it is
+    skipped otherwise since the point of this test is the transport, not
+    liblouis itself.
+    """
+    large_text = ("hello world " * 40_000).strip()  # ~480KB, well past argv limits
+    try:
+        result = worker.back_translate(large_text, timeout=30.0)
+    except worker.WorkerError as exc:
+        if "liblouis is not installed" in str(exc):
+            import pytest
+
+            pytest.skip("liblouis is not installed in this environment")
+        raise
+    assert result

@@ -10,6 +10,7 @@ from quill.io.pandoc import (
     PandocUnavailableError,
     convert_document_with_pandoc,
 )
+from quill.ui.dialog_contract import set_accessible_name
 
 
 def _normalize_whitespace(value: str) -> str:
@@ -235,15 +236,12 @@ class WordDocumentSurface:
             self._preview_page,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2,
         )
+        set_accessible_name(self.preview, "Word view preview")
         self.text_ctrl = wx.TextCtrl(
             self._text_page,
             style=wx.TE_MULTILINE | wx.TE_RICH2 | wx.TE_NOHIDESEL,
         )
-        # Non-modal editor surface: never shown via show_modal_dialog, so the
-        # #1012 show-time naming pass cannot reach it — name explicitly or
-        # macOS VoiceOver announces the document content with no label.
-        self.preview.SetName("Word view")
-        self.text_ctrl.SetName("Document text")
+        set_accessible_name(self.text_ctrl, "Word document as text")
 
         preview_sizer = wx.BoxSizer(wx.VERTICAL)
         preview_sizer.Add(self.preview, 1, wx.EXPAND)

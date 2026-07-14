@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name, show_modal_dialog
 
 # ---------------------------------------------------------------------------
 # Typed confirmation -- the stronger gate for the four highest-consequence
@@ -243,7 +243,7 @@ class BranchProtectionDialog:
             wx.ALIGN_CENTER_VERTICAL,
         )
         self._review_spin = wx.SpinCtrl(panel, min=0, max=6, initial=0)
-        self._review_spin.SetName("Required approving reviews")
+        set_accessible_name(self._review_spin, "Required approving reviews")
         rules_grid.Add(self._review_spin, 0)
 
         rules_grid.Add(

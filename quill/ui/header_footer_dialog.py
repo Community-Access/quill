@@ -16,6 +16,7 @@ from dataclasses import replace
 import wx
 
 from quill.core.header_footer import PRESETS, HeaderFooterSpec, PageNumberStyle
+from quill.ui.dialog_contract import set_accessible_name
 
 
 class HeaderFooterDialog:
@@ -80,7 +81,7 @@ class HeaderFooterDialog:
             12,
         )
         self._start_page_ctrl = wx.SpinCtrl(self.dialog, min=1, max=9999, initial=1)
-        self._start_page_ctrl.SetName("Start page number")
+        set_accessible_name(self._start_page_ctrl, "Start page number")
         options_row.Add(self._start_page_ctrl, 0, wx.LEFT, 4)
         root.Add(options_row, 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
 

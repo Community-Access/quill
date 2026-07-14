@@ -43,7 +43,12 @@ from quill.core.assistant_ai import (
 from quill.core.commands import CommandRegistry
 from quill.core.features import FeatureManager
 from quill.core.python_sandbox import PythonSandboxResult, run_python_sandbox
-from quill.ui.dialog_contract import apply_modal_ids, show_message_box, show_modal_dialog
+from quill.ui.dialog_contract import (
+    apply_modal_ids,
+    set_accessible_name,
+    show_message_box,
+    show_modal_dialog,
+)
 
 
 class RunPythonDialog:
@@ -91,6 +96,7 @@ class RunPythonDialog:
             style=wx.TE_MULTILINE | wx.TE_PROCESS_TAB | wx.BORDER_SIMPLE,
             size=(-1, 280),
         )
+        set_accessible_name(self.code, "Python code")
         self.code.SetValue(
             "# document_text and selection_text are available.\n"
             "# Set result or call set_result(...).\n"
@@ -106,6 +112,7 @@ class RunPythonDialog:
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.BORDER_SIMPLE,
             size=(-1, 220),
         )
+        set_accessible_name(self.preview, "Result preview")
         root.Add(self.preview, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
@@ -264,6 +271,7 @@ class AccessibilityAgentDialog:
             panel,
             choices=[self._step_label(step) for step in self.plan.steps],
         )
+        set_accessible_name(self.step_list, "Proposed steps")
         root.Add(self.step_list, 1, wx.EXPAND | wx.ALL, 8)
         for index, step in enumerate(self.plan.steps):
             if step.auto_fixable:
@@ -280,6 +288,7 @@ class AccessibilityAgentDialog:
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.BORDER_SIMPLE,
             size=(-1, 150),
         )
+        set_accessible_name(self.details, "Step details")
         root.Add(self.details, 0, wx.EXPAND | wx.ALL, 8)
 
         self.status = wx.StaticText(panel, label="Ready to apply the checked steps.")
@@ -438,6 +447,7 @@ class DiffReviewDialog:
             panel,
             choices=[hunk.describe() for hunk in self.review.hunks],
         )
+        set_accessible_name(self.hunk_list, "Changes")
         root.Add(self.hunk_list, 1, wx.EXPAND | wx.ALL, 8)
         for index in range(len(self.review.hunks)):
             self.hunk_list.Check(index, True)
@@ -448,6 +458,7 @@ class DiffReviewDialog:
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.BORDER_SIMPLE,
             size=(-1, 170),
         )
+        set_accessible_name(self.details, "Change details")
         root.Add(self.details, 0, wx.EXPAND | wx.ALL, 8)
 
         self.status = wx.StaticText(panel, label="Ready to apply the checked changes.")
@@ -599,6 +610,7 @@ class WritingAssistantDialog:
             choices=[preset.title for preset in self._prompt_presets],
         )
         self.preset_choice.SetSelection(0 if self._prompt_presets else wx.NOT_FOUND)
+        set_accessible_name(self.preset_choice, "Prompt presets")
         self.load_prompt_button = wx.Button(self.dialog, label="Load Prompt")
         self.use_selection_button = wx.Button(self.dialog, label="Use Selection")
         self.use_document_button = wx.Button(self.dialog, label="Use Document")
@@ -640,9 +652,11 @@ class WritingAssistantDialog:
             size=(-1, 110),
         )
         self.chat_log.SetValue(self._initial_chat_log())
+        set_accessible_name(self.chat_log, "Assistant conversation log")
         root.Add(self.chat_log, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         self.results = wx.ListBox(self.dialog)
+        set_accessible_name(self.results, "Matching actions")
         root.Add(self.results, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         self.details = wx.TextCtrl(
@@ -650,6 +664,7 @@ class WritingAssistantDialog:
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.BORDER_SIMPLE,
             size=(-1, 120),
         )
+        set_accessible_name(self.details, "Action details")
         root.Add(self.details, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
@@ -822,6 +837,7 @@ class SearchableModelPickerDialog:
         root.Add(self.query, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         self.listbox = wx.ListBox(self.dialog, choices=self._filtered_models)
+        set_accessible_name(self.listbox, "Available models")
         root.Add(self.listbox, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         buttons = self.dialog.CreateButtonSizer(wx.OK | wx.CANCEL)
@@ -914,6 +930,7 @@ class AIHubDialog:
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.BORDER_SIMPLE,
             size=(-1, 220),
         )
+        set_accessible_name(self.summary, "AI Hub summary")
         root.Add(self.summary, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         self.status = wx.StaticText(self.dialog, label="Ready.")
