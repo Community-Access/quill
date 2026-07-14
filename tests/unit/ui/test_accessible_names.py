@@ -278,6 +278,10 @@ class SpinCtrl(_FakeWindow):
     pass
 
 
+class SpinButton(_FakeWindow):
+    """The stepper half of the macOS spin composite."""
+
+
 class StaticText(_FakeWindow):
     def __init__(self, label: str) -> None:
         super().__init__()
@@ -306,6 +310,20 @@ def test_set_accessible_name_propagates_to_inner_text_child() -> None:
 
     assert spin.GetName() == "Rate (words per minute)"
     assert inner.GetName() == "Rate (words per minute)"
+
+
+def test_spin_stepper_child_is_named_too() -> None:
+    """Live #1012 finding: VoiceOver walks the stepper as its own object
+    right after the edit field, and it announced nameless when only the
+    TextCtrl child was covered."""
+    inner = TextCtrl(name="text")
+    stepper = SpinButton(name="spinButton")
+    spin = SpinCtrl(name="wxSpinCtrl", children=[inner, stepper])
+
+    set_accessible_name(spin, "Font size:")
+
+    assert inner.GetName() == "Font size"
+    assert stepper.GetName() == "Font size"
 
 
 def test_set_accessible_name_leaves_explicitly_named_children_alone() -> None:
@@ -425,6 +443,48 @@ def test_native_label_targets_the_scrollviews_document_view(monkeypatch) -> None
 
     assert inner.label == "Notes"
     assert scroll.label == "Notes"
+
+
+class Choice(_FakeWindow):
+    """Class name matters (Choice is labelable); carries a native handle."""
+
+    def GetHandle(self) -> int:  # noqa: N802
+        return 0xF00D
+
+
+def test_walker_pushes_native_label_for_already_named_controls(monkeypatch) -> None:
+    """Live #1012 finding: Settings' Theme choice is named via a direct
+    SetName call, which never touched NSAccessibility — VoiceOver read just
+    "System". The show-time walk must push the existing wx name natively."""
+    import quill.ui.accessible_names as an
+
+    view = _FakeNSView()
+    monkeypatch.setattr(an.sys, "platform", "darwin")
+    monkeypatch.setattr(an, "_objc_cache", _FakeObjc(view))
+    theme = Choice(name="Theme")
+    dialog = Dialog(children=[theme])
+
+    ensure_accessible_names(dialog)
+
+    assert theme.GetName() == "Theme"  # wx name untouched
+    assert view.label == "Theme"  # but now audible
+
+
+def test_walker_never_speaks_machine_key_names(monkeypatch) -> None:
+    """Help-topic keys ("wizard.kb_pack_choice") must stay silent: speaking
+    them would be worse than the current nameless announcement."""
+    import quill.ui.accessible_names as an
+
+    view = _FakeNSView()
+    monkeypatch.setattr(an.sys, "platform", "darwin")
+    monkeypatch.setattr(an, "_objc_cache", _FakeObjc(view))
+    choice = Choice(name="wizard.kb_pack_choice")
+    dialog = Dialog(children=[choice])
+
+    ensure_accessible_names(dialog)
+
+    assert choice.GetName() == "wizard.kb_pack_choice"
+    assert view.label is None
 
 
 def test_pin_macos_text_area_role_sets_role_and_label(monkeypatch) -> None:

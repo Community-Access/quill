@@ -223,6 +223,13 @@ PyObjC is already bundled by the <code>[macos]</code> extra.
 <code>SetName</code> is still applied everywhere (it feeds the label
 inference, tests, and the Alt+F1 announcer), but the native push is the
 part macOS hears.</p>
+<p>Second-round VoiceOver findings folded in: controls that were
+<em>already</em> explicitly named (the Settings Theme choice etc.) get
+their existing wx name pushed natively during the show-time walk (a
+direct <code>SetName</code> call alone never reaches NSAccessibility),
+and composite propagation covers the spin control's
+<code>SpinButton</code> stepper — VoiceOver walks it as its own object
+right after the edit field.</p>
 <h2 id="the-fix--one-global-mechanism-not-per-site-edits">The fix — one
 global mechanism, not per-site edits</h2>
 <p>Everything lives in <code>quill/ui/accessible_names.py</code>:</p>
@@ -328,13 +335,15 @@ editor (<code>SetName("Document")</code>, pre-existing), the CSV surface
 surface (<code>Word view</code> / <code>Document text</code>), and the
 sticky-notes vault list/preview (<code>Sticky notes</code> /
 <code>Note preview</code> — its only preceding text is prose).</li>
-<li><strong>Machine-key names remain machine keys.</strong> Controls
+<li><strong>Machine-key names stay silent on macOS.</strong> Controls
 named for F1 help topics (<code>info_pages.py</code>,
-<code>setup_wizard_pages.py</code>,
-<code>guided_speech_dialog.py</code>, devtools console, ...) keep those
-names, so VoiceOver reads e.g. "wizard.kb_pack_choice". Pre-existing
-behaviour, out of scope here; fixing it means giving the help system its
-own key channel (follow-up candidate).</li>
+<code>setup_wizard_pages.py</code>, ...) keep their wx names for the
+help system, and the walker pushes an <em>existing</em> explicit name to
+NSAccessibility only when it is human-shaped (contains a space or an
+uppercase letter — see <code>_speakable_name</code>). Speaking
+"wizard.kb_pack_choice" would be worse than the nameless status quo.
+Giving those controls real labels means a separate help-topic key
+channel (follow-up candidate).</li>
 <li><strong>Controls with no visible label anywhere</strong> stay
 unnamed unless a site names them (the walker returns them as leftovers;
 the audit keeps them visible). Fixed-by-hand cases so far: sticky-notes

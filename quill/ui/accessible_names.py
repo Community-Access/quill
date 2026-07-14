@@ -130,6 +130,7 @@ _FALLBACK_DEFAULT_NAMES: frozenset[str] = frozenset({
     "check",
     "button",
     "staticText",
+    "spinButton",
 })
 
 #: A StaticText longer than this is prose (instructions, descriptions), not a
@@ -253,6 +254,19 @@ def _objc_import() -> object:
     return _objc_cache
 
 
+def _speakable_name(name: str) -> bool:
+    """True when *name* reads as a label rather than a machine key.
+
+    Window names double as F1 help-topic keys and ``FindWindowByName``
+    targets (``"wizard.kb_pack_choice"``, ``"about_overview"``). Speaking
+    those through VoiceOver is worse than staying silent, so the native
+    push only fires for human-shaped names: anything containing a space or
+    an uppercase letter. Real labels ("Theme", "SSH port", "Rate (words per
+    minute)") all qualify; snake/dotted lowercase keys never do.
+    """
+    return " " in name or any(ch.isupper() for ch in name)
+
+
 def _macos_native_label(control: object, name: str) -> None:
     """Push *name* onto the control's native ``NSAccessibility`` label.
 
@@ -266,6 +280,8 @@ def _macos_native_label(control: object, name: str) -> None:
     non-darwin platforms this is an immediate no-op.
     """
     if sys.platform != "darwin":
+        return
+    if not _speakable_name(name):
         return
     objc = _objc_import()
     if not objc:
@@ -337,18 +353,25 @@ def _get_children(widget: object) -> list[object]:
         return []
 
 
+#: Classes composite names propagate onto. Extends the labelable set with the
+#: SpinButton stepper half of the macOS ``wx.SpinCtrl`` composite: VoiceOver
+#: walks it as its own object right after the edit field, and live #1012
+#: testing showed it announcing nameless when only the TextCtrl was covered.
+_PROPAGATE_CLASSES: frozenset[str] = _LABELABLE_CLASSES | frozenset({"SpinButton"})
+
+
 def _propagate_name_to_inner_children(control: object, name: str) -> None:
     """Copy *name* onto default-named labelable descendants of a composite.
 
-    VoiceOver focuses the *inner* field of composite controls (the
-    ``NSTextField`` inside ``wx.SpinCtrl``/``wx.ComboBox``, the ``ListCtrl``
-    inside ``EditableListBox``), and the inner field does not inherit the
-    composite's name (support#69). Explicitly named children are left alone.
+    VoiceOver focuses the *inner* fields of composite controls (the
+    ``NSTextField`` and stepper inside ``wx.SpinCtrl``, the ``ListCtrl``
+    inside ``EditableListBox``), and they do not inherit the composite's
+    name (support#69). Explicitly named children are left alone.
     """
     if not name:
         return
     for child in _get_children(control):
-        if _class_matches(child, _LABELABLE_CLASSES) and _has_default_name(child):
+        if _class_matches(child, _PROPAGATE_CLASSES) and _has_default_name(child):
             _set_name(child, name)
         _propagate_name_to_inner_children(child, name)
 
@@ -409,10 +432,16 @@ def _walk(widget: object, unnamed: list[object], pending: str | None) -> str | N
                     unnamed.append(child)
             else:
                 # Already named (explicitly, or via constructor ``name=``):
-                # leave the name alone — it may be an F1 help-topic key or a
-                # FindWindowByName target — but still sync composite children
-                # so a named-composite spin control reads correctly.
-                _propagate_name_to_inner_children(child, _get_name(child))
+                # leave the wx name alone — it may be an F1 help-topic key or
+                # a FindWindowByName target — but sync composite children AND
+                # push the native NSAccessibility label, which a direct
+                # SetName call never did (live #1012 finding: the Settings
+                # Theme choice read as just "System" because its explicit
+                # name existed only at the wx level). _macos_native_label
+                # itself skips machine-key names.
+                name = _get_name(child)
+                _propagate_name_to_inner_children(child, name)
+                _macos_native_label(child, name)
             pending = None
             continue
         if _class_matches(child, _SELF_LABELED_CLASSES):

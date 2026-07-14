@@ -40,6 +40,13 @@ focuses). PyObjC is already bundled by the `[macos]` extra. `SetName` is
 still applied everywhere (it feeds the label inference, tests, and the
 Alt+F1 announcer), but the native push is the part macOS hears.
 
+Second-round VoiceOver findings folded in: controls that were *already*
+explicitly named (the Settings Theme choice etc.) get their existing wx name
+pushed natively during the show-time walk (a direct `SetName` call alone
+never reaches NSAccessibility), and composite propagation covers the spin
+control's `SpinButton` stepper — VoiceOver walks it as its own object right
+after the edit field.
+
 ## The fix — one global mechanism, not per-site edits
 
 Everything lives in `quill/ui/accessible_names.py`:
@@ -113,11 +120,14 @@ The snapshot is therefore also the authoritative list of deviations.
   CSV surface (`CSV grid` / `CSV text`), the Word structure surface
   (`Word view` / `Document text`), and the sticky-notes vault list/preview
   (`Sticky notes` / `Note preview` — its only preceding text is prose).
-* **Machine-key names remain machine keys.** Controls named for F1 help
-  topics (`info_pages.py`, `setup_wizard_pages.py`, `guided_speech_dialog.py`,
-  devtools console, ...) keep those names, so VoiceOver reads e.g.
-  "wizard.kb_pack_choice". Pre-existing behaviour, out of scope here; fixing
-  it means giving the help system its own key channel (follow-up candidate).
+* **Machine-key names stay silent on macOS.** Controls named for F1 help
+  topics (`info_pages.py`, `setup_wizard_pages.py`, ...) keep their wx names
+  for the help system, and the walker pushes an *existing* explicit name to
+  NSAccessibility only when it is human-shaped (contains a space or an
+  uppercase letter — see `_speakable_name`). Speaking
+  "wizard.kb_pack_choice" would be worse than the nameless status quo.
+  Giving those controls real labels means a separate help-topic key channel
+  (follow-up candidate).
 * **Controls with no visible label anywhere** stay unnamed unless a site
   names them (the walker returns them as leftovers; the audit keeps them
   visible). Fixed-by-hand cases so far: sticky-notes vault.
