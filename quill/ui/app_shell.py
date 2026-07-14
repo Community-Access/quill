@@ -164,6 +164,54 @@ class AppShellFrame:
         self._tray_icon.PopupMenu(menu)
         menu.Destroy()
 
+    # -- basic per-app update check (Help > Check for Updates...) ------------
+
+    def check_for_app_updates(self, *, repo_slug: str, current_version: str) -> None:
+        """Deliberately basic: newest stable GitHub release for this app's own
+        repo vs the running version, then offer to open the download page in
+        the browser. The full QUILL updater (signed manifest, in-place
+        download, portable swaps) stays in QUILL itself."""
+        from quill.core.updates import fetch_releases, is_newer_version
+
+        api_url = f"https://api.github.com/repos/{repo_slug}/releases"
+        self._announce("Checking for updates")
+
+        def _fetch() -> object:
+            return fetch_releases(api_url)
+
+        def _report(_name: str, releases: object) -> None:
+            def _show() -> None:
+                stable = [r for r in releases if not r.prerelease]
+                newest = stable[0] if stable else None
+                if newest is None or not is_newer_version(current_version, newest.version):
+                    self._announce(f"You are up to date ({current_version}).")
+                    return
+                title = self.frame.GetTitle()
+                answer = self._show_message_box(
+                    f"{title} {newest.version} is available (you have "
+                    f"{current_version}).\n\nOpen the download page in your browser?",
+                    "Update Available",
+                    wx.ICON_INFORMATION | wx.YES_NO,
+                )
+                if answer in (wx.YES, wx.ID_YES):
+                    import webbrowser
+
+                    webbrowser.open(newest.download_url)
+
+            wx.CallAfter(_show)
+
+        def _failed(_name: str, error: BaseException) -> None:
+            wx.CallAfter(
+                self._show_message_box,
+                f"Could not check for updates: {error}",
+                "Check for Updates",
+                wx.ICON_ERROR | wx.OK,
+            )
+
+        self._task_manager.submit(
+            "app-update-check", _fetch, on_success=_report, on_failure=_failed
+        )
+
     # -- calling back into full QUILL ----------------------------------------
 
     def open_in_quill(self, *paths: str) -> None:

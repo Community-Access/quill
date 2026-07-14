@@ -86,3 +86,10 @@ def test_adp_menu_items_absent_while_locked():
     shell._append_adp_media_items(menu)
     assert menu.appended == []
     assert menu.separators == 0
+
+
+def test_top_level_adp_menu_is_none_while_locked():
+    shell = _ShellWithAdp.__new__(_ShellWithAdp)
+    shell.features = _Features(set())
+    shell._feature_locks = _Locks(set())
+    assert shell._build_adp_menu() is None
