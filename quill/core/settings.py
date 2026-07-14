@@ -102,6 +102,11 @@ class Settings:
     warm_dictation_model: bool = True
     warm_kokoro_model: bool = True
     tray_enabled: bool = False
+    # Registers a per-user Windows Run-key entry (quill/platform/windows/startup.py);
+    # a no-op setting on non-Windows platforms. Checking this also forces
+    # tray_enabled on -- launching silently at login with no tray icon would
+    # leave no visible way back into a hidden window.
+    launch_at_windows_startup: bool = False
     persistent_undo: bool = False
     spellcheck_as_you_type: bool = False
     # When True, saving a document first opens the F7 spelling review so the user

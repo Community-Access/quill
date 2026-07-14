@@ -16,7 +16,7 @@ from collections.abc import Callable
 
 from quill.core.i18n import _, lazy_gettext
 from quill.core.platform_nouns import credential_store_name
-from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 
 _PROVIDER_CHOICES: tuple[tuple[str, object], ...] = (
     ("off", lazy_gettext("Off (AI disabled)")),
@@ -590,6 +590,7 @@ class AIHubDialog:
         self._datalab_mode_ctrl.SetSelection(
             mode_values.get(str(getattr(stored, "datalab_mode", "balanced")), 1)
         )
+        set_accessible_name(self._datalab_mode_ctrl, str(_("Default mode")))
         grid.Add(self._datalab_mode_ctrl, 0, wx.EXPAND)
 
         grid.Add(wx.StaticText(panel, label=str(_("Default output:"))), 0, wx.ALIGN_CENTER_VERTICAL)
@@ -600,6 +601,7 @@ class AIHubDialog:
         self._datalab_output_ctrl.SetSelection(
             output_values.get(str(getattr(stored, "datalab_output", "markdown")), 0)
         )
+        set_accessible_name(self._datalab_output_ctrl, str(_("Default output")))
         grid.Add(self._datalab_output_ctrl, 0, wx.EXPAND)
         box.Add(grid, 0, wx.EXPAND | wx.ALL, 6)
 
@@ -940,7 +942,7 @@ class AIHubDialog:
             max=20,
             initial=self._deepgram_max_speakers,
         )
-        self._max_speakers_spin.SetName("Default maximum speakers")
+        set_accessible_name(self._max_speakers_spin, "Default maximum speakers")
         sizer.Add(self._max_speakers_spin, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         note = wx.StaticText(

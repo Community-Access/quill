@@ -88,7 +88,7 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "set to download mode) -- never a silent background fetch the user "
         "didn't opt into for that show. HTTPS-only over a verified TLS "
         "context with a bounded timeout; supports resumable Range requests "
-        "for the per-item pause/resume controls (podcasts.md §4)."
+        "for the per-item pause/resume controls."
     ),
     "core/podcasts/feed_reader.py::_fetch_feed_bytes": (
         "Single egress site for podcast subscribing/refreshing: fetches one "
@@ -100,6 +100,23 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "size. Private-feed Basic-auth credentials come from the OS "
         "credential store, sent only to that feed's own host. Disabled in "
         "Safe Mode via feed_reader.refuse_in_safe_mode."
+    ),
+    "core/podcasts/chapters.py::_fetch_chapters_bytes": (
+        "Single egress site for podcast chapter navigation: fetches one "
+        "episode's Podcasting 2.0 JSON chapters document (parsed locally, no "
+        "further network activity). Reached only when the user opens the "
+        "Chapters view for an episode that has a chapters_url. HTTPS-only "
+        "over a verified TLS context with a bounded timeout and response "
+        "size. Disabled in Safe Mode via chapters.refuse_in_safe_mode."
+    ),
+    "core/podcasts/transcripts.py::_fetch_transcript_bytes": (
+        "Single egress site for podcast transcripts: fetches one episode's "
+        "Podcasting 2.0 transcript file (VTT/SRT/JSON, parsed locally, no "
+        "further network activity) and caches the parsed text so reopening "
+        "never re-fetches. Reached only when the user opens the transcript "
+        "view for an episode that has a transcript_url. HTTPS-only over a "
+        "verified TLS context with a bounded timeout and response size. "
+        "Disabled in Safe Mode via refuse_in_safe_mode."
     ),
     "core/podcasts/itunes_search.py::_http_json": (
         "Single egress site for Add Podcast's search: iTunes' free, keyless "

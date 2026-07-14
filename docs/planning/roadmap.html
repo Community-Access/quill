@@ -308,6 +308,23 @@ pass on a packaged build.</p>
 streaming Read Aloud refinements, voice management, server-side
 pronunciation, Tier-3 surfaces — all in §5. Voice
 <strong>cloning</strong> stays deliberately descoped.</p>
+<h3 id="17-internet-radio--remaining">1.7 Internet Radio —
+remaining</h3>
+<p>Internet Radio shipped (PR #987), including stream recording and
+in-app scheduled recording (0.9.0 Beta 3; canonical: PRD §5.84f, user
+guide, CHANGELOG). Not being built right now, parked for later: an
+<strong>ACB Media events/meetings calendar</strong> — a read-only "ACB
+Media Events" view (or an .ics/iCal export) surfaced from the same place
+the ACB Media station category lives. Researched from
+<code>S:\code\acb_link_desktop</code>'s
+<code>categories.xml</code>-family feeds served from
+<code>link.acb.org</code>; needs the exact events-feed URL confirmed
+(only <code>streams.xml</code>/<code>link.opml</code> were concretely
+verified), a new <code>network_egress_audit.py</code> entry, and parsing
+with stdlib <code>xml.etree.ElementTree</code> (matching
+<code>link_finder.py</code>). The rest of ACB Link's surface (affiliate
+directories, publications, SIG info, voice control) is out of scope —
+this feed is the one piece directly relevant to Radio.</p>
 <hr />
 <h2 id="2-locked--hidden-features-register">2. Locked / hidden features
 (register)</h2>
@@ -586,6 +603,11 @@ validation pass.</td>
 <tr>
 <td>ElevenLabs 2.0 extras (§1.6)</td>
 <td>Live streaming Read Aloud, voice management, Tier-3 — all §5.</td>
+</tr>
+<tr>
+<td>Internet Radio (§1.7)</td>
+<td><strong>Shipped 0.9.0 Beta 3</strong> (incl. recording +
+scheduling). Open: ACB Media events/meetings calendar feed.</td>
 </tr>
 <tr>
 <td>Audio Studio</td>

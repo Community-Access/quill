@@ -1,5 +1,5 @@
 """The podcast episode download queue: its own thread, resumable transfers,
-and two independent pause controls (podcasts.md §4).
+and two independent pause controls.
 
 Runs on a dedicated background worker thread rather than the shared
 ``QuillTaskManager`` pool, so a backlog of podcast downloads never competes

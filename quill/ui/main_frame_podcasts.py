@@ -3,9 +3,9 @@
 Follows ``main_frame_radio.py``'s exact pattern: one shared playback
 controller (never owned by a dialog), a status bar cell, a tray section, and
 commands registered in ``CommandRegistry`` so they show up in the Command
-Palette. See ``docs/planning/podcasts.md`` for the full feature plan --
-this mixin covers Phase 1 (subscribe, download with pause/resume, nested
-library folders, OPML, playback).
+Palette. See PRD §5.84g for the full feature plan; this mixin covers
+subscribe, download with pause/resume, nested library folders, OPML,
+playback, chapters, sorting, and show notes.
 """
 
 from __future__ import annotations
@@ -38,6 +38,8 @@ class PodcastsMixin:
         self._podcast_library: PodcastLibrary = load_library(app_data_dir())
         self._podcast_manager_dialog: PodcastManagerDialog | None = None
         self._podcast_ever_active = False
+        self._podcast_current_chapters: list = []
+        self._podcast_chapters_key: tuple[str, str] | None = None
         self._podcast_controller = PodcastPlayerController(
             self.frame,
             on_state_changed=self._on_podcast_state_changed,
@@ -62,6 +64,37 @@ class PodcastsMixin:
         self._maybe_surface_podcast_status_cell(bool(state.title))
         self._refresh_statusbar()
         self._refresh_podcast_tray_tooltip()
+        self._maybe_reload_podcast_chapters(state)
+
+    def _maybe_reload_podcast_chapters(self, state: PodcastPlaybackState) -> None:
+        if not state.show_id or not state.episode_guid:
+            self._podcast_current_chapters = []
+            self._podcast_chapters_key = None
+            return
+        key = (state.show_id, state.episode_guid)
+        if key == self._podcast_chapters_key:
+            return
+        self._podcast_chapters_key = key
+        self._podcast_current_chapters = []
+        show = self._podcast_library.find_show(state.show_id)
+        episode = show.find_episode(state.episode_guid) if show is not None else None
+        if episode is None or not episode.chapters_url:
+            return
+
+        from quill.core.podcasts import chapters as chapters_module
+
+        def _do_fetch(**_kwargs: object):
+            return chapters_module.fetch_and_parse_chapters(
+                episode.chapters_url, safe_mode=self._safe_mode
+            )
+
+        def _on_success(_op: str, result: list) -> None:
+            if self._podcast_chapters_key == key:
+                self._podcast_current_chapters = result
+
+        self._task_manager.submit(
+            "podcast-chapters", _do_fetch, on_success=_on_success, on_failure=lambda *_a: None
+        )
 
     def _maybe_surface_podcast_status_cell(self, active: bool) -> None:
         if not active or self._podcast_ever_active:
@@ -188,6 +221,36 @@ class PodcastsMixin:
         self._podcast_controller.stop()
         self._announce("Podcasts stopped")
 
+    def podcast_next_chapter(self) -> None:
+        from quill.core.podcasts.chapters import next_chapter
+
+        if not self._podcast_current_chapters:
+            self._announce("This episode has no chapters.")
+            return
+        target = next_chapter(
+            self._podcast_current_chapters, self._podcast_controller.position_ms()
+        )
+        if target is None:
+            self._announce("Already at the last chapter.")
+            return
+        self._podcast_controller.seek(target.start_ms)
+        self._announce(f"Chapter: {target.title}")
+
+    def podcast_previous_chapter(self) -> None:
+        from quill.core.podcasts.chapters import previous_chapter
+
+        if not self._podcast_current_chapters:
+            self._announce("This episode has no chapters.")
+            return
+        target = previous_chapter(
+            self._podcast_current_chapters, self._podcast_controller.position_ms()
+        )
+        if target is None:
+            self._announce("Already at the first chapter.")
+            return
+        self._podcast_controller.seek(target.start_ms)
+        self._announce(f"Chapter: {target.title}")
+
     def podcast_pause_all_downloads(self) -> None:
         self._podcast_download_queue.pause_all()
         self._announce("Paused all podcast downloads")
@@ -211,12 +274,15 @@ class PodcastsMixin:
             controller=self._podcast_controller,
             download_root=self._podcast_download_root(),
             safe_mode=self._safe_mode,
+            task_manager=self._task_manager,
             announce_cb=self._announce,
             on_library_changed=self._save_podcast_library,
             on_open_add_podcast=self._podcast_open_add_dialog,
             on_open_import_opml=self._podcast_open_import_opml,
             on_export_opml=self._podcast_export_opml,
             on_refresh_feed=self.refresh_podcast_feed,
+            on_open_settings=self._podcast_open_settings,
+            on_send_show_notes=self._podcast_send_show_notes_to_editor,
         )
         self._podcast_manager_dialog = dialog
         try:
@@ -224,6 +290,22 @@ class PodcastsMixin:
         finally:
             self._podcast_manager_dialog = None
         self._refresh_statusbar()
+
+    def _podcast_send_show_notes_to_editor(self, plain_text: str) -> None:
+        self._power_tools_open_text_in_new_buffer(plain_text, "Opened podcast show notes")
+
+    def _podcast_open_settings(self) -> None:
+        from quill.ui.podcasts.podcast_settings_dialog import PodcastSettingsDialog
+
+        dialog = PodcastSettingsDialog(
+            self.frame, settings=self._podcast_library.settings, announce_cb=self._announce
+        )
+        updated = dialog.show()
+        if updated is None:
+            return
+        self._podcast_library.settings = updated
+        self._save_podcast_library()
+        self._announce("Podcast settings saved")
 
     def _podcast_open_add_dialog(self) -> None:
         dialog = AddPodcastDialog(
@@ -312,6 +394,13 @@ class PodcastsMixin:
                 "podcasts.resume_all_downloads",
                 "Podcasts: Resume All Downloads",
                 self.podcast_resume_all_downloads,
+            ),
+            ("podcasts.settings", "Podcasts: Podcast Settings...", self._podcast_open_settings),
+            ("podcasts.next_chapter", "Podcasts: Next Chapter", self.podcast_next_chapter),
+            (
+                "podcasts.previous_chapter",
+                "Podcasts: Previous Chapter",
+                self.podcast_previous_chapter,
             ),
         ):
             self.commands.try_register(

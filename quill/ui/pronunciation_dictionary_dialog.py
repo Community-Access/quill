@@ -30,6 +30,7 @@ from quill.core.speech.pronunciation import (
 from quill.ui.dialog_contract import (
     apply_listbox_activation,
     apply_modal_ids,
+    set_accessible_name,
     show_message_box,
 )
 
@@ -55,6 +56,7 @@ class PronunciationEntryDialog:
 
         root.Add(wx.StaticText(self.dialog, label="&Word or phrase:"), 0, wx.ALL, 6)
         self._term = wx.TextCtrl(self.dialog, value=entry.term)
+        set_accessible_name(self._term, "Word or phrase")
         root.Add(self._term, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
 
         # SSML entries keep their markup in `replacement`; the visible field shows
@@ -68,6 +70,7 @@ class PronunciationEntryDialog:
             wx.StaticText(self.dialog, label="&Spoken as (spell it how it sounds):"), 0, wx.ALL, 6
         )
         self._spoken = wx.TextCtrl(self.dialog, value=spoken_value)
+        set_accessible_name(self._spoken, "Spoken as, spell it how it sounds")
         root.Add(self._spoken, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
 
         ssml_row = wx.BoxSizer(wx.HORIZONTAL)
@@ -229,6 +232,7 @@ class PronunciationDictionaryDialog:
         left = wx.BoxSizer(wx.VERTICAL)
         left.Add(wx.StaticText(self.dialog, label="&Dictionaries:"), 0, wx.BOTTOM, 4)
         self._dict_list = wx.ListBox(self.dialog, choices=[])
+        set_accessible_name(self._dict_list, "Dictionaries")
         self._dict_list.Bind(wx.EVT_LISTBOX, lambda _e: self._on_select_dict())
         left.Add(self._dict_list, 1, wx.EXPAND)
         self._enabled = wx.CheckBox(self.dialog, label="&Enabled for export")
@@ -250,6 +254,7 @@ class PronunciationDictionaryDialog:
         right = wx.BoxSizer(wx.VERTICAL)
         right.Add(wx.StaticText(self.dialog, label="&Words in this dictionary:"), 0, wx.BOTTOM, 4)
         self._entry_list = wx.ListBox(self.dialog, choices=[])
+        set_accessible_name(self._entry_list, "Words in this dictionary")
         apply_listbox_activation(self._entry_list, lambda _e: self._on_edit_entry(None))
         right.Add(self._entry_list, 1, wx.EXPAND)
         e_btns = wx.BoxSizer(wx.HORIZONTAL)

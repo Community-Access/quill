@@ -6,7 +6,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 from quill.core.ai.transcription import SUPPORTED_AUDIO_EXTENSIONS, SUPPORTED_LANGUAGES
-from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 
 
 class AITranscribeDialog:
@@ -88,7 +88,7 @@ class AITranscribeDialog:
         speaker_row = wx.BoxSizer(wx.HORIZONTAL)
         speaker_label = wx.StaticText(self.dialog, label="Maximum speakers:")
         self._max_speakers = wx.SpinCtrl(self.dialog, min=2, max=20, initial=6)
-        self._max_speakers.SetName("Maximum speakers")
+        set_accessible_name(self._max_speakers, "Maximum speakers")
         self._max_speakers.Enable(False)
         speaker_row.Add(speaker_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
         speaker_row.Add(self._max_speakers, 0)
@@ -329,6 +329,7 @@ class AIProgressDialog:
         self._label.Wrap(440)
         root.Add(self._label, 0, wx.ALL, 12)
         self._gauge = wx.Gauge(self.dialog, style=wx.GA_HORIZONTAL | wx.GA_SMOOTH)
+        set_accessible_name(self._gauge, str(message))
         self._gauge.Pulse()
         root.Add(self._gauge, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 12)
         self._cancel_btn: object = None
