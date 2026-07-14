@@ -77,6 +77,7 @@ class CsvGridSurface:
             style=wx.TE_MULTILINE | wx.TE_RICH2 | wx.TE_NOHIDESEL,
         )
         set_accessible_name(self.text_ctrl, "CSV as text")
+        set_accessible_name(self.grid, "CSV grid")
 
         grid_sizer = wx.BoxSizer(wx.VERTICAL)
         grid_sizer.Add(self.grid, 1, wx.EXPAND)

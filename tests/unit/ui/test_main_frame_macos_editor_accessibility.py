@@ -115,18 +115,26 @@ def test_pin_macos_editor_accessibility_role_helper_exists() -> None:
     body = re.search(_PIN_MACOS_ROLE_PATTERN, MAIN_FRAME, re.MULTILINE | re.DOTALL)
     assert body is not None, "_pin_macos_editor_accessibility_role not found"
     src = body.group(0)
-    # Helper early-returns on non-darwin.
-    assert 'sys.platform != "darwin"' in src, "helper must guard on sys.platform"
-    # Imports AppKit and uses the text-area role constant.
-    assert "AppKit" in src, "helper must import AppKit"
-    assert "NSAccessibilityRoleTextAreaRole" in src, "helper must set the NSTextView role"
-    # Uses GetHandle() to reach the NSView.
-    assert "GetHandle" in src, "helper must use GetHandle() to reach NSView"
-    # Calls setAccessibilityRole_ on the NSView.
-    assert "setAccessibilityRole_" in src, "helper must call setAccessibilityRole_"
-    # Defensive: tolerates missing AppKit via try/except import.
-    assert re.search(r"except\s+Exception:\s*\n\s*return", src), (
-        "AppKit import failure must be a silent no-op"
+    # The MainFrame helper now delegates to the shared native-layer helper
+    # (accessible_names.pin_macos_text_area_role); the platform guard,
+    # AppKit access, and GetHandle wrapping live THERE, where the fake-objc
+    # tests exercise them. Assert the delegation here and the substance at
+    # its real home, so the contract still cannot silently regress.
+    assert "pin_macos_text_area_role" in src, "helper must delegate to the shared pin"
+    from pathlib import Path as _Path
+
+    shared = (
+        _Path(__file__).resolve().parents[3] / "quill" / "ui" / "accessible_names.py"
+    ).read_text(encoding="utf-8")
+    assert 'sys.platform != "darwin"' in shared, "shared pin must guard on sys.platform"
+    assert "GetHandle" in shared, "shared pin must use GetHandle() to reach NSView"
+    assert "NSAccessibilityRoleTextAreaRole" in shared or "TextArea" in shared
+    # Calls setAccessibilityRole_ on the (PyObjC-wrapped) NSView, and
+    # tolerates a missing/odd AppKit via a broad except -- both asserted at
+    # the shared helper, where the logic actually lives now.
+    assert "setAccessibilityRole_" in shared, "shared pin must call setAccessibilityRole_"
+    assert re.search(r"except\s+Exception", shared), (
+        "AppKit import failure must be a silent no-op in the shared pin"
     )
 
 

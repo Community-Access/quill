@@ -1,0 +1,65 @@
+name: macos-test-build
+
+# On-demand, UNSIGNED macOS app build for manual testing (e.g. VoiceOver
+# passes on accessibility fixes like #1012). Unlike macos-release.yml this
+# needs no signing/notarization secrets, so it can be dispatched on any
+# branch — including forks — straight from the Actions tab.
+#
+# The artifact is an ad-hoc-signed .app in a zip. macOS quarantines it on
+# download; to launch it on a test Mac either right-click > Open (twice), or:
+#   xattr -dr com.apple.quarantine Quill.app
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install macOS build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[ui,spellcheck,macos,feedback,github]"
+
+      - name: Generate build-identity and feedback-token modules
+        # Without --require-token a missing QUILL_FEEDBACK_GITHUB_TOKEN writes
+        # an empty token: fine for a test build (Report a Bug falls back to a
+        # web link), and exactly why release builds must NOT use this workflow.
+        run: |
+          python tools/generate_build_info.py || echo "no build/version.toml - unversioned test build"
+          python tools/generate_feedback_token.py
+
+      - name: Build .app with py2app (unsigned)
+        run: python scripts/setup_macos.py py2app
+
+      - name: Zip the app bundle
+        # ditto preserves symlinks and resource forks; a plain `zip` (or the
+        # artifact uploader zipping a bare .app) breaks the bundle layout.
+        run: ditto -c -k --keepParent dist/Quill.app Quill-test-unsigned.zip
+
+      - name: Startup smoke check
+        run: |
+          set -euo pipefail
+          open dist/Quill.app
+          sleep 15
+          if ! pgrep -f "dist/Quill.app/Contents/MacOS" >/dev/null; then
+            echo "App process was not observed after launch; possible startup crash." >&2
+            exit 1
+          fi
+          pkill -f "dist/Quill.app/Contents/MacOS" || true
+
+      - name: Upload test app artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: quill-macos-test-unsigned
+          path: Quill-test-unsigned.zip
+          retention-days: 14
