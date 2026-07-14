@@ -2443,6 +2443,7 @@ class MenuBuilderMixin:
             self.frame.Bind(
                 wx.EVT_MENU, lambda _e: self.open_sleep_timer_dialog(), id=id_sleep_timer
             )
+            self._append_adp_media_items(media_menu)
             tools_menu.AppendSubMenu(media_menu, _("&Media"))
 
         # Comparison (was Compare Documents) ----------------------------------

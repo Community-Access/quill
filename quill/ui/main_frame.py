@@ -419,6 +419,7 @@ from quill.ui.dialog_contract import (
 from quill.ui.html_paste_cleaner import analyze_paste
 from quill.ui.keymap_editor import KeymapEditorMixin
 from quill.ui.main_frame_abbreviations import AbbreviationsMixin
+from quill.ui.main_frame_adp import AdpMixin
 from quill.ui.main_frame_ai_actions import AiActionsMixin
 from quill.ui.main_frame_braille import BrailleCommandsMixin
 from quill.ui.main_frame_braille_phase2 import BraillePhase2CommandsMixin
@@ -860,6 +861,7 @@ class MainFrame(
     LineCommandsMixin,
     ListStudioMixin,
     StoryStudioMixin,
+    AdpMixin,
     GlobalHotkeysMixin,
     UnlockCodesMixin,
     VaultMixin,
@@ -2446,6 +2448,7 @@ class MainFrame(
             self._binding_for("tools.sticky_note_capture"),
         )
         self._register_global_hotkey_commands()
+        self._register_adp_commands()
         self.commands.register(
             "tools.spell_check_dialog",
             "Spell Check...",

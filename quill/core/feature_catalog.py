@@ -449,6 +449,40 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
         category="future",
         locked_off=True,
     ),
+    "future.adp_assistant": FeatureDefinition(
+        "future.adp_assistant",
+        "ADP Assistant (Audio Description Search)",
+        aliases=("adp", "audio description", "described movies", "ask adp", "described tv"),
+        description=(
+            "Chat with the Audio Description Project assistant: search "
+            "described films, series, and TV schedules by natural language, "
+            "with spoken answers and an accessible results table. Calls a "
+            "hosted ADP service over HTTPS. Pre-release: enabled only by a "
+            "signed unlock code."
+        ),
+        maturity="experimental",
+        privacy="network after confirmation",
+        category="future",
+        dependencies=("core.app",),
+        locked_off=True,
+    ),
+    "future.adp_voice_mode": FeatureDefinition(
+        "future.adp_voice_mode",
+        "ADP Voice Mode",
+        aliases=("hey adp", "adp voice", "hands-free adp"),
+        description=(
+            "Hands-free conversational mode for the ADP Assistant: speak a "
+            "question, hear the answer, stay in the conversation. Voice "
+            "capture and speech stay on this device; only the question text "
+            "travels to the ADP service. Pre-release: enabled only by a "
+            "signed unlock code."
+        ),
+        maturity="experimental",
+        privacy="network after confirmation",
+        category="future",
+        dependencies=("future.adp_assistant",),
+        locked_off=True,
+    ),
     "future.publishing_read": FeatureDefinition(
         "future.publishing_read",
         "Publishing (Read-Only)",
