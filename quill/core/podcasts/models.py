@@ -26,6 +26,32 @@ class PodcastFolder:
 
 
 @dataclass(slots=True)
+class QueueItem:
+    """One Play Queue slot: a cross-show episode reference (Phase 4 §Queue).
+
+    Stored by ids, not object references, so the queue survives restarts and
+    tolerates an episode disappearing (its slot resolves to nothing and is
+    skipped at play time rather than crashing).
+    """
+
+    show_id: str
+    episode_guid: str
+
+    def to_dict(self) -> dict:
+        return {"show_id": self.show_id, "episode_guid": self.episode_guid}
+
+    @classmethod
+    def from_dict(cls, data: object) -> QueueItem | None:
+        if not isinstance(data, dict):
+            return None
+        show_id = str(data.get("show_id", "")).strip()
+        episode_guid = str(data.get("episode_guid", "")).strip()
+        if not show_id or not episode_guid:
+            return None
+        return cls(show_id=show_id, episode_guid=episode_guid)
+
+
+@dataclass(slots=True)
 class PodcastSettings:
     """One global defaults record; a show's own ``PodcastShow.settings`` only
     stores the fields it overrides (``None`` = inherit the global value)."""
@@ -36,6 +62,15 @@ class PodcastSettings:
     speed: float = 1.0
     download_root: str = ""  # "" = default (<data_dir>/podcasts)
     delete_files_on_remove: str = "ask"  # "ask" | "always" | "never" -- on Unsubscribe
+    #: Always Sync (Phase 4): beyond the routine refresh, also download every
+    #: catalog episode the live feed still exposes (download-mode shows only).
+    #: In tension with keep_last_n retention -- the settings UI nudges toward
+    #: keep_all when this is on.
+    always_sync_full_catalog: bool = False
+    #: Download-time audio processing (Phase 4): the audiobook builder's own
+    #: ffmpeg passes, applied to a finished download. Off by default.
+    auto_trim_silence: bool = False
+    normalize_loudness: bool = False
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -45,6 +80,9 @@ class PodcastSettings:
             "speed": self.speed,
             "download_root": self.download_root,
             "delete_files_on_remove": self.delete_files_on_remove,
+            "always_sync_full_catalog": self.always_sync_full_catalog,
+            "auto_trim_silence": self.auto_trim_silence,
+            "normalize_loudness": self.normalize_loudness,
         }
 
     @classmethod
@@ -59,6 +97,9 @@ class PodcastSettings:
             delete_files_on_remove=delete_policy
             if delete_policy in ("ask", "always", "never")
             else "ask",
+            always_sync_full_catalog=bool(data.get("always_sync_full_catalog", False)),
+            auto_trim_silence=bool(data.get("auto_trim_silence", False)),
+            normalize_loudness=bool(data.get("normalize_loudness", False)),
         )
 
 
@@ -133,7 +174,10 @@ class PodcastShow:
     is_local: bool = False
     folder_id: str | None = None
     paused: bool = False
-    is_favorite: bool = False  # §10, not yet surfaced in the UI this phase
+    is_favorite: bool = False  # Favorites virtual view (Phase 4)
+    #: Local shows only (Phase 4): a folder QUILL watches; audio files dropped
+    #: there become new episodes on the next scan (local_import.py).
+    watched_folder: str = ""
     route_to_inbox: bool = False  # §9, not yet surfaced in the UI this phase
     inbox_default_folder_id: str | None = None  # §9
     settings: PodcastSettings | None = None
@@ -153,6 +197,7 @@ class PodcastShow:
             "homepage": self.homepage,
             "artwork_url": self.artwork_url,
             "is_local": self.is_local,
+            "watched_folder": self.watched_folder,
             "folder_id": self.folder_id,
             "paused": self.paused,
             "is_favorite": self.is_favorite,
@@ -189,6 +234,7 @@ class PodcastShow:
             homepage=str(data.get("homepage", "")),
             artwork_url=str(data.get("artwork_url", "")),
             is_local=bool(data.get("is_local", False)),
+            watched_folder=str(data.get("watched_folder", "")),
             folder_id=str(folder_id) if isinstance(folder_id, str) and folder_id else None,
             paused=bool(data.get("paused", False)),
             is_favorite=bool(data.get("is_favorite", False)),

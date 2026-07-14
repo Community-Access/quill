@@ -1,0 +1,517 @@
+"""Phase 4 surfaces for the Podcast Manager (mixin on PodcastManagerDialog).
+
+Everything docs/planning/podcasts.md's remaining-work list adds to the
+manager, kept out of manager_dialog.py per its own CQ-1 decomposition note:
+
+- the pinned virtual-view nodes (Favorites / New Episodes / Continue
+  Listening / Inbox) at the top of the folder tree;
+- the filter row (episode + show filters, Search Everywhere, Play Queue,
+  volume boost);
+- the Play Queue dialog (accessible reordering: nudge + mark-and-move);
+- episode context-menu additions (Play Next / Add to Queue, Episode
+  Notes..., transcripts, File to Inbox Folder..., Rename);
+- show context-menu additions (Favorite, Route to Inbox).
+
+The mixin only touches attributes PodcastManagerDialog owns; every new
+control carries an accessible name.
+"""
+
+from __future__ import annotations
+
+from quill.core.podcasts.filtering import (
+    filter_episodes,
+    filter_shows,
+    search_everywhere,
+)
+from quill.core.podcasts.models import PodcastEpisode, PodcastShow
+from quill.core.podcasts.virtual_views import virtual_view_pairs
+
+_EPISODE_FILTER_LABELS = ("All", "Unplayed", "Played", "Downloaded", "Not downloaded")
+_EPISODE_FILTER_MODES = ("all", "unplayed", "played", "downloaded", "not_downloaded")
+_SHOW_FILTER_LABELS = ("All shows", "Favorites only", "Has unplayed")
+_SHOW_FILTER_MODES = ("all", "favorites_only", "has_unplayed")
+_BOOST_LABELS = ("Boost off", "1.5x boost", "2x boost", "3x boost")
+_BOOST_FACTORS = (1.0, 1.5, 2.0, 3.0)
+
+#: (view_id, tree label) for the pinned nodes, in pinned order.
+_PINNED_VIEWS = (
+    ("favorites", "Favorites"),
+    ("new_episodes", "New Episodes"),
+    ("continue_listening", "Continue Listening"),
+    ("inbox", "Inbox"),
+)
+
+
+class ManagerPhase4Mixin:
+    """Phase 4 wiring; mixed into PodcastManagerDialog."""
+
+    # -- filter row -----------------------------------------------------------
+
+    def _build_phase4_row(self, parent_sizer: object) -> None:
+        wx = self._wx
+        row = wx.BoxSizer(wx.HORIZONTAL)
+        self._episode_filter_choice = wx.Choice(self.dialog, choices=list(_EPISODE_FILTER_LABELS))
+        self._episode_filter_choice.SetName("Filter episodes by state")
+        self._episode_filter_choice.SetSelection(0)
+        self._show_filter_choice = wx.Choice(self.dialog, choices=list(_SHOW_FILTER_LABELS))
+        self._show_filter_choice.SetName("Filter shows in the folder tree")
+        self._show_filter_choice.SetSelection(0)
+        self._boost_choice = wx.Choice(self.dialog, choices=list(_BOOST_LABELS))
+        self._boost_choice.SetName("Volume boost for quiet audio; playback gain only")
+        self._boost_choice.SetSelection(0)
+        search_btn = wx.Button(self.dialog, label="Search &Everywhere...")
+        queue_btn = wx.Button(self.dialog, label="Play &Queue...")
+        row.Add(wx.StaticText(self.dialog, label="Ep&isodes:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        row.Add(self._episode_filter_choice, 0, wx.LEFT | wx.RIGHT, 4)
+        row.Add(wx.StaticText(self.dialog, label="S&hows:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        row.Add(self._show_filter_choice, 0, wx.LEFT | wx.RIGHT, 4)
+        row.Add(self._boost_choice, 0, wx.RIGHT, 4)
+        row.Add(search_btn, 0, wx.RIGHT, 4)
+        row.Add(queue_btn, 0)
+        parent_sizer.Add(row, 0, wx.EXPAND | wx.BOTTOM, 6)
+        self._episode_filter_choice.Bind(
+            wx.EVT_CHOICE, lambda _e: self._fill_episodes(self._current_show)
+        )
+        self._show_filter_choice.Bind(wx.EVT_CHOICE, lambda _e: self.refresh_tree())
+        self._boost_choice.Bind(wx.EVT_CHOICE, self._on_boost_choice)
+        search_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_search_everywhere())
+        queue_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_open_play_queue())
+
+    def _selected_episode_filter(self) -> str:
+        choice = getattr(self, "_episode_filter_choice", None)
+        if choice is None:
+            return "all"
+        index = choice.GetSelection()
+        return _EPISODE_FILTER_MODES[index] if index >= 0 else "all"
+
+    def _selected_show_filter(self) -> str:
+        choice = getattr(self, "_show_filter_choice", None)
+        if choice is None:
+            return "all"
+        index = choice.GetSelection()
+        return _SHOW_FILTER_MODES[index] if index >= 0 else "all"
+
+    def _apply_episode_filter(self, episodes: list[PodcastEpisode]) -> list[PodcastEpisode]:
+        return filter_episodes(episodes, self._selected_episode_filter())
+
+    def _apply_show_filter(self, shows: list[PodcastShow]) -> list[PodcastShow]:
+        return filter_shows(shows, self._selected_show_filter())
+
+    def _on_boost_choice(self, _event: object) -> None:
+        index = max(0, self._boost_choice.GetSelection())
+        factor = _BOOST_FACTORS[index]
+        self._controller.set_volume_boost(factor)
+        self._announce(
+            "Volume boost off" if factor == 1.0 else f"Volume boost {factor:g}x for quiet audio"
+        )
+
+    # -- pinned virtual views ---------------------------------------------------
+
+    def _add_virtual_view_nodes(self, root: object) -> None:
+        """Called by refresh_tree right after the root is created, so the
+        pinned views sit above every folder."""
+        self._tree_item_virtual: dict[int, str] = {}
+        self._tree_item_inbox_folder: dict[int, str] = {}
+        for view_id, label in _PINNED_VIEWS:
+            count = len(self._virtual_pairs(view_id))
+            text = f"{label} ({count})" if count else label
+            item = self._tree.AppendItem(root, text)
+            key = item.GetID() if hasattr(item, "GetID") else id(item)
+            self._tree_item_virtual[key] = view_id
+            if view_id == "inbox":
+                self._add_inbox_folder_children(item, None)
+
+    def _add_inbox_folder_children(self, parent_item: object, parent_id: str | None) -> None:
+        from quill.core.podcasts.inbox import inbox_pairs_in_folder
+
+        for folder in sorted(
+            (f for f in self._library.inbox_folders if f.parent_folder_id == parent_id),
+            key=lambda f: f.name.casefold(),
+        ):
+            count = len(inbox_pairs_in_folder(self._library, folder.id))
+            label = f"{folder.name} ({count})" if count else folder.name
+            item = self._tree.AppendItem(parent_item, label)
+            key = item.GetID() if hasattr(item, "GetID") else id(item)
+            self._tree_item_inbox_folder[key] = folder.id
+            self._add_inbox_folder_children(item, folder.id)
+
+    def _selected_virtual_view(self) -> str | None:
+        item = self._tree.GetSelection()
+        if not item.IsOk():
+            return None
+        key = item.GetID() if hasattr(item, "GetID") else id(item)
+        return getattr(self, "_tree_item_virtual", {}).get(key)
+
+    def _selected_inbox_folder_id(self) -> str | None:
+        item = self._tree.GetSelection()
+        if not item.IsOk():
+            return None
+        key = item.GetID() if hasattr(item, "GetID") else id(item)
+        return getattr(self, "_tree_item_inbox_folder", {}).get(key)
+
+    def _virtual_pairs(self, view_id: str) -> list[tuple[PodcastShow, PodcastEpisode]]:
+        if view_id == "favorites":
+            return [
+                (show, episode)
+                for show in self._library.shows
+                if show.is_favorite
+                for episode in show.episodes
+            ]
+        return virtual_view_pairs(self._library, view_id)
+
+    def _fill_episodes_from_pairs(
+        self, pairs: list[tuple[PodcastShow, PodcastEpisode]], *, view_label: str
+    ) -> None:
+        """Fill the episode list from cross-show pairs (virtual views and
+        Inbox folders); titles carry the show name so rows stay unambiguous
+        when several shows interleave."""
+        self._episodes.DeleteAllItems()
+        self._current_show = None
+        self._current_episodes = [episode for _show, episode in pairs]
+        self._pair_shows = [show for show, _episode in pairs]
+        for row, (show, episode) in enumerate(pairs):
+            self._episodes.InsertItem(row, f"{episode.title} — {show.title}")
+            self._episodes.SetItem(row, 1, episode.published[:16])
+            minutes, seconds = divmod(episode.duration_seconds, 60)
+            self._episodes.SetItem(
+                row, 2, f"{minutes}:{seconds:02d}" if episode.duration_seconds else ""
+            )
+            self._episodes.SetItem(row, 3, self._episode_status_text(episode))
+        self._status.SetLabel(f"{len(pairs)} episode(s) in {view_label}.")
+        if pairs:
+            self._episodes.Select(0)
+            self._episodes.Focus(0)
+
+    def _maybe_fill_virtual_selection(self) -> bool:
+        """Handle tree selection landing on a pinned view or an Inbox folder;
+        True when handled (the caller skips its normal show fill)."""
+        view_id = self._selected_virtual_view()
+        if view_id is not None:
+            labels = dict(_PINNED_VIEWS)
+            self._fill_episodes_from_pairs(
+                self._virtual_pairs(view_id), view_label=labels.get(view_id, view_id)
+            )
+            return True
+        inbox_folder_id = self._selected_inbox_folder_id()
+        if inbox_folder_id is not None:
+            from quill.core.podcasts.inbox import inbox_pairs_in_folder
+
+            folder = next((f for f in self._library.inbox_folders if f.id == inbox_folder_id), None)
+            self._fill_episodes_from_pairs(
+                inbox_pairs_in_folder(self._library, inbox_folder_id),
+                view_label=folder.name if folder else "Inbox folder",
+            )
+            return True
+        return False
+
+    def _show_for_selected_episode(self, index: int) -> PodcastShow | None:
+        """The show behind an episode row: the current show normally, the
+        pair's own show inside a virtual view."""
+        if self._current_show is not None:
+            return self._current_show
+        pair_shows = getattr(self, "_pair_shows", [])
+        if 0 <= index < len(pair_shows):
+            return pair_shows[index]
+        return None
+
+    # -- Search Everywhere ------------------------------------------------------
+
+    def _on_search_everywhere(self) -> None:
+        from quill.core.podcasts.episode_notes import load_episode_notes
+        from quill.core.podcasts.transcripts import iter_cached_transcripts
+        from quill.ui.podcasts.search_everywhere_dialog import SearchEverywhereDialog
+
+        try:
+            transcripts = list(iter_cached_transcripts())
+        except Exception:  # noqa: BLE001 - a broken cache must not block search
+            transcripts = []
+        dialog = SearchEverywhereDialog(
+            self.dialog,
+            on_search=lambda query: search_everywhere(
+                self._library,
+                query,
+                episode_notes=load_episode_notes(),
+                transcripts=transcripts,
+            ),
+            announce_cb=self._announce,
+        )
+        result = dialog.show()
+        if result is None:
+            return
+        self._select_search_result(result)
+
+    def _select_search_result(self, result: object) -> None:
+        """Land the tree/list selection on a Search Everywhere hit."""
+        show = self._library.find_show(getattr(result, "show_id", "") or "")
+        if show is None:
+            return
+        self.refresh_tree()
+        self._restore_tree_anchor(("show", show.id))
+        guid = getattr(result, "episode_guid", "") or ""
+        if guid:
+            for row, episode in enumerate(self._current_episodes):
+                if episode.guid == guid:
+                    self._episodes.Select(row)
+                    self._episodes.Focus(row)
+                    break
+        self._announce(f"Selected {show.title}")
+
+    # -- Play Queue ---------------------------------------------------------------
+
+    def _on_open_play_queue(self) -> None:
+        from quill.ui.podcasts.play_queue_dialog import PlayQueueDialog
+
+        dialog = PlayQueueDialog(
+            self.dialog,
+            library=self._library,
+            announce_cb=self._announce,
+            on_library_changed=self._on_library_changed,
+            on_play=self._play_pair,
+        )
+        dialog.show()
+
+    def _play_pair(self, show: PodcastShow, episode: PodcastEpisode) -> None:
+        speed = self._library.effective_settings(show).speed
+        source = episode.downloaded_path or episode.audio_url
+        self._controller.play_episode(
+            show_id=show.id,
+            episode_guid=episode.guid,
+            title=episode.title,
+            source=source,
+            resume_ms=episode.position_ms,
+            rate=speed,
+        )
+
+    # -- context-menu additions -----------------------------------------------
+
+    def _append_phase4_episode_items(
+        self, menu: object, show: PodcastShow, episode: PodcastEpisode
+    ) -> None:
+        wx = self._wx
+        from quill.core.podcasts import queue as queue_ops
+
+        menu.AppendSeparator()
+        play_next_item = menu.Append(wx.ID_ANY, "Play Ne&xt")
+        menu.Bind(
+            wx.EVT_MENU,
+            lambda _e: self._queue_and_announce(
+                lambda: queue_ops.play_next(self._library, show.id, episode.guid),
+                f"{episode.title} will play next",
+            ),
+            play_next_item,
+        )
+        add_queue_item = menu.Append(wx.ID_ANY, "Add to &Queue")
+        menu.Bind(
+            wx.EVT_MENU,
+            lambda _e: self._queue_and_announce(
+                lambda: queue_ops.add_to_queue(self._library, show.id, episode.guid),
+                f"Added {episode.title} to the Play Queue",
+            ),
+            add_queue_item,
+        )
+        notes_item = menu.Append(wx.ID_ANY, "Episode &Notes...")
+        menu.Bind(wx.EVT_MENU, lambda _e: self._on_episode_notes(show, episode), notes_item)
+        if episode.transcript_url:
+            save_tr_item = menu.Append(wx.ID_ANY, "Save &Transcript As...")
+            menu.Bind(wx.EVT_MENU, lambda _e: self._on_save_transcript(show, episode), save_tr_item)
+            open_tr_item = menu.Append(wx.ID_ANY, "Open Transcript in &Editor")
+            menu.Bind(wx.EVT_MENU, lambda _e: self._on_open_transcript(show, episode), open_tr_item)
+        file_inbox_item = menu.Append(wx.ID_ANY, "F&ile to Inbox Folder...")
+        file_inbox_item.Enable(show.route_to_inbox)
+        menu.Bind(
+            wx.EVT_MENU, lambda _e: self._on_file_to_inbox_folder(show, episode), file_inbox_item
+        )
+        rename_item = menu.Append(wx.ID_ANY, "Rena&me...\tF2")
+        menu.Bind(wx.EVT_MENU, lambda _e: self._on_rename_episode(episode), rename_item)
+
+    def _append_phase4_show_items(self, menu: object, show: PodcastShow) -> None:
+        wx = self._wx
+        favorite_label = "Remove from Fa&vorites" if show.is_favorite else "Add to Fa&vorites"
+        favorite_item = menu.Append(wx.ID_ANY, favorite_label)
+        menu.Bind(wx.EVT_MENU, lambda _e: self._on_toggle_favorite(show), favorite_item)
+        inbox_label = (
+            "Stop Routing to &Inbox" if show.route_to_inbox else "Route New Episodes to &Inbox"
+        )
+        inbox_item = menu.Append(wx.ID_ANY, inbox_label)
+        menu.Bind(wx.EVT_MENU, lambda _e: self._on_toggle_route_to_inbox(show), inbox_item)
+        if show.route_to_inbox and show.inbox_default_folder_id:
+            forget_item = menu.Append(wx.ID_ANY, "For&get Remembered Inbox Folder")
+            menu.Bind(wx.EVT_MENU, lambda _e: self._on_forget_inbox_folder(show), forget_item)
+
+    def _queue_and_announce(self, action: object, message: str) -> None:
+        action()
+        self._on_library_changed()
+        self._announce(message)
+
+    def _on_toggle_favorite(self, show: PodcastShow) -> None:
+        show.is_favorite = not show.is_favorite
+        self._on_library_changed()
+        self.refresh_tree()
+        self._announce(
+            f"Added {show.title} to Favorites"
+            if show.is_favorite
+            else f"Removed {show.title} from Favorites"
+        )
+
+    def _on_toggle_route_to_inbox(self, show: PodcastShow) -> None:
+        show.route_to_inbox = not show.route_to_inbox
+        self._on_library_changed()
+        self.refresh_tree()
+        self._announce(
+            f"New {show.title} episodes will appear in the Inbox"
+            if show.route_to_inbox
+            else f"{show.title} no longer routes to the Inbox"
+        )
+
+    def _on_forget_inbox_folder(self, show: PodcastShow) -> None:
+        from quill.core.podcasts.inbox import forget_remembered_folder
+
+        forget_remembered_folder(show)
+        self._on_library_changed()
+        self._announce(f"{show.title} episodes now file manually; no remembered folder")
+
+    def _on_file_to_inbox_folder(self, show: PodcastShow, episode: PodcastEpisode) -> None:
+        from quill.core.podcasts import inbox as inbox_ops
+        from quill.ui.podcasts.folder_picker_dialog import FolderPickerDialog
+
+        picker = FolderPickerDialog(
+            self.dialog,
+            title=f"File {episode.title} to Inbox Folder",
+            scope="inbox",
+            folders_provider=lambda: list(self._library.inbox_folders),
+            create_folder=lambda name, parent_id: inbox_ops.add_inbox_folder(
+                self._library, name, parent_folder_id=parent_id
+            ),
+            rename_folder=lambda folder_id, name: inbox_ops.rename_inbox_folder(
+                self._library, folder_id, name
+            ),
+            delete_folder=lambda folder_id: inbox_ops.delete_inbox_folder(self._library, folder_id),
+            top_level_label="Inbox (top level)",
+            announce_cb=self._announce,
+        )
+        result = picker.show()
+        if not result.confirmed:
+            return
+        remembered = inbox_ops.file_episode(self._library, show, episode, result.folder_id)
+        self._on_library_changed()
+        self.refresh_tree()
+        if remembered:
+            self._announce(
+                f"Filed {episode.title}. Future {show.title} episodes will file here "
+                "automatically; use Forget Remembered Inbox Folder to revert."
+            )
+        else:
+            self._announce(f"Filed {episode.title}")
+
+    # -- episode notes ------------------------------------------------------------
+
+    def _on_episode_notes(self, show: PodcastShow, episode: PodcastEpisode) -> None:
+        from quill.core.podcasts.episode_notes import (
+            delete_episode_note,
+            load_episode_notes,
+            notes_for_episode,
+        )
+        from quill.ui.podcasts.episode_notes_dialog import EpisodeNotesDialog
+
+        notes = notes_for_episode(load_episode_notes(), show.id, episode.guid)
+        dialog = EpisodeNotesDialog(
+            self.dialog,
+            show_id=show.id,
+            episode_guid=episode.guid,
+            episode_title=episode.title,
+            notes=notes,
+            on_delete=delete_episode_note,
+            announce_cb=self._announce,
+        )
+        jump_ms = dialog.show()
+        if jump_ms is None:
+            return
+        if self._controller.state.episode_guid == episode.guid:
+            self._controller.seek(jump_ms)
+        else:
+            self._play_pair(show, episode)
+            self._controller.seek(jump_ms)
+        self._announce(f"Jumped to note at {jump_ms // 60000}:{(jump_ms // 1000) % 60:02d}")
+
+    def add_note_for_playing_episode(self, text: str) -> bool:
+        """Timestamped note on the playing episode (the mixin/command path)."""
+        from quill.core.podcasts.episode_notes import add_episode_note
+
+        state = self._controller.state
+        if not state.show_id or not state.episode_guid:
+            return False
+        add_episode_note(
+            show_id=state.show_id,
+            episode_guid=state.episode_guid,
+            position_ms=self._controller.position_ms(),
+            text=text,
+        )
+        return True
+
+    # -- transcripts ----------------------------------------------------------------
+
+    def _on_save_transcript(self, show: PodcastShow, episode: PodcastEpisode) -> None:
+        wx = self._wx
+        with wx.FileDialog(  # dialog_button_contract: exempt
+            self.dialog,
+            "Save Transcript As",
+            defaultFile=f"{episode.title}.txt",
+            wildcard="Text files (*.txt)|*.txt|All files (*.*)|*.*",
+            style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
+        ) as dialog:
+            if dialog.ShowModal() != wx.ID_OK:
+                return
+            target = dialog.GetPath()
+        self._fetch_transcript_then(
+            show, episode, lambda text: self._write_transcript(target, text)
+        )
+
+    def _write_transcript(self, target: str, text: str) -> None:
+        from pathlib import Path
+
+        try:
+            Path(target).write_text(text, encoding="utf-8", newline="\n")
+        except OSError as error:
+            self._announce(f"Could not save the transcript: {error}")
+            return
+        self._announce(f"Transcript saved to {Path(target).name}")
+
+    def _on_open_transcript(self, show: PodcastShow, episode: PodcastEpisode) -> None:
+        send = self._on_send_show_notes
+        if send is None:
+            self._announce("Opening in the editor is not available here.")
+            return
+        self._fetch_transcript_then(show, episode, send)
+
+    def _fetch_transcript_then(
+        self, show: PodcastShow, episode: PodcastEpisode, consume: object
+    ) -> None:
+        from quill.core.podcasts import transcripts as transcripts_module
+
+        if self._task_manager is None:
+            self._announce("Transcript fetching is unavailable right now.")
+            return
+        self._announce("Fetching transcript...")
+
+        def _do_fetch(**_kwargs: object) -> str:
+            text = transcripts_module.fetch_and_parse_transcript(
+                episode.transcript_url,
+                episode.transcript_type,
+                safe_mode=self._safe_mode,
+            )
+            if text:
+                # Cache so Search Everywhere can search it with no re-fetch.
+                transcripts_module.save_cached_transcript(show.id, episode.guid, text)
+            return text
+
+        def _on_success(_op: str, text: str) -> None:
+            wx = self._wx
+            wx.CallAfter(consume, text)
+
+        def _on_failure(_op: str, error: object) -> None:
+            wx = self._wx
+            wx.CallAfter(self._announce, f"Transcript failed: {error}")
+
+        self._task_manager.submit(
+            "podcast-transcript", _do_fetch, on_success=_on_success, on_failure=_on_failure
+        )

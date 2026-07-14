@@ -7759,9 +7759,52 @@ An episode's right-click context menu includes **View Show Notes...**, which ope
 
 Right-click an episode (or open its context menu from the keyboard) for: Play/Pause, Stop, Download, Pause/Resume Download, Remove Downloaded Copy, Mark as Played/Unplayed, Copy Episode Link, View Show Notes..., and Send Show Notes to Editor. Right-click a show in the tree for: Refresh Feed, Pause/Resume This Podcast's Downloads, and Unsubscribe. Right-click a folder for: New Folder.
 
-### What's not in Podcasts yet
+### The pinned views: Favorites, New Episodes, Continue Listening, and the Inbox
 
-No video podcasts — QUILL plays audio only, on every platform. Transcript viewing/export (the feed already reads Podcasting 2.0 transcript URLs, ready for this), a separate Inbox view, a cross-show Play Queue, and local (imported-file) podcasts are planned next — see `docs/planning/podcasts.md` for the full phased plan.
+The top of the Podcast Manager's folder tree carries four pinned views, above your own folders, each with a live count:
+
+- **Favorites** — every show you've marked as a favorite (right-click a show > **Add to Favorites**), all episodes together.
+- **New Episodes** — every unplayed episode across every subscription, so "what's new" is one selection away.
+- **Continue Listening** — every episode you're partway through, because QUILL remembers your position in each one.
+- **Inbox** — a personal triage space, described next.
+
+In any pinned view, each row carries both the episode and show name, so cross-show lists stay unambiguous.
+
+### The Inbox: organize episodes, not shows
+
+The Inbox organizes *episodes*, cutting across your library folders entirely. Right-click a show and choose **Route New Episodes to Inbox**: its unplayed episodes now appear in the Inbox view, regardless of where the show lives in your folder tree. Inside the Inbox you can create your own nested folders and file episodes into them: right-click an episode > **File to Inbox Folder...** opens the same searchable folder picker used elsewhere. The first time you file an episode from a given show, QUILL remembers that folder and auto-files that show's future episodes there — the announcement tells you so — and **Forget Remembered Inbox Folder** (on the show's menu) reverts to manual filing. Deleting an Inbox folder only moves its episodes up a level; Inbox actions never delete an episode. The Inbox is deliberately excluded from OPML in both directions: it's your local curation, not part of the subscription list.
+
+### The Play Queue
+
+Any episode's right-click menu offers **Play Next** (front of the queue) and **Add to Queue** (back). When an episode finishes, the queue's next episode starts automatically — including across different shows. The **Play Queue...** button opens the queue itself: Enter or **Play Now** plays the selected item immediately, **Move Up/Down** nudges one slot, and for long moves, **Mark for Move** then **Move Marked Above/Below** places the marked item exactly where you want it relative to the selection — the same accessible reordering pattern as Interactive Rebase's commit list. Queued episodes that disappear (an unsubscribed show, a pruned episode) simply skip; nothing crashes. The queue survives restarts.
+
+### Filters and Search Everywhere
+
+Above the manager's tree: an **Episodes** filter (All, Unplayed, Played, Downloaded, Not downloaded), a **Shows** filter (All, Favorites only, Has unplayed), and **Search Everywhere...** — one search across every subscription, every episode, your episode notes, and every transcript you've already fetched (never a network call), grouped by type. Enter on a result jumps the manager straight to it.
+
+### Transcripts
+
+When a feed provides an episode transcript (Podcasting 2.0), the episode's right-click menu offers **Save Transcript As...** and **Open Transcript in Editor** — the transcript arrives as plain readable text (VTT/SRT/JSON formats handled), and once fetched it's cached locally so Search Everywhere can search it and reopening is instant.
+
+### Episode notes
+
+**Podcasts: Add Episode Note...** (command palette, or QUILL Cast's Episode menu) saves a timestamped note on whatever is playing, at the current position. An episode's right-click menu > **Episode Notes...** lists its notes; Enter on one jumps playback to that moment — starting the episode first if it isn't playing.
+
+### Local podcasts and watched folders
+
+**Podcasts: Add Local Podcast...** turns your own audio files into a show — one episode per file, titles guessed from filenames. Local shows live *outside* your synced data folder by design, so pointing QUILL Sync at a cloud folder never tries to sync gigabytes of audio. Give a local show a **watched folder** and **Scan Watched Folders** picks up any new audio files dropped there as new episodes. Local shows never appear in OPML export.
+
+### ACB Media Podcasts, in one command
+
+**Podcasts: Subscribe to ACB Media Podcasts** fetches ACB's live podcast directory and subscribes to all of it, inside its own "ACB Media Podcasts" folder. It's idempotent — run it again later and only genuinely new shows are added — and every arriving show is set to stream (not download), so one command never queues three dozen shows' downloads.
+
+### Always Sync, and downloaded-audio processing
+
+Podcast Settings gains three per-show-overridable switches. **Always sync the full catalog**: beyond the routine "what's new" refresh, a download-mode show backfills and downloads every episode the live feed still offers — and because backfilling a catalog while keep-last-N retention prunes it would fight itself, ticking it nudges retention to keep-all (announced, never silent). **Auto-trim silence** and **Normalize loudness** process each finished download using the same ffmpeg passes the Audio Studio's audiobook builder uses. And for quiet audio right now, the manager's **volume boost** control (1.5x/2x/3x) raises playback gain live without touching your saved volume — the Sleep Timer still restores the true, unboosted level.
+
+### What's not in Podcasts
+
+No video podcasts — QUILL plays audio only, on every platform, and that is a promise rather than a gap.
 
 ## Quill Radio and QUILL Cast: the standalone apps
 

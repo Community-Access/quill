@@ -8383,7 +8383,7 @@ summarize, which no standalone radio/podcast app offers.
 **Goal.** Subscribe to, organize, download, and play podcasts inside QUILL,
 sharing Internet Radio&#39;s (§5.84f) proven &quot;one player that outlives any
 dialog&quot; architecture rather than inventing a second one. Covers Phase 1 of
-the 5-phase plan in `docs/planning/podcasts.md` (discovery, subscriptions,
+the original 5-phase plan (discovery, subscriptions,
 nested folders, OPML, two-control downloads, retention, playback with
 per-show speed and resume position) plus chapters, sorting, and rich
 context menus pulled forward from Phase 3. Transcript UI, the Inbox, the
@@ -8537,7 +8537,7 @@ transcription engines are the intended target), a separate Inbox view with
 its own folder tree, a cross-show reorderable Play Queue, local
 (imported-file) podcasts and watched folders, virtual views
 (Favorites/New Episodes/Continue Listening), and rich filtering (including
-Search Everywhere) — see `docs/planning/podcasts.md` for the full phased
+Search Everywhere) — all shipped; see the Phase 4 block below for the full
 plan.
 
 **Value.** Closes the other half of the &quot;why QUILL and not a dedicated
@@ -8545,6 +8545,66 @@ player&quot; answer §5.84f opened: a downloaded episode chains directly into th
 Listening Companion (§5.84b) for transcribe-and-summarize, something no
 standalone podcast app offers, and the same QUILL Sync story that already
 carries settings between machines now carries listening position too.
+
+#### Phase 4 (shipped): views, Inbox, queue, transcripts, notes, local, sync
+
+Everything the original phased plan deferred, now shipped. Every core is
+wx-free and unit-tested; the manager UI additions live in
+``quill/ui/podcasts/manager_phase4.py`` (a mixin, per the manager&#39;s CQ-1
+decomposition note) and ``play_queue_dialog.py``; standalone QUILL Cast
+(§5.89e) inherits all of it and adds matching menu items.
+
+- **Pinned virtual views (P4-1).** Favorites / New Episodes / Continue
+  Listening / Inbox sit above the folder tree with live counts
+  (``virtual_views.py``; Favorites via ``PodcastShow.is_favorite``, toggled
+  from the show context menu). Cross-show rows always carry the show name.
+- **The Inbox (P4-2, ``inbox.py``).** An episode-level curation layer:
+  ``route_to_inbox`` shows surface unplayed episodes in the Inbox regardless
+  of library folder; a second, independent nested folder tree
+  (``PodcastLibrary.inbox_folders``) files episodes
+  (``inbox_assignments``); the first manual filing per show is remembered
+  (``inbox_default_folder_id``, announced) with Forget to revert. Folder
+  deletion only promotes contents; Inbox actions never delete an episode;
+  the whole layer is excluded from OPML both directions.
+- **Play Queue (P4-3, ``queue.py`` + ``PlayQueueDialog``).** Cross-show
+  ordered queue persisted on the library; Play Next / Add to Queue on any
+  episode; auto-advance on natural finish via ``pop_next_playable`` (stale
+  slots self-heal); reordering is nudge (Move Up/Down) plus mark-and-move
+  (Move Marked Above/Below) -- the Interactive Rebase pattern.
+- **Search Everywhere + filters (P4-4, ``filtering.py``).** One query over
+  shows, episodes, episode notes, and cached transcripts (never a network
+  fetch), grouped by type with jump-to-result; episode-state and show
+  filters narrow the manager live.
+- **Transcripts (P4-5, ``transcripts.py``).** Feed-provided Podcasting 2.0
+  transcripts (VTT/SRT/JSON parsed to plain text) save to a file or open in
+  the editor; fetched transcripts cache locally (searchable, instant
+  reopen).
+- **Episode notes (P4-6, ``episode_notes.py``).** Timestamped notes on the
+  playing episode; the notes dialog jumps playback to a note&#39;s moment.
+- **Local podcasts + watched folders (P4-7, ``local_import.py``).** Audio
+  files become an ``is_local`` show (one episode per file); stored under
+  ``~/.quill-local/podcasts`` -- outside the syncable data directory *by
+  construction*, per the sync-safety requirement. A per-show
+  ``watched_folder`` turns dropped files into episodes on scan. Never
+  exported to OPML.
+- **ACB Media directory (P4-8, ``acb_media_podcasts.py``).** One idempotent
+  command subscribes the live ACB directory into its own folder, every
+  arrival stream-only (``import_opml``&#39;s ``stream_only``/``into_folder``).
+- **Always Sync (P4-9).** ``always_sync_full_catalog`` (per-show
+  overridable): refresh backfills the catalog and queues downloads for
+  download-mode shows; the settings checkbox nudges retention to keep-all
+  (announced) since backfill fights keep-last-N.
+- **Download processing + volume boost (P4-10, ``audio_processing.py``).**
+  Optional auto-trim-silence and loudness-normalization on each finished
+  download (the audiobook builder&#39;s ffmpeg passes, off-thread);
+  ``set_volume_boost`` (0.5x-3.0x clamp) scales live gain only --
+  ``volume_percent`` stays unboosted so the Sleep Timer&#39;s restore is honest.
+- **Position checkpoints (P4-11).** ``on_position_checkpoint`` fires with
+  the outgoing episode&#39;s position at pause/stop/switch/shutdown and the
+  mixin persists it -- the write half of resume, which previously only read.
+- **Status page rows (P4-12, ``status_report.py``).** Podcast library
+  summary rows and download-task rows (with started/finished timestamps)
+  for the Help Status page.
 
 ---
 

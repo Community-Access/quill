@@ -44,6 +44,7 @@ class PodcastsMixin:
             self.frame,
             on_state_changed=self._on_podcast_state_changed,
             on_episode_finished=self._on_podcast_episode_finished,
+            on_position_checkpoint=self._on_podcast_position_checkpoint,
         )
         self._podcast_download_queue = PodcastDownloadQueue(
             on_status_changed=self._on_podcast_download_status_changed,
@@ -108,6 +109,16 @@ class PodcastsMixin:
             self.settings.status_bar_hidden = hidden
             save_settings(self.settings)
 
+    def _on_podcast_position_checkpoint(self, show_id: str, episode_guid: str, ms: int) -> None:
+        """Persist the outgoing episode's resume position (pause/stop/switch/
+        shutdown) -- the write half of the position_ms resume feature."""
+        show = self._podcast_library.find_show(show_id)
+        episode = show.find_episode(episode_guid) if show is not None else None
+        if episode is None:
+            return
+        episode.position_ms = max(0, int(ms))
+        self._save_podcast_library()
+
     def _on_podcast_episode_finished(self, show_id: str, episode_guid: str) -> None:
         show = self._podcast_library.find_show(show_id)
         if show is None:
@@ -116,11 +127,34 @@ class PodcastsMixin:
         if episode is None:
             return
         episode.played = True
+        episode.position_ms = 0
         settings = self._podcast_library.effective_settings(show)
         retention.apply_delete_after_play(episode, settings)
         self._save_podcast_library()
         if self._podcast_manager_dialog is not None:
             self._podcast_manager_dialog.refresh_tree()
+        self._podcast_play_next_from_queue()
+
+    def _podcast_play_next_from_queue(self) -> None:
+        """Auto-advance: when an episode finishes, the Play Queue's next
+        playable slot starts (stale slots self-heal away)."""
+        from quill.core.podcasts.queue import pop_next_playable
+
+        resolved = pop_next_playable(self._podcast_library)
+        if resolved is None:
+            return
+        next_show, next_episode = resolved
+        self._save_podcast_library()
+        speed = self._podcast_library.effective_settings(next_show).speed
+        self._podcast_controller.play_episode(
+            show_id=next_show.id,
+            episode_guid=next_episode.guid,
+            title=next_episode.title,
+            source=next_episode.downloaded_path or next_episode.audio_url,
+            resume_ms=next_episode.position_ms,
+            rate=speed,
+        )
+        self._announce(f"Up next from the queue: {next_episode.title}")
 
     # -- download queue callbacks (fire on the download worker thread --
     # everything here must be wx.CallAfter-safe) ----------------------------
@@ -142,6 +176,7 @@ class PodcastsMixin:
             episode = show.find_episode(item.episode_guid)
             if episode is not None:
                 episode.downloaded_path = str(item.destination)
+                self._maybe_process_downloaded_audio(show, item)
             settings = self._podcast_library.effective_settings(show)
             retention.apply_keep_last_n(show, settings)
         self._save_podcast_library()
@@ -362,10 +397,207 @@ class PodcastsMixin:
                 self._podcast_manager_dialog.refresh_tree()
             if new_count:
                 self._announce(f"{new_count} new episode(s) for {show.title}")
+            self._maybe_backfill_always_sync(show)
 
         self._task_manager.submit(
             "podcast-refresh", _do_refresh, on_success=_on_success, on_failure=lambda *_a: None
         )
+
+    def _maybe_backfill_always_sync(self, show: object) -> None:
+        """Always Sync (Phase 4): a download-mode show with
+        always_sync_full_catalog queues a download for every catalog episode
+        it doesn't have on disk yet -- the whole point of the setting."""
+        settings = self._podcast_library.effective_settings(show)
+        if not getattr(settings, "always_sync_full_catalog", False):
+            return
+        if settings.playback_mode != "download":
+            return
+        from quill.ui.podcasts.manager_dialog import episode_destination
+
+        queued = 0
+        for episode in show.episodes:
+            if episode.downloaded_path or episode.mode_override == "stream":
+                continue
+            item_id = f"{show.id}:{episode.guid}"
+            if self._podcast_download_queue.get(item_id) is not None:
+                continue
+            destination = episode_destination(self._podcast_download_root(), show, episode)
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            self._podcast_download_queue.enqueue(
+                item_id,
+                show_id=show.id,
+                episode_guid=episode.guid,
+                url=episode.audio_url,
+                destination=destination,
+            )
+            queued += 1
+        if queued:
+            self._announce(f"Always Sync queued {queued} download(s) for {show.title}")
+
+    def _maybe_process_downloaded_audio(self, show: object, item: DownloadItem) -> None:
+        """Auto-trim / loudness-normalize a finished download when the show's
+        settings ask for it (Phase 4; reuses the audiobook builder's ffmpeg
+        passes). Best-effort, off-thread; failure leaves the file as-is."""
+        settings = self._podcast_library.effective_settings(show)
+        wants_trim = bool(getattr(settings, "auto_trim_silence", False))
+        wants_normalize = bool(getattr(settings, "normalize_loudness", False))
+        if not wants_trim and not wants_normalize:
+            return
+
+        from pathlib import Path
+
+        from quill.core.podcasts import audio_processing
+
+        destination = Path(item.destination)
+
+        def _do_process(**_kwargs: object) -> bool:
+            changed = False
+            if wants_trim:
+                changed = audio_processing.trim_downloaded_episode_silence(destination) or changed
+            if wants_normalize:
+                changed = (
+                    audio_processing.normalize_downloaded_episode_loudness(destination) or changed
+                )
+            return changed
+
+        def _on_success(_op: str, changed: bool) -> None:
+            if changed:
+                self._announce(f"Processed audio for {destination.name}")
+
+        self._task_manager.submit(
+            "podcast-audio-process",
+            _do_process,
+            on_success=_on_success,
+            on_failure=lambda *_a: None,
+        )
+
+    # -- local (imported) podcasts (Phase 4) -----------------------------------
+
+    def add_local_podcast(self) -> None:
+        """Pick audio file(s); they become a local show, one episode per
+        file, stored outside the syncable data directory by construction."""
+        if self._safe_mode:
+            self._show_message_box(
+                _SAFE_MODE_MESSAGE, "Podcasts", self._wx.ICON_INFORMATION | self._wx.OK
+            )
+            return
+        wx = self._wx
+        from pathlib import Path
+
+        from quill.core.podcasts.local_import import (
+            SUPPORTED_AUDIO_EXTENSIONS,
+            create_local_show,
+            find_audio_files,
+        )
+
+        wildcard_exts = ";".join(f"*{ext}" for ext in SUPPORTED_AUDIO_EXTENSIONS)
+        with wx.FileDialog(  # dialog_button_contract: exempt
+            self.frame,
+            "Add Local Podcast: pick audio files",
+            wildcard=f"Audio files ({wildcard_exts})|{wildcard_exts}|All files (*.*)|*.*",
+            style=wx.FD_OPEN | wx.FD_MULTIPLE | wx.FD_FILE_MUST_EXIST,
+        ) as dialog:
+            if dialog.ShowModal() != wx.ID_OK:
+                return
+            paths = [Path(p) for p in dialog.GetPaths()]
+        audio_files = find_audio_files(paths)
+        if not audio_files:
+            self._announce("No supported audio files were selected.")
+            return
+        with wx.TextEntryDialog(  # dialog_button_contract: exempt
+            self.frame, "Name for this local podcast:", "Add Local Podcast"
+        ) as name_dialog:
+            if name_dialog.ShowModal() != wx.ID_OK:
+                return
+            title = name_dialog.GetValue().strip() or "Local Podcast"
+        show = create_local_show(title, audio_files)
+        self._podcast_library.add_show(show)
+        self._save_podcast_library()
+        if self._podcast_manager_dialog is not None:
+            self._podcast_manager_dialog.refresh_tree()
+        self._announce(
+            f"Added local podcast {show.title} with {len(show.episodes)} episode(s). "
+            "Its files live outside your synced data folder by design."
+        )
+
+    def scan_watched_podcast_folders(self) -> None:
+        """Scan every local show's watched folder for new audio files."""
+        from quill.core.podcasts.local_import import scan_watched_folder
+
+        added_total = 0
+        for show in self._podcast_library.shows:
+            if show.is_local and show.watched_folder:
+                added_total += scan_watched_folder(show)
+        if added_total:
+            self._save_podcast_library()
+            if self._podcast_manager_dialog is not None:
+                self._podcast_manager_dialog.refresh_tree()
+            self._announce(f"Watched folders added {added_total} new episode(s)")
+        else:
+            self._announce("No new files in watched folders")
+
+    def subscribe_acb_media_podcasts(self) -> None:
+        """One command subscribes ACB Media's whole podcast directory
+        (idempotent; new arrivals are stream-only so nothing mass-downloads)."""
+        if self._safe_mode:
+            self._show_message_box(
+                _SAFE_MODE_MESSAGE, "Podcasts", self._wx.ICON_INFORMATION | self._wx.OK
+            )
+            return
+        from quill.core.podcasts import acb_media_podcasts
+
+        def _do_subscribe(**_kwargs: object):
+            return acb_media_podcasts.add_acb_media_podcasts(
+                self._podcast_library, safe_mode=self._safe_mode
+            )
+
+        def _on_success(_op: str, outcome: object) -> None:
+            added, skipped = outcome
+            self._save_podcast_library()
+            if self._podcast_manager_dialog is not None:
+                self._podcast_manager_dialog.refresh_tree()
+            self._announce(
+                f"ACB Media Podcasts: {len(added)} new show(s) subscribed, "
+                f"{skipped} already present."
+            )
+
+        def _on_failure(_op: str, error: object) -> None:
+            self._announce(f"ACB Media Podcasts could not be fetched: {error}")
+
+        self._announce("Fetching the ACB Media podcast directory...")
+        self._task_manager.submit(
+            "podcast-acb-directory",
+            _do_subscribe,
+            on_success=_on_success,
+            on_failure=_on_failure,
+        )
+
+    def add_podcast_note(self) -> None:
+        """Timestamped note on the playing episode (Phase 4 episode notes)."""
+        state = self._podcast_controller.state
+        if not state.show_id or not state.episode_guid:
+            self._announce("Nothing is playing to add a note to.")
+            return
+        wx = self._wx
+        with wx.TextEntryDialog(  # dialog_button_contract: exempt
+            self.frame, "Note text (saved at the current position):", "Add Episode Note"
+        ) as dialog:
+            if dialog.ShowModal() != wx.ID_OK:
+                return
+            text = dialog.GetValue().strip()
+        if not text:
+            return
+        from quill.core.podcasts.episode_notes import add_episode_note
+
+        position = self._podcast_controller.position_ms()
+        add_episode_note(
+            show_id=state.show_id,
+            episode_guid=state.episode_guid,
+            position_ms=position,
+            text=text,
+        )
+        minutes, seconds = divmod(position // 1000, 60)
+        self._announce(f"Note saved at {minutes}:{seconds:02d}")
 
     # -- command palette registration ----------------------------------------
 
@@ -396,6 +628,18 @@ class PodcastsMixin:
                 self.podcast_resume_all_downloads,
             ),
             ("podcasts.settings", "Podcasts: Podcast Settings...", self._podcast_open_settings),
+            ("podcasts.add_local", "Podcasts: Add Local Podcast...", self.add_local_podcast),
+            (
+                "podcasts.scan_watched",
+                "Podcasts: Scan Watched Folders for New Episodes",
+                self.scan_watched_podcast_folders,
+            ),
+            (
+                "podcasts.acb_media",
+                "Podcasts: Subscribe to ACB Media Podcasts",
+                self.subscribe_acb_media_podcasts,
+            ),
+            ("podcasts.add_note", "Podcasts: Add Episode Note...", self.add_podcast_note),
             ("podcasts.next_chapter", "Podcasts: Next Chapter", self.podcast_next_chapter),
             (
                 "podcasts.previous_chapter",
