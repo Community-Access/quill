@@ -1264,8 +1264,6 @@ class MainFrame(
         )
         self._snippet_expansion_guard = False
         self._init_abbreviations()
-        self._init_radio()
-        self._init_podcasts()
         self._intellisense_popup: _IntellisensePopup | None = None
         self._intellisense_context: IntellisenseContext | None = None
         self._intellisense_fragment_text = ""
@@ -1301,6 +1299,11 @@ class MainFrame(
         # "Untitled" combined with any transient status-bar text. _refresh_title()
         # sets the real document-name title as soon as the editor is ready.
         self.frame = wx.Frame(None, title="Quill", size=(1000, 700))
+        # Radio/podcasts parent their player controllers on self.frame, so
+        # they must init after the frame exists (earlier placement crashed
+        # startup with AttributeError('frame')).
+        self._init_radio()
+        self._init_podcasts()
         self._intellisense_popup = _IntellisensePopup(wx, self.frame)
         self._intellisense_popup.set_accept_callback(self._apply_intellisense_selection)
         self._intellisense_popup.set_dismiss_callback(self._dismiss_intellisense_popup)
@@ -12589,10 +12592,8 @@ class MainFrame(
                         if _spec.minimum is not None and _spec.maximum is not None:
                             s.SetRange(int(_spec.minimum), int(_spec.maximum))
                         s.SetValue(_cur)
-                        # support#69: VoiceOver reads a SpinCtrl's inner TextCtrl
-                        # child, not the outer control's Name -- the helper names
-                        # both so every "int" setting (Read Aloud rate/volume/
-                        # pitch and friends) is announced with its label on macOS.
+                        # support#69: VoiceOver reads the inner TextCtrl, not the
+                        # composite's Name -- the helper names both (#1012).
                         set_accessible_name(s, _spec.label)
                         return s
 
@@ -13057,11 +13058,10 @@ class MainFrame(
                     return
                 _built_pages.add(idx)
                 _page_build_fns[idx]()
-                # Pages are built lazily, after show_modal_dialog's show-time
-                # naming pass already ran, so each freshly built page needs its
-                # own pass or its controls read as bare values on macOS (#1012).
-                # Guarded like the dialog_contract wiring: a naming failure
-                # must never break switching Settings pages.
+                # Pages build lazily, after show_modal_dialog's show-time
+                # naming pass, so each new page needs its own pass or its
+                # controls read as bare values on macOS (#1012). Guarded: a
+                # naming failure must never break switching Settings pages.
                 try:
                     ensure_accessible_names(dialog)
                 except Exception:  # noqa: BLE001
