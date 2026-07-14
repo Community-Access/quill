@@ -13,6 +13,7 @@ import sys
 import wx
 
 from quill.ui.app_shell import AppShellFrame
+from quill.ui.dialog_contract import set_accessible_name
 from quill.ui.main_frame_podcasts import PodcastsMixin
 
 _TITLE = "QUILL Cast"
@@ -20,13 +21,69 @@ _TITLE = "QUILL Cast"
 
 class PodcastsAppFrame(AppShellFrame, PodcastsMixin):
     def __init__(self, *, safe_mode: bool = False) -> None:
-        self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(420, 260))
+        self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(460, 360))
         self._init_podcasts()
         self._build_menu_bar()
+        self._build_main_panel()
         self._register_podcasts_commands()
         self._ensure_tray_icon(self._build_podcast_tray_menu, tooltip=_TITLE)
         self._refresh_statusbar()
         self.frame.Bind(wx.EVT_CLOSE, self._on_cast_app_close)
+
+    # -- main panel -------------------------------------------------------------
+    #
+    # A bare frame with only a menu bar leaves keyboard focus with nowhere to
+    # land: Tab does nothing and a screen reader reads an empty client area.
+    # The main panel gives the app a real, named, tabbable surface -- the
+    # subscribed-shows list takes focus on launch, and Enter on a show opens
+    # the full Podcast Manager (where all episode-level work happens).
+
+    def _build_main_panel(self) -> None:
+        panel = wx.Panel(self.frame, style=wx.TAB_TRAVERSAL)
+        root = wx.BoxSizer(wx.VERTICAL)
+
+        self._now_playing_text = wx.StaticText(panel, label="Podcasts: stopped")
+        set_accessible_name(self._now_playing_text, "Now playing")
+        root.Add(self._now_playing_text, 0, wx.EXPAND | wx.ALL, 8)
+
+        shows_label = wx.StaticText(panel, label="&Subscribed shows:")
+        root.Add(shows_label, 0, wx.LEFT | wx.RIGHT, 8)
+        self._shows_list = wx.ListBox(panel)
+        set_accessible_name(self._shows_list, "Subscribed shows")
+        root.Add(self._shows_list, 1, wx.EXPAND | wx.ALL, 8)
+        self._shows_list.Bind(wx.EVT_LISTBOX_DCLICK, lambda _e: self.open_podcast_manager())
+        self._shows_list.Bind(wx.EVT_KEY_DOWN, self._on_shows_key)
+
+        buttons = wx.BoxSizer(wx.HORIZONTAL)
+        for label, handler in (
+            ("Open &Manager...", lambda _e: self.open_podcast_manager()),
+            ("&Add Podcast...", lambda _e: self._podcast_open_add_dialog()),
+            ("&Play/Pause", lambda _e: self.podcast_toggle_play_pause()),
+            ("&Stop", lambda _e: self.podcast_stop()),
+        ):
+            button = wx.Button(panel, label=label)
+            set_accessible_name(button, label)
+            button.Bind(wx.EVT_BUTTON, handler)
+            buttons.Add(button, 0, wx.RIGHT, 6)
+        root.Add(buttons, 0, wx.ALL, 8)
+
+        panel.SetSizer(root)
+        self._main_panel = panel
+        self._reload_shows_list()
+        self._shows_list.SetFocus()
+
+    def _on_shows_key(self, event: wx.KeyEvent) -> None:
+        if event.GetKeyCode() in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
+            self.open_podcast_manager()
+            return
+        event.Skip()
+
+    def _reload_shows_list(self) -> None:
+        shows = self._podcast_library.shows
+        selected = self._shows_list.GetSelection()
+        self._shows_list.Set([show.title or show.feed_url for show in shows])
+        if shows:
+            self._shows_list.SetSelection(selected if 0 <= selected < len(shows) else 0)
 
     # -- menu bar -------------------------------------------------------------
 
@@ -115,11 +172,16 @@ class PodcastsAppFrame(AppShellFrame, PodcastsMixin):
     # -- status ---------------------------------------------------------------
 
     def _refresh_statusbar(self) -> None:
-        text = self._podcast_status_text()
-        self._set_status(text or "Podcasts: stopped")
+        text = self._podcast_status_text() or "Podcasts: stopped"
+        self._set_status(text)
         menu_bar = self.frame.GetMenuBar()
         if menu_bar is not None:
-            menu_bar.SetLabel(int(self._now_playing_item_id), text or "Podcasts: stopped")
+            menu_bar.SetLabel(int(self._now_playing_item_id), text)
+        now_playing = getattr(self, "_now_playing_text", None)
+        if now_playing is not None:
+            now_playing.SetLabel(text)
+        if getattr(self, "_shows_list", None) is not None:
+            self._reload_shows_list()
 
     # -- lifecycle --------------------------------------------------------------
 
