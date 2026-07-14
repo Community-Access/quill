@@ -23,7 +23,7 @@ from quill.core.navigation import estimate_page_count, estimate_page_for_positio
 from quill.core.palette import load_palette_usage, top_suggestion
 from quill.core.settings import STATUS_BAR_ITEMS, Settings, save_settings
 from quill.platform.sr_announce import announce
-from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 
 
 @dataclass(slots=True)
@@ -924,6 +924,7 @@ class StatusBarMixin:
             dialog,
             choices=[state_label(item, item not in hidden) for item in item_order],
         )
+        set_accessible_name(chooser, "Status bar items")
         for index, item in enumerate(item_order):
             chooser.Check(index, item not in hidden)
         root.Add(chooser, 1, wx.ALL | wx.EXPAND, 8)

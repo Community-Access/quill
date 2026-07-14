@@ -21,6 +21,7 @@ from dataclasses import dataclass, field
 from quill.ui.dialog_contract import (
     apply_listbox_activation,
     apply_modal_ids,
+    set_accessible_name,
     show_message_box,
 )
 
@@ -74,6 +75,7 @@ class TranslatedSpeechExportDialog:
             self.dialog,
             choices=["MP3 (with chapter markers)", "M4B audiobook (native chapters)", "WAV"],
         )
+        set_accessible_name(self._format, "Output format")
         self._format.SetSelection(0)
         root.Add(self._format, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
@@ -109,6 +111,7 @@ class TranslatedSpeechExportDialog:
         self._provider = wx.Choice(
             self.dialog, choices=["AI provider (cloud)", "LibreTranslate (local)"]
         )
+        set_accessible_name(self._provider, "Translate with")
         self._provider.SetSelection(0)
         rm_row.Add(self._provider, 0, wx.LEFT, 6)
         root.Add(rm_row, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)

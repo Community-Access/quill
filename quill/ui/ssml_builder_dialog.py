@@ -25,7 +25,7 @@ from quill.core.speech.pronunciation import (
     ssml_sub,
     validate_ssml_fragment,
 )
-from quill.ui.dialog_contract import apply_modal_ids, show_message_box
+from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name, show_message_box
 
 
 class SsmlBuilderDialog:
@@ -56,6 +56,7 @@ class SsmlBuilderDialog:
 
         root.Add(wx.StaticText(self.dialog, label="&Word or phrase:"), 0, wx.ALL, 6)
         self._term = wx.TextCtrl(self.dialog, value=term)
+        set_accessible_name(self._term, "Word or phrase")
         root.Add(self._term, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
 
         # Quick-insert helpers (each appends a fragment for the current term).
@@ -80,6 +81,7 @@ class SsmlBuilderDialog:
         self._fragment = wx.TextCtrl(
             self.dialog, value=fragment, style=wx.TE_MULTILINE | wx.TE_DONTWRAP
         )
+        set_accessible_name(self._fragment, "SSML fragment")
         self._fragment.SetMinSize(wx.Size(-1, 90))
         self._fragment.Bind(wx.EVT_TEXT, lambda _e: self._validate())
         root.Add(self._fragment, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
@@ -94,6 +96,7 @@ class SsmlBuilderDialog:
             6,
         )
         self._fallback = wx.TextCtrl(self.dialog, value=fallback or term)
+        set_accessible_name(self._fallback, "Plain fallback, spoken on non-SSML engines")
         root.Add(self._fallback, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
 
         if on_audition is not None:

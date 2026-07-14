@@ -247,6 +247,20 @@ An inconclusive exit no longer produces the **“Quill detected an unclean exit�
 
 The autosave snapshot is never removed or altered by this decision. It remains on disk either way. The only change is whether QUILL asks you to recover after an exit for which the log contains no evidence of a crash.
 
+### Crash-recovery reports now show their own evidence
+
+A follow-up report showed the gap in that fix from the reporter's side: filing a crash-recovery report from the dialog bundled only the last few thousand characters of the log, while the check above scans a much larger window near the end of the file. A genuine error early in that window could justify the recovery offer without ever appearing in what got filed, leaving a report that looked unexplained even when the underlying decision was correct.
+
+Filed crash-recovery reports now include the actual log lines that triggered the offer, wherever they fall in the scanned window, so a report is self-explanatory instead of a mystery to whoever triages it.
+
+### macOS VoiceOver now hears what a control is for, not just its value
+
+A community accessibility audit found that many QUILL dialogs relied on a Windows-only convention: a visible label sitting next to a control, with nothing else connecting the two. Windows screen readers infer the connection from that layout; VoiceOver does not; it needs an explicit accessible name, and without one it announces a bare value — a number with no unit, an empty edit field with no hint what belongs there.
+
+Two related patterns caused this. Plain fields and lists in a number of hand-built dialogs never received a name at all. Separately, every `SpinCtrl`/`SpinCtrlDouble` — the numeric steppers used throughout Preferences and elsewhere — is a composite control on macOS: naming the stepper itself doesn't reach the inner text field VoiceOver actually focuses, so even a named spinner could still read as a bare number.
+
+Both patterns are fixed with one small shared helper that names a control and, for spinners, its inner field too. The fix was swept across every affected dialog identified by the audit — Preferences, Watch Folder profiles, the Export/Import and GitHub dialogs, Quick Nav, the Heading Organizer, List Manager, the Regular Expression Helper, and dozens more — so a VoiceOver user hears what each control is, not just what it currently holds.
+
 ### Insert > Date and Time's submenu now actually opens
 
 Jayson Smith reported it precisely: open the Insert menu, arrow up to **Date and Time**, press Right Arrow to open the submenu, and land in the **Format** menu instead.

@@ -15,7 +15,7 @@ from quill.core.notebook_store import (
     load_notebook,
     save_notebook,
 )
-from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 from quill.ui.notebook_navigator_page import _NotebookNode, build_notebook_nodes
 
 
@@ -207,6 +207,7 @@ class NotebookUIMixin:
         outer = wx.BoxSizer(wx.VERTICAL)
         outer.Add(wx.StaticText(dialog, label="Versions:"), 0, wx.ALL, 8)
         listbox = wx.ListBox(dialog, style=wx.LB_SINGLE)
+        set_accessible_name(listbox, "Versions")
         snapshots = getattr(nb, "snapshots", [])
         for snap in snapshots:
             created = getattr(snap, "created", "")[:10]
