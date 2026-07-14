@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>apps</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="standalone-companion-apps--planning">Standalone Companion Apps —
+Planning</h1>
+<p>Status: planning / not yet scoped for a release. No code changes
+yet.</p>
+<h2 id="idea">Idea</h2>
+<p>Radio, Podcasts, and Audio Studio are useful on their own — someone
+might want to listen to internet radio or manage a podcast queue without
+opening the full QUILL editor. This document explores splitting them
+(and possibly other features) into standalone executables with their own
+menu bar and Start Menu shortcut, while keeping them able to call back
+into full QUILL when the user needs editing, dictation, or another core
+feature.</p>
+<p>"Shared components" means: one small reusable shell that any of these
+apps sits inside, so we're not building three (or five) one-off
+<code>wx.App</code>s.</p>
+<h2 id="why-this-is-more-feasible-than-it-sounds">Why this is more
+feasible than it sounds</h2>
+<p>Checked the current module layout before writing this. The split
+QUILL already has is doing most of the work for us:</p>
+<ul>
+<li><p><strong>Core logic is already wx-free and reusable.</strong>
+<code>quill/core/radio/</code>, <code>quill/core/podcasts/</code>, and
+<code>quill/core/speech/</code> (Audio Studio's engine) contain zero
+<code>wx</code> imports. They're plain Python: feed readers, download
+queues, recording schedulers, ffmpeg wrappers, catalog/credits tracking.
+Nothing here is coupled to <code>MainFrame</code>.</p></li>
+<li><p><strong>The UI pieces are already parent-agnostic
+dialogs/controllers</strong>, not MainFrame internals:</p>
+<ul>
+<li><code>quill/ui/radio/</code> — <code>StationBrowserDialog</code>,
+<code>AddStationDialog</code>, <code>RadioPlayerController</code>,
+<code>LinkFinderDialog</code>, <code>RecordingSettingsDialog</code>,
+<code>ScheduleRecordingDialog</code>.</li>
+<li><code>quill/ui/podcasts/</code> — <code>ManagerDialog</code>,
+<code>AddPodcastDialog</code>, <code>PodcastPlayerController</code>,
+<code>ChaptersDialog</code>, <code>ShowNotesDialog</code>, etc.</li>
+<li><code>quill/ui/audio_studio/</code> — <code>AudioStudioWizard</code>
+and its page panels, <code>AudioEngine</code>/<code>MpvEngine</code>,
+<code>PlayerPanel</code>.</li>
+</ul>
+<p>Every one of these takes a <code>wx.Window</code> as
+<code>parent</code> and otherwise only touches its own core module.
+<code>RadioPlayerController(self.frame, ...)</code> in
+<code>main_frame_radio.py:51-55</code> treats <code>self.frame</code> as
+nothing more than a parent window for child controls and modal
+dialogs.</p></li>
+<li><p><strong><code>main_frame_radio.py</code> /
+<code>main_frame_podcasts.py</code> are thin glue</strong>, not where
+the feature logic lives: menu item registration, keymap commands,
+status-bar mini-player, system tray integration, safe-mode gating.
+That's exactly the layer a standalone shell needs to reimplement in
+miniature — and only that layer.</p></li>
+</ul>
+<p>Net effect: we are not extracting features out of a monolith. We're
+wrapping already-decoupled features in a second, smaller frame.</p>
+<h2 id="proposed-shared-component-appshellframe">Proposed shared
+component: <code>AppShellFrame</code></h2>
+<p>A new small module, e.g. <code>quill/ui/app_shell.py</code>,
+providing a reusable base for any standalone companion app:</p>
+<ul>
+<li>Builds a <code>wx.Frame</code> + <code>wx.MenuBar</code> from a
+declarative menu spec (reuse the existing menu-building helpers
+<code>main_frame.py</code> already has, factored out rather than
+duplicated).</li>
+<li>Wires the same accessibility contract every QUILL dialog already
+follows: <code>apply_modal_ids</code>, <code>show_modal_dialog</code>,
+<code>set_accessible_name</code> from
+<code>quill/ui/dialog_contract.py</code>. A standalone app must not be a
+second-class screen-reader citizen.</li>
+<li>Loads the same <code>core.settings</code> / <code>core.keymap</code>
+so keybindings and preferences stay consistent between the standalone
+app and QUILL proper (one settings store, not a fork).</li>
+<li>Standard <code>Help &gt; About</code>,
+<code>Help &gt; Report a problem</code>,
+<code>File &gt; Exit</code>.</li>
+<li>One shared menu command: <strong>"Open in QUILL"</strong> (see
+below).</li>
+<li>Respects <code>QUILL_SAFE_MODE</code> the same way
+<code>MainFrame</code> does.</li>
+<li>A reusable system-tray helper (see next section) so tray support is
+a checkbox each app turns on, not something reimplemented per app.</li>
+</ul>
+<p>Each standalone app is then: <code>AppShellFrame</code> subclass +
+the existing dialog/controller for that feature, hosted directly in the
+frame's client area (or opened as the frame's one modal on launch)
+instead of as a child of <code>MainFrame</code>.</p>
+<h2 id="system-tray-per-app">System tray, per app</h2>
+<p>QUILL already has a working tray icon we can lift the pattern from
+rather than invent one:
+<code>_ensure_tray_icon</code>/<code>_remove_tray_icon</code> in
+<code>main_frame.py</code> (around line 10104) create a
+<code>wx.adv.TaskBarIcon()</code>, set its icon/tooltip, and bind
+left-double-click (restore window) and right-click (popup menu). Two
+details worth carrying over as-is rather than rediscovering:</p>
+<ul>
+<li><strong>macOS caveat</strong>: <code>wx.adv.TaskBarIcon</code> on
+macOS produces a Dock tile, not a menu-bar extra, so QUILL deliberately
+refuses tray mode there today (<code>main_frame.py:10115-10121</code>)
+and tells the user via the status bar instead. Each standalone app
+should apply the same guard rather than silently misbehaving on
+macOS.</li>
+<li><strong>Feature-scoped submenus already exist.</strong>
+<code>_on_tray_right_click</code> builds its popup menu from small
+per-feature builders — <code>_build_radio_tray_menu</code>
+(<code>main_frame_radio.py:234</code>) and
+<code>_build_podcast_tray_menu</code> — each of which only touches that
+feature's own controller (e.g. radio's shows a disabled "Radio: playing
+<station>" line plus the same play/pause/stop items as the status-bar
+mini-player). These builders are essentially already "the standalone
+app's tray menu" — extracting them out of <code>MainFrame</code> into
+the radio/podcasts mixins (or a shared module) means the standalone
+app's tray icon is just <code>_build_radio_tray_menu</code> plus "Show
+<App>" and "Exit", with no new UI to design.</li>
+<li>Audio Studio is project/wizard-driven rather than a background
+player, so its tray value is smaller — mainly useful if a batch export
+job is running and the user has switched away; tray icon there could
+just show job progress and a "Show" action. Lower priority than
+Radio/Podcasts.</li>
+</ul>
+<h2 id="menu-bar--going-beyond-the-bare-minimum">Menu bar — going beyond
+the bare minimum</h2>
+<p>The per-app sketches below are a starting skeleton, not the ceiling.
+Once each app has its own frame instead of living under
+<code>MainFrame</code>'s giant menu bar, there's real room to make each
+one feel like a purpose-built app rather than a stripped-down QUILL:</p>
+<ul>
+<li><strong>Now Playing / status as a first-class menu item</strong>,
+not just a tray line — mirrors the disabled "Radio: playing <station>"
+pattern already used in the tray submenu, surfaced in the menu bar too
+so sighted and screen-reader users both get it without opening the
+tray.</li>
+<li><strong>Favorites/subscriptions surfaced directly in the
+menu</strong>, not just behind a "Browse..." dialog launch — e.g.
+Radio's Station menu lists favorite stations inline for one-key
+switching; Podcasts' Subscriptions menu lists subscribed shows with
+unplayed-episode counts.</li>
+<li><strong>Queue/progress submenus</strong> — Podcasts' Downloads menu
+showing in-flight download progress; Audio Studio's Jobs menu showing
+batch export progress — both apps already track this state in their core
+managers, so this is a menu that reads existing state, not new
+tracking.</li>
+<li><strong>Recent items</strong> — Audio Studio's File menu gets Recent
+Projects; Podcasts gets Recently Played.</li>
+</ul>
+<p>None of this needs new core functionality —
+<code>quill/core/radio/favorites.py</code>, the podcast subscription
+store, and the download queue already hold the data these richer menus
+would just be reading.</p>
+<h2 id="per-app-sketch">Per-app sketch</h2>
+<h3 id="radio-player-pilot-candidate--smallest-surface">Radio Player
+(pilot candidate — smallest surface)</h3>
+<ul>
+<li>Entry point: <code>python -m quill.apps.radio</code> (packaged as
+<code>Quill Radio.exe</code>).</li>
+<li>Reuses <code>RadioPlayerController</code>,
+<code>StationBrowserDialog</code>, favorites/recording/ scheduling
+modules unchanged.</li>
+<li>Menu bar: Station (Browse, Add custom, Link finder,
+<strong>Favorites list inline</strong>), Playback (Play/Pause, Stop,
+<strong>Now Playing status line</strong>), Record, Help.</li>
+<li>Own tray icon built from <code>_build_radio_tray_menu</code> +
+Show/Exit.</li>
+</ul>
+<h3 id="podcast-manager">Podcast Manager</h3>
+<ul>
+<li>Entry point: <code>python -m quill.apps.podcasts</code>
+(<code>Quill Podcasts.exe</code>).</li>
+<li>Reuses
+<code>ManagerDialog</code>/<code>PodcastPlayerController</code> and
+everything under <code>quill/core/podcasts/</code>.</li>
+<li>Menu bar: Subscriptions (Add, Import OPML, Folders,
+<strong>subscribed shows inline with unplayed counts</strong>), Episode
+(Play, Download, Notes, Chapters), Downloads (<strong>in-flight queue
+with progress</strong>), Help.</li>
+<li>Own tray icon built from <code>_build_podcast_tray_menu</code> +
+Show/Exit.</li>
+</ul>
+<h3 id="audio-studio">Audio Studio</h3>
+<ul>
+<li>Entry point: <code>python -m quill.apps.audio_studio</code>
+(<code>Quill Audio Studio.exe</code>).</li>
+<li>Reuses <code>AudioStudioWizard</code> as the main content (or
+launched immediately on startup, closing the app if the wizard is
+cancelled).</li>
+<li>Menu bar: File (New project, <strong>Recent Projects</strong>), Jobs
+(<strong>batch export progress</strong>), Help.</li>
+<li>Tray icon optional/lower priority here (see above) — Show +
+job-progress line only, skip on v1 if it doesn't earn its keep.</li>
+</ul>
+<h3 id="maybe-later">Maybe later</h3>
+<p>Table/CSV Studio and Story Studio were both built with a similar
+core/UI split and could follow the same pattern once the shell exists.
+Not scoping them now — revisit after the pilot ships and we know the
+real cost per app.</p>
+<h2 id="calling-back-into-quill-open-in-quill">Calling back into QUILL
+("Open in QUILL")</h2>
+<p>Two options, ordered by how soon we could ship:</p>
+<ol type="1">
+<li><strong>v1 (simple):</strong> "Open in QUILL" launches a normal
+QUILL process (<code>quill.exe</code>, or <code>python -m quill</code>
+in dev), optionally passing along context (e.g., a podcast episode
+transcript path to open as a document). No IPC, no shared-instance
+awareness. A second QUILL window opening is an acceptable cost for
+v1.</li>
+<li><strong>v2 (nicer, more work):</strong> if QUILL is already running,
+focus the existing window and hand it the context instead of spawning a
+second process. This needs a small local IPC mechanism (named pipe on
+Windows) that QUILL doesn't have today. Worth doing only if user
+feedback says the double-open in v1 is actually annoying.</li>
+</ol>
+<p>Recommend starting with v1 and treating v2 as a follow-up, not a
+blocker.</p>
+<h2 id="packaging--distribution">Packaging / distribution</h2>
+<ul>
+<li>New Start Menu shortcuts per app via the Inno Setup script
+(generator, not the checked-in <code>.iss</code> — see
+<code>project_release_version_mechanics</code> /
+<code>project_build_tools</code> conventions: edit the <code>.iss</code>
+generator, ISCC at
+<code>C:\Users\jeffb\AppData\Local\Programs\Inno Setup 6\ISCC.exe</code>).</li>
+<li>Portable build: each app also needs a portable-mode entry point
+consistent with the existing portable launcher design
+(<code>docs/design/portable-launcher.md</code>).</li>
+<li>Each new top-level frame is a new surface for the dialog-inventory
+gate (<code>dialog_inventory.py</code>) and likely wants at least smoke
+coverage in the UIA regression suite eventually — not required for the
+planning phase, but should be budgeted into the estimate for whichever
+app ships first.</li>
+</ul>
+<h2
+id="open-questions-need-a-decision-before-implementation-starts">Open
+questions (need a decision before implementation starts)</h2>
+<ol type="1">
+<li><strong>Scope for v1</strong>: just Radio (smallest, cleanest
+pilot), or ship Radio + Podcasts together since they share the most
+shell code?</li>
+<li><strong>Settings/data contention</strong>: if the standalone Podcast
+app and full QUILL both run at once, both read/write the same podcast
+subscription store. <code>write_json_atomic</code> already makes
+individual writes safe, but simultaneous <em>feature</em> use (e.g.,
+both apps downloading the same episode) isn't designed for yet — worth a
+short concurrency review before Podcasts ships standalone, less of a
+concern for Radio (no shared queue state) or Audio Studio (project-file
+based, one project open at a time already).</li>
+<li><strong>Branding</strong>: do these ship as "Quill Radio" / "Quill
+Podcasts" / "Quill Audio Studio" (recommended — reinforces they're part
+of the QUILL family and legitimizes "Open in QUILL"), or fully
+independent branding?</li>
+<li><strong>Naming/location of the shell module</strong>: proposed
+<code>quill/ui/app_shell.py</code>
+<ul>
+<li>a new <code>quill/apps/</code> package for the thin per-app entry
+points — open to a different layout if it fits existing conventions
+better.</li>
+</ul></li>
+</ol>
+<h2 id="suggested-phasing">Suggested phasing</h2>
+<ol type="1">
+<li>Build <code>AppShellFrame</code> + ship Radio Player standalone as
+the pilot (small surface, proves the shell, cheapest to validate
+end-to-end including accessibility and packaging).</li>
+<li>Apply learnings from the pilot to Podcast Manager.</li>
+<li>Apply to Audio Studio.</li>
+<li>Revisit "maybe others" (Table/CSV Studio, Story Studio) only after
+the shell has shipped for all three above and the real per-app cost is
+known.</li>
+</ol>
+<h2 id="effort-qualitative-not-a-real-estimate-yet">Effort (qualitative,
+not a real estimate yet)</h2>
+<p>Low-risk relative to a typical QUILL feature, because the hard part
+(feature logic decoupled from <code>MainFrame</code>) is already done,
+and the two additions requested here (tray icons, richer menus) both
+ride on existing patterns and existing state rather than new mechanisms:
+the tray icon is the same <code>wx.adv.TaskBarIcon</code> call
+<code>MainFrame</code> already makes, and the richer menu items
+(favorites, subscriptions, queues, recents) just read data the core
+managers already track. Main unknowns are packaging/installer plumbing
+and how much dialog-inventory/UIA test coverage each new top-level frame
+needs — both answerable during the Radio Player pilot rather than
+needing more research up front.</p>
+</body>
+</html>
