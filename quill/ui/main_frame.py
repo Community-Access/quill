@@ -1508,13 +1508,17 @@ class MainFrame(
                     else:
                         self._wx.CallAfter(self._set_status_quiet, message)
                 # No-SR path: "Ready" was already announced in __init__; suppress the repeat.
+                if _profile:
+                    self._wx.CallAfter(
+                        _times.append,
+                        ("screen-reader detection (bg)", time.perf_counter() - t_worker),
+                    )
             except Exception:
+                # Nothing this one-shot probe does may ever escape the thread:
+                # an unhandled exception here (e.g. a test double standing in
+                # for wx without CallAfter, outliving its test) surfaces as an
+                # async error in whatever code happens to be running later.
                 pass
-            if _profile:
-                self._wx.CallAfter(
-                    _times.append,
-                    ("screen-reader detection (bg)", time.perf_counter() - t_worker),
-                )
 
         import threading
 
