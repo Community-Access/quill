@@ -29,6 +29,7 @@ from quill.core.podcasts.sorting import (
 )
 from quill.core.podcasts.subscriptions import PodcastLibrary
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box
+from quill.ui.podcasts.manager_phase4 import ManagerPhase4Mixin
 from quill.ui.podcasts.player_controller import PodcastPlayerController
 
 _FOLDER_ROOT_LABEL = "All Podcasts"
@@ -79,7 +80,7 @@ def _shows_episodes(library: PodcastLibrary, folder_id: str) -> list[PodcastEpis
     return episodes
 
 
-class PodcastManagerDialog:
+class PodcastManagerDialog(ManagerPhase4Mixin):
     """Browse/subscribe/download/play podcasts."""
 
     def __init__(
@@ -130,6 +131,8 @@ class PodcastManagerDialog:
         self.dialog.SetMinSize((820, 600))
         self.dialog.SetSize((960, 680))
         root_sizer = wx.BoxSizer(wx.VERTICAL)
+
+        self._build_phase4_row(root_sizer)
 
         body = wx.BoxSizer(wx.HORIZONTAL)
 
@@ -315,6 +318,7 @@ class PodcastManagerDialog:
         self._tree_item_show.clear()
         self._tree_item_folder.clear()
         root = self._tree.AddRoot(_FOLDER_ROOT_LABEL)
+        self._add_virtual_view_nodes(root)
         show_sort_mode = self._selected_show_sort_mode()
 
         def add_folder_children(parent_item: object, folder_id: str | None) -> None:
@@ -334,7 +338,9 @@ class PodcastManagerDialog:
             add_shows(parent_item, folder_id)
 
         def add_shows(parent_item: object, folder_id: str | None) -> None:
-            matching = [s for s in self._library.shows if s.folder_id == folder_id]
+            matching = self._apply_show_filter([
+                s for s in self._library.shows if s.folder_id == folder_id
+            ])
             for show in sort_shows(matching, show_sort_mode):
                 unheard = sum(1 for e in show.episodes if not e.played)
                 label = f"{show.title} ({unheard} unheard)" if unheard else show.title
@@ -363,6 +369,8 @@ class PodcastManagerDialog:
         return self._tree_item_folder.get(key)
 
     def _on_tree_selection(self, _event: object) -> None:
+        if self._maybe_fill_virtual_selection():
+            return
         show_id = self._selected_show_id()
         show = self._library.find_show(show_id) if show_id else None
         self._current_show = show
@@ -605,6 +613,7 @@ class PodcastManagerDialog:
                 "downloading new episodes for it."
             )
             menu.Bind(wx.EVT_MENU, lambda _e: self._on_toggle_show_paused(show), pause_item)
+            self._append_phase4_show_items(menu, show)
 
             move_item = menu.Append(wx.ID_ANY, "&Move to Folder...")
             menu.Bind(wx.EVT_MENU, lambda _e, s=show: self._on_move_show_to_folder(s), move_item)
@@ -648,8 +657,9 @@ class PodcastManagerDialog:
 
     def _fill_episodes(self, show: PodcastShow | None) -> None:
         self._episodes.DeleteAllItems()
-        episodes = list(show.episodes) if show is not None else []
+        episodes = self._apply_episode_filter(list(show.episodes) if show is not None else [])
         self._current_episodes = sort_episodes(episodes, self._selected_episode_sort_mode())
+        self._pair_shows = []
         for row, episode in enumerate(self._current_episodes):
             self._episodes.InsertItem(row, episode.title)
             self._episodes.SetItem(row, 1, episode.published[:16])
@@ -838,6 +848,10 @@ class PodcastManagerDialog:
         send_notes_item = menu.Append(wx.ID_ANY, "Sen&d Show Notes to Editor")
         send_notes_item.Enable(bool(episode.description) and self._on_send_show_notes is not None)
         menu.Bind(wx.EVT_MENU, lambda _e: self._on_send_show_notes_click(episode), send_notes_item)
+
+        episode_show = self._show_for_selected_episode(self._episodes.GetFirstSelected())
+        if episode_show is not None:
+            self._append_phase4_episode_items(menu, episode_show, episode)
 
         self._episodes.PopupMenu(menu)
         menu.Destroy()

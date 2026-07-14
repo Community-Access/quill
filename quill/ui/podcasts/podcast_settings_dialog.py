@@ -125,6 +125,36 @@ class PodcastSettingsDialog:
 
         root.Add(grid, 0, wx.EXPAND | wx.ALL, 10)
 
+        self._always_sync_check = wx.CheckBox(
+            self.dialog,
+            label="Always s&ync the full catalog (download every episode the feed offers)",
+        )
+        self._always_sync_check.SetName(
+            "Always Sync: backfill and download the show's whole catalog, not just new episodes; "
+            "works best with retention set to keep all"
+        )
+        self._always_sync_check.SetValue(settings.always_sync_full_catalog)
+        self._always_sync_check.Bind(wx.EVT_CHECKBOX, self._on_always_sync_toggle)
+        root.Add(self._always_sync_check, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+
+        self._auto_trim_check = wx.CheckBox(
+            self.dialog, label="Auto-&trim silence from downloaded episodes"
+        )
+        self._auto_trim_check.SetName(
+            "Trim leading and trailing silence from each finished download"
+        )
+        self._auto_trim_check.SetValue(settings.auto_trim_silence)
+        root.Add(self._auto_trim_check, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+
+        self._normalize_check = wx.CheckBox(
+            self.dialog, label="&Normalize loudness of downloaded episodes"
+        )
+        self._normalize_check.SetName(
+            "Even out volume across downloaded episodes using the audiobook builder's loudness pass"
+        )
+        self._normalize_check.SetValue(settings.normalize_loudness)
+        root.Add(self._normalize_check, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+
         hint = wx.StaticText(
             self.dialog,
             label=(
@@ -173,6 +203,18 @@ class PodcastSettingsDialog:
             if dlg.ShowModal() == wx.ID_OK:
                 self._download_root_ctrl.SetValue(dlg.GetPath())
 
+    def _on_always_sync_toggle(self, _event: object) -> None:
+        # Always Sync fights keep_last_n retention (backfill the catalog while
+        # pruning to N undoes itself) -- nudge toward keep_all, never force it.
+        if self._always_sync_check.GetValue():
+            retention_index = self._retention_choice.GetSelection()
+            if retention_index >= 0 and _RETENTION_MODES[retention_index] == "keep_last_n":
+                self._retention_choice.SetSelection(_RETENTION_MODES.index("keep_all"))
+                self._announce(
+                    "Retention set to keep all episodes; Always Sync backfills the "
+                    "whole catalog, which keep-last-N would immediately prune."
+                )
+
     def _on_save(self, _event: object) -> None:
         playback_index = self._playback_choice.GetSelection()
         retention_index = self._retention_choice.GetSelection()
@@ -185,5 +227,8 @@ class PodcastSettingsDialog:
             speed=float(_SPEED_CHOICES[speed_index].rstrip("x")) if speed_index >= 0 else 1.0,
             download_root=self._download_root_ctrl.GetValue().strip(),
             delete_files_on_remove=_DELETE_POLICIES[delete_index] if delete_index >= 0 else "ask",
+            always_sync_full_catalog=self._always_sync_check.GetValue(),
+            auto_trim_silence=self._auto_trim_check.GetValue(),
+            normalize_loudness=self._normalize_check.GetValue(),
         )
         self.dialog.EndModal(self._wx.ID_OK)

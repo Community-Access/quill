@@ -62,6 +62,15 @@ class PodcastSettings:
     speed: float = 1.0
     download_root: str = ""  # "" = default (<data_dir>/podcasts)
     delete_files_on_remove: str = "ask"  # "ask" | "always" | "never" -- on Unsubscribe
+    #: Always Sync (Phase 4): beyond the routine refresh, also download every
+    #: catalog episode the live feed still exposes (download-mode shows only).
+    #: In tension with keep_last_n retention -- the settings UI nudges toward
+    #: keep_all when this is on.
+    always_sync_full_catalog: bool = False
+    #: Download-time audio processing (Phase 4): the audiobook builder's own
+    #: ffmpeg passes, applied to a finished download. Off by default.
+    auto_trim_silence: bool = False
+    normalize_loudness: bool = False
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -71,6 +80,9 @@ class PodcastSettings:
             "speed": self.speed,
             "download_root": self.download_root,
             "delete_files_on_remove": self.delete_files_on_remove,
+            "always_sync_full_catalog": self.always_sync_full_catalog,
+            "auto_trim_silence": self.auto_trim_silence,
+            "normalize_loudness": self.normalize_loudness,
         }
 
     @classmethod
@@ -85,6 +97,9 @@ class PodcastSettings:
             delete_files_on_remove=delete_policy
             if delete_policy in ("ask", "always", "never")
             else "ask",
+            always_sync_full_catalog=bool(data.get("always_sync_full_catalog", False)),
+            auto_trim_silence=bool(data.get("auto_trim_silence", False)),
+            normalize_loudness=bool(data.get("normalize_loudness", False)),
         )
 
 
