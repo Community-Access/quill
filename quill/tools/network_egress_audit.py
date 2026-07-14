@@ -109,6 +109,17 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "over a verified TLS context with a bounded timeout and response "
         "size. Disabled in Safe Mode via chapters.refuse_in_safe_mode."
     ),
+    "core/adp/client.py::ask": (
+        "Single egress site for the pre-release ADP Assistant (locked_off; "
+        "reachable only via a signed unlock code): POSTs the user's typed or "
+        "explicitly routed question to the hosted ADP catalog service and "
+        "returns the answer. Reached only when the user presses Ask (or has "
+        "explicitly enabled hands-free question routing in ADP Settings). "
+        "HTTPS enforced in code over a verified TLS context with a bounded "
+        "timeout; the per-app bearer key lives in the OS credential vault. "
+        "Voice never leaves the device (no /api/speak, no /api/transcribe). "
+        "Raises in Safe Mode."
+    ),
     "core/podcasts/acb_media_podcasts.py::_fetch_opml_bytes": (
         "Single egress site for the ACB Media podcast directory: fetches "
         "ACB's published OPML subscription list (parsed locally; feeds it "

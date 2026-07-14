@@ -2598,6 +2598,11 @@ class SpeechCommandsMixin:
 
         if classify(transcript) != QUESTION:
             return False
+        # Pre-release ADP conversation routing wins when unlocked + opted in
+        # (main_frame_adp.AdpMixin); voice capture/speech stay on-device.
+        adp_router = getattr(self, "_adp_route_voice_question", None)
+        if adp_router is not None and adp_router(transcript):
+            return True
         opener = getattr(self, "open_ask_quill_conversation", None)
         if opener is None:
             return False
