@@ -109,6 +109,15 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "over a verified TLS context with a bounded timeout and response "
         "size. Disabled in Safe Mode via chapters.refuse_in_safe_mode."
     ),
+    "core/podcasts/acb_media_podcasts.py::_fetch_opml_bytes": (
+        "Single egress site for the ACB Media podcast directory: fetches "
+        "ACB's published OPML subscription list (parsed locally; feeds it "
+        "names are fetched only when the user later refreshes those shows). "
+        "Reached only when the user runs Podcasts: Subscribe to ACB Media "
+        "Podcasts explicitly. HTTPS-only over a verified TLS context with a "
+        "bounded timeout and response size. Disabled in Safe Mode via "
+        "feed_reader.refuse_in_safe_mode."
+    ),
     "core/podcasts/transcripts.py::_fetch_transcript_bytes": (
         "Single egress site for podcast transcripts: fetches one episode's "
         "Podcasting 2.0 transcript file (VTT/SRT/JSON, parsed locally, no "

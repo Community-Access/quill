@@ -56,8 +56,14 @@ def _most_recent_episode_timestamp(show: PodcastShow) -> float:
     return max(_parse_published(e.published) for e in show.episodes)
 
 
-def _unheard_count(show: PodcastShow) -> int:
+def unheard_count(show: PodcastShow) -> int:
+    """Unplayed episodes in *show* -- shared by tree labels, sorting, and the
+    Status page's podcast rows (status_report.py)."""
     return sum(1 for e in show.episodes if not e.played)
+
+
+# Backward-compat private alias (pre-Phase-4 internal name).
+_unheard_count = unheard_count
 
 
 def sort_shows(shows: list[PodcastShow], mode: str) -> list[PodcastShow]:

@@ -31,6 +31,7 @@ import urllib.error
 import urllib.request
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from datetime import UTC
 from pathlib import Path
 from typing import Literal
 
@@ -43,6 +44,13 @@ _USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
 _TIMEOUT_SECONDS = 20.0
 _CHUNK_BYTES = 65536
 _MAX_CONCURRENT = 3
+
+
+def _now_iso() -> str:
+    from datetime import datetime
+
+    return datetime.now(UTC).isoformat(timespec="seconds")
+
 
 DownloadStatus = Literal["queued", "downloading", "paused", "completed", "failed", "cancelled"]
 
@@ -66,6 +74,9 @@ class DownloadItem:
     bytes_downloaded: int = 0
     total_bytes: int = 0
     error_message: str = ""
+    #: ISO timestamps for the Status page's task rows ("" until reached).
+    started_at: str = ""
+    finished_at: str = ""
     _pause_event: threading.Event = field(default_factory=threading.Event, repr=False)
     _cancel_event: threading.Event = field(default_factory=threading.Event, repr=False)
 
@@ -160,6 +171,12 @@ class PodcastDownloadQueue:
         self._on_status_changed(item)
         return item
 
+    def snapshot(self) -> list[DownloadItem]:
+        """Every item ever enqueued this session, in enqueue order (the
+        Status page's download-task rows read this)."""
+        with self._lock:
+            return [self._items[item_id] for item_id in self._order if item_id in self._items]
+
     def pause_all(self) -> None:
         """Stop starting new transfers; anything already mid-transfer keeps
         running to completion (podcasts.md §4, control 1)."""
@@ -234,6 +251,7 @@ class PodcastDownloadQueue:
                 item = self._items[item_id]
                 if item.status == "queued":
                     item.status = "downloading"
+                    item.started_at = _now_iso()
                     self._active_count += 1
                     return item
             return None
@@ -272,6 +290,7 @@ class PodcastDownloadQueue:
             item.error_message = str(error)
             _log.warning("Podcast download failed for %s: %s", item.item_id, error)
         item.status = result
+        item.finished_at = _now_iso()
         with self._lock:
             self._active_count = max(0, self._active_count - 1)
         self._on_status_changed(item)

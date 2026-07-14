@@ -18,6 +18,7 @@ wx-free, strict-typed.
 from __future__ import annotations
 
 import xml.etree.ElementTree as ET
+from collections.abc import Iterator
 from dataclasses import dataclass
 
 from quill.core.error_codes import CodedError
@@ -113,19 +114,79 @@ def parse_opml(text: str) -> list[ImportedShow]:
     return _walk_outline(body, [])
 
 
-def import_opml(library: PodcastLibrary, text: str) -> tuple[list[PodcastShow], int]:
-    """Parse *text* and add every new show to *library* in place (in its
-    reconstructed folder path, creating folders as needed). Returns
-    ``(newly_added_shows, skipped_duplicate_count)``."""
+@dataclass(frozen=True, slots=True)
+class OpmlValidationResult:
+    """One feed's reachability check for the OPML import report (§import UX).
+
+    ``ok`` is whether the feed answered; ``error`` carries the human-readable
+    reason when it did not ("404 Not Found", "timeout", ...).
+    """
+
+    title: str
+    feed_url: str
+    ok: bool
+    error: str = ""
+    #: When the checker found the feed at a corrected address (e.g. a
+    #: permanent redirect), the address the subscription was updated to.
+    corrected_url: str = ""
+
+
+@dataclass(slots=True)
+class OpmlImportOutcome:
+    """What an OPML import did: the shows added and the duplicates skipped.
+
+    Iterable as ``(added_shows, skipped_duplicates)`` so existing callers
+    that tuple-unpack the old return shape keep working unchanged.
+    """
+
+    added_shows: list[PodcastShow]
+    skipped_duplicates: int
+
+    def __iter__(self) -> Iterator[object]:
+        yield self.added_shows
+        yield self.skipped_duplicates
+
+
+def decode_opml_bytes(data: bytes) -> str:
+    """Decode a fetched OPML document defensively.
+
+    UTF-8 with an optional BOM is the overwhelming real-world case; a
+    latin-1 fallback means one stray byte can never fail a whole directory
+    import (worst case: one mangled character in one show title).
+    """
+    try:
+        return data.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        return data.decode("latin-1")
+
+
+def import_opml(
+    library: PodcastLibrary,
+    text: str,
+    *,
+    stream_only: bool = False,
+    into_folder: str | None = None,
+) -> OpmlImportOutcome:
+    """Parse *text* and add every new show to *library* in place.
+
+    Shows land in their reconstructed OPML folder path (created as needed);
+    ``into_folder`` names a root folder to nest everything under instead
+    (used by directory imports like ACB Media, so a bulk subscribe stays in
+    its own folder). ``stream_only=True`` marks every added show
+    ``playback_mode="stream"`` so a bulk import never queues dozens of
+    downloads. The outcome tuple-unpacks as ``(added, skipped)`` for
+    backward compatibility.
+    """
     from quill.core.podcasts.subscriptions import new_id
 
     imported = parse_opml(text)
     added: list[PodcastShow] = []
     skipped = 0
     for entry in imported:
-        folder_id = (
-            library.find_or_create_folder_path(entry.folder_path) if entry.folder_path else None
-        )
+        path = list(entry.folder_path)
+        if into_folder:
+            path = [into_folder, *path]
+        folder_id = library.find_or_create_folder_path(path) if path else None
         show = PodcastShow(
             id=new_id(),
             title=entry.title,
@@ -133,8 +194,12 @@ def import_opml(library: PodcastLibrary, text: str) -> tuple[list[PodcastShow], 
             homepage=entry.homepage,
             folder_id=folder_id,
         )
+        if stream_only:
+            from quill.core.podcasts.models import PodcastSettings
+
+            show.settings = PodcastSettings(playback_mode="stream")
         if library.add_show(show):
             added.append(show)
         else:
             skipped += 1
-    return added, skipped
+    return OpmlImportOutcome(added_shows=added, skipped_duplicates=skipped)
