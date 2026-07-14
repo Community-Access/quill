@@ -67,6 +67,51 @@ def apply_modal_ids(
             button.SetLabel(cancel_label)
 
 
+def accessible_label(label: str) -> str:
+    """Strip a wx keyboard-mnemonic marker and trailing colon from *label*.
+
+    Hand-rolled dialogs write labels like ``"&Word or phrase:"`` for a
+    ``StaticText`` sitting next to a control; that raw string is not a fit
+    spoken name. A literal ``&&`` (wx's escape for a real ampersand) is
+    preserved as a single ``&``; a lone ``&`` (the mnemonic marker) is
+    dropped.
+    """
+    text = label.replace("&&", "\0").replace("&", "").replace("\0", "&")
+    return text.strip().rstrip(":").strip()
+
+
+def set_accessible_name(control: object, label: str) -> None:
+    """Give *control* an accessible name derived from its visible *label*.
+
+    macOS VoiceOver does not synthesize a control's name from a neighbouring
+    ``StaticText`` the way Windows screen readers do (#1012): with nothing
+    set explicitly, VoiceOver announces only the control's raw value -- a
+    bare number for a spin control, nothing at all for a text field. Call
+    this once, right after building the control, instead of relying on the
+    Windows-only label/mnemonic association.
+
+    ``wx.SpinCtrl``/``wx.SpinCtrlDouble`` are composites on macOS: an inner
+    ``TextCtrl`` (what VoiceOver actually lands on) plus a stepper button.
+    Naming the composite alone does not propagate to the inner field, so
+    this also names every immediate child -- a no-op for controls with none.
+    """
+    name = accessible_label(label)
+    set_name = getattr(control, "SetName", None)
+    if callable(set_name):
+        set_name(name)
+    get_children = getattr(control, "GetChildren", None)
+    if not callable(get_children):
+        return
+    try:
+        children = list(get_children())
+    except Exception:
+        return
+    for child in children:
+        child_set_name = getattr(child, "SetName", None)
+        if callable(child_set_name):
+            child_set_name(name)
+
+
 def ok_cancel_platform_order(ok_btn: object, cancel_btn: object) -> tuple[object, object]:
     """Return ``(first, second)`` for a manual OK/Cancel button sizer row.
 

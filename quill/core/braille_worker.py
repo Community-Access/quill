@@ -1,11 +1,16 @@
 """liblouis translation worker subprocess (#244 / BR-021).
 
 This module runs OUT of QUILL's process. It reads one JSON request from
-``argv[1]``, performs the liblouis translation, and prints a single JSON result
+stdin, performs the liblouis translation, and prints a single JSON result
 line. liblouis is imported only inside :func:`_translate`, so importing this
 module never pulls liblouis into any process; QUILL's main process never imports
 liblouis at all -- it only ever spawns this script (see
 :mod:`quill.core.braille_worker_client`).
+
+The request travels on stdin, not argv: a whole document's text can run to
+hundreds of KB, and Windows' CreateProcess has a roughly 32K total
+command-line-length limit -- an argv-embedded payload silently fails to
+launch once the caller's text grows past that.
 """
 
 from __future__ import annotations
@@ -34,12 +39,12 @@ def _translate(request: dict[str, object]) -> dict[str, str]:
         return {"error": str(exc)}
 
 
-def main(argv: list[str]) -> int:
-    if len(argv) < 2:
+def main(stdin_text: str) -> int:
+    if not stdin_text.strip():
         print(json.dumps({"error": "no request"}))
         return 1
     try:
-        request = json.loads(argv[1])
+        request = json.loads(stdin_text)
     except ValueError:
         print(json.dumps({"error": "bad request json"}))
         return 1
@@ -48,4 +53,4 @@ def main(argv: list[str]) -> int:
 
 
 if __name__ == "__main__":  # pragma: no cover - exercised as a subprocess
-    sys.exit(main(sys.argv))
+    sys.exit(main(sys.stdin.read()))

@@ -18,7 +18,7 @@ from quill.core.watch_profiles import (
     SCHED_WINDOW,
     WatchProfile,
 )
-from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 
 
 class WatchProfileDialogMixin:
@@ -84,7 +84,7 @@ class WatchProfileDialogMixin:
             size_row = wx.BoxSizer(wx.HORIZONTAL)
             size_label = wx.StaticText(dialog, label="Minimum size (bytes)")
             size_input = wx.SpinCtrl(dialog, min=0, max=1_000_000_000, initial=base.min_size_bytes)
-            size_input.SetName("Minimum file size in bytes")
+            set_accessible_name(size_input, "Minimum file size in bytes")
             size_row.Add(size_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
             size_row.Add(size_input, 0)
             root.Add(size_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
@@ -94,7 +94,7 @@ class WatchProfileDialogMixin:
             age_input = wx.SpinCtrlDouble(
                 dialog, min=0.0, max=3600.0, inc=0.5, initial=base.min_age_seconds
             )
-            age_input.SetName("Minimum file age in seconds")
+            set_accessible_name(age_input, "Minimum file age in seconds")
             age_row.Add(age_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
             age_row.Add(age_input, 0)
             root.Add(age_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
@@ -102,7 +102,7 @@ class WatchProfileDialogMixin:
             interval_row = wx.BoxSizer(wx.HORIZONTAL)
             interval_label = wx.StaticText(dialog, label="Poll interval (seconds)")
             interval_input = wx.SpinCtrl(dialog, min=2, max=300, initial=base.poll_interval_seconds)
-            interval_input.SetName("Poll interval in seconds")
+            set_accessible_name(interval_input, "Poll interval in seconds")
             interval_row.Add(interval_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
             interval_row.Add(interval_input, 0)
             root.Add(interval_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
@@ -132,18 +132,18 @@ class WatchProfileDialogMixin:
                 wx.StaticText(dialog, label="From"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4
             )
             start_hour = wx.SpinCtrl(dialog, min=0, max=23, initial=start_h)
-            start_hour.SetName("Schedule start hour")
+            set_accessible_name(start_hour, "Schedule start hour")
             start_minute = wx.SpinCtrl(dialog, min=0, max=59, initial=start_m)
-            start_minute.SetName("Schedule start minute")
+            set_accessible_name(start_minute, "Schedule start minute")
             time_row.Add(start_hour, 0, wx.RIGHT, 2)
             time_row.Add(start_minute, 0, wx.RIGHT, 12)
             time_row.Add(
                 wx.StaticText(dialog, label="to"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4
             )
             end_hour = wx.SpinCtrl(dialog, min=0, max=23, initial=end_h)
-            end_hour.SetName("Schedule end hour")
+            set_accessible_name(end_hour, "Schedule end hour")
             end_minute = wx.SpinCtrl(dialog, min=0, max=59, initial=end_m)
-            end_minute.SetName("Schedule end minute")
+            set_accessible_name(end_minute, "Schedule end minute")
             time_row.Add(end_hour, 0, wx.RIGHT, 2)
             time_row.Add(end_minute, 0)
             root.Add(time_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
@@ -302,7 +302,7 @@ class WatchProfileDialogMixin:
                 inc=0.5,
                 initial=float(base.action_options.get("timeout_seconds", 5.0) or 5.0),
             )
-            python_timeout.SetName("Python transform timeout in seconds")
+            set_accessible_name(python_timeout, "Python transform timeout in seconds")
             py_opts_row.Add(python_timeout, 0)
             root.Add(py_opts_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 

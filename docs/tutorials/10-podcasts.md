@@ -79,7 +79,34 @@ podcast you currently have selected, from 0.75x up to 2.0x. It's
 remembered per show, so a fast-talking interview show and a slow, dense
 lecture series can each have their own comfortable speed.
 
-## 5. Control it without opening the dialog
+## 5. Chapters, sorting, and show notes
+
+If a show publishes Podcasting 2.0 chapters (or the episode has ID3
+chapters once downloaded), a **Chapters...** button appears on the player
+row — opens a list of chapter titles and start times; picking one jumps
+playback straight there.
+
+Two **Sort by** choices, one above the folder tree (shows: Title,
+Unheard First, Recently Updated) and one above the episode list (episodes:
+Newest, Oldest, Title, Duration, Unplayed First), are remembered between
+sessions. Each show and folder in the tree also shows an unheard-episode
+count in parentheses, so you can see what's waiting without opening it.
+
+**View Show Notes...** on an episode's context menu opens its description
+in a plain, readable window — HTML stripped to text with links shown as
+`text (url)` rather than raw markup, or switch to a rich view if you'd
+rather see it formatted. **Send Show Notes to Editor** copies that same
+plain text into a new document tab, if you want to keep or annotate it.
+
+## 6. Podcast Settings
+
+**Podcast Settings...** on the Podcast Manager toolbar sets the defaults
+every show starts from: stream vs. download, retention (keep everything,
+keep the last N, or delete after playing), download location, and what
+happens to downloaded files when you unsubscribe from a show — **ask each
+time** (the default), **always delete them**, or **never delete them**.
+
+## 7. Control it without opening the dialog
 
 - **The status bar.** A **Podcasts** cell appears the first time you play
   an episode. Press Enter, or click it, to play/pause. Its context menu
@@ -91,7 +118,7 @@ lecture series can each have their own comfortable speed.
   Deliberately parked right next to Radio's N/0/9 chords, not on top of
   them. Remap either in **Preferences > Keyboard Shortcuts**.
 
-## 6. Take your library with you
+## 8. Take your library with you
 
 **Export OPML...** on the Podcast Manager writes your whole subscription
 list — folder structure included — to a standard `.opml` file that any
@@ -101,11 +128,12 @@ somewhere else) with **Import OPML...**, the same button you used in step 1.
 ## What's not here yet
 
 No video podcasts — audio only, matching every other playback surface in
-QUILL. Chapter navigation and transcript viewing/export are parsed from the
-feed already but have no UI of their own yet; a separate Inbox view, a
-cross-show reorderable Play Queue, local (imported-file) podcasts, and
-richer sorting/filtering are the next planned phases — see
-`docs/planning/podcasts.md` if you want the full roadmap.
+QUILL. Moving a show between folders is keyboard-menu-only for now (no
+drag-and-drop). Transcript viewing/export is parsed from the feed already
+but has no UI of its own yet; a separate Inbox view, a cross-show
+reorderable Play Queue, local (imported-file) podcasts, and richer
+filtering (beyond the sorting above) are the next planned phases — see
+`docs/planning/podcasts.md` if you want the full list.
 
 ## The shape of it
 

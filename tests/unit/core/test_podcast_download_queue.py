@@ -1,5 +1,5 @@
 """Tests for the podcast download queue: chunked/resumable transfer and the
-two independent pause controls (podcasts.md §4) -- no real network calls."""
+two independent pause controls -- no real network calls."""
 
 from __future__ import annotations
 

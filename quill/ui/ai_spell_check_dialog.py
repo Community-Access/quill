@@ -10,7 +10,7 @@ import threading
 from collections.abc import Callable
 
 from quill.core.ai.spell_check import SpellCorrection, apply_corrections
-from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 
 
 class AISpellCheckDialog:
@@ -305,6 +305,7 @@ class AISpellCheckInteractiveDialog:
         )
         root.Add(self._progress_label, 0, wx.ALL, 8)
         self._gauge = wx.Gauge(self.dialog, range=self._total)
+        set_accessible_name(self._gauge, "Spell check progress")
         root.Add(self._gauge, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
         # Correction list

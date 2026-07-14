@@ -114,6 +114,21 @@ Everything 1.0-scoped shipped. What remains is 2.0-deferred — live streaming
 Read Aloud refinements, voice management, server-side pronunciation, Tier-3
 surfaces — all in §5. Voice **cloning** stays deliberately descoped.
 
+### 1.7 Internet Radio — remaining
+
+Internet Radio shipped (PR #987), including stream recording and in-app
+scheduled recording (0.9.0 Beta 3; canonical: PRD §5.84f, user guide,
+CHANGELOG). Not being built right now, parked for later: an **ACB Media
+events/meetings calendar** — a read-only "ACB Media Events" view (or an
+.ics/iCal export) surfaced from the same place the ACB Media station
+category lives. Researched from `S:\code\acb_link_desktop`'s
+`categories.xml`-family feeds served from `link.acb.org`; needs the exact
+events-feed URL confirmed (only `streams.xml`/`link.opml` were concretely
+verified), a new `network_egress_audit.py` entry, and parsing with stdlib
+`xml.etree.ElementTree` (matching `link_finder.py`). The rest of ACB Link's
+surface (affiliate directories, publications, SIG info, voice control) is
+out of scope — this feed is the one piece directly relevant to Radio.
+
 ---
 
 ## 2. Locked / hidden features (register)
@@ -314,6 +329,7 @@ profiles (#426)**.
 | Docs & content (§1.4) | #535–#564, #505, #522, #590, #592. |
 | Table Studio (§1.5) | **Shipped 0.9.0 (experimental opt-in).** Open follow-ups: CSV as an editable document tab; real screen-reader validation pass. |
 | ElevenLabs 2.0 extras (§1.6) | Live streaming Read Aloud, voice management, Tier-3 — all §5. |
+| Internet Radio (§1.7) | **Shipped 0.9.0 Beta 3** (incl. recording + scheduling). Open: ACB Media events/meetings calendar feed. |
 | Audio Studio | **Shipped during the beta (all ten roadmap items).** Open: the human validation pass (`audio-studio-roadmap.md`) + episode-24 audio regeneration. |
 | Locked features (§2) | Voice Commands, Rich Text Lens, Publishing (send), Third-Party Plugins (`bw_whisperer` kept locked/inert — not removed). |
 

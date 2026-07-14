@@ -56,6 +56,12 @@ jobs:
     # may not fall below the floor. Raise the floor as coverage improves; never
     # lower it.
     runs-on: windows-latest
+    # A healthy full run finishes in ~15 minutes (install + suite). Two runs
+    # on 2026-07-14 sat "in progress" for an hour with the log frozen at the
+    # same 93% point -- a deterministic test hang. The job-level ceiling makes
+    # a hang cost 30 minutes instead of GitHub's 6-hour default, and the
+    # per-test --timeout below makes the hanging test name itself.
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
@@ -65,14 +71,52 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e .[dev,ui]
-      - name: Run unit and accessibility tests with coverage floor
+      - name: Run unit and accessibility tests
+        # -n 4 --dist=loadfile: the single-process run was silently
+        # accumulating native Windows window-creation resources across the
+        # suite's ~8700+ tests (dozens of test files each construct their own
+        # wx.App/wx.Dialog) until dialog construction started failing outright
+        # late in the run ("Failed to create dialog. Incorrect DLGTEMPLATE?"),
+        # unrelated to any actual code regression -- confirmed by bisection:
+        # the same tests pass individually and in any smaller batch, and fail
+        # only once enough of the suite has run first in the same process.
+        # loadfile keeps each file's tests together in one worker so
+        # module-scoped wx_app fixtures still work, while spreading files
+        # across 4 separate worker processes so no single process accumulates
+        # enough to hit the ceiling.
+        # --timeout=300 --timeout-method=thread: no legitimate test in this
+        # suite takes anywhere near 5 minutes, so a test that does is hung
+        # (e.g. blocked on a credential prompt or an unclosed pipe that only
+        # exists on a runner). The thread method works on Windows and dumps
+        # every thread's stack when it fires, so the log names the exact test
+        # and blocked line instead of freezing silently.
+        #
+        # test_dialog_inventory.py runs in its own step below: its full-package
+        # AST scans are the suite's single biggest allocation burst, and running
+        # that burst late inside a worker process already carrying thousands of
+        # wx tests' native leftovers crashed the worker outright on 2/2 CI runs
+        # on 2026-07-14 (same test, different workers, then the xdist scheduler
+        # deadlocked on the dead worker). In a fresh process it is fast and
+        # boring.
         run: |
-          pytest tests\unit tests\accessibility -q `
+          pytest tests\unit tests\accessibility -q -n 4 --dist=loadfile `
+            --timeout=300 --timeout-method=thread `
             --ignore=tests\unit\core\test_net_tls.py `
             --ignore=tests\unit\core\test_thesaurus.py `
+            --ignore=tests\unit\ui\test_dialog_inventory.py `
             --cov=quill.core --cov=quill.io `
-            --cov-report=term-missing:skip-covered `
-            --cov-fail-under=70
+            --cov-report=
+      - name: Run dialog-inventory gate tests (isolated process)
+        run: |
+          pytest tests\unit\ui\test_dialog_inventory.py -q `
+            --timeout=300 --timeout-method=thread -p no:cacheprovider
+      - name: Enforce coverage floor
+        # A separate step reading the persisted .coverage data, decoupled
+        # from the xdist test-runner process above -- if that process exits
+        # in some unusual way, the coverage floor is still checked from what
+        # was actually recorded rather than silently skipped.
+        run: |
+          coverage report --skip-covered --show-missing --fail-under=70
 
   characterization:
     # GATE-6: the MainFrame public surface is frozen so decomposition stays

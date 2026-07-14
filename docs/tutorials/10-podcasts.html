@@ -258,7 +258,32 @@ rate for whichever podcast you currently have selected, from 0.75x up to
 2.0x. It's remembered per show, so a fast-talking interview show and a
 slow, dense lecture series can each have their own comfortable
 speed.</p>
-<h2 id="5-control-it-without-opening-the-dialog">5. Control it without
+<h2 id="5-chapters-sorting-and-show-notes">5. Chapters, sorting, and
+show notes</h2>
+<p>If a show publishes Podcasting 2.0 chapters (or the episode has ID3
+chapters once downloaded), a <strong>Chapters...</strong> button appears
+on the player row — opens a list of chapter titles and start times;
+picking one jumps playback straight there.</p>
+<p>Two <strong>Sort by</strong> choices, one above the folder tree
+(shows: Title, Unheard First, Recently Updated) and one above the
+episode list (episodes: Newest, Oldest, Title, Duration, Unplayed
+First), are remembered between sessions. Each show and folder in the
+tree also shows an unheard-episode count in parentheses, so you can see
+what's waiting without opening it.</p>
+<p><strong>View Show Notes...</strong> on an episode's context menu
+opens its description in a plain, readable window — HTML stripped to
+text with links shown as <code>text (url)</code> rather than raw markup,
+or switch to a rich view if you'd rather see it formatted. <strong>Send
+Show Notes to Editor</strong> copies that same plain text into a new
+document tab, if you want to keep or annotate it.</p>
+<h2 id="6-podcast-settings">6. Podcast Settings</h2>
+<p><strong>Podcast Settings...</strong> on the Podcast Manager toolbar
+sets the defaults every show starts from: stream vs. download, retention
+(keep everything, keep the last N, or delete after playing), download
+location, and what happens to downloaded files when you unsubscribe from
+a show — <strong>ask each time</strong> (the default), <strong>always
+delete them</strong>, or <strong>never delete them</strong>.</p>
+<h2 id="7-control-it-without-opening-the-dialog">7. Control it without
 opening the dialog</h2>
 <ul>
 <li><strong>The status bar.</strong> A <strong>Podcasts</strong> cell
@@ -274,7 +299,7 @@ toggles play/pause; then <strong>7</strong> stops. Deliberately parked
 right next to Radio's N/0/9 chords, not on top of them. Remap either in
 <strong>Preferences &gt; Keyboard Shortcuts</strong>.</li>
 </ul>
-<h2 id="6-take-your-library-with-you">6. Take your library with you</h2>
+<h2 id="8-take-your-library-with-you">8. Take your library with you</h2>
 <p><strong>Export OPML...</strong> on the Podcast Manager writes your
 whole subscription list — folder structure included — to a standard
 <code>.opml</code> file that any other podcast app can read. Bring it
@@ -282,11 +307,13 @@ back into QUILL (or take it somewhere else) with <strong>Import
 OPML...</strong>, the same button you used in step 1.</p>
 <h2 id="whats-not-here-yet">What's not here yet</h2>
 <p>No video podcasts — audio only, matching every other playback surface
-in QUILL. Chapter navigation and transcript viewing/export are parsed
-from the feed already but have no UI of their own yet; a separate Inbox
-view, a cross-show reorderable Play Queue, local (imported-file)
-podcasts, and richer sorting/filtering are the next planned phases — see
-<code>docs/planning/podcasts.md</code> if you want the full roadmap.</p>
+in QUILL. Moving a show between folders is keyboard-menu-only for now
+(no drag-and-drop). Transcript viewing/export is parsed from the feed
+already but has no UI of its own yet; a separate Inbox view, a
+cross-show reorderable Play Queue, local (imported-file) podcasts, and
+richer filtering (beyond the sorting above) are the next planned phases
+— see <code>docs/planning/podcasts.md</code> if you want the full
+list.</p>
 <h2 id="the-shape-of-it">The shape of it</h2>
 <p>Subscribe with a search, a URL, or an OPML import; organize into
 folders; download with two pause controls that mean genuinely different

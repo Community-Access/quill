@@ -7,6 +7,7 @@ from collections.abc import Callable
 import wx.grid as wx_grid
 
 from quill.core.document import Document
+from quill.ui.dialog_contract import set_accessible_name
 
 # Stride large enough to avoid row*stride+col collisions for any realistic
 # spreadsheet (Excel cap is 16384 columns; anything beyond that is unusual).
@@ -75,6 +76,7 @@ class CsvGridSurface:
             self._text_page,
             style=wx.TE_MULTILINE | wx.TE_RICH2 | wx.TE_NOHIDESEL,
         )
+        set_accessible_name(self.text_ctrl, "CSV as text")
 
         grid_sizer = wx.BoxSizer(wx.VERTICAL)
         grid_sizer.Add(self.grid, 1, wx.EXPAND)

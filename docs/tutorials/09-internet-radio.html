@@ -258,14 +258,40 @@ forget it</h2>
 Windows system volume and from your screen reader's own speech volume —
 turn the music down (or mute it) without ever touching how loud your
 screen reader talks.</p>
+<h2 id="6-record-a-station-live-or-scheduled">6. Record a station, live
+or scheduled</h2>
+<p>Recording needs ffmpeg installed (<strong>Tools &gt; Download
+Optional Components</strong> if <code>Tools &gt; Media</code> doesn't
+show a Record item at all — it's hidden outright rather than shown
+disabled when the component is missing).</p>
+<ul>
+<li><strong>Record right now</strong>: with a station playing, your
+QUILL Key then <strong>6</strong> (or <strong>Tools &gt; Media &gt;
+Internet Radio &gt; Record Now</strong>) starts recording it to a file;
+the same chord (now labeled Stop Recording) ends it cleanly.</li>
+<li><strong>Recording Settings...</strong> sets the format
+(mp3/ogg/flac/wav), bitrate, destination folder, filename pattern, and
+an optional maximum duration.</li>
+<li><strong>Schedule Recording...</strong> queues a one-time, daily, or
+weekly recording — station, start time, and duration — that fires
+automatically while QUILL is open. It does not wake your computer or run
+if QUILL is closed at the scheduled time.</li>
+</ul>
+<h2 id="7-sleep-timer">7. Sleep timer</h2>
+<p><strong>Tools &gt; Media &gt; Sleep Timer...</strong> stops
+whatever's playing — Radio or a podcast episode — after a preset or
+custom number of minutes, fading the volume down gently over the last
+moments rather than cutting off abruptly, then restoring your normal
+volume once playback stops. Open the same dialog again to cancel a
+running timer.</p>
 <h2 id="whats-not-here">What's not here</h2>
 <p>TuneIn and iHeartRadio aren't supported — both are undocumented,
 reverse-engineered commercial APIs with no public terms, and
 RadioBrowser covers the same need without that risk. YouTube audio isn't
-supported either. Stream recording and scheduled recording are real,
-planned follow-ups — see <code>docs/planning/radio.md</code> if you're
-curious. Podcasts are a separate, already-shipped feature — see <a
-href="10-podcasts.md">Tutorial 10</a>.</p>
+supported either. A read-only ACB Media events/meetings calendar is a
+real, planned follow-up — see <code>docs/planning/roadmap.md</code> §1.7
+if you're curious. Podcasts are a separate, already-shipped feature —
+see <a href="10-podcasts.md">Tutorial 10</a>.</p>
 <h2 id="the-shape-of-it">The shape of it</h2>
 <p>One player, several doors into it: Browse Stations to find something
 new, the status bar or tray for everyday control, and QUILL Key chords

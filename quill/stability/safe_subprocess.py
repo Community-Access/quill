@@ -22,6 +22,7 @@ def run_subprocess_safely(
     *,
     timeout_seconds: float = 30.0,
     cwd: str | None = None,
+    input: str | None = None,  # noqa: A002 - matches subprocess.run's own parameter name
 ) -> subprocess.CompletedProcess[str]:
     """Run a subprocess with a timeout and clear, logged failure handling.
 
@@ -34,6 +35,13 @@ def run_subprocess_safely(
       directory is validated before launch so a caller cannot accidentally point
       the child process at a missing or non-directory path; callers are expected
       to pass a trusted, absolute directory they control.
+    - ``input``, when given, is piped to the child's stdin instead of being
+      folded into ``args``. A payload of arbitrary/unbounded size (e.g. a
+      whole document's text) must never become a command-line argument --
+      Windows' CreateProcess has a roughly 32K total command-line length
+      limit, so an argv-embedded payload silently fails to launch once a
+      caller's input grows past that (braille_worker_client hit exactly this
+      with a large document). Stdin has no such ceiling.
 
     Raises:
         ValueError: if ``args`` is empty or ``cwd`` is not an existing directory.
@@ -80,6 +88,7 @@ def run_subprocess_safely(
             capture_output=True,
             timeout=timeout_seconds,
             check=False,
+            input=input,
             **extra_kwargs,
         )
         logger.info(

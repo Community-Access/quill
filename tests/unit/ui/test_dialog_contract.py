@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 from quill.ui.dialog_contract import (
+    accessible_label,
     apply_modal_ids,
     find_primary_focus_target,
     focus_primary_control,
+    set_accessible_name,
     set_transition_announcement_policy,
     show_modal_dialog,
 )
@@ -322,3 +324,59 @@ def test_focus_primary_control_targets_tab_content_not_the_tab_strip() -> None:
 
     assert target is combo
     assert combo.HasFocus() is True
+
+
+# ---------------------------------------------------------------------------
+# #1012: macOS VoiceOver announces controls without their labels
+# ---------------------------------------------------------------------------
+
+
+class _FakeNamedControl:
+    def __init__(self, children: list[object] | None = None) -> None:
+        self.name: str | None = None
+        self._children = children or []
+
+    def SetName(self, name: str) -> None:
+        self.name = name
+
+    def GetChildren(self) -> list[object]:
+        return self._children
+
+
+def test_accessible_label_strips_mnemonic_ampersand() -> None:
+    assert accessible_label("&Word or phrase:") == "Word or phrase"
+
+
+def test_accessible_label_preserves_escaped_double_ampersand() -> None:
+    assert accessible_label("Search && Replace") == "Search & Replace"
+
+
+def test_accessible_label_strips_trailing_colon_and_whitespace() -> None:
+    assert accessible_label("  Font size:  ") == "Font size"
+
+
+def test_set_accessible_name_names_a_plain_control() -> None:
+    control = _FakeNamedControl()
+
+    set_accessible_name(control, "&Word or phrase:")
+
+    assert control.name == "Word or phrase"
+
+
+def test_set_accessible_name_names_composite_spin_inner_child() -> None:
+    """macOS wx.SpinCtrl is a composite: naming only the composite leaves
+    VoiceOver announcing the bare inner TextCtrl's value with no label."""
+    inner = _FakeNamedControl()
+    spin = _FakeNamedControl(children=[inner])
+
+    set_accessible_name(spin, "Font size")
+
+    assert spin.name == "Font size"
+    assert inner.name == "Font size"
+
+
+def test_set_accessible_name_ignores_controls_without_setname() -> None:
+    class _Bare:
+        pass
+
+    set_accessible_name(_Bare(), "Label")  # must not raise
