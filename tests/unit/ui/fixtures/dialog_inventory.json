@@ -455,6 +455,7 @@
   "quill/ui/transcript_actions_ui.py::offer_transcript_actions::wx.SingleChoiceDialog": "native",
   "quill/ui/translated_speech_export_dialog.py::TranslatedSpeechExportDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/translated_speech_runner.py::_prompt_output_folder::wx.DirDialog": "native",
+  "quill/ui/unlock_code_dialog.py::UnlockCodeDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/vault_dialogs.py::show_vault_filter_modal::wx.Dialog": "hardened_custom",
   "quill/ui/vault_dialogs.py::show_vault_list_modal::wx.Dialog": "hardened_custom",
   "quill/ui/verbosity_chord_editor.py::VerbosityChordEditorDialog.__init__::wx.Dialog": "hardened_custom",
