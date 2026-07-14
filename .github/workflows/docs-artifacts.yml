@@ -26,7 +26,7 @@ jobs:
   regenerate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           # On a PR, check out (and later push to) the PR's source branch;
           # on a main push, the branch itself.

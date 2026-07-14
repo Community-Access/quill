@@ -74,15 +74,17 @@ def _from_dict(data: dict) -> SiteConfig:
 def load_sites() -> list[SiteConfig]:
     """Return saved sites sorted by friendly name (case-insensitive)."""
     raw = read_json(_sites_path(), [])
-    if not isinstance(raw, list):
+    # Accept the versioned envelope and the legacy bare list (back-compat).
+    items = raw.get("sites", []) if isinstance(raw, dict) else raw
+    if not isinstance(items, list):
         return []
-    sites = [_from_dict(item) for item in raw if isinstance(item, dict) and item.get("name")]
+    sites = [_from_dict(item) for item in items if isinstance(item, dict) and item.get("name")]
     return sorted(sites, key=lambda site: site.name.lower())
 
 
 def save_sites(sites: list[SiteConfig]) -> None:
     base = app_data_dir()
-    payload = [asdict(site.normalised()) for site in sites]
+    payload = {"schema_version": 1, "sites": [asdict(site.normalised()) for site in sites]}
     write_json_atomic(_sites_path(), payload, base=base)
 
 

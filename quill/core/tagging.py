@@ -1,6 +1,43 @@
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
+
+#: Run-level keyed attributes, in the fixed order they are materialized into a
+#: Pandoc span ``[text]{...}`` so the markup round-trips deterministically. The
+#: boolean flags (:data:`SPAN_FLAG_ORDER`) are emitted after these.
+SPAN_ATTRIBUTE_ORDER = ("font-family", "font-size", "color", "highlight")
+#: Run-level boolean flags, emitted bare and in this order (matches the model's
+#: ``rtf_model._span_attr_markup`` so apply-then-reparse is stable).
+SPAN_FLAG_ORDER = ("underline", "strike", "superscript", "subscript")
+
+#: Paragraph alignments accepted by :func:`build_block_alignment`.
+ALIGN_CHOICES = ("left", "right", "center", "justify")
+#: Block (fenced-div) attribute keys, in materialization order (matches the
+#: model's ``rtf_model._block_markup``).
+BLOCK_ATTRIBUTE_ORDER = (
+    "align",
+    "pstyle",
+    "line-spacing",
+    "space-before",
+    "space-after",
+    "indent",
+    "first-line-indent",
+)
+#: Named Word paragraph styles accepted by the ``pstyle`` block attribute.
+NAMED_STYLE_CHOICES = ("quote", "title", "subtitle", "caption")
+#: Line-spacing values accepted by the ``line-spacing`` block attribute.
+LINE_SPACING_CHOICES = ("1", "1.5", "2")
+
+#: The standalone page-break marker line.
+PAGE_BREAK_MARKER = "::: pagebreak"
+
+_SPAN_ATTR_PAIR_RE = re.compile(r'([A-Za-z][\w-]*)\s*=\s*"([^"]*)"|([A-Za-z][\w-]*)')
+_EXISTING_SPAN_RE = re.compile(r"^\[(.*)\]\{([^}]*)\}$", re.DOTALL)
+_EXISTING_DIV_RE = re.compile(r"^:::\s*\{([^}]*)\}\n(.*)\n:::$", re.DOTALL)
+_BOLD_RE = re.compile(r"\*\*([^*]+)\*\*")
+_ITALIC_RE = re.compile(r"(?<!\*)\*([^*]+)\*(?!\*)")
+_U_TAG_RE = re.compile(r"<u>(.*?)</u>", re.DOTALL | re.IGNORECASE)
 
 VOID_HTML_TAGS = {"br", "hr", "img", "input", "meta", "link"}
 
@@ -206,6 +243,14 @@ def build_markdown_insertion(
             text = f"*{selected_text}*"
             return InsertionResult(text, len(text))
         return InsertionResult("**", 1)
+    # Markdown has no native underline syntax. Use inline HTML <u>...</u>,
+    # which every CommonMark viewer that supports raw HTML will render as
+    # underlined text. Surfaces the feature parity with the HTML branch.
+    if kind == "Underline":
+        if selected_text:
+            text = f"<u>{selected_text}</u>"
+            return InsertionResult(text, len(text))
+        return InsertionResult("<u></u>", 3)
     if kind == "Inline Code":
         if selected_text:
             text = f"`{selected_text}`"
@@ -250,6 +295,154 @@ def build_markdown_insertion(
         text = f"{content}[^1]\n\n[^1]: Footnote text"
         return InsertionResult(text, len(content) + 4)
     return InsertionResult(content, len(content))
+
+
+def render_span_attributes(attributes: dict[str, str]) -> str:
+    """Render run-level attributes as a Pandoc span attribute string.
+
+    Keyed pairs are emitted in :data:`SPAN_ATTRIBUTE_ORDER` then boolean flags in
+    :data:`SPAN_FLAG_ORDER`, so identical attribute sets always serialize the same
+    way (stable round-trip). Empty values are skipped; truthy flags are emitted
+    bare.
+    """
+    parts: list[str] = []
+    for key in SPAN_ATTRIBUTE_ORDER:
+        value = attributes.get(key, "")
+        if value:
+            parts.append(f'{key}="{value}"')
+    for flag in SPAN_FLAG_ORDER:
+        if attributes.get(flag):
+            parts.append(flag)
+    return " ".join(parts)
+
+
+def render_block_attributes(attributes: dict[str, str]) -> str:
+    """Render block (fenced-div) attributes in :data:`BLOCK_ATTRIBUTE_ORDER`."""
+    parts: list[str] = []
+    for key in BLOCK_ATTRIBUTE_ORDER:
+        value = attributes.get(key, "")
+        if value:
+            parts.append(f'{key}="{value}"')
+    return " ".join(parts)
+
+
+def _parse_span_attributes(raw: str) -> dict[str, str]:
+    """Parse space-separated ``key="value"`` pairs (and bare flags) from a span.
+
+    Mirrors ``quill.io.rtf_model.parse_span_attributes`` but lives in ``core`` so
+    ``tagging`` does not import the ``io`` layer.
+    """
+    attrs: dict[str, str] = {}
+    for match in _SPAN_ATTR_PAIR_RE.finditer(raw):
+        if match.group(1) is not None:
+            attrs[match.group(1).lower()] = match.group(2)
+        elif match.group(3) is not None:
+            attrs.setdefault(match.group(3).lower(), "1")
+    return attrs
+
+
+def merge_span_attributes(base: dict[str, str], updates: dict[str, str]) -> dict[str, str]:
+    """Merge ``updates`` onto ``base``, keeping one attribute set per run.
+
+    Applying font then size to the same selection merges into a single span's
+    attribute set rather than nesting spans (mirrors
+    ``heading_styles._merge_style_attr``). Empty update values are ignored so a
+    no-op apply never clears an existing attribute.
+    """
+    merged = dict(base)
+    for key, value in updates.items():
+        if value:
+            merged[key.lower()] = value
+    return merged
+
+
+def build_span_insertion(selected_text: str, attrs: dict[str, str]) -> InsertionResult:
+    """Materialize an inline run-formatting span ``[text]{...}`` over a selection.
+
+    If ``selected_text`` is itself a single existing span, the new attributes merge
+    into its attribute set rather than nesting a second span. With no selection, an
+    empty span is produced and the caret is placed between the brackets so the user
+    can type the styled text.
+    """
+    inner = selected_text
+    base: dict[str, str] = {}
+    match = _EXISTING_SPAN_RE.match(selected_text)
+    if match:
+        inner = match.group(1)
+        base = _parse_span_attributes(match.group(2))
+    merged = merge_span_attributes(base, attrs)
+    rendered = render_span_attributes(merged)
+    if not rendered:
+        return InsertionResult(selected_text, len(selected_text))
+    if inner:
+        text = f"[{inner}]{{{rendered}}}"
+        return InsertionResult(text, len(text))
+    text = f"[]{{{rendered}}}"
+    return InsertionResult(text, 1)
+
+
+def build_block_attributes(selected_text: str, attrs: dict[str, str]) -> InsertionResult:
+    """Materialize a paragraph block-formatting fenced div ``::: {...}``.
+
+    The selection (or a ``text`` placeholder when empty) becomes the div body. If
+    the selection is itself an existing div, the new attributes merge into its
+    header rather than nesting a second div. An empty/invalid attribute set returns
+    the text unchanged. The div is invisible in the editor and only realized at
+    export, matching the hidden-codes design.
+    """
+    body = selected_text
+    base: dict[str, str] = {}
+    match = _EXISTING_DIV_RE.match(selected_text)
+    if match:
+        body = match.group(2)
+        base = _parse_span_attributes(match.group(1))
+    merged = merge_span_attributes(base, attrs)
+    rendered = render_block_attributes(merged)
+    if not rendered:
+        return InsertionResult(selected_text, len(selected_text))
+    inner = body or "text"
+    text = f"::: {{{rendered}}}\n{inner}\n:::"
+    if body:
+        return InsertionResult(text, len(text))
+    prefix = f"::: {{{rendered}}}\n"
+    return InsertionResult(text, len(prefix) + len(inner))
+
+
+def build_block_alignment(selected_text: str, align: str) -> InsertionResult:
+    """Materialize a paragraph-alignment fenced div (thin :func:`build_block_attributes`)."""
+    normalized = align.strip().lower()
+    if normalized not in ALIGN_CHOICES:
+        return InsertionResult(selected_text, len(selected_text))
+    return build_block_attributes(selected_text, {"align": normalized})
+
+
+def strip_run_formatting(text: str) -> str:
+    """Remove run-level formatting markup, keeping the visible text (Clear Formatting).
+
+    Unwraps hidden-codes spans ``[inner]{...}`` to ``inner`` (repeatedly, for
+    nested spans), then strips bold/italic markers and inline ``<u>`` tags. Links
+    ``[label](url)`` are intentionally preserved — clearing *formatting* should not
+    destroy a hyperlink.
+    """
+    previous = None
+    while previous != text:
+        previous = text
+        text = re.sub(r"\[([^\]]*)\]\{[^}]*\}", r"\1", text)
+    text = _BOLD_RE.sub(r"\1", text)
+    text = _ITALIC_RE.sub(r"\1", text)
+    text = _U_TAG_RE.sub(r"\1", text)
+    return text
+
+
+def build_clear_formatting(selected_text: str) -> InsertionResult:
+    """Return the selection with run formatting stripped (Clear Formatting)."""
+    stripped = strip_run_formatting(selected_text)
+    return InsertionResult(stripped, len(stripped))
+
+
+def build_page_break() -> InsertionResult:
+    """Return the standalone page-break marker line."""
+    return InsertionResult(PAGE_BREAK_MARKER, len(PAGE_BREAK_MARKER))
 
 
 def _render_html_attributes(attributes: dict[str, str]) -> str:

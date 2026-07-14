@@ -15,7 +15,7 @@ from pathlib import Path
 
 from quill.core.ai.style import StyleProfile, load_style, save_style
 from quill.core.features import FeatureManager
-from quill.core.keymap import load_keymap, merge_keymaps, save_keymap
+from quill.core.keymap import DEFAULT_KEYMAP, load_keymap, merge_keymaps, save_keymap
 from quill.core.macros import Macro, MacroManager
 from quill.core.settings import Settings
 from quill.core.settings_registry import export_settings, import_settings
@@ -309,7 +309,11 @@ def _apply_keymap(
     payload = package.sections[SECTION_KEYMAP]
     if not isinstance(payload, dict):
         raise ValueError("Keymap section must be a mapping.")
-    incoming = {str(k): str(v) for k, v in payload.items()}
+    # The export payload is the full resolved map; only the entries that
+    # actually differ from the default are the user's overrides. Without
+    # this filter, importing a profile would overwrite the recipient's
+    # own overrides back to the defaults the exporter happens to ship.
+    incoming = {str(k): str(v) for k, v in payload.items() if str(v) != DEFAULT_KEYMAP.get(str(k))}
     if mode == MODE_MERGE:
         merged = {**load_keymap(), **incoming}
         save_keymap(merged)

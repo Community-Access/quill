@@ -69,6 +69,9 @@ class _FakeCtx:
     def announce(self, message: str) -> None:
         self.announced.append(message)
 
+    def is_verbosity_speech_enabled(self) -> bool:
+        return True
+
 
 def _register_extension() -> _FakeApi:
     sys.path.insert(0, str(_DIR))

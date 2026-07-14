@@ -19,11 +19,19 @@ logger = getLogger("autoupdate")
 
 
 def _version_tuple(v: object) -> tuple[int, ...]:
-    """Parse a version string into a comparable integer tuple."""
-    try:
-        return tuple(int(x) for x in str(v).split("."))
-    except ValueError:
-        return (0,)
+    """Parse a version string into a comparable integer tuple.
+
+    Leading digits of each segment are used so pre-release suffixes like
+    "1.2.3rc1" or "2.0.0-beta" compare as (1,2,3) and (2,0,0) rather than
+    silently mapping the whole string to (0,).
+    """
+    import re
+
+    parts = []
+    for segment in str(v).split("."):
+        m = re.match(r"(\d+)", segment)
+        parts.append(int(m.group(1)) if m else 0)
+    return tuple(parts) if parts else (0,)
 
 
 def perform_update(

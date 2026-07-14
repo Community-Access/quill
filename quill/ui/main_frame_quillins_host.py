@@ -87,11 +87,17 @@ class _EditorHostServices:
     def announce(self, message: str) -> None:
         self._frame._announce(message)
 
+    def is_verbosity_speech_enabled(self) -> bool:
+        settings = getattr(self._frame, "settings", None)
+        if settings is None:
+            return True
+        return bool(getattr(settings, "verbosity_speech_enabled", True))
+
     def prompt(self, title: str, label: str, default: str) -> str | None:
         return self._frame._power_tools_prompt_single(title, label, default)
 
     def set_status(self, message: str) -> None:
-        self._frame._set_status_text(message)
+        self._frame._set_status(message)
 
     def show_choices(self, title: str, items: list[str]) -> str | None:
         wx = self._frame._wx if hasattr(self._frame, "_wx") else None

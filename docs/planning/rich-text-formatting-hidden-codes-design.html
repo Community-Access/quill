@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>rich-text-formatting-hidden-codes-design</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1
+id="rich-text-formatting-with-hidden-codes--design-and-implementation-note">Rich
+Text Formatting with Hidden Codes — Design and Implementation Note</h1>
+<p>Status: <strong>Implemented</strong> on the 2.0 branch (was: draft
+exploration, 2026-06-26). Scope: font family, point size, color,
+highlight, underline, strikethrough, super/subscript, paragraph
+alignment, line spacing, paragraph spacing, indent, named paragraph
+styles, page breaks, and a "Clear formatting" command in the QUILL
+editor — exported faithfully to Word (<code>.docx</code>), RTF, and
+HTML, while the editing buffer stays free of visible markup.</p>
+<h2 id="1-problem-and-intent">1. Problem and intent</h2>
+<p>QUILL originally applied only bold, italic, and underline, writing
+inline markup (<code>**...**</code>,
+<code>&lt;u&gt;...&lt;/u&gt;</code>) into a plain
+<code>wx.TextCtrl</code>. There was no font, size, color, alignment or
+layout, and Word export ran Markdown through Pandoc, whose docx writer
+silently dropped inline CSS for font/size/alignment.</p>
+<p>The product intent, stated by the user:</p>
+<ul>
+<li>Apply font, style, point size, alignment, and color — and the
+broader set of word-processor attributes (strikethrough,
+super/subscript, line spacing, paragraph spacing, indent, named styles,
+page breaks).</li>
+<li><strong>The formatting codes must be hidden from the user.</strong>
+The document stays "simple, fast, and efficient." The user reads and
+edits clean text.</li>
+<li>The user can <strong>interrogate</strong> the document — ask "what
+is the formatting here?" — quickly, and (being a screen-reader user)
+<em>hear</em> the answer.</li>
+<li>The tags are <strong>materialized only at export</strong>.</li>
+</ul>
+<p>This reframes the feature away from a WYSIWYG/visible-markup editor
+toward a clean buffer with a formatting layer that is queried on demand
+and serialized at export time.</p>
+<h2 id="2-why-this-fits-quills-existing-architecture">2. Why this fits
+QUILL's existing architecture</h2>
+<p>Four existing pieces made the hidden-codes model practical rather
+than a rewrite:</p>
+<ol type="1">
+<li><strong>A rich intermediate model</strong> —
+<code>quill/io/rtf_model.py</code> (<code>InlineSpan</code> /
+<code>RichParagraph</code> / <code>RichDocument</code>,
+<code>markdown_to_rich</code> / <code>rich_to_markdown</code>) is the
+shared model for every writer.</li>
+<li><strong>An offset map between markup and visible text</strong> —
+<code>analyze_markdown</code> / <code>format_at_markdown_offset</code>
+map visible caret offsets to markup offsets, which is exactly "hide the
+codes but keep the caret honest."</li>
+<li><strong>A spoken-formatting vocabulary</strong> —
+<code>quill/core/format_speech.py</code>
+(<code>describe_inline_format</code>) turns formatting flags into
+phrases.</li>
+<li><strong>Font/size/alignment precedent</strong> —
+<code>quill/core/heading_styles.py</code> validates alignment against
+<code>{left, right, center, justify}</code> and emits CSS; the same
+logic generalizes from headings to arbitrary runs and paragraphs.</li>
+</ol>
+<h2 id="3-the-materialized-tag-vocabulary">3. The materialized tag
+vocabulary</h2>
+<p>Tags are produced at export and (under storage Option A) on save.
+They use Pandoc's generic attribute-span / fenced-div syntax with
+explicit values. Because Word is written by our own python-docx code,
+<strong>we own attribute interpretation</strong>.</p>
+<pre><code>Inline run:   [Hello world]{font-family=&quot;Arial&quot; font-size=&quot;14&quot; color=&quot;#C00000&quot;}
+Inline flags: [note]{underline strike superscript}
+Paragraph:    ::: {align=&quot;center&quot; line-spacing=&quot;1.5&quot; pstyle=&quot;quote&quot;}
+              Centered, 1.5-spaced quote.
+              :::
+Page break:   ::: pagebreak</code></pre>
+<p>The implemented vocabulary:</p>
+<ul>
+<li><strong>Inline (run-level):</strong> <code>font-family</code>,
+<code>font-size</code> (points), <code>color</code>,
+<code>highlight</code>, plus the boolean flags <code>underline</code>,
+<code>strike</code>, <code>superscript</code>, <code>subscript</code>,
+and the existing <code>bold</code> / <code>italic</code> (carried as
+<code>**</code>/<code>*</code> inside the span label).</li>
+<li><strong>Block (paragraph-level), via fenced div:</strong>
+<code>align</code>
+(<code>left</code>/<code>right</code>/<code>center</code>/<code>justify</code>),
+<code>pstyle</code> (a named Word style:
+<code>quote</code>/<code>title</code>/<code>subtitle</code>/<code>caption</code>),
+<code>line-spacing</code>
+(<code>1</code>/<code>1.5</code>/<code>2</code>),
+<code>space-before</code> / <code>space-after</code> (points),
+<code>indent</code> (left indent, points),
+<code>first-line-indent</code> (points).</li>
+<li><strong>Page break:</strong> the standalone marker line
+<code>::: pagebreak</code>.</li>
+</ul>
+<p>Attribute order is fixed (keyed pairs then boolean flags for runs; a
+fixed key order for divs) so apply-then-reparse and
+<code>markdown -&gt; rich -&gt; markdown</code> are stable identities.
+<code>quill/io/rtf_model.parse_span_attributes</code> parses the
+space-separated <code>key="value"</code> grammar (and bare flags);
+<code>quill/core/tagging.py</code> owns the matching builders
+(<code>render_span_attributes</code>,
+<code>render_block_attributes</code>).</p>
+<h2 id="4-hidden-codes-storage">4. Hidden-codes storage</h2>
+<p>The editor never shows tags. <strong>Option A (markup canonical,
+hidden in the view)</strong> is implemented: <code>Document.text</code>
+holds the Pandoc-span/fenced-div markup; the existing markup-to-visible
+offset map keeps the caret honest; saving <code>.md</code> writes the
+markup (invisible in QUILL). <strong>Option B (out-of-band overlay +
+sidecar)</strong> remains the documented future end-state; because both
+options converge on the same <code>RichDocument</code> before any writer
+runs, the writers, menus, speech and tests carry over unchanged.</p>
+<h2 id="5-shared-model-and-parsing--quilliortf_modelpy">5. Shared model
+and parsing — <code>quill/io/rtf_model.py</code></h2>
+<ul>
+<li><code>InlineSpan</code> gained <code>underline</code>,
+<code>strike</code>, <code>superscript</code>, <code>subscript</code>,
+<code>font_family</code>, <code>font_size_pt</code>, <code>color</code>,
+<code>highlight</code>.</li>
+<li><code>RichParagraph</code> gained <code>align</code>,
+<code>named_style</code>, <code>line_spacing</code>,
+<code>space_before</code>, <code>space_after</code>,
+<code>indent</code>, <code>first_line_indent</code>, and a
+<code>"pagebreak"</code> style.</li>
+<li><code>InlineFormat</code> / <code>MarkdownSegment</code> mirror the
+new fields so caret context reports them.</li>
+<li>The inline walker recognizes <code>[...]{...}</code> spans;
+<code>_classify_lines</code> recognizes <code>::: {...}</code> fenced
+divs and the <code>::: pagebreak</code> marker. Span/div/marker markup
+is consumed without contributing visible characters, so offset tracking
+stays correct (the whole <code>:::</code> line is structure — no visible
+text and no visible newline).</li>
+</ul>
+<h2 id="6-materialization-helpers-and-editor-commands">6.
+Materialization helpers and editor commands</h2>
+<p><code>quill/core/tagging.py</code>:</p>
+<ul>
+<li><code>build_span_insertion(selected_text, attrs)</code> — run span,
+with merge-into-existing so applying font then size yields one span, not
+nested spans.</li>
+<li><code>build_block_attributes(selected_text, attrs)</code> /
+<code>build_block_alignment(...)</code> — paragraph fenced div, also
+merge-aware.</li>
+<li><code>build_clear_formatting</code> /
+<code>strip_run_formatting</code> — Clear Formatting (unwraps spans and
+emphasis, preserves links).</li>
+<li><code>build_page_break</code> — the <code>::: pagebreak</code>
+marker.</li>
+</ul>
+<p><code>quill/ui/main_frame_format_codes.py</code>
+(<code>FormatCodesMixin</code>, extracted to keep
+<code>main_frame.py</code> within the GATE-11 budget) holds every
+command and the menu construction/binding:
+<code>format_set_font/size/color/highlight</code>,
+<code>format_strikethrough/superscript/subscript</code>,
+<code>format_clear_formatting</code>, <code>open_font_dialog</code>,
+<code>format_align</code>, <code>format_set_line_spacing</code>,
+<code>format_set_space_before/after</code>,
+<code>format_set_indent/first_line_indent</code>,
+<code>format_set_named_style</code>, <code>insert_page_break</code>, and
+the interrogation commands. The Format menu gains Font / Size / Align /
+Color / Highlight / Line Spacing / Paragraph Spacing / Paragraph Indent
+/ Paragraph Style submenus plus
+strikethrough/superscript/subscript/clear/page-break/Font-dialog
+items.</p>
+<h2 id="7-interrogation-and-screen-reader-communication">7.
+Interrogation and screen-reader communication</h2>
+<ul>
+<li><code>describe_inline_format</code> speaks the full set, e.g.
+<code>"quote style, Arial, 14 point, bold strikethrough, centered, double spaced, indented, red"</code>.
+Order is paragraph-style → typeface → size → weight/decoration → layout
+→ color.</li>
+<li><strong>"Describe Formatting at Cursor"</strong> reads
+<code>format_at_markdown_offset</code> at the caret and announces it.
+Default hotkey: <strong>Ctrl+Shift+D</strong>
+(<code>format.describe_formatting</code>, remappable).</li>
+<li>An optional <strong>on-caret-move</strong> announcement of
+formatting <em>transitions</em> (only the delta, via
+<code>describe_format_transition</code>) is available behind the
+<code>announce_formatting_on_move</code> setting (Format menu check
+item; off by default so navigation stays quiet).</li>
+<li>Every apply action announces its result.</li>
+</ul>
+<h2 id="8-export-pipeline-identical-for-a-and-b">8. Export pipeline
+(identical for A and B)</h2>
+<p>All writers consume the extended <code>RichDocument</code> (or the
+canonical markup):</p>
+<ul>
+<li><strong>Word (<code>.docx</code>)</strong> —
+<code>quill/io/docx_writer.py</code> (python-docx). Per paragraph:
+alignment, line spacing, space before/after, left/first-line indent, and
+named styles (Quote/Title/Subtitle/Caption) plus heading/bullet styles;
+page breaks via <code>add_page_break</code>. Per run:
+bold/italic/underline/strike/super/subscript, <code>font.name</code>,
+<code>font.size</code>, <code>font.color.rgb</code>, highlight.
+<code>write_docx_document</code> prefers this writer and <strong>falls
+back to the Pandoc path</strong> when python-docx is absent, so docx
+export never hard-fails. (Optional dependency:
+<code>quill[docx]</code>.)</li>
+<li><strong>RTF</strong> (<code>quill/io/rtf.py</code>) — emits
+<code>\ul</code>, <code>\strike</code>,
+<code>\super</code>/<code>\sub</code>, a font table
+(<code>\fN</code>/<code>\fsN</code>), a color table
+(<code>\cfN</code>/<code>\highlightN</code>), alignment
+(<code>\qc/\qr/\qj</code>), line spacing (<code>\slN\slmult1</code>),
+spacing (<code>\sb</code>/<code>\sa</code>), indent
+(<code>\li</code>/<code>\fi</code>), and page breaks
+(<code>\page</code>). The RTF <strong>reader</strong> was upgraded to
+recover underline, strikethrough, super/subscript, color and highlight
+(parsing <code>\colortbl</code>), so opening an RTF/Word file
+round-trips losslessly. Consequently those items were dropped from
+<code>_UNSUPPORTED_FEATURES</code> (only tables, images and footnotes
+remain reported as flattened).</li>
+<li><strong>HTML</strong> (<code>markdown_to_html</code> →
+<code>quill/core/browser_preview.py</code>) — renders run spans to
+<code>&lt;span style&gt;</code>
+(font/size/color/background/<code>text-decoration</code>/
+<code>vertical-align</code>) and divs to <code>&lt;div style&gt;</code>
+(<code>text-align</code>, <code>line-height</code>, margins,
+<code>text-indent</code>, named-style CSS); page breaks to
+<code>page-break-after: always</code>. This also enriches the live
+preview.</li>
+<li><strong>Plain text</strong> (<code>markdown_to_plain_text</code>) —
+strips span wrappers, fenced-div markers and page-break lines, keeping
+the visible words.</li>
+</ul>
+<h2 id="9-dependencies-and-gates">9. Dependencies and gates</h2>
+<ul>
+<li><strong><code>python-docx</code></strong> is declared as the
+optional <code>quill[docx]</code> extra; the native writer activates
+when it is installed, Pandoc otherwise.</li>
+<li>mypy stays scoped to <code>core</code> / <code>io</code>; all
+new/changed modules type-check.</li>
+<li>Menus only (no new modal except the optional Font dialog, which
+routes through <code>_show_modal_dialog</code> +
+<code>apply_modal_ids</code>); <code>menu_lint</code> and GATE-11
+pass.</li>
+<li>No new network egress.</li>
+</ul>
+<h2 id="10-phasing--delivered">10. Phasing — delivered</h2>
+<ol type="1">
+<li>Inline run formatting (font/size/color/highlight/underline) —
+<strong>done.</strong></li>
+<li>Paragraph alignment — <strong>done.</strong></li>
+<li>python-docx Word writer + optional dependency —
+<strong>done.</strong></li>
+<li>Color / highlight across model, builders, writers, speech —
+<strong>done.</strong></li>
+<li>Strikethrough, super/subscript, Clear Formatting —
+<strong>done.</strong></li>
+<li>Line spacing, paragraph spacing, indent, named styles, page break —
+<strong>done.</strong></li>
+<li>Accessible "Font…" dialog, Describe-Formatting hotkey, on-caret-move
+toggle, lossless RTF read-back — <strong>done.</strong></li>
+<li>Out-of-band overlay + sidecar persistence (storage Option B) —
+<strong>future</strong>, as the clean-document end-state; reuses
+everything above.</li>
+</ol>
+<h2 id="11-verification">11. Verification</h2>
+<ul>
+<li>Unit: <code>tests/unit/io/test_rtf_model.py</code>
+(span/div/page-break round-trip, offset stability, interrogation),
+<code>tests/unit/core/test_format_speech.py</code> (phrases),
+<code>tests/unit/core/test_tagging.py</code>
+(builders/merge/clear/page-break),
+<code>tests/unit/io/test_rtf.py</code> (writer control words + lossless
+read-back), <code>tests/unit/io/test_export.py</code> (HTML
+spans/divs/page-break, plain-text strip),
+<code>tests/unit/io/test_docx_writer.py</code> (opens the produced
+<code>.docx</code> and asserts run/paragraph attributes; skipped when
+python-docx is absent).</li>
+<li>Round-trip: <code>markdown -&gt; rich -&gt; markdown</code> is
+identity for every attribute.</li>
+<li>Lint/types: <code>ruff check .</code>,
+<code>mypy quill\core quill\io</code>, <code>menu_lint</code>,
+GATE-11.</li>
+</ul>
+<h2 id="12-open-questions-for-the-future-option-b">12. Open questions
+for the future (Option B)</h2>
+<ul>
+<li>Sidecar format and naming for Option B persistence, and behavior
+when a <code>.txt</code> is opened in another editor (overlay dropped
+vs. warned).</li>
+<li>Font/size pickers: the menu presets + "More Font Options…" dialog
+exist; a visual color picker could be added later (the current color
+field accepts a name or <code>#RRGGBB</code>, which is the most
+screen-reader-friendly form).</li>
+<li>Note: color <em>names</em> normalize to <code>#RRGGBB</code> when
+round-tripped through RTF (the RTF color table is numeric); this is
+expected and lossless in meaning.</li>
+</ul>
+</body>
+</html>

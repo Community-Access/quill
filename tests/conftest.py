@@ -34,3 +34,29 @@ def quill_data_dir(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Path:
     """
     monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
     return tmp_path
+
+
+@pytest.fixture()
+def isolated_profile(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Path:
+    """Point the user-profile env vars at a per-test temp directory.
+
+    Opt-in isolation for tests that read ``APPDATA``/``LOCALAPPDATA``/``HOME``/
+    ``USERPROFILE`` (directly or via a fallback path) so they cannot pick up the
+    developer's real profile state — the class of bug that made
+    ``test_storage_mode_uses_portable_root`` pass in CI but fail locally.
+
+    Deliberately **not** autouse: a blanket autouse breaks ~36 core tests that
+    legitimately depend on the real profile environment (e.g. atomic-write and
+    legacy-migration checks). Request this fixture explicitly in tests that touch
+    profile-derived paths. Returns the fake home directory.
+    """
+    home = tmp_path / "_home"
+    appdata = home / "AppData" / "Roaming"
+    local = home / "AppData" / "Local"
+    for path in (appdata, local):
+        path.mkdir(parents=True, exist_ok=True)
+    monkeypatch.setenv("APPDATA", str(appdata))
+    monkeypatch.setenv("LOCALAPPDATA", str(local))
+    monkeypatch.setenv("USERPROFILE", str(home))
+    monkeypatch.setenv("HOME", str(home))
+    return home

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>SECURITY</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="security-policy">Security Policy</h1>
+<h2 id="supported-versions">Supported versions</h2>
+<p>Security fixes are prioritized on the latest release line in
+<code>main</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Version line</th>
+<th>Security support</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Current release (<code>main</code>)</td>
+<td>Supported</td>
+</tr>
+<tr>
+<td>Older releases</td>
+<td>Best effort only</td>
+</tr>
+</tbody>
+</table>
+<h2 id="reporting-a-vulnerability">Reporting a vulnerability</h2>
+<p>Please report suspected vulnerabilities privately. Do
+<strong>not</strong> open a public issue for security problems.</p>
+<ul>
+<li>Email: <a href="mailto:support@communityaccess.org"
+class="email">support@communityaccess.org</a></li>
+<li>Subject: <code>QUILL security report</code></li>
+</ul>
+<p>If your report includes sensitive details, note that in the
+subject/body and we will coordinate a safer exchange path.</p>
+<p>Include the following details:</p>
+<ol type="1">
+<li>A description of the issue and impact.</li>
+<li>Reproduction steps or proof of concept.</li>
+<li>Affected version/commit.</li>
+<li>Any suggested mitigation.</li>
+<li>Whether you believe this is remotely exploitable or local-only.</li>
+</ol>
+<h2 id="response-expectations">Response expectations</h2>
+<p>Target response windows:</p>
+<ul>
+<li>Acknowledgement: within 3 business days.</li>
+<li>Initial triage: within 7 business days.</li>
+<li>Follow-up cadence: at least weekly until resolution or
+mitigation.</li>
+<li>Coordinated disclosure: agreed after fix readiness.</li>
+</ul>
+<p>Please do not disclose the issue publicly until maintainers confirm a
+fix and disclosure plan.</p>
+<h2 id="scope-guidance">Scope guidance</h2>
+<p>Security reports are most useful when they involve:</p>
+<ul>
+<li>Unauthorized access to protected data</li>
+<li>Privilege escalation</li>
+<li>Remote code execution paths</li>
+<li>Unsafe network or update trust behavior</li>
+<li>Secret exposure in logs, diagnostics, or crash artifacts</li>
+</ul>
+<p>Out-of-scope examples (generally):</p>
+<ul>
+<li>Purely theoretical findings without a plausible exploit path</li>
+<li>Reports that require unrealistic local setup not used by QUILL
+users</li>
+<li>Best-practice suggestions without a concrete vulnerability</li>
+</ul>
+<h2 id="safe-harbor-for-good-faith-research">Safe harbor for good-faith
+research</h2>
+<p>We support good-faith security research intended to improve user
+safety. Please:</p>
+<ol type="1">
+<li>Avoid privacy violations, destructive testing, or service
+disruption.</li>
+<li>Test only what is necessary to demonstrate the issue.</li>
+<li>Keep findings private until coordinated disclosure is agreed.</li>
+</ol>
+<p>If you follow these expectations in good faith, we will treat your
+research as authorized for this policy’s purposes.</p>
+<h2 id="security-expectations-for-contributors">Security expectations
+for contributors</h2>
+<p>All contributors should follow these baseline practices:</p>
+<ol type="1">
+<li>Never commit secrets, tokens, credentials, or private keys.</li>
+<li>Avoid logging document content or sensitive user data.</li>
+<li>Keep networked behavior explicit and user-initiated.</li>
+<li>Validate external input and fail safely.</li>
+<li>Use dependency updates intentionally and review changelogs for
+risk.</li>
+<li>Keep cloud endpoints on HTTPS; allow HTTP only for local-only
+runtimes.</li>
+<li>Ensure diagnostics and logs redact API keys, bearer tokens, and
+equivalent secrets.</li>
+</ol>
+<p>Related project docs:</p>
+<ul>
+<li><code>CONTRIBUTING.md</code></li>
+<li><code>CODE_OF_CONDUCT.md</code></li>
+<li><code>PRIVACY.md</code></li>
+<li><code>RESPONSIBLE_AI_USE.md</code></li>
+</ul>
+<h2 id="secret-handling-baseline">Secret handling baseline</h2>
+<p>QUILL stores AI API keys in Windows Credential Manager when
+available. If Credential Manager is unavailable, QUILL falls back to
+DPAPI-encrypted local storage. Plaintext API key storage is not
+permitted.</p>
+<h2 id="security-automation-baseline">Security automation baseline</h2>
+<ul>
+<li><code>.github/workflows/security-ci.yml</code> runs dependency
+audit, secret scanning, and SBOM generation.</li>
+<li><code>.github/workflows/windows-release.yml</code> publishes release
+metadata plus SBOM artifacts.</li>
+</ul>
+</body>
+</html>

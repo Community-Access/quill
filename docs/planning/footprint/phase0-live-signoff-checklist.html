@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>phase0-live-signoff-checklist</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="phase-0-footprint--live-sign-off-checklist">Phase 0 footprint —
+live sign-off checklist</h1>
+<p>The footprint baseline has three parts. Two are automated; one is a
+short manual pass. Run all three on the <strong>reference
+machine</strong> (the cheap CPU-only laptop the optimization work
+targets), with the AI + speech engines and at least one model of each
+installed.</p>
+<p>Roadmap: §1.1 "AI footprint &amp; optimization". Design: PRD
+§5.25f.</p>
+<h2 id="1-static-inventory-automated">1. Static inventory
+(automated)</h2>
+<pre><code>python scripts/footprint_report.py</code></pre>
+<p>Writes <code>docs/planning/footprint/footprint-baseline.json</code>
+(installed size by component, on-disk model/asset sizes, machine
+context) and prints a speakable Markdown summary. Read-only; safe to run
+anytime.</p>
+<h2 id="2-per-engine-timings--peak-rss-automated">2. Per-engine timings
++ peak RSS (automated)</h2>
+<pre><code>python scripts/footprint_live.py --merge-baseline</code></pre>
+<p>Runs each installed speech engine in an isolated subprocess on a
+1-second synthetic clip and records <strong>cold start</strong> (model
+load), <strong>first output</strong> (first transcription), and
+<strong>peak RSS</strong> (sampled by the parent), merging an
+<code>engine_timings</code> block into the baseline JSON. Engines with
+no model, or not installed, are recorded as notes — no fabricated
+numbers. Add <code>--timeout N</code> to raise the per-engine cap on a
+slow machine.</p>
+<blockquote>
+<p>Note which engines actually reported timings. An engine that shows
+"engine not available" or "no model installed" needs its runtime/model
+installed before its numbers count toward the baseline.</p>
+</blockquote>
+<h2 id="3-live-runtime-behaviors-manual--a-few-minutes">3. Live runtime
+behaviors (manual — a few minutes)</h2>
+<p>These exercise the now-wired runtime policies that only show up in
+the running app. Tick each; note the observed behavior next to it.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Idle-sweep unloads a
+model.</strong> Load a model (run any AI or transcription action), then
+leave QUILL idle past the idle-unload interval. Confirm the model is
+released (memory drops; the next use reloads it). Expected: the
+idle-sweep timer fires and unloads without freezing the UI.</label></li>
+<li><label><input type="checkbox" /><strong>Model upgrade hint.</strong>
+Open the AI model / connection dialog with a small model selected on a
+machine that could run a stronger one. Confirm the upgrade hint is shown
+and is announced by the screen reader.</label></li>
+<li><label><input type="checkbox" /><strong>Cloud → local fallback
+announcement.</strong> With a cloud provider active, force a failure
+(disconnect the network, or use a bad key) and run an AI action. Confirm
+QUILL announces the offline/cloud→local fallback clearly rather than a
+generic error.</label></li>
+<li><label><input type="checkbox" /><strong>Nothing regresses in Safe
+Mode.</strong> Launch with <code>--safe-mode</code> and confirm the
+AI/speech features are disabled as expected (no engine loads, no timers
+arm).</label></li>
+</ul>
+<p>Record the results (screen-reader announcements verbatim where
+relevant) in the PR or the baseline notes so the sign-off is
+auditable.</p>
+<h2 id="what-is-still-out-of-scope-here">What is still out of scope
+here</h2>
+<ul>
+<li><strong>macOS offline-speech parity</strong> (a mac
+<code>whisper-cli</code> / Faster Whisper default) is a separate
+cross-platform task — see roadmap §1.1.</li>
+<li><strong>New quant catalog entries</strong> (q5/q8, int8_float16)
+need real pinned files + SHA-256 hashes before they can be added to the
+download catalog.</li>
+</ul>
+</body>
+</html>

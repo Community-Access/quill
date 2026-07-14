@@ -96,6 +96,9 @@ class _FakeCtx:
     def announce(self, message: str) -> None:
         self.announced.append(message)
 
+    def is_verbosity_speech_enabled(self) -> bool:
+        return True
+
 
 def _register_example() -> _FakeApi:
     namespace: dict[str, Any] = {}

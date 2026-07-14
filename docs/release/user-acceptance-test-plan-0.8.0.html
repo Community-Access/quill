@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>user-acceptance-test-plan-0.8.0</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1
+id="quill-080-beta---user-acceptance-test-runbook-step-by-step">QUILL
+0.8.0 Beta - User Acceptance Test Runbook (Step by Step)</h1>
+<p>One continuous, numbered checklist for the public-beta sign-off.
+Every action and every validation is a single numbered step with its own
+checkbox. Numbers run straight through from start to finish and never
+restart, so you always know exactly where you left off: your resume
+point is simply "I am on Step N."</p>
+<p>Work top to bottom. Check a box <code>[x]</code> only when that step
+actually passed in front of you. If a step fails, write the step number,
+what you saw, and any crash-bundle path in the Issue Log at the end,
+then keep going unless the step is marked RELEASE BLOCKER.</p>
+<h2 id="how-to-read-each-step">How to read each step</h2>
+<ul>
+<li><code>- [ ] **N.** Do this. EXPECT: what must be true.</code></li>
+<li>Tags you will see:
+<ul>
+<li>RELEASE BLOCKER - must Pass before public beta (user gets stuck or
+loses data if not).</li>
+<li>[unit-backed] - logic has automated tests; your job is to confirm it
+in the real app.</li>
+<li>[needs setup: X] - requires an optional download/account/server; if
+you cannot provide X, mark the step Blocked with the reason. Never check
+it on faith.</li>
+<li>[packaged-only] / [Windows] / [macOS] - only applies to that build
+or platform.</li>
+</ul></li>
+<li>Run the first pass of every UI step <strong>keyboard-only</strong>
+(ignore the mouse), then a second pass reading with the screen reader's
+review/virtual cursor.</li>
+<li>For every step, the honest outcomes are Pass, Fail, Blocked, or Not
+tested.</li>
+</ul>
+<h2 id="before-you-touch-a-key-read-once">Before you touch a key (read
+once)</h2>
+<ul>
+<li>Use a packaged 0.8.0 Beta Windows build, NVDA and JAWS both
+available (Narrator and VoiceOver where noted; VoiceOver for the macOS
+part).</li>
+<li>Have the three installers staged (see
+<code>upgrade-path-regression-0.8.0.md</code>):
+<code>Quill-Setup-0.5.0.exe</code>,
+<code>Quill-for-All-Setup-0.7.0.Beta.1.exe</code>,
+<code>Quill-for-All-Setup-0.8.0 Beta 1.exe</code>.</li>
+<li>Have a fixtures folder with:
+<code>.txt .md .html .rtf .docx .doc .odt .epub .pptx .xlsx .csv</code>,
+a text <code>.pdf</code>, a scanned/image-only <code>.pdf</code>, a
+LaTeX snippet, and a <code>.brf</code>. Keep spare copies; some steps
+write or delete.</li>
+<li>This runbook references its sibling plans instead of repeating them:
+<code>fresh-install-regression-0.8.0.md</code>,
+<code>upgrade-path-regression-0.8.0.md</code>,
+<code>screen-reader-test-plan.md</code>.</li>
+</ul>
+<hr />
+<h2 id="part-a---prepare-and-reset-the-machine">Part A - Prepare and
+reset the machine</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>1.</strong> Confirm the
+machine meets the bar: Windows 11, NVDA and JAWS installed,
+virtualization available if you also plan the Sandbox fresh-install.
+EXPECT: both screen readers launch and speak.</label></li>
+<li><label><input type="checkbox" /><strong>2.</strong> Copy the three
+staged installers and the fixtures folder somewhere local. EXPECT: all
+files present and openable.</label></li>
+<li><label><input type="checkbox" /><strong>3.</strong> Back up any real
+QUILL data you care about: copy <code>%APPDATA%\Quill</code> elsewhere.
+EXPECT: a backup exists (the reset deletes this folder).</label></li>
+<li><label><input type="checkbox" /><strong>4.</strong> Open PowerShell
+in <code>docs\release</code>. Run
+<code>.\clean-quill-install.ps1 -Backup</code>. EXPECT: it stops any
+QUILL process, runs any uninstaller, and removes both branding folders
+and the data dirs; it prints "Clean."</label></li>
+<li><label><input type="checkbox" /><strong>5.</strong> Verify clean:
+<code>Test-Path "$env:LOCALAPPDATA\Programs\Quill"</code>,
+<code>...\Programs\QUILL for All"</code>,
+<code>"$env:APPDATA\Quill"</code>,
+<code>"$env:LOCALAPPDATA\Quill"</code>. EXPECT: every one returns False.
+RELEASE BLOCKER for the upgrade test if not clean.</label></li>
+</ul>
+<h2 id="part-b---install-the-050-baseline-and-create-real-state">Part B
+- Install the 0.5.0 baseline and create real state</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>6.</strong> Run
+<code>Quill-Setup-0.5.0.exe</code>; accept the per-user defaults;
+finish. EXPECT: installs to <code>%LOCALAPPDATA%\Programs\Quill</code>;
+Start Menu group is <code>Quill</code>.</label></li>
+<li><label><input type="checkbox" /><strong>7.</strong> Launch QUILL
+0.5.0 from the Start menu. EXPECT: the window appears, no crash dialog,
+and the screen reader announces the window on foreground.</label></li>
+<li><label><input type="checkbox" /><strong>8.</strong> Help &gt; About.
+EXPECT: version reads 0.5.0.</label></li>
+<li><label><input type="checkbox" /><strong>9.</strong> Create a new
+document, type a known paragraph, and Save it to a path you record.
+EXPECT: file saved; note the exact text for later
+comparison.</label></li>
+<li><label><input type="checkbox" /><strong>10.</strong> Change one
+visible setting (e.g. a speech voice or verbosity level). EXPECT: the
+change is accepted and persists.</label></li>
+<li><label><input type="checkbox" /><strong>11.</strong> Open the Keymap
+editor and remap one command; save. EXPECT: remap saved.</label></li>
+<li><label><input type="checkbox" /><strong>12.</strong> Confirm 0.5.0
+wrote its state:
+<code>Test-Path "$env:APPDATA\Quill\settings.json"</code> returns True;
+list <code>%APPDATA%\Quill</code>. EXPECT: settings/keymap/recovery
+files exist. RELEASE BLOCKER if no state was written (the migration test
+below would be meaningless).</label></li>
+<li><label><input type="checkbox" /><strong>13.</strong> Record a
+baseline snapshot for later diffing:
+<code>Get-ChildItem "$env:APPDATA\Quill" -Recurse | Select FullName,Length | Sort FullName</code>.
+EXPECT: you have the listing saved.</label></li>
+<li><label><input type="checkbox" /><strong>14.</strong> Close QUILL
+fully; confirm no <code>quill.exe</code>/<code>pythonw.exe</code>
+remains in Task Manager. EXPECT: process gone.</label></li>
+</ul>
+<h2 id="part-c---upgrade-050---070-the-critical-migration-step">Part C -
+Upgrade 0.5.0 -&gt; 0.7.0 (the critical migration step)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>15.</strong> Run
+<code>Quill-for-All-Setup-0.7.0.Beta.1.exe</code> WITHOUT uninstalling
+0.5.0. EXPECT: it recognizes the prior install (same AppId) and upgrades
+in place; it does not present as a brand-new install into a fresh
+dir.</label></li>
+<li><label><input type="checkbox" /><strong>16.</strong> Check
+install-dir uniqueness: exactly one of <code>...\Programs\Quill</code>
+or <code>...\Programs\QUILL for All</code> exists; the other is False.
+EXPECT: exactly one. RELEASE BLOCKER if both exist (side-by-side
+duplication bug).</label></li>
+<li><label><input type="checkbox" /><strong>17.</strong> Settings &gt;
+Apps. EXPECT: exactly one QUILL entry in Add/Remove
+Programs.</label></li>
+<li><label><input type="checkbox" /><strong>18.</strong> Check the Start
+Menu. EXPECT: one usable QUILL entry; no dead <code>Quill</code>
+shortcut pointing at a removed path.</label></li>
+<li><label><input type="checkbox" /><strong>19.</strong> Launch the
+upgraded app. Help &gt; About. EXPECT: version reads 0.7.0 Beta
+1.</label></li>
+<li><label><input type="checkbox" /><strong>20.</strong> EXPECT: the
+first-run setup wizard does NOT appear (existing user;
+<code>setup_wizard_completed</code> survived).</label></li>
+<li><label><input type="checkbox" /><strong>21.</strong> Open the
+document you saved in Step 9. EXPECT: identical contents. RELEASE
+BLOCKER if content changed or the file cannot open.</label></li>
+<li><label><input type="checkbox" /><strong>22.</strong> EXPECT: the
+setting changed in Step 10 is still in effect.</label></li>
+<li><label><input type="checkbox" /><strong>23.</strong> EXPECT: the key
+remapped in Step 11 still works.</label></li>
+<li><label><input type="checkbox" /><strong>24.</strong> Confirm
+settings migration ran:
+<code>(Get-Content "$env:APPDATA\Quill\settings.json" -Raw) -match '"schema_version"'</code>
+returns True (nested/versioned shape, not the old flat 0.5.0 layout).
+EXPECT: True.</label></li>
+<li><label><input type="checkbox" /><strong>25.</strong> Confirm retired
+ids migrated rather than breaking: a <code>pyttsx3</code> read-aloud
+engine becomes <code>sapi5</code>; a
+<code>vosk</code>/<code>whisper</code> dictation engine becomes
+<code>offline</code> (#617). EXPECT: the matching Preferences controls
+show a valid selection, no blank/error state.</label></li>
+<li><label><input type="checkbox" /><strong>26.</strong> Diff
+<code>%APPDATA%\Quill</code> against the Step 13 snapshot. EXPECT:
+additive changes only; no data loss. RELEASE BLOCKER on data
+loss.</label></li>
+<li><label><input type="checkbox" /><strong>27.</strong> Re-run the Step
+13 snapshot command to capture a 0.7.0 baseline. EXPECT: saved for the
+next diff. Close QUILL fully.</label></li>
+</ul>
+<h2 id="part-d---upgrade-070---080">Part D - Upgrade 0.7.0 -&gt;
+0.8.0</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>28.</strong> Run
+<code>Quill-for-All-Setup-0.8.0 Beta 1.exe</code> over the 0.7.0
+install. EXPECT: in-place upgrade into the same dir; still exactly one
+install dir, one Add/Remove entry, one Start Menu group.</label></li>
+<li><label><input type="checkbox" /><strong>29.</strong> Launch; Help
+&gt; About. EXPECT: version reads 0.8.0 Beta 1 with a build
+stamp.</label></li>
+<li><label><input type="checkbox" /><strong>30.</strong> EXPECT: no
+first-run wizard; the document, setting, and keymap from the earlier
+steps are all still present.</label></li>
+<li><label><input type="checkbox" /><strong>31.</strong> EXPECT:
+<code>settings.json</code> still loads cleanly
+(<code>schema_version</code> present at the version 0.8.0 expects); diff
+against the 0.7.0 snapshot shows additive-only.</label></li>
+<li><label><input type="checkbox" /><strong>32.</strong> EXPECT: no
+data-location migration error notice appears on launch; if one does,
+capture it.</label></li>
+<li><label><input type="checkbox" /><strong>33.</strong> Help &gt; Check
+for Updates. EXPECT: it does NOT advertise a newer version (the 0.8.0
+feed is intentionally left on the prior release for this
+beta).</label></li>
+</ul>
+<h2
+id="part-e---fresh-install-confirmation-separate-clean-machine-or-sandbox">Part
+E - Fresh-install confirmation (separate clean machine or Sandbox)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>34.</strong> On a clean
+machine/Sandbox, run the full
+<code>fresh-install-regression-0.8.0.md</code> plan. EXPECT: first-run
+wizard appears, app launches with SR announcement, About reads 0.8.0
+Beta 1, settings/keymap/recovery created fresh. RELEASE BLOCKER on a
+fresh-install crash.</label></li>
+<li><label><input type="checkbox" /><strong>35.</strong> Confirm every
+bundled dependency from that plan's section 4 is present in the install
+dir (embedded Python, Pandoc, eSpeak-NG, DECtalk, Piper, braille pack,
+whisper.cpp binary + dlls, Vosk/Kokoro/OCR/spellcheck wheels). EXPECT:
+all present.</label></li>
+</ul>
+<hr />
+<h2 id="part-f---first-run-trust-safe-mode-on-the-upgraded-080">Part F -
+First run, trust, Safe Mode (on the upgraded 0.8.0)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>36.</strong> [unit-backed]
+Launch with <code>--safe-mode</code>. EXPECT: AI, watch folder, and
+Quillin contributions are disabled and say so when invoked; core editing
+still works.</label></li>
+<li><label><input type="checkbox" /><strong>37.</strong> Invoke an AI
+action in Safe Mode. EXPECT: a clear "disabled in Safe Mode" style
+message, no network call.</label></li>
+<li><label><input type="checkbox" /><strong>38.</strong> Relaunch
+normally. EXPECT: AI is off by default and requires explicit
+enable.</label></li>
+</ul>
+<h2 id="part-g---document-lifecycle-file-menu">Part G - Document
+lifecycle (File menu)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>39.</strong> File &gt; New,
+type a paragraph, Save to a new <code>.md</code>, close, reopen. EXPECT:
+content identical; no partial/zero-byte file ever on disk. RELEASE
+BLOCKER (data integrity).</label></li>
+<li><label><input type="checkbox" /><strong>40.</strong> Open each
+fixture type in turn: <code>.txt</code>. EXPECT: opens,
+readable.</label></li>
+<li><label><input type="checkbox" /><strong>41.</strong> Open
+<code>.md</code>. EXPECT: opens, readable, Markdown
+surface.</label></li>
+<li><label><input type="checkbox" /><strong>42.</strong> Open
+<code>.html</code>. EXPECT: opens, readable.</label></li>
+<li><label><input type="checkbox" /><strong>43.</strong> Open
+<code>.rtf</code>. EXPECT: opens in the rich-text surface, formatting
+preserved.</label></li>
+<li><label><input type="checkbox" /><strong>44.</strong> Open
+<code>.docx</code>. EXPECT: opens, content and structure
+readable.</label></li>
+<li><label><input type="checkbox" /><strong>45.</strong> Open
+<code>.doc</code>. EXPECT: opens or reports an honest
+unsupported-variant message.</label></li>
+<li><label><input type="checkbox" /><strong>46.</strong> Open
+<code>.odt</code>. EXPECT: opens, readable.</label></li>
+<li><label><input type="checkbox" /><strong>47.</strong> Open
+<code>.epub</code>; use the EPUB Navigator. EXPECT: opens; chapters
+navigable.</label></li>
+<li><label><input type="checkbox" /><strong>48.</strong> Open
+<code>.pptx</code>. EXPECT: slides intake as navigable
+text.</label></li>
+<li><label><input type="checkbox" /><strong>49.</strong> Open
+<code>.xlsx</code>. EXPECT: opens in a grid/structured
+surface.</label></li>
+<li><label><input type="checkbox" /><strong>50.</strong> Open
+<code>.csv</code>. EXPECT: opens in the CSV grid; rows/columns
+navigable.</label></li>
+<li><label><input type="checkbox" /><strong>51.</strong> Save As a
+Markdown doc to <code>.rtf</code>. EXPECT: real RTF written; extension
+drives format.</label></li>
+<li><label><input type="checkbox" /><strong>52.</strong> Save As to
+<code>.html</code>. EXPECT: standalone HTML page written.</label></li>
+<li><label><input type="checkbox" /><strong>53.</strong> Save As to
+<code>.txt</code>. EXPECT: markup stripped per the Links-in-plain-text
+setting.</label></li>
+<li><label><input type="checkbox" /><strong>54.</strong> Save As to
+<code>.docx</code>. EXPECT: valid Word file.</label></li>
+<li><label><input type="checkbox" /><strong>55.</strong> Confirm the
+post-Save-As reload behavior matches Settings &gt; Editing (auto-reload
+/ keep surface / prompt). EXPECT: behaves as configured.</label></li>
+<li><label><input type="checkbox" /><strong>56.</strong> Open three
+modified docs and Save All. EXPECT: all three persist.</label></li>
+<li><label><input type="checkbox" /><strong>57.</strong> Save As Plain
+Text on one. EXPECT: honors the chosen link export mode (text+URL
+default / text only / URL only / original Markdown).</label></li>
+<li><label><input type="checkbox" /><strong>58.</strong> Edit a doc,
+change the file externally, Reload from Disk. EXPECT: confirmation
+first; edits discarded only after confirm.</label></li>
+<li><label><input type="checkbox" /><strong>59.</strong> Edit/save a doc
+several times, then File &gt; Restore Backup. [needs setup:
+autosave/backup on] EXPECT: prior versions listed and restore
+correctly.</label></li>
+<li><label><input type="checkbox" /><strong>60.</strong> Check Open
+Recent; with "Drop missing recent files automatically" on, delete a
+fixed-drive entry's file. EXPECT: fixed-drive entry drops; USB/network
+entries are kept even when the drive is absent.</label></li>
+<li><label><input type="checkbox" /><strong>61.</strong> File &gt;
+Snapshots: save a snapshot of several open docs, close all, reopen the
+snapshot. EXPECT: the group reopens as saved.</label></li>
+<li><label><input type="checkbox" /><strong>62.</strong> Copy text
+elsewhere; File &gt; New from Clipboard. EXPECT: new doc seeded with
+it.</label></li>
+<li><label><input type="checkbox" /><strong>63.</strong> [needs setup:
+network] File &gt; Open from URL with a small text URL. EXPECT: host and
+expected size confirmed before download; nothing writes before you
+confirm; a blocked host is reported clearly.</label></li>
+<li><label><input type="checkbox" /><strong>64.</strong> File &gt; Page
+Setup, then Print (to PDF or printer). EXPECT: dialogs keyboard/SR
+accessible; output matches the document.</label></li>
+<li><label><input type="checkbox" /><strong>65.</strong> Run Current
+File on a file with an associated tool. EXPECT: the right tool
+runs.</label></li>
+<li><label><input type="checkbox" /><strong>66.</strong> Place caret on
+a path/link; Open Target at Cursor. EXPECT: target opens; empty target
+is a clear no-op.</label></li>
+<li><label><input type="checkbox" /><strong>67.</strong> Rename Current
+File. EXPECT: file and editor state stay consistent.</label></li>
+<li><label><input type="checkbox" /><strong>68.</strong> Delete Current
+File on a scratch copy. EXPECT: confirms before delete.</label></li>
+<li><label><input type="checkbox" /><strong>69.</strong> With unsaved
+edits, Close Document then Exit. EXPECT: save prompt; Cancel aborts; no
+data lost. RELEASE BLOCKER (data integrity).</label></li>
+</ul>
+<h2 id="part-h---editing-edit-menu">Part H - Editing (Edit menu)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>70.</strong> Exercise Undo,
+Redo, Cut, Copy, Paste, Select All. EXPECT: each works; Undo/Redo
+granular and consistent.</label></li>
+<li><label><input type="checkbox" /><strong>71.</strong> [unit-backed]
+Copy several items to Copy Tray slots; paste from a specific slot.
+EXPECT: slots hold distinct items; paste targets the right
+slot.</label></li>
+<li><label><input type="checkbox" /><strong>72.</strong> Label a Copy
+Tray slot; use the management dialog and the system-tray path. EXPECT:
+labels persist; every entry point is keyboard/SR
+accessible.</label></li>
+<li><label><input type="checkbox" /><strong>73.</strong> Copy With
+Source from a code/quote context. EXPECT: source/attribution
+included.</label></li>
+<li><label><input type="checkbox" /><strong>74.</strong> Copy rich HTML
+elsewhere; Paste HTML as Markdown. EXPECT: clean Markdown.</label></li>
+<li><label><input type="checkbox" /><strong>75.</strong> Selection
+submenu: Select Line, Paragraph, Block, to start/end of line, to
+start/end of document. EXPECT: each selection correct and
+announced.</label></li>
+<li><label><input type="checkbox" /><strong>76.</strong> Recent Marks
+(ring): set a mark, jump to previous marks, swap cursor and mark, list
+recent marks. EXPECT: ring cycles; list navigable.</label></li>
+<li><label><input type="checkbox" /><strong>77.</strong> Extend
+Selection Mode on/off. EXPECT: movement grows the selection in mode;
+normal movement restored on exit; state announced.</label></li>
+<li><label><input type="checkbox" /><strong>78.</strong> Deletion group:
+Delete to Line Start, Line End, Document Top, Document Bottom, Delete
+Paragraph. EXPECT: each deletes exactly that range; Undo
+restores.</label></li>
+<li><label><input type="checkbox" /><strong>79.</strong> Word Prediction
+(Ctrl+.): type to surface document words, HTML tags, Markdown tags;
+arrow + Enter to insert. EXPECT: suggestions navigable and insert
+correctly.</label></li>
+<li><label><input type="checkbox" /><strong>80.</strong> Toggle Word
+Prediction off in General Preferences. EXPECT: it stops
+appearing.</label></li>
+<li><label><input type="checkbox" /><strong>81.</strong> Follow Link
+with caret on a link. EXPECT: link opens; non-link is a
+no-op.</label></li>
+</ul>
+<h2 id="part-i---find-replace-cross-file-search">Part I - Find, Replace,
+cross-file search</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>82.</strong> Find, Find
+Next, Find Previous, Find All Matches. EXPECT: matches found, counted,
+announced; Find All lists every match navigably.</label></li>
+<li><label><input type="checkbox" /><strong>83.</strong> Toggle Wrap
+Find Searches. EXPECT: wrapping behavior changes
+accordingly.</label></li>
+<li><label><input type="checkbox" /><strong>84.</strong> Replace and
+Replace All. EXPECT: single and bulk replace work; counts announced;
+Undo reverts cleanly.</label></li>
+<li><label><input type="checkbox" /><strong>85.</strong> Search modes:
+case, whole word, regex; then an invalid regex. EXPECT: each mode
+changes results; invalid regex is reported, not crashed.</label></li>
+<li><label><input type="checkbox" /><strong>86.</strong> Search &gt;
+Search in Files across the fixtures folder. EXPECT: results list every
+file/line, keyboard navigable.</label></li>
+<li><label><input type="checkbox" /><strong>87.</strong> Replace Across
+Files (on scratch copies). EXPECT: only confirmed changes
+written.</label></li>
+<li><label><input type="checkbox" /><strong>88.</strong> Count Regex
+Matches and Extract Regex Matches. EXPECT: correct count; extract pulls
+every match.</label></li>
+<li><label><input type="checkbox" /><strong>89.</strong> Mark two
+blocks; Lines in First Block Only; Lines Common to Both Blocks. EXPECT:
+correct set results.</label></li>
+</ul>
+<h2 id="part-j---format-and-line-transforms">Part J - Format and line
+transforms</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>90.</strong> Change Case:
+Upper, Lower, Title, Sentence, Toggle on a selection. EXPECT: each
+correct; Undo restores.</label></li>
+<li><label><input type="checkbox" /><strong>91.</strong> Toggle Line
+Comment, Toggle Block Comment. EXPECT: comment syntax matches the
+document type.</label></li>
+<li><label><input type="checkbox" /><strong>92.</strong> Indent and
+Outdent. EXPECT: respect tab/space settings.</label></li>
+<li><label><input type="checkbox" /><strong>93.</strong> Move Line
+Up/Down, Duplicate Line, Delete Line, Join Lines. EXPECT: each behaves;
+multi-line selections handled; Undo restores.</label></li>
+<li><label><input type="checkbox" /><strong>94.</strong> Bold and Italic
+on a selection. EXPECT: correct markup for the document
+format.</label></li>
+<li><label><input type="checkbox" /><strong>95.</strong> Transform
+Lines: Number Lines, then Number Lines (Advanced) with a start,
+increment, Roman/digit style, zero-pad width, suffix, and alignment.
+EXPECT: each option takes effect.</label></li>
+<li><label><input type="checkbox" /><strong>96.</strong> Transform
+Lines: Hard-Wrap, Sort Ascending, Sort Descending, Reverse, Remove
+Duplicate Lines. EXPECT: each correct.</label></li>
+<li><label><input type="checkbox" /><strong>97.</strong> Transform
+Lines: Trim Trailing Whitespace, Normalize Whitespace, Convert
+Indentation to Spaces, Convert Indentation to Tabs. EXPECT: each
+correct.</label></li>
+</ul>
+<h2 id="part-k---insert-menu">Part K - Insert menu</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>98.</strong> Insert Link.
+EXPECT: correct Markdown/HTML link for the document type.</label></li>
+<li><label><input type="checkbox" /><strong>99.</strong> Insert Heading
+1 through 6; Decrease Level; Increase Level. EXPECT: correct heading
+markup.</label></li>
+<li><label><input type="checkbox" /><strong>100.</strong> Style Headings
+(font/size/alignment) for the current level, then all levels. EXPECT:
+styling applies to the chosen scope.</label></li>
+<li><label><input type="checkbox" /><strong>101.</strong> List submenu:
+Bullet, Numbered, Task. EXPECT: correct list markup.</label></li>
+<li><label><input type="checkbox" /><strong>102.</strong> List Manager
+and Structured List Studio (F2). EXPECT: keyboard/SR navigable; edits
+the list structure.</label></li>
+<li><label><input type="checkbox" /><strong>103.</strong> Insert Code
+Block, Insert Footnote. EXPECT: valid markup.</label></li>
+<li><label><input type="checkbox" /><strong>104.</strong> Insert Table
+(build a grid in the dialog). EXPECT: correct table
+inserted.</label></li>
+<li><label><input type="checkbox" /><strong>105.</strong> Insert HTML
+Tag and Insert Markdown Tag. EXPECT: valid tags inserted.</label></li>
+<li><label><input type="checkbox" /><strong>106.</strong> Insert
+Snippet; then Manage Snippets (create/edit/delete/import/export).
+EXPECT: snippets insert; management persists.</label></li>
+<li><label><input type="checkbox" /><strong>107.</strong> Use snippet
+placeholders <code>${input}</code>, <code>${choice}</code>,
+<code>${date}</code>, <code>${time}</code>, <code>${cursor}</code>.
+EXPECT: placeholder navigation works.</label></li>
+<li><label><input type="checkbox" /><strong>108.</strong> Preferences
+&gt; Install Starter Snippet Packs. EXPECT: a starter library
+installs.</label></li>
+<li><label><input type="checkbox" /><strong>109.</strong> Special
+Character picker (Shift+F2). EXPECT: searchable, keyboard navigable,
+inserts the glyph.</label></li>
+<li><label><input type="checkbox" /><strong>110.</strong> Insert &gt;
+Date and Time: Insert Date, Insert Time, Insert Date and Time. EXPECT:
+inserts using project <code>${date}</code>/<code>${time}</code>
+formats.</label></li>
+<li><label><input type="checkbox" /><strong>111.</strong> Disable the
+insert-tools Quillin in Preferences. EXPECT: the Date and Time items
+disappear with it.</label></li>
+<li><label><input type="checkbox" /><strong>112.</strong> Insert File
+Content from another file. EXPECT: contents inserted at the
+caret.</label></li>
+<li><label><input type="checkbox" /><strong>113.</strong> Insert
+Equation (Ctrl+Shift+E): enter <code>E=mc^2</code>, choose inline vs
+block. EXPECT: mode step appears; correct delimiters
+inserted.</label></li>
+<li><label><input type="checkbox" /><strong>114.</strong> Insert
+Equation: paste a <code>&lt;math&gt;</code> MathML fragment. EXPECT:
+inserted verbatim, no mode step.</label></li>
+<li><label><input type="checkbox" /><strong>115.</strong> Re-invoke
+Ctrl+Shift+E on a selected LaTeX equation. EXPECT: delimiters stripped
+and the bare formula pre-fills the prompt.</label></li>
+</ul>
+<h2 id="part-l---view-and-preview">Part L - View and preview</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>116.</strong> Toggle Soft
+Wrap. EXPECT: wrapping changes; file content unchanged.</label></li>
+<li><label><input type="checkbox" /><strong>117.</strong> Auto
+Side-by-Side Preview; edit and watch it update. EXPECT: preview tracks
+edits.</label></li>
+<li><label><input type="checkbox" /><strong>118.</strong> Focus Preview,
+then return to the editor. EXPECT: SR focus moves to the named "Preview"
+pane and back (see screen-reader TC-EDIT-003).</label></li>
+<li><label><input type="checkbox" /><strong>119.</strong> Show Tab
+Control toggle. EXPECT: the document tab strip shows/hides.</label></li>
+<li><label><input type="checkbox" /><strong>120.</strong> Start With No
+Document Open; restart. EXPECT: opens into an empty
+workspace.</label></li>
+<li><label><input type="checkbox" /><strong>121.</strong> Preview,
+Preview Side by Side, Browser Preview. EXPECT: rendered views match the
+document; Browser Preview renders equations via MathJax.</label></li>
+</ul>
+<h2 id="part-m---navigate">Part M - Navigate</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>122.</strong> Go To Line, Go
+To Page, Go to Percent. EXPECT: caret lands correctly.</label></li>
+<li><label><input type="checkbox" /><strong>123.</strong> Back Location
+and Forward Location (Alt+Left/Right on Windows). EXPECT: location
+history moves; chords match the platform.</label></li>
+<li><label><input type="checkbox" /><strong>124.</strong> Next Heading /
+Previous Heading in a multi-heading doc. EXPECT: lands on the right
+headings; announced.</label></li>
+<li><label><input type="checkbox" /><strong>125.</strong> Outline
+Navigator. EXPECT: navigable outline; selecting an entry jumps
+there.</label></li>
+<li><label><input type="checkbox" /><strong>126.</strong> Heading
+Organizer (level edits, section reorder, validation). EXPECT: reorders
+sections; reports invalid heading nesting.</label></li>
+<li><label><input type="checkbox" /><strong>127.</strong> Next/Previous
+Block, Next/Previous Structure, Next/Previous Region; Match Bracket.
+EXPECT: each moves to the correct element; bracket pair
+matched.</label></li>
+<li><label><input type="checkbox" /><strong>128.</strong> Set Bookmark,
+Go To Bookmark, List Bookmarks. EXPECT: bookmarks set, persist,
+navigate; list keyboard navigable.</label></li>
+<li><label><input type="checkbox" /><strong>129.</strong> First
+Non-Blank, Last Non-Blank. EXPECT: caret moves as
+described.</label></li>
+</ul>
+<h2 id="part-n---reading-read-aloud-and-speech-synthesis">Part N -
+Reading: Read Aloud and speech synthesis</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>130.</strong> [needs setup:
+engines bundled] Read Aloud with eSpeak-NG. EXPECT: speaks; voice/rate
+work; stop is immediate.</label></li>
+<li><label><input type="checkbox" /><strong>131.</strong> Read Aloud
+with DECtalk. EXPECT: speaks.</label></li>
+<li><label><input type="checkbox" /><strong>132.</strong> Read Aloud
+with SAPI5/Windows. EXPECT: speaks.</label></li>
+<li><label><input type="checkbox" /><strong>133.</strong> Read Aloud
+with Piper. EXPECT: speaks (note if absent in this build).</label></li>
+<li><label><input type="checkbox" /><strong>134.</strong> Read Aloud
+with Kokoro. [needs setup: model] EXPECT: speaks after model
+present.</label></li>
+<li><label><input type="checkbox" /><strong>135.</strong> Text cleanup
+for speech. EXPECT: markup/URLs spoken sensibly, not raw.</label></li>
+<li><label><input type="checkbox" /><strong>136.</strong> Batch Export
+to Speech Audio for one document. EXPECT: audio file produced; progress
+announced; cancel works.</label></li>
+<li><label><input type="checkbox" /><strong>137.</strong> [needs setup:
+AI/translation] Export to Translated Speech Audio (one doc). EXPECT:
+translated audio produced, or a clear "needs X" message.</label></li>
+<li><label><input type="checkbox" /><strong>138.</strong> Build
+Audiobook from a folder of documents. EXPECT: combined audiobook with
+per-document structure; progress and completion announced.</label></li>
+<li><label><input type="checkbox" /><strong>139.</strong> SSML Builder
+produces SSML; play it back. EXPECT: valid SSML; playback honors
+it.</label></li>
+</ul>
+<h2 id="part-o---dictation-speech-to-text">Part O - Dictation
+(speech-to-text)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>140.</strong>
+[Windows][needs setup: Windows speech] F9 hold-to-dictate. EXPECT:
+recognized text inserts as ONE undoable edit.</label></li>
+<li><label><input type="checkbox" /><strong>141.</strong> Ctrl+F9 locked
+dictation session; then Escape. EXPECT: session toggles; Escape cancels
+cleanly.</label></li>
+<li><label><input type="checkbox" /><strong>142.</strong>
+[packaged-only][needs setup: model download] Tools &gt; Speech &gt;
+Manage Speech Models: download a Whisper model; dictate with
+whisper.cpp. EXPECT: bundled <code>whisper-cli.exe</code> + dlls
+present; model downloads on first use; inserts as one edit.</label></li>
+<li><label><input type="checkbox" /><strong>143.</strong> [needs setup:
+~40MB model][unit-backed] Select Vosk; dictate. EXPECT: selectable out
+of the box; model downloads on first use; works.</label></li>
+<li><label><input type="checkbox" /><strong>144.</strong>
+[packaged-only][needs setup][unit-backed] Tools &gt; Speech &gt;
+Whisperer &gt; Download Faster Whisper Engine. EXPECT: wheel-only
+install into app-data engine-packs (no admin); engine then appears in
+the chooser; blocked in Safe Mode; confirmation + progress shown.
+(RELEASE-001 needs live packaged validation.)</label></li>
+<li><label><input type="checkbox" /><strong>145.</strong> [needs setup:
+API keys][unit-backed] Configure and run the Groq, OpenAI Whisper, and
+ElevenLabs transcription Quillins. EXPECT: each transcribes; missing key
+reported clearly; egress only on explicit use.</label></li>
+</ul>
+<h2 id="part-p---ocr-and-document-intake">Part P - OCR and document
+intake</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>146.</strong> [needs setup:
+OCR model may download] OCR Image on a scanned image / image-only PDF.
+EXPECT: text extracted into a document; progress announced.</label></li>
+<li><label><input type="checkbox" /><strong>147.</strong> Open the text
+<code>.pdf</code> fixture. EXPECT: text extracts with sensible
+structure.</label></li>
+<li><label><input type="checkbox" /><strong>148.</strong> Open the
+image-only <code>.pdf</code>. EXPECT: routes to OCR or clearly says it
+needs OCR.</label></li>
+<li><label><input type="checkbox" /><strong>149.</strong> Confirm
+<code>.docx/.pptx/.xlsx</code> intake via markitdown yields clean
+navigable text.</label></li>
+</ul>
+<h2 id="part-q---ai-assistant">Part Q - AI Assistant</h2>
+<p>Throughout: no cloud call without an explicit AI action; no chat
+transcript persisted by default; keys in Windows Credential Manager with
+DPAPI fallback.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>150.</strong> [needs setup:
+provider] AI Hub: pick a provider (Ollama local/cloud, OpenAI, Claude,
+OpenRouter, Gemini, or Custom OpenAI-compatible); confirm host/model.
+EXPECT: provider selectable; defaults pre-filled where
+applicable.</label></li>
+<li><label><input type="checkbox" /><strong>151.</strong> Enter a key if
+required; Verify Connection. EXPECT: result announced in plain language;
+AI status line updates.</label></li>
+<li><label><input type="checkbox" /><strong>152.</strong> List Models
+and filter; Recommend Model; Save. EXPECT: models fetched and
+filterable; a recommendation is offered; settings persist.</label></li>
+<li><label><input type="checkbox" /><strong>153.</strong> Force each
+connection error and read the message: bad key (401), no-access (403),
+warming up, server-not-running, rate-limit, key-unlock-failed. EXPECT:
+each documented message appears and is reachable.</label></li>
+<li><label><input type="checkbox" /><strong>154.</strong>
+[Windows][unit-backed] Confirm the saved key is in Credential Manager
+(DPAPI fallback), not plain text. EXPECT: not stored in
+clear.</label></li>
+<li><label><input type="checkbox" /><strong>155.</strong> Rewrite
+Selection with a selection, then without. EXPECT: announces scope
+("Rewrite paragraph (N words)"); empty target says "Nothing to
+rewrite".</label></li>
+<li><label><input type="checkbox" /><strong>156.</strong> Summarize
+Selection, Continue Writing, Fix Grammar (with and without a selection).
+EXPECT: correct scope each; with AI off all announce "AI is turned
+off..." and do nothing.</label></li>
+<li><label><input type="checkbox" /><strong>157.</strong> Ask AI
+(one-off question). EXPECT: a single answer returns.</label></li>
+<li><label><input type="checkbox" /><strong>158.</strong> Check Grammar
+with AI. EXPECT: suggestions returned.</label></li>
+<li><label><input type="checkbox" /><strong>159.</strong> Writing
+Assistant / Ask Quill Chat: send a prompt; jump between turns by
+heading; new replies announced. EXPECT: each turn is a heading;
+auto-announced.</label></li>
+<li><label><input type="checkbox" /><strong>160.</strong> Have the
+assistant propose a command/edit; approve it. EXPECT: nothing applies
+without your approval.</label></li>
+<li><label><input type="checkbox" /><strong>161.</strong> Change
+provider/model from the in-chat picker; Escape to close. EXPECT: the
+active provider/model bar updates; chat closes on Escape.</label></li>
+<li><label><input type="checkbox" /><strong>162.</strong> [needs setup:
+model] On-device model: place a <code>.gguf</code> in the models dir (or
+set <code>QUILL_LLAMA_MODEL</code>); chat. EXPECT: responses without
+network.</label></li>
+<li><label><input type="checkbox" /><strong>163.</strong> Prompt Studio
+/ Prompt Library: build a custom prompt with template variables; save
+and reuse. EXPECT: variables resolve; saved prompts
+persist.</label></li>
+<li><label><input type="checkbox" /><strong>164.</strong> Skill Library
+(.sqp): run a skill with parameters; import/validate a skill. EXPECT:
+skills run; parameter controls named (screen-reader TC-A11Y-003a);
+invalid skills reported.</label></li>
+<li><label><input type="checkbox" /><strong>165.</strong> Agent Center:
+generate a guided task plan; review before sending. EXPECT: a reviewable
+plan; nothing executes without your go-ahead.</label></li>
+<li><label><input type="checkbox" /><strong>166.</strong> Confirm
+first-run AI consent acknowledgement appeared once and AI stays off
+until enabled. EXPECT: explicit opt-in.</label></li>
+</ul>
+<h2 id="part-r---braille-mode">Part R - Braille mode</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>167.</strong> Open the
+<code>.brf</code> fixture; toggle Braille Mode; translate to/from UEB.
+EXPECT: uses the bundled liblouis pack; round-trips sensibly; mode
+announced.</label></li>
+<li><label><input type="checkbox" /><strong>168.</strong> BRF tools and
+BRF sidecar. EXPECT: BRF tools operate; sidecar metadata preserved on
+save.</label></li>
+</ul>
+<h2 id="part-s---math-citations-markdown-profiles">Part S - Math,
+citations, markdown profiles</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>169.</strong> Confirm
+equations export/render in Browser Preview and HTML export (MathJax).
+EXPECT: equations render correctly.</label></li>
+<li><label><input type="checkbox" /><strong>170.</strong> Insert
+citations; build a bibliography. EXPECT: citations and generated
+bibliography correct and navigable.</label></li>
+<li><label><input type="checkbox" /><strong>171.</strong> Switch
+Markdown profile; generate a Table of Contents. EXPECT: profile changes
+markup behavior; TOC reflects the headings.</label></li>
+</ul>
+<h2 id="part-t---verbosity-and-announcements">Part T - Verbosity and
+announcements</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>172.</strong> [unit-backed]
+Set verbosity low, then medium, then high; perform move/ select/save
+actions at each. EXPECT: announcement detail scales with the
+level.</label></li>
+<li><label><input type="checkbox" /><strong>173.</strong> Confirm the
+verbosity status line is named "Verbosity status" (screen-reader
+TC-A11Y-002b). EXPECT: correct name.</label></li>
+<li><label><input type="checkbox" /><strong>174.</strong> [unit-backed]
+Confirm no status-bar update is silent (GATE-12). EXPECT: every status
+change is announced.</label></li>
+</ul>
+<h2 id="part-u---accessibility-core-run-the-screen-reader-plan">Part U -
+Accessibility core (run the screen-reader plan)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>175.</strong> Editor
+surface: focus the editor. EXPECT: announced "Document", text-area role,
+multi-line; typed text reads back; selection stays visible
+(screen-reader TC-EDIT-001).</label></li>
+<li><label><input type="checkbox" /><strong>176.</strong> With focus in
+the editor, press Tab. EXPECT: focus LEAVES the editor; Tab is not
+trapped and inserts no tab character (TC-EDIT-002). RELEASE BLOCKER if
+trapped.</label></li>
+<li><label><input type="checkbox" /><strong>177.</strong> Document tabs
+and side preview: arrow across tabs, Enter on one, focus the preview.
+EXPECT: "Open documents" tab group; Enter announces "Focused document
+<name>"; preview named "Preview" (TC-EDIT-003).</label></li>
+<li><label><input type="checkbox" /><strong>178.</strong> Status bar
+segments: invoke focus-status-bar; Tab across cells; Escape. EXPECT:
+each cell "Status bar, <label>, <value>"; Escape "Returned to editor"
+(TC-EDIT-004).</label></li>
+<li><label><input type="checkbox" /><strong>179.</strong> Dialog
+naming/focus contract across representative dialogs: names present,
+initial focus on content not OK, Tab/Escape work, errors move focus to
+the field (screen-reader TC-A11Y-001..004, FOCUS-001, KEY-001). EXPECT:
+all pass. RELEASE BLOCKER class.</label></li>
+<li><label><input type="checkbox" /><strong>180.</strong> Region model:
+Next/Previous Region movement. EXPECT: moves between regions;
+announced.</label></li>
+<li><label><input type="checkbox" /><strong>181.</strong> Run the
+keyboard-trap / accessibility audit tool. EXPECT: it runs and
+reports.</label></li>
+<li><label><input type="checkbox" /><strong>182.</strong>
+Contrast/theme: dirty-title style, title-path style, system-theme
+respect. EXPECT: information never conveyed by color alone; theme
+follows the setting.</label></li>
+<li><label><input type="checkbox" /><strong>183.</strong> Sound
+notifications / earcons: toggle and trigger. EXPECT: meaningful,
+toggleable cues.</label></li>
+<li><label><input type="checkbox" /><strong>184.</strong> Startup speech
+is opt-in (not automatic); the post-show foreground announcement fires
+on launch (#259). EXPECT: SR announces the window on launch; no forced
+startup speech.</label></li>
+</ul>
+<h2 id="part-v---profiles-keyboard-packs-customization">Part V -
+Profiles, keyboard packs, customization</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>185.</strong> Switch a
+feature profile. EXPECT: enables/disables the documented feature set;
+persists.</label></li>
+<li><label><input type="checkbox" /><strong>186.</strong> Fine-tune an
+individual feature toggle. EXPECT: overrides the profile;
+persists.</label></li>
+<li><label><input type="checkbox" /><strong>187.</strong> Switch a
+keyboard pack. EXPECT: remaps keys as documented;
+announced.</label></li>
+<li><label><input type="checkbox" /><strong>188.</strong> Keymap editor:
+remap a command, create a conflict, save. EXPECT: remap applies;
+conflicts warned, not silently overwritten.</label></li>
+<li><label><input type="checkbox" /><strong>189.</strong> Customize
+Menus. EXPECT: customization persists; keyboard/SR
+accessible.</label></li>
+<li><label><input type="checkbox" /><strong>190.</strong> Settings
+dialog: change a representative setting in each group; restart. EXPECT:
+changes persist atomically and survive restart; sensitive settings use
+DPAPI.</label></li>
+</ul>
+<h2 id="part-w---quick-nav-command-palette">Part W - Quick Nav, command
+palette</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>191.</strong> Enter QUILL
+Quick Nav mode; exercise the QUILL-key prefix actions; use the Quick-Nav
+keyboard manager. EXPECT: mode toggles and is announced; prefix actions
+fire; manager edits Quick-Nav bindings.</label></li>
+<li><label><input type="checkbox" /><strong>192.</strong> Command
+Palette: open it; use <code>&gt;</code> general, <code>:</code> by id,
+<code>?</code> bound-first, <code>~</code> recent. EXPECT: each mode
+reranks; arrow/Enter run a command; Escape closes; list fully SR
+navigable.</label></li>
+</ul>
+<h2 id="part-x---quillins-extensions">Part X - Quillins
+(extensions)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>193.</strong> Confirm the
+bundled Quillins are present and each contributes its items:
+insert-tools, line-tools, text-tools, markdown-helpers, math-equations,
+brf-tools, journal-stamp, status-scribe, smart-insert, doc-guardian,
+insert-character, ai-writing-prompts, ai-writing-skills,
+word-count-node, and the three transcription Quillins. EXPECT:
+contributions appear.</label></li>
+<li><label><input type="checkbox" /><strong>194.</strong> Disable one
+Quillin. EXPECT: exactly its contributions disappear.</label></li>
+<li><label><input type="checkbox" /><strong>195.</strong> Quillins
+Manager + Preferences: enable/disable/configure a Quillin. EXPECT: state
+persists; prefs keyboard/SR accessible.</label></li>
+<li><label><input type="checkbox" /><strong>196.</strong> Trigger a
+Document Event that an event-driven Quillin handles. EXPECT: it fires on
+the documented event.</label></li>
+<li><label><input type="checkbox" /><strong>197.</strong> [needs setup:
+bundled Node] Run the <code>word-count-node</code> example. EXPECT: the
+Node runtime executes it and returns a result.</label></li>
+<li><label><input type="checkbox" /><strong>198.</strong> [unit-backed]
+Under <code>--safe-mode</code>, confirm no Quillin contributions load.
+EXPECT: none load.</label></li>
+<li><label><input type="checkbox" /><strong>199.</strong> Lint a
+Quillin:
+<code>python -m quill.tools.quillin_lint &lt;dir&gt; --strict</code>.
+EXPECT: reports issues; a valid Quillin passes.</label></li>
+</ul>
+<h2 id="part-y---eraser-abbreviation-insert-automation">Part Y - Eraser,
+abbreviation, insert automation</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>200.</strong> Quill Eraser
+on the whole document, then Quill Eraser on Selection. EXPECT: removes
+the targeted content per spec; Undo restores.</label></li>
+<li><label><input type="checkbox" /><strong>201.</strong> Define and
+trigger an abbreviation while typing; then toggle it off. EXPECT:
+expands as configured; can be disabled.</label></li>
+<li><label><input type="checkbox" /><strong>202.</strong> Insert
+Automation: set up a smart trigger and an append anchor; append to a log
+file. EXPECT: triggers fire; appends land at the anchor; log entries
+accumulate.</label></li>
+</ul>
+<h2 id="part-z---recovery-sessions-safety">Part Z - Recovery, sessions,
+safety</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>203.</strong> Confirm edits
+autosave per setting; backups accumulate (restore tested in Step 59).
+EXPECT: autosave occurs.</label></li>
+<li><label><input type="checkbox" /><strong>204.</strong> Force a hard
+kill with unsaved work; relaunch. EXPECT: unsaved work is recovered or
+clearly offered for recovery. RELEASE BLOCKER (data
+integrity).</label></li>
+<li><label><input type="checkbox" /><strong>205.</strong> Enable
+persistent undo; edit, close, reopen, Undo. EXPECT: undo history
+survives the reopen.</label></li>
+<li><label><input type="checkbox" /><strong>206.</strong> Sessions
+restore open docs/state; Notebooks group documents. EXPECT: both behave
+as designed.</label></li>
+<li><label><input type="checkbox" /><strong>207.</strong> Confirm marks
+(transient ring) and bookmarks (named, persistent) behave distinctly.
+EXPECT: clear distinction.</label></li>
+<li><label><input type="checkbox" /><strong>208.</strong> Trusted
+locations: act on an untrusted location. EXPECT: prompts for trust and
+remembers the choice.</label></li>
+</ul>
+<h2 id="part-aa---remote-files-and-github">Part AA - Remote files and
+GitHub</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>209.</strong> [needs setup:
+servers][unit-backed] Manage Remote Sites; open and save over FTP.
+EXPECT: confirms host/expected size; no local write before
+confirm.</label></li>
+<li><label><input type="checkbox" /><strong>210.</strong> Open/save over
+SFTP; confirm SSH host-key policy defaults to reject and trust-first-use
+only when enabled. EXPECT: secure default.</label></li>
+<li><label><input type="checkbox" /><strong>211.</strong> Open/save over
+HTTPS/WebDAV. EXPECT: verified TLS; size/host confirmed.</label></li>
+<li><label><input type="checkbox" /><strong>212.</strong> Open/save over
+S3 (or S3-compatible). EXPECT: works; explicit confirm.</label></li>
+<li><label><input type="checkbox" /><strong>213.</strong> [needs setup:
+GitHub] File &gt; Open from Remote &gt; GitHub; open a repo. EXPECT:
+files open/save against the repo.</label></li>
+<li><label><input type="checkbox" /><strong>214.</strong> In the GitHub
+open-repository form, submit invalid owner/repo. EXPECT: focus moves to
+the field and the error is announced (screen-reader
+TC-A11Y-004).</label></li>
+</ul>
+<h2 id="part-ab---updates-and-localization">Part AB - Updates and
+localization</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>215.</strong> Help &gt;
+Check for Updates (manual). EXPECT: does NOT advertise a newer version
+for this beta; the check is accessible and clear.</label></li>
+<li><label><input type="checkbox" /><strong>216.</strong> Confirm the
+automatic-update setting and release-channel selection behave; no
+surprise downloads. EXPECT: consent respected.</label></li>
+<li><label><input type="checkbox" /><strong>217.</strong> Change QUILL's
+display language; restart if required. EXPECT: UI strings localize; no
+raw <code>lazy_gettext</code> proxy leaks into a control (#261 class);
+untranslated strings fall back to English, not blank.</label></li>
+</ul>
+<h2 id="part-ac---help-about-crash-diagnostics">Part AC - Help, About,
+crash, diagnostics</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>218.</strong> F1 on several
+focused controls. EXPECT: help targets the focused control; the help
+surface is keyboard/SR accessible.</label></li>
+<li><label><input type="checkbox" /><strong>219.</strong> Help &gt;
+About; arrow across the native ListCtrl tabs (#260). EXPECT: version
+reads 0.8.0 Beta 1; tabs named (screen-reader TC-A11Y-001b) and keyboard
+navigable.</label></li>
+<li><label><input type="checkbox" /><strong>220.</strong> Report a
+problem from inside QUILL. EXPECT: the flow collects what it needs and
+is accessible.</label></li>
+<li><label><input type="checkbox" /><strong>221.</strong> Trigger a
+non-fatal error; review the crash-submit dialog and the produced bundle.
+EXPECT: dialog accessible; bundle written; secrets redacted (no
+keys/tokens). RELEASE BLOCKER (privacy) if secrets leak.</label></li>
+<li><label><input type="checkbox" /><strong>222.</strong> Help &gt;
+Application Status; Tab across the status tabs. EXPECT: tabs/lists named
+(screen-reader TC-A11Y-001a/002a); live task and download state
+shown.</label></li>
+</ul>
+<h2 id="part-ad---developer-console-qdc">Part AD - Developer Console
+(QDC)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>223.</strong> Open the QDC;
+run basic Python; inspect state. EXPECT: first-run warning shown;
+commands run; SR-friendly transcript captured.</label></li>
+<li><label><input type="checkbox" /><strong>224.</strong> Record and
+replay a macro in the QDC. EXPECT: macro records and
+replays.</label></li>
+<li><label><input type="checkbox" /><strong>225.</strong> TypeScript
+console: run a snippet with the documented globals. EXPECT: runs in its
+worker within limits.</label></li>
+<li><label><input type="checkbox" /><strong>226.</strong> Run the
+accessibility diagnostics commands from the console. EXPECT: reports
+region/focus/name state.</label></li>
+<li><label><input type="checkbox" /><strong>227.</strong> Console
+safety: attempt a dangerous op and a remote execution. EXPECT: dangerous
+ops gated; remote honors the trust model; disabled in Safe Mode where
+applicable.</label></li>
+</ul>
+<h2 id="part-ae---macos-macos">Part AE - macOS [macOS]</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>228.</strong> [macOS] Launch
+on macOS; navigate menus, editor, and dialogs with VoiceOver. EXPECT:
+fully VoiceOver accessible; Back/Forward location chords are Cmd+[ /
+Cmd+].</label></li>
+<li><label><input type="checkbox" /><strong>229.</strong> [macOS] On
+Apple Silicon (macOS 26+), confirm Apple Foundation Models is the
+on-device AI backend. EXPECT: on-device responses where
+available.</label></li>
+<li><label><input type="checkbox" /><strong>230.</strong> [macOS]
+Exercise macOS speech/dictation paths. EXPECT: behave or degrade
+cleanly.</label></li>
+</ul>
+<h2 id="part-af---cross-cutting-non-functional">Part AF - Cross-cutting
+non-functional</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>231.</strong> Run the whole
+core editing flow under <code>--safe-mode</code>. EXPECT:
+editing/format/ navigate/search all work; AI, watch folder, Quillins off
+and say so.</label></li>
+<li><label><input type="checkbox" /><strong>232.</strong> Start a long
+task (batch export or model download) and keep editing. EXPECT: UI stays
+responsive; work runs off the UI thread; progress announced; cancel
+works.</label></li>
+<li><label><input type="checkbox" /><strong>233.</strong> [unit-backed]
+With consent off, attempt each outbound feature. EXPECT: no outbound
+call without explicit consent; each egress matches an audited call
+site.</label></li>
+<li><label><input type="checkbox" /><strong>234.</strong> Where safe,
+interrupt during a settings/document save. EXPECT: no truncated/ corrupt
+file; either old or new content survives whole.</label></li>
+</ul>
+<h2 id="part-ag---final-uninstall">Part AG - Final uninstall</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>235.</strong> Uninstall via
+Add/Remove Programs. EXPECT: the install dir is removed; no orphaned
+second QUILL entry; <code>%APPDATA%\Quill</code> intentionally left
+behind (data preserved).</label></li>
+<li><label><input type="checkbox" /><strong>236.</strong> Confirm no
+dead Start Menu shortcut remains under <code>Quill</code> or
+<code>QUILL for All</code>. EXPECT: none.</label></li>
+</ul>
+<hr />
+<h2 id="issue-log">Issue Log</h2>
+<p>Record every Fail/Blocked here so nothing is lost between
+sessions.</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Severity (Blocker/Major/Minor)</th>
+<th>What you saw (and SR announcement)</th>
+<th>Crash-bundle path</th>
+<th>Issue #</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="resume-tracker">Resume tracker</h2>
+<ul>
+<li>Last step completed:</li>
+<li>Next step to run:</li>
+<li>Date / session:</li>
+</ul>
+<h2 id="sign-off">Sign-off</h2>
+<ul>
+<li>Tester(s):</li>
+<li>Build / commit under test:</li>
+<li>Screen reader(s) and version(s):</li>
+<li>OS / platform:</li>
+<li>Date started / finished:</li>
+<li>Steps attempted (range) / total 236:</li>
+<li>Release blockers found (must be zero to ship):</li>
+<li>Major / Minor issues filed (IDs):</li>
+<li>Blocked / Not-tested steps and why:</li>
+<li>Overall: Pass / Pass-with-known-issues / Fail</li>
+<li>Notes:</li>
+</ul>
+</body>
+</html>

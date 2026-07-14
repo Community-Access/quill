@@ -1,0 +1,3109 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>QUILL-Native-Google-Docs-Support-PRD</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1 id="quill-native-google-docs-support">QUILL Native Google Docs
+Support</h1>
+<h2 id="product-requirements-document">Product Requirements
+Document</h2>
+<p><strong>Document status:</strong> Draft for product and engineering
+review<br />
+<strong>Product:</strong> QUILL<br />
+<strong>Feature area:</strong> Cloud Documents / Google Docs<br />
+<strong>Document version:</strong> 1.0<br />
+<strong>Date:</strong> June 25, 2026<br />
+<strong>Primary platform:</strong> Windows 11, wxPython, keyboard-first
+and screen-reader-first<br />
+<strong>Intended audience:</strong> Product, engineering, accessibility,
+quality assurance, security, documentation, and release teams</p>
+<hr />
+<h2 id="executive-summary">1. Executive Summary</h2>
+<p>QUILL will add native support for opening, creating, editing, saving,
+reviewing, and managing Google Docs documents without embedding the
+Google Docs web editor and without forcing users to edit Markdown.</p>
+<p>The feature will preserve QUILL’s central promise: a fast,
+understandable, text-first editing experience that meets people where
+they are. Ordinary document text will remain ordinary text. Semantic
+formatting such as headings, lists, links, and emphasis will be retained
+as document metadata. Structured objects such as tables, images,
+footnotes, comments, headers, and document tabs will be represented
+clearly in the main text surface and edited through focused,
+purpose-built, keyboard-accessible dialogs.</p>
+<p>The Google document, not Markdown and not a flattened local string,
+will remain the authoritative structured document. QUILL will maintain
+an internal semantic document model that translates between:</p>
+<ol type="1">
+<li>The Google Docs API document representation.</li>
+<li>A provider-independent QUILL semantic document model.</li>
+<li>A text-first accessible projection shown in QUILL.</li>
+<li>A journal of semantic edit operations that can be synchronized
+safely back to Google.</li>
+</ol>
+<p>Markdown will be available as an optional view, import/export format,
+clipboard format, and AI-friendly representation. It will not be the
+canonical editing or persistence format because Markdown cannot
+faithfully represent many Google Docs features, including comments,
+suggestions, complex tables, tabs, images, headers, footers, page
+structure, and advanced formatting.</p>
+<p>The implementation will be delivered incrementally. The initial
+public release will prioritize reliable paragraphs, headings, basic
+inline formatting, links, lists, simple tables, document tabs, safe
+synchronization, conflict detection, recovery, and explicit handling of
+unsupported content. Later releases will expand support for comments,
+images, footnotes, headers, footers, offline editing, richer tables, and
+advanced collaboration workflows.</p>
+<hr />
+<h2 id="product-vision">2. Product Vision</h2>
+<h3 id="vision-statement">2.1 Vision statement</h3>
+<blockquote>
+<p>Enable people to edit Google Docs through QUILL’s accessible,
+efficient, text-first experience while preserving Google Drive storage,
+permissions, document structure, and collaboration.</p>
+</blockquote>
+<h3 id="core-product-promise">2.2 Core product promise</h3>
+<p>A user should be able to:</p>
+<ul>
+<li>Connect a Google account safely.</li>
+<li>Choose or create a Google document.</li>
+<li>Read and edit its ordinary text as naturally as any other QUILL
+document.</li>
+<li>Understand when structured content is present.</li>
+<li>Open a clear, accessible editor for a table, list, image, footnote,
+comment, or other object.</li>
+<li>Save changes without understanding Google API concepts.</li>
+<li>Know whether changes are saved, pending, offline, conflicted, or
+blocked.</li>
+<li>Recover work after a crash, authentication failure, network failure,
+or synchronization problem.</li>
+<li>Open the same document in Google Docs when QUILL cannot yet perform
+an operation.</li>
+<li>Trust that QUILL will not silently destroy unsupported document
+content.</li>
+</ul>
+<h3 id="experience-principles">2.3 Experience principles</h3>
+<ol type="1">
+<li><p><strong>Text first, not markup first.</strong><br />
+Users edit prose, not syntax.</p></li>
+<li><p><strong>Semantics over visual simulation.</strong><br />
+QUILL will represent meaning—heading, list item, table cell, link—not
+attempt to recreate a page canvas.</p></li>
+<li><p><strong>Structured content receives structured
+editors.</strong><br />
+Two-dimensional or object-based content is not flattened into unreadable
+punctuation.</p></li>
+<li><p><strong>No silent data loss.</strong><br />
+Unsupported content is preserved, protected, identified, and never
+discarded without explicit confirmation.</p></li>
+<li><p><strong>Accessible by construction.</strong><br />
+All core operations must work with the keyboard and expose useful names,
+roles, states, positions, relationships, and status changes to assistive
+technology.</p></li>
+<li><p><strong>Local work is durable.</strong><br />
+Keystrokes must not depend on immediate network success.</p></li>
+<li><p><strong>Synchronization is understandable.</strong><br />
+QUILL must communicate state using plain language rather than vague
+cloud icons or unexplained technical errors.</p></li>
+<li><p><strong>Progressive capability.</strong><br />
+A document remains usable even when it contains features QUILL cannot
+fully edit.</p></li>
+<li><p><strong>Provider-independent foundations.</strong><br />
+Google Docs will be the first cloud document provider, not a one-off
+implementation that prevents later Microsoft Word/Graph, Nextcloud, or
+other integrations.</p></li>
+</ol>
+<hr />
+<h2 id="background-and-problem-statement">3. Background and Problem
+Statement</h2>
+<p>Google Docs is widely used for education, employment, community work,
+and collaboration. A web-based editing surface can be complex for users
+who prefer a native Windows application, predictable keyboard
+interaction, direct text navigation, a conventional menu system, or a
+screen-reader-optimized experience.</p>
+<p>QUILL currently provides a text-centric environment. Direct Google
+Docs support introduces several challenges:</p>
+<ul>
+<li>A Google document is structured, not merely a text file.</li>
+<li>Tables are two-dimensional.</li>
+<li>Headings and lists have semantic properties.</li>
+<li>Images, drawings, charts, headers, footers, and footnotes are
+objects or separate document segments.</li>
+<li>A document can contain multiple top-level and nested tabs.</li>
+<li>Comments and suggestions have collaboration semantics.</li>
+<li>Other collaborators may edit the document while it is open.</li>
+<li>Google API indexes can shift after edits.</li>
+<li>Some Google Docs capabilities cannot be fully controlled through the
+public API.</li>
+<li>Network and authentication failures must not lose user work.</li>
+<li>A direct conversion to Markdown would lose fidelity and expose
+unnecessary syntax.</li>
+</ul>
+<p>The product must therefore provide a native text-first projection
+backed by a structured model rather than treating Google Docs as a
+remote plain-text file.</p>
+<hr />
+<h2 id="goals">4. Goals</h2>
+<h3 id="primary-goals">4.1 Primary goals</h3>
+<ul>
+<li>Provide a first-class <strong>Google Docs document provider</strong>
+in QUILL.</li>
+<li>Preserve QUILL’s existing text-editing speed and accessibility.</li>
+<li>Keep Google Docs as the authoritative cloud document.</li>
+<li>Support safe round-trip editing of common document structures.</li>
+<li>Provide purpose-built accessible editors for structured
+objects.</li>
+<li>Preserve unsupported content without destructive conversion.</li>
+<li>Provide robust autosave, recovery, conflict detection, and offline
+queuing.</li>
+<li>Make synchronization state clear through speech, status text, and
+commands.</li>
+<li>Use least-privilege Google authorization wherever practical.</li>
+<li>Establish a reusable Cloud Document Provider architecture.</li>
+</ul>
+<h3 id="secondary-goals">4.2 Secondary goals</h3>
+<ul>
+<li>Support optional Markdown projection, import, export, and clipboard
+workflows.</li>
+<li>Allow users to open documents by Picker, URL, document ID, recent
+list, or QUILL history.</li>
+<li>Support multiple Google accounts.</li>
+<li>Support personal Drive and shared drives where the authorized file
+and account permit access.</li>
+<li>Support comments and replies in a dedicated accessible review
+experience.</li>
+<li>Allow users to switch quickly between QUILL and the Google Docs web
+editor.</li>
+<li>Provide diagnostics suitable for user support without logging
+document content by default.</li>
+</ul>
+<h3 id="success-outcomes">4.3 Success outcomes</h3>
+<p>The feature is successful when:</p>
+<ul>
+<li>A screen-reader user can open, edit, and save a typical Google
+document without visiting the web editor.</li>
+<li>A user can encounter a table, understand its dimensions and purpose,
+read it linearly, and edit it cell by cell.</li>
+<li>A temporary network failure does not interrupt typing or lose
+work.</li>
+<li>External collaborator changes are either merged safely or presented
+for accessible review.</li>
+<li>Unsupported objects survive unrelated edits unchanged.</li>
+<li>Users can always determine whether their work is saved.</li>
+<li>The implementation does not require broad access to every file in a
+user’s Google Drive for the normal workflow.</li>
+</ul>
+<hr />
+<h2 id="non-goals">5. Non-Goals</h2>
+<p>The following are explicitly outside the initial public release
+unless separately approved:</p>
+<ul>
+<li>Recreating the full visual Google Docs page layout inside
+QUILL.</li>
+<li>Pixel-perfect pagination, ruler behavior, margins, print preview, or
+floating object placement.</li>
+<li>Showing live collaborator cursors, selections, or
+character-by-character presence.</li>
+<li>Creating, accepting, or rejecting Google Docs suggestions through
+the API.</li>
+<li>Full editing of drawings, embedded charts, equations, smart chips,
+or third-party add-on objects.</li>
+<li>Exact fidelity for every Google Docs table style or merged-cell
+layout.</li>
+<li>Replacing Google Drive as a file-management product.</li>
+<li>Providing a general Google Workspace client.</li>
+<li>Running a mandatory QUILL cloud synchronization service in the first
+release.</li>
+<li>Storing Google passwords.</li>
+<li>Using service accounts to impersonate ordinary users.</li>
+<li>Flattening all documents into Markdown or DOCX for routine
+editing.</li>
+<li>Silently replacing an original Google document with a converted
+copy.</li>
+</ul>
+<hr />
+<h2 id="users-and-personas">6. Users and Personas</h2>
+<h3 id="primary-persona-screen-reader-first-writer">6.1 Primary persona:
+screen-reader-first writer</h3>
+<p>A blind user who:</p>
+<ul>
+<li>Uses JAWS, NVDA, or Narrator.</li>
+<li>Prefers predictable native controls.</li>
+<li>Navigates by keyboard.</li>
+<li>Wants direct access to document text.</li>
+<li>Needs concise but informative announcements.</li>
+<li>Finds complex browser application modes burdensome.</li>
+<li>Collaborates in Google Docs because an employer, school, nonprofit,
+or team requires it.</li>
+</ul>
+<h3 id="keyboard-first-power-user">6.2 Keyboard-first power user</h3>
+<p>A user who:</p>
+<ul>
+<li>Wants fast navigation and editing.</li>
+<li>Prefers menus and shortcuts.</li>
+<li>Uses structured commands for headings, lists, links, comments, and
+tables.</li>
+<li>May use Markdown but does not want it forced on every document.</li>
+<li>Expects local-editor responsiveness even with remote documents.</li>
+</ul>
+<h3 id="occasional-google-docs-user">6.3 Occasional Google Docs
+user</h3>
+<p>A user who:</p>
+<ul>
+<li>Primarily uses local files.</li>
+<li>Receives a Google Docs link.</li>
+<li>Wants to open and edit it without learning a new interface.</li>
+<li>Needs clear account and permission guidance.</li>
+</ul>
+<h3 id="collaborative-reviewer">6.4 Collaborative reviewer</h3>
+<p>A user who:</p>
+<ul>
+<li>Reads comments.</li>
+<li>Replies to discussions.</li>
+<li>Reviews externally changed content.</li>
+<li>Needs to understand unresolved suggestions.</li>
+<li>May need to open the web editor for unsupported collaboration
+operations.</li>
+</ul>
+<h3 id="organization-managed-user">6.5 Organization-managed user</h3>
+<p>A user whose Google Workspace administrator may:</p>
+<ul>
+<li>Restrict OAuth applications.</li>
+<li>Restrict external sharing.</li>
+<li>Restrict Drive access.</li>
+<li>Require application verification or allowlisting.</li>
+<li>Disable some Google services.</li>
+</ul>
+<hr />
+<h2 id="terminology">7. Terminology</h2>
+<ul>
+<li><strong>Cloud document:</strong> A document whose authoritative copy
+is stored by a remote provider.</li>
+<li><strong>Provider:</strong> An adapter that implements cloud document
+operations, such as Google Docs.</li>
+<li><strong>Semantic document model:</strong> QUILL’s internal
+provider-independent representation of paragraphs, runs, headings,
+lists, tables, objects, tabs, and document segments.</li>
+<li><strong>Projection:</strong> The editable text-first representation
+shown in the main QUILL editor.</li>
+<li><strong>Object marker:</strong> A protected, meaningful
+representation of a structured object in the projection.</li>
+<li><strong>Source span:</strong> The provider-side range or element to
+which a projected range maps.</li>
+<li><strong>Projection span:</strong> A range in the QUILL text surface
+that maps to a semantic node.</li>
+<li><strong>Operation journal:</strong> Durable local records of user
+edits awaiting synchronization.</li>
+<li><strong>Shadow snapshot:</strong> A local copy of the last known
+provider document model and revision metadata.</li>
+<li><strong>Revision ID:</strong> A Google Docs value used to control
+how a write applies relative to collaborator changes.</li>
+<li><strong>Strict write:</strong> A write using
+<code>requiredRevisionId</code>.</li>
+<li><strong>Collaborative write:</strong> A write using
+<code>targetRevisionId</code>.</li>
+<li><strong>Unsupported object:</strong> Content QUILL can preserve and
+identify but cannot fully edit.</li>
+<li><strong>Structured editor:</strong> A focused dialog or pane for
+editing a semantic object such as a table.</li>
+</ul>
+<hr />
+<h2 id="product-scope-and-release-levels">8. Product Scope and Release
+Levels</h2>
+<h3 id="level-a-core-editable-content">8.1 Level A: core editable
+content</h3>
+<p>Required for the first public release:</p>
+<ul>
+<li>Document metadata and title.</li>
+<li>Document tabs and nested tab navigation.</li>
+<li>Paragraphs.</li>
+<li>Named paragraph styles, especially title, subtitle, and
+headings.</li>
+<li>Plain text and paragraph breaks.</li>
+<li>Bold, italic, underline, strikethrough, and basic text links.</li>
+<li>Numbered and bulleted lists.</li>
+<li>Simple tables.</li>
+<li>Page breaks and section markers represented safely.</li>
+<li>Basic inline images as preserved objects with accessible
+metadata.</li>
+<li>Read-only preservation of unsupported objects.</li>
+<li>Autosave, recovery, retry, and conflict handling.</li>
+<li>Open in Google Docs.</li>
+<li>Account connection and disconnection.</li>
+<li>Picker-based file authorization.</li>
+<li>Open by pasted Google Docs URL.</li>
+<li>Creation of new Google documents.</li>
+</ul>
+<h3 id="level-b-collaboration-and-richer-structure">8.2 Level B:
+collaboration and richer structure</h3>
+<p>Targeted for the next release:</p>
+<ul>
+<li>Comments and replies.</li>
+<li>Comment resolution where permitted.</li>
+<li>Footnotes.</li>
+<li>Headers and footers.</li>
+<li>Image alternative text and description editing where supported.</li>
+<li>Improved table properties and header-row behavior.</li>
+<li>Shared drive workflows.</li>
+<li>Offline editing with robust rebase and conflict review.</li>
+<li>Document outline and structured navigation.</li>
+<li>Enhanced import/export.</li>
+</ul>
+<h3 id="level-c-advanced-fidelity">8.3 Level C: advanced fidelity</h3>
+<p>Longer-term:</p>
+<ul>
+<li>Merged-cell tables.</li>
+<li>Advanced table style preservation and editing.</li>
+<li>Named ranges and bookmarks.</li>
+<li>Rich links and person/date smart elements where APIs permit.</li>
+<li>Equations as accessible objects.</li>
+<li>Embedded charts and drawings as protected objects with richer
+metadata.</li>
+<li>Revision comparison.</li>
+<li>Optional event-driven remote change notifications.</li>
+<li>Organization deployment guidance and policy controls.</li>
+<li>Additional cloud providers using the same framework.</li>
+</ul>
+<hr />
+<h2 id="user-experience-overview">9. User Experience Overview</h2>
+<h3 id="file-menu-commands">9.1 File menu commands</h3>
+<p>QUILL will add:</p>
+<ul>
+<li><strong>File → Open from Google Drive…</strong></li>
+<li><strong>File → Open Google Document from Link…</strong></li>
+<li><strong>File → New Google Document…</strong></li>
+<li><strong>File → Save a Copy to Google Drive…</strong></li>
+<li><strong>File → Recent Google Documents</strong></li>
+<li><strong>File → Google Account</strong>
+<ul>
+<li>Connect account…</li>
+<li>Switch account…</li>
+<li>Manage connected accounts…</li>
+<li>Disconnect current account…</li>
+</ul></li>
+<li><strong>File → Open Current Document in Google Docs</strong></li>
+<li><strong>File → Google Document Properties…</strong></li>
+</ul>
+<p>Commands must be available through menus, keyboard access keys,
+command palette, and configurable shortcuts.</p>
+<h3 id="document-menu-commands">9.2 Document menu commands</h3>
+<ul>
+<li><strong>Document → Google Docs Status</strong></li>
+<li><strong>Document → Synchronize Now</strong></li>
+<li><strong>Document → Refresh from Google Docs</strong></li>
+<li><strong>Document → Review External Changes</strong></li>
+<li><strong>Document → Comments</strong></li>
+<li><strong>Document → Suggestions</strong></li>
+<li><strong>Document → Document Tabs</strong></li>
+<li><strong>Document → Structured Objects</strong></li>
+<li><strong>Document → Unsupported Content Report</strong></li>
+<li><strong>Document → Export Projection</strong></li>
+<li><strong>Document → Repair Synchronization…</strong></li>
+</ul>
+<h3 id="status-presentation">9.3 Status presentation</h3>
+<p>The title bar should contain concise state, for example:</p>
+<ul>
+<li><code>Project Plan — Google Docs — Saved</code></li>
+<li><code>Project Plan — Google Docs — Saving</code></li>
+<li><code>Project Plan — Google Docs — Offline, 3 changes pending</code></li>
+<li><code>Project Plan — Google Docs — Conflict requires review</code></li>
+<li><code>Project Plan — Google Docs — Read only</code></li>
+</ul>
+<p>A detailed status command should report:</p>
+<ul>
+<li>Account.</li>
+<li>Document title.</li>
+<li>Current tab.</li>
+<li>Permission level.</li>
+<li>Save state.</li>
+<li>Last successful synchronization time.</li>
+<li>Number of pending local operations.</li>
+<li>Number of unresolved comments.</li>
+<li>Number of unresolved suggestions.</li>
+<li>Whether unsupported content is present.</li>
+<li>Whether external changes have been detected.</li>
+</ul>
+<p>Routine autosave should not produce repetitive speech. State
+transitions, failures, conflicts, and completed explicit saves should be
+announced.</p>
+<h3 id="opening-a-document">9.4 Opening a document</h3>
+<p>Supported entry points:</p>
+<ol type="1">
+<li>Google Picker in the default browser.</li>
+<li>Paste a Google Docs URL.</li>
+<li>Paste a document ID.</li>
+<li>Recent Google documents previously authorized for QUILL.</li>
+<li>A <code>.gdoc</code> shortcut file, where practical.</li>
+<li>A future Drive “Open with QUILL” integration.</li>
+<li>Command-line open using a Google Docs URL.</li>
+</ol>
+<p>When a URL is pasted, QUILL will:</p>
+<ul>
+<li>Validate the URL.</li>
+<li>Extract the document ID.</li>
+<li>Determine whether the current account can access it.</li>
+<li>If the file has not been authorized under the chosen scope, launch
+the authorization/Picker path.</li>
+<li>Open read-only if the user lacks edit permission.</li>
+<li>Explain account mismatch or organization restrictions in plain
+language.</li>
+</ul>
+<h3 id="creating-a-document">9.5 Creating a document</h3>
+<p>The New Google Document dialog will request:</p>
+<ul>
+<li>Title.</li>
+<li>Google account.</li>
+<li>Destination, where supported.</li>
+<li>Optional template in a future release.</li>
+<li>Initial tab title, if desired.</li>
+</ul>
+<p>After creation, focus moves to the empty editable document body and
+QUILL announces:</p>
+<blockquote>
+<p>Google document created. Blank document. Changes will save
+automatically.</p>
+</blockquote>
+<hr />
+<h2 id="main-editing-surface">10. Main Editing Surface</h2>
+<h3 id="design-decision">10.1 Design decision</h3>
+<p>The main editing surface will be a <strong>text-first
+projection</strong> of the semantic document model.</p>
+<p>It will not be:</p>
+<ul>
+<li>Raw Google Docs JSON.</li>
+<li>HTML.</li>
+<li>Markdown by default.</li>
+<li>A converted DOCX file.</li>
+<li>A browser-embedded Google Docs canvas.</li>
+<li>A plain-text extraction that discards structure.</li>
+</ul>
+<h3 id="ordinary-text">10.2 Ordinary text</h3>
+<p>Paragraph text is displayed directly. Paragraph boundaries remain
+normal line or paragraph boundaries according to QUILL’s editor
+behavior.</p>
+<p>Example:</p>
+<pre class="text"><code>Project Proposal
+
+Introduction
+
+This proposal describes the next phase of the project.</code></pre>
+<p>Internally:</p>
+<ul>
+<li><code>Project Proposal</code> may be <code>TITLE</code>.</li>
+<li><code>Introduction</code> may be <code>HEADING_1</code>.</li>
+<li>The final paragraph may be <code>NORMAL_TEXT</code>.</li>
+</ul>
+<p>Users do not need to see <code>#</code>, <code>**</code>, HTML tags,
+or field codes.</p>
+<h3 id="semantic-formatting-announcements">10.3 Semantic formatting
+announcements</h3>
+<p>When entering or querying a paragraph, QUILL can announce:</p>
+<ul>
+<li>Heading level.</li>
+<li>List level and position.</li>
+<li>Quote style.</li>
+<li>Alignment when relevant.</li>
+<li>Link presence.</li>
+<li>Character formatting at the caret.</li>
+<li>Comment or suggestion presence.</li>
+<li>Current document tab.</li>
+</ul>
+<p>Announcements must be configurable:</p>
+<ul>
+<li>Minimal.</li>
+<li>Balanced.</li>
+<li>Verbose.</li>
+<li>Custom.</li>
+</ul>
+<h3 id="object-markers">10.4 Object markers</h3>
+<p>Structured objects appear as protected markers, such as:</p>
+<pre class="text"><code>[Table 1: Project schedule. 4 rows by 3 columns. Press F2 to edit.]
+
+[Image 2: QUILL logo. Alternative text available. Press F2 for details.]
+
+[Footnote 1: Press F2 to read or edit.]
+
+[Unsupported drawing: Preserved. Press Enter for details or open in Google Docs.]</code></pre>
+<p>Object marker requirements:</p>
+<ul>
+<li>The marker must have a stable semantic node ID.</li>
+<li>The marker text must be localized.</li>
+<li>The marker must not be editable as ordinary text.</li>
+<li>Backspace/Delete on a marker must invoke a confirmation workflow
+rather than corrupt the marker.</li>
+<li>Copying the marker should offer semantic copy options.</li>
+<li>Screen readers must receive a useful role/name/state.</li>
+<li>Markers must remain discoverable through object navigation.</li>
+<li>Users may configure compact or descriptive marker wording.</li>
+</ul>
+<h3 id="caret-and-selection-behavior">10.5 Caret and selection
+behavior</h3>
+<ul>
+<li>Left/Right treats a protected object marker as one semantic unit
+when possible.</li>
+<li>Ctrl+Left/Ctrl+Right moves by text rules without landing inside
+marker internals.</li>
+<li>Enter on an object opens its default read/review action.</li>
+<li>F2 opens its structured editor.</li>
+<li>Applications/Shift+F10 opens object commands.</li>
+<li>Delete asks whether to remove the object from the Google
+document.</li>
+<li>Selection across objects is allowed only if the resulting operation
+can be translated safely.</li>
+<li>Destructive bulk edits crossing unsupported objects require an
+explicit preservation choice.</li>
+</ul>
+<h3 id="bulk-selection-safety">10.6 Bulk selection safety</h3>
+<p>When a user selects text containing protected or unsupported objects
+and presses Delete, Cut, or Paste, QUILL must present a clear
+dialog:</p>
+<blockquote>
+<p>The selection contains 2 tables and 1 drawing. Deleting the selection
+will remove those objects from the Google document.<br />
+Remove selected text and objects<br />
+Remove text but preserve structured objects<br />
+Cancel</p>
+</blockquote>
+<p>The default must be the safest non-destructive action.</p>
+<hr />
+<h2 id="semantic-document-model">11. Semantic Document Model</h2>
+<h3 id="architecture">11.1 Architecture</h3>
+<pre class="text"><code>Google Docs API representation
+            ↓
+GoogleDocsImporter / Parser
+            ↓
+QUILL Semantic Document Model
+            ↓
+Projection Builder
+            ↓
+QUILL text surface + protected object markers
+            ↓
+Semantic edit operations
+            ↓
+GoogleDocsOperationTranslator
+            ↓
+Google Docs batchUpdate requests</code></pre>
+<h3 id="provider-independent-node-hierarchy">11.2 Provider-independent
+node hierarchy</h3>
+<p>Illustrative model:</p>
+<pre class="text"><code>CloudDocument
+  metadata
+  provider_state
+  tabs[]
+    DocumentTab
+      title
+      tab_id
+      parent_tab_id
+      body
+        BlockNode[]
+      headers[]
+      footers[]
+      footnotes[]
+      unsupported_segments[]</code></pre>
+<p>Block nodes:</p>
+<ul>
+<li>ParagraphNode</li>
+<li>HeadingNode</li>
+<li>ListItemNode</li>
+<li>TableNode</li>
+<li>ImageNode</li>
+<li>PageBreakNode</li>
+<li>SectionBreakNode</li>
+<li>HorizontalRuleNode, if applicable</li>
+<li>UnsupportedBlockNode</li>
+</ul>
+<p>Inline nodes:</p>
+<ul>
+<li>TextRunNode</li>
+<li>LinkNode</li>
+<li>InlineImageNode</li>
+<li>FootnoteReferenceNode</li>
+<li>CommentAnchorNode</li>
+<li>SuggestionAnnotationNode</li>
+<li>UnsupportedInlineNode</li>
+</ul>
+<h3 id="required-node-properties">11.3 Required node properties</h3>
+<p>Every semantic node must include:</p>
+<ul>
+<li>Stable local UUID.</li>
+<li>Provider-specific identity or source path where available.</li>
+<li>Node type.</li>
+<li>Parent ID.</li>
+<li>Child IDs.</li>
+<li>Current semantic properties.</li>
+<li>Provider source range or location.</li>
+<li>Projection range, when projected.</li>
+<li>Editability level:
+<ul>
+<li>Fully editable.</li>
+<li>Partially editable.</li>
+<li>Read-only preserved.</li>
+<li>Unsupported protected.</li>
+</ul></li>
+<li>Dirty state.</li>
+<li>Local version counter.</li>
+<li>Last synchronized hash.</li>
+<li>Diagnostics metadata excluding sensitive content by default.</li>
+</ul>
+<h3 id="document-tabs">11.4 Document tabs</h3>
+<p>Google Docs supports top-level and nested tabs. The model must:</p>
+<ul>
+<li>Preserve tab IDs.</li>
+<li>Preserve titles.</li>
+<li>Preserve parent/child relationships.</li>
+<li>Specify <code>tabId</code> on applicable update requests.</li>
+<li>Never assume the first tab is the only tab.</li>
+<li>Allow a tab to be loaded lazily if performance requires it.</li>
+<li>Maintain independent projection and cursor state per tab.</li>
+</ul>
+<h3 id="segment-support">11.5 Segment support</h3>
+<p>The model must distinguish:</p>
+<ul>
+<li>Main body.</li>
+<li>Header segments.</li>
+<li>Footer segments.</li>
+<li>Footnotes.</li>
+<li>Other API-exposed segments.</li>
+</ul>
+<p>Indexes must never be treated as globally interchangeable across tabs
+or segments.</p>
+<hr />
+<h2 id="projection-engine">12. Projection Engine</h2>
+<h3 id="responsibilities">12.1 Responsibilities</h3>
+<p>The Projection Engine will:</p>
+<ul>
+<li>Build editable text from semantic nodes.</li>
+<li>Insert protected object markers.</li>
+<li>Maintain bidirectional mappings between projection spans and
+semantic nodes.</li>
+<li>Translate text edits into semantic operations.</li>
+<li>Rebuild minimal affected regions after structured changes.</li>
+<li>Restore caret and selection after a rebuild.</li>
+<li>Expose formatting and structure at the caret.</li>
+<li>Reject operations that cannot be represented safely.</li>
+<li>Provide plain-text, Markdown, and diagnostic projections as separate
+modes.</li>
+</ul>
+<h3 id="mapping-model">12.2 Mapping model</h3>
+<p>Each projected span will record:</p>
+<pre class="text"><code>projection_start
+projection_end
+semantic_node_id
+semantic_offset_start
+semantic_offset_end
+provider_tab_id
+provider_segment_id
+edit_policy</code></pre>
+<p>The system must not depend solely on provider character indexes
+remaining stable. Google indexes are refreshed or transformed after each
+applied operation batch.</p>
+<h3 id="edit-capture">12.3 Edit capture</h3>
+<p>The editor integration layer will convert UI events into operations
+such as:</p>
+<ul>
+<li>InsertText</li>
+<li>DeleteTextRange</li>
+<li>SplitParagraph</li>
+<li>MergeParagraphs</li>
+<li>ApplyTextStyle</li>
+<li>ApplyParagraphStyle</li>
+<li>CreateList</li>
+<li>RemoveList</li>
+<li>ChangeListLevel</li>
+<li>InsertTable</li>
+<li>EditTableCell</li>
+<li>InsertTableRow</li>
+<li>DeleteTableRow</li>
+<li>InsertObject</li>
+<li>DeleteObject</li>
+<li>ChangeLink</li>
+<li>ChangeTab</li>
+<li>RenameTab</li>
+</ul>
+<p>Operations should describe intent, not low-level offsets alone.</p>
+<h3 id="incremental-rebuild">12.4 Incremental rebuild</h3>
+<p>For performance and focus stability:</p>
+<ul>
+<li>Plain text changes should update only the affected paragraph or run
+mapping.</li>
+<li>List operations should update the affected list region.</li>
+<li>Table edits should update the marker summary and table model.</li>
+<li>Full projection rebuilds should be reserved for external refresh,
+major conflicts, or model repair.</li>
+<li>A full rebuild must restore the nearest semantic caret
+position.</li>
+</ul>
+<h3 id="projection-integrity-checks">12.5 Projection integrity
+checks</h3>
+<p>In debug and test builds, QUILL will verify:</p>
+<ul>
+<li>Projection spans do not overlap incorrectly.</li>
+<li>Every editable projected character maps to a semantic node.</li>
+<li>Protected markers cannot be partially edited.</li>
+<li>Node parent/child relationships are valid.</li>
+<li>Provider tab and segment IDs are present where required.</li>
+<li>Operation journal entries reference valid semantic nodes.</li>
+<li>Round-trip serialization preserves unsupported nodes.</li>
+</ul>
+<p>On integrity failure:</p>
+<ul>
+<li>Stop remote writes.</li>
+<li>Preserve local text and journal.</li>
+<li>Create a recovery snapshot.</li>
+<li>Present a repair workflow.</li>
+<li>Never discard user edits automatically.</li>
+</ul>
+<hr />
+<h2 id="markdown-and-other-alternate-views">13. Markdown and Other
+Alternate Views</h2>
+<h3 id="markdown-position-in-the-product">13.1 Markdown position in the
+product</h3>
+<p>Markdown is optional and secondary.</p>
+<p>Supported commands:</p>
+<ul>
+<li>View → Document View.</li>
+<li>View → Markdown Projection.</li>
+<li>View → Plain Text Extraction.</li>
+<li>Copy as Markdown.</li>
+<li>Paste Markdown into Document.</li>
+<li>Export as Markdown.</li>
+<li>Import Markdown as New Google Document.</li>
+</ul>
+<h3 id="markdown-projection-warnings">13.2 Markdown projection
+warnings</h3>
+<p>The Markdown projection must identify lossy elements:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!-- QUILL: Complex table preserved but not representable in standard Markdown. --&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Complex table: 14 rows by 7 columns</span><span class="co">]</span></span></code></pre></div>
+<p>Switching to Markdown Projection must not silently make it the source
+of truth. Direct editing in Markdown Projection may be:</p>
+<ul>
+<li>Disabled initially.</li>
+<li>Enabled only for representable regions.</li>
+<li>Later implemented through a controlled parse-and-merge
+workflow.</li>
+</ul>
+<h3 id="plain-text-extraction">13.3 Plain-text extraction</h3>
+<p>Plain-text extraction is read-only by default and intended for:</p>
+<ul>
+<li>Copying.</li>
+<li>Search.</li>
+<li>AI context preparation.</li>
+<li>Reading without structural markers.</li>
+<li>Export.</li>
+</ul>
+<p>It must not be used to overwrite the source document.</p>
+<hr />
+<h2 id="structured-editors">14. Structured Editors</h2>
+<h3 id="common-structured-editor-requirements">14.1 Common
+structured-editor requirements</h3>
+<p>Every structured editor must:</p>
+<ul>
+<li>Be fully keyboard operable.</li>
+<li>Use standard native controls where practical.</li>
+<li>Place focus predictably.</li>
+<li>Announce object type and context on entry.</li>
+<li>Provide a clear Save/Apply and Cancel path.</li>
+<li>Preserve changes locally if remote saving fails.</li>
+<li>Report row, column, item, object, or segment position.</li>
+<li>Avoid keyboard traps.</li>
+<li>Support configurable shortcuts.</li>
+<li>Expose validation errors inline and through an error summary.</li>
+<li>Return focus to the originating object marker or semantic
+position.</li>
+<li>Support Help for the current dialog.</li>
+<li>Avoid relying on color, pointer position, or visual layout
+alone.</li>
+<li>Be testable with JAWS, NVDA, and Narrator.</li>
+</ul>
+<h3 id="f2-behavior">14.2 F2 behavior</h3>
+<p>F2 is the default command to edit the semantic object at the
+caret.</p>
+<ul>
+<li>On ordinary text: open paragraph/style properties or existing QUILL
+F2 behavior according to context.</li>
+<li>On a table marker: open Table Editor.</li>
+<li>On a list item: open Structured List Editor.</li>
+<li>On an image: open Image Details.</li>
+<li>On a link: open Link Editor.</li>
+<li>On a footnote reference: open Footnote Editor.</li>
+<li>On a comment anchor: open Comment Discussion.</li>
+<li>On unsupported content: open Object Details with safe available
+actions.</li>
+</ul>
+<p>F2 behavior must be discoverable from object announcements and
+context menus.</p>
+<hr />
+<h2 id="table-experience">15. Table Experience</h2>
+<h3 id="table-representation-in-the-document">15.1 Table representation
+in the document</h3>
+<p>A table appears as:</p>
+<pre class="text"><code>[Table 1: Project schedule. 4 rows by 3 columns. Press Enter to read or F2 to edit.]</code></pre>
+<p>The summary should use, in priority order:</p>
+<ol type="1">
+<li>Explicit table description or caption.</li>
+<li>Inferred header text.</li>
+<li>Nearby paragraph context.</li>
+<li>Generic numbered label.</li>
+</ol>
+<p>Inference must never be saved back as authored content without
+confirmation.</p>
+<h3 id="table-reading-mode">15.2 Table reading mode</h3>
+<p>Enter on the marker opens a read-only multiline table reader.</p>
+<p>Default row-oriented output:</p>
+<pre class="text"><code>Table: Project schedule
+4 rows, 3 columns
+
+Row 1, column headings
+Phase
+Owner
+Date
+
+Row 2
+Phase: Design
+Owner: Jeff
+Date: August</code></pre>
+<p>Reader options:</p>
+<ul>
+<li>Read by row.</li>
+<li>Read by column.</li>
+<li>Read current cell.</li>
+<li>Include coordinates.</li>
+<li>Include row and column headings.</li>
+<li>Copy as tab-separated values.</li>
+<li>Copy as CSV.</li>
+<li>Copy as Markdown.</li>
+<li>Open Table Editor.</li>
+<li>Open in Google Docs.</li>
+</ul>
+<h3 id="table-editor-layout">15.3 Table Editor layout</h3>
+<p>Recommended controls:</p>
+<ol type="1">
+<li>Table name/description.</li>
+<li>Position and dimension status.</li>
+<li>Current cell context.</li>
+<li>Multiline cell editor.</li>
+<li>Navigation controls.</li>
+<li>Row/column commands.</li>
+<li>Table properties.</li>
+<li>Apply and Cancel.</li>
+</ol>
+<p>The primary cell editor should be a standard multiline edit control
+so users can navigate cell content naturally.</p>
+<h3 id="table-navigation">15.4 Table navigation</h3>
+<p>Default configurable commands:</p>
+<ul>
+<li>Tab: next cell.</li>
+<li>Shift+Tab: previous cell.</li>
+<li>Ctrl+Right: next column.</li>
+<li>Ctrl+Left: previous column.</li>
+<li>Ctrl+Down: next row.</li>
+<li>Ctrl+Up: previous row.</li>
+<li>Ctrl+Home: first cell.</li>
+<li>Ctrl+End: last cell.</li>
+<li>Alt+Home: first cell in row.</li>
+<li>Alt+End: last cell in row.</li>
+<li>Alt+Page Up: first cell in column.</li>
+<li>Alt+Page Down: last cell in column.</li>
+<li>Ctrl+Insert: insert row after.</li>
+<li>Ctrl+Shift+Insert: insert column after.</li>
+<li>Applications/Shift+F10: table commands.</li>
+<li>Escape: close after save/discard decision.</li>
+</ul>
+<h3 id="cell-announcement">15.5 Cell announcement</h3>
+<p>On movement:</p>
+<blockquote>
+<p>Row 3 of 4, column 2 of 3, Owner. Taylor Arndt.</p>
+</blockquote>
+<p>Configurable components:</p>
+<ul>
+<li>Coordinates.</li>
+<li>Row heading.</li>
+<li>Column heading.</li>
+<li>Cell content.</li>
+<li>Blank state.</li>
+<li>Span/merged state.</li>
+<li>Formatting state.</li>
+</ul>
+<h3 id="simple-table-definition-for-initial-release">15.6 Simple-table
+definition for initial release</h3>
+<p>Fully editable when:</p>
+<ul>
+<li>No nested tables.</li>
+<li>No unsupported embedded objects in cells.</li>
+<li>No merged cells, unless read-only preservation is implemented
+safely.</li>
+<li>Cell content is composed of supported paragraphs, text runs, links,
+and simple lists.</li>
+<li>The table belongs to a supported segment.</li>
+</ul>
+<h3 id="complex-tables">15.7 Complex tables</h3>
+<p>Complex tables are:</p>
+<ul>
+<li>Readable through a linear representation where possible.</li>
+<li>Preserved unchanged.</li>
+<li>Partially editable only when the operation can be isolated
+safely.</li>
+<li>Clearly labeled with limitations.</li>
+<li>Openable in Google Docs.</li>
+</ul>
+<p>Example:</p>
+<blockquote>
+<p>Complex table, 14 rows by 7 columns, merged cells present. QUILL can
+read this table but cannot safely change its structure. Cell text
+editing is available only in unmerged cells.</p>
+</blockquote>
+<h3 id="table-structural-operations">15.8 Table structural
+operations</h3>
+<p>Supported API translation includes:</p>
+<ul>
+<li>Insert table.</li>
+<li>Insert row.</li>
+<li>Delete row.</li>
+<li>Insert column.</li>
+<li>Delete column.</li>
+<li>Insert cell content.</li>
+<li>Delete cell content.</li>
+<li>Modify supported row or column properties.</li>
+<li>Pin header rows where supported and implemented.</li>
+</ul>
+<p>Each structural operation must use strict revision control unless
+engineering proves collaborative application safe.</p>
+<hr />
+<h2 id="lists">16. Lists</h2>
+<h3 id="normal-editing">16.1 Normal editing</h3>
+<p>Lists appear naturally:</p>
+<pre class="text"><code>1. Improved accessibility
+2. Faster document preparation
+3. Better collaboration</code></pre>
+<p>The visible marker may be rendered by QUILL, but list identity and
+nesting are semantic.</p>
+<h3 id="editing-behavior">16.2 Editing behavior</h3>
+<ul>
+<li>Enter creates the next list item.</li>
+<li>Enter on an empty item exits the list.</li>
+<li>Tab and Shift+Tab change nesting only when safe and configured.</li>
+<li>Backspace at the start of an item changes level or removes list
+formatting with predictable rules.</li>
+<li>Numbering is recalculated semantically.</li>
+<li>Users do not type or manage raw Google bullet IDs.</li>
+</ul>
+<h3 id="structured-list-editor">16.3 Structured List Editor</h3>
+<p>F2 opens an accessible list editor supporting:</p>
+<ul>
+<li>Ordered/unordered style.</li>
+<li>Item navigation.</li>
+<li>Add, remove, duplicate, and reorder.</li>
+<li>Nest and unnest.</li>
+<li>Paste lines as items.</li>
+<li>Convert selected paragraphs to a list.</li>
+<li>Convert list to paragraphs.</li>
+<li>Task-list-like presentation where supported by QUILL, even if
+represented through a provider-compatible format.</li>
+</ul>
+<h3 id="list-fidelity">16.4 List fidelity</h3>
+<p>The initial release should support common presets. Unrecognized
+bullet glyphs or numbering schemes must be preserved and described, not
+normalized silently.</p>
+<hr />
+<h2 id="headings-paragraphs-and-inline-formatting">17. Headings,
+Paragraphs, and Inline Formatting</h2>
+<h3 id="named-paragraph-styles">17.1 Named paragraph styles</h3>
+<p>Support:</p>
+<ul>
+<li>Normal text.</li>
+<li>Title.</li>
+<li>Subtitle.</li>
+<li>Heading 1 through Heading 6 where available.</li>
+<li>Quote styles where safely mapped.</li>
+<li>Other styles preserved as custom/unsupported style metadata.</li>
+</ul>
+<p>Commands should include:</p>
+<ul>
+<li>Ctrl+Alt+1 through Ctrl+Alt+6 for headings.</li>
+<li>Ctrl+0 or configurable command for normal text.</li>
+<li>Paragraph Style menu.</li>
+<li>Announce current style.</li>
+</ul>
+<h3 id="inline-formatting">17.2 Inline formatting</h3>
+<p>Support:</p>
+<ul>
+<li>Bold.</li>
+<li>Italic.</li>
+<li>Underline.</li>
+<li>Strikethrough.</li>
+<li>Foreground/background color as semantic properties, with accessible
+names where feasible.</li>
+<li>Font family and size preservation.</li>
+<li>Link.</li>
+<li>Baseline offset/superscript/subscript where supported.</li>
+<li>Clear formatting.</li>
+</ul>
+<p>The default interface should not over-announce visual formatting.
+Users can query it or enable verbose announcements.</p>
+<h3 id="unsupported-formatting">17.3 Unsupported formatting</h3>
+<p>Unknown or advanced style attributes must remain attached to the
+semantic run and survive unrelated edits.</p>
+<p>When editing inside a run with unsupported styling:</p>
+<ul>
+<li>Preserve inherited styling where possible.</li>
+<li>Warn only when the requested operation would discard unsupported
+properties.</li>
+<li>Offer “preserve existing formatting” as the default.</li>
+</ul>
+<hr />
+<h2 id="links">18. Links</h2>
+<h3 id="link-interaction">18.1 Link interaction</h3>
+<ul>
+<li>Ctrl+K opens Link Editor.</li>
+<li>Enter or a configurable command follows the link after
+confirmation/preferences.</li>
+<li>F2 on linked text opens Link Editor.</li>
+<li>A command announces link text and destination.</li>
+</ul>
+<h3 id="link-editor-fields">18.2 Link Editor fields</h3>
+<ul>
+<li>Display text.</li>
+<li>Address.</li>
+<li>Accessible description, if QUILL maintains one locally or the
+provider supports it.</li>
+<li>Open link.</li>
+<li>Remove link.</li>
+<li>Apply/Cancel.</li>
+</ul>
+<h3 id="safety">18.3 Safety</h3>
+<ul>
+<li>Identify suspicious schemes.</li>
+<li>Never execute unsupported URI schemes without confirmation.</li>
+<li>Announce when display text and destination domain differ
+significantly.</li>
+<li>Preserve provider rich-link data as an unsupported or partially
+supported object when it is not a standard URL link.</li>
+</ul>
+<hr />
+<h2 id="images-and-embedded-objects">19. Images and Embedded
+Objects</h2>
+<h3 id="main-surface-representation">19.1 Main-surface
+representation</h3>
+<p>Example:</p>
+<pre class="text"><code>[Image 2: QUILL logo. Alternative text: Blue quill beside the word QUILL. Press F2 for details.]</code></pre>
+<h3 id="image-details-dialog">19.2 Image Details dialog</h3>
+<p>Where provider data permits:</p>
+<ul>
+<li>Alternative text.</li>
+<li>Description.</li>
+<li>Caption.</li>
+<li>Source or link.</li>
+<li>Dimensions.</li>
+<li>Replace image.</li>
+<li>Download image.</li>
+<li>Remove image.</li>
+<li>Open in Google Docs.</li>
+</ul>
+<h3 id="initial-edit-policy">19.3 Initial edit policy</h3>
+<ul>
+<li>Preserve all images.</li>
+<li>Allow metadata edits only after round-trip verification.</li>
+<li>Support image insertion later or in a controlled first-release
+scope.</li>
+<li>Treat floating/positioned images conservatively.</li>
+<li>Never change image position merely because surrounding text
+changed.</li>
+</ul>
+<h3 id="drawings-charts-equations-and-rich-embeds">19.4 Drawings,
+charts, equations, and rich embeds</h3>
+<p>Represent as protected objects:</p>
+<pre class="text"><code>[Embedded Google drawing: Preserved. Editing requires Google Docs.]</code></pre>
+<p>Available actions:</p>
+<ul>
+<li>Read metadata.</li>
+<li>Copy accessible description.</li>
+<li>Open in Google Docs.</li>
+<li>Delete with confirmation.</li>
+<li>Replace when implementation is safe.</li>
+<li>Include in unsupported-content report.</li>
+</ul>
+<hr />
+<h2 id="footnotes-headers-footers-sections-and-page-breaks">20.
+Footnotes, Headers, Footers, Sections, and Page Breaks</h2>
+<h3 id="footnotes">20.1 Footnotes</h3>
+<p>A reference appears as:</p>
+<pre class="text"><code>The project began in 2025.[Footnote 1]</code></pre>
+<p>Enter reads the footnote. F2 edits it in a multiline field.</p>
+<p>Requirements:</p>
+<ul>
+<li>Preserve source segment ID.</li>
+<li>Maintain reference-to-footnote relationship.</li>
+<li>Support insert, edit, and delete after API round-trip testing.</li>
+<li>Return focus to the reference.</li>
+<li>Include footnotes in search when configured.</li>
+</ul>
+<h3 id="headers-and-footers">20.2 Headers and footers</h3>
+<p>Access through:</p>
+<ul>
+<li>Document → Headers and Footers.</li>
+<li>Object navigation.</li>
+<li>A dedicated segment selector.</li>
+</ul>
+<p>Edit in a normal multiline semantic surface, not inside the main body
+projection.</p>
+<h3 id="page-breaks">20.3 Page breaks</h3>
+<p>Represent with a concise protected marker:</p>
+<pre class="text"><code>[Page break]</code></pre>
+<p>Allow insertion and deletion.</p>
+<h3 id="section-breaks">20.4 Section breaks</h3>
+<p>Represent:</p>
+<pre class="text"><code>[Section break: next page]</code></pre>
+<p>Advanced section properties may be preserved but not fully editable
+initially.</p>
+<hr />
+<h2 id="document-tabs-1">21. Document Tabs</h2>
+<h3 id="navigation">21.1 Navigation</h3>
+<ul>
+<li>Ctrl+Page Down: next document tab.</li>
+<li>Ctrl+Page Up: previous document tab.</li>
+<li>Document → Tabs opens a tree for nested tabs.</li>
+<li>A command announces current tab and position.</li>
+</ul>
+<p>Example:</p>
+<blockquote>
+<p>Tab 2 of 4, Implementation, child of Product Plan.</p>
+</blockquote>
+<h3 id="tab-manager">21.2 Tab Manager</h3>
+<p>Tree-based dialog:</p>
+<ul>
+<li>Search/filter.</li>
+<li>Open selected tab.</li>
+<li>Add tab.</li>
+<li>Rename tab.</li>
+<li>Move/reparent tab when supported.</li>
+<li>Delete tab with content-impact confirmation.</li>
+<li>Open tab in Google Docs.</li>
+</ul>
+<h3 id="focus-persistence">21.3 Focus persistence</h3>
+<p>QUILL stores:</p>
+<ul>
+<li>Last caret semantic position per tab.</li>
+<li>Last selection per tab.</li>
+<li>Fold/navigation state per tab.</li>
+<li>Last structured object opened per tab when useful.</li>
+</ul>
+<h3 id="api-rules">21.4 API rules</h3>
+<p>Every applicable update must specify the intended <code>tabId</code>.
+The implementation must never rely on Google defaulting to the first
+tab.</p>
+<hr />
+<h2 id="comments-and-discussions">22. Comments and Discussions</h2>
+<h3 id="comments-center">22.1 Comments Center</h3>
+<p>A dedicated accessible dialog will list discussions with:</p>
+<ul>
+<li>Status: open/resolved.</li>
+<li>Author.</li>
+<li>Date.</li>
+<li>Quoted/anchored text where available.</li>
+<li>Comment text.</li>
+<li>Replies.</li>
+<li>Assignment information where available.</li>
+<li>Current tab/context.</li>
+</ul>
+<h3 id="commands">22.2 Commands</h3>
+<ul>
+<li>Next/previous comment.</li>
+<li>Filter open/resolved/all.</li>
+<li>Filter mentions/assigned.</li>
+<li>Reply.</li>
+<li>Edit own comment where permitted.</li>
+<li>Resolve/reopen where API and permissions permit.</li>
+<li>Delete own comment with confirmation.</li>
+<li>Go to anchor.</li>
+<li>Open in Google Docs.</li>
+<li>Copy discussion.</li>
+</ul>
+<h3 id="main-surface-presentation">22.3 Main-surface presentation</h3>
+<p>Configurable:</p>
+<ul>
+<li>Hidden, accessible through Comments Center.</li>
+<li>Compact marker.</li>
+<li>Inline expanded marker.</li>
+<li>Announce on caret entry only.</li>
+</ul>
+<p>Default should avoid clutter while still announcing that a paragraph
+or range has comments.</p>
+<h3 id="anchor-limitations">22.4 Anchor limitations</h3>
+<p>Google Drive comment anchors may not provide a complete, stable
+editable mapping for every Google Docs scenario. QUILL must:</p>
+<ul>
+<li>Use quoted content and anchor metadata where available.</li>
+<li>Treat uncertain anchors as approximate.</li>
+<li>Never jump to a misleading location without saying the match is
+approximate.</li>
+<li>Offer search for quoted text.</li>
+<li>Open the discussion in Google Docs when precise placement cannot be
+determined.</li>
+</ul>
+<hr />
+<h2 id="suggestions">23. Suggestions</h2>
+<h3 id="api-limitation">23.1 API limitation</h3>
+<p>The Google Docs API can expose suggestions but does not allow
+applications to create, accept, or reject them programmatically.</p>
+<h3 id="quill-behavior">23.2 QUILL behavior</h3>
+<p>QUILL will:</p>
+<ul>
+<li>Retrieve documents using an appropriate suggestions view mode.</li>
+<li>Preserve suggestion metadata.</li>
+<li>Provide a Suggestions Review dialog.</li>
+<li>Identify suggested insertions, deletions, and style changes.</li>
+<li>Read a preview with suggestions included, accepted, or
+rejected.</li>
+<li>Navigate to affected content.</li>
+<li>Open the document in Google Docs to accept or reject
+suggestions.</li>
+</ul>
+<h3 id="editing-around-suggestions">23.3 Editing around suggestions</h3>
+<p>Because suggestion view modes affect indexes:</p>
+<ul>
+<li>Synchronization reads must use <code>SUGGESTIONS_INLINE</code> when
+indexes will be used for subsequent updates.</li>
+<li>Editing directly inside unresolved suggested ranges may be
+restricted in the initial release.</li>
+<li>QUILL must explain the restriction and offer:
+<ul>
+<li>Edit surrounding text.</li>
+<li>Open suggestion in Google Docs.</li>
+<li>View accepted/rejected preview.</li>
+</ul></li>
+<li>No suggestion metadata may be silently stripped.</li>
+</ul>
+<hr />
+<h2 id="authentication-and-account-management">24. Authentication and
+Account Management</h2>
+<h3 id="oauth-model">24.1 OAuth model</h3>
+<p>Use Google’s OAuth 2.0 installed/desktop application flow.</p>
+<p>Requirements:</p>
+<ul>
+<li>Authorization occurs in the user’s default browser.</li>
+<li>QUILL never requests or stores the Google password.</li>
+<li>Use Authorization Code flow with PKCE where supported by the
+selected library and Google configuration.</li>
+<li>Use a loopback receiver or approved HTTPS redirect bridge according
+to current Google requirements.</li>
+<li>Validate <code>state</code>.</li>
+<li>Use exact redirect URI registration.</li>
+<li>Handle user cancellation.</li>
+<li>Support account selection.</li>
+<li>Request offline access only when durable synchronization requires
+it.</li>
+</ul>
+<h3 id="scope-strategy">24.2 Scope strategy</h3>
+<p>Default to:</p>
+<pre class="text"><code>https://www.googleapis.com/auth/drive.file</code></pre>
+<p>Rationale:</p>
+<ul>
+<li>Per-file access.</li>
+<li>User chooses files.</li>
+<li>Works with Google Docs batch updates.</li>
+<li>Avoids broad access to all Drive files.</li>
+<li>Simplifies trust and verification compared with restricted all-Drive
+scopes.</li>
+</ul>
+<p>The product must not request broader Drive scopes merely to implement
+a convenient custom global file browser.</p>
+<h3 id="picker-workflow">24.3 Picker workflow</h3>
+<p>For desktop Picker integration:</p>
+<ul>
+<li>Launch the Google Picker in the default browser.</li>
+<li>Filter to Google Docs MIME type where appropriate.</li>
+<li>Return selected file IDs through the approved callback.</li>
+<li>Exchange the authorization code securely.</li>
+<li>Store authorized file metadata locally for Recent Google
+Documents.</li>
+</ul>
+<p>The Picker flow and account connection flow may need to be
+coordinated carefully because current Picker desktop guidance imposes
+scope constraints. Engineering must implement against current Google
+documentation and automated integration tests.</p>
+<h3 id="credential-storage">24.4 Credential storage</h3>
+<ul>
+<li>Store refresh tokens through Windows Credential Manager via a vetted
+keyring abstraction.</li>
+<li>Never store tokens in plaintext configuration files.</li>
+<li>Do not include tokens in logs, crash reports, clipboard data, or
+diagnostics bundles.</li>
+<li>Store access tokens in memory only where practical.</li>
+<li>Clear tokens from memory references on disconnect.</li>
+<li>Support token revocation and local credential removal.</li>
+<li>Distinguish multiple Google accounts by stable account identifier
+and display email.</li>
+</ul>
+<h3 id="account-manager">24.5 Account Manager</h3>
+<p>Display:</p>
+<ul>
+<li>Account email.</li>
+<li>Connection state.</li>
+<li>Last authorization date.</li>
+<li>Number of documents authorized in QUILL’s local history.</li>
+<li>Reauthorize.</li>
+<li>Disconnect.</li>
+<li>Remove local recent-document history.</li>
+<li>Open Google account permissions page.</li>
+</ul>
+<h3 id="organization-restrictions">24.6 Organization restrictions</h3>
+<p>Error guidance must distinguish:</p>
+<ul>
+<li>User denied access.</li>
+<li>Workspace administrator blocked the app.</li>
+<li>File belongs to another account.</li>
+<li>User has view/comment-only access.</li>
+<li>File has been deleted or moved.</li>
+<li>App lacks file authorization.</li>
+<li>OAuth consent is incomplete or unverified.</li>
+<li>Sharing policy prohibits an action.</li>
+</ul>
+<hr />
+<h2 id="google-cloud-project-and-distribution-requirements">25. Google
+Cloud Project and Distribution Requirements</h2>
+<p>Before public release:</p>
+<ul>
+<li>Create a production Google Cloud project owned by the appropriate
+QUILL organization.</li>
+<li>Enable Google Docs API, Google Drive API, and Google Picker API as
+required.</li>
+<li>Configure OAuth branding and consent.</li>
+<li>Register production desktop client credentials.</li>
+<li>Configure authorized redirect flow.</li>
+<li>Publish privacy policy and terms links.</li>
+<li>Complete required OAuth verification.</li>
+<li>Prepare screen recordings and reviewer instructions if
+requested.</li>
+<li>Document data use and retention.</li>
+<li>Rotate/revoke compromised credentials.</li>
+<li>Separate development, test, and production Cloud projects.</li>
+<li>Restrict project administration to authorized maintainers.</li>
+<li>Enable audit and budget alerts.</li>
+<li>Track changes in Google API policies and quotas.</li>
+</ul>
+<p>Desktop OAuth client identifiers are distributed with the application
+and must not be treated as confidential secrets. No privileged server
+secret may be embedded in QUILL.</p>
+<hr />
+<h2 id="cloud-document-provider-architecture">26. Cloud Document
+Provider Architecture</h2>
+<h3 id="interface">26.1 Interface</h3>
+<p>Illustrative Python protocol:</p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> CloudDocumentProvider(Protocol):</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    provider_id: <span class="bu">str</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">async</span> <span class="kw">def</span> connect_account(<span class="va">self</span>) <span class="op">-&gt;</span> AccountInfo: ...</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">async</span> <span class="kw">def</span> disconnect_account(<span class="va">self</span>, account_id: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">async</span> <span class="kw">def</span> choose_document(<span class="va">self</span>, account_id: <span class="bu">str</span>) <span class="op">-&gt;</span> DocumentReference: ...</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">async</span> <span class="kw">def</span> open_document(<span class="va">self</span>, ref: DocumentReference) <span class="op">-&gt;</span> CloudDocumentSnapshot: ...</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">async</span> <span class="kw">def</span> create_document(<span class="va">self</span>, request: CreateDocumentRequest) <span class="op">-&gt;</span> CloudDocumentSnapshot: ...</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">async</span> <span class="kw">def</span> apply_operations(</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>,</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>        session: CloudDocumentSession,</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>        operations: <span class="bu">list</span>[SemanticOperation],</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>        policy: WritePolicy,</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>    ) <span class="op">-&gt;</span> ApplyResult: ...</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">async</span> <span class="kw">def</span> refresh_document(<span class="va">self</span>, session: CloudDocumentSession) <span class="op">-&gt;</span> RefreshResult: ...</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">async</span> <span class="kw">def</span> get_comments(<span class="va">self</span>, session: CloudDocumentSession) <span class="op">-&gt;</span> <span class="bu">list</span>[Discussion]: ...</span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">async</span> <span class="kw">def</span> open_in_provider(<span class="va">self</span>, session: CloudDocumentSession) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">async</span> <span class="kw">def</span> get_permissions(<span class="va">self</span>, session: CloudDocumentSession) <span class="op">-&gt;</span> PermissionInfo: ...</span></code></pre></div>
+<h3 id="google-specific-modules">26.2 Google-specific modules</h3>
+<p>Suggested package structure:</p>
+<pre class="text"><code>quill/
+  cloud/
+    contracts.py
+    models.py
+    operation_journal.py
+    recovery.py
+    sync_coordinator.py
+    conflict_engine.py
+    status.py
+    providers/
+      google_docs/
+        provider.py
+        auth.py
+        picker.py
+        docs_client.py
+        drive_client.py
+        parser.py
+        serializer.py
+        operation_translator.py
+        revision_control.py
+        comments.py
+        permissions.py
+        error_mapping.py
+        capabilities.py
+  document_model/
+    nodes.py
+    styles.py
+    projection.py
+    mappings.py
+    operations.py
+    validators.py
+  ui/
+    cloud_documents/
+    structured_editors/</code></pre>
+<h3 id="dependency-direction">26.3 Dependency direction</h3>
+<ul>
+<li>UI depends on provider-independent contracts.</li>
+<li>Semantic model never imports Google client types.</li>
+<li>Google provider translates JSON/resources into internal models.</li>
+<li>Synchronization coordinator operates on semantic operations.</li>
+<li>Provider-specific exceptions are mapped to QUILL error
+categories.</li>
+<li>No Google-specific conditionals should be scattered through the main
+editor.</li>
+</ul>
+<hr />
+<h2 id="google-api-client-layer">27. Google API Client Layer</h2>
+<h3 id="recommended-libraries">27.1 Recommended libraries</h3>
+<p>Use maintained Google Python libraries where suitable:</p>
+<ul>
+<li><code>google-api-python-client</code></li>
+<li><code>google-auth</code></li>
+<li><code>google-auth-oauthlib</code></li>
+<li><code>google-auth-httplib2</code> or a maintained supported
+transport</li>
+<li>A vetted keyring package for Windows Credential Manager
+integration</li>
+</ul>
+<p>Pin compatible versions in the release build and run dependency
+vulnerability scanning.</p>
+<h3 id="threading-and-async-behavior">27.2 Threading and async
+behavior</h3>
+<p>No network request may block the wxPython UI thread.</p>
+<p>Requirements:</p>
+<ul>
+<li>All API work runs in a controlled worker/executor or asynchronous
+service layer.</li>
+<li>UI updates return through <code>wx.CallAfter</code> or the project’s
+approved event mechanism.</li>
+<li>Cancellation tokens stop obsolete refresh/open operations.</li>
+<li>Closing a document flushes or journals pending operations without
+hanging the UI.</li>
+<li>Worker exceptions are captured and mapped.</li>
+<li>A hung network request has a timeout.</li>
+<li>Retries are bounded and cancellable.</li>
+</ul>
+<h3 id="request-fields-and-performance">27.3 Request fields and
+performance</h3>
+<ul>
+<li>Request only needed fields from Drive.</li>
+<li>Use <code>includeTabsContent=True</code> when retrieving full tab
+content.</li>
+<li>Use <code>SUGGESTIONS_INLINE</code> when indexes are needed for
+updates.</li>
+<li>Batch related Docs updates.</li>
+<li>Avoid a network write for each keystroke.</li>
+<li>Cache immutable metadata cautiously.</li>
+<li>Invalidate cache on external change or permission change.</li>
+</ul>
+<hr />
+<h2 id="synchronization-model">28. Synchronization Model</h2>
+<h3 id="local-first-editing">28.1 Local-first editing</h3>
+<p>Typing updates the local semantic model immediately. Network failure
+must not block the editor.</p>
+<p>Pipeline:</p>
+<pre class="text"><code>User edit
+  → semantic operation
+  → apply locally
+  → append durable journal entry
+  → mark pending
+  → debounce/coalesce
+  → translate to Google requests
+  → apply with revision control
+  → refresh affected model/revision metadata
+  → mark journal entries committed</code></pre>
+<h3 id="autosave-policy">28.2 Autosave policy</h3>
+<p>Recommended defaults:</p>
+<ul>
+<li>Debounce for 2 seconds after typing stops.</li>
+<li>Maximum unsent interval of 10 seconds during continuous
+editing.</li>
+<li>Flush before:
+<ul>
+<li>Closing the document.</li>
+<li>Switching accounts.</li>
+<li>Explicit refresh.</li>
+<li>Structural editor close.</li>
+<li>Opening in Google Docs, when practical.</li>
+<li>Application shutdown.</li>
+</ul></li>
+<li>Combine compatible operations.</li>
+<li>Send structural operations promptly after the structured editor
+applies them.</li>
+<li>Respect API quotas.</li>
+</ul>
+<p>These values must be configurable internally and may later be user
+configurable.</p>
+<h3 id="operation-coalescing">28.3 Operation coalescing</h3>
+<p>Examples:</p>
+<ul>
+<li>Consecutive inserts in the same run become one insert.</li>
+<li>Insert followed by delete of the same unsent text cancels.</li>
+<li>Repeated style toggles collapse to final state.</li>
+<li>Multiple cell edits may batch if no structural dependency
+exists.</li>
+<li>Operations must not reorder across semantic dependencies.</li>
+</ul>
+<h3 id="durable-operation-journal">28.4 Durable operation journal</h3>
+<p>Use a local transactional store, preferably SQLite, with:</p>
+<ul>
+<li>Document ID.</li>
+<li>Account ID.</li>
+<li>Provider ID.</li>
+<li>Base revision ID.</li>
+<li>Local sequence number.</li>
+<li>Operation type and payload.</li>
+<li>Created time.</li>
+<li>Commit state.</li>
+<li>Retry count.</li>
+<li>Last error category.</li>
+<li>Content encryption policy.</li>
+<li>Recovery snapshot reference.</li>
+</ul>
+<p>SQLite should use transactions and safe journaling settings
+appropriate to the application.</p>
+<h3 id="shadow-snapshot">28.5 Shadow snapshot</h3>
+<p>Store:</p>
+<ul>
+<li>Last successfully loaded semantic model.</li>
+<li>Provider revision ID.</li>
+<li>Tab metadata.</li>
+<li>Node hashes.</li>
+<li>Unsupported object payloads or sufficient provider
+representation.</li>
+<li>Permission state.</li>
+<li>Last sync time.</li>
+</ul>
+<p>Sensitive document cache behavior must be configurable and
+documented. Users must be able to clear local cloud-document data.</p>
+<hr />
+<h2 id="revision-and-conflict-strategy">29. Revision and Conflict
+Strategy</h2>
+<h3 id="google-write-controls">29.1 Google write controls</h3>
+<p>Google Docs supports:</p>
+<ul>
+<li><code>requiredRevisionId</code>: fail if the specified revision is
+not current.</li>
+<li><code>targetRevisionId</code>: apply changes against newer
+collaborator changes when possible.</li>
+</ul>
+<h3 id="policy">29.2 Policy</h3>
+<p>Use <strong>collaborative write</strong> with
+<code>targetRevisionId</code> for carefully bounded text/style
+operations where:</p>
+<ul>
+<li>The base revision is recent.</li>
+<li>The semantic source span remains valid.</li>
+<li>The operation does not cross unsupported objects.</li>
+<li>The translator can express exact intent.</li>
+<li>Automated tests cover the operation.</li>
+</ul>
+<p>Use <strong>strict write</strong> with
+<code>requiredRevisionId</code> for:</p>
+<ul>
+<li>Table structural changes.</li>
+<li>Tab deletion/reparenting.</li>
+<li>Bulk deletion across objects.</li>
+<li>Header/footer/footnote structural changes.</li>
+<li>Unsupported-object-adjacent edits.</li>
+<li>Operations whose safe transformation is uncertain.</li>
+<li>Any operation marked high risk.</li>
+</ul>
+<h3 id="preflight-refresh">29.3 Preflight refresh</h3>
+<p>Refresh before a strict structural write when:</p>
+<ul>
+<li>Base revision is older than a configured threshold.</li>
+<li>A remote-change signal is present.</li>
+<li>The document is actively shared.</li>
+<li>The previous write reported a stale revision.</li>
+<li>The local operation touches a range modified remotely.</li>
+</ul>
+<h3 id="conflict-categories">29.4 Conflict categories</h3>
+<ul>
+<li>No conflict: apply normally.</li>
+<li>Auto-merge safe: provider applies against remote changes.</li>
+<li>Text overlap: both sides changed the same semantic range.</li>
+<li>Structural overlap: table/list/tab structure changed.</li>
+<li>Object deletion conflict: one side deleted an object edited by the
+other.</li>
+<li>Permission conflict: edit rights changed.</li>
+<li>Stale revision: target no longer valid.</li>
+<li>Projection integrity conflict: local mapping cannot be trusted.</li>
+<li>Unsupported-content risk: requested operation may destroy unknown
+data.</li>
+</ul>
+<h3 id="conflict-review-dialog">29.5 Conflict Review dialog</h3>
+<p>Must be screen-reader friendly and avoid a purely visual diff.</p>
+<p>For each conflict:</p>
+<ul>
+<li>Context before.</li>
+<li>Local version.</li>
+<li>Google version.</li>
+<li>Optional combined proposal.</li>
+<li>Semantic location: tab, heading path, paragraph, table cell.</li>
+<li>Actions:
+<ul>
+<li>Keep local.</li>
+<li>Keep Google.</li>
+<li>Use combined.</li>
+<li>Edit result.</li>
+<li>Save local work as a copy.</li>
+<li>Defer.</li>
+<li>Open in Google Docs.</li>
+</ul></li>
+</ul>
+<p>Use multiline read-only/edit fields so users can arrow through
+content.</p>
+<h3 id="no-conflict-data-preservation">29.6 No-conflict data
+preservation</h3>
+<p>Unrelated remote changes must be retained. QUILL must never resolve a
+conflict by replacing the entire Google document body with its local
+projection.</p>
+<hr />
+<h2 id="remote-change-detection">30. Remote Change Detection</h2>
+<h3 id="initial-approach">30.1 Initial approach</h3>
+<p>The first release will use polling and lifecycle checks:</p>
+<ul>
+<li>Before applying a save batch when needed.</li>
+<li>When the QUILL window regains focus after a meaningful
+interval.</li>
+<li>On explicit Refresh.</li>
+<li>At a low-frequency interval while a document is open.</li>
+<li>Before high-risk structural operations.</li>
+</ul>
+<h3 id="polling-behavior">30.2 Polling behavior</h3>
+<ul>
+<li>Poll metadata/revision indicators, not full content, when
+possible.</li>
+<li>Back off when the document is idle.</li>
+<li>Stop polling when no Google document is open.</li>
+<li>Do not poll more frequently than necessary.</li>
+<li>Respect metered/offline state when detectable.</li>
+</ul>
+<h3 id="future-push-notifications">30.3 Future push notifications</h3>
+<p>Drive change watches or Google Workspace Events may be considered
+later. A desktop app may require a public HTTPS receiver or relay
+service. This is not required for initial release and must undergo
+privacy, cost, operations, and security review.</p>
+<h3 id="user-notifications">30.4 User notifications</h3>
+<ul>
+<li>Do not interrupt for every remote save.</li>
+<li>Announce when remote changes are incorporated.</li>
+<li>Announce when review is required.</li>
+<li>Provide a count and summary.</li>
+<li>Allow automatic refresh preferences for non-conflicting
+changes.</li>
+</ul>
+<hr />
+<h2 id="offline-and-network-failure-behavior">31. Offline and Network
+Failure Behavior</h2>
+<h3 id="offline-state">31.1 Offline state</h3>
+<p>When connectivity is unavailable:</p>
+<ul>
+<li>Editing continues.</li>
+<li>Operations are journaled.</li>
+<li>Title/status says <code>Offline, N changes pending</code>.</li>
+<li>Explicit Save says changes are safely stored locally but not yet on
+Google.</li>
+<li>Structured editors continue to work against the local model when
+safe.</li>
+<li>Operations requiring a provider fetch are disabled with an
+explanation.</li>
+</ul>
+<h3 id="reconnection">31.2 Reconnection</h3>
+<p>On reconnect:</p>
+<ol type="1">
+<li>Refresh remote metadata/revision.</li>
+<li>Retrieve current document if necessary.</li>
+<li>Rebase pending operations.</li>
+<li>Apply automatically if safe.</li>
+<li>Open conflict review if not safe.</li>
+<li>Update status and announce outcome.</li>
+</ol>
+<h3 id="authentication-expiration">31.3 Authentication expiration</h3>
+<p>If refresh fails:</p>
+<ul>
+<li>Keep editing locally.</li>
+<li>Mark <code>Sign-in required, N changes pending</code>.</li>
+<li>Prompt at a non-destructive moment.</li>
+<li>After reauthorization, resume synchronization.</li>
+<li>Never discard the journal because a token is invalid.</li>
+</ul>
+<h3 id="save-as-copy-fallback">31.4 Save as copy fallback</h3>
+<p>At all times, users can:</p>
+<ul>
+<li>Save pending content as a local QUILL recovery document.</li>
+<li>Export as Markdown.</li>
+<li>Export as plain text.</li>
+<li>Create a new Google document after reauthorization.</li>
+<li>Copy all local text.</li>
+<li>Generate a conflict package for support without credentials.</li>
+</ul>
+<hr />
+<h2 id="permissions-and-read-only-modes">32. Permissions and Read-Only
+Modes</h2>
+<h3 id="permission-states">32.1 Permission states</h3>
+<ul>
+<li>Owner/editor.</li>
+<li>Commenter.</li>
+<li>Viewer.</li>
+<li>Unknown/revoked.</li>
+<li>Organization blocked.</li>
+</ul>
+<h3 id="viewer-behavior">32.2 Viewer behavior</h3>
+<ul>
+<li>Text and objects are readable.</li>
+<li>Editing commands are disabled.</li>
+<li>Copy/export remains available according to policy and API.</li>
+<li>Status clearly says read-only.</li>
+<li>Open in Google Docs remains available.</li>
+</ul>
+<h3 id="commenter-behavior">32.3 Commenter behavior</h3>
+<ul>
+<li>Document content is read-only.</li>
+<li>Comment and reply actions are available where permitted.</li>
+<li>Suggestions cannot be created through the Docs API; QUILL must not
+pretend otherwise.</li>
+</ul>
+<h3 id="permission-changes-while-open">32.4 Permission changes while
+open</h3>
+<ul>
+<li>Preserve unsent local changes.</li>
+<li>Stop writes.</li>
+<li>Explain that access changed.</li>
+<li>Offer save as copy/export.</li>
+<li>Refresh permission state after user action.</li>
+</ul>
+<hr />
+<h2 id="error-handling">33. Error Handling</h2>
+<h3 id="error-categories">33.1 Error categories</h3>
+<p>Map provider failures into stable QUILL categories:</p>
+<ul>
+<li>Authentication required.</li>
+<li>Authorization denied.</li>
+<li>Permission denied.</li>
+<li>File not found.</li>
+<li>File deleted/trashed.</li>
+<li>File not authorized for QUILL.</li>
+<li>Invalid document type.</li>
+<li>Quota/rate limit.</li>
+<li>Temporary Google service failure.</li>
+<li>Network unavailable.</li>
+<li>Timeout.</li>
+<li>Stale revision.</li>
+<li>Invalid operation.</li>
+<li>Unsupported document structure.</li>
+<li>Local cache/journal failure.</li>
+<li>Internal mapping error.</li>
+</ul>
+<h3 id="user-facing-messages">33.2 User-facing messages</h3>
+<p>Messages must answer:</p>
+<ol type="1">
+<li>What happened?</li>
+<li>Is the user’s work safe?</li>
+<li>What will QUILL do automatically?</li>
+<li>What action is available?</li>
+</ol>
+<p>Example:</p>
+<blockquote>
+<p>Google could not save this change because the document changed
+elsewhere. Your work is safe on this computer. QUILL will refresh the
+document and ask you to review any overlapping changes.</p>
+</blockquote>
+<h3 id="retry-policy">33.3 Retry policy</h3>
+<p>For 429 and transient 5xx responses:</p>
+<ul>
+<li>Use truncated exponential backoff with jitter.</li>
+<li>Honor provider retry guidance and headers where available.</li>
+<li>Bound retries for foreground commands.</li>
+<li>Continue background retry for journaled work without blocking
+editing.</li>
+<li>Allow the user to retry now.</li>
+<li>Avoid synchronized retry storms.</li>
+</ul>
+<p>Do not automatically retry:</p>
+<ul>
+<li>Permission denial.</li>
+<li>Invalid request caused by a translation bug.</li>
+<li>User cancellation.</li>
+<li>Confirmed file deletion.</li>
+<li>Persistent malformed structure.</li>
+</ul>
+<h3 id="diagnostics">33.4 Diagnostics</h3>
+<p>Diagnostic records may include:</p>
+<ul>
+<li>Operation type.</li>
+<li>Provider endpoint category.</li>
+<li>HTTP status.</li>
+<li>Error reason.</li>
+<li>Document ID hashed or redacted by default.</li>
+<li>Revision age.</li>
+<li>Retry count.</li>
+<li>Mapping node type.</li>
+<li>Timing.</li>
+</ul>
+<p>Do not log:</p>
+<ul>
+<li>OAuth tokens.</li>
+<li>Authorization codes.</li>
+<li>Full document text.</li>
+<li>Comment text.</li>
+<li>File titles unless the user opts in to a support bundle.</li>
+<li>Email addresses unless explicitly included with consent.</li>
+</ul>
+<hr />
+<h2 id="quota-and-performance-requirements">34. Quota and Performance
+Requirements</h2>
+<h3 id="current-google-docs-api-considerations">34.1 Current Google Docs
+API considerations</h3>
+<p>As of this PRD’s verification date, Google documents quotas include
+per-user and per-project read/write limits. The design must not assume
+unlimited requests.</p>
+<h3 id="performance-targets">34.2 Performance targets</h3>
+<p>On a typical supported Windows system:</p>
+<ul>
+<li>Local keystroke response: indistinguishable from a local QUILL
+document.</li>
+<li>Open progress indication begins within 250 ms.</li>
+<li>First readable content for ordinary documents should appear as early
+as practical.</li>
+<li>Switching an already loaded tab should feel immediate.</li>
+<li>Structured editor navigation should not make network calls.</li>
+<li>Autosave occurs in the background.</li>
+<li>Closing QUILL should not hang indefinitely on a network
+operation.</li>
+</ul>
+<h3 id="large-documents">34.3 Large documents</h3>
+<p>For large documents:</p>
+<ul>
+<li>Parse in a worker.</li>
+<li>Provide progress by tab/section.</li>
+<li>Consider lazy projection by tab.</li>
+<li>Avoid quadratic mapping updates.</li>
+<li>Use interval trees, piece tables, ropes, or another suitable span
+structure rather than repeatedly shifting every later offset.</li>
+<li>Defer expensive unsupported-object analysis.</li>
+<li>Warn before operations that require a full rebuild.</li>
+</ul>
+<h3 id="api-batching">34.4 API batching</h3>
+<ul>
+<li>Batch compatible edits.</li>
+<li>Keep batches small enough to diagnose and recover.</li>
+<li>Preserve operation ordering.</li>
+<li>Split very large batches.</li>
+<li>On partial design: remember <code>batchUpdate</code> validates
+requests and fails the entire batch if any request is invalid.</li>
+<li>Reconcile returned replies to operation IDs.</li>
+</ul>
+<hr />
+<h2 id="security-and-privacy-requirements">35. Security and Privacy
+Requirements</h2>
+<h3 id="least-privilege">35.1 Least privilege</h3>
+<ul>
+<li>Use <code>drive.file</code> by default.</li>
+<li>Do not request broad Drive access for convenience.</li>
+<li>Separate optional capabilities that would require broader
+scopes.</li>
+<li>Explain scope changes before authorization.</li>
+</ul>
+<h3 id="local-data-protection">35.2 Local data protection</h3>
+<ul>
+<li>Credentials in Windows Credential Manager.</li>
+<li>Local cache stored in the user’s profile with restrictive
+permissions.</li>
+<li>Consider encryption at rest for cached content and journals.</li>
+<li>Never place recovery content in a shared temporary directory.</li>
+<li>Securely delete local cache entries where practical when the user
+chooses Clear Data.</li>
+<li>Do not upload document content to QUILL-operated services by
+default.</li>
+</ul>
+<h3 id="network-security">35.3 Network security</h3>
+<ul>
+<li>HTTPS only.</li>
+<li>Validate TLS normally; no certificate bypass.</li>
+<li>Validate OAuth <code>state</code>.</li>
+<li>Use short-lived authorization codes.</li>
+<li>Do not accept callback data from arbitrary origins.</li>
+<li>Avoid exposing a long-lived local callback listener.</li>
+<li>Sanitize provider errors before display/logging.</li>
+</ul>
+<h3 id="content-safety">35.4 Content safety</h3>
+<ul>
+<li>Treat document content as untrusted.</li>
+<li>Do not execute embedded scripts or macros.</li>
+<li>Sanitize HTML from comments before rendering in rich controls.</li>
+<li>Open links through safe system mechanisms.</li>
+<li>Do not auto-download or open attachments/embedded resources.</li>
+<li>Prevent path traversal in exports/downloads.</li>
+</ul>
+<h3 id="privacy-documentation">35.5 Privacy documentation</h3>
+<p>Publish:</p>
+<ul>
+<li>What data QUILL accesses.</li>
+<li>Why it accesses it.</li>
+<li>Where tokens are stored.</li>
+<li>Whether document content is cached.</li>
+<li>How to clear data.</li>
+<li>How to revoke access.</li>
+<li>Whether diagnostics include content.</li>
+<li>Whether any QUILL server is involved.</li>
+<li>Retention behavior.</li>
+</ul>
+<hr />
+<h2 id="accessibility-requirements">36. Accessibility Requirements</h2>
+<h3 id="standards-and-principles">36.1 Standards and principles</h3>
+<p>The implementation should align with:</p>
+<ul>
+<li>WCAG 2.2 AA principles where applicable to any web/callback
+surfaces.</li>
+<li>Microsoft Active Accessibility/UI Automation expectations for native
+controls.</li>
+<li>Accessible name, role, value, state, and relationship exposure.</li>
+<li>Keyboard-only operation.</li>
+<li>Predictable focus.</li>
+<li>No dependence on color or visual position.</li>
+<li>Clear error identification and recovery.</li>
+</ul>
+<h3 id="screen-reader-support-matrix">36.2 Screen-reader support
+matrix</h3>
+<p>Required testing:</p>
+<ul>
+<li>JAWS on supported Windows releases.</li>
+<li>NVDA current stable.</li>
+<li>Windows Narrator current stable.</li>
+<li>At least one high-contrast configuration.</li>
+<li>200% and higher text/display scaling where applicable.</li>
+</ul>
+<h3 id="speech-behavior">36.3 Speech behavior</h3>
+<p>Use speech/status announcements for:</p>
+<ul>
+<li>Document opened and permission state.</li>
+<li>Current tab on tab switch.</li>
+<li>Save state transitions when important.</li>
+<li>Offline/reconnected.</li>
+<li>Conflict detected/resolved.</li>
+<li>Structured editor entry/exit.</li>
+<li>Table coordinates and headings.</li>
+<li>Unsupported object limitations.</li>
+<li>Errors and recovery safety.</li>
+</ul>
+<p>Avoid:</p>
+<ul>
+<li>Speaking every autosave.</li>
+<li>Repeating title/status on every keystroke.</li>
+<li>Dumping raw error codes unless details are requested.</li>
+<li>Emoji-dependent status.</li>
+</ul>
+<h3 id="braille">36.4 Braille</h3>
+<ul>
+<li>Keep status text concise.</li>
+<li>Avoid decorative Unicode.</li>
+<li>Ensure object markers are understandable in braille.</li>
+<li>Expose table coordinates.</li>
+<li>Provide compact marker mode.</li>
+<li>Ensure focus does not jump during background sync.</li>
+</ul>
+<h3 id="focus-requirements">36.5 Focus requirements</h3>
+<ul>
+<li>Opening a document places focus at the restored semantic caret or
+document start.</li>
+<li>Background refresh must not steal focus.</li>
+<li>Applying a structured edit returns to the object marker or logical
+next position.</li>
+<li>Error dialogs focus the summary.</li>
+<li>Picker browser flow returns focus to QUILL and announces
+success/cancellation.</li>
+<li>Switching tabs restores tab-specific caret.</li>
+</ul>
+<h3 id="accessibility-acceptance-gate">36.6 Accessibility acceptance
+gate</h3>
+<p>No feature may be considered complete until:</p>
+<ul>
+<li>All operations are possible without a mouse.</li>
+<li>Controls have correct accessible names.</li>
+<li>Focus order is logical.</li>
+<li>Screen-reader announcements are useful but not noisy.</li>
+<li>Dialogs are free of keyboard traps.</li>
+<li>Error and conflict workflows are tested.</li>
+<li>Automated accessibility checks and manual testing both pass.</li>
+</ul>
+<hr />
+<h2 id="search-navigation-and-document-intelligence">37. Search,
+Navigation, and Document Intelligence</h2>
+<h3 id="search">37.1 Search</h3>
+<p>Search should operate across:</p>
+<ul>
+<li>Current tab by default.</li>
+<li>All loaded tabs.</li>
+<li>Optional headers, footers, and footnotes.</li>
+<li>Optional comments.</li>
+<li>Object alternative text.</li>
+<li>Unsupported-object descriptions.</li>
+</ul>
+<p>Results identify semantic context:</p>
+<blockquote>
+<p>Tab Implementation, Heading 2 Synchronization, paragraph 4.</p>
+</blockquote>
+<h3 id="navigation-1">37.2 Navigation</h3>
+<p>Add commands/panes for:</p>
+<ul>
+<li>Headings.</li>
+<li>Lists.</li>
+<li>Tables.</li>
+<li>Images.</li>
+<li>Links.</li>
+<li>Comments.</li>
+<li>Suggestions.</li>
+<li>Footnotes.</li>
+<li>Unsupported objects.</li>
+<li>Document tabs.</li>
+</ul>
+<h3 id="document-outline">37.3 Document outline</h3>
+<p>Build from semantic headings per tab. Selecting a heading moves the
+caret without changing content.</p>
+<hr />
+<h2 id="clipboard-import-and-export">38. Clipboard, Import, and
+Export</h2>
+<h3 id="copy">38.1 Copy</h3>
+<p>Default copy returns human-readable text. Context options:</p>
+<ul>
+<li>Copy.</li>
+<li>Copy with formatting.</li>
+<li>Copy as Markdown.</li>
+<li>Copy as HTML.</li>
+<li>Copy table as TSV.</li>
+<li>Copy table as CSV.</li>
+<li>Copy object description.</li>
+</ul>
+<h3 id="paste">38.2 Paste</h3>
+<p>Support:</p>
+<ul>
+<li>Plain text.</li>
+<li>Rich text converted to supported semantics.</li>
+<li>Markdown conversion when explicitly selected.</li>
+<li>Lines to list.</li>
+<li>TSV/CSV to table.</li>
+<li>Google Docs URL to link or open prompt.</li>
+</ul>
+<p>Pasting must not import active content.</p>
+<h3 id="export">38.3 Export</h3>
+<ul>
+<li>Markdown.</li>
+<li>Plain text.</li>
+<li>HTML where supported.</li>
+<li>Local QUILL recovery package.</li>
+<li>Future DOCX/PDF through established export paths, not as the
+canonical sync path.</li>
+</ul>
+<p>Export warnings must list unsupported/lossy content.</p>
+<hr />
+<h2 id="recovery-and-crash-safety">39. Recovery and Crash Safety</h2>
+<h3 id="recovery-guarantees">39.1 Recovery guarantees</h3>
+<p>Every locally applied semantic operation must be durable within a
+short bounded interval, independent of Google synchronization.</p>
+<h3 id="startup-recovery">39.2 Startup recovery</h3>
+<p>On startup:</p>
+<ul>
+<li>Detect uncommitted Google document sessions.</li>
+<li>Show document title/account safely.</li>
+<li>Report pending operations.</li>
+<li>Offer:
+<ul>
+<li>Reopen and synchronize.</li>
+<li>Open offline.</li>
+<li>Export recovery copy.</li>
+<li>Discard after confirmation.</li>
+</ul></li>
+<li>Never auto-discard based only on age.</li>
+</ul>
+<h3 id="corrupted-cache">39.3 Corrupted cache</h3>
+<p>If the snapshot is corrupted but journal is intact:</p>
+<ul>
+<li>Retrieve fresh remote document.</li>
+<li>Attempt journal replay.</li>
+<li>If replay cannot map safely, create conflict/recovery document.</li>
+<li>Preserve raw recovery data for support with user consent.</li>
+</ul>
+<h3 id="application-shutdown">39.4 Application shutdown</h3>
+<ul>
+<li>Attempt a short flush.</li>
+<li>Do not wait indefinitely.</li>
+<li>Ensure pending operations are committed to local journal.</li>
+<li>State on next launch that changes remain pending.</li>
+</ul>
+<hr />
+<h2 id="settings">40. Settings</h2>
+<h3 id="google-docs-settings">40.1 Google Docs settings</h3>
+<ul>
+<li>Default Google account.</li>
+<li>Autosave enabled.</li>
+<li>Save debounce policy, advanced only.</li>
+<li>Remote change check frequency.</li>
+<li>Automatically apply non-conflicting remote changes.</li>
+<li>Announce save state: minimal/balanced/verbose.</li>
+<li>Object marker detail: compact/standard/detailed.</li>
+<li>Include comments in projection.</li>
+<li>Include suggestion markers.</li>
+<li>Table announcement detail.</li>
+<li>Cache documents for offline use.</li>
+<li>Clear local cloud document cache.</li>
+<li>Open Google links in QUILL when possible.</li>
+<li>Default alternate view.</li>
+<li>Confirm object deletion.</li>
+<li>Confirm bulk edits crossing structured objects.</li>
+<li>Use Google Docs web editor for unsupported actions.</li>
+</ul>
+<h3 id="managed-settings">40.2 Managed settings</h3>
+<p>Future organization policies may:</p>
+<ul>
+<li>Disable offline cache.</li>
+<li>Disable account connection.</li>
+<li>Restrict accounts to a domain.</li>
+<li>Disable exports.</li>
+<li>Require explicit save.</li>
+<li>Disable diagnostics content.</li>
+<li>Specify OAuth client/project for managed builds, subject to
+product/security approval.</li>
+</ul>
+<hr />
+<h2 id="telemetry-and-product-analytics">41. Telemetry and Product
+Analytics</h2>
+<p>Telemetry must be opt-in or follow QUILL’s established privacy
+policy.</p>
+<p>Allowed aggregate events might include:</p>
+<ul>
+<li>Google document opened.</li>
+<li>Document created.</li>
+<li>Structured editor type opened.</li>
+<li>Save succeeded/failed by category.</li>
+<li>Conflict workflow opened.</li>
+<li>Unsupported object type encountered.</li>
+<li>Picker cancelled.</li>
+<li>Recovery restored.</li>
+</ul>
+<p>Never collect:</p>
+<ul>
+<li>Document text.</li>
+<li>File title.</li>
+<li>Comment content.</li>
+<li>URLs.</li>
+<li>Email addresses.</li>
+<li>OAuth data.</li>
+<li>Table cell content.</li>
+</ul>
+<p>All telemetry names and payloads must be documented and
+reviewable.</p>
+<hr />
+<h2 id="testing-strategy">42. Testing Strategy</h2>
+<h3 id="unit-tests">42.1 Unit tests</h3>
+<ul>
+<li>Google JSON to semantic model parsing.</li>
+<li>Semantic model to projection.</li>
+<li>Projection mapping.</li>
+<li>Edit-to-operation translation.</li>
+<li>Operation coalescing.</li>
+<li>Google request generation.</li>
+<li>Revision policy selection.</li>
+<li>Error mapping.</li>
+<li>Object marker protection.</li>
+<li>Markdown/plain-text projections.</li>
+<li>Local journal transactions.</li>
+<li>Recovery replay.</li>
+<li>Tab and segment identity.</li>
+<li>Suggestions index handling.</li>
+</ul>
+<h3 id="golden-fixture-tests">42.2 Golden fixture tests</h3>
+<p>Maintain anonymized/synthetic Google document fixtures for:</p>
+<ul>
+<li>Plain paragraphs.</li>
+<li>Mixed styles.</li>
+<li>Nested lists.</li>
+<li>Simple tables.</li>
+<li>Complex tables.</li>
+<li>Images.</li>
+<li>Footnotes.</li>
+<li>Headers/footers.</li>
+<li>Multiple nested tabs.</li>
+<li>Comments.</li>
+<li>Suggestions.</li>
+<li>Unsupported elements.</li>
+<li>Right-to-left text.</li>
+<li>Unicode and emoji.</li>
+<li>Very large documents.</li>
+</ul>
+<p>Round-trip tests compare:</p>
+<ul>
+<li>Supported semantics.</li>
+<li>Unsupported payload preservation.</li>
+<li>Expected API requests.</li>
+<li>Projection text.</li>
+<li>Mapping integrity.</li>
+</ul>
+<h3 id="mock-api-tests">42.3 Mock API tests</h3>
+<p>Simulate:</p>
+<ul>
+<li>401 token expiration.</li>
+<li>403 permission denial.</li>
+<li>404 deleted document.</li>
+<li>429 rate limit.</li>
+<li>5xx service failures.</li>
+<li>Network timeout.</li>
+<li>Stale revision.</li>
+<li>Collaborator edits.</li>
+<li>Permission downgrade.</li>
+<li>Invalid batch request.</li>
+<li>Picker cancellation.</li>
+<li>Account mismatch.</li>
+</ul>
+<h3 id="live-integration-tests">42.4 Live integration tests</h3>
+<p>Use a dedicated Google Workspace test environment with:</p>
+<ul>
+<li>Multiple test accounts.</li>
+<li>Viewer/commenter/editor permissions.</li>
+<li>Shared drive.</li>
+<li>Simultaneous edits.</li>
+<li>Organization policy restrictions.</li>
+<li>Revoked tokens.</li>
+<li>Trashed/restored files.</li>
+</ul>
+<p>Live tests must not run against personal user documents.</p>
+<h3 id="accessibility-tests">42.5 Accessibility tests</h3>
+<p>For each workflow:</p>
+<ul>
+<li>Keyboard-only completion.</li>
+<li>JAWS.</li>
+<li>NVDA.</li>
+<li>Narrator.</li>
+<li>Braille display spot checks.</li>
+<li>High contrast.</li>
+<li>Scaling.</li>
+<li>Focus after browser OAuth/Picker return.</li>
+<li>Conflict dialog.</li>
+<li>Recovery dialog.</li>
+<li>Table editor.</li>
+<li>Comments center.</li>
+<li>Tab tree.</li>
+<li>Error states.</li>
+</ul>
+<h3 id="fuzzproperty-tests">42.6 Fuzz/property tests</h3>
+<ul>
+<li>Random valid semantic trees.</li>
+<li>Random edit sequences.</li>
+<li>Insert/delete around object boundaries.</li>
+<li>Unicode combining characters.</li>
+<li>Surrogate pairs and emoji.</li>
+<li>Bidirectional text.</li>
+<li>Large nested lists.</li>
+<li>Random collaborator edits.</li>
+<li>Journal replay after arbitrary interruption.</li>
+</ul>
+<p>Properties:</p>
+<ul>
+<li>No unsupported object disappears unless explicitly deleted.</li>
+<li>Projection-to-model mapping remains valid.</li>
+<li>Applying and replaying operations is deterministic.</li>
+<li>A failed remote write does not alter committed remote
+assumptions.</li>
+<li>Local user content remains recoverable.</li>
+</ul>
+<h3 id="performance-tests">42.7 Performance tests</h3>
+<ul>
+<li>10-page ordinary document.</li>
+<li>100-page document.</li>
+<li>1,000-paragraph document.</li>
+<li>Hundreds of comments.</li>
+<li>Many tabs.</li>
+<li>Large tables.</li>
+<li>Continuous typing for 30 minutes.</li>
+<li>Repeated network loss/reconnect.</li>
+<li>Slow API responses.</li>
+<li>Memory use across multiple open documents.</li>
+</ul>
+<hr />
+<h2 id="quality-gates-and-acceptance-criteria">43. Quality Gates and
+Acceptance Criteria</h2>
+<h3 id="core-opening">43.1 Core opening</h3>
+<ul>
+<li>User can connect an account without entering credentials into
+QUILL.</li>
+<li>User can select a Google Doc through Picker.</li>
+<li>User can paste a Google Docs link.</li>
+<li>Unauthorized files trigger the correct authorization path.</li>
+<li>View-only documents open read-only.</li>
+<li>Multiple tabs are discovered and navigable.</li>
+</ul>
+<h3 id="editing">43.2 Editing</h3>
+<ul>
+<li>Paragraph edits round-trip correctly.</li>
+<li>Heading changes round-trip correctly.</li>
+<li>Supported character formatting round-trips.</li>
+<li>Links round-trip.</li>
+<li>Lists round-trip.</li>
+<li>Simple table cell text and supported structural edits
+round-trip.</li>
+<li>Unsupported objects remain unchanged after nearby text edits.</li>
+<li>Main-surface object markers cannot be accidentally corrupted.</li>
+</ul>
+<h3 id="synchronization">43.3 Synchronization</h3>
+<ul>
+<li>Typing remains responsive without network.</li>
+<li>Pending operations survive a crash.</li>
+<li>Autosave is batched.</li>
+<li>Explicit Sync reports success/failure.</li>
+<li>Stale revisions are handled.</li>
+<li>Non-overlapping collaborator edits are retained.</li>
+<li>Overlapping changes open accessible conflict review.</li>
+<li>No full-document destructive replacement is used as routine conflict
+resolution.</li>
+</ul>
+<h3 id="accessibility">43.4 Accessibility</h3>
+<ul>
+<li>Every core workflow completes with keyboard only.</li>
+<li>Focus returns correctly after OAuth/Picker.</li>
+<li>Table editor announces coordinates and headings.</li>
+<li>Status changes are available to screen readers.</li>
+<li>Background sync does not steal focus.</li>
+<li>Object markers are understandable in speech and braille.</li>
+<li>No critical defect remains for JAWS, NVDA, or Narrator.</li>
+</ul>
+<h3 id="security">43.5 Security</h3>
+<ul>
+<li>Tokens are not stored in plaintext.</li>
+<li>Logs contain no tokens or document content by default.</li>
+<li>OAuth state is validated.</li>
+<li>Broad Drive scopes are not requested in the default workflow.</li>
+<li>Disconnect revokes/removes local credentials as designed.</li>
+<li>Local cache clear works.</li>
+</ul>
+<h3 id="reliability">43.6 Reliability</h3>
+<ul>
+<li>Recovery works after forced termination.</li>
+<li>429 and transient failures back off.</li>
+<li>Invalid provider data fails safely.</li>
+<li>Journal corruption does not silently lose content.</li>
+<li>API errors do not crash QUILL.</li>
+<li>UI thread is never blocked by network calls.</li>
+</ul>
+<hr />
+<h2 id="implementation-plan">44. Implementation Plan</h2>
+<h3 id="phase-0-feasibility-spike">Phase 0: feasibility spike</h3>
+<p>Deliverables:</p>
+<ul>
+<li>Production-like OAuth desktop proof of concept.</li>
+<li>Picker return flow.</li>
+<li>Open document by ID.</li>
+<li>Parse tabs and ordinary paragraphs.</li>
+<li>Apply a text insertion using revision control.</li>
+<li>Table fixture parse.</li>
+<li>Token storage proof.</li>
+<li>Accessibility review of browser return behavior.</li>
+<li>Written findings on API limitations.</li>
+</ul>
+<p>Exit criteria:</p>
+<ul>
+<li>End-to-end text round trip succeeds.</li>
+<li>No broad Drive scope required.</li>
+<li>Clear redirect strategy.</li>
+<li>Confirmed packaging dependencies.</li>
+<li>Confirmed Google verification path.</li>
+</ul>
+<h3 id="phase-1-semantic-foundation">Phase 1: semantic foundation</h3>
+<p>Deliverables:</p>
+<ul>
+<li>Provider-independent semantic model.</li>
+<li>Google parser.</li>
+<li>Projection engine.</li>
+<li>Protected object markers.</li>
+<li>Mapping/integrity validation.</li>
+<li>Operation model.</li>
+<li>Local shadow snapshots.</li>
+<li>Unit/golden tests.</li>
+</ul>
+<p>Exit criteria:</p>
+<ul>
+<li>Complex fixtures parse without dropping unknown nodes.</li>
+<li>Projection supports paragraphs, headings, lists, simple tables,
+images as markers, tabs.</li>
+<li>Unsupported content preservation is demonstrated.</li>
+</ul>
+<h3 id="phase-2-account-picker-and-opencreate-workflows">Phase 2:
+account, Picker, and open/create workflows</h3>
+<p>Deliverables:</p>
+<ul>
+<li>Account Manager.</li>
+<li>Secure token store.</li>
+<li>Picker.</li>
+<li>Open by URL.</li>
+<li>Recent authorized documents.</li>
+<li>New Google Document.</li>
+<li>Read-only permissions.</li>
+<li>Open in Google Docs.</li>
+</ul>
+<p>Exit criteria:</p>
+<ul>
+<li>Tested with personal and managed Workspace accounts.</li>
+<li>Cancellation and blocked-app errors are accessible.</li>
+<li>Multiple accounts work.</li>
+</ul>
+<h3 id="phase-3-text-editing-and-synchronization">Phase 3: text editing
+and synchronization</h3>
+<p>Deliverables:</p>
+<ul>
+<li>Text/paragraph/style/link/list operations.</li>
+<li>Autosave coordinator.</li>
+<li>Batch translation.</li>
+<li>Revision control.</li>
+<li>Retry/backoff.</li>
+<li>Durable journal.</li>
+<li>Status announcements.</li>
+<li>Crash recovery.</li>
+</ul>
+<p>Exit criteria:</p>
+<ul>
+<li>Continuous typing test passes.</li>
+<li>Offline journal survives restart.</li>
+<li>Collaborator non-overlap test passes.</li>
+<li>No UI blocking.</li>
+</ul>
+<h3 id="phase-4-tables-and-structured-objects">Phase 4: tables and
+structured objects</h3>
+<p>Deliverables:</p>
+<ul>
+<li>Table reader.</li>
+<li>Table Editor.</li>
+<li>Simple structural operations.</li>
+<li>List Editor integration.</li>
+<li>Image details.</li>
+<li>Footnote support as approved.</li>
+<li>Unsupported Content Report.</li>
+</ul>
+<p>Exit criteria:</p>
+<ul>
+<li>Table workflows pass screen-reader testing.</li>
+<li>Complex tables are preserved.</li>
+<li>Object boundary deletion is safe.</li>
+</ul>
+<h3 id="phase-5-conflict-and-external-change-workflows">Phase 5:
+conflict and external change workflows</h3>
+<p>Deliverables:</p>
+<ul>
+<li>Polling/refresh.</li>
+<li>Rebase engine.</li>
+<li>Conflict classification.</li>
+<li>Accessible Conflict Review.</li>
+<li>Save-as-copy fallback.</li>
+<li>Permission-change handling.</li>
+</ul>
+<p>Exit criteria:</p>
+<ul>
+<li>Simultaneous edit scenarios pass.</li>
+<li>No data loss across forced conflicts.</li>
+<li>Conflict dialog passes accessibility review.</li>
+</ul>
+<h3 id="phase-6-comments-suggestions-and-richer-navigation">Phase 6:
+comments, suggestions, and richer navigation</h3>
+<p>Deliverables:</p>
+<ul>
+<li>Comments Center.</li>
+<li>Reply/resolve operations where supported.</li>
+<li>Suggestions Review.</li>
+<li>Outline and object navigation.</li>
+<li>Headers/footers/footnotes as approved.</li>
+<li>Search across tabs/segments.</li>
+</ul>
+<p>Exit criteria:</p>
+<ul>
+<li>Collaboration limitations are accurately communicated.</li>
+<li>Comments and suggestions remain preserved.</li>
+</ul>
+<h3 id="phase-7-hardening-and-public-beta">Phase 7: hardening and public
+beta</h3>
+<p>Deliverables:</p>
+<ul>
+<li>OAuth verification complete.</li>
+<li>Privacy documentation.</li>
+<li>Security review.</li>
+<li>Large-document tuning.</li>
+<li>Full accessibility matrix.</li>
+<li>User documentation.</li>
+<li>Diagnostics bundle.</li>
+<li>Feature flag and rollback controls.</li>
+<li>Beta feedback workflow.</li>
+</ul>
+<p>Exit criteria:</p>
+<ul>
+<li>All release-blocking acceptance criteria pass.</li>
+<li>Recovery and downgrade path documented.</li>
+<li>No known data-loss defect.</li>
+<li>No critical accessibility defect.</li>
+</ul>
+<hr />
+<h2 id="feature-flags-and-rollback">45. Feature Flags and Rollback</h2>
+<p>Feature flags:</p>
+<ul>
+<li><code>google_docs_provider_enabled</code></li>
+<li><code>google_docs_editing_enabled</code></li>
+<li><code>google_docs_tables_enabled</code></li>
+<li><code>google_docs_offline_enabled</code></li>
+<li><code>google_docs_comments_enabled</code></li>
+<li><code>google_docs_conflict_merge_enabled</code></li>
+<li><code>google_docs_structural_writes_enabled</code></li>
+</ul>
+<p>Flags must allow:</p>
+<ul>
+<li>Read-only emergency mode.</li>
+<li>Disabling a faulty operation translator.</li>
+<li>Preserving access to recovery/export.</li>
+<li>Rolling back without deleting journals.</li>
+<li>Targeting beta users.</li>
+</ul>
+<p>A rollback must never strand unsent local operations. Older versions
+should detect newer journal formats and offer export rather than
+corrupting them.</p>
+<hr />
+<h2 id="documentation-and-onboarding">46. Documentation and
+Onboarding</h2>
+<h3 id="first-run-onboarding">46.1 First-run onboarding</h3>
+<p>Explain:</p>
+<ul>
+<li>QUILL opens chosen Google files only.</li>
+<li>Sign-in occurs in the browser.</li>
+<li>The Google document stays in Google Drive.</li>
+<li>Ordinary text edits normally.</li>
+<li>Press F2 on tables and objects.</li>
+<li>Changes save automatically.</li>
+<li>QUILL preserves unsupported content.</li>
+<li>Some actions still require Google Docs.</li>
+</ul>
+<h3 id="help-topics">46.2 Help topics</h3>
+<ul>
+<li>Connect a Google account.</li>
+<li>Open a Google document.</li>
+<li>Open from a link.</li>
+<li>Create a document.</li>
+<li>Understand save status.</li>
+<li>Work offline.</li>
+<li>Edit a table.</li>
+<li>Navigate document tabs.</li>
+<li>Review comments.</li>
+<li>Review suggestions.</li>
+<li>Resolve conflicts.</li>
+<li>Handle organization restrictions.</li>
+<li>Clear local data.</li>
+<li>Revoke QUILL access.</li>
+<li>Export a recovery copy.</li>
+<li>Report a problem safely.</li>
+</ul>
+<h3 id="in-product-teaching">46.3 In-product teaching</h3>
+<p>Use short contextual hints, not repeated tutorials:</p>
+<blockquote>
+<p>Table, 4 rows by 3 columns. Press Enter to read or F2 to edit.</p>
+</blockquote>
+<p>Hints must be dismissible and configurable.</p>
+<hr />
+<h2 id="support-and-diagnostics">47. Support and Diagnostics</h2>
+<h3 id="google-docs-diagnostics-dialog">47.1 Google Docs Diagnostics
+dialog</h3>
+<p>Show:</p>
+<ul>
+<li>Provider connection state.</li>
+<li>Account, partially redacted.</li>
+<li>Document ID, partially redacted.</li>
+<li>Permission.</li>
+<li>Revision age.</li>
+<li>Pending operation count.</li>
+<li>Last sync result.</li>
+<li>API retry state.</li>
+<li>Local cache path with Open Folder.</li>
+<li>Mapping integrity state.</li>
+<li>Unsupported node counts.</li>
+<li>Copy diagnostics.</li>
+<li>Export support bundle.</li>
+</ul>
+<h3 id="support-bundle">47.2 Support bundle</h3>
+<p>Default bundle contains:</p>
+<ul>
+<li>App version.</li>
+<li>OS version.</li>
+<li>Screen reader information if user agrees.</li>
+<li>Dependency versions.</li>
+<li>Redacted logs.</li>
+<li>Error categories.</li>
+<li>Operation types without content.</li>
+<li>Integrity reports.</li>
+<li>Feature flags.</li>
+</ul>
+<p>Optional content inclusion must require explicit informed consent and
+preview.</p>
+<hr />
+<h2 id="open-questions-requiring-product-or-engineering-decision">48.
+Open Questions Requiring Product or Engineering Decision</h2>
+<ol type="1">
+<li>Which QUILL text control/editor component will host protected object
+markers most reliably?</li>
+<li>Can existing QUILL document abstractions be extended, or is a new
+semantic document engine required?</li>
+<li>Should the initial public release allow fully offline editing or
+only durable pending saves during temporary outages?</li>
+<li>What local encryption approach should protect cached document
+content?</li>
+<li>Should comments be hidden by default or represented with compact
+markers?</li>
+<li>How should mixed formatting be announced at the caret?</li>
+<li>Which simple table properties are essential for release one?</li>
+<li>Should complex-table cell text editing be allowed when structure is
+read-only?</li>
+<li>How should external changes be surfaced when the user is actively
+typing?</li>
+<li>What is the preferred OAuth callback architecture for packaged
+portable and installed builds?</li>
+<li>Does portable QUILL support secure token storage, or should Google
+Docs require installed mode initially?</li>
+<li>Which Google account identity fields can be retrieved without adding
+unnecessary scopes?</li>
+<li>Should local recent-document history be encrypted?</li>
+<li>Should account disconnect revoke the token remotely by default or
+only remove local credentials?</li>
+<li>How will QUILL handle documents larger than practical full-model
+memory limits?</li>
+<li>Should a cloud document occupy one QUILL editor tab with internal
+Google document tabs, or map each Google document tab to a QUILL
+workspace tab?</li>
+<li>Can the existing QUILL list editor be reused directly?</li>
+<li>Should alternate Markdown projection be editable in the first
+release?</li>
+<li>Which unsupported objects should be launch blockers versus protected
+placeholders?</li>
+<li>What privacy and legal entity will own the Google Cloud project and
+OAuth consent publication?</li>
+</ol>
+<p>Recommended defaults:</p>
+<ul>
+<li>Use one QUILL document tab with internal Google tab navigation.</li>
+<li>Make Markdown projection read-only initially.</li>
+<li>Require installed mode for Google Docs if portable credential
+security cannot be guaranteed.</li>
+<li>Hide comments from the main projection by default but announce their
+presence.</li>
+<li>Allow complex-table reading, but restrict structural edits.</li>
+<li>Revoke access only after a clear disconnect confirmation.</li>
+<li>Treat any known data-loss path as a release blocker.</li>
+</ul>
+<hr />
+<h2 id="risks-and-mitigations">49. Risks and Mitigations</h2>
+<h3 id="risk-semantic-model-complexity">Risk: semantic model
+complexity</h3>
+<p><strong>Mitigation:</strong> Build provider-independent nodes,
+operation tests, golden fixtures, and incremental release gates before
+enabling writes broadly.</p>
+<h3 id="risk-unsupported-content-loss">Risk: unsupported content
+loss</h3>
+<p><strong>Mitigation:</strong> Preserve unknown provider payloads,
+protect markers, use surgical API operations, and prohibit full-document
+replacement.</p>
+<h3 id="risk-collaborator-conflicts">Risk: collaborator conflicts</h3>
+<p><strong>Mitigation:</strong> Revision-aware writes, preflight
+refresh, durable journal, conflict classification, save-as-copy
+fallback.</p>
+<h3 id="risk-google-api-or-policy-changes">Risk: Google API or policy
+changes</h3>
+<p><strong>Mitigation:</strong> Isolate provider code, monitor release
+notes, pin/test dependencies, feature flags, annual OAuth review.</p>
+<h3 id="risk-inaccessible-pickerbrowser-return">Risk: inaccessible
+Picker/browser return</h3>
+<p><strong>Mitigation:</strong> Test major browsers and screen readers,
+provide paste-link fallback, announce return state, document the
+flow.</p>
+<h3 id="risk-rate-limits">Risk: rate limits</h3>
+<p><strong>Mitigation:</strong> Debounce, batch, cache, poll
+conservatively, exponential backoff.</p>
+<h3 id="risk-token-theft">Risk: token theft</h3>
+<p><strong>Mitigation:</strong> OS credential store, no plaintext logs,
+least privilege, secure callbacks, dependency review.</p>
+<h3 id="risk-editor-focus-instability-during-projection-rebuild">Risk:
+editor focus instability during projection rebuild</h3>
+<p><strong>Mitigation:</strong> Semantic caret anchors, minimal
+rebuilds, focus regression tests, no background focus stealing.</p>
+<h3 id="risk-portable-build-credential-security">Risk: portable-build
+credential security</h3>
+<p><strong>Mitigation:</strong> Disable or limit persistent account
+support until secure storage is proven; provide explicit installed-mode
+requirement.</p>
+<h3 id="risk-scope-expansion-pressure">Risk: scope expansion
+pressure</h3>
+<p><strong>Mitigation:</strong> Preserve Picker/per-file authorization
+as the default; treat broader scopes as a separate reviewed
+capability.</p>
+<h3 id="risk-user-assumes-full-google-docs-parity">Risk: user assumes
+full Google Docs parity</h3>
+<p><strong>Mitigation:</strong> Clear capability report, unsupported
+markers, onboarding, and “Open in Google Docs” escape hatch.</p>
+<hr />
+<h2 id="definition-of-done">50. Definition of Done</h2>
+<p>The complete implementation is done when:</p>
+<ul>
+<li>The Cloud Document Provider framework is stable and documented.</li>
+<li>Google OAuth and Picker flows are verified and
+production-ready.</li>
+<li>Google documents can be opened, created, edited, and
+synchronized.</li>
+<li>The semantic model covers all provider content by supported nodes or
+preserved unsupported nodes.</li>
+<li>Paragraphs, headings, formatting, links, lists, tables, tabs, and
+approved structured elements round-trip.</li>
+<li>Autosave, offline journaling, recovery, retries, and conflicts are
+reliable.</li>
+<li>All unsupported content is protected from accidental loss.</li>
+<li>Core collaboration review workflows are available within API
+limits.</li>
+<li>Accessibility acceptance tests pass with JAWS, NVDA, and
+Narrator.</li>
+<li>Security and privacy reviews pass.</li>
+<li>OAuth verification is complete.</li>
+<li>Documentation, onboarding, diagnostics, and support procedures are
+complete.</li>
+<li>No known critical data-loss, security, crash, or accessibility
+defect remains.</li>
+<li>Feature flags permit safe disablement and rollback.</li>
+</ul>
+<hr />
+<h2 id="recommended-first-public-release-boundary">51. Recommended First
+Public Release Boundary</h2>
+<p>To avoid an endless implementation while still delivering a
+meaningful feature, the recommended first public beta should
+include:</p>
+<ul>
+<li>Secure account connection.</li>
+<li>Picker and paste-link open.</li>
+<li>Create document.</li>
+<li>Multiple Google document tabs.</li>
+<li>Paragraphs and named headings.</li>
+<li>Basic inline formatting.</li>
+<li>Links.</li>
+<li>Numbered and bulleted lists.</li>
+<li>Simple tables with reader and editor.</li>
+<li>Images and advanced objects preserved as markers.</li>
+<li>Suggestions preserved and reviewable, with web handoff.</li>
+<li>Read-only permission support.</li>
+<li>Local operation journal.</li>
+<li>Autosave and manual Sync.</li>
+<li>Temporary offline editing.</li>
+<li>Revision-aware conflict detection.</li>
+<li>Accessible conflict review for text.</li>
+<li>Open in Google Docs.</li>
+<li>Recovery/export.</li>
+<li>Full keyboard and screen-reader support.</li>
+</ul>
+<p>Defer from first public beta:</p>
+<ul>
+<li>Advanced table styling and merged-cell structural edits.</li>
+<li>Full comments authoring if anchor behavior is not sufficiently
+reliable.</li>
+<li>Header/footer structural editing.</li>
+<li>Push notification relay.</li>
+<li>Editable Markdown projection.</li>
+<li>Rich chips, drawings, charts, and equations.</li>
+<li>Full offline rebase for every structural operation.</li>
+<li>Broad Drive browsing that requires broader scopes.</li>
+</ul>
+<hr />
+<h2 id="technical-source-notes">52. Technical Source Notes</h2>
+<p>The following official Google documentation informed this PRD.
+Engineering must re-check current documentation during implementation
+because APIs, policies, quotas, and OAuth requirements can change.</p>
+<ol type="1">
+<li><p>Google Docs API overview<br />
+https://developers.google.com/workspace/docs/api/reference/rest</p></li>
+<li><p>Google Docs document structure<br />
+https://developers.google.com/workspace/docs/api/concepts/structure</p></li>
+<li><p>Google Docs document model and methods<br />
+https://developers.google.com/workspace/docs/api/concepts/document</p></li>
+<li><p>Google Docs <code>documents.batchUpdate</code> and
+<code>WriteControl</code><br />
+https://developers.google.com/workspace/docs/api/reference/rest/v1/documents/batchUpdate</p></li>
+<li><p>Google Docs request types<br />
+https://developers.google.com/workspace/docs/api/reference/rest/v1/documents/request</p></li>
+<li><p>Working with Google Docs tables<br />
+https://developers.google.com/workspace/docs/api/how-tos/tables</p></li>
+<li><p>Working with Google Docs lists<br />
+https://developers.google.com/workspace/docs/api/how-tos/lists</p></li>
+<li><p>Working with Google Docs tabs<br />
+https://developers.google.com/workspace/docs/api/how-tos/tabs</p></li>
+<li><p>Working with Google Docs suggestions<br />
+https://developers.google.com/workspace/docs/api/how-tos/suggestions</p></li>
+<li><p>Google Docs API usage limits<br />
+https://developers.google.com/workspace/docs/api/limits</p></li>
+<li><p>OAuth 2.0 for desktop applications<br />
+https://developers.google.com/identity/protocols/oauth2/native-app</p></li>
+<li><p>Google Drive API scope guidance<br />
+https://developers.google.com/workspace/drive/api/guides/api-specific-auth</p></li>
+<li><p>Google Picker overview<br />
+https://developers.google.com/workspace/drive/picker/guides/overview</p></li>
+<li><p>Google Picker for desktop and mobile apps<br />
+https://developers.google.com/workspace/drive/picker/guides/desktop-mobile-picker</p></li>
+<li><p>Google Drive comments and replies<br />
+https://developers.google.com/workspace/drive/api/guides/manage-comments</p></li>
+<li><p>Google Drive comments resource<br />
+https://developers.google.com/workspace/drive/api/reference/rest/v3/comments</p></li>
+<li><p>Google Drive changes and revisions<br />
+https://developers.google.com/workspace/drive/api/guides/change-overview</p></li>
+<li><p>Google Drive API error handling<br />
+https://developers.google.com/workspace/drive/api/guides/handle-errors</p></li>
+</ol>
+<p><strong>Source verification date:</strong> June 25, 2026</p>
+<hr />
+<h2 id="final-product-decision">53. Final Product Decision</h2>
+<p>QUILL will not make Markdown the mandatory editing surface for Google
+Docs.</p>
+<p>The implementation will use:</p>
+<pre class="text"><code>Google Docs structured document
+            ↓
+QUILL semantic document model
+            ↓
+Text-first accessible projection
+            ↓
+Focused structured editors</code></pre>
+<p>This architecture preserves the simplicity of a text editor without
+pretending that tables and other document objects are merely strings. It
+also creates the foundation for QUILL to become an accessible native
+front end for additional cloud document platforms in the future.</p>
+</body>
+</html>

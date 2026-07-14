@@ -70,12 +70,11 @@ def test_show_bw_onboarding_accepted_applies_recommended_defaults(monkeypatch) -
 
 
 def test_show_profile_onboarding_uses_real_method_not_corrupted_link_dialog() -> None:
-    # Regression for BUG-1: the onboarding methods must exist and reference
-    # only defined names (no leftover Insert Link copy-paste).
+    # Regression for BUG-1: the remaining onboarding methods must exist and
+    # reference only defined names (no leftover Insert Link copy-paste). The
+    # legacy per-feature first-run prompts (profile/AI/etc.) were removed (#700).
     assert callable(getattr(MainFrame, "_show_bw_onboarding", None))
-    assert callable(getattr(MainFrame, "_offer_ai_onboarding", None))
     assert callable(getattr(MainFrame, "_sync_ai_enabled_menu", None))
-    assert callable(getattr(MainFrame, "_show_profile_onboarding", None))
 
 
 def test_startup_wizard_does_not_offer_bw_setup() -> None:

@@ -1,4 +1,7 @@
 from quill.core.navigation import (
+    estimate_page_count,
+    estimate_page_for_position,
+    estimate_page_start_for_number,
     next_block_start,
     next_heading_start,
     page_start_for_number,
@@ -50,3 +53,54 @@ def test_block_navigation() -> None:
 def test_parse_line_column_supports_optional_column() -> None:
     assert parse_line_column("42") == (42, None)
     assert parse_line_column("42,7") == (42, 7)
+
+
+def test_estimate_page_count_empty_text_is_one_page() -> None:
+    assert estimate_page_count("", 300) == 1
+
+
+def test_estimate_page_count_rounds_up() -> None:
+    text = " ".join(["word"] * 301)  # 301 words, 300/page -> 2 pages
+    assert estimate_page_count(text, 300) == 2
+
+
+def test_estimate_page_count_exact_multiple() -> None:
+    text = " ".join(["word"] * 600)  # exactly 2 pages at 300/page
+    assert estimate_page_count(text, 300) == 2
+
+
+def test_estimate_page_for_position_start_of_document_is_page_one() -> None:
+    text = " ".join(["word"] * 900)  # 3 pages at 300/page
+    assert estimate_page_for_position(text, 0, 300) == 1
+
+
+def test_estimate_page_for_position_tracks_caret_forward() -> None:
+    words = ["word"] * 900  # 3 pages at 300/page
+    text = " ".join(words)
+    # Position at the start of the 301st word (i.e. into page 2).
+    page_1_text = " ".join(words[:300]) + " "
+    position = len(page_1_text)
+    assert estimate_page_for_position(text, position, 300) == 2
+
+
+def test_estimate_page_for_position_clamps_to_final_page() -> None:
+    text = " ".join(["word"] * 10)  # 1 page at 300/page
+    assert estimate_page_for_position(text, len(text), 300) == 1
+
+
+def test_estimate_page_start_for_number_page_one_is_zero() -> None:
+    text = " ".join(["word"] * 900)
+    assert estimate_page_start_for_number(text, 1, 300) == 0
+
+
+def test_estimate_page_start_for_number_matches_word_boundary() -> None:
+    words = ["word"] * 900
+    text = " ".join(words)
+    expected = len(" ".join(words[:300]) + " ")
+    assert estimate_page_start_for_number(text, 2, 300) == expected
+
+
+def test_estimate_page_start_for_number_out_of_range_is_none() -> None:
+    text = " ".join(["word"] * 10)  # 1 page at 300/page
+    assert estimate_page_start_for_number(text, 2, 300) is None
+    assert estimate_page_start_for_number(text, 0, 300) is None

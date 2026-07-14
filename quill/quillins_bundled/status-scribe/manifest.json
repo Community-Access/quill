@@ -1,0 +1,157 @@
+{
+  "schema": "quill.extension/1",
+  "id": "com.quill.statusscribe",
+  "name": "Status Scribe",
+  "version": "1.0.0",
+  "author": "QUILL Team",
+  "description": "Adds a live word-count cell to the status bar, updated after every save. Demonstrates the status_bar contribution, api.log() developer logging, and the quillin.enabled/quillin.disabled lifecycle events.",
+  "license": "MIT",
+  "min_quill_version": "0.6.0",
+  "categories": ["writing", "productivity", "accessibility"],
+  "capabilities": [
+    "document.events",
+    "editor.read",
+    "ui.announce",
+    "ui.status",
+    "ui.command",
+    "settings.own.read",
+    "settings.own.write",
+    "schedule",
+    "ui.log"
+  ],
+  "main": "extension.py",
+  "contributes": {
+    "document_events": [
+      {
+        "event": "document.after_save",
+        "handler": "on_after_save",
+        "title": "Refresh word count after save",
+        "description": "Counts words in the saved document and pushes the count into the status bar cell so it stays current without polling.",
+        "enabled_by_default": true
+      },
+      {
+        "event": "document.activated",
+        "handler": "on_activated",
+        "title": "Show word count for active document",
+        "description": "Updates the status bar cell whenever you switch tabs so the count always reflects the document currently in focus.",
+        "enabled_by_default": true
+      },
+      {
+        "event": "quillin.enabled",
+        "handler": "on_enabled",
+        "title": "Status Scribe enabled",
+        "description": "Announces activation and logs a developer message to the Developer Console.",
+        "enabled_by_default": true
+      },
+      {
+        "event": "quillin.disabled",
+        "handler": "on_disabled",
+        "title": "Status Scribe disabled",
+        "description": "Clears the status bar cell and logs deactivation.",
+        "enabled_by_default": true
+      },
+      {
+        "event": "settings.changed",
+        "handler": "on_settings_changed",
+        "title": "Update counting mode",
+        "description": "Applies the new counting mode (words, characters, or sentences) immediately when the preference changes.",
+        "enabled_by_default": true
+      }
+    ],
+    "status_bar": [
+      {
+        "id": "count",
+        "label": "Words: --",
+        "handler": "get_count_cell",
+        "tooltip": "Live document word count. Updates after every save and when switching tabs.",
+        "width": 14
+      }
+    ],
+    "schedule": [
+      {
+        "id": "refresh",
+        "interval_seconds": 300,
+        "handler": "on_timer_refresh",
+        "description": "Recount the active document every five minutes so the status cell never goes stale between saves."
+      }
+    ],
+    "preferences": [
+      {
+        "id": "main",
+        "title": "Status Scribe",
+        "description": "Settings for the Status Scribe Quillin.",
+        "tabs": [
+          {
+            "id": "display",
+            "title": "Display",
+            "description": "Control what the status bar cell shows.",
+            "order": 0,
+            "sections": [
+              {
+                "id": "mode",
+                "title": "Count Mode",
+                "settings": [
+                  {
+                    "key": "count_mode",
+                    "label": "Count",
+                    "type": "choice",
+                    "default": "words",
+                    "description": "What to measure and display in the status bar cell.",
+                    "search_keywords": ["word count", "character count", "sentence count", "statistics"],
+                    "choices": [
+                      { "value": "words", "label": "Words" },
+                      { "value": "chars", "label": "Characters" },
+                      { "value": "sentences", "label": "Sentences" }
+                    ]
+                  },
+                  {
+                    "key": "show_label",
+                    "label": "Show label in cell",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Prefix the count with a label such as 'Words:' for context."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "announce",
+            "title": "Announce",
+            "description": "When and how to speak the count aloud.",
+            "order": 1,
+            "sections": [
+              {
+                "id": "voice",
+                "title": "Voice Feedback",
+                "settings": [
+                  {
+                    "key": "announce_on_save",
+                    "label": "Speak count after save",
+                    "type": "boolean",
+                    "default": false,
+                    "description": "In addition to updating the status bar, speak the count aloud after every save."
+                  },
+                  {
+                    "key": "announce_priority",
+                    "label": "Announcement priority",
+                    "type": "choice",
+                    "default": "quiet",
+                    "description": "Screen reader urgency channel for the spoken count. 'quiet' lets it queue behind other speech.",
+                    "search_keywords": ["speech priority", "screen reader urgency"],
+                    "choices": [
+                      { "value": "quiet", "label": "Quiet (queued)" },
+                      { "value": "normal", "label": "Normal" },
+                      { "value": "urgent", "label": "Urgent (interrupts)" }
+                    ],
+                    "enabled_when": { "setting": "announce_on_save", "equals": true }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

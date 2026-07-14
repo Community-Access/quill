@@ -5,7 +5,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from quill.core.feature_catalog import FEATURE_ALIASES, FEATURE_DEFINITIONS, FeatureDefinition
 from quill.core.feature_command_map import COMMAND_FEATURE_MAP
+from quill.core.i18n import LazyStr, lazy_gettext
 from quill.core.paths import app_data_dir
 from quill.core.storage import read_json, write_json_atomic
 
@@ -15,381 +17,38 @@ FEATURE_STATE_OFF = "off"
 
 PROFILE_ESSENTIAL = "essential"
 PROFILE_WRITER = "writer"
+PROFILE_AUTHOR_STUDENT = "author_or_student"
 PROFILE_DEVELOPER_POWER_TEXT = "developer_power_text"
 PROFILE_ACCESSIBILITY_PROFESSIONAL = "accessibility_professional"
 PROFILE_FULL_QUILL = "full_quill"
 
 
-@dataclass(frozen=True, slots=True)
-class FeatureDefinition:
-    id: str
-    name: str
-    description: str = ""
-    aliases: tuple[str, ...] = ()
-    dependencies: tuple[str, ...] = ()
-    maturity: str = "stable"
-    privacy: str = "local only"
-    locked_on: bool = False
-    locked_off: bool = False
-    category: str = ""
-
-
 @dataclass(slots=True)
 class FeatureProfile:
     id: str
-    name: str
-    description: str
+    name: str | LazyStr
+    description: str | LazyStr
     states: dict[str, str] = field(default_factory=dict)
-
-
-FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
-    "core.app": FeatureDefinition("core.app", "App Shell", category="core"),
-    "core.editor": FeatureDefinition(
-        "core.editor", "Editor Core", category="core", dependencies=("core.app",)
-    ),
-    "core.file": FeatureDefinition(
-        "core.file", "File Commands", category="core", dependencies=("core.app",)
-    ),
-    "core.edit": FeatureDefinition(
-        "core.edit", "Editing Commands", category="core", dependencies=("core.app",)
-    ),
-    "core.search": FeatureDefinition(
-        "core.search", "Search", category="core", dependencies=("core.editor",)
-    ),
-    "core.search.regex": FeatureDefinition(
-        "core.search.regex",
-        "Regular Expression Search",
-        aliases=("regex", "regular expression", "find regex"),
-        dependencies=("core.search",),
-        category="power text",
-    ),
-    "core.format": FeatureDefinition(
-        "core.format", "Format Commands", category="core", dependencies=("core.editor",)
-    ),
-    "core.macros": FeatureDefinition(
-        "core.macros", "Macros", category="power text", dependencies=("core.editor",)
-    ),
-    "core.links": FeatureDefinition(
-        "core.links", "Link Tools", category="core", dependencies=("core.editor",)
-    ),
-    "core.navigate": FeatureDefinition(
-        "core.navigate", "Navigation", category="core", dependencies=("core.editor",)
-    ),
-    "core.window": FeatureDefinition(
-        "core.window", "Window Switching", category="core", dependencies=("core.app",)
-    ),
-    "core.view": FeatureDefinition(
-        "core.view", "View Toggles", category="core", dependencies=("core.app",)
-    ),
-    "core.spellcheck": FeatureDefinition(
-        "core.spellcheck", "Spell Check", category="core", dependencies=("core.editor",)
-    ),
-    "core.dictionary": FeatureDefinition(
-        "core.dictionary",
-        "Dictionary and Thesaurus",
-        aliases=("dictionary", "thesaurus", "look up", "lexical"),
-        description="Definitions, synonyms, and the Look Up surface (DICT-1/DICT-2).",
-        category="core",
-        dependencies=("core.editor",),
-    ),
-    "core.intellisense": FeatureDefinition(
-        "core.intellisense",
-        "Word Prediction",
-        aliases=("intellisense", "autocomplete", "word prediction"),
-        category="core",
-        dependencies=("core.editor",),
-    ),
-    "core.read_aloud": FeatureDefinition(
-        "core.read_aloud", "Read Aloud", category="accessibility", dependencies=("core.editor",)
-    ),
-    "core.dictation": FeatureDefinition(
-        "core.dictation",
-        "Dictation",
-        description="Launches Windows dictation in the active editor.",
-        category="accessibility",
-        dependencies=("core.editor",),
-    ),
-    "core.voice_commands": FeatureDefinition(
-        "core.voice_commands",
-        "Voice Commands",
-        description="Interprets Windows dictation phrases as Quill commands.",
-        category="accessibility",
-        dependencies=("core.dictation",),
-    ),
-    "core.rich_text_lens": FeatureDefinition(
-        "core.rich_text_lens",
-        "Rich Text Lens",
-        description=(
-            "Native wxPython rich-text editing surface for .rtf files. Locked off "
-            "pending fuller screen-reader testing; RTF files continue to open as "
-            "plain text in the meantime. Remove locked_off to re-enable."
-        ),
-        category="editor",
-        locked_off=True,
-    ),
-    "core.bw_whisperer": FeatureDefinition(
-        "core.bw_whisperer",
-        "BITS Whisperer",
-        description=(
-            "Master flag for the BITS Whisperer transcription suite. Disabled for "
-            "QUILL 1.0 (deferred to 2.0) until it reaches feature parity; gating "
-            "this off hides the entire BITS Whisperer menu and its sub-features."
-        ),
-        category="accessibility",
-        dependencies=("core.dictation",),
-        locked_off=True,
-    ),
-    "core.bw_transcription": FeatureDefinition(
-        "core.bw_transcription",
-        "BITS Whisperer Transcription Rollout",
-        description="Phased BITS Whisperer speech-model and dictation rollout surface.",
-        category="accessibility",
-        dependencies=("core.dictation", "core.bw_whisperer"),
-    ),
-    "core.bw_parakeet": FeatureDefinition(
-        "core.bw_parakeet",
-        "BITS Whisperer Parakeet Models",
-        description="Controls visibility for phased Parakeet model options.",
-        category="accessibility",
-        dependencies=("core.bw_transcription",),
-    ),
-    "core.bw_providers": FeatureDefinition(
-        "core.bw_providers",
-        "BITS Whisperer Provider Onboarding",
-        description="Guided provider planning and readiness checks for phased rollout.",
-        category="accessibility",
-        dependencies=("core.bw_transcription",),
-    ),
-    "core.bw_insights": FeatureDefinition(
-        "core.bw_insights",
-        "BITS Whisperer Rollout Insights",
-        description="Readiness checks, capability matrix, and rollout diagnostics surfaces.",
-        category="accessibility",
-        dependencies=("core.bw_transcription",),
-    ),
-    "core.watch_folder": FeatureDefinition(
-        "core.watch_folder",
-        "Watch Folder Automation",
-        description="Monitors a folder and opens newly detected supported files.",
-        category="accessibility",
-        dependencies=("core.file",),
-    ),
-    "core.analysis": FeatureDefinition(
-        "core.analysis", "Document Analysis", category="core", dependencies=("core.editor",)
-    ),
-    "core.glow": FeatureDefinition(
-        "core.glow",
-        "GLOW Accessibility",
-        category="accessibility",
-        dependencies=("core.editor",),
-        locked_off=True,
-        description=(
-            "GLOW document accessibility audit, fix, and engine updates. Hidden "
-            "for now while the feature is finished; remove locked_off to re-enable. "
-            "Does not affect Report a Bug or diagnostics, which read the GLOW "
-            "engine version independently."
-        ),
-    ),
-    "core.trust": FeatureDefinition(
-        "core.trust", "Trust and Intake", category="safety", dependencies=("core.file",)
-    ),
-    "core.accessibility": FeatureDefinition(
-        "core.accessibility",
-        "Accessibility Tools",
-        category="accessibility",
-        dependencies=("core.editor",),
-    ),
-    "core.notifications": FeatureDefinition(
-        "core.notifications",
-        "Notifications",
-        category="core",
-        dependencies=("core.app",),
-    ),
-    "core.updates": FeatureDefinition(
-        "core.updates", "Update Checks", category="safety", dependencies=("core.app",)
-    ),
-    "core.shell": FeatureDefinition(
-        "core.shell", "Shell Integration", category="system", dependencies=("core.app",)
-    ),
-    "core.keymap": FeatureDefinition(
-        "core.keymap", "Keymap Management", category="core", dependencies=("core.app",)
-    ),
-    "core.help": FeatureDefinition(
-        "core.help", "Help and Guides", category="core", dependencies=("core.app",)
-    ),
-    "core.palette": FeatureDefinition(
-        "core.palette", "Command Palette", category="core", dependencies=("core.app",)
-    ),
-    "core.profile": FeatureDefinition(
-        "core.profile",
-        "Feature Profiles",
-        description="Profile switching, previews, and recovery.",
-        dependencies=("core.app",),
-        category="core",
-        locked_on=True,
-    ),
-    "core.recovery": FeatureDefinition(
-        "core.recovery",
-        "Recovery Paths",
-        description="Safe mode, restore prompts, and emergency reset.",
-        dependencies=("core.app",),
-        category="safety",
-        locked_on=True,
-    ),
-    "core.notes": FeatureDefinition(
-        "core.notes",
-        "Sticky Notes",
-        aliases=("notes", "sticky", "sticky notes"),
-        description="Inline sticky notes attached to document positions.",
-        dependencies=("core.editor",),
-        category="core",
-    ),
-    "core.notebook": FeatureDefinition(
-        "core.notebook",
-        "Notebook (Workspace)",
-        aliases=("notebook", "workspace", "entries"),
-        description="Multi-document workspace with entries, goals, and snapshots (§10.4).",
-        dependencies=("core.file",),
-        category="core",
-    ),
-    "core.remote": FeatureDefinition(
-        "core.remote",
-        "Remote Access",
-        aliases=("remote", "ftp", "sftp", "webdav", "s3", "remote sites"),
-        description=(
-            "Open, save, and manage files over FTP, SFTP, WebDAV, and S3 "
-            "remote sites (issues #154-#157). Disabling this hides the "
-            "remote-sites file menu and the Manage Remote Sites dialog."
-        ),
-        category="core",
-        dependencies=("core.file",),
-    ),
-    "core.github_remote": FeatureDefinition(
-        "core.github_remote",
-        "GitHub Remote Access",
-        aliases=("github", "github remote", "open from github"),
-        description=(
-            "Browse GitHub repositories, open remote files, and commit changes "
-            "back to GitHub (File > Open Remote > GitHub). Requires PyGithub "
-            "(pip install quill[github]). Disabling this hides the GitHub items "
-            "in the Open from Remote submenu."
-        ),
-        category="core",
-        privacy="network after confirmation",
-        dependencies=("core.remote",),
-    ),
-    "core.developer_console": FeatureDefinition(
-        "core.developer_console",
-        "Developer Console",
-        aliases=("developer console", "qdc", "scripting", "python console", "automation"),
-        description=(
-            "Embedded Python and TypeScript consoles for developers, power users, "
-            "and accessibility professionals. Exposes the q scripting API. "
-            "Gated by profile; hidden for Essential and Writer profiles."
-        ),
-        category="developer",
-        dependencies=("core.app",),
-    ),
-    "core.developer_console.typescript": FeatureDefinition(
-        "core.developer_console.typescript",
-        "Developer Console TypeScript",
-        aliases=("typescript console", "ts console"),
-        description=(
-            "TypeScript console via a Node.js subprocess bridge. Requires Node.js on PATH."
-        ),
-        category="developer",
-        dependencies=("core.developer_console",),
-    ),
-    "core.ocr": FeatureDefinition(
-        "core.ocr", "OCR", category="accessibility", dependencies=("core.file",)
-    ),
-    "future.character_inspector": FeatureDefinition(
-        "future.character_inspector",
-        "Character Inspector",
-        aliases=("character inspector", "inspect character"),
-        maturity="advanced",
-        category="power text",
-    ),
-    "future.cleanup": FeatureDefinition(
-        "future.cleanup",
-        "Unicode Cleanup",
-        aliases=("cleanup", "unicode cleanup"),
-        maturity="advanced",
-        category="power text",
-    ),
-    "future.regex_library": FeatureDefinition(
-        "future.regex_library",
-        "Regular Expression Library",
-        aliases=("regex library", "regex recipes"),
-        maturity="advanced",
-        category="power text",
-    ),
-    "future.ai": FeatureDefinition(
-        "future.ai",
-        "AI Assistance",
-        aliases=("ai", "assistant"),
-        maturity="advanced",
-        privacy="network after confirmation",
-        category="future",
-    ),
-    "core.third_party_plugins": FeatureDefinition(
-        "core.third_party_plugins",
-        "Third-Party Plugins",
-        aliases=("plugins", "third party plugins", "plugin loader"),
-        description=(
-            "SEC-8: experimental loader for third-party plugins. Disabled for "
-            "QUILL 1.0 — a default build never loads third-party plugin code. "
-            "Locked off until the plugin sandbox, signing, and review process "
-            "ship; gating this off keeps untrusted plugin code out of the "
-            "process entirely."
-        ),
-        maturity="experimental",
-        privacy="local only",
-        category="future",
-        dependencies=("core.app",),
-        locked_off=True,
-    ),
-    "core.bundled_quillins": FeatureDefinition(
-        "core.bundled_quillins",
-        "Bundled Quillins",
-        aliases=("bundled quillins", "first-party quillins", "built-in quillins"),
-        description=(
-            "Tier C: QUILL's own features shipped as sandboxed Quillins inside "
-            "the install tree (quill/quillins_bundled). These are trusted-author, "
-            "run through the same out-of-process, capability- and consent-gated "
-            "path as third-party Quillins, and ship enabled — wholly independent "
-            "of the SEC-8 core.third_party_plugins lock, which stays off. Turning "
-            "this off hides the bundled Quillins' commands."
-        ),
-        maturity="stable",
-        privacy="local only",
-        category="core",
-        dependencies=("core.app",),
-        locked_on=True,
-    ),
-}
-
-
-FEATURE_ALIASES: dict[str, str] = {}
-for feature in FEATURE_DEFINITIONS.values():
-    FEATURE_ALIASES[feature.id.lower()] = feature.id
-    FEATURE_ALIASES[feature.name.lower()] = feature.id
-    for alias in feature.aliases:
-        FEATURE_ALIASES[alias.lower()] = feature.id
 
 
 PROFILE_DEFINITIONS: dict[str, FeatureProfile] = {
     PROFILE_ESSENTIAL: FeatureProfile(
         id=PROFILE_ESSENTIAL,
-        name="Essential",
-        description="Core editing, file, and navigation features.",
+        name=lazy_gettext("Essential"),
+        description=lazy_gettext("Core editing, file, and navigation features."),
         states={
             "core.app": FEATURE_STATE_ON,
             "core.editor": FEATURE_STATE_ON,
             "core.file": FEATURE_STATE_ON,
             "core.edit": FEATURE_STATE_ON,
+            # Abbreviations is available (not locked, not hidden) so its enable
+            # toggle is discoverable in the command palette. The expansion
+            # *behaviour* still defaults off via settings.abbreviation_expansion,
+            # so users are not surprised by auto-expansion until they opt in.
+            "core.abbreviations": FEATURE_STATE_ON,
+            "core.notes": FEATURE_STATE_OFF,
             "core.search": FEATURE_STATE_ON,
-            "core.search.regex": FEATURE_STATE_QUIET,
+            "core.search.regex": FEATURE_STATE_OFF,
             "core.format": FEATURE_STATE_QUIET,
             "core.macros": FEATURE_STATE_OFF,
             "core.links": FEATURE_STATE_QUIET,
@@ -413,38 +72,106 @@ PROFILE_DEFINITIONS: dict[str, FeatureProfile] = {
             "core.recovery": FEATURE_STATE_ON,
             "core.ocr": FEATURE_STATE_QUIET,
             "core.intellisense": FEATURE_STATE_OFF,
+            "core.markdown_profiles": FEATURE_STATE_QUIET,
+            "core.text_encoding": FEATURE_STATE_QUIET,
             "future.character_inspector": FEATURE_STATE_OFF,
             "future.cleanup": FEATURE_STATE_OFF,
-            "future.regex_library": FEATURE_STATE_OFF,
             "future.ai": FEATURE_STATE_QUIET,
+            # Publishing is writer-tier-and-above only (Writer, Author or
+            # Student, Developer and Power Text, Full Quill); off by default
+            # here, but any user can still enable it individually.
+            "future.publishing": FEATURE_STATE_OFF,
+            "future.publishing_read": FEATURE_STATE_OFF,
         },
     ),
     PROFILE_WRITER: FeatureProfile(
         id=PROFILE_WRITER,
-        name="Writer",
-        description="Writing, formatting, and cleanup with guided power features.",
+        name=lazy_gettext("Casual Writer"),
+        description=lazy_gettext(
+            "A focused 'just write' setup — everyday writing, formatting, and "
+            "printing, without the power surfaces. AI, GLOW review, remote files, "
+            "document analysis, watch folders, notebooks, and developer tools are "
+            "off (turn any on from Profiles and Features). For papers, citations, "
+            "and a table of contents, try the Author or Student profile instead."
+        ),
         states={
+            # #890: an unlisted feature defaults to ON (see state_for), so a true
+            # "just write, format, print, send" identity has to name every power
+            # surface it wants OFF -- otherwise GLOW, remote files, the developer
+            # console, notebooks, and more are silently on. Accessibility I/O
+            # (read aloud, voice commands, dictation, OCR, and braille, which is
+            # left at its ON default) stays available on purpose: "just write"
+            # must never mean "less accessible."
             "core.search.regex": FEATURE_STATE_QUIET,
             "core.format": FEATURE_STATE_ON,
             "core.macros": FEATURE_STATE_QUIET,
             "core.links": FEATURE_STATE_ON,
             "core.read_aloud": FEATURE_STATE_QUIET,
             "core.voice_commands": FEATURE_STATE_ON,
-            "core.watch_folder": FEATURE_STATE_ON,
+            "core.shell": FEATURE_STATE_QUIET,
+            "core.keymap": FEATURE_STATE_QUIET,
+            "core.ocr": FEATURE_STATE_QUIET,
+            "core.markdown_profiles": FEATURE_STATE_QUIET,
+            "core.text_encoding": FEATURE_STATE_QUIET,
+            "future.character_inspector": FEATURE_STATE_QUIET,
+            "future.cleanup": FEATURE_STATE_QUIET,
+            # Explicitly off: not part of "write, format, print, send". Each stays
+            # individually re-enableable from Profiles and Features / the palette.
+            "core.watch_folder": FEATURE_STATE_OFF,
+            "core.analysis": FEATURE_STATE_OFF,
+            "core.glow": FEATURE_STATE_OFF,
+            "core.remote": FEATURE_STATE_OFF,
+            "core.github_remote": FEATURE_STATE_OFF,
+            "core.developer_console": FEATURE_STATE_OFF,
+            "core.developer_console.typescript": FEATURE_STATE_OFF,
+            "core.emmet": FEATURE_STATE_OFF,
+            "core.intellisense": FEATURE_STATE_OFF,
+            "core.notebook": FEATURE_STATE_OFF,
+            "future.ai": FEATURE_STATE_OFF,
+            "future.ai_menu_top_level": FEATURE_STATE_OFF,
+            # Writer is one of the writer-tier-and-above profiles with publishing
+            # ("send") access (see PROFILE_ESSENTIAL's comment above).
+            "future.publishing": FEATURE_STATE_ON,
+            "future.publishing_read": FEATURE_STATE_OFF,
+        },
+    ),
+    PROFILE_AUTHOR_STUDENT: FeatureProfile(
+        id=PROFILE_AUTHOR_STUDENT,
+        name=lazy_gettext("Author or Student"),
+        description=lazy_gettext(
+            "Long-form writing with a table of contents, footnotes, and "
+            "MLA / Chicago / APA citations — for papers, theses, and class "
+            "assignments. Choose your citation style from Preferences > "
+            "Profiles and Features."
+        ),
+        states={
+            "core.search.regex": FEATURE_STATE_QUIET,
+            "core.format": FEATURE_STATE_ON,
+            "core.macros": FEATURE_STATE_QUIET,
+            "core.links": FEATURE_STATE_ON,
+            "core.read_aloud": FEATURE_STATE_ON,
+            "core.voice_commands": FEATURE_STATE_ON,
+            "core.watch_folder": FEATURE_STATE_QUIET,
             "core.analysis": FEATURE_STATE_ON,
             "core.shell": FEATURE_STATE_QUIET,
             "core.keymap": FEATURE_STATE_QUIET,
             "core.ocr": FEATURE_STATE_QUIET,
+            "core.intellisense": FEATURE_STATE_QUIET,
+            "core.markdown_profiles": FEATURE_STATE_ON,
+            "core.text_encoding": FEATURE_STATE_ON,
             "future.character_inspector": FEATURE_STATE_QUIET,
             "future.cleanup": FEATURE_STATE_QUIET,
-            "future.regex_library": FEATURE_STATE_QUIET,
             "future.ai": FEATURE_STATE_QUIET,
+            # Author or Student is one of the writer-tier-and-above profiles
+            # with publishing access (see PROFILE_ESSENTIAL's comment above).
+            "future.publishing": FEATURE_STATE_ON,
+            "future.publishing_read": FEATURE_STATE_OFF,
         },
     ),
     "reader_and_student": FeatureProfile(
         id="reader_and_student",
-        name="Reader and Student",
-        description="Reading, highlights, references, and light writing workflows.",
+        name=lazy_gettext("Reader and Student"),
+        description=lazy_gettext("Reading, highlights, references, and light writing workflows."),
         states={
             "core.search.regex": FEATURE_STATE_QUIET,
             "core.format": FEATURE_STATE_QUIET,
@@ -460,13 +187,14 @@ PROFILE_DEFINITIONS: dict[str, FeatureProfile] = {
             "core.intellisense": FEATURE_STATE_QUIET,
             "future.character_inspector": FEATURE_STATE_OFF,
             "future.cleanup": FEATURE_STATE_OFF,
-            "future.regex_library": FEATURE_STATE_OFF,
+            "future.publishing": FEATURE_STATE_OFF,
+            "future.publishing_read": FEATURE_STATE_OFF,
         },
     ),
     "office_and_admin": FeatureProfile(
         id="office_and_admin",
-        name="Office and Admin",
-        description="Reliable file work, sessions, cleanup, and printing.",
+        name=lazy_gettext("Office and Admin"),
+        description=lazy_gettext("Reliable file work, sessions, cleanup, and printing."),
         states={
             "core.search.regex": FEATURE_STATE_QUIET,
             "core.format": FEATURE_STATE_ON,
@@ -482,13 +210,16 @@ PROFILE_DEFINITIONS: dict[str, FeatureProfile] = {
             "core.intellisense": FEATURE_STATE_QUIET,
             "future.character_inspector": FEATURE_STATE_QUIET,
             "future.cleanup": FEATURE_STATE_QUIET,
-            "future.regex_library": FEATURE_STATE_QUIET,
+            "future.publishing": FEATURE_STATE_OFF,
+            "future.publishing_read": FEATURE_STATE_OFF,
         },
     ),
     PROFILE_DEVELOPER_POWER_TEXT: FeatureProfile(
         id=PROFILE_DEVELOPER_POWER_TEXT,
-        name="Developer and Power Text",
-        description="Regular Expression, cleanup, inspection, and document analysis tools.",
+        name=lazy_gettext("Developer and Power Text"),
+        description=lazy_gettext(
+            "Regular Expression, cleanup, inspection, and document analysis tools."
+        ),
         states={
             "core.search.regex": FEATURE_STATE_ON,
             "core.format": FEATURE_STATE_ON,
@@ -503,13 +234,19 @@ PROFILE_DEFINITIONS: dict[str, FeatureProfile] = {
             "core.intellisense": FEATURE_STATE_QUIET,
             "future.character_inspector": FEATURE_STATE_QUIET,
             "future.cleanup": FEATURE_STATE_QUIET,
-            "future.regex_library": FEATURE_STATE_QUIET,
+            # Developer and Power Text is one of the writer-tier-and-above
+            # profiles with publishing access (see PROFILE_ESSENTIAL's
+            # comment above).
+            "future.publishing": FEATURE_STATE_ON,
+            "future.publishing_read": FEATURE_STATE_OFF,
         },
     ),
     "low_vision": FeatureProfile(
         id="low_vision",
-        name="Low Vision",
-        description="Higher contrast, larger reading aids, and friendly inspection tools.",
+        name=lazy_gettext("Low Vision"),
+        description=lazy_gettext(
+            "Higher contrast, larger reading aids, and friendly inspection tools."
+        ),
         states={
             "core.search.regex": FEATURE_STATE_QUIET,
             "core.format": FEATURE_STATE_ON,
@@ -525,13 +262,16 @@ PROFILE_DEFINITIONS: dict[str, FeatureProfile] = {
             "core.intellisense": FEATURE_STATE_QUIET,
             "future.character_inspector": FEATURE_STATE_QUIET,
             "future.cleanup": FEATURE_STATE_QUIET,
-            "future.regex_library": FEATURE_STATE_QUIET,
+            "future.publishing": FEATURE_STATE_OFF,
+            "future.publishing_read": FEATURE_STATE_OFF,
         },
     ),
     "braille_screen_reader_power_user": FeatureProfile(
         id="braille_screen_reader_power_user",
-        name="Braille and Screen Reader Power User",
-        description="Screen-reader-friendly navigation with advanced text tools surfaced calmly.",
+        name=lazy_gettext("Braille and Screen Reader Power User"),
+        description=lazy_gettext(
+            "Screen-reader-friendly navigation with advanced text tools surfaced calmly."
+        ),
         states={
             "core.search.regex": FEATURE_STATE_QUIET,
             "core.format": FEATURE_STATE_QUIET,
@@ -547,13 +287,14 @@ PROFILE_DEFINITIONS: dict[str, FeatureProfile] = {
             "core.intellisense": FEATURE_STATE_QUIET,
             "future.character_inspector": FEATURE_STATE_QUIET,
             "future.cleanup": FEATURE_STATE_QUIET,
-            "future.regex_library": FEATURE_STATE_QUIET,
+            "future.publishing": FEATURE_STATE_OFF,
+            "future.publishing_read": FEATURE_STATE_OFF,
         },
     ),
     PROFILE_ACCESSIBILITY_PROFESSIONAL: FeatureProfile(
         id=PROFILE_ACCESSIBILITY_PROFESSIONAL,
-        name="Accessibility Professional",
-        description="Reading, inspection, trust, and accessibility diagnostics.",
+        name=lazy_gettext("Accessibility Professional"),
+        description=lazy_gettext("Reading, inspection, trust, and accessibility diagnostics."),
         states={
             "core.search.regex": FEATURE_STATE_QUIET,
             "core.format": FEATURE_STATE_QUIET,
@@ -569,13 +310,14 @@ PROFILE_DEFINITIONS: dict[str, FeatureProfile] = {
             "core.intellisense": FEATURE_STATE_QUIET,
             "future.character_inspector": FEATURE_STATE_QUIET,
             "future.cleanup": FEATURE_STATE_QUIET,
-            "future.regex_library": FEATURE_STATE_QUIET,
+            "future.publishing": FEATURE_STATE_OFF,
+            "future.publishing_read": FEATURE_STATE_OFF,
         },
     ),
     PROFILE_FULL_QUILL: FeatureProfile(
         id=PROFILE_FULL_QUILL,
-        name="Full Quill",
-        description="Everything visible, including advanced and experimental paths.",
+        name=lazy_gettext("Full Quill"),
+        description=lazy_gettext("Everything visible, including advanced and experimental paths."),
         states={feature_id: FEATURE_STATE_ON for feature_id in FEATURE_DEFINITIONS},
     ),
 }
@@ -644,6 +386,27 @@ def feature_for_command(command_id: str) -> str:
     if command_id.startswith("help."):
         return "core.help"
     return "core.app"
+
+
+def transitive_dependencies(feature_id: str) -> frozenset[str]:
+    """Every feature ``feature_id`` (transitively) depends on. Cycle-safe.
+
+    Used by the remote kill switch so that locking a feature also locks
+    everything that cannot work without it: a feature is effectively locked
+    when it, or any feature in this set, is locked.
+    """
+    seen: set[str] = set()
+    stack = [feature_id]
+    while stack:
+        current = stack.pop()
+        definition = FEATURE_DEFINITIONS.get(current)
+        if definition is None:
+            continue
+        for dependency in definition.dependencies:
+            if dependency not in seen:
+                seen.add(dependency)
+                stack.append(dependency)
+    return frozenset(seen)
 
 
 def find_feature(feature_name: str) -> FeatureDefinition | None:

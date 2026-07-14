@@ -3,8 +3,21 @@ from __future__ import annotations
 import os
 import shutil
 import subprocess
+import sys
 from dataclasses import dataclass
 from pathlib import Path
+
+# A Finder-launched macOS .app bundle gets a minimal default PATH; it does not
+# inherit /usr/local/bin or /opt/homebrew/bin the way a login/interactive shell
+# does (those are sourced from the user's shell profile). A tool installed via
+# a .pkg installer (e.g. pandoc.org's own installer, not Homebrew) or via
+# Homebrew itself is then genuinely on disk but invisible to shutil.which().
+# Checked only after PATH itself comes up empty.
+_MACOS_FALLBACK_DIRS: tuple[str, ...] = (
+    "/usr/local/bin",
+    "/opt/homebrew/bin",
+    "/opt/local/bin",  # MacPorts
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -131,6 +144,15 @@ def detect_tool(definition: ExternalToolDefinition) -> ExternalToolStatus:
             source="bundled",
             version=_tool_version(bundled),
         )
+    managed = _managed_tool_path(definition)
+    if managed is not None:
+        return ExternalToolStatus(
+            definition=definition,
+            installed=True,
+            path=str(managed),
+            source="downloaded",
+            version=_tool_version(managed),
+        )
     for executable_name in definition.executable_names:
         discovered = shutil.which(executable_name)
         if discovered:
@@ -141,6 +163,17 @@ def detect_tool(definition: ExternalToolDefinition) -> ExternalToolStatus:
                 source="system",
                 version=_tool_version(Path(discovered)),
             )
+    if sys.platform == "darwin":
+        for executable_name in definition.executable_names:
+            found = _macos_path_fallback(executable_name)
+            if found is not None:
+                return ExternalToolStatus(
+                    definition=definition,
+                    installed=True,
+                    path=found,
+                    source="system",
+                    version=_tool_version(Path(found)),
+                )
     return ExternalToolStatus(
         definition=definition,
         installed=False,
@@ -179,6 +212,20 @@ def copyable_install_command(tool_id: str) -> str:
     return get_external_tool_status(tool_id).definition.install_command
 
 
+def _macos_path_fallback(executable_name: str) -> str | None:
+    """Look for *executable_name* in well-known macOS install locations.
+
+    Only meaningful when ``shutil.which`` already came up empty -- see the
+    ``_MACOS_FALLBACK_DIRS`` comment for why a real, on-disk install can still
+    be invisible to a GUI app's PATH.
+    """
+    for directory in _MACOS_FALLBACK_DIRS:
+        candidate = Path(directory) / executable_name
+        if candidate.is_file():
+            return str(candidate)
+    return None
+
+
 def _bundled_tool_path(definition: ExternalToolDefinition) -> Path | None:
     app_root = os.environ.get("QUILL_APP_ROOT", "").strip()
     if app_root:
@@ -186,6 +233,24 @@ def _bundled_tool_path(definition: ExternalToolDefinition) -> Path | None:
         if candidate.exists():
             return candidate.resolve()
     return None
+
+
+def _managed_tool_path(definition: ExternalToolDefinition) -> Path | None:
+    """A copy fetched on demand into the app-data tools directory.
+
+    Pandoc is no longer bundled (footprint unbundle): the first conversion that
+    needs it downloads it here. Other tools have no managed download yet and
+    fall through to PATH detection.
+    """
+    if definition.tool_id != "pandoc":
+        return None
+    try:
+        from quill.core.pandoc_install import managed_pandoc_executable
+
+        managed = managed_pandoc_executable()
+    except Exception:  # noqa: BLE001 - resolution must never crash detection
+        return None
+    return managed.resolve() if managed is not None else None
 
 
 def _tool_version(executable: Path) -> str | None:

@@ -78,6 +78,45 @@ def test_read_structured_docx_extracts_text(monkeypatch, tmp_path: Path) -> None
     assert "World" in document.text
 
 
+def test_read_structured_docx_pandoc_engine(monkeypatch, tmp_path: Path) -> None:
+    # docx_engine="pandoc" converts through Pandoc and records that engine in
+    # the metadata; MarkItDown must not be consulted.
+    target = tmp_path / "sample.docx"
+    target.write_bytes(b"PK\x03\x04")
+
+    class _Result:
+        text = "# Pandoc Extract\n\nRicher structure\n"
+
+    monkeypatch.setattr(
+        "quill.io.pandoc.convert_document_with_pandoc",
+        lambda _path, _kind, **_kw: _Result(),
+    )
+    monkeypatch.setattr(
+        "quill.io.structured.convert_with_markitdown",
+        lambda _path: (_ for _ in ()).throw(AssertionError("markitdown must not run")),
+    )
+    document = read_structured_document(target, docx_engine="pandoc")
+    assert document.source_metadata["engine"] == "pandoc"
+    assert "Richer structure" in document.text
+
+
+def test_read_structured_docx_pandoc_engine_falls_back(monkeypatch, tmp_path: Path) -> None:
+    # When Pandoc is missing or fails, the pandoc preference degrades to the
+    # default MarkItDown chain instead of failing the open.
+    target = tmp_path / "sample.docx"
+    target.write_bytes(b"PK\x03\x04")
+    monkeypatch.setattr(
+        "quill.io.pandoc.convert_document_with_pandoc",
+        lambda _path, _kind, **_kw: (_ for _ in ()).throw(RuntimeError("no pandoc")),
+    )
+    monkeypatch.setattr(
+        "quill.io.structured.convert_with_markitdown",
+        lambda _path: "# DOCX Extract\n\nHello\n",
+    )
+    document = read_structured_document(target, docx_engine="pandoc")
+    assert document.source_metadata["engine"] == "markitdown"
+
+
 def test_read_structured_doc_extracts_text(monkeypatch, tmp_path: Path) -> None:
     target = tmp_path / "sample.doc"
     target.write_bytes(b"\xd0\xcf\x11\xe0")

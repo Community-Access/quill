@@ -15,13 +15,18 @@ class NotebookEntriesPanel:
     def __init__(self, parent: object, wx: object) -> None:
         self._wx = wx
         self.panel = wx.Panel(parent)
+        self.panel.SetName("Notebook entries")
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         self._name_label = wx.StaticText(self.panel, label="No notebook open")
+        self._name_label.SetName("Notebook name")
         self._goal_label = wx.StaticText(self.panel, label="")
+        self._goal_label.SetName("Notebook goal")
         self._filter = wx.TextCtrl(self.panel, style=wx.TE_PROCESS_ENTER)
+        self._filter.SetName("Filter notebook entries")
         self._filter.SetHint("Filter entries...")
         self._listbox = wx.ListBox(self.panel, style=wx.LB_SINGLE)
+        self._listbox.SetName("Notebook entries list")
 
         sizer.Add(self._name_label, 0, wx.EXPAND | wx.ALL, 4)
         sizer.Add(self._goal_label, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 4)

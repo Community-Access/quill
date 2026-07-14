@@ -57,24 +57,63 @@ class AskQuillChatDialog:
         get_selection,
         insert_text,
         replace_selection,
+        set_text=None,
+        open_new_document=None,
         run_command,
         tool_catalog: list[tuple[str, str]],
         announce=None,
         review_changes=None,
+        conversation=None,
+        voice_mode=False,
+        voice=None,
+        signal_sound=None,
+        open_speech_player=None,
+        rebuild_conversation=None,
+        initial_prompt="",
     ) -> None:
         import wx
 
         self._wx = wx
         self._assistant = assistant
+        # Voice conversation mode (Companion). ``voice`` is a VoiceServices for mic
+        # capture (Ctrl+F9) and spoken answers; ``signal_sound(name)`` plays an
+        # earcon ("thinking"/"response"/"error"); ``open_speech_player(text)`` opens
+        # the transport popup for a spoken reply. All optional — absent => text only.
+        self._voice_mode = bool(voice_mode)
+        self._voice = voice
+        self._signal_sound = signal_sound or (lambda _name: None)
+        self._open_speech_player = open_speech_player
+        self._recording = False
+        from quill.core.ai.thinking import ThinkingIndicator
+
+        self._thinking = ThinkingIndicator()
+        self._thinking_timer = None
+        # Phase 1 companion: a callable (message, document, selection) ->
+        # (answer, edited, error). When supplied, each turn runs the multi-step
+        # tool loop through the Safe Editor Tool Gateway (reads, reviewed edits,
+        # undo, audit) instead of the legacy decide/answer heuristic. None falls
+        # back to the legacy path so provider setup still works inline.
+        self._conversation = conversation
+        # Rebuild the companion conversation after switching provider/model in chat, so the
+        # change takes effect live (the backend reads the active connection at build time).
+        self._rebuild_conversation = rebuild_conversation
         self._get_document = get_document
         self._get_selection = get_selection
         self._insert_text = insert_text
         self._replace_selection = replace_selection
+        self._set_text = set_text or (lambda _t: None)
+        self._open_new_document = open_new_document or (lambda _t: None)
         self._run_command = run_command
         self._review_changes = review_changes
         self._tool_titles = dict(tool_catalog)
         self._tool_ids = tuple(tid for tid, _ in tool_catalog)
-        self._announce = announce or (lambda _m: None)
+        # Route announcements through the verbosity engine's legacy passthrough
+        # (a no-op for the user today) so engine.speak() is reachable from this
+        # call site as the verbosity rebuild migrates paths onto it.
+        from quill.core.verbosity.engine import speak_legacy_text
+
+        _base_announce = announce or (lambda _m: None)
+        self._announce = lambda message: _base_announce(speak_legacy_text(message))
         self._last_response = ""
         self._first_done = False
         self._session = None
@@ -110,6 +149,10 @@ class AskQuillChatDialog:
 
         self._full_messages: list[str] = []
         self._transcript: list[tuple[str, str]] = []
+        # Hey QUILL Phase 4: a voice question routed here pre-fills the composer
+        # so the user can confirm and send; voice never fires an AI request on
+        # its own (a person stays in the loop for every network call).
+        self._initial_prompt = str(initial_prompt or "").strip()
         self._webview = None
         self.messages = None
         self.input = None
@@ -165,6 +208,32 @@ class AskQuillChatDialog:
         insert_row.Add(self._insert_button, 0)
         outer.Add(insert_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 14)
 
+        # Direct text-action row — apply the last response without going through
+        # the approval flow. Replace checks for an active selection at click time.
+        text_action_row = wx.BoxSizer(wx.HORIZONTAL)
+        text_action_row.Add(
+            wx.StaticText(self.dialog, label="Text actions:"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
+            6,
+        )
+        self._action_insert_btn = wx.Button(self.dialog, label="Insert at Cursor")
+        self._action_insert_btn.SetName("Insert last response at cursor")
+        self._action_insert_btn.Enable(False)
+        text_action_row.Add(self._action_insert_btn, 0, wx.RIGHT, 6)
+        self._action_replace_btn = wx.Button(self.dialog, label="Replace")
+        self._action_replace_btn.SetName(
+            "Replace selection with last response,"
+            " or replace all document text if nothing is selected"
+        )
+        self._action_replace_btn.Enable(False)
+        text_action_row.Add(self._action_replace_btn, 0, wx.RIGHT, 6)
+        self._action_new_doc_btn = wx.Button(self.dialog, label="Open as New Document")
+        self._action_new_doc_btn.SetName("Open last response as a new document")
+        self._action_new_doc_btn.Enable(False)
+        text_action_row.Add(self._action_new_doc_btn, 0)
+        outer.Add(text_action_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 14)
+
         footer = wx.BoxSizer(wx.HORIZONTAL)
         self.copy_button = wx.Button(self.dialog, label="Copy Last Response")
         self.copy_button.Enable(False)
@@ -178,6 +247,9 @@ class AskQuillChatDialog:
         self.discard_button.Bind(wx.EVT_BUTTON, self._on_discard)
         self.copy_button.Bind(wx.EVT_BUTTON, self._on_copy)
         self._insert_button.Bind(wx.EVT_BUTTON, self._on_insert_into_document)
+        self._action_insert_btn.Bind(wx.EVT_BUTTON, self._on_action_insert)
+        self._action_replace_btn.Bind(wx.EVT_BUTTON, self._on_action_replace)
+        self._action_new_doc_btn.Bind(wx.EVT_BUTTON, self._on_action_open_new_doc)
         self._change_provider_btn.Bind(wx.EVT_BUTTON, self._on_change_provider)
         self.dialog.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
         self._refresh_active_status()
@@ -187,6 +259,11 @@ class AskQuillChatDialog:
         self._setup_strip.Hide()
 
         def _check_available() -> None:
+            # The companion's provider was already verified when the session was
+            # built, so treat the dialog as ready and skip the legacy probe.
+            if self._conversation is not None:
+                self._wx.CallAfter(self._on_availability_checked, True, None)
+                return
             avail, reason = assistant.is_available()
             self._wx.CallAfter(self._on_availability_checked, avail, reason)
 
@@ -225,6 +302,10 @@ class AskQuillChatDialog:
         self._setup_provider = wx.Choice(
             panel, choices=[_PROVIDER_LABELS[p] for p in _PROVIDER_IDS]
         )
+        # The adjacent "Provider:" StaticText is not auto-associated as the
+        # accessible name on Windows, so set it explicitly or a screen reader
+        # announces this combo box unlabeled when tabbed to.
+        self._setup_provider.SetName("Provider")
         self._setup_provider.SetSelection(0)
         row.Add(self._setup_provider, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 12)
 
@@ -353,14 +434,70 @@ class AskQuillChatDialog:
     # -- Close ----------------------------------------------------------------
 
     def _close(self) -> None:
-        self.dialog.EndModal(self._wx.ID_CANCEL)
+        # Works whether the dialog was shown modal (EndModal) or modeless (Close ->
+        # EVT_CLOSE -> Destroy, which also restores the menu bar via the on_close hook).
+        if self.dialog.IsModal():
+            self.dialog.EndModal(self._wx.ID_CANCEL)
+        else:
+            self.dialog.Close()
 
     def _on_char_hook(self, event: object) -> None:
         wx = self._wx
-        if event.GetKeyCode() == wx.WXK_ESCAPE:
+        key = event.GetKeyCode()
+        if key == wx.WXK_ESCAPE:
             self._close()
             return
+        # Ctrl+F9: ask a question by voice (record -> transcribe -> send).
+        if key == wx.WXK_F9 and event.ControlDown():
+            self._toggle_voice_question()
+            return
         event.Skip()
+
+    # -- Voice question (Ctrl+F9) ---------------------------------------------
+
+    def _toggle_voice_question(self) -> None:
+        if self._voice is None or not self._voice.input_available():
+            self._announce(
+                "Voice input is not available. Connect a microphone and install a "
+                "speech-to-text model in Speech settings."
+            )
+            return
+        if not self._recording:
+            try:
+                self._voice.start_recording()
+            except Exception as exc:  # noqa: BLE001
+                self._announce(f"Could not start recording: {exc}")
+                return
+            self._recording = True
+            self._announce("Recording. Press Control F9 again to stop and send.")
+            return
+
+        self._recording = False
+        self._announce("Transcribing your question")
+        self._set_busy(True)
+
+        def worker() -> None:
+            try:
+                text = self._voice.stop_and_transcribe()
+            except Exception as exc:  # noqa: BLE001
+                self._wx.CallAfter(self._on_voice_question, "", str(exc))
+                return
+            self._wx.CallAfter(self._on_voice_question, text, "")
+
+        threading.Thread(  # GATE-40-OK: STT worker; posts via CallAfter.
+            target=worker, daemon=True
+        ).start()
+
+    def _on_voice_question(self, text: str, error: str) -> None:
+        self._set_busy(False)
+        if error:
+            self._announce(f"Could not transcribe: {error}")
+            return
+        text = (text or "").strip()
+        if not text:
+            self._announce("I didn't catch that. Please try again.")
+            return
+        self._submit(text)
 
     # -- Fallback UI (no WebView) ---------------------------------------------
 
@@ -426,6 +563,7 @@ class AskQuillChatDialog:
         self._announce(f"{prefix}: {compact}")
 
     def _set_busy(self, busy: bool) -> None:
+        self._update_thinking(busy)
         if self._webview is not None:
             self._webview.set_input_enabled(not busy)
             return
@@ -434,7 +572,43 @@ class AskQuillChatDialog:
         for button in self._suggestion_buttons:
             button.Enable(not busy)
 
+    def _update_thinking(self, busy: bool) -> None:
+        """Drive the 'thinking' / 'still thinking' cue while waiting for a reply."""
+        import time
+
+        wx = self._wx
+        if busy:
+            self._thinking.start(time.monotonic())
+            if self._thinking_timer is None:
+                self._thinking_timer = wx.Timer(self.dialog)
+                self.dialog.Bind(wx.EVT_TIMER, self._on_thinking_tick, self._thinking_timer)
+            self._thinking_timer.Start(1000)
+        else:
+            self._thinking.stop()
+            if self._thinking_timer is not None:
+                self._thinking_timer.Stop()
+
+    def _on_thinking_tick(self, _event: object) -> None:
+        import time
+
+        wx = self._wx
+        # Never loop the cue over a modal dialog (share consent / approval) or into the
+        # background. Those run a nested event loop with busy still set, so without this
+        # guard a turn that pauses for the user would repeat "still thinking" forever.
+        # Only speak when our chat window is the active foreground window.
+        if wx.GetActiveWindow() is not self.dialog:
+            return
+        if self._thinking.due_for_cue(time.monotonic()):
+            self._signal_sound("thinking")
+            self._announce("Quill is still thinking")
+
     def _focus_composer(self) -> None:
+        if self._initial_prompt and self.input is not None:
+            # Pre-fill once from a routed voice question, then clear so it does
+            # not reappear on later focus passes. The user presses Enter to send.
+            self.input.SetValue(self._initial_prompt)
+            self.input.SetInsertionPointEnd()
+            self._initial_prompt = ""
         if self._webview is not None:
             self._webview.focus()
         elif self.input is not None:
@@ -467,6 +641,15 @@ class AskQuillChatDialog:
         self._stream_last = 0.0
 
         def worker() -> None:
+            if self._conversation is not None:
+                try:
+                    answer, edited, error = self._conversation(message, document, selection)
+                    result = ("conversation", answer or "", "edited" if edited else "", error or "")
+                except Exception as exc:  # noqa: BLE001
+                    result = ("error", "", "", str(exc))
+                    self._pending_fallback_hint = self._fallback_hint(exc)
+                self._wx.CallAfter(self._apply, *result)
+                return
             try:
                 decision = self._assistant.decide(message, document, self._tool_ids)
                 action = decision.action
@@ -491,6 +674,7 @@ class AskQuillChatDialog:
                     result = ("answer", text, "", "")
             except Exception as exc:  # noqa: BLE001
                 result = ("error", "", "", str(exc))
+                self._pending_fallback_hint = self._fallback_hint(exc)
             self._wx.CallAfter(self._apply, *result)
 
         threading.Thread(  # GATE-40-OK: streaming response worker; posts deltas via CallAfter.
@@ -542,7 +726,75 @@ class AskQuillChatDialog:
         self.discard_button.Enable(show)
         self.dialog.Layout()
 
+    def _fallback_hint(self, exc: Exception) -> str:
+        """A consent-safe, accessible fallback suggestion for a failed AI call, or "".
+
+        Uses the tested :mod:`quill.core.ai.fallback` decision: only on a connectivity
+        failure (offline/timeout/rate-limit/5xx), and only for the offline direction
+        (a cloud call failed and an on-device model exists). Never switches providers
+        automatically — the privacy posture is the user's choice — it only announces
+        the option, so a screen-reader user hears a way forward instead of a dead end.
+        """
+        try:
+            from quill.core.ai import fallback
+            from quill.core.ai.model_manager import existing_model
+            from quill.core.settings import load_settings
+
+            kind = fallback.classify_exception(exc)
+            provider = str(getattr(load_settings(), "ai_chat_default_provider", "") or "")
+            plan = fallback.plan_fallback(
+                primary_provider=provider or "cloud",
+                failure_kind=kind,
+                local_available=existing_model() is not None,
+                cloud_available=False,  # only the offline (cloud->local) direction here
+                cloud_provider=provider,
+            )
+            if plan.offer and plan.to_provider == "local":
+                return (
+                    "The AI service could not be reached. You have an on-device model "
+                    "available — open AI settings to switch to it and keep working offline."
+                )
+        except Exception:  # noqa: BLE001 - a fallback hint must never mask the real error
+            pass
+        return ""
+
     def _apply(self, action: str, text: str, tool: str, error: str) -> None:
+        # Phase 4: after a connectivity failure, announce the consent-safe fallback
+        # option (posted so it follows the error announcement below). Cleared once used.
+        fallback_hint = getattr(self, "_pending_fallback_hint", "")
+        self._pending_fallback_hint = ""
+        if error and fallback_hint:
+            self._wx.CallAfter(self._announce, fallback_hint)
+        if action == "conversation":
+            # The gateway already performed (and the user already reviewed) any
+            # edit; here we just surface the assistant's answer. ``tool`` carries
+            # the "edited" marker so we announce a change vs a plain answer.
+            self._last_response = text or ""
+            self._append("Quill", text or "(no response)")
+            if error:
+                self._signal_sound("error")
+                self._announce_incoming(error, prefix="Quill error")
+            elif tool == "edited":
+                self._signal_sound("response")
+                self._announce("Quill updated the document. Press Control Z to undo.")
+            else:
+                self._signal_sound("response")
+                self._announce_incoming(text or "No response")
+            self._record_session_exchange(text or "")
+            # Voice mode: speak the reply with transport controls (Pause/Stop/Play/
+            # Save). Only when a speech player was provided (TTS output available);
+            # otherwise the screen reader already voiced the announcement above.
+            if not error and self._voice_mode and self._open_speech_player and (text or "").strip():
+                self._open_speech_player(text)
+            self.copy_button.Enable(bool(self._last_response))
+            self._action_insert_btn.Enable(bool(self._last_response))
+            self._action_replace_btn.Enable(bool(self._last_response))
+            self._action_new_doc_btn.Enable(bool(self._last_response))
+            self._set_busy(False)
+            if self._webview is not None:
+                self._webview.set_status("Quill responded")
+            self._focus_composer()
+            return
         if action == "error":
             message, disable_chat = classify_assistant_error(error)
             self._append("Quill", message)
@@ -582,6 +834,9 @@ class AskQuillChatDialog:
                 self._announce_incoming(text or "No response")
             self._record_session_exchange(text)
         self.copy_button.Enable(bool(self._last_response))
+        self._action_insert_btn.Enable(bool(self._last_response))
+        self._action_replace_btn.Enable(bool(self._last_response))
+        self._action_new_doc_btn.Enable(bool(self._last_response))
         self._set_busy(False)
         if self._webview is not None:
             self._webview.set_status("Quill responded")
@@ -691,18 +946,141 @@ class AskQuillChatDialog:
         self._insert_text(content)
         self._announce(f"Inserted {what} into the document as {fmt}.")
 
+    # -- Direct text actions (bypass approval flow) ---------------------------
+
+    def _on_action_insert(self, _event: object) -> None:
+        if not self._last_response:
+            return
+        try:
+            self._insert_text(self._last_response)
+        except Exception as exc:  # noqa: BLE001
+            self._append("Quill", f"Couldn't insert: {exc}")
+            return
+        self._announce("Inserted last response at cursor")
+
+    def _on_action_replace(self, _event: object) -> None:
+        if not self._last_response:
+            return
+        try:
+            selection = self._get_selection()
+            if selection:
+                self._replace_selection(self._last_response)
+                self._announce("Replaced selection with last response")
+            else:
+                self._set_text(self._last_response)
+                self._announce("Replaced all document text with last response")
+        except Exception as exc:  # noqa: BLE001
+            self._append("Quill", f"Couldn't replace: {exc}")
+
+    def _on_action_open_new_doc(self, _event: object) -> None:
+        if not self._last_response:
+            return
+        try:
+            self._open_new_document(self._last_response)
+        except Exception as exc:  # noqa: BLE001
+            self._append("Quill", f"Couldn't open new document: {exc}")
+            return
+        self._announce("Opened last response as a new document")
+
+    def _switch_provider_list(self) -> list:
+        """Providers offered in the in-chat switcher: ones you've configured, plus
+        on-device Ollama (which needs no key). As ``(id, display name)``."""
+        import quill.core.ai.onboarding as ob
+
+        items = list(ob.configured_cloud_providers())
+        ollama = (ob.ONDEVICE_PROVIDER_OPTION.id, ob.ONDEVICE_PROVIDER_OPTION.name)
+        if ollama not in items:
+            items.append(ollama)
+        return items
+
     def _on_change_provider(self, _event: object) -> None:
-        self._show_setup("Switch provider or model, then click Save to set it as the default.")
-        self._setup_provider.SetFocus()
+        """A light switcher: pick a configured provider + model and Set. No key field —
+        keys come from setup; on-device Ollama needs none. Applies live to the open chat."""
+        import quill.core.ai.onboarding as ob
+        from quill.core.ai.providers import (
+            default_model_for_provider,
+            recommended_models_for_provider,
+        )
+
+        wx = self._wx
+        providers = self._switch_provider_list()
+        if not providers:
+            # Nothing configured yet: fall back to the inline key setup for first run.
+            self._show_setup("Add a provider to get started.")
+            self._setup_provider.SetFocus()
+            return
+
+        dlg = wx.Dialog(self.dialog, title="Switch AI provider and model")
+        root = wx.BoxSizer(wx.VERTICAL)
+        root.Add(wx.StaticText(dlg, label="&Provider:"), 0, wx.LEFT | wx.TOP, 10)
+        prov = wx.Choice(dlg, choices=[name for _id, name in providers])
+        prov.SetName("AI provider")
+        prov.SetSelection(0)
+        root.Add(prov, 0, wx.EXPAND | wx.ALL, 10)
+        root.Add(wx.StaticText(dlg, label="&Model:"), 0, wx.LEFT, 10)
+        model_combo = wx.ComboBox(dlg, style=wx.CB_DROPDOWN)
+        model_combo.SetName("Model — choose a suggestion or type a model id")
+        root.Add(model_combo, 0, wx.EXPAND | wx.ALL, 10)
+        buttons = dlg.CreateButtonSizer(wx.OK | wx.CANCEL)
+        set_btn = dlg.FindWindowById(wx.ID_OK)
+        if set_btn is not None:
+            set_btn.SetLabel("Set")
+        root.Add(buttons, 0, wx.EXPAND | wx.ALL, 10)
+        dlg.SetSizerAndFit(root)
+
+        def fill_models() -> None:
+            pid = providers[prov.GetSelection()][0]
+            model_combo.Set(recommended_models_for_provider(pid))
+            model_combo.SetValue(ob.stored_provider_model(pid) or default_model_for_provider(pid))
+
+        fill_models()
+        prov.Bind(wx.EVT_CHOICE, lambda _e: fill_models())
+        apply_modal_ids(dlg, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
+        try:
+            if show_modal_dialog(dlg, "Switch AI provider and model") != wx.ID_OK:
+                return
+            pid, name = providers[prov.GetSelection()]
+            chosen_model = model_combo.GetValue().strip() or default_model_for_provider(pid)
+        finally:
+            dlg.Destroy()
+
+        if pid == "ollama":
+            ob.apply_on_device_setup(model=chosen_model)
+        else:
+            ob.apply_cloud_setup(pid, ob.stored_provider_key(pid), model=chosen_model)
+        # Apply live: the backend and companion both read the active connection at build
+        # time, so rebuild them now and the open chat uses the new provider/model at once.
+        try:
+            from quill.core.ai.provider_backend import ProviderChatBackend
+
+            self._assistant.backend = ProviderChatBackend()
+        except Exception:  # noqa: BLE001 - never break the open chat on a switch
+            pass
+        if self._rebuild_conversation is not None:
+            try:
+                self._conversation = self._rebuild_conversation()
+            except Exception:  # noqa: BLE001
+                pass
+        self._setup_strip.Hide()
+        self._set_busy(False)
+        self.dialog.Layout()
+        self._refresh_active_status()
+        self._announce(f"Now using {name}, model {chosen_model}.")
 
     def _refresh_active_status(self) -> None:
+        # Read the unified assistant_ai connection so chat reflects the same provider/model
+        # the wizard and the rest of the app use (not the legacy chat-only settings).
         try:
-            from quill.core.settings import load_settings
+            from quill.core.ai.providers import provider_display_name
+            from quill.core.assistant_ai import load_assistant_connection_settings
 
-            s = load_settings()
-            pid = getattr(s, "ai_chat_default_provider", "") or ""
-            model = getattr(s, "ai_chat_default_model", "") or "(provider default)"
-            label = _PROVIDER_LABELS.get(pid, pid or "(none)")
+            conn = load_assistant_connection_settings()
+            provider = conn.provider.strip().lower()
+            if not provider or provider == "off":
+                self._active_status.SetLabel("Active provider: (none) — choose one to start")
+                return
+            label = provider_display_name(provider)
+            model = conn.model.strip() or "(provider default)"
             self._active_status.SetLabel(f"Active provider: {label}  —  Model: {model}")
         except Exception:  # noqa: BLE001
             self._active_status.SetLabel("")
@@ -721,3 +1099,28 @@ class AskQuillChatDialog:
             show_modal_dialog(self.dialog, "Ask Quill")
         finally:
             self.dialog.Destroy()
+
+    def show_modeless(self, *, on_close=None) -> None:
+        """Show the chat without blocking, so the user can keep working and reach the slim
+        Chat menu. ``on_close`` runs when the dialog closes (used to restore the menu bar).
+        """
+        self._on_close_cb = on_close
+        self.dialog.CentreOnParent()
+        apply_modal_ids(
+            self.dialog,
+            affirmative_id=self._wx.ID_CANCEL,
+            escape_id=self._wx.ID_CANCEL,
+        )
+        self.dialog.Bind(self._wx.EVT_CLOSE, self._on_evt_close)
+        self.dialog.Show()
+        self.dialog.Raise()
+        self._wx.CallAfter(self._focus_composer)
+
+    def _on_evt_close(self, _event: object) -> None:
+        cb = getattr(self, "_on_close_cb", None)
+        if cb is not None:
+            try:
+                cb()
+            except Exception:  # noqa: BLE001 - close must always proceed
+                pass
+        self.dialog.Destroy()

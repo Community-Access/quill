@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>roadmap</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">roadmap</h1>
+</header>
+<h1 id="quill-plan-of-record-outstanding-work">QUILL — Plan of Record
+(outstanding work)</h1>
+<blockquote>
+<p><strong>The single planning document — it tracks only what is still
+open</strong>, plus the register of <strong>locked / hidden</strong>
+features (consolidated here from the retired
+<code>deferred-locked-features.md</code>). Shipped work is not listed
+here; once something lands it leaves this file and its behavior lives in
+the user guide and <code>QUILL-PRD.md</code>. The large in-flight
+feature specs that once kept their own files have all shipped and been
+retired to git history (Table Studio → PRD §5.4.14; Hey QUILL voice
+interaction → PRD §5776 + user guide; Accessible Vault → PRD
+§5.89d).</p>
+<p>The Accessible Vault plan has been <strong>retired</strong>: Phases
+0–7 shipped (feature-complete for 0.9.0, no open work) and the feature
+now lives in <code>QUILL-PRD.md</code> §5.89d and the user guide. The
+Audio Studio shipped the same way (PRD, user guide, release notes; only
+the human validation pass remains, in
+<code>audio-studio-roadmap.md</code>).</p>
+<p><strong>Operating principle:</strong> everything here is in scope to
+<strong>ship</strong> for 1.0 (except rows explicitly marked 2.0).
+Simplicity for the screen-reader user is king. QUILL owns the editor,
+focus, undo, and announcements; AI and every integration are optional
+and off by default. Platform scope is Windows (primary) and macOS
+(supported).</p>
+</blockquote>
+<p><strong>Last consolidated:</strong> 2026-07-05 (Audio Studio roadmap
+completed and folded into the canonical docs; libmpv hosted on assets-v1
+and surfaced in Download Optional Components; completed sections —
+Accessible Vault, Quillin Hub, libmpv hosting — removed from this
+file).</p>
+<hr />
+<h2 id="north-star">0. North star</h2>
+<p>QUILL is a screen-reader-first writing environment, becoming the home
+for a family of accessibility products that Blind Information Technology
+Solutions (BITS) and CSE Designs built as separate apps. Rather than
+ship four editors, we <strong>consolidate their durable value into
+QUILL</strong> as optional, keyboard-clear, screen-reader-first feature
+families. The consolidation itself is <strong>done</strong> — BITS
+Whisperer, GLOW, and ChapterForge (now the Audio Studio) all live in
+QUILL; the only sibling still feeding open work is
+<strong>GLOW</strong>’s extended family (§5). The discipline: take what
+clears QUILL’s quality and accessibility bar, re-home it on QUILL’s
+invariants (atomic storage, the dialog contract, the announcement
+grammar, Safe Mode, the network-egress audit), and leave behind anything
+superseded or off-mission.</p>
+<hr />
+<h2 id="open-workstreams">1. Open workstreams</h2>
+<h3
+id="ai-footprint-optimization-remaining-wiring-buildhardware-sign-off">1.1
+AI footprint &amp; optimization — remaining wiring + build/hardware
+sign-off</h3>
+<p>The measurement-first effort to make QUILL’s full AI + speech feature
+set install small, start fast, and run on a cheap CPU-only laptop. The
+durable design (principles, reliable-acquisition model,
+host/redistribution rules, size/RAM reference) lives in <a
+href="../Product%20Requirement%20Documents%20and%20Specifications/QUILL-PRD.md"><code>QUILL-PRD.md</code></a>
+§5.25f. The wx-free cores (runtime-memory policy, upgrade advisor,
+cloud↔︎local fallback, footprint sampler) and the Vosk unbundle +
+self-hosting have shipped and are unit-tested. <strong>Still
+open:</strong></p>
+<ul>
+<li><strong>Live-app sign-off (smoke test)</strong> of the now-wired
+runtime-memory policy (the idle-sweep timer firing, a real model
+unloading), the model upgrade hint in the AI model dialog, and the
+offline cloud↔︎local fallback announcement on a real failure.</li>
+<li><strong>Phase 1 installer-size delta</strong> — <strong>Pandoc
+unbundled 2026-07-03</strong> (the single largest component, ~220 MB
+unpacked) and <strong>the braille pack unbundled the same day</strong>
+(PR #800): both now download a pinned, SHA-256-verified build on demand
+the first time they are needed (braille was found safe to unbundle — the
+pack is a detection marker + BRF-profiles source; the actual
+<code>import louis</code> translation is external and unaffected).
+Remaining candidates are ruled out: <code>win32more</code> is a real
+dependency of the screen-reader layer (<code>prismatoid</code>) and
+Windows OCR — not removable without breaking accessibility;
+<code>vosk</code> and non-en enchant dictionaries already download on
+demand. Concrete new quant catalog entries (q5/q8, int8_float16) still
+need real pinned files + SHA-256 hashes.</li>
+<li><strong>Phase 0 committed numbers</strong> — per-engine peak RSS and
+cold-start/first-output timings. The measurement harness now exists:
+<code>python scripts/footprint_live.py --merge-baseline</code> runs each
+installed engine in an isolated subprocess and merges real timings +
+peak RSS into the baseline (degrades to notes, never fabricates). What
+remains is a <strong>live run on a reference machine</strong> with the
+engines/models installed, plus the short manual runtime-behavior pass in
+<a
+href="footprint/phase0-live-signoff-checklist.md"><code>phase0-live-signoff-checklist.md</code></a>.</li>
+<li><strong>macOS offline-speech parity</strong> — a mac
+<code>whisper-cli</code>, or Faster Whisper as the mac default — the
+tracked cross-platform gap.</li>
+</ul>
+<h3 id="glow-open-remainder">1.2 GLOW — open remainder</h3>
+<p>GLOW shipped for 0.9.0 (canonical: PRD §5.92, user guide, release
+notes). Open: only the <em>extended</em> family — ACB large-print
+document audit (#528–#534) and the WATCH-8 watch action (#566) — see
+§5.</p>
+<h3 id="platform-distribution">1.3 Platform &amp; distribution</h3>
+<ul>
+<li><strong>Copilot OAuth deploy nicety</strong>: register a GitHub
+OAuth App and provide its client id via
+<code>QUILL_GITHUB_CLIENT_ID</code> at build time to light the in-app
+spoken device-code Copilot sign-in (the Copilot/GitHub CLI sign-in
+already works without it — enhancement, not blocker). Everything else in
+this workstream (Quillin Hub + signing #517/#519, agent harnesses)
+shipped; canonical docs: <code>docs/signing.md</code>,
+<code>docs/release/quillin-hub-deployment.md</code>, PRD §5.84e.</li>
+<li><strong>Deferred to 2.0</strong> (tracker #680): the Windows 11
+modern primary-menu <code>IExplorerCommand</code> pass (SHELL-3,
+#525).</li>
+</ul>
+<h3 id="docs-tutorials-content">1.4 Docs, tutorials &amp; content</h3>
+<p>One <strong>Documentation &amp; Tutorials</strong> track: user-guide
+coverage, getting-started tutorials, the podcast/walkthrough series, and
+content-quality follow-ups (#535–#564, #505, #522). Long-horizon
+ecosystem (#590) and collaboration (#592) ideas park here.</p>
+<h3 id="table-studio-open-follow-ups">1.5 Table Studio — open
+follow-ups</h3>
+<p>Table Studio shipped as an experimental opt-in (canonical: PRD
+§5.4.14, user guide, release notes; a macOS NSAccessibility bridge
+design note is preserved at
+<code>docs/design/table-studio-macos-nsaccessibility.md</code>). Open:
+make the CSV a first-class editable <em>document tab</em> (retire the
+legacy <code>CsvGridSurface</code>), and a real screen-reader validation
+pass on a packaged build.</p>
+<h3 id="elevenlabs-remaining-2.0-extras">1.6 ElevenLabs — remaining 2.0
+extras</h3>
+<p>Everything 1.0-scoped shipped. What remains is 2.0-deferred — live
+streaming Read Aloud refinements, voice management, server-side
+pronunciation, Tier-3 surfaces — all in §5. Voice
+<strong>cloning</strong> stays deliberately descoped.</p>
+<hr />
+<h2 id="locked-hidden-features-register">2. Locked / hidden features
+(register)</h2>
+<p>These features are gated <code>locked_off=True</code> in
+<code>quill/core/feature_catalog.py</code> and must <strong>not</strong>
+appear in shipping user-facing docs (user guide, release notes, control
+reference, PRD). Authoritative state is the catalog; this register is
+the human summary (consolidated from the retired
+<code>deferred-locked-features.md</code>). When a feature unlocks, move
+its preserved content back into the relevant doc.</p>
+<p><strong>Currently locked (as of 0.9.0 Beta 1):</strong></p>
+<ul>
+<li><code>core.rich_text_lens</code> — <strong>Rich Text Lens</strong>
+(native wxPython rich-text editing for <code>.rtf</code>). Locked
+pending fuller screen-reader testing; RTF opens as plain text meanwhile.
+Docs must not claim native RTF editing ships.</li>
+<li><code>future.publishing</code> — <strong>Publishing</strong> send
+path (publishing connections + provider-aware remote publishing). Locked
+while the providers framework is reviewed; the read-only inbound half
+ships. Release notes already frame this as <em>future</em>.</li>
+<li><code>core.third_party_plugins</code> — <strong>Third-Party
+Plugins</strong> loader (SEC-8). Locked until the plugin sandbox,
+signing, and review process ship. Release notes frame third-party
+Quillins / a marketplace as <em>future</em>.</li>
+<li><code>core.bw_whisperer</code> — <strong>BITS Whisperer</strong>
+brand menu (plus <code>core.bw_transcription</code>,
+<code>core.bw_providers</code>, <code>core.bw_insights</code> sub-flags,
+the <code>quill/core/bw_providers.py</code> backend, the hidden
+Whisperer menu, and its commands/settings). This gates only the
+<strong>superseded branded presentation</strong> — the phased-rollout /
+Provider Center / Status Page surface that the shipped flat
+<strong>Tools &gt; Speech</strong> menu replaced. It does
+<strong>not</strong> gate the speech or agentic-AI
+<em>capabilities</em>, which ship as plain, always-on features.
+<strong>Decision: keep it as-is (locked, inert).</strong> It builds
+nothing at runtime and ships nothing, so there is no benefit to removing
+it and real risk in the ~1000-line untangle (its handlers are coupled to
+the <em>shared</em> <code>bw_speech.py</code> and speech settings that
+the live speech service uses). Leave it locked until there is a concrete
+reason to touch it.</li>
+</ul>
+<p><strong>All voice and speech <em>capabilities</em> are shipped and
+baked in</strong> — offline dictation, transcription and captions,
+read-aloud across SAPI 5 / DECtalk / Piper / eSpeak / Kokoro and the
+ElevenLabs cloud voice, batch document-to-speech, and audiobook
+building. Hands-free <strong>voice interaction</strong> also shipped:
+<code>core.voice_commands</code> was unlocked for Hey QUILL
+(push-to-talk, conversation mode, wake word, Ask Quill routing) — no
+speech-adjacent lock remains.</p>
+<blockquote>
+<p><strong>Docs framing.</strong> GLOW ships as an experimental opt-in
+(2026-07-02) and its preserved user-facing content has been restored
+into the user guide (“GLOW Workflows Inside QUILL”), glossary, help
+topics, and PRD §5.92 — the §2.1 preservation block this file used to
+carry is gone because the real docs now own it. The <strong>BITS
+Whisperer</strong> brand is retired — earlier drafts named a “BITS
+Whisperer speech suite” / “Tools &gt; Speech &gt; Whisperer”; that is
+now the flat <strong>Tools &gt; Speech</strong> menu and a plain
+“private, on-device speech suite,” with no brand to restore.</p>
+</blockquote>
+<hr />
+<h2 id="release-gap-list-path-to-green">3. Release gap list (path to
+green)</h2>
+<p>What’s left between QUILL and a <strong>green, release-ready</strong>
+state is now just <strong>routine validation</strong>, handled in the
+normal QA pass rather than tracked as release blockers (the same
+disposition as the closed #506 / #518 / #526):</p>
+<ul>
+<li><strong>Packaged-build validation</strong> of the optional speech
+engines (Faster Whisper, Vosk) on the real installer, not just from
+source.</li>
+<li><strong>Watch Folder queue</strong> — a live repro confirming the
+by-design priming (drop a <em>new</em> matching file into a running
+profile, or enable “Process existing files”).</li>
+<li><strong>Snapshots vs Versions</strong> — a live repro of the
+reported empty-submenu render (toggle the <code>core.notebook</code> /
+<code>core.recovery</code> flags); the user-facing “Versions” rename is
+done.</li>
+<li><strong>Save As conversion (shipped 2026-07-04)</strong> — the
+manual JAWS/NVDA spot checks for the Save As conversion / window-title /
+export-fidelity fix (the retired plan’s Task 9); the step-by-step script
+is SAVE-001 in <a
+href="../release/screen-reader-test-plan.md"><code>docs/release/screen-reader-test-plan.md</code></a>,
+and the converter verdicts live in <a
+href="../qa/converter-bakeoff.md"><code>docs/qa/converter-bakeoff.md</code></a>.</li>
+</ul>
+<p>Excluded per direction: all table work (§1.5 + the CSV-grid half of
+#514).</p>
+<hr />
+<h2 id="planned-phase-outcomes">4. Planned phase outcomes</h2>
+<p>What the user will notice as the remaining open work lands,
+screen-reader experience first.</p>
+<ul>
+<li><strong>Move faster + publish further.</strong> The CSV document-tab
+consolidation (§1.5); direct publishing to external platforms (#140,
+gated in §2); the extended GLOW family (§5). <em>Faster keyboard
+navigation and accessible publishing.</em></li>
+<li><strong>Solid on Windows and macOS.</strong> Footprint sign-off on
+real hardware (§1.1), macOS offline-speech parity, better docs/tutorials
+(§1.4). <em>A dependable, well-documented product on its supported
+platforms.</em></li>
+</ul>
+<hr />
+<h2 id="deferred-to-quill-2.0">5. Deferred to QUILL 2.0</h2>
+<p>Confirmed out of 1.0 scope. Recorded so the intent is not lost; items
+graduate into the open sections above when scheduled.</p>
+<ul>
+<li><strong>Dictation later phases</strong> — an optional <strong>global
+Windows key hook</strong> (system-wide dictation hotkey),
+<strong>idle-silence detection</strong> (auto-stop on a pause), and
+<strong>dictation intelligence</strong> (spoken punctuation/commands).
+Each is sizable beyond the keyboard-only Hold/Locked dictation that
+ships.</li>
+<li><strong>Voice interaction / Hey QUILL</strong> — <strong>shipped
+0.9.0</strong> (all four phases + refinements: push-to-talk Voice
+Command, Voice Conversation Mode with sounders + VAD, always-listening
+“Hey QUILL” wake word, Ask Quill routing). Canonical docs: PRD §5776
+“Voice input”, user guide “Voice Interaction”. Commands stay bounded by
+the agent safe-tool allowlist. The one open follow-up is a dedicated
+low-power keyword spotter for the wake word.</li>
+<li><strong>BITS Whisperer remainder</strong> (tracker #680) — the
+consolidation shipped for 1.0; the leftovers (a Windows SAPI/WinRT
+zero-download engine, a consented cloud watch action, guided provider
+onboarding, diarization/live-mic, additional cloud kinds, and the
+Whisperer brand decision) moved to #680 when #669 closed. See also the
+<code>bw_whisperer</code> cleanup in §2.</li>
+<li><strong>Platform singleton</strong> (tracker #680) — the Windows 11
+modern primary-menu <code>IExplorerCommand</code> pass (SHELL-3, #525).
+<em>(Freeze/compile packaging — PyInstaller / Nuitka — is out of scope:
+the embedded-Python + Inno Setup model is the shipping
+approach.)</em></li>
+<li><strong>Direct publishing (#140)</strong> — publish a finished
+document/audiobook to WordPress and other platforms; a long-term,
+likely-<strong>Quillin</strong> integration; early design in
+<code>docs/design/publishing/</code>.</li>
+<li><strong>Remaining ChapterForge surfaces</strong> — Auphonic
+post-processing, RSS podcast feeds, SFTP publishing, and MusicBrainz /
+Open Library metadata lookup.</li>
+<li><strong>ElevenLabs Tier-2/3 extras</strong> — live streaming
+Read-Aloud refinements (SDK streaming, sentence prefetch, an aggressive
+<code>tts_cache</code>, a persistent “reading via ElevenLabs (cloud)”
+indicator); voice management / cloning / design / server-side
+pronunciation dictionaries; and the SFX / voice-changer /
+generation-history surfaces (if ever built, as <strong>optional
+Quillins</strong>, not core). QUILL narrates with the account’s existing
+voices and does <strong>not</strong> clone.</li>
+<li><strong>Native Google Docs support</strong> — read/write/round-trip
+Google Docs (Drive API, OAuth, accessible doc model); spec in <a
+href="QUILL-Native-Google-Docs-Support-PRD.md"><code>QUILL-Native-Google-Docs-Support-PRD.md</code></a>.</li>
+<li><strong>Extended GLOW family (§1.2)</strong> — the core GLOW suite
+<strong>shipped (experimental opt-in) for 0.9.0</strong> (PRD §5.92);
+what stays future is the extended family: ACB Large-Print Guidelines /
+Microsoft Accessibility Checker / WCAG 2.2 AA document-audit profiles
+(#528–#534) and the WATCH-8 GLOW watch action (#566), re-homed on
+QUILL’s invariants. GLOW’s server/Keycloak/Office-add-in/MCP surfaces
+stay in the GLOW product (<code>s:\code\glow</code>); QUILL takes the
+authoring-time checks.</li>
+<li><strong>OCR / document-conversion depth extras</strong> — the
+supported tool <strong>shipped complete for 0.9.0</strong> (all three
+tiers, the AI Hub Services tab, Review Mode v1, temp-file management;
+canonical spec now <strong>PRD §5.93</strong> — the standalone OCR
+planning PRD is retired). Remaining depth, on demand: the full §12-style
+review <em>workspace</em> (outline tree, per-block accept/edit, table
+review/CSV export, re-run pages in accurate mode, OCR dictionary),
+Datalab advanced options (page ranges, max pages, word/table bounding
+boxes, block IDs, extras, processing region, usage warnings), additional
+providers (Azure Document Intelligence, Mistral OCR, AWS Textract,
+Google Document AI, local Marker/Chandra), a provider comparison view,
+on-prem endpoint guidance, and an optional Ctrl+Shift+O shortcut.</li>
+<li><strong>Verbosity polish-backlog long tail</strong> — the
+speculative slice of the ~100 addenda (#405–#504) beyond the shipped
+core/UI/modes/anti-spam; the shipped design lives in <strong>PRD
+§5.91</strong>. Full backlog below.</li>
+</ul>
+<h3 id="verbosity-2.0-polish-backlog-consolidated">Verbosity 2.0 polish
+backlog (consolidated)</h3>
+<p>The verbosity engine and its full 1.0 surface shipped (design in
+<strong>PRD §5.91</strong>). This is the consolidated reference for the
+<strong>deferred</strong> polish-backlog addenda (#405–#504), absorbed
+here when the standalone <code>verbosity-system.md</code> archive was
+retired. Issue numbers are kept so each idea stays findable.</p>
+<p><strong>Valuable candidates (build first if the range
+reopens):</strong></p>
+<ul>
+<li><strong>Error coaching (#416)</strong> — turn an error announcement
+into a next-step hint.</li>
+<li><strong>Per-category announcement detail levels (#418)</strong> —
+independent verbosity per category (nav / edit / search / system) on top
+of the global profile.</li>
+<li><strong>Markdown-aware (#427) / Code-aware (#428) verbosity</strong>
+— context-sensitive announcements when editing Markdown or source.</li>
+<li><strong>“Undo available” cues (#502)</strong> and richer
+<strong>destructive-action warnings (#501)</strong> (the confirm dialog
+ships; the spoken cue is the increment).</li>
+<li><strong>Boundary announcements (#419)</strong> and
+<strong>progress-announcement controls (#420)</strong>.</li>
+<li><strong>Details-on-demand (#417)</strong> beyond the existing
+status-query commands.</li>
+</ul>
+<p><strong>Themed reference well (speculative; build only on
+demand):</strong></p>
+<ul>
+<li><em>Settings UX:</em> searchable settings (#406), recipes (#407),
+bulk edit (#464), undo for settings (#465), change history (#466),
+export preview (#482), import-conflict wizard (#483), “try without
+applying” (#484), reset granularity (#481), explain-my-settings (#446),
+test-my-settings (#467), recommended settings (#468), persona setup
+(#469).</li>
+<li><em>Packs:</em> community pack preview/diff (#442), trust labels
+(#443), copy-as-user-template (#444), pack-author mode (#461), built-in
+sample QVPs (#462), conflict checker (#445).</li>
+<li><em>Modes / recipes:</em> focus mode (#487), review mode (#488),
+session profiles (#485), time-based quiet hours (#486), temporary boost
+(#436), training mode (#438).</li>
+<li><em>Privacy / support:</em> privacy controls (#448),
+private-document mode (#449), export support bundle (#447), copy debug
+summary (#478), report announcement (#479), developer trace verbosity
+(#495), performance knobs (#496).</li>
+<li><em>Output niceties:</em> last-important announcement (#452), pin
+status (#456), smart status rotation (#457), favorites (#455), labels
+(#473), per-announcement suppression (#471/#472), earcons-with-text
+(#453), learn-sounds mode (#454), status badges (#497), braille status
+cell (#498), before/after announcements (#500).</li>
+<li><em>Content / localization:</em> friendly names (#440/#477),
+microcopy style (#490), use-my-words labels (#491), abbreviation
+dictionary (#492), localization readiness (#493), readability verbosity
+(#489).</li>
+<li><em>Hardware / context:</em> multi-monitor / presentation safety
+(#503), screen-reader handoff mode (#410), command discovery (#470),
+contextual help hooks (#439), hold-to-explain (#437), confidence-check
+wizard (#441).</li>
+</ul>
+<p><strong>Recommend do not build</strong> (the screen reader already
+owns these; QUILL speaks <em>alongside</em> it and must not duplicate or
+fight its settings): <strong>typing echo (#411)</strong>,
+<strong>command echo (#499)</strong>, <strong>speech rate / pause knobs
+(#450)</strong>, and <strong>punctuation / symbol profiles
+(#426)</strong>.</p>
+<hr />
+<h2 id="feature-ledger-open-work-by-workstream">6. Feature ledger (open
+work by workstream)</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Workstream</th>
+<th>Open work</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AI footprint &amp; optimization (§1.1)</td>
+<td>Live-app smoke test; Phase 1 installer-size build; Phase 0 committed
+numbers; macOS speech parity.</td>
+</tr>
+<tr>
+<td>GLOW (§1.2)</td>
+<td><strong>Shipped 0.9.0 (experimental opt-in).</strong> Extended
+family (ACB audit profiles #528–#534, WATCH-8 #566) in §5.</td>
+</tr>
+<tr>
+<td>OCR / document conversion (PRD §5.93)</td>
+<td><strong>Free local tiers shipped 0.9.0.</strong> Cloud tier, OCR
+Review Mode, Services tab in §5.</td>
+</tr>
+<tr>
+<td>Platform &amp; distribution (§1.3)</td>
+<td>Copilot OAuth client id (deploy nicety); #525 deferred to 2.0
+(#680).</td>
+</tr>
+<tr>
+<td>Docs &amp; content (§1.4)</td>
+<td>#535–#564, #505, #522, #590, #592.</td>
+</tr>
+<tr>
+<td>Table Studio (§1.5)</td>
+<td><strong>Shipped 0.9.0 (experimental opt-in).</strong> Open
+follow-ups: CSV as an editable document tab; real screen-reader
+validation pass.</td>
+</tr>
+<tr>
+<td>ElevenLabs 2.0 extras (§1.6)</td>
+<td>Live streaming Read Aloud, voice management, Tier-3 — all §5.</td>
+</tr>
+<tr>
+<td>Audio Studio</td>
+<td><strong>Shipped during the beta (all ten roadmap items).</strong>
+Open: the human validation pass (<code>audio-studio-roadmap.md</code>) +
+episode-24 audio regeneration.</td>
+</tr>
+<tr>
+<td>Locked features (§2)</td>
+<td>Voice Commands, Rich Text Lens, Publishing (send), Third-Party
+Plugins (<code>bw_whisperer</code> kept locked/inert — not
+removed).</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

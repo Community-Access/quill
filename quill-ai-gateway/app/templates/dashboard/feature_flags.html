@@ -1,0 +1,34 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Feature flags{% endblock %}
+{% block content %}
+<h1>Feature flags</h1>
+<p><strong>Hosted AI</strong> is the emergency kill switch — disabling it
+  pauses every hosted request for every user immediately. The other flags
+  pause one feature at a time, leaving the rest available.</p>
+
+<ul class="flag-list">
+  {% for flag in flags %}
+  <li>
+    <div>
+      <span class="model-name">
+        {{ "⚠ Hosted AI (global kill switch)" if flag.is_global else flag.feature.replace("_", " ").title() }}
+      </span>
+      <span class="pill {{ 'is-default' if flag.enabled }}">{{ "Enabled" if flag.enabled else "Disabled" }}</span>
+      {% if not flag.enabled and flag.disabled_reason %}
+      <div class="flag-meta">Reason: {{ flag.disabled_reason }}</div>
+      {% endif %}
+    </div>
+    <form method="post" action="{{ url_for('dashboard.toggle_feature_flag', feature=flag.feature) }}">
+      <input type="hidden" name="enabled" value="{{ '0' if flag.enabled else '1' }}">
+      {% if flag.enabled %}
+      <label for="reason-{{ flag.feature }}" class="field-description">Reason (shown to users)</label>
+      <input type="text" id="reason-{{ flag.feature }}" name="reason" placeholder="e.g. reviewing unusual activity">
+      {% endif %}
+      <button type="submit" class="{{ 'danger' if flag.enabled else 'primary' }}">
+        {{ "Disable" if flag.enabled else "Enable" }}
+      </button>
+    </form>
+  </li>
+  {% endfor %}
+</ul>
+{% endblock %}

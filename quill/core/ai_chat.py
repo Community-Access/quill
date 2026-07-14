@@ -14,6 +14,9 @@ import urllib.request
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from quill.core.assistant_ai import provider_credential_target
+from quill.core.error_codes import CodedError
+
 if TYPE_CHECKING:
     pass
 
@@ -23,8 +26,8 @@ TIMEOUT_MODELS_S = 10
 _VERIFIED_CTX = ssl.create_default_context()
 
 
-class AIChatError(Exception):
-    pass
+class AIChatError(CodedError):
+    code = "QUILL-AI-CHAT-FAILED"
 
 
 class AIChatCredentialError(AIChatError):
@@ -88,19 +91,24 @@ def _get_json(url: str, headers: dict, timeout: int) -> dict:  # type: ignore[ty
 # Provider definitions
 # ---------------------------------------------------------------------------
 
+# One provider truth (§7): the ``credential_name`` for each keyed provider is the
+# *canonical* per-provider credential target used by ``assistant_ai`` and the AI
+# Hub, so this lightweight client and the main AI stack read/write the SAME key.
+# A reversible startup migration (assistant_ai.consolidate_provider_keys) copies
+# any key from the old ``quill-<provider>-api-key`` slot into the canonical one.
 PROVIDERS: dict[str, dict] = {
     "openrouter": {
         "label": "OpenRouter",
         "base_url": "https://openrouter.ai/api/v1",
         "needs_key": True,
-        "credential_name": "quill-openrouter-api-key",
+        "credential_name": provider_credential_target("openrouter"),
         "mode": "openai_compat",
     },
     "openai": {
         "label": "OpenAI",
         "base_url": "https://api.openai.com/v1",
         "needs_key": True,
-        "credential_name": "quill-openai-api-key",
+        "credential_name": provider_credential_target("openai"),
         "mode": "openai_compat",
     },
     "ollama_local": {
@@ -114,7 +122,7 @@ PROVIDERS: dict[str, dict] = {
         "label": "Ollama Cloud",
         "base_url": "https://api.ollama.com",
         "needs_key": True,
-        "credential_name": "quill-ollama-api-key",
+        "credential_name": provider_credential_target("ollama_cloud"),
         "mode": "openai_compat",
     },
 }
@@ -150,6 +158,35 @@ def list_models(provider_id: str, api_key: str = "", base_url: str = "") -> list
             models.append(AIModel(id=mid, display_name=mid, provider=provider_id))
         models.sort(key=lambda m: m.id)
         return models
+
+
+def list_models_raw(provider_id: str, api_key: str = "", base_url: str = "") -> list[dict]:  # type: ignore[type-arg]
+    """Fetch the raw model dicts for a provider, preserving pricing metadata.
+
+    Unlike :func:`list_models` (which projects to :class:`AIModel`), this keeps
+    the full provider payload so callers can read fields like OpenRouter's
+    ``pricing``. Reuses the audited ``_get_json`` egress site — no new network
+    call site is introduced. OpenAI-compatible providers only; Ollama's
+    ``/api/tags`` has no pricing and returns bare name entries.
+    """
+    pdef = PROVIDERS.get(provider_id)
+    if pdef is None:
+        raise AIChatProviderError(f"Unknown provider: {provider_id}")
+    url = base_url or pdef["base_url"]
+    if pdef["mode"] == "ollama":
+        data = _get_json(f"{url}/api/tags", {}, TIMEOUT_MODELS_S)
+        return [dict(m) for m in data.get("models", []) if isinstance(m, dict)]
+    if not api_key and pdef["needs_key"]:
+        raise AIChatCredentialError(f"No API key configured for {pdef['label']}")
+    headers: dict[str, str] = {}
+    if api_key:
+        headers["Authorization"] = f"Bearer {api_key}"
+    data = _get_json(f"{url}/models", headers, TIMEOUT_MODELS_S)
+    return [
+        dict(m)
+        for m in data.get("data", [])
+        if isinstance(m, dict) and m.get("id") and not str(m.get("id", "")).startswith("~")
+    ]
 
 
 def send_prompt(
@@ -192,4 +229,15 @@ def send_prompt(
         choices = data.get("choices", [])
         if not choices:
             raise AIChatProviderError("No choices in response")
-        return choices[0].get("message", {}).get("content", "")  # type: ignore[no-any-return]
+        message = choices[0].get("message", {})
+        content = str(message.get("content", "") or "")
+        if content.strip():
+            return content
+        # Reasoning models (e.g. gpt-oss on Ollama Cloud) leave `content` empty
+        # and put the answer on a reasoning channel; surface it rather than
+        # returning an empty string the caller cannot use.
+        for key in ("reasoning_content", "reasoning"):
+            reasoning = message.get(key)
+            if isinstance(reasoning, str) and reasoning.strip():
+                return reasoning
+        return content

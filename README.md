@@ -1,10 +1,16 @@
-# QUILL
+# QUILL for All
 
 [![Contributors](https://contrib.rocks/image?repo=Community-Access/quill)](https://github.com/Community-Access/quill/graphs/contributors)
 
+**QUILL for All** is an open-source, accessibility-focused editor from
+Community Access.
+
+QUILL for All helps people write, edit, convert, compare, and publish
+documents in a screen-reader-friendly environment.
+
 **QUILL** stands for **Quality, Usable, Inclusive, Lightweight, Literate**.
 
-**QUILL: A quality, usable, inclusive, lightweight, and literate editor built for everyone who writes, codes, learns, and creates.**
+**QUILL for All: A quality, usable, inclusive, lightweight, and literate editor built for everyone who writes, codes, learns, and creates.**
 
 ## The Quillin Hub
 
@@ -25,9 +31,9 @@ Quill is designed to stay focused and useful:
 
 ## Current release line
 
-Current release line: **0.5.0**
+Current release line: **0.7.0**
 
-Highlights in 0.5.0 include:
+Highlights since 0.5.0 include:
 
 - Insert menu with searchable Markdown/HTML insertion.
 - Word Prediction with `Ctrl+.` plus HTML/Markdown tag IntelliSense.
@@ -35,7 +41,7 @@ Highlights in 0.5.0 include:
 - Release-safety default: Word and CSV open in the normal plain-text editor surface.
 - Structured Word view and CSV grid code paths remain in-repo behind an internal gate for continued verification.
 - Expanded structured intake for `.doc`/`.docx`, `.ppt`/`.pptx`, `.xlsx`/`.xls`, `.pages`, and low-confidence PDF fallback via MarkItDown when available.
-- Writing Assistant shell with prompt presets, generated tool suggestions, and a sandboxed Python runner.
+- Writing Assistant shell with prompt presets, generated tool suggestions, and a restricted Python runner (import allowlist, resource limits, confirmation required — not a security boundary; see the user guide).
 - AI Connection workflow from both Preferences and the AI menu, with provider-aware host defaults.
 - Verify Connection, List Models, and Recommend Model actions in AI Connection settings.
 - AI menu status line with plain-language detail (`Ready` or `Needs attention`) and immediate accessible feedback.
@@ -44,8 +50,8 @@ Highlights in 0.5.0 include:
 - Optional Ollama cloud key mode over HTTPS (no local Ollama required for cloud endpoint access).
 - In-App Preview and Side-by-Side Preview with a dedicated Focus Preview command.
 - Heading styling tools to apply font family, size, and alignment to current-level or all headings in Markdown/HTML.
-- Heading Organizer (`Ctrl+Shift+Grave, O`) with keyboard-driven heading level changes, section reordering, and accessibility validation.
-- QUILL Quick Nav mode (browse-style cursor navigation) activated with `Ctrl+Shift+Grave`, with mnemonic single-key movement for links, lists, list items, tables, block quotes, bookmarks, code blocks, table of contents, headings, heading levels (`1` through `6`), paragraphs, sentences, and blocks.
+- Heading Organizer (`Ctrl+Shift+Grave, O` — shown to users as `QUILL Key + O`) with keyboard-driven heading level changes, section reordering, and accessibility validation.
+- QUILL Quick Nav mode (browse-style cursor navigation) activated with the QUILL key (`Ctrl+Shift+Grave` — shown to users as `QUILL Key`), with mnemonic single-key movement for links, lists, list items, tables, block quotes, bookmarks, code blocks, table of contents, headings, heading levels (`1` through `6`), paragraphs, sentences, and blocks.
 - Watch Folder automation under **Tools -> Dictation** to auto-open newly dropped supported files.
 - Unified first-run **Personalise QUILL** wizard (re-runnable from **Help -> Personalise QUILL**) covering keyboard pack, feature profile, remote access, AI, reading/accessibility, writing tools, and startup behaviour.
 - Search menu simplification with replace-all inside the Replace dialog.
@@ -136,6 +142,8 @@ Runs on **Windows and macOS** (Python 3.12).
 2. Install dependencies:
    - `pip install -e ".[ui,dev]"`
    - On-device AI for Ask Quill: add `ai` on Windows/Linux (`pip install -e ".[ui,ai]"`, pulls llama.cpp). macOS uses Apple Foundation Models — no extra needed.
+   - Tip: `llama-cpp-python` has prebuilt CPU wheels but no Windows wheel on PyPI itself; if `pip` starts a slow source build, force the wheel with `pip install --only-binary=llama-cpp-python ...` (the project's extra index already points at the CPU wheels).
+   - Offline speech (**Tools > Speech > Whisperer**): no Python package is required — the whisper.cpp engine ships with the Windows installer (the *offline speech engine* component) or you can drop it under `tools/speech/whispercpp`. To transcribe non-WAV audio/video (mp3, m4a, mp4, mov, ...), install **ffmpeg** and put it on your PATH (for example `winget install Gyan.FFmpeg`); QUILL invokes a system/user-installed ffmpeg and does **not** bundle it (ffmpeg is GPL/LGPL). For the optional GPU-accelerated engine, add `pip install faster-whisper`.
 3. Launch:
    - `python -m quill`  (on Windows, `pythonw -m quill` for no console window)
 
@@ -208,13 +216,13 @@ Use **Help -> Report a Bug** inside Quill. The flow supports diagnostics bundle 
 
 Community contributions are welcome.
 
-- Read **[CONTRIBUTING.md](CONTRIBUTING.md)** for setup, workflow, and PR expectations.
-- Read **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)** before participating.
-- Read **[SECURITY.md](SECURITY.md)** for private vulnerability reporting.
-- Read **[PRIVACY.md](PRIVACY.md)** for data handling and retention behavior.
-- Read **[RESPONSIBLE_AI_USE.md](RESPONSIBLE_AI_USE.md)** for ethical and accountable AI use requirements.
-- Read **[GOVERNANCE.md](GOVERNANCE.md)** for project decision model.
-- Read **[MAINTAINERS.md](MAINTAINERS.md)** for maintainer responsibilities.
+- Read **[CONTRIBUTING.md](docs/CONTRIBUTING.md)** for setup, workflow, and PR expectations.
+- Read **[CODE_OF_CONDUCT.md](docs/CODE_OF_CONDUCT.md)** before participating.
+- Read **[SECURITY.md](docs/SECURITY.md)** for private vulnerability reporting.
+- Read **[PRIVACY.md](docs/legal/PRIVACY.md)** for data handling and retention behavior.
+- Read **[RESPONSIBLE_AI_USE.md](docs/legal/RESPONSIBLE_AI_USE.md)** for ethical and accountable AI use requirements.
+- Read **[GOVERNANCE.md](docs/GOVERNANCE.md)** for project decision model.
+- Read **[MAINTAINERS.md](docs/MAINTAINERS.md)** for maintainer responsibilities.
 - Contributor graph: **[contrib.rocks / QUILL](https://contrib.rocks/image?repo=Community-Access/quill)**
 
 ## Community discussions
@@ -224,9 +232,21 @@ Community contributions are welcome.
 
 ## Release governance
 
-- Release process and branch policy: **[RELEASE.md](RELEASE.md)**
+- Release process and branch policy: **[RELEASE.md](docs/release/RELEASE.md)**
 - Security advisory runbook: **[docs/QUILL-PRD.md](docs/QUILL-PRD.md)**
 
 ## License
 
 MIT. See `LICENSE`.
+
+## Legal and Trademark Notices
+
+QUILL for All is an independent open-source project by Community Access.
+It is not affiliated with, sponsored by, or endorsed by Quill.js,
+QuillBot, Quill.org, or any other similarly named product, project,
+company, or organisation.
+
+All trademarks are the property of their respective owners.
+
+See [TRADEMARKS.md](docs/legal/TRADEMARKS.md), [NOTICE](NOTICE), and
+[THIRD_PARTY_NOTICES.md](docs/legal/THIRD_PARTY_NOTICES.md) for more information.

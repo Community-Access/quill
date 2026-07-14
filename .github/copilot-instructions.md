@@ -2,7 +2,7 @@
 
 ## Repository state
 
-This repository contains the implementation source tree together with the product requirements document under `docs/QUILL-PRD.md` and `docs/QUILL-PRD.html`.
+This repository contains the implementation source tree together with the product requirements document under `docs/Product Requirement Documents and Specifications/QUILL-PRD.md` and `docs/QUILL-PRD.html`.
 
 When generating code or task plans, treat the PRD as the source of truth for intended architecture and conventions.
 
@@ -164,13 +164,13 @@ sequenced after Tier 4) now that the shared `quill-glow-core` engine is green.
 
 ## Keep dialogs.md current
 
-`dialogs.md` in the repo root is the master manual regression checklist for every
+`docs/qa/dialogs.md` is the master manual regression checklist for every
 user-facing dialog in QUILL, each mapped to the keyboard command or menu path
 that opens it. It must stay a faithful, complete map of the shipped dialogs.
 
 - Whenever you add, remove, rename, or rebind a dialog anywhere under `quill/ui/`
   (including `main_frame.py`, `palette.py`, `assistant_panel.py`,
-  `assistant_tools.py`, `ai_model_panel.py`, `style_panel.py`, `sticky_notes.py`,
+  `assistant_tools.py`, `ai_model_panel.py`, `train_style_dialog.py`, `sticky_notes.py`,
   `preview_dialog.py`, and `web_form.py`), update the matching row in `dialogs.md`
   in the same change.
 - New dialogs are added as a `- [ ]` checklist item in the correct section, with

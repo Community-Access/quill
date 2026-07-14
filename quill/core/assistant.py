@@ -75,7 +75,10 @@ _CONTENT_TOOLS: tuple[AssistantTool, ...] = (
     AssistantTool(
         name="run_python",
         title="Run Python",
-        description="Execute a sandboxed Python transform against document text.",
+        description=(
+            "Run a restricted Python transform against document text (import "
+            "allowlist and resource limits, not a security boundary)."
+        ),
         category="automation",
         requires_confirmation=True,
         dangerous=True,
@@ -204,7 +207,6 @@ def _tool_for_command(command: Command) -> AssistantTool:
         "file.open",
         "file.save_as",
         "file.restore_backup",
-        "tools.pandoc_wizard",
         "tools.run_python",
     }
     return AssistantTool(

@@ -126,3 +126,43 @@ def test_include_nav_items_drops_lists_and_list_items_when_off() -> None:
     # Tables and bookmarks have no toggle and are always kept.
     assert "Table" in kinds
     assert "Bookmark" in kinds
+
+
+# --------------------------------------------------------------------------- #
+# Transient nav types: misspellings and search hits (#513)
+# --------------------------------------------------------------------------- #
+
+
+def test_build_nav_index_includes_misspellings_and_search_hits() -> None:
+    context = {
+        "headings_by_level": {1: [0]},
+        "misspellings": [9],  # "intro" position-ish
+        "search_hits": [5, 30],
+    }
+    items = build_nav_index(_TEXT, context)
+    kinds = [item.kind for item in items]
+    assert "Misspelling" in kinds
+    assert kinds.count("Search hit") == 2
+    # Position-ordered with the rest of the index.
+    assert [item.position for item in items] == sorted(item.position for item in items)
+
+
+def test_transient_types_appear_in_count_panel_summary() -> None:
+    context = {"misspellings": [1, 4], "search_hits": [2]}
+    summary = dict(nav_type_summary(build_nav_index(_TEXT, context)))
+    assert summary["Misspelling"] == 2
+    assert summary["Search hit"] == 1
+
+
+def test_transient_types_filterable_by_category() -> None:
+    items = build_nav_index(_TEXT, {"misspellings": [3], "links": [10]})
+    only = filter_nav_items(items, category="Misspelling")
+    assert len(only) == 1 and only[0].kind == "Misspelling"
+
+
+def test_include_nav_items_keeps_transient_types() -> None:
+    # Misspellings/search hits have no settings toggle; they are always kept.
+    items = build_nav_index(_TEXT, {"misspellings": [3], "search_hits": [6]})
+    kept = include_nav_items(items, headings=False, links=False, lists=False)
+    kinds = {item.kind for item in kept}
+    assert {"Misspelling", "Search hit"} <= kinds

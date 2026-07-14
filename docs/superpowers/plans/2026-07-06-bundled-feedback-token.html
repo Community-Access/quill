@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>2026-07-06-bundled-feedback-token</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1 id="bundled-feedback-token-implementation-plan">Bundled Feedback
+Token Implementation Plan</h1>
+<blockquote>
+<p><strong>For agentic workers:</strong> REQUIRED SUB-SKILL: Use
+superpowers:subagent-driven-development (recommended) or
+superpowers:executing-plans to implement this plan task-by-task. Steps
+use checkbox (<code>- [ ]</code>) syntax for tracking.</p>
+</blockquote>
+<p><strong>Goal:</strong> Let QUILL’s “Report a Bug” dialog file GitHub
+issues for ordinary users who have never configured a personal GitHub
+token, by bundling one narrowly-scoped, issues-only token into the
+shipped app at build time.</p>
+<p><strong>Architecture:</strong> A new generator script
+(<code>tools/generate_feedback_token.py</code>) mirrors the existing
+<code>tools/generate_build_info.py</code> pattern: it reads
+<code>QUILL_FEEDBACK_GITHUB_TOKEN</code> from the environment and writes
+a gitignored <code>quill/_feedback_token.py</code> module containing
+<code>BUNDLED_TOKEN</code>. <code>quill/core/feedback_token.py</code>
+imports that constant (best-effort, empty string if absent) and passes
+it to <code>feedback_hub.resolve_token()</code> as the first candidate,
+ahead of the existing env-var fallback. Both platform build scripts call
+the generator before packaging.</p>
+<p><strong>Tech Stack:</strong> Python 3.12+, pytest, existing
+<code>feedback_hub</code> package (already a QUILL dependency).</p>
+<h2 id="global-constraints">Global Constraints</h2>
+<ul>
+<li>Never hard-fail when <code>QUILL_FEEDBACK_GITHUB_TOKEN</code> is
+unset (unlike <code>generate_build_info.py</code>, which requires
+<code>build/version.toml</code>) — dev checkouts, tests, and CI runs
+without the secret must be unaffected.</li>
+<li>The generated module is gitignored, matching
+<code>quill/_build_info.py</code>’s existing entry.</li>
+<li>A user’s personally-configured token (from the secure store) must
+still take priority over the bundled one — this is already
+<code>effective_github_token()</code>’s existing behavior and must not
+change.</li>
+<li>No network calls in this feature (out of scope: the future
+quillin-hub proxy).</li>
+</ul>
+<hr />
+<h3 id="task-1-generator-script">Task 1: Generator script</h3>
+<p><strong>Files:</strong> - Create:
+<code>tools/generate_feedback_token.py</code> - Test:
+<code>tests/unit/tools/test_generate_feedback_token.py</code></p>
+<p><strong>Interfaces:</strong> - Produces:
+<code>tools/generate_feedback_token.py</code> is a standalone script
+(like <code>tools/generate_build_info.py</code>) with a
+<code>main() -&gt; int</code> entry point and a
+<code>write_module(token: str, output_path: Path) -&gt; None</code>
+helper that later tasks/tests can call directly.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Write the failing
+test</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tests/unit/tools/test_generate_feedback_token.py</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> __future__ <span class="im">import</span> annotations</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>sys.path.insert(<span class="dv">0</span>, <span class="bu">str</span>(Path(<span class="va">__file__</span>).resolve().parents[<span class="dv">3</span>]))</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tools.generate_feedback_token <span class="im">import</span> write_module</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_write_module_with_token(tmp_path: Path) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    output <span class="op">=</span> tmp_path <span class="op">/</span> <span class="st">&quot;_feedback_token.py&quot;</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    write_module(<span class="st">&quot;github_pat_example123&quot;</span>, output)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> output.read_text(encoding<span class="op">=</span><span class="st">&quot;utf-8&quot;</span>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&#39;BUNDLED_TOKEN = &quot;github_pat_example123&quot;&#39;</span> <span class="kw">in</span> text</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_write_module_without_token_writes_empty_string(tmp_path: Path) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    output <span class="op">=</span> tmp_path <span class="op">/</span> <span class="st">&quot;_feedback_token.py&quot;</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    write_module(<span class="st">&quot;&quot;</span>, output)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> output.read_text(encoding<span class="op">=</span><span class="st">&quot;utf-8&quot;</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&#39;BUNDLED_TOKEN = &quot;&quot;&#39;</span> <span class="kw">in</span> text</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_main_never_fails_without_env_var(monkeypatch, tmp_path: Path) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> tools.generate_feedback_token <span class="im">as</span> gen</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    monkeypatch.delenv(<span class="st">&quot;QUILL_FEEDBACK_GITHUB_TOKEN&quot;</span>, raising<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(gen, <span class="st">&quot;OUTPUT_FILE&quot;</span>, tmp_path <span class="op">/</span> <span class="st">&quot;_feedback_token.py&quot;</span>)</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> gen.main() <span class="op">==</span> <span class="dv">0</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> (tmp_path <span class="op">/</span> <span class="st">&quot;_feedback_token.py&quot;</span>).exists()</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Run test to verify
+it fails</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/tools/test_generate_feedback_token.py -v</code>
+Expected: FAIL with
+<code>ModuleNotFoundError: No module named 'tools.generate_feedback_token'</code></p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Write minimal
+implementation</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tools/generate_feedback_token.py</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">&quot;&quot;&quot;Generate quill/_feedback_token.py, the bundled issues-only GitHub token.</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">Run before packaging (CI, local build). Reads QUILL_FEEDBACK_GITHUB_TOKEN</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">from the environment and writes it into a gitignored constant so ordinary</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">users (who have never configured a personal GitHub token) can still file a</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">bug report through the &quot;Report a Bug&quot; dialog. See</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">docs/superpowers/specs/2026-07-06-bundled-feedback-token-design.md.</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">Unlike tools/generate_build_info.py, this never fails: a missing env var</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">just writes an empty token, so dev checkouts, tests, and CI runs without the</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">secret are unaffected. The token itself must be a fine-grained GitHub PAT</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co">scoped only to Community-Access/quill with Issues: read/write and no other</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co">permission (see the design doc for how to create one).</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co">Usage::</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co">    python tools/generate_feedback_token.py</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co">&quot;&quot;&quot;</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> __future__ <span class="im">import</span> annotations</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>ROOT <span class="op">=</span> Path(<span class="va">__file__</span>).resolve().parents[<span class="dv">1</span>]</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>OUTPUT_FILE <span class="op">=</span> ROOT <span class="op">/</span> <span class="st">&quot;quill&quot;</span> <span class="op">/</span> <span class="st">&quot;_feedback_token.py&quot;</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>ENV_VAR <span class="op">=</span> <span class="st">&quot;QUILL_FEEDBACK_GITHUB_TOKEN&quot;</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> write_module(token: <span class="bu">str</span>, output_path: Path) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    output_path.parent.mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>    output_path.write_text(</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>        <span class="ss">f&quot;&quot;&quot;# This file is generated by tools/generate_feedback_token.py. Do not edit by hand.</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="ss"># Regenerate with: QUILL_FEEDBACK_GITHUB_TOKEN=&lt;token&gt; python tools/generate_feedback_token.py</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="ss">BUNDLED_TOKEN = </span><span class="sc">{</span>token<span class="sc">!r}</span></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="ss">&quot;&quot;&quot;</span>,</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>        encoding<span class="op">=</span><span class="st">&quot;utf-8&quot;</span>,</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> main() <span class="op">-&gt;</span> <span class="bu">int</span>:</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>    token <span class="op">=</span> os.environ.get(ENV_VAR, <span class="st">&quot;&quot;</span>).strip()</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>    write_module(token, OUTPUT_FILE)</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> token:</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f&quot;Wrote </span><span class="sc">{</span>OUTPUT_FILE<span class="sc">}</span><span class="ss"> with a bundled token.&quot;</span>)</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f&quot;</span><span class="sc">{</span>ENV_VAR<span class="sc">}</span><span class="ss"> not set; wrote </span><span class="sc">{</span>OUTPUT_FILE<span class="sc">}</span><span class="ss"> with an empty token.&quot;</span>)</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span></span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">&quot;__main__&quot;</span>:</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>    <span class="cf">raise</span> <span class="pp">SystemExit</span>(main())</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Run test to verify
+it passes</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/tools/test_generate_feedback_token.py -v</code>
+Expected: 3 passed</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 5:
+Commit</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add tools/generate_feedback_token.py tests/unit/tools/test_generate_feedback_token.py</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat: add generator for the bundled feedback-hub GitHub token&quot;</span></span></code></pre></div>
+<hr />
+<h3 id="task-2-gitignore-entry">Task 2: Gitignore entry</h3>
+<p><strong>Files:</strong> - Modify: <code>.gitignore</code></p>
+<p><strong>Interfaces:</strong> - Consumes: nothing. - Produces:
+<code>quill/_feedback_token.py</code> is untracked, matching
+<code>quill/_build_info.py</code>.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Add the
+entry</strong></label></li>
+</ul>
+<p>Add immediately after the existing <code>quill/_build_info.py</code>
+line (currently <code>.gitignore:10</code>):</p>
+<pre class="gitignore"><code># Generated bundled feedback token (regenerated by tools/generate_feedback_token.py)
+quill/_feedback_token.py</code></pre>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2:
+Verify</strong></label></li>
+</ul>
+<p>Run: <code>git check-ignore -v quill/_feedback_token.py</code>
+Expected: prints the <code>.gitignore</code> line that matches (confirms
+it would be ignored even though the file doesn’t exist yet —
+<code>git check-ignore</code> works on paths regardless of
+existence)</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3:
+Commit</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add .gitignore</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;chore: gitignore the generated bundled feedback token&quot;</span></span></code></pre></div>
+<hr />
+<h3 id="task-3-wire-the-bundled-token-into-effective_github_token">Task
+3: Wire the bundled token into
+<code>effective_github_token()</code></h3>
+<p><strong>Files:</strong> - Modify:
+<code>quill/core/feedback_token.py</code> - Test:
+<code>tests/unit/core/test_feedback_token.py</code> (new)</p>
+<p><strong>Interfaces:</strong> - Consumes:
+<code>quill._feedback_token.BUNDLED_TOKEN</code> (str) when the
+generated module exists; falls back to <code>""</code> when it doesn’t
+(import error). - Produces:
+<code>effective_github_token(*, import_from_env: bool = True) -&gt; str</code>
+keeps its existing public signature and return type; behavior changes
+only in that a bundled token is now tried as a
+<code>resolve_token()</code> candidate before the env-var fallback.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Write the failing
+tests</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tests/unit/core/test_feedback_token.py</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> __future__ <span class="im">import</span> annotations</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytest</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core <span class="im">import</span> feedback_token</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_stored_token_wins_over_bundled(monkeypatch: pytest.MonkeyPatch) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;quill.core.github.token_store.load_github_token&quot;</span>, <span class="kw">lambda</span>: <span class="st">&quot;stored-token&quot;</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> feedback_token.effective_github_token() <span class="op">==</span> <span class="st">&quot;stored-token&quot;</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_bundled_token_used_when_no_stored_token(monkeypatch: pytest.MonkeyPatch) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;quill.core.github.token_store.load_github_token&quot;</span>, <span class="kw">lambda</span>: <span class="st">&quot;&quot;</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;quill.core.github.token_store.save_github_token&quot;</span>, <span class="kw">lambda</span> token: <span class="va">None</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(feedback_token, <span class="st">&quot;_bundled_token&quot;</span>, <span class="kw">lambda</span>: <span class="st">&quot;bundled-token&quot;</span>)</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> feedback_token.effective_github_token(import_from_env<span class="op">=</span><span class="va">False</span>) <span class="op">==</span> <span class="st">&quot;bundled-token&quot;</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_empty_bundled_token_falls_through_to_env(monkeypatch: pytest.MonkeyPatch) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;quill.core.github.token_store.load_github_token&quot;</span>, <span class="kw">lambda</span>: <span class="st">&quot;&quot;</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(feedback_token, <span class="st">&quot;_bundled_token&quot;</span>, <span class="kw">lambda</span>: <span class="st">&quot;&quot;</span>)</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>    monkeypatch.delenv(<span class="st">&quot;FEEDBACK_HUB_GITHUB_TOKEN&quot;</span>, raising<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>    monkeypatch.delenv(<span class="st">&quot;SUPPORT_HUB_GITHUB_TOKEN&quot;</span>, raising<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>    monkeypatch.delenv(<span class="st">&quot;FEEDBACK_GITHUB_TOKEN&quot;</span>, raising<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> feedback_token.effective_github_token(import_from_env<span class="op">=</span><span class="va">False</span>) <span class="op">==</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_bundled_token_helper_returns_empty_when_module_absent(</span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>    monkeypatch: pytest.MonkeyPatch,</span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>    <span class="im">import</span> builtins</span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>    real_import <span class="op">=</span> builtins.<span class="bu">__import__</span></span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> fake_import(name: <span class="bu">str</span>, <span class="op">*</span>args: <span class="bu">object</span>, <span class="op">**</span>kwargs: <span class="bu">object</span>) <span class="op">-&gt;</span> <span class="bu">object</span>:</span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> name <span class="op">==</span> <span class="st">&quot;quill._feedback_token&quot;</span>:</span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>            <span class="cf">raise</span> <span class="pp">ImportError</span>(<span class="st">&quot;no generated module in this checkout&quot;</span>)</span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> real_import(name, <span class="op">*</span>args, <span class="op">**</span>kwargs)  <span class="co"># type: ignore[arg-type]</span></span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>    monkeypatch.<span class="bu">setattr</span>(builtins, <span class="st">&quot;__import__&quot;</span>, fake_import)</span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> feedback_token._bundled_token() <span class="op">==</span> <span class="st">&quot;&quot;</span></span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Run tests to verify
+they fail</strong></label></li>
+</ul>
+<p>Run: <code>pytest tests/unit/core/test_feedback_token.py -v</code>
+Expected: FAIL —
+<code>test_bundled_token_used_when_no_stored_token</code> and the others
+referencing <code>feedback_token._bundled_token</code> fail with
+<code>AttributeError: module 'quill.core.feedback_token' has no attribute '_bundled_token'</code></p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Write minimal
+implementation</strong></label></li>
+</ul>
+<p>Replace the full contents of
+<code>quill/core/feedback_token.py</code>:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">&quot;&quot;&quot;Resolve the GitHub token used for issue submission (#210 follow-up).</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">Both the Report a Bug dialog and the crash reporter need a GitHub token to</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co">create an issue. This unifies the sources: QUILL&#39;s OS-encrypted token store is</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co">the single source of truth, with a one-time import of whatever ``feedback_hub``</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co">resolves from the environment so a token configured for one path is reliably</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co">available to the other. No token is ever bundled or written to the repo; the</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co">store is per-user and encrypted (Windows Credential Manager / macOS Keychain).</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">Ordinary users who have never signed in to GitHub still need a working</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co">&quot;Report a Bug&quot; dialog, so a narrowly-scoped, issues-only token is bundled at</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co">build time into the generated ``quill._feedback_token`` module (see</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="co">``tools/generate_feedback_token.py`` and</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="co">``docs/superpowers/specs/2026-07-06-bundled-feedback-token-design.md``). That</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="co">bundled token is tried after the user&#39;s own stored/env token, never before</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co">it.</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="co">&quot;&quot;&quot;</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> __future__ <span class="im">import</span> annotations</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> logging</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>logger <span class="op">=</span> logging.getLogger(<span class="va">__name__</span>)</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _bundled_token() <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;Return the token baked in at build time, or &quot;&quot; in an unbuilt checkout.&quot;&quot;&quot;</span></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>        <span class="im">from</span> quill._feedback_token <span class="im">import</span> BUNDLED_TOKEN</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">ImportError</span>:</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (BUNDLED_TOKEN <span class="kw">or</span> <span class="st">&quot;&quot;</span>).strip()</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> effective_github_token(<span class="op">*</span>, import_from_env: <span class="bu">bool</span> <span class="op">=</span> <span class="va">True</span>) <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;Return the GitHub token to use, or an empty string when none is available.</span></span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a><span class="co">    Order of preference:</span></span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a><span class="co">    1. QUILL&#39;s secure token store (``token_store.load_github_token``).</span></span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a><span class="co">    2. ``feedback_hub.resolve_token()``, given the bundled, issues-only token</span></span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a><span class="co">       (baked in at build time) as its first candidate, so it wins over the</span></span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a><span class="co">       env-var fallback but never over a user&#39;s own stored token.</span></span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a><span class="co">    When a token is found only in the environment/bundle and the secure store</span></span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a><span class="co">    is empty, it is copied into the store (best effort) so subsequent calls —</span></span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a><span class="co">    and the other reporting path — resolve it reliably without depending on</span></span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a><span class="co">    env vars.</span></span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a><span class="co">    &quot;&quot;&quot;</span></span>
+<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> quill.core.github.token_store <span class="im">import</span> load_github_token, save_github_token</span>
+<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a>    stored <span class="op">=</span> load_github_token()</span>
+<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> stored:</span>
+<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> stored</span>
+<span id="cb7-55"><a href="#cb7-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-56"><a href="#cb7-56" aria-hidden="true" tabindex="-1"></a>    env_token <span class="op">=</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb7-57"><a href="#cb7-57" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb7-58"><a href="#cb7-58" aria-hidden="true" tabindex="-1"></a>        <span class="im">from</span> feedback_hub <span class="im">import</span> resolve_token</span>
+<span id="cb7-59"><a href="#cb7-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-60"><a href="#cb7-60" aria-hidden="true" tabindex="-1"></a>        env_token <span class="op">=</span> (resolve_token(_bundled_token()) <span class="kw">or</span> <span class="st">&quot;&quot;</span>).strip()</span>
+<span id="cb7-61"><a href="#cb7-61" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span>:  <span class="co"># noqa: BLE001 - a missing/broken feedback_hub is non-fatal</span></span>
+<span id="cb7-62"><a href="#cb7-62" aria-hidden="true" tabindex="-1"></a>        env_token <span class="op">=</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb7-63"><a href="#cb7-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-64"><a href="#cb7-64" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> env_token <span class="kw">and</span> import_from_env:</span>
+<span id="cb7-65"><a href="#cb7-65" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb7-66"><a href="#cb7-66" aria-hidden="true" tabindex="-1"></a>            save_github_token(env_token)</span>
+<span id="cb7-67"><a href="#cb7-67" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">Exception</span>:  <span class="co"># noqa: BLE001 - persisting is a convenience, not required</span></span>
+<span id="cb7-68"><a href="#cb7-68" aria-hidden="true" tabindex="-1"></a>            logger.warning(<span class="st">&quot;Could not persist resolved GitHub token&quot;</span>, exc_info<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb7-69"><a href="#cb7-69" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> env_token</span>
+<span id="cb7-70"><a href="#cb7-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-71"><a href="#cb7-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-72"><a href="#cb7-72" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> github_token_present() <span class="op">-&gt;</span> <span class="bu">bool</span>:</span>
+<span id="cb7-73"><a href="#cb7-73" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;Return True when a token is available without importing it into the store.&quot;&quot;&quot;</span></span>
+<span id="cb7-74"><a href="#cb7-74" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">bool</span>(effective_github_token(import_from_env<span class="op">=</span><span class="va">False</span>))</span></code></pre></div>
+<p>Note: <code>test_bundled_token_used_when_no_stored_token</code>
+monkeypatches <code>save_github_token</code> — with a real bundled token
+present, <code>effective_github_token</code> will attempt to persist it
+into the store, and the test must not touch the real OS credential
+store.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Run tests to verify
+they pass</strong></label></li>
+</ul>
+<p>Run: <code>pytest tests/unit/core/test_feedback_token.py -v</code>
+Expected: 4 passed</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 5: Run the full
+existing test suite for this module’s callers</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/core/test_feedback_token.py tests/unit/core/test_issue_submit.py -v</code>
+Expected: all pass (confirms no regression in the crash-report path,
+which also calls <code>effective_github_token()</code>)</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 6:
+Commit</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/core/feedback_token.py tests/unit/core/test_feedback_token.py</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat: try the bundled issues-only token before the env-var fallback&quot;</span></span></code></pre></div>
+<hr />
+<h3 id="task-4-wire-the-generator-into-both-build-scripts">Task 4: Wire
+the generator into both build scripts</h3>
+<p><strong>Files:</strong> - Modify:
+<code>scripts/build_windows_distribution.py:1304-1312</code>
+(immediately before the <code>shutil.copytree</code> call) - Modify:
+<code>scripts/build_macos.sh</code> (already has a
+<code>generate_build_info.py</code> call from the earlier mac
+version-stamping fix; add the new call alongside it)</p>
+<p><strong>Interfaces:</strong> - Consumes:
+<code>tools/generate_feedback_token.py</code>’s <code>main()</code>
+(Task 1), run as a subprocess/CLI, not imported. - Produces: nothing new
+for later tasks — this is the last task in the plan.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Add the call in
+<code>build_windows_distribution.py</code></strong></label></li>
+</ul>
+<p>Insert immediately before line 1304’s comment
+(<code># Copy the Quill package source...</code>):</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;Generating bundled feedback-hub token (quill/_feedback_token.py)...&quot;</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    subprocess.run(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>        [<span class="bu">str</span>(python_exe), <span class="bu">str</span>(source_root <span class="op">/</span> <span class="st">&quot;tools&quot;</span> <span class="op">/</span> <span class="st">&quot;generate_feedback_token.py&quot;</span>)],</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        check<span class="op">=</span><span class="va">False</span>,  <span class="co"># best-effort: an unset QUILL_FEEDBACK_GITHUB_TOKEN must not fail the build</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div>
+<p>Note: use <code>python_exe</code> (the build’s own interpreter,
+already in scope at this point in the function — the same variable used
+two statements above for the <code>pip install</code> call), not the
+bare <code>python</code> on PATH.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Add the call in
+<code>build_macos.sh</code></strong></label></li>
+</ul>
+<p>Modify the section added earlier in this session:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;==&gt; Generating build-identity module (quill/_build_info.py)&quot;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Best-effort: requires build/version.toml (gitignored, hand-maintained), so a</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># bare CI checkout without one falls through to setup_macos.py&#39;s own</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># get_short_version()/__version__ fallback instead of failing the build.</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> tools/generate_build_info.py <span class="kw">||</span> <span class="bu">echo</span> <span class="st">&quot;!! build/version.toml not found - shipping without a channel-annotated version label&quot;</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;==&gt; Generating bundled feedback-hub token (quill/_feedback_token.py)&quot;</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Best-effort: an unset QUILL_FEEDBACK_GITHUB_TOKEN must not fail the build —</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="co"># it just means Report a Bug falls back to the user&#39;s own token, if any.</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> tools/generate_feedback_token.py</span></code></pre></div>
+<p>(<code>generate_feedback_token.py</code> itself never raises — Task 1
+— so no <code>||</code> needed here, unlike the version-info line.)</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Verify both scripts
+are syntactically valid</strong></label></li>
+</ul>
+<p>Run:
+<code>python -c "import ast; ast.parse(open('scripts/build_windows_distribution.py', encoding='utf-8').read())"</code>
+Expected: no output (success)</p>
+<p>Run: <code>bash -n scripts/build_macos.sh</code> Expected: no output
+(success)</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Manual end-to-end
+check (requires the real token)</strong></label></li>
+</ul>
+<p>With <code>QUILL_FEEDBACK_GITHUB_TOKEN</code> set in the shell (from
+the file the user saved it to):</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="va">QUILL_FEEDBACK_GITHUB_TOKEN</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$(</span><span class="fu">cat</span> /s/token.txt<span class="va">)</span><span class="st">&quot;</span> <span class="ex">python</span> tools/generate_feedback_token.py</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-c</span> <span class="st">&quot;from quill.core.feedback_token import effective_github_token; print(bool(effective_github_token(import_from_env=False)))&quot;</span></span></code></pre></div>
+<p>Expected: <code>True</code>, and no token value printed anywhere in
+this step’s output.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 5:
+Commit</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add scripts/build_windows_distribution.py scripts/build_macos.sh</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;build: generate the bundled feedback token before packaging&quot;</span></span></code></pre></div>
+</body>
+</html>

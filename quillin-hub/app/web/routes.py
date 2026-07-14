@@ -1,51 +1,76 @@
-from app.models.database import Interaction, Plugin
 from flask import Blueprint, render_template, request
 
+from ..artifacts.registry import ARTIFACT_TYPES, get_type
+from ..models.database import Artifact, Interaction
+
 web_bp = Blueprint("web", __name__, template_folder="templates")
+
+
+def _verified(type_id: str | None = None):
+    query = Artifact.query.filter_by(status="Verified")
+    if type_id and get_type(type_id):
+        query = query.filter_by(artifact_type=type_id)
+    return query.all()
 
 
 @web_bp.route("/")
 def index():
     """
     Accessible Storefront Home.
-    Features: Search bar, Featured plugins, and Trending categories.
+    Features: search, artifact-type sections, featured (Gold Standard) artifacts.
     """
     search_query = request.args.get("q", "").strip()
-    plugins = Plugin.query.filter_by(status="Verified").all()
+    type_filter = request.args.get("type", "").strip() or None
+    artifacts = _verified(type_filter)
 
     if search_query:
-        plugins = [
-            p
-            for p in plugins
-            if search_query.lower() in p.name.lower()
-            or search_query.lower() in p.description.lower()
+        lowered = search_query.lower()
+        artifacts = [
+            artifact
+            for artifact in artifacts
+            if lowered in artifact.name.lower() or lowered in (artifact.description or "").lower()
         ]
 
-    # Sort by gold standard and then by reputation (simulated via a query for now)
-    featured = [p for p in plugins if p.is_gold_standard]
-    others = [p for p in plugins if not p.is_gold_standard]
+    featured = [artifact for artifact in artifacts if artifact.is_gold_standard]
+    others = [artifact for artifact in artifacts if not artifact.is_gold_standard]
 
-    return render_template("index.html", plugins=featured + others, query=search_query)
+    return render_template(
+        "index.html",
+        artifacts=featured + others,
+        artifact_types=ARTIFACT_TYPES,
+        active_type=get_type(type_filter) if type_filter else None,
+        query=search_query,
+    )
 
 
-@web_bp.route("/plugin/<int:plugin_id>")
-def plugin_detail(plugin_id):
-    """
-    Deep-dive plugin page with a a a a "Snippet Simulator" and reviews.
-    """
-    plugin = Plugin.query.get_or_404(plugin_id)
-    reviews = Interaction.query.filter_by(plugin_id=plugin_id, type="Comment").all()
-    return render_template("plugin.html", plugin=plugin, reviews=reviews)
+@web_bp.route("/artifact/<int:artifact_id>")
+@web_bp.route("/plugin/<int:artifact_id>")  # legacy bookmarks
+def artifact_detail(artifact_id):
+    """Deep-dive artifact page with reviews."""
+    artifact = Artifact.query.get_or_404(artifact_id)
+    reviews = Interaction.query.filter_by(artifact_id=artifact_id, type="Comment").all()
+    return render_template(
+        "plugin.html",
+        artifact=artifact,
+        hub_type=get_type(artifact.artifact_type),
+        reviews=reviews,
+    )
 
 
 @web_bp.route("/search")
 def search():
     """Dedicated search results page for accessibility navigation."""
     q = request.args.get("q", "")
-    plugins = (
-        Plugin.query
-        .filter(Plugin.name.contains(q) | Plugin.description.contains(q))
-        .filter_by(status="Verified")
-        .all()
+    type_filter = request.args.get("type", "").strip() or None
+    query = Artifact.query.filter(
+        Artifact.name.contains(q) | Artifact.description.contains(q)
+    ).filter_by(status="Verified")
+    if type_filter and get_type(type_filter):
+        query = query.filter_by(artifact_type=type_filter)
+    return render_template(
+        "search.html",
+        artifacts=query.all(),
+        artifact_types=ARTIFACT_TYPES,
+        active_type=get_type(type_filter) if type_filter else None,
+        query=q,
     )
-    return render_template("search.html", plugins=plugins, query=q)

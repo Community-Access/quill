@@ -4,6 +4,7 @@ import os
 import sys
 from pathlib import Path
 
+from quill.core import storage_mode
 from quill.core.storage_mode import load_storage_mode, portable_root_dir
 
 # H-1-core: ``QUILL_DATA_DIR`` is documented as a *dev-only* override. In
@@ -40,21 +41,26 @@ def app_data_dir() -> Path:
         if _is_constrained_to_home(resolved):
             return resolved
     # Release build: ignore the env var entirely.
+    mode = load_storage_mode()
+    if mode == "custom":
+        custom = storage_mode.custom_path()
+        if custom is not None:
+            return custom
+        # Saved custom path is unavailable (e.g. cleared externally); fall
+        # through to the appdata default below rather than raising.
     portable_root = portable_root_dir()
-    if portable_root is not None:
-        mode = load_storage_mode()
-        if mode == "portable":
-            return portable_root
-        if mode == "appdata":
-            appdata = os.environ.get("APPDATA")
-            if appdata:
-                return Path(appdata) / "Quill"
-            if sys.platform == "win32":
-                raise RuntimeError(
-                    "Could not determine the Quill data directory: APPDATA is not set. "
-                    "Please set QUILL_DATA_DIR (dev) or APPDATA in your environment."
-                )
-            return Path.home() / ".quill"
+    if portable_root is not None and mode == "portable":
+        return portable_root
+    if mode == "appdata":
+        appdata = os.environ.get("APPDATA")
+        if appdata:
+            return Path(appdata) / "Quill"
+        if sys.platform == "win32":
+            raise RuntimeError(
+                "Could not determine the Quill data directory: APPDATA is not set. "
+                "Please set QUILL_DATA_DIR (dev) or APPDATA in your environment."
+            )
+        return Path.home() / ".quill"
 
     appdata = os.environ.get("APPDATA")
     if appdata:
@@ -66,6 +72,46 @@ def app_data_dir() -> Path:
             "Please set QUILL_DATA_DIR (dev) or APPDATA in your environment."
         )
     return Path.home() / ".quill"
+
+
+def new_install_marker_path() -> Path | None:
+    """Return the path of the installer's new-install marker file, or None.
+
+    The installer writes quill-new-install.txt to {app} on every install
+    (including upgrades). Startup consumes it to reset setup_wizard_completed
+    so the first-run wizard re-runs after a reinstall, even when %APPDATA%
+    settings from a prior install say the wizard already completed.
+
+    Returns None when the install root cannot be determined (e.g., a dev run
+    without a bundled install directory) so the caller can safely skip the
+    check without touching anything.
+    """
+    import os
+
+    from quill.core.storage_mode import _has_portable_evidence
+
+    marker_name = "quill-new-install.txt"
+
+    # Primary: QUILL_APP_ROOT exported by the launcher at startup. The
+    # launcher sets it whenever a portable anchor is detected.
+    app_root_env = os.environ.get("QUILL_APP_ROOT")
+    if app_root_env:
+        candidate = Path(app_root_env).expanduser().resolve()
+        if _has_portable_evidence(candidate):
+            return candidate / marker_name
+
+    # Fallback: Start Menu shortcut calls quill.exe (or pythonw.exe for
+    # legacy bundles) directly; the exe lives at the bundle root or at
+    # {app}\python\, so the install root is one or two levels up.
+    exe = Path(sys.executable).resolve()
+    parents: list[Path] = [exe.parent, exe.parent.parent]
+    if exe.parent.parent != exe.parent:
+        parents.append(exe.parent.parent.parent)
+    for candidate in parents:
+        if _has_portable_evidence(candidate):
+            return candidate / marker_name
+
+    return None
 
 
 def ensure_app_directories() -> None:

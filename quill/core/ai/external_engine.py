@@ -41,6 +41,11 @@ from quill.core.storage import read_json, write_json_atomic
 
 _CONFIG_FILE = "external-engines.json"
 
+# Basenames for which QUILL can manage the runtime itself (node_install.py).
+# Used by _resolve_which to fall back to the QUILL-managed path when the
+# executable is not on the system PATH.
+_MANAGED_RUNTIME_BASENAMES: frozenset[str] = frozenset({"node", "node.exe"})
+
 # Canonical basenames the external-engine boundary is willing to launch.
 # Anything else is rejected by ``configure_engine`` and ``probe_engine`` as
 # a defense-in-depth check: a tampered ``settings.json`` (cloud sync,
@@ -66,6 +71,28 @@ _ENGINE_EXECUTABLE_BASENAMES: frozenset[str] = frozenset((
 # A runner takes (command, stdin_text, timeout_seconds) and returns
 # (returncode, stdout_text, stderr_text). Injectable for tests.
 Runner = Callable[[list[str], str, float], "tuple[int, str, str]"]
+
+
+def _resolve_which(name: str) -> str | None:
+    """Like shutil.which, but also checks the QUILL-managed Node.js path.
+
+    Used as the default ``which`` argument in :func:`probe_engine` and
+    :func:`configure_engine`. Tests that inject their own ``which`` function
+    bypass this entirely, so injected fakes remain authoritative.
+    """
+    found = shutil.which(name)
+    if found is not None:
+        return found
+    if Path(name).name.lower() in _MANAGED_RUNTIME_BASENAMES:
+        try:
+            from quill.core.node_install import node_executable_path
+
+            managed = node_executable_path()
+            if managed is not None:
+                return str(managed)
+        except Exception:  # noqa: BLE001 - node_install is optional; never crash the boundary
+            pass
+    return None
 
 
 # ---------------------------------------------------------------------------
@@ -125,6 +152,7 @@ def external_engines_enabled() -> bool:
 def set_external_engines_enabled(enabled: bool) -> None:
     document = _load_document()
     document["master_enabled"] = bool(enabled)
+    document["schema_version"] = 1  # persistence contract
     write_json_atomic(_config_path(), document)
 
 
@@ -143,6 +171,7 @@ def save_engine_config(config: EngineConfig) -> None:
     engines = dict(document["engines"])
     engines[config.engine_id] = config.to_dict()
     document["engines"] = engines
+    document["schema_version"] = 1  # persistence contract
     write_json_atomic(_config_path(), document)
 
 
@@ -171,7 +200,7 @@ def configure_engine(
     *,
     enabled: bool = False,
     description: str = "",
-    which: Callable[[str], str | None] = shutil.which,
+    which: Callable[[str], str | None] = _resolve_which,
 ) -> EngineConfig:
     """Parse a shell-style command line and persist one engine's config.
 
@@ -235,7 +264,7 @@ def probe_engine(
     config: EngineConfig,
     *,
     master_enabled: bool | None = None,
-    which: Callable[[str], str | None] = shutil.which,
+    which: Callable[[str], str | None] = _resolve_which,
 ) -> EngineStatus:
     """Decide whether an engine can run right now, with a human reason."""
 

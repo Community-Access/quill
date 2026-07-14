@@ -43,3 +43,15 @@ def test_picker_dialog_has_a_cancel_button() -> None:
     source = Path("quill/ui/profile_picker.py").read_text(encoding="utf-8")
     assert "wx.ID_CANCEL" in source
     assert "wx.ID_OK" in source
+
+
+def test_picker_listbox_and_description_coerce_lazy_strings() -> None:
+    # Same bug class as #261: ProfileDefinition.name/description can be a
+    # _LazyString from lazy_gettext(...). wxPython's strict ListBox/TextCtrl
+    # overload checker on Windows rejects that directly, surfacing as
+    # 'Startup task failed: startup profile prompt' whenever the picker
+    # opened with an unconverted name/description. Coerce to str at the use
+    # site, same as the wizard pages fix.
+    source = Path("quill/ui/profile_picker.py").read_text(encoding="utf-8")
+    assert "choices=[str(name) for _k, _i, name, _d in entries]" in source
+    assert "self.description.SetValue(str(self._entries[index][3]))" in source

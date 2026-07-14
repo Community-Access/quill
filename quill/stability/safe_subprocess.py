@@ -56,6 +56,9 @@ def run_subprocess_safely(
         timeout_seconds,
         cwd,
     )
+    extra_kwargs: dict = {}
+    if os.name == "nt":
+        extra_kwargs["creationflags"] = subprocess.CREATE_NO_WINDOW
     try:
         result = subprocess.run(
             arg_list,
@@ -64,6 +67,7 @@ def run_subprocess_safely(
             capture_output=True,
             timeout=timeout_seconds,
             check=False,
+            **extra_kwargs,
         )
         logger.info(
             "Subprocess finished returncode=%s %s",

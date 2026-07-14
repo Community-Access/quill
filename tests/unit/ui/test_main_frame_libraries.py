@@ -88,6 +88,46 @@ def test_open_prompt_library_uses_show_modal_dialog(monkeypatch) -> None:
     assert modal_calls == ["Prompt Library"]
 
 
+class _FakeAILibraryDialog:
+    def __init__(self, *_args, **_kwargs):
+        self.dialog = _FakeInnerDialog()
+
+    def close(self):
+        pass
+
+
+def test_open_ai_library_uses_show_modal_dialog(monkeypatch) -> None:
+    frame = _build_frame()
+    modal_calls: list[str] = []
+    frame._show_modal_dialog = lambda _dlg, label, **_kw: (
+        modal_calls.append(label) or frame._wx.ID_OK
+    )
+
+    monkeypatch.setattr(frame, "_get_prompt_library", lambda: object())
+    monkeypatch.setattr(frame, "_current_document_title", lambda: "note.md")
+    monkeypatch.setattr(frame, "_ai_insert_text", lambda *_: None)
+    frame._skill_store_cache = object()
+
+    class _FakeEditor:
+        def GetStringSelection(self):
+            return ""
+
+        def GetValue(self):
+            return "hello"
+
+    frame.editor = _FakeEditor()
+
+    from quill.ui import agent_editor_host as aeh_mod
+    from quill.ui import ai_library_dialog as ail_mod
+
+    monkeypatch.setattr(ail_mod, "AILibraryDialog", _FakeAILibraryDialog)
+    monkeypatch.setattr(aeh_mod, "_catalog_agents", lambda: [])
+
+    frame.open_ai_library()
+
+    assert modal_calls == ["AI Library"]
+
+
 def test_open_skill_library_uses_show_modal_dialog(monkeypatch) -> None:
     frame = _build_frame()
     modal_calls: list[str] = []

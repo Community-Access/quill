@@ -50,6 +50,20 @@
       "type": "text",
       "required": false,
       "default": "__platform__"
+    },
+    {
+      "name": "screen_reader",
+      "label": "Screen reader",
+      "type": "select",
+      "required": false,
+      "options": [
+        "Not using a screen reader",
+        "JAWS",
+        "NVDA",
+        "Narrator",
+        "VoiceOver",
+        "Other"
+      ]
     }
   ]
 }

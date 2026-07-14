@@ -1,0 +1,49 @@
+[JESSICA]
+The QUILL Cast, episode two. I'm Jessica, here with Liam, and today we install QUILL and get through the first launch together, step by step.
+
+[LIAM]
+Step one, get the installer. QUILL is published by Community Access; download the Windows installer from the official releases page. It's a standard signed installer, arrow through it like any other: license, install location, finish. No bundled extras, no toolbar surprises, no account creation.
+
+[JESSICA]
+Step two, launch. The first thing QUILL does is talk to you, through your screen reader if you run one, or with its own built-in voice if you don't. That built-in voice matters: QUILL self-voices as a fallback, so even with no screen reader running, a blind user can install and configure it independently. Day one independence is a design goal.
+
+[LIAM]
+Step three, the setup wizard. It's short, and it's worth taking slowly. The big question it asks is which feature profile you want. Let's explain profiles properly, because they're one of QUILL's best ideas and they confuse people coming from other software.
+
+[JESSICA]
+A profile is a named set of feature switches. Choose a focused writing profile and QUILL shows a small, calm menu system: files, editing, search, speech, help. Choose the full experience and everything is visible: AI, vault, braille, developer tools, the works.
+
+[LIAM]
+Here's the key: profiles hide, they never delete. Every feature is still there, and you can switch or customize profiles any time under Preferences, Profiles and Features. So the right answer for a new user is almost always the simpler profile. Menus you can hold in your head beat menus that impress.
+
+[JESSICA]
+Why does this matter so much for our audience specifically? Because a screen reader reads menus one item at a time, top to bottom. Every feature you don't use is a second of listening, every single time. Sighted users skim past clutter; we wade through it. Profiles are QUILL refusing to make you wade.
+
+[PAUSE]
+
+[LIAM]
+Step four, land in the editor and take a breath. You're in a tabbed text editor. There's a menu bar at the top, the editing area in the middle, a status bar at the bottom. Type a sentence. Hear your screen reader echo normally, no special modes, no magic. It's just an editor, and that's the point.
+
+[JESSICA]
+Do these three things before you finish today. First: press F1. Context-sensitive help works nearly everywhere in QUILL, whatever control you're on, F1 explains it. Make it a reflex now.
+
+[LIAM]
+Second: open the Help menu and find Download Optional Components. Don't download anything yet, just listen to the list: offline speech engines, neural voices, spell-check languages, audio helpers. This is QUILL's app store, except everything is free and checksum-verified. We'll come back for these in later episodes.
+
+[JESSICA]
+Third: press escape a few times in different places. Notice that escape always works, dialogs close, modes exit, you land back in your document. QUILL guarantees the escape hatch. Knowing you can always get out is what makes exploring safe.
+
+[LIAM]
+A word about Safe Mode before we close, because it's good to know about on day one even though you may never need it. If QUILL is ever misbehaving, maybe an extension you installed months from now acts up, you can start it with the safe mode flag, and AI, folder automation, and extensions are all disabled. A guaranteed clean room. It's the product's own escape hatch.
+
+[JESSICA]
+Homework, five minutes. One: complete the wizard and pick a profile. Two: type and save a document anywhere, control S, done. Three: open Preferences, Profiles and Features, and just read what's on and off in your profile, don't change anything, just build the map.
+
+[LIAM]
+Next episode: your first document, for real. Files, saving, reopening, recent files, and the quiet machinery already protecting your work.
+
+[JESSICA]
+I'm Jessica.
+
+[LIAM]
+I'm Liam. See you in the editor.

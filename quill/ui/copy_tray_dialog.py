@@ -7,6 +7,8 @@ flight so no content is lost.
 
 from __future__ import annotations
 
+from collections.abc import Callable
+
 import wx
 
 from quill.core.copy_tray import CopyTray
@@ -26,11 +28,18 @@ def _slot_row_text(n: int, slot_text: str, slot_label: str, pinned: bool = False
 class CopyTrayDialog:
     """Browse, edit, label, and paste from the persistent copy tray slots."""
 
-    def __init__(self, parent: object, tray: CopyTray, selection: str = "") -> None:
+    def __init__(
+        self,
+        parent: object,
+        tray: CopyTray,
+        selection: str = "",
+        announce_cb: Callable[[str], None] | None = None,
+    ) -> None:
         self._tray = tray
         self._selection = selection
         self._paste_slot: int = 0
         self._guard = False
+        self._announce = announce_cb or (lambda _msg: None)
 
         self.dialog = wx.Dialog(
             parent,
@@ -49,6 +58,9 @@ class CopyTrayDialog:
         self._listbox.SetName("Copy tray slots")
         self._rebuild_list(keep=False)
         left.Add(self._listbox, 1, wx.EXPAND)
+        self._status_label = wx.StaticText(self.dialog, label="")
+        self._status_label.SetName("Status")
+        left.Add(self._status_label, 0, wx.EXPAND | wx.TOP, 4)
         body.Add(left, 1, wx.EXPAND | wx.RIGHT, 8)
 
         # -- Right: label + content editor --
@@ -102,7 +114,7 @@ class CopyTrayDialog:
         self.dialog.SetSizer(root)
         self.dialog.Layout()
 
-        from quill.ui.dialog_contract import apply_modal_ids
+        from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids
 
         apply_modal_ids(
             self.dialog,
@@ -113,7 +125,7 @@ class CopyTrayDialog:
         )
 
         self._listbox.Bind(wx.EVT_LISTBOX, self._on_slot_changed)
-        self._listbox.Bind(wx.EVT_LISTBOX_DCLICK, self._on_double_click)
+        apply_listbox_activation(self._listbox, self._on_double_click)
         self._btn_paste.Bind(wx.EVT_BUTTON, self._on_paste)
         self._btn_clip.Bind(wx.EVT_BUTTON, self._on_paste_clipboard)
         self._btn_save.Bind(wx.EVT_BUTTON, self._on_save)
@@ -127,7 +139,9 @@ class CopyTrayDialog:
     # -- public API --
 
     def show(self) -> int:
-        return self.dialog.ShowModal()
+        from quill.ui.dialog_contract import show_modal_dialog
+
+        return show_modal_dialog(self.dialog, "Copy Tray")
 
     def close(self) -> None:
         self.dialog.Destroy()
@@ -146,6 +160,10 @@ class CopyTrayDialog:
         idx = self._listbox.GetSelection()
         return max(1, idx + 1)
 
+    def _set_status(self, msg: str) -> None:
+        self._status_label.SetLabel(msg)
+        self._announce(msg)
+
     def _load_slot(self, n: int) -> None:
         self._guard = True
         slot = self._tray.slot(n)
@@ -153,7 +171,7 @@ class CopyTrayDialog:
         self._content_ctrl.SetValue(slot.text)
         pin_part = " [pinned]" if slot.pinned else ""
         label_part = f" ({slot.label})" if slot.label else ""
-        self._listbox.SetName(f"Copy tray slots — slot {n}{label_part}{pin_part} loaded")
+        self._set_status(f"Slot {n}{label_part}{pin_part} loaded")
         self._guard = False
 
     def _flush_edits(self) -> None:
@@ -234,7 +252,7 @@ class CopyTrayDialog:
         self._rebuild_list()
         self._update_buttons()
         label_part = f" ({self._tray.slot(n).label})" if self._tray.slot(n).label else ""
-        self._listbox.SetName(f"Copy tray slots — system clipboard pasted to slot {n}{label_part}")
+        self._set_status(f"Pasted from system clipboard to slot {n}{label_part}")
         self._content_ctrl.SetFocus()
 
     def _on_save(self, _event: object) -> None:
@@ -243,7 +261,7 @@ class CopyTrayDialog:
         self._rebuild_list()
         self._update_buttons()
         label_part = f" ({self._tray.slot(n).label})" if self._tray.slot(n).label else ""
-        self._listbox.SetName(f"Copy tray slots — slot {n} saved{label_part}")
+        self._set_status(f"Slot {n} saved{label_part}")
         self._content_ctrl.SetFocus()
 
     def _on_clear_slot(self, _event: object) -> None:
@@ -252,7 +270,7 @@ class CopyTrayDialog:
         self._load_slot(n)
         self._rebuild_list()
         self._update_buttons()
-        self._listbox.SetName(f"Copy tray slots — slot {n} cleared")
+        self._set_status(f"Slot {n} cleared")
 
     def _on_pin_toggle(self, _event: object) -> None:
         n = self._sel_n()
@@ -264,4 +282,4 @@ class CopyTrayDialog:
             state = "pinned"
         self._rebuild_list()
         self._update_buttons()
-        self._listbox.SetName(f"Copy tray slots — slot {n} {state}")
+        self._set_status(f"Slot {n} {state}")

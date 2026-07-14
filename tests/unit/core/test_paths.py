@@ -87,6 +87,21 @@ def test_dev_build_accepts_override_under_home(
     assert result == target.resolve()
 
 
+def test_app_data_dir_resolves_custom_storage_mode(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """#615: a saved "custom" storage mode redirects app_data_dir()."""
+    from quill.core.storage_mode import save_storage_mode
+
+    monkeypatch.delenv("QUILL_DATA_DIR", raising=False)
+    monkeypatch.delenv("QUILL_APP_ROOT", raising=False)
+    monkeypatch.setenv("APPDATA", str(tmp_path / "appdata"))
+    target = tmp_path / "CustomQuillData"
+    save_storage_mode("custom", path=target)
+
+    assert paths.app_data_dir() == target.resolve()
+
+
 def test_dev_build_rejects_override_outside_home(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:

@@ -56,26 +56,26 @@ def _build_power_tools_registrar() -> FirstPartyRegistrar:
         label="Special &Character...",
         separator_before=True,
     )
-    add(
-        id="power.insert_date_time",
-        title="Insert Date and Time",
-        top_level="Insert",
-        group="insert",
-        label="Date and &Time",
-    )
-    add(
-        id="power.calculate_and_insert_date",
-        title="Insert Calculated Date",
-        top_level="Insert",
-        group="insert",
-        label="C&alculated Date...",
-    )
+    # NOTE: Power-tool date/time items (``power.insert_date_time`` and
+    # ``power.calculate_and_insert_date``) used to live on the Insert menu next to
+    # the bundled Quillin snippets of the same names. They were removed to
+    # eliminate the duplicate and to honour the Quillin migration: the bundled
+    # ``com.quill.bundled.insert-tools`` Quillin now ships these as a Layer 1
+    # snippet pack surfaced through the new ``Insert > Date and Time`` submenu.
     add(
         id="power.insert_file_content",
         title="Insert File Content",
         top_level="Insert",
         group="insert",
         label="File &Content...",
+    )
+    add(
+        id="power.insert_table_of_contents",
+        title="Insert Table of Contents",
+        top_level="Insert",
+        group="insert",
+        label="&Table of Contents",
+        separator_before=True,
     )
 
     # Edit menu ----------------------------------------------------------
@@ -93,6 +93,46 @@ def _build_power_tools_registrar() -> FirstPartyRegistrar:
         top_level="Edit",
         group="edit",
         label="New Document from Cli&pboard",
+        separator_before=False,
+    )
+    add(
+        id="power.expand_abbreviation",
+        title="Expand Abbreviation",
+        top_level="Edit",
+        group="edit",
+        label="&Expand Abbreviation",
+        separator_before=True,
+    )
+    add(
+        id="power.preview_abbreviation",
+        title="Preview Abbreviation",
+        top_level="Edit",
+        group="edit",
+        label="Pre&view Abbreviation...",
+        separator_before=False,
+    )
+    add(
+        id="power.explain_abbreviation",
+        title="Explain Abbreviation",
+        top_level="Edit",
+        group="edit",
+        label="Explain A&bbreviation...",
+        separator_before=False,
+    )
+    add(
+        id="edit.repeat_command",
+        title="Repeat Next Command",
+        top_level="Edit",
+        group="edit",
+        label="&Repeat Next Command...",
+        separator_before=True,
+    )
+    add(
+        id="edit.restore_deletion",
+        title="Restore Deleted Text",
+        top_level="Edit",
+        group="edit",
+        label="Restore &Deleted Text...",
         separator_before=False,
     )
 
@@ -121,6 +161,14 @@ def _build_power_tools_registrar() -> FirstPartyRegistrar:
         top_level="Format",
         group="format_line",
         label="&Number Lines...",
+        separator_before=False,
+    )
+    add(
+        id="power.number_lines_advanced",
+        title="Number Lines (Advanced)",
+        top_level="Format",
+        group="format_line",
+        label="Number Lines (&Advanced)...",
         separator_before=False,
     )
     add(
@@ -257,6 +305,160 @@ def _build_power_tools_registrar() -> FirstPartyRegistrar:
         label="&Encode HTML Entities",
         separator_before=False,
     )
+    add(
+        id="power.encode_all_non_ascii",
+        title="Convert Non-ASCII to HTML Entities",
+        top_level="Format",
+        group="html_encoding",
+        label="Convert &Non-ASCII to HTML Entities",
+        separator_before=True,
+    )
+    add(
+        id="power.show_non_ascii",
+        title="Show Non-ASCII Characters",
+        top_level="Format",
+        group="html_encoding",
+        label="&Show Non-ASCII Characters...",
+        separator_before=False,
+    )
+    add(
+        id="power.reencode_file",
+        title="Re-encode As",
+        top_level="Format",
+        group="html_encoding",
+        label="&Re-encode As...",
+        separator_before=False,
+    )
+    add(
+        id="power.non_ascii_jump_to_source",
+        title="Jump to Source Line",
+        top_level="Format",
+        group="html_encoding",
+        label="&Jump to Source Line",
+        separator_before=True,
+    )
+    add(
+        id="power.non_ascii_jump_to_report",
+        title="Jump Back to Non-ASCII Report",
+        top_level="Format",
+        group="html_encoding",
+        label="Jump &Back to Non-ASCII Report",
+        separator_before=False,
+    )
+    add(
+        id="power.analyze_encoding_requirements",
+        title="Analyze Encoding Requirements",
+        top_level="Format",
+        group="html_encoding",
+        label="&Analyze Encoding Requirements",
+        separator_before=True,
+    )
+    add(
+        id="power.save_minimum_encoding",
+        title="Save Using Minimum Required Encoding",
+        top_level="Format",
+        group="html_encoding",
+        label="Save Using &Minimum Required Encoding...",
+        separator_before=False,
+    )
+    add(
+        id="power.remove_email_quote_markers",
+        title="Remove Email Quote Markers",
+        top_level="Format",
+        group="html_encoding",
+        label="Remove E&mail Quote Markers",
+        separator_before=True,
+    )
+    add(
+        id="power.strip_low_ascii",
+        title="Strip Low ASCII Characters",
+        top_level="Format",
+        group="html_encoding",
+        label="Strip &Low ASCII Characters",
+        separator_before=False,
+    )
+    add(
+        id="power.strip_high_ascii",
+        title="Strip High ASCII (Non-ASCII) Characters",
+        top_level="Format",
+        group="html_encoding",
+        label="Strip &High ASCII Characters",
+        separator_before=False,
+    )
+    add(
+        id="power.hex_dump",
+        title="Convert to Hex Dump",
+        top_level="Format",
+        group="html_encoding",
+        label="Convert to &Hex Dump",
+        separator_before=False,
+    )
+    add(
+        id="power.convert_oem_to_ansi",
+        title="Convert OEM (DOS) to ANSI",
+        top_level="Format",
+        group="html_encoding",
+        label="Convert &OEM (DOS) to ANSI",
+        separator_before=True,
+    )
+    add(
+        id="power.convert_ansi_to_oem",
+        title="Convert ANSI to OEM (DOS)",
+        top_level="Format",
+        group="html_encoding",
+        label="Convert &ANSI to OEM (DOS)",
+        separator_before=False,
+    )
+    add(
+        id="power.convert_box_drawing_to_ascii",
+        title="Convert Line-Drawing Characters to ASCII",
+        top_level="Format",
+        group="html_encoding",
+        label="Convert &Line-Drawing Characters to ASCII",
+        separator_before=False,
+    )
+    add(
+        id="power.strip_box_drawing",
+        title="Strip Line-Drawing Characters",
+        top_level="Format",
+        group="html_encoding",
+        label="Strip Line-&Drawing Characters",
+        separator_before=False,
+    )
+
+    # Format > Markdown Profiles (#257) -----------------------------------
+    add(
+        id="power.select_markdown_profile",
+        title="Select Markdown Profile",
+        top_level="Format",
+        group="markdown_profiles",
+        label="&Select Markdown Profile...",
+        separator_before=True,
+    )
+    add(
+        id="power.toggle_preserve_line_breaks",
+        title="Preserve Single Line Breaks",
+        top_level="Format",
+        group="markdown_profiles",
+        label="Preserve Single &Line Breaks",
+        separator_before=False,
+    )
+    add(
+        id="power.read_markdown_status",
+        title="Read Markdown Processing Status",
+        top_level="Format",
+        group="markdown_profiles",
+        label="&Read Markdown Processing Status",
+        separator_before=False,
+    )
+    add(
+        id="power.select_citation_style",
+        title="Select Citation Style",
+        top_level="Format",
+        group="markdown_profiles",
+        label="Select &Citation Style...",
+        separator_before=True,
+    )
 
     # Navigate menu ------------------------------------------------------
     add(
@@ -323,29 +525,21 @@ def _build_power_tools_registrar() -> FirstPartyRegistrar:
         group="search",
         label="Lines Co&mmon to Both Blocks",
     )
-
-    # Tools > Accessibility ---------------------------------------------
     add(
-        id="power.speak_cursor_address",
-        title="Speak Cursor Address",
-        top_level="Tools",
-        group="accessibility",
-        label="Speak Cursor &Address",
+        id="power.multi_replace",
+        title="Multi Replace",
+        top_level="Search",
+        group="search",
+        label="&Multi Replace...",
         separator_before=True,
     )
     add(
-        id="power.speak_document_status",
-        title="Speak Document Status",
-        top_level="Tools",
-        group="accessibility",
-        label="Speak Document Stat&us",
-    )
-    add(
-        id="power.speak_selection_length",
-        title="Speak Selection Length",
-        top_level="Tools",
-        group="accessibility",
-        label="Speak Selection &Length",
+        id="power.count_occurrences",
+        title="Count Occurrences",
+        top_level="Search",
+        group="search",
+        label="Co&unt Occurrences...",
+        separator_before=False,
     )
 
     # Edit > Copy Tray --------------------------------------------------
@@ -422,6 +616,22 @@ def _build_power_tools_registrar() -> FirstPartyRegistrar:
         top_level="Tools",
         group="power_tools",
         label="I&nfer Indentation...",
+    )
+    add(
+        id="power.compute_line_statistics",
+        title="Line Statistics",
+        top_level="Tools",
+        group="power_tools",
+        label="&Line Statistics",
+        separator_before=True,
+    )
+    add(
+        id="power.describe_character",
+        title="Describe Character at Cursor",
+        top_level="Tools",
+        group="power_tools",
+        label="Describe &Character at Cursor",
+        separator_before=True,
     )
     return registrar
 
@@ -524,6 +734,20 @@ class PowerToolsMenuMixin:
     def _append_power_tools_edit_items(self, edit_menu: object) -> None:
         self._append_power_tools_group(edit_menu, "edit")
 
+    def _append_power_tools_file_create_items(self, file_menu: object) -> None:
+        """Append file-creation-adjacent power tools to the File menu.
+
+        The menu builder places "New Document from Clipboard" beside File > New
+        even though the command remains in the shared "edit" power-tools group
+        for palette/registration purposes. This small seam keeps the menu split
+        compatible with the existing placement contract from merged ``main``.
+        """
+        self._power_tools_menu_item(
+            file_menu,
+            "power.new_document_from_clipboard",
+            "New Document from Cli&pboard",
+        )
+
     def _append_power_tools_file_ops_items(self, file_menu: object) -> None:
         self._append_power_tools_group(file_menu, "file_ops")
 
@@ -539,14 +763,14 @@ class PowerToolsMenuMixin:
     def _append_power_tools_html_encoding_items(self, menu: object) -> None:
         self._append_power_tools_group(menu, "html_encoding")
 
+    def _append_power_tools_markdown_profiles_items(self, menu: object) -> None:
+        self._append_power_tools_group(menu, "markdown_profiles")
+
     def _append_power_tools_navigate_items(self, navigate_menu: object) -> None:
         self._append_power_tools_group(navigate_menu, "navigate")
 
     def _append_power_tools_search_items(self, search_menu: object) -> None:
         self._append_power_tools_group(search_menu, "search")
-
-    def _append_power_tools_accessibility_items(self, accessibility_menu: object) -> None:
-        self._append_power_tools_group(accessibility_menu, "accessibility")
 
     def _append_power_tools_copy_tray_items(self, menu: object) -> None:
         self._append_power_tools_group(menu, "copy_tray")

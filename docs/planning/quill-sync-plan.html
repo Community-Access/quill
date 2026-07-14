@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>quill-sync-plan</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">quill-sync-plan</h1>
+</header>
+<h1
+id="quill-sync-local-first-provider-neutral-accessibility-first-sync-and-versioning">QUILL
+Sync: Local-First, Provider-Neutral, Accessibility-First Sync and
+Versioning</h1>
+<p><strong>Status:</strong> Plan of record, 2026-07-04. No code exists
+yet; this document is the design the implementation phases will be cut
+from. <strong>Owner:</strong> QUILL core. <strong>One-line
+vision:</strong> Sign in once. Choose what to sync. QUILL handles the
+rest. Conflicts are readable. Nothing is hidden behind an inaccessible
+cloud-provider UI.</p>
+<hr />
+<h2 id="the-principle-that-governs-everything">1. The principle that
+governs everything</h2>
+<p>QUILL is not becoming a Dropbox app, a GitHub app, or a OneDrive app.
+QUILL Sync is QUILL infrastructure: a local-first sync engine with
+provider adapters behind it. Users never learn the storage backend’s
+concepts (repos, commits, delta tokens, cursors, app folders). They
+learn QUILL concepts: <strong>settings, snippets, workspaces, backups,
+conflicts, devices, and restore points.</strong></p>
+<p>Most sync tools are visual, vague, and terrifying when something goes
+wrong. QUILL Sync is calm, verbal, reversible, and deeply
+understandable. That is the whole product.</p>
+<p>Design laws, in priority order:</p>
+<ol type="1">
+<li><strong>Local first.</strong> Every write lands in the local QUILL
+data folder before any network is touched. Sync is a background
+replication of state that already exists locally. Offline is not an
+error state; it is the default state that networking occasionally
+improves.</li>
+<li><strong>Nothing silent.</strong> Every sync outcome — uploaded,
+downloaded, skipped, conflicted, failed — is observable in the Sync
+Center, the Safety Log, and (per verbosity settings) the announcement
+channel. No toast-only design, no color-only status, no mystery
+icons.</li>
+<li><strong>Reversible by construction.</strong> Sync never destroys the
+only copy of anything. Deletes are tombstones. Overwrites capture a
+restore point first. “Disconnect and keep local data” always works.</li>
+<li><strong>Least privilege.</strong> App-folder scopes wherever the
+provider offers them. Tokens live in the OS credential vault, never in
+files. Every network call site is registered in the egress audit. Safe
+Mode disables sync outright.</li>
+<li><strong>The user never has to understand the backend.</strong> If a
+screen or message requires knowing what a cursor, delta token, SHA, or
+remote is, the design has failed.</li>
+</ol>
+<h2 id="requirements">2. Requirements</h2>
+<h3 id="functional-requirements">2.1 Functional requirements</h3>
+<ul>
+<li>FR-1: Sync Tier-1 QUILL data (section 5) between two or more devices
+through a chosen backend, with no user knowledge of the backend’s
+concepts.</li>
+<li>FR-2: Work fully offline; queue changes and reconcile on
+reconnect.</li>
+<li>FR-3: Detect conflicts deterministically (version vectors, never
+wall-clock guessing) and resolve them only through explicit, accessible
+flows.</li>
+<li>FR-4: Record a restore point before any overwrite (sync-driven or
+local-save-driven) of a synced item; expose “Restore previous
+version.”</li>
+<li>FR-5: Tombstone deletes; propagate them; never hard-delete the last
+copy without an explicit, separately-confirmed user action.</li>
+<li>FR-6: Provide a Sync Center with live status, last-sync time,
+provider, device name, scope list, and the six actions (sync now, review
+conflicts, choose what syncs, export backup, view safety log,
+disconnect).</li>
+<li>FR-7: Keep a Safety Log of every sync action, exportable as plain
+text.</li>
+<li>FR-8: First-run wizard with the three plain-language questions
+(scope, destination, conflict policy) and a “what QUILL can access”
+disclosure.</li>
+<li>FR-9: Export the complete sync payload as a ZIP at any time; import
+it on a fresh install (“restore from backup” without any provider).</li>
+<li>FR-10: Per-device identity with a human-editable device name used in
+every conflict sentence and log line.</li>
+<li>FR-11: Disconnect in two explicit flavors: keep local data (default)
+or remove synced copies locally; both leave the provider copy
+untouched.</li>
+<li>FR-12 (Tier 2): Designate workspace folders; sync text-class
+documents with the same guarantees; binary files keep-both only.</li>
+</ul>
+<h3 id="non-functional-requirements">2.2 Non-functional
+requirements</h3>
+<ul>
+<li>NFR-1 <strong>Accessibility:</strong> every surface passes the
+dialog gates; all state changes reach the announcement/sound/status-bar
+channels per user verbosity; full keyboard operability; braille-friendly
+(short, front-loaded status strings); no color-only or icon-only
+meaning. Screen-reader scripts (JAWS + NVDA) are exit criteria for every
+phase.</li>
+<li>NFR-2 <strong>Data safety:</strong> kill -9 at any point corrupts
+nothing (journal + atomic writes + WAL); the convergence property suite
+(section 11) is green every release; zero classes of silent loss.</li>
+<li>NFR-3 <strong>Performance:</strong> steady-state idle cost ~0
+(event/timer driven, no busy polling); initial Tier-1 scan under 2
+seconds for a typical profile; UI thread never blocks on sync I/O
+(everything through QuillTaskManager, results via wx.CallAfter);
+background sync must not perceptibly delay typing, speech, or braille
+output.</li>
+<li>NFR-4 <strong>Privacy:</strong> no telemetry; the Safety Log is
+local; crash reports pass through the existing redaction scrubber so
+tokens, account names, and paths never leave the machine unredacted; API
+keys never sync.</li>
+<li>NFR-5 <strong>Honesty:</strong> every failure state has one owner
+message written in this plan or the copy deck, and every message says
+what QUILL will do next.</li>
+<li>NFR-6 <strong>Compatibility:</strong> sync schema is versioned; an
+older QUILL reading a newer sync store degrades to
+read-only-with-explanation, never corruption (section 13).</li>
+<li>NFR-7 <strong>i18n:</strong> every user-facing string goes through
+the gettext pipeline; conflict sentences are template-based so
+translators keep the grammar.</li>
+<li>NFR-8 <strong>Footprint:</strong> Phase 1-3 add zero new runtime
+dependencies (section 4); version store bounded by the retention
+policy’s size cap.</li>
+</ul>
+<h2 id="what-quill-already-has-build-on-it-do-not-duplicate-it">3. What
+QUILL already has (build on it, do not duplicate it)</h2>
+<p>This plan deliberately reuses existing, tested infrastructure. The
+sync engine is smaller than it looks because most of the hard parts
+already exist:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Existing piece</th>
+<th>Where</th>
+<th>Role in QUILL Sync</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Atomic JSON writes</td>
+<td><code>core.storage.write_json_atomic</code></td>
+<td>All local sync-state side files; the “never half-written”
+guarantee</td>
+</tr>
+<tr>
+<td>Credential vault + DPAPI</td>
+<td><code>platform/windows/credential_manager.py</code>,
+<code>dpapi.py</code></td>
+<td>OAuth token storage for every adapter</td>
+</tr>
+<tr>
+<td>Egress audit gate</td>
+<td><code>quill/tools/network_egress_audit.py</code></td>
+<td>Every adapter call site gets an audit entry; CI enforces it</td>
+</tr>
+<tr>
+<td>Background task pool</td>
+<td><code>stability/task_manager.py</code> (QuillTaskManager)</td>
+<td>All sync I/O off the UI thread; <code>wx.CallAfter</code> for UI
+updates</td>
+</tr>
+<tr>
+<td>Safe Mode</td>
+<td><code>QUILL_SAFE_MODE</code> gating pattern</td>
+<td>Sync fully disabled in Safe Mode, like AI and watch folders</td>
+</tr>
+<tr>
+<td>Redaction scrubber</td>
+<td><code>stability/redaction.py</code></td>
+<td>Tokens/accounts/paths scrubbed from any diagnostic bundle</td>
+</tr>
+<tr>
+<td>Announcements + sounds + verbosity</td>
+<td>announce engine, <code>core/sound_events.py</code>, verbosity
+system</td>
+<td>The accessible notification channel; sync adds events, not a new
+channel</td>
+</tr>
+<tr>
+<td>Settings registry + export</td>
+<td><code>core/settings.py</code>, <code>settings_specs.py</code>,
+SHARE-1 export</td>
+<td>The schema-validated, per-key-describable settings model that makes
+field-level settings merge possible</td>
+</tr>
+<tr>
+<td>Backups + autosave + persistent undo</td>
+<td><code>backup_document</code>, <code>core/autosave.py</code>,
+persistent undo store</td>
+<td>The starting point for document restore points</td>
+</tr>
+<tr>
+<td>Vault Git sync</td>
+<td>Vault “Sync Vault” (commit/pull/push, conflicts listed)</td>
+<td>Prior art for explicit, accessible conflict listing; the GitHub
+adapter generalizes it</td>
+</tr>
+<tr>
+<td>Remote transports</td>
+<td><code>quill/io/</code> sftp, ftp, http, webdav, s3</td>
+<td>Proof of the transport-adapter pattern; WebDAV/SFTP sync backends
+later reuse these</td>
+</tr>
+<tr>
+<td>Shareable artifact family</td>
+<td>Quillin Hub types (quillins, sound packs, keyboard packs, verbosity
+packs, dictionaries, agents, skills)</td>
+<td>The exact same artifact taxonomy defines what Tier-1 sync
+carries</td>
+</tr>
+<tr>
+<td>Accessible dialog contract</td>
+<td><code>_show_modal_dialog</code>, <code>apply_modal_ids</code>,
+dialog gates</td>
+<td>Sync Center and conflict dialogs are ordinary QUILL dialogs,
+gate-audited</td>
+</tr>
+<tr>
+<td>Compare mode</td>
+<td>existing document compare</td>
+<td>The “Compare in QUILL” conflict view for text files</td>
+</tr>
+<tr>
+<td>External change watcher</td>
+<td>FEAT-19 watcher + prime-on-save pattern</td>
+<td>The template for “my own sync write is not an external change”</td>
+</tr>
+<tr>
+<td>QUILL Companion plan</td>
+<td>PRD / companion workstream</td>
+<td>The Phase 6 account/phone layer lands inside that program, not as a
+second one</td>
+</tr>
+</tbody>
+</table>
+<h2 id="dependencies">4. Dependencies</h2>
+<h3 id="runtime-dependencies-the-goal-zero-new-ones-through-phase-3">4.1
+Runtime dependencies (the goal: zero new ones through Phase 3)</h3>
+<ul>
+<li><strong>SQLite:</strong> stdlib <code>sqlite3</code>. No package.
+WAL mode; single-writer engine.</li>
+<li><strong>Hashing:</strong> stdlib <code>hashlib</code>
+(SHA-256).</li>
+<li><strong>HTTP:</strong> the audited HTTP plumbing already in the tree
+(requests is already a transitive dependency). Adapters speak raw REST;
+provider SDKs are explicitly avoided unless a phase proves a concrete
+need, because every SDK is an unaudited egress surface, a supply-chain
+surface, and installer weight.</li>
+<li><strong>Microsoft auth:</strong> <code>msal</code> is already
+installed (it ships today via the Microsoft 365 integration chain), so
+the OneDrive adapter adds nothing.</li>
+<li><strong>Dropbox:</strong> raw REST (<code>/2/files/*</code>,
+<code>/2/files/list_folder*</code>) — nothing new.</li>
+<li><strong>Google:</strong> OAuth installed-app loopback flow
+implemented directly (a localhost redirect listener + token exchange
+over the audited HTTP layer); no <code>google-api-python-client</code>,
+no <code>google-auth</code>, unless Phase 4 review says otherwise.</li>
+<li><strong>GitHub:</strong> raw REST Contents/Git-Data APIs with the
+user’s fine-grained token — nothing new; PyGithub exists in the tree but
+the adapter prefers the same thin audited-REST style as the others.</li>
+</ul>
+<h3
+id="projectinfrastructure-dependencies-owner-action-required-long-lead">4.2
+Project/infrastructure dependencies (owner action required, long
+lead)</h3>
+<p>These are the items that block phases regardless of code readiness —
+start them early:</p>
+<ul>
+<li><strong>Azure app registration</strong> (OneDrive): public-client
+app, delegated <code>Files.ReadWrite.AppFolder</code> +
+<code>offline_access</code>; publisher verification for a clean consent
+screen. Lead time: days.</li>
+<li><strong>Dropbox app registration:</strong> App-Folder access type.
+Dropbox apps start in development status (limited users) and need
+<strong>production approval</strong> to exceed the small-user cap. Lead
+time: days to weeks.</li>
+<li><strong>Google Cloud project + OAuth consent verification:</strong>
+<code>drive.appdata</code> is a sensitive scope; Google’s app
+<strong>verification review</strong> is mandatory before non-test users
+can consent, and it can take weeks and requires a privacy policy URL and
+demo video. This is the single longest external lead time in the plan —
+file it at Phase 2 time even though Google ships in Phase 4.</li>
+<li><strong>GitHub:</strong> none (user-supplied fine-grained token; no
+app registration).</li>
+<li><strong>Redirect URI strategy</strong> for all OAuth: loopback
+(<code>http://127.0.0.1:&lt;port&gt;</code>) per RFC 8252 native-app
+guidance; no embedded web views (screen-reader-hostile and disallowed by
+Google). The system browser does the sign-in; QUILL announces “Your
+browser opened to sign in to OneDrive. QUILL is waiting.”</li>
+<li><strong>Provider terms and branding:</strong> each adapter’s release
+checklist includes API ToS review and brand-usage rules (name providers
+in plain text; no logo misuse implying endorsement).</li>
+</ul>
+<h3 id="internal-dependencies">4.3 Internal dependencies</h3>
+<ul>
+<li>Verbosity + sound events (new <code>SoundEvent</code>s:
+SYNC_STARTED, SYNC_COMPLETE, SYNC_ATTENTION, SYNC_CONFLICT — retunable
+in sound packs like all others).</li>
+<li>Settings registry (new specs; every new setting speakable).</li>
+<li>Keymap (new assignable commands; defaults listed in 9.4).</li>
+<li>Quillin Hub (Quillin re-install prompts on new devices; pack
+formats).</li>
+<li>i18n catalog; docs pipeline (this file’s own HTML/EPUB artifacts
+included).</li>
+</ul>
+<h2 id="architecture-three-layers">5. Architecture: three layers</h2>
+<h3 id="layer-1-the-local-sync-engine-quillcoresync">Layer 1: the Local
+Sync Engine (<code>quill/core/sync/</code>)</h3>
+<p>Pure domain logic. wx-free, strict-typed, fully unit-testable — the
+same discipline as <code>quill/core</code> everywhere else.</p>
+<p><strong>The object model.</strong> Every synced thing is a
+<code>SyncItem</code>:</p>
+<pre class="text"><code>id              stable QUILL-assigned identity (survives renames)
+type            settings | profile | snippet | abbreviation | dictionary |
+                template | soundpack | keyboard_pack | verbosity_pack |
+                quillin_config | ai_prefs | feature_flags | workspace_file
+path            logical QUILL path (&quot;snippets/email-replies.json&quot;)
+local_path      absolute path on this device
+provider_path   opaque adapter-owned locator (never shown to users)
+content_hash    SHA-256 of content, the change detector
+modified_time   local mtime (UTC)
+created_time    UTC
+device_id       stable per-install id + human device name (&quot;Work Laptop&quot;)
+version_id      monotonically increasing per-item counter + origin device
+deleted         tombstone flag (tombstones sync; nothing vanishes silently)
+encrypted       whether the payload is E2E encrypted at rest on the provider
+sync_status     in_sync | pending_upload | pending_download | conflict | error
+last_error      speakable string, empty when healthy</code></pre>
+<p><strong>Sync state store: SQLite.</strong> This is a deliberate,
+documented exception to the JSON-atomic-write rule: sync state is
+high-churn, needs transactions, indexed lookups by hash and path, and a
+journal that survives crashes mid-batch. One database,
+<code>sync/state.db</code>, under the QUILL data dir. WAL mode.
+Everything user-facing (the Safety Log export, backups) still renders to
+plain text and JSON; SQLite is an engine internal, never a user-visible
+format.</p>
+<p><strong>Versioning model.</strong> A content-addressed blob store
+(<code>sync/versions/</code> keyed by content hash) holds prior versions
+of synced items. Every overwrite — whether caused by sync or by a local
+save to a synced item — records a restore point first. Retention policy:
+keep every version from the last 7 days, then daily for 30 days, then
+weekly to a size cap (default 200 MB, settable). This generalizes
+<code>backup_document</code> rather than replacing it: documents keep
+their existing backup behavior; synced items gain a uniform “Restore
+previous version” surface on top.</p>
+<p><strong>Conflict detection.</strong> Per-item
+<code>(device_id, version_counter)</code> pairs — a lightweight version
+vector. A change is a fast-forward when the incoming version descends
+from the local one; otherwise it is a conflict. Wall-clock time is
+displayed to humans (“changed at 9:14 AM on Work Laptop”) but never used
+to decide a winner. There is no silent last-writer-wins anywhere in the
+engine; “prefer newest” exists only as an explicit user-chosen
+policy.</p>
+<p><strong>The journal.</strong> Every engine action appends a Safety
+Log record: what changed, which device changed it, when, and whether it
+uploaded, downloaded, skipped, or conflicted. The log is plain text,
+exportable, and rotates by size. This is the “support artifact” and the
+user’s audit trail in one.</p>
+<p><strong>Scheduling model.</strong> Event-driven, not polling: a
+debounced local watcher (reusing the FEAT-19 watcher machinery, primed
+so QUILL’s own writes are not “external changes”), plus provider change
+signals (Graph delta on a timer, Dropbox longpoll, Drive changes on a
+timer), plus manual “Sync now,” plus a low-frequency safety-net timer
+(default every 15 minutes when connected). Exponential backoff with
+jitter on provider errors and rate limits; backoff state is visible in
+the Sync Center (“Retrying in 4 minutes”), never hidden.</p>
+<p><strong>Engine API surface (names indicative, signatures settled in
+Phase 1):</strong></p>
+<ul>
+<li><code>scan()</code> — hash local items, enqueue pending uploads</li>
+<li><code>pull()</code> / <code>push()</code> — exchange with the active
+adapter via its change feed</li>
+<li><code>resolve(item, decision)</code> — apply a conflict decision
+(mine | theirs | both | merged payload)</li>
+<li><code>restore(item, version_id)</code> — restore point recovery</li>
+<li><code>status()</code> — the Sync Center’s single source of
+truth</li>
+</ul>
+<h3 id="layer-2-provider-adapters-quillcoresyncadapters">Layer 2:
+provider adapters (<code>quill/core/sync/adapters/</code>)</h3>
+<p>One small interface; each adapter translates provider events into the
+same internal engine events. The engine never branches on provider
+identity.</p>
+<pre class="text"><code>class SyncAdapter (contract):
+    capabilities()      -&gt; app_folder | delta_feed | ranges | atomic_replace
+    connect() / disconnect()
+    account_summary()   -&gt; speakable &quot;what QUILL can access&quot; description
+    list_changes(token) -&gt; (changes, next_token)     # normalized
+    download(item) / upload(item) / delete(item)     # tombstone-aware</code></pre>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Adapter</th>
+<th>Change detection</th>
+<th>Access model</th>
+<th>Ships in</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Local Folder</td>
+<td>filesystem scan + hashes</td>
+<td>a folder the user picks</td>
+<td>Phase 1</td>
+</tr>
+<tr>
+<td>OneDrive</td>
+<td>Microsoft Graph delta queries</td>
+<td>App Folder (<code>Files.ReadWrite.AppFolder</code>)</td>
+<td>Phase 2</td>
+</tr>
+<tr>
+<td>Dropbox</td>
+<td><code>list_folder</code> cursors + longpoll</td>
+<td>Dropbox App Folder</td>
+<td>Phase 3</td>
+</tr>
+<tr>
+<td>Google Drive</td>
+<td>Changes API + start page tokens</td>
+<td>appData folder (settings) or visible folder (workspaces)</td>
+<td>Phase 4</td>
+</tr>
+<tr>
+<td>GitHub</td>
+<td>tree/file SHAs, Contents API</td>
+<td>fine-grained token, one repo</td>
+<td>Phase 5, advanced</td>
+</tr>
+<tr>
+<td>WebDAV / SFTP / self-hosted</td>
+<td>ETag / mtime+size probing via existing <code>quill/io</code>
+transports</td>
+<td>user-supplied server</td>
+<td>later</td>
+</tr>
+</tbody>
+</table>
+<p>Adapter notes, by provider:</p>
+<ul>
+<li><strong>OneDrive first.</strong> Built into Windows, dominant in
+work and school, Graph delta queries are exactly the change feed a sync
+engine wants, and the App Folder scope means QUILL asks for its own
+folder, not the user’s drive. The honest caveats go in the UI: the app
+folder counts against quota, and the user can delete it from OneDrive’s
+own UI (the engine treats that as “remote reset,” not data loss, because
+local is the source of truth). Work/school tenants can block third-party
+consent; the failure message says exactly that and suggests the
+personal-account or local-folder path.</li>
+<li><strong>Dropbox second.</strong> The simplest mental model (files in
+a visible folder), App Folder scoping, mature cursor/longpoll change
+detection. Treated as storage only — QUILL never depends on the Dropbox
+desktop client or tray UI.</li>
+<li><strong>Google Drive third.</strong> appData is ideal for
+settings-class data and wrong for user-facing documents (hidden by
+design). The adapter therefore has two modes, chosen per scope: appData
+for Tier-1 data, a visible “QUILL” folder for workspaces. The Sync
+Center says which is in use in plain words, and the “Export backup”
+button exists precisely because appData is invisible.</li>
+<li><strong>GitHub is a power-user mode, never the default.</strong>
+Every file update is a repository operation, and the concept load
+(repos, tokens, branches, rate limits) is exactly what mainstream users
+must never meet. But for developers it is superb: version this writing
+project, sync a profile to a repo, publish or install snippet packs,
+sync Quillins from a repo. The Vault Git sync feature is the prototype;
+GitHub-adapter workspaces generalize it. Fine-grained tokens with
+Contents-write scope only; stored in the vault.</li>
+<li><strong>Local Folder is not a toy.</strong> It is the engine’s
+proving ground <em>and</em> a real product: point it at a thumb drive, a
+network share, or a folder that OneDrive/Syncthing/Drive’s own desktop
+client already mirrors, and users get provider sync with zero OAuth. It
+ships first and stays forever.</li>
+</ul>
+<h3
+id="layer-3-quill-cloud-account-layer-later-and-only-with-a-reason">Layer
+3: QUILL Cloud / account layer (later, and only with a reason)</h3>
+<p>Not storage-first. It exists when — and only when — a concrete need
+arrives: device registry across providers, push notifications, encrypted
+key recovery, snippet-pack sharing, “send to my other device,” and the
+phone companion. This layer lands inside the existing QUILL Companion
+program rather than as a parallel effort. Nothing in Layers 1-2 depends
+on it.</p>
+<h2 id="what-syncs-in-tiers">6. What syncs, in tiers</h2>
+<h3 id="tier-1-first-high-value-low-risk-quill-data">Tier 1 (first):
+high-value, low-risk QUILL data</h3>
+<p>Every entry maps to a storage surface QUILL already owns, which is
+what makes Tier 1 cheap and safe:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Sync scope</th>
+<th>Existing storage it rides on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Settings</td>
+<td>schema-validated settings JSON (sensitive keys excluded or
+E2E-encrypted; DPAPI-bound values never leave the machine)</td>
+</tr>
+<tr>
+<td>Feature profiles / flags</td>
+<td>the feature-profile export format (SHARE-1)</td>
+</tr>
+<tr>
+<td>Snippets</td>
+<td>snippet store</td>
+</tr>
+<tr>
+<td>Abbreviations</td>
+<td>abbreviation library (user library only; Quillin-contributed ones
+re-materialize from their Quillins)</td>
+</tr>
+<tr>
+<td>Dictionaries + custom spelling words</td>
+<td>spell-check dictionaries and user word lists</td>
+</tr>
+<tr>
+<td>Templates</td>
+<td>template files</td>
+</tr>
+<tr>
+<td>Sound packs</td>
+<td>the Hub sound-pack artifact format</td>
+</tr>
+<tr>
+<td>Keyboard customizations</td>
+<td>keymap + keyboard-pack (.kqp) export</td>
+</tr>
+<tr>
+<td>Verbosity packs</td>
+<td>verbosity system data</td>
+</tr>
+<tr>
+<td>Quillin configuration</td>
+<td>per-Quillin settings (configs sync; Quillin <em>code</em> installs
+from the Hub, so a new device gets “install these 3 Quillins?” as an
+accessible prompt, not silent code sync)</td>
+</tr>
+<tr>
+<td>AI Hub service preferences</td>
+<td>provider/model/engine prefs — <strong>never API keys</strong>; keys
+stay in the credential vault per device, and the new device says plainly
+“sign in to OpenRouter on this device to finish”</td>
+</tr>
+<tr>
+<td>Accessibility preferences</td>
+<td>settings subset, called out separately in “Choose what syncs”
+because it is the first thing a user wants on a new machine</td>
+</tr>
+<tr>
+<td>Recent folders</td>
+<td>paths only, never the files behind them</td>
+</tr>
+</tbody>
+</table>
+<p>Formats stay portable and human-readable on the provider:
+<code>settings.json</code>, <code>profiles/*.json</code>,
+<code>snippets/*.json</code>, <code>abbreviations/*.json</code>,
+<code>dictionaries/*.dic</code>, <code>templates/*</code>,
+<code>soundpacks/*</code> — a person can open their sync folder in any
+file manager and recognize everything.</p>
+<p><strong>Per-key sync policy in the settings registry.</strong> Each
+<code>SettingSpec</code> gains a sync class: <code>sync</code> (default
+for preferences), <code>local_only</code> (paths, window geometry,
+device-specific hardware choices like audio devices and SAPI voice ids —
+a synced voice that does not exist on the other machine must degrade,
+not error), or <code>secret</code> (never leaves the vault). The
+wizard’s “Choose what syncs” reads these classes, so the choice list
+stays truthful automatically as settings are added.</p>
+<h3 id="tier-2-later-document-workspaces">Tier 2 (later): document
+workspaces</h3>
+<p>A user designates a folder as a <strong>QUILL Workspace</strong>.
+QUILL syncs Markdown, text, HTML, BRF, scripts, and project folders
+inside it. Binary files are supported but conservative: hashed whole,
+never merged, conflicts always keep-both. A Vault is a natural workspace
+(one checkbox: “Sync this vault”); so is a Story Studio project folder.
+Workspaces wait until the engine has survived a full release cycle on
+Tier-1 data — full document sync on day one is the trap this plan exists
+to avoid.</p>
+<h2 id="document-versioning-the-half-of-this-that-is-not-sync">7.
+Document versioning (the half of this that is not sync)</h2>
+<p><strong>Status: SHIPPED early, in 0.9.0 Beta 1</strong> — this
+section was implemented ahead of the rest of Phase 1 as
+<code>quill/core/restore_points.py</code> +
+<code>quill/ui/main_frame_restore_points.py</code> (File &gt; Restore
+Previous Version, the <code>restore_points_enabled</code> /
+<code>restore_points_max_mb</code> settings, PRD 5.39a). The sync
+engine’s later phases build on that store as designed here.</p>
+<p>Versioning works entirely offline and is valuable with no provider
+connected at all:</p>
+<ul>
+<li><strong>Restore points.</strong> Every save of a synced item (and
+every sync-driven overwrite) records a content-addressed version.
+<code>File &gt; Restore Previous Version...</code> lists versions the
+way backups are listed today: “Yesterday at 4:12 PM, this device, 2,341
+words,” Enter to preview, explicit button to restore (which itself
+records a restore point first — restoring is never destructive
+either).</li>
+<li><strong>Retention</strong> as in section 5; the policy is one
+plain-language setting.</li>
+<li><strong>Relationship to existing features.</strong>
+<code>backup_document</code> and autosave keep doing their jobs;
+persistent undo remains the in-session safety net. Restore points are
+the cross-session, cross-device layer above both. One user guide page
+explains all three in one breath, because users should not have to
+taxonomize their own safety nets.</li>
+</ul>
+<h2 id="filesystem-and-platform-design-considerations">8. Filesystem and
+platform design considerations</h2>
+<p>The unglamorous list that decides whether sync is trustworthy:</p>
+<ul>
+<li><strong>Windows realities:</strong> case-insensitive filenames (two
+logical paths differing only by case are the <em>same</em> item —
+enforce at the logical-path layer); reserved device names (CON, PRN,
+AUX, NUL, COM1-9, LPT1-9) rejected in logical paths with a speakable
+message; long paths handled via the <code>\\?\</code> opt-in QUILL
+already uses for data dirs; NTFS alternate data streams are not
+synced.</li>
+<li><strong>macOS realities:</strong> Unicode normalization — APFS/HFS
+store NFD while everything else speaks NFC; all logical paths normalize
+to NFC before hashing and comparison, or the same file ping-pongs
+forever. Keychain replaces Credential Manager behind the same credential
+interface.</li>
+<li><strong>Timestamps:</strong> all stored times are UTC; display is
+local. Timestamps are informational only (FR-3), so clock skew can never
+corrupt state — it can only make a displayed time look odd.</li>
+<li><strong>Single-instance discipline:</strong> the engine takes an
+exclusive lock file next to <code>state.db</code>; a second QUILL
+instance (or a crashed one’s leftover lock, detected by PID liveness)
+degrades to “sync paused in this window,” spoken, not raced.</li>
+<li><strong>Own-write suppression:</strong> every local write the engine
+performs primes the external-change watcher (the FEAT-19 pattern) so
+sync never reports its own writes as external edits, and the editor
+never re-prompts on them.</li>
+<li><strong>Antivirus/locked files:</strong> transient sharing
+violations retry with backoff; a persistently locked file becomes a
+per-item <code>error</code> with the filename spoken, never a wedged
+queue.</li>
+<li><strong>Portable builds:</strong> the portable data dir is
+sync-capable; the Local Folder adapter is the natural pairing
+(QUILL-on-a-stick with versioning).</li>
+<li><strong>Metered connections:</strong> honor the OS
+metered-connection signal with a setting (“Pause sync on metered
+connections,” default on for uploads over 1 MB); state shows as “Paused
+(metered connection).”</li>
+<li><strong>Proxies:</strong> whatever the existing HTTP plumbing honors
+applies to adapters automatically; no adapter-private networking
+stacks.</li>
+<li><strong>Large files (Tier 2):</strong> chunked/resumable uploads
+where the provider supports them (Graph upload sessions, Dropbox upload
+sessions); a per-file size guardrail with a speakable “stays local”
+message (default 100 MB, settable).</li>
+</ul>
+<h2 id="the-accessibility-first-experience">9. The accessibility-first
+experience</h2>
+<h3 id="the-sync-center-tools-quill-sync-center">9.1 The Sync Center
+(<code>Tools &gt; QUILL Sync Center</code>)</h3>
+<p>One dialog, keyboard-first, gate-audited like every QUILL dialog:</p>
+<ul>
+<li>Status line, always one of: “Up to date,” “Syncing,” “Needs
+attention,” “Offline,” “Paused,” “Conflict found.” Words, not icons; a
+sound event and optional announcement accompany transitions.</li>
+<li>Last successful sync time, current provider, current device name
+(editable here), what is being synced (a readable list, not a tree of
+checkboxes).</li>
+<li>Buttons: <strong>Sync now</strong>, <strong>Review
+conflicts</strong>, <strong>Choose what syncs</strong>, <strong>Export
+backup</strong>, <strong>View safety log</strong>, <strong>Disconnect
+provider</strong>.</li>
+<li>Disconnect always asks one question with two honest answers: “keep
+local data” (default) or “also remove synced copies from this
+device.”</li>
+</ul>
+<p>A status-bar cell mirrors the status line (Enter opens the Center),
+and the existing Status Page gets sync task rows like any background
+work.</p>
+<h3 id="first-run-wizard">9.2 First-run wizard</h3>
+<p>Three plain-language questions, in this order:</p>
+<ol type="1">
+<li><strong>“What do you want to sync?”</strong> Settings only /
+Settings and snippets / Settings, snippets, and workspaces / Everything
+I choose manually.</li>
+<li><strong>“Where should QUILL store your sync data?”</strong> OneDrive
+(recommended for Windows and work or school) / Dropbox (recommended for
+simple personal file sync) / Google Drive / GitHub (advanced) / A local
+folder. Each option’s description says, in one sentence, what QUILL will
+be able to access — before sign-in, not after.</li>
+<li><strong>“How should conflicts be handled?”</strong> Ask me every
+time / <strong>Keep both copies and tell me (default)</strong> / Prefer
+this device / Prefer the newest copy.</li>
+</ol>
+<p>Sign-in happens in the system browser (RFC 8252 loopback; never an
+embedded web view — those are screen-reader-hostile and Google forbids
+them anyway). QUILL announces “Your browser opened to sign in to
+OneDrive. QUILL is waiting,” and completion returns focus to the wizard
+with a spoken result. After sign-in, a <strong>“What QUILL can
+access”</strong> screen states the granted scope in plain words (“QUILL
+can see only its own folder in your OneDrive, named Apps/QUILL. It
+cannot see your other files.”) with Disconnect right there.</p>
+<h3 id="conflict-resolution-the-part-everyone-else-gets-wrong">9.3
+Conflict resolution — the part everyone else gets wrong</h3>
+<p>QUILL never says only “Conflict detected.” The sentence pattern is
+fixed:</p>
+<blockquote>
+<p>“The snippet file ‘Email Replies’ was changed on Work Laptop at 9:14
+AM and on Home Desktop at 9:21 AM. Review both versions, keep both, or
+choose one.”</p>
+</blockquote>
+<p>Four resolvers, chosen by item type:</p>
+<ul>
+<li><strong>Text files:</strong> Compare in QUILL (the existing compare
+surface), read changed sections, jump by change, copy from either side,
+then Keep mine / Keep theirs / Save both / Merge manually.</li>
+<li><strong>Settings:</strong> field-level, in human language, powered
+by the fact that every setting has a spec with a speakable label: “Your
+Home Desktop changed the default font size from 12 to 14. Your Work
+Laptop changed it from 12 to
+<ol start="13" type="1">
+<li>Which value should QUILL use?” Non-conflicting fields merge silently
+and are listed in the Safety Log.</li>
+</ol></li>
+<li><strong>Collections</strong> (snippets, abbreviations, dictionary
+words): item-level. Two devices adding different snippets is not a
+conflict at all; only the same item edited both places asks a question,
+phrased like the settings one.</li>
+<li><strong>Binary files:</strong> always keep both (“Email Replies
+(from Home Desktop)”), say so, never attempt a merge.</li>
+</ul>
+<p>“Save both” is the universal escape hatch and the default policy. A
+conflict queue (not a modal ambush) lives behind “Review conflicts”;
+nothing blocks editing while conflicts wait.</p>
+<h3 id="commands-keys-and-menus">9.4 Commands, keys, and menus</h3>
+<ul>
+<li>Commands (palette + keymap-assignable, empty defaults except where
+noted): <code>sync.open_center</code> (suggested Alt+Shift+S),
+<code>sync.sync_now</code>, <code>sync.review_conflicts</code>,
+<code>sync.export_backup</code>, <code>sync.restore_version</code> (also
+under File for the active document).</li>
+<li>Menu: <code>Tools &gt; QUILL Sync Center...</code>;
+<code>File &gt; Restore Previous Version...</code>.</li>
+<li>Status bar cell opt-in via the existing Status Bar preferences.</li>
+</ul>
+<h3 id="notifications-and-copy-deck">9.5 Notifications and copy
+deck</h3>
+<p>Through the channels QUILL already has — status bar text, optional
+sound event, optional speech announcement honoring verbosity,
+braille-friendly status strings (short, meaning first). The copy below
+is the spec:</p>
+<ul>
+<li>“QUILL Sync complete. Three settings updated.”</li>
+<li>“QUILL Sync paused. OneDrive needs you to sign in again.”</li>
+<li>“Conflict found in Snippets. Press Alt+Shift+S to review.”</li>
+<li>“Sync is waiting for the network. Your changes are safe on this
+computer.”</li>
+<li>“Sync is retrying in four minutes. Nothing is lost.”</li>
+</ul>
+<p>No silent failure: an error state produces exactly one notification
+plus a persistent “Needs attention” status until acted on (no repeating
+nag). All strings gettext-wrapped; conflict sentences are parameterized
+templates.</p>
+<h3 id="the-sync-safety-log">9.6 The Sync Safety Log</h3>
+<p>Every record: what changed, which device, when, and the outcome
+(uploaded / downloaded / skipped / conflicted / failed, with the
+speakable reason). Plain-text export for support, one button. This log
+is also what “QUILL, what did sync just do?” reads from.</p>
+<h2 id="failure-modes-and-their-owner-messages">10. Failure modes and
+their owner messages</h2>
+<p>Every row is an exit criterion for the phase that ships it:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Failure</th>
+<th>Engine behavior</th>
+<th>What the user hears</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Token expired / revoked</td>
+<td>pause provider, keep queueing locally</td>
+<td>“Sync paused. OneDrive needs you to sign in again.”</td>
+</tr>
+<tr>
+<td>Provider outage / 5xx</td>
+<td>backoff with jitter, visible retry timer</td>
+<td>“Sync is retrying in four minutes. Nothing is lost.”</td>
+</tr>
+<tr>
+<td>Rate limited</td>
+<td>honor Retry-After, same as outage</td>
+<td>same as outage</td>
+</tr>
+<tr>
+<td>Quota full</td>
+<td>pause uploads, downloads continue</td>
+<td>“OneDrive is full. QUILL keeps your changes on this computer until
+space is free.”</td>
+</tr>
+<tr>
+<td>Remote app folder deleted</td>
+<td>treat as remote reset; re-seed from local after one
+confirmation</td>
+<td>“Your QUILL folder on OneDrive is gone. QUILL still has everything
+locally. Re-create it?”</td>
+</tr>
+<tr>
+<td>Tenant/admin consent blocked</td>
+<td>fail at sign-in with the real reason</td>
+<td>“Your work account does not allow QUILL to connect. A local folder
+or a personal account still works.”</td>
+</tr>
+<tr>
+<td>Local file locked (AV, editor)</td>
+<td>retry, then per-item error</td>
+<td>“Sync could not read ‘notes.md’ because another program has it
+open.”</td>
+</tr>
+<tr>
+<td>Same account, two devices syncing at once</td>
+<td>version vectors make this the normal case, not a failure</td>
+<td>(nothing — this is the designed situation)</td>
+</tr>
+<tr>
+<td>Crash mid-sync</td>
+<td>journal replay on next start</td>
+<td>“QUILL finished a sync that was interrupted.” (only if anything was
+pending)</td>
+</tr>
+<tr>
+<td>Sync store from a newer QUILL</td>
+<td>read-only + explanation</td>
+<td>“This sync data was written by a newer QUILL. Update this computer
+to sync again.”</td>
+</tr>
+<tr>
+<td>Hash mismatch after download</td>
+<td>discard, re-fetch, then per-item error</td>
+<td>“Sync could not verify ‘settings.json’ and will try again.”</td>
+</tr>
+</tbody>
+</table>
+<h2 id="testing-strategy">11. Testing strategy</h2>
+<ul>
+<li><strong>Engine:</strong> pure unit tests (wx-free) for hashing,
+version vectors, tombstones, retention, journal replay after simulated
+crash; property-style tests that random interleaved edits on N fake
+devices always converge with zero silent losses.</li>
+<li><strong>Adapter contract:</strong> one shared test suite every
+adapter must pass (the fake adapter, Local Folder, then each cloud
+adapter against a sandbox account) — the same pattern as the live AI
+provider regression suite, CI-safe and skipped without credentials.</li>
+<li><strong>Failure drills:</strong> scripted scenarios for every row of
+section 10 — mid-upload kill, token revocation, quota exhaustion, remote
+folder deletion — each must leave the journal replayable and user data
+intact.</li>
+<li><strong>Accessibility:</strong> dialog gates cover the new dialogs
+automatically; a manual screen-reader script per phase (JAWS, NVDA, the
+full conflict-review flow end to end by ear, braille status reading)
+mirrors the save-as spot-check practice. The wizard and Sync Center get
+the axe-style checks the accessibility rules require for UI work.</li>
+<li><strong>Performance:</strong> a benchmark fixture (1,000 Tier-1
+items) with budgets for initial scan, steady-state CPU, and memory, run
+in CI on the smoke tier.</li>
+</ul>
+<h2 id="security-and-privacy">12. Security and privacy</h2>
+<p>Minimum bar (Phase 1-2, non-negotiable):</p>
+<ul>
+<li>OAuth tokens in the Windows Credential Manager via the existing
+wrapper (Keychain on macOS); never in files, never in settings
+JSON.</li>
+<li>Least-privilege scopes: App Folder on OneDrive and Dropbox, appData
+on Drive, single-repo fine-grained token on GitHub.</li>
+<li>Every adapter call site registered in the network egress audit; the
+gate fails CI on any unregistered call.</li>
+<li>Sync disabled entirely in Safe Mode; no first network call before
+the wizard’s explicit consent (the existing consent-before-egress
+law).</li>
+<li>Sensitive settings (anything DPAPI-bound today) either excluded from
+sync or E2E-encrypted; API keys never sync, period.</li>
+<li>Diagnostic bundles route through the redaction scrubber; the Safety
+Log export redacts account identifiers by default with a “include
+account details” checkbox for support cases.</li>
+<li>Clear “what QUILL can access” screen; one-button disconnect.</li>
+</ul>
+<p>Better (its own later phase, opt-in): end-to-end encryption of the
+sync payload with a passphrase, so providers store only blobs. Honest
+caveat baked into the design: <strong>encryption recovery is an
+accessibility hazard.</strong> The passphrase flow must be speakable,
+re-promptable, and paired with a recovery phrase the wizard reads back
+and requires confirming; “I lost my passphrase” must have a documented,
+truthful answer (“your provider copy is unreadable; your local data is
+untouched; here is how to re-sync fresh”). If that UX cannot be made
+calm, E2E ships later rather than confusingly.</p>
+<h2 id="compatibility-and-schema-evolution">13. Compatibility and schema
+evolution</h2>
+<ul>
+<li><code>schema_version</code> lives in both <code>state.db</code> and
+a <code>manifest.json</code> at the root of the provider payload.</li>
+<li>Rules: same major — sync freely; newer minor writes, older minor
+reads — allowed (unknown fields preserved, never stripped); older QUILL
+meeting a newer major — read-only with the section-10 message, no
+writes, no corruption.</li>
+<li>Migrations run forward-only on the local store with a pre-migration
+backup ZIP written automatically.</li>
+<li>The manifest also records device registry (id, name, last-seen) so
+the Sync Center can list “computers using this sync data” without any
+cloud account.</li>
+</ul>
+<h2 id="phone-access">14. Phone access</h2>
+<p>Sequenced honestly, because cloud sync alone is not a phone
+story:</p>
+<ul>
+<li><strong>Phase A (free, immediate):</strong> synced data is
+human-readable on providers’ own mobile apps — Markdown, TXT, readable
+JSON exports, snippets as plain text. Costs nothing beyond the
+portable-format discipline already chosen.</li>
+<li><strong>Phase B: QUILL mobile web companion.</strong> A small
+accessible web app: view and copy snippets, read documents, edit plain
+text and Markdown, view sync status, “send this to my QUILL desktop.”
+This is where the QUILL Cloud account layer earns its existence, and it
+lands inside the QUILL Companion program alongside the Hub
+infrastructure.</li>
+<li><strong>Phase C: native mobile app,</strong> only after the model is
+proven.</li>
+</ul>
+<h2 id="staged-implementation-plan">15. Staged implementation plan</h2>
+<p>Each phase produces working, testable software; no phase depends on a
+later one. Documentation (user guide, PRD, CHANGELOG, release notes)
+updates as each phase ships, per the incremental-docs rule.</p>
+<p><strong>Phase 1 — Local Sync Foundation.</strong>
+<code>quill/core/sync/</code> engine + SQLite state + version store +
+Local Folder adapter + Sync Center + Safety Log + restore points +
+first-run wizard (local-folder path only) + export/import backup ZIP +
+the settings-spec sync classes. Exit criteria: two QUILL installs
+pointed at one shared folder converge; every conflict class (text,
+settings field, collection item, binary) resolves through the accessible
+flows; kill -9 mid-sync corrupts nothing; the whole engine is
+unit-tested with a scriptable fake adapter; the screen-reader script
+passes.</p>
+<p><strong>Phase 2 — OneDrive App Folder.</strong> Azure registration +
+msal OAuth (vault-stored, loopback flow), Graph delta queries, Tier-1
+scopes only. Egress audit entries, “what QUILL can access” screen,
+re-auth flow. Exit criteria: Tier-1 data round-trips between two
+machines; token revocation, tenant-blocked consent, quota-full, and
+remote-folder-deletion drills all produce their section-10 messages and
+recover.</p>
+<p><strong>Phase 3 — Dropbox App Folder.</strong> Cursor/longpoll change
+feed; production approval filed early. Proves the adapter contract with
+a second real provider; any engine change this phase forces is an
+adapter-contract bug to fix, not a special case to add.</p>
+<p><strong>Phase 4 — Google Drive.</strong> appData mode for Tier-1,
+visible-folder mode reserved for workspaces; the wizard explains the
+hidden-folder trade-off in one sentence with Export backup presented
+alongside. Google verification must already be underway (filed at Phase
+2 time).</p>
+<p><strong>Phase 5 — GitHub advanced mode + Tier-2 workspaces.</strong>
+Workspaces ship here, on the by-now-hardened engine: designate a
+workspace, sync documents, Vault and Story Studio integration, chunked
+uploads, size guardrails. GitHub adapter for power users:
+profile-to-repo, versioned writing projects, snippet packs,
+Quillins-from-repo. Clearly labeled “advanced” everywhere.</p>
+<p><strong>Phase 6 — QUILL Cloud / Companion.</strong> Account layer,
+device registry push, phone web companion, encrypted recovery, “send to
+my other device” — inside the QUILL Companion program, and only with the
+Phase B reason list actually in front of us.</p>
+<h2 id="repo-invariants-this-work-must-honor">16. Repo invariants this
+work must honor</h2>
+<ul>
+<li><code>quill/core/sync</code> is wx-free and joins the strict mypy
+scope.</li>
+<li>New modules stay under the 600-line default budget; no main_frame
+growth beyond thin command/dialog wiring (a mixin, not
+main_frame.py).</li>
+<li>All UI through <code>_show_modal_dialog</code> and the dialog
+contract; new dialogs enter the dialog inventory.</li>
+<li>Every outbound call in the egress audit; consent before first
+network use.</li>
+<li>Feature-flagged (<code>future.sync</code> pattern) until Phase 2 is
+judged stable; fully absent in Safe Mode.</li>
+<li>Settings additions go through <code>settings.py</code> +
+<code>settings_specs.py</code> with speakable descriptions; new sounds
+are real SoundEvents; new strings are in the i18n catalog; new commands
+are keymap-assignable.</li>
+</ul>
+<h2 id="risk-register">17. Risk register</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Likelihood</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Google OAuth verification delays Phase 4</td>
+<td>High</td>
+<td>File verification at Phase 2 time; Drive is deliberately not the
+first provider</td>
+</tr>
+<tr>
+<td>Tenant admins block OneDrive consent at work</td>
+<td>Medium</td>
+<td>Honest failure message + local-folder fallback is always
+present</td>
+</tr>
+<tr>
+<td>Sync bugs erode the trust the product is about</td>
+<td>Medium</td>
+<td>Local-first design, restore points, drills as exit criteria,
+Tier-1-before-documents sequencing</td>
+</tr>
+<tr>
+<td>E2E encryption recovery confuses users</td>
+<td>Medium</td>
+<td>Ship later, behind its own phase gate, only with a passing
+screen-reader script</td>
+</tr>
+<tr>
+<td>Scope creep toward “full Dropbox replacement”</td>
+<td>Medium</td>
+<td>Tier boundaries in this doc; workspaces wait a full release
+cycle</td>
+</tr>
+<tr>
+<td>Version store disk growth</td>
+<td>Low</td>
+<td>Retention policy with size cap + one plain-language setting</td>
+</tr>
+<tr>
+<td>Provider API/ToS changes</td>
+<td>Low</td>
+<td>Thin raw-REST adapters are small to update; contract tests catch
+drift</td>
+</tr>
+</tbody>
+</table>
+<h2 id="success-criteria">18. Success criteria</h2>
+<ul>
+<li>A blind user sets up sync on a second machine, alone, in under five
+minutes, and can state afterward what synced, where it lives, and how to
+turn it off — in their own words.</li>
+<li>Zero classes of silent data loss in the drill suite, every
+release.</li>
+<li>A conflict is something users resolve in QUILL in under a minute,
+not something they fear. The support question changes from “what
+happened to my file?” to “which version do I want?” — asked <em>by the
+product, out loud.</em></li>
+</ul>
+</body>
+</html>

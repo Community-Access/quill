@@ -48,6 +48,7 @@ class _Wx:
 def _dialog(wx: _Wx) -> AssistantConnectionDialog:
     dialog = AssistantConnectionDialog.__new__(AssistantConnectionDialog)
     dialog._wx = wx
+    dialog.dialog = None  # parent window; not needed in unit tests
     dialog.verify_button = _Button()
     dialog.connection_status = _Label()
     dialog.api_key = _Field()
@@ -60,24 +61,30 @@ def test_verify_runs_off_the_ui_thread(monkeypatch) -> None:
     dialog = _dialog(wx)
 
     worker_threads: list[str] = []
+    message_calls: list[tuple[str, str, int, object]] = []
 
     def fake_verify(_settings, _key):
         worker_threads.append(threading.current_thread().name)
         return True, "Connection verified. Found 3 models."
 
+    def fake_show_message_box(msg, caption, style, parent=None, *, announce=None):
+        message_calls.append((msg, caption, style, parent))
+        return 0
+
     monkeypatch.setattr(assistant_tools, "verify_assistant_connection", fake_verify)
+    monkeypatch.setattr(assistant_tools, "show_message_box", fake_show_message_box)
 
     main_thread = threading.current_thread().name
     dialog._on_verify_connection(object())
 
     # Give the worker thread a moment to finish (CallAfter runs inline here).
     for _ in range(100):
-        if wx.message_calls:
+        if message_calls:
             break
         threading.Event().wait(0.01)
 
     assert worker_threads and worker_threads[0] != main_thread
-    assert wx.message_calls
+    assert message_calls
     assert dialog.verify_button.enabled is True
     assert "verified" in dialog.connection_status.text.lower()
 
@@ -94,7 +101,12 @@ def test_verify_disables_button_and_shows_progress(monkeypatch) -> None:
         release.wait(1.0)
         return False, "Could not reach the AI endpoint."
 
+    def fake_show_message_box(msg, caption, style, parent=None, *, announce=None):
+        wx.message_calls.append((msg, caption, style))
+        return 0
+
     monkeypatch.setattr(assistant_tools, "verify_assistant_connection", fake_verify)
+    monkeypatch.setattr(assistant_tools, "show_message_box", fake_show_message_box)
 
     dialog._on_verify_connection(object())
     started.wait(1.0)

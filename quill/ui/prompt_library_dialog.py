@@ -11,12 +11,17 @@ with the response.
 from __future__ import annotations
 
 import threading
+from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 import wx
 
 from quill.core.prompt_library import CATEGORIES, Prompt, PromptLibrary
-from quill.ui.dialog_contract import show_message_box
+from quill.ui.dialog_contract import (
+    apply_listbox_activation,
+    apply_modal_ids,
+    show_message_box,
+)
 
 if TYPE_CHECKING:
     from quill.core.settings import Settings
@@ -33,6 +38,8 @@ class PromptLibraryDialog:
         selection: str = "",
         document: str = "",
         title: str = "",
+        *,
+        announce_cb: Callable[[str], None] | None = None,
     ) -> None:
         self._lib = library
         self._settings = settings
@@ -40,6 +47,7 @@ class PromptLibraryDialog:
         self._document = document
         self._doc_title = title
         self._running = False
+        self._announce = announce_cb or (lambda _: None)
 
         self.dialog = wx.Dialog(
             parent,
@@ -66,8 +74,13 @@ class PromptLibraryDialog:
         # -- Right: prompt text preview --
         right = wx.BoxSizer(wx.VERTICAL)
         right.Add(wx.StaticText(self.dialog, label="Prompt &text:"), 0, wx.BOTTOM, 2)
+        # TE_WORDWRAP, not TE_RICH2: a read-only RichEdit (TE_RICH2) control
+        # makes JAWS read character-by-character instead of line-by-line when
+        # arrowing through the preview. The preview only shows plain text, so
+        # the plain multiline EDIT control (which JAWS navigates correctly) is
+        # the right choice and matches the other read-only previews in the app.
         self._preview = wx.TextCtrl(
-            self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2
+            self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
         )
         self._preview.SetName("Prompt text preview")
         right.Add(self._preview, 1, wx.EXPAND)
@@ -117,8 +130,6 @@ class PromptLibraryDialog:
         self.dialog.SetSizer(root)
         self.dialog.Layout()
 
-        from quill.ui.dialog_contract import apply_modal_ids
-
         apply_modal_ids(
             self.dialog,
             affirmative_id=wx.ID_CANCEL,
@@ -128,7 +139,7 @@ class PromptLibraryDialog:
 
         self._search.Bind(wx.EVT_TEXT, self._on_search_changed)
         self._listbox.Bind(wx.EVT_LISTBOX, self._on_selection_changed)
-        self._listbox.Bind(wx.EVT_LISTBOX_DCLICK, self._on_run)
+        apply_listbox_activation(self._listbox, self._on_run)
         self._btn_run.Bind(wx.EVT_BUTTON, self._on_run)
         self._btn_new.Bind(wx.EVT_BUTTON, self._on_new)
         self._btn_edit.Bind(wx.EVT_BUTTON, self._on_edit)
@@ -142,6 +153,11 @@ class PromptLibraryDialog:
         self._search.SetFocus()
         self._check_ai_configured()
 
+    def _set_status(self, msg: str) -> None:
+        self._status.SetLabel(msg)
+        if msg:
+            self._announce(msg)
+
     def _check_ai_configured(self) -> None:
         model_id = (
             getattr(self._settings, "ai_prompt_default_model", "")
@@ -149,7 +165,7 @@ class PromptLibraryDialog:
             or ""
         )
         if not model_id:
-            self._status.SetLabel(
+            self._set_status(
                 "No AI model configured. Open Preferences > AI to set a provider and model."
             )
 
@@ -222,6 +238,7 @@ class PromptLibraryDialog:
                 "No Input Text",
                 wx.OK | wx.ICON_INFORMATION,
                 self.dialog,
+                announce=self._announce,
             )
             self._input.SetFocus()
             return
@@ -233,6 +250,7 @@ class PromptLibraryDialog:
                 "No Model",
                 wx.OK | wx.ICON_INFORMATION,
                 self.dialog,
+                announce=self._announce,
             )
             return
         prompt_text = (
@@ -243,7 +261,7 @@ class PromptLibraryDialog:
         )
         self._running = True
         self._update_buttons()
-        self._status.SetLabel(f"Sending to {model_id}...")
+        self._set_status(f"Sending to {model_id}...")
         self.dialog.Layout()
 
         def run() -> None:
@@ -263,7 +281,7 @@ class PromptLibraryDialog:
 
     def _on_result(self, result: str, model_id: str, provider_id: str) -> None:
         self._running = False
-        self._status.SetLabel("")
+        self._set_status("")
         self._update_buttons()
         from quill.ui.ai_chat_dialog import AIResponseDialog
 
@@ -273,13 +291,14 @@ class PromptLibraryDialog:
 
     def _on_run_error(self, message: str) -> None:
         self._running = False
-        self._status.SetLabel("")
+        self._set_status("")
         self._update_buttons()
         show_message_box(
             f"AI request failed: {message}",
             "Prompt Run Failed",
             wx.OK | wx.ICON_ERROR,
             self.dialog,
+            announce=self._announce,
         )
 
     def _on_new(self, _event: object) -> None:
@@ -326,9 +345,9 @@ class PromptLibraryDialog:
             "Delete Prompt",
             wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING,
         )
-        from quill.ui.dialog_contract import apply_modal_ids
-
-        apply_modal_ids(confirm, affirmative_id=wx.ID_YES, escape_id=wx.ID_NO)  # noqa: dialog_button_contract
+        apply_modal_ids(  # dialog_button_contract: exempt
+            confirm, affirmative_id=wx.ID_YES, escape_id=wx.ID_NO
+        )
         try:
             ok = confirm.ShowModal() == wx.ID_YES
         finally:
@@ -357,12 +376,19 @@ class PromptLibraryDialog:
                 "Import Error",
                 wx.OK | wx.ICON_ERROR,
                 self.dialog,
+                announce=self._announce,
             )
             return
         self._rebuild_list()
         msg = f"Imported {len(added)} prompt(s)." if added else "No new prompts to import."
         self._listbox.SetName(f"Prompt list — {msg}")
-        show_message_box(msg, "Import Complete", wx.OK | wx.ICON_INFORMATION, self.dialog)
+        show_message_box(
+            msg,
+            "Import Complete",
+            wx.OK | wx.ICON_INFORMATION,
+            self.dialog,
+            announce=self._announce,
+        )
 
     def _on_export(self, _event: object) -> None:
         with wx.FileDialog(
@@ -385,6 +411,7 @@ class PromptLibraryDialog:
                 "Export Error",
                 wx.OK | wx.ICON_ERROR,
                 self.dialog,
+                announce=self._announce,
             )
             return
         show_message_box(
@@ -392,6 +419,7 @@ class PromptLibraryDialog:
             "Export Complete",
             wx.OK | wx.ICON_INFORMATION,
             self.dialog,
+            announce=self._announce,
         )
 
 
@@ -452,8 +480,6 @@ class _PromptEditDialog:
         root.Add(btn_sizer, 0, wx.EXPAND | wx.ALL, 8)
 
         self.dialog.SetSizer(root)
-
-        from quill.ui.dialog_contract import apply_modal_ids
 
         apply_modal_ids(
             self.dialog,

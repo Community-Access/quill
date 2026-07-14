@@ -1,0 +1,4 @@
+# Development/test-only dependencies. Never installed in production.
+-r requirements.txt
+pytest>=8.0
+fakeredis>=2.23   # in-memory Redis stand-in for tests -- see tests/conftest.py

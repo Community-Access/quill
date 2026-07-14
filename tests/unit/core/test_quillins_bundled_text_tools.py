@@ -134,7 +134,7 @@ def test_insert_tools_manifest_is_capability_free_layer_one() -> None:
     assert not manifest.is_layer_two
     registry = build_registry([manifest])
     assert registry.conflicts == ()
-    assert {menu.parent for menu in registry.menus} == {"Insert"}
+    assert {menu.parent for menu in registry.menus} == {"Date and Time"}
 
 
 def test_insert_tools_snippets_expand() -> None:
@@ -200,6 +200,9 @@ class _FakeCtx:
 
     def announce(self, message: str) -> None:
         self.announced.append(message)
+
+    def is_verbosity_speech_enabled(self) -> bool:
+        return True
 
 
 def _register_text_tools() -> _FakeApi:

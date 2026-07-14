@@ -2,24 +2,32 @@ import re
 from pathlib import Path
 
 from quill.core.format_ops import (
+    compute_line_statistics,
     continue_markdown_list,
     convert_indentation_to_spaces,
     convert_indentation_to_tabs,
+    count_occurrences,
     decode_html_entities,
     delete_lines_containing,
     delete_lines_not_containing,
+    describe_indent_depth,
     encode_html_entities,
+    hex_dump,
     indent_lines,
+    multi_replace,
     normalize_whitespace,
     outdent_lines,
     quote_lines,
     remove_duplicate_lines,
+    remove_email_quote_markers,
     reverse_lines,
     shuffle_lines,
     sort_lines,
     sort_lines_by_length,
     sort_lines_numeric,
+    strip_high_ascii,
     strip_html_tags,
+    strip_low_ascii,
     toggle_block_comment,
     toggle_line_comment,
     trim_blank_lines,
@@ -49,6 +57,22 @@ def test_toggle_line_comment_prefix_style() -> None:
 def test_toggle_line_comment_prefix_style_on_blank_line() -> None:
     commented, _, _ = toggle_line_comment("", 0, 0, Path("script.py"))
     assert commented == "# "
+
+
+def test_toggle_comment_honors_pinned_profile_over_path() -> None:
+    # A .txt file pinned to HTML/Python comments per the profile, not the name.
+    from quill.core.language_profile import get_profile_by_name
+
+    html = get_profile_by_name("HTML")
+    python = get_profile_by_name("Python")
+    text = "hello"
+    html_line, _, _ = toggle_line_comment(text, 0, len(text), Path("note.txt"), html)
+    assert html_line == "<!-- hello -->"
+    py_line, _, _ = toggle_line_comment(text, 0, len(text), Path("note.txt"), python)
+    assert py_line == "# hello"
+    # Block comment likewise follows the profile.
+    wrapped, _, _ = toggle_block_comment("alpha", 0, 5, Path("note.txt"), html)
+    assert wrapped.startswith("<!--") and wrapped.endswith("-->")
 
 
 def test_toggle_line_comment_html_style() -> None:
@@ -259,3 +283,120 @@ def test_delete_lines_not_containing_case_insensitive() -> None:
     result = delete_lines_not_containing("Alpha\nbeta", "alpha", case_sensitive=False)
     assert "Alpha" in result
     assert "beta" not in result
+
+
+def test_remove_email_quote_markers_strips_leading_chevrons() -> None:
+    text = "> quoted line\n>> double quoted\nplain line"
+    result = remove_email_quote_markers(text)
+    assert result == "quoted line\ndouble quoted\nplain line"
+
+
+def test_remove_email_quote_markers_strips_name_prefix() -> None:
+    text = "Joe> said hello"
+    assert remove_email_quote_markers(text) == "said hello"
+
+
+def test_strip_low_ascii_removes_control_chars_keeps_tab_and_newline() -> None:
+    text = "a\x07b\tc\nd"
+    assert strip_low_ascii(text) == "ab\tc\nd"
+
+
+def test_strip_high_ascii_keeps_plain_ascii_only() -> None:
+    assert strip_high_ascii("café 中 plain") == "caf  plain"
+
+
+def test_hex_dump_formats_offset_hex_and_ascii() -> None:
+    result = hex_dump("AB")
+    assert result.startswith("00000000  ")
+    assert "41 42" in result
+    assert result.endswith("AB")
+
+
+def test_hex_dump_wraps_at_bytes_per_line() -> None:
+    result = hex_dump("A" * 17)
+    lines = result.splitlines()
+    assert len(lines) == 2
+    assert lines[1].startswith("00000010")
+
+
+def test_multi_replace_applies_pairs_in_order() -> None:
+    result = multi_replace("a b c", [("a", "1"), ("b", "2"), ("c", "3")])
+    assert result == "1 2 3"
+
+
+def test_multi_replace_skips_empty_search() -> None:
+    assert multi_replace("hello world", [("", "x"), ("world", "there")]) == "hello there"
+
+
+def test_multi_replace_case_insensitive() -> None:
+    result = multi_replace("Hello HELLO", [("hello", "hi")], case_sensitive=False)
+    assert result == "hi hi"
+
+
+def test_multi_replace_case_sensitive_default() -> None:
+    result = multi_replace("Hello hello", [("hello", "hi")])
+    assert result == "Hello hi"
+
+
+def test_count_occurrences_basic() -> None:
+    assert count_occurrences("ababab", "ab") == 3
+
+
+def test_count_occurrences_empty_needle() -> None:
+    assert count_occurrences("text", "") == 0
+
+
+def test_count_occurrences_case_insensitive() -> None:
+    assert count_occurrences("Cat cat CAT", "cat", case_sensitive=False) == 3
+
+
+def test_compute_line_statistics_no_numbers() -> None:
+    assert compute_line_statistics("hello\nworld") == "No numeric lines were found."
+
+
+def test_compute_line_statistics_reports_values() -> None:
+    report = compute_line_statistics("1\n2\n3\n4\n5")
+    assert "Numeric lines: 5" in report
+    assert "Total: 15" in report
+    assert "Average: 3" in report
+    assert "Median: 3" in report
+    assert "Standard deviation" in report
+
+
+def test_compute_line_statistics_single_value_skips_stdev() -> None:
+    report = compute_line_statistics("42")
+    assert "Standard deviation: not enough data" in report
+
+
+def test_describe_indent_depth_spaces() -> None:
+    # Caret on the second line, which has four leading spaces.
+    text = "top\n    body"
+    assert describe_indent_depth(text, len(text)) == "4 spaces"
+
+
+def test_describe_indent_depth_single_space_is_singular() -> None:
+    assert describe_indent_depth(" x", 2) == "1 space"
+
+
+def test_describe_indent_depth_tabs() -> None:
+    assert describe_indent_depth("\t\tx", 3) == "2 tabs"
+    assert describe_indent_depth("\tx", 2) == "1 tab"
+
+
+def test_describe_indent_depth_none() -> None:
+    assert describe_indent_depth("flush", 5) == "No indentation"
+
+
+def test_describe_indent_depth_mixed_tabs_and_spaces() -> None:
+    assert describe_indent_depth("\t  x", 4) == "1 tab, 2 spaces"
+
+
+def test_describe_indent_depth_is_line_local() -> None:
+    # The depth describes the caret's line only, not earlier lines.
+    text = "        deep\nb"
+    assert describe_indent_depth(text, len(text)) == "No indentation"
+
+
+def test_describe_indent_depth_clamps_out_of_range_caret() -> None:
+    assert describe_indent_depth("    x", 999) == "4 spaces"
+    assert describe_indent_depth("    x", -5) == "4 spaces"

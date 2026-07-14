@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>publishing-framework-design-record</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">publishing-framework-design-record</h1>
+</header>
+<h1
+id="publishing-providers-framework-consolidated-design-record">Publishing
+Providers Framework — Consolidated Design Record</h1>
+<p>The dated design and checkpoint notes for QUILL’s provider-aware
+publishing feature, merged into one chronological record (2026-07-05).
+Each section below is a formerly standalone document, preserved verbatim
+with its headings demoted one level; the original files are in git
+history under this folder.</p>
+<p>The feature remains <strong>locked off</strong> behind
+<code>future.publishing</code> (<code>locked_off=True</code>); see <a
+href="README.md">README.md</a> for the current gate state.</p>
+<p>Contents:</p>
+<ul>
+<li><a
+href="#publishing--remote-integration-planning-2026-06-10">Remote-integration
+planning (2026-06-10)</a></li>
+<li><a href="#publishing-follow-up-phases-2026-06-19">Follow-up phases
+(2026-06-19)</a></li>
+<li><a
+href="#bundled-publishing-provider-adapter-contract-2026-06-19">Bundled
+provider adapter contract (2026-06-19)</a></li>
+<li><a
+href="#publishing-providers-framework-current-plan-state-2026-06-19-through-2026-06-21">Framework
+current plan state (2026-06-19 through 2026-06-21)</a></li>
+<li><a
+href="#publishing-profile-restriction-writer-and-above--scoping-plan-2026-06-22">Profile
+restriction, “writer and above” (2026-06-22)</a></li>
+</ul>
+<hr />
+<h2 id="publishing-remote-integration-planning-2026-06-10">Publishing /
+Remote Integration Planning (2026-06-10)</h2>
+<p>Timestamp: <code>2026-06-10 17:24:40 -04:00</code></p>
+<p>Purpose:</p>
+<ul>
+<li>planning-only note</li>
+<li>no code changes proposed in this note</li>
+<li>evaluates how much of the publishing framework could be rolled into
+the newer remote-site infrastructure from current <code>main</code></li>
+</ul>
+<h3 id="short-answer">Short Answer</h3>
+<p>Some of it can and probably should be aligned later, but not all of
+it should be merged.</p>
+<p>Best planning direction:</p>
+<ul>
+<li>share storage and transport concepts where they are genuinely the
+same</li>
+<li>keep publishing-specific content workflows separate where the
+product semantics are different</li>
+</ul>
+<p>In other words:</p>
+<ul>
+<li>unify lower-level remote profile and credential patterns
+carefully</li>
+<li>do not collapse publishing into generic file-transfer UX</li>
+</ul>
+<h3 id="what-the-new-remote-infrastructure-already-gives-us">What The
+New Remote Infrastructure Already Gives Us</h3>
+<p>Current <code>main</code> now has a real remote-site stack for:</p>
+<ul>
+<li>FTP</li>
+<li>SFTP</li>
+<li>WebDAV</li>
+<li>S3</li>
+<li>generic “open from remote” / “save to remote” flows</li>
+</ul>
+<p>That stack already includes:</p>
+<ul>
+<li>a saved remote-site profile model in
+<code>quill/core/remote_sites.py</code></li>
+<li>password persistence patterns</li>
+<li>a governed remote-sites dialog in
+<code>quill/ui/remote_sites_dialog.py</code></li>
+<li><code>File</code> menu integration in
+<code>quill/ui/main_frame_menu.py</code></li>
+<li>remote open/save shell wiring in
+<code>quill/ui/main_frame.py</code></li>
+</ul>
+<p>This means the repo now has a broader “remote destination” concept
+than when the publishing plan was first drafted.</p>
+<h3 id="where-publishing-and-remote-sites-truly-overlap">Where
+Publishing And Remote Sites Truly Overlap</h3>
+<p>These parts overlap enough that future alignment is worth
+planning:</p>
+<h4 id="saved-remote-destination-pattern">1. Saved Remote Destination
+Pattern</h4>
+<p>Both systems need:</p>
+<ul>
+<li>named saved profiles</li>
+<li>a current/last-used selection model</li>
+<li>secure credential storage</li>
+<li>endpoint-specific metadata</li>
+<li>explicit user-driven network actions</li>
+</ul>
+<p>Planning takeaway:</p>
+<ul>
+<li>publishing connections and remote sites are both variants of a saved
+remote destination</li>
+<li>they do not need to stay totally unrelated forever</li>
+</ul>
+<h4 id="credential-persistence-strategy">2. Credential Persistence
+Strategy</h4>
+<p>Both systems already use the same broad trust model:</p>
+<ul>
+<li>secure persistence</li>
+<li>no plaintext credentials</li>
+<li>explicit user action before network use</li>
+</ul>
+<p>Planning takeaway:</p>
+<ul>
+<li>we should eventually standardize the credential-storage facade,
+naming, and lifecycle expectations</li>
+<li>this is a strong candidate for shared infrastructure</li>
+</ul>
+<h4 id="file-menu-placement-and-dialog-rhythm">3. File Menu Placement
+And Dialog Rhythm</h4>
+<p>Both systems live under <code>File</code> and follow a similar
+high-level rhythm:</p>
+<ul>
+<li>choose remote destination</li>
+<li>verify or browse</li>
+<li>act explicitly</li>
+</ul>
+<p>Planning takeaway:</p>
+<ul>
+<li>the shell can probably grow toward a more coherent “Remote” mental
+model without changing the underlying publishing semantics</li>
+</ul>
+<h3 id="where-publishing-and-remote-sites-should-stay-separate">Where
+Publishing And Remote Sites Should Stay Separate</h3>
+<p>This is the important part.</p>
+<h4 id="publishing-is-not-file-transfer">1. Publishing Is Not File
+Transfer</h4>
+<p>Remote Sites is fundamentally about files and paths:</p>
+<ul>
+<li>host</li>
+<li>directory</li>
+<li>remote file path</li>
+<li>transport protocol</li>
+</ul>
+<p>Publishing is fundamentally about content objects:</p>
+<ul>
+<li>post</li>
+<li>page</li>
+<li>remote content id</li>
+<li>authoring surface</li>
+<li>publish/update semantics</li>
+<li>site API behavior</li>
+</ul>
+<p>Planning takeaway:</p>
+<ul>
+<li>publishing should not be rewritten as “just another remote file
+transport”</li>
+<li>a WordPress post is not analogous to an SFTP path in the user’s
+mental model or in the code’s behavior</li>
+</ul>
+<h4 id="publishing-needs-content-aware-metadata">2. Publishing Needs
+Content-Aware Metadata</h4>
+<p>Publishing already depends on content-specific truth:</p>
+<ul>
+<li>content kind</li>
+<li>remote id</li>
+<li>remote URL</li>
+<li>publishing status</li>
+<li>chosen authoring surface</li>
+<li>open representation</li>
+</ul>
+<p>Remote Sites does not own those concepts.</p>
+<p>Planning takeaway:</p>
+<ul>
+<li>publishing must continue to own its content identity and
+representation metadata</li>
+<li>collapsing this into generic remote-site metadata would likely make
+the design less honest and harder to maintain</li>
+</ul>
+<h4 id="publishing-uses-provider-logic-not-just-transport-logic">3.
+Publishing Uses Provider Logic, Not Just Transport Logic</h4>
+<p>Remote Sites is transport-oriented. Publishing is
+provider-oriented.</p>
+<p>That difference matters because publishing needs:</p>
+<ul>
+<li>provider-specific browse logic</li>
+<li>provider-specific content-kind support</li>
+<li>provider-specific create/update workflows</li>
+<li>provider-specific API contracts</li>
+</ul>
+<p>Planning takeaway:</p>
+<ul>
+<li>the existing provider/client seam in publishing is still the right
+architectural center</li>
+<li>remote sites should not replace that seam</li>
+</ul>
+<h3 id="my-recommendation">My Recommendation</h3>
+<p>I would not merge publishing directly into the current Remote Sites
+feature.</p>
+<p>I would plan a phased alignment instead.</p>
+<h3 id="recommended-alignment-plan">Recommended Alignment Plan</h3>
+<h4 id="phase-a-keep-product-flows-separate">Phase A: Keep Product Flows
+Separate</h4>
+<p>For now:</p>
+<ul>
+<li>keep <code>File &gt; Publish</code> as its own content workflow</li>
+<li>keep <code>Open from Remote</code> / <code>Save to Remote</code> as
+file-transfer workflows</li>
+<li>keep publishing dialogs and remote-sites dialogs separate</li>
+</ul>
+<p>Reason:</p>
+<ul>
+<li>they solve different user jobs</li>
+<li>forcing a single UI too early would create confusion and probably
+regress accessibility clarity</li>
+</ul>
+<h4
+id="phase-b-introduce-a-shared-remote-destination-concept-under-the-hood">Phase
+B: Introduce A Shared “Remote Destination” Concept Under The Hood</h4>
+<p>Later, if we want less duplication:</p>
+<ul>
+<li>define a shared lower-level remote destination/storage
+abstraction</li>
+<li>let both publishing connections and remote sites build on it</li>
+</ul>
+<p>That shared layer could eventually cover:</p>
+<ul>
+<li>id / label / endpoint basics</li>
+<li>secret persistence helpers</li>
+<li>current-selection storage</li>
+<li>maybe some normalized trust/network metadata</li>
+</ul>
+<p>But it should not own:</p>
+<ul>
+<li>publishing content kinds</li>
+<li>publishing authoring-surface rules</li>
+<li>browse/update/publish semantics</li>
+<li>remote file browser semantics</li>
+</ul>
+<h4 id="phase-c-consider-a-shell-level-discoverability-cleanup">Phase C:
+Consider A Shell-Level Discoverability Cleanup</h4>
+<p>Once both systems are more mature:</p>
+<ul>
+<li>we could revisit the <code>File</code> menu wording and
+grouping</li>
+<li>maybe shape a clearer “Remote” cluster</li>
+</ul>
+<p>Example future direction:</p>
+<ul>
+<li>file transfer actions remain path/file oriented</li>
+<li>publishing actions remain content/site oriented</li>
+<li>both live near each other without pretending they are the same
+thing</li>
+</ul>
+<h3 id="what-feels-safe-to-reuse-later">What Feels Safe To Reuse
+Later</h3>
+<p>These are the pieces I think are safest to fold together over
+time:</p>
+<ul>
+<li>saved-profile persistence conventions</li>
+<li>secret storage helpers</li>
+<li>current-selection / last-used selection behavior</li>
+<li>some dialog structural patterns</li>
+<li>some network/trust validation helpers where semantics truly
+match</li>
+</ul>
+<h3 id="what-i-would-not-reuse-blindly">What I Would Not Reuse
+Blindly</h3>
+<p>These should stay publishing-owned unless a later design proves
+otherwise:</p>
+<ul>
+<li>provider registry</li>
+<li>publishing client seam</li>
+<li>browse published content UX</li>
+<li>remote content identity metadata</li>
+<li>authoring-surface / representation logic</li>
+<li>update remote content flow</li>
+<li>local linkage registry for publish/update relationships</li>
+</ul>
+<h3 id="overall-judgment">Overall Judgment</h3>
+<p>A moderate amount of future consolidation looks worthwhile.</p>
+<p>But the right consolidation target is:</p>
+<ul>
+<li>shared remote-destination infrastructure</li>
+</ul>
+<p>not:</p>
+<ul>
+<li>one merged publishing-and-file-transfer feature</li>
+</ul>
+<p>If we over-merge them, we’ll probably make the code less synchronized
+in practice, because we’d be forcing two different product models into
+one abstraction too early.</p>
+<p>If we align them at the storage/trust/credential layer, we get most
+of the maintainability win without losing the publishing model we
+already planned carefully.</p>
+<h3 id="best-next-planning-follow-up">Best Next Planning Follow-Up</h3>
+<p>Before any code:</p>
+<ul>
+<li>inventory exactly which fields overlap between
+<code>PublishingConnectionProfile</code> and
+<code>RemoteSite</code></li>
+<li>separate overlaps into:
+<ul>
+<li>truly shared</li>
+<li>superficially similar but semantically different</li>
+</ul></li>
+<li>decide whether a future shared <code>remote_destinations</code> core
+module would reduce duplication cleanly or just rename it</li>
+</ul>
+<p>That would give us a clean answer on whether consolidation is
+actually worth it before we touch the implementation.</p>
+<hr />
+<h2 id="publishing-follow-up-phases-2026-06-19">Publishing Follow-Up
+Phases (2026-06-19)</h2>
+<h3 id="phase-order">2026-06-19 Phase Order</h3>
+<p>The publishing framework readiness checkpoint is complete. The next
+work moves into follow-up phases. These phases should be developed
+deliberately, with local commits and validation after each slice.</p>
+<p>Recommended order:</p>
+<ol type="1">
+<li>WordPress first-party bundled provider package path.</li>
+<li>Schedule publish.</li>
+<li>Local-vs-remote compare and first honest sync model.</li>
+<li>Live third-party publishing provider loading.</li>
+</ol>
+<p>This order keeps the highest security and runtime-risk item, live
+third-party provider loading, last. WordPress extraction can use the
+trusted first-party bundled path as a proving ground before any
+third-party provider loading is exposed.</p>
+<h3 id="phase-1-wordpress-first-party-bundled-provider-package">Phase 1:
+WordPress First-Party Bundled Provider Package</h3>
+<p>Goal:</p>
+<ul>
+<li>Move WordPress toward a first-party bundled provider package or
+adapter while preserving the existing provider/client contract and
+user-facing behavior.</li>
+</ul>
+<p>Initial slices:</p>
+<ul>
+<li>define the bundled-provider adapter contract</li>
+<li>decide whether the first package remains in-process but separately
+registered, or crosses the Quillin worker boundary</li>
+<li>keep host-owned credential storage and explicit network egress
+review</li>
+<li>prove the package passes
+<code>python -m quill.tools.check_publishing_providers</code></li>
+<li>keep all command ids and menus provider-neutral</li>
+</ul>
+<p>Done when:</p>
+<ul>
+<li>WordPress can be represented as a first-party bundled provider
+without shell-specific WordPress assumptions</li>
+<li>the provider registry gate catches missing metadata/client pieces
+before exposure</li>
+<li>existing publishing workflows behave the same from the user’s
+perspective</li>
+</ul>
+<p>Non-goals:</p>
+<ul>
+<li>no third-party provider loading</li>
+<li>no marketplace or auto-discovery of publishing providers</li>
+<li>no rewrite of publishing dialogs just to expose package
+internals</li>
+</ul>
+<h3 id="phase-2-schedule-publish">Phase 2: Schedule Publish</h3>
+<p>Goal:</p>
+<ul>
+<li>Add explicit user-controlled scheduled publishing for supported
+providers.</li>
+</ul>
+<p>Initial slices:</p>
+<ul>
+<li>add provider operation metadata for scheduling if the current
+publish operation is not precise enough</li>
+<li>define scheduled publish data model and validation</li>
+<li>design UI flow with plain-language time/date confirmation</li>
+<li>ensure timezone and date handling are explicit</li>
+<li>add provider-client method or status/date payload strategy as
+needed</li>
+<li>keep scheduled action review-first and never silent</li>
+</ul>
+<p>Done when:</p>
+<ul>
+<li>users can schedule publish for a current or remote publishing
+document only after explicit confirmation</li>
+<li>unsupported providers report capability gaps clearly</li>
+<li>scheduled publish paths have focused unit tests and
+dialog/accessibility coverage</li>
+</ul>
+<p>Non-goals:</p>
+<ul>
+<li>no background CMS polling</li>
+<li>no recurring schedule automation</li>
+<li>no broad calendar/task system</li>
+</ul>
+<h3
+id="phase-3-local-vs-remote-compare-and-first-honest-sync-model">Phase
+3: Local-Vs-Remote Compare And First Honest Sync Model</h3>
+<p>Goal:</p>
+<ul>
+<li>Let users understand whether their local publishing document differs
+from the remote item, without promising automatic bidirectional
+sync.</li>
+</ul>
+<p>Initial slices:</p>
+<ul>
+<li>define remote identity/linkage source of truth</li>
+<li>load current remote state on explicit user request</li>
+<li>compare title, body, status, URL/id, and updated timestamp</li>
+<li>present a readable comparison summary</li>
+<li>decide what conflict states are detectable versus unknown</li>
+<li>keep update/publish actions explicit after comparison</li>
+</ul>
+<p>Done when:</p>
+<ul>
+<li>users can request a clear comparison between local and remote
+publishing content</li>
+<li>Quill reports unknown/stale states honestly</li>
+<li>no automatic overwrite or background sync happens without user
+action</li>
+</ul>
+<p>Non-goals:</p>
+<ul>
+<li>no real-time sync</li>
+<li>no automatic conflict resolution</li>
+<li>no bulk cross-site sync</li>
+</ul>
+<h3 id="phase-4-live-third-party-publishing-provider-loading">Phase 4:
+Live Third-Party Publishing Provider Loading</h3>
+<p>Goal:</p>
+<ul>
+<li>Eventually allow non-core publishing providers to register through
+the same provider/client contract after the runtime, policy, and
+security gates are ready.</li>
+</ul>
+<p>Prerequisites:</p>
+<ul>
+<li>WordPress first-party package path proven</li>
+<li>provider package validation contract complete</li>
+<li>capability and consent flow reviewed for provider network
+operations</li>
+<li>third-party Quillin/security policy explicitly lifted or scoped for
+publishing providers</li>
+<li>conflict handling for provider ids and command contributions</li>
+<li>CI gate prevents invalid providers from surfacing</li>
+</ul>
+<p>Done when:</p>
+<ul>
+<li>a provider can be discovered, validated, consented, and exposed
+without weakening SEC-8 or bypassing host-owned secret/network
+controls</li>
+<li>invalid or conflicting providers are rejected with actionable
+diagnostics</li>
+</ul>
+<p>Non-goals for now:</p>
+<ul>
+<li>do not enable this before the trusted first-party path is
+proven</li>
+<li>do not make publishing provider loading a hidden side effect of
+generic Quillin discovery</li>
+<li>do not allow providers to persist secrets outside host-owned
+storage</li>
+</ul>
+<h3 id="current-recommendation">Current Recommendation</h3>
+<h2
+id="start-with-phase-1-slice-a-define-the-bundled-provider-adapter-contract-in-docs-and-tests-then-implement-only-the-smallest-adapter-seam-needed-to-prove-wordpress-can-be-package-shaped-without-changing-user-visible-publishing-behavior.">Start
+with Phase 1 slice A: define the bundled-provider adapter contract in
+docs and tests, then implement only the smallest adapter seam needed to
+prove WordPress can be package-shaped without changing user-visible
+publishing behavior.</h2>
+<h2 id="bundled-publishing-provider-adapter-contract-2026-06-19">Bundled
+Publishing Provider Adapter Contract (2026-06-19)</h2>
+<h3 id="phase-1-slice-a-decision">Phase 1 Slice A Decision</h3>
+<p>The first trusted bundled-provider path remains in-process. A bundled
+publishing provider contributes one
+<code>BundledPublishingProviderAdapter</code> containing:</p>
+<ul>
+<li>a stable provider id</li>
+<li>its <code>PublishingProviderDefinition</code></li>
+<li>its matching <code>PublishingProviderClient</code></li>
+<li>an explicit network-capability rationale</li>
+<li>the fixed <code>host_owned</code> secret-access policy</li>
+<li>the fixed <code>in_process</code> execution policy</li>
+</ul>
+<p>Registration validates the package shape before changing either
+existing provider registry. Definition, client, and adapter ids must
+match. Missing network rationale, provider-owned secret storage, and
+worker execution are rejected in this slice.</p>
+<p>WordPress now has a package-shaped adapter factory under
+<code>quill.core.publishing_bundled.wordpress</code>. It wraps the same
+in-tree definition and client already used by publishing workflows, so
+registering it through the adapter preserves object identity and
+user-visible behavior.</p>
+<h3 id="deliberate-boundaries">Deliberate Boundaries</h3>
+<ul>
+<li>no package scanning or auto-discovery</li>
+<li>no live third-party provider loading</li>
+<li>no Quillin worker boundary yet</li>
+<li>no provider-owned credential persistence</li>
+<li>no new network action or consent surface</li>
+<li>no shell, command, menu, or dialog change</li>
+<li>no schedule-publish or compare/sync work</li>
+</ul>
+<p>The existing provider registry gate remains authoritative after
+adapter registration. Focused tests prove WordPress passes that gate in
+package shape and malformed adapters are rejected before registry
+exposure.</p>
+<h3 id="startup-bootstrap-decision---2026-06-20">Startup Bootstrap
+Decision - 2026-06-20</h3>
+<p>Normal application startup explicitly calls
+<code>bootstrap_bundled_publishing_providers()</code> before importing
+the UI. WordPress is registered through
+<code>wordpress_bundled_provider_adapter()</code> on this path. Repeated
+bootstrap replaces only the adapter record; the existing provider
+definition and client objects retain identity.</p>
+<p>This decision does not add package scanning, third-party loading,
+worker execution, credential access, or network activity. Those
+boundaries remain unchanged.</p>
+<p>Every future adapter/bootstrap slice must run focused publishing
+tests, relevant unit tests, Ruff, the provider registry gate, and the
+full unit suite with workspace-local temporary state.</p>
+<h3 id="phase-1-contract-finalized---2026-06-20">Phase 1 Contract
+Finalized - 2026-06-20</h3>
+<h2
+id="the-closeout-audit-accepts-this-bundled-adapter-contract-as-the-completed-phase-1-foundation.-later-phases-may-extend-execution-and-loading-policy-only-in-separate-reviewed-slices-they-must-not-silently-weaken-identity-validation-host-owned-secret-handling-explicit-network-action-or-validation-before-exposure.">The
+closeout audit accepts this bundled-adapter contract as the completed
+Phase 1 foundation. Later phases may extend execution and loading policy
+only in separate reviewed slices; they must not silently weaken identity
+validation, host-owned secret handling, explicit network action, or
+validation-before-exposure.</h2>
+<h2
+id="publishing-providers-framework-current-plan-state-2026-06-19-through-2026-06-21">Publishing
+Providers Framework Current Plan State (2026-06-19 through
+2026-06-21)</h2>
+<h3 id="phase-1-slice-a-complete">Phase 1 Slice A Complete</h3>
+<p>This checkpoint supplements
+<code>publishing-providers-framework.md</code> with the latest
+implemented state.</p>
+<p>Implemented:</p>
+<ul>
+<li><code>BundledPublishingProviderAdapter</code> pairs a stable
+provider id, provider definition, and matching provider client.</li>
+<li>Registration rejects mismatched ids before changing either existing
+registry.</li>
+<li>Trusted bundled adapters require a network-capability
+rationale.</li>
+<li>Secret access is fixed to host-owned storage.</li>
+<li>Execution is fixed to the trusted in-process path for this
+phase.</li>
+<li><code>quill.core.publishing_bundled.wordpress</code> represents
+WordPress using the same definition and client objects already used by
+publishing workflows.</li>
+</ul>
+<p>Validation:</p>
+<ul>
+<li>focused adapter, publishing, and provider-gate tests:
+<code>34 passed in 0.69s</code></li>
+<li>Ruff: passed</li>
+<li>provider registry gate: passed</li>
+</ul>
+<p>Recommended next Phase 1 slice:</p>
+<ul>
+<li>decide whether normal app bootstrap should register WordPress
+through the bundled adapter</li>
+<li>preserve current provider/client behavior and all user-visible
+workflows</li>
+<li>rerun focused publishing tests and the provider registry gate</li>
+</ul>
+<p>Do not begin schedule publish, compare/sync, worker execution, or
+live third-party provider loading without explicit approval.</p>
+<h3 id="phase-1-slice-b-complete---2026-06-20">Phase 1 Slice B Complete
+- 2026-06-20</h3>
+<p>Decision: WordPress should bootstrap through the trusted bundled
+adapter during normal application startup.</p>
+<p>Implemented:</p>
+<ul>
+<li>explicit first-party bootstrap in
+<code>quill.core.publishing_bundled</code></li>
+<li>bootstrap call at the application entry point before UI import</li>
+<li>repeat-safe registration preserving existing provider-definition and
+client identity</li>
+<li>no change to credentials, network behavior, commands, menus,
+dialogs, or user-visible publishing behavior</li>
+</ul>
+<p>Required validation for every next slice: focused publishing tests,
+slice-specific unit tests, Ruff, provider registry gate, and the
+complete unit suite using a workspace-local temp root. Record any
+non-slice baseline failures instead of silently omitting the full
+run.</p>
+<p>Phase 1 remains active. The prohibited later-phase work remains out
+of scope.</p>
+<h3 id="phase-1-closed---2026-06-20">Phase 1 Closed - 2026-06-20</h3>
+<p>The closeout audit found no remaining acceptance gap in the WordPress
+first-party bundled-provider path. Phase 1 is complete. Focused closeout
+validation passed with <code>77 passed</code>, Ruff, the module-size
+gate, and the provider registry gate.</p>
+<p>The user explicitly approved schedule publishing, local-versus-remote
+compare/sync, Quillin worker execution, and live third-party provider
+loading to become unblocked after this audit. Continue with schedule
+publishing as the next separately reviewable roadmap phase.
+Authorization does not waive SEC-8, consent, accessibility, validation,
+or testing requirements.</p>
+<h3 id="schedule-publishing-complete---2026-06-21">Schedule Publishing
+Complete - 2026-06-21</h3>
+<p>Implemented as the smallest coherent slice: one new
+<code>schedule</code> provider operation, a timezone-aware
+<code>validate_scheduled_publish_time</code> model, an optional
+<code>scheduled_at</code> parameter on the existing
+<code>create_publishing_remote_item</code>/<code>update_publishing_remote_item</code>
+functions (no new top-level action function), WordPress
+<code>status="future"</code> + UTC <code>date_gmt</code> behavior with
+round-tripped <code>scheduled_for</code>, and one accessible
+<code>SchedulePublishDialog</code> plus one command/menu entry covering
+both new-document and already-open-remote-item scheduling.</p>
+<p>Validation: core focused battery <code>61 passed</code>; combined
+publishing/accessibility/governance battery <code>153 passed</code>;
+Ruff and the provider registry gate passed; full unit suite
+<code>4074 passed, 66 failed, 14 skipped</code>, the 66 failures
+matching the pre-existing baseline exactly with no new failures.</p>
+<p>Next roadmap phase: local-versus-remote compare and the first honest
+sync model.</p>
+<h3 id="compare-with-remote-complete---2026-06-21">Compare With Remote
+Complete - 2026-06-21</h3>
+<p>Implemented as the smallest coherent slice:
+<code>build_publishing_comparison</code> (pure diff model),
+<code>compare_publishing_remote_item</code> (reuses
+<code>load_publishing_remote_item</code>/<code>PUBLISHING_OPERATION_LOAD</code>,
+no new provider operation or client method),
+<code>publishing_comparison_message</code>, and one command/menu entry
+reporting through the existing native message-box pattern (no new dialog
+surface). Cross-session linkage persistence (a durable local registry so
+compare/update still works after closing and reopening a locally-saved
+publishing document) was explicitly deferred —
+<code>source_metadata</code> does not survive save/reopen today, and
+building that registry is a separable, larger concern than this phase’s
+actual scope required.</p>
+<p>Validation: focused battery <code>86 passed</code>; Ruff and the
+provider registry gate passed; full unit suite
+<code>4083 passed, 66 failed, 14 skipped</code>, the 66 failures
+matching the pre-existing baseline exactly.</p>
+<p>Next roadmap phase: Quillin worker execution boundaries and lifecycle
+behavior.</p>
+<h3
+id="quillin-worker-execution-boundaries-complete---2026-06-21">Quillin
+Worker Execution Boundaries Complete - 2026-06-21</h3>
+<p>Scoped narrowly after confirming there’s no untrusted provider yet to
+validate a real subprocess worker boundary against. Implemented:
+cooperative cancellation
+(<code>is_cancelled</code>/<code>PublishingOperationCancelled</code>)
+threaded through <code>browse_publishing_content</code> and the
+WordPress client’s <code>browse_content</code>; a new
+<code>publishing_worker.py</code> dispatch module bridging to
+<code>quill.stability.task_manager</code>;
+<code>BrowsePublishingContentDialog</code> now runs its load through the
+existing <code>TaskManager</code> with a real Cancel button instead of
+blocking the UI thread; <code>publishing_adapters.py</code> recognizes
+<code>"worker"</code> as a declared-but-deferred execution policy with
+its own honest rejection message. The real subprocess/IPC boundary
+itself remains deferred to the live third-party loading phase.</p>
+<p>Validation: focused battery <code>97 passed</code>; Ruff, mypy, and
+the provider registry gate passed; full unit suite
+<code>4093 passed, 66 failed, 14 skipped</code> matching the
+pre-existing baseline exactly.</p>
+<p>Next roadmap phase: live third-party provider loading.</p>
+<h3
+id="live-third-party-provider-loading-contract-shipped-roadmap-closed---2026-06-21">Live
+Third-Party Provider Loading — Contract Shipped, Roadmap Closed -
+2026-06-21</h3>
+<p>Found this phase was really a product security policy question, not
+an engineering scoping one: SEC-8
+(<code>core.third_party_plugins</code>, <code>locked_off=True</code>) is
+product-wide, and the publishing provider registries have zero gate of
+their own today. Presented the user three options; they chose: build the
+<code>ThirdPartyPublishingProviderAdapter</code> validation contract
+(id-conflict checking against bundled providers, host-owned secrets,
+required worker execution) while leaving real loading unimplemented and
+the SEC-8 lock untouched — mirroring exactly how Phase 1 shipped a
+contract before wiring WordPress through it.</p>
+<p>Validation: focused battery <code>82 passed</code>; Ruff, mypy, and
+the provider registry gate passed (confirming zero registry impact);
+full unit suite <code>4100 passed, 66 failed, 14 skipped</code> matching
+the pre-existing baseline exactly.</p>
+<h2
+id="all-four-roadmap-phases-authorized-by-the-2026-06-20-phase-1-closeout-are-now-addressed.-two-decisions-remain-explicitly-open-for-the-userproduct-not-engineering-defaults-the-deferred-cross-session-publishing-linkage-registry-from-the-compare-phase-and-whetherwhen-to-loosen-sec-8-for-real-third-party-execution.">All
+four roadmap phases authorized by the 2026-06-20 Phase 1 closeout are
+now addressed. Two decisions remain explicitly open for the
+user/product, not engineering defaults: the deferred cross-session
+publishing-linkage registry (from the compare phase), and whether/when
+to loosen SEC-8 for real third-party execution.</h2>
+<h2
+id="publishing-profile-restriction-writer-and-above-scoping-plan-2026-06-22">Publishing
+Profile Restriction (“Writer and Above”) — Scoping Plan
+(2026-06-22)</h2>
+<h3 id="status">Status</h3>
+<p><strong>Implemented 2026-06-22</strong>, same day as the scoping. The
+two open questions in “Open questions / flagged assumptions” below were
+resolved before coding: soft restriction (Recommended option chosen) and
+<code>FEATURE_STATE_ON</code> (Recommended option chosen) for the
+included profiles. The third open question (timing) was resolved by the
+user asking to begin coding immediately — landed now, while still inert
+behind <code>future.publishing</code>’s
+<code>locked_off=True</code>.</p>
+<p>Implementation: <code>quill/core/features.py</code>’s
+<code>PROFILE_DEFINITIONS</code> now match the table below exactly
+(<code>author_or_student</code>’s previously-absent key was added, not
+left as an implicit default).
+<code>quill/core/feature_catalog.py</code>’s
+<code>future.publishing</code> description was extended to state the
+restriction. No UI/menu/palette code changed, confirmed unnecessary as
+predicted. Two new tests added to
+<code>tests/unit/core/test_publishing_framework.py</code>:
+<code>test_publishing_profile_states_match_writer_tier_and_above</code>
+(the configured values) and
+<code>test_publishing_profile_states_are_overridden_by_the_lock</code>
+(the regression test guarding the lock/profile interaction). Module-size
+budget for <code>features.py</code> bumped 727-&gt;738. Full suite,
+scoped mypy, ruff, provider-registry gate, and a smoke launch all clean
+— see
+<code>codex-notes/logs/publishing-providers-framework-current-work-log-2026-06-19.md</code>’s
+matching 2026-06-22 entry for full validation numbers.</p>
+<p>The rest of this document is preserved as written during scoping, for
+the historical record of what was decided and why.</p>
+<p>Note (2026-07-04): the <code>codex-notes/</code> working-notes folder
+cited below was retired when the repository root was reorganized. The
+cited plans and work logs remain available in git history (last present
+at the <code>chore/root-docs-new-homes</code> merge, PR #824).</p>
+<h3 id="context">Context</h3>
+<p>The user was told (by someone above them in the project) that the
+publishing feature must only be available in “writer and above”
+profiles. This is a separate, additive requirement from the existing
+<code>future.publishing</code> <code>locked_off=True</code> review-gate
+lock added 2026-06-22 (see
+<code>codex-notes/logs/publishing-providers-framework-current-work-log-2026-06-19.md</code>’s
+“Locked publishing off behind the existing feature flag” entry) to keep
+publishing out of the public release until this branch’s PR is
+reviewed.</p>
+<p>The two are independent and stack:</p>
+<ul>
+<li><strong>The <code>locked_off</code> lock</strong> is the master kill
+switch. While it’s <code>True</code>,
+<code>FeatureManager.state_for("future.publishing")</code> returns
+<code>FEATURE_STATE_OFF</code> unconditionally, for every profile, with
+no exceptions — it is checked before any profile is ever consulted.</li>
+<li><strong>This profile restriction</strong> describes the feature’s
+<em>intended configuration once that lock is eventually lifted</em> —
+which profiles should see/use publishing by default once it’s actually
+live. It has zero user-visible effect today and will continue to have
+zero effect for as long as <code>locked_off=True</code> remains in
+place.</li>
+</ul>
+<p>Do not confuse “configuring the profile states correctly” with
+“lifting the review-gate lock.” They are two separate decisions; this
+plan only scopes the first.</p>
+<h3 id="decided-scope">Decided scope</h3>
+<p>QUILL’s 10 feature profiles (<code>quill/core/features.py</code>,
+<code>PROFILE_DEFINITIONS</code>) have <strong>no existing tier or
+rank</strong> — they’re independent personas (Essential, Casual Writer,
+Author or Student, Reader and Student, Office and Admin, Developer and
+Power Text, Low Vision, Braille and Screen Reader Power User,
+Accessibility Professional, Full Quill), not a capability ladder.
+“Writer and above” therefore has no formal, pre-existing meaning in this
+codebase. Confirmed directly with the user (offered three concrete
+readings; they chose the second):</p>
+<blockquote>
+<p><strong>Writer + “serious writing” profiles</strong>: Writer, Author
+or Student, Developer and Power Text, and Full Quill get publishing
+access. Reader and Student, Office and Admin, Low Vision, Braille and
+Screen Reader Power User, and Accessibility Professional are treated as
+different use cases, not a writing-capability tier, and do not get it.
+Essential — the baseline/default profile — does not get it either.</p>
+</blockquote>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Profile (id)</th>
+<th>Display name</th>
+<th>Gets publishing?</th>
+<th>Target <code>future.publishing</code> state</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>essential</code></td>
+<td>Essential</td>
+<td>No</td>
+<td><code>FEATURE_STATE_OFF</code></td>
+</tr>
+<tr>
+<td><code>writer</code></td>
+<td>Casual Writer</td>
+<td><strong>Yes</strong></td>
+<td><code>FEATURE_STATE_ON</code></td>
+</tr>
+<tr>
+<td><code>author_or_student</code></td>
+<td>Author or Student</td>
+<td><strong>Yes</strong></td>
+<td><code>FEATURE_STATE_ON</code></td>
+</tr>
+<tr>
+<td><code>reader_and_student</code></td>
+<td>Reader and Student</td>
+<td>No</td>
+<td><code>FEATURE_STATE_OFF</code></td>
+</tr>
+<tr>
+<td><code>office_and_admin</code></td>
+<td>Office and Admin</td>
+<td>No</td>
+<td><code>FEATURE_STATE_OFF</code></td>
+</tr>
+<tr>
+<td><code>developer_power_text</code></td>
+<td>Developer and Power Text</td>
+<td><strong>Yes</strong></td>
+<td><code>FEATURE_STATE_ON</code></td>
+</tr>
+<tr>
+<td><code>low_vision</code></td>
+<td>Low Vision</td>
+<td>No</td>
+<td><code>FEATURE_STATE_OFF</code></td>
+</tr>
+<tr>
+<td><code>braille_screen_reader_power_user</code></td>
+<td>Braille and Screen Reader Power User</td>
+<td>No</td>
+<td><code>FEATURE_STATE_OFF</code></td>
+</tr>
+<tr>
+<td><code>accessibility_professional</code></td>
+<td>Accessibility Professional</td>
+<td>No</td>
+<td><code>FEATURE_STATE_OFF</code></td>
+</tr>
+<tr>
+<td><code>full_quill</code></td>
+<td>Full Quill</td>
+<td><strong>Yes</strong></td>
+<td>already <code>FEATURE_STATE_ON</code> — no change needed</td>
+</tr>
+</tbody>
+</table>
+<h3 id="current-state-vs.-target-state">Current state vs. target
+state</h3>
+<p>Read directly from <code>quill/core/features.py</code> (lines as of
+this writing):</p>
+<ul>
+<li>Every profile listed above <strong>except
+<code>author_or_student</code></strong> already has an explicit
+<code>"future.publishing": FEATURE_STATE_QUIET</code> entry in its
+<code>states</code> dict (lines 76, 104, 155, 177, 200, 224, 248, 270).
+All of these need to change from <code>FEATURE_STATE_QUIET</code> to
+either <code>FEATURE_STATE_ON</code> (the 3 included profiles:
+<code>writer</code>, <code>developer_power_text</code>) or
+<code>FEATURE_STATE_OFF</code> (the 5 excluded profiles:
+<code>essential</code>, <code>reader_and_student</code>,
+<code>office_and_admin</code>, <code>low_vision</code>,
+<code>braille_screen_reader_power_user</code>,
+<code>accessibility_professional</code> — that’s 6, not 5; see the table
+above for the authoritative list).</li>
+<li><code>author_or_student</code>’s <code>states</code> dict (lines
+116-134) has <strong>no</strong> <code>"future.publishing"</code> key at
+all. Today, ignoring the lock, that silently falls back to the default
+<code>FEATURE_STATE_ON</code> via <code>state_for()</code>’s
+<code>self.active_profile.states.get(feature_id, FEATURE_STATE_ON)</code>
+— which happens to already match the target state, but as an
+unintentional gap, not a deliberate choice. The implementation should
+add the key explicitly (<code>FEATURE_STATE_ON</code>) so the intent is
+documented in the data rather than relying on an accidental
+default.</li>
+<li><code>full_quill</code>’s <code>states</code> dict is
+<code>{feature_id: FEATURE_STATE_ON for feature_id in FEATURE_DEFINITIONS}</code>
+— a comprehension over every registered feature. It already evaluates to
+<code>ON</code> for <code>future.publishing</code> and needs no
+change.</li>
+</ul>
+<h3 id="why-no-uimenu-code-changes-are-needed">Why no UI/menu code
+changes are needed</h3>
+<p>The gating added for the review-gate lock already reads the <em>live,
+active</em> profile on every call — confirmed by tracing the call
+chain:</p>
+<pre><code>main_frame_menu.py:
+    if self._feature_enabled(&quot;future.publishing&quot;):   # wraps the Publish submenu
+
+MainFrame._feature_enabled (main_frame.py:7082-7086):
+    return self.features.is_enabled(feature_id)
+
+FeatureManager.is_enabled (features.py:451-459):
+    if self.state_for(feature_id) == FEATURE_STATE_OFF: return False
+    ...
+
+FeatureManager.state_for (features.py:436-446):
+    if definition.locked_on: return ON
+    if definition.locked_off: return OFF          # &lt;- short-circuits today
+    if feature_id in self.overrides: return override
+    return self.active_profile.states.get(feature_id, ON)   # &lt;- profile-aware</code></pre>
+<p>The same chain backs <code>quill/ui/palette.py</code>’s
+<code>is_visible()</code> (Command Palette / Go to Anything filtering,
+via <code>COMMAND_FEATURE_MAP</code>). Once <code>locked_off</code> is
+lifted, both surfaces will automatically respect whichever profile is
+active — <strong>no changes are needed in
+<code>main_frame_menu.py</code>, <code>quill/ui/palette.py</code>, or
+<code>quill/core/feature_command_map.py</code></strong> for the profile
+restriction itself. The only source-of-truth file is
+<code>quill/core/features.py</code>’s
+<code>PROFILE_DEFINITIONS</code>.</p>
+<h3
+id="implementation-checklist-for-whenever-this-is-actually-built">Implementation
+checklist (for whenever this is actually built)</h3>
+<ol type="1">
+<li>In <code>quill/core/features.py</code>, change
+<code>"future.publishing"</code> in these <code>states</code> dicts:
+<ul>
+<li><code>PROFILE_ESSENTIAL</code> → <code>FEATURE_STATE_OFF</code></li>
+<li><code>PROFILE_WRITER</code> → <code>FEATURE_STATE_ON</code></li>
+<li><code>PROFILE_AUTHOR_STUDENT</code> → <strong>add</strong>
+<code>"future.publishing": FEATURE_STATE_ON</code> (key currently
+absent)</li>
+<li><code>"reader_and_student"</code> →
+<code>FEATURE_STATE_OFF</code></li>
+<li><code>"office_and_admin"</code> →
+<code>FEATURE_STATE_OFF</code></li>
+<li><code>PROFILE_DEVELOPER_POWER_TEXT</code> →
+<code>FEATURE_STATE_ON</code></li>
+<li><code>"low_vision"</code> → <code>FEATURE_STATE_OFF</code></li>
+<li><code>"braille_screen_reader_power_user"</code> →
+<code>FEATURE_STATE_OFF</code></li>
+<li><code>PROFILE_ACCESSIBILITY_PROFESSIONAL</code> →
+<code>FEATURE_STATE_OFF</code></li>
+<li><code>PROFILE_FULL_QUILL</code> — no change (comprehension already
+yields <code>ON</code>)</li>
+</ul></li>
+<li>Update <code>future.publishing</code>’s <code>description</code> in
+<code>quill/core/feature_catalog.py</code> to also state the profile
+restriction once it’s actually live (today’s description only mentions
+the review-gate lock — e.g. append something like “Once enabled,
+available by default in the Casual Writer, Author or Student, Developer
+and Power Text, and Full Quill profiles; off by default elsewhere, but
+any user can still turn it on individually via Manage Individual
+Features.”).</li>
+<li>No changes to <code>main_frame_menu.py</code>,
+<code>palette.py</code>, <code>feature_command_map.py</code>, or any
+dialog/menu surface (see above).</li>
+</ol>
+<h3 id="test-plan-for-whenever-this-is-implemented">Test plan (for
+whenever this is implemented)</h3>
+<ul>
+<li><strong>Direct profile-data assertions</strong> (independent of the
+live <code>locked_off</code> short-circuit — these test the
+<em>configured</em> values): for each of the 10 profile ids, assert
+<code>PROFILE_DEFINITIONS[profile_id].states["future.publishing"]</code>
+equals the target state in the table above. Natural home:
+<code>tests/unit/core/test_features.py</code> or a new test in
+<code>tests/unit/core/test_publishing_framework.py</code>.</li>
+<li><strong>Lock/profile interaction regression test</strong> (important
+— prevents a future session from mistaking “the profile data says ON”
+for “the feature is actually reachable”): with the profile states set as
+above and <code>locked_off</code> still <code>True</code>, assert
+<code>FeatureManager(active_profile_id=...).state_for("future.publishing")</code>
+is <code>FEATURE_STATE_OFF</code> for <strong>every</strong> profile,
+including the 3 that are configured <code>ON</code>. This documents the
+lock’s precedence explicitly rather than leaving it implicit.</li>
+<li><strong>Once the lock is separately lifted</strong> (a later,
+distinct change — not part of this profile-restriction work):
+<ul>
+<li><code>FeatureManager(active_profile_id=PROFILE_WRITER).is_enabled("future.publishing")</code>
+is <code>True</code>; same for <code>PROFILE_AUTHOR_STUDENT</code>,
+<code>PROFILE_DEVELOPER_POWER_TEXT</code>,
+<code>PROFILE_FULL_QUILL</code>.</li>
+<li><code>FeatureManager(active_profile_id=PROFILE_ESSENTIAL).is_enabled("future.publishing")</code>
+is <code>False</code>; same for the other 5 excluded profiles.</li>
+<li><code>open_individual_feature_toggles</code>’s feature list still
+includes <code>future.publishing</code> (proves the restriction is a
+soft per-profile default, not a hard lock — see below) once
+<code>locked_off</code> no longer excludes it from that screen.</li>
+</ul></li>
+</ul>
+<h3
+id="open-questions-flagged-assumptions-confirm-before-implementing">Open
+questions / flagged assumptions (confirm before implementing)</h3>
+<p>These are genuine product decisions, not engineering defaults —
+flagged explicitly rather than silently assumed:</p>
+<ol type="1">
+<li><strong>Soft vs. hard restriction.</strong> Every profile-scoped
+feature in this catalog today (<code>future.ai</code>,
+<code>future.character_inspector</code>, <code>future.cleanup</code>,
+and publishing itself) uses a <em>soft</em> default: the profile sets
+what’s on by default, but <code>open_individual_feature_toggles</code>
+lets any user override any non-locked feature regardless of profile.
+There is no existing mechanism in this codebase for a <em>hard</em>,
+unoverridable per-profile restriction — building one would be new
+infrastructure, not a data change. <strong>This plan assumes
+soft</strong> (matching every existing precedent). If “only available in
+writer and above” was meant literally — i.e., an Essential-profile user
+must never be able to turn it on even manually — that requires a
+different, larger design and should be raised explicitly before
+implementing.</li>
+<li><strong><code>FEATURE_STATE_ON</code>
+vs. <code>FEATURE_STATE_QUIET</code> for the 3 included
+profiles.</strong> This plan recommends <code>ON</code> (fully
+available, not gated behind a separate “show quiet/future features”
+toggle) since the instruction was “available,” not “discoverable for
+advanced users only.” <code>QUIET</code> would mean even Writer-profile
+users wouldn’t see it by default without first enabling that separate
+toggle.</li>
+<li><strong>Timing.</strong> This plan doesn’t decide <em>when</em> to
+make the <code>features.py</code> edit — it could land now (harmless and
+inert while <code>locked_off=True</code> stays in place) so it’s ready
+the instant the review-gate lock is lifted, or it could be deferred
+until the lock-lifting decision is made. That’s a separate “when”
+question for the user, not an engineering call.</li>
+</ol>
+<h3 id="relationship-to-the-rest-of-the-roadmap">Relationship to the
+rest of the roadmap</h3>
+<p>This is a refinement of the already-closed
+publishing-providers-framework roadmap, not a new roadmap phase. See
+<code>codex-notes/plans/publishing-providers-framework.md</code> for the
+full history; a one-paragraph pointer to this file has been appended
+there.</p>
+</body>
+</html>

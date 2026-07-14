@@ -31,6 +31,20 @@ from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 
 FieldSpec = dict
 
+_SR_DETECTED: bool | None = None
+
+
+def _is_sr_active() -> bool:
+    global _SR_DETECTED
+    if _SR_DETECTED is None:
+        try:
+            from quill.platform.sr_detect import detect_screen_reader
+
+            _SR_DETECTED = detect_screen_reader().detected
+        except Exception:  # noqa: BLE001
+            _SR_DETECTED = False
+    return bool(_SR_DETECTED)
+
 
 def show_web_form(
     parent: object,
@@ -90,20 +104,21 @@ class _WebFormDialog:
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         self._webview = None
-        try:
-            from wx_accessible_webview import AccessibleWebView
+        if not _is_sr_active():
+            try:
+                from wx_accessible_webview import AccessibleWebView
 
-            self._webview = AccessibleWebView(
-                self.dialog,
-                title=title,
-                handler_name="awv",
-                on_message=self._on_message,
-                on_close=self._cancel,
-                escape_to_close=True,
-                initial_html=self._form_html(intro),
-            )
-        except Exception:  # noqa: BLE001
-            self._webview = None
+                self._webview = AccessibleWebView(
+                    self.dialog,
+                    title=title,
+                    handler_name="awv",
+                    on_message=self._on_message,
+                    on_close=self._cancel,
+                    escape_to_close=True,
+                    initial_html=self._form_html(intro),
+                )
+            except Exception:  # noqa: BLE001
+                self._webview = None
 
         if self._webview is not None and self._webview.using_webview:
             sizer.Add(self._webview.control, 1, wx.EXPAND)
@@ -264,10 +279,15 @@ class _WebFormDialog:
                 sizer.Add(
                     wx.StaticText(self.dialog, label=label), 0, wx.LEFT | wx.RIGHT | wx.TOP, 8
                 )
-                style = wx.TE_MULTILINE | wx.TE_PROCESS_TAB if ftype == "textarea" else 0
+                # No TE_PROCESS_TAB: textareas hold prose, so Tab must move focus
+                # between fields rather than insert a tab character (keyboard-trap fix).
+                style = wx.TE_MULTILINE if ftype == "textarea" else 0
                 control = wx.TextCtrl(self.dialog, value=str(field.get("value", "")), style=style)
                 proportion = 1 if ftype == "textarea" else 0
                 sizer.Add(control, proportion, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+            # Accessible name from the field's visible label so each form control
+            # is announced by name (a separate StaticText is not reliably linked).
+            control.SetName(label)
             self._native_controls[name] = control
         buttons = self.dialog.CreateButtonSizer(wx.OK | wx.CANCEL)
         if buttons is not None:

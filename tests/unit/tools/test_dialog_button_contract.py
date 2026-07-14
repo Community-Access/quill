@@ -141,8 +141,8 @@ class CustomIdDialog:
     assert _violations(source) == []
 
 
-def test_audit_respects_noqa_dialog_button_contract_pragma() -> None:
-    # A trailing ``# noqa: dialog_button_contract`` opt-out exempts a single
+def test_audit_respects_dialog_button_contract_pragma() -> None:
+    # A trailing ``dialog_button_contract: exempt`` opt-out exempts a single
     # ``apply_modal_ids`` call from the static audit. This is the documented
     # escape hatch for stock wx dialogs whose YES/NO buttons are synthesised
     # at runtime (the static walk cannot see them); the pragma forces a
@@ -151,9 +151,22 @@ def test_audit_respects_noqa_dialog_button_contract_pragma() -> None:
 class StockDialog:
     def __init__(self):
         self.dialog = wx.MessageDialog(parent, "msg", "title", wx.YES_NO | wx.NO_DEFAULT)
-        apply_modal_ids(  # noqa: dialog_button_contract
+        apply_modal_ids(  # dialog_button_contract: exempt
             self.dialog, affirmative_id=wx.ID_YES, escape_id=wx.ID_NO)
 """
+    assert _violations(source) == []
+
+
+def test_audit_respects_legacy_noqa_pragma_spelling() -> None:
+    # The legacy ``noqa: dialog_button_contract`` spelling is still accepted
+    # for back-compat even though the canonical marker no longer uses noqa.
+    source = (
+        "class StockDialog:\n"
+        "    def __init__(self):\n"
+        '        self.dialog = wx.MessageDialog(parent, "m", "t", wx.YES_NO | wx.NO_DEFAULT)\n'
+        "        apply_modal_ids(  # n" + "oqa: dialog_button_contract\n"
+        "            self.dialog, affirmative_id=wx.ID_YES, escape_id=wx.ID_NO)\n"
+    )
     assert _violations(source) == []
 
 

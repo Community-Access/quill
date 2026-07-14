@@ -6,6 +6,7 @@ load/save/merge logic and stay within its module-size budget.
 
 from __future__ import annotations
 
+import sys
 from dataclasses import dataclass
 
 KEYBOARD_PACK_DEFAULT = "Quill Default"
@@ -27,6 +28,11 @@ _PACK_LABELS: dict[str, str] = {
     "edit.find": "Find",
     "edit.find_all_matches": "Find All Matches",
     "edit.find_next": "Find Next",
+    "view.reveal_codes_toggle": "Reveal Codes",
+    "notes.add_inline_note": "Add Inline Note",
+    "notes.next_inline_note": "Next Inline Note",
+    "notes.previous_inline_note": "Previous Inline Note",
+    "notes.speak_inline_note": "Speak Inline Note",
     "edit.insert_link": "Insert Link",
     "edit.redo": "Redo",
     "edit.replace": "Replace",
@@ -54,6 +60,7 @@ _PACK_LABELS: dict[str, str] = {
     "file.open": "Open",
     "file.save": "Save",
     "file.save_as": "Save As",
+    "file.restore_previous_version": "Restore Previous Version",
     "file.open_from_remote": "Open From Remote...",
     "file.save_to_remote": "Save To Remote",
     "file.save_copy_to_remote": "Save Copy To Remote...",
@@ -64,6 +71,7 @@ _PACK_LABELS: dict[str, str] = {
     "format.duplicate_line": "Duplicate Line",
     "format.indent": "Indent",
     "format.italic": "Italic",
+    "format.underline": "Underline",
     "format.lower_case": "Lower Case",
     "format.move_line_down": "Move Line Down",
     "format.move_line_up": "Move Line Up",
@@ -75,7 +83,11 @@ _PACK_LABELS: dict[str, str] = {
     "format.manage_abbreviations": "Manage Abbreviations",
     "format.toggle_abbreviation_expansion": "Toggle Abbreviation Expansion",
     "format.toggle_line_comment": "Toggle Line Comment",
+    "format.auto_indent_newline": "Auto-Indent Newline",
     "format.upper_case": "Upper Case",
+    "navigate.speak_window_title": "Speak Window Title",
+    "navigate.speak_full_path": "Speak Full Path",
+    "navigate.speak_status_summary": "Speak Status Summary",
     "navigate.back_location": "Back",
     "navigate.forward_location": "Forward",
     "navigate.go_to_line": "Go To Line",
@@ -83,6 +95,9 @@ _PACK_LABELS: dict[str, str] = {
     "navigate.list_bookmarks": "List Bookmarks",
     "navigate.quick_nav": "Quick Nav (Go to Anything)",
     "navigate.next_region": "Next Region",
+    "navigate.next_token": "Next Token",
+    "navigate.previous_token": "Previous Token",
+    "navigate.set_language": "Set Document Language",
     "navigate.next_structure": "Next Structure",
     "navigate.heading_organizer": "Heading Organizer",
     "navigate.outline_navigator": "Outline Navigator",
@@ -102,6 +117,9 @@ _PACK_LABELS: dict[str, str] = {
     "tools.check_grammar_ai": "Check Grammar with AI",
     "tools.word_count": "Word Count",
     "tools.writing_instructions": "Open Writing Instructions",
+    "tools.speech_batch_export": "Audio Studio...",
+    "tools.speech_export_audio": "Export to Speech Audio...",
+    "tools.speech_export_translated": "Export to Translated Speech Audio...",
     "view.browser_preview": "Browser Preview",
     "view.preview": "Preview",
     "view.split_preview": "Preview Side by Side",
@@ -131,10 +149,11 @@ KEYBOARD_PACKS: dict[str, KeyboardPack] = {
             "edit.select_line": "Ctrl+L",
             "edit.insert_link": "Ctrl+K",
             "tools.spell_check_dialog": "F7",
-            "tools.next_misspelling": "Alt+F7",
+            "tools.next_misspelling": "Ctrl+F7",
             "tools.thesaurus": "Shift+F7",
             "format.bold": "Ctrl+B",
             "format.italic": "Ctrl+I",
+            "format.underline": "Ctrl+U",
             "format.upper_case": "Ctrl+Shift+U",
         },
     ),
@@ -150,8 +169,11 @@ KEYBOARD_PACKS: dict[str, KeyboardPack] = {
             "navigate.go_to_line": "Ctrl+G",
             "navigate.go_to_page": "Ctrl+Shift+G",
             "navigate.outline_navigator": "Ctrl+Shift+O",
-            "navigate.back_location": "Alt+Left",
-            "navigate.forward_location": "Alt+Right",
+            # #609: macOS uses Cmd+[ / Cmd+] for back/forward location
+            # so the Alt+Left / Alt+Right slot stays free for the
+            # system-standard word-by-word movement.
+            "navigate.back_location": "Cmd+[" if sys.platform == "darwin" else "Alt+Left",
+            "navigate.forward_location": "Cmd+]" if sys.platform == "darwin" else "Alt+Right",
             "navigate.next_structure": "Alt+Down",
             "navigate.previous_structure": "Alt+Up",
             "edit.select_line": "Ctrl+L",
@@ -169,7 +191,7 @@ KEYBOARD_PACKS: dict[str, KeyboardPack] = {
             "tools.word_count": "Ctrl+Shift+W",
             "tools.document_intake_report": "Ctrl+Shift+I",
             "edit.copy_with_source": "Ctrl+Shift+C",
-            "edit.find_all_matches": "Alt+F3",
+            "edit.find_all_matches": "Ctrl+Shift+F3",
             "navigate.outline_navigator": "Ctrl+Shift+O",
             "navigate.go_to_page": "Ctrl+Shift+G",
             "edit.select_line": "Ctrl+L",
@@ -202,7 +224,7 @@ KEYBOARD_PACKS: dict[str, KeyboardPack] = {
         ),
         {
             "navigate.go_to_line": "Ctrl+G",
-            "edit.find_all_matches": "Alt+F3",
+            "edit.find_all_matches": "Ctrl+Shift+F3",
             "format.duplicate_line": "Ctrl+D",
             "format.delete_line": "Ctrl+L",
             "format.move_line_up": "Alt+Up",

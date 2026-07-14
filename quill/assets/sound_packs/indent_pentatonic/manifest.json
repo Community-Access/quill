@@ -1,0 +1,26 @@
+{
+  "format": "qsp",
+  "version": "1",
+  "name": "Ink Pentatonic Tones",
+  "author": "Jeff Bishop",
+  "description": "Indentation depth tones on a C5 pentatonic scale. Any two adjacent notes are harmonious; no dissonance possible. Recommended default for most users. Partial QSP: defines only indent_level events. Combine with the Ink earcon pack for full audio feedback.",
+  "license": "CC0",
+  "events": {
+    "indent_level_0_up": "indent_pentatonic_0_up.wav",
+    "indent_level_0_down": "indent_pentatonic_0_down.wav",
+    "indent_level_1_up": "indent_pentatonic_1_up.wav",
+    "indent_level_1_down": "indent_pentatonic_1_down.wav",
+    "indent_level_2_up": "indent_pentatonic_2_up.wav",
+    "indent_level_2_down": "indent_pentatonic_2_down.wav",
+    "indent_level_3_up": "indent_pentatonic_3_up.wav",
+    "indent_level_3_down": "indent_pentatonic_3_down.wav",
+    "indent_level_4_up": "indent_pentatonic_4_up.wav",
+    "indent_level_4_down": "indent_pentatonic_4_down.wav",
+    "indent_level_5_up": "indent_pentatonic_5_up.wav",
+    "indent_level_5_down": "indent_pentatonic_5_down.wav",
+    "indent_level_6_up": "indent_pentatonic_6_up.wav",
+    "indent_level_6_down": "indent_pentatonic_6_down.wav",
+    "indent_level_7_up": "indent_pentatonic_7_up.wav",
+    "indent_level_7_down": "indent_pentatonic_7_down.wav"
+  }
+}

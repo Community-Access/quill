@@ -157,10 +157,13 @@ def load_sites() -> list[RemoteSite]:
     """Return saved sites sorted by friendly name (case-insensitive)."""
 
     raw = read_json(_sites_path(), [])
-    if not isinstance(raw, list):
+    # Accept the versioned envelope {"schema_version", "sites": [...]} and the
+    # legacy bare list, so old files keep loading.
+    items = raw.get("sites", []) if isinstance(raw, dict) else raw
+    if not isinstance(items, list):
         return []
     sites: list[RemoteSite] = []
-    for item in raw:
+    for item in items:
         if not isinstance(item, dict):
             continue
         site = RemoteSite.from_dict(item).normalised()
@@ -172,7 +175,7 @@ def load_sites() -> list[RemoteSite]:
 def save_sites(sites: list[RemoteSite]) -> None:
     """Persist ``sites`` to the JSON store under the app-data directory."""
 
-    payload = [site.to_dict() for site in sites]
+    payload = {"schema_version": 1, "sites": [site.to_dict() for site in sites]}
     base = app_data_dir()
     write_json_atomic(_sites_path(), payload, base=base)
 

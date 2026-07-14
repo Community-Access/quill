@@ -71,7 +71,14 @@ def dump_all_thread_stacks(reason: str) -> Path:
         for thread in threading.enumerate():
             handle.write("=" * 80 + "\n")
             handle.write(f"Thread: {thread.name} ident={thread.ident} daemon={thread.daemon}\n")
-            frame = frames.get(thread.ident)
+            # ``thread.ident`` is documented as ``int | None`` (None for
+            # synthetic threads without a real OS thread id). Skip those
+            # here -- the frames dict is keyed on the int ident.
+            ident = thread.ident
+            if ident is None:
+                handle.write("No Python frame available (no OS ident).\n\n")
+                continue
+            frame = frames.get(ident)
             if frame is None:
                 handle.write("No Python frame available.\n\n")
                 continue

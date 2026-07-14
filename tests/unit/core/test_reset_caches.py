@@ -58,6 +58,21 @@ def test_spellcheck_preload_after_reset_loads_wordlist(
     assert "alpha" in spellcheck._load_wordlist()
 
 
+def test_spellcheck_preload_warms_suggestion_buckets(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # #527: preload must also build the length-bucketed suggestion index so the
+    # first F7 spell review does not pay that one-time cost on the UI thread.
+    wordlist = tmp_path / "words_alpha.txt"
+    wordlist.write_text("alpha\nbeta\ngamma\n", encoding="utf-8")
+    monkeypatch.setattr(spellcheck, "_WORDLIST_PATH", wordlist)
+    spellcheck.reset_caches()
+    assert spellcheck._LENGTH_BUCKETS_BY_WORDLIST_ID == {}  # cold after reset
+    spellcheck.preload()
+    loaded = spellcheck._load_wordlist()
+    assert id(loaded) in spellcheck._LENGTH_BUCKETS_BY_WORDLIST_ID  # warmed by preload
+
+
 def test_thesaurus_reset_caches_clears_index_and_error() -> None:
     thesaurus._INDEX = {"happy": []}
     thesaurus._LOAD_ERROR = "boom"
@@ -86,7 +101,14 @@ def test_thesaurus_reset_caches_acquires_load_lock() -> None:
     assert thesaurus._INDEX is None
 
 
+@pytest.mark.timeout(90)
 def test_thesaurus_preload_after_reset_is_idempotent() -> None:
+    # windows-latest CI runners occasionally take much longer than the
+    # global 30s budget to read+parse the 18.5MB th_en_US_v2.dat on first
+    # touch (Windows Defender scanning a freshly checked-out file), the
+    # same flakiness tests/unit/core/test_thesaurus.py is excluded from
+    # Windows CI runs for. A longer timeout keeps this test's real
+    # reset/preload coverage instead of skipping it outright.
     thesaurus.reset_caches()
     thesaurus.preload()
     thesaurus.preload()

@@ -1,77 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quillin Hub | Plugin Details</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        :focus { outline: 3px solid #2563eb !important; outline-offset: 2px !important; }
-        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0; }
-    </style>
-</head>
-<body class="bg-slate-50 text-slate-900 font-sans">
-    <header class="bg-white border-b border-slate-200 px-6 py-4" role="banner">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <a href="/" class="text-2xl font-bold text-blue-700">Quillin Hub</a>
-            <nav aria-label="Main Navigation">
-                <a href="/" class="text-slate-600 hover:text-blue-600 font-medium px-4">Home</a>
-                <a href="/forge" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Submit a Quillin</a>
-            </nav>
-        </div>
-    </header>
-
-    <main id="main-content" class="max-w-4xl mx-auto px-6 py-12" role="main">
-        <div class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
+{% extends "_base.html" %}
+{% block title %}Quillin Hub | {{ artifact.name }}{% endblock %}
+{% block content %}
+        <div class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm max-w-4xl mx-auto">
             <div class="flex justify-between items-start mb-6">
                 <div>
-                    <h1 class="text-4xl font-bold text-slate-900">{{ plugin.name }}</h1>
-                    <p class="text-slate-500 text-lg">v{{ plugin.version }} • Author: {{ plugin.author }}</p>
+                    <h2 class="text-4xl font-bold text-slate-900">{{ artifact.name }}</h2>
+                    <p class="text-slate-500 text-lg">
+                        {% if hub_type %}{{ hub_type.label }}{% else %}{{ artifact.artifact_type }}{% endif %}
+                        &middot; v{{ artifact.version }}
+                    </p>
+                    <p class="text-sm mt-1 {% if artifact.signer_key_id %}text-slate-500{% else %}text-red-700 font-semibold{% endif %}">
+                        {% if artifact.signer_key_id %}Signed by <code class="text-slate-700">{{ artifact.signer_key_id }}</code>{% else %}Unsigned{% endif %}
+                    </p>
                 </div>
-                {% if plugin.is_gold_standard %}
+                {% if artifact.is_gold_standard %}
                 <span class="bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full uppercase">Gold Standard</span>
                 {% endif %}
             </div>
 
             <div class="prose max-w-none mb-8 text-slate-700 leading-relaxed">
-                {{ plugin.description }}
+                {{ artifact.description }}
             </div>
 
-            <!-- The Magical Snippet Simulator -->
-            <section class="bg-slate-100 rounded-xl p-6 mb-8 border border-slate-200" aria-labelledby="simulator-heading">
-                <h2 id="simulator-heading" class="text-xl font-bold mb-4 text-slate-800">Try it Now (Snippet Simulator)</h2>
-                <p class="text-sm text-slate-500 mb-4">Enter text below to see how this plugin transforms your writing.</p>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="flex flex-col">
-                        <label for="sim-input" class="text-sm font-medium mb-2">Input Text</label>
-                        <textarea id="sim-input" class="border border-slate-300 rounded-lg p-3 h-32 focus:ring-2 focus:ring-blue-500" placeholder="Type something..."></textarea>
-                    </div>
-                    <div class="flex flex-col">
-                        <label for="sim-output" class="text-sm font-medium mb-2">Result</label>
-                        <div id="sim-output" class="border border-slate-300 rounded-lg p-3 h-32 bg-white overflow-auto whitespace-pre-wrap" aria-live="polite">
-                            (Waiting for input...)
-                        </div>
-                    </div>
-                </div>
+            {% if hub_type %}
+            <section class="bg-slate-100 rounded-xl p-6 mb-8 border border-slate-200" aria-labelledby="install-heading">
+                <h3 id="install-heading" class="text-xl font-bold mb-2 text-slate-800">Where it lives in QUILL</h3>
+                <p class="text-slate-700">{{ hub_type.description }}</p>
+                <p class="text-slate-700 mt-2">Once installed you will find it under <strong>{{ hub_type.installs_into }}</strong>.</p>
             </section>
+            {% endif %}
 
             <div class="flex gap-4">
-                <a href="{{ plugin.download_url }}" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl" aria-label="Download {{ plugin.name }}">
-                    Install Quillin
+                <a href="{{ artifact.download_url }}" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl" aria-label="Download {{ artifact.name }}">
+                    Download
                 </a>
             </div>
         </div>
 
         <!-- Community Reviews -->
-        <section class="mt-12" aria-labelledby="reviews-heading">
-            <h2 id="reviews-heading" class="text-2xl font-bold mb-6 text-slate-800">Community Feedback</h2>
+        <section class="mt-12 max-w-4xl mx-auto" aria-labelledby="reviews-heading">
+            <h3 id="reviews-heading" class="text-2xl font-bold mb-6 text-slate-800">Community Feedback</h3>
             <div class="space-y-4">
                 {% for review in reviews %}
                 <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
                     <div class="flex justify-between mb-2">
-                        <span class="font-bold text-slate-900">{{ review.username }}</span>
-                        <span class="text-xs text-slate-400">{{ review.timestamp.strftime('%Y-%m-%d') }}</span>
+                        <span class="font-bold text-slate-900">{{ review.user_id }}</span>
+                        <span class="text-xs text-slate-500">{{ review.timestamp.strftime('%Y-%m-%d') }}</span>
                     </div>
                     <p class="text-slate-700">{{ review.content }}</p>
                 </div>
@@ -81,28 +55,4 @@
                 {% endif %}
             </div>
         </section>
-    </main>
-
-    <footer class="bg-slate-100 border-t border-slate-200 px-6 py-8 mt-12 text-center text-slate-500 text-sm">
-        <p>&copy; 2026 Community Access. Built with accessibility at the core.</p>
-    </footer>
-
-    <script>
-        // Simple Snippet Simulator Logic
-        const input = document.getElementById('sim-input');
-        const output = document.getElementById('sim-output');
-        
-        // In a real app, the 'plugin_manifest' would be passed from Flask
-        const laExampleManifest = {
-            "snippet": "Siphoned results: ${selection} [Source: Research Alchemist]"
-        };
-
-        input.addEventListener('input', (e) => {
-            const val = e.target.value;
-            // Simple mock replacement logic
-            const result = laExampleManifest.snippet.replace('${selection}', val);
-            output.textContent = result;
-        });
-    </script>
-</body>
-</html>
+{% endblock %}

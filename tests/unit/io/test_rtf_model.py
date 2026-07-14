@@ -141,3 +141,140 @@ def test_scan_rtf_features_flags_tables_and_images() -> None:
 def test_scan_rtf_features_clean_subset_is_empty() -> None:
     rtf = r"{\rtf1\ansi\pard {\b bold} text\par}"
     assert scan_rtf_features(rtf) == []
+
+
+# --------------------------------------------------------------------------- #
+# Hidden-codes: run spans and alignment fenced divs
+# --------------------------------------------------------------------------- #
+def test_span_attributes_parsed_onto_run() -> None:
+    doc = markdown_to_rich('[Hi]{font-family="Arial" font-size="14" color="#C00000" underline}')
+    span = doc.paragraphs[0].spans[0]
+    assert span.text == "Hi"
+    assert span.font_family == "Arial"
+    assert span.font_size_pt == 14
+    assert span.color == "#C00000"
+    assert span.underline is True
+
+
+def test_span_highlight_parsed() -> None:
+    doc = markdown_to_rich('[x]{highlight="yellow"}')
+    assert doc.paragraphs[0].spans[0].highlight == "yellow"
+
+
+def test_span_round_trip_is_identity() -> None:
+    md = '[Hello]{font-family="Arial" font-size="14" color="#C00000"} world'
+    assert rich_to_markdown(markdown_to_rich(md)) == md
+
+
+def test_span_wraps_bold_inner() -> None:
+    md = "[**bold word**]{underline} after"
+    assert rich_to_markdown(markdown_to_rich(md)) == md
+
+
+def test_fenced_div_alignment_round_trip() -> None:
+    md = '::: {align="center"}\nCentered text here.\n:::'
+    assert rich_to_markdown(markdown_to_rich(md)) == md
+    assert markdown_to_rich(md).paragraphs[0].align == "center"
+
+
+def test_fenced_div_groups_consecutive_paragraphs() -> None:
+    md = '::: {align="right"}\nfirst\nsecond\n:::'
+    doc = markdown_to_rich(md)
+    assert [p.align for p in doc.paragraphs] == ["right", "right"]
+    assert rich_to_markdown(doc) == md
+
+
+def test_fenced_div_excluded_from_plain_text() -> None:
+    analysis = analyze_markdown('::: {align="center"}\nhi there\n:::')
+    assert analysis.plain_text == "hi there"
+
+
+def test_invalid_alignment_ignored() -> None:
+    doc = markdown_to_rich('::: {align="sideways"}\nbody\n:::')
+    assert doc.paragraphs[0].align is None
+
+
+def test_format_at_offset_reports_font_and_size() -> None:
+    md = '[Hello]{font-family="Arial" font-size="14"} world'
+    fmt = format_at_markdown_offset(md, 3)
+    assert fmt.font_family == "Arial"
+    assert fmt.font_size_pt == 14
+
+
+def test_format_at_offset_reports_align() -> None:
+    md = '::: {align="center"}\nhello\n:::'
+    # Caret inside the visible word reports the paragraph alignment.
+    fmt = format_at_markdown_offset(md, len('::: {align="center"}\nhe'))
+    assert fmt.align == "center"
+
+
+def test_span_offset_maps_into_label() -> None:
+    md = 'x [bold]{color="#FF0000"} y'
+    # The 'b' of "bold" sits at md offset 3; its visible offset is 2 ("x b").
+    assert markdown_offset_to_plain_offset(md, 3) == 2
+    assert analyze_markdown(md).plain_text == "x bold y"
+
+
+# --------------------------------------------------------------------------- #
+# Hidden codes, full vocabulary: strike/super/sub + block + page break
+# --------------------------------------------------------------------------- #
+def test_strike_super_sub_parsed() -> None:
+    doc = markdown_to_rich("[a]{strike} [b]{superscript} [c]{subscript}")
+    spans = [s for s in doc.paragraphs[0].spans if s.text in ("a", "b", "c")]
+    by = {s.text: s for s in spans}
+    assert by["a"].strike and not by["a"].superscript
+    assert by["b"].superscript and not by["b"].strike
+    assert by["c"].subscript
+
+
+def test_strike_super_sub_round_trip() -> None:
+    for md in ("[a]{strike}", "[b]{superscript}", "[c]{subscript}", "[d]{underline strike}"):
+        assert rich_to_markdown(markdown_to_rich(md)) == md
+
+
+def test_block_attributes_round_trip() -> None:
+    md = (
+        '::: {align="center" pstyle="quote" line-spacing="2" '
+        'space-before="12" space-after="6" indent="36" first-line-indent="18"}\n'
+        "body line\n:::"
+    )
+    doc = markdown_to_rich(md)
+    para = doc.paragraphs[0]
+    assert para.align == "center"
+    assert para.named_style == "quote"
+    assert para.line_spacing == "2"
+    assert para.space_before == 12
+    assert para.indent == 36
+    assert para.first_line_indent == 18
+    assert rich_to_markdown(doc) == md
+
+
+def test_invalid_named_style_and_spacing_ignored() -> None:
+    doc = markdown_to_rich('::: {pstyle="bogus" line-spacing="3"}\nx\n:::')
+    assert doc.paragraphs[0].named_style is None
+    assert doc.paragraphs[0].line_spacing is None
+
+
+def test_page_break_round_trip_and_paragraph() -> None:
+    md = "before\n::: pagebreak\nafter"
+    doc = markdown_to_rich(md)
+    assert [p.style for p in doc.paragraphs] == ["paragraph", "pagebreak", "paragraph"]
+    assert rich_to_markdown(doc) == md
+
+
+def test_page_break_excluded_from_visible_text() -> None:
+    analysis = analyze_markdown("a\n::: pagebreak\nb")
+    assert analysis.plain_text == "a\nb"
+
+
+def test_interrogate_reports_block_and_inline() -> None:
+    md = '::: {line-spacing="2" pstyle="quote"}\n[x]{strike}\n:::'
+    fmt = format_at_markdown_offset(md, len('::: {line-spacing="2" pstyle="quote"}\n[x'))
+    assert fmt.strike is True
+    assert fmt.line_spacing == "2"
+    assert fmt.named_style == "quote"
+
+
+def test_scan_no_longer_flags_recovered_attributes() -> None:
+    rtf = r"{\rtf1\ansi\pard {\ul under}{\cf1 color}\par}"
+    assert scan_rtf_features(rtf) == []

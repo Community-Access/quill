@@ -19,6 +19,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
+from quill.core.error_codes import CodedError
 from quill.stability.wx_dispatch import call_ui_safely
 
 logger = logging.getLogger(__name__)
@@ -35,8 +36,8 @@ RESULT_CANCELLED: TaskResult = "cancelled"
 RESULT_FAILED: TaskResult = "failed"
 
 
-class CancelledError(Exception):
-    pass
+class CancelledError(CodedError):
+    code = "QUILL-STABILITY-TASK-CANCELLED"
 
 
 @dataclass(slots=True)

@@ -16,6 +16,7 @@ import json
 from collections.abc import Callable
 from typing import Any
 
+from quill.core import lifecycle_service
 from quill.core.ai.agent import ACTIONS, AgentDecision
 from quill.core.ai.backend import AIBackend, ContextWindowExceeded
 from quill.core.ai.model_manager import choose_model_spec, ensure_model, existing_model
@@ -108,11 +109,24 @@ class LlamaCppBackend(AIBackend):
             # Resolve (and download the RAM-appropriate model the first time).
             path = self._model_path or ensure_model(self._progress)
             self._model_path = path
+            # Low-resource mode may evict another loaded engine to make room first.
+            lifecycle_service.reserve("llm")
             try:
                 self._llm = Llama(model_path=path, n_ctx=self._n_ctx, verbose=False)
             except OSError as exc:
                 raise RuntimeError(_format_native_load_error(exc)) from exc
+            lifecycle_service.note_loaded("llm", self.unload)
+        lifecycle_service.touch("llm")
         return self._llm
+
+    def unload(self) -> None:
+        """Free the loaded model (idle-unload / low-resource eviction).
+
+        The next completion reloads it (the warm cost). Safe to call when nothing is
+        loaded. Registered with the lifecycle service so an idle sweep can call it.
+        """
+        self._llm = None
+        lifecycle_service.note_unloaded("llm")
 
     def is_available(self) -> tuple[bool, str | None]:
         try:

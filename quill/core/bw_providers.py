@@ -86,7 +86,7 @@ def recommended_provider_id(*, local_first: bool = True) -> str:
         return "openai_whisper"
 
     fw_ok, _ = faster_whisper_status()
-    model_ids = downloaded_model_ids(include_parakeet=False)
+    model_ids = downloaded_model_ids()
     if fw_ok and bool(model_ids):
         return "local_whisper"
     return "openai_whisper"
@@ -104,7 +104,7 @@ def provider_readiness(provider_id: str, *, local_first: bool = True) -> Provide
 
     if provider.id == "local_whisper":
         fw_ok, fw_status = faster_whisper_status()
-        model_ids = downloaded_model_ids(include_parakeet=False)
+        model_ids = downloaded_model_ids()
         if fw_ok and bool(model_ids):
             return ProviderReadiness(
                 provider_id=provider.id,

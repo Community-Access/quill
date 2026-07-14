@@ -1,15 +1,21 @@
 """Version consistency gate (GATE-VC).
 
 Ensures that all version-bearing files in the repo agree with the
-authoritative version in ``quill/__init__.py``.
+authoritative version in ``quill/__init__.py`` (and ``build/version.toml``
+when present, since 0.7.0 the toml is the canonical source for the
+display version, channel, and build identity that feed the About
+dialog, support info, and InnoSetup installer metadata).
 
 Files checked:
 
-- ``quill/__init__.py`` -- authoritative source (read first)
+- ``quill/__init__.py`` -- authoritative source for the PEP 440 version
+- ``build/version.toml`` -- authoritative source for the display
+                            version and release channel (0.7.0+)
 - ``pyproject.toml``    -- must use ``dynamic = ["version"]`` (not a static
                            ``version =`` field); ``[tool.hatch.version] path``
                            must point at ``quill/__init__.py``
-- ``installer/quill.iss`` -- ``#define AppVersion`` must match
+- ``installer/quill.iss`` -- ``#define AppVersion`` and
+                             ``OutputBaseFilename`` must match
 - ``CHANGELOG.md``     -- the topmost version heading (``## <version>``) must match
 
 Exit 0 on success, 1 with diagnostics on any mismatch.
@@ -24,6 +30,28 @@ from pathlib import Path
 
 
 def _authoritative_version(repo_root: Path) -> str:
+    """Return the display version that drives user-visible strings.
+
+    Prefers ``build/version.toml`` (the canonical source as of 0.7.0);
+    falls back to the PEP 440 version in ``quill/__init__.py`` for
+    pre-0.7.0 checkouts where the toml is absent.
+    """
+    toml_path = repo_root / "build" / "version.toml"
+    if toml_path.exists():
+        with toml_path.open("rb") as handle:
+            data = tomllib.load(handle)
+        base = str(data.get("base_version", "")).strip()
+        channel = str(data.get("channel", "stable")).strip().lower()
+        pre = int(data.get("prerelease_number", 0))
+        if channel == "stable":
+            return base
+        if channel == "alpha":
+            return f"{base} Alpha {pre}"
+        if channel == "beta":
+            return f"{base} Beta {pre}"
+        if channel == "rc":
+            return f"{base} Release Candidate {pre}"
+        return f"{base} Dev"
     init_py = repo_root / "quill" / "__init__.py"
     match = re.search(r'^__version__\s*=\s*["\']([^"\']+)["\']', init_py.read_text(), re.M)
     if not match:
@@ -82,8 +110,10 @@ def _check_iss(repo_root: Path, canonical: str) -> list[str]:
             f'expected "{canonical}" (from quill/__init__.py).'
         )
 
-    # OutputBaseFilename should also match
-    fn_match = re.search(r"OutputBaseFilename=Quill-Setup-([^\r\n]+)", text)
+    # OutputBaseFilename should also match. Accept both the pre-0.7.0
+    # ``Quill-Setup-X`` and the current ``Quill-for-All-Setup-X`` forms so
+    # the gate does not break while older install artefacts age out.
+    fn_match = re.search(r"OutputBaseFilename=(?:Quill-Setup|Quill-for-All-Setup)-([^\r\n]+)", text)
     if fn_match:
         fn_version = fn_match.group(1).strip()
         if fn_version != canonical:
@@ -102,8 +132,17 @@ def _check_changelog(repo_root: Path, canonical: str) -> list[str]:
         return errors
 
     text = changelog.read_text(encoding="utf-8")
-    # Find first ## heading that looks like a version (e.g. "## 0.5.0" or "## 0.5.0 (2026-...)")
-    match = re.search(r"^## (\d+\.\d+[\w.]*)[\s(]", text, re.M)
+    # Find first ## heading that looks like a version. Accepts stable
+    # (``## 0.5.0``), pre-release (``## 0.7.0 Beta 1``, ``## 0.7.0a1``,
+    # ``## 0.7.0rc1``, ``## 0.7.0 Release Candidate 2``) and dev
+    # (``## 0.7.0.dev20260619``) forms.
+    match = re.search(
+        r"^## (\d+\.\d+(?:\.\d+)?"
+        r"(?:[._-]?(?:a|b|rc|alpha|beta|dev)\d*|"
+        r"\s+(?:alpha|beta|release\s+candidate|rc|dev)\.?\s*\d*)?)",
+        text,
+        re.M | re.I,
+    )
     if not match:
         errors.append("CHANGELOG.md: could not find a version heading (## X.Y.Z).")
         return errors

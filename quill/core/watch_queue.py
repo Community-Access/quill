@@ -151,6 +151,10 @@ class WatchQueue:
         self._items: dict[str, QueueItem] = {}
         self._order: list[str] = []
         self._known_sources: set[str] = set()
+        # Files claimed by prime() — present at start and intentionally ignored
+        # because their profile has process_existing off. Surfaced as a monitor
+        # hint so an "empty" queue is self-explanatory.
+        self._primed_count = 0
         self._paused_profiles: set[str] = set()
         self._globally_paused = False
         if storage_path is not None:
@@ -202,7 +206,14 @@ class WatchQueue:
         except OSError:
             canonical = str(source_path)
         with self._lock:
-            self._known_sources.add(canonical)
+            if canonical not in self._known_sources:
+                self._known_sources.add(canonical)
+                self._primed_count += 1
+
+    def primed_count(self) -> int:
+        """How many pre-existing files have been primed (claimed and ignored)."""
+        with self._lock:
+            return self._primed_count
 
     # -- claim / complete ------------------------------------------------
 

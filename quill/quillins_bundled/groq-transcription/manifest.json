@@ -1,0 +1,23 @@
+{
+  "schema": "quill.extension/1",
+  "id": "com.quill.groq",
+  "name": "Groq Whisper Transcription",
+  "version": "1.0.0",
+  "author": "QUILL Team",
+  "description": "Adds Groq's fast Whisper large-v3-turbo as a cloud transcription provider. Audio is uploaded to Groq only when you explicitly transcribe with this provider and have configured an API key -- never offline, never without consent. The QUILL host performs the upload under the network-egress audit; the extension itself handles no audio bytes or keys.",
+  "license": "MIT",
+  "min_quill_version": "0.7.0",
+  "categories": ["ai", "integration", "accessibility"],
+  "contributes": {
+    "transcription_providers": [
+      {
+        "id": "ext.quill.groq",
+        "display_name": "Groq Whisper",
+        "kind": "groq",
+        "description": "Cloud speech-to-text via Groq's whisper-large-v3-turbo. Very fast and high accuracy; requires a Groq API key and per-use consent.",
+        "credential": "Groq API key",
+        "max_file_mb": 25
+      }
+    ]
+  }
+}

@@ -14,10 +14,13 @@ def _main_frame_source() -> str:
     )
 
 
-def test_quill_key_m_invokes_paste_html_as_markdown() -> None:
+def test_quill_key_chord_dispatch_is_data_driven() -> None:
+    # Chord commands are now dispatched from the keymap, not hardcoded.
+    # The state machine must contain _chord_command_for_event, not a hardcoded
+    # key_code check for M or a direct paste_html_as_markdown() call.
     source = _main_frame_source()
-    assert 'key_code in (ord("M"), ord("m"))' in source
-    assert "self.paste_html_as_markdown()" in source
+    assert "_chord_command_for_event" in source
+    assert 'key_code in (ord("M"), ord("m"))' not in source
 
 
 def test_power_tools_mixin_is_wired_into_main_frame() -> None:
@@ -26,10 +29,16 @@ def test_power_tools_mixin_is_wired_into_main_frame() -> None:
     assert "PowerToolsActionsMixin" in source.split("class MainFrame(")[1].split(")")[0]
 
 
-def test_prefix_message_advertises_markdown_paste() -> None:
-    from pathlib import Path
+def test_paste_html_as_markdown_is_on_quill_key_m_in_keymap() -> None:
+    # Verify the keymap (not the state machine) is the source of truth for M.
+    from quill.core.keymap import DEFAULT_KEYMAP
 
+    assert DEFAULT_KEYMAP.get("power.paste_html_as_markdown") == "Ctrl+Shift+Grave, M"
+    assert DEFAULT_KEYMAP.get("format.insert_markdown_tag", "") == ""
+
+
+def test_prefix_message_mentions_chord_keys() -> None:
     quill_key_source = (
         Path(__file__).resolve().parents[3] / "quill" / "ui" / "main_frame_quill_key.py"
     ).read_text(encoding="utf-8")
-    assert "M to paste HTML" in quill_key_source
+    assert "configured chord key" in quill_key_source

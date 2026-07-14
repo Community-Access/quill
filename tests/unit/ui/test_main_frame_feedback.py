@@ -2,11 +2,33 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
+import quill.core.updates as updates_module
 import quill.ui.main_frame as main_frame_module
 from quill.core.document import Document
 from quill.core.notifications import Notification
 from quill.core.updates import GitHubRelease, UpdateManifest
 from quill.ui.main_frame import MainFrame
+
+
+@pytest.fixture(autouse=True)
+def _force_non_portable(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Pin check_for_updates onto the installer (non-portable) path.
+
+    ``check_for_updates`` branches on ``running_portable()``, which sniffs the
+    filesystem/env for a portable bundle. In a full-suite run that ambient state
+    can be left set by an earlier test, flipping these tests onto the GitHub
+    releases path they do not stub (manifest -> None -> live fetch_releases).
+    These unit tests exercise the installer flow, so they must control that
+    branch explicitly rather than depend on detection.
+
+    Patched on ``quill.core.updates`` (the source module) rather than
+    ``quill.ui.main_frame``: ``check_for_updates``/``_on_update_fetch_done``
+    import these names locally (perf: lazy-import quill.core.updates), so
+    patching the consumer's namespace no longer has any effect.
+    """
+    monkeypatch.setattr(updates_module, "running_portable", lambda: False)
 
 
 class _Frame:
@@ -40,8 +62,6 @@ def test_report_bug_feedback_hub_path_goes_through_show_modal_dialog(monkeypatch
         modal_calls.append(label) or frame._wx.ID_OK
     )
 
-    monkeypatch.setattr(frame, "_feedback_hub_available", lambda: True)
-
     class _FakeSchema:
         pass
 
@@ -70,46 +90,32 @@ def test_report_bug_feedback_hub_path_goes_through_show_modal_dialog(monkeypatch
     assert frame._notification == ("Submitted feedback via feedback hub", "support")
 
 
-def test_report_bug_reviews_then_opens_support_form(monkeypatch) -> None:
+def test_report_bug_failure_copies_support_url_and_reports_plainly(monkeypatch) -> None:
+    # The legacy built-in form is gone (feedback_hub ships with QUILL), so a
+    # hub failure must still leave the user a path: the online support-form
+    # URL lands on the clipboard and a message box says so out loud.
     frame = _build_frame()
-    opened: list[str] = []
     copied: list[str] = []
-    monkeypatch.setattr(frame, "_feedback_hub_available", lambda: False)
-    monkeypatch.setattr(
-        frame,
-        "_review_bug_report",
-        lambda: ({"summary": "Bug report: note.md", "body": "Body"}, "https://example.invalid"),
-    )
+    boxes: list[tuple[str, str]] = []
+
+    def _boom() -> None:
+        raise RuntimeError("hub exploded")
+
+    monkeypatch.setattr(frame, "_report_bug_via_hub", _boom)
     monkeypatch.setattr(frame, "_copy_to_clipboard", lambda text: copied.append(text) or True)
-    monkeypatch.setattr("quill.ui.main_frame.webbrowser.open", lambda url: opened.append(url))
+    frame._show_message_box = lambda message, caption, _style: boxes.append((message, caption))
+    frame._wx = type(
+        "Wx",
+        (),
+        {"version": staticmethod(lambda: "4.2-test"), "OK": 4, "ICON_ERROR": 512},
+    )()
 
     frame.report_bug()
 
-    assert copied == ["Body"]
-    assert opened == ["https://example.invalid"]
-    assert frame._notification == ("Opened support-hub bug report form", "support")
-
-
-def test_report_bug_includes_diagnostics_path_when_present(monkeypatch) -> None:
-    frame = _build_frame()
-    opened: list[str] = []
-    copied: list[str] = []
-    frame._last_bug_report_diagnostics_path = Path(r"C:\Temp\quill-diagnostics.zip")
-    monkeypatch.setattr(frame, "_feedback_hub_available", lambda: False)
-    monkeypatch.setattr(
-        frame,
-        "_review_bug_report",
-        lambda: ({"summary": "Bug report: note.md", "body": "Body"}, "https://example.invalid"),
-    )
-    monkeypatch.setattr(frame, "_copy_to_clipboard", lambda text: copied.append(text) or True)
-    monkeypatch.setattr("quill.ui.main_frame.webbrowser.open", lambda url: opened.append(url))
-
-    frame.report_bug()
-
-    assert copied[0].startswith("Body")
-    assert "Diagnostics bundle path" in copied[0]
-    assert "quill-diagnostics.zip" in copied[0]
-    assert opened == ["https://example.invalid"]
+    assert len(copied) == 1
+    assert copied[0].startswith("https://github.com/Community-Access/support/issues/new?")
+    assert boxes and boxes[0][1] == "Report a Bug"
+    assert "copied to your clipboard" in boxes[0][0]
 
 
 def test_save_diagnostics_bundle_cancels_when_review_cancelled(monkeypatch) -> None:
@@ -245,9 +251,9 @@ def test_check_for_updates_can_close_app_before_installer(monkeypatch) -> None:
     frame.exit_app = lambda: exits.append("exit")
     opened: list[str] = []
     monkeypatch.setattr(
-        main_frame_module,
+        updates_module,
         "fetch_update_manifest",
-        lambda _url: UpdateManifest(
+        lambda *_a, **_k: UpdateManifest(
             version="0.1.1",
             download_url="https://example.com/Quill-Setup-0.1.1.exe",
             published_at="2026-05-30T00:00:00Z",
@@ -255,7 +261,7 @@ def test_check_for_updates_can_close_app_before_installer(monkeypatch) -> None:
             signature="sig",
         ),
     )
-    monkeypatch.setattr(main_frame_module, "is_newer_version", lambda _current, _available: True)
+    monkeypatch.setattr(updates_module, "is_newer_version", lambda _current, _available: True)
     monkeypatch.setattr(
         "quill.ui.main_frame.webbrowser.open",
         lambda url: opened.append(url) or True,
@@ -281,9 +287,9 @@ def test_check_for_updates_allows_download_without_immediate_exit(monkeypatch) -
     frame.exit_app = lambda: (_ for _ in ()).throw(AssertionError("exit_app should not be called"))
     opened: list[str] = []
     monkeypatch.setattr(
-        main_frame_module,
+        updates_module,
         "fetch_update_manifest",
-        lambda _url: UpdateManifest(
+        lambda *_a, **_k: UpdateManifest(
             version="0.1.1",
             download_url="https://example.com/Quill-Setup-0.1.1.exe",
             published_at="2026-05-30T00:00:00Z",
@@ -291,7 +297,7 @@ def test_check_for_updates_allows_download_without_immediate_exit(monkeypatch) -
             signature="sig",
         ),
     )
-    monkeypatch.setattr(main_frame_module, "is_newer_version", lambda _current, _available: True)
+    monkeypatch.setattr(updates_module, "is_newer_version", lambda _current, _available: True)
     monkeypatch.setattr(
         "quill.ui.main_frame.webbrowser.open",
         lambda url: opened.append(url) or True,
@@ -333,26 +339,30 @@ def test_skip_update_version_records_choice(monkeypatch) -> None:
 def test_check_for_updates_silent_honors_skipped_version(monkeypatch) -> None:
     frame = _build_frame()
     frame.settings.beta_updates = False
-    frame.settings.skipped_update_version = "0.6.0"
+    # The skipped version must be NEWER than the running build, otherwise
+    # is_newer_version returns False and the "skipped by you" branch is
+    # never reached. 9.9.9 is a sentinel that sorts after every shipped
+    # version regardless of when this test runs.
+    frame.settings.skipped_update_version = "9.9.9"
     frame.settings.last_update_check = ""
     monkeypatch.setattr(main_frame_module, "save_settings", lambda _settings: None)
     monkeypatch.setattr(
-        main_frame_module,
+        updates_module,
         "fetch_update_manifest",
-        lambda _url: (_ for _ in ()).throw(main_frame_module.URLError("offline")),
+        lambda *_a, **_k: (_ for _ in ()).throw(main_frame_module.URLError("offline")),
     )
     release = GitHubRelease(
-        version="0.6.0",
+        version="9.9.9",
         download_url="https://github.com/releases/download/x/Quill.exe",
         published_at="2026-06-01",
         notes="New",
         prerelease=False,
     )
-    monkeypatch.setattr(main_frame_module, "fetch_releases", lambda: [release])
+    monkeypatch.setattr(updates_module, "fetch_releases", lambda: [release])
     frame._download_update_release = lambda _release: (_ for _ in ()).throw(
         AssertionError("a skipped version must not download")
     )
 
     frame.check_for_updates(silent_no_update=True)
 
-    assert frame._notification == ("Update 0.6.0 available (skipped by you)", "update")
+    assert frame._notification == ("Update 9.9.9 available (skipped by you)", "update")

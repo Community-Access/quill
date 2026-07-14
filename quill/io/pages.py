@@ -32,12 +32,12 @@ def read_pages_document(path: Path) -> Document:
     """
     try:
         return _read_pages_via_iwa(path)
-    except (ImportError, Exception):
+    except Exception:  # noqa: BLE001 - fall through to the LibreOffice route
         pass
 
     try:
         return _read_pages_via_libreoffice(path)
-    except (ImportError, subprocess.CalledProcessError, Exception):
+    except Exception:  # noqa: BLE001 - fall through to the graceful error below
         pass
 
     return Document(

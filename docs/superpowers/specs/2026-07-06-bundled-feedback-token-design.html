@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>2026-07-06-bundled-feedback-token-design</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="bundled-feedback-hub-github-token-design">Bundled feedback-hub
+GitHub token — design</h1>
+<h2 id="problem">Problem</h2>
+<p>The “Report a Bug” dialog (and the crash-recovery auto-report path)
+needs a GitHub token to file an issue against
+<code>Community-Access/quill</code> via the bundled
+<code>feedback_hub</code> package.
+<code>quill/core/feedback_token.py</code> only resolves a token from
+QUILL’s own encrypted token store (populated only if a user manually
+signs in to GitHub for the unrelated repo-browser feature) or from a
+short list of environment variables no ordinary user will ever set. An
+ordinary user (e.g. Michael) has neither, so
+<code>effective_github_token()</code> returns <code>""</code> and the
+dialog can’t push. <code>feedback_hub.resolve_token()</code> is
+explicitly designed to accept the app’s own bundled, narrowly-scoped PAT
+as a candidate (“safe to bundle issues-only fine-grained PATs in desktop
+apps: worst case misuse is filing extra issues, not code/repo access”) —
+QUILL never wired that half up.</p>
+<h2
+id="decision-interim-client-side-bundled-token-real-hub-proxy-later">Decision:
+interim client-side bundled token, real hub proxy later</h2>
+<p>Standing up <code>quillin-hub</code> as a live, publicly deployed
+proxy (the more secure long-term design, where the raw token never
+leaves a server) is a separate infrastructure project (subdomain,
+container, hosting, database) that cannot land inside this release
+cycle. For 0.9.0, QUILL instead bundles a single, narrowly-scoped GitHub
+token directly into the shipped app, matching exactly the risk model
+<code>feedback_hub</code>’s own docstring already describes and
+accepts.</p>
+<h2 id="design">Design</h2>
+<p><strong>Token creation (manual, GitHub web UI only — no API/CLI path
+exists):</strong> Jeff creates a fine-grained PAT scoped to
+<code>Community-Access/quill</code> only, with <strong>Issues:
+read/write</strong> and no other permission. He sets it locally as
+<code>QUILL_FEEDBACK_GITHUB_TOKEN</code> before running a build; it is
+never committed, never pasted into chat, and never given a broader scope
+than issues.</p>
+<p><strong>Generated module (mirrors the existing
+<code>quill/_build_info.py</code> pattern):</strong></p>
+<ul>
+<li><code>tools/generate_feedback_token.py</code> — reads
+<code>QUILL_FEEDBACK_GITHUB_TOKEN</code> from the environment and writes
+<code>quill/_feedback_token.py</code> containing
+<code>BUNDLED_TOKEN = "&lt;value&gt;"</code>. Unlike
+<code>generate_build_info.py</code>, this never hard-fails: a missing
+env var writes <code>BUNDLED_TOKEN = ""</code> so ordinary dev
+checkouts, tests, and CI runs without the secret are unaffected.</li>
+<li><code>quill/_feedback_token.py</code> is gitignored, same as
+<code>_build_info.py</code>.</li>
+</ul>
+<p><strong>Wiring:</strong></p>
+<ul>
+<li><code>quill/core/feedback_token.py::effective_github_token()</code>
+imports <code>BUNDLED_TOKEN</code> from the generated module
+(best-effort: falls back to <code>""</code> if the module doesn’t exist,
+e.g. an unbuilt dev checkout) and passes it as the first candidate to
+<code>feedback_hub.resolve_token(BUNDLED_TOKEN)</code>, ahead of the
+existing env-var fallback. A user’s personally-configured token (from
+the secure store) still takes priority over the bundled one, unchanged
+from today.</li>
+<li><code>scripts/build_windows_distribution.py</code> and
+<code>scripts/build_macos.sh</code> each gain a best-effort call to
+<code>tools/generate_feedback_token.py</code>, run alongside
+(immediately after) the existing <code>generate_build_info.py</code>
+call.</li>
+</ul>
+<p><strong>Testing:</strong> a unit test in
+<code>tests/unit/core/test_feedback_token.py</code> (new) covering:
+bundled token used when present and no stored token exists; stored token
+still wins over the bundled one; empty bundled token falls through to
+the existing env-var path unchanged.</p>
+<h2 id="explicitly-out-of-scope">Explicitly out of scope</h2>
+<ul>
+<li>Deploying <code>quillin-hub</code> or any new server endpoint.</li>
+<li>Token rotation tooling, rate limiting, or abuse monitoring for the
+shared token (accepted risk, matching <code>feedback_hub</code>’s stated
+model).</li>
+<li>Any change to the crash-recovery auto-report flow’s behavior beyond
+picking up the same token resolution change.</li>
+</ul>
+</body>
+</html>

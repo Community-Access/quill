@@ -1,37 +1,10 @@
 from __future__ import annotations
 
-from quill.core.dictation import DictationController, DictationSettings, _transcribe_audio
-
-
-class _FakeRecognizer:
-    def __init__(self) -> None:
-        self.whisper_calls: list[tuple[object, str, str]] = []
-        self.vosk_payload: str | dict[str, str] = '{"text":"hello world"}'
-
-    def recognize_whisper(self, audio: object, *, model: str, language: str) -> str:
-        self.whisper_calls.append((audio, model, language))
-        return "dictated phrase"
-
-    def recognize_vosk(self, _audio: object) -> str | dict[str, str]:
-        return self.vosk_payload
-
-
-def test_transcribe_audio_uses_whisper_engine() -> None:
-    recognizer = _FakeRecognizer()
-    text = _transcribe_audio(
-        recognizer,
-        object(),
-        DictationSettings(engine="whisper", model="tiny", language="en-US"),
-    )
-    assert text == "dictated phrase"
-    assert recognizer.whisper_calls[0][1:] == ("tiny", "en-US")
-
-
-def test_transcribe_audio_parses_vosk_json() -> None:
-    recognizer = _FakeRecognizer()
-    recognizer.vosk_payload = '{"text":"from vosk"}'
-    text = _transcribe_audio(recognizer, object(), DictationSettings(engine="vosk"))
-    assert text == "from vosk"
+from quill.core.dictation import (
+    DictationController,
+    DictationSettings,
+    list_dictation_devices,
+)
 
 
 def test_stop_returns_joined_segments_and_resets_state() -> None:
@@ -40,3 +13,14 @@ def test_stop_returns_joined_segments_and_resets_state() -> None:
     result = controller.stop()
     assert result == "first second"
     assert controller.state == "idle"
+
+
+def test_default_engine_is_windows() -> None:
+    # Only the OS dictation panel is functional today; the default reflects that
+    # rather than promising an offline recognizer that is not wired up (S0).
+    assert DictationSettings().engine == "windows"
+
+
+def test_list_dictation_devices_is_empty_placeholder() -> None:
+    # Capture (and real device enumeration) arrives with the #617 speech engine.
+    assert list_dictation_devices() == []

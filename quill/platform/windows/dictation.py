@@ -4,8 +4,8 @@ try:  # pragma: no cover - Windows-only runtime hook
     import ctypes
     from ctypes import wintypes
 except ImportError:  # pragma: no cover - non-Windows fallback
-    ctypes = None
-    wintypes = None
+    ctypes = None  # type: ignore[assignment]
+    wintypes = None  # type: ignore[assignment]
 
 VK_LWIN = 0x5B
 VK_H = 0x48

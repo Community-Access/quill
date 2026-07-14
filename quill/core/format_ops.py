@@ -95,6 +95,33 @@ def outdent_lines(
     return merged, line_start, line_start + len(updated)
 
 
+def describe_indent_depth(text: str, caret: int) -> str:
+    """Describe the leading indentation of the line containing *caret*.
+
+    Returns e.g. ``"4 spaces"``, ``"8 spaces"``, ``"1 tab"``, ``"2 tabs"``,
+    ``"1 tab, 3 spaces"`` (mixed), or ``"No indentation"``. Tabs/spaces aware so a
+    screen reader can speak the new depth after Tab / Shift+Tab instead of a terse
+    "Indented lines".
+    """
+    caret = max(0, min(caret, len(text)))
+    line_start = text.rfind("\n", 0, caret) + 1
+    line_end = text.find("\n", line_start)
+    if line_end == -1:
+        line_end = len(text)
+    line = text[line_start:line_end]
+    leading = line[: len(line) - len(line.lstrip(" \t"))]
+    if not leading:
+        return "No indentation"
+    tabs = leading.count("\t")
+    spaces = leading.count(" ")
+    parts: list[str] = []
+    if tabs:
+        parts.append(f"{tabs} tab" if tabs == 1 else f"{tabs} tabs")
+    if spaces:
+        parts.append(f"{spaces} space" if spaces == 1 else f"{spaces} spaces")
+    return ", ".join(parts)
+
+
 def sort_lines(
     text: str,
     descending: bool = False,
@@ -165,11 +192,12 @@ def toggle_line_comment(
     start: int,
     end: int,
     path: Path | None,
+    profile: object | None = None,
 ) -> tuple[str, int, int]:
     line_start, line_end = _line_bounds(text, start, end)
     original = text[line_start:line_end]
     lines = _split_lines_keepends(original)
-    style = _line_comment_style(path)
+    style = _line_comment_style(path, profile)
 
     if style == "html":
         all_commented = _all_html_commented(lines)
@@ -203,6 +231,109 @@ def decode_html_entities(text: str) -> str:
 def encode_html_entities(text: str) -> str:
     """Encode <, >, &, " and ' as HTML entities."""
     return html.escape(text)
+
+
+_EMAIL_QUOTE_PREFIX = re.compile(r"^(?:\s*>+\s?)+")
+
+
+def remove_email_quote_markers(text: str) -> str:
+    """Strip leading ``>`` quote markers (and ``Name>`` prefixes) from each line."""
+    lines = []
+    for line in _split_lines(text):
+        stripped = _EMAIL_QUOTE_PREFIX.sub("", line)
+        if stripped == line:
+            stripped = re.sub(r"^\s*\S+>\s?", "", line, count=1)
+        lines.append(stripped)
+    return "\n".join(lines)
+
+
+def strip_low_ascii(text: str) -> str:
+    """Remove control characters (codepoints below 0x20), keeping tab and newline."""
+    return "".join(ch for ch in text if ord(ch) >= 0x20 or ch in "\t\n\r")
+
+
+def strip_high_ascii(text: str) -> str:
+    """Remove every character above 0x7E (non-ASCII), leaving plain ASCII text."""
+    return "".join(ch for ch in text if ord(ch) <= 0x7E or ch in "\t\n\r")
+
+
+def multi_replace(text: str, pairs: list[tuple[str, str]], *, case_sensitive: bool = True) -> str:
+    """Apply up to several search/replace pairs to *text* in one pass.
+
+    Pairs are applied in order, left to right, each over the result of the
+    previous one. Empty search strings are skipped rather than raising.
+    """
+    result = text
+    for search, replacement in pairs:
+        if not search:
+            continue
+        if case_sensitive:
+            result = result.replace(search, replacement)
+        else:
+
+            def _repl(_m: re.Match[str], r: str = replacement) -> str:
+                return r
+
+            result = re.sub(re.escape(search), _repl, result, flags=re.IGNORECASE)
+    return result
+
+
+def count_occurrences(text: str, needle: str, *, case_sensitive: bool = True) -> int:
+    """Count non-overlapping occurrences of *needle* in *text*."""
+    if not needle:
+        return 0
+    if case_sensitive:
+        return text.count(needle)
+    return text.lower().count(needle.lower())
+
+
+def compute_line_statistics(text: str) -> str:
+    """Render count/total/average/median/mode/standard deviation for numeric lines.
+
+    Non-numeric and blank lines are ignored. Designed to be read with a
+    screen reader: one labeled value per line.
+    """
+    import statistics
+
+    values: list[float] = []
+    for line in text.splitlines():
+        candidate = line.strip()
+        if not candidate:
+            continue
+        try:
+            values.append(float(candidate))
+        except ValueError:
+            continue
+    if not values:
+        return "No numeric lines were found."
+    lines = [
+        f"Numeric lines: {len(values)}",
+        f"Total: {sum(values):g}",
+        f"Average: {statistics.mean(values):g}",
+        f"Median: {statistics.median(values):g}",
+    ]
+    try:
+        lines.append(f"Mode: {statistics.mode(values):g}")
+    except statistics.StatisticsError:
+        lines.append("Mode: no unique mode")
+    if len(values) > 1:
+        lines.append(f"Standard deviation: {statistics.stdev(values):g}")
+    else:
+        lines.append("Standard deviation: not enough data")
+    return "\n".join(lines)
+
+
+def hex_dump(text: str, *, bytes_per_line: int = 16) -> str:
+    """Render *text* (encoded as UTF-8) as a classic hex + ASCII dump."""
+    data = text.encode("utf-8")
+    lines = []
+    for offset in range(0, len(data), bytes_per_line):
+        chunk = data[offset : offset + bytes_per_line]
+        hex_part = " ".join(f"{byte:02x}" for byte in chunk)
+        hex_part = hex_part.ljust(bytes_per_line * 3 - 1)
+        ascii_part = "".join(chr(byte) if 0x20 <= byte < 0x7F else "." for byte in chunk)
+        lines.append(f"{offset:08x}  {hex_part}  {ascii_part}")
+    return "\n".join(lines)
 
 
 def shuffle_lines(text: str) -> str:
@@ -299,8 +430,9 @@ def toggle_block_comment(
     start: int,
     end: int,
     path: Path | None,
+    profile: object | None = None,
 ) -> tuple[str, int, int]:
-    opening, closing = _block_comment_tokens(path)
+    opening, closing = _block_comment_tokens(path, profile)
     selected = text[start:end]
     if selected:
         stripped = selected.strip()
@@ -411,7 +543,17 @@ def _outdent_single_line(line: str, indent_unit: str) -> tuple[str, int]:
     return line[remove_count:], remove_count
 
 
-def _line_comment_style(path: Path | None) -> str:
+def _line_comment_style(path: Path | None, profile: object | None = None) -> str:
+    # A user-pinned language profile wins over the file name, so e.g. a .txt set
+    # to Python comments with "# " and one set to HTML comments with <!-- -->.
+    if profile is not None:
+        if getattr(profile, "markup_kind", "") in {"html", "markdown"}:
+            return "html"
+        prefix = getattr(profile, "comment_prefix", "")
+        if prefix:
+            return prefix
+        return "// "
+
     kind = infer_markup_kind(path)
     if kind in {"html", "markdown"}:
         return "html"
@@ -424,7 +566,16 @@ def _line_comment_style(path: Path | None) -> str:
     return "// "
 
 
-def _block_comment_tokens(path: Path | None) -> tuple[str, str]:
+def _block_comment_tokens(path: Path | None, profile: object | None = None) -> tuple[str, str]:
+    if profile is not None:
+        if getattr(profile, "markup_kind", "") in {"html", "markdown"}:
+            return "<!-- ", " -->"
+        start = getattr(profile, "block_comment_start", "")
+        end = getattr(profile, "block_comment_end", "")
+        if start and end:
+            return f"{start} ", f" {end}"
+        return "/* ", " */"
+
     style = _line_comment_style(path)
     if style == "html":
         return "<!-- ", " -->"

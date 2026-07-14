@@ -8,6 +8,7 @@ from quill.core.diagnostics import (
     build_bug_report_payload,
     build_diagnostics_review_text,
     build_support_issue_url,
+    document_snapshot,
     load_diagnostic_events,
     record_diagnostic_event,
     write_diagnostics_bundle,
@@ -15,6 +16,31 @@ from quill.core.diagnostics import (
 from quill.core.document import Document
 from quill.core.notifications import Notification
 from quill.core.settings import Settings
+
+
+def test_document_snapshot_never_leaks_content_and_hashes_path() -> None:
+    # Crash reports / bug reports attach this snapshot. It must never carry the
+    # document text, and with include_file_paths=False (the crash-report default)
+    # the full path is hashed, not sent, so a sensitive path cannot leak.
+    secret = "TОP SECRET manuscript body text that must never be sent"
+    document = Document(text=secret, path=Path("C:/Private/Resignation letter.docx"))
+
+    snap = document_snapshot(document, include_file_paths=False)
+    serialized = json.dumps(snap)
+
+    assert secret not in serialized
+    assert "text" not in snap  # no content field at all
+    assert "path" not in snap  # full path never included when hashing
+    assert snap.get("path_hash")  # the hash stands in for the path
+    assert "Private" not in serialized  # the directory path is never present
+    # The basename is still exposed via name (shown in the user-reviewed preview).
+    assert snap["name"] == "Resignation letter.docx"
+
+    # With include_file_paths=True (explicit opt-in), the raw path is present but
+    # the content still is not.
+    snap_paths = document_snapshot(document, include_file_paths=True)
+    assert snap_paths["path"] == str(document.path)
+    assert secret not in json.dumps(snap_paths)
 
 
 def test_record_diagnostic_event_round_trips(monkeypatch, tmp_path: Path) -> None:

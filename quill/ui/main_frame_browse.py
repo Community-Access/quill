@@ -21,8 +21,8 @@ import re
 import threading
 
 from quill.core.browser_preview import guess_preview_kind
-from quill.core.heading_organizer import parse_heading_blocks
 from quill.core.links import infer_markup_kind
+from quill.core.markdown_sections import parse_heading_blocks
 from quill.core.marks import line_column_for_position
 from quill.core.selection import line_span
 
@@ -125,6 +125,35 @@ class BrowseModeMixin:
     def _refresh_browse_navigation_cache_now(self) -> None:
         self._browse_navigation_cache = None
         self._browse_navigation_context()
+
+    def _quick_nav_panel_context(self) -> dict[str, object]:
+        """Browse nav context plus the on-demand transient nav types for the
+        Quick Nav panel: misspellings and active-search hits (#513).
+
+        These are computed here, not in the prewarmed browse cache, so the
+        perf-critical navigation cache stays light -- they only matter when the
+        user opens the panel. Failures degrade to "none", never breaking Quick Nav.
+        """
+        context = dict(self._browse_navigation_context())
+        text = str(context.get("text", ""))
+        try:
+            from quill.core.spellcheck import list_misspellings
+
+            context["misspellings"] = [
+                m.start for m in list_misspellings(text, self._spell_dictionary())
+            ]
+        except Exception:  # noqa: BLE001 - a spell-check hiccup must never break Quick Nav
+            context["misspellings"] = []
+        query = str(getattr(self, "_last_find_query", "") or "")
+        if query:
+            try:
+                from quill.core.search import find_matches
+
+                options = getattr(self, "_last_search_options", None)
+                context["search_hits"] = [s for s, _ in find_matches(text, query, options)]
+            except Exception:  # noqa: BLE001 - never let a bad pattern break Quick Nav
+                context["search_hits"] = []
+        return context
         self._quill_feedback(
             "QUILL browse cache refreshed",
             status_message="QUILL browse cache refreshed",
@@ -408,7 +437,7 @@ class BrowseModeMixin:
         self.editor.SetFocus()
         self._location_ring.record(target)
         line, column = line_column_for_position(text, target)
-        self._browse_feedback_move(f"Moved to {label} {kind} at line {line}, column {column}")
+        self._browse_feedback_move(f"Moved to {label} {kind}", line, column)
 
     def _browse_paragraph(self, *, reverse: bool) -> None:
         positions = [start for start, _end in self._browse_navigation_context()["paragraph_spans"]]
@@ -464,9 +493,16 @@ class BrowseModeMixin:
         self._location_ring.record(target)
         line, column = line_column_for_position(self.editor.GetValue(), target)
         direction = "previous" if reverse else "next"
-        self._browse_feedback_move(f"Moved to {direction} {noun} at line {line}, column {column}")
+        self._browse_feedback_move(f"Moved to {direction} {noun}", line, column)
 
-    def _browse_feedback_move(self, message: str) -> None:
+    def _browse_feedback_move(self, prefix: str, line: int, column: int) -> None:
+        detail = str(getattr(self.settings, "browse_mode_move_detail", "position")).strip().lower()
+        if detail == "none":
+            return
+        if detail == "line":
+            message = f"{prefix} at line {line}"
+        else:
+            message = f"{prefix} at line {line}, column {column}"
         self._quill_feedback(message, status_message=message, sound_kind="move")
 
     def _browse_not_found(self, noun: str, surface: str) -> None:

@@ -13,7 +13,7 @@ jobs:
   test:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
@@ -31,7 +31,7 @@ jobs:
     needs: test
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
@@ -54,7 +54,15 @@ jobs:
           if (-not $match) { throw 'Could not find ISCC.exe after installing Inno Setup.' }
           "ISCC_PATH=$match" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       - name: Build Windows distribution
-        run: python scripts/build_windows_distribution.py --bundle-python --compile-installer --iscc-path "$env:ISCC_PATH" --output-dir windows-distribution
+        # QUILL_FEEDBACK_GITHUB_TOKEN is the issues-only PAT baked into the build so
+        # users who never configured a personal token can still Report a Bug. It must
+        # be provided here (macOS already did this in #864; Windows never did, which
+        # shipped an empty bundled token and broke the field bug reporter), and
+        # --require-feedback-token makes a missing secret HARD-FAIL the release build
+        # rather than silently shipping a broken reporter.
+        env:
+          QUILL_FEEDBACK_GITHUB_TOKEN: ${{ secrets.QUILL_FEEDBACK_GITHUB_TOKEN }}
+        run: python scripts/build_windows_distribution.py --bundle-python --compile-installer --require-feedback-token --iscc-path "$env:ISCC_PATH" --output-dir windows-distribution
       - name: Generate release artifacts
         run: python scripts/generate_release_artifacts.py --output-dir release-artifacts --include-optional
       - name: Generate SBOM
@@ -85,7 +93,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: quill-installer
-          path: windows-distribution/installer/Output/Quill-Setup-*.exe
+          path: windows-distribution/installer/Output/Quill-for-All-Setup-*.exe
       - name: Upload installer script
         uses: actions/upload-artifact@v7
         with:
@@ -96,13 +104,41 @@ jobs:
         with:
           name: quill-release-artifacts
           path: release-artifacts
+      # Generate the signed update feed (autoupdate manifest) so the running
+      # build's Check for Updates flow points at this installer. Reads
+      # build/version.toml for the display version and reuses the installer's
+      # actual filename so the manifest can never drift from the artifact.
+      - name: Generate update feed
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          python scripts/generate_update_feed.py \
+            --output docs/site/updates/.quill-update-feed-v1.json \
+            --tag "${{ github.ref_name }}" \
+            --notes "$(python scripts/extract_release_body.py --version '${{ github.ref_name }}' --max-chars 800)"
+      - name: Commit update feed
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/site/updates/.quill-update-feed-v1.json
+          git diff --cached --quiet || git commit -m "docs(update-feed): refresh autoupdate manifest for ${{ github.ref_name }}"
+          git push
 
   release:
     needs: build
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Build release body from CHANGELOG
+        run: |
+          python scripts/extract_release_body.py \
+            --version "${{ github.ref_name }}" \
+            --output release-body.md \
+            --fallback-full
       - name: Download installer artifact
         uses: actions/download-artifact@v8
         with:
@@ -131,10 +167,10 @@ jobs:
       - name: Create GitHub release
         uses: softprops/action-gh-release@v3
         with:
-          name: "Quill ${{ github.ref_name }} Beta"
-          body_path: CHANGELOG.md
+          name: "QUILL for All ${{ github.ref_name }} Beta"
+          body_path: release-body.md
           files: |
-            release-assets/installer/Quill-Setup-*.exe
+            release-assets/installer/Quill-for-All-Setup-*.exe
             release-assets/Quill-Portable-*.zip
             release-assets/metadata/*.json
             release-assets/update/*.zip

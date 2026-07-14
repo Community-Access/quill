@@ -34,3 +34,36 @@ def test_render_preview_html_adapts_links_for_dark_browsers() -> None:
     assert "@media (prefers-color-scheme: dark)" in page
     # A light-blue link colour, not the default #0000ee, on dark backgrounds.
     assert "a{color:#6cb6ff;}" in page
+
+
+def test_render_preview_html_never_emits_a_refresh_tag() -> None:
+    # A preview page must never force-reload itself on a timer. The old
+    # <meta http-equiv="refresh"> poll re-rendered the whole page once a
+    # second, which flickered the tab and, for a screen-reader/braille user
+    # reading the preview, re-announced from the top constantly. The external
+    # browser preview now reloads only when the user re-runs the command, and
+    # the in-app preview is updated by pushing fresh HTML to the WebView.
+    page = render_preview_html("Doc", "hello", "markdown")
+    # Assert the specific meta-refresh mechanism is absent rather than the bare
+    # word "refresh", which could legitimately appear in future copy or script.
+    assert "http-equiv" not in page.lower()
+
+
+def test_render_preview_html_preserves_scroll_across_live_reloads() -> None:
+    # When there is no start anchor, the page stashes/restores scroll position in
+    # sessionStorage so a live-edit reload lands the reader where they were,
+    # instead of jumping to the top (part of the "flicker" a braille user feels).
+    page = render_preview_html("Doc", "hello", "markdown")
+    assert "sessionStorage" in page
+    assert "quillPreviewScroll" in page
+    assert "window.scrollTo(0" in page
+    # Still no timer-based reload.
+    assert "http-equiv" not in page
+
+
+def test_render_preview_html_anchor_takes_precedence_over_scroll_restore() -> None:
+    # With a heading anchor the page scrolls to that heading, not the saved
+    # position, so "preview at cursor" still lands on the right heading.
+    page = render_preview_html("Doc", "# Title\n\nbody", "markdown", "title")
+    assert "scrollIntoView" in page
+    assert "quillPreviewScroll" not in page

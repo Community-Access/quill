@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import subprocess
 import sys
+import urllib.parse
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any, Protocol
@@ -33,6 +34,8 @@ from quill.core.quillins.model import (
     CAP_FS_READ,
     CAP_FS_WRITE,
     CAP_NET,
+    CAP_SETTINGS_OWN_READ,
+    CAP_SETTINGS_OWN_WRITE,
     CAP_STORAGE,
     CAP_UI_ANNOUNCE,
     CAP_UI_CHOICES,
@@ -71,6 +74,8 @@ _METHOD_CAPABILITY: dict[str, str] = {
     "get_storage": CAP_STORAGE,
     "set_storage": CAP_STORAGE,
     "delete_storage": CAP_STORAGE,
+    "get_setting": CAP_SETTINGS_OWN_READ,
+    "set_setting": CAP_SETTINGS_OWN_WRITE,
 }
 
 
@@ -97,6 +102,7 @@ class HostServices(Protocol):
     def prompt(self, title: str, label: str, default: str) -> str | None: ...
     def set_status(self, message: str) -> None: ...
     def show_choices(self, title: str, items: list[str]) -> str | None: ...
+    def is_verbosity_speech_enabled(self) -> bool: ...
     def read_file(self, path: str) -> str: ...
     def write_file(self, path: str, text: str) -> None: ...
     def fetch(self, url: str, method: str, body: str | None) -> dict[str, Any]: ...
@@ -134,6 +140,7 @@ class ApiDispatcher:
             granted = manifest.capabilities
         self._granted: frozenset[str] = frozenset(granted)
         self._storage: dict[str, str] = storage if storage is not None else {}
+        self._net_allowed_hosts: tuple[str, ...] = manifest.net_allowed_hosts
 
     def handle(self, message: dict[str, Any]) -> dict[str, Any]:
         call_id = int(message.get("id", 0))
@@ -164,6 +171,29 @@ class ApiDispatcher:
             return protocol.api_error(call_id, "QuillinError", str(error))
         return protocol.api_ok(call_id, value)
 
+    def _is_host_allowed(self, url: str) -> bool:
+        """Return True if ``url``'s hostname matches ``net_allowed_hosts``.
+
+        An empty allowlist means all hosts are permitted (backwards-compatible
+        default). Wildcard patterns ``*.example.com`` match any subdomain.
+        """
+
+        if not self._net_allowed_hosts:
+            return True
+        try:
+            host = urllib.parse.urlparse(url).hostname or ""
+        except Exception:
+            return False
+        for pattern in self._net_allowed_hosts:
+            if pattern.startswith("*."):
+                # "*.example.com" matches "sub.example.com" but NOT "example.com"
+                suffix = "." + pattern[2:]
+                if host.endswith(suffix):
+                    return True
+            elif pattern == host:
+                return True
+        return False
+
     def _invoke_service(self, method: str, args: list[Any]) -> Any:
         services = self._services
         if method == "get_text":
@@ -186,6 +216,8 @@ class ApiDispatcher:
             services.open_buffer(str(args[0]), title)
             return None
         if method == "announce":
+            if not services.is_verbosity_speech_enabled():
+                return None
             services.announce(str(args[0]))
             return None
         if method == "prompt":
@@ -199,6 +231,8 @@ class ApiDispatcher:
             return None
         if method == "fetch":
             url = str(args[0])
+            if not self._is_host_allowed(url):
+                raise QuillinError(f"fetch blocked: host not in net_allowed_hosts ({url!r})")
             http_method = str(args[1]) if len(args) > 1 else "GET"
             body = args[2] if len(args) > 2 else None
             return services.fetch(url, http_method, None if body is None else str(body))
@@ -231,6 +265,11 @@ class ApiDispatcher:
             return None
         if method == "delete_storage":
             self._storage.pop(str(args[0]), None)
+            return None
+        if method == "get_setting":
+            return self._storage.get(str(args[0]))
+        if method == "set_setting":
+            self._storage[str(args[0])] = str(args[1])
             return None
         raise QuillinError(f"unhandled method: {method}")
 
@@ -318,6 +357,21 @@ class ExtensionHost:
         handler = self._handler_for(command_id)
         self._call_id += 1
         self._send(protocol.invoke(self._call_id, handler, context))
+        message = self._pump_until_result()
+        return message.get("value")
+
+    def invoke_event(self, handler_name: str, context: dict[str, Any]) -> Any:
+        """Invoke a registered handler by name (event/timer dispatch).
+
+        Works like :meth:`invoke` but takes the handler function name directly
+        rather than resolving it from a command id, because document-event and
+        timer handlers are not registered as commands.
+        """
+
+        if not isinstance(handler_name, str) or not handler_name:
+            raise QuillinError("invoke_event requires a non-empty handler name")
+        self._call_id += 1
+        self._send(protocol.invoke(self._call_id, handler_name, context))
         message = self._pump_until_result()
         return message.get("value")
 

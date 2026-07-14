@@ -1,7 +1,15 @@
 from __future__ import annotations
 
+import html
 import re
 from dataclasses import dataclass
+
+from quill.core.markdown_sections import (
+    _HTML_HEADING_PATTERN,
+    _MD_HEADING_PATTERN,
+)
+
+_ALLOWED_TEXT_ALIGN = {"left", "right", "center", "justify"}
 
 
 @dataclass(frozen=True, slots=True)
@@ -13,11 +21,11 @@ class HeadingStyle:
     def declarations(self) -> list[str]:
         declarations: list[str] = []
         if self.font_family:
-            declarations.append(f"font-family: {self.font_family}")
+            declarations.append(f"font-family: {html.escape(self.font_family, quote=True)}")
         if self.font_size_pt is not None and self.font_size_pt > 0:
             declarations.append(f"font-size: {self.font_size_pt}pt")
-        if self.text_align:
-            declarations.append(f"text-align: {self.text_align}")
+        if self.text_align and self.text_align.lower() in _ALLOWED_TEXT_ALIGN:
+            declarations.append(f"text-align: {self.text_align.lower()}")
         return declarations
 
 
@@ -54,16 +62,14 @@ def _apply_markdown_heading_style(
         level = len(marker)
         if level not in levels:
             return match.group(0)
-        body = match.group("body").strip()
+        body = (match.group("title") or "").strip()
         changed += 1
         return f'<h{level} style="{style_text}">{body}</h{level}>'
 
-    updated = re.sub(
-        r"^(?P<marker>#{1,6})[ \t]+(?P<body>.+)$",
-        replace,
-        text,
-        flags=re.MULTILINE,
-    )
+    # Use the shared pattern from quill.core.markdown_sections (#359): the
+    # old local regex required a space + body, so a heading like ``#NoSpace``
+    # was silently skipped. The canonical pattern matches an optional title.
+    updated = _MD_HEADING_PATTERN.sub(replace, text)
     return updated, changed
 
 
@@ -72,10 +78,8 @@ def _apply_html_heading_style(
     style: HeadingStyle,
     levels: set[int],
 ) -> tuple[str, int]:
-    pattern = re.compile(
-        r"<h(?P<level>[1-6])(?P<attrs>[^>]*)>(?P<body>.*?)</h(?P=level)>",
-        flags=re.IGNORECASE | re.DOTALL,
-    )
+    # The shared HTML pattern from quill.core.markdown_sections (#359).
+    pattern = _HTML_HEADING_PATTERN
     changed = 0
 
     def replace(match: re.Match[str]) -> str:

@@ -100,6 +100,9 @@ class _LazyString:
         return hash(str(self))
 
 
+LazyStr = _LazyString
+
+
 def lazy_gettext(message: str) -> _LazyString:
     """Return a proxy that translates *message* on first string conversion.
 
@@ -109,6 +112,72 @@ def lazy_gettext(message: str) -> _LazyString:
         LABEL = lazy_gettext("Open file")
     """
     return _LazyString(message)
+
+
+# Display names for languages QUILL is likely to be translated into. The
+# native name is included in parentheses so a speaker of that language can
+# recognise their own language in the chooser even before the UI switches.
+_DISPLAY_NAMES: dict[str, str] = {
+    "en": "English",
+    "ar": "Arabic (العربية)",
+    "cs": "Czech (Čeština)",
+    "da": "Danish (Dansk)",
+    "de": "German (Deutsch)",
+    "el": "Greek (Ελληνικά)",
+    "es": "Spanish (Español)",
+    "fi": "Finnish (Suomi)",
+    "fr": "French (Français)",
+    "he": "Hebrew (עברית)",
+    "hi": "Hindi (हिन्दी)",
+    "it": "Italian (Italiano)",
+    "ja": "Japanese (日本語)",
+    "ko": "Korean (한국어)",
+    "nb": "Norwegian Bokmål (Norsk bokmål)",
+    "nl": "Dutch (Nederlands)",
+    "pl": "Polish (Polski)",
+    "pt": "Portuguese (Português)",
+    "pt_BR": "Portuguese, Brazil (Português do Brasil)",
+    "ru": "Russian (Русский)",
+    "sv": "Swedish (Svenska)",
+    "tr": "Turkish (Türkçe)",
+    "uk": "Ukrainian (Українська)",
+    "zh": "Chinese (中文)",
+    "zh_Hans": "Chinese, Simplified (简体中文)",
+    "zh_Hant": "Chinese, Traditional (繁體中文)",
+}
+
+
+def language_display_name(tag: str) -> str:
+    """Return a human-friendly name for a locale *tag* (falls back to the tag).
+
+    Looks up the exact tag first, then the base language (so ``"fr_CA"`` still
+    shows the French name), then returns the tag unchanged.
+    """
+    key = tag.replace("-", "_")
+    if key in _DISPLAY_NAMES:
+        return _DISPLAY_NAMES[key]
+    base = key.split("_", 1)[0]
+    return _DISPLAY_NAMES.get(base, tag)
+
+
+def available_languages() -> list[str]:
+    """Return locale tags that have a compiled translation (``quill.mo``).
+
+    These are the directory names under ``quill/locale`` that contain
+    ``LC_MESSAGES/quill.mo`` — i.e. the languages a user can actually switch
+    to. The list is sorted and never includes the source language placeholder
+    (English needs no ``.mo``). Returns an empty list when only the ``.pot``
+    template is present.
+    """
+    if not _LOCALE_DIR.is_dir():
+        return []
+    tags: list[str] = []
+    for child in _LOCALE_DIR.iterdir():
+        if not child.is_dir():
+            continue
+        if (child / "LC_MESSAGES" / f"{_DOMAIN}.mo").is_file():
+            tags.append(child.name)
+    return sorted(tags)
 
 
 def _detect_os_language() -> str:

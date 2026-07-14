@@ -1,0 +1,322 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quill.app/schemas/speech_project/2.json",
+  "title": "QUILL Speech Project Profile",
+  "description": "Per-project remembered speech settings, stored at <project>/.quill/speech-project.json. Carries the synthesizer, output format, chapterization, text normalization, active pronunciation dictionaries, and the Phase 4-6 wizard flags (book_credits, library_mode) so a folder of documents is configured once. See docs/planning/speech-project-format.md and §4.10 of docs/planning/batch-document-to-speech-plan.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version"],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Profile schema version. Current is 2. v1 documents load with book_credits and library_mode defaulting to false."
+    },
+    "synthesizer": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The chosen TTS engine and its voice / pacing.",
+      "properties": {
+        "engine": {
+          "enum": ["sapi5", "dectalk", "piper", "kokoro", "espeak"],
+          "description": "Local synthesis engine. Cloud engines are excluded from batch (§2.3)."
+        },
+        "voice": {
+          "type": "string",
+          "description": "Engine voice id/name (e.g. a SAPI voice token, a Kokoro voice, an eSpeak language)."
+        },
+        "rate": {
+          "type": "integer",
+          "minimum": 50,
+          "maximum": 800,
+          "description": "Words-per-minute style rate (SAPI 5 / eSpeak / DECtalk)."
+        },
+        "volume": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Output volume, 0.0-1.0."
+        },
+        "speed": {
+          "type": "number",
+          "minimum": 0.25,
+          "maximum": 4.0,
+          "description": "Speed multiplier for engines that use one (Kokoro)."
+        },
+        "extra": {
+          "type": "object",
+          "description": "Engine-specific keys. Recognised: piper_executable, piper_model, dectalk_executable, dectalk_dictionary, espeak_executable. Values are paths/strings.",
+          "additionalProperties": true
+        }
+      }
+    },
+    "discovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Which files in the project folder are converted.",
+      "properties": {
+        "extensions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "File extensions to include (e.g. \".docx\", \".md\")."
+        },
+        "recursive": {
+          "type": "boolean",
+          "description": "Descend into subfolders when discovering documents."
+        },
+        "include_glob": {
+          "type": "string",
+          "description": "Semicolon/comma-separated glob list; only matching files are kept (empty = all). Matched against the file name and its path relative to the source folder."
+        },
+        "exclude_glob": {
+          "type": "string",
+          "description": "Semicolon/comma-separated glob list; matching files are dropped (wins over include)."
+        },
+        "max_file_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Skip files larger than this many bytes. 0 = no cap."
+        }
+      }
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "How audio files are written.",
+      "properties": {
+        "format": {
+          "enum": ["wav", "mp3", "m4a", "m4b", "opus", "flac", "ogg"],
+          "description": "wav (always available) or a compressed format (requires ffmpeg; falls back to wav with a note). m4b is the audiobook container."
+        },
+        "skip_existing": {
+          "type": "boolean",
+          "description": "Legacy alias for on_existing=\"skip\": skip a file whose output already exists."
+        },
+        "on_existing": {
+          "enum": ["skip", "overwrite", "rename"],
+          "description": "What to do when the target file exists: skip (cheap resume), overwrite, or write a unique \"name (2).ext\" sibling."
+        },
+        "mp3_vbr_quality": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9,
+          "description": "libmp3lame VBR quality (-q:a): 0 best/largest .. 9 smallest. Only used for mp3 output."
+        },
+        "wav_sample_rate": {
+          "type": ["integer", "null"],
+          "minimum": 8000,
+          "maximum": 192000,
+          "description": "Re-sample WAV output to this rate (requires ffmpeg). null = leave as synthesized."
+        },
+        "wav_channels": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "maximum": 2,
+          "description": "Down-mix WAV output to this many channels (requires ffmpeg). null = leave as synthesized."
+        },
+        "flatten": {
+          "type": "boolean",
+          "description": "Collapse the source folder tree into a single output folder instead of mirroring it."
+        },
+        "filename_template": {
+          "type": "string",
+          "description": "Rename output stems. Fields: {stem}, {index} (1-based), {index0}, {total}; zero-padding like {index:03d} works. Empty = keep the source stem."
+        }
+      }
+    },
+    "chapters": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Heading-aware chapterization (§4.8).",
+      "properties": {
+        "mode": {
+          "enum": ["none", "single", "separate"],
+          "description": "none = one flat file; single = one file with MP3 chapter markers; separate = one file per article."
+        },
+        "sound_enabled": {
+          "type": "boolean",
+          "description": "Play a transition earcon at each article boundary; also emits a with-tones file variant."
+        },
+        "sound_id": {
+          "type": "string",
+          "description": "Sound-pack sound id for the transition earcon. \"\" = the bundled placeholder chime."
+        },
+        "sound_volume": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Earcon volume, 0-100."
+        },
+        "article_gap_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000,
+          "description": "Silence inserted between articles, in milliseconds."
+        },
+        "sentence_gap_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000,
+          "description": "Silence inserted between sentences within a section, in milliseconds. 0 = off (one synthesis call per section)."
+        },
+        "tail_padding_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000,
+          "description": "Silence appended after each section's speech, in milliseconds, to prevent end-of-clip cutoff. 0 = off."
+        },
+        "intro_section_title": {
+          "type": "string",
+          "description": "Title for the lead-in section before the first heading (and for documents with no headings)."
+        },
+        "combine_headings": {
+          "type": "boolean",
+          "description": "When true, fold empty (bodyless) headings into the next article before synthesis, joining their titles (ACB-style)."
+        },
+        "normalize_loudness": {
+          "type": "boolean",
+          "description": "When true, normalize each output to ACX audiobook loudness with a two-pass loudnorm pass before encoding."
+        },
+        "round_robin_voices": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Ordered voice ids (of the chosen engine) cycled one per article/heading. Empty or a single voice uses the single synthesizer voice."
+        }
+      }
+    },
+    "normalization": {
+      "type": "object",
+      "description": "Serialized TextNormalizationOptions (§4.9). Empty object = recommended defaults. See quill/core/speech/text_normalize.py.",
+      "additionalProperties": true
+    },
+    "pronunciation": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Active pronunciation dictionaries for the project (§4.7).",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Master toggle for pronunciation correction in this project."
+        },
+        "dictionaries": {
+          "type": "array",
+          "description": "Ordered references to the dictionaries this project uses.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Dictionary id (the JSON file stem for quill-json dictionaries)."
+              },
+              "scope": {
+                "enum": ["global", "project"],
+                "description": "global = app data dir; project = the project folder's .quill/pronunciation/."
+              },
+              "format": {
+                "enum": ["quill-json", "sapi-lexicon", "csv"],
+                "description": "Dictionary file format. quill-json is native; sapi-lexicon and csv are reserved for future importers."
+              },
+              "path": {
+                "type": "string",
+                "description": "For project scope: path relative to the project root. \"\" = resolve by id in the standard location."
+              }
+            }
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Audiobook / file tags stamped on compressed outputs (none for WAV). The per-file title defaults to the document stem.",
+      "properties": {
+        "album": { "type": "string", "description": "Album / audiobook title." },
+        "author": { "type": "string", "description": "Author or narrator (ffmpeg \"artist\")." },
+        "album_artist": {
+          "type": "string",
+          "description": "Album artist. Empty falls back to author."
+        },
+        "genre": { "type": "string", "description": "Genre tag (e.g. \"Audiobook\")." },
+        "year": { "type": "string", "description": "Release year / date tag." },
+        "comment": { "type": "string", "description": "Free-text comment tag." }
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "How the batch runs: error policy, concurrency, and run report.",
+      "properties": {
+        "stop_on_error": {
+          "type": "boolean",
+          "description": "Stop the whole batch on the first hard error instead of continuing."
+        },
+        "retry_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10,
+          "description": "Extra synthesis attempts per file on a hard failure (flaky subprocess engines)."
+        },
+        "max_workers": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16,
+          "description": "Files synthesized at once. Clamped to 1 for SAPI 5 and Kokoro (single-apartment engines)."
+        },
+        "write_manifest": {
+          "type": "boolean",
+          "description": "Write manifest.json and manifest.csv of the run into the output folder."
+        }
+      }
+    },
+    "translation": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Remembered translated-export targets and backend (§7).",
+      "properties": {
+        "provider": {
+          "enum": ["ai_assistant", "libretranslate"],
+          "description": "Translation backend: ai_assistant (the configured AI provider) or libretranslate (local)."
+        },
+        "libretranslate_url": {
+          "type": "string",
+          "description": "Base URL of the LibreTranslate server when provider is libretranslate."
+        },
+        "targets": {
+          "type": "array",
+          "description": "Each language to also export, with the voice that speaks it.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["language"],
+            "properties": {
+              "language": {
+                "type": "string",
+                "minLength": 1,
+                "description": "ISO 639-1 base language code, e.g. \"es\"."
+              },
+              "engine": {
+                "type": "string",
+                "description": "Voice engine: espeak | sapi5 | openai | gemini | elevenlabs."
+              },
+              "voice": {
+                "type": "string",
+                "description": "Engine-native voice id for this language."
+              }
+            }
+          }
+        }
+      }
+    },
+    "book_credits": {
+      "type": "boolean",
+      "description": "When true, the synthesized audiobook includes a 'Credits' section as the final chapter. Persisted at the project level so a folder's per-run choices auto-stick across 'Skip to summary'."
+    },
+    "library_mode": {
+      "type": "boolean",
+      "description": "When true, the audio-journey treats every subfolder of the source as its own book and builds unattended. Persisted at the project level so the per-folder auto-remember covers it."
+    }
+  }
+}

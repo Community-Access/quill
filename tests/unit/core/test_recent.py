@@ -4,7 +4,13 @@ from pathlib import Path
 
 import pytest
 
-from quill.core.recent import add_recent_file, clear_recent_files, load_recent_files
+from quill.core import recent as recent_module
+from quill.core.recent import (
+    add_recent_file,
+    clear_recent_files,
+    load_recent_files,
+    prune_missing_recent_files,
+)
 
 
 def test_add_recent_file_prepends_and_dedupes(
@@ -45,3 +51,39 @@ def test_clear_recent_files(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> 
     add_recent_file(one, limit=10)
     clear_recent_files()
     assert load_recent_files() == []
+
+
+def test_prune_missing_disabled_is_noop(tmp_path: Path) -> None:
+    gone = tmp_path / "gone.txt"  # never created
+    kept, removed = prune_missing_recent_files([gone], enabled=False)
+    assert kept == [gone]
+    assert removed == []
+
+
+def test_prune_missing_drops_only_on_fixed_drive(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setattr(recent_module, "_is_fixed_drive", lambda _path: True)
+    here = tmp_path / "here.txt"
+    here.write_text("x", encoding="utf-8")
+    gone = tmp_path / "gone.txt"  # never created
+    kept, removed = prune_missing_recent_files([here, gone], enabled=True)
+    assert kept == [here]
+    assert removed == [gone]
+
+
+def test_prune_missing_keeps_everything_on_removable_or_network(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # A non-fixed drive (USB/network/unknown) must never be probed or dropped,
+    # even when the file is missing -- the drive is likely just detached (#14).
+    monkeypatch.setattr(recent_module, "_is_fixed_drive", lambda _path: False)
+
+    def _explode() -> bool:
+        raise AssertionError("exists() must not be called for non-fixed drives")
+
+    gone = tmp_path / "gone.txt"
+    monkeypatch.setattr(type(gone), "exists", lambda _self: _explode())
+    kept, removed = prune_missing_recent_files([gone], enabled=True)
+    assert kept == [gone]
+    assert removed == []

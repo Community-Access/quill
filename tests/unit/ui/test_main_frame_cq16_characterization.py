@@ -190,9 +190,11 @@ def test_prompt_to_save_active_document_decision_table() -> None:
     frame = _bare()
     frame._wx = SimpleNamespace(ID_CANCEL=5101, ID_YES=5103, ID_NO=5104)
     prompt_calls: list[tuple[Any, ...]] = []
+    kwarg_calls: list[dict[str, Any]] = []
 
-    def _prompt(*args: Any) -> int:
+    def _prompt(*args: Any, **_kwargs: Any) -> int:
         prompt_calls.append(args)
+        kwarg_calls.append(_kwargs)
         return frame._next_prompt_result
 
     frame._prompt_unsaved_changes_action = _prompt  # type: ignore[method-assign]
@@ -220,6 +222,13 @@ def test_prompt_to_save_active_document_decision_table() -> None:
     assert frame._prompt_to_save_active_document("closing") is True
     assert frame.document.modified is True
 
+    # #619: the close path must pass restore_focus=False so the queued
+    # editor.SetFocus does not fire after DeletePage destroys the TextCtrl.
+    assert kwarg_calls, "the save prompt must have been invoked at least once"
+    assert all(call.get("restore_focus") is False for call in kwarg_calls), (
+        "#619: every close-path save prompt must pass restore_focus=False"
+    )
+
 
 def test_switch_document_wraps_around_and_guards_single_tab() -> None:
     frame = _bare()
@@ -246,17 +255,11 @@ def test_switch_document_wraps_around_and_guards_single_tab() -> None:
     assert statuses[-1] == "Switched to B.md"
 
 
-def test_write_document_to_disk_routes_rtf_through_the_rtf_writer(monkeypatch) -> None:
+def test_write_document_to_disk_routes_by_extension(monkeypatch) -> None:
     import quill.io.export as export_module
 
-    plain_calls: list[tuple[object, Path | None]] = []
     rtf_calls: list[tuple[object, Path | None]] = []
     verbatim_calls: list[tuple[object, Path | None]] = []
-    monkeypatch.setattr(
-        export_module,
-        "write_plain_text_document",
-        lambda doc, target=None, **kwargs: plain_calls.append((doc, target)),
-    )
     monkeypatch.setattr(
         export_module,
         "write_rtf_document",
@@ -270,20 +273,23 @@ def test_write_document_to_disk_routes_rtf_through_the_rtf_writer(monkeypatch) -
 
     frame = _bare()
 
-    # A .txt target strips markup to plain text.
+    # A .txt target is written verbatim — no Markdown stripping and no blank-line
+    # collapsing (#649). (The explicit "Save as plain text" command still flattens
+    # markup; Save / Save As by extension does not.)
     txt_doc = SimpleNamespace(path=Path("note.txt"))
     frame._write_document_to_disk(txt_doc)
-    assert plain_calls == [(txt_doc, Path("note.txt"))]
+    assert verbatim_calls[-1] == (txt_doc, Path("note.txt"))
     assert rtf_calls == []
 
-    # A .md target is written verbatim (already Markdown).
+    # A .md target is also written verbatim (already Markdown).
     md_doc = SimpleNamespace(path=Path("note.md"))
     frame._write_document_to_disk(md_doc)
-    assert verbatim_calls == [(md_doc, Path("note.md"))]
+    assert verbatim_calls[-1] == (md_doc, Path("note.md"))
 
+    # A .rtf path routes through the RTF writer.
     rtf_doc = SimpleNamespace(path=Path("note.rtf"))
     frame._write_document_to_disk(rtf_doc)
-    assert rtf_calls == [(rtf_doc, Path("note.rtf"))]
+    assert rtf_calls[-1] == (rtf_doc, Path("note.rtf"))
 
     # An explicit .rtf target overrides a non-rtf document path.
     other = SimpleNamespace(path=Path("note.txt"))

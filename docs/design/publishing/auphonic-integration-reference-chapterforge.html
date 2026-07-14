@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>auphonic-integration-reference-chapterforge</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<blockquote>
+<p><strong>Archived reference.</strong> This is ChapterForge’s Auphonic
+integration design, kept when ChapterForge was consolidated into QUILL
+(2026-07-04). QUILL’s own shipped client is the compact
+<code>quill/core/publish/auphonic.py</code> (API-token auth, simple-API
+upload/poll/download, credential-vault storage) reached from the Chapter
+Workbench’s Publish dialog. Mine this document when growing that client
+(OAuth flow, credit balance, multitrack, preset UX).</p>
+</blockquote>
+<h1 id="auphonic-integration">Auphonic Integration</h1>
+<blockquote>
+<p><strong>Beta feature</strong> - Auphonic integration is opt-in.
+Enable it under <strong>Tools &gt; Settings &gt; General &gt; Enable
+beta features</strong>. The Auphonic menu will appear after saving.</p>
+</blockquote>
+<p>ChapterForge integrates with <a
+href="https://auphonic.com">Auphonic</a> for professional audio
+post-production. Connect your own Auphonic account to process audio
+using your own credits - ChapterForge does not resell or proxy Auphonic
+billing.</p>
+<h2 id="features">Features</h2>
+<ul>
+<li>Connect your Auphonic account via OAuth 2.0 (no password
+stored)</li>
+<li>View your available credit balance before submitting jobs</li>
+<li>Submit singletrack and multitrack audio productions</li>
+<li>Six built-in presets plus your own Auphonic account presets</li>
+<li>Audio-only validation - video files are rejected at the source</li>
+<li>Automatic credit estimation with 3-minute minimum warning</li>
+<li>Background polling with exponential backoff until jobs complete</li>
+<li>Download all result files (audio, transcript, captions, stats,
+chapters)</li>
+<li>Review-before-publish workflow</li>
+<li>Full keyboard and screen reader accessibility</li>
+</ul>
+<h2 id="menu-access">Menu Access</h2>
+<p><strong>Auphonic</strong> menu (between View and Help):</p>
+<table>
+<thead>
+<tr>
+<th>Menu item</th>
+<th>Shortcut</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Connect Account</td>
+<td>-</td>
+<td>OAuth connect / view credit balance</td>
+</tr>
+<tr>
+<td>New Production</td>
+<td>-</td>
+<td>Submit audio for processing</td>
+</tr>
+<tr>
+<td>Job History</td>
+<td>-</td>
+<td>View jobs and download results</td>
+</tr>
+</tbody>
+</table>
+<h2 id="setup">Setup</h2>
+<h3 id="enable-beta-features">0. Enable beta features</h3>
+<p>Open <strong>Tools &gt; Settings</strong>, go to the
+<strong>General</strong> tab, and check <strong>Enable beta features
+(Auphonic integration)</strong>. Click OK. The <strong>Auphonic</strong>
+menu will appear in the menu bar.</p>
+<h3 id="get-an-auphonic-account">1. Get an Auphonic account</h3>
+<p>Sign up at https://auphonic.com. New accounts receive free
+credits.</p>
+<h3 id="register-a-desktop-oauth-app-admin-developer-step">2. Register a
+desktop OAuth app (admin / developer step)</h3>
+<p>Contact Auphonic support to register a desktop OAuth application. You
+will receive a <strong>Client ID</strong> and <strong>Client
+Secret</strong>. These are set per deployment:</p>
+<ul>
+<li><p>For development: set environment variables before launching:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="va">$env</span><span class="op">:</span><span class="va">AUPHONIC_CLIENT_ID</span> <span class="op">=</span> <span class="st">&quot;your-client-id&quot;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="va">$env</span><span class="op">:</span><span class="va">AUPHONIC_CLIENT_SECRET</span> <span class="op">=</span> <span class="st">&quot;your-client-secret&quot;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>python main<span class="op">.</span><span class="fu">py</span></span></code></pre></div></li>
+<li><p>For production builds: the build pipeline injects these at build
+time (same pattern as the GitHub feedback token).</p></li>
+</ul>
+<h3 id="connect-from-inside-chapterforge">3. Connect from inside
+ChapterForge</h3>
+<ol type="1">
+<li>Open <strong>Auphonic &gt; Connect Account</strong></li>
+<li>Click <strong>Connect Auphonic</strong> - your browser opens to
+Auphonic’s authorization page</li>
+<li>Log in and approve access</li>
+<li>Return to ChapterForge - the dialog shows your credit balance</li>
+</ol>
+<p>Your OAuth token is stored encrypted in
+<code>%APPDATA%\ChapterForge\auphonic_token.bin</code> using Windows
+DPAPI. It is never logged or sent to any server other than Auphonic.</p>
+<h2 id="submitting-a-production">Submitting a Production</h2>
+<ol type="1">
+<li>Open <strong>Auphonic &gt; New Production</strong></li>
+<li>Click <strong>Browse</strong> and select an audio file</li>
+<li>ChapterForge validates the file with ffprobe (rejects video
+streams)</li>
+<li>Your credit estimate and available balance are shown</li>
+<li>Choose a preset (or your own account preset)</li>
+<li>Enter a title and click <strong>Submit Production</strong></li>
+<li>ChapterForge submits to Auphonic and polls for completion in the
+background</li>
+</ol>
+<p>When the job finishes you receive a notification. Open <strong>Job
+History</strong> to download results.</p>
+<h2 id="built-in-presets">Built-in Presets</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Preset</th>
+<th>Best for</th>
+<th>Key settings</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Podcast Cleanup</td>
+<td>General podcast editing</td>
+<td>Leveling, -16 LUFS, denoise, filtering. MP3 + stats</td>
+</tr>
+<tr>
+<td>Podcast Cleanup + Transcript</td>
+<td>Podcast with accessibility</td>
+<td>Same + transcript HTML/TXT, SRT, WebVTT captions</td>
+</tr>
+<tr>
+<td>Audiobook / ACX Draft</td>
+<td>Audiobook submission drafts</td>
+<td>-18 LUFS, heavy denoise, WAV + FLAC</td>
+</tr>
+<tr>
+<td>Lecture Cleanup</td>
+<td>Recorded lectures</td>
+<td>Denoise, silence cutting, MP3 + captions</td>
+</tr>
+<tr>
+<td>Meeting / Interview Multitrack</td>
+<td>Multi-person recordings</td>
+<td>Adaptive leveling, multitrack layout, MP3</td>
+</tr>
+<tr>
+<td>Archive Master</td>
+<td>Long-term archival</td>
+<td>Minimal processing, FLAC + WAV + chapters</td>
+</tr>
+</tbody>
+</table>
+<h2 id="audio-only-policy">Audio-Only Policy</h2>
+<p>This integration is audio-only. The following are enforced at every
+stage:</p>
+<ul>
+<li>Only audio file extensions are accepted (MP3, WAV, FLAC, M4A, AAC,
+OGG, Opus, AIFF, and others)</li>
+<li>ffprobe inspects every file for video streams - any video stream
+causes rejection</li>
+<li>Remote URLs must use HTTPS and must not resolve to private/loopback
+IP ranges</li>
+<li>Auphonic output files containing video or audiogram formats are
+hidden from results even if Auphonic returns them</li>
+</ul>
+<h2 id="credit-billing">Credit Billing</h2>
+<p>Auphonic bills based on processed audio duration:</p>
+<ul>
+<li>Minimum charge: 3 minutes per production</li>
+<li>Re-running with changed settings on the same input does not trigger
+a new charge (per Auphonic’s pricing FAQ)</li>
+<li>Creating a new production from the same audio does trigger a new
+charge</li>
+<li>ChapterForge shows your available balance before submission and the
+actual credits used after completion</li>
+</ul>
+<h2 id="job-history">Job History</h2>
+<p><strong>Auphonic &gt; Job History</strong> shows all submitted jobs
+with:</p>
+<ul>
+<li>Title, status, credits used, and submission timestamp</li>
+<li><strong>Download Results</strong> - saves allowed output files to a
+folder you choose</li>
+<li><strong>Publish</strong> - triggers publishing for jobs held at
+review-before-publish</li>
+</ul>
+<h2 id="data-storage">Data Storage</h2>
+<p>All Auphonic job data is stored locally in
+<code>%APPDATA%\ChapterForge\auphonic.db</code> (SQLite). Nothing is
+sent to ChapterForge’s servers.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“Not connected to Auphonic”</td>
+<td>Open Connect Account and click Connect</td>
+</tr>
+<tr>
+<td>“Insufficient credits”</td>
+<td>Purchase credits at auphonic.com or use a shorter file</td>
+</tr>
+<tr>
+<td>“File contains a video stream”</td>
+<td>Convert to audio-only before using (e.g., extract audio with
+ffmpeg)</td>
+</tr>
+<tr>
+<td>Token expired</td>
+<td>Open Connect Account - ChapterForge refreshes automatically, or
+reconnect</td>
+</tr>
+<tr>
+<td>Job stuck in Processing</td>
+<td>Job History &gt; Refresh - polling continues in the background</td>
+</tr>
+<tr>
+<td>OAuth credentials not configured</td>
+<td>Set AUPHONIC_CLIENT_ID and AUPHONIC_CLIENT_SECRET environment
+variables</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

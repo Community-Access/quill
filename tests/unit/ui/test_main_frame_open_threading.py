@@ -16,9 +16,11 @@ def test_open_reads_heavy_office_formats_off_the_ui_thread() -> None:
     assert "if suffix in _OFFICE_STREAM_SUFFIXES:" in SOURCE
     # The office branch dispatches the read through the background-task helper.
     assert "self._run_background_task(" in SOURCE
-    assert "lambda _progress: read_open_document(selected_path, suffix, word_mode=word_mode)" in (
-        SOURCE
-    )
+    assert (
+        "lambda _progress: read_open_document(\n"
+        "                    selected_path, suffix, word_mode=word_mode, docx_engine=docx_engine\n"
+        "                )"
+    ) in SOURCE
 
 
 def test_open_resolves_word_prompt_before_leaving_the_ui_thread() -> None:

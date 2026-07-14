@@ -174,3 +174,21 @@ def test_main_frame_overrides_help_frame_property():
         "returning self would cause self.Bind() to fail since MainFrame "
         "is not a wx.Frame subclass."
     )
+
+
+# ---------------------------------------------------------------------------
+# Regression: _bind_events() runs during __init__ before the editor exists on
+# the first-run/wizard-pending path. _apply_soft_wrap must no-op rather than
+# crash with AttributeError: 'MainFrame' object has no attribute 'editor'.
+
+
+def test_apply_soft_wrap_no_ops_before_editor_exists() -> None:
+    from quill.ui.main_frame import MainFrame
+
+    class _Stub:
+        pass
+
+    stub = _Stub()
+    # No `editor` attribute yet — must return cleanly (it guards before using _wx).
+    MainFrame._apply_soft_wrap(stub, True)
+    MainFrame._apply_soft_wrap(stub, False)

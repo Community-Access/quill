@@ -1,8 +1,8 @@
 """Punctuation verbalization for Read Aloud (SET-3).
 
 Screen readers expose a punctuation verbosity level (none / some / most / all)
-so a listener can choose how much punctuation is spoken. No SAPI, Edge, or
-pyttsx3 voice exposes such a parameter, so QUILL implements it itself: before a
+so a listener can choose how much punctuation is spoken. No SAPI or Edge voice
+exposes such a parameter, so QUILL implements it itself: before a
 sentence is handed to any TTS engine, the punctuation marks at or below the
 chosen level are rewritten into their spoken names. This gives Read Aloud the
 same punctuation control a screen reader offers, independent of the engine in
@@ -86,6 +86,16 @@ def verbalize_punctuation(text: str, level: str) -> str:
     At ``none`` the text is returned unchanged. At higher levels each symbol in
     the active set is replaced by its spoken name surrounded by spaces, then
     runs of whitespace are collapsed so the engine receives clean input.
+
+    Performance notes (#344): the implementation walks the string once and
+    builds a list of string pieces before joining.  The per-character
+    ``list.append`` is O(1) amortised and the final ``str.split``/``join``
+    is O(N) on the rewritten length, so the function is linear in the input
+    length.  Sentence-level callers (the primary use case in the read-aloud
+    engine) stay well under 1 ms for typical inputs.  Whole-document input
+    is theoretically supported but is not on the read-aloud hot path; if a
+    future feature needs document-level verbalization, switch to a
+    ``str.translate``-based batch rewrite and drop the per-character loop.
     """
 
     active = _LEVEL_SYMBOLS.get(normalize_punctuation_level(level), _SOME_SYMBOLS)

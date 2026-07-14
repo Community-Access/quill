@@ -1,0 +1,42 @@
+{% extends "_base.html" %}
+{% block title %}Quillin Hub | The Submission Forge{% endblock %}
+{% block content %}
+    <section aria-labelledby="forge-heading" class="max-w-4xl mx-auto">
+        <h2 id="forge-heading" class="text-3xl font-bold mb-2 text-slate-800">The Submission Forge</h2>
+        <p class="text-slate-600 mb-8">
+            Everything you make in QUILL can be shared. Drop your file on the Forge and it does the
+            rest: detects what you built, runs the exact checks QUILL itself uses, reads your
+            manifest so you never retype it, and hands you a guided path to publication.
+        </p>
+
+        <p class="mb-10">
+            <a href="/forge/submit" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-700 shadow-lg">
+                Submit an artifact
+            </a>
+        </p>
+
+        <h3 class="text-2xl font-bold mb-4 text-slate-800">What can you share?</h3>
+        <ul class="space-y-4 list-none">
+            {% for t in artifact_types %}
+            <li class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                <h4 class="text-xl font-semibold text-slate-900 mb-1">
+                    <a href="/forge/submit?type={{ t.id }}" class="hover:text-blue-600">{{ t.plural }}</a>
+                    <span class="text-sm font-normal text-slate-500">({{ t.upload_suffixes | join(', ') }})</span>
+                </h4>
+                <p class="text-slate-600 mb-2">{{ t.description }}</p>
+                <p class="text-sm text-slate-500">{{ t.forge_tip }}</p>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <section aria-labelledby="covenant-heading" class="mt-10 bg-slate-100 border border-slate-200 rounded-xl p-6">
+            <h3 id="covenant-heading" class="text-xl font-bold mb-2 text-slate-800">Before you submit</h3>
+            <p class="text-slate-700">
+                Every submission attests to the Quillin Author Covenant: respect user privacy,
+                declare every capability honestly, and keep accessibility first. Publication is
+                GitHub-native -- the Forge validates your work here, then guides you through a
+                pull request so review is transparent and community-visible.
+            </p>
+        </section>
+    </section>
+{% endblock %}

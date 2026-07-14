@@ -96,3 +96,14 @@ def test_write_json_atomic_reraises_persistent_permission_error(
 
     with pytest.raises(PermissionError):
         write_json_atomic(target, {"k": "v"})
+
+
+def test_read_json_returns_default_on_corrupt_file(tmp_path) -> None:
+    from quill.core.storage import read_json
+
+    bad = tmp_path / "bad.json"
+    bad.write_text("{ not valid json", encoding="utf-8")
+    # A corrupt file must degrade to the default, never raise (one bad config
+    # file can't crash a load path).
+    assert read_json(bad, default={"ok": True}) == {"ok": True}
+    assert read_json(tmp_path / "missing.json", default=[]) == []

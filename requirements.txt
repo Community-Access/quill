@@ -4,7 +4,7 @@
 #  pyproject [macos] / [dev] extras, not here, so a runtime install stays clean.)
 
 # Core (always required)
-regex>=2024.0.0
+regex>=2026.6.28
 
 # Hardened XML parsing for untrusted document inputs (DOCX/XLSX/ODT/PPTX/EPUB)
 # — disables entity expansion to block billion-laughs denial-of-service files.
@@ -14,20 +14,21 @@ defusedxml>=0.7.1
 wxPython>=4.2.5
 # Accessible wx.html2.WebView surfaces (chat, preview, About, update dialogs).
 wx-accessible-webview>=0.2.0
-pyttsx3>=2.99
+# Windows SAPI 5 text-to-speech (Read Aloud + self-voicing announcements).
+comtypes>=1.4; sys_platform == "win32"
 
 # CA bundle for verified HTTPS (update checks) — Python on macOS otherwise has
 # no trusted roots wired into urllib (CERTIFICATE_VERIFY_FAILED).
-certifi>=2024.2.2
+certifi>=2026.6.17
 
 # Prism screen-reader speech bridge (Windows) — routes announcements to
 # NVDA / JAWS / Narrator instead of speaking over them.
-prismatoid>=0.16.5; sys_platform == "win32"
+prismatoid>=0.16.6; sys_platform == "win32"
 
 # macOS platform integration (VoiceOver announcements, Keychain) and the
 # Apple Foundation Models backend used by Ask Quill on macOS.
-pyobjc>=12.2; sys_platform == "darwin"
-apple-fm-sdk>=0.2.0; sys_platform == "darwin"
+pyobjc>=12.2.1; sys_platform == "darwin"
+apple-fm-sdk>=0.2.1; sys_platform == "darwin"
 
 # Spell check (optional)
 pyenchant>=3.3.0
@@ -36,18 +37,29 @@ pyenchant>=3.3.0
 # Windows/Linux use llama.cpp (CPU, GGUF) — also download a GGUF model
 # (e.g. Phi-4-mini Q4) into <app data>/models or set QUILL_LLAMA_MODEL.
 # Use llama-cpp-python CPU wheels to avoid source builds and Windows long-path failures.
+# Pin to the newest version with a prebuilt CPU wheel on the index below
+# (py3-none-win_amd64 wheels; 0.3.32 is the newest — 0.3.31 has NO wheel there,
+# so that pin silently fell back to the PyPI sdist and pip tried to compile
+# llama.cpp from source via CMake, which fails or hangs). Bump only after
+# confirming the index actually publishes a wheel for the new version.
 --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
-llama-cpp-python>=0.3.28
+llama-cpp-python==0.3.32
 
 # Dictation / voice input (mic permission required).
-SpeechRecognition>=3.16.1
+SpeechRecognition>=3.17.0
 
 # Native Windows OCR (OCR-1) lives in pyproject's [ocr] extra, not here. It is
 # bundled into packaged Windows builds (scripts/build_windows_distribution.py),
-# but the winsdk wheel only ships for stable CPython releases, so listing it in
-# this catch-all requirements file would break `pip install` / tooling envs on
-# newer/older interpreters. Install it explicitly with: pip install winsdk
-# (or `pip install .[ocr]`) on a supported Windows Python.
+# but the winrt-* OCR wheels are Windows-only, so listing them in this
+# catch-all requirements file would break `pip install` / tooling envs on
+# non-Windows interpreters. Install them explicitly with `pip install .[ocr]`
+# on a supported Windows Python.
+
+# Direct GitHub issue submission for Report a Bug (feedback_hub's accessible
+# FeedbackDialog + shared schema). This is the only Report a Bug form; on
+# failure QUILL copies the online support-form URL to the clipboard.
+# 1.0.1 fixes the wx sizer-parenting crash that broke the dialog on wx 4.2.5+.
+feedback-hub>=1.0.1
 
 # Structured document import (Word/PowerPoint/Excel/Pages/PDF fallback).
 # Only the converters Quill actually routes through MarkItDown are pulled in

@@ -82,7 +82,7 @@ def _load_raw() -> dict[str, str]:
 def _write_raw(active: str, assignments: dict[str, str]) -> None:
     write_json_atomic(
         _tiers_path(),
-        {"active": active, "assignments": assignments},
+        {"schema_version": 1, "active": active, "assignments": assignments},
     )
 
 

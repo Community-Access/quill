@@ -5,6 +5,12 @@ current document: headings, links, lists, list items, tables, block quotes,
 bookmarks, and code blocks. This module is UI-agnostic and builds that index
 from the browse navigation context (the same cache the QUILL key browse mode
 uses), so the panel and the jumper always agree with what browse mode can reach.
+
+Two *transient* nav types are also supported (#513) when the context supplies
+their positions: ``Misspelling`` (the document's flagged words) and
+``Search hit`` (matches of the active find query). The UI computes these on
+demand for the Quick Nav panel rather than in the prewarmed browse cache, so
+they appear in the live-count panel and the jumper alongside the landmarks.
 """
 
 from __future__ import annotations
@@ -21,6 +27,9 @@ _FLAT_KINDS: tuple[tuple[str, str], ...] = (
     ("Block quote", "block_quotes"),
     ("Bookmark", "bookmarks"),
     ("Code block", "code_blocks"),
+    # Transient types (#513): present only when the UI augments the context.
+    ("Misspelling", "misspellings"),
+    ("Search hit", "search_hits"),
 )
 
 

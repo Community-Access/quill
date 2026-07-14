@@ -4,6 +4,7 @@ import sys
 import types
 from pathlib import Path
 
+from quill.core.navigation import page_starts
 from quill.io import pdf as pdf_module
 from quill.io.pdf import PdfExtractionResult, _score_pdf_text, format_pdf_document
 
@@ -102,3 +103,88 @@ def test_malformed_pdf_returns_empty_text_not_crash(monkeypatch, tmp_path: Path)
     result = pdf_module.extract_pdf_text(tmp_path / "corrupt.pdf")
     # Must not raise; the unavailable message or empty text is acceptable.
     assert isinstance(result.text, str)
+
+
+def test_extract_pdf_text_distinguishes_missing_extractor_from_scanned_pdf(
+    monkeypatch, tmp_path: Path
+) -> None:
+    # #909: no extractor installed vs. an extractor that ran but found no text
+    # (scanned/image PDF) are different problems with different remedies, so they
+    # must produce different engine tags and messages.
+    def _absent(_path: Path) -> object:
+        raise ModuleNotFoundError("no module")
+
+    def _empty(_path: Path) -> PdfExtractionResult:
+        return PdfExtractionResult(
+            text="",
+            quality_score=0,
+            engine="pypdf",
+            page_count=1,
+            extracted_pages=0,
+            page_scores=[],
+        )
+
+    # Both extractors absent -> "not installed" remedy.
+    monkeypatch.setattr(pdf_module, "_extract_with_pdfplumber", _absent)
+    monkeypatch.setattr(pdf_module, "_extract_with_pypdf", _absent)
+    missing = pdf_module.extract_pdf_text(tmp_path / "doc.pdf")
+    assert missing.engine == "unavailable"
+    assert "not" in missing.text.lower() and "install" in missing.text.lower()
+
+    # An extractor ran but found nothing -> point at OCR, not reinstalling.
+    monkeypatch.setattr(pdf_module, "_extract_with_pdfplumber", _empty)
+    monkeypatch.setattr(pdf_module, "_extract_with_pypdf", _empty)
+    scanned = pdf_module.extract_pdf_text(tmp_path / "scan.pdf")
+    assert scanned.engine == "empty"
+    assert "ocr" in scanned.text.lower()
+
+
+def test_pdfplumber_extraction_joins_pages_with_form_feed(monkeypatch, tmp_path: Path) -> None:
+    class _StubPage:
+        def __init__(self, text: str) -> None:
+            self._text = text
+
+        def extract_text(self) -> str:
+            return self._text
+
+    class _StubPdf:
+        def __init__(self) -> None:
+            self.pages = [_StubPage("Page one"), _StubPage("Page two"), _StubPage("Page three")]
+
+        def __enter__(self) -> _StubPdf:
+            return self
+
+        def __exit__(self, *_exc: object) -> None:
+            return None
+
+    fake_pdfplumber = types.ModuleType("pdfplumber")
+    fake_pdfplumber.open = lambda _path: _StubPdf()  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "pdfplumber", fake_pdfplumber)
+
+    result = pdf_module._extract_with_pdfplumber(tmp_path / "sample.pdf")
+
+    assert result.text.count("\f") == 2
+    assert len(page_starts(result.text)) == 3
+    assert result.page_count == 3
+
+
+def test_pypdf_extraction_joins_pages_with_form_feed(monkeypatch, tmp_path: Path) -> None:
+    class _StubPage:
+        def __init__(self, text: str) -> None:
+            self._text = text
+
+        def extract_text(self) -> str:
+            return self._text
+
+    class _StubReader:
+        def __init__(self, _path: str) -> None:
+            self.pages = [_StubPage("Page one"), _StubPage("Page two")]
+
+    fake_pypdf = types.ModuleType("pypdf")
+    fake_pypdf.PdfReader = _StubReader  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "pypdf", fake_pypdf)
+
+    result = pdf_module._extract_with_pypdf(tmp_path / "sample.pdf")
+
+    assert result.text.count("\f") == 1
+    assert len(page_starts(result.text)) == 2

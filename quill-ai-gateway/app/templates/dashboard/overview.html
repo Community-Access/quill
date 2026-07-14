@@ -1,0 +1,75 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Overview{% endblock %}
+{% block content %}
+<h1>Overview</h1>
+
+<section class="card" aria-labelledby="budget-h">
+  <h2 id="budget-h">This month's hosted-AI spend</h2>
+  <div class="stat-tile">
+    <span class="value">${{ "%.2f"|format(spend) }}</span>
+    <span class="text-secondary">of ${{ "%.2f"|format(budget_cap) }} budget cap ({{ month_key }})</span>
+    <span class="status-badge" data-status="{{ status }}">
+      {%- if status == "good" %}✓ On track
+      {%- elif status == "warning" %}⚠ 75% of budget used
+      {%- elif status == "serious" %}⚠ 90% of budget used
+      {%- else %}⛔ Budget reached — hosted AI auto-pauses
+      {%- endif %}
+    </span>
+  </div>
+  <p>
+    <label for="budget-progress">Percent of monthly budget used: {{ fraction_percent }}%</label>
+  </p>
+  <progress id="budget-progress" class="budget-progress" data-status="{{ status }}"
+            value="{{ fraction_percent }}" max="100"
+            aria-label="{{ fraction_percent }}% of this month's ${{ '%.2f'|format(budget_cap) }} budget used">
+    {{ fraction_percent }}%
+  </progress>
+  <p><a class="button" href="{{ url_for('dashboard.config') }}">Adjust limits</a></p>
+</section>
+
+<section class="card" aria-labelledby="usage-h">
+  <h2 id="usage-h">Requests per month (last {{ trend|length }} months)</h2>
+  {% if trend %}
+  <ul class="bar-chart" aria-hidden="true">
+    {% for row in trend %}
+    <li>
+      <span class="bar-label">{{ row.year_month }}</span>
+      <span class="bar-track">
+        <span class="bar-fill" style="width: {{ row.bar_percent }}%;"></span>
+      </span>
+      <span class="bar-value">{{ row.requests }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  <table class="data-table">
+    <caption>Requests per month, as numbers (the bars above illustrate the same data)</caption>
+    <thead>
+      <tr><th scope="col">Month</th><th scope="col">Requests</th></tr>
+    </thead>
+    <tbody>
+      {% for row in trend %}
+      <tr><td>{{ row.year_month }}</td><td>{{ row.requests }}</td></tr>
+      {% else %}
+      <tr><td colspan="2">No usage recorded yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="card" aria-labelledby="at-a-glance-h">
+  <h2 id="at-a-glance-h">At a glance</h2>
+  <table class="data-table">
+    <caption>Account totals</caption>
+    <tbody>
+      <tr><th scope="row">Total registered users</th><td>{{ user_count }}</td></tr>
+      <tr><th scope="row">Active devices</th><td>{{ active_devices }}</td></tr>
+    </tbody>
+  </table>
+  <p>
+    <a class="button" href="{{ url_for('dashboard.users') }}">Manage users</a>
+    <a class="button" href="{{ url_for('dashboard.models') }}">Manage models</a>
+    <a class="button" href="{{ url_for('dashboard.feature_flags') }}">Feature flags</a>
+  </p>
+</section>
+{% endblock %}

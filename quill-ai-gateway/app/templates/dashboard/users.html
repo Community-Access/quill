@@ -1,0 +1,30 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Users{% endblock %}
+{% block content %}
+<h1>Users</h1>
+<p>Most recent 200 registrations. Pseudonymous by design — there is no
+  name or email to show unless a user has linked one (PRD §4.2).</p>
+<table class="data-table">
+  <caption>Registered users</caption>
+  <thead>
+    <tr>
+      <th scope="col">User</th>
+      <th scope="col">Status</th>
+      <th scope="col">Registered</th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for user in users %}
+    <tr>
+      <td>{{ user.email or user.id }}</td>
+      <td>{{ user.status }}</td>
+      <td>{{ user.created_at.strftime("%Y-%m-%d") }}</td>
+      <td><a class="button" href="{{ url_for('dashboard.user_detail', user_id=user.id) }}">View</a></td>
+    </tr>
+    {% else %}
+    <tr><td colspan="4">No users registered yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

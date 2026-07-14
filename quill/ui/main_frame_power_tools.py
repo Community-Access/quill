@@ -9,31 +9,30 @@ relies on its helpers: ``self.editor``, ``self.document``, ``self.settings``,
 ``self._create_document_tab`` and the ``_apply_*`` mutation helpers.
 
 The wx-free logic lives in dedicated ``quill/core`` modules (unicode_insert,
-datetime_insert, wrap_ops, set_ops, regex_ops, cursor_address, indent_infer,
-clipboard_collector, key_describer, run_target) and ``quill/core/line_ops``; this
-layer only wires those into the editor, dialogs, and announcements.
+wrap_ops, set_ops, regex_ops, cursor_address, indent_infer, clipboard_collector,
+key_describer, run_target) and ``quill/core/line_ops``; this layer only wires
+those into the editor, dialogs, and announcements.
+
+NOTE: the former ``insert_date_time`` and ``calculate_and_insert_date`` EDS-2
+and EDS-3 methods were removed in lock-step with the date/time consolidation
+that moved all Insert-menu date/time items into the bundled
+``com.quill.bundled.insert-tools`` Quillin (``Insert > Date and Time``).
+``quill.core.datetime_insert`` is no longer imported here for that reason;
+``datetime.now`` is still used for unrelated helpers (clipboard collector,
+session metadata).
 """
 
 from __future__ import annotations
 
 import os
 import webbrowser
-from datetime import datetime
+from collections.abc import Callable
 from pathlib import Path
 
 from quill.core import format_ops as _fmt
 from quill.core.clipboard_collector import append_collected
 from quill.core.cursor_address import (
-    describe_cursor_address,
-    describe_document_status,
-    describe_selection_length,
     offset_for_percent,
-)
-from quill.core.datetime_insert import (
-    DEFAULT_DATETIME_FORMAT,
-    calculate_date,
-    format_datetime,
-    parse_weekday,
 )
 from quill.core.document import Document
 from quill.core.html_to_markdown import extract_cf_html_fragment, html_to_markdown
@@ -59,8 +58,6 @@ from quill.core.run_target import classify_target, is_dangerous_executable, targ
 from quill.core.set_ops import format_lines, lines_common_to_both, lines_in_first_not_second
 from quill.core.storage import read_json, write_json_atomic
 from quill.core.unicode_insert import CodepointError, parse_codepoint
-
-_DATE_INSERT_FORMAT = "%Y-%m-%d"
 
 
 class PowerToolsActionsMixin:
@@ -191,60 +188,14 @@ class PowerToolsActionsMixin:
             return
         self._power_tools_insert_at_cursor(character, f"Inserted U+{ord(character):04X}")
 
-    # --------------------------------------------------------- EDS-2 date/time
-    def insert_date_time(self) -> None:
-        fmt = str(getattr(self.settings, "datetime_insert_format", "") or DEFAULT_DATETIME_FORMAT)
-        rendered = format_datetime(datetime.now(), fmt)
-        self._power_tools_insert_at_cursor(rendered, f"Inserted date and time: {rendered}")
-
-    # ------------------------------------------------------- EDS-3 calc a date
-    def calculate_and_insert_date(self) -> None:
-        from quill.ui.web_form import show_web_form
-
-        now = datetime.now()
-        values = show_web_form(
-            self.frame,
-            self._wx,
-            title="Calculate Date",
-            intro=(
-                "Enter a year and month, then either a fixed day, or a week and "
-                "weekday (for example week 4, Thursday for the 4th Thursday)."
-            ),
-            fields=[
-                {"name": "year", "label": "Year", "type": "text", "value": str(now.year)},
-                {"name": "month", "label": "Month (1-12)", "type": "text", "value": str(now.month)},
-                {"name": "day", "label": "Day of month (optional)", "type": "text", "value": ""},
-                {
-                    "name": "week",
-                    "label": "Week (optional, -1 = last)",
-                    "type": "text",
-                    "value": "",
-                },
-                {
-                    "name": "weekday",
-                    "label": "Weekday name (optional)",
-                    "type": "text",
-                    "value": "",
-                },
-            ],
-        )
-        if values is None:
-            return
-        try:
-            year = int(str(values.get("year", "")).strip())
-            month = int(str(values.get("month", "")).strip())
-            day_raw = str(values.get("day", "")).strip()
-            week_raw = str(values.get("week", "")).strip()
-            weekday_raw = str(values.get("weekday", "")).strip()
-            day = int(day_raw) if day_raw else None
-            week = int(week_raw) if week_raw else None
-            weekday = parse_weekday(weekday_raw) if weekday_raw else None
-            result = calculate_date(year, month, day=day, week=week, weekday=weekday)
-        except ValueError as error:
-            self._set_status(f"Could not calculate date: {error}")
-            return
-        rendered = result.strftime(_DATE_INSERT_FORMAT)
-        self._power_tools_insert_at_cursor(rendered, f"Inserted date: {rendered}")
+    # NOTE: EDS-2 (``insert_date_time``) and EDS-3 (``calculate_and_insert_date``)
+    # were removed in the date/time consolidation that moved all Insert-menu
+    # date/time items into the bundled ``com.quill.bundled.insert-tools``
+    # Quillin (``Insert > Date and Time``). The handlers used to live here and
+    # the corresponding ``power.insert_date_time`` / ``power.calculate_and_insert_date``
+    # commands are no longer registered. ``quill.core.datetime_insert`` still
+    # exists for tests and downstream callers but is no longer imported by this
+    # module.
 
     # ----------------------------------- EDS-4/5 line transforms (migrated)
     # ``number_lines`` and ``hard_wrap_lines`` moved onto the contribution
@@ -298,7 +249,9 @@ class PowerToolsActionsMixin:
         cached = getattr(self, "_power_tools_read_only_paths", None)
         if cached is None:
             stored = read_json(self._read_only_store_path(), [])
-            cached = {str(item) for item in stored} if isinstance(stored, list) else set()
+            # Versioned envelope {"schema_version", "paths": [...]} or legacy list.
+            items = stored.get("paths", []) if isinstance(stored, dict) else stored
+            cached = {str(item) for item in items} if isinstance(items, list) else set()
             self._power_tools_read_only_paths = cached
         return cached
 
@@ -327,7 +280,10 @@ class PowerToolsActionsMixin:
             else:
                 paths.discard(str(self.document.path))
             try:
-                write_json_atomic(self._read_only_store_path(), sorted(paths))
+                write_json_atomic(
+                    self._read_only_store_path(),
+                    {"schema_version": 1, "paths": sorted(paths)},
+                )
             except OSError:
                 pass
         self._announce("Document is read-only" if read_only else "Document is editable")
@@ -435,19 +391,6 @@ class PowerToolsActionsMixin:
             self._set_status(str(error))
             return
         self._power_tools_open_text_in_new_buffer(extracted, "Extracted matches")
-
-    # -------------------------------------------------- EDS-14 speech queries
-    def speak_cursor_address(self) -> None:
-        text, cursor = self._power_tools_text_cursor()
-        self._announce(describe_cursor_address(text, cursor))
-
-    def speak_document_status(self) -> None:
-        self._announce(describe_document_status(self.document.modified, self.document.encoding))
-
-    def speak_selection_length(self) -> None:
-        start, end = self.editor.GetSelection()
-        selection = self.editor.GetValue()[start:end]
-        self._announce(describe_selection_length(selection))
 
     # ----------------------------------------------------- EDS-15 go to percent
     def go_to_percent(self) -> None:
@@ -585,6 +528,47 @@ class PowerToolsActionsMixin:
         if message is not None:
             self._announce(message)
 
+    def _maybe_play_indent_tone(self) -> None:
+        """Play a pitched tone when the caret moves to a new indent level.
+
+        Off unless the user picks a scale in Preferences (``indent_tone_scale``).
+        The level is ``indent columns // indent size`` clamped to 0-7, matching
+        the 8 levels the tone packs ship. Blank / whitespace-only lines hold the
+        previous level so cursoring through gaps stays silent.
+        """
+        scale = str(getattr(self.settings, "indent_tone_scale", "") or "")
+        if not scale:
+            return
+        # editor binds on tab selection; short-circuit before that (#614)
+        editor = getattr(self, "editor", None)
+        if editor is None:
+            return
+        # #603: the caret handler can fire after the underlying C++ TextCtrl
+        # has been destroyed (e.g. on a dirty-doc close where the editor is
+        # torn down between the queued event and its dispatch). Reading
+        # GetValue() / GetInsertionPoint() on a dead widget raises
+        # RuntimeError; swallow it so the close path completes cleanly.
+        try:
+            text = editor.GetValue()
+            cursor = editor.GetInsertionPoint()
+        except RuntimeError:
+            return
+        line_start = text.rfind("\n", 0, cursor) + 1
+        newline = text.find("\n", cursor)
+        line_end = len(text) if newline == -1 else newline
+        if not text[line_start:line_end].strip():
+            return
+        indent_size = int(getattr(self.settings, "indent_size", 4) or 4)
+        level = max(0, min(7, self._current_indent_columns() // max(1, indent_size)))
+        previous = getattr(self, "_indent_tone_last_level", None)
+        self._indent_tone_last_level = level
+        if previous is None or level == previous:
+            return
+        direction = "up" if level > previous else "down"
+        from quill.ui.sound_manager import post_sound
+
+        post_sound(f"indent_level_{level}_{direction}")
+
     def infer_indent(self) -> None:
         unit = infer_indent_unit(self.editor.GetValue())
         description = describe_indent_unit(unit)
@@ -720,6 +704,569 @@ class PowerToolsActionsMixin:
         self._power_tools_transform_selection_or_document(
             _fmt.encode_html_entities, "Encoded HTML entities"
         )
+
+    # ----------------------------------------- #197 encoding tools
+    def show_non_ascii(self) -> None:
+        """Open a read-only report of every non-ASCII character (#197)."""
+        from quill.core import encoding_tools
+
+        self._non_ascii_source_tab: object = self._document_tabs[self._current_tab_index()]
+        report = encoding_tools.summarize_non_ascii(self.editor.GetValue())
+        self._power_tools_open_text_in_new_buffer(report, "Non-ASCII characters")
+        self._non_ascii_report_tab: object = self._document_tabs[self._current_tab_index()]
+
+    def non_ascii_jump_to_source(self) -> None:
+        """From the Non-ASCII report, jump to the referenced line in the source (#197)."""
+        import re
+
+        source_tab = getattr(self, "_non_ascii_source_tab", None)
+        if source_tab is None:
+            self._set_status("Run Show Non-ASCII Characters first.")
+            return
+        text = self.editor.GetValue()
+        pos = self.editor.GetInsertionPoint()
+        line_start = text.rfind("\n", 0, pos) + 1
+        line_end_nl = text.find("\n", pos)
+        line_text = text[line_start:] if line_end_nl == -1 else text[line_start:line_end_nl]
+        match = re.match(r"^(\d+):(\d+)\t", line_text)
+        if not match:
+            self._set_status("Current line is not a character entry (expected line:column format).")
+            return
+        line_num = int(match.group(1))
+        try:
+            src_idx = self._document_tabs.index(source_tab)
+        except ValueError:
+            self._set_status("Source document is no longer open.")
+            return
+        self._non_ascii_report_tab = self._document_tabs[self._current_tab_index()]
+        self._select_tab(src_idx)
+        self.go_to_line_number(line_num)
+
+    def non_ascii_jump_to_report(self) -> None:
+        """From the source document, jump back to the Non-ASCII report (#197)."""
+        report_tab = getattr(self, "_non_ascii_report_tab", None)
+        if report_tab is None:
+            self._set_status("No Non-ASCII report is open. Run Show Non-ASCII Characters first.")
+            return
+        try:
+            rep_idx = self._document_tabs.index(report_tab)
+        except ValueError:
+            self._set_status("Non-ASCII report tab is no longer open.")
+            return
+        self._select_tab(rep_idx)
+
+    def encode_all_non_ascii(self) -> None:
+        """Replace every non-ASCII character with its HTML entity (#197).
+
+        Runs on a background thread (#906): the per-character transform loop
+        can take the better part of a minute on a large (1MB+) document, and
+        running that synchronously on the UI thread (the shared
+        ``_power_tools_transform_selection_or_document`` helper other, faster
+        power-tool commands use) froze QUILL -- and the screen reader riding
+        along with it -- for the whole duration.
+        """
+        from quill.core import encoding_tools
+
+        if self._document_is_read_only():
+            self._set_status("Document is read-only")
+            return
+        text = self.editor.GetValue()
+        start, end = self.editor.GetSelection()
+        if start == end:
+            start, end = 0, len(text)
+        segment = text[start:end]
+
+        def _work(_progress: Callable[[str, int, int], None]) -> str:
+            return encoding_tools.encode_non_ascii_to_entities(segment)
+
+        def _done(block: object) -> None:
+            updated = text[:start] + str(block) + text[end:]
+            self._replace_document_text(updated)
+            self.document.set_text(updated)
+            self.editor.SetSelection(start, start + len(str(block)))
+            # #905: a UTF-8 BOM only makes sense when the file still has
+            # multi-byte UTF-8 content. Once every non-ASCII character is an
+            # HTML entity, the result is pure ASCII, and saving with
+            # "utf-8-sig" would keep writing a three-byte BOM prefix nothing
+            # in the file needs anymore.
+            if self.document.encoding == "utf-8-sig" and updated.isascii():
+                self.document.encoding = "utf-8"
+            self._set_status("Converted non-ASCII characters to HTML entities")
+
+        self._run_background_task("Converting non-ASCII characters", _work, _done)
+
+    def reencode_file(self) -> None:
+        """Save a copy of the document in a chosen text encoding (#197)."""
+        from quill.core import encoding_tools
+
+        wx = self._wx
+        text = self.editor.GetValue()
+        labels = [label for _codec, label in encoding_tools.ENCODING_CHOICES]
+        with wx.SingleChoiceDialog(
+            self.frame,
+            "Choose the target encoding for the saved copy:",
+            "Re-encode As",
+            labels,
+        ) as chooser:
+            if self._show_modal_dialog(chooser, "Re-encode As") != wx.ID_OK:
+                self._set_status("Re-encode cancelled")
+                return
+            index = chooser.GetSelection()
+        if index == wx.NOT_FOUND:
+            self._set_status("Re-encode cancelled")
+            return
+        codec, label = encoding_tools.ENCODING_CHOICES[index]
+        data = encoding_tools.reencode_text(text, codec)
+
+        default_dir = ""
+        if hasattr(self, "_file_dialog_default_dir"):
+            default_dir = self._file_dialog_default_dir()
+        with wx.FileDialog(
+            self.frame,
+            f"Save re-encoded copy ({label})",
+            defaultDir=default_dir,
+            wildcard="All files (*.*)|*.*",
+            style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
+        ) as dialog:
+            if self._show_modal_dialog(dialog, "Save re-encoded copy") != wx.ID_OK:
+                self._set_status("Re-encode cancelled")
+                return
+            target = Path(dialog.GetPath())
+        try:
+            target.write_bytes(data)
+        except OSError as error:
+            self._set_status(f"Could not write file: {error}")
+            return
+        self._set_status(f"Saved re-encoded copy ({label}) to {target}")
+
+    # -------------------------------------- #256 minimum required encoding
+    def analyze_encoding_requirements(self) -> None:
+        """Report the current vs. minimum-required encoding (#256)."""
+        from quill.core import encoding_tools
+
+        text = self.editor.GetValue()
+        report = encoding_tools.describe_minimum_encoding(text, self.document.encoding)
+        self._power_tools_open_text_in_new_buffer(report + "\n", "Encoding requirements")
+
+    def save_minimum_encoding(self) -> None:
+        """Save a copy of the document in the simplest lossless encoding (#256)."""
+        from quill.core import encoding_tools
+
+        wx = self._wx
+        text = self.editor.GetValue()
+        codec = encoding_tools.minimum_encoding(text)
+        label = encoding_tools.ENCODING_LABELS.get(codec, codec)
+        data = encoding_tools.reencode_text(text, codec)
+
+        default_dir = ""
+        if hasattr(self, "_file_dialog_default_dir"):
+            default_dir = self._file_dialog_default_dir()
+        with wx.FileDialog(
+            self.frame,
+            f"Save copy using minimum required encoding ({label})",
+            defaultDir=default_dir,
+            wildcard="All files (*.*)|*.*",
+            style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
+        ) as dialog:
+            if self._show_modal_dialog(dialog, "Save Using Minimum Required Encoding") != wx.ID_OK:
+                self._set_status("Save using minimum required encoding cancelled")
+                return
+            target = Path(dialog.GetPath())
+        try:
+            target.write_bytes(data)
+        except OSError as error:
+            self._set_status(f"Could not write file: {error}")
+            return
+        self._set_status(f"Saved copy using minimum required encoding ({label}) to {target}")
+
+    # -------------------------------------- #257 Markdown profiles and table of contents
+    def insert_table_of_contents(self) -> None:
+        """Insert a deterministic table of contents built from headings (#257).
+
+        Non-AI counterpart to AI > Generate Table of Contents: this parses
+        ATX headings directly, with no model call, so it works offline and
+        always matches the document exactly.
+        """
+        from quill.core.markdown_extensions import insert_toc
+
+        if self._document_is_read_only():
+            self._set_status("Document is read-only")
+            return
+        text = self.editor.GetValue()
+        updated, heading_count = insert_toc(text)
+        if heading_count == 0:
+            self._set_status("No headings were found to build a table of contents")
+            return
+        self._replace_document_text(updated)
+        self.document.set_text(updated)
+        noun = "heading" if heading_count == 1 else "headings"
+        self._set_status(f"Inserted table of contents ({heading_count} {noun})")
+
+    def select_markdown_profile(self) -> None:
+        """Choose a Markdown profile by plain-language name (#257)."""
+        from quill.core.markdown_profiles import MARKDOWN_PROFILES, describe_profile
+
+        wx = self._wx
+        profile_ids = list(MARKDOWN_PROFILES)
+        labels = [MARKDOWN_PROFILES[pid].name for pid in profile_ids]
+        current = getattr(self.settings, "markdown_profile_id", "standard")
+        current_index = profile_ids.index(current) if current in profile_ids else 0
+        with wx.SingleChoiceDialog(
+            self.frame,
+            "Choose a Markdown profile:",
+            "Markdown Profile",
+            labels,
+        ) as dialog:
+            dialog.SetSelection(current_index)
+            if self._show_modal_dialog(dialog, "Markdown Profile") != wx.ID_OK:
+                self._set_status("Markdown profile selection cancelled")
+                return
+            selected = dialog.GetSelection()
+        if selected < 0 or selected >= len(profile_ids):
+            return
+        self.settings.markdown_profile_id = profile_ids[selected]
+        self._set_status(describe_profile(self.settings.markdown_profile_id))
+
+    def toggle_preserve_line_breaks(self) -> None:
+        """Apply the line-break-preservation transform (#257 nl2br)."""
+        from quill.core.markdown_extensions import apply_nl2br
+
+        self._power_tools_transform_selection_or_document(
+            apply_nl2br, "Preserved single line breaks"
+        )
+
+    def read_markdown_status(self) -> None:
+        """Announce the active Markdown profile and its enabled extensions (#257)."""
+        from quill.core.markdown_profiles import MARKDOWN_PROFILES, describe_profile
+
+        profile_id = getattr(self.settings, "markdown_profile_id", "standard")
+        if profile_id not in MARKDOWN_PROFILES:
+            profile_id = "standard"
+        self._set_status(describe_profile(profile_id))
+
+    def select_citation_style(self) -> None:
+        """Choose the default citation style for the Author or Student profile.
+
+        Markdown footnotes need no extra fields; Academic switches Insert >
+        Insert Citation toward the MLA/Chicago/APA bibliography workflow that
+        already exists in ``quill.core.citations`` (#203) — no new dependency
+        either way.
+        """
+        from quill.core.markdown_profiles import CITATION_STYLES
+
+        wx = self._wx
+        style_ids = [value for value, _label in CITATION_STYLES]
+        labels = [label for _value, label in CITATION_STYLES]
+        current = getattr(self.settings, "citation_style", "footnotes")
+        current_index = style_ids.index(current) if current in style_ids else 0
+        with wx.SingleChoiceDialog(
+            self.frame,
+            "Choose a citation style:",
+            "Citation Style",
+            labels,
+        ) as dialog:
+            dialog.SetSelection(current_index)
+            if self._show_modal_dialog(dialog, "Citation Style") != wx.ID_OK:
+                self._set_status("Citation style selection cancelled")
+                return
+            selected = dialog.GetSelection()
+        if selected < 0 or selected >= len(style_ids):
+            return
+        self.settings.citation_style = style_ids[selected]
+        self._set_status(f"Citation style set to {labels[selected]}")
+
+    # -------------------------------------- text-utility gap fill for 0.6.0
+    def remove_email_quote_markers(self) -> None:
+        self._power_tools_transform_selection_or_document(
+            _fmt.remove_email_quote_markers, "Removed email quote markers"
+        )
+
+    def strip_low_ascii(self) -> None:
+        self._power_tools_transform_selection_or_document(
+            _fmt.strip_low_ascii, "Stripped low ASCII control characters"
+        )
+
+    def strip_high_ascii(self) -> None:
+        self._power_tools_transform_selection_or_document(
+            _fmt.strip_high_ascii, "Stripped high ASCII (non-ASCII) characters"
+        )
+
+    def number_lines_advanced(self) -> None:
+        """Auto-number lines with increment, padding, Roman numerals, and alignment."""
+        from quill.core.line_ops import number_lines_advanced as _number_lines_advanced
+        from quill.ui.web_form import show_web_form
+
+        if self._document_is_read_only():
+            self._set_status("Document is read-only")
+            return
+        values = show_web_form(
+            self.frame,
+            self._wx,
+            title="Number Lines (Advanced)",
+            intro="Set the starting number, increment, style, and alignment.",
+            save_label="Number",
+            fields=[
+                {"name": "start", "label": "Start numbering at", "type": "text", "value": "1"},
+                {"name": "increment", "label": "Increment by", "type": "text", "value": "1"},
+                {
+                    "name": "style",
+                    "label": "Number style",
+                    "type": "select",
+                    "value": "digits",
+                    "options": [
+                        ("digits", "Digits (1, 2, 3)"),
+                        ("roman", "Roman numerals (I, II, III)"),
+                    ],
+                },
+                {
+                    "name": "pad_width",
+                    "label": "Zero-pad to width (0 = none)",
+                    "type": "text",
+                    "value": "0",
+                },
+                {"name": "suffix", "label": "Text after the number", "type": "text", "value": ". "},
+                {
+                    "name": "align",
+                    "label": "Justify",
+                    "type": "select",
+                    "value": "left",
+                    "options": [("left", "Left"), ("right", "Right")],
+                },
+            ],
+        )
+        if values is None:
+            self._set_status("Number Lines (Advanced) cancelled")
+            return
+        try:
+            start = int(str(values["start"]).strip() or "1")
+            increment = int(str(values["increment"]).strip() or "1")
+            pad_width = int(str(values["pad_width"]).strip() or "0")
+        except ValueError:
+            self._set_status("Start, increment, and pad width must be whole numbers")
+            return
+        self._power_tools_transform_selection_or_document(
+            lambda text: _number_lines_advanced(
+                text,
+                start=start,
+                increment=increment,
+                style=str(values["style"]),
+                pad_width=pad_width,
+                suffix=str(values["suffix"]),
+                align=str(values["align"]),
+            ),
+            "Numbered lines",
+        )
+
+    def convert_oem_to_ansi(self) -> None:
+        from quill.core.encoding_tools import oem_to_ansi
+
+        self._power_tools_transform_selection_or_document(
+            oem_to_ansi, "Converted OEM (DOS) text to ANSI (Windows-1252)"
+        )
+
+    def convert_ansi_to_oem(self) -> None:
+        from quill.core.encoding_tools import ansi_to_oem
+
+        self._power_tools_transform_selection_or_document(
+            ansi_to_oem, "Converted ANSI (Windows-1252) text to OEM (DOS)"
+        )
+
+    def convert_box_drawing_to_ascii(self) -> None:
+        from quill.core.encoding_tools import convert_box_drawing_to_ascii as _convert
+
+        self._power_tools_transform_selection_or_document(
+            _convert, "Converted line-drawing characters to +, -, and |"
+        )
+
+    def strip_box_drawing(self) -> None:
+        from quill.core.encoding_tools import strip_box_drawing as _strip
+
+        self._power_tools_transform_selection_or_document(
+            _strip, "Stripped line-drawing characters"
+        )
+
+    def multi_replace(self) -> None:
+        """Apply up to four search/replace pairs in one pass."""
+        from quill.ui.web_form import show_web_form
+
+        if self._document_is_read_only():
+            self._set_status("Document is read-only")
+            return
+        values = show_web_form(
+            self.frame,
+            self._wx,
+            title="Multi Replace",
+            intro="Enter up to four search and replace pairs. Empty search fields are skipped.",
+            save_label="Replace",
+            fields=[
+                {"name": "search1", "label": "Search 1", "type": "text", "value": ""},
+                {"name": "replace1", "label": "Replace 1", "type": "text", "value": ""},
+                {"name": "search2", "label": "Search 2", "type": "text", "value": ""},
+                {"name": "replace2", "label": "Replace 2", "type": "text", "value": ""},
+                {"name": "search3", "label": "Search 3", "type": "text", "value": ""},
+                {"name": "replace3", "label": "Replace 3", "type": "text", "value": ""},
+                {"name": "search4", "label": "Search 4", "type": "text", "value": ""},
+                {"name": "replace4", "label": "Replace 4", "type": "text", "value": ""},
+                {
+                    "name": "case_sensitive",
+                    "label": "Case sensitive",
+                    "type": "checkbox",
+                    "value": True,
+                },
+            ],
+        )
+        if values is None:
+            self._set_status("Multi Replace cancelled")
+            return
+        pairs = [(str(values[f"search{i}"]), str(values[f"replace{i}"])) for i in range(1, 5)]
+        case_sensitive = bool(values["case_sensitive"])
+        from quill.core.format_ops import multi_replace as _multi_replace
+
+        self._power_tools_transform_selection_or_document(
+            lambda text: _multi_replace(text, pairs, case_sensitive=case_sensitive),
+            "Applied multi replace",
+        )
+
+    def count_occurrences(self) -> None:
+        from quill.core.format_ops import count_occurrences as _count_occurrences
+
+        needle = self._power_tools_prompt_single("Count Occurrences", "Text to count:")
+        if needle is None:
+            return
+        if not needle:
+            self._set_status("Enter text to count")
+            return
+        text = self.editor.GetValue()
+        start, end = self.editor.GetSelection()
+        if start != end:
+            text = text[start:end]
+        count = _count_occurrences(text, needle)
+        noun = "occurrence" if count == 1 else "occurrences"
+        self._set_status(f'Found {count} {noun} of "{needle}"')
+
+    def compute_line_statistics(self) -> None:
+        from quill.core.format_ops import compute_line_statistics as _compute_line_statistics
+
+        text = self.editor.GetValue()
+        start, end = self.editor.GetSelection()
+        if start != end:
+            text = text[start:end]
+        self._power_tools_open_text_in_new_buffer(
+            _compute_line_statistics(text) + "\n", "Line statistics"
+        )
+
+    def hex_dump(self) -> None:
+        text = self.editor.GetValue()
+        start, end = self.editor.GetSelection()
+        if start != end:
+            text = text[start:end]
+        self._power_tools_open_text_in_new_buffer(_fmt.hex_dump(text) + "\n", "Hex dump")
+
+    # -------------------------------------- Emmet-style abbreviation expansion
+    def _emmet_mode(self) -> str:
+        path = self.document.path
+        if path is not None and path.suffix.lower() == ".css":
+            return "css"
+        return "html"
+
+    def expand_abbreviation(self) -> None:
+        from quill.core.emmet import (
+            EmmetSyntaxError,
+            expand_css_abbreviation,
+            expand_html_abbreviation,
+            extract_abbreviation_before_cursor,
+        )
+
+        if self._document_is_read_only():
+            self._set_status("Document is read-only")
+            return
+        text = self.editor.GetValue()
+        start, end = self.editor.GetSelection()
+        if start == end:
+            start, end = extract_abbreviation_before_cursor(text, start)
+        abbreviation = text[start:end]
+        if not abbreviation.strip():
+            self._set_status("Type an abbreviation before expanding")
+            return
+        if self._emmet_mode() == "css":
+            expanded = expand_css_abbreviation(abbreviation)
+            if expanded is None:
+                self._set_status(f'Unknown CSS abbreviation: "{abbreviation}"')
+                return
+        else:
+            try:
+                expanded = expand_html_abbreviation(abbreviation)
+            except EmmetSyntaxError as exc:
+                self._set_status(f"Could not expand abbreviation: {exc}")
+                return
+        updated = text[:start] + expanded + text[end:]
+        self._replace_document_text(updated)
+        self.document.set_text(updated)
+        new_pos = start + len(expanded)
+        self.editor.SetInsertionPoint(new_pos)
+        self.editor.SetSelection(new_pos, new_pos)
+        self._set_status("Abbreviation expanded")
+
+    def preview_abbreviation(self) -> None:
+        from quill.core.emmet import (
+            EmmetSyntaxError,
+            expand_css_abbreviation,
+            expand_html_abbreviation,
+        )
+
+        start, end = self.editor.GetSelection()
+        default = self.editor.GetValue()[start:end] if start != end else ""
+        abbreviation = self._power_tools_prompt_single(
+            "Preview Abbreviation", "Abbreviation:", default
+        )
+        if abbreviation is None:
+            return
+        if not abbreviation.strip():
+            self._set_status("Enter an abbreviation to preview")
+            return
+        if self._emmet_mode() == "css":
+            expanded = expand_css_abbreviation(abbreviation)
+            if expanded is None:
+                self._set_status(f'Unknown CSS abbreviation: "{abbreviation}"')
+                return
+        else:
+            try:
+                expanded = expand_html_abbreviation(abbreviation)
+            except EmmetSyntaxError as exc:
+                self._set_status(f"Could not expand abbreviation: {exc}")
+                return
+        self._power_tools_open_text_in_new_buffer(expanded + "\n", "Abbreviation preview")
+
+    def explain_abbreviation(self) -> None:
+        from quill.core.emmet import (
+            EmmetSyntaxError,
+            expand_css_abbreviation,
+        )
+        from quill.core.emmet import explain_abbreviation as _explain_abbreviation
+
+        start, end = self.editor.GetSelection()
+        default = self.editor.GetValue()[start:end] if start != end else ""
+        abbreviation = self._power_tools_prompt_single(
+            "Explain Abbreviation", "Abbreviation:", default
+        )
+        if abbreviation is None:
+            return
+        if not abbreviation.strip():
+            self._set_status("Enter an abbreviation to explain")
+            return
+        if self._emmet_mode() == "css":
+            expanded = expand_css_abbreviation(abbreviation)
+            if expanded is None:
+                self._set_status(f'Unknown CSS abbreviation: "{abbreviation}"')
+                return
+            explanation = f"CSS abbreviation '{abbreviation.strip()}' expands to:\n{expanded}"
+        else:
+            try:
+                explanation = _explain_abbreviation(abbreviation)
+            except EmmetSyntaxError as exc:
+                self._set_status(f"Could not explain abbreviation: {exc}")
+                return
+        self._power_tools_open_text_in_new_buffer(explanation + "\n", "Abbreviation explanation")
 
     # -------------------------------------- EDS-22 line-level TextMonkey transforms
     def trim_blank_lines(self) -> None:

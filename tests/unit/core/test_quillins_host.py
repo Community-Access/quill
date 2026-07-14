@@ -6,10 +6,14 @@ spawning a worker subprocess, so the security gate is tested in isolation.
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
-from quill.core.quillins.host import ApiDispatcher
-from quill.core.quillins.model import Contributions, ExtensionManifest
+import pytest
+
+from quill.core.quillins import protocol
+from quill.core.quillins.host import ApiDispatcher, ExtensionHost
+from quill.core.quillins.model import Contributions, ExtensionManifest, QuillinError
 
 
 class _RecordingServices:
@@ -36,6 +40,9 @@ class _RecordingServices:
     def announce(self, message: str) -> None:
         self.calls.append(("announce", (message,)))
 
+    def is_verbosity_speech_enabled(self) -> bool:
+        return True
+
     def read_file(self, path: str) -> str:
         self.calls.append(("read_file", (path,)))
         return "file contents"
@@ -54,7 +61,7 @@ class _RecordingServices:
         self.calls.append(("set_clipboard", (text,)))
 
 
-def _manifest(*capabilities: str) -> ExtensionManifest:
+def _manifest(*capabilities: str, net_allowed_hosts: tuple[str, ...] = ()) -> ExtensionManifest:
     return ExtensionManifest(
         id="com.example.t",
         name="T",
@@ -62,6 +69,7 @@ def _manifest(*capabilities: str) -> ExtensionManifest:
         capabilities=tuple(capabilities),
         main="extension.py",
         contributes=Contributions(),
+        net_allowed_hosts=net_allowed_hosts,
     )
 
 
@@ -157,3 +165,138 @@ def test_args_must_be_a_list() -> None:
     result = dispatcher.handle({"type": "api_call", "id": 1, "method": "get_text", "args": "x"})
     assert result["ok"] is False
     assert "args must be a list" in result["message"]
+
+
+# -- net_allowed_hosts enforcement -------------------------------------------
+
+
+def test_fetch_allowed_when_no_allowlist() -> None:
+    services = _RecordingServices()
+    dispatcher = ApiDispatcher(_manifest("net"), services, consent=lambda c, d: True)
+    result = _call(dispatcher, "fetch", "https://example.com/data")
+    assert result["ok"] is True
+    assert services.calls[0][0] == "fetch"
+
+
+def test_fetch_blocked_when_host_not_in_allowlist() -> None:
+    services = _RecordingServices()
+    dispatcher = ApiDispatcher(
+        _manifest("net", net_allowed_hosts=("api.example.com",)),
+        services,
+        consent=lambda c, d: True,
+    )
+    result = _call(dispatcher, "fetch", "https://evil.com/steal")
+    assert result["ok"] is False
+    assert "net_allowed_hosts" in result["message"]
+    assert services.calls == []
+
+
+def test_fetch_allowed_when_host_matches_exact() -> None:
+    services = _RecordingServices()
+    dispatcher = ApiDispatcher(
+        _manifest("net", net_allowed_hosts=("api.example.com",)),
+        services,
+        consent=lambda c, d: True,
+    )
+    result = _call(dispatcher, "fetch", "https://api.example.com/v1/data")
+    assert result["ok"] is True
+
+
+def test_fetch_allowed_when_wildcard_matches_subdomain() -> None:
+    services = _RecordingServices()
+    dispatcher = ApiDispatcher(
+        _manifest("net", net_allowed_hosts=("*.example.com",)),
+        services,
+        consent=lambda c, d: True,
+    )
+    result = _call(dispatcher, "fetch", "https://sub.example.com/data")
+    assert result["ok"] is True
+
+
+def test_fetch_blocked_when_wildcard_does_not_match_parent() -> None:
+    services = _RecordingServices()
+    dispatcher = ApiDispatcher(
+        _manifest("net", net_allowed_hosts=("*.example.com",)),
+        services,
+        consent=lambda c, d: True,
+    )
+    # "example.com" itself does not match "*.example.com"
+    result = _call(dispatcher, "fetch", "https://example.com/data")
+    assert result["ok"] is False
+
+
+# -- invoke_event (Part 0) ----------------------------------------------------
+
+
+class _NullServices:
+    """Minimal HostServices stand-in; never reached in these transport tests."""
+
+    def __getattr__(self, _name: str) -> Any:  # pragma: no cover - defensive
+        def _stub(*_a: Any, **_k: Any) -> Any:
+            return None
+
+        return _stub
+
+
+def _event_host() -> tuple[ExtensionHost, list[dict[str, Any]]]:
+    host = ExtensionHost(
+        ExtensionManifest(
+            id="com.example.e",
+            name="E",
+            version="1.0.0",
+            main="extension.py",
+            contributes=Contributions(),
+        ),
+        Path("."),
+        _NullServices(),
+    )
+    sent: list[dict[str, Any]] = []
+    host._send = sent.append  # type: ignore[assignment,method-assign]
+    # The worker reports a successful, valueless result for the invoke.
+    host._pump_until_result = lambda: protocol.result_ok(host._call_id)  # type: ignore[assignment,method-assign]
+    return host, sent
+
+
+def test_invoke_event_calls_handler_by_name() -> None:
+    host, sent = _event_host()
+    host.invoke_event("on_after_save", {"file_path": "C:/a.txt"})
+    invoke = next(m for m in sent if m.get("type") == protocol.MSG_INVOKE)
+    assert invoke["command"] == "on_after_save"
+    assert invoke["context"] == {"file_path": "C:/a.txt"}
+
+
+def test_invoke_event_rejects_empty_handler_name() -> None:
+    host, _sent = _event_host()
+    with pytest.raises(QuillinError):
+        host.invoke_event("", {})
+
+
+# -- verbosity speech gate ----------------------------------------------------
+
+
+class _SpeechGateServices(_RecordingServices):
+    """Variant of _RecordingServices that reports a configurable speech gate."""
+
+    def __init__(self, *, speech_enabled: bool) -> None:
+        super().__init__()
+        self._speech_enabled = speech_enabled
+
+    def is_verbosity_speech_enabled(self) -> bool:
+        return self._speech_enabled
+
+
+def test_announce_passes_through_when_speech_enabled() -> None:
+    services = _SpeechGateServices(speech_enabled=True)
+    dispatcher = ApiDispatcher(_manifest("ui.announce"), services)
+    result = _call(dispatcher, "announce", "Hello.")
+    assert result["ok"] is True
+    assert services.calls == [("announce", ("Hello.",))]
+
+
+def test_announce_is_suppressed_when_speech_disabled() -> None:
+    services = _SpeechGateServices(speech_enabled=False)
+    dispatcher = ApiDispatcher(_manifest("ui.announce"), services)
+    result = _call(dispatcher, "announce", "Hello.")
+    assert result["ok"] is True
+    # No "announce" call was forwarded to the host services — the gate dropped it.
+    assert ("announce", ("Hello.",)) not in services.calls

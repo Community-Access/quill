@@ -14,11 +14,13 @@ import time
 
 import regex
 
+from quill.core.error_codes import CodedError
+
 logger = logging.getLogger(__name__)
 
 
-class RegexTimeoutError(Exception):
-    pass
+class RegexTimeoutError(CodedError):
+    code = "QUILL-STABILITY-REGEX-TIMEOUT"
 
 
 @functools.lru_cache(maxsize=128)

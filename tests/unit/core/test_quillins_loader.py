@@ -9,15 +9,19 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from unittest.mock import patch
 
 from quill.core.quillins.loader import (
+    _parse_semver,
     discover_extensions,
     extensions_root,
     grant_capabilities,
+    is_event_enabled,
     load_enabled_manifests,
     load_state,
     remove_extension,
     set_enabled,
+    set_event_enabled,
 )
 
 
@@ -129,3 +133,117 @@ def test_remove_extension_deletes_directory_and_state(tmp_path: Path) -> None:
 def test_remove_rejects_path_escape(tmp_path: Path) -> None:
     # A crafted id must never delete outside the extensions root.
     assert remove_extension("..", root=tmp_path) is False
+
+
+# -- semver parsing ----------------------------------------------------------
+
+
+def test_parse_semver_valid() -> None:
+    assert _parse_semver("1.2.3") == (1, 2, 3)
+    assert _parse_semver("0.6.0") == (0, 6, 0)
+
+
+def test_parse_semver_invalid_returns_none() -> None:
+    assert _parse_semver("nope") is None
+    assert _parse_semver("") is None
+
+
+# -- min_quill_version enforcement -------------------------------------------
+
+
+def test_min_quill_version_below_current_is_accepted(tmp_path: Path) -> None:
+    manifest = _snippet_manifest()
+    manifest["min_quill_version"] = "0.1.0"
+    _install(tmp_path, "com.example.fence", manifest)
+    with patch("quill.core.quillins.loader._running_quill_version", return_value="0.6.0"):
+        discovered = discover_extensions(_Features(third_party=True), root=tmp_path)
+    assert discovered[0].is_valid
+
+
+def test_min_quill_version_above_current_is_rejected(tmp_path: Path) -> None:
+    manifest = _snippet_manifest()
+    manifest["min_quill_version"] = "99.0.0"
+    _install(tmp_path, "com.example.fence", manifest)
+    with patch("quill.core.quillins.loader._running_quill_version", return_value="0.6.0"):
+        discovered = discover_extensions(_Features(third_party=True), root=tmp_path)
+    assert not discovered[0].is_valid
+    assert any("requires QUILL" in e for e in discovered[0].errors)
+
+
+# -- requires enforcement ----------------------------------------------------
+
+
+def _requires_manifest(
+    extension_id: str = "com.example.child",
+    dep_id: str = "com.example.dep",
+    min_version: str = "",
+) -> dict[str, object]:
+    requires_entry: dict[str, object] = {"id": dep_id}
+    if min_version:
+        requires_entry["min_version"] = min_version
+    return {
+        "schema": "quill.extension/1",
+        "id": extension_id,
+        "name": "Child",
+        "version": "1.0.0",
+        "requires": [requires_entry],
+        "contributes": {
+            "commands": [{"id": "ext.child.run", "title": "Run", "run": {"snippet": "x"}}]
+        },
+    }
+
+
+def test_requires_met_when_dependency_is_installed(tmp_path: Path) -> None:
+    _install(tmp_path, "com.example.dep", _snippet_manifest("com.example.dep"))
+    _install(tmp_path, "com.example.child", _requires_manifest())
+    discovered = {
+        item.id: item for item in discover_extensions(_Features(third_party=True), root=tmp_path)
+    }
+    assert discovered["com.example.child"].is_valid
+
+
+def test_requires_error_when_dependency_missing(tmp_path: Path) -> None:
+    _install(tmp_path, "com.example.child", _requires_manifest())
+    discovered = discover_extensions(_Features(third_party=True), root=tmp_path)
+    assert not discovered[0].is_valid
+    assert any("not installed" in e for e in discovered[0].errors)
+
+
+def test_requires_error_when_version_too_low(tmp_path: Path) -> None:
+    dep = _snippet_manifest("com.example.dep")
+    dep["version"] = "0.1.0"
+    _install(tmp_path, "com.example.dep", dep)
+    _install(tmp_path, "com.example.child", _requires_manifest(min_version="1.0.0"))
+    discovered = {
+        item.id: item for item in discover_extensions(_Features(third_party=True), root=tmp_path)
+    }
+    assert not discovered["com.example.child"].is_valid
+    assert any(">=" in e for e in discovered["com.example.child"].errors)
+
+
+# -- per-event toggle --------------------------------------------------------
+
+
+def test_event_is_enabled_by_default(tmp_path: Path) -> None:
+    assert is_event_enabled("com.example.fence", "after_save", root=tmp_path) is True
+
+
+def test_set_event_disabled_persists(tmp_path: Path) -> None:
+    set_event_enabled("com.example.fence", "after_save", False, root=tmp_path)
+    assert is_event_enabled("com.example.fence", "after_save", root=tmp_path) is False
+
+
+def test_re_enabling_event_removes_it_from_disabled_set(tmp_path: Path) -> None:
+    set_event_enabled("com.example.fence", "after_save", False, root=tmp_path)
+    set_event_enabled("com.example.fence", "after_save", True, root=tmp_path)
+    assert is_event_enabled("com.example.fence", "after_save", root=tmp_path) is True
+
+
+def test_disabled_events_survive_state_round_trip(tmp_path: Path) -> None:
+    set_event_enabled("com.example.fence", "after_save", False, root=tmp_path)
+    set_event_enabled("com.example.fence", "before_save", False, root=tmp_path)
+    state = load_state(root=tmp_path)
+    entry = state.entry("com.example.fence")
+    assert "after_save" in entry.disabled_events
+    assert "before_save" in entry.disabled_events
+    assert "activated" not in entry.disabled_events

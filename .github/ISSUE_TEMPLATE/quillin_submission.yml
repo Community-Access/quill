@@ -8,8 +8,8 @@ body:
       value: |
         Thanks for proposing a Quillin! This form helps you build the
         `manifest.json` and records your acceptance of the
-        [Quillin Author Covenant](../blob/main/docs/quillins.md).
-        Read the [submission guide](../blob/main/docs/quillins.md)
+        [Quillin Author Covenant](https://github.com/Community-Access/quill/blob/main/docs/quillins/quillins.md).
+        Read the [submission guide](https://github.com/Community-Access/quill/blob/main/docs/quillins/quillins.md)
         first. Before opening the PR, run the linter locally:
         `python -m quill.tools.quillin_lint <dir> --strict`.
   - type: input

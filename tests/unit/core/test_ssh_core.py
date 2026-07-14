@@ -95,7 +95,10 @@ def test_persisted_site_never_contains_a_password(temp_app_data) -> None:
     import json
 
     sites_mod.upsert_site(SiteConfig(name="Server", host="s.example", username="admin"))
-    records = json.loads((temp_app_data / "ssh_sites.json").read_text(encoding="utf-8"))
+    stored = json.loads((temp_app_data / "ssh_sites.json").read_text(encoding="utf-8"))
+    # Versioned envelope: {"schema_version", "sites": [...]}.
+    assert stored["schema_version"] == 1
+    records = stored["sites"]
     # The site stores the auth *method* ("password") but no secret value: there is
     # no "password" key holding a credential.
     assert all("password" not in record for record in records)

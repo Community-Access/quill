@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>2026-07-07-guided-component-installer-consolidation</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="guided-component-installer--speech-consolidation">Guided
+Component Installer &amp; Speech Consolidation</h1>
+<p><strong>Status:</strong> proposed · <strong>Date:</strong> 2026-07-07
+· <strong>Branch:</strong> <code>fix/hub-download-test-ux</code>
+(follow-up to the 0.9.0 Beta 2 Download Optional Components hub, PR
+#875)</p>
+<h2 id="why">Why</h2>
+<p>Beta-2 shipped the Download Optional Components hub, but testing on a
+clean build surfaced that acquiring the <em>heavy</em> components is
+still scattered and rough: separate Tools &gt; Speech "Download …" menu
+items, downloads that dump you out of the hub, Test buttons that fire on
+components that can't actually run yet, and Kokoro that silently failed
+because a transitive dependency (<code>babel</code>) was pruned from the
+installer.</p>
+<p>The goal: <strong>one magical place</strong> — the Download Optional
+Components hub — to discover, install, test, remove, and manage every
+optional component, with friendly, guided, responsive flows. <em>Meet
+people where they are.</em> Consolidation, top-notch UX.</p>
+<h2 id="principles">Principles</h2>
+<ul>
+<li><strong>One front door.</strong> The hub is where you get anything
+optional. Point-of-use prompts route into it.</li>
+<li><strong>Guided, not dumped.</strong> Multi-step installs (engine +
+model, package + models) are walked through with clear explanations and
+progress, and land you <strong>back in the hub</strong>, never in an
+unrelated tab or the editor.</li>
+<li><strong>Only offer what can work.</strong> Test/preview appear only
+when the component can actually run; otherwise the row guides you to
+finish (get a model / a voice), never a bug report for a normal
+not-yet-downloaded state.</li>
+<li><strong>Small installer, on-demand heft.</strong> Bundle only what
+every user needs; download the big engines/models on first use.</li>
+</ul>
+<h2 id="scope">Scope</h2>
+<h3
+id="1-consolidate-the-tools--speech-submenu-remove-the-scattered-download-items">1.
+Consolidate the Tools &gt; Speech submenu (remove the scattered download
+items)</h3>
+<p>Remove these three menu items and fold their function into the
+hub:</p>
+<ul>
+<li><code>Download &amp;FFmpeg…</code>
+(<code>tools.speech_ffmpeg</code>)</li>
+<li><code>Download &amp;Offline Speech Engine…</code>
+(<code>tools.speech_offline_engine</code>, whisper.cpp)</li>
+<li><code>Download Faster Whisper &amp;Engine…</code>
+(<code>tools.speech_engine_download</code>)</li>
+</ul>
+<p>Keep the <em>usage</em> entries (<code>Speech and Dictation…</code>,
+<code>Dictate (Offline)</code>, Voice Command/Conversation/Wake, Speak
+Voice Status). Manage Speech Models and Manage Voices remain reachable
+from the hub's <strong>Manage</strong> buttons (and from the Speech and
+Dictation dialog for choosing the <em>active</em> model/voice).</p>
+<h3 id="2-guided-offline-speech-whisper-flow">2. Guided offline-speech
+(Whisper) flow</h3>
+<p>A single hub entry — "Offline speech (dictation &amp; transcription)"
+— opens a short wizard:</p>
+<ol type="1">
+<li><strong>Choose the engine</strong> with plain-language explanations
+of the trade-off:
+<ul>
+<li><strong>Faster Whisper</strong> — most accurate, uses more disk/RAM,
+GPU-aware.</li>
+<li><strong>whisper.cpp</strong> — lighter and fast on CPU, great for
+most machines.</li>
+</ul></li>
+<li><strong>Choose a model</strong> — tiny → large, each with size and a
+"recommended for your computer" mark (Manage Speech Models already
+computes this). <strong>Default to tiny</strong> so the user is working
+immediately.</li>
+<li>Install engine + selected model with visible progress; return to the
+hub with the row now showing Installed + Test.</li>
+</ol>
+<h3 id="3-guided-kokoro-flow--unbundle-for-footprint">3. Guided Kokoro
+flow + unbundle for footprint</h3>
+<ul>
+<li><strong>Unbundle Kokoro from the installer.</strong> Remove
+<code>kokoro</code> from <code>DEFAULT_BUNDLED_DEPENDENCY_GROUPS</code>
+in <code>scripts/build_windows_distribution.py</code>. Verified safe:
+<code>install_kokoro_onnx()</code> pip-installs the full tree (incl.
+<code>babel</code> transitively via phonemizer→segments→csvw) into an
+engine-pack, and <code>activate_engine_packs()</code> puts it on
+<code>sys.path</code>. This shrinks the installer <em>and</em> fixes
+#881 without bundling babel.</li>
+<li><strong>Guided install:</strong> one flow fetches the onnx package
+(+deps) <strong>and</strong> the voice models, then returns to the
+hub.</li>
+</ul>
+<h3 id="4-mp3-export-support-as-a-guided-download">4. MP3 export support
+as a guided download</h3>
+<p>Fold the <code>mutagen</code> MP3-support acquisition into the same
+wizard-style flow (progress + friendly copy) instead of a bare
+dependency gap.</p>
+<h3 id="5-stay-in-the-hub--focus-the-beta-2-test-findings">5.
+Stay-in-the-hub + focus (the beta-2 test findings)</h3>
+<ul>
+<li>Downloads run without leaving the hub; on completion the row
+refreshes and focus returns to the list. (Fixes "eSpeak/MathCAT/whisper
+took me out of the dialog.")</li>
+<li>Test/preview dialogs are parented to the hub so focus never lands
+behind the modal. (Fixes the keyboard trap.)</li>
+<li>Test only runs when previewable; otherwise route to Manage. (Done:
+<code>VerifyResult.remedy</code>; no-voice → Manage Voices.)</li>
+</ul>
+<h2 id="already-landed-on-this-branch">Already landed on this
+branch</h2>
+<ul>
+<li><strong><code>fix(build)</code> #881 / Kokoro:</strong> stop pruning
+<code>babel</code> (kokoro-onnx needs it at runtime). Superseded in
+spirit by the unbundle above, but harmless and correct if Kokoro ever
+stays bundled.</li>
+<li><strong><code>fix(components)</code> Test routing:</strong> expected
+"no model / no voice" states route to Manage Speech Models / Manage
+Voices instead of erroring or offering a bug report.</li>
+<li><strong>Manage models/voices routing buttons</strong> (from PR
+#875).</li>
+</ul>
+<h2 id="non-goals">Non-goals</h2>
+<ul>
+<li>Not changing how the <em>active</em> voice/model is chosen (that
+stays in Speech and Dictation / Manage Voices).</li>
+<li>Not bundling any large engine/model in the installer.</li>
+</ul>
+<h2 id="open-decisions">Open decisions</h2>
+<ul>
+<li>Whether the guided wizard is a new dialog or additional pages inside
+the existing hub. Recommendation: keep it in the hub's flow (a
+lightweight step panel) so it stays "one place."</li>
+<li>Exact copy for the Faster Whisper vs whisper.cpp explanation (needs
+a friendly, screen-reader-first pass).</li>
+</ul>
+</body>
+</html>

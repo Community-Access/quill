@@ -25,28 +25,46 @@ from pathlib import Path
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 _MAIN_FRAME = _REPO_ROOT / "quill" / "ui" / "main_frame.py"
 SNAPSHOT_PATH = _REPO_ROOT / "tests" / "unit" / "ui" / "fixtures" / "main_frame_public_surface.json"
+_UI_ROOT = _REPO_ROOT / "quill" / "ui"
+
+
+def _ui_class_index() -> dict[str, ast.ClassDef]:
+    index: dict[str, ast.ClassDef] = {}
+    for path in sorted(_UI_ROOT.glob("main_frame*.py")):
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        for node in tree.body:
+            if isinstance(node, ast.ClassDef):
+                index[node.name] = node
+    return index
+
+
+def _public_methods_for_class(
+    class_name: str,
+    index: dict[str, ast.ClassDef],
+    seen: set[str] | None = None,
+) -> set[str]:
+    seen = seen or set()
+    if class_name in seen or class_name not in index:
+        return set()
+    seen.add(class_name)
+    class_def = index[class_name]
+    names = {
+        member.name
+        for member in class_def.body
+        if isinstance(member, (ast.FunctionDef, ast.AsyncFunctionDef))
+        and not member.name.startswith("_")
+    }
+    for base in class_def.bases:
+        if isinstance(base, ast.Name):
+            names.update(_public_methods_for_class(base.id, index, seen))
+    return names
 
 
 def main_frame_public_methods(source_path: Path = _MAIN_FRAME) -> list[str]:
     """Return the sorted public (non-underscore) method names of ``MainFrame``."""
-    tree = ast.parse(source_path.read_text(encoding="utf-8"), filename=str(source_path))
-    try:
-        main_frame = next(
-            node
-            for node in tree.body
-            if isinstance(node, ast.ClassDef) and node.name == "MainFrame"
-        )
-    except StopIteration:
-        raise SystemExit(
-            f"Could not find class MainFrame in {source_path}. Has it been renamed?"
-        ) from None
-    names = {
-        member.name
-        for member in main_frame.body
-        if isinstance(member, (ast.FunctionDef, ast.AsyncFunctionDef))
-        and not member.name.startswith("_")
-    }
-    return sorted(names)
+    del source_path  # MainFrame now spans the main module plus extracted mixins.
+    index = _ui_class_index()
+    return sorted(_public_methods_for_class("MainFrame", index))
 
 
 def load_snapshot() -> list[str]:

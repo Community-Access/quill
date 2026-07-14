@@ -1,0 +1,201 @@
+{
+  "schema": "quill.extension/1",
+  "id": "com.quill.bundled.math-equations",
+  "name": "Math Equations",
+  "version": "1.5.1",
+  "author": "QUILL Project",
+  "description": "Bundled Quillin: insert LaTeX or MathML equations at the caret, plus Math AutoCorrect-style abbreviations for common symbols. Wraps LaTeX in \\(...\\) (inline) or $$...$$ (display); inserts MathML verbatim.",
+  "license": "MIT",
+  "min_quill_version": "1.0.0",
+  "capabilities": ["ui.prompt", "ui.choices", "ui.announce", "editor.read", "editor.write", "ui.command"],
+  "main": "extension.py",
+  "contributes": {
+    "commands": [
+      {
+        "id": "ext.math.insert_equation",
+        "title": "Insert Equation...",
+        "run": { "handler": "insert_equation" }
+      },
+      {
+        "id": "ext.math.explore_equation_structure",
+        "title": "Explore Equation Structure...",
+        "description": "Step through a formula's structure piece by piece (numerator/denominator, base/exponent, a root's radicand) with a plain-English reading of each part.",
+        "run": { "handler": "explore_equation_structure" }
+      }
+    ],
+    "menus": [
+      { "parent": "Insert", "command": "ext.math.insert_equation" },
+      { "parent": "Insert", "command": "ext.math.explore_equation_structure" }
+    ],
+    "context_menu": [
+      { "command": "ext.math.insert_equation", "when": "always" },
+      { "command": "ext.math.explore_equation_structure", "when": "editor.hasSelection" }
+    ],
+    "hotkeys": [
+      { "command": "ext.math.insert_equation", "binding": "Ctrl+Shift+E" },
+      { "command": "ext.math.explore_equation_structure", "binding": "Ctrl+Shift+Grave, F" }
+    ],
+    "abbreviations": [
+      { "trigger": "\\cdot", "expansion": "⋅", "description": "Dot multiplication", "category": "Operators" },
+      { "trigger": "\\times", "expansion": "×", "description": "Times", "category": "Operators" },
+      { "trigger": "\\div", "expansion": "÷", "description": "Division", "category": "Operators" },
+      { "trigger": "\\pm", "expansion": "±", "description": "Plus or minus", "category": "Operators" },
+      { "trigger": "\\mp", "expansion": "∓", "description": "Minus or plus", "category": "Operators" },
+      { "trigger": "\\sqrt", "expansion": "√", "description": "Square root", "category": "Operators" },
+      { "trigger": "\\cbrt", "expansion": "∛", "description": "Cube root", "category": "Operators" },
+      { "trigger": "\\qdrt", "expansion": "∜", "description": "Fourth root", "category": "Operators" },
+      { "trigger": "\\infty", "expansion": "∞", "description": "Infinity", "category": "Operators" },
+      { "trigger": "\\circ", "expansion": "∘", "description": "Composed with", "category": "Operators" },
+      { "trigger": "\\ne", "expansion": "≠", "description": "Not equal", "category": "Relations" },
+      { "trigger": "\\neq", "expansion": "≠", "description": "Not equal", "category": "Relations" },
+      { "trigger": "\\le", "expansion": "≤", "description": "Less than or equal", "category": "Relations" },
+      { "trigger": "\\leq", "expansion": "≤", "description": "Less than or equal", "category": "Relations" },
+      { "trigger": "\\ge", "expansion": "≥", "description": "Greater than or equal", "category": "Relations" },
+      { "trigger": "\\geq", "expansion": "≥", "description": "Greater than or equal", "category": "Relations" },
+      { "trigger": "\\approx", "expansion": "≈", "description": "Approximately equal", "category": "Relations" },
+      { "trigger": "\\propto", "expansion": "∝", "description": "Proportional to", "category": "Relations" },
+      { "trigger": "\\cong", "expansion": "≅", "description": "Congruent to", "category": "Relations" },
+      { "trigger": "\\sim", "expansion": "∼", "description": "Similar to", "category": "Relations" },
+      { "trigger": "\\ll", "expansion": "≪", "description": "Much less than", "category": "Relations" },
+      { "trigger": "\\gg", "expansion": "≫", "description": "Much greater than", "category": "Relations" },
+      { "trigger": "\\in", "expansion": "∈", "description": "Element of", "category": "Sets and Logic" },
+      { "trigger": "\\notin", "expansion": "∉", "description": "Not an element of", "category": "Sets and Logic" },
+      { "trigger": "\\ni", "expansion": "∋", "description": "Contains as member", "category": "Sets and Logic" },
+      { "trigger": "\\subset", "expansion": "⊂", "description": "Subset of", "category": "Sets and Logic" },
+      { "trigger": "\\subseteq", "expansion": "⊆", "description": "Subset of or equal to", "category": "Sets and Logic" },
+      { "trigger": "\\superset", "expansion": "⊃", "description": "Superset of", "category": "Sets and Logic" },
+      { "trigger": "\\superseteq", "expansion": "⊇", "description": "Superset of or equal to", "category": "Sets and Logic" },
+      { "trigger": "\\cup", "expansion": "∪", "description": "Union", "category": "Sets and Logic" },
+      { "trigger": "\\cap", "expansion": "∩", "description": "Intersection", "category": "Sets and Logic" },
+      { "trigger": "\\leftrightarrow", "expansion": "↔", "description": "Biconditional", "category": "Sets and Logic" },
+      { "trigger": "\\rightarrow", "expansion": "→", "description": "Implication / rightward arrow", "category": "Sets and Logic" },
+      { "trigger": "\\to", "expansion": "→", "description": "Rightward arrow", "category": "Sets and Logic" },
+      { "trigger": "\\wedge", "expansion": "∧", "description": "Logical and", "category": "Sets and Logic" },
+      { "trigger": "\\vee", "expansion": "∨", "description": "Logical or", "category": "Sets and Logic" },
+      { "trigger": "\\neg", "expansion": "¬", "description": "Logical not", "category": "Sets and Logic" },
+      { "trigger": "\\oplus", "expansion": "⊕", "description": "Exclusive or", "category": "Sets and Logic" },
+      { "trigger": "\\odot", "expansion": "⊙", "description": "Circled dot", "category": "Sets and Logic" },
+      { "trigger": "\\forall", "expansion": "∀", "description": "For all", "category": "Sets and Logic" },
+      { "trigger": "\\exists", "expansion": "∃", "description": "There exists", "category": "Sets and Logic" },
+      { "trigger": "\\emptyset", "expansion": "∅", "description": "Empty set", "category": "Sets and Logic" },
+      { "trigger": "\\doubleN", "expansion": "ℕ", "description": "Natural numbers", "category": "Number Sets" },
+      { "trigger": "\\doubleZ", "expansion": "ℤ", "description": "Integers", "category": "Number Sets" },
+      { "trigger": "\\doubleQ", "expansion": "ℚ", "description": "Rational numbers", "category": "Number Sets" },
+      { "trigger": "\\doubleR", "expansion": "ℝ", "description": "Real numbers", "category": "Number Sets" },
+      { "trigger": "\\doubleC", "expansion": "ℂ", "description": "Complex numbers", "category": "Number Sets" },
+      { "trigger": "\\alpha", "expansion": "α", "description": "Greek letter alpha", "category": "Greek Letters" },
+      { "trigger": "\\beta", "expansion": "β", "description": "Greek letter beta", "category": "Greek Letters" },
+      { "trigger": "\\chi", "expansion": "χ", "description": "Greek letter chi", "category": "Greek Letters" },
+      { "trigger": "\\delta", "expansion": "δ", "description": "Greek letter delta (lowercase)", "category": "Greek Letters", "case_sensitive": true },
+      { "trigger": "\\Delta", "expansion": "Δ", "description": "Greek letter Delta (uppercase)", "category": "Greek Letters", "case_sensitive": true },
+      { "trigger": "\\gamma", "expansion": "γ", "description": "Greek letter gamma", "category": "Greek Letters" },
+      { "trigger": "\\lambda", "expansion": "λ", "description": "Greek letter lambda", "category": "Greek Letters" },
+      { "trigger": "\\mu", "expansion": "μ", "description": "Greek letter mu", "category": "Greek Letters" },
+      { "trigger": "\\omega", "expansion": "ω", "description": "Greek letter omega", "category": "Greek Letters" },
+      { "trigger": "\\phi", "expansion": "ϕ", "description": "Greek letter phi", "category": "Greek Letters" },
+      { "trigger": "\\pi", "expansion": "π", "description": "Greek letter pi", "category": "Greek Letters" },
+      { "trigger": "\\rho", "expansion": "ρ", "description": "Greek letter rho", "category": "Greek Letters" },
+      { "trigger": "\\Sigma", "expansion": "Σ", "description": "Greek letter Sigma (uppercase)", "category": "Greek Letters" },
+      { "trigger": "\\tau", "expansion": "τ", "description": "Greek letter tau", "category": "Greek Letters" },
+      { "trigger": "\\theta", "expansion": "θ", "description": "Greek letter theta", "category": "Greek Letters" },
+      { "trigger": "\\prime", "expansion": "′", "description": "Prime", "category": "Calculus" },
+      { "trigger": "\\pprime", "expansion": "″", "description": "Double prime", "category": "Calculus" },
+      { "trigger": "\\ppprime", "expansion": "‴", "description": "Triple prime", "category": "Calculus" },
+      { "trigger": "\\pppprime", "expansion": "⁗", "description": "Quadruple prime", "category": "Calculus" },
+      { "trigger": "\\int", "expansion": "∫", "description": "Integral", "category": "Calculus" },
+      { "trigger": "\\iint", "expansion": "∬", "description": "Double integral", "category": "Calculus" },
+      { "trigger": "\\iiint", "expansion": "∭", "description": "Triple integral", "category": "Calculus" },
+      { "trigger": "\\partial", "expansion": "∂", "description": "Partial derivative", "category": "Calculus" },
+      { "trigger": "\\sum", "expansion": "∑", "description": "Summation", "category": "Calculus" },
+      { "trigger": "\\prod", "expansion": "∏", "description": "Product", "category": "Calculus" },
+      { "trigger": "\\nabla", "expansion": "∇", "description": "Gradient / nabla", "category": "Calculus" },
+      { "trigger": "\\vec", "expansion": "→", "description": "Vector arrow", "category": "Geometry and Vectors" },
+      { "trigger": "\\angle", "expansion": "∠", "description": "Angle", "category": "Geometry and Vectors" },
+      { "trigger": "\\perp", "expansion": "⊥", "description": "Perpendicular", "category": "Geometry and Vectors" },
+      { "trigger": "\\parallel", "expansion": "∥", "description": "Parallel", "category": "Geometry and Vectors" },
+      { "trigger": "\\degree", "expansion": "°", "description": "Degree", "category": "Geometry and Vectors" },
+      { "trigger": "\\overparen", "expansion": "⌢", "description": "Arc", "category": "Geometry and Vectors" },
+      { "trigger": "\\degc", "expansion": "°C", "description": "Degrees Celsius", "category": "Geometry and Vectors" },
+      { "trigger": "\\degf", "expansion": "°F", "description": "Degrees Fahrenheit", "category": "Geometry and Vectors" },
+      { "trigger": "\\therefore", "expansion": "∴", "description": "Therefore", "category": "Miscellaneous" },
+      { "trigger": "\\because", "expansion": "∵", "description": "Because", "category": "Miscellaneous" },
+      { "trigger": "\\cdots", "expansion": "⋯", "description": "Horizontal ellipsis (mid-line)", "category": "Miscellaneous" },
+      { "trigger": "\\vdots", "expansion": "⋮", "description": "Vertical ellipsis", "category": "Miscellaneous" },
+      { "trigger": "\\ddots", "expansion": "⋱", "description": "Diagonal ellipsis", "category": "Miscellaneous" },
+      { "trigger": "\\dots", "expansion": "…", "description": "Ellipsis", "category": "Miscellaneous" },
+      { "trigger": "\\ldots", "expansion": "…", "description": "Ellipsis", "category": "Miscellaneous" }
+    ],
+    "snippet_gallery": [
+      {
+        "id": "quadratic-formula",
+        "name": "Quadratic Formula",
+        "category": "Algebra",
+        "description": "Solves ax^2 + bx + c = 0 for x.",
+        "body": "$$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$"
+      },
+      {
+        "id": "pythagorean-theorem",
+        "name": "Pythagorean Theorem",
+        "category": "Geometry",
+        "description": "Relates the legs and hypotenuse of a right triangle.",
+        "body": "$$a^2 + b^2 = c^2$$"
+      },
+      {
+        "id": "slope-intercept-form",
+        "name": "Slope-Intercept Form",
+        "category": "Algebra",
+        "description": "The equation of a line given its slope and y-intercept.",
+        "body": "$$y = mx + b$$"
+      },
+      {
+        "id": "point-slope-form",
+        "name": "Point-Slope Form",
+        "category": "Algebra",
+        "description": "The equation of a line given one point and its slope.",
+        "body": "$$y - y_1 = m(x - x_1)$$"
+      },
+      {
+        "id": "slope-formula",
+        "name": "Slope Formula",
+        "category": "Algebra",
+        "description": "The slope between two points.",
+        "body": "$$m = \\frac{y_2 - y_1}{x_2 - x_1}$$"
+      },
+      {
+        "id": "distance-formula",
+        "name": "Distance Formula",
+        "category": "Geometry",
+        "description": "The distance between two points on a plane.",
+        "body": "$$d = \\sqrt{(x_2-x_1)^2 + (y_2-y_1)^2}$$"
+      },
+      {
+        "id": "midpoint-formula",
+        "name": "Midpoint Formula",
+        "category": "Geometry",
+        "description": "The midpoint between two points.",
+        "body": "$$\\left(\\frac{x_1+x_2}{2}, \\frac{y_1+y_2}{2}\\right)$$"
+      },
+      {
+        "id": "difference-of-squares",
+        "name": "Difference of Squares",
+        "category": "Algebra",
+        "description": "A standard algebraic factoring identity.",
+        "body": "$$a^2 - b^2 = (a-b)(a+b)$$"
+      },
+      {
+        "id": "circle-area",
+        "name": "Area of a Circle",
+        "category": "Geometry",
+        "description": "The area of a circle given its radius.",
+        "body": "$$A = \\pi r^2$$"
+      },
+      {
+        "id": "circle-circumference",
+        "name": "Circumference of a Circle",
+        "category": "Geometry",
+        "description": "The circumference of a circle given its radius.",
+        "body": "$$C = 2\\pi r$$"
+      }
+    ]
+  }
+}

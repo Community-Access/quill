@@ -21,19 +21,39 @@ class PdfExtractionResult:
 
 
 def extract_pdf_text(path: Path) -> PdfExtractionResult:
+    # Distinguish "no extractor installed" from "an extractor ran but found no
+    # text" (#909). They are different problems with different remedies: the
+    # former is a broken/partial install, the latter is almost always a scanned
+    # or image-only PDF that needs OCR. Collapsing both into one message sent
+    # users chasing the wrong fix.
+    any_extractor_available = False
     for extractor in (_extract_with_pdfplumber, _extract_with_pypdf):
         try:
             result = extractor(path)
         except ModuleNotFoundError:
-            continue
+            continue  # this extractor's package is absent; try the next
         except Exception:
+            any_extractor_available = True  # it imported, it just failed on this file
             continue
+        any_extractor_available = True
         if result.text.strip():
             return result
+    if not any_extractor_available:
+        message = (
+            f"(No PDF text extractor is installed, so QUILL could not read "
+            f"{path.name}. Reinstall QUILL, or run: pip install pdfplumber pypdf.)\n"
+        )
+        engine = "unavailable"
+    else:
+        message = (
+            f"(No selectable text was found in {path.name}. It is likely a scanned "
+            f"or image-only PDF — use File > Import and choose OCR to read it.)\n"
+        )
+        engine = "empty"
     return PdfExtractionResult(
-        text=f"(No PDF text extractor was available for {path.name}.)\n",
+        text=message,
         quality_score=0,
-        engine="unavailable",
+        engine=engine,
         page_count=0,
         extracted_pages=0,
         page_scores=[],
@@ -86,7 +106,12 @@ def _extract_with_pdfplumber(path: Path) -> PdfExtractionResult:
             flush_cache = getattr(page, "flush_cache", None)
             if callable(flush_cache):
                 flush_cache()
-    text = "\n\n".join(page_texts).strip()
+    # #872: join with a form feed, not a blank line, so real page
+    # boundaries survive into the editable Document text. This makes
+    # quill.core.navigation.page_starts()/page_start_for_number() -- already
+    # built for this, previously unreachable for real documents -- report
+    # exact pages for PDFs.
+    text = "\f".join(page_texts).strip()
     score = _score_pdf_text(text, page_count, sum(1 for page_text in page_texts if page_text))
     return PdfExtractionResult(
         text=text + "\n" if text else "",
@@ -108,7 +133,8 @@ def _extract_with_pypdf(path: Path) -> PdfExtractionResult:
         if index >= _PDF_MAX_PAGES:
             break
         page_texts.append((page.extract_text() or "").strip())
-    text = "\n\n".join(page_texts).strip()
+    # #872: see the matching comment in _extract_with_pdfplumber above.
+    text = "\f".join(page_texts).strip()
     score = _score_pdf_text(text, page_count, sum(1 for page_text in page_texts if page_text))
     return PdfExtractionResult(
         text=text + "\n" if text else "",

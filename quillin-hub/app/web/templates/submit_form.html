@@ -1,0 +1,49 @@
+{% extends "_base.html" %}
+{% block title %}Quillin Hub | Submit an artifact{% endblock %}
+{% block content %}
+    <section aria-labelledby="submit-heading" class="max-w-2xl mx-auto">
+        <h2 id="submit-heading" class="text-3xl font-bold mb-2 text-slate-800">Submit an artifact</h2>
+        <p class="text-slate-600 mb-8">
+            Choose the file you built. The Forge auto-detects the artifact type -- pick one below
+            only if you want to override the detection.
+        </p>
+
+        {% if error %}
+        <div role="alert" class="bg-red-50 border border-red-300 text-red-800 rounded-lg p-4 mb-6">
+            <strong>Error:</strong> {{ error }}
+        </div>
+        {% endif %}
+
+        <form action="/forge/submit" method="POST" enctype="multipart/form-data" class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+            <div class="mb-6">
+                <label for="artifact-file" class="block font-semibold text-slate-800 mb-2">Artifact file</label>
+                <input type="file" id="artifact-file" name="artifact" required
+                       accept="{{ accept }}"
+                       aria-describedby="artifact-file-help"
+                       class="block w-full border border-slate-300 rounded-lg p-2">
+                <p id="artifact-file-help" class="text-sm text-slate-500 mt-2">
+                    Accepted: {{ accept }}. Quillin extensions go in as a .zip of the folder.
+                </p>
+            </div>
+
+            <div class="mb-6">
+                <label for="artifact-type" class="block font-semibold text-slate-800 mb-2">Artifact type (optional)</label>
+                <select id="artifact-type" name="artifact_type"
+                        aria-describedby="artifact-type-help"
+                        class="block w-full border border-slate-300 rounded-lg p-2 bg-white">
+                    <option value="" {% if not preselected %}selected{% endif %}>Detect automatically</option>
+                    {% for t in artifact_types %}
+                    <option value="{{ t.id }}" {% if preselected == t.id %}selected{% endif %}>{{ t.label }}</option>
+                    {% endfor %}
+                </select>
+                <p id="artifact-type-help" class="text-sm text-slate-500 mt-2">
+                    Leave on "Detect automatically" unless the Forge guessed wrong.
+                </p>
+            </div>
+
+            <button type="submit" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-700 shadow-lg">
+                Run the Forge checks
+            </button>
+        </form>
+    </section>
+{% endblock %}

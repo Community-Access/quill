@@ -204,9 +204,46 @@ main.prose { padding: 2.5rem 0 3.5rem; }
 .faq summary::before { content: "\25B8\00a0"; color: var(--accent); }
 .faq details[open] summary::before { content: "\25BE\00a0"; }
 .faq summary:hover { color: var(--accent); }
+/* FAQ questions carry real h3s so heading navigation reaches every answer. */
+.faq summary h3 { display: inline; margin: 0; font-size: 1.05rem; font-weight: 600; }
 .faq details > *:not(summary) { padding: 0 1.1rem 0.4rem; max-width: var(--measure); }
 .faq .toc { columns: 2; gap: 2rem; }
 @media (max-width: 40rem) { .faq .toc { columns: 1; } }
+
+/* Go-deeper accordions on the landing page. Native details/summary: fully
+   keyboard operable and announced as collapsed/expanded by screen readers
+   with no script. Styled to match the FAQ accordions. */
+.band details.deep {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin: 1.2rem 0 0;
+  background: var(--surface);
+}
+.band details.deep[open] { background: var(--surface-2); }
+.band details.deep > summary {
+  cursor: pointer;
+  padding: 0.9rem 1.1rem;
+  font-weight: 600;
+  font-size: 1.05rem;
+  list-style: none;
+}
+.band details.deep > summary::-webkit-details-marker { display: none; }
+.band details.deep > summary::before { content: "\25B8\00a0"; color: var(--accent); }
+.band details.deep[open] > summary::before { content: "\25BE\00a0"; }
+.band details.deep > summary:hover { color: var(--accent); }
+.band details.deep > div { padding: 0 1.1rem 0.9rem; }
+.band details.deep ul { margin: 0.4rem 0 0.6rem; padding-left: 1.3rem; }
+.band details.deep li { margin: 0.35rem 0; max-width: var(--measure); }
+/* The summary carries a real h3 so heading navigation reaches each
+   "Go deeper" section, and every deep item is an h4 + paragraph. */
+.band details.deep > summary h3 {
+  display: inline;
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+.band details.deep h4 { margin: 0.9rem 0 0.15rem; font-size: 1rem; }
+.band details.deep p { margin: 0.15rem 0 0.5rem; max-width: var(--measure); }
 
 /* Footer */
 footer.site {

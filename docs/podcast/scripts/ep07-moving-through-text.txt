@@ -1,0 +1,43 @@
+[LIAM]
+The QUILL Cast, episode seven, and welcome to part two: the everyday editor. I'm Liam. Over the next seven episodes we make you fast, at moving, editing, finding, correcting, and never losing work.
+
+[JESSICA]
+I'm Jessica, and we start with movement, because editing speed is mostly navigation speed. The words per minute you type matter less than the seconds it takes to get your cursor where the next edit happens.
+
+[LIAM]
+Layer one is the standard grammar you already know, and QUILL honors all of it: arrows by character and line, control arrows by word, home and end for line edges, control home and end for the document, page up and down. Shift extends any of those into a selection. If you can edit in Notepad, your hands already work here.
+
+[JESSICA]
+Layer two: structural movement. In a Markdown document, and Markdown is just text with headings, which we'll formalize in episode fourteen, QUILL can jump by heading, so a long document becomes a series of landings instead of a scroll. Section movement commands hop between logical blocks. Paragraph motion is the workhorse: most editing thought happens a paragraph at a time.
+
+[LIAM]
+Layer three: remembered places. Named bookmarks: drop one anywhere, jump back to it by name, from the palette or its shortcut. They belong to their specific document and survive restarts, set bookmarks in chapter twelve today, they're waiting there next month. Plus the automatic one from episode three: every saved file reopens at your last cursor position.
+
+[JESSICA]
+And selection marks for the point-and-mark crowd: set a mark, move anywhere, then operate on everything between mark and cursor, or swap between point and mark to bounce across a document. If you ever loved a certain classic editor, yes, that's the idea, made speakable.
+
+[PAUSE]
+
+[LIAM]
+Layer four: Go To Line. Palette, go to line, type twelve, or twelve comma four for line and column, enter. Sounds humble; becomes essential the first time an error message or a collaborator says line two-forty.
+
+[JESSICA]
+Now the mode that ties navigation together: Browse Mode and Quick Nav, and here's the proper introduction. QUILL has a prefix key, called the QUILL key, control shift grave by default, the tilde key. Press it once, and the next key you press is a command instead of a letter. That's Quick Nav: one command, then back to typing.
+
+[LIAM]
+Press the QUILL key twice, and Browse Mode locks on: now letters and arrows keep acting as navigation commands until you press escape. If you use a screen reader on the web, you know this idea intimately, it's the virtual cursor pattern, brought into the editor. Skim a long document by headings in Browse Mode, escape, and you're typing again.
+
+[JESSICA]
+The mental model that makes all this stick: navigation in QUILL is a vocabulary, not a feature list. Characters, words, lines, paragraphs, sections, headings, bookmarks, marks, lines-by-number. Each is a word in the sentence get me there. Fluency is knowing which word fits, and fluency comes from deliberately using the bigger words, most people underuse everything above the paragraph.
+
+[LIAM]
+Homework. One: open your longest document and traverse it three ways, once by paragraph, once by heading or section, once with two named bookmarks you set at the halfway and end points. Feel the difference in effort. Two: enter Browse Mode, double QUILL key, wander, escape out. Three: go to a specific line number, just to have done it.
+
+[JESSICA]
+Next episode: the QUILL key gets its full due, chords, the prefix command family, and the map of what lives behind it.
+
+[LIAM]
+I'm Liam.
+
+[JESSICA]
+I'm Jessica. Get there faster.

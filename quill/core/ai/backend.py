@@ -5,9 +5,13 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 
+from quill.core.error_codes import CodedError
 
-class ContextWindowExceeded(Exception):
+
+class ContextWindowExceeded(CodedError):
     """Raised when a prompt + response would exceed the model's context window."""
+
+    code = "QUILL-AI-BACKEND-CONTEXT-EXCEEDED"
 
 
 class AIBackend(ABC):

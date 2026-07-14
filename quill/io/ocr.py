@@ -93,7 +93,7 @@ class OcrBackend(Protocol):
 class WindowsOcrBackend:
     """Native ``Windows.Media.Ocr`` backend, fully offline and zero-install (OCR-1).
 
-    Recognition uses the WinRT OCR engine via ``winsdk``/``winrt`` when present.
+    Recognition uses the WinRT OCR engine via the ``winrt-*`` packages when present.
     On a non-Windows machine or without the projection installed,
     :meth:`is_available` returns ``False`` so selection falls back cleanly.
     """

@@ -5,6 +5,7 @@ from __future__ import annotations
 from quill.tools.menu_lint import (
     _check_ctrl_alt,
     _check_depth,
+    _check_no_literal_double_ampersand,
     _check_required_clusters,
     run_checks,
 )
@@ -42,34 +43,119 @@ def test_ctrl_alt_case_insensitive() -> None:
     assert errors
 
 
+def test_ctrl_alt_edsharp_heading_permitted() -> None:
+    """EdSharp PR2: format.heading_1..6 are allowlisted because each
+    binding carries a per-line # §edsharp-ok justification comment
+    naming the screen-reader binding it overrides (NVDA switch-to-synth-N).
+    """
+    src = (
+        "DEFAULT_KEYMAP: dict[str, str] = {\n"
+        '    "format.heading_1": "Ctrl+Alt+1",  # §edsharp-ok — overrides NVDA switch-to-synth-1\n'
+        '    "format.heading_6": "Ctrl+Alt+6",  # §edsharp-ok — overrides NVDA switch-to-synth-6\n'
+        "}\n"
+    )
+    assert _check_ctrl_alt(src) == []
+
+
+def test_ctrl_alt_uncommented_still_fails() -> None:
+    """Regression: the gate still fires for an unlisted Ctrl+Alt+ binding
+    even after the escape-hatch is introduced.  Ensures the per-binding
+    justification comment is required."""
+    src = 'DEFAULT_KEYMAP: dict[str, str] = {\n    "edit.something": "Ctrl+Alt+Q",\n}\n'
+    errors = _check_ctrl_alt(src)
+    assert errors
+    assert any("edit.something" in e for e in errors)
+
+
+def test_ctrl_alt_edsharp_comment_without_allowlist_entry_still_passes() -> None:
+    """The escape hatch is per-binding: a Ctrl+Alt+ binding outside the
+    global allowlist passes if its line carries # §edsharp-ok.  This is
+    the path that lets future EdSharp-style bindings enter the keymap
+    without needing a menu_lint.py edit each time."""
+    src = (
+        "DEFAULT_KEYMAP: dict[str, str] = {\n"
+        '    "format.new_one_off_command": "Ctrl+Alt+Q",  # §edsharp-ok — justifies why\n'
+        "}\n"
+    )
+    assert _check_ctrl_alt(src) == []
+
+
+def test_ctrl_alt_shift_plus_does_not_match_ctrl_alt_gate() -> None:
+    """Regression for #347: the regex `ctrl+alt+` was a prefix match, so it
+    fired on every Ctrl+Alt+Shift+... binding. The gate's intent is the
+    plain Ctrl+Alt+ chord; Ctrl+Alt+Shift+ is governed by §10.4 and is not
+    this gate's concern. An unlisted Ctrl+Alt+Shift+ binding must pass."""
+    src = (
+        "DEFAULT_KEYMAP: dict[str, str] = {\n"
+        '    "view.toggle_dark_mode": "Ctrl+Alt+Shift+D",\n'
+        '    "tools.run_macro": "Ctrl+Alt+Shift+M",\n'
+        "}\n"
+    )
+    assert _check_ctrl_alt(src) == []
+
+
+def test_ctrl_alt_lower_case_shift_plus_does_not_match() -> None:
+    src = 'DEFAULT_KEYMAP: dict[str, str] = {\n    "x": "ctrl+alt+shift+q",\n}\n'
+    assert _check_ctrl_alt(src) == []
+
+
 # ---------------------------------------------------------------------------
 # Required clusters
 # ---------------------------------------------------------------------------
 
 
+def _fake_menu_source(*labels: str) -> str:
+    """Build a fake main_frame_menu.py body with one AppendSubMenu(...) call
+    per label, matching the real file's `_("...")`-wrapped label argument."""
+    lines = ["from quill.core.i18n import _", ""]
+    for index, label in enumerate(labels):
+        lines.append(f"sub_{index} = wx.Menu()")
+        lines.append(f'parent_menu.AppendSubMenu(sub_{index}, _("{label}"))')
+    return "\n".join(lines)
+
+
 def test_required_clusters_present() -> None:
-    # All nine required cluster labels in one fake source.
-    fake = (
-        '"R&eading && Dictation" "C&omparison" "&Watch Folder" "AI &Assistant"'
-        ' "&Advanced" "&Quillins" "A&ccessibility" "&Customize && Support"'
-        ' "&Writing && Language"'
+    # All required cluster labels, each passed to a real AppendSubMenu call.
+    # (AI is now a top-level menu, not a Tools cluster.)
+    fake = _fake_menu_source(
+        "R&eading and Dictation",
+        "C&omparison",
+        "&Watch Folder",
+        "&Advanced",
+        "&Quillins",
+        "A&ccessibility",
+        "&Customize and Support",
+        "&Writing and Language",
     )
     assert _check_required_clusters(fake) == []
 
 
 def test_required_clusters_missing_reports_error() -> None:
-    fake = '"C&omparison"'  # most clusters absent
+    fake = _fake_menu_source("C&omparison")  # most clusters absent
     errors = _check_required_clusters(fake)
     assert errors
 
 
 def test_required_clusters_missing_writing_language() -> None:
-    fake = (
-        '"R&eading && Dictation" "C&omparison" "&Watch Folder" "AI &Assistant"'
-        ' "&Advanced" "&Quillins" "A&ccessibility" "&Customize && Support"'
+    fake = _fake_menu_source(
+        "R&eading and Dictation",
+        "C&omparison",
+        "&Watch Folder",
+        "&Advanced",
+        "&Quillins",
+        "A&ccessibility",
+        "&Customize and Support",
     )
     errors = _check_required_clusters(fake)
     assert any("Writing" in e for e in errors)
+
+
+def test_required_clusters_comment_mention_does_not_satisfy_gate() -> None:
+    """Regression for #286: the old substring check would pass if a cluster's
+    label text merely appeared in a comment. The AST check must not."""
+    fake = '# TODO: rename the "&Watch Folder" cluster someday\nimport wx\n'
+    errors = _check_required_clusters(fake)
+    assert any("Watch Folder" in e for e in errors)
 
 
 # ---------------------------------------------------------------------------
@@ -122,6 +208,43 @@ def test_depth_root_menus_ignored() -> None:
 
 
 # ---------------------------------------------------------------------------
+# #876: submenu labels must not contain a literal "&&"
+# ---------------------------------------------------------------------------
+
+
+def test_no_double_ampersand_clean_source_passes() -> None:
+    src = (
+        "def build():\n"
+        "    m = wx.Menu()\n"
+        "    sub = wx.Menu()\n"
+        "    m.AppendSubMenu(sub, _('&Writing and Language'))\n"
+    )
+    assert _check_no_literal_double_ampersand(src) == []
+
+
+def test_no_double_ampersand_detects_violation() -> None:
+    """#876: NVDA read submenu headers like 'Writing & Language' as literal
+    'Writing && Language' -- the double-ampersand escape did not collapse to
+    a single '&' the way it does for leaf menu items. Fixed by not relying on
+    the '&&' escape in submenu header labels at all."""
+    src = (
+        "def build():\n"
+        "    m = wx.Menu()\n"
+        "    sub = wx.Menu()\n"
+        "    m.AppendSubMenu(sub, _('&Writing && Language'))\n"
+    )
+    errors = _check_no_literal_double_ampersand(src)
+    assert any("Writing" in e for e in errors)
+
+
+def test_no_double_ampersand_ignores_non_submenu_calls() -> None:
+    # A literal "&&" elsewhere (e.g. a leaf menu item via _menu_label) is not
+    # this gate's concern -- only AppendSubMenu headers are checked.
+    src = "def build():\n    x = _('Dictation &History && Review...')\n"
+    assert _check_no_literal_double_ampersand(src) == []
+
+
+# ---------------------------------------------------------------------------
 # Integration: full run_checks on live source
 # ---------------------------------------------------------------------------
 
@@ -129,3 +252,35 @@ def test_depth_root_menus_ignored() -> None:
 def test_run_checks_passes_on_current_codebase() -> None:
     errors = run_checks()
     assert errors == [], "\n".join(errors)
+
+
+def test_binding_label_consistency_runs_via_menu_lint() -> None:
+    """The 4th invariant (binding/label consistency) is wired into menu_lint.
+
+    Confirmed by stubbing the 4th-check module to record that
+    run_checks() was called from menu_lint's perspective. The actual
+    output of the check is exercised in
+    tests/unit/tools/test_binding_label_consistency.py.
+    """
+    import quill.tools._check_binding_label_consistency as bl_module
+    import quill.tools.menu_lint as ml_module
+
+    called = {"count": 0}
+
+    def _spy() -> list[str]:
+        called["count"] += 1
+        return []
+
+    original = bl_module.run_checks
+    bl_module.run_checks = _spy  # type: ignore[assignment]
+    try:
+        # The menu_lint module imports the function under a private name.
+        # Reset its import-cache entry so the spy is picked up.
+        if hasattr(ml_module, "_bl_checks"):
+            ml_module._bl_checks = _spy  # type: ignore[attr-defined]
+        errors = ml_module.run_checks()
+    finally:
+        bl_module.run_checks = original  # type: ignore[assignment]
+
+    assert called["count"] >= 1
+    assert errors == []

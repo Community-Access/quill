@@ -4,6 +4,27 @@ setlocal EnableExtensions EnableDelayedExpansion
 set "ROOT=%~dp0"
 set "PYTHON_EXE="
 
+REM --- Dev data folder + dev-build flag ---
+REM QUILL_DATA_DIR is only honored when the dev-build flag is on, and it must
+REM live under your home directory. Defaulting it here keeps test data out of
+REM the repo and out of your real install, so you can test source changes
+REM without rebuilding. Override either var before calling this script.
+if not defined QUILL_DEV_BUILD set "QUILL_DEV_BUILD=1"
+if not defined QUILL_DATA_DIR set "QUILL_DATA_DIR=%USERPROFILE%\quill-dev-data"
+
+REM Point at an installed QUILL so a source run can discover bundled engine
+REM assets that are not in the source tree (whisper.cpp, DECtalk, Piper under
+REM tools\speech\). Search the common install locations and use the first that
+REM has the engine folder. Override by setting QUILL_APP_ROOT yourself.
+if not defined QUILL_APP_ROOT (
+    for %%R in ("C:\quill" "%LOCALAPPDATA%\Programs\Quill" "%ProgramFiles%\Quill") do (
+        if not defined QUILL_APP_ROOT if exist "%%~R\tools\speech" set "QUILL_APP_ROOT=%%~R"
+    )
+)
+
+echo [run-from-source] QUILL_DATA_DIR=%QUILL_DATA_DIR%
+if defined QUILL_APP_ROOT echo [run-from-source] QUILL_APP_ROOT=%QUILL_APP_ROOT%
+
 if defined QUILL_PYTHON call :UsePythonIfHasWx "%QUILL_PYTHON%"
 if not defined PYTHON_EXE if defined VIRTUAL_ENV call :UsePythonIfHasWx "%VIRTUAL_ENV%\Scripts\python.exe"
 if not defined PYTHON_EXE if defined CONDA_PREFIX call :UsePythonIfHasWx "%CONDA_PREFIX%\python.exe"

@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>upgrade-path-regression-0.8.0</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1 id="quill-080-beta-1---upgrade-path-regression-test-plan">QUILL
+0.8.0 Beta 1 - Upgrade-Path Regression Test Plan</h1>
+<p>Goal: validate that a user on an older QUILL release can install
+newer releases <strong>on top</strong> without losing data, ending up
+with a broken/duplicated install, or hitting a crash on first launch.
+This is the companion to <code>fresh-install-regression-0.8.0.md</code>,
+which covers the brand-new-user case.</p>
+<p>The upgrade chain under test (oldest to newest):</p>
+<ol type="1">
+<li><strong>0.5.0</strong> -&gt;
+<code>installers/Quill-Setup-0.5.0.exe</code></li>
+<li><strong>0.7.0 Beta 1</strong> -&gt;
+<code>installers/Quill-for-All-Setup-0.7.0.Beta.1.exe</code></li>
+<li><strong>0.8.0 Beta 1</strong> -&gt;
+<code>installers/Quill-for-All-Setup-0.8.0 Beta 1.exe</code></li>
+</ol>
+<p>(0.6.0 has no separate Windows installer asset published; the 0.5.0
+-&gt; 0.7.0 step exercises the same branding/layout transition that
+0.6.0 sat inside.)</p>
+<p>All three are per-user installs by default
+(<code>PrivilegesRequired=lowest</code>).</p>
+<h2
+id="test-principle-launch-and-run-each-version---do-not-chain-installers">Test
+principle: launch and run EACH version - do not chain installers</h2>
+<p>You must <strong>install -&gt; launch -&gt; use -&gt; close each
+version in turn</strong>, in order, before installing the next one. Do
+not run the three installers back-to-back.</p>
+<p>The reason is that QUILL's upgrade logic runs <em>in the app at
+launch</em>, not in the installer:</p>
+<ul>
+<li>Settings are persisted as a <strong>versioned document</strong>
+(<code>schema_version</code>, currently <code>1</code>, written by
+<code>quill/core/settings_migration.py</code>). The legacy flat settings
+file is only rewritten into the nested/versioned shape when a version
+that understands it actually loads it.</li>
+<li>Field-level migrations fire on read, e.g. the retired
+<code>pyttsx3</code> read-aloud engine id -&gt; <code>sapi5</code>, and
+the dictation engine <code>vosk</code>/<code>whisper</code> -&gt;
+<code>offline</code> (#617). These only execute when that version's code
+runs.</li>
+<li>A pending <strong>data-location move</strong> is applied very early
+in <code>quill.__main__.main()</code> on the next launch, not by the
+installer.</li>
+</ul>
+<p>If you skip launching an intermediate version, its state files are
+never created and its migration gate never runs - so a later version
+migrates from the wrong starting point and the test proves nothing. Each
+version must write its files and hand a correctly-migrated state to the
+next.</p>
+<p>At every step, before moving on, confirm the expected files actually
+exist on disk under <code>%APPDATA%\Quill</code> (not just that the app
+opened).</p>
+<h2 id="where-the-installers-live">Where the installers live</h2>
+<p>The three installers are staged locally under
+<code>docs/release/upgrade-test/installers/</code>. That folder is
+gitignored (the <code>.exe</code> files are large release binaries and
+are not committed). To re-fetch them:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cd</span> docs\release\upgrade-test\installers</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>gh release download v0<span class="op">.</span><span class="dv">5.0</span>          <span class="op">--</span>pattern <span class="st">&quot;Quill-Setup-0.5.0.exe&quot;</span> <span class="op">--</span>clobber</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>gh release download v0<span class="op">.</span><span class="dv">7.0</span><span class="op">-</span>beta<span class="op">.</span><span class="dv">1</span>   <span class="op">--</span>pattern <span class="st">&quot;Quill-for-All-Setup-0.7.0.Beta.1.exe&quot;</span> <span class="op">--</span>clobber</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 0.8.0 is not yet published; copy the locally built installer:</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">copy</span> <span class="st">&quot;..\..\..\..\windows-distribution-0.8.0\installer\Output\Quill-for-All-Setup-0.8.0 Beta 1.exe&quot;</span> <span class="op">.</span></span></code></pre></div>
+<h2 id="why-this-test-matters---the-brandingappid-transition">Why this
+test matters - the branding/AppId transition</h2>
+<p>This is the specific risk the chain is designed to surface:</p>
+<ul>
+<li><strong>0.5.0</strong> ships as AppName <code>Quill</code>, so it
+installs to <code>%LOCALAPPDATA%\Programs\Quill</code> and its Start
+Menu group is <code>Quill</code>.</li>
+<li><strong>0.7.0 / 0.8.0</strong> ship as AppName
+<code>QUILL for All</code>, default dir
+<code>%LOCALAPPDATA%\Programs\QUILL for All</code>, Start Menu group
+<code>QUILL for All</code>.</li>
+<li><strong>All three share the same Inno Setup
+<code>AppId</code></strong>
+(<code>{6E0A1C52-4A90-4C6E-A8A1-3C2A16E2B7F2}</code>). Inno identifies a
+product by <code>AppId</code>, not by name - so the newer installer
+should recognize the prior install and <strong>upgrade in place into the
+existing <code>Quill</code> folder</strong>, rather than dropping a
+second <code>QUILL for All</code> folder beside it.</li>
+</ul>
+<p>The two failure modes to watch for at the 0.5.0 -&gt; 0.7.0 step:</p>
+<ul>
+<li><strong>Side-by-side duplication:</strong> both
+<code>Programs\Quill</code> and <code>Programs\QUILL for All</code> end
+up present. Result: two Start Menu entries, two Add/Remove Programs
+entries, ambiguous launcher.</li>
+<li><strong>Orphaned shortcuts:</strong> the old <code>Quill</code>
+Start Menu group / desktop shortcut survives but points at a path the
+upgrade removed or replaced.</li>
+</ul>
+<p>User data lives in <code>%APPDATA%\Quill</code> for every version, so
+settings/keymap/ recovery should carry across all three upgrades
+untouched. Confirming that is the other half of this test.</p>
+<h2 id="0-reset-to-a-clean-machine-first">0. Reset to a clean machine
+first</h2>
+<p>An upgrade test is only meaningful starting from nothing - otherwise
+leftover state from a prior run hides regressions. Use the cleanup
+script, which now removes BOTH branding folders (<code>Quill</code> and
+<code>QUILL for All</code>), the elevated Program Files variants, and
+the data dirs:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># from docs\release</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>\clean-quill-install<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Backup    <span class="co"># backs up %APPDATA%\Quill to Desktop first</span></span></code></pre></div>
+<p>Verify clean before starting:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Test-Path</span> <span class="st">&quot;</span><span class="va">$env</span><span class="op">:</span><span class="va">LOCALAPPDATA</span><span class="st">\Programs\Quill&quot;</span>            <span class="co"># expect False</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">Test-Path</span> <span class="st">&quot;</span><span class="va">$env</span><span class="op">:</span><span class="va">LOCALAPPDATA</span><span class="st">\Programs\QUILL for All&quot;</span>    <span class="co"># expect False</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">Test-Path</span> <span class="st">&quot;</span><span class="va">$env</span><span class="op">:</span><span class="va">APPDATA</span><span class="st">\Quill&quot;</span>                          <span class="co"># expect False</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">Test-Path</span> <span class="st">&quot;</span><span class="va">$env</span><span class="op">:</span><span class="va">LOCALAPPDATA</span><span class="st">\Quill&quot;</span>                     <span class="co"># expect False</span></span></code></pre></div>
+<p>For the truest result, run the whole chain on a real machine with
+your screen reader. Windows Sandbox is clean but has no screen reader
+and does not persist state between launches, which defeats an upgrade
+test.</p>
+<h2 id="1-install-the-baseline-050">1. Install the baseline (0.5.0)</h2>
+<ol type="1">
+<li>Run <code>installers\Quill-Setup-0.5.0.exe</code>, accept defaults
+(per-user).</li>
+<li>Confirm install dir is <code>%LOCALAPPDATA%\Programs\Quill</code>
+and the Start Menu group is <code>Quill</code>.</li>
+<li>Launch QUILL. Confirm About reports <code>0.5.0</code>.</li>
+<li><strong>Seed user data so the upgrade has something to
+preserve:</strong>
+<ul class="task-list">
+<li><label><input type="checkbox" />Create and save a document (note its
+path and contents).</label></li>
+<li><label><input type="checkbox" />Change at least one visible setting
+(e.g. a speech voice or a verbosity level).</label></li>
+<li><label><input type="checkbox" />Remap one key in the Keymap
+Editor.</label></li>
+<li><label><input type="checkbox" />Note the contents of
+<code>%APPDATA%\Quill</code> (settings.json, keymap, etc.).</label></li>
+</ul></li>
+<li><strong>Confirm 0.5.0 actually wrote its state before
+continuing</strong> (this is the gate the chain depends on):
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Test-Path</span> <span class="st">&quot;</span><span class="va">$env</span><span class="op">:</span><span class="va">APPDATA</span><span class="st">\Quill\settings.json&quot;</span>   <span class="co"># expect True</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">Get-ChildItem</span> <span class="st">&quot;</span><span class="va">$env</span><span class="op">:</span><span class="va">APPDATA</span><span class="st">\Quill&quot;</span>             <span class="co"># settings, keymap, recovery, etc.</span></span></code></pre></div>
+If these do not exist, the app did not run far enough - stop and fix
+before upgrading, or the migration test below is meaningless.</li>
+<li>Close QUILL fully (check Task Manager for <code>quill.exe</code> /
+<code>pythonw.exe</code>).</li>
+</ol>
+<p>Record a snapshot for later comparison:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Get-ChildItem</span> <span class="st">&quot;</span><span class="va">$env</span><span class="op">:</span><span class="va">APPDATA</span><span class="st">\Quill&quot;</span> <span class="op">-</span>Recurse <span class="op">|</span> <span class="fu">Select-Object</span> FullName<span class="op">,</span>Length <span class="op">|</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">Sort-Object</span> FullName <span class="op">|</span> <span class="fu">Format-Table</span> <span class="op">-</span>Auto</span></code></pre></div>
+<h2 id="2-upgrade-050---070-beta-1-the-critical-step">2. Upgrade 0.5.0
+-&gt; 0.7.0 Beta 1 (the critical step)</h2>
+<ol type="1">
+<li>Run <code>installers\Quill-for-All-Setup-0.7.0.Beta.1.exe</code>
+<strong>without uninstalling 0.5.0 first</strong>.</li>
+<li>Watch the install dir the installer proposes/uses.</li>
+</ol>
+<p>Checks:</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Installer recognizes the prior
+install (same AppId) and upgrades in place - it does NOT prompt as a
+brand-new install into a fresh dir.</label></li>
+<li><label><input type="checkbox" /><strong>Exactly one</strong> install
+dir exists afterward. Record which:
+<code>powershell Test-Path "$env:LOCALAPPDATA\Programs\Quill"          # in-place upgrade -&gt; True Test-Path "$env:LOCALAPPDATA\Programs\QUILL for All"  # relocated/new -&gt; True </code>
+One of these must be True and the <strong>other False</strong>. Both
+True = the side-by-side duplication bug; file it.</label></li>
+<li><label><input type="checkbox" /><strong>Exactly one</strong>
+Add/Remove Programs entry for QUILL (Settings -&gt; Apps).</label></li>
+<li><label><input type="checkbox" />Start Menu has one usable QUILL
+entry; no dead <code>Quill</code> shortcut left pointing at a removed
+path.</label></li>
+<li><label><input type="checkbox" />Launch QUILL. About reports
+<code>0.7.0 Beta 1</code>.</label></li>
+<li><label><input type="checkbox" />First launch does not show the
+first-run setup wizard (this is an existing user -
+<code>setup_wizard_completed</code> survived).</label></li>
+<li><label><input type="checkbox" />The document saved under 0.5.0 still
+opens with identical contents.</label></li>
+<li><label><input type="checkbox" />The setting changed under 0.5.0 is
+still in effect.</label></li>
+<li><label><input type="checkbox" />The remapped key from 0.5.0 still
+works.</label></li>
+<li><label><input type="checkbox" /><code>%APPDATA%\Quill</code> was
+migrated/preserved (no reset to defaults; diff against the step-1
+snapshot - additive changes are fine, data loss is not).</label></li>
+<li><label><input type="checkbox" /><strong>Settings migration
+ran:</strong> after this launch, <code>settings.json</code> carries the
+nested/versioned shape (<code>schema_version: 1</code>, a
+<code>groups</code> object), not the old flat 0.5.0 layout:
+<code>powershell (Get-Content "$env:APPDATA\Quill\settings.json" -Raw) -match '"schema_version"' </code></label></li>
+<li><label><input type="checkbox" />Any retired ids migrated rather than
+breaking: a <code>pyttsx3</code> read-aloud engine becomes
+<code>sapi5</code>; a <code>vosk</code>/<code>whisper</code> dictation
+engine becomes <code>offline</code> (#617). Verify the corresponding
+Preferences controls still show a valid selection (no blank/error
+state).</label></li>
+<li><label><input type="checkbox" />Screen reader announces the window
+on foreground; no crash dialog.</label></li>
+</ul>
+<p>Close QUILL fully before the next step. Re-run the snapshot command
+from step 1 so you have a 0.7.0 baseline to diff against after the 0.8.0
+upgrade.</p>
+<h2 id="3-upgrade-070---080-beta-1">3. Upgrade 0.7.0 -&gt; 0.8.0 Beta
+1</h2>
+<ol type="1">
+<li>Run <code>installers\Quill-for-All-Setup-0.8.0 Beta 1.exe</code>
+over the 0.7.0 install.</li>
+</ol>
+<p>Checks:</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />In-place upgrade into the same dir
+as 0.7.0; still exactly one install dir, one Add/Remove entry, one Start
+Menu group.</label></li>
+<li><label><input type="checkbox" />About reports
+<code>0.8.0 Beta 1</code> and the build stamp.</label></li>
+<li><label><input type="checkbox" />No first-run wizard; existing user
+state intact.</label></li>
+<li><label><input type="checkbox" />Document, setting, and keymap from
+earlier steps all still present.</label></li>
+<li><label><input type="checkbox" /><code>settings.json</code> still
+loads cleanly (<code>schema_version</code> present and at the version
+0.8.0 expects; no reset to defaults). Diff against the 0.7.0 snapshot -
+additive only, no data loss.</label></li>
+<li><label><input type="checkbox" />No data-location migration error
+notice surfaces on launch (that path is applied early in
+<code>quill.__main__.main()</code>); if one appears, capture
+it.</label></li>
+<li><label><input type="checkbox" />Help -&gt; Check for Updates does
+NOT advertise a newer version (the 0.8.0 feed is intentionally left on
+the prior release for this beta).</label></li>
+<li><label><input type="checkbox" />Screen reader announces on
+foreground; no crash dialog.</label></li>
+</ul>
+<h2 id="4-post-upgrade-feature-smoke-on-the-upgraded-install">4.
+Post-upgrade feature smoke (on the upgraded install)</h2>
+<p>Confirm the upgraded install is fully functional, not just
+launchable. Bundled dependencies should all be present from the 0.8.0
+layout (same checklist as the fresh-install plan, section 4):</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />New document, type, save (atomic
+write), reopen.</label></li>
+<li><label><input type="checkbox" />Import a <code>.docx</code> and a
+<code>.md</code>; export to <code>.docx</code>, <code>.md</code>, and
+DAISY (File -&gt; Export -&gt; DAISY Talking Book).</label></li>
+<li><label><input type="checkbox" />Speech: eSpeak-NG and DECtalk each
+speak a line.</label></li>
+<li><label><input type="checkbox" />Dictation: F9 hold-to-dictate
+inserts text as one undoable edit (after the Whisper model
+downloads).</label></li>
+<li><label><input type="checkbox" />Braille Mode toggles and
+translates.</label></li>
+<li><label><input type="checkbox" />Keymap Editor opens; remap a key; no
+conflict warnings on save.</label></li>
+<li><label><input type="checkbox" />About QUILL notebook tabs navigate
+by keyboard.</label></li>
+<li><label><input type="checkbox" />AI gated off under
+<code>--safe-mode</code>, on otherwise.</label></li>
+<li><label><input type="checkbox" />A bundled Quillin loads; Safe Mode
+disables contributions.</label></li>
+</ul>
+<h2 id="5-clean-uninstall-after-upgrade">5. Clean-uninstall after
+upgrade</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Uninstall via Add/Remove
+Programs.</label></li>
+<li><label><input type="checkbox" />Install dir is removed (whichever
+one the chain ended on).</label></li>
+<li><label><input type="checkbox" />No second/orphaned QUILL entry
+remains in Add/Remove Programs.</label></li>
+<li><label><input type="checkbox" /><code>%APPDATA%\Quill</code> is
+intentionally left behind (matches fresh-install behavior - data is
+preserved across uninstall).</label></li>
+<li><label><input type="checkbox" />No dead Start Menu shortcut under
+either <code>Quill</code> or <code>QUILL for All</code>.</label></li>
+</ul>
+<h2 id="6-record-results">6. Record results</h2>
+<p>For each failure capture: the upgrade step (e.g. "0.5.0 -&gt;
+0.7.0"), expected vs actual, the install-dir / Add-Remove / Start-Menu
+state, the screen-reader announcement (or silence), any data that was
+lost, and the crash-bundle path if one was produced. File issues against
+the 0.8.0 Beta 1 milestone and tag them <code>upgrade-path</code>.</p>
+</body>
+</html>

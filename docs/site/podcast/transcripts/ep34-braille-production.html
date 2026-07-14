@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>34: Braille Production - transcript - The QUILL Cast</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="alternate" type="application/rss+xml" title="The QUILL Cast" href="../feed.xml">
+</head>
+<body>
+<header class="site"><div class="wrap"><nav class="site" aria-label="Primary"><ul><li><a href="/index.html">QUILL home</a></li><li><a href="../index.html">All episodes</a></li><li><a href="/tutorials/index.html">Tutorials</a></li><li><a href="/docs/userguide.html">User guide</a></li></ul></nav></div></header>
+<main><div class="wrap">
+<h1>34: Braille Production - transcript</h1>
+<p><audio controls preload="none" aria-label="Play 34: Braille Production" style="width:100%;max-width:36em"><source src="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep34-braille-production.mp3" type="audio/mpeg">Your browser does not support the audio element; <a href="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep34-braille-production.mp3">download the MP3</a> instead.</audio></p>
+<p><a href="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep34-braille-production.mp3">Download the MP3</a></p>
+<p><strong>Liam:</strong> The QUILL Cast, episode thirty-four. I&#x27;m Liam. Today: braille, not as a checkbox, but as a production workflow, from file to embossed page.</p>
+<p><strong>Jessica:</strong> I&#x27;m Jessica. Context for listeners who live mostly in speech: braille formats are unforgiving in a way audio never is. A BRF file is a physical grid, so many cells per line, so many lines per page, hard limits set by paper and machine. One line too long, and the embosser wraps it, and your careful formatting becomes soup.</p>
+<p><strong>Liam:</strong> Which is why looks fine on screen is the most dangerous phrase in braille production, and why QUILL&#x27;s braille mode replaces it with three better words: measured, verified, repaired.</p>
+<p><strong>Jessica:</strong> The formats: QUILL works with BRF and BRL, the classic embosser-ready files, and PEF, the portable embosser format, with UEB workflows supported. Braille mode understands you&#x27;re working in cells and lines, not characters and paragraphs, and your page geometry, cells per line, lines per page, is a setting the whole toolchain honors.</p>
+<p><strong>Liam:</strong> The star: the Braille Repair submenu, NLS-style proofreading in the editor. Read Layout Metrics is the pre-flight: one command announces your longest line and longest page measured against your limits, with explicit width and depth warnings. Twenty-nine cell limit, longest line thirty-one? You know in two seconds, before any paper.</p>
+<p><strong>Jessica:</strong> Then the repair loop, and it&#x27;s genuinely satisfying: Go to Longest Line jumps to the worst offender. Fix it. Metrics again. Jump to the new longest. Like sanding down high spots until the surface reads flat. Go to Longest Page does the same for depth, and Remove Trailing Spaces, line or whole file, clears the invisible padding that pushes lines past limits. Trailing spaces are braille&#x27;s silent killer: they don&#x27;t read, but they count.</p>
+<hr>
+<p><strong>Liam:</strong> A word on page geometry, because it&#x27;s the decision everything else hangs on. Cells per line and lines per page are physical facts about your embosser and paper, not preferences, so get them from the device manual or your agency&#x27;s spec sheet, set them once, and let every metric check measure against reality. The most common production mistake we see isn&#x27;t bad formatting, it&#x27;s good formatting measured against the wrong grid.</p>
+<p><strong>Jessica:</strong> And know your output formats. BRF is the universal workhorse, plain, portable, every embosser speaks it. PEF, the portable embosser format, carries its page geometry inside the file, so the document and its dimensions travel together, worth preferring when you&#x27;re handing files to someone else&#x27;s workflow. QUILL works with both, so the choice is about your destination, not your editor.</p>
+<p><strong>Liam:</strong> A production pass, end to end, for something real, say a meeting agenda for embossing. Author it normally, all your part-two tools apply. Bring it to BRF. Set geometry for the target embosser. Read Layout Metrics. Run the repair loop until clean. Remove Trailing Spaces, whole file. Emboss one proof. The machine checks catch everything measurable, so your human proofread spends itself on language, where humans are irreplaceable.</p>
+<p><strong>Jessica:</strong> And braille mode inherits the ecosystem, the running theme of this whole final part: compare two BRF revisions with the compare tools and hear what changed. The Spoken Echo keeps the metrics announcements. Verbosity profiles apply. And remember episode twenty-four: the same source document can leave as a DAISY talking book and a BRF, digital ears and physical fingertips, one master.</p>
+<p><strong>Liam:</strong> Homework. One: open or export any BRF, set your limits, and run Read Layout Metrics, if you&#x27;ve never heard your document measured, it&#x27;s a small revelation. Two: run one full repair loop. Three: take two revisions of the same BRF and run them through Compare, hearing exactly which lines changed between drafts is the braille proofreader&#x27;s secret weapon.</p>
+<p><strong>Jessica:</strong> Next episode, the second-to-last: opening the hood, Quillins, QUILL&#x27;s extension system, and the developer console for building your own.</p>
+<p><strong>Liam:</strong> I&#x27;m Liam.</p>
+<p><strong>Jessica:</strong> I&#x27;m Jessica. Mind your cells.</p>
+<p><a href="../index.html">Back to all episodes</a></p>
+</div></main>
+</body>
+</html>

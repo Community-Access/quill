@@ -23,7 +23,7 @@ jobs:
     # manual local actionlint run. Pinned to a specific image for reproducibility.
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Lint workflows with actionlint
         uses: docker://rhysd/actionlint:1.7.12
         with:
@@ -32,7 +32,7 @@ jobs:
   lint:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
@@ -57,7 +57,7 @@ jobs:
     # lower it.
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
@@ -80,7 +80,7 @@ jobs:
     # 'python -m quill.tools.ui_surface --write' when the surface changes.
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
@@ -93,12 +93,12 @@ jobs:
           pytest -q tests\unit\ui\test_main_frame_characterization.py
 
   internal-gates:
-    # GATE-4/GATE-11/check_feature_tags/check_translation/check_help_coverage:
+    # GATE-4/GATE-11/publishing-provider/check_feature_tags/check_translation/check_help_coverage:
     # run every internal CI gate that the pre-commit hooks enforce locally so
     # PRs from forks (which bypass pre-commit) are still caught in CI.
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
@@ -110,6 +110,10 @@ jobs:
         run: python -m quill.tools.check_banned_patterns
       - name: Module-size budget (GATE-11)
         run: python -m quill.tools.module_size_budget
+      - name: Error-code completeness gate (GATE-EC)
+        run: python -m quill.tools.error_code_audit
+      - name: Publishing provider registry gate
+        run: python -m quill.tools.check_publishing_providers
       - name: Feature-tag gate
         run: python -m quill.tools.check_feature_tags
       - name: Translation gate
@@ -120,9 +124,11 @@ jobs:
         run: |
           pytest -q `
             tests\unit\tools\test_check_banned_patterns.py `
+            tests\unit\tools\test_check_publishing_providers.py `
             tests\unit\tools\test_feature_tags.py `
             tests\unit\tools\test_translation.py `
-            tests\unit\tools\test_help_coverage.py
+            tests\unit\tools\test_help_coverage.py `
+            tests\unit\tools\test_error_code_audit.py
 
   performance-budgets:
     # PERF-9: enforce hard ceilings on the startup-critical paths (startup
@@ -131,7 +137,7 @@ jobs:
     # raise a budget to hide a regression -- fix the regression instead.
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"

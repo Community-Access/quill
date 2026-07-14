@@ -1,0 +1,43 @@
+[JESSICA]
+The QUILL Cast, episode sixteen. I'm Jessica. Today: real formatting, fonts, colors, sizes, alignment, without your editor turning into symbol soup. The hidden codes system.
+
+[LIAM]
+I'm Liam. The dilemma first. Visual word processors show formatting visually, useless if you can't see it. Markup shows formatting as symbols, audible, but now every sentence is cluttered with tags your screen reader dutifully reads. Pick your poison, historically.
+
+[JESSICA]
+QUILL's answer: refuse both. You apply real formatting, bold, italic, underline, strikethrough, superscript, font family and size, text color, highlight, plus paragraph alignment, spacing, indent, and named styles, from the Format menu or the Font dialog. But your editor buffer stays completely clean plain text. The formatting rides along as invisible codes.
+
+[LIAM]
+So how do you know what's formatted? You ask. Describe Formatting at Cursor announces exactly what's in effect where you stand: Arial, fourteen point, centered, bold. And an optional setting announces formatting changes as you arrow through a document, so transitions are spoken as you cross them. Formatting on demand, by ear, with zero visual dependence and zero clutter.
+
+[JESSICA]
+For the full X-ray there's Reveal Codes, a loving tribute to WordPerfect, and if you know, you know. It opens a synchronized inspector showing the codes around your cursor position, move in the document, the inspector follows. For diagnosing why is this paragraph misbehaving, it's the definitive answer, the codes don't lie.
+
+[PAUSE]
+
+[LIAM]
+Everything else still works, and this is the engineering feat worth appreciating: undo, search, spell check, AI actions, they all operate on the same clean text. Formatting never gets in the way of any other feature, because the text the features see is pure.
+
+[JESSICA]
+Now the persistence question: where does invisible formatting go when you save? Three answers. Save as Word, RTF, or HTML, and it materializes into real native formatting, your bold is Word bold, next episode's territory. Save as Markdown, and the structural parts map to markup.
+
+[LIAM]
+And save as plain text, dot T X T? That's answer three, the clever one: the Illumination. Plain text physically cannot hold fonts and colors. So QUILL writes your genuinely plain text file, and beside it, a small companion file, your file dot T X T dot illumination, carrying the formatting. Reopen the text file in QUILL, and every font, color, and alignment comes back. Open it anywhere else, and it's perfect ordinary text.
+
+[JESSICA]
+The staleness case is handled honestly: if another program edits the text file, QUILL detects the mismatch and opens it plain rather than misapplying outdated formatting to changed text. And you choose the policy in settings: ask each time, always write the Illumination, or always save plain and drop formatting.
+
+[LIAM]
+Who is this whole system for? Anyone submitting formatted work, résumés, manuscripts, school papers, while working by ear. You can now state with confidence: my document is Times New Roman twelve, double-spaced, headings centered and bold, because you set it, and you verified it with Describe Formatting, not because a sighted friend checked.
+
+[JESSICA]
+Homework. One: apply bold, a font change, and centering to a paragraph, then run Describe Formatting at Cursor on it and on an unformatted paragraph, hear the difference. Two: open Reveal Codes and just watch it track your cursor for a minute. Three: save the formatted document as plain text, accept the Illumination, close, reopen, and confirm the formatting survived. Then peek at the folder and meet the companion file.
+
+[LIAM]
+Next episode: the format gateway, Word, EPUB, PDF and friends, in and out with fidelity.
+
+[JESSICA]
+I'm Jessica.
+
+[LIAM]
+I'm Liam. Dress your words, quietly.

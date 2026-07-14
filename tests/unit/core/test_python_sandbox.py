@@ -8,6 +8,8 @@ import pytest
 
 from quill.core.python_sandbox import run_python_sandbox
 
+pytestmark = pytest.mark.smoke
+
 
 def test_python_sandbox_runs_simple_transform() -> None:
     result = run_python_sandbox(
@@ -25,6 +27,22 @@ def test_python_sandbox_blocks_disallowed_imports() -> None:
 
     assert result.succeeded is False
     assert "not allowed" in result.error.lower()
+
+
+def test_python_sandbox_blocks_dunder_subclasses_escape() -> None:
+    # The classic sandbox escape reaches subprocess/os through the object graph.
+    # The AST policy must reject dunder attribute access before it can run.
+    result = run_python_sandbox("result = ().__class__.__base__.__subclasses__()")
+
+    assert result.succeeded is False
+    assert "dunder" in result.error.lower()
+
+
+def test_python_sandbox_blocks_dunder_name_access() -> None:
+    result = run_python_sandbox("result = __import__('os').getcwd()")
+
+    assert result.succeeded is False
+    assert "dunder" in result.error.lower() or "not allowed" in result.error.lower()
 
 
 def test_python_sandbox_times_out_runaway_code() -> None:

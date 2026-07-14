@@ -86,8 +86,9 @@ def test_save_and_load_round_trips_sorted() -> None:
     assert [site.id for site in loaded] == ["alpha", "beta"]  # sorted by name
     # The on-disk file should contain normalised entries.
     raw = json.loads(Path(remote_sites._sites_path()).read_text(encoding="utf-8"))  # type: ignore[attr-defined]
-    assert isinstance(raw, list)
-    assert {entry["id"] for entry in raw} == {"alpha", "beta"}
+    # Versioned envelope: {"schema_version", "sites": [...]}.
+    assert raw["schema_version"] == 1
+    assert {entry["id"] for entry in raw["sites"]} == {"alpha", "beta"}
 
 
 def test_upsert_replaces_existing_id() -> None:
@@ -126,3 +127,15 @@ def test_delete_password_is_idempotent() -> None:
 def test_save_sites_handles_empty_list(tmp_path: Path) -> None:
     save_sites([])
     assert load_sites() == []
+
+
+def test_load_reads_legacy_bare_list(monkeypatch, tmp_path) -> None:
+    import json
+    from pathlib import Path
+
+    monkeypatch.setattr(remote_sites, "_sites_path", lambda: tmp_path / "remote-sites.json")
+    # A pre-versioning file was a bare list; it must still load.
+    legacy = [{"id": "a", "name": "Alpha", "host": "h", "username": "u"}]
+    Path(remote_sites._sites_path()).write_text(json.dumps(legacy), encoding="utf-8")  # type: ignore[attr-defined]
+    loaded = remote_sites.load_sites()
+    assert [s.id for s in loaded] == ["a"]

@@ -55,16 +55,8 @@ def test_connection_dialog_shows_plain_storage_hint() -> None:
     assert "provider_api_key_storage_hint()" in body
 
 
-# --- #124: Prompt Studio can be closed with Escape ---------------------------
-
-
-def test_prompt_studio_has_cancel_close_button() -> None:
-    source = _assistant_tools_source()
-    start = source.index("class PromptStudioDialog")
-    end = source.index("\nclass ", start + 1)
-    body = source[start:end]
-    assert 'wx.Button(self.dialog, id=wx.ID_CANCEL, label="Close")' in body
-    assert "escape_id=wx.ID_CANCEL" in body
+# Prompt Studio was retired into the unified AI Library; its Escape-close test is
+# removed with the dialog.
 
 
 # --- AI menu consolidation: Model/Connection merged into the AI Hub ----------

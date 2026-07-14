@@ -32,13 +32,15 @@ _SPREADSHEET_MAX_ROWS = 50
 _SPREADSHEET_MAX_COLS = 20
 
 
-def read_structured_document(path: Path, encoding: str = "utf-8") -> Document:
+def read_structured_document(
+    path: Path, encoding: str = "utf-8", *, docx_engine: str = "auto"
+) -> Document:
     suffix = path.suffix.lower()
     if suffix in {".sqlite", ".db"}:
         text = _format_sqlite(path)
         metadata = {"source_kind": "sqlite", "engine": "sqlite", "quality_score": 100}
     elif suffix == ".docx":
-        document = _read_via_markitdown(path, "docx", fallback_engine="docx")
+        document = _read_docx(path, engine=docx_engine)
         if document is not None:
             return document
         text = _format_docx(path)
@@ -142,6 +144,40 @@ def _read_via_markitdown(
             "fallback_engine": fallback_engine,
         },
     )
+
+
+def _read_docx(path: Path, *, engine: str = "auto") -> Document | None:
+    """Read a ``.docx`` via the preferred engine chain (``docx_read_engine``).
+
+    ``auto`` and ``markitdown`` try MarkItDown first. ``pandoc`` converts to
+    Markdown with Pandoc (richer structure: footnotes and complex tables
+    survive better) and degrades to the MarkItDown chain when Pandoc is
+    unavailable or fails, so an engine preference never fails an open.
+    Returning ``None`` lets the caller fall back to the raw paragraph extract.
+    """
+    if engine == "pandoc":
+        try:
+            from quill.io import pandoc as pandoc_mod
+
+            result = pandoc_mod.convert_document_with_pandoc(path, "markdown", from_format="docx")
+            text = result.text
+            if text.strip():
+                return Document(
+                    text=text.rstrip() + "\n",
+                    path=path,
+                    modified=False,
+                    encoding="utf-8",
+                    line_ending="\n",
+                    source_metadata={
+                        "source_kind": "docx",
+                        "engine": "pandoc",
+                        "quality_score": 90,
+                        "fallback_engine": "docx",
+                    },
+                )
+        except Exception:  # noqa: BLE001 - degrade to the default chain
+            pass
+    return _read_via_markitdown(path, "docx", fallback_engine="docx")
 
 
 def _read_spreadsheet_via_markitdown(path: Path) -> Document | None:

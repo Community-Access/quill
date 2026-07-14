@@ -47,6 +47,7 @@ _SECTION_LABELS: dict[str, str] = {
     "help-learning-and-daily-confidence": "Help, Learning, and Daily Confidence",
     "checking-for-updates": "Checking for Updates",
     "glow-workflows-inside-quill": "GLOW Workflows Inside QUILL",
+    "braille-mode": "Braille Mode",
 }
 
 # Desired display order for sections. Sections not listed appear at the end
@@ -69,6 +70,7 @@ _SECTION_ORDER: list[str] = [
     "trust-recovery-sessions-and-safety",
     "tools-for-reading-review-and-inspection",
     "working-with-different-document-types",
+    "braille-mode",
     "help-learning-and-daily-confidence",
     "checking-for-updates",
     "glow-workflows-inside-quill",

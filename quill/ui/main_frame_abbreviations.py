@@ -16,6 +16,22 @@ class AbbreviationsMixin:
 
         self._abbreviation_library = load_abbreviation_library()
         self._abbreviation_expansion_guard = False
+        # (post_expansion_text, caret_after, token_start, original_abbr) or None
+        self._pending_undo: tuple[str, int, int, str] | None = None
+
+    def _try_expand_contributed(self, text: str, caret: int, clipboard_text: str = ""):
+        """Try to expand against the Quillin-contributed abbreviation library.
+
+        This library (built at Quillin load, never persisted) is checked only
+        after the user's own library, so a user abbreviation always wins over a
+        Quillin-contributed one with the same trigger.
+        """
+        library = getattr(self, "_quillin_abbreviation_library", None)
+        if library is None or not library.abbreviations:
+            return None
+        from quill.core.abbreviations import try_expand
+
+        return try_expand(text, caret, library, clipboard_text)
 
     # -- automatic expansion hook (called from _on_text_changed) --
 
@@ -23,7 +39,10 @@ class AbbreviationsMixin:
         """Try to expand an abbreviation at the current cursor position.
 
         Returns True if an expansion was applied (caller skips _sync_editor_change).
+        Also intercepts a backspace immediately after an expansion.
         """
+        if self._pending_undo is not None and self._try_undo_expansion():
+            return True
         if self.editor.GetSelection()[0] != self.editor.GetSelection()[1]:
             return False
         text = self.editor.GetValue()
@@ -32,6 +51,8 @@ class AbbreviationsMixin:
         from quill.core.abbreviations import try_expand
 
         match = try_expand(text, caret, self._abbreviation_library, clipboard_text)
+        if match is None:
+            match = self._try_expand_contributed(text, caret, clipboard_text)
         if match is None:
             return False
         before = text[: match.token_start]
@@ -49,9 +70,57 @@ class AbbreviationsMixin:
         finally:
             self._abbreviation_expansion_guard = False
         self.document.set_text(new_text)
+        original_abbr = text[match.token_start : match.token_end]
+        self._pending_undo = (new_text, new_caret, match.token_start, original_abbr)
         self._play_abbreviation_sound()
         preview = match.resolved_text[:40] + ("..." if len(match.resolved_text) > 40 else "")
         self._announce(f"Expanded: {preview}")
+        fire = getattr(self, "_fire_quillin_event", None)
+        if callable(fire):
+            fire("abbreviation.expanded", {"trigger": original_abbr})
+        return True
+
+    def _try_undo_expansion(self) -> bool:
+        """Detect and handle a single backspace pressed right after an expansion.
+
+        Returns True (and consumes the change) if the backspace-after-expansion
+        logic fires; False if the pending state is stale and should be cleared.
+        """
+        stored_text, stored_caret, token_start, original_abbr = self._pending_undo  # type: ignore[misc]
+        self._pending_undo = None
+        current_text = self.editor.GetValue()
+        current_caret = self.editor.GetInsertionPoint()
+        # Single backspace: caret retreated by 1, that char was deleted.
+        if current_caret != stored_caret - 1:
+            return False
+        expected = stored_text[: stored_caret - 1] + stored_text[stored_caret:]
+        if current_text != expected:
+            return False
+        # Confirmed backspace immediately after expansion.
+        behavior = str(getattr(self.settings, "abbreviation_backspace_behavior", "delete"))
+        before = current_text[:token_start]
+        after = current_text[current_caret:]
+        if behavior == "revert":
+            new_text = before + original_abbr + after
+            new_caret = token_start + len(original_abbr)
+            label = f"Reverted to: {original_abbr}"
+        else:
+            new_text = before + after
+            new_caret = token_start
+            label = "Expansion deleted"
+        self._abbreviation_expansion_guard = True
+        try:
+            self.editor.ChangeValue(new_text)
+            self.editor.SetInsertionPoint(new_caret)
+            self.editor.SetSelection(new_caret, new_caret)
+        finally:
+            self._abbreviation_expansion_guard = False
+        self.document.set_text(new_text)
+        from quill.core.sound_events import SoundEvent
+        from quill.ui.sound_manager import post_sound
+
+        post_sound(SoundEvent.ABBREVIATION_DELETED)
+        self._announce(label)
         return True
 
     def _get_clipboard_text_for_abbreviation(self) -> str:
@@ -68,6 +137,13 @@ class AbbreviationsMixin:
         return ""
 
     def _play_abbreviation_sound(self) -> None:
+        from quill.core.sound_events import SoundEvent
+        from quill.ui.sound_manager import is_active, post_sound
+
+        if is_active():
+            post_sound(SoundEvent.ABBREVIATION_EXPANDED)
+            return
+        # Legacy per-event winsound path for users without a QSP configured.
         if not getattr(self.settings, "abbreviation_expansion_sound", False):
             return
         sound_path = getattr(self.settings, "abbreviation_expansion_sound_file", "")
@@ -97,6 +173,8 @@ class AbbreviationsMixin:
         from quill.core.abbreviations import try_expand
 
         match = try_expand(padded, caret + 1, self._abbreviation_library)
+        if match is None:
+            match = self._try_expand_contributed(padded, caret + 1)
         if match is None:
             self._announce("No abbreviation match")
             return

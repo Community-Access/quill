@@ -164,6 +164,14 @@ def missing_required_api_key(provider: str, host: str, api_key: str) -> bool:
     return not _is_local_host(hostname)
 
 
+def _api_key_required_message(provider: str) -> str:
+    """Shared 'no key set' sentence so verify and the chat paths can't drift."""
+    return (
+        f"An API key is required for {provider_display_name(provider)}. "
+        "Enter your key and try again."
+    )
+
+
 def verify_assistant_connection(
     settings: AssistantConnectionSettings,
     api_key: str,
@@ -193,11 +201,7 @@ def verify_assistant_connection(
     # authentication, so without this guard verify would falsely report success
     # for a blank required key (#123).
     if missing_required_api_key(provider, settings.host, api_key):
-        return (
-            False,
-            f"An API key is required for {provider_display_name(provider)}. "
-            "Enter your key and try again.",
-        )
+        return False, _api_key_required_message(provider)
 
     models, error = list_assistant_models(settings, api_key, timeout_seconds=timeout_seconds)
     if error is None:
@@ -612,6 +616,7 @@ def save_assistant_connection_settings(settings: AssistantConnectionSettings) ->
     payload["provider"] = settings.provider.strip().lower() or "ollama"
     payload["host"] = settings.host.strip() or default_host_for_provider(payload["provider"])
     payload["model"] = settings.model.strip() or default_model_for_provider(payload["provider"])
+    payload["schema_version"] = 1  # persistence contract
     write_json_atomic(assistant_connection_path(), payload)
 
 
@@ -708,6 +713,28 @@ def load_provider_api_key(provider: str) -> str:
     return _cs_load(provider_credential_target(provider)) or ""
 
 
+def load_keyed_provider_api_key(provider: str) -> str:
+    """Return *provider*'s key for a direct call to that provider's API.
+
+    Prefers the per-provider stored key; falls back to the active assistant key
+    only when *provider* is the active provider. A feature that always calls one
+    specific provider (e.g. OpenAI Whisper transcription or OpenAI TTS) must use
+    this rather than :func:`load_assistant_api_key`, so it never sends another
+    provider's active key to OpenAI and gets a confusing 401.
+    """
+    target = provider.strip().lower()
+    key = load_provider_api_key(target)
+    if key:
+        return key
+    try:
+        conn = load_assistant_connection_settings()
+    except Exception:  # noqa: BLE001 - unreadable connection means "no active key"
+        return ""
+    if (conn.provider or "").strip().lower() == target:
+        return load_assistant_api_key() or ""
+    return ""
+
+
 def save_provider_api_key(provider: str, api_key: str) -> bool:
     """Store (or clear, when empty) the key for *provider*. Returns True on save."""
     secret = api_key.strip()
@@ -732,25 +759,33 @@ def provider_models_path() -> Path:
     return assistant_connection_path().parent / "assistant-provider-models.json"
 
 
+def _provider_models_map(raw: object) -> dict[str, object]:
+    """Extract the {provider: model} map from the versioned envelope or legacy flat file."""
+    if not isinstance(raw, dict):
+        return {}
+    inner = raw.get("models")
+    if isinstance(inner, dict):
+        return inner
+    # Legacy: the file was the bare flat map (no envelope).
+    return {} if "schema_version" in raw else raw
+
+
 def load_provider_model(provider: str) -> str:
     """Return the saved default model for *provider*, or "" if none."""
-    raw = read_json(provider_models_path(), default={})
-    if not isinstance(raw, dict):
-        return ""
-    return str(raw.get(provider.strip().lower(), "")).strip()
+    models = _provider_models_map(read_json(provider_models_path(), default={}))
+    return str(models.get(provider.strip().lower(), "")).strip()
 
 
 def save_provider_model(provider: str, model: str) -> None:
     """Remember (or clear, when empty) the default model for *provider*."""
     key = provider.strip().lower() or "ollama"
-    raw = read_json(provider_models_path(), default={})
-    data = dict(raw) if isinstance(raw, dict) else {}
+    data = dict(_provider_models_map(read_json(provider_models_path(), default={})))
     value = model.strip()
     if value:
         data[key] = value
     else:
         data.pop(key, None)
-    write_json_atomic(provider_models_path(), data)
+    write_json_atomic(provider_models_path(), {"schema_version": 1, "models": data})
 
 
 def set_active_provider(settings: AssistantConnectionSettings, api_key: str) -> None:
@@ -853,12 +888,18 @@ def build_chat_body(
     *,
     max_tokens: int = _DEFAULT_MAX_TOKENS,
     stream: bool = False,
+    system_prompt: str = "",
 ) -> dict[str, object]:
     """Return the JSON request body for a provider's chat API (pure).
 
     ``stream`` requests incremental token delivery (AI-14). Gemini carries the
     streaming choice in its URL rather than the body, so the flag is a no-op
     there; every other provider sets its own ``stream`` field.
+
+    ``system_prompt`` is sent as a dedicated system message so providers can
+    cache the stable instruction prefix separately from per-request user
+    content.  For Anthropic Claude the system field uses the structured block
+    format required for prompt caching (cache_control: ephemeral).
     """
     normalized = provider.strip().lower()
     user_message = {"role": "user", "content": prompt}
@@ -869,28 +910,68 @@ def build_chat_body(
             "max_tokens": max_tokens,
             "messages": [user_message],
         }
+        if system_prompt:
+            # Structured block format enables Anthropic prompt caching.
+            # Requires the anthropic-beta: prompt-caching-2024-07-31 header.
+            body["system"] = [
+                {
+                    "type": "text",
+                    "text": system_prompt,
+                    "cache_control": {"type": "ephemeral"},
+                }
+            ]
         if stream:
             body["stream"] = True
         return body
     if normalized == "gemini":
         # Gemini streams via the :streamGenerateContent?alt=sse endpoint, not a
         # body flag, so the request body is identical for both modes.
-        return {"contents": [{"role": "user", "parts": [{"text": prompt}]}]}
+        body_g: dict[str, object] = {"contents": [{"role": "user", "parts": [{"text": prompt}]}]}
+        if system_prompt:
+            body_g["systemInstruction"] = {"parts": [{"text": system_prompt}]}
+        return body_g
     if normalized == "ollama":
-        return {"model": model, "messages": [user_message], "stream": stream}
-    body = {"model": model, "messages": [user_message], "max_tokens": max_tokens}
+        messages: list[dict[str, str]] = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append(user_message)
+        return {"model": model, "messages": messages, "stream": stream}
+    # OpenAI-compatible: openai, openrouter, custom, ollama_cloud.
+    # OpenAI automatically caches prompt prefixes > 1024 tokens; sending the
+    # system prompt as a dedicated role="system" message keeps the cacheable
+    # prefix stable across requests.
+    messages_oa: list[dict[str, str]] = []
+    if system_prompt:
+        messages_oa.append({"role": "system", "content": system_prompt})
+    messages_oa.append(user_message)
+    body = {"model": model, "messages": messages_oa, "max_tokens": max_tokens}
     if stream:
         body["stream"] = True
     return body
 
 
-def build_chat_headers(provider: str, host: str, api_key: str) -> dict[str, str]:
-    """Return chat request headers, including OpenRouter attribution (pure)."""
+def build_chat_headers(
+    provider: str,
+    host: str,
+    api_key: str,
+    *,
+    cache_system_prompt: bool = False,
+) -> dict[str, str]:
+    """Return chat request headers, including OpenRouter attribution (pure).
+
+    When *cache_system_prompt* is True and the provider is Anthropic Claude,
+    the ``anthropic-beta: prompt-caching-2024-07-31`` header is added.  This
+    header is required for the structured ``cache_control`` block in the
+    request body to take effect.
+    """
     headers = _build_auth_headers(provider, host, api_key)
-    if provider.strip().lower() == "openrouter":
+    normalized = provider.strip().lower()
+    if normalized == "openrouter":
         # Optional attribution headers OpenRouter uses for app ranking.
         headers.setdefault("HTTP-Referer", "https://github.com/Community-Access/quill")
         headers.setdefault("X-Title", "QUILL")
+    if normalized == "claude" and cache_system_prompt:
+        headers["anthropic-beta"] = "prompt-caching-2024-07-31"
     return headers
 
 
@@ -938,7 +1019,17 @@ def parse_chat_response(provider: str, payload: object) -> str | None:
             message = first.get("message")
             if isinstance(message, dict):
                 text = str(message.get("content", "")).strip()
-                return text or None
+                if text:
+                    return text
+                # Reasoning models (e.g. gpt-oss on Ollama Cloud, some OpenRouter
+                # routes) put their output on a reasoning channel and leave
+                # `content` empty. Fall back to it so the answer is not lost and
+                # the request does not fail as an "invalid response".
+                for key in ("reasoning_content", "reasoning"):
+                    reasoning = message.get(key)
+                    if isinstance(reasoning, str) and reasoning.strip():
+                        return reasoning.strip()
+                return None
             text_value = first.get("text")
             if isinstance(text_value, str):
                 return text_value.strip() or None
@@ -991,28 +1082,48 @@ def generate_assistant_response(
     max_tokens: int = _DEFAULT_MAX_TOKENS,
     timeout_seconds: float = 60.0,
     max_attempts: int = 3,
+    system_prompt: str = "",
 ) -> tuple[str | None, str | None]:
     """Generate a chat response from the configured provider.
 
     Returns ``(text, error)``: on success ``text`` is the response and ``error``
     is ``None``; on failure ``text`` is ``None`` and ``error`` is a cause-specific
     message from the shared taxonomy.
+
+    ``system_prompt`` is the stable instruction text for this task (from
+    custom_instructions.split_instruction).  When provided it is sent as a
+    dedicated system message so providers can cache the prefix independently of
+    the per-request user content:
+
+    - Anthropic Claude: structured ``cache_control: ephemeral`` block with the
+      ``anthropic-beta: prompt-caching-2024-07-31`` header.  Cached for 5 min.
+    - OpenAI / OpenRouter / custom: ``role="system"`` message prepended to the
+      conversation.  OpenAI automatically caches prompt prefixes >= 1024 tokens.
+    - Ollama: ``role="system"`` message (model-dependent support).
+    - Gemini: ``systemInstruction`` field.
     """
     provider = settings.provider.strip().lower()
     if provider == "off":
         return None, "The AI provider is set to Off."
     if _safe_mode_active():
         return None, _safe_mode_blocked_message("AI generation")
+    # Mirror verify's pre-flight guards so a keyless chat call fails with an
+    # actionable message instead of a confusing provider 401 (L-5, #123).
+    if assistant_secret_unlock_failed() and api_key == "":
+        return None, ASSISTANT_KEY_UNLOCK_FAILED_MESSAGE
     host = (settings.host or "").strip().rstrip("/") or default_host_for_provider(provider)
+    if missing_required_api_key(provider, host, api_key):
+        return None, _api_key_required_message(provider)
     policy_error = _validate_endpoint_security(provider, host)
     if policy_error:
         return None, policy_error
     model = (settings.model or "").strip() or default_model_for_provider(provider)
     endpoint = chat_endpoint(provider, host, model)
-    headers = build_chat_headers(provider, host, api_key)
-    body = json.dumps(build_chat_body(provider, model, prompt, max_tokens=max_tokens)).encode(
-        "utf-8"
-    )
+    cache_active = bool(system_prompt)
+    headers = build_chat_headers(provider, host, api_key, cache_system_prompt=cache_active)
+    body = json.dumps(
+        build_chat_body(provider, model, prompt, max_tokens=max_tokens, system_prompt=system_prompt)
+    ).encode("utf-8")
 
     last_error: _FetchError | None = None
     attempts = max(1, max_attempts)
@@ -1269,7 +1380,13 @@ def generate_assistant_response_stream(
         return None, "The AI provider is set to Off."
     if _safe_mode_active():
         return None, _safe_mode_blocked_message("AI streaming")
+    # Same pre-flight guards as the blocking path so a keyless stream fails
+    # with an actionable message instead of a confusing provider 401 (L-5, #123).
+    if assistant_secret_unlock_failed() and api_key == "":
+        return None, ASSISTANT_KEY_UNLOCK_FAILED_MESSAGE
     host = (settings.host or "").strip().rstrip("/") or default_host_for_provider(provider)
+    if missing_required_api_key(provider, host, api_key):
+        return None, _api_key_required_message(provider)
     policy_error = _validate_endpoint_security(provider, host)
     if policy_error:
         return None, policy_error

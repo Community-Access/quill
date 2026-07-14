@@ -1,0 +1,39 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Limits{% endblock %}
+{% block content %}
+<h1>Limits</h1>
+<p>Every number here takes effect on the very next request — no restart,
+  no deploy. See the PRD's "start small and learn" section for why the
+  initial values are conservative.</p>
+
+<div class="card">
+  <table class="data-table">
+    <caption>Tunable limits (gateway_config)</caption>
+    <thead>
+      <tr>
+        <th scope="col">Limit</th>
+        <th scope="col">Current value</th>
+        <th scope="col">Update</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        <td>
+          <label for="value-{{ row.key }}">{{ row.description }}</label><br>
+          <span class="model-meta">{{ row.key }}</span>
+        </td>
+        <td>{{ row.value }}</td>
+        <td>
+          <form method="post" action="{{ url_for('dashboard.update_config', key=row.key) }}" style="display:flex; gap:0.5rem;">
+            <input type="number" step="any" id="value-{{ row.key }}" name="value" value="{{ row.value }}"
+                   aria-label="New value for {{ row.description }}">
+            <button type="submit" class="primary">Save</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

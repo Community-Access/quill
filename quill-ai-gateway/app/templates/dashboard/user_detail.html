@@ -1,0 +1,59 @@
+{% extends "dashboard/base.html" %}
+{% block title %}User {{ user.id }}{% endblock %}
+{% block content %}
+<h1>User {{ user.email or user.id }}</h1>
+<p><a href="{{ url_for('dashboard.users') }}">← Back to all users</a></p>
+
+<section class="card" aria-labelledby="usage-h">
+  <h2 id="usage-h">Usage history</h2>
+  <table class="data-table">
+    <caption>Monthly usage (request counts and cost — never prompt content, which this schema never stores)</caption>
+    <thead>
+      <tr><th scope="col">Month</th><th scope="col">Requests</th><th scope="col">Cost (USD)</th></tr>
+    </thead>
+    <tbody>
+      {% for s in summaries %}
+      <tr><td>{{ s.year_month }}</td><td>{{ s.request_count }}</td><td>${{ "%.4f"|format(s.total_cost_usd) }}</td></tr>
+      {% else %}
+      <tr><td colspan="3">No usage recorded yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="card" aria-labelledby="status-h">
+  <h2 id="status-h">Account status</h2>
+  <p>Current status: <strong>{{ user.status }}</strong></p>
+  <form class="settings-form" method="post" action="{{ url_for('dashboard.set_user_status', user_id=user.id) }}">
+    <div>
+      <label for="status">Set status</label>
+      <select id="status" name="status">
+        <option value="active" {{ "selected" if user.status == "active" }}>Active</option>
+        <option value="reduced" {{ "selected" if user.status == "reduced" }}>Reduced quota</option>
+        <option value="review" {{ "selected" if user.status == "review" }}>Under review</option>
+        <option value="blocked" {{ "selected" if user.status == "blocked" }}>Blocked (reversible)</option>
+      </select>
+      <p class="field-description">Blocked stops every request immediately; setting it back to
+        active restores access exactly as it was.</p>
+    </div>
+    <button type="submit" class="primary">Update status</button>
+  </form>
+</section>
+
+<section class="card" aria-labelledby="danger-h">
+  <h2 id="danger-h">Permanent removal</h2>
+  <p>This deletes the user and their devices outright — distinct from
+    "blocked," which is reversible. Use this for a right-to-be-forgotten
+    request, or to clean up a clearly-abusive account.</p>
+  <form class="settings-form" method="post" action="{{ url_for('dashboard.delete_user', user_id=user.id) }}">
+    <div>
+      <label for="confirm-delete">
+        <input type="checkbox" id="confirm-delete" name="confirm" value="yes" required
+               style="width:auto; display:inline-block; margin-right:0.5rem;">
+        I understand this permanently deletes this user and their devices
+      </label>
+    </div>
+    <button type="submit" class="danger">Permanently remove this user</button>
+  </form>
+</section>
+{% endblock %}

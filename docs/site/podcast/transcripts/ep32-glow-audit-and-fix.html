@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>32: GLOW - Audit and Fix - transcript - The QUILL Cast</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="alternate" type="application/rss+xml" title="The QUILL Cast" href="../feed.xml">
+</head>
+<body>
+<header class="site"><div class="wrap"><nav class="site" aria-label="Primary"><ul><li><a href="/index.html">QUILL home</a></li><li><a href="../index.html">All episodes</a></li><li><a href="/tutorials/index.html">Tutorials</a></li><li><a href="/docs/userguide.html">User guide</a></li></ul></nav></div></header>
+<main><div class="wrap">
+<h1>32: GLOW - Audit and Fix - transcript</h1>
+<p><audio controls preload="none" aria-label="Play 32: GLOW - Audit and Fix" style="width:100%;max-width:36em"><source src="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep32-glow-audit-and-fix.mp3" type="audio/mpeg">Your browser does not support the audio element; <a href="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep32-glow-audit-and-fix.mp3">download the MP3</a> instead.</audio></p>
+<p><a href="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep32-glow-audit-and-fix.mp3">Download the MP3</a></p>
+<p><strong>Liam:</strong> The QUILL Cast, episode thirty-two, and the final part begins: production and trust. I&#x27;m Liam. Today, GLOW, QUILL&#x27;s accessibility review system, and a small role reversal worth savoring.</p>
+<p><strong>Jessica:</strong> I&#x27;m Jessica. The reversal: most accessibility software helps you consume inaccessible things. GLOW helps you produce accessible things. It stands for Guided Layout and Output Workflow, and the framing in QUILL&#x27;s own docs is exactly right: guided confidence, not a compliance dashboard.</p>
+<p><strong>Liam:</strong> Why it matters for this audience specifically: blind professionals constantly produce documents for sighted consumption, and, with bitter irony, we can&#x27;t perceive the problems that make documents inaccessible to others. Missing alt text is invisible in a screen reader too. GLOW is the second reader who speaks your language.</p>
+<p><strong>Jessica:</strong> One setup note before the tour, because GLOW ships as an experimental feature: it&#x27;s off until you switch it on. Preferences, Experimental, tick Enable experimental features, then tick GLOW accessibility review and repair. It takes effect the moment you apply settings, no restart, and the Tools menu grows a GLOW submenu.</p>
+<p><strong>Liam:</strong> And that Experimental tab is worth a look while you&#x27;re there: one master switch governs every experiment, each feature has its own checkbox beneath it, and until the master is on, nothing experimental can even be reached by the keyboard. Opt-in, layer by layer. Experimental means still maturing, by the way, not unsafe, every GLOW action keeps the review-first contract you know.</p>
+<p><strong>Jessica:</strong> Now the commands, all under Tools, GLOW. Audit Current Document reviews the whole buffer; Audit Selection reviews just the block at your caret, perfect for the section you just wrote. Results open as a normal tab, and by episode thirty-two you know what that means: arrow through it, search it, keep it beside your draft.</p>
+<p><strong>Liam:</strong> Each finding carries the rule, the severity, the location, and, the humane part, a plain-language suggestion. Not heading level violation, but use intermediate heading levels for a smoother outline. Findings that GLOW can repair itself are marked auto-fix.</p>
+<p><strong>Jessica:</strong> What it checks, in the editor, for plain text, Markdown, and HTML: heading levels that jump, an H1 straight to an H4 scrambles navigation for every screen reader user downstream. Links that just say click here. Images missing alt text. HTML missing its language attribute, which garbles pronunciation in every screen reader on earth. Tables without header cells. Tab characters where they&#x27;ll cause chaos. Dense paragraphs that are brutal to listen to, and plain-language nudges for bureaucratic phrasing.</p>
+<p><strong>Liam:</strong> Every item on that list is a real barrier some real reader hits. GLOW catches them while the document is still yours to fix quietly.</p>
+<hr>
+<p><strong>Jessica:</strong> The fix flows, in two temperaments. Fix Selection: quick, in place, cleans the block you&#x27;re in and leaves the result selected, review it or control Z, episode ten&#x27;s contract. Fix Current Document is deliberately ceremonial: it opens the repaired text as a named preview tab and immediately starts a compare session against your original. You hear exactly what changed, difference by difference, before you accept anything.</p>
+<p><strong>Liam:</strong> Never a silent rewrite. Sound familiar? It&#x27;s the same contract as the AI features, and that&#x27;s no coincidence, it&#x27;s the house philosophy with different tools inside it: propose, then dispose, in that order, always.</p>
+<p><strong>Jessica:</strong> Where GLOW sits in a writing routine, our recommendation: draft freely, audit at natural pauses, fix the judgment calls yourself, the link text, the dense paragraphs, then let Fix Document handle the mechanical ones through the compare. Two minutes per document, and structural accessibility stops being a special project and becomes hygiene, like episode twelve&#x27;s spell pass.</p>
+<p><strong>Liam:</strong> And a pointer up the ladder: for the ambitious full-document overhaul, episode twenty-eight&#x27;s Accessibility Tune-Up agent drafts the broader plan, GLOW is the deterministic floor, the agent is the ambitious ceiling, and they share the review-everything soul.</p>
+<p><strong>Jessica:</strong> Tomorrow&#x27;s episode takes GLOW beyond the editor, to Word files, PDFs, and EPUBs on disk, with scores and letter grades. Today, build the in-editor habit.</p>
+<p><strong>Liam:</strong> Homework. One: audit the messiest document you own and just listen to the whole report, no fixing, learn the findings vocabulary. Two: run Fix Current Document on something real and actually read the compare, hear what changed and how it&#x27;s presented. Three: fix one click here link by hand, and notice you now know why it mattered.</p>
+<p><strong>Jessica:</strong> I&#x27;m Jessica.</p>
+<p><strong>Liam:</strong> I&#x27;m Liam. Make it accessible, then make it beautiful.</p>
+<p><a href="../index.html">Back to all episodes</a></p>
+</div></main>
+</body>
+</html>

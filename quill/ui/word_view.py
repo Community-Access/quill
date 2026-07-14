@@ -228,6 +228,7 @@ class WordDocumentSurface:
         root.Add(header, 0, wx.ALL, 6)
 
         self._notebook = wx.Notebook(self.panel)
+        self._notebook.SetName("Word view")
         self._preview_page = wx.Panel(self._notebook)
         self._text_page = wx.Panel(self._notebook)
         self.preview = wx.TextCtrl(

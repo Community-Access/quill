@@ -83,6 +83,32 @@ _AGENT_PROFILES: tuple[AgentProfile, ...] = (
             "Suggest improvements that keep meaning intact:\n\n{selection}{document}"
         ),
     ),
+    AgentProfile(
+        agent_id="expand",
+        title="Expand Agent",
+        description="Expand a brief outline or passage into fuller prose.",
+        template=(
+            "Goal: {goal}\n"
+            "Audience: {audience}\n"
+            "Tone: {tone}\n\n"
+            "Expand the following into well-developed prose. Add detail, examples, "
+            "and transitions as appropriate. Return only the expanded text:\n\n"
+            "{selection}{document}"
+        ),
+    ),
+    AgentProfile(
+        agent_id="toc",
+        title="Table of Contents Agent",
+        description="Generate a structured table of contents from document headings.",
+        template=(
+            "Goal: {goal}\n"
+            "Audience: {audience}\n"
+            "Tone: {tone}\n\n"
+            "Analyse the following document and produce a hierarchical table of contents "
+            "using Markdown nested list syntax. Include only headings that appear in the "
+            "text. Return only the table of contents:\n\n{document}{selection}"
+        ),
+    ),
 )
 
 

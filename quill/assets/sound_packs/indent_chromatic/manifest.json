@@ -1,0 +1,26 @@
+{
+  "format": "qsp",
+  "version": "1",
+  "name": "Ink Chromatic Tones",
+  "author": "Jeff Bishop",
+  "description": "Indentation depth tones \u2014 one semitone per level from C5. Maximum pitch resolution for users working at 5+ nesting levels. Partial QSP: defines only indent_level events.",
+  "license": "CC0",
+  "events": {
+    "indent_level_0_up": "indent_chromatic_0_up.wav",
+    "indent_level_0_down": "indent_chromatic_0_down.wav",
+    "indent_level_1_up": "indent_chromatic_1_up.wav",
+    "indent_level_1_down": "indent_chromatic_1_down.wav",
+    "indent_level_2_up": "indent_chromatic_2_up.wav",
+    "indent_level_2_down": "indent_chromatic_2_down.wav",
+    "indent_level_3_up": "indent_chromatic_3_up.wav",
+    "indent_level_3_down": "indent_chromatic_3_down.wav",
+    "indent_level_4_up": "indent_chromatic_4_up.wav",
+    "indent_level_4_down": "indent_chromatic_4_down.wav",
+    "indent_level_5_up": "indent_chromatic_5_up.wav",
+    "indent_level_5_down": "indent_chromatic_5_down.wav",
+    "indent_level_6_up": "indent_chromatic_6_up.wav",
+    "indent_level_6_down": "indent_chromatic_6_down.wav",
+    "indent_level_7_up": "indent_chromatic_7_up.wav",
+    "indent_level_7_down": "indent_chromatic_7_down.wav"
+  }
+}

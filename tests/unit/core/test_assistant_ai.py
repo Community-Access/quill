@@ -289,6 +289,29 @@ def test_recommended_models_for_provider_cloud_and_local(
     assert "gpt-4o-mini" in cloud
 
 
+def test_ollama_cloud_default_and_recommended_models_are_real_ids() -> None:
+    # Bare "qwen3"/"gemma3" 404 on ollama.com; every default/recommended cloud
+    # model id must carry a size tag (or be a tagless flagship that exists).
+    default = providers.default_model_for_provider("ollama_cloud")
+    recommended = providers.recommended_models_for_provider("ollama_cloud")
+    assert default == "gemma3:12b"
+    assert "qwen3" not in recommended and "gemma3" not in recommended
+    # The non-reasoning default leads so it works on chat and the agent path.
+    assert recommended[0] == "gemma3:12b"
+
+
+def test_parse_chat_response_falls_back_to_reasoning_when_content_empty() -> None:
+    # Reasoning models (gpt-oss, some OpenRouter routes) leave `content` empty and
+    # put the answer on a reasoning channel; we must surface it, not fail.
+    payload = {"choices": [{"message": {"content": "", "reasoning_content": "the answer"}}]}
+    assert assistant_ai.parse_chat_response("ollama_cloud", payload) == "the answer"
+    payload2 = {"choices": [{"message": {"content": "", "reasoning": "alt channel"}}]}
+    assert assistant_ai.parse_chat_response("openrouter", payload2) == "alt channel"
+    # Normal content still wins over any reasoning field.
+    payload3 = {"choices": [{"message": {"content": "real", "reasoning": "ignored"}}]}
+    assert assistant_ai.parse_chat_response("openai", payload3) == "real"
+
+
 def test_recommended_model_guidance_returns_framing(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -655,6 +678,48 @@ def test_per_provider_keys_are_isolated(monkeypatch: pytest.MonkeyPatch) -> None
     assert openai_target != claude_target
 
 
+def test_keyed_provider_key_prefers_per_provider_store(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Even when the active provider is something else, the per-provider OpenAI key
+    # is used for a direct OpenAI call (Whisper / OpenAI TTS).
+    _fake_credential_store(monkeypatch)
+    assistant_ai.save_provider_api_key("openai", "openai-key")
+    monkeypatch.setattr(
+        assistant_ai,
+        "load_assistant_connection_settings",
+        lambda: assistant_ai.AssistantConnectionSettings(provider="claude"),
+    )
+    monkeypatch.setattr(assistant_ai, "load_assistant_api_key", lambda: "claude-active-key")
+    assert assistant_ai.load_keyed_provider_api_key("openai") == "openai-key"
+
+
+def test_keyed_provider_key_falls_back_to_active_only_when_provider_matches(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _fake_credential_store(monkeypatch)  # no per-provider openai key stored
+    monkeypatch.setattr(
+        assistant_ai,
+        "load_assistant_connection_settings",
+        lambda: assistant_ai.AssistantConnectionSettings(provider="openai"),
+    )
+    monkeypatch.setattr(assistant_ai, "load_assistant_api_key", lambda: "openai-active-key")
+    assert assistant_ai.load_keyed_provider_api_key("openai") == "openai-active-key"
+
+
+def test_keyed_provider_key_never_returns_another_providers_active_key(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # The 401 bug: with no OpenAI key but an active Anthropic key, asking for the
+    # OpenAI key must return "" rather than the Anthropic key (which OpenAI rejects).
+    _fake_credential_store(monkeypatch)
+    monkeypatch.setattr(
+        assistant_ai,
+        "load_assistant_connection_settings",
+        lambda: assistant_ai.AssistantConnectionSettings(provider="claude"),
+    )
+    monkeypatch.setattr(assistant_ai, "load_assistant_api_key", lambda: "claude-active-key")
+    assert assistant_ai.load_keyed_provider_api_key("openai") == ""
+
+
 def test_clear_provider_api_key_only_affects_that_provider(monkeypatch: pytest.MonkeyPatch) -> None:
     _fake_credential_store(monkeypatch)
     assistant_ai.save_provider_api_key("openai", "openai-key")
@@ -713,3 +778,74 @@ def test_save_provider_model_empty_clears(monkeypatch: pytest.MonkeyPatch, tmp_p
     assistant_ai.save_provider_model("openrouter", "openrouter/auto")
     assistant_ai.save_provider_model("openrouter", "  ")
     assert assistant_ai.load_provider_model("openrouter") == ""
+
+
+# ---------------------------------------------------------------------------
+# Prompt caching: build_chat_body and build_chat_headers
+# ---------------------------------------------------------------------------
+
+
+def test_build_chat_body_claude_without_system_prompt() -> None:
+    body = assistant_ai.build_chat_body("claude", "claude-3-5-sonnet-20241022", "Hello")
+    assert "system" not in body
+    assert body["messages"] == [{"role": "user", "content": "Hello"}]
+
+
+def test_build_chat_body_claude_with_system_prompt_adds_cache_control() -> None:
+    body = assistant_ai.build_chat_body(
+        "claude", "claude-3-5-sonnet-20241022", "Hello", system_prompt="Be concise."
+    )
+    system = body.get("system")
+    assert isinstance(system, list) and len(system) == 1
+    block = system[0]
+    assert block["type"] == "text"
+    assert block["text"] == "Be concise."
+    assert block["cache_control"] == {"type": "ephemeral"}
+    assert body["messages"] == [{"role": "user", "content": "Hello"}]
+
+
+def test_build_chat_body_openai_with_system_prompt_prepends_system_role() -> None:
+    body = assistant_ai.build_chat_body("openai", "gpt-4o", "Hello", system_prompt="Be helpful.")
+    messages = body["messages"]
+    assert messages[0] == {"role": "system", "content": "Be helpful."}
+    assert messages[1] == {"role": "user", "content": "Hello"}
+
+
+def test_build_chat_body_openai_without_system_prompt_no_system_role() -> None:
+    body = assistant_ai.build_chat_body("openai", "gpt-4o", "Hello")
+    roles = [m["role"] for m in body["messages"]]
+    assert "system" not in roles
+
+
+def test_build_chat_body_gemini_with_system_prompt() -> None:
+    body = assistant_ai.build_chat_body(
+        "gemini", "gemini-2.0-flash", "Hello", system_prompt="Be precise."
+    )
+    assert "systemInstruction" in body
+    assert body["systemInstruction"]["parts"][0]["text"] == "Be precise."
+
+
+def test_build_chat_body_ollama_with_system_prompt() -> None:
+    body = assistant_ai.build_chat_body("ollama", "llama3", "Hello", system_prompt="Be brief.")
+    messages = body["messages"]
+    assert messages[0] == {"role": "system", "content": "Be brief."}
+    assert messages[1] == {"role": "user", "content": "Hello"}
+
+
+def test_build_chat_headers_claude_no_cache_by_default() -> None:
+    headers = assistant_ai.build_chat_headers("claude", "https://api.anthropic.com", "key123")
+    assert "anthropic-beta" not in headers
+
+
+def test_build_chat_headers_claude_with_cache_adds_beta_header() -> None:
+    headers = assistant_ai.build_chat_headers(
+        "claude", "https://api.anthropic.com", "key123", cache_system_prompt=True
+    )
+    assert headers.get("anthropic-beta") == "prompt-caching-2024-07-31"
+
+
+def test_build_chat_headers_openai_does_not_get_anthropic_beta() -> None:
+    headers = assistant_ai.build_chat_headers(
+        "openai", "https://api.openai.com", "key123", cache_system_prompt=True
+    )
+    assert "anthropic-beta" not in headers

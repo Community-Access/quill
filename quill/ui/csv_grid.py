@@ -67,6 +67,7 @@ class CsvGridSurface:
         root.Add(header, 0, wx.ALL, 6)
 
         self._notebook = wx.Notebook(self.panel)
+        self._notebook.SetName("CSV view")
         self._grid_page = wx.Panel(self._notebook)
         self._text_page = wx.Panel(self._notebook)
         self.grid = wx_grid.Grid(self._grid_page)

@@ -121,7 +121,7 @@ def load_model_choice() -> str:
 def save_model_choice(model_id: str) -> None:
     if model_id != "auto" and model_id not in MODELS:
         raise ValueError(f"Unknown model id: {model_id}")
-    write_json_atomic(_choice_path(), {"model": model_id})
+    write_json_atomic(_choice_path(), {"schema_version": 1, "model": model_id})
 
 
 # --- AI on/off (a Settings value, set during onboarding) -------------------

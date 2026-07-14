@@ -26,7 +26,7 @@ Authoritative sources these rules are grounded in:
 
 When any rule below conflicts with QUILL's machine-enforced contract, the
 enforced contract wins. Otherwise, treat these as required. This file is the
-authoring companion to `dialogs.md` (manual regression map) and the DLG-3
+authoring companion to `docs/qa/dialogs.md` (manual regression map) and the DLG-3
 dialog estate governance described in the repository Copilot instructions.
 
 ---

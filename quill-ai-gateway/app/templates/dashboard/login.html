@@ -1,0 +1,17 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Sign in{% endblock %}
+{% block content %}
+<h1>QUILL AI Gateway — Admin sign in</h1>
+<p>Paste an admin device token (the same bearer token your device registered
+  with the Gateway, added to <code>GATEWAY_ADMIN_ALLOWLIST</code>). This
+  isn't a separate password — it's the same credential the JSON admin API
+  already uses.</p>
+<form class="settings-form" method="post" action="{{ url_for('dashboard.login') }}">
+  <input type="hidden" name="next" value="{{ next }}">
+  <div>
+    <label for="token">Admin device token</label>
+    <input type="password" id="token" name="token" autocomplete="off" required autofocus>
+  </div>
+  <button type="submit" class="primary">Sign in</button>
+</form>
+{% endblock %}

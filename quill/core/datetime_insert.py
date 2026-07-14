@@ -3,6 +3,13 @@
 These functions are UI-framework agnostic. ``format_datetime`` accepts either a
 ``strftime``-style format (containing ``%``) or a small set of .NET-style tokens
 (``yyyy``, ``MM``, ``dd``, ``HH``, ``mm``, ``ss``, ``yy``) for friendliness.
+
+The Insert-menu date/time items that historically called into this module were
+removed in the date/time consolidation. The ``com.quill.bundled.insert-tools``
+Quillin now owns ``Insert > Date and Time`` as a Layer 1 snippet pack, and the
+mixin handlers in :mod:`quill.ui.main_frame_power_tools` no longer import this
+module. ``calculate_date``, ``format_datetime`` and the rest remain available
+for tests, third-party Quillins, and any future feature that needs them.
 """
 
 from __future__ import annotations

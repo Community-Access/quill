@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>19: Files Everywhere - transcript - The QUILL Cast</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="alternate" type="application/rss+xml" title="The QUILL Cast" href="../feed.xml">
+</head>
+<body>
+<header class="site"><div class="wrap"><nav class="site" aria-label="Primary"><ul><li><a href="/index.html">QUILL home</a></li><li><a href="../index.html">All episodes</a></li><li><a href="/tutorials/index.html">Tutorials</a></li><li><a href="/docs/userguide.html">User guide</a></li></ul></nav></div></header>
+<main><div class="wrap">
+<h1>19: Files Everywhere - transcript</h1>
+<p><audio controls preload="none" aria-label="Play 19: Files Everywhere" style="width:100%;max-width:36em"><source src="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep19-files-everywhere.mp3" type="audio/mpeg">Your browser does not support the audio element; <a href="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep19-files-everywhere.mp3">download the MP3</a> instead.</audio></p>
+<p><a href="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep19-files-everywhere.mp3">Download the MP3</a></p>
+<p><strong>Liam:</strong> The QUILL Cast, episode nineteen. I&#x27;m Liam. Today: files that don&#x27;t live on your computer, servers, cloud storage, GitHub repositories, and machines across an SSH connection, all edited without leaving the editor.</p>
+<p><strong>Jessica:</strong> I&#x27;m Jessica. The old workflow deserves a eulogy first: an FTP client here, a terminal there, download the file, edit it, re-upload it, pray you grabbed the latest version. Every hop a different app with different accessibility quirks. QUILL collapses the whole pilgrimage into File, Remote.</p>
+<p><strong>Liam:</strong> Five protocols: FTP, SFTP, HTTPS with WebDAV, and S3-compatible object storage, which covers Amazon and everything speaking its dialect. Three commands run the show. Manage Remote Sites: save a connection once, host, protocol, credentials, default path. Open from Remote: browse the server, pick a file, it downloads into a normal tab. Save to Remote, or Save Copy to Remote: write it back, with a tilde backup left beside the original on the server.</p>
+<p><strong>Jessica:</strong> Chords from episode eight, paying off: QUILL key then shift O opens from remote, QUILL key then W saves to remote, QUILL key then shift M manages sites.</p>
+<p><strong>Liam:</strong> And the trust architecture applies in full. Every operation is explicit and announced, host and expected size before any transfer. Credentials live in the Windows credential vault, encrypted, never in a plain config file. All traffic runs over verified TLS, cloud endpoints must be HTTPS, and even server responses are parsed defensively so a malicious listing can&#x27;t attack the parser. Yes, someone thought of that. That&#x27;s the house style.</p>
+<hr>
+<p><strong>Jessica:</strong> Now the crowd favorite: GitHub, with no Git installed. QUILL browses repositories, opens files, and saves changes back as commits, no command line, no GitHub Desktop, no toolchain. Browse the repo like a folder, open the readme, fix the typo, save. Committed.</p>
+<p><strong>Liam:</strong> Think who that serves: the person maintaining their organization&#x27;s website content, the docs contributor, the teacher with course materials in a repo. For the enormous population whose Git needs are edit that one file, the entire ceremony just... evaporated.</p>
+<p><strong>Jessica:</strong> For genuinely remote machines, SSH editing: open a file living on a server over SSH, edit locally with every QUILL power, save back over the wire. Host key verification is strict by default, unknown hosts are rejected unless you explicitly enable trust-on-first-use. Security-correct defaults, stated rather than hidden.</p>
+<p><strong>Liam:</strong> Two smaller doors in the same wall. Open from URL: grab a document from a link through a safety flow that confirms host and size first, no browser dance. And remember from episode seven of the vault preview, when we get to episode thirty-one, Vault Sync does this same trick for whole folders of notes over your own Git remote.</p>
+<p><strong>Jessica:</strong> The composite day, because the pieces stack: morning, open the client&#x27;s draft from their SFTP server, edit, save back, tilde backup automatic. Afternoon, fix the website typo in the GitHub repo, open, edit, save, committed. Evening, adjust a config file on your web host over SSH. Three infrastructures, one editor, zero context switches. The tax every tool-switch used to charge, QUILL stopped collecting.</p>
+<p><strong>Liam:</strong> Homework. One: save one remote site, even a test account, and round-trip a file. Two: browse any public GitHub repository from QUILL and open its readme, no account needed for reading. Three: try Open from URL on any document link and listen to the safety flow do its job.</p>
+<p><strong>Jessica:</strong> Next episode: QUILL starts working while you&#x27;re not there, watch folders and automation.</p>
+<p><strong>Liam:</strong> I&#x27;m Liam.</p>
+<p><strong>Jessica:</strong> I&#x27;m Jessica. The world is your filesystem.</p>
+<p><a href="../index.html">Back to all episodes</a></p>
+</div></main>
+</body>
+</html>

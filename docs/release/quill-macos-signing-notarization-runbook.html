@@ -1,0 +1,1459 @@
+<h1 id="quill-macos-dmg-signing-and-notarization-runbook">QUILL macOS
+DMG Signing and Notarization Runbook</h1>
+<p><strong>Last updated:</strong> 2026-07-02<br />
+<strong>Owner:</strong> Release Engineering<br />
+<strong>Product:</strong> QUILL<br />
+<strong>Project home:</strong> Community Access, <a
+href="http://www.community-access.org"
+class="uri">http://www.community-access.org</a><br />
+<strong>Signing owner for first macOS distribution:</strong> Jeff
+Bishop<br />
+<strong>Recommended bundle identifier:</strong>
+<code>org.community-access.quill</code><br />
+<strong>Primary release target:</strong> Signed and notarized macOS
+<code>.dmg</code> produced by GitHub Actions</p>
+<hr />
+<h2 id="executive-decision">1. Executive decision</h2>
+<p>QUILL can and should produce a working macOS DMG through GitHub
+Actions. GitHub Actions can automate the build, signing, notarization,
+stapling, verification, and artifact upload steps, but GitHub does not
+provide Apple trust. Apple trust comes from Jeff Bishop’s active Apple
+Developer Program membership, a Developer ID Application certificate,
+and Apple notarization credentials.</p>
+<p>For the first QUILL macOS beta, sign under:</p>
+<pre class="text"><code>Developer ID Application: Jeff Bishop (TEAMID)</code></pre>
+<p>Use Community Access as the project identity:</p>
+<pre class="text"><code>App display name: QUILL
+Bundle identifier: org.community-access.quill
+Project / website: Community Access
+macOS developer shown by Gatekeeper: Jeff Bishop
+Distribution format: signed and notarized DMG</code></pre>
+<p>Recommended public wording:</p>
+<blockquote>
+<p>QUILL is a Community Access project. The macOS build is signed and
+notarized by Apple under Jeff Bishop’s Apple Developer account.</p>
+</blockquote>
+<p>For any external beta, sign and notarize. Unsigned builds should be
+limited to short-lived internal engineering use only.</p>
+<hr />
+<h2 id="why-this-matters">2. Why this matters</h2>
+<p>If QUILL ships as an unsigned or non-notarized macOS app, users may
+hit Gatekeeper warnings such as unknown developer, app cannot be opened
+safely, quarantine friction, or managed-device policy blocks. That
+creates a product trust problem and an accessibility problem.</p>
+<p>For QUILL, setup needs to be predictable, keyboard friendly, and
+supportable. Asking blind and screen reader users to bypass macOS
+security prompts is not acceptable for public distribution.</p>
+<p>Signing and notarization reduce:</p>
+<ul>
+<li>Failed installs.</li>
+<li>Confusing security prompts.</li>
+<li>Support burden.</li>
+<li>Enterprise and managed-device friction.</li>
+<li>Trust concerns around a new assistive technology tool.</li>
+</ul>
+<p>Apple describes Developer ID Application certificates as certificates
+used to sign Mac apps outside the Mac App Store, and Apple’s
+notarization tools support submitting software to the Apple notary
+service and stapling the resulting ticket to the distributed artifact.
+See the reference section for official Apple links.</p>
+<hr />
+<h2 id="beta-policy-recommendation">3. Beta policy recommendation</h2>
+<table>
+<colgroup>
+<col style="width: 21%" />
+<col style="width: 28%" />
+<col style="width: 28%" />
+<col style="width: 21%" />
+</colgroup>
+<thead>
+<tr>
+<th>Release type</th>
+<th style="text-align: right;">Signing required?</th>
+<th style="text-align: right;">Notarization required?</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Internal alpha, core engineering only</td>
+<td style="text-align: right;">Optional temporarily</td>
+<td style="text-align: right;">Optional temporarily</td>
+<td>Accept only if short-lived and clearly marked internal.</td>
+</tr>
+<tr>
+<td>Private beta with external testers</td>
+<td style="text-align: right;">Yes</td>
+<td style="text-align: right;">Yes</td>
+<td>Treat as real software distribution.</td>
+</tr>
+<tr>
+<td>Public beta</td>
+<td style="text-align: right;">Yes</td>
+<td style="text-align: right;">Yes</td>
+<td>Required for user trust.</td>
+</tr>
+<tr>
+<td>Release candidate</td>
+<td style="text-align: right;">Yes</td>
+<td style="text-align: right;">Yes</td>
+<td>Required.</td>
+</tr>
+<tr>
+<td>Production release</td>
+<td style="text-align: right;">Yes</td>
+<td style="text-align: right;">Yes</td>
+<td>Mandatory.</td>
+</tr>
+</tbody>
+</table>
+<p>Go/no-go rule:</p>
+<p>QUILL should not publish an external macOS beta unless all of these
+are true:</p>
+<ul>
+<li>The <code>.app</code> is signed.</li>
+<li>The artifact is notarized.</li>
+<li>The notarization ticket is stapled.</li>
+<li>A clean-device install test passed.</li>
+<li>QUILL launches without manual security bypass steps.</li>
+</ul>
+<hr />
+<h2 id="what-can-and-cannot-be-done-without-a-mac">4. What can and
+cannot be done without a Mac</h2>
+<h3 id="what-can-be-done-from-windows">4.1 What can be done from
+Windows</h3>
+<p>You can use a Windows browser to do most Apple portal work:</p>
+<ul>
+<li>Sign in to Apple Developer.</li>
+<li>Confirm Apple Developer Program membership.</li>
+<li>View Team ID.</li>
+<li>Create the Developer ID Application certificate record.</li>
+<li>Upload a certificate signing request.</li>
+<li>Download the <code>.cer</code> certificate.</li>
+<li>Sign in to App Store Connect.</li>
+<li>Request App Store Connect API access if needed.</li>
+<li>Generate a team API key.</li>
+<li>Download the <code>.p8</code> API key.</li>
+<li>Use GitHub CLI to create environments and upload GitHub Actions
+secrets.</li>
+</ul>
+<h3 id="what-should-not-be-done-from-iphone">4.2 What should not be done
+from iPhone</h3>
+<p>Use iPhone only for Apple ID two-factor authentication or emergency
+account checks. Do not use it as the primary workflow for handling:</p>
+<ul>
+<li><code>.csr</code></li>
+<li><code>.cer</code></li>
+<li><code>.p8</code></li>
+<li><code>.p12</code></li>
+<li>certificate passwords</li>
+<li>Team ID / Key ID / Issuer ID</li>
+</ul>
+<p>The files are too sensitive and too easy to misplace or mishandle
+from mobile file workflows.</p>
+<h3 id="what-still-needs-macos-somewhere">4.3 What still needs macOS
+somewhere</h3>
+<p>The final signing/notarization workflow needs macOS somewhere because
+the normal toolchain uses:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">codesign</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">xcrun</span> notarytool</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">xcrun</span> stapler</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ex">spctl</span></span></code></pre></div>
+<p>That macOS environment can be:</p>
+<ol type="1">
+<li>A borrowed Mac used once to create/export the <code>.p12</code> and
+test the process.</li>
+<li>A rented/cloud Mac.</li>
+<li>A GitHub Actions macOS runner.</li>
+<li>A self-hosted Mac runner.</li>
+</ol>
+<p>Recommended QUILL path:</p>
+<pre class="text"><code>Windows = command center
+Apple Developer website = one-time credential creation
+GitHub Actions macOS runner = build/sign/notarize/staple/release
+Borrowed/cloud Mac = optional first-time .p12 creation and VoiceOver smoke test</code></pre>
+<hr />
+<h2 id="target-architecture-magical-but-controlled">5. Target
+architecture: magical but controlled</h2>
+<p>The desired release path is:</p>
+<pre class="text"><code>Developer pushes a release tag
+        ↓
+GitHub Actions starts macos-release workflow
+        ↓
+macOS runner builds QUILL.app
+        ↓
+Temporary keychain is created
+        ↓
+Developer ID .p12 is imported
+        ↓
+QUILL.app is signed with hardened runtime
+        ↓
+DMG is created
+        ↓
+DMG/app is submitted to Apple notarization
+        ↓
+Ticket is stapled
+        ↓
+Gatekeeper verification runs
+        ↓
+Signed/notarized DMG is uploaded as a release artifact</code></pre>
+<p>The release pipeline should fail closed. If signing, notarization,
+stapling, or Gatekeeper verification fails, the pipeline should fail and
+no external beta artifact should be published.</p>
+<hr />
+<h2 id="phase-0-apple-account-and-release-ownership">6. Phase 0 — Apple
+account and release ownership</h2>
+<p>Assumption: an Apple Developer account exists, but nothing else has
+been set up.</p>
+<h3 id="confirm-apple-developer-program-membership">6.1 Confirm Apple
+Developer Program membership</h3>
+<ol type="1">
+<li>Open <a href="https://developer.apple.com/account"
+class="uri">https://developer.apple.com/account</a></li>
+<li>Sign in with the Apple ID tied to the paid Apple Developer Program
+membership.</li>
+<li>Go to <strong>Membership details</strong>.</li>
+<li>Confirm:
+<ul>
+<li>Membership is active.</li>
+<li>Role is <strong>Account Holder</strong>.</li>
+<li>Team name is Jeff Bishop or your personal developer team.</li>
+<li>Team ID is visible.</li>
+</ul></li>
+<li>Copy the Team ID into a secure notes file.</li>
+</ol>
+<p>Record:</p>
+<pre class="text"><code>APPLE_TEAM_ID=__________
+APPLE_ACCOUNT_HOLDER=Jeff Bishop
+APPLE_SIGNING_DISPLAY_NAME=Jeff Bishop</code></pre>
+<h3 id="decide-release-custody">6.2 Decide release custody</h3>
+<p>For QUILL, assign at least two maintainers for operational
+continuity, even if only Jeff holds the Apple account initially.</p>
+<p>Minimum roles:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Role</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Apple Account Holder</td>
+<td>Owns Apple Developer account, certificates, API keys, legal
+agreements.</td>
+</tr>
+<tr>
+<td>Release Maintainer 1</td>
+<td>Maintains GitHub Actions and release secrets.</td>
+</tr>
+<tr>
+<td>Release Maintainer 2</td>
+<td>Backup for credential rotation and break-glass recovery.</td>
+</tr>
+</tbody>
+</table>
+<p>If only one person currently has Apple access, document that clearly
+as a temporary risk.</p>
+<h3 id="create-a-secure-release-vault">6.3 Create a secure release
+vault</h3>
+<p>Create a password-manager entry or secure vault folder named:</p>
+<pre class="text"><code>QUILL Apple Release - Jeff Bishop Developer ID</code></pre>
+<p>Store only metadata at first:</p>
+<pre class="text"><code>Team ID:
+Apple ID email:
+Account Holder:
+Signing identity, once known:
+API Key ID, once known:
+Issuer ID, once known:
+P12 password, once created:
+Keychain password for CI, once created:</code></pre>
+<p>Do not store these in the QUILL Git repository.</p>
+<hr />
+<h2 id="phase-1-create-the-developer-id-application-certificate">7.
+Phase 1 — Create the Developer ID Application certificate</h2>
+<p>Apple Developer ID certificates are created from
+<strong>Certificates, Identifiers &amp; Profiles</strong>. For QUILL,
+you need a <strong>Developer ID Application</strong> certificate. You
+only need a <strong>Developer ID Installer</strong> certificate if QUILL
+ships as a <code>.pkg</code> installer.</p>
+<p>For the recommended first release as a <code>.dmg</code>, start with
+only:</p>
+<pre class="text"><code>Developer ID Application: Jeff Bishop (TEAMID)</code></pre>
+<h3 id="recommended-path-if-you-can-access-a-mac-once">7.1 Recommended
+path if you can access a Mac once</h3>
+<p>Use this path if you can borrow, rent, or temporarily access a
+Mac.</p>
+<h4 id="step-a-create-a-certificate-signing-request-on-macos">Step A —
+Create a certificate signing request on macOS</h4>
+<ol type="1">
+<li>Open <strong>Keychain Access</strong>.</li>
+<li>Choose <strong>Keychain Access &gt; Certificate Assistant &gt;
+Request a Certificate From a Certificate Authority</strong>.</li>
+<li>Enter the Apple Developer email address.</li>
+<li>For <strong>Common Name</strong>, use:</li>
+</ol>
+<pre class="text"><code>Jeff Bishop QUILL Developer ID Key</code></pre>
+<ol start="5" type="1">
+<li>Leave <strong>CA Email Address</strong> blank.</li>
+<li>Select <strong>Saved to disk</strong>.</li>
+<li>Save the file as:</li>
+</ol>
+<pre class="text"><code>quill-developer-id.certSigningRequest</code></pre>
+<h4 id="step-b-create-the-certificate-on-apple-developer">Step B —
+Create the certificate on Apple Developer</h4>
+<ol type="1">
+<li>Open <a href="https://developer.apple.com/account"
+class="uri">https://developer.apple.com/account</a></li>
+<li>Go to <strong>Certificates, Identifiers &amp;
+Profiles</strong>.</li>
+<li>Select <strong>Certificates</strong> in the sidebar.</li>
+<li>Click the <strong>+</strong> button.</li>
+<li>Under <strong>Software</strong>, select <strong>Developer
+ID</strong>.</li>
+<li>Select <strong>Developer ID Application</strong>.</li>
+<li>Click <strong>Continue</strong>.</li>
+<li>Upload <code>quill-developer-id.certSigningRequest</code>.</li>
+<li>Click <strong>Continue</strong>.</li>
+<li>Download the <code>.cer</code> file.</li>
+<li>Double-click the <code>.cer</code> on the Mac to install it into
+Keychain Access.</li>
+</ol>
+<h4 id="step-c-confirm-the-identity-exists">Step C — Confirm the
+identity exists</h4>
+<p>Run:</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">security</span> find-identity <span class="at">-v</span> <span class="at">-p</span> codesigning</span></code></pre></div>
+<p>Look for a line like:</p>
+<pre class="text"><code>Developer ID Application: Jeff Bishop (TEAMID)</code></pre>
+<p>Copy the exact string. This becomes:</p>
+<pre class="text"><code>MACOS_CODESIGN_IDENTITY=Developer ID Application: Jeff Bishop (TEAMID)</code></pre>
+<h4 id="step-d-export-the-.p12">Step D — Export the
+<code>.p12</code></h4>
+<ol type="1">
+<li>Open <strong>Keychain Access</strong>.</li>
+<li>Choose the <strong>login</strong> keychain.</li>
+<li>Select <strong>My Certificates</strong>.</li>
+<li>Find
+<code>Developer ID Application: Jeff Bishop (TEAMID)</code>.</li>
+<li>Expand it and confirm a private key appears beneath it.</li>
+<li>Right-click the certificate.</li>
+<li>Choose <strong>Export</strong>.</li>
+<li>Save as:</li>
+</ol>
+<pre class="text"><code>DeveloperID_Application_JeffBishop.p12</code></pre>
+<ol start="9" type="1">
+<li>Set a strong password.</li>
+<li>Store the <code>.p12</code> file and password in the secure release
+vault.</li>
+</ol>
+<p>Exit criteria:</p>
+<ul>
+<li><code>.p12</code> exists.</li>
+<li><code>.p12</code> password is known and stored securely.</li>
+<li>Exact signing identity string is captured.</li>
+</ul>
+<h3 id="advanced-path-if-you-only-have-windows">7.2 Advanced path if you
+only have Windows</h3>
+<p>Apple’s official instructions show creating the CSR with Keychain
+Access on macOS. However, a CSR is a standard certificate signing
+request. If you cannot access a Mac at all, you can generate the private
+key and CSR from Windows using OpenSSL, upload the CSR to Apple
+Developer, download the <code>.cer</code>, and create the
+<code>.p12</code> yourself.</p>
+<p>Use this only if you are comfortable managing private keys.</p>
+<h4 id="step-a-install-openssl-on-windows">Step A — Install OpenSSL on
+Windows</h4>
+<p>Use a trusted OpenSSL distribution or Git Bash environment that
+includes OpenSSL.</p>
+<p>Verify:</p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>openssl version</span></code></pre></div>
+<h4 id="step-b-generate-private-key-and-csr">Step B — Generate private
+key and CSR</h4>
+<p>From a secure folder:</p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>mkdir C<span class="op">:</span>\QUILL-Apple-Release</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cd</span> C<span class="op">:</span>\QUILL-Apple-Release</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>openssl genrsa <span class="op">-</span>out quill-developer-id<span class="op">.</span><span class="fu">key</span> <span class="dv">2048</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="dt">openssl</span> req <span class="op">-</span>new `</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span>key quill-developer-id<span class="op">.</span><span class="fu">key</span> `</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span>out quill-developer-id<span class="op">.</span><span class="fu">csr</span> `</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span>subj <span class="st">&quot;/CN=Jeff Bishop QUILL Developer ID Key&quot;</span></span></code></pre></div>
+<p>Important:</p>
+<ul>
+<li><code>quill-developer-id.key</code> is the private key.</li>
+<li>Never commit it to Git.</li>
+<li>Never email it.</li>
+<li>Store it in the secure release vault.</li>
+</ul>
+<h4 id="step-c-upload-csr-to-apple">Step C — Upload CSR to Apple</h4>
+<ol type="1">
+<li>Open <a href="https://developer.apple.com/account"
+class="uri">https://developer.apple.com/account</a></li>
+<li>Go to <strong>Certificates, Identifiers &amp;
+Profiles</strong>.</li>
+<li>Select <strong>Certificates</strong>.</li>
+<li>Click <strong>+</strong>.</li>
+<li>Under <strong>Software</strong>, select <strong>Developer
+ID</strong>.</li>
+<li>Select <strong>Developer ID Application</strong>.</li>
+<li>Upload <code>quill-developer-id.csr</code>.</li>
+<li>Download the <code>.cer</code> file.</li>
+<li>Save it as:</li>
+</ol>
+<pre class="text"><code>DeveloperID_Application_JeffBishop.cer</code></pre>
+<h4 id="step-d-convert-apple-.cer-and-private-key-into-.p12">Step D —
+Convert Apple <code>.cer</code> and private key into
+<code>.p12</code></h4>
+<p>Apple certificates may need to be converted before packaging with
+OpenSSL. Try:</p>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>openssl x509 <span class="op">-</span>inform DER `</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span>in DeveloperID_Application_JeffBishop<span class="op">.</span><span class="fu">cer</span> `</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span>out DeveloperID_Application_JeffBishop<span class="op">.</span><span class="fu">pem</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>openssl pkcs12 <span class="op">-</span>export `</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span>inkey quill-developer-id<span class="op">.</span><span class="fu">key</span> `</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span>in DeveloperID_Application_JeffBishop<span class="op">.</span><span class="fu">pem</span> `</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span>out DeveloperID_Application_JeffBishop<span class="op">.</span><span class="fu">p12</span></span></code></pre></div>
+<p>Set a strong export password when prompted.</p>
+<p>Exit criteria:</p>
+<ul>
+<li><code>DeveloperID_Application_JeffBishop.p12</code> exists.</li>
+<li>P12 password is stored securely.</li>
+<li>Private key is stored securely or archived according to release
+policy.</li>
+</ul>
+<p>Important caveat:</p>
+<p>This Windows-only certificate path can produce the <code>.p12</code>,
+but QUILL still needs a macOS runner to actually sign, notarize, staple,
+and verify.</p>
+<hr />
+<h2 id="phase-2-create-app-store-connect-api-key-for-notarization">8.
+Phase 2 — Create App Store Connect API key for notarization</h2>
+<p>Use an App Store Connect API key rather than Apple ID + app-specific
+password. It is better for CI and easier to rotate.</p>
+<h3 id="request-api-access-if-required">8.1 Request API access if
+required</h3>
+<ol type="1">
+<li>Open <a href="https://appstoreconnect.apple.com"
+class="uri">https://appstoreconnect.apple.com</a></li>
+<li>Sign in.</li>
+<li>Go to <strong>Users and Access</strong>.</li>
+<li>Open <strong>Integrations</strong>.</li>
+<li>The page should open with <strong>App Store Connect API</strong>
+selected.</li>
+<li>If prompted, click <strong>Request Access</strong>.</li>
+<li>Agree to the terms and submit.</li>
+</ol>
+<p>Only the Account Holder can request App Store Connect API access.</p>
+<h3 id="generate-a-team-api-key">8.2 Generate a team API key</h3>
+<ol type="1">
+<li>Open <a href="https://appstoreconnect.apple.com"
+class="uri">https://appstoreconnect.apple.com</a></li>
+<li>Go to <strong>Users and Access</strong>.</li>
+<li>Open <strong>Integrations</strong>.</li>
+<li>Select <strong>App Store Connect API</strong>.</li>
+<li>Select <strong>Team Keys</strong>.</li>
+<li>Click <strong>Generate API Key</strong> or the <strong>+</strong>
+button if a key already exists.</li>
+<li>Name it:</li>
+</ol>
+<pre class="text"><code>QUILL Notarization</code></pre>
+<ol start="8" type="1">
+<li>Assign the least role that works for notarization in your build
+process. If unsure for the first pass, use a key created by the Account
+Holder and document the role used.</li>
+<li>Click <strong>Generate</strong>.</li>
+<li>Download the <code>.p8</code> file immediately.</li>
+</ol>
+<p>Important:</p>
+<p>Apple API keys are private and can only be downloaded once. If you
+lose the <code>.p8</code>, revoke the key and create a new one.</p>
+<p>Record:</p>
+<pre class="text"><code>APPLE_API_KEY_ID=__________
+APPLE_API_ISSUER=__________
+APPLE_TEAM_ID=__________
+APPLE_API_KEY_FILENAME=AuthKey_XXXXXXXXXX.p8</code></pre>
+<p>Store the <code>.p8</code> in the secure release vault.</p>
+<hr />
+<h2 id="phase-3-choose-quill-app-identity-and-artifact-names">9. Phase 3
+— Choose QUILL app identity and artifact names</h2>
+<p>Use stable values now so future updates keep the same identity.</p>
+<p>Recommended values:</p>
+<pre class="text"><code>APP_NAME=QUILL
+BUNDLE_ID=org.community-access.quill
+MACOS_CODESIGN_IDENTITY=Developer ID Application: Jeff Bishop (TEAMID)
+DMG_NAME=QUILL-macOS.dmg
+RELEASE_ENVIRONMENT=macos-release</code></pre>
+<p>Avoid:</p>
+<pre class="text"><code>com.jeffbishop.quill</code></pre>
+<p>The signing account is Jeff Bishop, but the project home is Community
+Access. The bundle ID should reflect the long-term project home.</p>
+<hr />
+<h2 id="phase-4-github-environment-and-secrets">10. Phase 4 — GitHub
+environment and secrets</h2>
+<p>Use GitHub environment secrets rather than broad repository secrets.
+The release environment should be protected so accidental workflow
+changes or branch pushes cannot publish a public beta without
+review.</p>
+<p>Recommended environment:</p>
+<pre class="text"><code>macos-release</code></pre>
+<h3 id="create-the-github-environment-from-windows-powershell">10.1
+Create the GitHub environment from Windows PowerShell</h3>
+<p>From the repository root:</p>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cd</span> S<span class="op">:</span>\quill</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>gh auth status</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>gh repo set-default Community-Access<span class="op">/</span>quill</span></code></pre></div>
+<p>Create the protected environment:</p>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>gh api <span class="op">--</span>method PUT repos<span class="op">/</span>Community-Access<span class="op">/</span>quill<span class="op">/</span>environments<span class="op">/</span>macos-release</span></code></pre></div>
+<p>Then configure protection rules in the GitHub web UI:</p>
+<ol type="1">
+<li>Open the QUILL repository on GitHub.</li>
+<li>Go to <strong>Settings</strong>.</li>
+<li>Go to <strong>Environments</strong>.</li>
+<li>Select <strong>macos-release</strong>.</li>
+<li>Add required reviewers.</li>
+<li>Restrict deployment branches or tags if desired.</li>
+<li>Save.</li>
+</ol>
+<p>Recommended protection:</p>
+<ul>
+<li>Required reviewer: Jeff Bishop or a designated release
+maintainer.</li>
+<li>Allowed branches/tags: release branches and version tags only.</li>
+<li>No external beta job should run without environment approval.</li>
+</ul>
+<h3 id="required-secrets">10.2 Required secrets</h3>
+<p>Use these exact names to match the workflow examples later:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Secret</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BUILD_CERTIFICATE_BASE64</code></td>
+<td>Base64-encoded
+<code>DeveloperID_Application_JeffBishop.p12</code>.</td>
+</tr>
+<tr>
+<td><code>P12_PASSWORD</code></td>
+<td>Password used when exporting the <code>.p12</code>.</td>
+</tr>
+<tr>
+<td><code>KEYCHAIN_PASSWORD</code></td>
+<td>Temporary keychain password used inside GitHub Actions.</td>
+</tr>
+<tr>
+<td><code>MACOS_CODESIGN_IDENTITY</code></td>
+<td>Exact identity string from <code>security find-identity</code>.</td>
+</tr>
+<tr>
+<td><code>APPLE_API_KEY_B64</code></td>
+<td>Base64-encoded <code>AuthKey_XXXXXXXXXX.p8</code>.</td>
+</tr>
+<tr>
+<td><code>APPLE_API_KEY_ID</code></td>
+<td>Key ID from App Store Connect.</td>
+</tr>
+<tr>
+<td><code>APPLE_API_ISSUER</code></td>
+<td>Issuer ID from App Store Connect.</td>
+</tr>
+<tr>
+<td><code>APPLE_TEAM_ID</code></td>
+<td>Apple Developer Team ID.</td>
+</tr>
+</tbody>
+</table>
+<p>Optional secrets:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Secret</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DMG_SIGNING_IDENTITY</code></td>
+<td>Usually same as <code>MACOS_CODESIGN_IDENTITY</code>; useful if
+signing DMG separately.</td>
+</tr>
+<tr>
+<td><code>APPLE_ID</code></td>
+<td>Only for fallback Apple ID notarization path; not recommended.</td>
+</tr>
+<tr>
+<td><code>APPLE_APP_SPECIFIC_PASSWORD</code></td>
+<td>Only for fallback Apple ID notarization path; not recommended.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="add-file-based-secrets-from-windows-powershell">10.3 Add
+file-based secrets from Windows PowerShell</h3>
+<p>Replace paths with your actual files.</p>
+<div class="sourceCode" id="cb27"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="op">[</span>Convert<span class="op">]::</span>ToBase64String<span class="op">([</span>IO<span class="op">.</span><span class="fu">File</span><span class="op">]::</span>ReadAllBytes<span class="op">(</span><span class="st">&quot;C:\path\to\DeveloperID_Application_JeffBishop.p12&quot;</span><span class="op">))</span> <span class="op">|</span> gh secret <span class="fu">set</span> <span class="op">-</span>e macos-release BUILD_CERTIFICATE_BASE64</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="op">[</span>Convert<span class="op">]::</span>ToBase64String<span class="op">([</span>IO<span class="op">.</span><span class="fu">File</span><span class="op">]::</span>ReadAllBytes<span class="op">(</span><span class="st">&quot;C:\path\to\AuthKey_ABC123XYZ.p8&quot;</span><span class="op">))</span> <span class="op">|</span> gh secret <span class="fu">set</span> <span class="op">-</span>e macos-release APPLE_API_KEY_B64</span></code></pre></div>
+<h3 id="add-prompt-based-text-secrets">10.4 Add prompt-based text
+secrets</h3>
+<div class="sourceCode" id="cb28"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>gh secret <span class="fu">set</span> <span class="op">-</span>e macos-release P12_PASSWORD</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>gh secret <span class="fu">set</span> <span class="op">-</span>e macos-release KEYCHAIN_PASSWORD</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>gh secret <span class="fu">set</span> <span class="op">-</span>e macos-release MACOS_CODESIGN_IDENTITY</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>gh secret <span class="fu">set</span> <span class="op">-</span>e macos-release APPLE_API_KEY_ID</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>gh secret <span class="fu">set</span> <span class="op">-</span>e macos-release APPLE_API_ISSUER</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>gh secret <span class="fu">set</span> <span class="op">-</span>e macos-release APPLE_TEAM_ID</span></code></pre></div>
+<p>Suggested <code>KEYCHAIN_PASSWORD</code>:</p>
+<ul>
+<li>Generate a long random value.</li>
+<li>It only protects the temporary keychain on the runner.</li>
+<li>Store it in the password manager anyway.</li>
+</ul>
+<h3 id="verify-secrets-were-created">10.5 Verify secrets were
+created</h3>
+<div class="sourceCode" id="cb29"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>gh secret list <span class="op">-</span>e macos-release</span></code></pre></div>
+<p>Exit criteria:</p>
+<ul>
+<li>All required secrets exist.</li>
+<li>Secrets are scoped to <code>macos-release</code>.</li>
+<li>Environment has approval protection.</li>
+</ul>
+<hr />
+<h2 id="phase-5-add-local-helper-scripts">11. Phase 5 — Add local helper
+scripts</h2>
+<p>Create these scripts in the repository:</p>
+<pre class="text"><code>scripts/macos/
+  check-apple-signing-ready.sh
+  sign-notarize-quill.sh
+  verify-gatekeeper.sh</code></pre>
+<p>These are useful on a borrowed/cloud Mac or a self-hosted Mac
+runner.</p>
+<h3 id="scriptsmacoscheck-apple-signing-ready.sh">11.1
+<code>scripts/macos/check-apple-signing-ready.sh</code></h3>
+<div class="sourceCode" id="cb31"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/usr/bin/env bash</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="bu">set</span> <span class="at">-euo</span> pipefail</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="va">ENV_FILE</span><span class="op">=</span><span class="st">&quot;</span><span class="va">${1</span><span class="op">:-</span><span class="va">$HOME</span>/QUILL-Apple-Release/quill-apple-release.env<span class="va">}</span><span class="st">&quot;</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">[[</span> <span class="ot">!</span> <span class="ot">-f</span> <span class="st">&quot;</span><span class="va">$ENV_FILE</span><span class="st">&quot;</span> <span class="kw">]];</span> <span class="cf">then</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">&quot;Missing env file: </span><span class="va">$ENV_FILE</span><span class="st">&quot;</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>  <span class="bu">exit</span> 1</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a><span class="co"># shellcheck source=/dev/null</span></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> <span class="st">&quot;</span><span class="va">$ENV_FILE</span><span class="st">&quot;</span></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;Checking Apple command line tools...&quot;</span></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a><span class="ex">xcrun</span> <span class="at">--find</span> codesign <span class="op">&gt;</span>/dev/null</span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a><span class="ex">xcrun</span> <span class="at">--find</span> notarytool <span class="op">&gt;</span>/dev/null</span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a><span class="ex">xcrun</span> <span class="at">--find</span> stapler <span class="op">&gt;</span>/dev/null</span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;Checking Developer ID signing identity...&quot;</span></span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a><span class="ex">security</span> find-identity <span class="at">-v</span> <span class="at">-p</span> codesigning <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-F</span> <span class="st">&quot;</span><span class="va">$MACOS_CODESIGN_IDENTITY</span><span class="st">&quot;</span> <span class="op">&gt;</span>/dev/null</span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;Checking App Store Connect API key...&quot;</span></span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">[[</span> <span class="ot">!</span> <span class="ot">-f</span> <span class="st">&quot;</span><span class="va">$APPLE_API_KEY_PATH</span><span class="st">&quot;</span> <span class="kw">]];</span> <span class="cf">then</span></span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">&quot;Missing API key: </span><span class="va">$APPLE_API_KEY_PATH</span><span class="st">&quot;</span></span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a>  <span class="bu">exit</span> 1</span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">[[</span> <span class="ot">-z</span> <span class="st">&quot;</span><span class="va">${APPLE_TEAM_ID</span><span class="op">:-</span><span class="va">}</span><span class="st">&quot;</span> <span class="kw">]];</span> <span class="cf">then</span></span>
+<span id="cb31-29"><a href="#cb31-29" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">&quot;APPLE_TEAM_ID is empty&quot;</span></span>
+<span id="cb31-30"><a href="#cb31-30" aria-hidden="true" tabindex="-1"></a>  <span class="bu">exit</span> 1</span>
+<span id="cb31-31"><a href="#cb31-31" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span>
+<span id="cb31-32"><a href="#cb31-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-33"><a href="#cb31-33" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;QUILL Apple signing setup looks ready.&quot;</span></span>
+<span id="cb31-34"><a href="#cb31-34" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;Signing identity: </span><span class="va">$MACOS_CODESIGN_IDENTITY</span><span class="st">&quot;</span></span>
+<span id="cb31-35"><a href="#cb31-35" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;Team ID: </span><span class="va">$APPLE_TEAM_ID</span><span class="st">&quot;</span></span></code></pre></div>
+<h3 id="scriptsmacossign-notarize-quill.sh">11.2
+<code>scripts/macos/sign-notarize-quill.sh</code></h3>
+<div class="sourceCode" id="cb32"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/usr/bin/env bash</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="bu">set</span> <span class="at">-euo</span> pipefail</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="va">ENV_FILE</span><span class="op">=</span><span class="st">&quot;</span><span class="va">${1</span><span class="op">:-</span><span class="va">$HOME</span>/QUILL-Apple-Release/quill-apple-release.env<span class="va">}</span><span class="st">&quot;</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="va">APP_PATH</span><span class="op">=</span><span class="st">&quot;</span><span class="va">${2</span><span class="op">:-</span>dist/QUILL.app<span class="va">}</span><span class="st">&quot;</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a><span class="va">OUTPUT_DIR</span><span class="op">=</span><span class="st">&quot;</span><span class="va">${3</span><span class="op">:-</span>dist<span class="va">}</span><span class="st">&quot;</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a><span class="co"># shellcheck source=/dev/null</span></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> <span class="st">&quot;</span><span class="va">$ENV_FILE</span><span class="st">&quot;</span></span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a><span class="va">ZIP_PATH</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$OUTPUT_DIR</span><span class="st">/QUILL-macOS-notary.zip&quot;</span></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">[[</span> <span class="ot">!</span> <span class="ot">-d</span> <span class="st">&quot;</span><span class="va">$APP_PATH</span><span class="st">&quot;</span> <span class="kw">]];</span> <span class="cf">then</span></span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">&quot;Missing app bundle: </span><span class="va">$APP_PATH</span><span class="st">&quot;</span></span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>  <span class="bu">exit</span> 1</span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;Signing QUILL with hardened runtime...&quot;</span></span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a><span class="ex">codesign</span> <span class="dt">\</span></span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">--force</span> <span class="dt">\</span></span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">--deep</span> <span class="dt">\</span></span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">--timestamp</span> <span class="dt">\</span></span>
+<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">--options</span> runtime <span class="dt">\</span></span>
+<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">--sign</span> <span class="st">&quot;</span><span class="va">$MACOS_CODESIGN_IDENTITY</span><span class="st">&quot;</span> <span class="dt">\</span></span>
+<span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;</span><span class="va">$APP_PATH</span><span class="st">&quot;</span></span>
+<span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-27"><a href="#cb32-27" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;Verifying code signature...&quot;</span></span>
+<span id="cb32-28"><a href="#cb32-28" aria-hidden="true" tabindex="-1"></a><span class="ex">codesign</span> <span class="at">--verify</span> <span class="at">--deep</span> <span class="at">--strict</span> <span class="at">--verbose</span><span class="op">=</span>2 <span class="st">&quot;</span><span class="va">$APP_PATH</span><span class="st">&quot;</span></span>
+<span id="cb32-29"><a href="#cb32-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-30"><a href="#cb32-30" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;Creating notarization zip...&quot;</span></span>
+<span id="cb32-31"><a href="#cb32-31" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-f</span> <span class="st">&quot;</span><span class="va">$ZIP_PATH</span><span class="st">&quot;</span></span>
+<span id="cb32-32"><a href="#cb32-32" aria-hidden="true" tabindex="-1"></a><span class="ex">ditto</span> <span class="at">-c</span> <span class="at">-k</span> <span class="at">--keepParent</span> <span class="st">&quot;</span><span class="va">$APP_PATH</span><span class="st">&quot;</span> <span class="st">&quot;</span><span class="va">$ZIP_PATH</span><span class="st">&quot;</span></span>
+<span id="cb32-33"><a href="#cb32-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-34"><a href="#cb32-34" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;Submitting to Apple notarization...&quot;</span></span>
+<span id="cb32-35"><a href="#cb32-35" aria-hidden="true" tabindex="-1"></a><span class="ex">xcrun</span> notarytool submit <span class="st">&quot;</span><span class="va">$ZIP_PATH</span><span class="st">&quot;</span> <span class="dt">\</span></span>
+<span id="cb32-36"><a href="#cb32-36" aria-hidden="true" tabindex="-1"></a>  <span class="at">--key</span> <span class="st">&quot;</span><span class="va">$APPLE_API_KEY_PATH</span><span class="st">&quot;</span> <span class="dt">\</span></span>
+<span id="cb32-37"><a href="#cb32-37" aria-hidden="true" tabindex="-1"></a>  <span class="at">--key-id</span> <span class="st">&quot;</span><span class="va">$APPLE_API_KEY_ID</span><span class="st">&quot;</span> <span class="dt">\</span></span>
+<span id="cb32-38"><a href="#cb32-38" aria-hidden="true" tabindex="-1"></a>  <span class="at">--issuer</span> <span class="st">&quot;</span><span class="va">$APPLE_API_ISSUER</span><span class="st">&quot;</span> <span class="dt">\</span></span>
+<span id="cb32-39"><a href="#cb32-39" aria-hidden="true" tabindex="-1"></a>  <span class="at">--team-id</span> <span class="st">&quot;</span><span class="va">$APPLE_TEAM_ID</span><span class="st">&quot;</span> <span class="dt">\</span></span>
+<span id="cb32-40"><a href="#cb32-40" aria-hidden="true" tabindex="-1"></a>  <span class="at">--wait</span></span>
+<span id="cb32-41"><a href="#cb32-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-42"><a href="#cb32-42" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;Stapling notarization ticket to app...&quot;</span></span>
+<span id="cb32-43"><a href="#cb32-43" aria-hidden="true" tabindex="-1"></a><span class="ex">xcrun</span> stapler staple <span class="st">&quot;</span><span class="va">$APP_PATH</span><span class="st">&quot;</span></span>
+<span id="cb32-44"><a href="#cb32-44" aria-hidden="true" tabindex="-1"></a><span class="ex">xcrun</span> stapler validate <span class="st">&quot;</span><span class="va">$APP_PATH</span><span class="st">&quot;</span></span>
+<span id="cb32-45"><a href="#cb32-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-46"><a href="#cb32-46" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;Running Gatekeeper assessment...&quot;</span></span>
+<span id="cb32-47"><a href="#cb32-47" aria-hidden="true" tabindex="-1"></a><span class="ex">spctl</span> <span class="at">--assess</span> <span class="at">--type</span> execute <span class="at">--verbose</span> <span class="st">&quot;</span><span class="va">$APP_PATH</span><span class="st">&quot;</span></span>
+<span id="cb32-48"><a href="#cb32-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-49"><a href="#cb32-49" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;QUILL is signed, notarized, stapled, and Gatekeeper-verified.&quot;</span></span></code></pre></div>
+<h3 id="scriptsmacosverify-gatekeeper.sh">11.3
+<code>scripts/macos/verify-gatekeeper.sh</code></h3>
+<div class="sourceCode" id="cb33"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/usr/bin/env bash</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="bu">set</span> <span class="at">-euo</span> pipefail</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="va">TARGET</span><span class="op">=</span><span class="st">&quot;</span><span class="va">${1</span><span class="op">:-</span>dist/QUILL.app<span class="va">}</span><span class="st">&quot;</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">[[</span> <span class="ot">!</span> <span class="ot">-e</span> <span class="st">&quot;</span><span class="va">$TARGET</span><span class="st">&quot;</span> <span class="kw">]];</span> <span class="cf">then</span></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">&quot;Missing target: </span><span class="va">$TARGET</span><span class="st">&quot;</span></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>  <span class="bu">exit</span> 1</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;Checking code signature...&quot;</span></span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a><span class="ex">codesign</span> <span class="at">--verify</span> <span class="at">--deep</span> <span class="at">--strict</span> <span class="at">--verbose</span><span class="op">=</span>2 <span class="st">&quot;</span><span class="va">$TARGET</span><span class="st">&quot;</span></span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;Checking notarization staple...&quot;</span></span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a><span class="ex">xcrun</span> stapler validate <span class="st">&quot;</span><span class="va">$TARGET</span><span class="st">&quot;</span></span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;Checking Gatekeeper assessment...&quot;</span></span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a><span class="ex">spctl</span> <span class="at">--assess</span> <span class="at">--type</span> execute <span class="at">--verbose</span> <span class="st">&quot;</span><span class="va">$TARGET</span><span class="st">&quot;</span></span>
+<span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-20"><a href="#cb33-20" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&quot;Gatekeeper verification passed: </span><span class="va">$TARGET</span><span class="st">&quot;</span></span></code></pre></div>
+<hr />
+<h2 id="phase-6-github-actions-workflow">12. Phase 6 — GitHub Actions
+workflow</h2>
+<p>Create:</p>
+<pre class="text"><code>.github/workflows/macos-release.yml</code></pre>
+<p>This workflow is intentionally conservative:</p>
+<ul>
+<li>Runs on macOS.</li>
+<li>Uses environment secrets.</li>
+<li>Creates a temporary keychain.</li>
+<li>Imports the Developer ID certificate.</li>
+<li>Writes the App Store Connect API key to disk.</li>
+<li>Builds QUILL.</li>
+<li>Signs QUILL.</li>
+<li>Creates a DMG.</li>
+<li>Notarizes and staples.</li>
+<li>Uploads the final artifact.</li>
+</ul>
+<p>You must adapt the build commands to QUILL’s actual macOS build
+process.</p>
+<div class="sourceCode" id="cb35"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> macOS Release</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="fu">on</span><span class="kw">:</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">workflow_dispatch</span><span class="kw">:</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">push</span><span class="kw">:</span></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">tags</span><span class="kw">:</span></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">&quot;v*&quot;</span></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a><span class="fu">permissions</span><span class="kw">:</span></span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">contents</span><span class="kw">:</span><span class="at"> read</span></span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a><span class="fu">env</span><span class="kw">:</span></span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">APP_NAME</span><span class="kw">:</span><span class="at"> QUILL</span></span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">BUNDLE_ID</span><span class="kw">:</span><span class="at"> org.community-access.quill</span></span>
+<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">DMG_NAME</span><span class="kw">:</span><span class="at"> QUILL-macOS.dmg</span></span>
+<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a><span class="fu">jobs</span><span class="kw">:</span></span>
+<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">build-sign-notarize</span><span class="kw">:</span></span>
+<span id="cb35-19"><a href="#cb35-19" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Build, sign, notarize, and package QUILL for macOS</span></span>
+<span id="cb35-20"><a href="#cb35-20" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">runs-on</span><span class="kw">:</span><span class="at"> macos-latest</span></span>
+<span id="cb35-21"><a href="#cb35-21" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">environment</span><span class="kw">:</span><span class="at"> macos-release</span></span>
+<span id="cb35-22"><a href="#cb35-22" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">timeout-minutes</span><span class="kw">:</span><span class="at"> </span><span class="dv">90</span></span>
+<span id="cb35-23"><a href="#cb35-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-24"><a href="#cb35-24" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
+<span id="cb35-25"><a href="#cb35-25" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Check out repository</span></span>
+<span id="cb35-26"><a href="#cb35-26" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/checkout@v4</span></span>
+<span id="cb35-27"><a href="#cb35-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-28"><a href="#cb35-28" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Show macOS and Xcode environment</span></span>
+<span id="cb35-29"><a href="#cb35-29" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb35-30"><a href="#cb35-30" aria-hidden="true" tabindex="-1"></a>          sw_vers</span>
+<span id="cb35-31"><a href="#cb35-31" aria-hidden="true" tabindex="-1"></a>          xcodebuild -version || true</span>
+<span id="cb35-32"><a href="#cb35-32" aria-hidden="true" tabindex="-1"></a>          xcrun --find codesign</span>
+<span id="cb35-33"><a href="#cb35-33" aria-hidden="true" tabindex="-1"></a>          xcrun --find notarytool</span>
+<span id="cb35-34"><a href="#cb35-34" aria-hidden="true" tabindex="-1"></a>          xcrun --find stapler</span>
+<span id="cb35-35"><a href="#cb35-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-36"><a href="#cb35-36" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Decode signing certificate and API key</span></span>
+<span id="cb35-37"><a href="#cb35-37" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">env</span><span class="kw">:</span></span>
+<span id="cb35-38"><a href="#cb35-38" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">BUILD_CERTIFICATE_BASE64</span><span class="kw">:</span><span class="at"> ${{ secrets.BUILD_CERTIFICATE_BASE64 }}</span></span>
+<span id="cb35-39"><a href="#cb35-39" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">APPLE_API_KEY_B64</span><span class="kw">:</span><span class="at"> ${{ secrets.APPLE_API_KEY_B64 }}</span></span>
+<span id="cb35-40"><a href="#cb35-40" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb35-41"><a href="#cb35-41" aria-hidden="true" tabindex="-1"></a>          mkdir -p &quot;$RUNNER_TEMP/apple&quot;</span>
+<span id="cb35-42"><a href="#cb35-42" aria-hidden="true" tabindex="-1"></a>          echo &quot;$BUILD_CERTIFICATE_BASE64&quot; | base64 --decode &gt; &quot;$RUNNER_TEMP/apple/developer_id.p12&quot;</span>
+<span id="cb35-43"><a href="#cb35-43" aria-hidden="true" tabindex="-1"></a>          echo &quot;$APPLE_API_KEY_B64&quot; | base64 --decode &gt; &quot;$RUNNER_TEMP/apple/AuthKey.p8&quot;</span>
+<span id="cb35-44"><a href="#cb35-44" aria-hidden="true" tabindex="-1"></a>          chmod 600 &quot;$RUNNER_TEMP/apple/AuthKey.p8&quot;</span>
+<span id="cb35-45"><a href="#cb35-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-46"><a href="#cb35-46" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Create temporary keychain and import Developer ID certificate</span></span>
+<span id="cb35-47"><a href="#cb35-47" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">env</span><span class="kw">:</span></span>
+<span id="cb35-48"><a href="#cb35-48" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">KEYCHAIN_PASSWORD</span><span class="kw">:</span><span class="at"> ${{ secrets.KEYCHAIN_PASSWORD }}</span></span>
+<span id="cb35-49"><a href="#cb35-49" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">P12_PASSWORD</span><span class="kw">:</span><span class="at"> ${{ secrets.P12_PASSWORD }}</span></span>
+<span id="cb35-50"><a href="#cb35-50" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb35-51"><a href="#cb35-51" aria-hidden="true" tabindex="-1"></a>          KEYCHAIN_PATH=&quot;$RUNNER_TEMP/quill-signing.keychain-db&quot;</span>
+<span id="cb35-52"><a href="#cb35-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-53"><a href="#cb35-53" aria-hidden="true" tabindex="-1"></a>          security create-keychain -p &quot;$KEYCHAIN_PASSWORD&quot; &quot;$KEYCHAIN_PATH&quot;</span>
+<span id="cb35-54"><a href="#cb35-54" aria-hidden="true" tabindex="-1"></a>          security set-keychain-settings -lut 21600 &quot;$KEYCHAIN_PATH&quot;</span>
+<span id="cb35-55"><a href="#cb35-55" aria-hidden="true" tabindex="-1"></a>          security unlock-keychain -p &quot;$KEYCHAIN_PASSWORD&quot; &quot;$KEYCHAIN_PATH&quot;</span>
+<span id="cb35-56"><a href="#cb35-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-57"><a href="#cb35-57" aria-hidden="true" tabindex="-1"></a>          security import &quot;$RUNNER_TEMP/apple/developer_id.p12&quot; \</span>
+<span id="cb35-58"><a href="#cb35-58" aria-hidden="true" tabindex="-1"></a>            -P &quot;$P12_PASSWORD&quot; \</span>
+<span id="cb35-59"><a href="#cb35-59" aria-hidden="true" tabindex="-1"></a>            -A \</span>
+<span id="cb35-60"><a href="#cb35-60" aria-hidden="true" tabindex="-1"></a>            -t cert \</span>
+<span id="cb35-61"><a href="#cb35-61" aria-hidden="true" tabindex="-1"></a>            -f pkcs12 \</span>
+<span id="cb35-62"><a href="#cb35-62" aria-hidden="true" tabindex="-1"></a>            -k &quot;$KEYCHAIN_PATH&quot;</span>
+<span id="cb35-63"><a href="#cb35-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-64"><a href="#cb35-64" aria-hidden="true" tabindex="-1"></a>          security list-keychain -d user -s &quot;$KEYCHAIN_PATH&quot; login.keychain-db</span>
+<span id="cb35-65"><a href="#cb35-65" aria-hidden="true" tabindex="-1"></a>          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k &quot;$KEYCHAIN_PASSWORD&quot; &quot;$KEYCHAIN_PATH&quot;</span>
+<span id="cb35-66"><a href="#cb35-66" aria-hidden="true" tabindex="-1"></a>          security find-identity -v -p codesigning &quot;$KEYCHAIN_PATH&quot;</span>
+<span id="cb35-67"><a href="#cb35-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-68"><a href="#cb35-68" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Set up Python</span></span>
+<span id="cb35-69"><a href="#cb35-69" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/setup-python@v5</span></span>
+<span id="cb35-70"><a href="#cb35-70" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
+<span id="cb35-71"><a href="#cb35-71" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">python-version</span><span class="kw">:</span><span class="at"> </span><span class="st">&quot;3.13&quot;</span></span>
+<span id="cb35-72"><a href="#cb35-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-73"><a href="#cb35-73" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Install build dependencies</span></span>
+<span id="cb35-74"><a href="#cb35-74" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb35-75"><a href="#cb35-75" aria-hidden="true" tabindex="-1"></a>          python -m pip install --upgrade pip</span>
+<span id="cb35-76"><a href="#cb35-76" aria-hidden="true" tabindex="-1"></a>          if [ -f requirements.txt ]; then python -m pip install -r requirements.txt; fi</span>
+<span id="cb35-77"><a href="#cb35-77" aria-hidden="true" tabindex="-1"></a>          if [ -f requirements-macos.txt ]; then python -m pip install -r requirements-macos.txt; fi</span>
+<span id="cb35-78"><a href="#cb35-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-79"><a href="#cb35-79" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Build QUILL.app</span></span>
+<span id="cb35-80"><a href="#cb35-80" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb35-81"><a href="#cb35-81" aria-hidden="true" tabindex="-1"></a>          # Replace this block with the actual QUILL macOS build command.</span>
+<span id="cb35-82"><a href="#cb35-82" aria-hidden="true" tabindex="-1"></a>          # Examples might include PyInstaller, Briefcase, or a custom build script.</span>
+<span id="cb35-83"><a href="#cb35-83" aria-hidden="true" tabindex="-1"></a>          if [ -f scripts/macos/build-app.sh ]; then</span>
+<span id="cb35-84"><a href="#cb35-84" aria-hidden="true" tabindex="-1"></a>            bash scripts/macos/build-app.sh</span>
+<span id="cb35-85"><a href="#cb35-85" aria-hidden="true" tabindex="-1"></a>          else</span>
+<span id="cb35-86"><a href="#cb35-86" aria-hidden="true" tabindex="-1"></a>            echo &quot;Missing scripts/macos/build-app.sh. Add the real QUILL macOS build command here.&quot;</span>
+<span id="cb35-87"><a href="#cb35-87" aria-hidden="true" tabindex="-1"></a>            exit 1</span>
+<span id="cb35-88"><a href="#cb35-88" aria-hidden="true" tabindex="-1"></a>          fi</span>
+<span id="cb35-89"><a href="#cb35-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-90"><a href="#cb35-90" aria-hidden="true" tabindex="-1"></a>          test -d &quot;dist/QUILL.app&quot;</span>
+<span id="cb35-91"><a href="#cb35-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-92"><a href="#cb35-92" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Sign QUILL.app</span></span>
+<span id="cb35-93"><a href="#cb35-93" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">env</span><span class="kw">:</span></span>
+<span id="cb35-94"><a href="#cb35-94" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">MACOS_CODESIGN_IDENTITY</span><span class="kw">:</span><span class="at"> ${{ secrets.MACOS_CODESIGN_IDENTITY }}</span></span>
+<span id="cb35-95"><a href="#cb35-95" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb35-96"><a href="#cb35-96" aria-hidden="true" tabindex="-1"></a>          codesign \</span>
+<span id="cb35-97"><a href="#cb35-97" aria-hidden="true" tabindex="-1"></a>            --force \</span>
+<span id="cb35-98"><a href="#cb35-98" aria-hidden="true" tabindex="-1"></a>            --deep \</span>
+<span id="cb35-99"><a href="#cb35-99" aria-hidden="true" tabindex="-1"></a>            --timestamp \</span>
+<span id="cb35-100"><a href="#cb35-100" aria-hidden="true" tabindex="-1"></a>            --options runtime \</span>
+<span id="cb35-101"><a href="#cb35-101" aria-hidden="true" tabindex="-1"></a>            --sign &quot;$MACOS_CODESIGN_IDENTITY&quot; \</span>
+<span id="cb35-102"><a href="#cb35-102" aria-hidden="true" tabindex="-1"></a>            &quot;dist/QUILL.app&quot;</span>
+<span id="cb35-103"><a href="#cb35-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-104"><a href="#cb35-104" aria-hidden="true" tabindex="-1"></a>          codesign --verify --deep --strict --verbose=2 &quot;dist/QUILL.app&quot;</span>
+<span id="cb35-105"><a href="#cb35-105" aria-hidden="true" tabindex="-1"></a>          codesign -dv --verbose=4 &quot;dist/QUILL.app&quot; || true</span>
+<span id="cb35-106"><a href="#cb35-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-107"><a href="#cb35-107" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Create DMG</span></span>
+<span id="cb35-108"><a href="#cb35-108" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb35-109"><a href="#cb35-109" aria-hidden="true" tabindex="-1"></a>          mkdir -p dist/dmg-root</span>
+<span id="cb35-110"><a href="#cb35-110" aria-hidden="true" tabindex="-1"></a>          cp -R &quot;dist/QUILL.app&quot; &quot;dist/dmg-root/QUILL.app&quot;</span>
+<span id="cb35-111"><a href="#cb35-111" aria-hidden="true" tabindex="-1"></a>          ln -s /Applications &quot;dist/dmg-root/Applications&quot;</span>
+<span id="cb35-112"><a href="#cb35-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-113"><a href="#cb35-113" aria-hidden="true" tabindex="-1"></a>          hdiutil create \</span>
+<span id="cb35-114"><a href="#cb35-114" aria-hidden="true" tabindex="-1"></a>            -volname &quot;QUILL&quot; \</span>
+<span id="cb35-115"><a href="#cb35-115" aria-hidden="true" tabindex="-1"></a>            -srcfolder &quot;dist/dmg-root&quot; \</span>
+<span id="cb35-116"><a href="#cb35-116" aria-hidden="true" tabindex="-1"></a>            -ov \</span>
+<span id="cb35-117"><a href="#cb35-117" aria-hidden="true" tabindex="-1"></a>            -format UDZO \</span>
+<span id="cb35-118"><a href="#cb35-118" aria-hidden="true" tabindex="-1"></a>            &quot;dist/${DMG_NAME}&quot;</span>
+<span id="cb35-119"><a href="#cb35-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-120"><a href="#cb35-120" aria-hidden="true" tabindex="-1"></a>          hdiutil verify &quot;dist/${DMG_NAME}&quot;</span>
+<span id="cb35-121"><a href="#cb35-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-122"><a href="#cb35-122" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Notarize DMG</span></span>
+<span id="cb35-123"><a href="#cb35-123" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">env</span><span class="kw">:</span></span>
+<span id="cb35-124"><a href="#cb35-124" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">APPLE_API_KEY_ID</span><span class="kw">:</span><span class="at"> ${{ secrets.APPLE_API_KEY_ID }}</span></span>
+<span id="cb35-125"><a href="#cb35-125" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">APPLE_API_ISSUER</span><span class="kw">:</span><span class="at"> ${{ secrets.APPLE_API_ISSUER }}</span></span>
+<span id="cb35-126"><a href="#cb35-126" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">APPLE_TEAM_ID</span><span class="kw">:</span><span class="at"> ${{ secrets.APPLE_TEAM_ID }}</span></span>
+<span id="cb35-127"><a href="#cb35-127" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb35-128"><a href="#cb35-128" aria-hidden="true" tabindex="-1"></a>          xcrun notarytool submit &quot;dist/${DMG_NAME}&quot; \</span>
+<span id="cb35-129"><a href="#cb35-129" aria-hidden="true" tabindex="-1"></a>            --key &quot;$RUNNER_TEMP/apple/AuthKey.p8&quot; \</span>
+<span id="cb35-130"><a href="#cb35-130" aria-hidden="true" tabindex="-1"></a>            --key-id &quot;$APPLE_API_KEY_ID&quot; \</span>
+<span id="cb35-131"><a href="#cb35-131" aria-hidden="true" tabindex="-1"></a>            --issuer &quot;$APPLE_API_ISSUER&quot; \</span>
+<span id="cb35-132"><a href="#cb35-132" aria-hidden="true" tabindex="-1"></a>            --team-id &quot;$APPLE_TEAM_ID&quot; \</span>
+<span id="cb35-133"><a href="#cb35-133" aria-hidden="true" tabindex="-1"></a>            --wait \</span>
+<span id="cb35-134"><a href="#cb35-134" aria-hidden="true" tabindex="-1"></a>            --output-format json | tee &quot;$RUNNER_TEMP/notary-result.json&quot;</span>
+<span id="cb35-135"><a href="#cb35-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-136"><a href="#cb35-136" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Staple notarization ticket to DMG</span></span>
+<span id="cb35-137"><a href="#cb35-137" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb35-138"><a href="#cb35-138" aria-hidden="true" tabindex="-1"></a>          xcrun stapler staple &quot;dist/${DMG_NAME}&quot;</span>
+<span id="cb35-139"><a href="#cb35-139" aria-hidden="true" tabindex="-1"></a>          xcrun stapler validate &quot;dist/${DMG_NAME}&quot;</span>
+<span id="cb35-140"><a href="#cb35-140" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-141"><a href="#cb35-141" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Verify final artifact</span></span>
+<span id="cb35-142"><a href="#cb35-142" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb35-143"><a href="#cb35-143" aria-hidden="true" tabindex="-1"></a>          spctl --assess --type open --verbose &quot;dist/${DMG_NAME}&quot;</span>
+<span id="cb35-144"><a href="#cb35-144" aria-hidden="true" tabindex="-1"></a>          hdiutil attach &quot;dist/${DMG_NAME}&quot; -nobrowse -readonly -mountpoint &quot;$RUNNER_TEMP/quill-dmg&quot;</span>
+<span id="cb35-145"><a href="#cb35-145" aria-hidden="true" tabindex="-1"></a>          spctl --assess --type execute --verbose &quot;$RUNNER_TEMP/quill-dmg/QUILL.app&quot;</span>
+<span id="cb35-146"><a href="#cb35-146" aria-hidden="true" tabindex="-1"></a>          hdiutil detach &quot;$RUNNER_TEMP/quill-dmg&quot;</span>
+<span id="cb35-147"><a href="#cb35-147" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-148"><a href="#cb35-148" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Upload notarization log</span></span>
+<span id="cb35-149"><a href="#cb35-149" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">if</span><span class="kw">:</span><span class="at"> always()</span></span>
+<span id="cb35-150"><a href="#cb35-150" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/upload-artifact@v4</span></span>
+<span id="cb35-151"><a href="#cb35-151" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
+<span id="cb35-152"><a href="#cb35-152" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> macos-notarization-logs</span></span>
+<span id="cb35-153"><a href="#cb35-153" aria-hidden="true" tabindex="-1"></a><span class="fu">          path</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb35-154"><a href="#cb35-154" aria-hidden="true" tabindex="-1"></a>            ${{ runner.temp }}/notary-result.json</span>
+<span id="cb35-155"><a href="#cb35-155" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">if-no-files-found</span><span class="kw">:</span><span class="at"> ignore</span></span>
+<span id="cb35-156"><a href="#cb35-156" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-157"><a href="#cb35-157" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Upload signed and notarized DMG</span></span>
+<span id="cb35-158"><a href="#cb35-158" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/upload-artifact@v4</span></span>
+<span id="cb35-159"><a href="#cb35-159" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
+<span id="cb35-160"><a href="#cb35-160" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">name</span><span class="kw">:</span><span class="at"> QUILL-macOS-signed-notarized</span></span>
+<span id="cb35-161"><a href="#cb35-161" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">path</span><span class="kw">:</span><span class="at"> dist/QUILL-macOS.dmg</span></span>
+<span id="cb35-162"><a href="#cb35-162" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">if-no-files-found</span><span class="kw">:</span><span class="at"> error</span></span></code></pre></div>
+<hr />
+<h2 id="phase-7-first-live-run">13. Phase 7 — First live run</h2>
+<p>From Windows PowerShell:</p>
+<div class="sourceCode" id="cb36"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cd</span> S<span class="op">:</span>\quill</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>gh <span class="kw">workflow</span> run macos-release<span class="op">.</span><span class="fu">yml</span> <span class="op">--</span>ref main</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>gh run list <span class="op">--</span>workflow macos-release<span class="op">.</span><span class="fu">yml</span> <span class="op">--</span>limit <span class="dv">5</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="dt">gh</span> run watch</span></code></pre></div>
+<p>Optional:</p>
+<div class="sourceCode" id="cb37"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>gh run view <span class="op">--</span>web</span></code></pre></div>
+<p>If using a feature branch first:</p>
+<div class="sourceCode" id="cb38"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>gh <span class="kw">workflow</span> run macos-release<span class="op">.</span><span class="fu">yml</span> <span class="op">--</span>ref feature<span class="op">/</span>agent-harness-buildout</span></code></pre></div>
+<p>First-pass success criteria:</p>
+<ul>
+<li>Workflow finishes green.</li>
+<li>DMG artifact exists in run outputs.</li>
+<li>No signing rejection appears in logs.</li>
+<li>No notary rejection appears in logs.</li>
+<li>Stapler validation passes.</li>
+<li>Gatekeeper assessment passes.</li>
+</ul>
+<hr />
+<h2 id="phase-8-clean-device-validation">14. Phase 8 — Clean-device
+validation</h2>
+<p>A clean-device test is mandatory before external beta.</p>
+<p>Use one of:</p>
+<ul>
+<li>Borrowed Mac.</li>
+<li>Cloud Mac.</li>
+<li>Self-hosted Mac test machine.</li>
+<li>Trusted external tester with a clean macOS account.</li>
+</ul>
+<p>Validation steps:</p>
+<ol type="1">
+<li>Download the DMG from the GitHub Actions artifact or GitHub
+Release.</li>
+<li>Open the DMG normally from Finder.</li>
+<li>Drag <code>QUILL.app</code> to Applications.</li>
+<li>Launch QUILL from Applications.</li>
+<li>Confirm no manual security bypass is required.</li>
+<li>Confirm macOS does not report unknown developer.</li>
+<li>Turn on VoiceOver.</li>
+<li>Launch QUILL again.</li>
+<li>Confirm first-run focus lands somewhere sensible.</li>
+<li>Confirm menus are reachable from keyboard.</li>
+<li>Confirm a basic document can be opened or created.</li>
+<li>Confirm quit/relaunch works.</li>
+</ol>
+<p>Record:</p>
+<pre class="text"><code>macOS version:
+Apple Silicon or Intel:
+VoiceOver tested: yes/no
+Install required bypass: yes/no
+Launch warning observed: yes/no
+Tester:
+Date:
+Result:</code></pre>
+<p>Exit criteria:</p>
+<ul>
+<li>User can install and launch without bypass commands.</li>
+<li>VoiceOver smoke check passes.</li>
+<li>Any first-run prompts are understandable and keyboard
+accessible.</li>
+</ul>
+<hr />
+<h2 id="phase-9-beta-rollout-controls">15. Phase 9 — Beta rollout
+controls</h2>
+<p>Before publishing a public or external beta:</p>
+<ul>
+<li>Require the <code>macos-release</code> workflow to pass.</li>
+<li>Require environment approval for release jobs.</li>
+<li>Do not manually upload unsigned local builds to public release
+pages.</li>
+<li>Keep unsigned artifacts clearly marked as internal-only.</li>
+<li>Keep a rollback link to the last known-good signed/notarized
+DMG.</li>
+</ul>
+<p>Recommended release checklist item:</p>
+<div class="sourceCode" id="cb40"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="va">[ ]</span> macOS DMG was produced by the protected <span class="in">`macos-release`</span> workflow.</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="va">[ ]</span> App is signed with Developer ID Application: Jeff Bishop (TEAMID).</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="va">[ ]</span> DMG is notarized.</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="va">[ ]</span> Stapler validation passed.</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="va">[ ]</span> Gatekeeper validation passed.</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="va">[ ]</span> Clean-device install and VoiceOver smoke test completed.</span></code></pre></div>
+<hr />
+<h2 id="troubleshooting-guide">16. Troubleshooting guide</h2>
+<h3 id="certificate-import-failure">16.1 Certificate import failure</h3>
+<p>Symptoms:</p>
+<ul>
+<li><code>security import</code> fails.</li>
+<li><code>security find-identity</code> does not show Developer ID
+identity.</li>
+<li><code>codesign</code> says identity not found.</li>
+</ul>
+<p>Check:</p>
+<ul>
+<li><code>BUILD_CERTIFICATE_BASE64</code> was created from the
+<code>.p12</code>, not the <code>.cer</code>.</li>
+<li><code>P12_PASSWORD</code> exactly matches the export password.</li>
+<li>The <code>.p12</code> contains the private key.</li>
+<li>The workflow imported the certificate into the same keychain used by
+codesign.</li>
+</ul>
+<p>Fix:</p>
+<ul>
+<li>Re-export the <code>.p12</code> from Keychain Access.</li>
+<li>Re-upload <code>BUILD_CERTIFICATE_BASE64</code>.</li>
+<li>Reset <code>P12_PASSWORD</code>.</li>
+</ul>
+<h3 id="signing-identity-mismatch">16.2 Signing identity mismatch</h3>
+<p>Symptoms:</p>
+<ul>
+<li><code>codesign</code> cannot find identity.</li>
+<li>Identity appears in keychain but workflow fails.</li>
+</ul>
+<p>Check:</p>
+<div class="sourceCode" id="cb41"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="ex">security</span> find-identity <span class="at">-v</span> <span class="at">-p</span> codesigning</span></code></pre></div>
+<p>The secret must exactly match the identity string, for example:</p>
+<pre class="text"><code>Developer ID Application: Jeff Bishop (TEAMID)</code></pre>
+<p>Fix:</p>
+<div class="sourceCode" id="cb43"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>gh secret <span class="fu">set</span> <span class="op">-</span>e macos-release MACOS_CODESIGN_IDENTITY</span></code></pre></div>
+<p>Paste the exact value.</p>
+<h3 id="notary-authentication-failure">16.3 Notary authentication
+failure</h3>
+<p>Symptoms:</p>
+<ul>
+<li><code>notarytool submit</code> fails quickly.</li>
+<li>Error mentions key, issuer, team, or authorization.</li>
+</ul>
+<p>Check:</p>
+<ul>
+<li><code>APPLE_API_KEY_ID</code> matches the <code>.p8</code> key.</li>
+<li><code>APPLE_API_ISSUER</code> is the issuer ID from App Store
+Connect.</li>
+<li><code>APPLE_TEAM_ID</code> is the Apple Developer Team ID.</li>
+<li><code>APPLE_API_KEY_B64</code> was generated from the correct
+<code>.p8</code> file.</li>
+<li>The API key was not revoked.</li>
+</ul>
+<p>Fix:</p>
+<ul>
+<li>Recreate the App Store Connect API key.</li>
+<li>Download the new <code>.p8</code> immediately.</li>
+<li>Update all API secrets.</li>
+</ul>
+<h3 id="notary-rejection">16.4 Notary rejection</h3>
+<p>Symptoms:</p>
+<ul>
+<li>Apple accepts credentials but rejects the submitted artifact.</li>
+</ul>
+<p>Check:</p>
+<ul>
+<li>Hardened runtime is enabled: <code>--options runtime</code>.</li>
+<li>All nested binaries are signed.</li>
+<li>Native libraries, helper binaries, frameworks, and executable
+resources are signed.</li>
+<li>Entitlements are correct.</li>
+<li>DMG contains the signed app, not a stale unsigned app.</li>
+</ul>
+<p>Fix:</p>
+<ul>
+<li>Inspect notarization log.</li>
+<li>Add explicit signing for nested <code>.dylib</code>,
+<code>.so</code>, helper executables, frameworks, or plug-ins.</li>
+<li>Rebuild clean and retry.</li>
+</ul>
+<h3 id="stapling-failure">16.5 Stapling failure</h3>
+<p>Symptoms:</p>
+<ul>
+<li>Notarization passes but <code>stapler staple</code> fails.</li>
+</ul>
+<p>Check:</p>
+<ul>
+<li>You are stapling the same artifact that was notarized.</li>
+<li>The DMG was not modified after notarization.</li>
+<li>Apple notary result is complete.</li>
+</ul>
+<p>Fix:</p>
+<ul>
+<li>Recreate DMG.</li>
+<li>Submit DMG to notarization.</li>
+<li>Staple the unchanged DMG.</li>
+</ul>
+<h3 id="gatekeeper-failure-after-download">16.6 Gatekeeper failure after
+download</h3>
+<p>Symptoms:</p>
+<ul>
+<li>CI passed but tester sees warning.</li>
+</ul>
+<p>Check:</p>
+<ul>
+<li>Tester downloaded the signed/notarized artifact, not an older
+unsigned one.</li>
+<li>The download host did not repackage the DMG.</li>
+<li>Stapler validation passes on the downloaded file.</li>
+<li>Quarantine behavior is tested from an actual browser download, not
+only a local file copy.</li>
+</ul>
+<p>Fix:</p>
+<ul>
+<li>Re-upload the verified DMG.</li>
+<li>Rename artifacts clearly.</li>
+<li>Remove old unsigned artifacts from public pages.</li>
+</ul>
+<hr />
+<h2 id="risk-register">17. Risk register</h2>
+<table>
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 23%" />
+<col style="width: 23%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+</colgroup>
+<thead>
+<tr>
+<th>Risk</th>
+<th style="text-align: right;">Impact</th>
+<th style="text-align: right;">Likelihood without controls</th>
+<th>User effect</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unsigned or non-notarized beta distributed externally</td>
+<td style="text-align: right;">High</td>
+<td style="text-align: right;">Medium</td>
+<td>Security warnings, failed installs, trust erosion</td>
+<td>Block public beta unless signed/notarized workflow passes.</td>
+</tr>
+<tr>
+<td>Certificate expiration or revocation</td>
+<td style="text-align: right;">High</td>
+<td style="text-align: right;">Medium</td>
+<td>New builds fail trust checks</td>
+<td>Calendar renewal reminders, two-owner custody, pre-expiry rotation
+drill.</td>
+</tr>
+<tr>
+<td>Secret leakage or mis-scoped access</td>
+<td style="text-align: right;">High</td>
+<td style="text-align: right;">Low to Medium</td>
+<td>Signing abuse and incident response</td>
+<td>GitHub environments, limited maintainers, mandatory reviews, secret
+rotation.</td>
+</tr>
+<tr>
+<td>Notarization service outage or API change</td>
+<td style="text-align: right;">Medium</td>
+<td style="text-align: right;">Low to Medium</td>
+<td>Delayed beta</td>
+<td>Retry policy, release buffer, preserve logs.</td>
+</tr>
+<tr>
+<td>No physical Mac for final accessibility smoke testing</td>
+<td style="text-align: right;">Medium</td>
+<td style="text-align: right;">Medium</td>
+<td>VoiceOver-specific issues escape</td>
+<td>Use borrowed/cloud Mac or trusted tester before public beta.</td>
+</tr>
+<tr>
+<td>Individual Apple account used for a Community Access project</td>
+<td style="text-align: right;">Low to Medium</td>
+<td style="text-align: right;">High by design</td>
+<td>User may ask why macOS says Jeff Bishop</td>
+<td>Explain in release notes and download page.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="credential-rotation-and-recovery">18. Credential rotation and
+recovery</h2>
+<h3 id="rotation-schedule">18.1 Rotation schedule</h3>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Credential</th>
+<th>Rotate when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Developer ID certificate</td>
+<td>Before expiration, suspected compromise, maintainer transition.</td>
+</tr>
+<tr>
+<td><code>.p12</code> password</td>
+<td>Whenever <code>.p12</code> is re-exported or maintainer access
+changes.</td>
+</tr>
+<tr>
+<td>App Store Connect API key</td>
+<td>Annually, suspected compromise, maintainer transition.</td>
+</tr>
+<tr>
+<td>GitHub environment secrets</td>
+<td>When any underlying credential changes.</td>
+</tr>
+<tr>
+<td>Keychain password</td>
+<td>Anytime; low-risk but should still be refreshed periodically.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="break-glass-recovery">18.2 Break-glass recovery</h3>
+<p>If a signing secret is compromised:</p>
+<ol type="1">
+<li>Disable the <code>macos-release</code> environment temporarily.</li>
+<li>Revoke the compromised App Store Connect API key if affected.</li>
+<li>Revoke/recreate Developer ID certificate if the certificate/private
+key is affected.</li>
+<li>Create new <code>.p12</code> and/or <code>.p8</code>
+credentials.</li>
+<li>Update GitHub environment secrets.</li>
+<li>Run a clean test release.</li>
+<li>Document incident and rotation date.</li>
+</ol>
+<hr />
+<h2 id="operator-notes-for-maintainers">19. Operator notes for
+maintainers</h2>
+<ul>
+<li>Do not commit <code>.p12</code>, <code>.p8</code>,
+<code>.key</code>, <code>.csr</code>, or certificate passwords.</li>
+<li>Do not paste secrets into GitHub issue comments, pull requests,
+logs, or AI chats.</li>
+<li>Do not use Apple ID + app-specific password unless the API-key route
+is blocked.</li>
+<li>Do not allow release workflows to run with secrets on untrusted pull
+requests.</li>
+<li>Keep the release workflow under branch protection.</li>
+<li>Treat signing as part of accessibility quality, not just security
+compliance.</li>
+<li>Keep the first public Mac experience calm, predictable, and boring
+in the best possible way.</li>
+</ul>
+<hr />
+<h2 id="complete-implementation-checklist">20. Complete implementation
+checklist</h2>
+<h3 id="apple-setup">Apple setup</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />Apple Developer Program membership
+confirmed.</label></li>
+<li><label><input type="checkbox" />Account Holder role
+confirmed.</label></li>
+<li><label><input type="checkbox" />Team ID recorded.</label></li>
+<li><label><input type="checkbox" />Developer ID Application certificate
+created.</label></li>
+<li><label><input type="checkbox" /><code>.p12</code> exported or
+generated.</label></li>
+<li><label><input type="checkbox" /><code>.p12</code> password stored
+securely.</label></li>
+<li><label><input type="checkbox" />Exact signing identity
+captured.</label></li>
+<li><label><input type="checkbox" />App Store Connect API access
+requested if needed.</label></li>
+<li><label><input type="checkbox" />Team API key generated.</label></li>
+<li><label><input type="checkbox" /><code>.p8</code> downloaded and
+stored securely.</label></li>
+<li><label><input type="checkbox" />Key ID recorded.</label></li>
+<li><label><input type="checkbox" />Issuer ID recorded.</label></li>
+</ul>
+<h3 id="github-setup">GitHub setup</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" /><code>macos-release</code>
+environment created.</label></li>
+<li><label><input type="checkbox" />Environment protection rules
+configured.</label></li>
+<li><label><input type="checkbox" />Required reviewers
+assigned.</label></li>
+<li><label><input
+type="checkbox" /><code>BUILD_CERTIFICATE_BASE64</code>
+set.</label></li>
+<li><label><input type="checkbox" /><code>P12_PASSWORD</code>
+set.</label></li>
+<li><label><input type="checkbox" /><code>KEYCHAIN_PASSWORD</code>
+set.</label></li>
+<li><label><input type="checkbox" /><code>MACOS_CODESIGN_IDENTITY</code>
+set.</label></li>
+<li><label><input type="checkbox" /><code>APPLE_API_KEY_B64</code>
+set.</label></li>
+<li><label><input type="checkbox" /><code>APPLE_API_KEY_ID</code>
+set.</label></li>
+<li><label><input type="checkbox" /><code>APPLE_API_ISSUER</code>
+set.</label></li>
+<li><label><input type="checkbox" /><code>APPLE_TEAM_ID</code>
+set.</label></li>
+<li><label><input type="checkbox" />Secrets verified with
+<code>gh secret list -e macos-release</code>.</label></li>
+</ul>
+<h3 id="workflow-setup">Workflow setup</h3>
+<ul class="task-list">
+<li><label><input
+type="checkbox" /><code>.github/workflows/macos-release.yml</code>
+added.</label></li>
+<li><label><input type="checkbox" />QUILL macOS build command wired into
+workflow.</label></li>
+<li><label><input type="checkbox" />App signing step
+enabled.</label></li>
+<li><label><input type="checkbox" />DMG creation step
+enabled.</label></li>
+<li><label><input type="checkbox" />Notarization step
+enabled.</label></li>
+<li><label><input type="checkbox" />Stapling step enabled.</label></li>
+<li><label><input type="checkbox" />Gatekeeper verification step
+enabled.</label></li>
+<li><label><input type="checkbox" />Notary logs uploaded as
+artifact.</label></li>
+<li><label><input type="checkbox" />Signed/notarized DMG uploaded as
+artifact.</label></li>
+</ul>
+<h3 id="release-validation">Release validation</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />Workflow run completed
+green.</label></li>
+<li><label><input type="checkbox" />DMG downloaded from workflow
+artifact.</label></li>
+<li><label><input type="checkbox" />Clean macOS install
+tested.</label></li>
+<li><label><input type="checkbox" />Launch tested with no security
+bypass.</label></li>
+<li><label><input type="checkbox" />VoiceOver smoke test
+completed.</label></li>
+<li><label><input type="checkbox" />Release notes clarify Community
+Access project / Jeff Bishop signing.</label></li>
+<li><label><input type="checkbox" />Public beta go/no-go
+approved.</label></li>
+</ul>
+<hr />
+<h2 id="suggested-tester-facing-release-note">21. Suggested
+tester-facing release note</h2>
+<p>Use this in the first macOS beta release notes:</p>
+<div class="sourceCode" id="cb44"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>QUILL for macOS is a Community Access project. This beta is signed and notarized by Apple under Jeff Bishop&#39;s Apple Developer account, so macOS should allow installation without unidentified-developer bypass steps.</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>Expected install process:</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Download <span class="in">`QUILL-macOS.dmg`</span>.</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Open the DMG.</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Drag QUILL to Applications.</span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Launch QUILL from Applications.</span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>If macOS reports that the app is from an unidentified developer, please stop and report the exact message. That likely means the wrong artifact was downloaded or the release pipeline failed.</span></code></pre></div>
+<hr />
+<h2 id="official-references">22. Official references</h2>
+<ul>
+<li><p>Apple Developer: Developer ID certificates<br />
+<a
+href="https://developer.apple.com/help/account/certificates/create-developer-id-certificates/"
+class="uri">https://developer.apple.com/help/account/certificates/create-developer-id-certificates/</a></p></li>
+<li><p>Apple Developer: Notarizing macOS software before
+distribution<br />
+<a
+href="https://developer.apple.com/documentation/security/notarizing-macos-software-before-distribution"
+class="uri">https://developer.apple.com/documentation/security/notarizing-macos-software-before-distribution</a></p></li>
+<li><p>Apple Developer: App Store Connect API setup<br />
+<a
+href="https://developer.apple.com/help/app-store-connect/get-started/app-store-connect-api/"
+class="uri">https://developer.apple.com/help/app-store-connect/get-started/app-store-connect-api/</a></p></li>
+<li><p>Apple Developer: App Store Connect role permissions<br />
+<a
+href="https://developer.apple.com/help/app-store-connect/reference/account-management/role-permissions/"
+class="uri">https://developer.apple.com/help/app-store-connect/reference/account-management/role-permissions/</a></p></li>
+<li><p>GitHub Docs: GitHub-hosted runners<br />
+<a
+href="https://docs.github.com/actions/using-github-hosted-runners/about-github-hosted-runners"
+class="uri">https://docs.github.com/actions/using-github-hosted-runners/about-github-hosted-runners</a></p></li>
+<li><p>GitHub Docs: Using secrets in GitHub Actions<br />
+<a
+href="https://docs.github.com/actions/security-guides/using-secrets-in-github-actions"
+class="uri">https://docs.github.com/actions/security-guides/using-secrets-in-github-actions</a></p></li>
+</ul>
+<hr />
+<h2 id="final-recommended-path-for-quill">23. Final recommended path for
+QUILL</h2>
+<p>Do this in order:</p>
+<ol type="1">
+<li>Use Windows to confirm Apple Developer membership and Team ID.</li>
+<li>Use a borrowed/cloud Mac if available to create the CSR, install the
+cert, and export <code>.p12</code>.</li>
+<li>If no Mac is available, use the Windows/OpenSSL path to create the
+CSR and <code>.p12</code>, then rely on GitHub Actions macOS for
+signing.</li>
+<li>Create an App Store Connect team API key and download the
+<code>.p8</code> immediately.</li>
+<li>Create the <code>macos-release</code> GitHub environment.</li>
+<li>Add all secrets to that environment.</li>
+<li>Add the <code>macos-release.yml</code> workflow.</li>
+<li>Run the workflow manually.</li>
+<li>Fix signing/notarization issues until the run is green.</li>
+<li>Download the DMG and test on a clean Mac with VoiceOver.</li>
+<li>Only then publish the external beta.</li>
+</ol>
+<p>The goal is a release process that feels almost magical to
+maintainers and completely ordinary to users: download, open, drag to
+Applications, launch QUILL, and get to work.</p>

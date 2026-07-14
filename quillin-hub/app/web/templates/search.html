@@ -1,0 +1,48 @@
+{% extends "_base.html" %}
+{% block title %}Quillin Hub | Search results for {{ query }}{% endblock %}
+{% block content %}
+    <section aria-labelledby="results-heading">
+        <h2 id="results-heading" class="text-3xl font-bold mb-2 text-slate-800">
+            Search results for "{{ query }}"
+        </h2>
+        <p class="text-slate-600 mb-6" aria-live="polite">
+            {{ artifacts | length }} result{{ 's' if artifacts | length != 1 }}
+            {% if active_type %} in {{ active_type.plural }}{% endif %}.
+        </p>
+
+        <nav aria-label="Filter results by artifact type" class="mb-8">
+            <ul class="flex flex-wrap gap-2 list-none">
+                <li>
+                    <a href="/search?q={{ query | urlencode }}" {% if not active_type %}aria-current="page"{% endif %}
+                       class="inline-block px-3 py-1 rounded-full border {% if not active_type %}bg-blue-600 text-white border-blue-600{% else %}bg-white text-slate-700 border-slate-300{% endif %}">
+                        All types
+                    </a>
+                </li>
+                {% for t in artifact_types %}
+                <li>
+                    <a href="/search?q={{ query | urlencode }}&type={{ t.id }}" {% if active_type and active_type.id == t.id %}aria-current="page"{% endif %}
+                       class="inline-block px-3 py-1 rounded-full border {% if active_type and active_type.id == t.id %}bg-blue-600 text-white border-blue-600{% else %}bg-white text-slate-700 border-slate-300{% endif %}">
+                        {{ t.plural }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </nav>
+
+        {% if not artifacts %}
+        <p class="text-slate-600">No matches. Try a shorter search, or <a href="/" class="text-blue-700 underline">browse everything</a>.</p>
+        {% endif %}
+
+        <ul class="space-y-4 list-none">
+            {% for artifact in artifacts %}
+            <li class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                <h3 class="text-xl font-semibold">
+                    <a href="/artifact/{{ artifact.id }}" class="text-slate-900 hover:text-blue-600">{{ artifact.name }}</a>
+                </h3>
+                <p class="text-sm text-slate-500 mb-2">{{ artifact.artifact_type }} &middot; v{{ artifact.version }}</p>
+                <p class="text-slate-600">{{ artifact.description }}</p>
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+{% endblock %}

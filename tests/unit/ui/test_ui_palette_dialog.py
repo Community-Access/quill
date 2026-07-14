@@ -74,6 +74,9 @@ class _SearchCtrl:
     def SetDescriptiveText(self, _text: str) -> None:
         return
 
+    def SetHint(self, _text: str) -> None:
+        return
+
     def Bind(self, *_args: object, **_kwargs: object) -> None:
         return
 

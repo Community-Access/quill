@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>MAINTAINERS</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="quill-maintainers">QUILL Maintainers</h1>
+<p>This file describes maintainer responsibilities and operational
+expectations.</p>
+<h2 id="named-maintainers">Named maintainers</h2>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Name</th>
+<th>Contact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Code Maintainer</td>
+<td>Jeff Bishop</td>
+<td>jeff@jeffbishop.com</td>
+</tr>
+</tbody>
+</table>
+<h2 id="maintainer-team">Maintainer team</h2>
+<ul>
+<li>Community Access maintainers (<code>@Community-Access</code>)</li>
+</ul>
+<h2 id="responsibilities">Responsibilities</h2>
+<ol type="1">
+<li>Triage issues and guide contributors to the right
+template/workflow.</li>
+<li>Review pull requests for correctness, accessibility, and
+maintainability.</li>
+<li>Keep release process and documentation current.</li>
+<li>Enforce <code>CODE_OF_CONDUCT.md</code> and
+<code>SECURITY.md</code>.</li>
+<li>Protect user trust: no silent network behavior, no unsafe
+defaults.</li>
+</ol>
+<h2 id="triage-and-labeling-standards">Triage and labeling
+standards</h2>
+<p>Maintainers should apply both a <strong>type</strong> and an
+<strong>area</strong> label:</p>
+<ul>
+<li>Type: <code>bug</code>, <code>feature</code>,
+<code>documentation</code>, <code>security</code></li>
+<li>Area: <code>accessibility</code>, <code>ai</code>,
+<code>intake</code>, <code>snippets</code>, <code>dictation</code>,
+<code>performance</code>, <code>stability</code></li>
+</ul>
+<p>Priority labels:</p>
+<ul>
+<li><code>p0</code>: release blocker (launch crash, data loss, severe
+accessibility break)</li>
+<li><code>p1</code>: major workflow break</li>
+</ul>
+<p>Triage target: new issues receive an initial maintainer response
+within 5 business days.</p>
+<h2 id="review-expectations">Review expectations</h2>
+<p>Maintainers should request changes when a PR:</p>
+<ul>
+<li>introduces accessibility regressions,</li>
+<li>bypasses architecture boundaries from
+<code>docs/QUILL-PRD.md</code>,</li>
+<li>weakens security/privacy constraints,</li>
+<li>omits required tests/checks for changed behavior.</li>
+</ul>
+<h2 id="availability-and-handoff">Availability and handoff</h2>
+<p>If a maintainer is unavailable, another maintainer should take
+ownership of:</p>
+<ol type="1">
+<li>Security reports</li>
+<li>Release-blocking regressions</li>
+<li>Accessibility regressions</li>
+</ol>
+<h2 id="role-descriptions">Role descriptions</h2>
+<p><strong>Code Maintainer</strong> — Reviews and merges pull requests,
+triages bug reports and feature requests, cuts releases, enforces code
+quality gates and CI requirements, and sets technical direction for the
+project.</p>
+<h2 id="related-docs">Related docs</h2>
+<ul>
+<li><code>CONTRIBUTING.md</code></li>
+<li><code>GOVERNANCE.md</code></li>
+<li><code>SECURITY.md</code></li>
+<li><code>release/RELEASE.md</code></li>
+</ul>
+</body>
+</html>

@@ -98,6 +98,11 @@ class SessionBrowserDialog:
         save_session(self._session)
         self._rows = branch_rows(self._session)
         self.branch_list.Set([row.label for row in self._rows])
+        # Move focus onto the freshly rebuilt list so screen readers
+        # land on the new branch labels (the list itself is the thing
+        # that just changed; the announcement names the result but the
+        # focus shift is what makes Tab/back-tab work from here).
+        self.branch_list.SetFocus()
         self._announce(f"Resumed branch. {summarize_session(self._session)}")
 
     def _on_compare(self, _event: object) -> None:

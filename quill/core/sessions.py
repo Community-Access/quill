@@ -49,13 +49,21 @@ def build_session_payload(
     positions = caret_positions or [0] * len(documents)
     if len(positions) < len(documents):
         positions = list(positions) + [0] * (len(documents) - len(positions))
+    # The zip() contract is one-to-one: every document pairs with a
+    # position. The defensive padding above already normalises the lengths
+    # to match, so the assert is a loud guard against future refactors
+    # breaking that invariant; strict=True turns a regression into a
+    # ValueError instead of silently dropping trailing documents.
+    assert len(positions) == len(documents), (
+        f"caret_positions length {len(positions)} must match documents length {len(documents)}"
+    )
     return {
         "version": 1,
         "title": title,
         "saved_at": datetime.now(UTC).isoformat(),
         "active_index": active_index,
         "documents": [
-            _document_payload(doc, pos) for doc, pos in zip(documents, positions, strict=False)
+            _document_payload(doc, pos) for doc, pos in zip(documents, positions, strict=True)
         ],
     }
 
@@ -82,7 +90,23 @@ def session_title(payload: dict[str, object], fallback: str) -> str:
 
 
 def documents_from_session(payload: dict[str, object]) -> list[Document]:
-    documents_payload = payload.get("documents", [])
+    """Reconstruct the document list saved with a session.
+
+    Three cases (#342):
+
+    * The ``documents`` key is missing from the payload — return a single
+      untitled :class:`Document` so the editor opens with something to type
+      into.  This is the "I have never seen this session before" fallback.
+    * The ``documents`` key is present and is a list — return exactly
+      what the list deserialises to, including the empty list.  An empty
+      list means "the user explicitly saved with no open documents", which
+      the editor must honour rather than substituting a placeholder.
+    * The ``documents`` key is present but is not a list — treat the
+      payload as malformed and fall back to a single untitled document.
+    """
+    if "documents" not in payload:
+        return [Document()]
+    documents_payload = payload.get("documents")
     if not isinstance(documents_payload, list):
         return [Document()]
 
@@ -90,7 +114,7 @@ def documents_from_session(payload: dict[str, object]) -> list[Document]:
     for item in documents_payload:
         if isinstance(item, dict):
             documents.append(_document_from_payload(item))
-    return documents or [Document()]
+    return documents
 
 
 def caret_positions_from_session(payload: dict[str, object]) -> list[int]:

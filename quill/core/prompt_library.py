@@ -230,6 +230,38 @@ class PromptLibrary:
         self._save()
         return p
 
+    def upsert_external(
+        self,
+        *,
+        id: str,
+        name: str,
+        text: str,
+        category: str = "Custom",
+        shortcut: str = "",
+        source: str = "user",
+    ) -> Prompt:
+        """Insert or replace a user prompt by explicit id (import / migration).
+
+        Unlike :meth:`add` (which mints a fresh uuid), this preserves a caller-
+        supplied id so an import or a store migration is idempotent and
+        reversible. Refuses to overwrite a built-in prompt. The prompt is
+        persisted immediately.
+        """
+        existing = self._prompts.get(id)
+        if existing is not None and existing.is_builtin:
+            raise ValueError("Built-in prompts cannot be overwritten.")
+        p = Prompt(
+            id=id,
+            name=name,
+            text=text,
+            category=category if category in CATEGORIES else "Custom",
+            shortcut=shortcut,
+            source=source,
+        )
+        self._prompts[id] = p
+        self._save()
+        return p
+
     def update(self, prompt_id: str, **kwargs: Any) -> None:
         p = self._prompts.get(prompt_id)
         if p is None:

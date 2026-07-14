@@ -39,6 +39,25 @@ class SettingGroup:
     description: str = ""
 
 
+def _ai_tts_voice_choices() -> tuple[tuple[str, str], ...]:
+    """Build the AI Voice choice list (provider-prefixed) from the TTS catalogs.
+
+    Falls back to a minimal pair if the optional AI modules cannot be imported,
+    so the settings table never fails to load.
+    """
+    choices: list[tuple[str, str]] = [("", "Provider default")]
+    try:
+        from quill.core.ai.cloud_tts import provider_label, voices_for
+
+        for provider in ("openai", "gemini", "elevenlabs"):
+            label = provider_label(provider)
+            for voice_id, voice_name in voices_for(provider):
+                choices.append((voice_id, f"{label}: {voice_name}"))
+    except Exception:  # noqa: BLE001 - keep settings loadable without the AI modules
+        choices.extend([("nova", "OpenAI: Nova"), ("Kore", "Gemini: Kore")])
+    return tuple(choices)
+
+
 SETTING_GROUPS: tuple[SettingGroup, ...] = (
     SettingGroup("general", "General", "Appearance, window, and startup behavior."),
     SettingGroup("editing", "Editing", "How the editor behaves while you write."),
@@ -55,9 +74,14 @@ SETTING_GROUPS: tuple[SettingGroup, ...] = (
     SettingGroup("read_aloud", "Read Aloud", "Spoken playback engine and voice tuning."),
     SettingGroup("ai", "AI and Assistant", "Writing assistant tone and behavior."),
     SettingGroup(
+        "performance",
+        "Performance and Memory",
+        "How QUILL manages model memory on modest machines.",
+    ),
+    SettingGroup(
         "transcription",
         "Transcription",
-        "BITS Whisperer speech-model and provider behavior.",
+        "Offline speech-model and provider behavior.",
     ),
     SettingGroup(
         "watch",
@@ -69,16 +93,28 @@ SETTING_GROUPS: tuple[SettingGroup, ...] = (
         "Integration and Context Menu",
         "File-manager right-click verbs and how QUILL is offered on files.",
     ),
-    SettingGroup("updates", "Updates", "Update checking and release channel."),
     SettingGroup(
-        "security",
-        "Security and Privacy",
-        "Host-key trust, network consent, and other safety toggles.",
+        "admin",
+        "Administration",
+        "Updates, security, developer tools, and settings management.",
     ),
     SettingGroup(
-        "developer",
-        "Developer Console",
-        "Python and TypeScript consoles for developers and power users.",
+        "braille",
+        "Braille Mode",
+        "Page geometry, page-break heuristic, sidecar, and announcements for braille.",
+    ),
+    SettingGroup(
+        "spelling",
+        "Spelling Review",
+        "Behavior of the F7 guided spelling review dialog.",
+    ),
+    SettingGroup(
+        "experimental",
+        "Experimental",
+        (
+            "Opt-in, for-testing options that change how the editor is built. "
+            "Restart QUILL after changing anything here so it applies everywhere."
+        ),
     ),
 )
 
@@ -169,6 +205,49 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("recent", "history", "files"),
     ),
     SettingSpec(
+        "recent_files_auto_clear_missing",
+        "Drop missing recent files automatically",
+        "general",
+        "bool",
+        "Remove Recent Files entries whose file no longer exists, but only on "
+        "fixed internal drives -- never on removable, USB, or network drives "
+        "(where a missing file usually means the drive is disconnected).",
+        keywords=("recent", "history", "files", "missing", "clean up"),
+    ),
+    SettingSpec(
+        "first_line_as_title",
+        "Suggest a filename from the first line",
+        "general",
+        "bool",
+        "When you save an untitled document, pre-fill the Save dialog with a name "
+        "taken from the document's first line. Works across formats and strips "
+        "leading markup (a Markdown heading, a quote, or a list bullet). On by "
+        "default; it never renames an already-saved document.",
+        keywords=("title", "filename", "first line", "save", "name", "heading"),
+    ),
+    SettingSpec(
+        "restore_points_enabled",
+        "Keep restore points when saving",
+        "general",
+        "bool",
+        "Each time you save, QUILL keeps a snapshot of the document so File > "
+        "Restore Previous Version can bring any earlier save back. Saving "
+        "unchanged text stores nothing extra, and keeping a snapshot can never "
+        "be the reason a save fails. On by default.",
+        keywords=("restore", "version", "history", "snapshot", "save", "backup"),
+    ),
+    SettingSpec(
+        "restore_points_max_mb",
+        "Restore point disk limit (MB)",
+        "general",
+        "int",
+        "How much disk space one document's restore-point history may use, in "
+        "megabytes. Older versions thin out first (a full week is kept, then "
+        "one per day, then one per week), and the newest five versions are "
+        "always kept regardless of this limit.",
+        keywords=("restore", "version", "disk", "space", "limit", "history"),
+    ),
+    SettingSpec(
         "language",
         "Interface language",
         "general",
@@ -184,6 +263,33 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "bool",
         "Ask before actions that discard work, such as clearing or overwriting.",
         keywords=("confirm", "prompt", "destructive", "safety"),
+    ),
+    SettingSpec(
+        "startup_folder",
+        "Default file-open folder",
+        "general",
+        "text",
+        "Initial folder for Open and Save As dialogs. Leave blank to use the Documents folder.",
+        keywords=("startup folder", "default folder", "open folder", "file dialog", "start folder"),
+    ),
+    SettingSpec(
+        "use_simple_file_dialog",
+        "Use simple file open dialog",
+        "general",
+        "bool",
+        "When enabled, File > Open... opens a keyboard-friendly file picker "
+        "with a small filter, recent locations, and a hidden-files toggle, "
+        "instead of the standard Windows file open dialog. The simple "
+        "dialog includes a Use Windows Dialog button for edge cases.",
+        keywords=(
+            "simple",
+            "open",
+            "dialog",
+            "file",
+            "screen reader",
+            "accessibility",
+            "keyboard",
+        ),
     ),
     SettingSpec(
         "default_new_document_format",
@@ -224,6 +330,53 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("wrap", "word wrap", "lines"),
     ),
     SettingSpec(
+        "plain_text_with_formatting",
+        "Saving formatted text as plain text",
+        "editing",
+        "choice",
+        (
+            "What QUILL does when a document that carries hidden formatting (fonts, "
+            "colours, alignment) is saved as plain text. An Illumination is a small "
+            "<name>.illumination sidecar that keeps the formatting so the clean .txt "
+            "round-trips it in QUILL, while staying plain for every other tool."
+        ),
+        choices=(
+            ("ask", "Ask each time (keep formatting, illuminate, or save plain)"),
+            ("illuminate", "Always save an Illumination sidecar"),
+            ("plain", "Save plain text and drop the formatting"),
+        ),
+        keywords=("plain text", "illumination", "formatting", "sidecar", "preserve"),
+    ),
+    SettingSpec(
+        "language_detection_mode",
+        "Auto-detect document language",
+        "editing",
+        "choice",
+        (
+            "Detect the programming or markup language when you paste or type code "
+            "into a plain text or untitled document, so you get that language's "
+            "editing characteristics. Never overrides a real file extension or a "
+            "language you set yourself."
+        ),
+        choices=(
+            ("off", "Off"),
+            ("hint", "Hint in the status bar only"),
+            ("prompt", "Suggest and announce, you confirm"),
+            ("auto", "Switch automatically"),
+        ),
+        keywords=(
+            "language",
+            "detect",
+            "auto",
+            "syntax",
+            "paste",
+            "html",
+            "markdown",
+            "code",
+            "profile",
+        ),
+    ),
+    SettingSpec(
         "wrap_find",
         "Wrap find searches",
         "editing",
@@ -257,6 +410,16 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Flag misspellings while you write.",
         feature_id="core.spellcheck",
         keywords=("spelling", "spell check", "typos"),
+    ),
+    SettingSpec(
+        "spell_check_before_save",
+        "Spell check a document before saving",
+        "editing",
+        "bool",
+        "Open the spelling review (F7) when you save, so you can correct "
+        "misspellings before the file is written. Off by default.",
+        feature_id="core.spellcheck",
+        keywords=("spelling", "spell check", "save", "proofread", "before saving"),
     ),
     SettingSpec(
         "intellisense_as_you_type",
@@ -298,6 +461,31 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "text",
         "Path to a .wav file played on expansion. Leave blank for the default system sound.",
         keywords=("abbreviation", "sound", "wav", "audio"),
+    ),
+    SettingSpec(
+        "list_auto_fill_numbers",
+        "Auto-fill numbered list markers",
+        "editing",
+        "bool",
+        "When inserting a Markdown numbered list, fill in the leading "
+        "'1. ', '2. ', '3. ' markers for each item instead of leaving the "
+        "first marker only. Auto-fill is also enabled automatically while "
+        "the caret is in a Markdown document, or for 5 minutes after you "
+        "toggle a numbered list on the active document.",
+        keywords=("list", "numbered", "auto", "fill", "markdown"),
+        feature_id="core.format",
+    ),
+    SettingSpec(
+        "abbreviation_backspace_behavior",
+        "Backspace after expansion",
+        "editing",
+        "choice",
+        "What to do when you press Backspace immediately after an abbreviation expands.",
+        choices=(
+            ("delete", "Delete the expanded text"),
+            ("revert", "Revert to the typed abbreviation"),
+        ),
+        keywords=("abbreviation", "backspace", "undo", "delete", "revert"),
     ),
     SettingSpec(
         "persistent_undo",
@@ -356,6 +544,42 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("save as", "convert", "rtf", "reload", "surface", "format"),
     ),
     SettingSpec(
+        "docx_read_engine",
+        "Word document reading engine",
+        "editing",
+        "choice",
+        "How QUILL converts a Word document into editable text when you open "
+        "it. Auto tries MarkItDown first and falls back to a plain extract. "
+        "MarkItDown is fast and reliable: headings, lists, and tables come "
+        "through; images, comments, and fonts do not. Pandoc keeps richer "
+        "structure - footnotes and complex tables survive better - and needs "
+        "Pandoc installed; when Pandoc is missing it falls back to Auto.",
+        choices=(
+            ("auto", "Auto (MarkItDown first)"),
+            ("markitdown", "MarkItDown"),
+            ("pandoc", "Pandoc"),
+        ),
+        keywords=("word", "docx", "converter", "engine", "pandoc", "markitdown", "open"),
+    ),
+    SettingSpec(
+        "docx_write_engine",
+        "Word document saving engine",
+        "editing",
+        "choice",
+        "How QUILL converts your text into a Word document when you save as "
+        ".docx. Native keeps QUILL formatting codes - fonts, sizes, colors, "
+        "highlights, and alignment - and each editor line becomes one Word "
+        "paragraph; best for documents written in QUILL. Pandoc maps structure "
+        "to Word styles - headings, lists, tables, links, and footnotes - but "
+        "drops font, size, and color codes, and needs Pandoc installed.",
+        choices=(
+            ("auto", "Auto (native writer first)"),
+            ("native", "Native (python-docx)"),
+            ("pandoc", "Pandoc"),
+        ),
+        keywords=("word", "docx", "converter", "engine", "pandoc", "save"),
+    ),
+    SettingSpec(
         "plain_text_link_style",
         "Links in plain-text export",
         "editing",
@@ -396,6 +620,44 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Convert a double hyphen to an en or em dash while you type.",
         keywords=("autoformat", "dash", "hyphen", "typography"),
     ),
+    # #262: Pandoc Import / Export batch conversion defaults. These show in
+    # Preferences -> Editing; the wizard reads them as starting values and
+    # lets the user override per batch. ``import_export_last_folder`` is
+    # intentionally not exposed in Preferences (it is a session memory for
+    # the folder picker, not a user-tunable policy).
+    SettingSpec(
+        "import_export_recursive",
+        "Include subfolders in batch conversion",
+        "editing",
+        "bool",
+        "When the Batch Conversion wizard runs over a folder, descend into subfolders.",
+        keywords=("pandoc", "batch", "import", "export", "convert", "recursive", "subfolders"),
+    ),
+    SettingSpec(
+        "import_export_overwrite",
+        "Overwrite behaviour for batch conversion",
+        "editing",
+        "choice",
+        "What to do when an output file already exists during a batch run.",
+        choices=(
+            ("ask", "Ask each time"),
+            ("never", "Never overwrite"),
+            ("always", "Always overwrite"),
+        ),
+        keywords=("pandoc", "batch", "import", "export", "convert", "overwrite"),
+    ),
+    SettingSpec(
+        "import_export_output_layout",
+        "Default output layout for batch conversion",
+        "editing",
+        "choice",
+        "Where the wizard puts converted files by default.",
+        choices=(
+            ("subfolder", "Output subfolder per source folder"),
+            ("same_folder", "Same folder as source"),
+        ),
+        keywords=("pandoc", "batch", "import", "export", "convert", "output", "layout"),
+    ),
     # --- Navigation and QUILL key -----------------------------------------
     SettingSpec(
         "browse_mode_wrap",
@@ -422,6 +684,20 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("browse", "feedback", "sound", "speech"),
     ),
     SettingSpec(
+        "browse_mode_move_detail",
+        "QUILL browse move detail",
+        "navigation",
+        "choice",
+        "How much detail is spoken after a browse-mode move completes.",
+        choices=(
+            ("position", "Line and column"),
+            ("line", "Line only"),
+            ("none", "Say nothing"),
+        ),
+        feature_id="core.navigate",
+        keywords=("browse", "move", "detail", "line", "position", "announcement"),
+    ),
+    SettingSpec(
         "browse_mode_preload_cache",
         "Preload QUILL browse cache in background",
         "navigation",
@@ -432,28 +708,50 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
     ),
     SettingSpec(
         "quill_key_timeout_seconds",
-        "QUILL key timeout (seconds)",
+        "QUILL key prefix timeout (seconds)",
         "navigation",
         "float",
-        "How long the QUILL key prefix and browse mode wait before expiring. 0 means no timeout.",
+        (
+            "How long the QUILL key prefix waits for a follow-on key before "
+            "expiring. 0 means no timeout."
+        ),
         minimum=0.0,
         maximum=60.0,
         keywords=("quill key", "timeout", "prefix"),
     ),
-    # --- Accessibility -----------------------------------------------------
     SettingSpec(
-        "ocr_engine",
-        "OCR engine",
-        "accessibility",
+        "browse_mode_followon_timeout",
+        "Browse mode follow-on timeout",
+        "navigation",
         "choice",
-        "Which engine recognizes text in images. Automatic uses the built-in Windows engine.",
-        choices=(
-            ("auto", "Automatic"),
-            ("windows", "Windows (built-in)"),
+        (
+            "How long browse mode stays active between follow-on keypresses "
+            "after entering with N. Pick a preset or choose Custom to set "
+            "your own value in milliseconds."
         ),
-        feature_id="core.ocr",
-        keywords=("ocr", "image", "text", "windows", "recognition"),
+        choices=(
+            ("instant", "Instant (0 ms)"),
+            ("fast", "Fast (1500 ms)"),
+            ("normal", "Normal (4000 ms)"),
+            ("slow", "Slow (8000 ms)"),
+            ("custom", "Custom..."),
+            ("unlimited", "Unlimited (no timeout)"),
+        ),
+        feature_id="core.navigate",
+        keywords=("quill key", "browse", "timeout", "follow-on"),
     ),
+    SettingSpec(
+        "browse_mode_followon_custom_ms",
+        "Browse mode follow-on timeout — custom value (milliseconds)",
+        "navigation",
+        "int",
+        ("Used when 'Browse mode follow-on timeout' is set to Custom. 0 means no timeout."),
+        minimum=0,
+        maximum=60000,
+        feature_id="core.navigate",
+        keywords=("quill key", "browse", "timeout", "custom", "milliseconds"),
+    ),
+    # --- Accessibility -----------------------------------------------------
     # --- External file-change watch and safe reload (FEAT-19) --------------
     SettingSpec(
         "external_change_watch_enabled",
@@ -599,6 +897,82 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("announcement", "screen reader", "speech"),
     ),
     SettingSpec(
+        "announce_dialog_transitions",
+        "Announce entering and leaving dialogs",
+        "accessibility",
+        "bool",
+        'Speak "Entered"/"Exited" when a dialog box opens and closes. Off by '
+        "default (your screen reader already announces dialogs); turn it on for the cue.",
+        feature_id="core.accessibility",
+        keywords=("dialog", "announcement", "entered", "exited", "leaving"),
+    ),
+    SettingSpec(
+        "low_resource_mode",
+        "Low-resource mode (one model at a time)",
+        "performance",
+        "bool",
+        "Keep only one AI or speech engine loaded at a time and prefer the smallest "
+        "model that fits. Trades speed when you switch features for a much smaller "
+        "memory footprint. Never turns AI or speech off — it just loads them one at a "
+        "time. Helpful on machines with limited RAM.",
+        feature_id="core.performance",
+        keywords=("memory", "ram", "low", "resource", "footprint", "unload", "model"),
+    ),
+    SettingSpec(
+        "idle_unload_minutes",
+        "Unload idle models after (minutes)",
+        "performance",
+        "int",
+        "Free the memory of an AI or speech model that has not been used for this "
+        "many minutes; the next use reloads it automatically. Set to 0 to keep models "
+        "loaded until you close QUILL.",
+        minimum=0,
+        maximum=240,
+        feature_id="core.performance",
+        keywords=("memory", "ram", "idle", "unload", "timeout", "model"),
+    ),
+    SettingSpec(
+        "announce_indent_depth",
+        "Announce indentation depth on Tab",
+        "accessibility",
+        "bool",
+        'Speak the new indent depth ("4 spaces" or "1 tab") when Tab or Shift+Tab '
+        'indents, instead of just "Indented lines".',
+        feature_id="core.accessibility",
+        keywords=("indent", "tab", "spaces", "announcement", "depth"),
+    ),
+    SettingSpec(
+        "spoken_echo_on_double_press",
+        "Double-press to show the Spoken Echo",
+        "accessibility",
+        "bool",
+        "Double-press an informational command (Describe Formatting, Document "
+        "Summary, Context Help, Announce Contrast) to open the Spoken Echo review "
+        "dialog instead of re-speaking. The dedicated Echo key always works.",
+        feature_id="core.accessibility",
+        keywords=("echo", "double-press", "review", "announcement", "virtualize"),
+    ),
+    SettingSpec(
+        "editor_control_kind",
+        "Editor control type (braille)",
+        "accessibility",
+        "choice",
+        (
+            "Which native control backs the editor. RichEdit is the default; some "
+            "braille displays show the first character of every line in cell two "
+            "with a rich control (the long-standing Microsoft Word quirk). "
+            "'Plain edit, like Notepad' uses a simple control that avoids the "
+            "offset and still reads correctly. Takes effect for documents opened "
+            "after the change (restart to apply everywhere). Windows only."
+        ),
+        choices=(
+            ("rich2", "RichEdit 3.0 (default)"),
+            ("rich", "RichEdit 2.0 (older engine)"),
+            ("plain", "Plain edit, like Notepad (best for braille)"),
+        ),
+        keywords=("braille", "richedit", "notepad", "plain", "jaws", "cell", "display"),
+    ),
+    SettingSpec(
         "announcement_trace_enabled",
         "Record announcement trace",
         "accessibility",
@@ -606,6 +980,114 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Log announcements for diagnostics (no document content is captured).",
         feature_id="core.accessibility",
         keywords=("trace", "diagnostics", "announcement"),
+    ),
+    SettingSpec(
+        "announcement_startup_tips_enabled",
+        "Speak startup readiness and theme contrast announcements",
+        "accessibility",
+        "bool",
+        "When enabled, QUILL speaks the 'Ready' tip after startup and the "
+        "contrast ratio after each theme change. Off by default to keep "
+        "startup quiet; the announcements still appear in the status bar.",
+        feature_id="core.accessibility",
+        keywords=("announcement", "startup", "speech", "contrast"),
+    ),
+    SettingSpec(
+        "verbosity_speech_enabled",
+        "Speech channel (verbosity)",
+        "accessibility",
+        "bool",
+        "Master gate for the speech output channel. When off, spoken "
+        "announcements from built-in startup events and Quillin extensions "
+        "are suppressed. The status bar still receives the same text so "
+        "sighted and low-vision users see the information. Used as the "
+        "shim for the 0.7.1 verbosity rebuild.",
+        feature_id="core.accessibility",
+        keywords=("speech", "verbosity", "channel", "announcement", "quiet"),
+    ),
+    SettingSpec(
+        "announce_screen_reader_detected",
+        "Speak screen-reader detection result at startup",
+        "accessibility",
+        "bool",
+        "When enabled, speaks 'Detected screen reader: <name>. Adaptive "
+        "hints enabled.' after the screen-reader probe finishes. Off by "
+        "default to keep startup quiet; the result is still placed in the "
+        "status bar.",
+        feature_id="core.accessibility",
+        keywords=("screen reader", "detection", "JAWS", "NVDA", "Narrator"),
+    ),
+    # --- Sound notifications (QSP) ----------------------------------------
+    SettingSpec(
+        "sound_enabled",
+        "Enable sound notifications",
+        "accessibility",
+        "bool",
+        "Play short earcon sounds for editing events (abbreviation expansion, save, search, etc.).",
+        keywords=("sound", "audio", "earcon", "notification", "beep"),
+    ),
+    SettingSpec(
+        "sound_pack_path",
+        "Sound pack path",
+        "accessibility",
+        "text",
+        "Path to a .qsp file or folder. Leave blank to use the bundled Ink pack.",
+        keywords=("sound", "pack", "qsp", "earcon", "theme"),
+    ),
+    SettingSpec(
+        "sound_volume",
+        "Sound notification volume",
+        "accessibility",
+        "int",
+        "Volume for earcon sounds (0 = silent, 100 = full).",
+        minimum=0,
+        maximum=100,
+        keywords=("sound", "volume", "audio", "earcon"),
+    ),
+    SettingSpec(
+        "sound_events_disabled",
+        "Silenced sound events",
+        "accessibility",
+        "text",
+        "Comma-separated list of sound event IDs to silence, e.g. transcription_word_inserted.",
+        keywords=("sound", "disable", "mute", "earcon", "events"),
+    ),
+    SettingSpec(
+        "verbosity_collapse_repeats",
+        "Collapse repeated announcements",
+        "accessibility",
+        "bool",
+        "Skip speaking the same announcement again when it repeats within a moment "
+        "(for example, holding a key at a boundary). The status bar still updates.",
+        keywords=("verbosity", "announcement", "repeat", "collapse", "spam", "duplicate"),
+    ),
+    SettingSpec(
+        "verbosity_max_announcements_per_window",
+        "Announcement budget (per 5 seconds)",
+        "accessibility",
+        "int",
+        "Cap how many announcements are spoken in a 5-second window to avoid floods "
+        "(0 means no cap). Suppressed announcements still appear on the status bar.",
+        minimum=0,
+        maximum=1000,
+        keywords=("verbosity", "announcement", "budget", "limit", "flood", "throttle"),
+    ),
+    SettingSpec(
+        "indent_tone_scale",
+        "Indentation tones",
+        "accessibility",
+        "choice",
+        "Play a pitched tone as the caret moves across indent levels. The tone rises "
+        "as you go deeper and falls as you come back out. Choose the musical scale, or "
+        "Off to disable.",
+        choices=(
+            ("", "Off"),
+            ("pentatonic", "Pentatonic (no dissonance)"),
+            ("whole_tone", "Whole tone (even steps)"),
+            ("diatonic", "Diatonic C major (familiar)"),
+            ("chromatic", "Chromatic (one semitone per level)"),
+        ),
+        keywords=("sound", "indent", "indentation", "tone", "pitch", "code", "earcon"),
     ),
     # --- Read Aloud --------------------------------------------------------
     SettingSpec(
@@ -692,15 +1174,79 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "choice",
         "Speech engine used for read aloud.",
         choices=(
-            ("pyttsx3", "System (pyttsx3)"),
+            ("sapi5", "Windows (SAPI 5)"),
             ("dectalk", "DECtalk"),
             ("piper", "Piper"),
             ("kokoro", "Kokoro"),
             ("espeak", "eSpeak"),
-            ("openvoice", "OpenVoice"),
+            ("elevenlabs", "ElevenLabs (premium cloud)"),
         ),
         feature_id="core.read_aloud",
-        keywords=("read aloud", "tts", "voice", "engine"),
+        keywords=("read aloud", "tts", "voice", "engine", "elevenlabs"),
+    ),
+    SettingSpec(
+        "read_aloud_elevenlabs_voice",
+        "ElevenLabs Read Aloud voice",
+        "read_aloud",
+        "text",
+        "The ElevenLabs voice id used when Read Aloud is set to the ElevenLabs engine. "
+        "Pick one in the Voice Browser; blank uses the default voice.",
+        feature_id="core.read_aloud",
+        keywords=("read aloud", "elevenlabs", "voice", "cloud"),
+    ),
+    SettingSpec(
+        "read_aloud_elevenlabs_model",
+        "ElevenLabs Read Aloud model",
+        "read_aloud",
+        "text",
+        "The ElevenLabs model id used for Read Aloud (blank uses the high-quality "
+        "multilingual default; the turbo model is faster and cheaper).",
+        feature_id="core.read_aloud",
+        keywords=("read aloud", "elevenlabs", "model", "cloud"),
+    ),
+    SettingSpec(
+        "ai_tts_provider",
+        "AI Voice provider",
+        "read_aloud",
+        "choice",
+        "Cloud provider for the AI Voice read-aloud and audio export actions. "
+        "ElevenLabs is audio-export only and needs the optional elevenlabs extra.",
+        choices=(
+            ("openai", "OpenAI"),
+            ("gemini", "Google Gemini"),
+            ("elevenlabs", "ElevenLabs (export only)"),
+        ),
+        feature_id="core.read_aloud",
+        keywords=("ai voice", "cloud tts", "openai", "gemini", "elevenlabs", "provider"),
+    ),
+    SettingSpec(
+        "ai_tts_model",
+        "AI Voice model",
+        "read_aloud",
+        "choice",
+        "Model used by the selected AI Voice provider (blank uses the provider default).",
+        choices=(
+            ("", "Provider default"),
+            ("tts-1", "OpenAI: tts-1 (fast)"),
+            ("tts-1-hd", "OpenAI: tts-1-hd (higher quality)"),
+            ("gemini-2.5-flash-preview-tts", "Gemini: 2.5 Flash (fast)"),
+            ("gemini-2.5-pro-preview-tts", "Gemini: 2.5 Pro (higher quality)"),
+            ("eleven_multilingual_v2", "ElevenLabs: Multilingual v2 (high quality)"),
+            ("eleven_turbo_v2_5", "ElevenLabs: Turbo v2.5 (fast)"),
+        ),
+        feature_id="core.read_aloud",
+        keywords=("ai voice", "cloud tts", "model"),
+    ),
+    SettingSpec(
+        "ai_tts_voice",
+        "AI Voice",
+        "read_aloud",
+        "choice",
+        "Voice for the AI Voice provider (blank uses the provider default). "
+        "Pick a voice that matches the selected provider.",
+        choices=_ai_tts_voice_choices(),
+        feature_id="core.read_aloud",
+        keywords=("ai voice", "cloud tts", "voice"),
     ),
     SettingSpec(
         "read_aloud_rate",
@@ -746,6 +1292,18 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         feature_id="core.read_aloud",
         keywords=("read aloud", "pause", "pacing", "timing"),
     ),
+    SettingSpec(
+        "read_aloud_follow_cursor",
+        "Move cursor to follow Read Aloud",
+        "read_aloud",
+        "bool",
+        "Select each sentence in the editor as it is spoken so you can follow "
+        "along. Off by default, because with a screen reader running this makes "
+        "it announce the selection over the Read Aloud voice. Turn it on if you "
+        "want the cursor to track what is being read.",
+        feature_id="core.read_aloud",
+        keywords=("read aloud", "follow", "cursor", "highlight", "selection", "screen reader"),
+    ),
     # --- AI and assistant --------------------------------------------------
     SettingSpec(
         "assistant_enabled",
@@ -775,9 +1333,17 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "ai_chat_default_provider",
         "Ask AI default provider",
         "ai",
-        "text",
-        "Default provider selected when the Ask AI dialog opens"
-        " (ollama, ollama_cloud, openai, claude, openrouter, gemini, custom).",
+        "choice",
+        "Default provider selected when the Ask AI dialog opens.",
+        choices=(
+            ("", "First available provider"),
+            ("ollama", "Ollama (local)"),
+            ("openai", "OpenAI"),
+            ("claude", "Claude (Anthropic)"),
+            ("openrouter", "OpenRouter"),
+            ("gemini", "Google Gemini"),
+            ("custom", "Custom endpoint"),
+        ),
         keywords=("ai", "chat", "provider", "ollama", "openai", "claude", "openrouter", "gemini"),
     ),
     SettingSpec(
@@ -805,6 +1371,60 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Default model ID used when running prompt-library prompts."
         " Leave blank to fall back to the Ask AI default model.",
         keywords=("ai", "prompt", "model", "prompt library", "grammar"),
+    ),
+    SettingSpec(
+        "vision_default_prompt_style",
+        "Default image description style",
+        "ai",
+        "text",
+        "The prompt style used when describing images with AI. Defaults to 'accessibility'.",
+        keywords=("vision", "image", "description", "prompt", "style", "accessibility"),
+    ),
+    SettingSpec(
+        "vision_prompt_picker_enabled",
+        "Show style picker before image description",
+        "ai",
+        "bool",
+        "When enabled, a style picker appears before each image description"
+        " so you can choose a different prompt style each time.",
+        keywords=("vision", "image", "description", "picker", "style"),
+    ),
+    SettingSpec(
+        "vision_disabled_builtin_styles",
+        "Disabled built-in image prompt styles",
+        "ai",
+        "text",
+        "List of built-in style IDs to hide from the style picker.",
+        keywords=("vision", "image", "description", "disabled", "hidden"),
+    ),
+    SettingSpec(
+        "vision_custom_prompts",
+        "Custom image prompt styles",
+        "ai",
+        "text",
+        "User-defined image description prompt styles.",
+        keywords=("vision", "image", "description", "custom", "prompt"),
+    ),
+    # #622: when an unhandled exception crashes QUILL, offer a dialog
+    # that lets the user review a redacted preview and choose whether
+    # to send the report to the developers. When disabled the local
+    # crash file is still saved to app_data_dir()/crash-reports; the
+    # dialog is the only opt-in here.
+    SettingSpec(
+        "auto_ask_crash_submit",
+        "Offer to send crash reports automatically",
+        "general",
+        "bool",
+        "When an unhandled exception closes Quill, show a dialog that "
+        "lets you review a redacted summary (recent commands, "
+        "environment, last frames of the traceback) and choose whether "
+        "to send it to the developers. Your personal data is scrubbed "
+        "before it leaves the machine, and nothing is sent unless you "
+        "explicitly choose Send. The local crash file is always saved "
+        "even when this option is off. Enabled by default during the "
+        "beta phase so the team can hear about crashes without you "
+        "having to opt in every time.",
+        keywords=("crash", "report", "submit", "send", "diagnostics", "beta"),
     ),
     # --- Transcription -----------------------------------------------------
     SettingSpec(
@@ -860,12 +1480,129 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
     ),
     SettingSpec(
         "voice_commands_enabled",
-        "Hey QUILL voice commands",
+        "Voice commands (push-to-talk)",
         "transcription",
         "bool",
-        "Enable Hey QUILL voice commands during dictation (e.g., 'Hey QUILL save file').",
+        "Enable the offline Voice Command tool: run it, speak one command "
+        "(like 'save file' or 'word count'), and QUILL acts. Commands are "
+        "limited to a safe, non-destructive allowlist. Disabled in Safe Mode.",
         feature_id="core.voice_commands",
-        keywords=("voice commands", "hey quill", "dictation", "speech"),
+        keywords=("voice commands", "hey quill", "push to talk", "speech"),
+    ),
+    SettingSpec(
+        "voice_conversation_enabled",
+        "Voice conversation mode",
+        "transcription",
+        "bool",
+        "Turn one Voice Command into a hands-free conversation: after each "
+        "command QUILL keeps listening for a short follow-up window, with warm "
+        "audio cues for every state. Requires voice commands; off in Safe Mode.",
+        feature_id="core.voice_commands",
+        keywords=("voice conversation", "hey quill", "hands-free", "follow-up"),
+    ),
+    SettingSpec(
+        "voice_conversation_silence_ms",
+        "Conversation: pause before a command ends (ms)",
+        "transcription",
+        "int",
+        "How long a pause ends what you are saying, in milliseconds. Longer "
+        "gives you more time to think; shorter feels snappier. 0 uses the "
+        "engine default.",
+        feature_id="core.voice_commands",
+        keywords=("voice conversation", "silence", "timing"),
+    ),
+    SettingSpec(
+        "voice_conversation_review_ms",
+        "Conversation: cancel window before acting (ms)",
+        "transcription",
+        "int",
+        "A brief beat after QUILL recognizes a command during which you can "
+        "say 'cancel' before it runs, in milliseconds. 0 acts immediately.",
+        feature_id="core.voice_commands",
+        keywords=("voice conversation", "cancel", "review", "timing"),
+    ),
+    SettingSpec(
+        "voice_conversation_followup_ms",
+        "Conversation: keep listening after a command (ms)",
+        "transcription",
+        "int",
+        "How long QUILL stays listening for a follow-up command after acting, "
+        "in milliseconds, so you can chain commands without re-arming. "
+        "0 turns off the follow-up window.",
+        feature_id="core.voice_commands",
+        keywords=("voice conversation", "follow-up", "timing"),
+    ),
+    SettingSpec(
+        "voice_conversation_thinking_ms",
+        "Conversation: 'still working' tick interval (ms)",
+        "transcription",
+        "int",
+        "How often a soft tick plays while QUILL is working, in milliseconds, "
+        "so a wait is never silent. 0 turns off the tick.",
+        feature_id="core.voice_commands",
+        keywords=("voice conversation", "thinking", "tick", "timing"),
+    ),
+    SettingSpec(
+        "voice_recognition_engine",
+        "Voice recognition engine",
+        "transcription",
+        "choice",
+        "Which on-device engine powers the voice features (Voice Command, "
+        "Conversation Mode, Hey QUILL). 'Follow main engine' uses your usual "
+        "speech engine; 'whisper.cpp' favors accuracy; 'Vosk' is fast and "
+        "light, best for the always-listening wake word. Requires a model for "
+        "the chosen engine; falls back automatically if one is missing.",
+        feature_id="core.voice_commands",
+        choices=(
+            ("", "Follow main engine"),
+            ("whispercpp", "whisper.cpp (accurate)"),
+            ("vosk", "Vosk (fast, light)"),
+        ),
+        keywords=("voice engine", "vosk", "whisper", "recognition"),
+    ),
+    SettingSpec(
+        "voice_conversation_user_name",
+        "Conversation: your name (optional)",
+        "transcription",
+        "str",
+        "An optional name QUILL uses in spoken prompts, like 'Listening, Jeff.' "
+        "Leave blank for neutral prompts.",
+        feature_id="core.voice_commands",
+        keywords=("voice conversation", "name", "personalize"),
+    ),
+    SettingSpec(
+        "voice_conversation_spoken_cues",
+        "Conversation: speak prompts aloud",
+        "transcription",
+        "bool",
+        "Speak the welcome and follow-up prompts aloud with the read-aloud "
+        "voice. Off by default when a screen reader is running so QUILL does "
+        "not talk over it; the audio cues and status still convey each state.",
+        feature_id="core.voice_commands",
+        keywords=("voice conversation", "spoken", "prompts", "text to speech"),
+    ),
+    SettingSpec(
+        "voice_wakeword_enabled",
+        "Listen for 'Hey QUILL' (wake word)",
+        "transcription",
+        "bool",
+        "Listen continuously, on-device, for the phrase 'Hey QUILL' so you can "
+        "start a command without touching the keyboard. The microphone stays "
+        "on while this is enabled; QUILL keeps its status visible and can play "
+        "a periodic reminder. Off in Safe Mode.",
+        feature_id="core.voice_commands",
+        keywords=("wake word", "hey quill", "always listening", "hands-free"),
+    ),
+    SettingSpec(
+        "voice_wakeword_persist",
+        "Keep listening for 'Hey QUILL' across restarts",
+        "transcription",
+        "bool",
+        "By default, always-listening turns itself off when QUILL closes, so a "
+        "live microphone is never a surprise on the next launch. Turn this on "
+        "to have QUILL resume listening automatically at startup.",
+        feature_id="core.voice_commands",
+        keywords=("wake word", "persist", "startup", "always listening"),
     ),
     # --- Watch Folders -----------------------------------------------------
     SettingSpec(
@@ -928,16 +1665,21 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
     SettingSpec(
         "auto_check_updates",
         "Check for updates on startup",
-        "updates",
+        "admin",
         "bool",
-        "Look for a newer release each time QUILL starts.",
+        "Look for a newer release each time QUILL starts. This check also "
+        "delivers signed safety advisories - the rare notice that temporarily "
+        "disables a specific shipped feature if the community reports it is "
+        "misbehaving - so leaving it on keeps that protection current. On by "
+        "default; the check fetches QUILL's own signed feed and sends nothing "
+        "about you or your documents.",
         feature_id="core.updates",
-        keywords=("updates", "startup", "check"),
+        keywords=("updates", "startup", "check", "safety", "advisory"),
     ),
     SettingSpec(
         "beta_updates",
         "Get beta updates",
-        "updates",
+        "admin",
         "bool",
         "Receive pre-release builds, which may be unstable.",
         feature_id="core.updates",
@@ -1012,12 +1754,11 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "with motor control differences. Default: 400.",
         keywords=("multi press", "double press", "copy tray", "keyboard", "timer"),
     ),
-    # --- Security and privacy ----------------------------------------------
-    # --- Developer Console -------------------------------------------------
+    # --- Administration: developer tools, security, updates, and settings management ---
     SettingSpec(
         "console_enabled",
         "Enable Developer Console",
-        "developer",
+        "admin",
         "bool",
         "When on, the Python and TypeScript developer consoles are available "
         "under Tools > Advanced > Developer Console. Off by default for "
@@ -1028,7 +1769,7 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
     SettingSpec(
         "console_python_timeout",
         "Python console execution timeout (seconds)",
-        "developer",
+        "admin",
         "int",
         "Maximum seconds a Python console command may run before QUILL interrupts it. Default: 30.",
         minimum=5,
@@ -1039,7 +1780,7 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
     SettingSpec(
         "console_typescript_timeout",
         "TypeScript console execution timeout (seconds)",
-        "developer",
+        "admin",
         "int",
         "Maximum seconds a TypeScript console command may run before the "
         "Node worker is restarted. Default: 30.",
@@ -1051,12 +1792,442 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
     SettingSpec(
         "ssh_trust_first_use",
         "Trust SSH hosts on first connection",
-        "security",
+        "admin",
         "bool",
         "When on, QUILL remembers a host key the first time it is seen "
         "(paramiko AutoAddPolicy). When off, the safer default, an "
         "unknown host key rejects the connection so you notice the "
         "mismatch. Off unless you have a specific reason to change it.",
         keywords=("ssh", "host key", "trust", "paramiko", "security"),
+    ),
+    # --- Braille Mode (BR-008) ---------------------------------------------
+    SettingSpec(
+        "braille_cells_per_line",
+        "Cells per line",
+        "braille",
+        "int",
+        "How many characters a single braille line holds. NABCC literature "
+        "ranges from 28 (jumbo) to 42 (wide). 40 matches BANA and is the default.",
+        minimum=28,
+        maximum=42,
+        keywords=("braille", "cells", "line width", "page width", "brf"),
+        feature_id="core.braille",
+    ),
+    SettingSpec(
+        "braille_lines_per_page",
+        "Lines per page",
+        "braille",
+        "int",
+        "How many lines fit on one braille page. BANA hard copy is 25, "
+        "Braille Blaster sized embosser paper is 20-30.",
+        minimum=20,
+        maximum=30,
+        keywords=("braille", "lines", "page height", "brf"),
+        feature_id="core.braille",
+    ),
+    SettingSpec(
+        "braille_use_form_feeds",
+        "Use form feeds for page breaks",
+        "braille",
+        "bool",
+        "When on (the historical default), form-feed characters (0x0C) in a "
+        "BRF file are treated as authoritative page breaks. Turn off only "
+        "if the source never used form feeds.",
+        keywords=("braille", "form feed", "page break", "brf"),
+        feature_id="core.braille",
+    ),
+    # --- Page indicator (#872) ---------------------------------------------
+    SettingSpec(
+        "page_estimate_words_per_page",
+        "Estimated words per page",
+        "navigation",
+        "int",
+        "Used only for documents without real page breaks (plain text, "
+        "Markdown, most DOCX files) to estimate a page count from word "
+        "count. This is an approximation, not an exact printed page count -- "
+        "it does not account for fonts, margins, or paper size.",
+        minimum=150,
+        maximum=600,
+        keywords=("page", "page count", "page number", "status bar", "estimate"),
+        feature_id="core.editor",
+    ),
+    SettingSpec(
+        "braille_calculate_pages",
+        "Calculate pages from geometry",
+        "braille",
+        "bool",
+        "When on and no form feeds are present, derive page boundaries from "
+        "the cells-per-line / lines-per-page setting. Off by default only "
+        "when both heuristics disagree; QUILL falls back to a hybrid mode.",
+        keywords=("braille", "calculate", "geometry", "page break", "brf"),
+        feature_id="core.braille",
+    ),
+    SettingSpec(
+        "braille_save_sidecar",
+        "Write sidecar on save",
+        "braille",
+        "bool",
+        "When on, saving a BRF file also writes a matching .brf.json sidecar "
+        "stamping the profile, line-ending report, and BOM presence so other "
+        "tools can recover the reading context.",
+        keywords=("braille", "sidecar", "json", "save", "brf"),
+        feature_id="core.braille",
+    ),
+    SettingSpec(
+        "braille_status_verbosity",
+        "Status verbosity",
+        "braille",
+        "choice",
+        "How much of the braille position to announce and display. "
+        "'brief' is page + line + cell; 'normal' adds print page; "
+        "'detailed' adds continuation, running head, and proofing status.",
+        choices=(
+            ("brief", "Brief"),
+            ("normal", "Normal"),
+            ("detailed", "Detailed"),
+        ),
+        keywords=("braille", "status", "verbosity", "announce", "speech"),
+        feature_id="core.braille",
+    ),
+    SettingSpec(
+        "braille_auto_announce_page_changes",
+        "Announce page changes automatically",
+        "braille",
+        "bool",
+        "When on, QUILL speaks the new page number whenever the caret "
+        "crosses a page boundary. Off by default to avoid speech churn.",
+        keywords=("braille", "announce", "page", "speech"),
+        feature_id="core.braille",
+    ),
+    SettingSpec(
+        "braille_auto_announce_print_page_changes",
+        "Announce print page changes",
+        "braille",
+        "bool",
+        "When on, QUILL speaks when the implied print page changes "
+        "(requires a print page map; otherwise the announcement is skipped).",
+        keywords=("braille", "announce", "print page", "speech"),
+        feature_id="core.braille",
+    ),
+    SettingSpec(
+        "braille_auto_announce_line_overflow",
+        "Announce line overflow",
+        "braille",
+        "bool",
+        "When on, QUILL warns when a source line exceeds the cells-per-line "
+        "budget. Off by default to keep read-aloud uninterrupted.",
+        keywords=("braille", "announce", "overflow", "line", "speech"),
+        feature_id="core.braille",
+    ),
+    SettingSpec(
+        "braille_include_proofing_status",
+        "Include proofing status in status string",
+        "braille",
+        "bool",
+        "When on, the detailed status string includes the last proofed "
+        "page and the number of pages that still need review.",
+        keywords=("braille", "proofing", "status", "review"),
+        feature_id="core.braille",
+    ),
+    SettingSpec(
+        "braille_include_running_head",
+        "Include running head in status string",
+        "braille",
+        "bool",
+        "When on, the detailed status string includes the current running "
+        "head (page header) when one is present in the sidecar.",
+        keywords=("braille", "running head", "header", "status"),
+        feature_id="core.braille",
+    ),
+    SettingSpec(
+        "braille_include_continuation",
+        "Include continuation in status string",
+        "braille",
+        "bool",
+        "When on, the detailed status string announces the continuation "
+        "letter (a, b, c) when a page overflows onto a continuation page.",
+        keywords=("braille", "continuation", "status", "speech"),
+        feature_id="core.braille",
+    ),
+    # --- Spelling Review (F7) ---------------------------------------------
+    SettingSpec(
+        "spell_review_verbosity",
+        "Spelling review announcement verbosity",
+        "spelling",
+        "choice",
+        "How much information is spoken during the F7 spelling review. "
+        "Concise gives progress only. Balanced includes the issue type and word. "
+        "Detailed adds scope reminders and keyboard hints.",
+        choices=(
+            ("concise", "Concise"),
+            ("balanced", "Balanced"),
+            ("detailed", "Detailed"),
+        ),
+        keywords=("spelling", "review", "verbosity", "speech", "announcement", "f7"),
+    ),
+    SettingSpec(
+        "spell_review_spell_word",
+        "Spell out the misspelled word letter by letter",
+        "spelling",
+        "bool",
+        "After announcing each misspelled word, spell it out letter by letter "
+        "after a short pause. Useful when the word is hard to parse from speech alone.",
+        keywords=("spelling", "spell out", "letters", "review", "f7"),
+    ),
+    SettingSpec(
+        "spell_review_spell_word_pause_ms",
+        "Pause before spelling the word (milliseconds)",
+        "spelling",
+        "int",
+        "How long to wait after announcing the misspelled word before spelling it "
+        "out letter by letter (100 to 3000). Default is 800.",
+        minimum=100,
+        maximum=3000,
+        keywords=("spelling", "pause", "spell out", "timing", "review", "f7"),
+    ),
+    SettingSpec(
+        "spell_review_wrap_to_beginning",
+        "Wrap spelling review to the beginning",
+        "spelling",
+        "bool",
+        "When spelling review reaches the end of the document, offer to continue "
+        "checking from the beginning back to the original caret position.",
+        keywords=("spelling", "wrap", "review", "f7"),
+    ),
+    SettingSpec(
+        "spell_review_context_mode",
+        "Spelling review context display mode",
+        "spelling",
+        "choice",
+        "How much surrounding text is shown in the Context field of the F7 spelling review dialog.",
+        choices=(
+            ("sentence", "Sentence with adjacent sentences"),
+            ("paragraph", "Full paragraph"),
+        ),
+        keywords=("spelling", "context", "review", "f7", "sentence", "paragraph"),
+    ),
+    # --- Administration: upgrade and migration behavior --------------------
+    SettingSpec(
+        "apply_recommended_keymap_updates",
+        "Apply recommended keyboard-shortcut updates",
+        "admin",
+        "bool",
+        "Let QUILL apply important shortcut corrections once on upgrade (for "
+        "example, restoring Find to Ctrl+F). Each fix is applied a single time, "
+        "so you can always rebind it afterward. Turn this off to keep your "
+        "shortcuts exactly as you set them.",
+        keywords=("upgrade", "shortcut", "keymap", "recommended", "find", "ctrl+f", "migration"),
+    ),
+    SettingSpec(
+        "migration_notice",
+        "Upgrade notice",
+        "admin",
+        "choice",
+        "How QUILL tells you when it has migrated your settings or shortcuts "
+        "after an update. A backup is always saved first regardless of this "
+        "choice.",
+        choices=(
+            ("silent", "Silent"),
+            ("announce", "Brief announcement"),
+            ("prompt", "Summary with Undo"),
+        ),
+        keywords=("upgrade", "migration", "notice", "announce", "undo", "settings"),
+    ),
+    # --- Experimental (opt-in features still maturing) ----------------------
+    SettingSpec(
+        "experimental_acknowledged",
+        "Enable experimental features (the master switch for everything on this tab)",
+        "experimental",
+        "bool",
+        (
+            "The required master gate for ALL experimental features. Experimental "
+            "features work, but they are still maturing and may change or have rough "
+            "edges. While this is OFF, every experimental option below is ignored and "
+            "its controls are disabled (they leave the tab order), so an accidental "
+            "change can never affect QUILL. Tick it to unlock the individual "
+            "experiments below — each one still has its own switch."
+        ),
+        keywords=(
+            "experimental",
+            "enable",
+            "master",
+            "acknowledge",
+            "understand",
+            "risk",
+            "testing",
+        ),
+    ),
+    SettingSpec(
+        "glow_experimental_enabled",
+        "GLOW accessibility review and repair (experimental)",
+        "experimental",
+        "bool",
+        (
+            "Adds the Tools > GLOW menu: plain-language accessibility audits of the "
+            "document or selection in front of you, safe deterministic fixes with a "
+            "before/after compare, and scored, graded audits and non-destructive "
+            "repairs of Word, PowerPoint, Excel, PDF, and EPUB files on disk. "
+            "Everything runs on your machine by default. Off while GLOW matures; "
+            "requires the master switch above. Takes effect as soon as you apply "
+            "Settings — no restart."
+        ),
+        keywords=("experimental", "glow", "accessibility", "audit", "fix", "review"),
+    ),
+    SettingSpec(
+        "publishing_experimental_enabled",
+        "WordPress publishing connections (experimental)",
+        "experimental",
+        "bool",
+        (
+            "Adds the read-only publishing tools to the File menu: save WordPress "
+            "connections, verify them, browse your site's posts and pages, and open "
+            "a remote item in the editor. Strictly inbound for now — the send/publish "
+            "half stays locked while the providers framework is reviewed, so nothing "
+            "can be published from QUILL. Requires the master switch above. Takes "
+            "effect as soon as you apply Settings — no restart."
+        ),
+        keywords=("experimental", "wordpress", "publishing", "connections", "read"),
+    ),
+    SettingSpec(
+        "table_studio_experimental_enabled",
+        "Table Studio — accessible table and CSV editing (experimental)",
+        "experimental",
+        "bool",
+        (
+            "Adds Table Studio (Tools menu): build a new table or open a CSV/TSV "
+            "file in one fully keyboard-accessible grid where the arrow keys move "
+            "by cell and speak the column. Insert the result into your document as "
+            "Markdown or HTML, or save it back out as CSV. Requires the master "
+            "switch above. Takes effect as soon as you apply Settings — no restart."
+        ),
+        keywords=("experimental", "table", "csv", "studio", "grid", "accessible"),
+    ),
+    SettingSpec(
+        "edge_read_aloud_enabled",
+        "Read the document aloud in your browser (experimental)",
+        "experimental",
+        "bool",
+        (
+            "Adds a Read Document in Browser command (menu and command palette) "
+            "that opens an accessible reader page in your browser with a voice "
+            "picker and Play/Pause/Stop. A real browser exposes its full voice "
+            "set — including Edge's Online (Natural) voices — which the in-app "
+            "engine cannot. Requires the master switch above. QUILL makes no "
+            "network call and no audio file is produced; on-device voices stay "
+            "local. Note: the Online (Natural) voices synthesize in Microsoft's "
+            "cloud, so choosing one sends the text to that service — pick an "
+            "on-device voice to keep everything local. Availability varies with "
+            "your browser and network. Set your browser under Preferences > "
+            "Preview. Takes effect as soon as you apply Settings — no restart."
+        ),
+        keywords=(
+            "experimental",
+            "browser",
+            "edge",
+            "chrome",
+            "voice",
+            "read aloud",
+            "speech",
+            "web speech",
+            "natural",
+        ),
+    ),
+    SettingSpec(
+        "experimental_editor_surfaces_enabled",
+        "Enable experimental editor surfaces (features may degrade based on the control selected)",
+        "experimental",
+        "bool",
+        (
+            "The safety gate for the editor-surface options below. The editor "
+            "surface is the control your document lives in, so changing it affects "
+            "everything you do — some features may degrade or behave differently on "
+            "a non-default surface. Until this is ticked (along with the master "
+            "switch above), the surface and border options are ignored and their "
+            "controls are disabled, so an accidental change can never affect your "
+            "editor."
+        ),
+        keywords=(
+            "experimental",
+            "editor",
+            "surface",
+            "acknowledge",
+            "degrade",
+            "control",
+            "testing",
+        ),
+    ),
+    SettingSpec(
+        "experimental_editor_surface",
+        "Editor surface (for testing)",
+        "experimental",
+        "choice",
+        (
+            "Which control backs the editor, for testing different surfaces. "
+            "'Default' follows the braille Editor control type (Accessibility). "
+            "RichEdit 3.0/2.0 are the native Windows rich controls; 'Notepad' is a "
+            "plain EDIT control; 'Rich text' is an experimental wx.RichTextCtrl; "
+            "'Notepad++ experiment' is the Scintilla control (wx.stc.StyledTextCtrl); "
+            "'QuillRichEdit' wraps the native Rich Edit control and adds RTF "
+            "load/save via its text object model. "
+            "RESTART QUILL after changing this so every document uses the new surface."
+        ),
+        choices=(
+            ("default", "Default (follow Accessibility setting)"),
+            ("rich2", "RichEdit 3.0"),
+            ("rich", "RichEdit 2.0"),
+            ("plain", "Notepad (plain edit control)"),
+            ("rtf", "Rich text (wx.RichTextCtrl, experimental)"),
+            ("win32", "Native Win32 EDIT (pywin32 spike, Windows only)"),
+            ("stc", "Notepad++ experiment (Scintilla, wx.stc.StyledTextCtrl)"),
+            ("richedit_rtf", "QuillRichEdit (native Rich Edit + RTF, experimental)"),
+        ),
+        keywords=(
+            "experimental",
+            "editor",
+            "surface",
+            "richedit",
+            "quillrichedit",
+            "notepad",
+            "rtf",
+            "win32",
+            "stc",
+            "scintilla",
+            "native",
+            "testing",
+        ),
+    ),
+    SettingSpec(
+        "editor_hide_border",
+        "Hide editor border",
+        "experimental",
+        "bool",
+        (
+            "Draw the editor with no border for a cleaner, Notepad-like frame. "
+            "RESTART QUILL after changing this."
+        ),
+        keywords=("experimental", "border", "margin", "notepad", "frame", "chrome"),
+    ),
+    SettingSpec(
+        "experimental_richedit_emulate_sysedit",
+        "QuillRichEdit: emulate a system edit control (braille test)",
+        "experimental",
+        "bool",
+        (
+            "Only affects the QuillRichEdit editor surface. Puts the native Rich "
+            "Edit control in 'emulate system edit' mode to test whether it fixes "
+            "the braille cell-2 offset and missing selection dots 7-8 that some "
+            "displays show on Rich Edit. Needs a braille display to judge. RESTART "
+            "QUILL after changing this."
+        ),
+        keywords=(
+            "experimental",
+            "braille",
+            "richedit",
+            "quillrichedit",
+            "emulate",
+            "cell",
+            "selection",
+            "dots",
+        ),
     ),
 )

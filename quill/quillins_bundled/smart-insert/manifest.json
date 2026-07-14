@@ -1,0 +1,455 @@
+{
+  "schema": "quill.extension/1",
+  "id": "com.quill.smartinsert",
+  "name": "Smart Insert",
+  "version": "1.0.0",
+  "author": "QUILL Project",
+  "description": "Bundled Quillin: typed templates, log entries, BRF test content, and smart triggers — plus a preferences page for configuring them. Demonstrates the Quillin preferences and abbreviation contribution model.",
+  "license": "MIT",
+  "min_quill_version": "0.6.0",
+  "categories": ["writing", "productivity", "formatting"],
+  "capabilities": [
+    "editor.write",
+    "ui.announce",
+    "ui.command",
+    "settings.own.read",
+    "settings.own.write"
+  ],
+  "main": "extension.py",
+  "contributes": {
+    "commands": [
+      {
+        "id": "ext.smartinsert.bug",
+        "title": "Insert Bug Report Template",
+        "description": "Inserts a Markdown bug report skeleton with title, steps to reproduce, expected, and actual fields.",
+        "run": { "handler": "insert_bug" }
+      },
+      {
+        "id": "ext.smartinsert.meeting",
+        "title": "Insert Meeting Notes Template",
+        "description": "Inserts a structured meeting notes block with date, attendees, agenda, and action items.",
+        "run": { "handler": "insert_meeting" }
+      },
+      {
+        "id": "ext.smartinsert.journal",
+        "title": "Insert Journal Entry",
+        "run": { "handler": "insert_journal" }
+      },
+      {
+        "id": "ext.smartinsert.todo",
+        "title": "Insert To-Do List",
+        "run": { "handler": "insert_todo" }
+      },
+      {
+        "id": "ext.smartinsert.logentry",
+        "title": "Insert Log Timestamp",
+        "run": { "handler": "insert_log_entry" }
+      },
+      {
+        "id": "ext.smartinsert.brftest",
+        "title": "Insert BRF Test Document",
+        "run": { "handler": "insert_brf_test" }
+      },
+      {
+        "id": "ext.smartinsert.rand",
+        "title": "Insert Sample Text",
+        "run": { "handler": "insert_rand" }
+      }
+    ],
+    "menus": [
+      { "parent": "Insert", "command": "ext.smartinsert.bug" },
+      { "parent": "Insert", "command": "ext.smartinsert.meeting" },
+      { "parent": "Insert", "command": "ext.smartinsert.journal" },
+      { "parent": "Insert", "command": "ext.smartinsert.todo" },
+      { "parent": "Insert", "command": "ext.smartinsert.logentry" },
+      { "parent": "Insert", "command": "ext.smartinsert.brftest" }
+    ],
+    "abbreviations": [
+      {
+        "trigger": "qbug",
+        "expansion": "Title:\nBuild:\nScreen reader:\nWindows version:\nSteps to reproduce:\nExpected result:\nActual result:\nNotes:\n${cursor}",
+        "description": "Insert a QUILL bug report template",
+        "category": "Templates",
+        "enabled_by_default": true
+      },
+      {
+        "trigger": "qmeet",
+        "expansion": "Meeting:\nDate: ${date}\nAttendees:\nPurpose:\nNotes:\nAction Items:\n${cursor}",
+        "description": "Insert a meeting notes template",
+        "category": "Templates",
+        "enabled_by_default": true
+      },
+      {
+        "trigger": "qlog",
+        "expansion": "${date} ${time}\n${cursor}",
+        "description": "Insert a log timestamp",
+        "category": "Log",
+        "enabled_by_default": true
+      },
+      {
+        "trigger": "qtodo",
+        "expansion": "- [ ] \n- [ ] \n- [ ] \n${cursor}",
+        "description": "Insert a short to-do checklist",
+        "category": "Templates",
+        "enabled_by_default": true
+      },
+      {
+        "trigger": "qbrf",
+        "handler": "insert_brf_test",
+        "description": "Insert a BRF test document via dynamic handler",
+        "category": "Braille",
+        "enabled_by_default": true
+      }
+    ],
+    "smart_triggers": [
+      {
+        "trigger": "bug",
+        "command": "ext.smartinsert.bug",
+        "syntax": "=bug()",
+        "description": "Insert a bug report template.",
+        "category": "Templates",
+        "enabled_by_default": true
+      },
+      {
+        "trigger": "meeting",
+        "command": "ext.smartinsert.meeting",
+        "syntax": "=meeting()",
+        "description": "Insert a meeting notes template.",
+        "category": "Templates",
+        "enabled_by_default": true
+      },
+      {
+        "trigger": "journal",
+        "command": "ext.smartinsert.journal",
+        "syntax": "=journal()",
+        "description": "Insert a journal entry.",
+        "category": "Templates",
+        "enabled_by_default": true
+      },
+      {
+        "trigger": "todo",
+        "command": "ext.smartinsert.todo",
+        "syntax": "=todo(count)",
+        "description": "Insert a to-do checklist. Optional count sets list length.",
+        "category": "Templates",
+        "enabled_by_default": true,
+        "min_args": 0,
+        "max_args": 1,
+        "large_insert_threshold": 50
+      },
+      {
+        "trigger": "logentry",
+        "command": "ext.smartinsert.logentry",
+        "syntax": "=logentry()",
+        "description": "Insert a log timestamp at the cursor.",
+        "category": "Log",
+        "enabled_by_default": true
+      },
+      {
+        "trigger": "brftest",
+        "command": "ext.smartinsert.brftest",
+        "syntax": "=brftest()",
+        "description": "Insert a predictable BRF test document for translation verification.",
+        "category": "Braille",
+        "enabled_by_default": true
+      },
+      {
+        "trigger": "rand",
+        "command": "ext.smartinsert.rand",
+        "syntax": "=rand(paragraphs, lines)",
+        "description": "Insert readable sample text.",
+        "category": "Sample Text",
+        "enabled_by_default": true,
+        "min_args": 0,
+        "max_args": 2,
+        "large_insert_threshold": 50
+      }
+    ],
+    "snippet_gallery": [
+      {
+        "id": "report-header",
+        "name": "Report Header",
+        "category": "Reports",
+        "description": "A titled report header with an author and date line.",
+        "body": "# {title}\n\nDate: {date}\n\n---\n\n",
+        "params": [
+          { "name": "title", "label": "Report title", "default": "Status Report" },
+          { "name": "date", "label": "Date", "default": "" }
+        ]
+      },
+      {
+        "id": "meeting-invite",
+        "name": "Meeting Invitation",
+        "category": "Meetings",
+        "description": "A meeting invitation with subject, date, location, and agenda.",
+        "body": "Subject: {subject}\nWhen: {date}\nWhere: {location}\n\nAgenda:\n{agenda}\n",
+        "params": [
+          { "name": "subject", "label": "Meeting subject", "default": "" },
+          { "name": "date", "label": "Date and time", "default": "" },
+          { "name": "location", "label": "Location", "default": "Online" },
+          { "name": "agenda", "label": "Agenda items", "default": "- " }
+        ]
+      },
+      {
+        "id": "bug-report-md",
+        "name": "Bug Report (Markdown)",
+        "category": "Reports",
+        "description": "A Markdown bug report template with title, build, screen reader, and steps.",
+        "body": "## {title}\n\n- Build: {build}\n- Screen reader: {sr}\n\n### Steps to reproduce\n{steps}\n\n### Expected\n\n### Actual\n",
+        "params": [
+          { "name": "title", "label": "Bug title", "default": "" },
+          { "name": "build", "label": "QUILL build", "default": "" },
+          { "name": "sr", "label": "Screen reader", "default": "" },
+          { "name": "steps", "label": "Steps to reproduce", "default": "1. " }
+        ]
+      }
+    ],
+    "preferences": [
+      {
+        "id": "smartinsert",
+        "title": "Smart Insert",
+        "parent": "Editing",
+        "section": "Insert Automation",
+        "placement": "page",
+        "description": "Configure Smart Insert triggers, abbreviations, log timestamp format, and BRF test content.",
+        "tabs": [
+          {
+            "id": "general",
+            "title": "General",
+            "description": "General Smart Insert behavior and large-insertion guards.",
+            "order": 10,
+            "sections": [
+              {
+                "id": "general_behavior",
+                "title": "General Behavior",
+                "settings": [
+                  {
+                    "key": "confirm_large_insertions",
+                    "label": "Confirm before large insertions",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Ask before inserting generated text that exceeds the threshold."
+                  },
+                  {
+                    "key": "large_insert_threshold",
+                    "label": "Large insertion threshold (paragraphs)",
+                    "type": "integer",
+                    "default": 50,
+                    "minimum": 1,
+                    "maximum": 1000,
+                    "description": "Ask for confirmation when inserting this many paragraphs or more."
+                  },
+                  {
+                    "key": "default_todo_count",
+                    "label": "Default to-do list length",
+                    "type": "integer",
+                    "default": 5,
+                    "minimum": 1,
+                    "maximum": 50,
+                    "description": "Number of blank items inserted by =todo() with no argument."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "log_mode",
+            "title": "Log Mode",
+            "description": "Configure the timestamp inserted when a .LOG file is opened.",
+            "order": 20,
+            "sections": [
+              {
+                "id": "log_mode_behavior",
+                "title": "Log Mode Behavior",
+                "settings": [
+                  {
+                    "key": "enable_log_mode",
+                    "label": "Enable .LOG compatibility",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Insert a timestamp when opening a file whose first line is .LOG."
+                  },
+                  {
+                    "key": "timestamp_format",
+                    "label": "Timestamp format",
+                    "type": "choice",
+                    "default": "long",
+                    "description": "Controls how timestamps are formatted.",
+                    "choices": [
+                      { "value": "long", "label": "Long date and time" },
+                      { "value": "short", "label": "Short date and time" },
+                      { "value": "iso", "label": "ISO 8601" },
+                      { "value": "date_only", "label": "Date only" },
+                      { "value": "time_only", "label": "Time only" },
+                      { "value": "custom", "label": "Custom format" }
+                    ]
+                  },
+                  {
+                    "key": "custom_timestamp_format",
+                    "label": "Custom timestamp pattern",
+                    "type": "string",
+                    "default": "",
+                    "placeholder": "e.g. %A, %B %d, %Y %I:%M %p",
+                    "description": "Python strftime pattern used when Timestamp format is set to Custom format.",
+                    "visible_when": { "setting": "timestamp_format", "equals": "custom" }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "triggers",
+            "title": "Smart Triggers",
+            "description": "Enable or disable individual typed = triggers.",
+            "order": 30,
+            "sections": [
+              {
+                "id": "trigger_toggles",
+                "title": "Active Triggers",
+                "settings": [
+                  {
+                    "key": "enable_bug",
+                    "label": "Enable =bug() trigger",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Allow =bug() to insert a bug report template."
+                  },
+                  {
+                    "key": "enable_meeting",
+                    "label": "Enable =meeting() trigger",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Allow =meeting() to insert a meeting notes template."
+                  },
+                  {
+                    "key": "enable_journal",
+                    "label": "Enable =journal() trigger",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Allow =journal() to insert a journal entry."
+                  },
+                  {
+                    "key": "enable_todo",
+                    "label": "Enable =todo() trigger",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Allow =todo() to insert a to-do checklist."
+                  },
+                  {
+                    "key": "enable_logentry",
+                    "label": "Enable =logentry() trigger",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Allow =logentry() to insert a timestamp at the cursor."
+                  },
+                  {
+                    "key": "enable_rand",
+                    "label": "Enable =rand() trigger",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Allow =rand() to insert readable sample text."
+                  },
+                  {
+                    "key": "enable_brftest",
+                    "label": "Enable =brftest() trigger",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Allow =brftest() to insert a predictable BRF test document."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "abbreviations",
+            "title": "Abbreviations",
+            "description": "Enable or disable the abbreviations this Quillin contributes.",
+            "order": 40,
+            "sections": [
+              {
+                "id": "abbrev_toggles",
+                "title": "Contributed Abbreviations",
+                "settings": [
+                  {
+                    "key": "enable_abbrev_qbug",
+                    "label": "Enable qbug abbreviation",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Expand qbug to a bug report template after a delimiter."
+                  },
+                  {
+                    "key": "enable_abbrev_qmeet",
+                    "label": "Enable qmeet abbreviation",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Expand qmeet to a meeting notes template."
+                  },
+                  {
+                    "key": "enable_abbrev_qlog",
+                    "label": "Enable qlog abbreviation",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Expand qlog to a log timestamp."
+                  },
+                  {
+                    "key": "enable_abbrev_qtodo",
+                    "label": "Enable qtodo abbreviation",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Expand qtodo to a short to-do checklist."
+                  },
+                  {
+                    "key": "enable_abbrev_qbrf",
+                    "label": "Enable qbrf abbreviation",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Expand qbrf to a BRF test document."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "brf_testing",
+            "title": "BRF Testing",
+            "description": "Configure the content produced by =brftest() and the qbrf abbreviation.",
+            "order": 50,
+            "sections": [
+              {
+                "id": "brf_test_content",
+                "title": "BRF Test Content",
+                "settings": [
+                  {
+                    "key": "brf_test_pages",
+                    "label": "Test document pages",
+                    "type": "integer",
+                    "default": 2,
+                    "minimum": 1,
+                    "maximum": 20,
+                    "description": "Number of braille pages generated by =brftest()."
+                  },
+                  {
+                    "key": "brf_test_lines_per_page",
+                    "label": "Lines per page",
+                    "type": "integer",
+                    "default": 3,
+                    "minimum": 1,
+                    "maximum": 25,
+                    "description": "Number of content lines per braille page in the test document."
+                  },
+                  {
+                    "key": "brf_test_line_text",
+                    "label": "Test line text",
+                    "type": "string",
+                    "default": "This is predictable BRF test content.",
+                    "description": "Repeated text on each line of the test document. Keep it short and all-ASCII for clean translation."
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

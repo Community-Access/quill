@@ -12,6 +12,9 @@ from quill.core.read_aloud import ReadAloudUnavailableError
 def _make_fake_zip_bytes() -> bytes:
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, "w") as zf:
+        # The runtime returns DECtalk.dll (the synthesis engine), not the
+        # graphical speak.exe sample.
+        zf.writestr("AMD64/DECtalk.dll", "binary")
         zf.writestr("AMD64/speak.exe", "binary")
     return buffer.getvalue()
 
@@ -57,6 +60,6 @@ def test_download_dectalk_runtime_accepts_matching_checksum(monkeypatch, tmp_pat
     digest = hashlib.sha256(payload).hexdigest()
     monkeypatch.setattr(dectalk_module, "DECTALK_RELEASE_ZIP_SHA256", digest)
     _patch_urlopen(monkeypatch, payload)
-    speak = dectalk_module.download_dectalk_runtime(tmp_path)
-    assert speak.name == "speak.exe"
-    assert speak.exists()
+    runtime = dectalk_module.download_dectalk_runtime(tmp_path)
+    assert runtime.name == "DECtalk.dll"
+    assert runtime.exists()

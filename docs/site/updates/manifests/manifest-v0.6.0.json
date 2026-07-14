@@ -1,0 +1,3925 @@
+{
+  "version": "v0.6.0",
+  "generated_at": "2026-06-17T16:57:03Z",
+  "install_prefix": "python/Lib/site-packages",
+  "files": [
+    {
+      "path": "quill/__init__.py",
+      "install_path": "python/Lib/site-packages/quill/__init__.py",
+      "sha256": "8cc8f1bcf5530ce3302e0ca884a3f93288de11414366d0d8a3ffe8e003bc2dc3",
+      "size": 76
+    },
+    {
+      "path": "quill/__main__.py",
+      "install_path": "python/Lib/site-packages/quill/__main__.py",
+      "sha256": "60d47bba82e1abe788c63237f5bd329934bf0eef63c860f07e23d9f340b6c864",
+      "size": 12732
+    },
+    {
+      "path": "quill/_vendor/__init__.py",
+      "install_path": "python/Lib/site-packages/quill/_vendor/__init__.py",
+      "sha256": "e0652ecf9396bca07fa7f62af53a4f0ec8a0142b31c0b54dd237ff7d90fac8eb",
+      "size": 79
+    },
+    {
+      "path": "quill/_vendor/autoupdate/__init__.py",
+      "install_path": "python/Lib/site-packages/quill/_vendor/autoupdate/__init__.py",
+      "sha256": "c13d119ece1304eb8714e1bd2888fb9873fe7a33ce6b841dbe6a28608a9bd4d6",
+      "size": 508
+    },
+    {
+      "path": "quill/_vendor/autoupdate/autoupdate.py",
+      "install_path": "python/Lib/site-packages/quill/_vendor/autoupdate/autoupdate.py",
+      "sha256": "c4c6a5b5ec2fa2d34700a1b7bf33db1371f0bedb591f624afadda202c386dcbf",
+      "size": 6111
+    },
+    {
+      "path": "quill/_vendor/autoupdate/bootstrappers/bootstrap-lin.sh",
+      "install_path": "python/Lib/site-packages/quill/_vendor/autoupdate/bootstrappers/bootstrap-lin.sh",
+      "sha256": "7c6309c33fc08a08bed76913f5f1172c6af159c4ebe5615e9d13e7d073e88ae9",
+      "size": 579
+    },
+    {
+      "path": "quill/_vendor/autoupdate/bootstrappers/bootstrap-mac.sh",
+      "install_path": "python/Lib/site-packages/quill/_vendor/autoupdate/bootstrappers/bootstrap-mac.sh",
+      "sha256": "b0f8069cffdf6439411f023645236b3848a35d17027946aab65f8f51eaf534d1",
+      "size": 659
+    },
+    {
+      "path": "quill/_vendor/autoupdate/bootstrappers/bootstrap.exe",
+      "install_path": "python/Lib/site-packages/quill/_vendor/autoupdate/bootstrappers/bootstrap.exe",
+      "sha256": "36997459894850cfd2e731a416a0bdb9dc68c81f5b2c1bf96bb2e084d77401c6",
+      "size": 12800
+    },
+    {
+      "path": "quill/_vendor/autoupdate/bootstrappers/checksums.sha256",
+      "install_path": "python/Lib/site-packages/quill/_vendor/autoupdate/bootstrappers/checksums.sha256",
+      "sha256": "ad8650bfedad761c8c577a18ecf0264fffbe4bc9864da05ec7bd629a762bc23e",
+      "size": 249
+    },
+    {
+      "path": "quill/_vendor/autoupdate/bootstrappers/README.txt",
+      "install_path": "python/Lib/site-packages/quill/_vendor/autoupdate/bootstrappers/README.txt",
+      "sha256": "fe8acde0ab09ea9bb02368dffc9cc2a1dd4675efe52433ba42a339099f3dd63d",
+      "size": 893
+    },
+    {
+      "path": "quill/_vendor/autoupdate/LICENSE",
+      "install_path": "python/Lib/site-packages/quill/_vendor/autoupdate/LICENSE",
+      "sha256": "2e1fb88e5e795b9bc4afe458ebe0c0408b3055d3fedfaed50926ba77857ffd07",
+      "size": 1060
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_chromatic/indent_chromatic_0_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_chromatic/indent_chromatic_0_down.wav",
+      "sha256": "772d28c763ecc56d84c4063d0024dd3ef28db97a1d681cc304664a889d0f11a7",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_chromatic/indent_chromatic_0_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_chromatic/indent_chromatic_0_up.wav",
+      "sha256": "a057c3cff9e96440c2e97d53ebc85188e0a50e2a1965d51c99fc01d0e86695cb",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_chromatic/indent_chromatic_1_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_chromatic/indent_chromatic_1_down.wav",
+      "sha256": "d125250f9cd88b6dc9441b26d4e1db1c6ffb63267cc636f265f32f938410d740",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_chromatic/indent_chromatic_1_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_chromatic/indent_chromatic_1_up.wav",
+      "sha256": "aa96757985c23564238c948f6512313b12c63d49eb21fe8094917fa6f06ee36b",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_chromatic/indent_chromatic_2_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_chromatic/indent_chromatic_2_down.wav",
+      "sha256": "9473783557eccd279127a2ec722597982d5bfd22ad7f62fb1e1fc9d990344e2e",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_chromatic/indent_chromatic_2_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_chromatic/indent_chromatic_2_up.wav",
+      "sha256": "9caea48538e107b73da83dcdaed6d1593d2dbc612f022f283b0181e4cb5bf847",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_chromatic/indent_chromatic_3_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_chromatic/indent_chromatic_3_down.wav",
+      "sha256": "26c640ad2935f1f3a18bdfbe8f24063ddba03399d15656eeaa5fd95810989f34",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_chromatic/indent_chromatic_3_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_chromatic/indent_chromatic_3_up.wav",
+      "sha256": "bac56156d7fd8782103fd165fd14306552ea873c17c4db84ce973378063ab32e",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_chromatic/indent_chromatic_4_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_chromatic/indent_chromatic_4_down.wav",
+      "sha256": "0658ddc3895f69176777b8cedd19e0ea45485a3d3789d9da8c971476c4559bcd",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_chromatic/indent_chromatic_4_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_chromatic/indent_chromatic_4_up.wav",
+      "sha256": "5dc2bae84218cf2fce03e3e4de35fbc3523344e9d1345e18281486e6deed6807",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_chromatic/indent_chromatic_5_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_chromatic/indent_chromatic_5_down.wav",
+      "sha256": "52136d787b7ba473dc251a1d4853b13daf0b7cef6ca5e6361cadcc5ee8e54bb6",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_chromatic/indent_chromatic_5_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_chromatic/indent_chromatic_5_up.wav",
+      "sha256": "0cd1f2b11520a6e7f2ea1edb5b81f5477414d9bd7bb5067f40b6ac6fbde02ce9",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_chromatic/indent_chromatic_6_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_chromatic/indent_chromatic_6_down.wav",
+      "sha256": "beaad4215b314e1f29f6de67f4b194927331a6ac0ed356068fb4e353994d4247",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_chromatic/indent_chromatic_6_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_chromatic/indent_chromatic_6_up.wav",
+      "sha256": "75a9f0304f46bcde47b405779da9739e2ac79c022cb68616e525e71aa95abc1c",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_chromatic/indent_chromatic_7_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_chromatic/indent_chromatic_7_down.wav",
+      "sha256": "a3a2d0d8ee622ac7499376ec60e2152aabe9ba5ee2999ff48448db9e43fdb72f",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_chromatic/indent_chromatic_7_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_chromatic/indent_chromatic_7_up.wav",
+      "sha256": "41b9d8bce4a7bbb5b6ca45201782ffb54c4e84941916b43ce15bfb98b77cbb6c",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_chromatic/manifest.json",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_chromatic/manifest.json",
+      "sha256": "9413f9f9e1b8dab6ac13bacc30988ae18a8767ecbc8d1f9748448d26bc708725",
+      "size": 1255
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_diatonic/indent_diatonic_0_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_diatonic/indent_diatonic_0_down.wav",
+      "sha256": "560183781e0bba349bdd7d12c2678902da074ab09af25da548d680272a684874",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_diatonic/indent_diatonic_0_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_diatonic/indent_diatonic_0_up.wav",
+      "sha256": "a6df38a3ad7973764675f2f79464703393d43ee6a1ff09effa703e8e5e8d7503",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_diatonic/indent_diatonic_1_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_diatonic/indent_diatonic_1_down.wav",
+      "sha256": "c8cf08cf2fc32125fbde869e304b7403d2ddfe1596bdb3b63c72812261fffa22",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_diatonic/indent_diatonic_1_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_diatonic/indent_diatonic_1_up.wav",
+      "sha256": "1cdcd2880ac64603decc6717d044e830f899818672b425722c5017bf93bc4a8d",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_diatonic/indent_diatonic_2_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_diatonic/indent_diatonic_2_down.wav",
+      "sha256": "a8a972c2626f46b1187cd7d29d05aa9f32f867c2f3fbbed75c03717d52bad1b4",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_diatonic/indent_diatonic_2_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_diatonic/indent_diatonic_2_up.wav",
+      "sha256": "592880ac58bfe24fbc208697abbcceffa2335f9072640f5bdcd3be49536acd75",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_diatonic/indent_diatonic_3_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_diatonic/indent_diatonic_3_down.wav",
+      "sha256": "2b95d82fc74cd1f7d2b129feb72158352b8568a987725df6650d0596f2bd1732",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_diatonic/indent_diatonic_3_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_diatonic/indent_diatonic_3_up.wav",
+      "sha256": "6c8e8a5ad7f8de6cfa8a56014c8b44600e9215a6d6356506448391d97f2e3b55",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_diatonic/indent_diatonic_4_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_diatonic/indent_diatonic_4_down.wav",
+      "sha256": "f0d1919e24af34bfa3c53a9d5d5821ba384c9199591a98a8603b2254e27e492b",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_diatonic/indent_diatonic_4_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_diatonic/indent_diatonic_4_up.wav",
+      "sha256": "3fcf86647738c23702aed3a3ecae24077e34ef023999dda58d1131c6bf6621ff",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_diatonic/indent_diatonic_5_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_diatonic/indent_diatonic_5_down.wav",
+      "sha256": "0c5295647d29d2f8c5f18bcd5a201b234cd1c01d8f33a9134ebaf066e8fe7008",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_diatonic/indent_diatonic_5_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_diatonic/indent_diatonic_5_up.wav",
+      "sha256": "73be099921358913f1df23c6a59e213dc9b8805bf7a133ffc0175b8669b8c45d",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_diatonic/indent_diatonic_6_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_diatonic/indent_diatonic_6_down.wav",
+      "sha256": "8575ff9fb92bb7cf26b4bbb33eadfdfada8e3c1ca6526b81b6869cabeffa6f31",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_diatonic/indent_diatonic_6_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_diatonic/indent_diatonic_6_up.wav",
+      "sha256": "11117c82c0ed4f2a3f0e32bac01258c6b6874408de7f954070473512edb7e92f",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_diatonic/indent_diatonic_7_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_diatonic/indent_diatonic_7_down.wav",
+      "sha256": "a80d3830023c7d3716622765525825115741664be4595081914714ed594f04d7",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_diatonic/indent_diatonic_7_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_diatonic/indent_diatonic_7_up.wav",
+      "sha256": "91ea53c0638a1cf4869f72b20c7efa07df6550291982f0387266b6716496e324",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_diatonic/manifest.json",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_diatonic/manifest.json",
+      "sha256": "497f82809a00b84de7964d71c347eac35f6f0b3f5e20d599d604f0c825da12f1",
+      "size": 1277
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_0_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_0_down.wav",
+      "sha256": "e0d015321cb0b16f2440d61a18308c94b5fd95f495757bcedcb13dcc51e60963",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_0_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_0_up.wav",
+      "sha256": "39a99711577507d685c2001b439cf4ca8af3bca0b93258f296c29d20b4a2ac2e",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_1_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_1_down.wav",
+      "sha256": "f47339677977fcb88e7dc6dbfb32ee7e6bd97fcbb02669dbb34f1da476cbec67",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_1_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_1_up.wav",
+      "sha256": "aaada1d38d8804b984fe503affd68e84a14a6f3eab023c0afe51ab8fad6397e1",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_2_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_2_down.wav",
+      "sha256": "748fac077c9554991a1505e7746548b36596dce48c6a7bb6a97a0060dfe342f3",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_2_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_2_up.wav",
+      "sha256": "83c9d191dd170573950c1d0e060cacea6ea70236e46d03f15d80e082a31559b8",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_3_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_3_down.wav",
+      "sha256": "81deb54f8b5277b7bf967164c817369c19bae7bdf3593daac9be8e5c633ed7f7",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_3_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_3_up.wav",
+      "sha256": "0bc8e477e78a901aaaa6805cf2a737eb298e827f8a0e3df92b2daa0b89a747cf",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_4_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_4_down.wav",
+      "sha256": "dbd094c64587d14f052822f891e622affeec9583c8655ce65c67722288eb0573",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_4_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_4_up.wav",
+      "sha256": "86a65258cbaed89692ac682938a9f063a7f37bfcbb69a9bd223e07302f69d3a6",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_5_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_5_down.wav",
+      "sha256": "dea05303067227a080d3d323e21c44f49ff0906415179636848cc006b19dbbdf",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_5_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_5_up.wav",
+      "sha256": "2a9e52aa7901505c6ec70b079ae9888f3f6eb82e047b9ea77ede203c4bf81e99",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_6_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_6_down.wav",
+      "sha256": "6477a963afd9ae12469bc10fec4cbe378e7628008c97a608c6831d5f0aa48dbe",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_6_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_6_up.wav",
+      "sha256": "970cb446732a063cedb6f1e5f6318783a897237f2b9a734e1b240218fa73d34e",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_7_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_7_down.wav",
+      "sha256": "b4a32bf9d8359464c23137b99b932082138b2d2d068bb9a7c3e100524065c3a8",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_7_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_pentatonic/indent_pentatonic_7_up.wav",
+      "sha256": "0c5c5947bfd323e5814e79c2cb423d7402603ee0cb233abb3fa647087ed8e4a6",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_pentatonic/manifest.json",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_pentatonic/manifest.json",
+      "sha256": "05420ef5a50399f9968e17245fa319cbec7f1e6ceeb3ca1bba773001c4fd031c",
+      "size": 1351
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_0_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_0_down.wav",
+      "sha256": "403a5c93f0c7181edaaec78bc1875fada5c08a11933855bf8ab777fdd6cabb6e",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_0_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_0_up.wav",
+      "sha256": "3fe10701bf1e4bbd88f1d4dafe25eb81ffdec5734abae7af03f7f0cacbfa804f",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_1_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_1_down.wav",
+      "sha256": "b01e4664643e950c7583dcdb8449af124e9ae102f76059cad405d69594e8eb91",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_1_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_1_up.wav",
+      "sha256": "c13ee78d78f41fc07dc93a6731e22b79aca6b267bb781c885f3007a5ef057b2e",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_2_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_2_down.wav",
+      "sha256": "cbdd18796b34d886ab13ca15df5f9d1b111c6dbd93779ff5992bdfb918bd01f2",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_2_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_2_up.wav",
+      "sha256": "b18fa7c86560bce3e835357611ea76f1368749aa085d586b51d502676f9ebded",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_3_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_3_down.wav",
+      "sha256": "991b1fa9a4f4bcfa9811d66ffc21be1dc181e62d39001c7a258ae1196654b437",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_3_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_3_up.wav",
+      "sha256": "e82d6e3ae38389d847a4f0a9fd1f3a831a3205d4b3d812e8af3bf61480316239",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_4_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_4_down.wav",
+      "sha256": "fc9d941fe4e99190f2b71a512ca63513dbb8858e629307ed9eac0013a7217b08",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_4_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_4_up.wav",
+      "sha256": "72eaa6b8eab594f460903d1bf5dc28a0cc6521f916406ea6851fbec8dbcf3ebd",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_5_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_5_down.wav",
+      "sha256": "8b8a92457c904560556cf3fac7ae618b658633ccd11b9c1cdf1ac78b40949d13",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_5_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_5_up.wav",
+      "sha256": "84e56cfc40170ed71fda9537a6810cb657ef1924e7d11d3e78028b71ac2d21aa",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_6_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_6_down.wav",
+      "sha256": "5b31f525b1f4d2f3c324f4a199cb7231bb29e4d6c7efe5f37ce7cc97bd8a581b",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_6_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_6_up.wav",
+      "sha256": "7efda6ba4ad53466d0935fd7c293af5d65324802dd3a9a34b295196f3395c1d0",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_7_down.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_7_down.wav",
+      "sha256": "73e4b23a513c56f69344c16f22d218cc5a48323f05f8bf6cbdaa6fa5f1737267",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_7_up.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_whole_tone/indent_whole_tone_7_up.wav",
+      "sha256": "b0a9d41c4027080e43bde19d989cd49c5b65b396a07eb92793852a0e944f9ee3",
+      "size": 7364
+    },
+    {
+      "path": "quill/assets/sound_packs/indent_whole_tone/manifest.json",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/indent_whole_tone/manifest.json",
+      "sha256": "3b36cbec6c76d9f7785abe7a24c96039d059ca6d7dec06c0ad42d16c1a9d3b1b",
+      "size": 1307
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/ai_done.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/ai_done.wav",
+      "sha256": "ddc55b5ec228db63604899e1fa8ccc0ce1e8976d293d07d1dec6ee19fe646dba",
+      "size": 15038
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/ai_error.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/ai_error.wav",
+      "sha256": "ccd1bfde911d9978ad460dc528d1eccf0c009421565690a7e73dadf5c08100d6",
+      "size": 18208
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/ai_start.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/ai_start.wav",
+      "sha256": "3278b6145b9493defb20989ad46690906e75b7410e88e54c80545c1fd95dbca9",
+      "size": 15038
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/autocomplete.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/autocomplete.wav",
+      "sha256": "68dab1dc0ae52aa3b483f32a8f80a645bfb3ab5efef0ea328f1e87ac4dd88624",
+      "size": 6744
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/browse_off.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/browse_off.wav",
+      "sha256": "e9b7b67c03a58a43e96d4e1ed55762fdc9a67743c667245de30a7b1e10e3b697",
+      "size": 11510
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/browse_on.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/browse_on.wav",
+      "sha256": "f6cca4f487727c2dbaa4ffbcb56267e224d641d438ab2da3ad42f870826c8635",
+      "size": 11510
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/compare_enter.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/compare_enter.wav",
+      "sha256": "b0e09b4d078b41e0c0299eeee03f183ebd16298319fff9b13f886a7b105405d4",
+      "size": 11332
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/compare_exit.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/compare_exit.wav",
+      "sha256": "c0a4ddf08e4b5a763fb3ea7f924486b033f77c115463dd31748b225a66772cb7",
+      "size": 11332
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/compare_next.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/compare_next.wav",
+      "sha256": "7e6b46d9cd499ba12497ade48061d42662c80a374467d20cb5cb84d89da8638c",
+      "size": 4012
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/compare_none.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/compare_none.wav",
+      "sha256": "21043e66eea9a80634ae428a6b6816278c55ac4270352257fc5c4d80df18aa6f",
+      "size": 11508
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/compare_prev.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/compare_prev.wav",
+      "sha256": "92e23ebd3b47ccf73d0cda3060376d8d26bb2047ba5a4304f48b7a57b91e65f6",
+      "size": 4012
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/connect.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/connect.wav",
+      "sha256": "5842bafab058bea51d8cc8e43c2290bce0ba7b7f09fe0ff29b1d1be4d93e8814",
+      "size": 13714
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/create.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/create.wav",
+      "sha256": "183fac657cf1ec07d38491ceb32d434dc7e753904673c138e67d34b7a150f979",
+      "size": 13274
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/delete.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/delete.wav",
+      "sha256": "4b3170a171c93a4438fe4ca99f08fff9ba8e0ff8133ad7e1405ab8fabb3b1f05",
+      "size": 7186
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/disconnect.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/disconnect.wav",
+      "sha256": "421f1fe10b2fad5a571ae0832b50a75624c81dee2e801d471a2084f4fb2d0691",
+      "size": 13714
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/error.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/error.wav",
+      "sha256": "54bf30805c09dc5524fb6ec478e8b63b94fea1555fa0e8239690f8bd72965df9",
+      "size": 17682
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/expand.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/expand.wav",
+      "sha256": "0a6a603cf9aad80afbc625c12d4abdb0ec0df7db289f5cf59149d7fb435ea1a2",
+      "size": 7186
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/found.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/found.wav",
+      "sha256": "03d6c0768403feb26a249cc1f8f58f560521dd9bf339ea542dba0cc1f65205dc",
+      "size": 5776
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/manifest.json",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/manifest.json",
+      "sha256": "4817ea65f9f81f1ce5daf7f57041549221a8431ce4531a2749a73552a999cb61",
+      "size": 1703
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/nav_heading.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/nav_heading.wav",
+      "sha256": "25bce64c7caf91687676c07004c35bafb5ebcd40ce04dcc4dd0ca88aa04ae9b0",
+      "size": 5246
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/nav_table.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/nav_table.wav",
+      "sha256": "bbdc909bb17eba59199767604131a490ffdc8bdff767e154ae80de54e0f4ba4b",
+      "size": 7802
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/notfound.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/notfound.wav",
+      "sha256": "7dc65f2f1ea94a356a98fdfa5d93930c69765807eefbd402acd2822ce20e5513",
+      "size": 12830
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/quill_key.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/quill_key.wav",
+      "sha256": "24629c43c92e8d8b50e5eb8d1c96b216c7a12309b1240796d60211bef5749111",
+      "size": 6218
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/rec_start.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/rec_start.wav",
+      "sha256": "c6576e40b430644c39e5b611626b17995b6f1f823c97cff7107170f9c2dbde18",
+      "size": 12126
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/rec_stop.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/rec_stop.wav",
+      "sha256": "98b6534957cc2bec6c0097eb5530f0ce52d74a639621f380706edbf8a92e13a0",
+      "size": 12126
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/save.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/save.wav",
+      "sha256": "fd80a8cf9243073309afccd4fc941838f4e3f3e576a7afb0b6a4592a477531c3",
+      "size": 7100
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/snippet.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/snippet.wav",
+      "sha256": "40120e4c2484844c701983c636159bd461b8b7ce4066cf52dea7215a471fbdd3",
+      "size": 9478
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/sound_off.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/sound_off.wav",
+      "sha256": "d253dd16cfcb398ac68c81b387dd1e576535df0a9724894023860dadfee3963c",
+      "size": 10626
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/sound_on.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/sound_on.wav",
+      "sha256": "bd4d7bd51ba3aca56610297cbea291fd5d97fe34ebfbd9a3261196e719754ae0",
+      "size": 10626
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/warning.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/warning.wav",
+      "sha256": "17ab13d2d23f51536ce364ee55266d271a00ba5bad19ed17d59c72ae20b489c1",
+      "size": 7982
+    },
+    {
+      "path": "quill/assets/sound_packs/ink/wrap.wav",
+      "install_path": "python/Lib/site-packages/quill/assets/sound_packs/ink/wrap.wav",
+      "sha256": "039a4f5de04fdbc40f1aa24a5756fa74d88d5d6979b75d542ab9218ce6f4cf08",
+      "size": 9566
+    },
+    {
+      "path": "quill/core/__init__.py",
+      "install_path": "python/Lib/site-packages/quill/core/__init__.py",
+      "sha256": "dcbc8727a4ddcd6172f48bffa400d1fbf0f07498ced7f738a89d91fcb5cdaa43",
+      "size": 28
+    },
+    {
+      "path": "quill/core/a11y_regions.py",
+      "install_path": "python/Lib/site-packages/quill/core/a11y_regions.py",
+      "sha256": "fe6568ec685745ca2ed970260ccef945bb62af43a6d892a462d031c897da30a9",
+      "size": 3614
+    },
+    {
+      "path": "quill/core/abbreviations.py",
+      "install_path": "python/Lib/site-packages/quill/core/abbreviations.py",
+      "sha256": "0ba2d3f198651e02bebb885f912cc8226a974e883f346aca155725d866ff026f",
+      "size": 8152
+    },
+    {
+      "path": "quill/core/accessibility_agent.py",
+      "install_path": "python/Lib/site-packages/quill/core/accessibility_agent.py",
+      "sha256": "b3915c0db40f73eca676dc1c74421d72ef2492c1ff575e7116c6105cb9b13207",
+      "size": 20870
+    },
+    {
+      "path": "quill/core/acr.py",
+      "install_path": "python/Lib/site-packages/quill/core/acr.py",
+      "sha256": "63d553d0022316f94bf9bf15d87bd63b64bb9de670a31ae79460f8e830722cd7",
+      "size": 1602
+    },
+    {
+      "path": "quill/core/ai/__init__.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/__init__.py",
+      "sha256": "936960c753548f1ae7d499b499c0466ade5619c9dcb02996892f1c967bb85e6f",
+      "size": 606
+    },
+    {
+      "path": "quill/core/ai/agent.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/agent.py",
+      "sha256": "f76f915269c42605cd02cb793ff9aad1262b71da429f1ab42653c09019dde130",
+      "size": 1927
+    },
+    {
+      "path": "quill/core/ai/agent_session.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/agent_session.py",
+      "sha256": "92cedc7f881d77f8b4cc68ef0ce4332e7a13ef41e004f05cb5db1995a2091cae",
+      "size": 6622
+    },
+    {
+      "path": "quill/core/ai/assistant.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/assistant.py",
+      "sha256": "e462bd0b97bce110fe444713b7fdb8eadbbc3a2c29c9ad0913c1787ab79bce7f",
+      "size": 16485
+    },
+    {
+      "path": "quill/core/ai/availability.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/availability.py",
+      "sha256": "7c92fd6c580b9e5b3a347c4696c5b23c03a43b1f24ec13c29f9af1c64ec8fd3e",
+      "size": 3073
+    },
+    {
+      "path": "quill/core/ai/backend.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/backend.py",
+      "sha256": "2b0e7ccaa45aaabe8e37e4cd3fb3ac1fe9e1a75900a818343368fc0edbbfad1b",
+      "size": 1274
+    },
+    {
+      "path": "quill/core/ai/chat_export.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/chat_export.py",
+      "sha256": "3b276db91d4f6549968d25e393aa02ccb2a1816e466de96ea31ece62b7761b3a",
+      "size": 1643
+    },
+    {
+      "path": "quill/core/ai/compaction.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/compaction.py",
+      "sha256": "e6eebfc0f90aa5bb5bdb84e74080f072af46e414b05e616d8ef7263bd9ee54e5",
+      "size": 4288
+    },
+    {
+      "path": "quill/core/ai/custom_instructions.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/custom_instructions.py",
+      "sha256": "f1d14094d522e68a8dbcf674ea3cb2e615ea569ed5945d7d06d4faf79c9fa465",
+      "size": 20217
+    },
+    {
+      "path": "quill/core/ai/device_login.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/device_login.py",
+      "sha256": "54fc0157e3f7a02d77ea97923058dddad70323af62b103edfed5156014f63950",
+      "size": 6750
+    },
+    {
+      "path": "quill/core/ai/diarization.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/diarization.py",
+      "sha256": "61a2f42247e55a03202cd7abd11c771fb987d3c9b284801f3770a060e3b7fbb4",
+      "size": 8730
+    },
+    {
+      "path": "quill/core/ai/diff_review.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/diff_review.py",
+      "sha256": "fa137546d257d087808d051760e86cd7f0ec0f0bdc77972d067751184d5f5411",
+      "size": 6565
+    },
+    {
+      "path": "quill/core/ai/document_qa.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/document_qa.py",
+      "sha256": "3ad4062d351797d62ffaa6644d1864f4d718ad4fb9ed6f7be34ba91196533ece",
+      "size": 6068
+    },
+    {
+      "path": "quill/core/ai/external_engine.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/external_engine.py",
+      "sha256": "38777aa628d86e340df298c4ae8d9090fec76ea03ad95d67e2ac74ca0ce5c761",
+      "size": 13181
+    },
+    {
+      "path": "quill/core/ai/foundation_models.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/foundation_models.py",
+      "sha256": "e393d7c7151d8bfb8ce8426744bebf5516b3f459913c59a4279b401cd4c1edad",
+      "size": 6479
+    },
+    {
+      "path": "quill/core/ai/grammar_check.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/grammar_check.py",
+      "sha256": "36a5ec4ff6fe2462f664842be02bf28072abf6d715d1fa428b9cee4c87435121",
+      "size": 6443
+    },
+    {
+      "path": "quill/core/ai/llama_cpp_backend.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/llama_cpp_backend.py",
+      "sha256": "80cbd5daa22663baea29758eedc870f3671a673601c485e377a208bda4cfe8dd",
+      "size": 8595
+    },
+    {
+      "path": "quill/core/ai/model_manager.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/model_manager.py",
+      "sha256": "c042efde5708c543b0c46f0d94966501ca8f897470a4005e3f5ce5ffd472ac27",
+      "size": 7684
+    },
+    {
+      "path": "quill/core/ai/model_tiers.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/model_tiers.py",
+      "sha256": "46fca24f1b7dd32d22bde6ca0d169ca4afc121e7b42072169b254749043a865e",
+      "size": 5858
+    },
+    {
+      "path": "quill/core/ai/provider_backend.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/provider_backend.py",
+      "sha256": "5f62ecd5bcaa647a9b681075e6ce50bbdedb7538b736173cb7f0a588ac433904",
+      "size": 5549
+    },
+    {
+      "path": "quill/core/ai/providers.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/providers.py",
+      "sha256": "907dc574b1413235e84aa91a7a0debde1400c4a5b614ad685a5d52003e17d4f4",
+      "size": 9239
+    },
+    {
+      "path": "quill/core/ai/sessions.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/sessions.py",
+      "sha256": "1b8ac8d2bfc45688f62d5ef2317f5982767683f695ac1fab08b9c5e2780c3b80",
+      "size": 17287
+    },
+    {
+      "path": "quill/core/ai/spell_check.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/spell_check.py",
+      "sha256": "77eb167e103470c50e2b934b1a4a898c76183049626a58669ea0229e9cb7cafc",
+      "size": 7708
+    },
+    {
+      "path": "quill/core/ai/style.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/style.py",
+      "sha256": "6cf0faa2b256f38269ef9f70d8c3eca4710e48061eb53192eabefcedd934da59",
+      "size": 3197
+    },
+    {
+      "path": "quill/core/ai/thesaurus.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/thesaurus.py",
+      "sha256": "d877d993727f29b4791e5ac644ec8631a53c9651b0da87ed72d72b0a1c9d706a",
+      "size": 3794
+    },
+    {
+      "path": "quill/core/ai/tools.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/tools.py",
+      "sha256": "23bdde8b270181ae3d0129eaf84c2a862b658329b3a443df9868010ca52fd65f",
+      "size": 926
+    },
+    {
+      "path": "quill/core/ai/transcription.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/transcription.py",
+      "sha256": "69fbae5e7f8f7ce3f44ddaeae240fa3f93fbd3a05a398b9c1a1ba7650e4cf44f",
+      "size": 5964
+    },
+    {
+      "path": "quill/core/ai/translation.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/translation.py",
+      "sha256": "e00185e8f39651d7b6c0093060631580ee89c2d763b4b2ac2b052fbecf415a6d",
+      "size": 6555
+    },
+    {
+      "path": "quill/core/ai/tts.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/tts.py",
+      "sha256": "cfe0e16de3e4db31bc1c5eb2c8b08f6e0bd60cf9cc1fb4f5b9610c55919428c5",
+      "size": 9489
+    },
+    {
+      "path": "quill/core/ai/vision.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/vision.py",
+      "sha256": "1a060c215aa681dd189d01264f487acdbfb21a21ab01b26d5202f6a6f7e6379f",
+      "size": 8270
+    },
+    {
+      "path": "quill/core/ai/vision_prompts.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/vision_prompts.py",
+      "sha256": "f96ff3dd19064e86d67d9144cc86c7cef40b154076d0630c76135e967094cb94",
+      "size": 9280
+    },
+    {
+      "path": "quill/core/ai/writing_instructions.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai/writing_instructions.py",
+      "sha256": "d57caf3b1570a8aeb3d3dba90815bedb689c64586ca14226cfe9899d2e1ebfbb",
+      "size": 4468
+    },
+    {
+      "path": "quill/core/ai_chat.py",
+      "install_path": "python/Lib/site-packages/quill/core/ai_chat.py",
+      "sha256": "feec0407ba7fb1bac1ac8416186fea670624920b6ad119c40f4d7bbb23f9ef58",
+      "size": 6526
+    },
+    {
+      "path": "quill/core/announcements.py",
+      "install_path": "python/Lib/site-packages/quill/core/announcements.py",
+      "sha256": "94b46f287d4209f37c7c0db014823c3be6d92ea386ac4bf2ae8a0474eb846545",
+      "size": 3421
+    },
+    {
+      "path": "quill/core/assistant.py",
+      "install_path": "python/Lib/site-packages/quill/core/assistant.py",
+      "sha256": "cfc1971ee3bbd71d573d4e6f46735b09960d1a7d5adcaa9a7a078bde6872f896",
+      "size": 7801
+    },
+    {
+      "path": "quill/core/assistant_agents.py",
+      "install_path": "python/Lib/site-packages/quill/core/assistant_agents.py",
+      "sha256": "392e3e0b342f6b6b3fb3e0e7957a2ad2f019baba216134601167a3fe78d1d77d",
+      "size": 5020
+    },
+    {
+      "path": "quill/core/assistant_ai.py",
+      "install_path": "python/Lib/site-packages/quill/core/assistant_ai.py",
+      "sha256": "fe688171ba411d49a936b96bbc17f36185e52767b3d7afddec8ca6ef35cde57f",
+      "size": 52403
+    },
+    {
+      "path": "quill/core/assistant_prompts.py",
+      "install_path": "python/Lib/site-packages/quill/core/assistant_prompts.py",
+      "sha256": "d26ac3a841e336f0a04291f4bfc5adeece0f9c388931c0745519dc3cfc3f8f00",
+      "size": 4456
+    },
+    {
+      "path": "quill/core/autoformat.py",
+      "install_path": "python/Lib/site-packages/quill/core/autoformat.py",
+      "sha256": "d194c066a088fc272c9003ed0b9fb1981d1e1094f4971eccb64b282acd489889",
+      "size": 1695
+    },
+    {
+      "path": "quill/core/autosave.py",
+      "install_path": "python/Lib/site-packages/quill/core/autosave.py",
+      "sha256": "7ea8c85c5b2cfededadd964ddf8f3a060cc5c86a2fe4362530a04d054d2c7016",
+      "size": 2000
+    },
+    {
+      "path": "quill/core/backups.py",
+      "install_path": "python/Lib/site-packages/quill/core/backups.py",
+      "sha256": "bfb348b62d70d63b47fc48d85d9726510c54d47200075976eafdc3aa3e8a0a47",
+      "size": 1550
+    },
+    {
+      "path": "quill/core/bookmarks.py",
+      "install_path": "python/Lib/site-packages/quill/core/bookmarks.py",
+      "sha256": "78e8d8d4f07e2bb5f77ffd5962cb3a919826013b36698dc94aefa4cd4bfeed11",
+      "size": 808
+    },
+    {
+      "path": "quill/core/braille_pack.py",
+      "install_path": "python/Lib/site-packages/quill/core/braille_pack.py",
+      "sha256": "59939d8ee665324e2ff9e812fb5e2fa5efab3ee321b54ccb60edd1063d48ebe1",
+      "size": 4247
+    },
+    {
+      "path": "quill/core/braille_position.py",
+      "install_path": "python/Lib/site-packages/quill/core/braille_position.py",
+      "sha256": "25e12f088fe9d8e217d174f2321764d09d9d2ef245a5fb91f543a066b90c4244",
+      "size": 5685
+    },
+    {
+      "path": "quill/core/braille_status.py",
+      "install_path": "python/Lib/site-packages/quill/core/braille_status.py",
+      "sha256": "8f56bc3dfdd65189406525e289bc0d2fd08f7047c828d0d78b60c0bfacbd16b0",
+      "size": 11673
+    },
+    {
+      "path": "quill/core/braille_statusbar.py",
+      "install_path": "python/Lib/site-packages/quill/core/braille_statusbar.py",
+      "sha256": "0a3b01659ae8810f4e62eccd3e19172e52691cb4a0a0a5a34959103e110ea640",
+      "size": 2129
+    },
+    {
+      "path": "quill/core/braille_worker.py",
+      "install_path": "python/Lib/site-packages/quill/core/braille_worker.py",
+      "sha256": "927dfd17b9b65ae0b5c0bf95ca464805c624288a3f1d0da36b044ae50b801226",
+      "size": 1819
+    },
+    {
+      "path": "quill/core/braille_worker_client.py",
+      "install_path": "python/Lib/site-packages/quill/core/braille_worker_client.py",
+      "sha256": "f8b2d0b8c8af0a195ee7353cc5cd9a8cf2aee64a8eda5782d2d13dcb49352540",
+      "size": 3978
+    },
+    {
+      "path": "quill/core/brf_ascii.py",
+      "install_path": "python/Lib/site-packages/quill/core/brf_ascii.py",
+      "sha256": "f9675eee937ab0f441333f02c523ff387d1fc2f4a7fb22df1cca4f97c33bdc92",
+      "size": 4010
+    },
+    {
+      "path": "quill/core/brf_document.py",
+      "install_path": "python/Lib/site-packages/quill/core/brf_document.py",
+      "sha256": "3320bfdc24631cc430e975b015bb9e43753e99ae6b784ad98d280df1c07ce0cf",
+      "size": 4438
+    },
+    {
+      "path": "quill/core/brf_page_map.py",
+      "install_path": "python/Lib/site-packages/quill/core/brf_page_map.py",
+      "sha256": "ef2058590ac7427c74befa9c92dde689d510bb640a4789f3ed6dbd16c1f823c0",
+      "size": 11022
+    },
+    {
+      "path": "quill/core/browser_preview.py",
+      "install_path": "python/Lib/site-packages/quill/core/browser_preview.py",
+      "sha256": "dc3ed036e81e363f1b25154f34693cbea78ea8c130ba1bff0173f8228f3aa4f3",
+      "size": 15381
+    },
+    {
+      "path": "quill/core/bw_providers.py",
+      "install_path": "python/Lib/site-packages/quill/core/bw_providers.py",
+      "sha256": "1da0761816c482575a357ac391898874435691a55855a9ed4780f9add3db2109",
+      "size": 5070
+    },
+    {
+      "path": "quill/core/bw_speech.py",
+      "install_path": "python/Lib/site-packages/quill/core/bw_speech.py",
+      "sha256": "37393ca064630bfd02603295fb930643bf925f1c377e0ef3a07f9daa2011a255",
+      "size": 8425
+    },
+    {
+      "path": "quill/core/citations.py",
+      "install_path": "python/Lib/site-packages/quill/core/citations.py",
+      "sha256": "0a2aaf90523cadff33989063d40309a7d9ca9f3d6b4811b2747a0a463dcd8b08",
+      "size": 9102
+    },
+    {
+      "path": "quill/core/clipboard_collector.py",
+      "install_path": "python/Lib/site-packages/quill/core/clipboard_collector.py",
+      "sha256": "570a24fd87ebb581e805a2ff3b3d27328c7d81be42267c4dfd438fe34f3b35cc",
+      "size": 893
+    },
+    {
+      "path": "quill/core/commands.py",
+      "install_path": "python/Lib/site-packages/quill/core/commands.py",
+      "sha256": "0ed9c43f2abd58803695d860f9f1ed2b020f4e7b964c37ba3443bfd8f7f4f161",
+      "size": 2366
+    },
+    {
+      "path": "quill/core/compare_service.py",
+      "install_path": "python/Lib/site-packages/quill/core/compare_service.py",
+      "sha256": "cf3ca9ab88c25f4aef28aab98b5fbd5261c7dec284c92ca2bc98ab09b43fe7b5",
+      "size": 14266
+    },
+    {
+      "path": "quill/core/compliance.py",
+      "install_path": "python/Lib/site-packages/quill/core/compliance.py",
+      "sha256": "de706fbfefbf05591295fcb662e4f3a2ecb471c9cddfb674302530bdb11a2980",
+      "size": 19683
+    },
+    {
+      "path": "quill/core/context_menu.py",
+      "install_path": "python/Lib/site-packages/quill/core/context_menu.py",
+      "sha256": "c3a78fcedf4d770695573a49e8015306a17b751ae8d9b84581e218a750ff5956",
+      "size": 4890
+    },
+    {
+      "path": "quill/core/contrast.py",
+      "install_path": "python/Lib/site-packages/quill/core/contrast.py",
+      "sha256": "c4f099e81bd89243194aa0757996c365065315a98cac247b4b86b264e99d4807",
+      "size": 2327
+    },
+    {
+      "path": "quill/core/contributions.py",
+      "install_path": "python/Lib/site-packages/quill/core/contributions.py",
+      "sha256": "d18ce028c756730e7f5691a83813fcd63181c9d0270c9a4dc47b271291e576ca",
+      "size": 11066
+    },
+    {
+      "path": "quill/core/contributors.py",
+      "install_path": "python/Lib/site-packages/quill/core/contributors.py",
+      "sha256": "ef0979a2e3400420c0497353f5ec11d78a6f486db859f7d609c64fa035bcb5b0",
+      "size": 3443
+    },
+    {
+      "path": "quill/core/copy_tray.py",
+      "install_path": "python/Lib/site-packages/quill/core/copy_tray.py",
+      "sha256": "753b7016b07e9721e15c3d9a9299122c066d70128b73f7b3e279ab6703d2bda7",
+      "size": 4261
+    },
+    {
+      "path": "quill/core/cursor_address.py",
+      "install_path": "python/Lib/site-packages/quill/core/cursor_address.py",
+      "sha256": "5eaa35309cf4d098b87031c60d715e2f9b9cb18c9efb977e6926994a01f92681",
+      "size": 2188
+    },
+    {
+      "path": "quill/core/custom_profiles.py",
+      "install_path": "python/Lib/site-packages/quill/core/custom_profiles.py",
+      "sha256": "d44551a9a07f7a903a212e02dc5dcfc3544c0ce8aa4119f6e7efb547735cb6f0",
+      "size": 4170
+    },
+    {
+      "path": "quill/core/datetime_insert.py",
+      "install_path": "python/Lib/site-packages/quill/core/datetime_insert.py",
+      "sha256": "b05ef93c5079ddb50db1fc7c57c2388f3052f62072583ef8a929302977eda14d",
+      "size": 3901
+    },
+    {
+      "path": "quill/core/dectalk_runtime.py",
+      "install_path": "python/Lib/site-packages/quill/core/dectalk_runtime.py",
+      "sha256": "82c32410f442013a28e10ffee9749ea808d56c199169aecf282a8948c420d2b5",
+      "size": 2132
+    },
+    {
+      "path": "quill/core/diagnostics.py",
+      "install_path": "python/Lib/site-packages/quill/core/diagnostics.py",
+      "sha256": "f86f1f774d539cda2ec1afe4da2cc61c5f504c8005d9a813a877110ab98a7b0f",
+      "size": 12301
+    },
+    {
+      "path": "quill/core/dictation.py",
+      "install_path": "python/Lib/site-packages/quill/core/dictation.py",
+      "sha256": "141e46c9d680a0899a40c35496d36fa848187ea416b25c35c9025f96497999a3",
+      "size": 3632
+    },
+    {
+      "path": "quill/core/diffing.py",
+      "install_path": "python/Lib/site-packages/quill/core/diffing.py",
+      "sha256": "1bbf5de7caa0e18f4b506593af822036b61d9f0653c4ec55df9e2d51a47905e0",
+      "size": 675
+    },
+    {
+      "path": "quill/core/document.py",
+      "install_path": "python/Lib/site-packages/quill/core/document.py",
+      "sha256": "d25085396e781a55b295233eb2c60282ff161b5c4aec44eb91da5fa2b3cc97db",
+      "size": 944
+    },
+    {
+      "path": "quill/core/emmet.py",
+      "install_path": "python/Lib/site-packages/quill/core/emmet.py",
+      "sha256": "927cd4ec769caec1dc1e6a1c0b4b469b9cdd01374e75e830f202a772244c7814",
+      "size": 21882
+    },
+    {
+      "path": "quill/core/encoding_tools.py",
+      "install_path": "python/Lib/site-packages/quill/core/encoding_tools.py",
+      "sha256": "b93e79ab3719e6f62a034500e4718cfb5a76cff1b91d87c96e7682916db5ed97",
+      "size": 10279
+    },
+    {
+      "path": "quill/core/epub.py",
+      "install_path": "python/Lib/site-packages/quill/core/epub.py",
+      "sha256": "5eff746c3438326dd186d027fe08bf40a407f3f840f0b8a15b081a80f5d3dc25",
+      "size": 5151
+    },
+    {
+      "path": "quill/core/events.py",
+      "install_path": "python/Lib/site-packages/quill/core/events.py",
+      "sha256": "94a9217a8725abfde9c4445a7a87379e39647bf7e896961598da81b266392932",
+      "size": 342
+    },
+    {
+      "path": "quill/core/external_change.py",
+      "install_path": "python/Lib/site-packages/quill/core/external_change.py",
+      "sha256": "817735a9ead1cacfa509a24804a6d1743d9eb3a1a69db60fd47c2d9084e69749",
+      "size": 7656
+    },
+    {
+      "path": "quill/core/external_tools.py",
+      "install_path": "python/Lib/site-packages/quill/core/external_tools.py",
+      "sha256": "6acd38c09cacf11d483b66bb9ba36c26d4edfc43fc962a67d1beb73bedff615e",
+      "size": 7248
+    },
+    {
+      "path": "quill/core/feature_catalog.py",
+      "install_path": "python/Lib/site-packages/quill/core/feature_catalog.py",
+      "sha256": "396e9805e4e9cc062657b903dc597b4f906e4c1667e4481a47c78181932feeba",
+      "size": 20136
+    },
+    {
+      "path": "quill/core/feature_command_map.py",
+      "install_path": "python/Lib/site-packages/quill/core/feature_command_map.py",
+      "sha256": "9e187dbf579db40fa082ed912110b243bd0afadc690aede0b0bb9fdd83e0b46f",
+      "size": 15418
+    },
+    {
+      "path": "quill/core/features.py",
+      "install_path": "python/Lib/site-packages/quill/core/features.py",
+      "sha256": "96f90a829b03460a3d073da35f513f82188e307095e21ba9bdfef6a8a3d862c2",
+      "size": 31075
+    },
+    {
+      "path": "quill/core/feedback_token.py",
+      "install_path": "python/Lib/site-packages/quill/core/feedback_token.py",
+      "sha256": "55876f5dfd2ef87d35db8e6a5b9915b6974e70fcfd39550a8ae4547c5da8ad34",
+      "size": 2122
+    },
+    {
+      "path": "quill/core/file_search.py",
+      "install_path": "python/Lib/site-packages/quill/core/file_search.py",
+      "sha256": "9dc534662f23f01c7731b29515d75cfb02268174bbd8f96462d2648ef50de2cd",
+      "size": 9865
+    },
+    {
+      "path": "quill/core/format_ops.py",
+      "install_path": "python/Lib/site-packages/quill/core/format_ops.py",
+      "sha256": "eed84315a861cd2859ba342add027799dec12bc052bec5594b004aca50bdeb94",
+      "size": 20033
+    },
+    {
+      "path": "quill/core/format_speech.py",
+      "install_path": "python/Lib/site-packages/quill/core/format_speech.py",
+      "sha256": "8c0b3991d96cd70ea171d61e176b5d507b225dcef45de8b83b1f26d46f6f76fa",
+      "size": 1914
+    },
+    {
+      "path": "quill/core/github/__init__.py",
+      "install_path": "python/Lib/site-packages/quill/core/github/__init__.py",
+      "sha256": "354e0fdee232a0da4365d0cdd865610833ae62c3d1cca19248a81489a0a3f169",
+      "size": 75
+    },
+    {
+      "path": "quill/core/github/consent.py",
+      "install_path": "python/Lib/site-packages/quill/core/github/consent.py",
+      "sha256": "deb36871275ab44459444b31f726044481789b7d886e5bc608c29280f84baffc",
+      "size": 817
+    },
+    {
+      "path": "quill/core/github/github_provider.py",
+      "install_path": "python/Lib/site-packages/quill/core/github/github_provider.py",
+      "sha256": "df8848aeb709c04cba85c77187db53cace6867702a6ac5ba72816798a0e5aba5",
+      "size": 10009
+    },
+    {
+      "path": "quill/core/github/models.py",
+      "install_path": "python/Lib/site-packages/quill/core/github/models.py",
+      "sha256": "ee5b658e881486b2535c89869dbc92cb8cd2a3747b4a9ede7e58d8bb320cd027",
+      "size": 1915
+    },
+    {
+      "path": "quill/core/github/provider.py",
+      "install_path": "python/Lib/site-packages/quill/core/github/provider.py",
+      "sha256": "6b7ae76628452e726e58fe2af2c137c376b352e13df1498bd06965371b879897",
+      "size": 2760
+    },
+    {
+      "path": "quill/core/github/token_store.py",
+      "install_path": "python/Lib/site-packages/quill/core/github/token_store.py",
+      "sha256": "5b21c9639192f61b727f7227ea7e44ee1d6cd76405290147daccef9cc0d1c3d8",
+      "size": 2456
+    },
+    {
+      "path": "quill/core/glow.py",
+      "install_path": "python/Lib/site-packages/quill/core/glow.py",
+      "sha256": "49cee1521c3fc8ea383f6323c478690cdc7cdf908934eaa6eb896ba296a32cdb",
+      "size": 30474
+    },
+    {
+      "path": "quill/core/glow_updates.py",
+      "install_path": "python/Lib/site-packages/quill/core/glow_updates.py",
+      "sha256": "acd20f1716ff3805111a2b352e7960331e8deca5a02d4f008accdc2964b1dbcb",
+      "size": 13330
+    },
+    {
+      "path": "quill/core/guides.py",
+      "install_path": "python/Lib/site-packages/quill/core/guides.py",
+      "sha256": "394a481e81570b6a5b314501cc231bfa12977ee40825e8de4e36364dcd2aa10f",
+      "size": 6600
+    },
+    {
+      "path": "quill/core/heading_organizer.py",
+      "install_path": "python/Lib/site-packages/quill/core/heading_organizer.py",
+      "sha256": "6a87d5805ff3906a400708bd95c4277fa37465ff986364e5dc24b70590565e57",
+      "size": 6172
+    },
+    {
+      "path": "quill/core/heading_styles.py",
+      "install_path": "python/Lib/site-packages/quill/core/heading_styles.py",
+      "sha256": "a3150f92d049295069fdee784726498c2d1cdf27b973bdc63645c902a652c0be",
+      "size": 3972
+    },
+    {
+      "path": "quill/core/help/__init__.py",
+      "install_path": "python/Lib/site-packages/quill/core/help/__init__.py",
+      "sha256": "fdec932a68280b782ba2b1c19a202c7add8a74ff98883162b9dbb930d268a942",
+      "size": 376
+    },
+    {
+      "path": "quill/core/help/renderer.py",
+      "install_path": "python/Lib/site-packages/quill/core/help/renderer.py",
+      "sha256": "5863d54fadfa6981b8cde36b236e6f06df9fad8de6a5349a7febfe9d86ac766b",
+      "size": 5540
+    },
+    {
+      "path": "quill/core/help/topics.json",
+      "install_path": "python/Lib/site-packages/quill/core/help/topics.json",
+      "sha256": "867dfe2ba0e91a234a29f47ab8ea057bf7705ac31bc4546ad1ecd111c2b37e00",
+      "size": 37727
+    },
+    {
+      "path": "quill/core/html_to_markdown.py",
+      "install_path": "python/Lib/site-packages/quill/core/html_to_markdown.py",
+      "sha256": "57822c457afb4254e22e4c401a4594f88f80b3feea18a7b82e669411bffdc7bb",
+      "size": 8690
+    },
+    {
+      "path": "quill/core/hygiene/__init__.py",
+      "install_path": "python/Lib/site-packages/quill/core/hygiene/__init__.py",
+      "sha256": "418b75deb7c8f6f3ef79716eb2d16e58b500f9ac4a4fb1421ad4fc5d64eaa992",
+      "size": 354
+    },
+    {
+      "path": "quill/core/hygiene/engine.py",
+      "install_path": "python/Lib/site-packages/quill/core/hygiene/engine.py",
+      "sha256": "21796fa49693960bfd159ec9a0f0b5688bb3d330f34dc06f7ea9d09f5fe8e18c",
+      "size": 5673
+    },
+    {
+      "path": "quill/core/hygiene/findings.py",
+      "install_path": "python/Lib/site-packages/quill/core/hygiene/findings.py",
+      "sha256": "197fac465a7de4caa8007072f44b968539ad58cdfd580f824e670df2aab977d9",
+      "size": 2007
+    },
+    {
+      "path": "quill/core/hygiene/ignored_ranges.py",
+      "install_path": "python/Lib/site-packages/quill/core/hygiene/ignored_ranges.py",
+      "sha256": "0f763a332c1623692cb0a8e1cbfb8e0c3ac1da8efea550f7341cafb82b36eaa5",
+      "size": 2181
+    },
+    {
+      "path": "quill/core/hygiene/rules.py",
+      "install_path": "python/Lib/site-packages/quill/core/hygiene/rules.py",
+      "sha256": "db75a3f11bfedcff9a487bc7e2c2deb71caf7bd59b80eb9c4c89a8e5b4da31b1",
+      "size": 11375
+    },
+    {
+      "path": "quill/core/i18n.py",
+      "install_path": "python/Lib/site-packages/quill/core/i18n.py",
+      "sha256": "2cddc7ef83cfd5576c75762153d2c9b5816fc209057ce2efeea3a2a2303ad9f3",
+      "size": 3481
+    },
+    {
+      "path": "quill/core/indent_infer.py",
+      "install_path": "python/Lib/site-packages/quill/core/indent_infer.py",
+      "sha256": "2ad734f360c972f8b8a272eb05d229b5da173655105508e80fe73dc540a60b7f",
+      "size": 2398
+    },
+    {
+      "path": "quill/core/intake.py",
+      "install_path": "python/Lib/site-packages/quill/core/intake.py",
+      "sha256": "657b00864e40778041ddcb3d36f4508b63b8859696c34ea4bde4ad5f1f055e4c",
+      "size": 8038
+    },
+    {
+      "path": "quill/core/intellisense.py",
+      "install_path": "python/Lib/site-packages/quill/core/intellisense.py",
+      "sha256": "3628c1258fd56f06db550b03934dae637701c7a69df526ac1749b4e89169b9fa",
+      "size": 3886
+    },
+    {
+      "path": "quill/core/ipc.py",
+      "install_path": "python/Lib/site-packages/quill/core/ipc.py",
+      "sha256": "8cdd7b381d289b87d9fdbd7013a381cf91c13406226764e29da8a03cc39cc689",
+      "size": 7033
+    },
+    {
+      "path": "quill/core/issue_submit.py",
+      "install_path": "python/Lib/site-packages/quill/core/issue_submit.py",
+      "sha256": "a73a8053b59ca67d72259b3d1c97689d518f526ff9d7717f550561f3b9fd1a6b",
+      "size": 3258
+    },
+    {
+      "path": "quill/core/key_describer.py",
+      "install_path": "python/Lib/site-packages/quill/core/key_describer.py",
+      "sha256": "cf565cdcff501c65903b908fff707b43dcbbb589e0ba02223fee9965e8319793",
+      "size": 1503
+    },
+    {
+      "path": "quill/core/keymap/profile_default.json",
+      "install_path": "python/Lib/site-packages/quill/core/keymap/profile_default.json",
+      "sha256": "b59bca30ad6355fa929a128bd183f91a1cb65793bab78479df2c6df6dd376d97",
+      "size": 7696
+    },
+    {
+      "path": "quill/core/keymap/profile_minimal.json",
+      "install_path": "python/Lib/site-packages/quill/core/keymap/profile_minimal.json",
+      "sha256": "a406a5e015f6ac1c09add11b585d015c4551f9b81bd1484ffde51d46dbeb262b",
+      "size": 1461
+    },
+    {
+      "path": "quill/core/keymap/profile_sr_friendly.json",
+      "install_path": "python/Lib/site-packages/quill/core/keymap/profile_sr_friendly.json",
+      "sha256": "38bfed3b94bd51fe4a9a9e62092c28444dbc7d7ca4d5388389a27fdb532a34f6",
+      "size": 7769
+    },
+    {
+      "path": "quill/core/keymap.py",
+      "install_path": "python/Lib/site-packages/quill/core/keymap.py",
+      "sha256": "ee0393506e9455950cbbfb1767f9f334c6a378d846dc7787e0a80b9eb9e66dbc",
+      "size": 19523
+    },
+    {
+      "path": "quill/core/keymap_packs.py",
+      "install_path": "python/Lib/site-packages/quill/core/keymap_packs.py",
+      "sha256": "e3e6b7b624fc2786790bbc1a3799e70302586b0057de7403149b8e551360bb74",
+      "size": 11005
+    },
+    {
+      "path": "quill/core/language_profile.py",
+      "install_path": "python/Lib/site-packages/quill/core/language_profile.py",
+      "sha256": "311f19c93f6e46dd507c48196934d56e0ea233b33179d8991919f0f925044217",
+      "size": 15023
+    },
+    {
+      "path": "quill/core/lexical.py",
+      "install_path": "python/Lib/site-packages/quill/core/lexical.py",
+      "sha256": "e3e3933062cf714cee7e6ba07f2b1adf46b1db3aebe767e4b18ec406c4a45f4d",
+      "size": 18163
+    },
+    {
+      "path": "quill/core/lexical_preload.py",
+      "install_path": "python/Lib/site-packages/quill/core/lexical_preload.py",
+      "sha256": "b6d5936b3730dd6d3cb0362056a914bed6065e0b85d935c35c6699a5df0f4e44",
+      "size": 1286
+    },
+    {
+      "path": "quill/core/line_ops.py",
+      "install_path": "python/Lib/site-packages/quill/core/line_ops.py",
+      "sha256": "eab7280e45c26137ed05814811fd24e0ddad578054338cb6e0aed7297fd019de",
+      "size": 14786
+    },
+    {
+      "path": "quill/core/link_inventory.py",
+      "install_path": "python/Lib/site-packages/quill/core/link_inventory.py",
+      "sha256": "d170b0eddd84063bfbb2889c5dce62cde1af132dfbf3c38a92a281748e9f851f",
+      "size": 2579
+    },
+    {
+      "path": "quill/core/links.py",
+      "install_path": "python/Lib/site-packages/quill/core/links.py",
+      "sha256": "f030597ad51b1b1517449671866d660e6a7fca5834993a59efa4f84c19a048cd",
+      "size": 1160
+    },
+    {
+      "path": "quill/core/locations.py",
+      "install_path": "python/Lib/site-packages/quill/core/locations.py",
+      "sha256": "0baf4dfe4987067911396427a3e6042eee8e979931a7e28e78ed6bd616aad3fa",
+      "size": 1540
+    },
+    {
+      "path": "quill/core/macros.py",
+      "install_path": "python/Lib/site-packages/quill/core/macros.py",
+      "sha256": "982878673dc4b9f43e0985b541f5b3b8ca350c4054c7e87daae74edd70c0940d",
+      "size": 4841
+    },
+    {
+      "path": "quill/core/markdown_extensions.py",
+      "install_path": "python/Lib/site-packages/quill/core/markdown_extensions.py",
+      "sha256": "a746466b60cbcafeba1f28cd10ecbecfb38a0fcb21b0e036145302ea69100848",
+      "size": 6635
+    },
+    {
+      "path": "quill/core/markdown_profiles.py",
+      "install_path": "python/Lib/site-packages/quill/core/markdown_profiles.py",
+      "sha256": "3ab1e14fe792c968d643d24ecbfaefebabfd8e565e65edce417d04bc8eb83f64",
+      "size": 7908
+    },
+    {
+      "path": "quill/core/marks.py",
+      "install_path": "python/Lib/site-packages/quill/core/marks.py",
+      "sha256": "a8626b03df5b707569d0cc3121a75e962418d2bd721e488d6a605da42c59eb7d",
+      "size": 2005
+    },
+    {
+      "path": "quill/core/menu_customization.py",
+      "install_path": "python/Lib/site-packages/quill/core/menu_customization.py",
+      "sha256": "05460ee6686aacf849758a47bf59b013023d2c54fbdef898315fab15b0ad01ec",
+      "size": 12182
+    },
+    {
+      "path": "quill/core/metrics.py",
+      "install_path": "python/Lib/site-packages/quill/core/metrics.py",
+      "sha256": "1cf196d25b84df74e296f054fd7912297f50cf3ed58d724696fbe42e4b9bd4c8",
+      "size": 475
+    },
+    {
+      "path": "quill/core/multi_press.py",
+      "install_path": "python/Lib/site-packages/quill/core/multi_press.py",
+      "sha256": "9fc2e17da93b4f6a2bcc1523ec5b467eae10e7afd11286dbbb6b1596e8a02c56",
+      "size": 2039
+    },
+    {
+      "path": "quill/core/navigation.py",
+      "install_path": "python/Lib/site-packages/quill/core/navigation.py",
+      "sha256": "e66caa0980079e17647d96dcf157eb3789bc29c225946809ead8b9f6e059fadb",
+      "size": 2694
+    },
+    {
+      "path": "quill/core/net.py",
+      "install_path": "python/Lib/site-packages/quill/core/net.py",
+      "sha256": "65421cddcca48596362757290caa2ddb3c708ff6a5dc6531ac12637e7d3bc752",
+      "size": 1146
+    },
+    {
+      "path": "quill/core/notebook_store.py",
+      "install_path": "python/Lib/site-packages/quill/core/notebook_store.py",
+      "sha256": "4292ed6781df0ab47cd61bd6a8ab6e23f8781606d37ca95dbd870e6f969c425b",
+      "size": 12947
+    },
+    {
+      "path": "quill/core/notifications.py",
+      "install_path": "python/Lib/site-packages/quill/core/notifications.py",
+      "sha256": "c7a1b875b73141d275d6bc17fb9c4fecf940c4ca62769c01c74ca6a6ef06f3d9",
+      "size": 1924
+    },
+    {
+      "path": "quill/core/onboarding.py",
+      "install_path": "python/Lib/site-packages/quill/core/onboarding.py",
+      "sha256": "7019cfdb4e0f8ce005c7f45c66045ed6ab4dd6cfc11bebc3f8d14c98929d1333",
+      "size": 4096
+    },
+    {
+      "path": "quill/core/onboarding_profiles.py",
+      "install_path": "python/Lib/site-packages/quill/core/onboarding_profiles.py",
+      "sha256": "d64190b5aff60577ac6559c0733d94fd4a0f3fa430e7d64c66a500ac6e970239",
+      "size": 13845
+    },
+    {
+      "path": "quill/core/outline.py",
+      "install_path": "python/Lib/site-packages/quill/core/outline.py",
+      "sha256": "7e87e6e88d697b300b2a8bd42a41240df721a9ccc7e4510e6e78edea046da032",
+      "size": 1436
+    },
+    {
+      "path": "quill/core/palette.py",
+      "install_path": "python/Lib/site-packages/quill/core/palette.py",
+      "sha256": "620d179aa1089d148f61b39e3d4d917b49674aeb6799b94defe207e3d01bd82b",
+      "size": 6113
+    },
+    {
+      "path": "quill/core/paths.py",
+      "install_path": "python/Lib/site-packages/quill/core/paths.py",
+      "sha256": "8d2a11578ae48737ef850714922f08c0f79b98583bddb63a9ce44ac5e1acd0f7",
+      "size": 2815
+    },
+    {
+      "path": "quill/core/plain_language.py",
+      "install_path": "python/Lib/site-packages/quill/core/plain_language.py",
+      "sha256": "2c47fe58d97993a98af9937e9739ecd4b8d1abfb1faf022d993ffd93fd794fc3",
+      "size": 1525
+    },
+    {
+      "path": "quill/core/profile_startup.py",
+      "install_path": "python/Lib/site-packages/quill/core/profile_startup.py",
+      "sha256": "7cf6c793e2820460f78abc01e0de505e971af49dfb79d14a21fb1655309efde4",
+      "size": 4096
+    },
+    {
+      "path": "quill/core/prompt_library.py",
+      "install_path": "python/Lib/site-packages/quill/core/prompt_library.py",
+      "sha256": "ab045e2f293f40c004461ec075229337f12ebd86e4024e29f0922feee840bd14",
+      "size": 12303
+    },
+    {
+      "path": "quill/core/punctuation_speech.py",
+      "install_path": "python/Lib/site-packages/quill/core/punctuation_speech.py",
+      "sha256": "c0ca497fadc34486e02698c92d563d0816e026ef607f3bc432164b448e98e928",
+      "size": 3447
+    },
+    {
+      "path": "quill/core/python_sandbox.py",
+      "install_path": "python/Lib/site-packages/quill/core/python_sandbox.py",
+      "sha256": "89143bff5a8d26315a00fa5f498b1ab004dc2f6faa3da2018214bf5a66d3d3be",
+      "size": 13535
+    },
+    {
+      "path": "quill/core/quick_nav.py",
+      "install_path": "python/Lib/site-packages/quill/core/quick_nav.py",
+      "sha256": "35eab5bf23243ac48aae67f61597fd5bff12327dcb5baf105f9f7bab2a93da88",
+      "size": 4908
+    },
+    {
+      "path": "quill/core/quill_key_help.py",
+      "install_path": "python/Lib/site-packages/quill/core/quill_key_help.py",
+      "sha256": "aab2c2085e72c2ca5266c9913208bcbb6a876ccdff6951d55420ea9c466f39a0",
+      "size": 7909
+    },
+    {
+      "path": "quill/core/quillin_settings.py",
+      "install_path": "python/Lib/site-packages/quill/core/quillin_settings.py",
+      "sha256": "3a80f339e4015a26245caedc1a28146890ba93ed11a261fc229f443a4efb3e86",
+      "size": 3958
+    },
+    {
+      "path": "quill/core/quillins/__init__.py",
+      "install_path": "python/Lib/site-packages/quill/core/quillins/__init__.py",
+      "sha256": "d1ccdc87e10b8533adae4f82c09c16e28683bbfeb233ce075735f89a0f6cc77e",
+      "size": 3446
+    },
+    {
+      "path": "quill/core/quillins/host.py",
+      "install_path": "python/Lib/site-packages/quill/core/quillins/host.py",
+      "sha256": "38f42b608395ef81589c6004587ff6015fe59ad9e2964cdca6f9615e1b781102",
+      "size": 17307
+    },
+    {
+      "path": "quill/core/quillins/host_worker.py",
+      "install_path": "python/Lib/site-packages/quill/core/quillins/host_worker.py",
+      "sha256": "f066e26e2e3fd94b00d5f2ce8725a310a3e71af26559195644eb6f36330e8407",
+      "size": 14362
+    },
+    {
+      "path": "quill/core/quillins/loader.py",
+      "install_path": "python/Lib/site-packages/quill/core/quillins/loader.py",
+      "sha256": "c82c1d2a1ea2fa887337d839680a4ded45d9050d15a03e82731769219977195b",
+      "size": 19717
+    },
+    {
+      "path": "quill/core/quillins/model.py",
+      "install_path": "python/Lib/site-packages/quill/core/quillins/model.py",
+      "sha256": "0095ab9ee1eab9b18a196168ce7d94c44fde9e42cfca21ce8317ad8700835987",
+      "size": 14676
+    },
+    {
+      "path": "quill/core/quillins/protocol.py",
+      "install_path": "python/Lib/site-packages/quill/core/quillins/protocol.py",
+      "sha256": "f6eb7f281fbc4a2de9b3660baec72c41fe0daf23c68dd763762f3f8c145deffd",
+      "size": 3879
+    },
+    {
+      "path": "quill/core/quillins/registry.py",
+      "install_path": "python/Lib/site-packages/quill/core/quillins/registry.py",
+      "sha256": "0d29c8ad2be72720f5d97767acf5fbbf41e4afd6dbd04519d6db2145fa91b765",
+      "size": 7605
+    },
+    {
+      "path": "quill/core/quillins/snippets.py",
+      "install_path": "python/Lib/site-packages/quill/core/quillins/snippets.py",
+      "sha256": "872b55e4feedcb90153a8b28a279b6c8cfb70daccfb47442c867587513b99e20",
+      "size": 4041
+    },
+    {
+      "path": "quill/core/quillins/validation.py",
+      "install_path": "python/Lib/site-packages/quill/core/quillins/validation.py",
+      "sha256": "947598545e8208e2e2e914a3d263c8001066c9acebecc4f998130e22e0eb5406",
+      "size": 54957
+    },
+    {
+      "path": "quill/core/read_aloud.py",
+      "install_path": "python/Lib/site-packages/quill/core/read_aloud.py",
+      "sha256": "5a130699a047d99b4f37b9890b38d6863e78cd9d74a080d7e7db498ac3234fd9",
+      "size": 40524
+    },
+    {
+      "path": "quill/core/recent.py",
+      "install_path": "python/Lib/site-packages/quill/core/recent.py",
+      "sha256": "5e98ae1129425b8f9489bf6d3faf9a13d0237a7b8eb8dd0aff9c15ee4a485452",
+      "size": 1032
+    },
+    {
+      "path": "quill/core/recovery.py",
+      "install_path": "python/Lib/site-packages/quill/core/recovery.py",
+      "sha256": "f8692f49878d946700647b785e10a9e8bc64a6f6032a8e8e0e45f952ab85c1ec",
+      "size": 9350
+    },
+    {
+      "path": "quill/core/regex_ops.py",
+      "install_path": "python/Lib/site-packages/quill/core/regex_ops.py",
+      "sha256": "437f469a3401b16b78c0fdac47c0a849bb6b1b20ea3b6a100591fbbaee9bf05e",
+      "size": 1345
+    },
+    {
+      "path": "quill/core/remote_sites.py",
+      "install_path": "python/Lib/site-packages/quill/core/remote_sites.py",
+      "sha256": "26a3818b138525a11f91d1105ca660329fe55d70e42f8b1e7b15f7165f2d983e",
+      "size": 13000
+    },
+    {
+      "path": "quill/core/run_target.py",
+      "install_path": "python/Lib/site-packages/quill/core/run_target.py",
+      "sha256": "67d28998bcb7ea01bcbd8c00001ecf984c31ddf31e49ce29166391825bd68e73",
+      "size": 5434
+    },
+    {
+      "path": "quill/core/safe_archive.py",
+      "install_path": "python/Lib/site-packages/quill/core/safe_archive.py",
+      "sha256": "43ce5ffc032e83e65e5af512eb026bce707192c97a690207c3286916836a5ca7",
+      "size": 2506
+    },
+    {
+      "path": "quill/core/safe_xml.py",
+      "install_path": "python/Lib/site-packages/quill/core/safe_xml.py",
+      "sha256": "3c1978c56f20920f533c1880e8fabf249fa1311360a2d38d1d52526f6409cbc2",
+      "size": 2838
+    },
+    {
+      "path": "quill/core/schemas/extension.json",
+      "install_path": "python/Lib/site-packages/quill/core/schemas/extension.json",
+      "sha256": "40c97e910ae5e83ad1bc620224275e1884608e8bc4db89c572ed056d390ab485",
+      "size": 26360
+    },
+    {
+      "path": "quill/core/schemas/feedback.json",
+      "install_path": "python/Lib/site-packages/quill/core/schemas/feedback.json",
+      "sha256": "4a543f47bd2dbcd7ce0614f54391afb260146ee21a34248f9f4ec5260d81d6f0",
+      "size": 1677
+    },
+    {
+      "path": "quill/core/schemas/notebook.json",
+      "install_path": "python/Lib/site-packages/quill/core/schemas/notebook.json",
+      "sha256": "d51a4bc8a28f75a3e05d6e0f841f8c9feb27430d008f7d2ee3611b3e296988b2",
+      "size": 6475
+    },
+    {
+      "path": "quill/core/schemas/sound_pack.json",
+      "install_path": "python/Lib/site-packages/quill/core/schemas/sound_pack.json",
+      "sha256": "f8572d8cef487c54044280aa7d8f4d221f3ad13c33ec4647cf8f7c1a9068ff54",
+      "size": 1356
+    },
+    {
+      "path": "quill/core/script_results.py",
+      "install_path": "python/Lib/site-packages/quill/core/script_results.py",
+      "sha256": "ddf2add1718baf9a2db06748cd8b7542c6a34db22d28245891406f9d66abb386",
+      "size": 613
+    },
+    {
+      "path": "quill/core/scripting.py",
+      "install_path": "python/Lib/site-packages/quill/core/scripting.py",
+      "sha256": "7cbc1bbf2e6d552aaa4e585deb703a15e4f918df89e1b0ee8006f4669ffd97d3",
+      "size": 20341
+    },
+    {
+      "path": "quill/core/search.py",
+      "install_path": "python/Lib/site-packages/quill/core/search.py",
+      "sha256": "1c45423e55651cd1bccacabe0764219d23c80847d1a0a7c88339f569b64bab7f",
+      "size": 4389
+    },
+    {
+      "path": "quill/core/search_history.py",
+      "install_path": "python/Lib/site-packages/quill/core/search_history.py",
+      "sha256": "6ef469b766055318bbd943ab5f67deb5aac9c0c8eaf953f5655d0ba69518d990",
+      "size": 839
+    },
+    {
+      "path": "quill/core/selection.py",
+      "install_path": "python/Lib/site-packages/quill/core/selection.py",
+      "sha256": "7f3d48a0c08927bb764fc6dd343427a027cf7d60cf9a6b85fb6a7f6d8dae46cd",
+      "size": 5596
+    },
+    {
+      "path": "quill/core/sentence_split.py",
+      "install_path": "python/Lib/site-packages/quill/core/sentence_split.py",
+      "sha256": "76aa0831760420bfc7657c3b43de926d771a20d733b8f2442ba916dc3ea2571a",
+      "size": 988
+    },
+    {
+      "path": "quill/core/sessions.py",
+      "install_path": "python/Lib/site-packages/quill/core/sessions.py",
+      "sha256": "9798a68544306bceb68ff6467dcabefebae83ac0356ff870447fcca3dd438ac4",
+      "size": 5368
+    },
+    {
+      "path": "quill/core/set_ops.py",
+      "install_path": "python/Lib/site-packages/quill/core/set_ops.py",
+      "sha256": "27fcc3ee8baeff6e668c362c253c1124cac627da8360734dacc38b91f68ed460",
+      "size": 2129
+    },
+    {
+      "path": "quill/core/settings.py",
+      "install_path": "python/Lib/site-packages/quill/core/settings.py",
+      "sha256": "31d5c37cb43e659fff62c45d34c421260b0203b3ddde14f277d4bdee6c95eacc",
+      "size": 42524
+    },
+    {
+      "path": "quill/core/settings_migration.py",
+      "install_path": "python/Lib/site-packages/quill/core/settings_migration.py",
+      "sha256": "8d8084e764ed8de01b7c55b728fd13f2c9a35907cfdc506a65903c16ed3b5840",
+      "size": 4643
+    },
+    {
+      "path": "quill/core/settings_normalizers.py",
+      "install_path": "python/Lib/site-packages/quill/core/settings_normalizers.py",
+      "sha256": "4c1c6519c62616d4946cef77bd7e0c1fd76768e4bd0d0ac62c5611b7d714c406",
+      "size": 3345
+    },
+    {
+      "path": "quill/core/settings_registry.py",
+      "install_path": "python/Lib/site-packages/quill/core/settings_registry.py",
+      "sha256": "f8b844c3672f93b167a41bb2c3088d0f93622691c364d75fa7c3771a933c0831",
+      "size": 5281
+    },
+    {
+      "path": "quill/core/settings_specs.py",
+      "install_path": "python/Lib/site-packages/quill/core/settings_specs.py",
+      "sha256": "97620ee584010b9a28460fb2d36dba503409f1e4aa149bba5d789863aa3b393b",
+      "size": 46987
+    },
+    {
+      "path": "quill/core/share_package.py",
+      "install_path": "python/Lib/site-packages/quill/core/share_package.py",
+      "sha256": "e365356b96329d2749e53ed7497dcf8966f5ed7f7a27867d616c36c6b431168a",
+      "size": 12841
+    },
+    {
+      "path": "quill/core/shell_verbs.py",
+      "install_path": "python/Lib/site-packages/quill/core/shell_verbs.py",
+      "sha256": "76809bec7466d0594d3d7cd42828ecb4787c86134ddda082af21555fc03f6ac0",
+      "size": 6437
+    },
+    {
+      "path": "quill/core/skill_pack.py",
+      "install_path": "python/Lib/site-packages/quill/core/skill_pack.py",
+      "sha256": "f4c6875f1faa3fe0dba34aa9d648fa4882106470f7ed46e717e0a48998859731",
+      "size": 20274
+    },
+    {
+      "path": "quill/core/snippets.py",
+      "install_path": "python/Lib/site-packages/quill/core/snippets.py",
+      "sha256": "95db19b3e87f1594e19f3eac8dce5856dec499c5f5aa144fee39cc90255278af",
+      "size": 11269
+    },
+    {
+      "path": "quill/core/sound_events.py",
+      "install_path": "python/Lib/site-packages/quill/core/sound_events.py",
+      "sha256": "352392e5ee8ab7477bb95cd41bd1d667d1db978fb8d744b20d43cd6b7f6d2318",
+      "size": 3134
+    },
+    {
+      "path": "quill/core/sound_pack.py",
+      "install_path": "python/Lib/site-packages/quill/core/sound_pack.py",
+      "sha256": "60643f3a987cec418b6c5f86884404653769d8e194ea0da8da3cbfe2888c1e58",
+      "size": 8462
+    },
+    {
+      "path": "quill/core/spellcheck.py",
+      "install_path": "python/Lib/site-packages/quill/core/spellcheck.py",
+      "sha256": "fa001a4ab3a6536debb3830c5dd0ad40a8698596e4d84e1b37993dc3e57f5a3b",
+      "size": 14126
+    },
+    {
+      "path": "quill/core/ssh/__init__.py",
+      "install_path": "python/Lib/site-packages/quill/core/ssh/__init__.py",
+      "sha256": "4e772bf9f114caea7746e499c4722e685a24ab5015f0e15e167ca744fdf2c937",
+      "size": 667
+    },
+    {
+      "path": "quill/core/ssh/client.py",
+      "install_path": "python/Lib/site-packages/quill/core/ssh/client.py",
+      "sha256": "272ab6179ae1ae7d9fdfd8a732c4ad089356d03778b08e261cbd8be61e24d57a",
+      "size": 7064
+    },
+    {
+      "path": "quill/core/ssh/keys.py",
+      "install_path": "python/Lib/site-packages/quill/core/ssh/keys.py",
+      "sha256": "8f0845994a65c3be092a5ac5e6cd8a10075b29b08591c7cf98d8ff3fe0f8f683",
+      "size": 2785
+    },
+    {
+      "path": "quill/core/ssh/putty_key.py",
+      "install_path": "python/Lib/site-packages/quill/core/ssh/putty_key.py",
+      "sha256": "ab64537e9c4d6b509b117c9558552d992433f6d31ef464bfad618696e7dcdfee",
+      "size": 9911
+    },
+    {
+      "path": "quill/core/ssh/sites.py",
+      "install_path": "python/Lib/site-packages/quill/core/ssh/sites.py",
+      "sha256": "a555d3fe6f5be9ba5ffeb12e3d61312298d926b738a62d1798b0b9edf8e9eaca",
+      "size": 3507
+    },
+    {
+      "path": "quill/core/ssh/transfer.py",
+      "install_path": "python/Lib/site-packages/quill/core/ssh/transfer.py",
+      "sha256": "202383e0c4ca2f1600574f786e4f61658438bbb82b1d7aec51d037a3d28f5561",
+      "size": 2629
+    },
+    {
+      "path": "quill/core/sticky_notes.py",
+      "install_path": "python/Lib/site-packages/quill/core/sticky_notes.py",
+      "sha256": "fa8a742f78b2e5dbe3be63b28305250eecc326c2e2f64cb97c045bf5eeb5d812",
+      "size": 3445
+    },
+    {
+      "path": "quill/core/storage.py",
+      "install_path": "python/Lib/site-packages/quill/core/storage.py",
+      "sha256": "1cfa4c9851e9aad15975be3c19b2179f06c3f301487479bcbaf336bfecb7fb93",
+      "size": 2663
+    },
+    {
+      "path": "quill/core/storage_mode.py",
+      "install_path": "python/Lib/site-packages/quill/core/storage_mode.py",
+      "sha256": "f69c932f4b6c1bd102f2d7ae7d6b831832b2f1281a602999fcb182b57fa08e14",
+      "size": 2962
+    },
+    {
+      "path": "quill/core/structure_nav.py",
+      "install_path": "python/Lib/site-packages/quill/core/structure_nav.py",
+      "sha256": "531282c6029d0964d3ecec1f07652951f1af7b33ab69b71bae665cdbbea91452",
+      "size": 2307
+    },
+    {
+      "path": "quill/core/tagging.py",
+      "install_path": "python/Lib/site-packages/quill/core/tagging.py",
+      "sha256": "22526bf8675a6c8f7a7b360a30dc0bcfc6e1178b3c60acec983ab7b7f52bc561",
+      "size": 10808
+    },
+    {
+      "path": "quill/core/thesaurus.py",
+      "install_path": "python/Lib/site-packages/quill/core/thesaurus.py",
+      "sha256": "e9ab1dc2d777423add6bea44e60759a0508e1b2db6e41aca34bc0d739084700d",
+      "size": 7771
+    },
+    {
+      "path": "quill/core/token_nav.py",
+      "install_path": "python/Lib/site-packages/quill/core/token_nav.py",
+      "sha256": "27a8538f492fccded17dc7f44984f804dc3b080d9f11154df261295b1ee35954",
+      "size": 3070
+    },
+    {
+      "path": "quill/core/transforms.py",
+      "install_path": "python/Lib/site-packages/quill/core/transforms.py",
+      "sha256": "5317274eecd2b3346fa111a608b755f8d07265b7ed5e0ec4e9f7932da10b6057",
+      "size": 983
+    },
+    {
+      "path": "quill/core/trust.py",
+      "install_path": "python/Lib/site-packages/quill/core/trust.py",
+      "sha256": "1fbc4bc95d44468143934f24d6a5a321995d3649321c3c68e0303cf3bfe1e723",
+      "size": 1008
+    },
+    {
+      "path": "quill/core/tts_cache.py",
+      "install_path": "python/Lib/site-packages/quill/core/tts_cache.py",
+      "sha256": "470f0c659f19bd369e1405c6a46292498cbfb88dfd22dbcfab3c7aba997b2995",
+      "size": 7145
+    },
+    {
+      "path": "quill/core/undo_store.py",
+      "install_path": "python/Lib/site-packages/quill/core/undo_store.py",
+      "sha256": "d7e1d11298d93daa68a04a2c66dd9469b638d429bf3c2b70e1c96f7cdcb6bc62",
+      "size": 910
+    },
+    {
+      "path": "quill/core/unicode_insert.py",
+      "install_path": "python/Lib/site-packages/quill/core/unicode_insert.py",
+      "sha256": "fb8ca525ab7827115fdccd823659ea99dc4ae55f458f0f057d4d26c8d265c0c1",
+      "size": 1978
+    },
+    {
+      "path": "quill/core/updates.py",
+      "install_path": "python/Lib/site-packages/quill/core/updates.py",
+      "sha256": "92f309bb9c76728c2182e2a12d34013b23f2c1f36b34f7e0a99f919e61fabd2b",
+      "size": 12918
+    },
+    {
+      "path": "quill/core/url_ops.py",
+      "install_path": "python/Lib/site-packages/quill/core/url_ops.py",
+      "sha256": "ea83b2691e51e28c0b793741ec883585464ad6c2a8ba337dcfed54ea13f2a5ad",
+      "size": 814
+    },
+    {
+      "path": "quill/core/voice_commands.py",
+      "install_path": "python/Lib/site-packages/quill/core/voice_commands.py",
+      "sha256": "39277d348df9a010abc9f6e9d77ed2bf027e8113b8cf876dd98b5cc8edb31ae0",
+      "size": 3353
+    },
+    {
+      "path": "quill/core/watch_actions.py",
+      "install_path": "python/Lib/site-packages/quill/core/watch_actions.py",
+      "sha256": "910f3754a9840d442ad22eee5c11e827c58b43f3cdca89df493fdeb82025f7e0",
+      "size": 34298
+    },
+    {
+      "path": "quill/core/watch_profile_store.py",
+      "install_path": "python/Lib/site-packages/quill/core/watch_profile_store.py",
+      "sha256": "2fc76908f6029999ba2eb4084a037df4350f333e86782be25f4f4a5a308f78fa",
+      "size": 6643
+    },
+    {
+      "path": "quill/core/watch_profiles.py",
+      "install_path": "python/Lib/site-packages/quill/core/watch_profiles.py",
+      "sha256": "d3d503f5b6f872ecf2ff351661e9a6ab304a777889987f7424f9d39295b6f0e6",
+      "size": 17691
+    },
+    {
+      "path": "quill/core/watch_queue.py",
+      "install_path": "python/Lib/site-packages/quill/core/watch_queue.py",
+      "sha256": "7ff5a702a23337f2967446d163706ba7f1dde349880dc9b16c8d166992d525cf",
+      "size": 16316
+    },
+    {
+      "path": "quill/core/watch_service.py",
+      "install_path": "python/Lib/site-packages/quill/core/watch_service.py",
+      "sha256": "335bc691a98c7c5910674184a811e3e1460d7ee317088d662d889cc19fc73e11",
+      "size": 5870
+    },
+    {
+      "path": "quill/core/watch_worker.py",
+      "install_path": "python/Lib/site-packages/quill/core/watch_worker.py",
+      "sha256": "7e32a84854fffffbd6072975c8cead6d8d9f0dc6e41861ad7984d9244cb0b0b9",
+      "size": 6368
+    },
+    {
+      "path": "quill/core/wrap_ops.py",
+      "install_path": "python/Lib/site-packages/quill/core/wrap_ops.py",
+      "sha256": "464d2c175cb957a478aaa6d74a53f4ef818b5e2555916bb73aaedcfac0c5f4d7",
+      "size": 1631
+    },
+    {
+      "path": "quill/core/yaml_structure.py",
+      "install_path": "python/Lib/site-packages/quill/core/yaml_structure.py",
+      "sha256": "e643d4693a7cca1857cca9617f7d7904ab535a7dcfa35b2d0836deae31a0f51e",
+      "size": 9935
+    },
+    {
+      "path": "quill/data/__init__.py",
+      "install_path": "python/Lib/site-packages/quill/data/__init__.py",
+      "sha256": "01940658b494ddfb9df0b58c080b802ff42d0da14952cac34f23b15d31341098",
+      "size": 33
+    },
+    {
+      "path": "quill/data/th_en_US_LICENSE.txt",
+      "install_path": "python/Lib/site-packages/quill/data/th_en_US_LICENSE.txt",
+      "sha256": "df84246204e3c54cd24aebbc23714235f5fc41d754d53b65444a2afbf070130f",
+      "size": 15122
+    },
+    {
+      "path": "quill/data/th_en_US_v2.dat",
+      "install_path": "python/Lib/site-packages/quill/data/th_en_US_v2.dat",
+      "sha256": "8a3e4637450b7277428da248f0a604b5c92942bc30507220c051181462340f39",
+      "size": 18553257
+    },
+    {
+      "path": "quill/data/th_en_US_WordNet_LICENSE.txt",
+      "install_path": "python/Lib/site-packages/quill/data/th_en_US_WordNet_LICENSE.txt",
+      "sha256": "23dbc4f3ea771304e5ab3e5709843813d2619f3c0cfc81229b53fcdb9985f29a",
+      "size": 1625
+    },
+    {
+      "path": "quill/data/voice-previews/dectalk/betty.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/dectalk/betty.mp3",
+      "sha256": "46ebcddea999d8b3c0803e1fcf40193c916014b481f3d3f4706037db2e48979b",
+      "size": 29928
+    },
+    {
+      "path": "quill/data/voice-previews/dectalk/dennis.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/dectalk/dennis.mp3",
+      "sha256": "bd0163340a0818d1d58f6f691b7541e487eeea3e4d1164720b3f9f8e485bb02d",
+      "size": 29928
+    },
+    {
+      "path": "quill/data/voice-previews/dectalk/frank.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/dectalk/frank.mp3",
+      "sha256": "85c5e6112968c6c07b800121f92567526171d1e565dac4db5c9f2e73835c4a72",
+      "size": 23658
+    },
+    {
+      "path": "quill/data/voice-previews/dectalk/harry.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/dectalk/harry.mp3",
+      "sha256": "b8280c77f9faa6f08ec919be79c3f56355663b1e33cf710293f75a24b2659d74",
+      "size": 23658
+    },
+    {
+      "path": "quill/data/voice-previews/dectalk/kit.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/dectalk/kit.mp3",
+      "sha256": "cb42d49314eef8ac614c0a4e819b4fcab21ce22c12a650e91b54c7883a9fe80a",
+      "size": 29928
+    },
+    {
+      "path": "quill/data/voice-previews/dectalk/paul.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/dectalk/paul.mp3",
+      "sha256": "25bb010ff4c8173ad1b0861cf00717d8656f7da9768e117ed618e639c985b229",
+      "size": 27838
+    },
+    {
+      "path": "quill/data/voice-previews/dectalk/rita.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/dectalk/rita.mp3",
+      "sha256": "795cf866641968fbfaa5f679fe155a359604d6c096cede7987dd8b0f78686d84",
+      "size": 29928
+    },
+    {
+      "path": "quill/data/voice-previews/dectalk/ursula.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/dectalk/ursula.mp3",
+      "sha256": "c13e70099c865b8b82efcf770a506f5a47a0f3117d3690da6861ed997212b97c",
+      "size": 23658
+    },
+    {
+      "path": "quill/data/voice-previews/dectalk/wendy.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/dectalk/wendy.mp3",
+      "sha256": "8eadd6cf5c552333b03e2ec5ab5a3be94169446eae3e5526798492049be8b59d",
+      "size": 23658
+    },
+    {
+      "path": "quill/data/voice-previews/espeak/en-au.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/espeak/en-au.mp3",
+      "sha256": "c25feb81eacd0e183a44ebe652eea70ee74e7a1b3d4d7d135834d98fe9202745",
+      "size": 22301
+    },
+    {
+      "path": "quill/data/voice-previews/espeak/en-ca.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/espeak/en-ca.mp3",
+      "sha256": "c25feb81eacd0e183a44ebe652eea70ee74e7a1b3d4d7d135834d98fe9202745",
+      "size": 22301
+    },
+    {
+      "path": "quill/data/voice-previews/espeak/en-gb-x-rp.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/espeak/en-gb-x-rp.mp3",
+      "sha256": "859bd309f08dd38a75b680d1a516d02959cf6e3b47b47a910233de0c777179eb",
+      "size": 22614
+    },
+    {
+      "path": "quill/data/voice-previews/espeak/en-gb.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/espeak/en-gb.mp3",
+      "sha256": "c25feb81eacd0e183a44ebe652eea70ee74e7a1b3d4d7d135834d98fe9202745",
+      "size": 22301
+    },
+    {
+      "path": "quill/data/voice-previews/espeak/en-in.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/espeak/en-in.mp3",
+      "sha256": "c25feb81eacd0e183a44ebe652eea70ee74e7a1b3d4d7d135834d98fe9202745",
+      "size": 22301
+    },
+    {
+      "path": "quill/data/voice-previews/espeak/en-rp.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/espeak/en-rp.mp3",
+      "sha256": "c25feb81eacd0e183a44ebe652eea70ee74e7a1b3d4d7d135834d98fe9202745",
+      "size": 22301
+    },
+    {
+      "path": "quill/data/voice-previews/espeak/en-sc.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/espeak/en-sc.mp3",
+      "sha256": "c25feb81eacd0e183a44ebe652eea70ee74e7a1b3d4d7d135834d98fe9202745",
+      "size": 22301
+    },
+    {
+      "path": "quill/data/voice-previews/espeak/en-us.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/espeak/en-us.mp3",
+      "sha256": "2baad9e616421825cefc6149a19726e8943104a5dc76eadb31af1043f2003522",
+      "size": 22301
+    },
+    {
+      "path": "quill/data/voice-previews/espeak/en-wls.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/espeak/en-wls.mp3",
+      "sha256": "c25feb81eacd0e183a44ebe652eea70ee74e7a1b3d4d7d135834d98fe9202745",
+      "size": 22301
+    },
+    {
+      "path": "quill/data/voice-previews/espeak/en.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/espeak/en.mp3",
+      "sha256": "c25feb81eacd0e183a44ebe652eea70ee74e7a1b3d4d7d135834d98fe9202745",
+      "size": 22301
+    },
+    {
+      "path": "quill/data/voice-previews/kokoro/af_aoede.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/kokoro/af_aoede.mp3",
+      "sha256": "262007e667c1bf72af55072d7d83bbd1ca9ee95cbea92a8a57762991e9328a64",
+      "size": 35757
+    },
+    {
+      "path": "quill/data/voice-previews/kokoro/af_bella.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/kokoro/af_bella.mp3",
+      "sha256": "4ec8254589dd97a59c928f990d5d74ecc13bf7225dcc606c1d8c8d86549914cd",
+      "size": 39213
+    },
+    {
+      "path": "quill/data/voice-previews/kokoro/af_heart.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/kokoro/af_heart.mp3",
+      "sha256": "19cd41902bdc7bea9e47e99255c31a13fdd33ba4edb03f88536ba478fe295560",
+      "size": 35757
+    },
+    {
+      "path": "quill/data/voice-previews/kokoro/af_kore.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/kokoro/af_kore.mp3",
+      "sha256": "3b10a7d77f7d402ef4d35b7f5fc0514c9eb595461985f2f2bdd595e75384dd30",
+      "size": 34893
+    },
+    {
+      "path": "quill/data/voice-previews/kokoro/af_nicole.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/kokoro/af_nicole.mp3",
+      "sha256": "a59a05b7851d34b7acb45bdf852cdfb49736e837bbcf3c06ab9207f3376abe00",
+      "size": 48141
+    },
+    {
+      "path": "quill/data/voice-previews/kokoro/af_sarah.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/kokoro/af_sarah.mp3",
+      "sha256": "b1d6cd770b5ce0873bb7eab3914522d406d4166ffe030f14edd95a91cc946bc1",
+      "size": 41517
+    },
+    {
+      "path": "quill/data/voice-previews/kokoro/af_sky.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/kokoro/af_sky.mp3",
+      "sha256": "cd3ae3ff1e1c60ef70260087e08df8f7a9cec96798ea0f98710450e46b32da9c",
+      "size": 37773
+    },
+    {
+      "path": "quill/data/voice-previews/kokoro/am_adam.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/kokoro/am_adam.mp3",
+      "sha256": "79201e3637ac09fb4a977a4caf2be2a51a81a649e871c14f44cd0f5716e6e902",
+      "size": 38061
+    },
+    {
+      "path": "quill/data/voice-previews/kokoro/am_echo.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/kokoro/am_echo.mp3",
+      "sha256": "0de9680b3d0bf1945639e1cb09ffe0320ce0a8d740ba46f6d106243aca94e96c",
+      "size": 40653
+    },
+    {
+      "path": "quill/data/voice-previews/kokoro/am_eric.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/kokoro/am_eric.mp3",
+      "sha256": "6f587e7b60ccaf18cea2369e03dff0b2edbca586002fe9300c44129e7a2d6a51",
+      "size": 35469
+    },
+    {
+      "path": "quill/data/voice-previews/kokoro/am_fenrir.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/kokoro/am_fenrir.mp3",
+      "sha256": "16f4dc7989759a3620913aa5d07b107aa2b920a9ec98a2fcb1e921f55c7ffded",
+      "size": 33741
+    },
+    {
+      "path": "quill/data/voice-previews/kokoro/am_liam.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/kokoro/am_liam.mp3",
+      "sha256": "46c819e8175a19fa8fae2981e02f684d5de33c41bc4ad12b6d047ceb20e89a9b",
+      "size": 36621
+    },
+    {
+      "path": "quill/data/voice-previews/kokoro/am_michael.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/kokoro/am_michael.mp3",
+      "sha256": "a2c79fe6c86e4307219be107c2d76c364478dc7bfd7a5c908836892b4c204d55",
+      "size": 39501
+    },
+    {
+      "path": "quill/data/voice-previews/kokoro/am_onyx.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/kokoro/am_onyx.mp3",
+      "sha256": "d3068ced1984436988b935c6ed7de38370f984266544c7ceeb9fcc1520cf783b",
+      "size": 41805
+    },
+    {
+      "path": "quill/data/voice-previews/kokoro/am_puck.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/kokoro/am_puck.mp3",
+      "sha256": "e299e0c197df440366cdf19f4b25ff35035666f417f708b761d763e679f43f69",
+      "size": 34605
+    },
+    {
+      "path": "quill/data/voice-previews/kokoro/bf_alice.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/kokoro/bf_alice.mp3",
+      "sha256": "f971b08eada84547af11fb0c45a25b91c754f659db9c9029795681df7e914403",
+      "size": 36909
+    },
+    {
+      "path": "quill/data/voice-previews/kokoro/bf_emma.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/kokoro/bf_emma.mp3",
+      "sha256": "3672148f9f390900d0b53dfd7fb9c36a4d4a0055cb045a89a449c960073432d0",
+      "size": 36045
+    },
+    {
+      "path": "quill/data/voice-previews/kokoro/bf_isabella.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/kokoro/bf_isabella.mp3",
+      "sha256": "b4245f954128b7eadff681bc09650c87acf2a30941cfada1f9df7b448b4413ee",
+      "size": 38349
+    },
+    {
+      "path": "quill/data/voice-previews/kokoro/bf_lily.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/kokoro/bf_lily.mp3",
+      "sha256": "1cdfeecaeed0f53c0a3ac879d526fe0f354f4c5b7ede1542ae6535c103ddb256",
+      "size": 37485
+    },
+    {
+      "path": "quill/data/voice-previews/kokoro/bm_daniel.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/kokoro/bm_daniel.mp3",
+      "sha256": "2b33b791497cf9c8f8618ea29c98ec3ac529618fe37cb64dd325ce0f3d68056a",
+      "size": 35469
+    },
+    {
+      "path": "quill/data/voice-previews/kokoro/bm_fable.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/kokoro/bm_fable.mp3",
+      "sha256": "56260aa249b4f63df5f46b452f9a2fd7c7de0d5a8a3c6610c6cd97eeb2b4fc8d",
+      "size": 40365
+    },
+    {
+      "path": "quill/data/voice-previews/kokoro/bm_george.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/kokoro/bm_george.mp3",
+      "sha256": "b41b41af4b87a0ff5ed6ad6e39739ba2892db486e38444ac19ce142f8090c9b4",
+      "size": 39789
+    },
+    {
+      "path": "quill/data/voice-previews/kokoro/bm_lewis.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/kokoro/bm_lewis.mp3",
+      "sha256": "1587fcbd93862fa935910d0912c91fa547062b6fdc7d9716bb7acfd1cf54241f",
+      "size": 40653
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_GB-alan-medium.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_GB-alan-medium.mp3",
+      "sha256": "d9014c8b391383884b297cf1af53c12be86393f9f05b9103760abfed2e9a4798",
+      "size": 102223
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_GB-alba-medium.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_GB-alba-medium.mp3",
+      "sha256": "6df4f047daa0f7e44a6844216b26ceef3e1eabe2e314621b5b5fa28c6eb57d30",
+      "size": 88476
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_GB-aru-medium.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_GB-aru-medium.mp3",
+      "sha256": "92d616f1c297033c0f7ea340ee2a2283f8add96a0ccb25de7cb11f036b1d5e23",
+      "size": 34213
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_GB-cori-high.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_GB-cori-high.mp3",
+      "sha256": "164f6ac1e4f16086afc0f0b3eb58167d4b07fbe1f8c0673b9574b0ad38e974dc",
+      "size": 32645
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_GB-cori-medium.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_GB-cori-medium.mp3",
+      "sha256": "00a1add8452ff274eee63620c4632d760e239f4bda626bb8a92cb4f0c1aa4054",
+      "size": 88727
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_GB-jenny_dioco-medium.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_GB-jenny_dioco-medium.mp3",
+      "sha256": "72a3d7f34f93a531a4f07dafcafd08c5c27dd459f56072c748b5005c1c75ac98",
+      "size": 95066
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_GB-northern_english_male-medium.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_GB-northern_english_male-medium.mp3",
+      "sha256": "b81a829cca988937a80c472bfaa5cfaf11c035eac3537a03481f54d0ab852c22",
+      "size": 87884
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_GB-semaine-medium.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_GB-semaine-medium.mp3",
+      "sha256": "10a2b4229a6916afae7fd5e24ae24e36ec961d453928f641ae1f99b2d2b10caa",
+      "size": 30765
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_GB-southern_english_female-low.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_GB-southern_english_female-low.mp3",
+      "sha256": "3fb8d6d7620cdb73f19e2ead511e43e88d30ff72cf82ef885bb67c15398879b7",
+      "size": 28125
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_GB-vctk-medium.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_GB-vctk-medium.mp3",
+      "sha256": "cbd18976110bf03548cf3000776154dcce20b66487af623b09407f338a82fece",
+      "size": 25436
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_US-amy-low.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_US-amy-low.mp3",
+      "sha256": "93c903ed1c8858a98f79377703b7b14ed0aab75550479f23957aa85b7558b8b7",
+      "size": 35037
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_US-amy-medium.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_US-amy-medium.mp3",
+      "sha256": "89a70b1c5f88f395ca4f1fbf916b53a4f8f66c054bfb06bc3ab3b4520b68d1f7",
+      "size": 95553
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_US-arctic-medium.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_US-arctic-medium.mp3",
+      "sha256": "03b322ffc831ad6547b4fd70bfc74f97757b264e2aa92b6c776c2e614848f35d",
+      "size": 29511
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_US-bryce-medium.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_US-bryce-medium.mp3",
+      "sha256": "0bb610687a94eb0a6f02ef4720742e1e3785b38b730082bce6085cc965d61e1e",
+      "size": 39228
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_US-danny-low.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_US-danny-low.mp3",
+      "sha256": "0e9d2f7aa02190480038489ec82462adc522c35e51356682b93c221516f836e4",
+      "size": 27693
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_US-hfc_female-medium.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_US-hfc_female-medium.mp3",
+      "sha256": "c9682897d836ca48bad1b49392261b1383038e7dfbe5e0c1a99664dce20a4fe3",
+      "size": 86872
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_US-hfc_male-medium.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_US-hfc_male-medium.mp3",
+      "sha256": "2127dd9329b89d98c22bad87bd16c3f6c4aebb8d74323789fcd353fce5c313a6",
+      "size": 93221
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_US-joe-medium.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_US-joe-medium.mp3",
+      "sha256": "7391ee0a89f2fbf9d5dfb0e53314d32ee9b130a7ddfde1a456717668309e1829",
+      "size": 90499
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_US-john-medium.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_US-john-medium.mp3",
+      "sha256": "97d4cb0f292540f308614d1345126fdde6be243a0cd1fa4bfbe388a2a46c04c0",
+      "size": 34840
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_US-kathleen-low.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_US-kathleen-low.mp3",
+      "sha256": "aebb6868fa1efc2070b32ca861b2f6c5d83b5deeb71e0cc430f228dfced9e69c",
+      "size": 30285
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_US-kristin-medium.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_US-kristin-medium.mp3",
+      "sha256": "1dae7f1de1230ee75c89225af7a4dad4adb37097ae57c0e3ea8a812cab77f1e8",
+      "size": 98782
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_US-kusal-medium.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_US-kusal-medium.mp3",
+      "sha256": "cfaa829fa6e0dd058a800f44784b1fe9ef4c40e455b779bc2aec2e8067f3bb0c",
+      "size": 27943
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_US-l2arctic-medium.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_US-l2arctic-medium.mp3",
+      "sha256": "5f42b34888979ab421967db9d5eb22cc15e5954f17c5f5035d1870d697f107e4",
+      "size": 35153
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_US-lessac-high.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_US-lessac-high.mp3",
+      "sha256": "5e61a6b860d013b2ca5eae7add934773ba215bf7fb61a46b250b871d6f739d68",
+      "size": 31078
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_US-lessac-low.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_US-lessac-low.mp3",
+      "sha256": "733e2de245677f5d5bc472b646e75bc4b7d18150c5f3c9925900164872225329",
+      "size": 33741
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_US-lessac-medium.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_US-lessac-medium.mp3",
+      "sha256": "50952249253e66f8d448ace6a8b1ca32eee1209aa41a81898d83e71979c86c52",
+      "size": 83453
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_US-libritts-high.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_US-libritts-high.mp3",
+      "sha256": "e117251e744bcabf5779a8d6d7f3d282b39a60b9ef55b026751d824268f2149b",
+      "size": 29197
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_US-libritts_r-medium.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_US-libritts_r-medium.mp3",
+      "sha256": "e3f187612e89a2cc8aa02dfb0c71a1415d8c1fdb5ea73c8b69f0f8c5e9a2fcd2",
+      "size": 23241
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_US-ljspeech-high.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_US-ljspeech-high.mp3",
+      "sha256": "7c2a64e11094820ee8cb2cc9b0c59a13370b277f363d6003348f1109b93147ce",
+      "size": 29824
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_US-ljspeech-medium.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_US-ljspeech-medium.mp3",
+      "sha256": "819eb43c26695275782dd16bf3374f8ca1ee9cfae3092b81b009ace0224cb6f7",
+      "size": 30451
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_US-norman-medium.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_US-norman-medium.mp3",
+      "sha256": "6875560f2e23e73733ecf7a992fbde6056e0a9589d0edac483e4ddd9f20b7ec9",
+      "size": 91296
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_US-reza_ibrahim-medium.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_US-reza_ibrahim-medium.mp3",
+      "sha256": "7b7949e7f5054664d2dc5299644325a23b7991c22f0ede627ffebf27cf7dcd65",
+      "size": 41109
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_US-ryan-high.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_US-ryan-high.mp3",
+      "sha256": "6d33ea84ee9c8dfdb4af3f6002afea6fb93d7e6ed0de8f126e8ddc51642181bf",
+      "size": 26689
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_US-ryan-low.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_US-ryan-low.mp3",
+      "sha256": "67cec2d71e37cdabdd68963961027d973228129f4db77cd1f8ea2e3b1697788d",
+      "size": 26397
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_US-ryan-medium.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_US-ryan-medium.mp3",
+      "sha256": "c0deca0b1d5ba6e1a8e1d17acf83198a26ee8d74e288358cdab0cdc6b56dc867",
+      "size": 81958
+    },
+    {
+      "path": "quill/data/voice-previews/piper/en_US-sam-medium.mp3",
+      "install_path": "python/Lib/site-packages/quill/data/voice-previews/piper/en_US-sam-medium.mp3",
+      "sha256": "00bba5012bc7cfd0d0766a4ce4b9ffd3cc697a5c9c0a0146bf71c778edbe413d",
+      "size": 28570
+    },
+    {
+      "path": "quill/data/words_alpha.LICENSE.txt",
+      "install_path": "python/Lib/site-packages/quill/data/words_alpha.LICENSE.txt",
+      "sha256": "2208f4d2c0e86d4c5583eacbe203bcd917d80436d42c53bf171bd9c24067ccf7",
+      "size": 1488
+    },
+    {
+      "path": "quill/data/words_alpha.txt",
+      "install_path": "python/Lib/site-packages/quill/data/words_alpha.txt",
+      "sha256": "3ed0c94610d8bcf7c11bbb49c56aa49c7234d32b66824df91f554169e572da48",
+      "size": 4234910
+    },
+    {
+      "path": "quill/devtools/__init__.py",
+      "install_path": "python/Lib/site-packages/quill/devtools/__init__.py",
+      "sha256": "d4503f9a05899f8b456a4b5dd59e096adcff7a1dc1dbddd10a1bf262b7907e6a",
+      "size": 86
+    },
+    {
+      "path": "quill/devtools/console_window.py",
+      "install_path": "python/Lib/site-packages/quill/devtools/console_window.py",
+      "sha256": "9eca76ea1c93f1d9cb7a9277432dfdefa5453a9797193127a8cfa5c040d9b07b",
+      "size": 18515
+    },
+    {
+      "path": "quill/devtools/history.py",
+      "install_path": "python/Lib/site-packages/quill/devtools/history.py",
+      "sha256": "3a70a6a140f362ee40f02a8461b036fd59627c97a8313c5d2fbe9c6418d5eba7",
+      "size": 3065
+    },
+    {
+      "path": "quill/devtools/python_console.py",
+      "install_path": "python/Lib/site-packages/quill/devtools/python_console.py",
+      "sha256": "d5a15bdf8e63f7aaeec4bc91c1bb246727b360c982425a20c261ca0499579215",
+      "size": 3797
+    },
+    {
+      "path": "quill/devtools/ts_console.py",
+      "install_path": "python/Lib/site-packages/quill/devtools/ts_console.py",
+      "sha256": "1bcade260f1e35ae1118c5e05abe7ec76f15e521ab73014b6f92c5104f3c0de3",
+      "size": 11443
+    },
+    {
+      "path": "quill/devtools/ts_worker_protocol.py",
+      "install_path": "python/Lib/site-packages/quill/devtools/ts_worker_protocol.py",
+      "sha256": "90d2df93f342d5bd7a3dcd22e128a402918965fe36535967ff213d62a2a4ac6a",
+      "size": 2109
+    },
+    {
+      "path": "quill/io/__init__.py",
+      "install_path": "python/Lib/site-packages/quill/io/__init__.py",
+      "sha256": "07fcd6f099bde238fe865def8e7d0ae7e2e5f02b0744306681c8afbe3f5bfcb2",
+      "size": 44
+    },
+    {
+      "path": "quill/io/detect.py",
+      "install_path": "python/Lib/site-packages/quill/io/detect.py",
+      "sha256": "69d578f405d417eeaec02a392645dc646069fd0f0f7127810eb7d5436ec93570",
+      "size": 569
+    },
+    {
+      "path": "quill/io/export.py",
+      "install_path": "python/Lib/site-packages/quill/io/export.py",
+      "sha256": "daca715f674aa244627ad4b07b1242c1ee53261ebdda451843a807cd30584bec",
+      "size": 11015
+    },
+    {
+      "path": "quill/io/ftp_transport.py",
+      "install_path": "python/Lib/site-packages/quill/io/ftp_transport.py",
+      "sha256": "6c38b4e44f49b932ffc03c1ded1e4bfb3c09e38254bcb098e2e3260f8f8d35eb",
+      "size": 8991
+    },
+    {
+      "path": "quill/io/http_transport.py",
+      "install_path": "python/Lib/site-packages/quill/io/http_transport.py",
+      "sha256": "d99faa822af2024625ea9d10003e60121970687a8851423ab52f9d38a3be711f",
+      "size": 8367
+    },
+    {
+      "path": "quill/io/markitdown_bridge.py",
+      "install_path": "python/Lib/site-packages/quill/io/markitdown_bridge.py",
+      "sha256": "d07d4c0823b2cae240ad10787538872fd1f53e07df8fab951694b4a3dd6d5454",
+      "size": 569
+    },
+    {
+      "path": "quill/io/ocr.py",
+      "install_path": "python/Lib/site-packages/quill/io/ocr.py",
+      "sha256": "67d42f11d577ebafdbef906b1aa1ac284c9edd571914ce19674342df21ee33b3",
+      "size": 7586
+    },
+    {
+      "path": "quill/io/open_read.py",
+      "install_path": "python/Lib/site-packages/quill/io/open_read.py",
+      "sha256": "2ba12b5d70280f325cce7dac3fbf0f6bfcfed93eae79cd37a64e2121b6a60b8a",
+      "size": 5331
+    },
+    {
+      "path": "quill/io/pages.py",
+      "install_path": "python/Lib/site-packages/quill/io/pages.py",
+      "sha256": "d6902438e42ba3c5ed4aba07c28d39cbc7020370d949ad4c9c6c0bd8bde31622",
+      "size": 12187
+    },
+    {
+      "path": "quill/io/pandoc.py",
+      "install_path": "python/Lib/site-packages/quill/io/pandoc.py",
+      "sha256": "595b6cff58c03b28234a2386f8714aa0ae46b445b47dd021a6b0c96c147fac7a",
+      "size": 3464
+    },
+    {
+      "path": "quill/io/pdf.py",
+      "install_path": "python/Lib/site-packages/quill/io/pdf.py",
+      "sha256": "29504d7b45e89ccbdf40f41b85d44b6271b98c7f7fa72cca97d374387ef7ed04",
+      "size": 4632
+    },
+    {
+      "path": "quill/io/remote_transport.py",
+      "install_path": "python/Lib/site-packages/quill/io/remote_transport.py",
+      "sha256": "0965965fceb257c6357d87041b4f715b9b4fef67b7996aed4458cb28aeb8e907",
+      "size": 6689
+    },
+    {
+      "path": "quill/io/rtf.py",
+      "install_path": "python/Lib/site-packages/quill/io/rtf.py",
+      "sha256": "3ad652cf7e76b81cb5e9f7bc1d151693e985798f84d4355bb9ce128bada12537",
+      "size": 12809
+    },
+    {
+      "path": "quill/io/rtf_model.py",
+      "install_path": "python/Lib/site-packages/quill/io/rtf_model.py",
+      "sha256": "a1bc71e296350a6e42b52b402bd258c1c38fc5586a69c985d9bb141227c5e1a0",
+      "size": 17410
+    },
+    {
+      "path": "quill/io/rtf_safety.py",
+      "install_path": "python/Lib/site-packages/quill/io/rtf_safety.py",
+      "sha256": "2c1afa7208140b67ab449e864e53f5ad5bed408a9eca2fff17df1225d856ab89",
+      "size": 5184
+    },
+    {
+      "path": "quill/io/s3_sigv4.py",
+      "install_path": "python/Lib/site-packages/quill/io/s3_sigv4.py",
+      "sha256": "cee9e133ded35aa902227245d684011ef318541de752a9321ad5ca7520df4ddc",
+      "size": 11384
+    },
+    {
+      "path": "quill/io/s3_transport.py",
+      "install_path": "python/Lib/site-packages/quill/io/s3_transport.py",
+      "sha256": "f2366b340c5135fcb0236b4084e11c2270a8bb56db264b3428ecafcd5fbadc34",
+      "size": 17561
+    },
+    {
+      "path": "quill/io/sftp_transport.py",
+      "install_path": "python/Lib/site-packages/quill/io/sftp_transport.py",
+      "sha256": "76b61fa67fca381fedf1a22196b17c4812e78b07400aeaa6c469cad9dd904eb1",
+      "size": 6867
+    },
+    {
+      "path": "quill/io/structured.py",
+      "install_path": "python/Lib/site-packages/quill/io/structured.py",
+      "sha256": "bc1ab3498a332978eff9dd0468703c5077b96d83d73228b0eb02ae1fde470cfb",
+      "size": 23833
+    },
+    {
+      "path": "quill/io/text.py",
+      "install_path": "python/Lib/site-packages/quill/io/text.py",
+      "sha256": "7ce4012c9a88752b4689db12cbebf067feda440caf0b98a5d97f4426c8567941",
+      "size": 3683
+    },
+    {
+      "path": "quill/io/webdav_transport.py",
+      "install_path": "python/Lib/site-packages/quill/io/webdav_transport.py",
+      "sha256": "d1f2987d6cda91fc567b2b633e52d14ce8d6a488f4a39e15d2d01020a09d2c0d",
+      "size": 13012
+    },
+    {
+      "path": "quill/locale/quill.pot",
+      "install_path": "python/Lib/site-packages/quill/locale/quill.pot",
+      "sha256": "944ec1a672a79ff9dfb875db91e7c05ae8520f44c2bace3d0a6f63ed0c8007d2",
+      "size": 47693
+    },
+    {
+      "path": "quill/platform/__init__.py",
+      "install_path": "python/Lib/site-packages/quill/platform/__init__.py",
+      "sha256": "73bfaf1488097198b682814b7eccc0b38652f9f0b17c83a5989bb27cfc55d44e",
+      "size": 39
+    },
+    {
+      "path": "quill/platform/announce_engine.py",
+      "install_path": "python/Lib/site-packages/quill/platform/announce_engine.py",
+      "sha256": "2279ee78c878871681b3aa4c942b9c6731cbf595fdad97c42a1cac813c737437",
+      "size": 514
+    },
+    {
+      "path": "quill/platform/credential_validation.py",
+      "install_path": "python/Lib/site-packages/quill/platform/credential_validation.py",
+      "sha256": "77d38e2f1586b18a2ab7ae1d9076c9b226aa11f71265087df87df24b002ff1d8",
+      "size": 1832
+    },
+    {
+      "path": "quill/platform/dispatch.py",
+      "install_path": "python/Lib/site-packages/quill/platform/dispatch.py",
+      "sha256": "9ebc5c6eba92c1e08c884f40fd580c86c7c4ea0390758b6736c43af361bf65ca",
+      "size": 1607
+    },
+    {
+      "path": "quill/platform/high_contrast.py",
+      "install_path": "python/Lib/site-packages/quill/platform/high_contrast.py",
+      "sha256": "46de4ea918f17768c277d457fea83acd713d32bbfbca59c6856e8b71844d31d8",
+      "size": 519
+    },
+    {
+      "path": "quill/platform/macos/__init__.py",
+      "install_path": "python/Lib/site-packages/quill/platform/macos/__init__.py",
+      "sha256": "629115d6ff23c4573686baa2da67cff09e838c966446b948ef01cd17eff8758e",
+      "size": 342
+    },
+    {
+      "path": "quill/platform/macos/announce.py",
+      "install_path": "python/Lib/site-packages/quill/platform/macos/announce.py",
+      "sha256": "e62338e1ff4e53aa2b1b729f750b9f9e17d4560df59cbe0c09387e7588c84782",
+      "size": 1309
+    },
+    {
+      "path": "quill/platform/macos/high_contrast.py",
+      "install_path": "python/Lib/site-packages/quill/platform/macos/high_contrast.py",
+      "sha256": "a98d6047d20e68c18c53336b4aa6c6dfce82e2f4e3a36a8d4ab19d7683a5f48a",
+      "size": 744
+    },
+    {
+      "path": "quill/platform/macos/keychain.py",
+      "install_path": "python/Lib/site-packages/quill/platform/macos/keychain.py",
+      "sha256": "6bbe98cc6206799b037d76a4986ed55f9c8907a6c5ae4b8905a664093eaa5795",
+      "size": 3156
+    },
+    {
+      "path": "quill/platform/macos/macos_app.py",
+      "install_path": "python/Lib/site-packages/quill/platform/macos/macos_app.py",
+      "sha256": "3bdff9422f252e5ae119b04bd0e1d786b649220ea20e47e63dc595cf2526776b",
+      "size": 183
+    },
+    {
+      "path": "quill/platform/macos/shell_integration.py",
+      "install_path": "python/Lib/site-packages/quill/platform/macos/shell_integration.py",
+      "sha256": "75b2f18f9a5e921db95be83fbc187abaa5564855a98bb823f7f92c985e0c303c",
+      "size": 3538
+    },
+    {
+      "path": "quill/platform/macos/sr_detect.py",
+      "install_path": "python/Lib/site-packages/quill/platform/macos/sr_detect.py",
+      "sha256": "57b4059a5ae812d987a0f1f58363bb3bc3beb156e2555b2ff2fe764d47bda601",
+      "size": 1348
+    },
+    {
+      "path": "quill/platform/shell_integration.py",
+      "install_path": "python/Lib/site-packages/quill/platform/shell_integration.py",
+      "sha256": "32790697644e641ebda678a33bedb9db0abeb1904b460f0d3d7e97e7a6e6e95d",
+      "size": 1266
+    },
+    {
+      "path": "quill/platform/sound_player.py",
+      "install_path": "python/Lib/site-packages/quill/platform/sound_player.py",
+      "sha256": "c78f2e6b056319b7411d7e5d8780fa670fc86b228ad4984f3a1bae32e769fe3b",
+      "size": 10296
+    },
+    {
+      "path": "quill/platform/sr_announce.py",
+      "install_path": "python/Lib/site-packages/quill/platform/sr_announce.py",
+      "sha256": "adf8ae6be0fbbfd1fc9725d0d774ff6994cc9f0b5ea67f5896d1ffd12e725276",
+      "size": 666
+    },
+    {
+      "path": "quill/platform/sr_detect.py",
+      "install_path": "python/Lib/site-packages/quill/platform/sr_detect.py",
+      "sha256": "ca0b2b2b9be2b0c164191eb739f936cec2aca5b8d13b1e920b15ab3658d99140",
+      "size": 854
+    },
+    {
+      "path": "quill/platform/windows/__init__.py",
+      "install_path": "python/Lib/site-packages/quill/platform/windows/__init__.py",
+      "sha256": "ca9b34d259dfb59935d9ae64054d409e66410dfb348e07322caeba4740024edd",
+      "size": 34
+    },
+    {
+      "path": "quill/platform/windows/clipboard.py",
+      "install_path": "python/Lib/site-packages/quill/platform/windows/clipboard.py",
+      "sha256": "fce3cca1d2f229e46ab8eec3d23a3242460a25a978e772d25d19ca2bec438895",
+      "size": 5138
+    },
+    {
+      "path": "quill/platform/windows/credential_manager.py",
+      "install_path": "python/Lib/site-packages/quill/platform/windows/credential_manager.py",
+      "sha256": "5acf8d544bbd674736bbc15002361c4278c76971d638ae1cd7e7acad99d5e1f3",
+      "size": 5240
+    },
+    {
+      "path": "quill/platform/windows/credential_store.py",
+      "install_path": "python/Lib/site-packages/quill/platform/windows/credential_store.py",
+      "sha256": "c45260258fe12c3fe35e4b758fb95e28488a2f8ea3dd5bd976f7a564324cc7e2",
+      "size": 8133
+    },
+    {
+      "path": "quill/platform/windows/dictation.py",
+      "install_path": "python/Lib/site-packages/quill/platform/windows/dictation.py",
+      "sha256": "7eb1af87535284b141c62f8bad2c8f7510dd31e75585c8fa12e526c46b34b54e",
+      "size": 901
+    },
+    {
+      "path": "quill/platform/windows/dpapi.py",
+      "install_path": "python/Lib/site-packages/quill/platform/windows/dpapi.py",
+      "sha256": "30cec32644f012e5682b4332f9dda7e8fbab9e21df161de05389e62c2199cb64",
+      "size": 2885
+    },
+    {
+      "path": "quill/platform/windows/foreground.py",
+      "install_path": "python/Lib/site-packages/quill/platform/windows/foreground.py",
+      "sha256": "ab774ff044e266341917d8e976d63ac5d60ba48f31b082f2bb2103e0df079421",
+      "size": 1135
+    },
+    {
+      "path": "quill/platform/windows/high_contrast.py",
+      "install_path": "python/Lib/site-packages/quill/platform/windows/high_contrast.py",
+      "sha256": "fb8728dd275c15468a0c305306b42a7d6bc7f23166f30b22fe3172c7b0ddb955",
+      "size": 1098
+    },
+    {
+      "path": "quill/platform/windows/prism_bridge.py",
+      "install_path": "python/Lib/site-packages/quill/platform/windows/prism_bridge.py",
+      "sha256": "8ff1666ce0128453c0b57c141669544e5cb73698917ba739c82a3ec8f38a89ab",
+      "size": 12594
+    },
+    {
+      "path": "quill/platform/windows/screen_capture.py",
+      "install_path": "python/Lib/site-packages/quill/platform/windows/screen_capture.py",
+      "sha256": "1833b092473ce9814ebcc2fcd6dd095007c3206f9671fd8947be9f09fddafcec",
+      "size": 5397
+    },
+    {
+      "path": "quill/platform/windows/shell_integration.py",
+      "install_path": "python/Lib/site-packages/quill/platform/windows/shell_integration.py",
+      "sha256": "85609d927a44b024a6ad514d6da3ade107be1222d8319cdcfd76879f6de8d097",
+      "size": 11581
+    },
+    {
+      "path": "quill/platform/windows/sound_player.py",
+      "install_path": "python/Lib/site-packages/quill/platform/windows/sound_player.py",
+      "sha256": "6e0cfa70ef24080e92e6baec29cb2f9554e9066b501cd9fe999195c3bad32ccf",
+      "size": 259
+    },
+    {
+      "path": "quill/platform/windows/sr_announce.py",
+      "install_path": "python/Lib/site-packages/quill/platform/windows/sr_announce.py",
+      "sha256": "7dded16c695191909f0e054fdb811cea95f1b85b4e1e0dae59b194da02a0e6d7",
+      "size": 1191
+    },
+    {
+      "path": "quill/platform/windows/sr_detect.py",
+      "install_path": "python/Lib/site-packages/quill/platform/windows/sr_detect.py",
+      "sha256": "6219e5bfbb77ae3a221ce1ca94a4be33e20ffbbbadce705d48142d5075f4111e",
+      "size": 1492
+    },
+    {
+      "path": "quill/platform/windows/windows_ocr.py",
+      "install_path": "python/Lib/site-packages/quill/platform/windows/windows_ocr.py",
+      "sha256": "110ac95ceea9d4255d3983b210b8100e8eda2a73fd0e9f293cc0504efd142eb1",
+      "size": 3172
+    },
+    {
+      "path": "quill/plugins/__init__.py",
+      "install_path": "python/Lib/site-packages/quill/plugins/__init__.py",
+      "sha256": "75ac2d5706a5169560360769a40fa910997edb0a67ff0d9f5eb1c34fa4a59606",
+      "size": 2415
+    },
+    {
+      "path": "quill/plugins/api.py",
+      "install_path": "python/Lib/site-packages/quill/plugins/api.py",
+      "sha256": "78ae86e0a6e2281f9066796340c3d262b4092f19313af3c74079f27e4a11fba6",
+      "size": 213
+    },
+    {
+      "path": "quill/plugins/node_quillin_runner.py",
+      "install_path": "python/Lib/site-packages/quill/plugins/node_quillin_runner.py",
+      "sha256": "ec67ed33f8c490fc4cf20a8e730d7c936fdb96680d6131b71061327eeb729348",
+      "size": 5707
+    },
+    {
+      "path": "quill/quillins_bundled/ai-writing-prompts/LICENSE",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/ai-writing-prompts/LICENSE",
+      "sha256": "1d6db8a39da7d801b22b19908b98b772386078e4558678417a4b4096343afc02",
+      "size": 1070
+    },
+    {
+      "path": "quill/quillins_bundled/ai-writing-prompts/manifest.json",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/ai-writing-prompts/manifest.json",
+      "sha256": "2ab62d24df5a25017f1f5ef29e020d6e450348a1ebec5e23a4fc42ecf739aa3c",
+      "size": 445
+    },
+    {
+      "path": "quill/quillins_bundled/ai-writing-prompts/prompts.json",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/ai-writing-prompts/prompts.json",
+      "sha256": "28ecaabefcbf25c91f9f8b5895d2b3e62d6df8e9911aa5f9add72ac8b23fafb6",
+      "size": 1711
+    },
+    {
+      "path": "quill/quillins_bundled/ai-writing-prompts/README.epub",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/ai-writing-prompts/README.epub",
+      "sha256": "aea244db22a7e8826d12c8626560791ef284635d161ad6d20d2c133ca93bef14",
+      "size": 5635
+    },
+    {
+      "path": "quill/quillins_bundled/ai-writing-prompts/README.html",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/ai-writing-prompts/README.html",
+      "sha256": "008ed26491cb2cfc664f4ea88b598cdbadcf3d5d055794ceb59eb458fee90614",
+      "size": 5237
+    },
+    {
+      "path": "quill/quillins_bundled/ai-writing-prompts/README.md",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/ai-writing-prompts/README.md",
+      "sha256": "4c00a6419983ce0e50808648190e1c834fb010b089b2437f8d419d84eeba9bfa",
+      "size": 879
+    },
+    {
+      "path": "quill/quillins_bundled/ai-writing-skills/accessible-rewrite.sqp",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/ai-writing-skills/accessible-rewrite.sqp",
+      "sha256": "9a3138f1538e23a2fa0e474a0f2aaa324be3dd9e04134283ff3184cc7532dda3",
+      "size": 1363
+    },
+    {
+      "path": "quill/quillins_bundled/ai-writing-skills/argument-strengthener.sqp",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/ai-writing-skills/argument-strengthener.sqp",
+      "sha256": "4f47f647d8474991f6816cea3818fd84fa0f6c8dcbad0fb1d8a70c9fcb4f3c3b",
+      "size": 1652
+    },
+    {
+      "path": "quill/quillins_bundled/ai-writing-skills/LICENSE",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/ai-writing-skills/LICENSE",
+      "sha256": "6f80eedd8005edf2e4e68f1fbc2a44ef25fb3f77f4d5fab3cfb61c6a17d0d7cc",
+      "size": 1070
+    },
+    {
+      "path": "quill/quillins_bundled/ai-writing-skills/manifest.json",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/ai-writing-skills/manifest.json",
+      "sha256": "2fec15e60652e35767423276e3e19f90ca73ee60c77d78494c056682ce2e48f2",
+      "size": 376
+    },
+    {
+      "path": "quill/quillins_bundled/ai-writing-skills/meeting-notes-to-actions.sqp",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/ai-writing-skills/meeting-notes-to-actions.sqp",
+      "sha256": "b5719a2011dea98572fe5763a6a2b248fee75e0ed8b3e3a7f12b2e28b64919aa",
+      "size": 1615
+    },
+    {
+      "path": "quill/quillins_bundled/ai-writing-skills/README.epub",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/ai-writing-skills/README.epub",
+      "sha256": "dd9d7cca53d238e4ff9fe29d3f4a7b1316b779bf4771c1f01d5542039b889adc",
+      "size": 6303
+    },
+    {
+      "path": "quill/quillins_bundled/ai-writing-skills/README.html",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/ai-writing-skills/README.html",
+      "sha256": "c03001daa449c42dd59cff6aeff01c9241e3e30644505efdcf57f4e581f58745",
+      "size": 5908
+    },
+    {
+      "path": "quill/quillins_bundled/ai-writing-skills/README.md",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/ai-writing-skills/README.md",
+      "sha256": "c2f8bdd48109c9ddc4d097fb22b6623d4437abf3d2a20703387dd5b3d1e7344a",
+      "size": 1477
+    },
+    {
+      "path": "quill/quillins_bundled/ai-writing-skills/research-and-draft.sqp",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/ai-writing-skills/research-and-draft.sqp",
+      "sha256": "190e83bb30ab3f7b9f5f6596a6af222dddbe70a7da13e031eb2561edaba6be7f",
+      "size": 1360
+    },
+    {
+      "path": "quill/quillins_bundled/brf-tools/extension.py",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/brf-tools/extension.py",
+      "sha256": "40c875c060e006cb7d4da2dd861f8d9cfb6912b6263d54ebd6afa7480b5bd0c5",
+      "size": 1930
+    },
+    {
+      "path": "quill/quillins_bundled/brf-tools/LICENSE",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/brf-tools/LICENSE",
+      "sha256": "e6ac8095faa08dd10a2cad01dbb1fdb8f6ae13c35df713a09b9b266423891375",
+      "size": 1118
+    },
+    {
+      "path": "quill/quillins_bundled/brf-tools/manifest.json",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/brf-tools/manifest.json",
+      "sha256": "abe923eb493ce7ec6669cf45d8e64c940dbe5c2a80a4c5e2a37f9fb16f8fa591",
+      "size": 9597
+    },
+    {
+      "path": "quill/quillins_bundled/brf-tools/README.epub",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/brf-tools/README.epub",
+      "sha256": "076df846622fd4ede5c9e67548d40f6b0f673c304a3bf8ac0de94d043db4b950",
+      "size": 6018
+    },
+    {
+      "path": "quill/quillins_bundled/brf-tools/README.html",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/brf-tools/README.html",
+      "sha256": "35a776a0086d1aee8e41f7f200081c9301e5ced9e16f9da2ea080bcf81a4139e",
+      "size": 6062
+    },
+    {
+      "path": "quill/quillins_bundled/brf-tools/README.md",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/brf-tools/README.md",
+      "sha256": "97e570a46298caa708984e99e24b7d6dbcb9b9eb47355438df6ef52e9ddc363a",
+      "size": 1658
+    },
+    {
+      "path": "quill/quillins_bundled/doc-guardian/extension.py",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/doc-guardian/extension.py",
+      "sha256": "d1ce53939ae81a41fc3922db18449c3b5ef3e68cbdd756d58f449430679a48cc",
+      "size": 3611
+    },
+    {
+      "path": "quill/quillins_bundled/doc-guardian/LICENSE",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/doc-guardian/LICENSE",
+      "sha256": "e6ac8095faa08dd10a2cad01dbb1fdb8f6ae13c35df713a09b9b266423891375",
+      "size": 1118
+    },
+    {
+      "path": "quill/quillins_bundled/doc-guardian/manifest.json",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/doc-guardian/manifest.json",
+      "sha256": "0dd3a83d7697442a0226682819b20a8650f5f1f5f184b56eab62d8e1b834c39f",
+      "size": 7034
+    },
+    {
+      "path": "quill/quillins_bundled/doc-guardian/README.md",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/doc-guardian/README.md",
+      "sha256": "4cf194750b7c778465de95cb5b06c69dd4e2cc8c7b69b453a02990b6d2d90368",
+      "size": 2397
+    },
+    {
+      "path": "quill/quillins_bundled/insert-character/codepoints.py",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/insert-character/codepoints.py",
+      "sha256": "6d159c8ba703dd5cbb884c45f968807c65adcaed18c637b6174d758abf52c946",
+      "size": 1543
+    },
+    {
+      "path": "quill/quillins_bundled/insert-character/extension.py",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/insert-character/extension.py",
+      "sha256": "2542a0c5c430a0a64d52c8a6f2a3f2bbabf0681c171decb6e0be2e35febc60fc",
+      "size": 1391
+    },
+    {
+      "path": "quill/quillins_bundled/insert-character/LICENSE",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/insert-character/LICENSE",
+      "sha256": "696e5af9c9333dc5662902c52488820d427bd6f3ba200e55506f63393fe29ca3",
+      "size": 1102
+    },
+    {
+      "path": "quill/quillins_bundled/insert-character/manifest.json",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/insert-character/manifest.json",
+      "sha256": "0c4b032967adbe355d80819e553ee7b67283b0b8cbcc84d5deaba2877f7bdcfb",
+      "size": 807
+    },
+    {
+      "path": "quill/quillins_bundled/insert-character/README.epub",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/insert-character/README.epub",
+      "sha256": "5a86724ef68b150e04cadbd87f2e37107c28519c4b8abc91bbe437ef20750814",
+      "size": 5971
+    },
+    {
+      "path": "quill/quillins_bundled/insert-character/README.html",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/insert-character/README.html",
+      "sha256": "0939d4aa3950cfcc2de9692ee59bfa961b93426de56deff6dcd12198e5655c63",
+      "size": 5944
+    },
+    {
+      "path": "quill/quillins_bundled/insert-character/README.md",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/insert-character/README.md",
+      "sha256": "139e948ceb2cbb52683274de4518288822cda1f24eef18678a2c456bc7a5a77d",
+      "size": 1110
+    },
+    {
+      "path": "quill/quillins_bundled/insert-tools/LICENSE",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/insert-tools/LICENSE",
+      "sha256": "01a14d96f8f517e978ab7b76a168755c13fae7d87d60b07a256db3ac09e3d696",
+      "size": 1123
+    },
+    {
+      "path": "quill/quillins_bundled/insert-tools/manifest.json",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/insert-tools/manifest.json",
+      "sha256": "2a49006a9d2876a8f3811bf88827c159244811ff9e18efba9031457e636e0fe5",
+      "size": 1182
+    },
+    {
+      "path": "quill/quillins_bundled/insert-tools/README.epub",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/insert-tools/README.epub",
+      "sha256": "fa89a1fa1a12137c44df93fb74420fa9193172a6f67ee55e12a09e9d1a0b5021",
+      "size": 6004
+    },
+    {
+      "path": "quill/quillins_bundled/insert-tools/README.html",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/insert-tools/README.html",
+      "sha256": "6768657f0820f34898741ff3c7a48e0d91a7020b40b4e934a3b6dd37ef5b4280",
+      "size": 6088
+    },
+    {
+      "path": "quill/quillins_bundled/insert-tools/README.md",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/insert-tools/README.md",
+      "sha256": "93a8217de3303b8f057052e9f4b43787aa74c9ea2d90f577552c4e5fd175fb65",
+      "size": 1440
+    },
+    {
+      "path": "quill/quillins_bundled/journal-stamp/extension.py",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/journal-stamp/extension.py",
+      "sha256": "249b5409f3a7243de9347b3ad6a65356f4ef01a1eff1bdf509b2abd2766af2a2",
+      "size": 2638
+    },
+    {
+      "path": "quill/quillins_bundled/journal-stamp/LICENSE",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/journal-stamp/LICENSE",
+      "sha256": "e6ac8095faa08dd10a2cad01dbb1fdb8f6ae13c35df713a09b9b266423891375",
+      "size": 1118
+    },
+    {
+      "path": "quill/quillins_bundled/journal-stamp/manifest.json",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/journal-stamp/manifest.json",
+      "sha256": "481026e1caed679795244753bc3193902257d0edeec3ba3a81e5d156dc588e3b",
+      "size": 8088
+    },
+    {
+      "path": "quill/quillins_bundled/journal-stamp/README.md",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/journal-stamp/README.md",
+      "sha256": "6d0e251f47c21479bbeabc42c555fd87fe5ccb9ed4f8510c938a82db6be859ef",
+      "size": 1904
+    },
+    {
+      "path": "quill/quillins_bundled/line-tools/extension.py",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/line-tools/extension.py",
+      "sha256": "cf42d005ac89561a867cad1efb10570391bc480ede5d45981e509e894f28e3eb",
+      "size": 2034
+    },
+    {
+      "path": "quill/quillins_bundled/line-tools/LICENSE",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/line-tools/LICENSE",
+      "sha256": "696e5af9c9333dc5662902c52488820d427bd6f3ba200e55506f63393fe29ca3",
+      "size": 1102
+    },
+    {
+      "path": "quill/quillins_bundled/line-tools/line_ops.py",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/line-tools/line_ops.py",
+      "sha256": "bb0ccda3bb98f69bf14cbd757904d37e68a52cd68005162c3acb420dc4eb3cd9",
+      "size": 3688
+    },
+    {
+      "path": "quill/quillins_bundled/line-tools/manifest.json",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/line-tools/manifest.json",
+      "sha256": "13977ba636153ed8138c60c7e7c203f453df459ab9d55106ab8b937c5306253c",
+      "size": 1667
+    },
+    {
+      "path": "quill/quillins_bundled/line-tools/README.epub",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/line-tools/README.epub",
+      "sha256": "8536bb5b4dae8ea79272780f6da297094c7181023d74270775505773ddd1bef6",
+      "size": 6150
+    },
+    {
+      "path": "quill/quillins_bundled/line-tools/README.html",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/line-tools/README.html",
+      "sha256": "d4bbbcc393f2759171d7e8221ad3425c4e8e0e7d739297deb4f12d68c7b0326f",
+      "size": 6742
+    },
+    {
+      "path": "quill/quillins_bundled/line-tools/README.md",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/line-tools/README.md",
+      "sha256": "70a1bda49f233f50da8a38a427e1c3d4fc182389650639fbe57f612e63516e03",
+      "size": 1671
+    },
+    {
+      "path": "quill/quillins_bundled/markdown-helpers/extension.py",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/markdown-helpers/extension.py",
+      "sha256": "70fb34822e9c83e78d4afe9ba0963d4a268f68a258bb8f55815dde36b9d165de",
+      "size": 1246
+    },
+    {
+      "path": "quill/quillins_bundled/markdown-helpers/LICENSE",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/markdown-helpers/LICENSE",
+      "sha256": "01a14d96f8f517e978ab7b76a168755c13fae7d87d60b07a256db3ac09e3d696",
+      "size": 1123
+    },
+    {
+      "path": "quill/quillins_bundled/markdown-helpers/manifest.json",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/markdown-helpers/manifest.json",
+      "sha256": "3e78b0f64d3fb8af260f54dcbc38f92595719c16c40d6a62d4521525254ac2d4",
+      "size": 1227
+    },
+    {
+      "path": "quill/quillins_bundled/markdown-helpers/README.epub",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/markdown-helpers/README.epub",
+      "sha256": "bba6ae0d4fb70c2a1471eec3e5669c4b7e8cd104ef94dbc653ad3be2a4038f57",
+      "size": 6385
+    },
+    {
+      "path": "quill/quillins_bundled/markdown-helpers/README.html",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/markdown-helpers/README.html",
+      "sha256": "508a7f855419a7b215058250cc1556a2f60ff97be2db313d65a64a1186d99370",
+      "size": 6864
+    },
+    {
+      "path": "quill/quillins_bundled/markdown-helpers/README.md",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/markdown-helpers/README.md",
+      "sha256": "4d19e3ffed9aec4000f6c7f63fb18e640e9ad229a288984af362c5054c9bb2ea",
+      "size": 1938
+    },
+    {
+      "path": "quill/quillins_bundled/math-equations/extension.py",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/math-equations/extension.py",
+      "sha256": "bb32ff949178d4843de32f220c6a5fa17a459823961fa1b763e2de667c8cd6a8",
+      "size": 2621
+    },
+    {
+      "path": "quill/quillins_bundled/math-equations/LICENSE",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/math-equations/LICENSE",
+      "sha256": "1d6db8a39da7d801b22b19908b98b772386078e4558678417a4b4096343afc02",
+      "size": 1070
+    },
+    {
+      "path": "quill/quillins_bundled/math-equations/manifest.json",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/math-equations/manifest.json",
+      "sha256": "e5ae1855ff606a6ddd73c9debf4dbe7e76761918086bd3928b9e211d95d18d0c",
+      "size": 995
+    },
+    {
+      "path": "quill/quillins_bundled/math-equations/README.md",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/math-equations/README.md",
+      "sha256": "b623551bda0322b22b4e8b105b6ea17a5041171e96dc8748510fff21d4bc4a26",
+      "size": 276
+    },
+    {
+      "path": "quill/quillins_bundled/smart-insert/extension.py",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/smart-insert/extension.py",
+      "sha256": "205c8851f97431edd4b2194c105d73b2d56bca8b774d52e2eeab9f35d1e4cc40",
+      "size": 6263
+    },
+    {
+      "path": "quill/quillins_bundled/smart-insert/LICENSE",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/smart-insert/LICENSE",
+      "sha256": "e6ac8095faa08dd10a2cad01dbb1fdb8f6ae13c35df713a09b9b266423891375",
+      "size": 1118
+    },
+    {
+      "path": "quill/quillins_bundled/smart-insert/manifest.json",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/smart-insert/manifest.json",
+      "sha256": "3486a163bce6d9e2c6fb4b2ddb7c3bee4a3f97da83e0bd108e5b469540c1ada3",
+      "size": 17787
+    },
+    {
+      "path": "quill/quillins_bundled/smart-insert/README.epub",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/smart-insert/README.epub",
+      "sha256": "7aa3fdcf04a09bcd3745cc63d3b2412dcce8fb53e250d57c7c838da066e47008",
+      "size": 6283
+    },
+    {
+      "path": "quill/quillins_bundled/smart-insert/README.html",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/smart-insert/README.html",
+      "sha256": "8ae48bb53c021e7a4be40b9d1f1e3d855c36f630317e803bee8516813e59037f",
+      "size": 7041
+    },
+    {
+      "path": "quill/quillins_bundled/smart-insert/README.md",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/smart-insert/README.md",
+      "sha256": "d50214e17ce05da08db1309433176a59b09334ba37aa76345a42e2c1df84bb78",
+      "size": 1948
+    },
+    {
+      "path": "quill/quillins_bundled/status-scribe/extension.py",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/status-scribe/extension.py",
+      "sha256": "444bb5f2a8d77c4c599e4ae82bf2d4fd405742fbc8cb9691e6776f1a281fbc05",
+      "size": 3319
+    },
+    {
+      "path": "quill/quillins_bundled/status-scribe/LICENSE",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/status-scribe/LICENSE",
+      "sha256": "8caa23c584014d86cbe711d20e8411ab3ddd4fb4958dc2035d621f35a9a32472",
+      "size": 1123
+    },
+    {
+      "path": "quill/quillins_bundled/status-scribe/manifest.json",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/status-scribe/manifest.json",
+      "sha256": "e4bbe151eb6f418d3919607c26c0a401f0a806ab684706932df1571f1b26c992",
+      "size": 5904
+    },
+    {
+      "path": "quill/quillins_bundled/status-scribe/README.md",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/status-scribe/README.md",
+      "sha256": "67494358623a1fafa8d8ce2eac42f80fd615d8348b40ec2eaf174319f18a1f1a",
+      "size": 1941
+    },
+    {
+      "path": "quill/quillins_bundled/text-tools/algorithms.py",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/text-tools/algorithms.py",
+      "sha256": "1d53bd08b6e97fe7b57931d357ace6f661e4e4451706b6ca754ac242b7f226cf",
+      "size": 6016
+    },
+    {
+      "path": "quill/quillins_bundled/text-tools/extension.py",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/text-tools/extension.py",
+      "sha256": "cf2600e079d225b585dcb7dc2d88fb1c8758758a3f39e6009d74950ed0764cd6",
+      "size": 5434
+    },
+    {
+      "path": "quill/quillins_bundled/text-tools/html_ops.py",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/text-tools/html_ops.py",
+      "sha256": "d3c0aafa29215ad11188517dd3d32e7a30cb8d7b6143ad1f9d31ba485d882903",
+      "size": 7505
+    },
+    {
+      "path": "quill/quillins_bundled/text-tools/LICENSE",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/text-tools/LICENSE",
+      "sha256": "01a14d96f8f517e978ab7b76a168755c13fae7d87d60b07a256db3ac09e3d696",
+      "size": 1123
+    },
+    {
+      "path": "quill/quillins_bundled/text-tools/manifest.json",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/text-tools/manifest.json",
+      "sha256": "d90c044d3df3da255fbbcc773f7d0fee0072619449448d2a498a5463bfff4eae",
+      "size": 2139
+    },
+    {
+      "path": "quill/quillins_bundled/text-tools/README.epub",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/text-tools/README.epub",
+      "sha256": "6ab7a63dcb3261873f528b2773d698d2e2ab3118720ea4797fdf79f91bea11a1",
+      "size": 5995
+    },
+    {
+      "path": "quill/quillins_bundled/text-tools/README.html",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/text-tools/README.html",
+      "sha256": "9e22647ae90fba16ca31e7245d05ae95e4b677ea2309c062fd641544685d5d89",
+      "size": 6206
+    },
+    {
+      "path": "quill/quillins_bundled/text-tools/README.md",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/text-tools/README.md",
+      "sha256": "e9c92af9774547c295631391eb2b31e3177a35d8df05a86627f90f2e896e53f6",
+      "size": 1448
+    },
+    {
+      "path": "quill/quillins_bundled/word-count-node/extension.js",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/word-count-node/extension.js",
+      "sha256": "31a20753b8cc28dd9c76494422132343f0147946af8c289eb9f8d74c8ec98674",
+      "size": 2760
+    },
+    {
+      "path": "quill/quillins_bundled/word-count-node/LICENSE",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/word-count-node/LICENSE",
+      "sha256": "ebf2b3f5b22b0c40d30baaf7d5f6d566380df801e21702ef7abe0870a69db90c",
+      "size": 1065
+    },
+    {
+      "path": "quill/quillins_bundled/word-count-node/manifest.json",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/word-count-node/manifest.json",
+      "sha256": "29e5be17606da569f20ab22e2b8250b27e8e7fe99c7213b56ea4b3a0c7e97f4d",
+      "size": 749
+    },
+    {
+      "path": "quill/quillins_bundled/word-count-node/README.epub",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/word-count-node/README.epub",
+      "sha256": "5011dbda9b3b6eea0a2874638dd2a9bc3f5311edb76be7a4c5d442c59e346277",
+      "size": 5842
+    },
+    {
+      "path": "quill/quillins_bundled/word-count-node/README.html",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/word-count-node/README.html",
+      "sha256": "f22df24054d11d51f15b18c78fa817d6cc73f3bb9a403d59dcb18b6c44c7efbd",
+      "size": 5379
+    },
+    {
+      "path": "quill/quillins_bundled/word-count-node/README.md",
+      "install_path": "python/Lib/site-packages/quill/quillins_bundled/word-count-node/README.md",
+      "sha256": "a735fc972056c8d51ae4c881a8401e7df9b9991ebc55bf4220cb186dddb5da48",
+      "size": 1035
+    },
+    {
+      "path": "quill/stability/__init__.py",
+      "install_path": "python/Lib/site-packages/quill/stability/__init__.py",
+      "sha256": "cba63cf627db90c5bceace7e86e1ee14cb33f9b0816bea446fe0e78808a8004b",
+      "size": 2193
+    },
+    {
+      "path": "quill/stability/crash_report.py",
+      "install_path": "python/Lib/site-packages/quill/stability/crash_report.py",
+      "sha256": "6657250f3dddbdde506e277ab577cbca115492cd9ab4327d6e5a952c3a88f7b2",
+      "size": 6495
+    },
+    {
+      "path": "quill/stability/diagnostics.py",
+      "install_path": "python/Lib/site-packages/quill/stability/diagnostics.py",
+      "sha256": "b9bf19f11f7147a0686540a7287cad96fb5ce093b978688fe255a18c0231b5b7",
+      "size": 2829
+    },
+    {
+      "path": "quill/stability/feature_contracts.py",
+      "install_path": "python/Lib/site-packages/quill/stability/feature_contracts.py",
+      "sha256": "8d224ec829c4e03e9e5f39291105651be4e27db9a3f5a9c71d686546198488ae",
+      "size": 1990
+    },
+    {
+      "path": "quill/stability/logging_config.py",
+      "install_path": "python/Lib/site-packages/quill/stability/logging_config.py",
+      "sha256": "5c1c4ce13ac5aa42242f3530a59d56bfd0e7e6f8f33a4d8bb1228ebb9b1c59d3",
+      "size": 1393
+    },
+    {
+      "path": "quill/stability/memory_watch.py",
+      "install_path": "python/Lib/site-packages/quill/stability/memory_watch.py",
+      "sha256": "a59a7f346b301a48570368dbaa32ea706dbfcf10110f86f373f8bfceb405f8f4",
+      "size": 1154
+    },
+    {
+      "path": "quill/stability/redaction.py",
+      "install_path": "python/Lib/site-packages/quill/stability/redaction.py",
+      "sha256": "af9b8e91ce13675d6846267960897197367cde873741b19c9b348273b7109166",
+      "size": 9329
+    },
+    {
+      "path": "quill/stability/safe_mode.py",
+      "install_path": "python/Lib/site-packages/quill/stability/safe_mode.py",
+      "sha256": "469ffcd4f3f19a8740bb4e0fde99179205f8418b5518f8e96b3d7c7291c36044",
+      "size": 1388
+    },
+    {
+      "path": "quill/stability/safe_regex.py",
+      "install_path": "python/Lib/site-packages/quill/stability/safe_regex.py",
+      "sha256": "cfbcd3372c398f175c0551576f449d2db4a91781c2429f0ab6cbc0e41b24997a",
+      "size": 2989
+    },
+    {
+      "path": "quill/stability/safe_subprocess.py",
+      "install_path": "python/Lib/site-packages/quill/stability/safe_subprocess.py",
+      "sha256": "e25e8083894671fac5ad71d4bd9c15e759d5ff62ce49aa8282c12d5e5b8cd618",
+      "size": 3073
+    },
+    {
+      "path": "quill/stability/shutdown_watchdog.py",
+      "install_path": "python/Lib/site-packages/quill/stability/shutdown_watchdog.py",
+      "sha256": "25964b4b184a1ae50db1ef1cccb2dd8eb26f9e4b633e72f91e06abd5582f08a9",
+      "size": 1611
+    },
+    {
+      "path": "quill/stability/task_manager.py",
+      "install_path": "python/Lib/site-packages/quill/stability/task_manager.py",
+      "sha256": "7a0d5d334e5e42e7e10c21c45154ef0bdb72d1809b84a1941bc344bad7fb23d3",
+      "size": 7689
+    },
+    {
+      "path": "quill/stability/ui_responsiveness.py",
+      "install_path": "python/Lib/site-packages/quill/stability/ui_responsiveness.py",
+      "sha256": "47ecc84d724ad165d8a0c97a1c8f980d63befca84e820df151d7bfd02b3bf44b",
+      "size": 1873
+    },
+    {
+      "path": "quill/stability/wx_dispatch.py",
+      "install_path": "python/Lib/site-packages/quill/stability/wx_dispatch.py",
+      "sha256": "d49c609e3c72e5ed67643b25a83aa82c901fc1c20f28f7595bec6ed141264ab6",
+      "size": 3301
+    },
+    {
+      "path": "quill/stability/wx_heartbeat.py",
+      "install_path": "python/Lib/site-packages/quill/stability/wx_heartbeat.py",
+      "sha256": "6e97aaa3cf4de81a68f244af6ce4ef3b0726bb167796d65cc45b0f87fe0cc4c6",
+      "size": 3666
+    },
+    {
+      "path": "quill/ui/__init__.py",
+      "install_path": "python/Lib/site-packages/quill/ui/__init__.py",
+      "sha256": "0a760d3f536915568d2acc061389312fb66504614e2cd1f53d40b063e6c3c335",
+      "size": 31
+    },
+    {
+      "path": "quill/ui/abbreviation_manager_dialog.py",
+      "install_path": "python/Lib/site-packages/quill/ui/abbreviation_manager_dialog.py",
+      "sha256": "ccabec2848c58db38ed117e9c28e6135684bbda83b99f47a2b468e1e7439d6cc",
+      "size": 15159
+    },
+    {
+      "path": "quill/ui/accessible_webview.py",
+      "install_path": "python/Lib/site-packages/quill/ui/accessible_webview.py",
+      "sha256": "0cec03bd7d7afcca730b83b103543fe0519b47e4bb006f04e618cb3374ae977b",
+      "size": 1922
+    },
+    {
+      "path": "quill/ui/ai_agent_result_dialog.py",
+      "install_path": "python/Lib/site-packages/quill/ui/ai_agent_result_dialog.py",
+      "sha256": "6c977d8de8e78822e5de0827af2dc11c6663c96743334e02ec93ad43dafebd59",
+      "size": 6139
+    },
+    {
+      "path": "quill/ui/ai_chat_dialog.py",
+      "install_path": "python/Lib/site-packages/quill/ui/ai_chat_dialog.py",
+      "sha256": "85b72b6b2f8afc368f06e17c910e7230cdb1ac9872aab53fcd2570f29b3e942d",
+      "size": 18013
+    },
+    {
+      "path": "quill/ui/ai_document_qa_dialog.py",
+      "install_path": "python/Lib/site-packages/quill/ui/ai_document_qa_dialog.py",
+      "sha256": "d1d3d1d91923ba16b00ea5bd5141c78e814e52a9524978592ba6be34b6b7dce4",
+      "size": 12306
+    },
+    {
+      "path": "quill/ui/ai_grammar_check_dialog.py",
+      "install_path": "python/Lib/site-packages/quill/ui/ai_grammar_check_dialog.py",
+      "sha256": "2625181c92cc24374d3dcb9f6cf52635df83f763a5080dd4e8b88511730694d4",
+      "size": 11174
+    },
+    {
+      "path": "quill/ui/ai_hub_dialog.py",
+      "install_path": "python/Lib/site-packages/quill/ui/ai_hub_dialog.py",
+      "sha256": "635b50d36ae3256a8c159cb90f895d50def6dd236d112f1a397dbe74d6097fcf",
+      "size": 36508
+    },
+    {
+      "path": "quill/ui/ai_model_panel.py",
+      "install_path": "python/Lib/site-packages/quill/ui/ai_model_panel.py",
+      "sha256": "c7d336f7ea31d3cbbf9d4316df224f16b1968b6dc4028613c73c3eaf234a3297",
+      "size": 11313
+    },
+    {
+      "path": "quill/ui/ai_spell_check_dialog.py",
+      "install_path": "python/Lib/site-packages/quill/ui/ai_spell_check_dialog.py",
+      "sha256": "13e3a504cca34b72a51b7a7d3620fe0065689e13e887c53ca81d767d90586c92",
+      "size": 17007
+    },
+    {
+      "path": "quill/ui/ai_thesaurus_dialog.py",
+      "install_path": "python/Lib/site-packages/quill/ui/ai_thesaurus_dialog.py",
+      "sha256": "f6f6866671fd2144b2b65c7658c2d527516e6c98afa3785f3e93d26c929e8398",
+      "size": 8250
+    },
+    {
+      "path": "quill/ui/ai_transcribe_dialog.py",
+      "install_path": "python/Lib/site-packages/quill/ui/ai_transcribe_dialog.py",
+      "sha256": "67937213f3cb43f2100616940541fe11724a3e65899c38a4af001692b89e1832",
+      "size": 13205
+    },
+    {
+      "path": "quill/ui/ai_translation_dialog.py",
+      "install_path": "python/Lib/site-packages/quill/ui/ai_translation_dialog.py",
+      "sha256": "9caf84ca3b4bbcb53874d39d96d15472ba715fe96e1073d2b17cd5a100f6b44d",
+      "size": 12139
+    },
+    {
+      "path": "quill/ui/assistant_panel.py",
+      "install_path": "python/Lib/site-packages/quill/ui/assistant_panel.py",
+      "sha256": "3f84ecb9b96eb0c57f3fd133ece7c7bd5535d25a04bbb08001a9cabae3ee55d9",
+      "size": 30384
+    },
+    {
+      "path": "quill/ui/assistant_tools.py",
+      "install_path": "python/Lib/site-packages/quill/ui/assistant_tools.py",
+      "sha256": "b84091c1bb14251e0f143b24e63b71ee89a65b277c832dc4a7eaa9d3303cd0b6",
+      "size": 85362
+    },
+    {
+      "path": "quill/ui/compare_dialog.py",
+      "install_path": "python/Lib/site-packages/quill/ui/compare_dialog.py",
+      "sha256": "b1411bb1875eceb17dd4bedea30fd309dcf2362544314d6880342808d27c1ae1",
+      "size": 8292
+    },
+    {
+      "path": "quill/ui/context_help.py",
+      "install_path": "python/Lib/site-packages/quill/ui/context_help.py",
+      "sha256": "d8967dbf4cd43ce601afc67965faadd25e3a76e39727328cb8d08ec87624efb5",
+      "size": 10374
+    },
+    {
+      "path": "quill/ui/contribution_host.py",
+      "install_path": "python/Lib/site-packages/quill/ui/contribution_host.py",
+      "sha256": "ed09c414f14e4903c1c3c09067446406c3425e4c4a978f280140d79b35ad25db",
+      "size": 1754
+    },
+    {
+      "path": "quill/ui/copy_tray_dialog.py",
+      "install_path": "python/Lib/site-packages/quill/ui/copy_tray_dialog.py",
+      "sha256": "d6006e1f502c9ea93c90156e2333cfd5ddede9f473f3f7efe39d6ced05ad1e4f",
+      "size": 9463
+    },
+    {
+      "path": "quill/ui/csv_grid.py",
+      "install_path": "python/Lib/site-packages/quill/ui/csv_grid.py",
+      "sha256": "e9cdf0678ba36bd3ee2438bb7c97f49aa8ede19747b01d4f2e7d63b151e64da4",
+      "size": 10357
+    },
+    {
+      "path": "quill/ui/dialog_contract.py",
+      "install_path": "python/Lib/site-packages/quill/ui/dialog_contract.py",
+      "sha256": "96e07c1f94c4484d8ce2c59c46e1a4851703695824ca806cf0e1039f6cd68776",
+      "size": 8091
+    },
+    {
+      "path": "quill/ui/editor_surface.py",
+      "install_path": "python/Lib/site-packages/quill/ui/editor_surface.py",
+      "sha256": "ffd239a4f009eed013e8e6a9eeafdea8f970ada04e7f241b09a59b84931fa544",
+      "size": 2997
+    },
+    {
+      "path": "quill/ui/features/__init__.py",
+      "install_path": "python/Lib/site-packages/quill/ui/features/__init__.py",
+      "sha256": "ff72aa4d2e232286115ca590512dbd166a04750249d96acc0a1ef86526db22da",
+      "size": 525
+    },
+    {
+      "path": "quill/ui/features/line_transforms.py",
+      "install_path": "python/Lib/site-packages/quill/ui/features/line_transforms.py",
+      "sha256": "92f4b025aa6d5f71f1c38513689d85147e66a443b3e9f3257d86cccf2e83742e",
+      "size": 2694
+    },
+    {
+      "path": "quill/ui/github_dialogs.py",
+      "install_path": "python/Lib/site-packages/quill/ui/github_dialogs.py",
+      "sha256": "ca9e50521a5e87d44f9f56b2013c176067a1bdb8088bd0a2ea1f58c7a94ca251",
+      "size": 26871
+    },
+    {
+      "path": "quill/ui/html_paste_cleaner.py",
+      "install_path": "python/Lib/site-packages/quill/ui/html_paste_cleaner.py",
+      "sha256": "0438bf9004518a8a78220950a112caf246cd7f53ce4081c240c08910f3c4f5d5",
+      "size": 5318
+    },
+    {
+      "path": "quill/ui/hygiene_dialog.py",
+      "install_path": "python/Lib/site-packages/quill/ui/hygiene_dialog.py",
+      "sha256": "23375b9483e5b59e58a404b3ea803e8657ba08132e0fd0b2784daa7fdaea46e8",
+      "size": 11579
+    },
+    {
+      "path": "quill/ui/info_pages.py",
+      "install_path": "python/Lib/site-packages/quill/ui/info_pages.py",
+      "sha256": "177c5cdf6ea5dfbffaba0810581c464d3aa4b32effb41b74d04133e635bc027a",
+      "size": 10909
+    },
+    {
+      "path": "quill/ui/main_frame.py",
+      "install_path": "python/Lib/site-packages/quill/ui/main_frame.py",
+      "sha256": "588773145a50f151c19cafbda6617ba1d20465f9ad50dd6f18207dfa60ca30c6",
+      "size": 1021205
+    },
+    {
+      "path": "quill/ui/main_frame_abbreviations.py",
+      "install_path": "python/Lib/site-packages/quill/ui/main_frame_abbreviations.py",
+      "sha256": "b25e0630971d73cc0b67db21511b9aa927b61699617386d82f0c3fe598ef5451",
+      "size": 9038
+    },
+    {
+      "path": "quill/ui/main_frame_ai_actions.py",
+      "install_path": "python/Lib/site-packages/quill/ui/main_frame_ai_actions.py",
+      "sha256": "6278a576a2b4dae3fb5055cb1e3a77635b2541a712845adde806cefdf564cfd6",
+      "size": 4775
+    },
+    {
+      "path": "quill/ui/main_frame_braille.py",
+      "install_path": "python/Lib/site-packages/quill/ui/main_frame_braille.py",
+      "sha256": "9b9c86d6979a91c6cd31ef8f0b58bcfe0ef53e63fe6f6e028677ad2d8f98ef25",
+      "size": 29375
+    },
+    {
+      "path": "quill/ui/main_frame_browse.py",
+      "install_path": "python/Lib/site-packages/quill/ui/main_frame_browse.py",
+      "sha256": "d70ed68ae8f71f3ec3aa15ca20a974c2d92ab659300c5ecb3a871e723cdff3c5",
+      "size": 21430
+    },
+    {
+      "path": "quill/ui/main_frame_copy_tray.py",
+      "install_path": "python/Lib/site-packages/quill/ui/main_frame_copy_tray.py",
+      "sha256": "5bac11730bcb179530d274614c2bca7f9c84ce23dbdb87ff8eefad3944de1ca0",
+      "size": 13376
+    },
+    {
+      "path": "quill/ui/main_frame_devtools.py",
+      "install_path": "python/Lib/site-packages/quill/ui/main_frame_devtools.py",
+      "sha256": "3dbd4640abc6b82e1b73020ac6d5eced3abccbffb5340b5cdd580d3382e750ad",
+      "size": 21959
+    },
+    {
+      "path": "quill/ui/main_frame_github.py",
+      "install_path": "python/Lib/site-packages/quill/ui/main_frame_github.py",
+      "sha256": "8de2813d690e9213fafd9798acbdc42e26e2a0ef13808997cb59b37c5e22901a",
+      "size": 19551
+    },
+    {
+      "path": "quill/ui/main_frame_hygiene.py",
+      "install_path": "python/Lib/site-packages/quill/ui/main_frame_hygiene.py",
+      "sha256": "f06be9539de971cc23db19b0c87dfe735b2858fd16509b7ce58a1d6b975001d1",
+      "size": 6904
+    },
+    {
+      "path": "quill/ui/main_frame_image.py",
+      "install_path": "python/Lib/site-packages/quill/ui/main_frame_image.py",
+      "sha256": "a2f4032f716cc0d6b9f762be68d4f975c09d90cf0577a17cdf446a9b58d2975f",
+      "size": 25555
+    },
+    {
+      "path": "quill/ui/main_frame_intellisense.py",
+      "install_path": "python/Lib/site-packages/quill/ui/main_frame_intellisense.py",
+      "sha256": "19cfe28f46c4bdbd5f2ea73c39ac4b39fcdf487724fb604bd834b47021669192",
+      "size": 6215
+    },
+    {
+      "path": "quill/ui/main_frame_line_commands.py",
+      "install_path": "python/Lib/site-packages/quill/ui/main_frame_line_commands.py",
+      "sha256": "0bbc05b622db703c43a10b5ce06edcd20a3096fea8e5eca49f8cd57f980f67f1",
+      "size": 6477
+    },
+    {
+      "path": "quill/ui/main_frame_menu.py",
+      "install_path": "python/Lib/site-packages/quill/ui/main_frame_menu.py",
+      "sha256": "d8bf01b739adef2ab6ce6c31ab6e078376659eda6e777d139b69202d5fd82516",
+      "size": 135516
+    },
+    {
+      "path": "quill/ui/main_frame_notebook.py",
+      "install_path": "python/Lib/site-packages/quill/ui/main_frame_notebook.py",
+      "sha256": "83a73dd02318044f10b23da9ef790b7397a1f3e17b99f35345911febf39bb6fe",
+      "size": 17007
+    },
+    {
+      "path": "quill/ui/main_frame_power_tools.py",
+      "install_path": "python/Lib/site-packages/quill/ui/main_frame_power_tools.py",
+      "sha256": "e8ff71efbb17dfdfdfb334f94e404ff24736636567388746d4f8e9e718665fc5",
+      "size": 55754
+    },
+    {
+      "path": "quill/ui/main_frame_power_tools_menu.py",
+      "install_path": "python/Lib/site-packages/quill/ui/main_frame_power_tools_menu.py",
+      "sha256": "48669e92be8f23fcc8214aa18a04687489b69af44576625f3d9e3b7d3742fcab",
+      "size": 27291
+    },
+    {
+      "path": "quill/ui/main_frame_profile_picker.py",
+      "install_path": "python/Lib/site-packages/quill/ui/main_frame_profile_picker.py",
+      "sha256": "b6a5e5b3f889dcc3c291b2077bb60f6383f072c5fb86da369eedaba953ee77c9",
+      "size": 6426
+    },
+    {
+      "path": "quill/ui/main_frame_quill_key.py",
+      "install_path": "python/Lib/site-packages/quill/ui/main_frame_quill_key.py",
+      "sha256": "7b9ef14dfd07be030446ce3bf336edd43b574d126233754e08a03b7f88ce55c6",
+      "size": 29801
+    },
+    {
+      "path": "quill/ui/main_frame_quillins.py",
+      "install_path": "python/Lib/site-packages/quill/ui/main_frame_quillins.py",
+      "sha256": "04e1264bdb80fb730e3a8f6fb710d9d1e9cb529fddb49fdc16e85b86cf0ae4e3",
+      "size": 42989
+    },
+    {
+      "path": "quill/ui/main_frame_quillins_host.py",
+      "install_path": "python/Lib/site-packages/quill/ui/main_frame_quillins_host.py",
+      "sha256": "a90a0e3906f527f6a3c24c03884a03a07c8e3a735b891c1f0438648d8e077782",
+      "size": 5066
+    },
+    {
+      "path": "quill/ui/main_frame_selection.py",
+      "install_path": "python/Lib/site-packages/quill/ui/main_frame_selection.py",
+      "sha256": "198ce536cf3651d3d6f89735b8928498335fefc0526f347fe0a131848161c37b",
+      "size": 14930
+    },
+    {
+      "path": "quill/ui/main_frame_sessions.py",
+      "install_path": "python/Lib/site-packages/quill/ui/main_frame_sessions.py",
+      "sha256": "e61439758cc6062dfa3f2c60b25e17895be4e7c0571c73b930dc448a72eba87e",
+      "size": 13239
+    },
+    {
+      "path": "quill/ui/main_frame_ssh.py",
+      "install_path": "python/Lib/site-packages/quill/ui/main_frame_ssh.py",
+      "sha256": "2a82b65baf327adff06ba5eaee14c21b55c8e7553685d044f71979194aea91a5",
+      "size": 7752
+    },
+    {
+      "path": "quill/ui/main_frame_statusbar.py",
+      "install_path": "python/Lib/site-packages/quill/ui/main_frame_statusbar.py",
+      "sha256": "f6fe3d8e8332cd01be46b3c642865ad907b0c2b94988eb8427782768f98e1a16",
+      "size": 27944
+    },
+    {
+      "path": "quill/ui/notebook_navigator_page.py",
+      "install_path": "python/Lib/site-packages/quill/ui/notebook_navigator_page.py",
+      "sha256": "f4807671a604e8aea7ace971bdb7921421df4b3d5585ecf74f8e999450c14a63",
+      "size": 2460
+    },
+    {
+      "path": "quill/ui/notebook_panel.py",
+      "install_path": "python/Lib/site-packages/quill/ui/notebook_panel.py",
+      "sha256": "6885e31b8ed41e4aba2b8369e36b22b7d63d3b097e3665c1132fdfdf0e8cb275",
+      "size": 3328
+    },
+    {
+      "path": "quill/ui/ocr_review_dialog.py",
+      "install_path": "python/Lib/site-packages/quill/ui/ocr_review_dialog.py",
+      "sha256": "1ee807a7f29608fda61275ad28b218933749cc12d1737d2b91333e9fc703b93c",
+      "size": 5780
+    },
+    {
+      "path": "quill/ui/palette.py",
+      "install_path": "python/Lib/site-packages/quill/ui/palette.py",
+      "sha256": "e4f656ccc33ed4a418576f3a08d8d135126cf88b7012ca634c4e3f34aa2d3ccd",
+      "size": 17669
+    },
+    {
+      "path": "quill/ui/preview_dialog.py",
+      "install_path": "python/Lib/site-packages/quill/ui/preview_dialog.py",
+      "sha256": "f555522242c41f159e1024cf366a4d2cb97af271c2310650e4933cac22a2e6ab",
+      "size": 7735
+    },
+    {
+      "path": "quill/ui/profile_picker.py",
+      "install_path": "python/Lib/site-packages/quill/ui/profile_picker.py",
+      "sha256": "b59225eb60667ce2eb4d0ff626e6ff23f412852eccb3cec22fea1bf489c458aa",
+      "size": 5179
+    },
+    {
+      "path": "quill/ui/prompt_library_dialog.py",
+      "install_path": "python/Lib/site-packages/quill/ui/prompt_library_dialog.py",
+      "sha256": "b14608c73da3a19ff97fb064acfb0a472825115034aba5ac20a2983c0ed7dbe2",
+      "size": 18717
+    },
+    {
+      "path": "quill/ui/quillin_prefs_dialog.py",
+      "install_path": "python/Lib/site-packages/quill/ui/quillin_prefs_dialog.py",
+      "sha256": "0b5a14a67af917bbba5e8ea8b4e876beb490cdc444d8ffe91fe8787b7621b41e",
+      "size": 10029
+    },
+    {
+      "path": "quill/ui/quillin_wizard.py",
+      "install_path": "python/Lib/site-packages/quill/ui/quillin_wizard.py",
+      "sha256": "eaef68748cf300433b0a8f52d1da21ed08d346cf29bbad418717302409bc091b",
+      "size": 19246
+    },
+    {
+      "path": "quill/ui/remote_sites_dialog.py",
+      "install_path": "python/Lib/site-packages/quill/ui/remote_sites_dialog.py",
+      "sha256": "9ac6bb454ab7ac28594702b13efb98846eea5c6d5ec867dfc17d7d0a1c7d18ad",
+      "size": 18951
+    },
+    {
+      "path": "quill/ui/rich_text_surface.py",
+      "install_path": "python/Lib/site-packages/quill/ui/rich_text_surface.py",
+      "sha256": "21baab5f3f4b7d3934da407a0761794d710699059b48cc7852423dce40361970",
+      "size": 15467
+    },
+    {
+      "path": "quill/ui/session_browser.py",
+      "install_path": "python/Lib/site-packages/quill/ui/session_browser.py",
+      "sha256": "3877fd54f7af26474fc04125edb9b02cd4eed21d0ef4fdf7781b160667a325b1",
+      "size": 4642
+    },
+    {
+      "path": "quill/ui/setup_wizard.py",
+      "install_path": "python/Lib/site-packages/quill/ui/setup_wizard.py",
+      "sha256": "6bffda2831038303ce50b36743b2a82f4b65c1f3dfa8f723b2c5891a34019564",
+      "size": 2515
+    },
+    {
+      "path": "quill/ui/setup_wizard_pages.py",
+      "install_path": "python/Lib/site-packages/quill/ui/setup_wizard_pages.py",
+      "sha256": "92af456329d7ec0e992cb5135e917fa1f4ff0842254fcbe2dba72c14a7fed3cb",
+      "size": 35527
+    },
+    {
+      "path": "quill/ui/share_dialogs.py",
+      "install_path": "python/Lib/site-packages/quill/ui/share_dialogs.py",
+      "sha256": "0a5cb89d34edff84b4168257ac4e9421c8656b1c6906ba35403f99e039615a75",
+      "size": 15824
+    },
+    {
+      "path": "quill/ui/skill_library_dialog.py",
+      "install_path": "python/Lib/site-packages/quill/ui/skill_library_dialog.py",
+      "sha256": "a8ad34e737899d60a42f5eadce0da3b185ed7a824715000976badaa1a21409c9",
+      "size": 20157
+    },
+    {
+      "path": "quill/ui/sound_events_dialog.py",
+      "install_path": "python/Lib/site-packages/quill/ui/sound_events_dialog.py",
+      "sha256": "44dc74ad2e89f9ca98396cb7c5f653a0f98bee6ad37a7888b81ee35fb6b77981",
+      "size": 8801
+    },
+    {
+      "path": "quill/ui/sound_manager.py",
+      "install_path": "python/Lib/site-packages/quill/ui/sound_manager.py",
+      "sha256": "3092681d8f705e4d11520a184548cb48f9c5a81095a65dadb1afb31db4d6476a",
+      "size": 13758
+    },
+    {
+      "path": "quill/ui/ssh_dialogs.py",
+      "install_path": "python/Lib/site-packages/quill/ui/ssh_dialogs.py",
+      "sha256": "2874823f29bcc35ab5fe1af6113c3cfa35bda25d86915da924b48354703419d8",
+      "size": 19611
+    },
+    {
+      "path": "quill/ui/status_dialog.py",
+      "install_path": "python/Lib/site-packages/quill/ui/status_dialog.py",
+      "sha256": "df62268ae3b9a002c8cfbea8c6d6e879b5d43f57c0208c03db3d5c781ecb9c34",
+      "size": 6495
+    },
+    {
+      "path": "quill/ui/sticky_notes.py",
+      "install_path": "python/Lib/site-packages/quill/ui/sticky_notes.py",
+      "sha256": "f71df84d24b8a975cefe19045e5802749787824f4e577cd39ebec3cc801ca531",
+      "size": 15312
+    },
+    {
+      "path": "quill/ui/style_panel.py",
+      "install_path": "python/Lib/site-packages/quill/ui/style_panel.py",
+      "sha256": "be308551fcdd5255ea9caea5fc4cca67310f71155cb506c02fbfbf51fae35229",
+      "size": 7547
+    },
+    {
+      "path": "quill/ui/vision_prompt_manager_dialog.py",
+      "install_path": "python/Lib/site-packages/quill/ui/vision_prompt_manager_dialog.py",
+      "sha256": "920f08c82409f007c59bcc8cfe382eaf4f161556b771f80203957baed83705d2",
+      "size": 15597
+    },
+    {
+      "path": "quill/ui/web_form.py",
+      "install_path": "python/Lib/site-packages/quill/ui/web_form.py",
+      "sha256": "b48e066b8fe637f3fa68e5b47bd35d3e242b1e6e55ab730a6533354c9ae0b4c3",
+      "size": 13087
+    },
+    {
+      "path": "quill/ui/word_view.py",
+      "install_path": "python/Lib/site-packages/quill/ui/word_view.py",
+      "sha256": "03ead8578dd1923bb5438bedc0e28c865ae7cd52362e4ec34b7105b0eb455ada",
+      "size": 14488
+    }
+  ]
+}

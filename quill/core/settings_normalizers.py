@@ -9,9 +9,24 @@ from __future__ import annotations
 
 STATUS_BAR_ITEMS: tuple[str, ...] = (
     "line_column",
+    # #872: page indicator. Visible by default (not in
+    # _default_status_bar_hidden below), placed right after line_column
+    # since both are "where am I" position cells -- not first, but adjacent.
+    "page",
     "message",
     "word_count",
+    # Character count of the whole document.
+    "char_count",
+    # Total line count of the whole document.
+    "line_count",
+    # Estimated reading time from the word count (~200 wpm).
+    "reading_time",
+    # Caret position as a percentage through the document.
+    "document_progress",
     "mode",
+    # Tab key behaviour: "Indent" (smart line indent) or "Tab char" (literal
+    # tab insertion). Toggled with QUILL Key + U.
+    "tab_mode",
     "selection",
     "encoding",
     "line_endings",
@@ -32,6 +47,21 @@ STATUS_BAR_ITEMS: tuple[str, ...] = (
     "abbreviations",
     # Copy Tray occupied-slot count.
     "copy_tray_slots",
+    # Active language profile for code-aware editing (#181).
+    "language_profile",
+    # Braille Mode (BR-010): page / line / cell / print page when a BRF
+    # document is active. Hidden for non-BRF documents so it does not
+    # take up status-bar real estate for sighted/non-braille workflows.
+    "braille",
+    # EdSharp port: caret-heading context — "Section: Heading N of M"
+    # when the caret is on a heading in a Markdown or HTML document.
+    # Hidden by default; users who work heavily with heading-level
+    # navigation can opt in via Preferences -> Status Bar.
+    "section_heading",
+    # Active AI engine (Native / Copilot / Claude / OpenAI Agents). Hidden by
+    # default; auto-surfaces once the user picks a non-Native agentic engine,
+    # and is the click target for the quick engine switcher.
+    "ai_engine",
 )
 
 
@@ -41,6 +71,10 @@ def _default_status_bar_order() -> list[str]:
 
 def _default_status_bar_hidden() -> list[str]:
     return [
+        "char_count",
+        "line_count",
+        "reading_time",
+        "document_progress",
         "selection",
         "encoding",
         "line_endings",
@@ -56,6 +90,10 @@ def _default_status_bar_hidden() -> list[str]:
         "sr_name",
         "abbreviations",
         "copy_tray_slots",
+        "language_profile",
+        "braille",
+        "section_heading",
+        "ai_engine",
     ]
 
 

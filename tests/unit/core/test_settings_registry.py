@@ -156,3 +156,37 @@ def test_import_accepts_bare_mapping_and_ignores_unknown() -> None:
 def test_import_garbage_returns_defaults() -> None:
     assert import_settings(None) == Settings()
     assert import_settings([1, 2, 3]) == Settings()
+
+
+def test_browse_mode_followon_timeout_default_is_unlimited() -> None:
+    # #265 follow-up: the accesswatch comment asked for browse mode to
+    # just wait for keys and not time out. The new default is
+    # 'unlimited' so QUILL key + N never expires by default.
+    assert Settings().browse_mode_followon_timeout == "unlimited"
+
+
+def test_import_unknown_browse_mode_followon_token_falls_back_to_unlimited() -> None:
+    # #265 follow-up: a stale settings.json with an unknown token
+    # should fall back to 'unlimited' rather than crash.
+    restored = import_settings({"browse_mode_followon_timeout": "garbage"})
+    assert restored.browse_mode_followon_timeout == "unlimited"
+
+
+def test_import_browse_mode_followon_custom_ms_clamps_to_window() -> None:
+    # #265 follow-up: custom-ms clamps to [0, 60000].
+    too_low = import_settings({"browse_mode_followon_custom_ms": -50})
+    assert too_low.browse_mode_followon_custom_ms == 0
+    too_high = import_settings({"browse_mode_followon_custom_ms": 99999})
+    assert too_high.browse_mode_followon_custom_ms == 60000
+    middle = import_settings({"browse_mode_followon_custom_ms": 2500})
+    assert middle.browse_mode_followon_custom_ms == 2500
+
+
+def test_export_import_browse_mode_followon_round_trip() -> None:
+    # #265 follow-up: the two new fields round-trip through the loader.
+    original = set_value(Settings(), "browse_mode_followon_timeout", "custom")
+    original = set_value(original, "browse_mode_followon_custom_ms", 2500)
+    exported = export_settings(original)
+    restored = import_settings(exported)
+    assert restored.browse_mode_followon_timeout == "custom"
+    assert restored.browse_mode_followon_custom_ms == 2500

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>06-make-it-accessible-with-glow</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="tutorial-6-make-a-document-accessible-with-glow">Tutorial 6:
+Make a document accessible with GLOW</h1>
+<p><strong>Goal:</strong> take a real document from "probably fine" to
+<em>verified, graded, and repaired</em> — using GLOW, QUILL's built-in
+accessibility review system.</p>
+<p>GLOW (Guided Layout and Output Workflow) is guided confidence, not a
+compliance dashboard: it explains each finding in plain language and
+only applies fixes you approve. Everything is under <strong>Tools &gt;
+GLOW</strong>.</p>
+<h2 id="0-switch-it-on-glow-is-experimental">0. Switch it on (GLOW is
+experimental)</h2>
+<p>GLOW ships as an experimental feature, off by default while it
+matures:</p>
+<ol type="1">
+<li><strong>Preferences &gt; Experimental.</strong></li>
+<li>Tick <strong>Enable experimental features</strong> (the master
+switch — until it is on, every experimental control is disabled and
+skipped in the tab order).</li>
+<li>Tick <strong>GLOW accessibility review and repair
+(experimental)</strong>.</li>
+<li>Apply. The <strong>Tools &gt; GLOW</strong> menu appears immediately
+— no restart.</li>
+</ol>
+<p>Experimental means still maturing, not unsafe: every GLOW action
+below keeps the review-first, never-touch-the-original contract.</p>
+<h2 id="1-audit-what-you-are-writing">1. Audit what you are writing</h2>
+<ol type="1">
+<li>Open any Markdown or HTML document you have written.</li>
+<li><strong>Tools &gt; GLOW &gt; GLOW Audit Current
+Document.</strong></li>
+<li>The report opens as a normal tab. Arrow through it. Each finding
+gives: the rule, the severity, the location, and a plain-language
+suggestion — e.g. heading levels that jump (H1 straight to H4), links
+that just say "click here", images without alt text, HTML missing
+<code>lang</code>, tables without header cells, paragraphs too dense to
+listen to.</li>
+</ol>
+<p>For just the section you are working on, use <strong>GLOW Audit
+Selection / Paragraph</strong> instead.</p>
+<h2 id="2-fix--with-your-eyes-open">2. Fix — with your eyes open</h2>
+<ol type="1">
+<li><strong>GLOW Fix Current Document.</strong> QUILL opens the repaired
+text as a <em>named preview tab</em> and immediately starts a
+<strong>compare session</strong> against your original.</li>
+<li>Walk the differences. Accept knowing exactly what changed; reject
+and nothing happened. Never a silent rewrite.</li>
+<li>For quick in-place cleanup of one block, <strong>GLOW Fix Selection
+/ Paragraph</strong> — the replacement stays selected so
+<code>Ctrl+Z</code> is one step away.</li>
+</ol>
+<p>Fixable findings (heading-marker spacing, missing <code>lang</code>,
+missing alt attributes, trailing whitespace) are marked
+<code>[auto-fix]</code> in the audit; judgment calls (link text, dense
+paragraphs) stay yours.</p>
+<h2 id="3-grade-the-file-you-are-about-to-send">3. Grade the file you
+are about to send</h2>
+<p>The headline capability: GLOW audits <strong>structured files on
+disk</strong> — Word, PowerPoint, Excel, PDF, EPUB.</p>
+<ol type="1">
+<li>Export your document to Word (<strong>File &gt; Export &gt; Word
+Document...</strong>), or pick any existing docx.</li>
+<li><strong>Tools &gt; GLOW &gt; GLOW Audit File...</strong> and choose
+it. The audit runs in the background and returns a <strong>score out of
+100, a letter grade</strong>, and every finding.</li>
+<li>To repair: <strong>GLOW Fix File...</strong>. GLOW writes a fixed
+copy <em>next to</em> the original (<code>report.docx</code> →
+<code>report-accessible.docx</code>), confirms the destination first,
+and opens the post-fix audit so you can verify the improvement.
+<strong>The original file is never modified.</strong></li>
+</ol>
+<h2 id="4-keep-the-engine-fresh-only-when-you-ask">4. Keep the engine
+fresh (only when you ask)</h2>
+<p><strong>Help &gt; Check for GLOW Updates...</strong> checks for a
+newer accessibility engine. The check runs only on your command, the
+download is confirmed separately, every wheel is signature- and
+checksum-verified, and a failed install rolls back automatically. The
+engine's optional networked helpers (AI alt-text, PII redaction) are off
+until you explicitly consent, per use — the default GLOW workflow is
+entirely on-device.</p>
+<h2 id="5-the-routine-worth-adopting">5. The routine worth adopting</h2>
+<p>Draft → <strong>Audit Current Document</strong> → fix the judgment
+calls yourself → <strong>Fix Current Document</strong> for the
+mechanical ones (accept from the compare) → export → <strong>Audit
+File</strong> as the final gate. Two minutes, and you are shipping
+documents more accessible than most sighted authors produce.</p>
+<p><em>Want an ambitious pass beyond the deterministic rules? The AI
+menu's <strong>Accessibility Tune-Up</strong> agent drafts a broader
+improvement plan — reviewable like everything else.</em></p>
+</body>
+</html>

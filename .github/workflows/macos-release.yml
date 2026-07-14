@@ -1,0 +1,228 @@
+name: macos-release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-26
+    environment: macos-release
+    env:
+      NOTARY_PROFILE: quill-notarytool
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Validate required secrets
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+          MACOS_CODESIGN_IDENTITY: ${{ secrets.MACOS_CODESIGN_IDENTITY }}
+          APPLE_API_KEY_B64: ${{ secrets.APPLE_API_KEY_B64 }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          set -euo pipefail
+          missing=0
+          for var in \
+            BUILD_CERTIFICATE_BASE64 \
+            P12_PASSWORD \
+            KEYCHAIN_PASSWORD \
+            MACOS_CODESIGN_IDENTITY \
+            APPLE_API_KEY_B64 \
+            APPLE_API_KEY_ID \
+            APPLE_API_ISSUER \
+            APPLE_TEAM_ID; do
+            if [ -z "${!var:-}" ]; then
+              echo "Missing required secret: $var" >&2
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            exit 1
+          fi
+
+      - name: Install macOS build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[ui,spellcheck,macos]"
+
+      - name: Import Apple signing certificate
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          set -euo pipefail
+          KEYCHAIN_PATH="$RUNNER_TEMP/app-signing.keychain-db"
+          CERTIFICATE_PATH="$RUNNER_TEMP/build_certificate.p12"
+          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode > "$CERTIFICATE_PATH"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security import "$CERTIFICATE_PATH" -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security list-keychains -d user -s "$KEYCHAIN_PATH" login.keychain-db
+          security default-keychain -d user -s "$KEYCHAIN_PATH"
+
+      - name: Configure notarytool profile
+        env:
+          APPLE_API_KEY_B64: ${{ secrets.APPLE_API_KEY_B64 }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          set -euo pipefail
+          APPLE_API_KEY_PATH="$RUNNER_TEMP/AuthKey.p8"
+          echo -n "$APPLE_API_KEY_B64" | base64 --decode > "$APPLE_API_KEY_PATH"
+          # API-key auth uses --key/--key-id/--issuer only. --team-id belongs to
+          # the Apple-ID + app-specific-password mode; passing it alongside the
+          # API key makes notarytool reject the profile as mixing credential
+          # types ("Cannot store both ... credentials in the same profile").
+          xcrun notarytool store-credentials "$NOTARY_PROFILE" \
+            --key "$APPLE_API_KEY_PATH" \
+            --key-id "$APPLE_API_KEY_ID" \
+            --issuer "$APPLE_API_ISSUER"
+
+      - name: Build, sign, notarize, and package DMG
+        env:
+          IDENTITY: ${{ secrets.MACOS_CODESIGN_IDENTITY }}
+          NOTARY_PROFILE: ${{ env.NOTARY_PROFILE }}
+          QUILL_FEEDBACK_GITHUB_TOKEN: ${{ secrets.QUILL_FEEDBACK_GITHUB_TOKEN }}
+          # Release build: hard-fail if the bundled bug-reporter token is missing,
+          # rather than silently shipping a broken Report a Bug.
+          QUILL_REQUIRE_FEEDBACK_TOKEN: "1"
+        run: |
+          chmod +x scripts/build_macos.sh
+          ./scripts/build_macos.sh
+
+      - name: Upload DMG artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: quill-dmg
+          path: dist/Quill.dmg
+
+      - name: Cleanup signing assets
+        if: always()
+        run: |
+          set -euo pipefail
+          KEYCHAIN_PATH="$RUNNER_TEMP/app-signing.keychain-db"
+          CERTIFICATE_PATH="$RUNNER_TEMP/build_certificate.p12"
+          APPLE_API_KEY_PATH="$RUNNER_TEMP/AuthKey.p8"
+          security delete-keychain "$KEYCHAIN_PATH" || true
+          rm -f "$CERTIFICATE_PATH" "$APPLE_API_KEY_PATH"
+
+  smoke:
+    needs: build
+    runs-on: macos-26
+    steps:
+      - name: Download DMG artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: quill-dmg
+          path: smoke-assets
+
+      - name: Trust and startup smoke checks
+        run: |
+          set -euo pipefail
+          DMG="smoke-assets/Quill.dmg"
+          TEST_DIR="$RUNNER_TEMP/quill-smoke"
+          TEST_APP="$TEST_DIR/Quill.app"
+
+          if [[ ! -s "$DMG" ]]; then
+            echo "Missing or empty DMG artifact: $DMG" >&2
+            exit 1
+          fi
+
+          echo "==> Validate stapled notarization ticket on DMG"
+          xcrun stapler validate "$DMG"
+
+          # Validate the app from the MOUNTED DMG, never from a re-uploaded
+          # artifact: uploading a .app as an artifact zips it, dropping the code
+          # signature and symlinks, so codesign/spctl would fail on the
+          # round-tripped bundle even when the shipped DMG is perfectly fine.
+          echo "==> Mount DMG"
+          MOUNT_POINT="$(hdiutil attach -nobrowse -readonly "$DMG" | awk '/\/Volumes\//{print $3; exit}')"
+          if [[ -z "$MOUNT_POINT" || ! -d "$MOUNT_POINT/Quill.app" ]]; then
+            echo "Mounted DMG does not contain Quill.app." >&2
+            exit 1
+          fi
+
+          echo "==> Verify signature + notarization/Gatekeeper of the shipped app"
+          codesign --verify --deep --strict --verbose=2 "$MOUNT_POINT/Quill.app"
+          spctl -a -t exec -vv "$MOUNT_POINT/Quill.app"
+
+          echo "==> Copy app to a writable location"
+          rm -rf "$TEST_DIR"
+          mkdir -p "$TEST_DIR"
+          cp -R "$MOUNT_POINT/Quill.app" "$TEST_APP"
+          hdiutil detach "$MOUNT_POINT" || true
+
+          echo "==> GUI launch smoke (must stay alive, no crash)"
+          open "$TEST_APP"
+          sleep 15
+          if ! pgrep -f "$TEST_APP/Contents/MacOS" >/dev/null; then
+            echo "App process was not observed after launch; possible startup crash." >&2
+            exit 1
+          fi
+          pkill -f "$TEST_APP/Contents/MacOS" || true
+
+          echo "==> Smoke checks passed"
+
+      - name: Cleanup mounted volume
+        if: always()
+        run: |
+          set -euo pipefail
+          DMG="smoke-assets/Quill.dmg"
+          if [[ -f "$DMG" ]]; then
+            MOUNT_POINT="$(hdiutil info | awk '/\/Volumes\/Quill/{print $1; exit}')"
+            if [[ -n "$MOUNT_POINT" ]]; then
+              hdiutil detach "$MOUNT_POINT" || true
+            fi
+          fi
+
+  release:
+    needs:
+      - build
+      - smoke
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Build release body from CHANGELOG
+        run: |
+          python scripts/extract_release_body.py \
+            --version "${{ github.ref_name }}" \
+            --output release-body.md \
+            --fallback-full
+
+      - name: Download DMG artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: quill-dmg
+          path: release-assets/dmg
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v3
+        with:
+          name: "QUILL for All ${{ github.ref_name }} Beta (macOS)"
+          body_path: release-body.md
+          files: |
+            release-assets/dmg/Quill.dmg
+          prerelease: true

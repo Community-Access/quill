@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>latex_testing</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="quill-math-test-document">Quill Math Test Document</h1>
+<p>This document contains 10 mathematical formulas across algebra and
+calculus to test Quill’s LaTeX and MathML integration.</p>
+<hr />
+<h2 id="algebra-formulas">Algebra Formulas</h2>
+<h3 id="quadratic-formula">1. Quadratic Formula</h3>
+<p>Used to find the roots of a quadratic equation: <span
+class="math display">$$x = \frac{-b \pm \sqrt{b^2 -
+4ac}}{2a}$$</span></p>
+<h3 id="difference-of-squares">2. Difference of Squares</h3>
+<p>A standard algebraic identity for factoring polynomials: <span
+class="math display"><em>a</em><sup>2</sup> − <em>b</em><sup>2</sup> = (<em>a</em> − <em>b</em>)(<em>a</em> + <em>b</em>)</span></p>
+<h3 id="binomial-theorem">3. Binomial Theorem</h3>
+<p>Describes the algebraic expansion of powers of a binomial: <span
+class="math display">$$(a + b)^n = \sum_{k=0}^{n} \binom{n}{k} a^{n-k}
+b^k$$</span></p>
+<h3 id="logarithm-change-of-base">4. Logarithm Change of Base</h3>
+<p>Used to convert logarithms from one base to another: <span
+class="math display">$$\log_a(x) =
+\frac{\log_b(x)}{\log_b(a)}$$</span></p>
+<h3 id="slope-intercept-equation">5. Slope-Intercept Equation</h3>
+<p>The standard equation of a straight line in Cartesian coordinates:
+<span
+class="math display"><em>y</em> = <em>m</em><em>x</em> + <em>b</em></span></p>
+<hr />
+<h2 id="calculus-formulas">Calculus Formulas</h2>
+<h3 id="limit-definition-of-the-derivative">6. Limit Definition of the
+Derivative</h3>
+<p>Represents the instantaneous rate of change of a function: <span
+class="math display">$$f'(x) = \lim_{h \to 0} \frac{f(x+h) -
+f(x)}{h}$$</span></p>
+<h3 id="fundamental-theorem-of-calculus">7. Fundamental Theorem of
+Calculus</h3>
+<p>Connects differentiation and integration: <span
+class="math display">∫<sub><em>a</em></sub><sup><em>b</em></sup><em>f</em>(<em>x</em>) <em>d</em><em>x</em> = <em>F</em>(<em>b</em>) − <em>F</em>(<em>a</em>)</span></p>
+<h3 id="taylor-series-expansion">8. Taylor Series Expansion</h3>
+<p>Represents a function as an infinite sum of terms calculated from the
+values of its derivatives at a single point: <span
+class="math display">$$f(x) = \sum_{n=0}^{\infty} \frac{f^{(n)}(a)}{n!}
+(x-a)^n$$</span></p>
+<h3 id="integration-by-parts">9. Integration by Parts</h3>
+<p>A rule that transforms the integral of a product of functions: <span
+class="math display">∫<em>u</em> <em>d</em><em>v</em> = <em>u</em><em>v</em> − ∫<em>v</em> <em>d</em><em>u</em></span></p>
+<h3 id="eulers-identity">10. Euler’s Identity</h3>
+<p>A famous equation in complex analysis relating five fundamental
+mathematical constants: <span
+class="math display"><em>e</em><sup><em>i</em><em>π</em></sup> + 1 = 0</span></p>
+</body>
+</html>

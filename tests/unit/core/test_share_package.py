@@ -28,7 +28,6 @@ from quill.core.share_package import (
 def _settings_payload() -> dict[str, object]:
     settings = Settings(
         theme="dark",
-        read_aloud_piper_executable=r"C:\Users\me\piper.exe",
         watch_folder_path=r"D:\watch",
         skipped_update_version="9.9.9",
     )
@@ -76,7 +75,6 @@ def test_profile_scrubs_private_settings_fields() -> None:
     inner = doc["sections"][SECTION_SETTINGS]["settings"]
     assert "theme" in inner  # shareable preference survives
     assert "watch_folder_path" not in inner
-    assert "read_aloud_piper_executable" not in inner
     assert "skipped_update_version" not in inner
     # The privacy guard finds nothing leaking.
     assert private_fields_present(doc) == []
@@ -162,3 +160,19 @@ def test_file_round_trip(tmp_path) -> None:
     package = read_package_file(path)
     assert package.name == "File"
     assert package.is_profile
+
+
+def test_private_settings_fields_are_all_real_settings_fields() -> None:
+    """Every per-device name scrubbed from a shared profile must be a real
+    Settings field. A name here with no matching field means some code path
+    reads settings.<name> and crashes with AttributeError -- the shape of the
+    "'Settings' object has no attribute 'read_aloud_piper_executable'" bug hit
+    when previewing a Piper voice.
+    """
+    from dataclasses import fields
+
+    from quill.core.share_package import PRIVATE_SETTINGS_FIELDS
+
+    field_names = {f.name for f in fields(Settings)}
+    missing = sorted(name for name in PRIVATE_SETTINGS_FIELDS if name not in field_names)
+    assert not missing, f"PRIVATE_SETTINGS_FIELDS names with no Settings field: {missing}"

@@ -2,6 +2,7 @@
 
 Entry point: open_skill_library() in MainFrame (Tools > AI Assistant > Skill Library...).
 A11Y-4 hardened: apply_modal_ids, public show()/close().
+Status changes are announced via announce_cb (finding #43).
 """
 
 from __future__ import annotations
@@ -22,10 +23,31 @@ from quill.core.skill_pack import (
     run_skill,
     validate_skill,
 )
-from quill.ui.dialog_contract import apply_modal_ids, show_message_box
+from quill.ui.dialog_contract import (
+    apply_listbox_activation,
+    apply_modal_ids,
+    show_message_box,
+)
 
 if TYPE_CHECKING:
     from quill.core.settings import Settings
+
+
+def open_skill_library(controller: object) -> None:
+    """Open the Skill Library for the host MainFrame (keeps main_frame thin)."""
+    dlg = SkillLibraryDialog(
+        controller.frame,  # type: ignore[attr-defined]
+        controller._get_skill_files(),  # type: ignore[attr-defined]
+        controller.settings,  # type: ignore[attr-defined]
+        selection=str(controller.editor.GetStringSelection()),  # type: ignore[attr-defined]
+        document=str(controller.editor.GetValue()),  # type: ignore[attr-defined]
+        title_text=controller._current_document_title(),  # type: ignore[attr-defined]
+        on_insert=controller._ai_insert_text,  # type: ignore[attr-defined]
+        announce_cb=controller._announce,  # type: ignore[attr-defined]
+    )
+    dlg.dialog.CenterOnParent()
+    controller._show_modal_dialog(dlg.dialog, "Skill Library")  # type: ignore[attr-defined]
+    dlg.close()
 
 
 class _SkillCancelled(Exception):
@@ -46,6 +68,7 @@ class SkillLibraryDialog:
         title_text: str = "",
         clipboard: str = "",
         on_insert: Callable[[str], None] | None = None,
+        announce_cb: Callable[[str], None] | None = None,
     ) -> None:
         self._settings = settings
         self._skill_files = list(skill_files)
@@ -57,6 +80,7 @@ class SkillLibraryDialog:
             "clipboard": clipboard,
         }
         self._on_insert = on_insert
+        self._announce = announce_cb or (lambda _: None)
         self._running = False
         self._cancel_event = threading.Event()
 
@@ -71,6 +95,7 @@ class SkillLibraryDialog:
 
         root.Add(wx.StaticText(self.dialog, label="&Skills:"), 0, wx.LEFT | wx.TOP, 8)
         self._list = wx.ListBox(self.dialog, style=wx.LB_SINGLE)
+        self._list.SetName("Skills")
         self._list.SetMinSize(wx.Size(-1, 180))
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8)
 
@@ -79,6 +104,7 @@ class SkillLibraryDialog:
             self.dialog,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP,
         )
+        self._desc.SetName("Description")
         self._desc.SetMinSize(wx.Size(-1, 70))
         root.Add(self._desc, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 4)
 
@@ -98,10 +124,13 @@ class SkillLibraryDialog:
 
         self.dialog.SetSizer(root)
         self.dialog.Fit()
-        apply_modal_ids(self.dialog)
+        # The only dismissing button is Close (ID_CLOSE), so wire it as both the
+        # affirmative and escape id. Without escape_id, Escape does nothing
+        # because wx only auto-handles Escape for an ID_CANCEL button.
+        apply_modal_ids(self.dialog, affirmative_id=wx.ID_CLOSE, escape_id=wx.ID_CLOSE)
 
         self._list.Bind(wx.EVT_LISTBOX, self._on_select)
-        self._list.Bind(wx.EVT_LISTBOX_DCLICK, self._on_run_or_cancel)
+        apply_listbox_activation(self._list, self._on_run_or_cancel)
         self._run_btn.Bind(wx.EVT_BUTTON, self._on_run_or_cancel)
         self._import_btn.Bind(wx.EVT_BUTTON, self._on_import)
         close_btn.Bind(wx.EVT_BUTTON, lambda _e: self.close())
@@ -113,6 +142,11 @@ class SkillLibraryDialog:
     # ------------------------------------------------------------------
     # Populate + configuration check
     # ------------------------------------------------------------------
+
+    def _set_status(self, msg: str) -> None:
+        self._status.SetLabel(msg)
+        if msg:
+            self._announce(msg)
 
     def _populate(self) -> None:
         self._packs.clear()
@@ -135,7 +169,7 @@ class SkillLibraryDialog:
             or ""
         )
         if not model_id:
-            self._status.SetLabel(
+            self._set_status(
                 "No AI model configured. Open Preferences > AI to set a provider and model."
             )
 
@@ -171,7 +205,7 @@ class SkillLibraryDialog:
         if self._running:
             self._cancel_event.set()
             self._run_btn.Disable()
-            self._status.SetLabel("Cancelling after current step completes...")
+            self._set_status("Cancelling after current step completes...")
             return
 
         idx = self._list.GetSelection()
@@ -206,6 +240,7 @@ class SkillLibraryDialog:
                 "No Model",
                 wx.OK | wx.ICON_INFORMATION,
                 self.dialog,
+                announce=self._announce,
             )
             return
 
@@ -218,8 +253,8 @@ class SkillLibraryDialog:
         self._running = True
         self._run_btn.SetLabel("&Cancel")
 
-        def _set_status(msg: str) -> None:
-            self._status.SetLabel(msg)
+        def _update_step_status(msg: str) -> None:
+            self._set_status(msg)
             self.dialog.Layout()
 
         def worker() -> None:
@@ -232,7 +267,7 @@ class SkillLibraryDialog:
                 status = f"Running step {n} of {total}"
                 if heading:
                     status += f": {heading}"
-                wx.CallAfter(_set_status, status + "...")
+                wx.CallAfter(_update_step_status, status + "...")
                 if self._cancel_event.is_set():
                     raise _SkillCancelled()
                 return send_prompt(
@@ -261,16 +296,17 @@ class SkillLibraryDialog:
 
         active = [r for r in results if not r.skipped]
         if not active:
-            self._status.SetLabel("")
+            self._set_status("")
             show_message_box(
                 "The skill ran but produced no output.",
                 "Skill result",
                 wx.OK | wx.ICON_INFORMATION,
                 self.dialog,
+                announce=self._announce,
             )
             return
 
-        self._status.SetLabel("")
+        self._set_status("")
 
         last_step = pack.steps[-1]
         accept_into = "none"
@@ -302,7 +338,7 @@ class SkillLibraryDialog:
 
     def _on_cancelled(self) -> None:
         self._reset_run_button()
-        self._status.SetLabel("Skill cancelled.")
+        self._set_status("Skill cancelled.")
 
     def _on_error(self, msg: str) -> None:
         self._reset_run_button()
@@ -312,6 +348,7 @@ class SkillLibraryDialog:
             "Skill error",
             wx.OK | wx.ICON_ERROR,
             self.dialog,
+            announce=self._announce,
         )
 
     # ------------------------------------------------------------------
@@ -338,10 +375,17 @@ class SkillLibraryDialog:
                 "Invalid skill",
                 wx.OK | wx.ICON_ERROR,
                 self.dialog,
+                announce=self._announce,
             )
             return
         except Exception as exc:
-            show_message_box(str(exc), "Import failed", wx.OK | wx.ICON_ERROR, self.dialog)
+            show_message_box(
+                str(exc),
+                "Import failed",
+                wx.OK | wx.ICON_ERROR,
+                self.dialog,
+                announce=self._announce,
+            )
             return
         if errors:
             show_message_box(
@@ -349,6 +393,7 @@ class SkillLibraryDialog:
                 "Invalid skill",
                 wx.OK | wx.ICON_ERROR,
                 self.dialog,
+                announce=self._announce,
             )
             return
         self._skill_files.append(path)
@@ -362,6 +407,7 @@ class SkillLibraryDialog:
             "Skill imported",
             wx.OK | wx.ICON_INFORMATION,
             self.dialog,
+            announce=self._announce,
         )
 
     # ------------------------------------------------------------------
@@ -373,7 +419,15 @@ class SkillLibraryDialog:
         self.dialog.ShowModal()
 
     def close(self) -> None:
-        self.dialog.EndModal(wx.ID_CLOSE)
+        # open_skill_library() runs the modal loop via _show_modal_dialog and
+        # then calls close(); the Close button and the window-close handler also
+        # call close(). End the modal loop if we are still in it; otherwise the
+        # loop already returned, so destroy the dismissed dialog. Calling
+        # EndModal on a non-modal dialog raises wxAssertionError, so guard it.
+        if self.dialog.IsModal():
+            self.dialog.EndModal(wx.ID_CLOSE)
+        else:
+            self.dialog.Destroy()
 
 
 class _SkillParameterDialog:
@@ -429,6 +483,10 @@ class _SkillParameterDialog:
             ctrl.SetMinSize(wx.Size(-1, 80))
         else:
             ctrl = wx.TextCtrl(self.dialog, value=default)
+        # Accessible name from the parameter's visible label so screen readers
+        # announce each field by name (the StaticText label alone is not reliably
+        # associated across screen readers).
+        ctrl.SetName(param.label or param.name)
         return ctrl
 
     def show(self) -> int:

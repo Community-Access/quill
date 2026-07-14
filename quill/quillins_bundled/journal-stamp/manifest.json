@@ -1,0 +1,196 @@
+{
+  "schema": "quill.extension/1",
+  "id": "com.quill.journalstamp",
+  "name": "Journal Stamp",
+  "version": "1.0.0",
+  "author": "QUILL Team",
+  "description": "Automatically inserts a date header when a new document is created in a journal folder, and optionally announces daily word counts after every save.",
+  "license": "MIT",
+  "min_quill_version": "0.6.0",
+  "categories": ["writing", "productivity"],
+  "capabilities": [
+    "document.events",
+    "editor.write",
+    "editor.read",
+    "ui.announce",
+    "settings.own.read",
+    "settings.own.write"
+  ],
+  "main": "extension.py",
+  "contributes": {
+    "document_events": [
+      {
+        "event": "document.created",
+        "handler": "on_document_created",
+        "title": "Insert journal date header",
+        "description": "Inserts an ISO date-and-weekday header when a new document is created in a folder that looks like a journal (path contains 'journal', 'diary', or 'notes').",
+        "conditions": {
+          "file_path_pattern": "**/journal*/**"
+        },
+        "enabled_by_default": true
+      },
+      {
+        "event": "document.after_save",
+        "handler": "on_after_save",
+        "title": "Announce word count after save",
+        "description": "Speaks the document word count after every save so you always know your progress. Configurable: off, on-save, or only when a daily goal is set.",
+        "enabled_by_default": true
+      },
+      {
+        "event": "document.loaded_from_session",
+        "handler": "on_session_restore",
+        "title": "Announce session restore",
+        "description": "Briefly announces that this document was restored from a previous session, so you know exactly where you are picking up.",
+        "enabled_by_default": true
+      },
+      {
+        "event": "quillin.enabled",
+        "handler": "on_enabled",
+        "title": "Journal Stamp enabled",
+        "description": "Runs once when the Quillin is first enabled, or when QUILL starts with it already enabled. Announces a brief activation notice so the user knows the Quillin is watching.",
+        "enabled_by_default": true
+      },
+      {
+        "event": "settings.changed",
+        "handler": "on_settings_changed",
+        "title": "React to setting changes",
+        "description": "Fires when the user changes any Journal Stamp preference. Refreshes internal configuration so the next event handler uses the latest settings.",
+        "enabled_by_default": true
+      }
+    ],
+    "preferences": [
+      {
+        "id": "main",
+        "title": "Journal Stamp",
+        "description": "Settings for the Journal Stamp Quillin.",
+        "tabs": [
+          {
+            "id": "header",
+            "title": "Date Header",
+            "description": "Control the format and placement of the date header inserted in new journal documents.",
+            "order": 0,
+            "sections": [
+              {
+                "id": "format",
+                "title": "Header Format",
+                "settings": [
+                  {
+                    "key": "date_format",
+                    "label": "Date format",
+                    "type": "choice",
+                    "default": "long",
+                    "description": "How the date is written in the inserted header line.",
+                    "search_keywords": ["timestamp", "iso", "strftime", "header format"],
+                    "choices": [
+                      { "value": "long", "label": "Long (e.g. Monday, 15 June 2026)" },
+                      { "value": "iso", "label": "ISO 8601 (e.g. 2026-06-15)" },
+                      { "value": "us", "label": "US style (e.g. June 15, 2026)" },
+                      { "value": "custom", "label": "Custom strftime pattern" }
+                    ]
+                  },
+                  {
+                    "key": "custom_date_pattern",
+                    "label": "Custom date pattern",
+                    "type": "string",
+                    "default": "%A, %d %B %Y",
+                    "description": "A Python strftime format string used when 'Custom strftime pattern' is selected. Example: %A, %d %B %Y produces Monday, 15 June 2026.",
+                    "visible_when": { "setting": "date_format", "equals": "custom" }
+                  },
+                  {
+                    "key": "header_separator",
+                    "label": "Separator after header",
+                    "type": "choice",
+                    "default": "blank_line",
+                    "description": "What follows the date header line.",
+                    "choices": [
+                      { "value": "blank_line", "label": "Blank line" },
+                      { "value": "dashes", "label": "Dashes (----------)" },
+                      { "value": "none", "label": "Nothing" }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "trigger",
+                "title": "When to Insert",
+                "settings": [
+                  {
+                    "key": "folder_pattern",
+                    "label": "Journal folder keyword",
+                    "type": "string",
+                    "default": "journal,diary,notes",
+                    "description": "Comma-separated keywords. A new document triggers the header only when its file path contains one of these words (case-insensitive). Leave blank to trigger for every new document."
+                  },
+                  {
+                    "key": "enabled",
+                    "label": "Insert header on new document",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Turn off to disable automatic header insertion entirely."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "wordcount",
+            "title": "Word Count",
+            "description": "Configure the word count announcement that plays after every save.",
+            "order": 1,
+            "sections": [
+              {
+                "id": "announce",
+                "title": "Save Announcement",
+                "settings": [
+                  {
+                    "key": "wordcount_mode",
+                    "label": "Announce word count",
+                    "type": "choice",
+                    "default": "always",
+                    "description": "When to speak the word count after a save.",
+                    "choices": [
+                      { "value": "always", "label": "After every save" },
+                      { "value": "goal", "label": "Only when a daily goal is set" },
+                      { "value": "off", "label": "Never" }
+                    ]
+                  },
+                  {
+                    "key": "daily_goal",
+                    "label": "Daily word goal",
+                    "type": "integer",
+                    "default": 0,
+                    "description": "Target word count per day. Set to 0 to disable. When set, the announcement says how many words remain.",
+                    "search_keywords": ["target", "writing goal", "word count target"],
+                    "minimum": 0,
+                    "maximum": 100000
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "session",
+            "title": "Session Restore",
+            "description": "Control what is announced when a document is restored from a previous session.",
+            "order": 2,
+            "sections": [
+              {
+                "id": "restore",
+                "title": "Restore Announcement",
+                "settings": [
+                  {
+                    "key": "announce_restore",
+                    "label": "Announce session restore",
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Speak a brief message when a document is restored from a crash or previous session."
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

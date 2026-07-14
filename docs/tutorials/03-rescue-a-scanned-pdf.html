@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>03-rescue-a-scanned-pdf</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="tutorial-3-rescue-a-scanned-pdf">Tutorial 3: Rescue a scanned
+PDF</h1>
+<p><strong>Goal:</strong> turn a scanned, image-only PDF (or a photo of
+a page) into real, editable, searchable text — free, on your own
+machine, with nothing uploaded.</p>
+<h2 id="background-the-one-rule">Background: the one rule</h2>
+<p><strong>Import / Convert Document</strong> routes every file through
+free, local services first: the built-in <strong>MarkItDown</strong>
+converter for born-digital files, then free on-device <strong>Tesseract
+OCR</strong> for scans. There is no cloud step, no account, and no cost.
+QUILL always asks before running OCR, and never opens an empty result
+silently.</p>
+<h2 id="1-one-time-setup-install-the-ocr-engine">1. One-time setup:
+install the OCR engine</h2>
+<ol type="1">
+<li><strong>Tools &gt; Reading &amp; Dictation &gt; Install Local OCR
+Engine (Tesseract)...</strong></li>
+<li>QUILL states the size (about 48 MB) and exactly what will happen,
+then downloads the official installer from QUILL's own verified release
+and checks it byte-for-byte.</li>
+<li>The installer opens <strong>visibly</strong> — complete it like any
+normal install. (If Tesseract is already on your machine, or installed
+via Homebrew on a Mac, skip this: QUILL finds it automatically.)</li>
+</ol>
+<h2 id="2-convert-the-document">2. Convert the document</h2>
+<ol type="1">
+<li><strong>File &gt; Import &gt; Import / Convert Document
+(OCR)...</strong> and pick your PDF.</li>
+<li>If the PDF actually has a text layer, it opens instantly as editable
+text — done, and QUILL announces "Nothing was uploaded."</li>
+<li>If it is a scan, QUILL says so honestly: <em>"QUILL could not find
+readable text in this document. It looks scanned or image-based. Run
+free on-device OCR? This stays on your computer and does not upload
+anything."</em></li>
+<li>Choose <strong>Yes</strong>. QUILL recognizes each page
+("Recognizing page 3 of 12...") and opens the result as a new document,
+with page boundaries kept as searchable
+<code>&lt;!-- Page N --&gt;</code> markers.</li>
+</ol>
+<p>Photos work too: point the same command at a <code>.png</code> or
+<code>.jpg</code> of a page and it goes straight to OCR.</p>
+<h2 id="3-judge-the-result">3. Judge the result</h2>
+<p>QUILL reports recognition <strong>confidence</strong> out of 100.
+Above ~80 on a clean scan, expect near-perfect text. When QUILL warns
+that confidence is low:</p>
+<ul>
+<li>Re-scan straighter/darker if you can — quality in, quality out.</li>
+<li>Read the result critically; OCR errors cluster around numbers,
+names, and poor contrast regions.</li>
+<li>Run a spell check (<code>palette &gt; spell</code>) — OCR errors
+light up fast.</li>
+</ul>
+<h2 id="4-finish-the-job">4. Finish the job</h2>
+<ul>
+<li>Save as Markdown or plain text, or <strong>File &gt; Export</strong>
+to Word.</li>
+<li>Run <strong>GLOW Audit Current Document</strong> to catch structural
+issues in the recovered text (see <a
+href="06-make-it-accessible-with-glow.md">tutorial 6</a>).</li>
+<li>For a recurring scan pile, aim a <strong>watch folder</strong> at
+your scanner's output directory.</li>
+</ul>
+<h2 id="where-this-is-honest">Where this is honest</h2>
+<p><strong>Tools &gt; Reading &amp; Dictation &gt; OCR and Conversion
+Services...</strong> describes every service in plain language — what it
+does, what it costs (nothing), what stays local (everything) — and shows
+the engine's install status. A consent-gated cloud tier for the hardest
+documents is planned; the free local tiers always run first.</p>
+<p><strong>Next:</strong> <a href="04-document-to-audiobook.md">Turn a
+document into an audiobook</a>.</p>
+</body>
+</html>

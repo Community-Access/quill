@@ -45,6 +45,13 @@ LIGHT_STRUCTURED_SUFFIXES: frozenset[str] = frozenset({
 
 _CSV_SUFFIXES: frozenset[str] = frozenset({".csv", ".tsv"})
 
+# Braille Mode (BR-004 / #226). The .brf / .brl / .pef / .ueb family is plain
+# ASCII text (NABCC) with a strict byte-for-byte contract on save: form feeds
+# are page breaks, trailing spaces count for layout, and line endings are
+# preserved. Detection is by extension; see ``quill/core/brf_ascii.py`` for the
+# character set, BOM handling, and the non-BRF-ASCII guard.
+BRF_SUFFIXES: frozenset[str] = frozenset({".brf", ".brl", ".pef", ".ueb"})
+
 
 def read_open_document(
     selected_path: Path,
@@ -52,12 +59,14 @@ def read_open_document(
     *,
     word_mode: str | None = None,
     csv_mode: str | None = None,
+    docx_engine: str = "auto",
 ) -> tuple[Document, object]:
     """Read ``selected_path`` into a document for the open flow.
 
     Returns the loaded :class:`Document` and any parsed EPUB book (``None`` for
     non-EPUB inputs). ``word_mode`` and ``csv_mode`` carry UI choices that must be
-    resolved before calling this function so it never needs the UI toolkit.
+    resolved before calling this function so it never needs the UI toolkit;
+    ``docx_engine`` carries the ``docx_read_engine`` setting the same way.
     """
     if suffix in _CSV_SUFFIXES:
         loaded = read_text_document(selected_path)
@@ -74,7 +83,7 @@ def read_open_document(
     if suffix in OFFICE_STREAM_SUFFIXES:
         from quill.io.structured import read_structured_document
 
-        loaded = read_structured_document(selected_path)
+        loaded = read_structured_document(selected_path, docx_engine=docx_engine)
         if word_mode is not None:
             loaded.source_metadata["word_open_mode"] = word_mode
         epub_book: object = None
@@ -88,5 +97,52 @@ def read_open_document(
         from quill.io.structured import read_structured_document
 
         return read_structured_document(selected_path), None
+
+    if suffix in BRF_SUFFIXES:
+        # Braille Mode: read raw bytes, strip a UTF-8 BOM if present, and
+        # surface a non-BRF-ASCII warning in source_metadata so the UI can
+        # announce it on open. The save path (quill.io.text.write_text_document
+        # + the braille_sanitized_input guard added in #228) preserves form
+        # feeds, trailing spaces, and line endings byte-for-byte. A
+        # BRFDocument is built alongside the Document so downstream modules
+        # (brf_page_map, braille_position, braille_status) can consume a
+        # single, typed snapshot.
+        from quill.core.brf_ascii import (
+            find_non_brf_ascii_offsets,
+            strip_bom,
+        )
+        from quill.core.brf_document import BRFDocument
+
+        raw_bytes = selected_path.read_bytes()
+        text, had_bom = strip_bom(raw_bytes)
+        non_ascii = find_non_brf_ascii_offsets(text)
+        brf_doc = BRFDocument.from_text_and_suffix(
+            text,
+            suffix.lstrip("."),
+            had_bom=had_bom,
+            non_ascii_offsets=non_ascii,
+        )
+        loaded = Document(
+            text=text,
+            path=selected_path,
+            modified=False,
+            encoding=brf_doc.encoding,
+            line_ending=brf_doc.line_ending,
+            source_metadata={
+                "source_kind": "brf",
+                "engine": "braille text",
+                "quality_score": 100,
+                "brf_suffix": brf_doc.suffix,
+                "brf_had_bom": had_bom,
+                "brf_non_ascii_offsets": non_ascii,
+                "brf_non_ascii_count": len(non_ascii),
+                "brf_form_feed_count": brf_doc.form_feed_count,
+                "brf_is_mixed_line_endings": brf_doc.is_mixed_line_endings,
+                "brf_profile": brf_doc.profile,
+                "brf_cell_width": brf_doc.cell_width,
+                "brf_line_height": brf_doc.line_height,
+            },
+        )
+        return loaded, None
 
     return read_text_document(selected_path), None

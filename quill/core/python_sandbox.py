@@ -1,8 +1,37 @@
+"""Run short Python snippets under layered isolation (SEC-14).
+
+Threat model (read before widening any entry point):
+
+* The primary containment is the **subprocess boundary**, not the Python-level
+  builtins shim. Snippets run in a separate, isolated interpreter (``-I -B``)
+  with a scrubbed environment (no secrets, only the minimum OS vars), a temp
+  cwd, a wall-clock timeout, and best-effort memory/CPU caps (a Windows job
+  object / POSIX ``setrlimit``).
+* The in-process defenses are defense-in-depth: a restricted ``__builtins__``,
+  an ``__import__`` guard limited to :data:`ALLOWED_IMPORTS`, and a static AST
+  policy (:func:`_validate_code_policy`) that rejects disallowed imports **and**
+  dunder attribute/name access. The dunder block closes the classic escape
+  ``().__class__.__base__.__subclasses__()`` that reaches already-imported
+  modules (``os``/``subprocess``) through the object graph, which the import
+  guard alone cannot see.
+* The resource caps are **best-effort**: if the OS call to install them fails
+  (e.g. ``CreateJobObject`` is denied) the snippet still runs, bounded only by
+  the wall-clock timeout. Callers that need a hard memory guarantee must not
+  rely on this alone.
+
+This is safe for user-authored snippets (the user already controls their own
+machine) and reasonably hardened against hostile AI/Quillin-authored code, but
+it is not a security boundary strong enough to run fully untrusted third-party
+code at scale. Keep both layers when editing: do not add builtins, widen
+``ALLOWED_IMPORTS``, or relax the AST policy without re-checking this model.
+"""
+
 from __future__ import annotations
 
 import ast
 import base64
 import json
+import logging
 import os
 import subprocess
 import sys
@@ -113,41 +142,57 @@ _SANDBOX_BOOTSTRAP = textwrap.dedent(
         JobObjectExtendedLimitInformation = 9
         job = kernel32.CreateJobObjectW(None, None)
         if not job:
-            return
+            return False
         info = _EXT()
         info.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_PROCESS_MEMORY
         info.ProcessMemoryLimit = limit_bytes
-        kernel32.SetInformationJobObject(
+        if not kernel32.SetInformationJobObject(
             job, JobObjectExtendedLimitInformation, ctypes.byref(info), ctypes.sizeof(info)
-        )
-        kernel32.AssignProcessToJobObject(job, kernel32.GetCurrentProcess())
+        ):
+            return False
+        return bool(kernel32.AssignProcessToJobObject(job, kernel32.GetCurrentProcess()))
 
 
     def _apply_resource_limits(payload):
+        # Returns a list of caps that were requested but could NOT be installed, so
+        # the parent can log that containment is weaker than intended (SEC-14). Best
+        # effort by design: a failure here never stops the snippet running (bounded
+        # by the wall-clock timeout regardless).
+        unapplied = []
         memory_limit_bytes = int(payload.get("memory_limit_bytes") or 0)
         cpu_limit_seconds = int(payload.get("cpu_limit_seconds") or 0)
         if sys.platform == "win32":
             if memory_limit_bytes > 0:
-                with contextlib.suppress(Exception):
-                    _apply_windows_memory_limit(memory_limit_bytes)
-            return
+                ok = False
+                try:
+                    ok = _apply_windows_memory_limit(memory_limit_bytes)
+                except Exception:
+                    ok = False
+                if not ok:
+                    unapplied.append("memory")
+            return unapplied
         try:
             import resource
         except Exception:
-            return
+            if memory_limit_bytes > 0:
+                unapplied.append("memory")
+            if cpu_limit_seconds > 0:
+                unapplied.append("cpu")
+            return unapplied
         if memory_limit_bytes > 0:
-            with contextlib.suppress(Exception):
-                resource.setrlimit(
-                    resource.RLIMIT_AS, (memory_limit_bytes, memory_limit_bytes)
-                )
+            try:
+                resource.setrlimit(resource.RLIMIT_AS, (memory_limit_bytes, memory_limit_bytes))
+            except Exception:
+                unapplied.append("memory")
         if cpu_limit_seconds > 0:
-            with contextlib.suppress(Exception):
-                resource.setrlimit(
-                    resource.RLIMIT_CPU, (cpu_limit_seconds, cpu_limit_seconds)
-                )
+            try:
+                resource.setrlimit(resource.RLIMIT_CPU, (cpu_limit_seconds, cpu_limit_seconds))
+            except Exception:
+                unapplied.append("cpu")
+        return unapplied
 
 
-    _apply_resource_limits(payload)
+    _caps_unapplied = _apply_resource_limits(payload)
 
     allowed_modules = set(payload.get("allowed_imports", ()))
     original_import = builtins.__import__
@@ -238,6 +283,7 @@ _SANDBOX_BOOTSTRAP = textwrap.dedent(
             "stderr": sys.stderr.getvalue(),
             "result": globals_ns.get("result"),
             "error": traceback.format_exc(),
+            "caps_unapplied": _caps_unapplied,
         }
     else:
         payload = {
@@ -245,6 +291,7 @@ _SANDBOX_BOOTSTRAP = textwrap.dedent(
             "stderr": sys.stderr.getvalue(),
             "result": globals_ns.get("result"),
             "error": "",
+            "caps_unapplied": _caps_unapplied,
         }
     if payload["result"] is not None and not isinstance(payload["result"], str):
         payload["result"] = str(payload["result"])
@@ -348,6 +395,15 @@ def run_python_sandbox(
             completed.returncode,
             elapsed,
         )
+    # SEC-14: if the child could not install its memory/CPU caps, containment is
+    # weaker than intended (the run is still wall-clock bounded). Log it so a
+    # misconfigured host is visible rather than silently unprotected.
+    caps_unapplied = payload_data.get("caps_unapplied") or []
+    if caps_unapplied:
+        logging.getLogger(__name__).warning(
+            "python sandbox resource cap(s) not applied: %s (run was time-bounded only)",
+            ", ".join(str(c) for c in caps_unapplied),
+        )
     return PythonSandboxResult(
         stdout=str(payload_data.get("stdout", "")),
         stderr=str(payload_data.get("stderr", "")),
@@ -373,3 +429,19 @@ def _validate_code_policy(code: str) -> None:
             root_name = node.module.split(".", 1)[0]
             if root_name not in ALLOWED_IMPORTS:
                 raise ValueError(f"Import of {root_name} is not allowed in the sandbox")
+        # SEC-14 hardening: reject dunder attribute/name access. The classic
+        # Python-sandbox escape reaches already-imported modules through the
+        # object graph -- e.g. ``().__class__.__base__.__subclasses__()`` to find
+        # ``subprocess.Popen`` or ``os.system`` -- which the import guard cannot
+        # see. Legitimate snippets that transform document text never need
+        # ``__``-prefixed attributes, so blocking them closes the escape without
+        # meaningful cost. (The subprocess boundary + resource caps remain the
+        # outer defense; this removes the cheap in-process traversal.)
+        elif isinstance(node, ast.Attribute):
+            if node.attr.startswith("__") and node.attr.endswith("__"):
+                raise ValueError(
+                    f"Access to dunder attribute '{node.attr}' is not allowed in the sandbox"
+                )
+        elif isinstance(node, ast.Name):
+            if node.id.startswith("__") and node.id.endswith("__"):
+                raise ValueError(f"Access to dunder name '{node.id}' is not allowed in the sandbox")

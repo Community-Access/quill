@@ -71,6 +71,9 @@ class _RecordingServices:
     def announce(self, message: str) -> None:
         self.calls.append(("announce", (message,)))
 
+    def is_verbosity_speech_enabled(self) -> bool:
+        return True
+
     def prompt(self, title: str, label: str, default: str) -> str | None:
         return None
 

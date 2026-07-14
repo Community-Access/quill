@@ -36,7 +36,12 @@ from quill.core.remote_sites import (
     save_password,
     upsert_site,
 )
-from quill.ui.dialog_contract import apply_modal_ids, focus_primary_control, show_message_box
+from quill.ui.dialog_contract import (
+    apply_listbox_activation,
+    apply_modal_ids,
+    focus_primary_control,
+    show_message_box,
+)
 
 
 class DialogMode(Enum):
@@ -218,8 +223,8 @@ class RemoteSitesDialog(wx.Dialog):
 
         # --- Bindings ---
         self._site_list.Bind(wx.EVT_LISTBOX, self._on_site_selected)
-        self._site_list.Bind(wx.EVT_LISTBOX_DCLICK, self._on_site_activated)
-        self._dir_list.Bind(wx.EVT_LISTBOX_DCLICK, self._on_dir_activated)
+        apply_listbox_activation(self._site_list, self._on_site_activated)
+        apply_listbox_activation(self._dir_list, self._on_dir_activated)
         self._dir_list.Bind(wx.EVT_LISTBOX, self._on_dir_selected)
         self._target_text.Bind(wx.EVT_TEXT_ENTER, self._on_accept)
         self.Bind(wx.EVT_BUTTON, self._on_new_site, id=self._id_new_site)
@@ -294,6 +299,7 @@ class RemoteSitesDialog(wx.Dialog):
             f"Delete the saved site '{current.name}'?",
             "Delete remote site",
             wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
+            self,
         )
         if result == wx.YES:
             delete_site(current.id)
@@ -303,7 +309,7 @@ class RemoteSitesDialog(wx.Dialog):
         site = self._site_list.selected_site()
         if site is None:
             show_message_box(
-                "Choose a remote site first.", self.GetTitle(), wx.ICON_WARNING | wx.OK
+                "Choose a remote site first.", self.GetTitle(), wx.ICON_WARNING | wx.OK, self
             )
             return
         path = self._target_text.GetValue().strip()
@@ -312,6 +318,7 @@ class RemoteSitesDialog(wx.Dialog):
                 "Enter a remote file path or select an entry from the directory list.",
                 self.GetTitle(),
                 wx.ICON_WARNING | wx.OK,
+                self,
             )
             return
         self._result = RemoteSitesResult(site=site, path=path, mode=self._mode)
@@ -455,7 +462,7 @@ class _SiteEditorDialog(wx.Dialog):
             extra["webdav_base"] = extra_value
         if not name or not host:
             show_message_box(
-                "Name and host are required.", self.GetTitle(), wx.ICON_WARNING | wx.OK
+                "Name and host are required.", self.GetTitle(), wx.ICON_WARNING | wx.OK, self
             )
             return
         site_id = (self._site.id if self._site else name).strip() or name

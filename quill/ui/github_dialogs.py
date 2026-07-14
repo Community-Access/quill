@@ -15,6 +15,7 @@ Accessibility contract:
 from __future__ import annotations
 
 import threading
+from collections.abc import Callable
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -263,11 +264,14 @@ class GitHubRepositoryBrowserDialog:
         parent: object,
         provider: GitHubRemoteProvider,
         identity_label: str,
+        *,
+        announce_cb: Callable[[str], None] | None = None,
     ) -> None:
         import wx
 
         self._wx = wx
         self._provider = provider
+        self._announce = announce_cb or (lambda _: None)
         self._repository: RemoteRepository | None = None
         self._current_ref = ""
         self._path_stack: list[str] = []  # stack of ancestor paths; top = current dir
@@ -299,7 +303,7 @@ class GitHubRepositoryBrowserDialog:
         # Repository row
         repo_row = wx.BoxSizer(wx.HORIZONTAL)
         repo_label = wx.StaticText(panel, label="Repository (owner/repo):")
-        self._repo_ctrl = wx.TextCtrl(panel)
+        self._repo_ctrl = wx.TextCtrl(panel, style=wx.TE_PROCESS_ENTER)
         self._repo_ctrl.SetName("Repository in owner slash repo format")
         self._load_btn = wx.Button(panel, label="Load")
         self._load_btn.SetName("Load repository")
@@ -408,9 +412,11 @@ class GitHubRepositoryBrowserDialog:
         full_name = self._repo_ctrl.GetValue().strip()
         if not full_name:
             self._set_status("Enter a repository name (owner/repo) first.")
+            self._repo_ctrl.SetFocus()  # place the user on the field to fix
             return
         if "/" not in full_name:
             self._set_status("Repository must be in owner/repo format.")
+            self._repo_ctrl.SetFocus()  # place the user on the field to fix
             return
         self._set_loading(True)
         self._set_status(f"Loading {full_name}...")
@@ -498,10 +504,13 @@ class GitHubRepositoryBrowserDialog:
     def _on_key(self, event: object) -> None:
         wx = self._wx
         key = getattr(event, "GetKeyCode", lambda: 0)()
+        focused = wx.Window.FindFocus()
         if key == wx.WXK_F5:
             self._on_refresh(None)
         elif key == wx.WXK_BACK:
-            if self._path_stack:
+            # Only treat Backspace as "Go Up" when the list control has focus.
+            # If the repo field or any TextCtrl has focus, let it delete characters.
+            if self._path_stack and focused is self._list:
                 self._on_go_up(None)
             else:
                 event.Skip()  # type: ignore[union-attr]
@@ -536,13 +545,20 @@ class GitHubRepositoryBrowserDialog:
         for ref in refs:
             label = f"{ref.name} ({ref.kind})"
             self._ref_choice.Append(label)
+        if not refs:
+            self._set_loading(False)
+            self._set_status(
+                f"{repo.full_name} has no branches. "
+                "It may be an empty repository. Press Cancel to go back."
+            )
+            return
         default_idx = next(
             (i for i, r in enumerate(refs) if r.name == repo.default_branch),
             0,
         )
         self._ref_choice.SetSelection(default_idx)
         self._ref_choice.Enable(True)
-        self._current_ref = refs[default_idx].name if refs else ""
+        self._current_ref = refs[default_idx].name
         self._path_stack.clear()
         desc = f" — {repo.description}" if repo.description else ""
         if self._refs_truncated:
@@ -601,6 +617,11 @@ class GitHubRepositoryBrowserDialog:
         count = len(nodes)
         self._set_status(f"{count} item{'s' if count != 1 else ''} in {display_path}")
         self._update_open_button()
+        # Focus the list and select the first item so SR users know content arrived.
+        if count > 0:
+            self._list.SetFocus()
+            self._list.Select(0)
+            self._list.Focus(0)
 
     def _do_open(self, node: RemoteNode) -> None:
         if not self._repository:
@@ -636,3 +657,5 @@ class GitHubRepositoryBrowserDialog:
     def _set_status(self, message: str) -> None:
         self._status.SetLabel(message)
         self._status.GetParent().Layout()
+        if message:
+            self._announce(message)

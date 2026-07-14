@@ -345,8 +345,10 @@ class ImageCaptureMixin:
         Lets the user pick an image (file, clipboard, or screen capture), sends
         it to the connected AI provider's vision model, and offers the written
         description for insertion, copy, or discard through the shared review
-        dialog. The request runs off the UI thread with a cancelable progress
-        dialog so the editor stays responsive.
+        dialog.  When ``vision_prompt_picker_enabled`` is True, a style picker
+        appears before the first describe.  The review dialog includes a
+        "Try a different prompt…" button that re-runs the description with a
+        different style without restarting the whole flow.
         """
         wx = self._wx
         _TITLE = "Describe Image"
@@ -384,70 +386,213 @@ class ImageCaptureMixin:
 
         api_key = load_assistant_api_key()
         from quill.core.ai.vision import describe_image
+        from quill.core.ai.vision_prompts import (
+            resolve_prompt_text,
+        )
 
-        progress_state: dict[str, object] = {"done": False, "text": None, "error": None}
+        # Reload settings from disk so vision prompt preferences saved by the
+        # AI Hub are visible without restarting Quill.
+        from quill.core.settings import load_settings
 
-        def run_describe() -> None:
+        current_settings = load_settings()
+
+        # Gather settings for the prompt library.
+        default_style_id = current_settings.vision_default_prompt_style
+        picker_enabled = current_settings.vision_prompt_picker_enabled
+        disabled_builtins: list[str] = list(current_settings.vision_disabled_builtin_styles)
+        custom_prompts: list[dict[str, str]] = list(current_settings.vision_custom_prompts)
+        builtin_overrides: dict[str, str] = dict(
+            getattr(current_settings, "vision_builtin_overrides", {})
+        )
+
+        # --- Phase 3: opt-in pre-describe picker ---
+        current_style_id = default_style_id
+        if picker_enabled:
+            picked = self._show_style_picker(
+                _TITLE,
+                disabled_builtins=disabled_builtins,
+                custom_prompts=custom_prompts,
+                current_id=current_style_id,
+            )
+            if picked is None:
+                self._set_status("Image description cancelled")
+                return
+            current_style_id = picked
+
+        # --- Describe + review loop (Phase 3: retry) ---
+        # Cache the first successful description so we can fall back if a
+        # retry fails (§8.2).
+        fallback_description: str | None = None
+
+        while True:
+            active_prompt = resolve_prompt_text(
+                current_style_id, custom_prompts=custom_prompts, overrides=builtin_overrides
+            )
+
+            progress_state: dict[str, object] = {"done": False, "text": None, "error": None}
+
+            def run_describe(
+                _prompt: str = active_prompt,
+                _state: dict[str, object] = progress_state,
+            ) -> None:
+                try:
+                    text, error = describe_image(connection, api_key, image_path, prompt=_prompt)
+                    _state["text"] = text
+                    _state["error"] = error
+                except Exception as exc:  # noqa: BLE001
+                    _state["error"] = str(exc)
+                finally:
+                    _state["done"] = True
+
+            worker = threading.Thread(  # GATE-40-OK: image describe worker
+                target=run_describe, name="describe-image", daemon=True
+            )
+            worker.start()
+            progress = wx.ProgressDialog(
+                _TITLE,
+                "Asking the model to describe the image...",
+                maximum=100,
+                parent=self.frame,
+                style=wx.PD_APP_MODAL | wx.PD_AUTO_HIDE | wx.PD_ELAPSED_TIME,
+            )
             try:
-                text, error = describe_image(connection, api_key, image_path)
-                progress_state["text"] = text
-                progress_state["error"] = error
-            except Exception as exc:  # noqa: BLE001 - surface any failure to the user
-                progress_state["error"] = str(exc)
+                while not progress_state["done"]:
+                    progress.Pulse("Asking the model to describe the image...")
+                    wx.MilliSleep(100)
+                worker.join()
             finally:
-                progress_state["done"] = True
+                progress.Destroy()
 
-        worker = threading.Thread(  # GATE-40-OK: image describe worker; posts via CallAfter.
-            target=run_describe, name="describe-image", daemon=True
-        )
-        worker.start()
-        progress = wx.ProgressDialog(
-            _TITLE,
-            "Asking the model to describe the image...",
-            maximum=100,
-            parent=self.frame,
-            style=wx.PD_APP_MODAL | wx.PD_AUTO_HIDE | wx.PD_ELAPSED_TIME,
-        )
-        try:
-            step = 10
-            while not progress_state["done"]:
-                progress.Pulse("Asking the model to describe the image...")
-                wx.MilliSleep(100)
-                step = min(90, step + 4)
-            worker.join()
-        finally:
-            progress.Destroy()
-
-        error = progress_state["error"]
-        if error:
-            self._show_message_box(str(error), _TITLE, wx.ICON_ERROR | wx.OK)
-            self._set_status("Image description failed")
-            return
-        description = progress_state["text"]
-        if not description:
-            self._set_status("No description returned")
-            return
-
-        from quill.ui.ocr_review_dialog import OcrReviewDialog
-
-        review_dialog = OcrReviewDialog(self.frame, _TITLE, str(description))
-        choice = review_dialog.show_modal(
-            announce=self._announce,
-            enter_region=self._region_tracker.enter,
-            exit_region=self._region_tracker.exit,
-        )
-        if choice == OcrReviewDialog.ID_INSERT:
-            pos = self.editor.GetInsertionPoint()
-            self.editor.WriteText(str(description))
-            self.editor.SetInsertionPoint(pos + len(str(description)))
-            self._set_status("Image description inserted")
-        elif choice == OcrReviewDialog.ID_COPY:
-            if wx.TheClipboard.Open():
-                wx.TheClipboard.SetData(wx.TextDataObject(str(description)))
-                wx.TheClipboard.Close()
-                self._set_status("Image description copied to clipboard")
+            error = progress_state["error"]
+            if error:
+                # If we have a fallback from a previous successful run,
+                # show the error but re-open the review dialog with the
+                # fallback text so the user doesn't lose work (§8.2).
+                if fallback_description is not None:
+                    self._show_message_box(str(error), _TITLE, wx.ICON_ERROR | wx.OK)
+                    description = fallback_description
+                else:
+                    self._show_message_box(str(error), _TITLE, wx.ICON_ERROR | wx.OK)
+                    self._set_status("Image description failed")
+                    return
             else:
-                self._set_status("Failed to copy to clipboard")
-        else:
-            self._set_status("Image description discarded")
-        self.editor.SetFocus()
+                description = progress_state["text"]
+                if not description:
+                    if fallback_description is not None:
+                        description = fallback_description
+                    else:
+                        self._set_status("No description returned")
+                        return
+                else:
+                    # First successful description becomes the fallback.
+                    if fallback_description is None:
+                        fallback_description = str(description)
+
+            from quill.ui.ocr_review_dialog import OcrReviewDialog
+
+            review_dialog = OcrReviewDialog(
+                self.frame,
+                _TITLE,
+                str(description),
+                allow_retry=True,
+                text_label="Image description",
+            )
+            choice = review_dialog.show_modal(
+                announce=self._announce,
+                enter_region=self._region_tracker.enter,
+                exit_region=self._region_tracker.exit,
+            )
+
+            if choice == OcrReviewDialog.ID_RETRY:
+                # Show the style picker for a different prompt (§8.3:
+                # default-select the last-used style).
+                picked = self._show_style_picker(
+                    _TITLE,
+                    disabled_builtins=disabled_builtins,
+                    custom_prompts=custom_prompts,
+                    current_id=current_style_id,
+                )
+                if picked is None:
+                    # User cancelled the picker — re-show the same review
+                    # dialog with the same text (no re-describe).
+                    continue
+                current_style_id = picked
+                continue  # loop back to describe with the new style
+
+            # --- Handle final action ---
+            if choice == OcrReviewDialog.ID_INSERT:
+                pos = self.editor.GetInsertionPoint()
+                self.editor.WriteText(str(description))
+                self.editor.SetInsertionPoint(pos + len(str(description)))
+                self._set_status("Image description inserted")
+            elif choice == OcrReviewDialog.ID_COPY:
+                if wx.TheClipboard.Open():
+                    wx.TheClipboard.SetData(wx.TextDataObject(str(description)))
+                    wx.TheClipboard.Close()
+                    self._set_status("Image description copied to clipboard")
+                else:
+                    self._set_status("Failed to copy to clipboard")
+            else:
+                self._set_status("Image description discarded")
+            self.editor.SetFocus()
+            return  # exit the retry loop
+
+    # ------------------------------------------------------------------
+    # Phase 3 helpers
+    # ------------------------------------------------------------------
+
+    def _show_style_picker(
+        self,
+        title: str,
+        *,
+        disabled_builtins: list[str] | None = None,
+        custom_prompts: list[dict] | None = None,
+        current_id: str | None = None,
+    ) -> str | None:
+        """Show a ``wx.SingleChoiceDialog`` listing enabled prompt styles.
+
+        Returns the chosen style ID, or ``None`` if the user cancelled.
+        ``current_id``, when provided, is pre-selected in the list.
+        """
+        wx = self._wx
+        from quill.core.ai.vision_prompts import enabled_style_choices
+
+        choices = enabled_style_choices(
+            disabled_builtins=disabled_builtins, custom_prompts=custom_prompts
+        )
+        if not choices:
+            self._show_message_box(
+                "No image description styles are enabled. Open Settings > AI > "
+                "Image Prompt Styles to enable at least one style.",
+                title,
+                wx.ICON_INFORMATION | wx.OK,
+            )
+            return None
+
+        labels = [c["title"] for c in choices]
+        ids = [c["id"] for c in choices]
+
+        # Pre-select the current style if it's in the list.
+        initial_selection = 0
+        if current_id is not None:
+            try:
+                initial_selection = ids.index(current_id)
+            except ValueError:
+                pass
+
+        with wx.SingleChoiceDialog(
+            self.frame,
+            "Choose a description style:",
+            title,
+            choices=labels,
+        ) as dialog:
+            dialog.SetSelection(initial_selection)
+            from quill.ui.dialog_contract import apply_modal_ids
+
+            apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
+            if self._show_modal_dialog(dialog, title) != wx.ID_OK:
+                return None
+            sel = dialog.GetSelection()
+            if 0 <= sel < len(ids):
+                return ids[sel]
+            return None

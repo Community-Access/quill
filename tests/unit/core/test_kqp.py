@@ -13,7 +13,7 @@ from quill.core.keymap import (
     export_keyboard_pack,
     import_keyboard_pack,
 )
-from quill.tools.kqp_validator import _validate_file
+from quill.tools.kqp_validator import validate_file
 
 
 def _write_kqp(path: Path, payload: object) -> None:
@@ -151,7 +151,7 @@ def test_import_runs_validator_before_merge(tmp_path: Path) -> None:
             "bindings": {"edit.find": "Alt+F"},
         },
     )
-    expected = _validate_file(path, strict=False)
+    expected = validate_file(path, strict=False)
     assert expected, "validator should report at least one error for this fixture"
     with pytest.raises(ValueError) as excinfo:
         import_keyboard_pack(path)
@@ -169,15 +169,16 @@ def test_import_runs_validator_before_merge(tmp_path: Path) -> None:
 def test_round_trip(tmp_path: pytest.TempPathFactory) -> None:
     keymap = DEFAULT_KEYMAP.copy()
     # Use key sequences not assigned to any other command in DEFAULT_KEYMAP and
-    # not subject to a legacy rebinding (e.g. "Ctrl+Shift+Grave, F" -> Ctrl+F).
-    keymap["edit.find"] = "Ctrl+Shift+Grave, Z"
-    keymap["tools.thesaurus"] = "Ctrl+Shift+Grave, Y"
+    # not subject to a legacy rebinding or the beta Find force (which rewrites
+    # any "Ctrl+Shift+Grave, *" edit.find binding to Ctrl+F).
+    keymap["edit.find_next"] = "Ctrl+Shift+Grave, Z"
+    keymap["tools.thesaurus"] = "Ctrl+Shift+Grave, Shift+Y"
     target = tmp_path / "trip.kqp"
     export_keyboard_pack(target, keymap, name="Trip Pack", description="Round trip test")
     name, description, merged = import_keyboard_pack(target)
     assert name == "Trip Pack"
     assert description == "Round trip test"
-    assert merged["edit.find"] == "Ctrl+Shift+Grave, Z"
-    assert merged["tools.thesaurus"] == "Ctrl+Shift+Grave, Y"
+    assert merged["edit.find_next"] == "Ctrl+Shift+Grave, Z"
+    assert merged["tools.thesaurus"] == "Ctrl+Shift+Grave, Shift+Y"
     # Untouched defaults survive.
     assert merged["file.save"] == DEFAULT_KEYMAP["file.save"]

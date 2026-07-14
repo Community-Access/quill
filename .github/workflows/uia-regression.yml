@@ -1,0 +1,63 @@
+# Windows UI-automation regression suite (tests/uia, marker "uia").
+#
+# Deliberately NON-BLOCKING and read-only:
+# - It is not a required PR check and never gates a merge.
+# - It changes nothing: no auto-fixes, no auto-filed issues, no commits.
+#   It runs the real app on the runner's desktop, asserts accessible names,
+#   keyboard behavior, and spoken output (via the announcement trace), and
+#   publishes a report for a human to read. Humans make the calls.
+# - It must never run on a developer's live desktop: it types real keystrokes
+#   and fights screen readers (see docs/qa/ui-automation.md).
+name: UIA regression (informational)
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Nightly at 09:17 UTC (quiet hour; offset avoids the top-of-hour rush).
+    - cron: "17 9 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  uia:
+    name: UI automation on Windows
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install QUILL with UI and dev extras
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[ui,dev]
+
+      - name: Run the UIA suite
+        env:
+          QUILL_UIA_TESTS: "1"
+        run: |
+          pytest tests/uia -m uia -v --junitxml=uia-results.xml
+
+      - name: Publish job summary
+        if: always()
+        shell: pwsh
+        run: |
+          if (Test-Path uia-results.xml) {
+            [xml]$r = Get-Content uia-results.xml
+            $s = $r.testsuites.testsuite
+            "## UIA regression results" >> $env:GITHUB_STEP_SUMMARY
+            "Tests: $($s.tests)  Failures: $($s.failures)  Errors: $($s.errors)  Skipped: $($s.skipped)" >> $env:GITHUB_STEP_SUMMARY
+            "Informational only: a failure here is a report to read, not a gate." >> $env:GITHUB_STEP_SUMMARY
+          }
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: uia-results
+          path: uia-results.xml
+          if-no-files-found: ignore

@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>2026-07-07-page-indicator-design</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1 id="page-indicator-for-every-document--design">Page indicator for
+every document — design</h1>
+<p>Closes GitHub issue #872.</p>
+<h2 id="problem">Problem</h2>
+<p>QUILL already has a mature, exact page-tracking system — but only for
+BRF/braille documents (<code>main_frame_braille.py</code> /
+<code>main_frame_braille_phase2.py</code>, detection in
+<code>brf_page_detection.py</code>). For every other format
+(<code>.txt</code>, <code>.md</code>, <code>.docx</code>, PDF-imported
+text), there is only a form-feed-based "Go To Page"
+(<code>navigation.py:page_starts</code> /
+<code>page_start_for_number</code>) that does nothing useful in
+practice, because nothing in QUILL's import pipeline ever inserts a
+literal <code>\f</code> character. There is no page count, no page
+indicator, and no page-based navigation for the documents most people
+actually write in.</p>
+<p>A beta tester asked directly: "Are we going to be able to see proper
+page numbers with QUILL?" Direction from Jeff: add a page item to the
+status bar <strong>by default</strong>, even for plain text files — not
+gated behind Braille mode — and make sure it ships for Beta 2 rather
+than waiting for a later release.</p>
+<h2 id="non-goals">Non-goals</h2>
+<ul>
+<li>Not a print/layout engine. QUILL will never compute the
+<em>actual</em> page count Word or a printer would produce for arbitrary
+text/Markdown/DOCX — that requires a full page-layout engine (fonts,
+margins, paper size) this project does not have and is not
+building.</li>
+<li>Not touching the existing BRF/braille page system at all. Braille
+documents keep their own richer "braille" status cell and command set;
+this feature's status cell is suppressed whenever that one is active, so
+the two never compete for the same space.</li>
+<li>Not adding page-based navigation for EPUB. EPUB already has its own
+chapter/heading navigator; page numbers are not a meaningful concept for
+reflowable EPUB content and are out of scope here.</li>
+<li>Not building a <code>Document.page_count</code> field or any new
+persisted page metadata. Both tracks below are computed on demand from
+the document's text (real pages from <code>\f</code> markers already in
+the text; estimates from a live word count), the same way
+<code>document_progress</code> and other status cells already work.</li>
+</ul>
+<h2 id="design">Design</h2>
+<h3 id="one-status-cell-two-tracks">One status cell, two tracks</h3>
+<p>A single new status bar item, <code>"page"</code>, is added to
+<code>STATUS_BAR_ITEMS</code>
+(<code>quill/core/settings_normalizers.py</code>) and, unlike most items
+there, is <strong>not</strong> added to
+<code>_default_status_bar_hidden()</code> — it is visible out of the box
+for every document, per the explicit ask. It is suppressed whenever the
+existing <code>"braille"</code> cell is active (BRF documents), via the
+same feature-style filtering <code>_statusbar_items()</code> already
+does in <code>main_frame_statusbar.py</code>.</p>
+<p>The cell's text is computed by a new
+<code>_statusbar_page_text()</code> method in
+<code>main_frame_statusbar.py</code>, mirroring the existing
+<code>_statusbar_braille_text()</code> pattern (a resolver cached on the
+frame, keyed by <code>(id(document), len(text))</code>, rebuilt when the
+text length changes):</p>
+<ul>
+<li><strong>Exact track:</strong> if
+<code>navigation.page_starts(text)</code> finds more than one page
+boundary (i.e. the document contains at least one <code>\f</code>), the
+cell reads <strong>"Page 3 of 12"</strong> — no qualifier, because it's
+a real count.</li>
+<li><strong>Estimated track:</strong> otherwise, the cell reads
+<strong>"Page ~3 of ~12 (estimated)"</strong> — the tilde and the word
+"estimated" are both always present together; this is deliberate and
+non-negotiable UI copy, so nobody mistakes an estimate for a fact. The
+accessible name/tooltip additionally spells out: <em>"Estimated from
+word count only (~{N} words per page) — does not reflect fonts, margins,
+or actual print/export pagination."</em></li>
+</ul>
+<p>Detection between the two tracks is nothing more than "does this
+document's text contain a <code>\f</code>" — no per-format
+special-casing is needed once the import side (below) is in place.</p>
+<h3 id="track-a--the-estimate-quillcorenavigationpy">Track A — the
+estimate (<code>quill/core/navigation.py</code>)</h3>
+<p>Two new pure functions:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> estimate_page_count(text: <span class="bu">str</span>, words_per_page: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">int</span>: ...</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> estimate_page_for_position(text: <span class="bu">str</span>, position: <span class="bu">int</span>, words_per_page: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">int</span>: ...</span></code></pre></div>
+<p>Word count reuses the same splitting logic
+<code>core/metrics.py</code> already uses for the existing word-count
+status cell, so the estimate's "words" always matches what the user
+already sees elsewhere. Both functions clamp to at least 1 page for any
+non-empty document.</p>
+<p>New setting <code>page_estimate_words_per_page: int = 300</code>,
+clamped to <code>[150, 600]</code>, following the exact pattern of
+<code>braille_lines_per_page</code> (<code>settings.py</code>,
+<code>settings_specs.py</code>) — declared, parsed in
+<code>from_dict</code>, clamped, and wired into the constructor. Exposed
+in Preferences under the same group as the other status-bar settings,
+with help text making the estimate's approximate nature explicit at the
+settings level too, not just in the status bar.</p>
+<h3 id="track-b--real-pages-quilliopdfpy-docx-import">Track B — real
+pages (<code>quill/io/pdf.py</code>, DOCX import)</h3>
+<p>This reuses machinery that already exists rather than building new
+exact-page tracking:</p>
+<ul>
+<li><strong>PDF:</strong> <code>_extract_with_pdfplumber</code> /
+<code>_extract_with_pypdf</code> (<code>quill/io/pdf.py</code>) already
+extract real per-page text and a real <code>page_count</code>, then
+discard both by joining every page with <code>"\n\n"</code>. Change the
+join to <code>"\f"</code> between pages (keeping paragraph breaks within
+a page as they are today) so the real boundaries survive into the
+<code>Document</code>'s text. No new field is needed —
+<code>page_starts()</code> on the resulting text <em>is</em> the page
+count and boundary list.</li>
+<li><strong>DOCX:</strong> the reader gains detection of explicit hard
+page breaks (<code>&lt;w:br w:type="page"/&gt;</code>) and inserts a
+<code>\f</code> at each one. Documents with no explicit break (the
+common case) produce no <code>\f</code> and fall straight through to the
+estimate — this is expected and correct; DOCX has no <em>computed</em>
+page count without a layout engine, only author-inserted breaks are ever
+"real." <code>quill/io/docx_writer.py</code> already turns
+<code>\f</code> back into a real page break on export, so this
+round-trips symmetrically.</li>
+</ul>
+<p><strong>Scope note (added during implementation planning):</strong>
+DOCX import goes through Pandoc or MarkItDown conversion to Markdown
+text (<code>quill/io/structured.py:_read_docx</code>), neither of which
+preserves explicit page-break positions in the converted text. Detecting
+hard page breaks would require a separate python-docx scan with no
+reliable way to map those positions into the converted text. Track B
+therefore ships for <strong>PDF only</strong> in the first
+implementation; DOCX stays on the Track A estimate. Real DOCX pagination
+is left as a follow-up, matching this issue's own original
+recommendation to treat exact-format pagination as separable,
+incremental work.</p>
+<h3 id="go-to-page-command">Go to Page command</h3>
+<p>The existing (currently dead)
+<code>navigation.page_start_for_number</code> powers an exact "Go to
+Page" for any document whose text contains <code>\f</code> — this is the
+same command surface the issue's linked plan expected, just newly
+reachable because real documents now carry page markers. For
+estimate-track documents, a parallel "Go to Page (estimated)" command
+computes a target character offset from the word-count heuristic. Its
+confirmation/prompt text repeats the same "this is an estimate" framing
+as the status cell — the disclaimer travels with the feature everywhere
+it surfaces, not just once.</p>
+<h3 id="testing">Testing</h3>
+<ul>
+<li><code>quill/core/navigation.py</code>: pure unit tests for
+<code>estimate_page_count</code> /
+<code>estimate_page_for_position</code> across empty, single-word, and
+multi-page texts, and for the interaction between
+<code>\f</code>-bearing and <code>\f</code>-free text.</li>
+<li><code>quill/io/pdf.py</code>: extraction test asserting
+<code>\f</code> appears between pages and <code>page_starts()</code> on
+the result matches the source <code>page_count</code>.</li>
+<li>DOCX import: a fixture <code>.docx</code> with one explicit page
+break, asserting the imported text contains exactly one <code>\f</code>
+at the right offset.</li>
+<li><code>main_frame_statusbar.py</code>: light-stub tests for
+<code>_statusbar_page_text()</code> covering both tracks, the
+BRF-suppression rule, and the resolver cache invalidating correctly when
+the document's text length changes.</li>
+<li>Settings: round-trip test for
+<code>page_estimate_words_per_page</code> (default, clamp bounds,
+persistence).</li>
+</ul>
+<h2 id="documentation">Documentation</h2>
+<ul>
+<li><strong>PRD:</strong> new subsection under the status bar /
+navigation area, describing both tracks and the exactness contract (cell
+wording rules above).</li>
+<li><strong>User guide:</strong> new subsection under Status Bar
+explaining the Page cell in plain language, including a short, explicit
+"this is an estimate, not a printed page count" paragraph, and
+documenting the two Go to Page commands and the
+<code>page_estimate_words_per_page</code> setting.</li>
+<li><strong>CHANGELOG / Beta 2 release notes:</strong> new entry under
+"0.9.0 Beta 2." Per Jeff's direction, this ships in Beta 2 despite being
+a feature rather than a fix; the release notes' "no new headline
+features here" sentence is softened to carve out this one exception
+rather than removed outright.</li>
+<li>Issue #872 is closed once all of the above lands and tests
+pass.</li>
+</ul>
+</body>
+</html>

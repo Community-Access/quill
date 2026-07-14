@@ -84,6 +84,9 @@ class _FakeCtx:
     def announce(self, message: str) -> None:
         self.announced.append(message)
 
+    def is_verbosity_speech_enabled(self) -> bool:
+        return True
+
     def get_cursor(self):
         class _C:
             line = 1

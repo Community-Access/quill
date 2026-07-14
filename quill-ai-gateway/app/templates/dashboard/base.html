@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}QUILL AI Gateway{% endblock %} — Admin Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  {% if session.get('admin_token') %}
+  <header class="site-header">
+    <div class="wrap">
+      <strong>QUILL AI Gateway</strong>
+      <nav aria-label="Dashboard sections">
+        <ul>
+          <li><a href="{{ url_for('dashboard.overview') }}" {% if request.endpoint == 'dashboard.overview' %}aria-current="page"{% endif %}>Overview</a></li>
+          <li><a href="{{ url_for('dashboard.models') }}" {% if request.endpoint == 'dashboard.models' %}aria-current="page"{% endif %}>Models</a></li>
+          <li><a href="{{ url_for('dashboard.config') }}" {% if request.endpoint == 'dashboard.config' %}aria-current="page"{% endif %}>Limits</a></li>
+          <li><a href="{{ url_for('dashboard.users') }}" {% if request.endpoint in ('dashboard.users', 'dashboard.user_detail') %}aria-current="page"{% endif %}>Users</a></li>
+          <li><a href="{{ url_for('dashboard.feature_flags') }}" {% if request.endpoint == 'dashboard.feature_flags' %}aria-current="page"{% endif %}>Feature flags</a></li>
+          <li><a href="{{ url_for('dashboard.audit_log') }}" {% if request.endpoint == 'dashboard.audit_log' %}aria-current="page"{% endif %}>Audit log</a></li>
+        </ul>
+      </nav>
+      <form method="post" action="{{ url_for('dashboard.logout') }}">
+        <button type="submit">Sign out</button>
+      </form>
+    </div>
+  </header>
+  {% endif %}
+  <main id="main">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <p class="flash" data-kind="{{ category }}" role="{{ 'alert' if category == 'error' else 'status' }}">{{ message }}</p>
+      {% endfor %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

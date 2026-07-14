@@ -21,6 +21,36 @@ class ModelRecommendation:
     reason: str
 
 
+# The canonical, ordered set of provider ids the catalog knows about. "off"
+# (AI disabled) and "ollama" (local) need no key; the rest are keyed providers.
+ALL_PROVIDERS: tuple[str, ...] = (
+    "off",
+    "ollama",
+    "ollama_cloud",
+    "openai",
+    "claude",
+    "openrouter",
+    "gemini",
+    "custom",
+)
+
+
+def allowed_providers(policy: object | None = None) -> list[str]:
+    """Return the provider ids selectable under an optional admin policy (§15).
+
+    With no policy (the default), every catalog provider is returned. With an
+    :class:`~quill.core.ai.admin_policy.AdminPolicy`, the org allow/block lists are
+    applied; ``"off"`` is always selectable so AI can never be policy-locked on.
+    """
+    if policy is None:
+        return list(ALL_PROVIDERS)
+    from quill.core.ai.admin_policy import AdminPolicy, is_provider_allowed
+
+    if not isinstance(policy, AdminPolicy):
+        return list(ALL_PROVIDERS)
+    return [p for p in ALL_PROVIDERS if is_provider_allowed(policy, p)]
+
+
 def default_host_for_provider(provider: str) -> str:
     normalized = provider.strip().lower()
     if normalized == "openai":
@@ -51,7 +81,11 @@ def default_model_for_provider(provider: str) -> str:
     if normalized == "gemini":
         return "gemini-2.5-flash"
     if normalized == "ollama_cloud":
-        return "qwen3"
+        # A real, listed cloud model id (bare "qwen3" 404s on ollama.com). gemma3
+        # is a non-reasoning instruction follower, so its OpenAI-compatible
+        # `content` is always populated — reasoning models (e.g. gpt-oss) return
+        # empty content on long tool prompts. See providers/regression learnings.
+        return "gemma3:12b"
     if normalized == "custom":
         return "gpt-4o-mini"
     if normalized == "off":
@@ -141,11 +175,25 @@ def recommended_models_for_provider(provider: str) -> list[str]:
     if normalized == "claude":
         return ["claude-haiku-4-5-20251001", "claude-sonnet-4-6"]
     if normalized == "openrouter":
-        return ["openrouter/auto", "anthropic/claude-sonnet-4-6", "openai/gpt-4o-mini"]
+        from quill.core.ai.free_models import best_free_writing_model
+
+        free_default = (
+            best_free_writing_model("openrouter") or "meta-llama/llama-3.3-70b-instruct:free"
+        )
+        return [
+            free_default,
+            "openai/gpt-4o-mini",
+            "openrouter/auto",
+            "anthropic/claude-sonnet-4-6",
+        ]
     if normalized == "gemini":
         return ["gemini-2.5-flash", "gemini-2.5-pro"]
     if normalized == "ollama_cloud":
-        return ["qwen3", "gpt-oss:20b", "gemma3"]
+        # Real, listed cloud model ids (bare "qwen3"/"gemma3" 404). gemma3:12b
+        # leads as a reliable non-reasoning default; the gpt-oss reasoning models
+        # follow for users who want them (their reasoning channel is handled in
+        # parse_chat_response).
+        return ["gemma3:12b", "gpt-oss:120b", "gpt-oss:20b"]
     if normalized == "ollama":
         if total_ram_gb() < 8.0:
             return [
@@ -194,12 +242,20 @@ def recommended_model_guidance(provider: str) -> list[ModelRecommendation]:
             ModelRecommendation(
                 model="gpt-4o-mini",
                 framing="Cost-aware daily use",
-                reason="Fast and efficient for most writing tasks.",
+                reason=(
+                    "Fast and inexpensive, and handles the great majority of writing tasks "
+                    "well — rewriting, summarizing, grammar, and quick questions. The best "
+                    "starting point for most people."
+                ),
             ),
             ModelRecommendation(
                 model="gpt-4.1",
                 framing="High-quality reasoning",
-                reason="Best for complex transformations and nuanced editing.",
+                reason=(
+                    "Noticeably stronger on complex transformations, nuanced editing, and "
+                    "longer documents, at higher cost and slightly slower responses. Choose "
+                    "it when quality matters more than speed or price."
+                ),
             ),
         ]
     if normalized == "claude":
@@ -207,25 +263,53 @@ def recommended_model_guidance(provider: str) -> list[ModelRecommendation]:
             ModelRecommendation(
                 model="claude-haiku-4-5-20251001",
                 framing="Speed-first drafting",
-                reason="Responsive for rapid prompt iteration.",
+                reason=(
+                    "Anthropic's fast, low-cost model — very responsive for rapid back-and-"
+                    "forth, drafting, and everyday edits. A great, affordable default."
+                ),
             ),
             ModelRecommendation(
                 model="claude-sonnet-4-6",
                 framing="Deep writing review",
-                reason="Stronger reasoning for long-form revision.",
+                reason=(
+                    "Stronger reasoning and careful long-form revision, better for nuanced "
+                    "rewrites and structured documents, at higher cost. Pick it when you "
+                    "want the most thoughtful output."
+                ),
             ),
         ]
     if normalized == "openrouter":
+        from quill.core.ai.free_models import best_free_writing_model
+
+        free_default = (
+            best_free_writing_model("openrouter") or "meta-llama/llama-3.3-70b-instruct:free"
+        )
         return [
             ModelRecommendation(
-                model="openrouter/auto",
-                framing="Automatic routing",
-                reason="Lets the endpoint select a good model for each request.",
+                model=free_default,
+                framing="Free and strong (recommended)",
+                reason=(
+                    "A capable free writing model that costs nothing — the best starting "
+                    "point if you don't want to pay. It uses your own free daily quota, so "
+                    "there's no shared limit. Free hosted models may log or train on what "
+                    "you send, so keep confidential text on the on-device option."
+                ),
             ),
             ModelRecommendation(
                 model="openai/gpt-4o-mini",
                 framing="Predictable speed and cost",
-                reason="Good explicit fallback when you want stable behavior.",
+                reason=(
+                    "A specific fast, low-cost paid model for stable, repeatable behavior — "
+                    "pennies per use when you want more consistency than the free tier."
+                ),
+            ),
+            ModelRecommendation(
+                model="openrouter/auto",
+                framing="Automatic routing",
+                reason=(
+                    "Lets OpenRouter pick a capable model for each request. Convenient, but "
+                    "it can route to paid models, so it is not a guaranteed-free choice."
+                ),
             ),
         ]
     if normalized == "gemini":
@@ -233,12 +317,45 @@ def recommended_model_guidance(provider: str) -> list[ModelRecommendation]:
             ModelRecommendation(
                 model="gemini-2.5-flash",
                 framing="Fast cloud drafting",
-                reason="Strong default for low-latency writing help.",
+                reason=(
+                    "Google's fast model with a generous free tier — low latency for "
+                    "everyday writing help, and an easy, low-cost default."
+                ),
             ),
             ModelRecommendation(
                 model="gemini-2.5-pro",
                 framing="Long-context analysis",
-                reason="Better for larger prompts and deeper synthesis.",
+                reason=(
+                    "Handles very large prompts and deeper synthesis better, at higher cost "
+                    "and latency. Choose it for big documents or research-style tasks."
+                ),
+            ),
+        ]
+    if normalized == "ollama_cloud":
+        return [
+            ModelRecommendation(
+                model="gemma3:12b",
+                framing="Reliable hosted default",
+                reason=(
+                    "A dependable, hosted open model that follows instructions well and "
+                    "always returns usable text — the safest Ollama Cloud starting point."
+                ),
+            ),
+            ModelRecommendation(
+                model="gpt-oss:120b",
+                framing="Largest hosted open model",
+                reason=(
+                    "More capable on harder tasks but heavier and slower; a reasoning model, "
+                    "so responses may pause to think before answering."
+                ),
+            ),
+            ModelRecommendation(
+                model="gpt-oss:20b",
+                framing="Lighter hosted open model",
+                reason=(
+                    "A smaller, quicker reasoning model — a middle ground between gemma3 and "
+                    "the 120b when you want more capability without the largest cost."
+                ),
             ),
         ]
     return [

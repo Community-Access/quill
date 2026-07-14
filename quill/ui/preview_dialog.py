@@ -72,6 +72,7 @@ except ImportError:
             view = wxhtml.HtmlWindow(self.dialog)
             view.SetName(title)
             view.SetPage("<html><body>" + (body_html or "") + "</body></html>")
+            self._view = view
             outer.Add(view, 1, wx.EXPAND)
             row = wx.BoxSizer(wx.HORIZONTAL)
             row.AddStretchSpacer()
@@ -95,11 +96,17 @@ except ImportError:
 
         def show_modal(self) -> int:
             self.dialog.CentreOnParent()
-            apply_modal_ids(  # noqa: dialog_button_contract
+            apply_modal_ids(  # dialog_button_contract: exempt
                 self.dialog,
                 affirmative_id=self._wx.ID_CANCEL,
                 escape_id=self._wx.ID_CANCEL,
             )
+            # Land initial focus on the readable content, not the Close button,
+            # so screen-reader users enter the dialog on its text (FOCUS-001).
+            try:
+                self._view.SetFocus()
+            except Exception:  # noqa: BLE001 - focus is best-effort
+                pass
             try:
                 show_modal_dialog(self.dialog, self.dialog.GetTitle())
             finally:

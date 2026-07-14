@@ -1,0 +1,37 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Models{% endblock %}
+{% block content %}
+<h1>Models</h1>
+<p>Turn a model on or off, or choose which enabled model is the active
+  default. Adding a brand-new model (a different id with its own real
+  per-token cost rates) is a deliberate, reviewed action outside this
+  dashboard — see the README's operations table.</p>
+
+<ul class="model-list">
+  {% for model in models %}
+  <li>
+    <div>
+      <span class="model-name">{{ model.label }}</span>
+      <span class="pill {{ 'is-default' if model.is_default }}">
+        {{ "Default" if model.is_default else ("Enabled" if model.enabled else "Disabled") }}
+      </span>
+      <div class="model-meta">
+        {{ model.model_id }} — ${{ "%.2f"|format(model.input_cost_per_million_usd) }}/M in,
+        ${{ "%.2f"|format(model.output_cost_per_million_usd) }}/M out
+      </div>
+    </div>
+    <div>
+      <form method="post" action="{{ url_for('dashboard.toggle_model', model_id=model.model_id) }}" style="display:inline">
+        <input type="hidden" name="enabled" value="{{ '0' if model.enabled else '1' }}">
+        <button type="submit">{{ "Disable" if model.enabled else "Enable" }}</button>
+      </form>
+      {% if model.enabled and not model.is_default %}
+      <form method="post" action="{{ url_for('dashboard.make_default_model', model_id=model.model_id) }}" style="display:inline">
+        <button type="submit" class="primary">Make default</button>
+      </form>
+      {% endif %}
+    </div>
+  </li>
+  {% endfor %}
+</ul>
+{% endblock %}

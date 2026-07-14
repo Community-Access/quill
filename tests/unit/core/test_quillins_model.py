@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import pytest
+
 from quill.core.quillins.model import (
     API_VERSION,
+    CAP_SCHEDULE,
     CAPABILITIES,
     CONSENT_GATED_CAPABILITIES,
     SCHEMA_ID,
@@ -14,8 +17,12 @@ from quill.core.quillins.model import (
     Contributions,
     ExtensionCommand,
     ExtensionManifest,
+    FileTypeContribution,
     ManifestError,
     QuillinError,
+    ScheduleContribution,
+    SnippetGalleryEntry,
+    SnippetParam,
 )
 
 
@@ -24,8 +31,15 @@ def test_schema_and_api_version_are_stable_identifiers() -> None:
     assert API_VERSION == 1
 
 
-def test_consent_gated_caps_are_the_fs_and_net_caps_only() -> None:
-    assert CONSENT_GATED_CAPABILITIES == frozenset({"fs.read", "fs.write", "net"})
+def test_consent_gated_caps_are_the_fs_net_and_core_settings_write() -> None:
+    # settings.core.write requires explicit user confirmation per change,
+    # making it as privileged as file/network access.
+    assert CONSENT_GATED_CAPABILITIES == frozenset({
+        "fs.read",
+        "fs.write",
+        "net",
+        "settings.core.write",
+    })
     assert CONSENT_GATED_CAPABILITIES <= CAPABILITIES
 
 
@@ -78,3 +92,69 @@ def test_capability_error_names_the_capability() -> None:
     error = CapabilityError("net", detail="fetch(url)")
     assert error.capability == "net"
     assert "net" in str(error)
+
+
+def test_document_events_catalogue_has_fourteen_entries() -> None:
+    from quill.core.quillins.model import DOCUMENT_EVENTS
+
+    expected = {
+        "document.opened",
+        "document.activated",
+        "document.before_save",
+        "document.after_save",
+        "document.before_close",
+        "document.after_close",
+        "document.created",
+        "document.loaded_from_session",
+        "smart_trigger.entered",
+        "abbreviation.expanded",
+        "quillin.enabled",
+        "quillin.disabled",
+        "quill.shutdown",
+        "settings.changed",
+    }
+    assert DOCUMENT_EVENTS == expected
+
+
+def test_contributions_carries_new_contribution_fields() -> None:
+    c = Contributions()
+    assert c.abbreviations == ()
+    assert c.smart_triggers == ()
+    assert c.preferences == ()
+    assert c.document_events == ()
+    assert c.status_bar == ()
+    assert c.schedule == ()
+    assert c.file_types == ()
+    assert c.snippet_gallery == ()
+
+
+def test_schedule_capability_is_registered() -> None:
+    assert CAP_SCHEDULE == "schedule"
+    assert CAP_SCHEDULE in CAPABILITIES
+
+
+def test_schedule_contribution_defaults() -> None:
+    sched = ScheduleContribution(id="refresh", interval_seconds=300, handler="on_tick")
+    assert sched.description == ""
+    assert sched.interval_seconds == 300
+
+
+def test_file_type_contribution_is_frozen() -> None:
+    import dataclasses
+
+    ft = FileTypeContribution(extensions=(".csv",), handler="on_open")
+    assert ft.description == ""
+    with pytest.raises(dataclasses.FrozenInstanceError):
+        ft.handler = "x"  # type: ignore[misc]
+
+
+def test_snippet_gallery_entry_with_params() -> None:
+    entry = SnippetGalleryEntry(
+        id="hdr",
+        name="Header",
+        body="# {title}",
+        params=(SnippetParam(name="title", label="Title", default="Untitled"),),
+    )
+    assert entry.category == ""
+    assert entry.params[0].default == "Untitled"
+    assert entry.params[0].name == "title"

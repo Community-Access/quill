@@ -170,7 +170,12 @@ def _seed_all_stores() -> None:
     from quill.core.watch_profiles import WatchProfile
     from quill.ui.share_dialogs import _watch_store
 
-    save_keymap({"command.custom": "Ctrl+Shift+Z"})
+    # Use a real command id so the saved binding survives the carry-over
+    # load path (which drops unknown command ids; see #292). The test is
+    # exercising the round-trip through disk, not the carry-over rule.
+    # The chord must not collide with another command's default binding
+    # or the conflict dropper will silently revert it to default.
+    save_keymap({"format.bold": "Ctrl+Alt+B"})
     save_snippet_library(
         SnippetLibrary(
             version=1,
@@ -264,7 +269,7 @@ def test_backup_round_trip_restores_every_store(tmp_path) -> None:
     outcome = apply_import(package, section_ids, Settings(), _features())
     assert len(outcome.applied) == len(section_ids)
 
-    assert load_keymap().get("command.custom") == "Ctrl+Shift+Z"
+    assert load_keymap().get("format.bold") == "Ctrl+Alt+B"
     assert any(s.trigger == ";hi" for s in load_snippet_library().snippets)
     assert "fixup" in MacroManager.load().macros
     assert any(p.name == "Drafts" for p in _watch_store().profiles())
@@ -276,7 +281,9 @@ def test_profile_merge_is_additive_for_keymap() -> None:
     from quill.core.keymap import load_keymap, save_keymap
     from quill.core.share_package import SECTION_KEYMAP
 
-    save_keymap({"command.custom": "Ctrl+Shift+Z"})
+    # Use real command ids — the carry-over load path drops unknown ones
+    # (#292), so the round-trip only works for valid saved bindings.
+    save_keymap({"format.bold": "Ctrl+Alt+B"})
     offers = gather_export_offers(Settings(), _features())
     document = build_export_document(
         kind=KIND_PROFILE,
@@ -287,12 +294,12 @@ def test_profile_merge_is_additive_for_keymap() -> None:
     )
 
     # Recipient already has a different custom binding.
-    save_keymap({"command.other": "Ctrl+Alt+Q"})
+    save_keymap({"format.italic": "Ctrl+Alt+I"})
     package = read_package(document)
     apply_import(package, [SECTION_KEYMAP], Settings(), _features())
     merged = load_keymap()
-    assert merged.get("command.custom") == "Ctrl+Shift+Z"  # imported
-    assert merged.get("command.other") == "Ctrl+Alt+Q"  # preserved
+    assert merged.get("format.bold") == "Ctrl+Alt+B"  # imported
+    assert merged.get("format.italic") == "Ctrl+Alt+I"  # preserved
 
 
 def test_feature_import_announces_dependency_enable() -> None:

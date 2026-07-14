@@ -1,23 +1,42 @@
 from __future__ import annotations
 
+import logging
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 import threading
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 from quill.core.punctuation_speech import normalize_punctuation_level, verbalize_punctuation
 from quill.core.sentence_split import SentenceSpan, sentence_spans
+from quill.core.speech.text_polish import clean_markdown_text
 from quill.core.tts_cache import cached_sentence_generator
 
-try:
-    import pyttsx3  # type: ignore[import-untyped]
-except ImportError:  # pragma: no cover - optional runtime dependency
-    pyttsx3 = None
+# The static voice tables live in voice_catalog (GATE-11 extract). Only the
+# names this module itself uses are imported; catalog-only consumers import
+# straight from quill.core.voice_catalog.
+from quill.core.voice_catalog import (
+    ESPEAK_ACCENTS,
+    ESPEAK_ENGLISH_VOICES,
+    ESPEAK_WORLD_VOICES,
+    KOKORO_ACCENTS,
+    KOKORO_LANG_BY_LETTER,
+    KOKORO_VOICES,
+    PIPER_ACCENTS_BY_LANG,
+    PIPER_VOICES,
+    kokoro_lang_for_voice,
+)
+
+# Windows system speech (SAPI 5) is reached through
+# quill.platform.windows.sapi5, imported lazily inside the functions that need
+# it so quill.core stays importable on non-Windows and keeps no import-time
+# dependency on the platform layer.
 
 try:
     import winsound as _winsound  # type: ignore[import]
@@ -29,6 +48,10 @@ except ImportError:  # pragma: no cover - non-Windows
 class VoiceOption:
     id: str
     name: str
+    accent: str = ""
+    description: str = ""
+    installed: bool = True
+    language: str = ""  # ISO base subtag when known (e.g. "es" for a Spanish voice)
 
 
 _MAX_SYNTHESIS_SECONDS: float = 120.0
@@ -45,50 +68,60 @@ DECTALK_VOICE_COMMANDS: dict[str, str] = {
     "kit": "[:nk]",
 }
 
-KOKORO_VOICES: list[tuple[str, str]] = [
-    ("af_heart", "Heart (American Female, warm)"),
-    ("af_bella", "Bella (American Female, expressive)"),
-    ("af_nicole", "Nicole (American Female, conversational)"),
-    ("af_aoede", "Aoede (American Female)"),
-    ("af_kore", "Kore (American Female)"),
-    ("af_sarah", "Sarah (American Female)"),
-    ("af_sky", "Sky (American Female)"),
-    ("am_adam", "Adam (American Male, deep)"),
-    ("am_echo", "Echo (American Male)"),
-    ("am_eric", "Eric (American Male)"),
-    ("am_fenrir", "Fenrir (American Male)"),
-    ("am_liam", "Liam (American Male)"),
-    ("am_michael", "Michael (American Male)"),
-    ("am_onyx", "Onyx (American Male)"),
-    ("am_puck", "Puck (American Male)"),
-    ("bf_alice", "Alice (British Female)"),
-    ("bf_emma", "Emma (British Female)"),
-    ("bf_isabella", "Isabella (British Female)"),
-    ("bf_lily", "Lily (British Female)"),
-    ("bm_daniel", "Daniel (British Male)"),
-    ("bm_fable", "Fable (British Male)"),
-    ("bm_george", "George (British Male)"),
-    ("bm_lewis", "Lewis (British Male)"),
-]
+KOKORO_ONNX_MODEL_URL = (
+    "https://github.com/thewh1teagle/kokoro-onnx/releases/download"
+    "/model-files-v1.0/kokoro-v1.0.int8.onnx"
+)
+KOKORO_ONNX_VOICES_URL = (
+    "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin"
+)
+KOKORO_ONNX_MODEL_FILENAME = "kokoro-v1.0.int8.onnx"
+KOKORO_ONNX_VOICES_FILENAME = "voices-v1.0.bin"
 
-ESPEAK_ENGLISH_VOICES: list[tuple[str, str]] = [
-    ("en", "English (default)"),
-    ("en-us", "English (US)"),
-    ("en-gb", "English (UK / RP)"),
-    ("en-au", "English (Australian)"),
-    ("en-ca", "English (Canadian)"),
-    ("en-in", "English (Indian)"),
-    ("en-sc", "English (Scottish)"),
-    ("en-wls", "English (Welsh)"),
-    ("en-rp", "English (Received Pronunciation)"),
-    ("en-gb-x-rp", "English (RP variant)"),
-]
 
-OPENVOICE_ENGLISH_VOICES: list[tuple[str, str]] = [
-    ("en-base", "OpenVoice Base (English)"),
-    ("en-bright", "OpenVoice Bright (English)"),
-    ("en-calm", "OpenVoice Calm (English)"),
-]
+def default_piper_model_dir() -> Path:
+    from quill.core.paths import app_data_dir
+
+    return app_data_dir() / "piper-models"
+
+
+def resolve_piper_model_path(voice_id: str, model_dir: Path | None = None) -> Path:
+    """The on-disk ``.onnx`` file for a catalog voice id.
+
+    Mirrors the exact check :func:`list_piper_catalog_voices` uses to decide a
+    voice is installed, so callers that synthesize from a voice id resolve the
+    same file the catalog already confirmed exists -- a bare voice id (e.g.
+    ``"en_GB-alan-medium"``) is not itself a usable path.
+    """
+    d = model_dir if model_dir is not None else default_piper_model_dir()
+    return d / f"{voice_id}.onnx"
+
+
+def list_piper_catalog_voices(model_dir: Path | None = None) -> list[VoiceOption]:
+    """Return all catalog Piper voices with download status and accent metadata."""
+    d = model_dir if model_dir is not None else default_piper_model_dir()
+    result = []
+    for voice_id, display_name in PIPER_VOICES:
+        downloaded = (d / f"{voice_id}.onnx").exists()
+        accent = PIPER_ACCENTS_BY_LANG.get(voice_id.split("-", 1)[0], "English")
+        # Extract quality from name, e.g. "medium" from "Alan (British, medium)"
+        desc = ""
+        if "(" in display_name and ")" in display_name:
+            inner = display_name[display_name.index("(") + 1 : display_name.rindex(")")]
+            parts = [p.strip() for p in inner.split(",")]
+            desc = parts[-1] if len(parts) > 1 else ""
+        short_name = display_name.split(" (")[0]
+        suffix = "" if downloaded else " [not downloaded]"
+        result.append(
+            VoiceOption(
+                id=voice_id,
+                name=f"{short_name}{suffix}",
+                accent=accent,
+                description=desc,
+                installed=downloaded,
+            )
+        )
+    return result
 
 
 def _validate_configured_executable(
@@ -118,15 +151,45 @@ def _validate_configured_executable(
 
 
 def discover_dectalk_executable(configured_path: str = "") -> Path | None:
-    validated = _validate_configured_executable(configured_path, ("speak.exe", "speak"))
-    if validated is not None:
-        return validated
+    """Locate the DECtalk synthesis runtime, returning the ``DECtalk.dll`` path.
+
+    Synthesis is driven through ``DECtalk.dll`` directly (see
+    :mod:`quill.core.speech.dectalk_say`), never through ``speak.exe`` -- the
+    package's ``AMD64/speak.exe`` is the *graphical* "Sample Speak Window" and
+    fast-fails (0xC000041D) when launched as a console program. A configured
+    path may point at ``DECtalk.dll`` or at the folder containing it; a
+    configured ``speak.exe`` is rejected rather than silently honoured.
+
+    The historical name is kept because callers thread the returned path back in
+    as ``executable_path``; it is now the DLL, which the worker understands.
+    """
+    raw = configured_path.strip()
+    if raw:
+        candidate = Path(raw).expanduser()
+        if candidate.is_dir():
+            candidate = candidate / "DECtalk.dll"
+        if candidate.name.lower() == "dectalk.dll" and candidate.is_file():
+            return candidate.resolve()
+        # A stale speak.exe path (or anything else) falls through to discovery.
+
+    relatives = (
+        "DECtalk.dll",
+        "AMD64/DECtalk.dll",
+        "IA32/DECtalk.dll",
+        "release/AMD64/DECtalk.dll",
+        "release/DECtalk.dll",
+    )
+    roots: list[Path] = []
     app_root = os.environ.get("QUILL_APP_ROOT", "").strip()
     if app_root:
-        bundled = Path(app_root) / "tools" / "speech" / "dectalk"
-        for relative in ("speak.exe", "AMD64/speak.exe", "IA32/speak.exe"):
-            probe = bundled / relative
-            if probe.exists():
+        roots.append(Path(app_root) / "tools" / "speech" / "dectalk")
+    from quill.core.paths import app_data_dir
+
+    roots.append(app_data_dir() / "speech" / "dectalk")
+    for root in roots:
+        for relative in relatives:
+            probe = root / relative
+            if probe.is_file():
                 return probe.resolve()
     return None
 
@@ -142,7 +205,49 @@ def discover_piper_executable(configured_path: str = "") -> Path | None:
             probe = bundled / relative
             if probe.exists():
                 return probe.resolve()
+    # Also check the user-data download location (set by in-app Piper download).
+    from quill.core.paths import app_data_dir
+
+    managed = app_data_dir() / "speech" / "piper"
+    for relative in ("piper.exe", "piper/piper.exe"):
+        probe = managed / relative
+        if probe.exists():
+            return probe.resolve()
+    found = shutil.which("piper") or shutil.which("piper.exe")
+    if found:
+        return Path(found).resolve()
     return None
+
+
+def build_piper_command(
+    executable_path: Path,
+    model_path: Path,
+    output_path: Path,
+    *,
+    length_scale: float | None = None,
+    noise_scale: float | None = None,
+    noise_w: float | None = None,
+) -> list[str]:
+    """Build the Piper argv, appending the optional synthesis-shaping flags.
+
+    ``length_scale`` slows (>1) or speeds (<1) speech; ``noise_scale`` and
+    ``noise_w`` vary timbre/cadence. Each is omitted when None so Piper uses the
+    model's defaults. Pure and unit-tested.
+    """
+    command = [
+        str(executable_path),
+        "--model",
+        str(model_path),
+        "--output_file",
+        str(output_path),
+    ]
+    if length_scale is not None:
+        command += ["--length_scale", f"{float(length_scale):g}"]
+    if noise_scale is not None:
+        command += ["--noise_scale", f"{float(noise_scale):g}"]
+    if noise_w is not None:
+        command += ["--noise_w", f"{float(noise_w):g}"]
+    return command
 
 
 def synthesize_with_piper(
@@ -151,6 +256,9 @@ def synthesize_with_piper(
     *,
     executable_path: Path,
     model_path: Path,
+    length_scale: float | None = None,
+    noise_scale: float | None = None,
+    noise_w: float | None = None,
 ) -> None:
     if not text.strip():
         raise ReadAloudUnavailableError("Cannot generate speech from empty text")
@@ -171,17 +279,20 @@ def synthesize_with_piper(
     try:
         with input_path.open("rb") as stdin_fh:
             completed = subprocess.run(
-                [
-                    str(executable_path),
-                    "--model",
-                    str(model_path),
-                    "--output_file",
-                    str(output_path),
-                ],
+                build_piper_command(
+                    executable_path,
+                    model_path,
+                    output_path,
+                    length_scale=length_scale,
+                    noise_scale=noise_scale,
+                    noise_w=noise_w,
+                ),
                 stdin=stdin_fh,
                 capture_output=True,
                 check=False,
                 timeout=_MAX_SYNTHESIS_SECONDS,
+                # No console window flash for screen-reader users (subprocess hardening).
+                creationflags=int(getattr(subprocess, "CREATE_NO_WINDOW", 0)),
             )
     except subprocess.TimeoutExpired as exc:
         raise ReadAloudUnavailableError(
@@ -217,6 +328,18 @@ def discover_espeak_executable(configured_path: str = "") -> Path | None:
             probe = bundled / relative
             if probe.exists():
                 return probe.resolve()
+    # Also check common user-data locations (installer or future in-app download).
+    from quill.core.paths import app_data_dir
+
+    managed = app_data_dir() / "speech" / "espeak-ng"
+    for relative in (
+        "espeak-ng.exe",
+        "espeak-ng/espeak-ng.exe",
+        "eSpeak NG/espeak-ng.exe",
+    ):
+        probe = managed / relative
+        if probe.exists():
+            return probe.resolve()
     import shutil as _shutil
 
     found = _shutil.which("espeak-ng")
@@ -225,25 +348,27 @@ def discover_espeak_executable(configured_path: str = "") -> Path | None:
     return None
 
 
-def discover_openvoice_executable(configured_path: str = "") -> Path | None:
-    validated = _validate_configured_executable(configured_path, ("openvoice.exe", "openvoice"))
-    if validated is not None:
-        return validated
-    app_root = os.environ.get("QUILL_APP_ROOT", "").strip()
-    if app_root:
-        bundled = Path(app_root) / "tools" / "speech" / "openvoice"
-        for relative in ("openvoice.exe", "bin/openvoice.exe"):
-            probe = bundled / relative
-            if probe.exists():
-                return probe.resolve()
-    found = shutil.which("openvoice") or shutil.which("openvoice.exe")
-    if found:
-        return Path(found).resolve()
-    return None
-
-
 def list_kokoro_voices() -> list[VoiceOption]:
-    return [VoiceOption(id=vid, name=name) for vid, name in KOKORO_VOICES]
+    ready = kokoro_onnx_ready()
+    result = []
+    for vid, display_name in KOKORO_VOICES:
+        accent = KOKORO_ACCENTS.get(vid[:2], "English")
+        # Extract style note: "warm" from "Heart (American Female, warm)"
+        desc = ""
+        if "(" in display_name and ")" in display_name:
+            inner = display_name[display_name.index("(") + 1 : display_name.rindex(")")]
+            parts = [p.strip() for p in inner.split(",")]
+            desc = parts[-1] if len(parts) > 1 else ""
+        result.append(
+            VoiceOption(
+                id=vid,
+                name=display_name.split(" (")[0],
+                accent=accent,
+                description=desc,
+                installed=ready,
+            )
+        )
+    return result
 
 
 def list_piper_voices(model_search_path: str = "") -> list[VoiceOption]:
@@ -260,11 +385,131 @@ def list_piper_voices(model_search_path: str = "") -> list[VoiceOption]:
 
 
 def list_espeak_english_voices() -> list[VoiceOption]:
-    return [VoiceOption(id=vid, name=name) for vid, name in ESPEAK_ENGLISH_VOICES]
+    return [
+        VoiceOption(id=vid, name=name, accent=ESPEAK_ACCENTS.get(vid, "English"))
+        for vid, name in ESPEAK_ENGLISH_VOICES
+    ]
 
 
-def list_openvoice_english_voices() -> list[VoiceOption]:
-    return [VoiceOption(id=vid, name=name) for vid, name in OPENVOICE_ENGLISH_VOICES]
+def list_espeak_voices() -> list[VoiceOption]:
+    """The full eSpeak catalog: English variants plus the world languages."""
+    world = [
+        VoiceOption(id=vid, name=name, accent=name.split(" (")[0])
+        for vid, name in ESPEAK_WORLD_VOICES
+    ]
+    return list_espeak_english_voices() + world
+
+
+def _kokoro_dir_has_models(d: Path) -> bool:
+    return (d / KOKORO_ONNX_MODEL_FILENAME).exists() and (d / KOKORO_ONNX_VOICES_FILENAME).exists()
+
+
+def _bundled_kokoro_model_dir() -> Path | None:
+    """A bundled kokoro-models dir shipped with the app, if present.
+
+    Lets QUILL ship Kokoro in the installer (``{app}/kokoro-models``) so users
+    don't have to download it, and lets a source run discover an installed
+    copy via QUILL_APP_ROOT. Returns None when no bundled copy exists.
+    """
+    app_root = os.environ.get("QUILL_APP_ROOT", "").strip()
+    if app_root:
+        bundled = Path(app_root) / "kokoro-models"
+        if _kokoro_dir_has_models(bundled):
+            return bundled
+    return None
+
+
+def default_kokoro_model_dir() -> Path:
+    """Where Kokoro models live: a user-downloaded copy if present, else the
+    bundled copy shipped with the app, else the (download target) data dir."""
+    from quill.core.paths import app_data_dir
+
+    data_dir = app_data_dir() / "kokoro-models"
+    if _kokoro_dir_has_models(data_dir):
+        return data_dir
+    bundled = _bundled_kokoro_model_dir()
+    return bundled if bundled is not None else data_dir
+
+
+def kokoro_onnx_ready(model_dir: Path | None = None) -> bool:
+    return _kokoro_dir_has_models(model_dir or default_kokoro_model_dir())
+
+
+def kokoro_engine_ready(model_dir: Path | None = None) -> bool:
+    """True when Kokoro can actually synthesize right now.
+
+    ``kokoro_onnx_ready`` alone only checks that model *files* exist on disk --
+    it says nothing about whether the ``kokoro_onnx`` pip package actually
+    imports. A caller (a UI availability flag, or the synthesis path below)
+    that trusts it alone can claim Kokoro is ready when the package install
+    was skipped or failed, discovering the gap only at synthesis time (#2,
+    beta-2 fix pass).
+    """
+    if not kokoro_onnx_ready(model_dir):
+        return False
+    from quill.core.speech.engine_install import is_kokoro_onnx_available
+
+    return is_kokoro_onnx_available()
+
+
+# Cache the loaded kokoro-onnx model so repeated synthesis (every section and,
+# with a sentence pause, every sentence of a batch) reuses one ~88 MB model load
+# instead of reloading it per call. The instance is stateless across calls
+# (voice/speed are per-``create``); a lock serializes (re)creation so concurrent
+# callers do not each build their own. Keyed by (model_path, voices_path).
+_KOKORO_ONNX_LOCK = threading.Lock()
+_KOKORO_ONNX_CACHE: dict[tuple[str, str], Any] = {}
+
+
+def _get_cached_kokoro_onnx(model_dir: Path) -> Any:
+    """Return a shared, lazily-built ``kokoro_onnx.Kokoro`` for *model_dir*."""
+    from kokoro_onnx import Kokoro as _KokoroOnnx  # type: ignore[import-not-found,import-untyped]
+
+    from quill.core import lifecycle_service
+
+    model_path = str(model_dir / KOKORO_ONNX_MODEL_FILENAME)
+    voices_path = str(model_dir / KOKORO_ONNX_VOICES_FILENAME)
+    key = (model_path, voices_path)
+    with _KOKORO_ONNX_LOCK:
+        instance = _KOKORO_ONNX_CACHE.get(key)
+        if instance is None:
+            # Low-resource mode may evict another engine before we build this one.
+            lifecycle_service.reserve("tts:kokoro")
+            instance = _KokoroOnnx(model_path, voices_path)
+            _KOKORO_ONNX_CACHE[key] = instance
+            lifecycle_service.note_loaded("tts:kokoro", clear_kokoro_cache)
+    lifecycle_service.touch("tts:kokoro")
+    return instance
+
+
+def clear_kokoro_cache() -> None:
+    """Drop the cached kokoro-onnx model (frees ~88 MB); the next call reloads it."""
+    from quill.core import lifecycle_service
+
+    with _KOKORO_ONNX_LOCK:
+        _KOKORO_ONNX_CACHE.clear()
+    lifecycle_service.note_unloaded("tts:kokoro")
+
+
+def warm_kokoro_onnx() -> bool:
+    """Load the Kokoro ONNX model into the shared cache now (best-effort).
+
+    Returns True when a model was available and loaded (or already cached), so a
+    startup prewarm makes the first preview/synthesis fast instead of paying the
+    ~88 MB load on the first user action.
+    """
+    model_dir = default_kokoro_model_dir()
+    if not kokoro_onnx_ready(model_dir):
+        return False
+    try:
+        _get_cached_kokoro_onnx(model_dir)
+        return True
+    except Exception:  # noqa: BLE001 - prewarm is best-effort
+        # Best-effort, but log why: a prewarm failure here is the same
+        # onnxruntime/model load error that will otherwise surface only as the
+        # generic fallback message at first synthesis (#kokoro-onnx).
+        logging.getLogger(__name__).debug("Kokoro onnx prewarm failed", exc_info=True)
+        return False
 
 
 def synthesize_with_kokoro(
@@ -276,11 +521,42 @@ def synthesize_with_kokoro(
 ) -> None:
     if not text.strip():
         raise ReadAloudUnavailableError("Cannot generate speech from empty text")
+
+    # Try kokoro-onnx first — no torch required, just onnxruntime (~20 MB).
+    # Uses the int8 quantized model downloaded to the default model directory.
+    model_dir = default_kokoro_model_dir()
+    if kokoro_engine_ready(model_dir):
+        try:
+            import numpy as _np  # type: ignore[import]
+            import soundfile as _sf  # type: ignore[import]
+
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            lang = kokoro_lang_for_voice(voice)
+            _k = _get_cached_kokoro_onnx(model_dir)
+            samples, sample_rate = _k.create(text, voice=voice, speed=float(speed), lang=lang)
+            _sf.write(str(output_path), _np.array(samples), sample_rate)
+            return
+        except Exception:  # noqa: BLE001 - fall through to kokoro + torch
+            # The onnx path is the primary route once kokoro_engine_ready() is
+            # True (models present + kokoro_onnx importable). If it still throws
+            # -- e.g. onnxruntime cannot load its native DLL, or the model is
+            # unreadable -- the fallback below raises a generic "needs a
+            # component" error that hides the real cause (a freshly downloaded
+            # Kokoro that will not speak). Log the true error so Help > Save
+            # Diagnostics captures it instead of losing it here (#kokoro-onnx).
+            logging.getLogger(__name__).exception(
+                "Kokoro onnx synthesis failed; falling back to kokoro+torch"
+            )
+
+    # Fall back to kokoro + torch.
     try:
         from kokoro import KPipeline  # type: ignore[attr-defined]
     except ImportError as exc:
         raise ReadAloudUnavailableError(
-            "Kokoro TTS requires the 'kokoro' package (pip install kokoro)"
+            "Kokoro voices need one more component. "
+            "Tools > Speech > Install Kokoro ONNX will fetch it (~114 MB).\n"
+            "(Advanced: the 'kokoro' package with torch also works, but needs "
+            "~2 GB: pip install kokoro)"
         ) from exc
     try:
         import numpy as np  # type: ignore[import]
@@ -293,15 +569,15 @@ def synthesize_with_kokoro(
             "Kokoro audio saving requires the 'soundfile' package (pip install soundfile)"
         ) from exc
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    lang_code = "b" if voice.startswith("b") else "a"
+    lang_code = voice[:1].lower() if voice[:1].lower() in KOKORO_LANG_BY_LETTER else "a"
     pipeline = KPipeline(lang_code=lang_code)
-    samples: list[np.ndarray] = []
+    samples_list: list[np.ndarray] = []
     for _g, _p, audio in pipeline(text, voice=voice, speed=float(speed)):
         if audio is not None and len(audio) > 0:
-            samples.append(audio)
-    if not samples:
+            samples_list.append(audio)
+    if not samples_list:
         raise ReadAloudUnavailableError("Kokoro produced no audio output")
-    sf.write(str(output_path), np.concatenate(samples), 24000)
+    sf.write(str(output_path), np.concatenate(samples_list), 24000)
 
 
 def synthesize_with_espeak(
@@ -311,6 +587,8 @@ def synthesize_with_espeak(
     executable_path: Path,
     voice: str = "en",
     rate: int = 175,
+    pitch: int | None = None,
+    word_gap_ms: int | None = None,
 ) -> None:
     if not text.strip():
         raise ReadAloudUnavailableError("Cannot generate speech from empty text")
@@ -326,9 +604,37 @@ def synthesize_with_espeak(
         str(bounded_rate),
         "-w",
         str(output_path),
-        text,
     ]
-    completed = subprocess.run(command, capture_output=True, check=False)
+    # Optional voice shaping: -p pitch (0-99), -g word gap in 10 ms units.
+    if pitch is not None:
+        command += ["-p", str(max(0, min(99, int(pitch))))]
+    if word_gap_ms is not None:
+        command += ["-g", str(max(0, int(word_gap_ms) // 10))]
+    # SSML/markup input (an assembled <speak> utterance) needs eSpeak-NG's markup
+    # mode (-m); otherwise the tags would be read aloud literally.
+    if text.lstrip().startswith("<speak"):
+        command.append("-m")
+    # A portable / managed eSpeak-NG (the in-app download and the bundled copy)
+    # ships its espeak-ng-data beside the executable. Without --path eSpeak-NG
+    # falls back to a compiled-in/registry data path that does not exist for a
+    # portable copy and crashes (access violation) instead of failing cleanly,
+    # so point it explicitly at the co-located data directory when present.
+    if (executable_path.parent / "espeak-ng-data").is_dir():
+        command.append(f"--path={executable_path.parent}")
+    command.append(text)
+    try:
+        completed = subprocess.run(
+            command,
+            capture_output=True,
+            check=False,
+            timeout=_MAX_SYNTHESIS_SECONDS,
+            # No console window flash for screen-reader users (subprocess hardening).
+            creationflags=int(getattr(subprocess, "CREATE_NO_WINDOW", 0)),
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise ReadAloudUnavailableError(
+            f"eSpeak-NG did not complete within {_MAX_SYNTHESIS_SECONDS:.0f} seconds."
+        ) from exc
     if completed.returncode != 0:
         raw = completed.stderr or completed.stdout or b""
         detail = (
@@ -343,60 +649,17 @@ def synthesize_with_espeak(
         )
 
 
-def _synthesize_with_cli_engine(
-    text: str,
-    output_path: Path,
-    *,
-    executable_path: Path,
-    voice: str,
-    rate: int,
-    engine_label: str,
-) -> None:
-    if not text.strip():
-        raise ReadAloudUnavailableError("Cannot generate speech from empty text")
-    if not executable_path.exists():
-        raise ReadAloudUnavailableError(f"{engine_label} executable was not found")
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    command = [
-        str(executable_path),
-        "--text",
-        text,
-        "--output",
-        str(output_path),
-        "--voice",
-        voice,
-        "--rate",
-        str(max(80, min(450, int(rate)))),
-    ]
-    completed = subprocess.run(command, capture_output=True, text=True, check=False)
-    if completed.returncode != 0:
-        detail = (completed.stderr or completed.stdout or "").strip()
-        raise ReadAloudUnavailableError(
-            f"{engine_label} failed: {detail}"
-            if detail
-            else f"{engine_label} exited with code {completed.returncode}."
-        )
+def sapi5_available() -> bool:
+    """True when Windows SAPI 5 speech can be reached on this machine."""
+    try:
+        from quill.platform.windows import sapi5
+
+        return sapi5.available()
+    except Exception:  # noqa: BLE001 - any failure means SAPI is unusable
+        return False
 
 
-def synthesize_with_openvoice(
-    text: str,
-    output_path: Path,
-    *,
-    executable_path: Path,
-    voice: str = "en-base",
-    rate: int = 180,
-) -> None:
-    _synthesize_with_cli_engine(
-        text,
-        output_path,
-        executable_path=executable_path,
-        voice=voice,
-        rate=rate,
-        engine_label="OpenVoice",
-    )
-
-
-def synthesize_to_file_with_pyttsx3(
+def synthesize_to_file_with_sapi5(
     text: str,
     output_path: Path,
     *,
@@ -404,21 +667,30 @@ def synthesize_to_file_with_pyttsx3(
     rate: int = 200,
     volume: float = 1.0,
 ) -> None:
+    """Synthesize ``text`` to a WAV file via Windows SAPI 5 (the system voice)."""
     if not text.strip():
         raise ReadAloudUnavailableError("Cannot generate speech from empty text")
-    if pyttsx3 is None:
-        raise ReadAloudUnavailableError("pyttsx3 is not available")
+    from quill.platform.windows import sapi5
+
+    if not sapi5.available():
+        raise ReadAloudUnavailableError("Windows SAPI 5 speech is not available")
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    engine = pyttsx3.init()
     try:
-        if voice:
-            engine.setProperty("voice", voice)
-        engine.setProperty("rate", int(rate))
-        engine.setProperty("volume", max(0.0, min(float(volume), 1.0)))
-        engine.save_to_file(text, str(output_path))
-        engine.runAndWait()
-    finally:
-        engine.stop()
+        sapi5.synthesize_to_wav(
+            text, output_path, voice_id=voice, rate_wpm=int(rate), volume=float(volume)
+        )
+    except RuntimeError as exc:
+        raise ReadAloudUnavailableError(str(exc)) from exc
+
+
+_DECTALK_SAY_WORKER = Path(__file__).resolve().parent / "speech" / "dectalk_say.py"
+
+
+def build_dectalk_payload(text: str, voice: str, rate: int) -> str:
+    """Compose a DECtalk command string: voice + rate command + text."""
+    voice_cmd = DECTALK_VOICE_COMMANDS.get(voice.strip().lower(), "")
+    bounded_rate = max(75, min(650, int(rate)))
+    return f"{voice_cmd} [:ra {bounded_rate}] {text}".strip()
 
 
 def synthesize_to_file_with_dectalk(
@@ -428,81 +700,135 @@ def synthesize_to_file_with_dectalk(
     executable_path: Path,
     voice: str = "paul",
     rate: int = 180,
-    dictionary_path: Path | None = None,
+    dictionary_path: Path | None = None,  # noqa: ARG001 - kept for call compatibility
 ) -> None:
+    """Synthesize DECtalk speech to ``output_path`` (WAV) via ``DECtalk.dll``.
+
+    ``executable_path`` is the ``DECtalk.dll`` produced by
+    :func:`discover_dectalk_executable`. Synthesis is delegated to the
+    out-of-process console worker (:mod:`quill.core.speech.dectalk_say`), which
+    loads the DLL with the audio device disabled and validates the wave output.
+    ``dictionary_path`` is accepted but unused: DECtalk locates ``dtalk_us.dic``
+    from its own runtime folder, and it is the system dictionary, not a ``-d``
+    user dictionary.
+    """
     if not text.strip():
         raise ReadAloudUnavailableError("Cannot generate speech from empty text")
     if not executable_path.exists():
-        raise ReadAloudUnavailableError("DECtalk executable was not found")
+        raise ReadAloudUnavailableError(
+            f"DECtalk runtime (DECtalk.dll) was not found at {executable_path}."
+        )
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    voice_cmd = DECTALK_VOICE_COMMANDS.get(voice.strip().lower(), "")
-    bounded_rate = max(75, min(650, int(rate)))
-    payload = f"{voice_cmd} [:ra {bounded_rate}] {text}".strip()
-    dict_file = (
-        dictionary_path.expanduser()
-        if dictionary_path is not None
-        else executable_path.parent / "dtalk_us.dic"
-    )
+    payload = build_dectalk_payload(text, voice, rate)
+    _run_dectalk_say(executable_path, payload, output_path)
+
+
+def _worker_python_executable() -> str:
+    """A real Python interpreter for running helper scripts (e.g. dectalk_say.py).
+
+    In a bundled build ``sys.executable`` is the QUILL launcher (``quill.exe``),
+    not a Python interpreter -- launching it with a bare script path makes QUILL
+    *open the script as a document* instead of running it (the "DECtalk opens a
+    Python file" bug). The embedded runtime ships ``pythonw.exe``/``python.exe``
+    beside the launcher, so prefer one of those when the launcher isn't itself
+    Python.
+    """
+    exe = Path(sys.executable)
+    if exe.stem.lower() in ("python", "pythonw"):
+        return str(exe)
+    for name in ("pythonw.exe", "python.exe"):
+        candidate = exe.with_name(name)
+        if candidate.is_file():
+            return str(candidate)
+    return sys.executable
+
+
+def _run_dectalk_say(dll_path: Path, payload: str, output_path: Path) -> None:
+    """Drive the DECtalk console worker; raise with a rich diagnostic on failure.
+
+    The payload is encoded as Windows-1252 (replacing unsupported characters),
+    the encoding the legacy ``char *`` DECtalk API expects; UTF-8 bytes would be
+    mis-spoken for non-ASCII text.
+    """
+    if not _DECTALK_SAY_WORKER.exists():
+        raise ReadAloudUnavailableError(f"DECtalk worker script is missing: {_DECTALK_SAY_WORKER}")
     create_no_window = int(getattr(subprocess, "CREATE_NO_WINDOW", 0))
-    with tempfile.NamedTemporaryFile(
-        mode="w", suffix=".txt", delete=False, encoding="utf-8", errors="replace"
-    ) as fh:
-        fh.write(payload)
-        tmp_path = Path(fh.name)
     try:
         completed = subprocess.run(
             [
-                str(executable_path),
-                "-file",
-                str(tmp_path),
-                "-wav",
+                _worker_python_executable(),
+                str(_DECTALK_SAY_WORKER),
+                "--dll",
+                str(dll_path),
+                "-w",
                 str(output_path),
-                "-dict",
-                str(dict_file),
             ],
-            cwd=str(executable_path.parent),
+            input=payload.encode("cp1252", errors="replace"),
             capture_output=True,
             creationflags=create_no_window,
             check=False,
+            timeout=_MAX_SYNTHESIS_SECONDS,
         )
-        if completed.returncode != 0:
-            raise ReadAloudUnavailableError(f"DECtalk exited with code {completed.returncode}.")
-    finally:
-        try:
-            tmp_path.unlink(missing_ok=True)
-        except OSError:
-            pass
+    except subprocess.TimeoutExpired as exc:
+        raise ReadAloudUnavailableError(
+            f"DECtalk did not complete within {_MAX_SYNTHESIS_SECONDS:.0f} seconds."
+        ) from exc
+    if completed.returncode != 0:
+        detail = (completed.stderr or b"").decode("utf-8", errors="replace").strip()
+        code = completed.returncode & 0xFFFFFFFF
+        raise ReadAloudUnavailableError(
+            f"DECtalk synthesis failed (exit 0x{code:08X})."
+            + (f" {detail}" if detail else "")
+            + f" [dll={dll_path}]"
+        )
 
 
 def list_dectalk_voices() -> list[VoiceOption]:
     return [
-        VoiceOption(id="paul", name="Paul"),
-        VoiceOption(id="harry", name="Harry"),
-        VoiceOption(id="dennis", name="Dennis"),
-        VoiceOption(id="frank", name="Frank"),
-        VoiceOption(id="betty", name="Betty"),
-        VoiceOption(id="ursula", name="Ursula"),
-        VoiceOption(id="rita", name="Rita"),
-        VoiceOption(id="wendy", name="Wendy"),
-        VoiceOption(id="kit", name="Kit"),
+        VoiceOption(id="paul", name="Paul", accent="American English", description="Male"),
+        VoiceOption(id="harry", name="Harry", accent="American English", description="Male"),
+        VoiceOption(id="dennis", name="Dennis", accent="American English", description="Male"),
+        VoiceOption(id="frank", name="Frank", accent="American English", description="Male"),
+        VoiceOption(id="betty", name="Betty", accent="American English", description="Female"),
+        VoiceOption(id="ursula", name="Ursula", accent="American English", description="Female"),
+        VoiceOption(id="rita", name="Rita", accent="American English", description="Female"),
+        VoiceOption(id="wendy", name="Wendy", accent="American English", description="Female"),
+        VoiceOption(id="kit", name="Kit", accent="American English", description="Child"),
     ]
 
 
 def list_voices() -> list[VoiceOption]:
-    if pyttsx3 is None:
+    """Return the installed Windows SAPI 5 voices as read-aloud options."""
+    from quill.platform.windows import sapi5
+
+    return [
+        VoiceOption(id=v.id, name=v.name, language=getattr(v, "language", ""))
+        for v in sapi5.list_voices()
+    ]
+
+
+def list_elevenlabs_voices(api_key: str) -> list[VoiceOption]:
+    """The ElevenLabs account's voices as read-aloud options, or ``[]``.
+
+    A read-only network call. Returns ``[]`` when there is no key, the optional SDK is
+    absent, or the call fails, so the caller can offer ElevenLabs voices without ever
+    raising into the UI. The actual synthesis is gated by per-session consent and Safe
+    Mode at the point of use.
+    """
+    key = (api_key or "").strip()
+    if not key:
         return []
-    engine = pyttsx3.init()
+    from quill.core.ai import elevenlabs_tts
+
+    if not elevenlabs_tts.available():
+        return []
     try:
-        voices = []
-        for voice in engine.getProperty("voices") or []:
-            voice_id = str(getattr(voice, "id", "")).strip()
-            if not voice_id:
-                continue
-            name = str(getattr(voice, "name", voice_id)).strip() or voice_id
-            voices.append(VoiceOption(id=voice_id, name=name))
-        return voices
-    finally:
-        engine.stop()
+        return [
+            VoiceOption(id=vid, name=name, language="")
+            for vid, name in elevenlabs_tts.list_voices(key)
+        ]
+    except Exception:  # noqa: BLE001 - listing voices must never raise into the UI
+        return []
 
 
 class ReadAloudUnavailableError(RuntimeError):
@@ -522,6 +848,8 @@ class ReadAloudController:
         self._sentence_pause_ms = 0
         self._punctuation_level = "some"
         self._cache_seed: tuple[object, ...] = ()
+        self._pron_dicts: list[Any] = []
+        self._pron_engine = "sapi5"
 
     @property
     def state(self) -> str:
@@ -539,7 +867,7 @@ class ReadAloudController:
         cursor: int,
         voice_id: str,
         *,
-        engine_name: str = "pyttsx3",
+        engine_name: str = "sapi5",
         rate: int | None = None,
         volume: float | None = None,
         pitch: int | None = None,
@@ -554,28 +882,30 @@ class ReadAloudController:
         espeak_executable: str = "",
         espeak_voice: str = "en",
         espeak_rate: int = 175,
-        openvoice_executable: str = "",
-        openvoice_voice: str = "en-base",
-        openvoice_rate: int = 180,
-        openvoice_consent: bool = False,
+        elevenlabs_api_key: str = "",
+        elevenlabs_voice: str = "",
+        elevenlabs_model: str = "",
         sentence_pause_ms: int = 0,
         punctuation_level: str = "some",
         end: int | None = None,
+        pronunciation_dictionaries: list[Any] | None = None,
         on_progress: Callable[[int, int], None] | None = None,
         on_state_change: Callable[[str], None] | None = None,
         on_error: Callable[[str], None] | None = None,
     ) -> None:
-        normalized_engine = engine_name.strip().lower() or "pyttsx3"
+        normalized_engine = engine_name.strip().lower() or "sapi5"
+        if normalized_engine == "pyttsx3":  # migrate the retired engine id
+            normalized_engine = "sapi5"
         _valid_engines = {
-            "pyttsx3",
+            "sapi5",
             "dectalk",
             "piper",
             "kokoro",
             "espeak",
-            "openvoice",
+            "elevenlabs",
         }
-        if normalized_engine == "pyttsx3" and pyttsx3 is None:
-            raise ReadAloudUnavailableError("pyttsx3 is not available")
+        if normalized_engine == "sapi5" and not sapi5_available():
+            raise ReadAloudUnavailableError("Windows SAPI 5 speech is not available")
         if normalized_engine == "dectalk":
             if discover_dectalk_executable(dectalk_executable) is None:
                 raise ReadAloudUnavailableError("DECtalk executable was not found")
@@ -590,19 +920,25 @@ class ReadAloudController:
                 "eSpeak-NG executable was not found. "
                 "Install eSpeak-NG or configure the path in Read Aloud Settings."
             )
-        if normalized_engine == "openvoice":
-            if not openvoice_consent:
+        if normalized_engine == "elevenlabs":
+            from quill.core.ai import elevenlabs_tts
+
+            if os.environ.get("QUILL_SAFE_MODE") == "1":
+                raise ReadAloudUnavailableError("ElevenLabs Read Aloud is disabled in Safe Mode.")
+            if not elevenlabs_api_key.strip():
+                raise ReadAloudUnavailableError("Connect ElevenLabs to use its Read Aloud voice.")
+            if not elevenlabs_tts.available():
                 raise ReadAloudUnavailableError(
-                    "OpenVoice requires explicit consent before use. "
-                    "Enable consent in Speech settings."
+                    "ElevenLabs support needs the optional SDK. "
+                    "Install it with: pip install quill[elevenlabs]"
                 )
-            if discover_openvoice_executable(openvoice_executable) is None:
-                raise ReadAloudUnavailableError("OpenVoice executable was not found")
         if normalized_engine not in _valid_engines:
             raise ReadAloudUnavailableError(f"Unsupported read-aloud engine: {normalized_engine}")
         self.stop()
         self._sentence_pause_ms = max(0, int(sentence_pause_ms))
         self._punctuation_level = normalize_punctuation_level(punctuation_level)
+        self._pron_dicts = pronunciation_dictionaries or []
+        self._pron_engine = normalized_engine
         spans = [span for span in sentence_spans(text) if span.end > cursor]
         if end is not None:
             spans = [span for span in spans if span.start < end]
@@ -617,14 +953,13 @@ class ReadAloudController:
 
         def worker() -> None:
             try:
-                if normalized_engine == "pyttsx3":
-                    self._run_pyttsx3(
+                if normalized_engine == "sapi5":
+                    self._run_sapi5(
                         spans,
                         text,
                         voice_id=voice_id,
                         rate=rate,
                         volume=volume,
-                        pitch=pitch,
                         on_progress=on_progress,
                     )
                 elif normalized_engine == "dectalk":
@@ -667,14 +1002,13 @@ class ReadAloudController:
                         rate=espeak_rate,
                         on_progress=on_progress,
                     )
-                elif normalized_engine == "openvoice":
-                    self._run_openvoice_live(
+                elif normalized_engine == "elevenlabs":
+                    self._run_elevenlabs_live(
                         spans,
                         text,
-                        executable=discover_openvoice_executable(openvoice_executable)
-                        or Path(openvoice_executable).expanduser(),
-                        voice=openvoice_voice,
-                        rate=openvoice_rate,
+                        api_key=elevenlabs_api_key,
+                        voice=elevenlabs_voice,
+                        model=elevenlabs_model,
                         on_progress=on_progress,
                     )
             except Exception as exc:  # noqa: BLE001
@@ -715,7 +1049,7 @@ class ReadAloudController:
                 return
             time.sleep(min(0.05, remaining))
 
-    def _run_pyttsx3(
+    def _run_sapi5(
         self,
         spans: list[SentenceSpan],
         text: str,
@@ -723,41 +1057,24 @@ class ReadAloudController:
         voice_id: str,
         rate: int | None,
         volume: float | None,
-        pitch: int | None,
         on_progress: Callable[[int, int], None] | None,
     ) -> None:
-        engine = pyttsx3.init()
-        try:
-            if voice_id:
-                engine.setProperty("voice", voice_id)
-            if rate is not None:
-                engine.setProperty("rate", int(rate))
-            if volume is not None:
-                engine.setProperty("volume", max(0.0, min(float(volume), 1.0)))
-            if pitch is not None:
-                try:
-                    engine.setProperty("pitch", int(pitch))
-                except Exception:  # noqa: BLE001
-                    pass
-            first = True
-            for span in spans:
-                if self._stop_event.is_set() or self._pause_event.is_set():
-                    break
-                sentence = text[span.start : span.end].strip()
-                if not sentence:
-                    continue
-                sentence = verbalize_punctuation(sentence, self._punctuation_level)
-                if not first:
-                    self._inter_sentence_pause()
-                first = False
-                if on_progress is not None:
-                    on_progress(span.start, span.end)
-                engine.say(sentence)
-                engine.runAndWait()
-                with self._lock:
-                    self._cursor = span.end
-        finally:
-            engine.stop()
+        """Play Windows SAPI 5 speech by synthesizing each sentence to WAV.
+
+        Routing through the shared WAV-sentence player (like Piper/Kokoro/eSpeak)
+        gives consistent pause/stop and sentence-cache behaviour. SAPI 5 has no
+        pitch control via the simple property API, so ``pitch`` is not used.
+        """
+        effective_rate = 200 if rate is None else int(rate)
+        effective_volume = 1.0 if volume is None else float(volume)
+
+        def gen(sentence: str, out: Path) -> None:
+            synthesize_to_file_with_sapi5(
+                sentence, out, voice=voice_id, rate=effective_rate, volume=effective_volume
+            )
+
+        self._cache_seed = ("sapi5", voice_id, effective_rate, effective_volume)
+        self._run_wav_sentences(spans, text, on_progress=on_progress, generate_sentence_wav=gen)
 
     def _run_dectalk(
         self,
@@ -767,108 +1084,46 @@ class ReadAloudController:
         executable: Path,
         voice_id: str,
         rate: int,
-        dictionary_path: Path | None,
+        dictionary_path: Path | None,  # noqa: ARG002 - kept for call compatibility
         on_progress: Callable[[int, int], None] | None,
     ) -> None:
-        working_dir = executable.parent
-        self._ensure_dectalk_dictionary(working_dir, dictionary_path)
-        first = True
-        for span in spans:
-            if self._stop_event.is_set() or self._pause_event.is_set():
-                break
-            sentence = text[span.start : span.end].strip()
-            if not sentence:
-                continue
-            sentence = verbalize_punctuation(sentence, self._punctuation_level)
-            if not first:
-                self._inter_sentence_pause()
-            first = False
-            if on_progress is not None:
-                on_progress(span.start, span.end)
-            payload = self._build_dectalk_payload(sentence, voice_id, rate)
-            self._speak_sentence_dectalk(executable, payload)
-            with self._lock:
-                self._cursor = span.end
+        """Play DECtalk speech by synthesizing each sentence to WAV and playing it.
 
-    def _build_dectalk_payload(self, sentence: str, voice_id: str, rate: int) -> str:
-        parts: list[str] = []
-        voice_cmd = DECTALK_VOICE_COMMANDS.get(voice_id.strip().lower(), "")
-        if voice_cmd:
-            parts.append(voice_cmd)
-        bounded_rate = max(75, min(650, int(rate)))
-        parts.append(f"[:ra {bounded_rate}]")
-        parts.append(sentence)
-        return " ".join(parts)
+        ``executable`` is the ``DECtalk.dll`` runtime path. Synthesis goes
+        through the out-of-process console worker (see
+        :func:`synthesize_to_file_with_dectalk`), so the broken graphical
+        ``speak.exe`` is never launched and live playback shares the same
+        engine path as preview generation.
+        """
 
-    def _ensure_dectalk_dictionary(self, working_dir: Path, dictionary_path: Path | None) -> None:
-        target = working_dir / "dtalk_us.dic"
-        if target.exists():
-            return
-        candidates: list[Path] = []
-        if dictionary_path is not None:
-            candidates.append(dictionary_path)
-        candidates.extend([
-            working_dir / "dic" / "dtalk_us.dic",
-            working_dir / "dtalk_us.dic",
-        ])
-        source = next((path for path in candidates if path.exists()), None)
-        if source is None:
-            raise ReadAloudUnavailableError(
-                "DECtalk dictionary dtalk_us.dic was not found. "
-                "Configure dictionary path in Speech settings."
+        def gen(sentence: str, out: Path) -> None:
+            synthesize_to_file_with_dectalk(
+                sentence, out, executable_path=executable, voice=voice_id, rate=rate
             )
-        if source.resolve() == target.resolve():
-            return
-        target.write_bytes(source.read_bytes())
 
-    def _speak_sentence_dectalk(self, executable: Path, payload: str) -> None:
-        dict_file = executable.parent / "dtalk_us.dic"
-        with tempfile.NamedTemporaryFile(
-            mode="w",
-            delete=False,
-            suffix=".txt",
-            encoding="utf-8",
-            errors="replace",
-        ) as handle:
-            handle.write(payload)
-            temp_path = Path(handle.name)
-        create_no_window = int(getattr(subprocess, "CREATE_NO_WINDOW", 0))
-        try:
-            process = subprocess.Popen(
-                [str(executable), "-file", str(temp_path), "-dict", str(dict_file)],
-                cwd=str(executable.parent),
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                creationflags=create_no_window,
-            )
-            self._active_process = process
-            start = time.monotonic()
-            while process.poll() is None:
-                if self._stop_event.is_set() or self._pause_event.is_set():
-                    process.terminate()
-                    break
-                if time.monotonic() - start >= _MAX_SYNTHESIS_SECONDS:
-                    process.kill()
-                    raise ReadAloudUnavailableError(
-                        f"DECtalk did not complete within {_MAX_SYNTHESIS_SECONDS:.0f} seconds."
-                    )
-                time.sleep(0.05)
-            exit_code = process.wait(timeout=2)
-            if exit_code != 0 and not (self._stop_event.is_set() or self._pause_event.is_set()):
-                raise ReadAloudUnavailableError(
-                    f"DECtalk exited with code {exit_code}. "
-                    "Check executable and dictionary settings."
-                )
-        finally:
-            self._active_process = None
-            try:
-                temp_path.unlink(missing_ok=True)
-            except OSError:
-                pass
+        self._cache_seed = ("dectalk", str(executable), voice_id, rate)
+        self._run_wav_sentences(spans, text, on_progress=on_progress, generate_sentence_wav=gen)
 
     # ------------------------------------------------------------------
     # WAV-based engine helpers
     # ------------------------------------------------------------------
+
+    def _apply_pronunciation(self, sentence: str) -> str:
+        """Apply the active pronunciation dictionaries to one spoken sentence.
+
+        Wired so corrections made in the manager are heard in live Read Aloud too,
+        not just batch export (the shared-pipeline, "live everywhere" design). A
+        no-op when no dictionaries are active.
+        """
+        dicts = getattr(self, "_pron_dicts", None)
+        if not dicts:
+            return sentence
+        from quill.core.speech.pronunciation import apply_pronunciations
+
+        try:
+            return apply_pronunciations(sentence, self._pron_engine, dicts).text
+        except Exception:  # noqa: BLE001 - a bad dictionary must never break read-aloud
+            return sentence
 
     def _interrupt_wav(self) -> None:
         """Stop any in-progress winsound WAV playback immediately."""
@@ -895,7 +1150,14 @@ class ReadAloudController:
             sentence = text[span.start : span.end].strip()
             if not sentence:
                 continue
-            sentence = verbalize_punctuation(sentence, self._punctuation_level)
+            sentence = clean_markdown_text(sentence).strip()
+            if not sentence:
+                continue
+            sentence = self._apply_pronunciation(sentence)
+            if not sentence.lstrip().startswith("<speak"):
+                # SSML utterances must reach the engine intact; verbalizing their
+                # punctuation would corrupt the markup.
+                sentence = verbalize_punctuation(sentence, self._punctuation_level)
             if not first:
                 self._inter_sentence_pause()
             first = False
@@ -971,6 +1233,37 @@ class ReadAloudController:
         self._cache_seed = ("kokoro", voice, speed)
         self._run_wav_sentences(spans, text, on_progress=on_progress, generate_sentence_wav=gen)
 
+    def _run_elevenlabs_live(
+        self,
+        spans: list[SentenceSpan],
+        text: str,
+        *,
+        api_key: str,
+        voice: str,
+        model: str,
+        on_progress: Callable[[int, int], None] | None,
+    ) -> None:
+        """ElevenLabs cloud voice: synthesize each sentence to WAV, then play it.
+
+        Reuses the cached WAV runner, so a repeated sentence is not re-synthesized -
+        saving cost and latency, since each fresh sentence is one billable ElevenLabs
+        call. Stop/pause interrupt between sentences exactly as for the local engines.
+        """
+        from quill.core.ai import elevenlabs_tts
+
+        chosen_voice = voice.strip() or elevenlabs_tts.DEFAULT_VOICE
+        chosen_model = model.strip() or elevenlabs_tts.DEFAULT_MODEL
+
+        def gen(sentence: str, out: Path) -> None:
+            out.write_bytes(
+                elevenlabs_tts.synthesize_wav(
+                    sentence, api_key, voice=chosen_voice, model=chosen_model
+                )
+            )
+
+        self._cache_seed = ("elevenlabs", chosen_voice, chosen_model)
+        self._run_wav_sentences(spans, text, on_progress=on_progress, generate_sentence_wav=gen)
+
     def _run_espeak_live(
         self,
         spans: list[SentenceSpan],
@@ -990,7 +1283,14 @@ class ReadAloudController:
             sentence = text[span.start : span.end].strip()
             if not sentence:
                 continue
-            sentence = verbalize_punctuation(sentence, self._punctuation_level)
+            sentence = clean_markdown_text(sentence).strip()
+            if not sentence:
+                continue
+            sentence = self._apply_pronunciation(sentence)
+            if not sentence.lstrip().startswith("<speak"):
+                # SSML utterances must reach the engine intact; verbalizing their
+                # punctuation would corrupt the markup.
+                sentence = verbalize_punctuation(sentence, self._punctuation_level)
             if not first:
                 self._inter_sentence_pause()
             first = False
@@ -1021,28 +1321,6 @@ class ReadAloudController:
                 raise ReadAloudUnavailableError(f"eSpeak-NG exited with code {exit_code}.")
             with self._lock:
                 self._cursor = span.end
-
-    def _run_openvoice_live(
-        self,
-        spans: list[SentenceSpan],
-        text: str,
-        *,
-        executable: Path,
-        voice: str,
-        rate: int,
-        on_progress: Callable[[int, int], None] | None,
-    ) -> None:
-        def gen(sentence: str, out: Path) -> None:
-            synthesize_with_openvoice(
-                sentence,
-                out,
-                executable_path=executable,
-                voice=voice,
-                rate=rate,
-            )
-
-        self._cache_seed = ("openvoice", str(executable), voice, rate)
-        self._run_wav_sentences(spans, text, on_progress=on_progress, generate_sentence_wav=gen)
 
     def pause(self) -> None:
         with self._lock:

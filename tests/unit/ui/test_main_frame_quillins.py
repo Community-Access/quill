@@ -35,13 +35,17 @@ def test_manager_command_is_registered() -> None:
 
 
 def test_quillins_submenu_is_attached_to_tools() -> None:
-    assert 'AppendSubMenu(self._build_quillins_menu(), "&Quillins")' in _MENU
+    # Accept both i18n-wrapped _("...") and bare string forms.
+    assert (
+        'AppendSubMenu(self._build_quillins_menu(), _("&Quillins"))' in _MENU
+        or 'AppendSubMenu(self._build_quillins_menu(), "&Quillins")' in _MENU
+    )
 
 
 def test_runtime_gates_bundled_and_third_party_separately() -> None:
     # Registration loads bundled (Tier C) behind core.bundled_quillins and
     # third-party behind the SEC-8 flag — they are merged into one registry.
-    reg = _QUILLINS[_QUILLINS.index("def _register_quillin_contributions") :][:900]
+    reg = _QUILLINS[_QUILLINS.index("def _register_quillin_contributions") :][:1600]
     assert "load_enabled_bundled_manifests(self.features)" in reg
     assert "load_enabled_manifests(self.features)" in reg
     enabled = _QUILLINS[_QUILLINS.index("def _quillins_enabled") :][:400]
@@ -96,7 +100,11 @@ def test_remove_quillin_confirm_routes_through_dialog_contract() -> None:
         _QUILLINS.index("def on_remove") : _QUILLINS.index("def on_remove") + 2200
     ]
     assert "self._show_modal_dialog(confirm" in on_remove
-    assert "apply_modal_ids(confirm" in on_remove
+    # apply_modal_ids is wrapped across lines to carry the
+    # ``# dialog_button_contract: exempt`` pragma, so match the call and its
+    # argument independently rather than as one literal substring.
+    assert "apply_modal_ids(" in on_remove
+    assert "confirm, affirmative_id=wx.ID_YES, escape_id=wx.ID_NO" in on_remove
     assert "confirm.Destroy()" in on_remove
     # And: no direct ShowModal() on the confirm dialog.
     assert "confirm.ShowModal()" not in on_remove
@@ -134,14 +142,15 @@ def test_modal_ids_route_through_dialog_contract() -> None:
     assert "apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_OK)" in manager
 
 
-def test_panel_owns_its_control_tree() -> None:
-    # Controls are parented to a panel whose sizer is set, then the panel is added
-    # to the outer dialog sizer (consistent parent ownership rule).
+def test_controls_parented_directly_on_dialog() -> None:
+    # Controls must be parented directly on the dialog (not on an inner panel)
+    # so NVDA users do not have to navigate into a group before reaching controls.
     manager = _QUILLINS[_QUILLINS.index("def open_quillins_manager") :]
-    assert "panel = wx.Panel(dialog)" in manager
-    assert "panel.SetSizer(body)" in manager
-    assert "outer.Add(panel" in manager
-    assert "dialog.SetSizerAndFit(outer)" in manager
+    assert "panel = wx.Panel(dialog)" not in manager
+    assert "wx.StaticText(dialog," in manager
+    assert "wx.ListBox(dialog," in manager
+    assert "wx.Button(dialog," in manager
+    assert "dialog.SetSizerAndFit(body)" in manager
 
 
 def test_host_services_never_imports_wx_into_core() -> None:

@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 
+from quill.core import paths
 from quill.core.commands import CommandRegistry
 from quill.core.features import (
     FEATURE_STATE_OFF,
@@ -23,6 +24,19 @@ from quill.core.features import (
 )
 
 
+@pytest.fixture(autouse=True)
+def feature_data_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    fake_home = tmp_path / "home"
+    fake_home.mkdir()
+    data_dir = fake_home / "quill-data"
+    monkeypatch.setattr(paths, "_DEV_BUILD", True)
+    monkeypatch.setattr(paths.Path, "home", classmethod(lambda cls: fake_home))
+    monkeypatch.setenv("QUILL_DATA_DIR", str(data_dir))
+    monkeypatch.delenv("APPDATA", raising=False)
+    monkeypatch.delenv("QUILL_PORTABLE_ROOT", raising=False)
+    return data_dir
+
+
 def test_feature_mapping_infers_command_groups() -> None:
     assert feature_for_command("edit.find") == "core.search"
     assert feature_for_command("edit.replace") == "core.search"
@@ -34,7 +48,6 @@ def test_feature_mapping_infers_command_groups() -> None:
     assert feature_for_command("whisperer.model_manager") == "core.bw_transcription"
     assert feature_for_command("whisperer.model_status") == "core.bw_transcription"
     assert feature_for_command("whisperer.model_recommend") == "core.bw_transcription"
-    assert feature_for_command("whisperer.toggle_parakeet") == "core.bw_parakeet"
     assert feature_for_command("whisperer.check_faster_whisper") == "core.bw_transcription"
     assert feature_for_command("whisperer.provider_center") == "core.bw_providers"
     assert feature_for_command("whisperer.provider_status") == "core.bw_providers"
@@ -58,11 +71,70 @@ def test_feature_mapping_infers_command_groups() -> None:
     assert feature_for_command("tools.run_python") == "future.ai"
 
 
+def test_feature_mapping_returns_nested_feature_id() -> None:
+    """Regression for #346: feature_for_command must pass through the nested
+    feature id that the COMMAND_FEATURE_MAP declares verbatim. Downstream
+    consumers (find_feature / FeatureManager) match against the literal id
+    in FEATURE_DEFINITIONS, so a nested id with an internal dot must
+    survive the round-trip without truncation."""
+    # The typescript-console command maps to a sub-feature of developer_console.
+    nested = feature_for_command("tools.open_typescript_console")
+    assert nested == "core.developer_console.typescript"
+
+    # find_feature must resolve the nested id back to its own definition
+    # (not the parent core.developer_console).
+    feature = find_feature(nested)
+    assert feature is not None
+    assert feature.id == "core.developer_console.typescript"
+    assert "typescript" in feature.name.lower()
+    # The nested feature must declare its parent dependency so a state
+    # change propagates correctly.
+    assert "core.developer_console" in feature.dependencies
+
+
 def test_feature_manager_respects_profile_state() -> None:
     manager = FeatureManager(active_profile_id=PROFILE_ESSENTIAL)
     assert manager.state_for("core.file") == FEATURE_STATE_ON
-    assert manager.state_for("core.search.regex") == FEATURE_STATE_QUIET
+    assert manager.state_for("core.search.regex") == FEATURE_STATE_OFF
     assert manager.state_for("future.ai") == FEATURE_STATE_QUIET
+    # future.publishing is locked_off (publishing-providers-framework branch
+    # under review), which overrides any profile's quiet/on state.
+    assert manager.state_for("future.publishing") == FEATURE_STATE_OFF
+
+
+def test_casual_writer_is_a_focused_just_write_profile() -> None:
+    """#890: Casual Writer turns off power/AI/review/remote/developer surfaces
+    (an unlisted feature defaults to ON, so each must be named), while keeping
+    the write/format/print/send core -- and all screen-reader I/O -- available."""
+    from quill.core.features import PROFILE_WRITER
+
+    manager = FeatureManager(active_profile_id=PROFILE_WRITER)
+
+    # Explicitly off: not part of "write, format, print, send".
+    for off_feature in (
+        "future.ai",
+        "future.ai_menu_top_level",
+        "core.glow",
+        "core.remote",
+        "core.github_remote",
+        "core.developer_console",
+        "core.emmet",
+        "core.watch_folder",
+        "core.analysis",
+        "core.notebook",
+    ):
+        assert manager.state_for(off_feature) == FEATURE_STATE_OFF, off_feature
+
+    # Core writing stays on.
+    assert manager.state_for("core.editor") == FEATURE_STATE_ON
+    assert manager.state_for("core.file") == FEATURE_STATE_ON
+    assert manager.state_for("core.format") == FEATURE_STATE_ON
+
+    # "Just write" must not mean "less accessible": screen-reader I/O stays.
+    assert manager.state_for("core.voice_commands") == FEATURE_STATE_ON
+    assert manager.state_for("core.braille") == FEATURE_STATE_ON  # ON by default, not stripped
+    assert manager.state_for("core.read_aloud") != FEATURE_STATE_OFF
+    assert manager.state_for("core.dictation") != FEATURE_STATE_OFF
 
 
 def test_feature_manager_can_switch_profiles() -> None:
@@ -112,6 +184,10 @@ def test_feature_registry_includes_shipped_profiles() -> None:
 
 def test_intellisense_feature_is_in_registry() -> None:
     assert "core.intellisense" in PROFILE_DEFINITIONS[PROFILE_FULL_QUILL].states
+
+
+def test_publishing_feature_is_in_registry() -> None:
+    assert "future.publishing" in PROFILE_DEFINITIONS[PROFILE_FULL_QUILL].states
 
 
 def test_feature_profile_import_and_export_roundtrip() -> None:
@@ -224,12 +300,12 @@ def test_feature_with_off_dependency_stays_off_even_if_self_on() -> None:
     # FLAG-1: a dependent feature is effectively off when any feature in its
     # dependency chain is off, regardless of how the dependency was disabled.
     manager = FeatureManager(active_profile_id=PROFILE_FULL_QUILL)
-    # core.bw_parakeet -> core.bw_transcription -> core.dictation -> core.editor
+    # core.bw_providers -> core.bw_transcription -> core.dictation -> core.editor
     manager.overrides["core.dictation"] = FEATURE_STATE_OFF
 
-    assert manager.state_for("core.bw_parakeet") == FEATURE_STATE_ON
-    assert manager.is_enabled("core.bw_parakeet") is False
-    assert manager.is_visible("core.bw_parakeet") is False
+    assert manager.state_for("core.bw_providers") == FEATURE_STATE_ON
+    assert manager.is_enabled("core.bw_providers") is False
+    assert manager.is_visible("core.bw_providers") is False
     assert manager.is_enabled("core.bw_transcription") is False
 
 
@@ -253,6 +329,16 @@ def test_visible_commands_hide_features_with_unmet_dependencies() -> None:
 def test_enabled_feature_with_all_dependencies_on_is_visible() -> None:
     manager = FeatureManager(active_profile_id=PROFILE_FULL_QUILL)
 
+    assert manager.is_enabled("core.navigate") is True
+    assert manager.is_visible("core.navigate") is True
+
+
+def test_voice_commands_is_unlocked_and_visible() -> None:
+    # Hey QUILL Phase 1: core.voice_commands is surfaced (push-to-talk over the
+    # offline speech stack). The runtime double-gate lives in
+    # voice_commands_available (off by default via settings, off in Safe Mode).
+    manager = FeatureManager(active_profile_id=PROFILE_FULL_QUILL)
+
     assert manager.is_enabled("core.voice_commands") is True
     assert manager.is_visible("core.voice_commands") is True
 
@@ -266,7 +352,7 @@ def test_bits_whisperer_master_flag_is_locked_off() -> None:
     assert manager.state_for("core.bw_whisperer") == FEATURE_STATE_OFF
     assert manager.is_enabled("core.bw_whisperer") is False
     assert manager.is_enabled("core.bw_transcription") is False
-    assert manager.is_enabled("core.bw_parakeet") is False
+    assert manager.is_enabled("core.bw_providers") is False
     assert manager.is_visible("core.bw_transcription") is False
 
     # A locked-off flag cannot be turned on by a user override either.

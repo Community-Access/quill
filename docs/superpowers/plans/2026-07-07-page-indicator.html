@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>2026-07-07-page-indicator</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1 id="page-indicator-implementation-plan">Page Indicator
+Implementation Plan</h1>
+<blockquote>
+<p><strong>For agentic workers:</strong> REQUIRED SUB-SKILL: Use
+superpowers:subagent-driven-development (recommended) or
+superpowers:executing-plans to implement this plan task-by-task. Steps
+use checkbox (<code>- [ ]</code>) syntax for tracking.</p>
+</blockquote>
+<p><strong>Goal:</strong> Add an always-on "page" status bar cell for
+every document — an exact count for PDFs (via preserved page boundaries)
+and an estimated word-count-based count for everything else — plus a
+track-aware Go To Page command, fully documented.</p>
+<p><strong>Architecture:</strong> One status bar cell computed by a
+single dispatcher branch; two pure, wx-free functions in
+<code>quill/core/navigation.py</code> for the estimate; PDF import
+changed to preserve real page boundaries as form-feed (<code>\f</code>)
+characters, reusing <code>navigation.py</code>'s existing
+<code>page_starts()</code>/<code>page_start_for_number()</code> rather
+than building new exact-page machinery.</p>
+<p><strong>Tech Stack:</strong> Python 3.13, wxPython (UI layer only),
+pytest.</p>
+<h2 id="global-constraints">Global Constraints</h2>
+<ul>
+<li>Word-count basis for estimates: <strong>words per page</strong>,
+default <strong>300</strong>, clamped <strong>[150, 600]</strong>
+(setting <code>page_estimate_words_per_page</code>).</li>
+<li>Estimated display text always includes both a tilde (<code>~</code>)
+and the word "estimated" — never one without the other, never omitted.
+Exact display text never includes either.</li>
+<li>The new <code>"page"</code> status bar cell is <strong>visible by
+default</strong> (not in <code>_default_status_bar_hidden()</code>),
+positioned immediately after <code>"line_column"</code> in
+<code>STATUS_BAR_ITEMS</code> — not first, but adjacent to the other
+position-context cell, per direction from Jeff.</li>
+<li>The <code>"page"</code> cell is suppressed whenever the existing
+<code>"braille"</code> cell is active (BRF documents keep their own
+richer page system untouched).</li>
+<li>Track B (exact pages via preserved <code>\f</code> boundaries) ships
+for <strong>PDF only</strong> in this plan. DOCX real page breaks are
+<strong>out of scope</strong> — DOCX import goes through
+Pandoc/MarkItDown text conversion, which does not preserve page-break
+positions; DOCX stays on the estimate track. This is a scope narrowing
+from the original spec, made during planning; the spec doc is updated in
+Task 7 to match.</li>
+<li>Closes GitHub issue #872. Ships in 0.9.0 Beta 2 (release notes' "no
+new headline features" line gets a carve-out, per Jeff).</li>
+</ul>
+<hr />
+<h3 id="task-1-estimate--exact-page-count-core-functions">Task 1:
+Estimate + exact page-count core functions</h3>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/core/navigation.py</code></li>
+<li>Test: <code>tests/unit/core/test_navigation.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Produces:
+<code>estimate_page_count(text: str, words_per_page: int) -&gt; int</code>,
+<code>estimate_page_for_position(text: str, position: int, words_per_page: int) -&gt; int</code>,
+<code>estimate_page_start_for_number(text: str, page_number: int, words_per_page: int) -&gt; int | None</code>
+— all pure, no wx, no I/O. <code>words_per_page</code> is always the
+caller-supplied setting value (no default baked in here — the default of
+300 lives in Task 2's setting).</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Write the failing
+tests</strong></label></li>
+</ul>
+<p>Add to <code>tests/unit/core/test_navigation.py</code> (append after
+the existing <code>page_start_for_number</code> tests):</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.navigation <span class="im">import</span> (</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    estimate_page_count,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    estimate_page_for_position,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    estimate_page_start_for_number,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_estimate_page_count_empty_text_is_one_page() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> estimate_page_count(<span class="st">&quot;&quot;</span>, <span class="dv">300</span>) <span class="op">==</span> <span class="dv">1</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_estimate_page_count_rounds_up() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> <span class="st">&quot; &quot;</span>.join([<span class="st">&quot;word&quot;</span>] <span class="op">*</span> <span class="dv">301</span>)  <span class="co"># 301 words, 300/page -&gt; 2 pages</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> estimate_page_count(text, <span class="dv">300</span>) <span class="op">==</span> <span class="dv">2</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_estimate_page_count_exact_multiple() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> <span class="st">&quot; &quot;</span>.join([<span class="st">&quot;word&quot;</span>] <span class="op">*</span> <span class="dv">600</span>)  <span class="co"># exactly 2 pages at 300/page</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> estimate_page_count(text, <span class="dv">300</span>) <span class="op">==</span> <span class="dv">2</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_estimate_page_for_position_start_of_document_is_page_one() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> <span class="st">&quot; &quot;</span>.join([<span class="st">&quot;word&quot;</span>] <span class="op">*</span> <span class="dv">900</span>)  <span class="co"># 3 pages at 300/page</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> estimate_page_for_position(text, <span class="dv">0</span>, <span class="dv">300</span>) <span class="op">==</span> <span class="dv">1</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_estimate_page_for_position_tracks_caret_forward() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    words <span class="op">=</span> [<span class="st">&quot;word&quot;</span>] <span class="op">*</span> <span class="dv">900</span>  <span class="co"># 3 pages at 300/page</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> <span class="st">&quot; &quot;</span>.join(words)</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Position at the start of the 301st word (i.e. into page 2).</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    page_1_text <span class="op">=</span> <span class="st">&quot; &quot;</span>.join(words[:<span class="dv">300</span>]) <span class="op">+</span> <span class="st">&quot; &quot;</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    position <span class="op">=</span> <span class="bu">len</span>(page_1_text)</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> estimate_page_for_position(text, position, <span class="dv">300</span>) <span class="op">==</span> <span class="dv">2</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_estimate_page_for_position_clamps_to_final_page() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> <span class="st">&quot; &quot;</span>.join([<span class="st">&quot;word&quot;</span>] <span class="op">*</span> <span class="dv">10</span>)  <span class="co"># 1 page at 300/page</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> estimate_page_for_position(text, <span class="bu">len</span>(text), <span class="dv">300</span>) <span class="op">==</span> <span class="dv">1</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_estimate_page_start_for_number_page_one_is_zero() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> <span class="st">&quot; &quot;</span>.join([<span class="st">&quot;word&quot;</span>] <span class="op">*</span> <span class="dv">900</span>)</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> estimate_page_start_for_number(text, <span class="dv">1</span>, <span class="dv">300</span>) <span class="op">==</span> <span class="dv">0</span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_estimate_page_start_for_number_matches_word_boundary() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>    words <span class="op">=</span> [<span class="st">&quot;word&quot;</span>] <span class="op">*</span> <span class="dv">900</span></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> <span class="st">&quot; &quot;</span>.join(words)</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>    expected <span class="op">=</span> <span class="bu">len</span>(<span class="st">&quot; &quot;</span>.join(words[:<span class="dv">300</span>]) <span class="op">+</span> <span class="st">&quot; &quot;</span>)</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> estimate_page_start_for_number(text, <span class="dv">2</span>, <span class="dv">300</span>) <span class="op">==</span> expected</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_estimate_page_start_for_number_out_of_range_is_none() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> <span class="st">&quot; &quot;</span>.join([<span class="st">&quot;word&quot;</span>] <span class="op">*</span> <span class="dv">10</span>)  <span class="co"># 1 page at 300/page</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> estimate_page_start_for_number(text, <span class="dv">2</span>, <span class="dv">300</span>) <span class="kw">is</span> <span class="va">None</span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> estimate_page_start_for_number(text, <span class="dv">0</span>, <span class="dv">300</span>) <span class="kw">is</span> <span class="va">None</span></span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Run tests to verify
+they fail</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/core/test_navigation.py -k estimate_page -v</code>
+Expected: FAIL with
+<code>ImportError: cannot import name 'estimate_page_count'</code></p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Implement the
+functions</strong></label></li>
+</ul>
+<p>In <code>quill/core/navigation.py</code>, add after
+<code>page_start_for_number</code> (after line 18):</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _word_starts(text: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">int</span>]:</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;Character offset of each word (maximal run of non-whitespace).</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">    Matches the token count `text.split()` would produce (used by the</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">    word-count status cell), so the page estimate always agrees with the</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">    word count shown elsewhere in the status bar.</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">    &quot;&quot;&quot;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [match.start() <span class="cf">for</span> match <span class="kw">in</span> re.finditer(<span class="vs">r&quot;</span><span class="dv">\S</span><span class="op">+</span><span class="vs">&quot;</span>, text)]</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> estimate_page_count(text: <span class="bu">str</span>, words_per_page: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">int</span>:</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;Estimate a page count from word count alone.</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co">    This is an approximation for documents with no real page breaks</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co">    (plain text, Markdown, most DOCX) -- it has no knowledge of fonts,</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co">    margins, or paper size, and will not match a printed or exported</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co">    page count. Always returns at least 1.</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co">    &quot;&quot;&quot;</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    words <span class="op">=</span> <span class="bu">len</span>(_word_starts(text))</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> words <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">1</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">max</span>(<span class="dv">1</span>, <span class="op">-</span>(<span class="op">-</span>words <span class="op">//</span> words_per_page))  <span class="co"># ceiling division</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> estimate_page_for_position(text: <span class="bu">str</span>, position: <span class="bu">int</span>, words_per_page: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">int</span>:</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;Estimate which page `position` falls on, clamped to the total.&quot;&quot;&quot;</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>    starts <span class="op">=</span> _word_starts(text)</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> starts:</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">1</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    position <span class="op">=</span> <span class="bu">max</span>(<span class="dv">0</span>, <span class="bu">min</span>(position, <span class="bu">len</span>(text)))</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    words_before <span class="op">=</span> <span class="bu">sum</span>(<span class="dv">1</span> <span class="cf">for</span> start <span class="kw">in</span> starts <span class="cf">if</span> start <span class="op">&lt;</span> position)</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    page <span class="op">=</span> words_before <span class="op">//</span> words_per_page <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>    total <span class="op">=</span> estimate_page_count(text, words_per_page)</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">max</span>(<span class="dv">1</span>, <span class="bu">min</span>(page, total))</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> estimate_page_start_for_number(</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>    text: <span class="bu">str</span>, page_number: <span class="bu">int</span>, words_per_page: <span class="bu">int</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="bu">int</span> <span class="op">|</span> <span class="va">None</span>:</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;Character offset where estimated `page_number` begins, or None if out of range.&quot;&quot;&quot;</span></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> page_number <span class="op">&lt;</span> <span class="dv">1</span>:</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">None</span></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>    starts <span class="op">=</span> _word_starts(text)</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>    total <span class="op">=</span> estimate_page_count(text, words_per_page)</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> page_number <span class="op">&gt;</span> total:</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">None</span></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> page_number <span class="op">==</span> <span class="dv">1</span>:</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">0</span></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>    index <span class="op">=</span> (page_number <span class="op">-</span> <span class="dv">1</span>) <span class="op">*</span> words_per_page</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> index <span class="op">&gt;=</span> <span class="bu">len</span>(starts):</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="bu">len</span>(text)</span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> starts[index]</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Run tests to verify
+they pass</strong></label></li>
+</ul>
+<p>Run: <code>pytest tests/unit/core/test_navigation.py -v</code>
+Expected: PASS (all tests in the file, including the pre-existing
+ones)</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 5: Lint and
+commit</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ruff</span> check quill/core/navigation.py tests/unit/core/test_navigation.py</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ruff</span> format <span class="at">--check</span> quill/core/navigation.py tests/unit/core/test_navigation.py</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/core/navigation.py tests/unit/core/test_navigation.py</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(navigation): estimate page count and position from word count (#872)&quot;</span></span></code></pre></div>
+<hr />
+<h3 id="task-2-page_estimate_words_per_page-setting">Task 2:
+<code>page_estimate_words_per_page</code> setting</h3>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/core/settings.py:469</code> (field),
+<code>quill/core/settings.py:1070</code> (parsing),
+<code>quill/core/settings.py:1438</code> (constructor)</li>
+<li>Modify: <code>quill/core/settings_specs.py:1827</code>
+(SettingSpec)</li>
+<li>Test: <code>tests/unit/core/test_settings.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: nothing new.</li>
+<li>Produces: <code>Settings.page_estimate_words_per_page: int</code>
+(default <code>300</code>, clamped <code>[150, 600]</code> on load), a
+searchable <code>SettingSpec</code> named
+<code>"page_estimate_words_per_page"</code> in the
+<code>"navigation"</code> group.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Write the failing
+test</strong></label></li>
+</ul>
+<p>Add to <code>tests/unit/core/test_settings.py</code>:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_page_estimate_words_per_page_defaults_to_300() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> Settings().page_estimate_words_per_page <span class="op">==</span> <span class="dv">300</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_page_estimate_words_per_page_clamps_on_load(monkeypatch, tmp_path) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    monkeypatch.setenv(<span class="st">&quot;QUILL_DATA_DIR&quot;</span>, <span class="bu">str</span>(tmp_path))</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    (tmp_path <span class="op">/</span> <span class="st">&quot;settings.json&quot;</span>).write_text(</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;{&quot;page_estimate_words_per_page&quot;: 5000}&#39;</span>, encoding<span class="op">=</span><span class="st">&quot;utf-8&quot;</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    loaded <span class="op">=</span> load_settings()</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> loaded.page_estimate_words_per_page <span class="op">==</span> <span class="dv">600</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_page_estimate_words_per_page_invalid_value_falls_back(monkeypatch, tmp_path) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    monkeypatch.setenv(<span class="st">&quot;QUILL_DATA_DIR&quot;</span>, <span class="bu">str</span>(tmp_path))</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    (tmp_path <span class="op">/</span> <span class="st">&quot;settings.json&quot;</span>).write_text(</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;{&quot;page_estimate_words_per_page&quot;: &quot;not a number&quot;}&#39;</span>, encoding<span class="op">=</span><span class="st">&quot;utf-8&quot;</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    loaded <span class="op">=</span> load_settings()</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> loaded.page_estimate_words_per_page <span class="op">==</span> <span class="dv">300</span></span></code></pre></div>
+<p>(This file already imports <code>Settings</code>,
+<code>load_settings</code>, <code>save_settings</code> at the top — no
+new imports needed.)</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Run tests to verify
+they fail</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/core/test_settings.py -k page_estimate_words_per_page -v</code>
+Expected: FAIL with
+<code>AttributeError: 'Settings' object has no attribute 'page_estimate_words_per_page'</code></p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Add the
+field</strong></label></li>
+</ul>
+<p>In <code>quill/core/settings.py</code>, after line 469
+(<code>braille_lines_per_page: int = 25</code>), add:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Page indicator (#872): word-count basis for the estimated page count</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># shown for documents with no real page breaks (plain text, Markdown,</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># most DOCX). This is an approximation, not a printed page count.</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    page_estimate_words_per_page: <span class="bu">int</span> <span class="op">=</span> <span class="dv">300</span></span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Add load-time
+parsing</strong></label></li>
+</ul>
+<p>In <code>quill/core/settings.py</code>, after line 1070
+(<code>braille_lines_per_page = max(20, min(30, braille_lines_per_page))</code>),
+add:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>            page_estimate_words_per_page <span class="op">=</span> <span class="bu">int</span>(data.get(<span class="st">&quot;page_estimate_words_per_page&quot;</span>, <span class="dv">300</span>))</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> (<span class="pp">TypeError</span>, <span class="pp">ValueError</span>):</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>            page_estimate_words_per_page <span class="op">=</span> <span class="dv">300</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        page_estimate_words_per_page <span class="op">=</span> <span class="bu">max</span>(<span class="dv">150</span>, <span class="bu">min</span>(<span class="dv">600</span>, page_estimate_words_per_page))</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 5: Wire the
+constructor</strong></label></li>
+</ul>
+<p>In <code>quill/core/settings.py</code>, after line 1438
+(<code>braille_lines_per_page=braille_lines_per_page,</code>), add:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>            page_estimate_words_per_page<span class="op">=</span>page_estimate_words_per_page,</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 6: Run tests to verify
+they pass</strong></label></li>
+</ul>
+<p>Run: <code>pytest tests/unit/core/test_settings.py -v</code>
+Expected: PASS (all tests in the file)</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 7: Add the
+SettingSpec</strong></label></li>
+</ul>
+<p>In <code>quill/core/settings_specs.py</code>, after the
+<code>braille_use_form_feeds</code> SettingSpec block (ends at line
+1838), add:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>    SettingSpec(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;page_estimate_words_per_page&quot;</span>,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Estimated words per page&quot;</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;navigation&quot;</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;int&quot;</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Used only for documents without real page breaks (plain text, &quot;</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Markdown, most DOCX files) to estimate a page count from word &quot;</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;count. This is an approximation, not an exact printed page count -- &quot;</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;it does not account for fonts, margins, or paper size.&quot;</span>,</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>        minimum<span class="op">=</span><span class="dv">150</span>,</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>        maximum<span class="op">=</span><span class="dv">600</span>,</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        keywords<span class="op">=</span>(<span class="st">&quot;page&quot;</span>, <span class="st">&quot;page count&quot;</span>, <span class="st">&quot;page number&quot;</span>, <span class="st">&quot;status bar&quot;</span>, <span class="st">&quot;estimate&quot;</span>),</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        feature_id<span class="op">=</span><span class="st">&quot;core.editor&quot;</span>,</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    ),</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 8: Test the spec is
+discoverable</strong></label></li>
+</ul>
+<p>Run: <code>pytest tests/unit/core/test_settings_specs.py -v</code>
+(if this file doesn't exist, skip this step -- there is no existing
+per-spec test convention to match)</p>
+<p>Run: <code>pytest tests/unit/core -k settings -v</code> Expected:
+PASS</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 9: Lint and
+commit</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ruff</span> check quill/core/settings.py quill/core/settings_specs.py tests/unit/core/test_settings.py</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ruff</span> format <span class="at">--check</span> quill/core/settings.py quill/core/settings_specs.py tests/unit/core/test_settings.py</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/core/settings.py quill/core/settings_specs.py tests/unit/core/test_settings.py</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(settings): add page_estimate_words_per_page (#872)&quot;</span></span></code></pre></div>
+<hr />
+<h3 id="task-3-register-the-page-status-bar-item">Task 3: Register the
+"page" status bar item</h3>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/core/settings_normalizers.py:10-61</code>
+(<code>STATUS_BAR_ITEMS</code> tuple)</li>
+<li>Modify: <code>quill/ui/main_frame.py:792-891</code>
+(<code>_STATUS_BAR_LABELS</code>, <code>_STATUS_BAR_WIDTHS</code>,
+<code>_STATUS_BAR_FEATURES</code>)</li>
+<li>Test: <code>tests/unit/core/test_settings.py</code>,
+<code>tests/unit/ui/test_main_frame_statusbar_context.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: nothing new.</li>
+<li>Produces: <code>"page"</code> is a member of
+<code>STATUS_BAR_ITEMS</code>, positioned right after
+<code>"line_column"</code>; <code>"page"</code> is <strong>not</strong>
+in <code>_default_status_bar_hidden()</code>;
+<code>MainFrame._STATUS_BAR_LABELS["page"] == "Page"</code>,
+<code>_STATUS_BAR_WIDTHS["page"] == 220</code>,
+<code>_STATUS_BAR_FEATURES["page"] == "core.analysis"</code>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Write the failing
+tests</strong></label></li>
+</ul>
+<p>Add to <code>tests/unit/core/test_settings.py</code>:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_page_is_a_status_bar_item_right_after_line_column() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> quill.core.settings_normalizers <span class="im">import</span> STATUS_BAR_ITEMS</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;page&quot;</span> <span class="kw">in</span> STATUS_BAR_ITEMS</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> STATUS_BAR_ITEMS.index(<span class="st">&quot;page&quot;</span>) <span class="op">==</span> STATUS_BAR_ITEMS.index(<span class="st">&quot;line_column&quot;</span>) <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_page_is_visible_by_default() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;page&quot;</span> <span class="kw">not</span> <span class="kw">in</span> Settings().status_bar_hidden</span></code></pre></div>
+<p>Add to
+<code>tests/unit/ui/test_main_frame_statusbar_context.py</code>:</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_page_status_bar_metadata_is_registered() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> MainFrame._STATUS_BAR_LABELS[<span class="st">&quot;page&quot;</span>] <span class="op">==</span> <span class="st">&quot;Page&quot;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> MainFrame._STATUS_BAR_WIDTHS[<span class="st">&quot;page&quot;</span>] <span class="op">==</span> <span class="dv">220</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> MainFrame._STATUS_BAR_FEATURES[<span class="st">&quot;page&quot;</span>] <span class="op">==</span> <span class="st">&quot;core.analysis&quot;</span></span></code></pre></div>
+<p>(Confirm <code>MainFrame</code> is already imported at the top of
+<code>test_main_frame_statusbar_context.py</code>; if not, add
+<code>from quill.ui.main_frame import MainFrame</code>.)</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Run tests to verify
+they fail</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/core/test_settings.py tests/unit/ui/test_main_frame_statusbar_context.py -k page -v</code>
+Expected: FAIL (<code>"page" not in STATUS_BAR_ITEMS</code> /
+<code>KeyError: 'page'</code>)</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Add "page" to
+STATUS_BAR_ITEMS</strong></label></li>
+</ul>
+<p>In <code>quill/core/settings_normalizers.py</code>, change:</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>STATUS_BAR_ITEMS: <span class="bu">tuple</span>[<span class="bu">str</span>, ...] <span class="op">=</span> (</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;line_column&quot;</span>,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;message&quot;</span>,</span></code></pre></div>
+<p>to:</p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>STATUS_BAR_ITEMS: <span class="bu">tuple</span>[<span class="bu">str</span>, ...] <span class="op">=</span> (</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;line_column&quot;</span>,</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># #872: page indicator. Visible by default (not in</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># _default_status_bar_hidden below), placed right after line_column</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># since both are &quot;where am I&quot; position cells -- not first, but adjacent.</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;page&quot;</span>,</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;message&quot;</span>,</span></code></pre></div>
+<p>Do <strong>not</strong> add <code>"page"</code> to
+<code>_default_status_bar_hidden()</code> (lines 68-93) -- its absence
+from that list is what makes it visible by default.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Add the three
+MainFrame class dicts</strong></label></li>
+</ul>
+<p>In <code>quill/ui/main_frame.py</code>, in
+<code>_STATUS_BAR_LABELS</code> (starts line 792), add after
+<code>"line_column": "Position",</code>:</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>        <span class="co">&quot;page&quot;</span>: <span class="st">&quot;Page&quot;</span>,</span></code></pre></div>
+<p>In <code>_STATUS_BAR_WIDTHS</code> (starts line 824), add after
+<code>"line_column": 140,</code>:</p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>        <span class="co">&quot;page&quot;</span>: <span class="dv">220</span>,</span></code></pre></div>
+<p>In <code>_STATUS_BAR_FEATURES</code> (starts line 856), add after
+<code>"line_column": "core.editor",</code>:</p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>        <span class="co">&quot;page&quot;</span>: <span class="st">&quot;core.analysis&quot;</span>,</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 5: Run tests to verify
+they pass</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/core/test_settings.py tests/unit/ui/test_main_frame_statusbar_context.py -v</code>
+Expected: PASS</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 6: Lint and
+commit</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ruff</span> check quill/core/settings_normalizers.py quill/ui/main_frame.py tests/unit/core/test_settings.py tests/unit/ui/test_main_frame_statusbar_context.py</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ruff</span> format <span class="at">--check</span> quill/core/settings_normalizers.py quill/ui/main_frame.py tests/unit/core/test_settings.py tests/unit/ui/test_main_frame_statusbar_context.py</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/core/settings_normalizers.py quill/ui/main_frame.py tests/unit/core/test_settings.py tests/unit/ui/test_main_frame_statusbar_context.py</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(statusbar): register the page item, visible by default (#872)&quot;</span></span></code></pre></div>
+<p><em>(Note: <code>quill/ui/main_frame.py</code> may exceed its GATE-11
+module size budget after this change -- check with
+<code>python -m pytest tests/unit/tools/test_module_size_budget.py -q</code>
+and, if it fails, add a dated <code>_rebaseline_</code> entry to
+<code>quill/tools/module_size_budgets.json</code> following the pattern
+of existing entries in that file, as part of this commit.)</em></p>
+<hr />
+<h3
+id="task-4-status-bar-cell-rendering-help-text-activation-and-brf-suppression">Task
+4: Status bar cell rendering, help text, activation, and BRF
+suppression</h3>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/ui/main_frame_statusbar.py</code></li>
+<li>Test:
+<code>tests/unit/ui/test_main_frame_statusbar_context.py</code>,
+<code>tests/unit/ui/test_main_frame_navigation.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: <code>estimate_page_count</code>,
+<code>estimate_page_for_position</code> from
+<code>quill.core.navigation</code> (Task 1); <code>page_starts</code>
+from <code>quill.core.navigation</code> (pre-existing);
+<code>settings.page_estimate_words_per_page</code> (Task 2).</li>
+<li>Produces:
+<code>StatusBarMixin._statusbar_page_text() -&gt; str</code>; the
+<code>"page"</code> branch in <code>_statusbar_text_for_item</code>;
+<code>"page"</code> entry in the help-text dict;
+<code>"page": self.go_to_page</code> in the activation actions dict;
+<code>"page"</code> removed from <code>_statusbar_items()</code>'s
+visible list whenever the <code>"braille"</code> cell is active.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Write the failing
+tests</strong></label></li>
+</ul>
+<p>Add to
+<code>tests/unit/ui/test_main_frame_statusbar_context.py</code>:</p>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> _PageEditor:</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, text: <span class="bu">str</span>, caret: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._text <span class="op">=</span> text</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._caret <span class="op">=</span> caret</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> GetValue(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>._text</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> GetInsertionPoint(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="bu">int</span>:</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>._caret</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _make_page_frame(text: <span class="bu">str</span>, caret: <span class="bu">int</span>, <span class="op">*</span>, words_per_page: <span class="bu">int</span> <span class="op">=</span> <span class="dv">300</span>) <span class="op">-&gt;</span> MainFrame:</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>    frame <span class="op">=</span> MainFrame.<span class="fu">__new__</span>(MainFrame)</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>    frame.settings <span class="op">=</span> Settings()</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>    frame.settings.page_estimate_words_per_page <span class="op">=</span> words_per_page</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>    frame.editor <span class="op">=</span> _PageEditor(text, caret)  <span class="co"># type: ignore[assignment]</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> frame</span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_page_cell_is_estimated_when_no_form_feeds() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> <span class="st">&quot; &quot;</span>.join([<span class="st">&quot;word&quot;</span>] <span class="op">*</span> <span class="dv">900</span>)  <span class="co"># 3 pages at 300/page</span></span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>    frame <span class="op">=</span> _make_page_frame(text, <span class="dv">0</span>)</span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> frame._statusbar_text_for_item(<span class="st">&quot;page&quot;</span>) <span class="op">==</span> <span class="st">&quot;~1 of ~3 (estimated)&quot;</span></span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_page_cell_is_exact_when_form_feeds_present() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> <span class="st">&quot;page one</span><span class="ch">\f</span><span class="st">page two</span><span class="ch">\f</span><span class="st">page three&quot;</span></span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a>    caret <span class="op">=</span> text.index(<span class="st">&quot;page two&quot;</span>)</span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a>    frame <span class="op">=</span> _make_page_frame(text, caret)</span>
+<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> frame._statusbar_text_for_item(<span class="st">&quot;page&quot;</span>) <span class="op">==</span> <span class="st">&quot;2 of 3&quot;</span></span>
+<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_page_cell_empty_when_editor_missing() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a>    frame <span class="op">=</span> MainFrame.<span class="fu">__new__</span>(MainFrame)</span>
+<span id="cb18-36"><a href="#cb18-36" aria-hidden="true" tabindex="-1"></a>    frame.settings <span class="op">=</span> Settings()</span>
+<span id="cb18-37"><a href="#cb18-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> frame._statusbar_text_for_item(<span class="st">&quot;page&quot;</span>) <span class="op">==</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb18-38"><a href="#cb18-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-39"><a href="#cb18-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-40"><a href="#cb18-40" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_page_help_text_mentions_go_to_page() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb18-41"><a href="#cb18-41" aria-hidden="true" tabindex="-1"></a>    frame <span class="op">=</span> _make_page_frame(<span class="st">&quot;hello&quot;</span>, <span class="dv">0</span>)</span>
+<span id="cb18-42"><a href="#cb18-42" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;Go To Page&quot;</span> <span class="kw">in</span> frame._statusbar_help_text(<span class="st">&quot;page&quot;</span>)</span></code></pre></div>
+<p>Add to <code>tests/unit/ui/test_main_frame_navigation.py</code>
+(reuses the existing <code>_build_frame</code> helper already in that
+file):</p>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_page_cell_activates_go_to_page() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    frame <span class="op">=</span> _build_frame(<span class="st">&quot;hello&quot;</span>, insertion_point<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    called: <span class="bu">list</span>[<span class="bu">bool</span>] <span class="op">=</span> []</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    frame.go_to_page <span class="op">=</span> <span class="kw">lambda</span>: called.append(<span class="va">True</span>)  <span class="co"># type: ignore[method-assign]</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    frame._activate_statusbar_cell(<span class="st">&quot;page&quot;</span>)</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> called <span class="op">==</span> [<span class="va">True</span>]</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_page_cell_suppressed_when_braille_active() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> quill.core.document <span class="im">import</span> Document</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>    frame <span class="op">=</span> _build_frame(<span class="st">&quot;hello&quot;</span>, insertion_point<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>    frame.document <span class="op">=</span> Document(</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>        text<span class="op">=</span><span class="st">&quot;hello</span><span class="ch">\f</span><span class="st">world&quot;</span>,</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>        source_metadata<span class="op">=</span>{</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;source_kind&quot;</span>: <span class="st">&quot;brf&quot;</span>,</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;brf_suffix&quot;</span>: <span class="st">&quot;brf&quot;</span>,</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;brf_cell_width&quot;</span>: <span class="dv">40</span>,</span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;brf_line_height&quot;</span>: <span class="dv">25</span>,</span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;brf_non_ascii_offsets&quot;</span>: [],</span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;brf_had_bom&quot;</span>: <span class="va">False</span>,</span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;brf_profile&quot;</span>: <span class="st">&quot;ueb_english&quot;</span>,</span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>        },</span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>    frame.editor.GetCurrentPos <span class="op">=</span> <span class="kw">lambda</span>: <span class="dv">0</span>  <span class="co"># type: ignore[attr-defined]</span></span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>    frame._get_action_suggestion <span class="op">=</span> <span class="kw">lambda</span>: <span class="va">None</span>  <span class="co"># type: ignore[method-assign]</span></span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a>    frame._ai_engine_should_autoshow <span class="op">=</span> <span class="kw">lambda</span>: <span class="va">False</span>  <span class="co"># type: ignore[method-assign]</span></span>
+<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a>    items <span class="op">=</span> frame._statusbar_items()</span>
+<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;braille&quot;</span> <span class="kw">in</span> items</span>
+<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;page&quot;</span> <span class="kw">not</span> <span class="kw">in</span> items</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Run tests to verify
+they fail</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/ui/test_main_frame_statusbar_context.py tests/unit/ui/test_main_frame_navigation.py -k page -v</code>
+Expected: FAIL (empty string / KeyError from the activation dict /
+"page" present alongside "braille")</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Add the
+imports</strong></label></li>
+</ul>
+<p>In <code>quill/ui/main_frame_statusbar.py</code>, change:</p>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.marks <span class="im">import</span> line_column_for_position</span></code></pre></div>
+<p>to:</p>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.marks <span class="im">import</span> line_column_for_position</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.navigation <span class="im">import</span> estimate_page_count, estimate_page_for_position, page_starts</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Add
+<code>_statusbar_page_text</code></strong></label></li>
+</ul>
+<p>In <code>quill/ui/main_frame_statusbar.py</code>, add this method
+right after <code>_statusbar_braille_text</code> (after its closing,
+before <code>_active_brf_resolver</code>):</p>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _statusbar_page_text(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>        <span class="co">&quot;&quot;&quot;Return the page cell&#39;s text: exact &quot;N of M&quot; or &quot;~N of ~M (estimated)&quot;.</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="co">        Exact when the document&#39;s text contains at least one form-feed</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="co">        (real page boundaries, e.g. from PDF import); otherwise estimated</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="co">        from word count via ``page_estimate_words_per_page``. Never</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="co">        returns one style&#39;s punctuation for the other -- the tilde and the</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="co">        word &quot;estimated&quot; always travel together.</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="co">        &quot;&quot;&quot;</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>        editor <span class="op">=</span> <span class="bu">getattr</span>(<span class="va">self</span>, <span class="st">&quot;editor&quot;</span>, <span class="va">None</span>)</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> editor <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>            text <span class="op">=</span> editor.GetValue()</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>            position <span class="op">=</span> editor.GetInsertionPoint()</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">RuntimeError</span>:</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>        starts <span class="op">=</span> page_starts(text)</span>
+<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">len</span>(starts) <span class="op">&gt;</span> <span class="dv">1</span>:</span>
+<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>            current <span class="op">=</span> <span class="bu">sum</span>(<span class="dv">1</span> <span class="cf">for</span> start <span class="kw">in</span> starts <span class="cf">if</span> start <span class="op">&lt;=</span> position)</span>
+<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>            current <span class="op">=</span> <span class="bu">max</span>(<span class="dv">1</span>, <span class="bu">min</span>(current, <span class="bu">len</span>(starts)))</span>
+<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="ss">f&quot;</span><span class="sc">{</span>current<span class="sc">}</span><span class="ss"> of </span><span class="sc">{</span><span class="bu">len</span>(starts)<span class="sc">}</span><span class="ss">&quot;</span></span>
+<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>        words_per_page <span class="op">=</span> <span class="bu">getattr</span>(<span class="va">self</span>.settings, <span class="st">&quot;page_estimate_words_per_page&quot;</span>, <span class="dv">300</span>)</span>
+<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>        total <span class="op">=</span> estimate_page_count(text, words_per_page)</span>
+<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>        current <span class="op">=</span> estimate_page_for_position(text, position, words_per_page)</span>
+<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="ss">f&quot;~</span><span class="sc">{</span>current<span class="sc">}</span><span class="ss"> of ~</span><span class="sc">{</span>total<span class="sc">}</span><span class="ss"> (estimated)&quot;</span></span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 5: Wire the dispatcher
+branch</strong></label></li>
+</ul>
+<p>In <code>quill/ui/main_frame_statusbar.py</code>, in
+<code>_statusbar_text_for_item</code>, change:</p>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> item <span class="op">==</span> <span class="st">&quot;braille&quot;</span>:</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="va">self</span>._statusbar_braille_text()</span></code></pre></div>
+<p>to:</p>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> item <span class="op">==</span> <span class="st">&quot;braille&quot;</span>:</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="va">self</span>._statusbar_braille_text()</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> item <span class="op">==</span> <span class="st">&quot;page&quot;</span>:</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="va">self</span>._statusbar_page_text()</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 6: Add the help
+text</strong></label></li>
+</ul>
+<p>In <code>quill/ui/main_frame_statusbar.py</code>, in
+<code>_statusbar_help_text</code>'s <code>labels</code> dict, add after
+<code>"line_column": "Go to line",</code>:</p>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>            <span class="co">&quot;page&quot;</span>: <span class="st">&quot;Page position. Press Enter for Go To Page.&quot;</span>,</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 7: Add the activation
+wiring</strong></label></li>
+</ul>
+<p>In <code>quill/ui/main_frame_statusbar.py</code>, in
+<code>_activate_statusbar_cell</code>'s <code>actions</code> dict, add
+after <code>"line_column": self.go_to_line,</code>:</p>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>            <span class="co">&quot;page&quot;</span>: <span class="va">self</span>.go_to_page,</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 8: Add the BRF
+suppression rule</strong></label></li>
+</ul>
+<p>In <code>quill/ui/main_frame_statusbar.py</code>, in
+<code>_statusbar_items</code>, find:</p>
+<div class="sourceCode" id="cb27"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="st">&quot;braille&quot;</span> <span class="kw">not</span> <span class="kw">in</span> visible <span class="kw">and</span> <span class="va">self</span>._statusbar_braille_text():</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>            visible.append(<span class="st">&quot;braille&quot;</span>)</span></code></pre></div>
+<p>and add immediately after it:</p>
+<div class="sourceCode" id="cb28"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="st">&quot;page&quot;</span> <span class="kw">in</span> visible <span class="kw">and</span> <span class="va">self</span>._statusbar_braille_text():</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>            visible <span class="op">=</span> [item <span class="cf">for</span> item <span class="kw">in</span> visible <span class="cf">if</span> item <span class="op">!=</span> <span class="st">&quot;page&quot;</span>]</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 9: Run tests to verify
+they pass</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/ui/test_main_frame_statusbar_context.py tests/unit/ui/test_main_frame_navigation.py -v</code>
+Expected: PASS</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 10: Lint and
+commit</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb29"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ruff</span> check quill/ui/main_frame_statusbar.py tests/unit/ui/test_main_frame_statusbar_context.py tests/unit/ui/test_main_frame_navigation.py</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ruff</span> format <span class="at">--check</span> quill/ui/main_frame_statusbar.py tests/unit/ui/test_main_frame_statusbar_context.py tests/unit/ui/test_main_frame_navigation.py</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/ui/main_frame_statusbar.py tests/unit/ui/test_main_frame_statusbar_context.py tests/unit/ui/test_main_frame_navigation.py</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(statusbar): render, help, activate, and suppress the page cell (#872)&quot;</span></span></code></pre></div>
+<hr />
+<h3 id="task-5-track-aware-go-to-page-command">Task 5: Track-aware Go To
+Page command</h3>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/ui/main_frame.py:15176-15209</code>
+(<code>go_to_page</code>)</li>
+<li>Test: <code>tests/unit/ui/test_main_frame_navigation.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: <code>estimate_page_count</code>,
+<code>estimate_page_start_for_number</code> from
+<code>quill.core.navigation</code>; <code>page_starts</code>,
+<code>page_start_for_number</code> (already imported in
+<code>main_frame.py</code>, lines 197-198).</li>
+<li>Produces: <code>MainFrame.go_to_page()</code> now prompts and jumps
+using the estimate when the document has no real page breaks, and says
+so in the prompt.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Write the failing
+tests</strong></label></li>
+</ul>
+<p>Add to <code>tests/unit/ui/test_main_frame_navigation.py</code>,
+matching the existing <code>_TextEntryDialog</code> fixture convention
+already used in this file (see
+<code>test_prompt_table_shape_reprompts_invalid_values</code>):</p>
+<div class="sourceCode" id="cb30"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _go_to_page_wx(value: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">object</span>:</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">class</span> _TextEntryDialog:</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>        <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, _parent: <span class="bu">object</span>, _message: <span class="bu">str</span>, _title: <span class="bu">str</span>, value: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.message <span class="op">=</span> _message</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.value <span class="op">=</span> value</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>        <span class="kw">def</span> <span class="fu">__enter__</span>(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="st">&quot;_TextEntryDialog&quot;</span>:</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="va">self</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>        <span class="kw">def</span> <span class="fu">__exit__</span>(<span class="va">self</span>, <span class="op">*</span>_args: <span class="bu">object</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="va">None</span></span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>        <span class="kw">def</span> GetValue(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="va">self</span>.value</span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">type</span>(</span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;WX&quot;</span>,</span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a>        (),</span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a>        {</span>
+<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;TextEntryDialog&quot;</span>: <span class="kw">lambda</span> parent, message, title, value: _TextEntryDialog(</span>
+<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a>                parent, message, title, value</span>
+<span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a>            ),</span>
+<span id="cb30-23"><a href="#cb30-23" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;ICON_ERROR&quot;</span>: <span class="dv">8</span>,</span>
+<span id="cb30-24"><a href="#cb30-24" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;OK&quot;</span>: <span class="dv">16</span>,</span>
+<span id="cb30-25"><a href="#cb30-25" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;ID_OK&quot;</span>: <span class="dv">1</span>,</span>
+<span id="cb30-26"><a href="#cb30-26" aria-hidden="true" tabindex="-1"></a>        },</span>
+<span id="cb30-27"><a href="#cb30-27" aria-hidden="true" tabindex="-1"></a>    )()</span>
+<span id="cb30-28"><a href="#cb30-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-29"><a href="#cb30-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-30"><a href="#cb30-30" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_go_to_page_exact_jumps_to_form_feed_boundary() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb30-31"><a href="#cb30-31" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> <span class="st">&quot;page one</span><span class="ch">\f</span><span class="st">page two</span><span class="ch">\f</span><span class="st">page three&quot;</span></span>
+<span id="cb30-32"><a href="#cb30-32" aria-hidden="true" tabindex="-1"></a>    frame <span class="op">=</span> _build_frame(text, insertion_point<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb30-33"><a href="#cb30-33" aria-hidden="true" tabindex="-1"></a>    frame._wx <span class="op">=</span> _go_to_page_wx(<span class="st">&quot;2&quot;</span>)</span>
+<span id="cb30-34"><a href="#cb30-34" aria-hidden="true" tabindex="-1"></a>    frame._show_modal_dialog <span class="op">=</span> <span class="kw">lambda</span> dialog, title: frame._wx.ID_OK  <span class="co"># type: ignore[method-assign]</span></span>
+<span id="cb30-35"><a href="#cb30-35" aria-hidden="true" tabindex="-1"></a>    frame.go_to_page()</span>
+<span id="cb30-36"><a href="#cb30-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> frame.editor.GetInsertionPoint() <span class="op">==</span> text.index(<span class="st">&quot;page two&quot;</span>)</span>
+<span id="cb30-37"><a href="#cb30-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-38"><a href="#cb30-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-39"><a href="#cb30-39" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_go_to_page_estimated_prompt_says_estimated() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb30-40"><a href="#cb30-40" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> <span class="st">&quot; &quot;</span>.join([<span class="st">&quot;word&quot;</span>] <span class="op">*</span> <span class="dv">900</span>)  <span class="co"># 3 pages at 300/page</span></span>
+<span id="cb30-41"><a href="#cb30-41" aria-hidden="true" tabindex="-1"></a>    frame <span class="op">=</span> _build_frame(text, insertion_point<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb30-42"><a href="#cb30-42" aria-hidden="true" tabindex="-1"></a>    frame._wx <span class="op">=</span> _go_to_page_wx(<span class="st">&quot;1&quot;</span>)</span>
+<span id="cb30-43"><a href="#cb30-43" aria-hidden="true" tabindex="-1"></a>    frame._show_modal_dialog <span class="op">=</span> <span class="kw">lambda</span> dialog, title: frame._wx.ID_OK  <span class="co"># type: ignore[method-assign]</span></span>
+<span id="cb30-44"><a href="#cb30-44" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Capture the prompt text passed to TextEntryDialog by wrapping the</span></span>
+<span id="cb30-45"><a href="#cb30-45" aria-hidden="true" tabindex="-1"></a>    <span class="co"># constructor _go_to_page_wx already installed on frame._wx.</span></span>
+<span id="cb30-46"><a href="#cb30-46" aria-hidden="true" tabindex="-1"></a>    captured: <span class="bu">list</span>[<span class="bu">str</span>] <span class="op">=</span> []</span>
+<span id="cb30-47"><a href="#cb30-47" aria-hidden="true" tabindex="-1"></a>    original <span class="op">=</span> frame._wx.TextEntryDialog</span>
+<span id="cb30-48"><a href="#cb30-48" aria-hidden="true" tabindex="-1"></a>    frame._wx.TextEntryDialog <span class="op">=</span> <span class="kw">lambda</span> parent, message, title, value: (</span>
+<span id="cb30-49"><a href="#cb30-49" aria-hidden="true" tabindex="-1"></a>        captured.append(message) <span class="kw">or</span> original(parent, message, title, value)</span>
+<span id="cb30-50"><a href="#cb30-50" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb30-51"><a href="#cb30-51" aria-hidden="true" tabindex="-1"></a>    frame.go_to_page()</span>
+<span id="cb30-52"><a href="#cb30-52" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;estimated&quot;</span> <span class="kw">in</span> captured[<span class="dv">0</span>].lower()</span>
+<span id="cb30-53"><a href="#cb30-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-54"><a href="#cb30-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-55"><a href="#cb30-55" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_go_to_page_estimated_out_of_range_reports_total() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb30-56"><a href="#cb30-56" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> <span class="st">&quot; &quot;</span>.join([<span class="st">&quot;word&quot;</span>] <span class="op">*</span> <span class="dv">10</span>)  <span class="co"># 1 page at 300/page</span></span>
+<span id="cb30-57"><a href="#cb30-57" aria-hidden="true" tabindex="-1"></a>    frame <span class="op">=</span> _build_frame(text, insertion_point<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb30-58"><a href="#cb30-58" aria-hidden="true" tabindex="-1"></a>    frame._wx <span class="op">=</span> _go_to_page_wx(<span class="st">&quot;5&quot;</span>)</span>
+<span id="cb30-59"><a href="#cb30-59" aria-hidden="true" tabindex="-1"></a>    frame._show_modal_dialog <span class="op">=</span> <span class="kw">lambda</span> dialog, title: frame._wx.ID_OK  <span class="co"># type: ignore[method-assign]</span></span>
+<span id="cb30-60"><a href="#cb30-60" aria-hidden="true" tabindex="-1"></a>    messages: <span class="bu">list</span>[<span class="bu">str</span>] <span class="op">=</span> []</span>
+<span id="cb30-61"><a href="#cb30-61" aria-hidden="true" tabindex="-1"></a>    frame._show_message_box <span class="op">=</span> (  <span class="co"># type: ignore[method-assign]</span></span>
+<span id="cb30-62"><a href="#cb30-62" aria-hidden="true" tabindex="-1"></a>        <span class="kw">lambda</span> message, <span class="op">*</span>_a, <span class="op">**</span>_k: messages.append(message)</span>
+<span id="cb30-63"><a href="#cb30-63" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb30-64"><a href="#cb30-64" aria-hidden="true" tabindex="-1"></a>    frame.go_to_page()</span>
+<span id="cb30-65"><a href="#cb30-65" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;1 page&quot;</span> <span class="kw">in</span> messages[<span class="dv">0</span>]</span></code></pre></div>
+<p><code>_build_frame</code> in this file already sets
+<code>frame.settings</code> with the fields the earlier tests need;
+<code>page_estimate_words_per_page</code> comes from the real
+<code>Settings</code> dataclass default (300) since
+<code>_build_frame</code>'s settings object is a lightweight stand-in --
+confirm it exposes <code>page_estimate_words_per_page</code> (add
+<code>"page_estimate_words_per_page": 300,</code> to its dict literal if
+it doesn't; <code>go_to_page</code> reads it via
+<code>getattr(self.settings, ..., 300)</code> so a missing attribute
+still falls back to 300 safely either way).</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Run tests to verify
+they fail</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/ui/test_main_frame_navigation.py -k go_to_page -v</code>
+Expected: FAIL (either an AttributeError from missing
+<code>_wx.TextEntryDialog</code>/<code>ID_OK</code> scaffolding, or the
+prompt/behavior not yet being track-aware)</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Rewrite
+<code>go_to_page</code></strong></label></li>
+</ul>
+<p>In <code>quill/ui/main_frame.py</code>, replace the full body of
+<code>go_to_page</code> (lines 15176-15209) with:</p>
+<div class="sourceCode" id="cb31"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> go_to_page(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>        wx <span class="op">=</span> <span class="va">self</span>._wx</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>        text <span class="op">=</span> <span class="va">self</span>.editor.GetValue()</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>        starts <span class="op">=</span> page_starts(text)</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>        exact <span class="op">=</span> <span class="bu">len</span>(starts) <span class="op">&gt;</span> <span class="dv">1</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>        words_per_page <span class="op">=</span> <span class="bu">getattr</span>(<span class="va">self</span>.settings, <span class="st">&quot;page_estimate_words_per_page&quot;</span>, <span class="dv">300</span>)</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>        total_pages <span class="op">=</span> <span class="bu">len</span>(starts) <span class="cf">if</span> exact <span class="cf">else</span> estimate_page_count(text, words_per_page)</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>        prompt <span class="op">=</span> (</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f&quot;Enter a page number (1-</span><span class="sc">{</span>total_pages<span class="sc">}</span><span class="ss">):&quot;</span></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> exact</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span> (</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>                <span class="ss">f&quot;Enter an estimated page number (1-</span><span class="sc">{</span>total_pages<span class="sc">}</span><span class="ss">). This is &quot;</span></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot;based on word count, not an exact printed page count:&quot;</span></span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">with</span> wx.TextEntryDialog(</span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.frame,</span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>            prompt,</span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;Go To Page&quot;</span>,</span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a>            value<span class="op">=</span><span class="st">&quot;1&quot;</span>,</span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a>        ) <span class="im">as</span> dialog:</span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="va">self</span>._show_modal_dialog(dialog, <span class="st">&quot;Go To Page&quot;</span>) <span class="op">!=</span> wx.ID_OK:</span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span></span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a>            raw_value <span class="op">=</span> dialog.GetValue().strip()</span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a>            page_number <span class="op">=</span> <span class="bu">int</span>(raw_value)</span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">ValueError</span>:</span>
+<span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>._show_message_box(</span>
+<span id="cb31-29"><a href="#cb31-29" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot;Page number must be a number.&quot;</span>,</span>
+<span id="cb31-30"><a href="#cb31-30" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot;Go To Page&quot;</span>,</span>
+<span id="cb31-31"><a href="#cb31-31" aria-hidden="true" tabindex="-1"></a>                wx.ICON_ERROR <span class="op">|</span> wx.OK,</span>
+<span id="cb31-32"><a href="#cb31-32" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb31-33"><a href="#cb31-33" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span></span>
+<span id="cb31-34"><a href="#cb31-34" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> exact:</span>
+<span id="cb31-35"><a href="#cb31-35" aria-hidden="true" tabindex="-1"></a>            target <span class="op">=</span> page_start_for_number(text, page_number)</span>
+<span id="cb31-36"><a href="#cb31-36" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb31-37"><a href="#cb31-37" aria-hidden="true" tabindex="-1"></a>            target <span class="op">=</span> estimate_page_start_for_number(text, page_number, words_per_page)</span>
+<span id="cb31-38"><a href="#cb31-38" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> target <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb31-39"><a href="#cb31-39" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>._show_message_box(</span>
+<span id="cb31-40"><a href="#cb31-40" aria-hidden="true" tabindex="-1"></a>                <span class="ss">f&quot;Document has only </span><span class="sc">{</span>total_pages<span class="sc">}</span><span class="ss"> page(s).&quot;</span>,</span>
+<span id="cb31-41"><a href="#cb31-41" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot;Go To Page&quot;</span>,</span>
+<span id="cb31-42"><a href="#cb31-42" aria-hidden="true" tabindex="-1"></a>                wx.ICON_ERROR <span class="op">|</span> wx.OK,</span>
+<span id="cb31-43"><a href="#cb31-43" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb31-44"><a href="#cb31-44" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span></span>
+<span id="cb31-45"><a href="#cb31-45" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._record_location_before_jump()</span>
+<span id="cb31-46"><a href="#cb31-46" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._move_point(target)</span>
+<span id="cb31-47"><a href="#cb31-47" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.editor.SetFocus()</span>
+<span id="cb31-48"><a href="#cb31-48" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>._location_ring.record(target)</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Add the new
+imports</strong></label></li>
+</ul>
+<p>In <code>quill/ui/main_frame.py</code>, change:</p>
+<div class="sourceCode" id="cb32"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>    page_start_for_number,</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>    page_starts,</span></code></pre></div>
+<p>(around line 197-198) to:</p>
+<div class="sourceCode" id="cb33"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>    estimate_page_count,</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>    estimate_page_start_for_number,</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    page_start_for_number,</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>    page_starts,</span></code></pre></div>
+<p>(Keep the existing alphabetical-ish grouping in that import block;
+insert alongside the other <code>navigation</code> imports.)</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 5: Run tests to verify
+they pass</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/ui/test_main_frame_navigation.py -v</code>
+Expected: PASS</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 6: Lint and
+commit</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb34"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ruff</span> check quill/ui/main_frame.py tests/unit/ui/test_main_frame_navigation.py</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ruff</span> format <span class="at">--check</span> quill/ui/main_frame.py tests/unit/ui/test_main_frame_navigation.py</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> pytest tests/unit/tools/test_module_size_budget.py <span class="at">-q</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/ui/main_frame.py tests/unit/ui/test_main_frame_navigation.py quill/tools/module_size_budgets.json</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(navigation): Go To Page falls back to a stated estimate (#872)&quot;</span></span></code></pre></div>
+<p><em>(If the budget test fails, add a dated <code>_rebaseline_</code>
+entry to <code>quill/tools/module_size_budgets.json</code> before
+committing, as in Task 3's note.)</em></p>
+<hr />
+<h3 id="task-6-pdf-import-preserves-real-page-boundaries">Task 6: PDF
+import preserves real page boundaries</h3>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/io/pdf.py:75-98</code>
+(<code>_extract_with_pdfplumber</code>,
+<code>_extract_with_pypdf</code>)</li>
+<li>Test: <code>tests/unit/io/test_pdf.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: nothing new.</li>
+<li>Produces: <code>extract_pdf_text(path).text</code> now joins pages
+with <code>"\f"</code> instead of <code>"\n\n"</code>, so
+<code>quill.core.navigation.page_starts()</code> on the resulting
+<code>Document.text</code> reports one boundary per real PDF page.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Write the failing
+test</strong></label></li>
+</ul>
+<p>Add to <code>tests/unit/io/test_pdf.py</code>:</p>
+<div class="sourceCode" id="cb35"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.core.navigation <span class="im">import</span> page_starts</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_pdfplumber_extraction_joins_pages_with_form_feed(monkeypatch, tmp_path: Path) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">class</span> _StubPage:</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>        <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, text: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>._text <span class="op">=</span> text</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>        <span class="kw">def</span> extract_text(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="va">self</span>._text</span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">class</span> _StubPdf:</span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>        <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.pages <span class="op">=</span> [_StubPage(<span class="st">&quot;Page one&quot;</span>), _StubPage(<span class="st">&quot;Page two&quot;</span>), _StubPage(<span class="st">&quot;Page three&quot;</span>)]</span>
+<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a>        <span class="kw">def</span> <span class="fu">__enter__</span>(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="st">&quot;_StubPdf&quot;</span>:</span>
+<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="va">self</span></span>
+<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-19"><a href="#cb35-19" aria-hidden="true" tabindex="-1"></a>        <span class="kw">def</span> <span class="fu">__exit__</span>(<span class="va">self</span>, <span class="op">*</span>_exc: <span class="bu">object</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb35-20"><a href="#cb35-20" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="va">None</span></span>
+<span id="cb35-21"><a href="#cb35-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-22"><a href="#cb35-22" aria-hidden="true" tabindex="-1"></a>    fake_pdfplumber <span class="op">=</span> types.ModuleType(<span class="st">&quot;pdfplumber&quot;</span>)</span>
+<span id="cb35-23"><a href="#cb35-23" aria-hidden="true" tabindex="-1"></a>    fake_pdfplumber.<span class="bu">open</span> <span class="op">=</span> <span class="kw">lambda</span> _path: _StubPdf()  <span class="co"># type: ignore[attr-defined]</span></span>
+<span id="cb35-24"><a href="#cb35-24" aria-hidden="true" tabindex="-1"></a>    monkeypatch.setitem(sys.modules, <span class="st">&quot;pdfplumber&quot;</span>, fake_pdfplumber)</span>
+<span id="cb35-25"><a href="#cb35-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-26"><a href="#cb35-26" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> pdf_module._extract_with_pdfplumber(tmp_path <span class="op">/</span> <span class="st">&quot;sample.pdf&quot;</span>)</span>
+<span id="cb35-27"><a href="#cb35-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-28"><a href="#cb35-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> result.text.count(<span class="st">&quot;</span><span class="ch">\f</span><span class="st">&quot;</span>) <span class="op">==</span> <span class="dv">2</span></span>
+<span id="cb35-29"><a href="#cb35-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="bu">len</span>(page_starts(result.text)) <span class="op">==</span> <span class="dv">3</span></span>
+<span id="cb35-30"><a href="#cb35-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> result.page_count <span class="op">==</span> <span class="dv">3</span></span>
+<span id="cb35-31"><a href="#cb35-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-32"><a href="#cb35-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-33"><a href="#cb35-33" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_pypdf_extraction_joins_pages_with_form_feed(monkeypatch, tmp_path: Path) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb35-34"><a href="#cb35-34" aria-hidden="true" tabindex="-1"></a>    <span class="kw">class</span> _StubPage:</span>
+<span id="cb35-35"><a href="#cb35-35" aria-hidden="true" tabindex="-1"></a>        <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, text: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb35-36"><a href="#cb35-36" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>._text <span class="op">=</span> text</span>
+<span id="cb35-37"><a href="#cb35-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-38"><a href="#cb35-38" aria-hidden="true" tabindex="-1"></a>        <span class="kw">def</span> extract_text(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
+<span id="cb35-39"><a href="#cb35-39" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="va">self</span>._text</span>
+<span id="cb35-40"><a href="#cb35-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-41"><a href="#cb35-41" aria-hidden="true" tabindex="-1"></a>    <span class="kw">class</span> _StubReader:</span>
+<span id="cb35-42"><a href="#cb35-42" aria-hidden="true" tabindex="-1"></a>        <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, _path: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb35-43"><a href="#cb35-43" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.pages <span class="op">=</span> [_StubPage(<span class="st">&quot;Page one&quot;</span>), _StubPage(<span class="st">&quot;Page two&quot;</span>)]</span>
+<span id="cb35-44"><a href="#cb35-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-45"><a href="#cb35-45" aria-hidden="true" tabindex="-1"></a>    fake_pypdf <span class="op">=</span> types.ModuleType(<span class="st">&quot;pypdf&quot;</span>)</span>
+<span id="cb35-46"><a href="#cb35-46" aria-hidden="true" tabindex="-1"></a>    fake_pypdf.PdfReader <span class="op">=</span> _StubReader  <span class="co"># type: ignore[attr-defined]</span></span>
+<span id="cb35-47"><a href="#cb35-47" aria-hidden="true" tabindex="-1"></a>    monkeypatch.setitem(sys.modules, <span class="st">&quot;pypdf&quot;</span>, fake_pypdf)</span>
+<span id="cb35-48"><a href="#cb35-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-49"><a href="#cb35-49" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> pdf_module._extract_with_pypdf(tmp_path <span class="op">/</span> <span class="st">&quot;sample.pdf&quot;</span>)</span>
+<span id="cb35-50"><a href="#cb35-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-51"><a href="#cb35-51" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> result.text.count(<span class="st">&quot;</span><span class="ch">\f</span><span class="st">&quot;</span>) <span class="op">==</span> <span class="dv">1</span></span>
+<span id="cb35-52"><a href="#cb35-52" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="bu">len</span>(page_starts(result.text)) <span class="op">==</span> <span class="dv">2</span></span></code></pre></div>
+<p>(<code>types</code>, <code>sys</code>, and <code>Path</code> are
+already imported at the top of this test file.)</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Run tests to verify
+they fail</strong></label></li>
+</ul>
+<p>Run: <code>pytest tests/unit/io/test_pdf.py -k form_feed -v</code>
+Expected: FAIL (<code>result.text.count("\f") == 0</code>, joined with
+<code>"\n\n"</code> instead)</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Change the page
+join</strong></label></li>
+</ul>
+<p>In <code>quill/io/pdf.py</code>, in
+<code>_extract_with_pdfplumber</code>, change:</p>
+<div class="sourceCode" id="cb36"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> <span class="st">&quot;</span><span class="ch">\n\n</span><span class="st">&quot;</span>.join(page_texts).strip()</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>    score <span class="op">=</span> _score_pdf_text(text, page_count, <span class="bu">sum</span>(<span class="dv">1</span> <span class="cf">for</span> page_text <span class="kw">in</span> page_texts <span class="cf">if</span> page_text))</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> PdfExtractionResult(</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>        text<span class="op">=</span>text <span class="op">+</span> <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span> <span class="cf">if</span> text <span class="cf">else</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>        quality_score<span class="op">=</span>score,</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>        engine<span class="op">=</span><span class="st">&quot;pdfplumber&quot;</span>,</span></code></pre></div>
+<p>to:</p>
+<div class="sourceCode" id="cb37"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>    <span class="co"># #872: join with a form feed, not a blank line, so real page</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># boundaries survive into the editable Document text. This makes</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># quill.core.navigation.page_starts()/page_start_for_number() -- already</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># built for this, previously unreachable for real documents -- report</span></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># exact pages for PDFs.</span></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> <span class="st">&quot;</span><span class="ch">\f</span><span class="st">&quot;</span>.join(page_texts).strip()</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>    score <span class="op">=</span> _score_pdf_text(text, page_count, <span class="bu">sum</span>(<span class="dv">1</span> <span class="cf">for</span> page_text <span class="kw">in</span> page_texts <span class="cf">if</span> page_text))</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> PdfExtractionResult(</span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>        text<span class="op">=</span>text <span class="op">+</span> <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span> <span class="cf">if</span> text <span class="cf">else</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>        quality_score<span class="op">=</span>score,</span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>        engine<span class="op">=</span><span class="st">&quot;pdfplumber&quot;</span>,</span></code></pre></div>
+<p>Make the identical change in <code>_extract_with_pypdf</code> (same
+<code>"\n\n".join(page_texts)</code> line, same comment, same
+replacement).</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Run tests to verify
+they pass</strong></label></li>
+</ul>
+<p>Run: <code>pytest tests/unit/io/test_pdf.py -v</code> Expected: PASS
+(all tests in the file, including the pre-existing ones -- confirm none
+of them assert on <code>"\n\n"</code> appearing in extracted text; if
+one does, it was pinning the old join and should be updated to assert
+<code>"\f"</code> instead)</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 5: Lint and
+commit</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb38"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ruff</span> check quill/io/pdf.py tests/unit/io/test_pdf.py</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ruff</span> format <span class="at">--check</span> quill/io/pdf.py tests/unit/io/test_pdf.py</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/io/pdf.py tests/unit/io/test_pdf.py</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(pdf): preserve real page boundaries as form feeds (#872)&quot;</span></span></code></pre></div>
+<hr />
+<h3
+id="task-7-documentation--spec-amendment-prd-user-guide-changelog-release-notes">Task
+7: Documentation — spec amendment, PRD, user guide, CHANGELOG, release
+notes</h3>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify:
+<code>docs/superpowers/specs/2026-07-07-page-indicator-design.md</code></li>
+<li>Modify:
+<code>docs/Product Requirement Documents and Specifications/QUILL-PRD.md</code></li>
+<li>Modify: <code>docs/user guide/userguide.md</code></li>
+<li>Modify: <code>CHANGELOG.md</code></li>
+<li>Modify: <code>docs/release notes/release0.9.0-beta2.md</code></li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Amend the spec's
+Track B section</strong></label></li>
+</ul>
+<p>In
+<code>docs/superpowers/specs/2026-07-07-page-indicator-design.md</code>,
+in the "Track B — real pages" section, add this paragraph immediately
+after the existing DOCX bullet (before "### Go to Page command"):</p>
+<div class="sourceCode" id="cb39"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>**Scope note (added during implementation planning):** DOCX import goes</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>through Pandoc or MarkItDown conversion to Markdown text</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>(<span class="in">`quill/io/structured.py:_read_docx`</span>), neither of which preserves explicit</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>page-break positions in the converted text. Detecting hard page breaks</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>would require a separate python-docx scan with no reliable way to map</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>those positions into the converted text. Track B therefore ships for</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>**PDF only** in the first implementation; DOCX stays on the Track A</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>estimate. Real DOCX pagination is left as a follow-up, matching this</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>issue&#39;s own original recommendation to treat exact-format pagination as</span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>separable, incremental work.</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Add the PRD
+subsection</strong></label></li>
+</ul>
+<p>In
+<code>docs/Product Requirement Documents and Specifications/QUILL-PRD.md</code>,
+find the status bar / navigation section (search for
+<code>"document_progress"</code> or the status bar items list to locate
+it) and add a new subsection:</p>
+<div class="sourceCode" id="cb40"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">#### Page indicator (#872)</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>Every document shows a <span class="in">`Page`</span> status bar cell, on by default, positioned</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>next to the line/column position cell. For PDFs, it reports an exact page</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>count and current page, derived from page boundaries preserved as</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>form-feed characters at import (<span class="in">`quill/io/pdf.py`</span>), reusing</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a><span class="in">`quill/core/navigation.py`</span>&#39;s <span class="in">`page_starts()`</span>/<span class="in">`page_start_for_number()`</span>.</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>For every other format (plain text, Markdown, DOCX), it reports an</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>**estimate** derived from word count (<span class="in">`page_estimate_words_per_page`</span>,</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>default 300, Preferences &gt; Navigation and QUILL Key) -- this is explicitly</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>not an exact science, and the cell&#39;s text always says so (&quot;~N of ~M</span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>(estimated)&quot;), never silently presenting an estimate as a fact. BRF/braille</span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>documents keep their own richer page system (<span class="in">`&quot;braille&quot;`</span> status cell);</span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>the generic <span class="in">`&quot;page&quot;`</span> cell is suppressed whenever that one is active. Go To</span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>Page (<span class="in">`Ctrl+Shift+G`</span>) is track-aware the same way: exact jump for</span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>form-feed-bearing documents, estimated jump (word-count-derived) otherwise,</span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>with the prompt text stating which one is in effect.</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Add the user guide
+subsection</strong></label></li>
+</ul>
+<p>In <code>docs/user guide/userguide.md</code>, find the Status Bar
+section (search for an existing heading like
+<code>### Status bar cells</code> or similar; if none exists, add this
+as a new <code>###</code>-level subsection near the other
+status-bar-cell documentation) and add:</p>
+<div class="sourceCode" id="cb41"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">### Page indicator</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>QUILL shows a **Page** cell in the status bar for every document, on by</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>default, right next to your line/column position.</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>For PDFs, this is an exact count: QUILL knows the real page boundaries</span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>from the file itself, so it reads, for example, &quot;3 of 12.&quot;</span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>For everything else -- plain text, Markdown, and most Word documents --</span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>there is no such thing as a real &quot;page&quot; until you print or export: page</span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>breaks depend on your font, margins, and paper size, none of which QUILL</span>
+<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a>tracks while you&#39;re writing. So for these documents, the Page cell shows</span>
+<span id="cb41-13"><a href="#cb41-13" aria-hidden="true" tabindex="-1"></a>an **estimate** based on word count, clearly marked as such: &quot;~3 of ~12</span>
+<span id="cb41-14"><a href="#cb41-14" aria-hidden="true" tabindex="-1"></a>(estimated).&quot; The tilde and the word &quot;estimated&quot; are always there together</span>
+<span id="cb41-15"><a href="#cb41-15" aria-hidden="true" tabindex="-1"></a>-- if you ever see a page number without them, it&#39;s a real count; if you</span>
+<span id="cb41-16"><a href="#cb41-16" aria-hidden="true" tabindex="-1"></a>see them, it&#39;s QUILL&#39;s best guess, not a promise.</span>
+<span id="cb41-17"><a href="#cb41-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-18"><a href="#cb41-18" aria-hidden="true" tabindex="-1"></a>You can tune the estimate&#39;s word-per-page basis in **Preferences &gt;</span>
+<span id="cb41-19"><a href="#cb41-19" aria-hidden="true" tabindex="-1"></a>Navigation and QUILL Key &gt; Estimated words per page** (default 300, range</span>
+<span id="cb41-20"><a href="#cb41-20" aria-hidden="true" tabindex="-1"></a>150-600) if your writing runs noticeably longer or shorter per page than</span>
+<span id="cb41-21"><a href="#cb41-21" aria-hidden="true" tabindex="-1"></a>the default assumes.</span>
+<span id="cb41-22"><a href="#cb41-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-23"><a href="#cb41-23" aria-hidden="true" tabindex="-1"></a>**Go To Page** (<span class="in">`Ctrl+Shift+G`</span>, also reachable by pressing Enter on the</span>
+<span id="cb41-24"><a href="#cb41-24" aria-hidden="true" tabindex="-1"></a>Page cell) jumps to a page number. For PDFs this is exact; for everything</span>
+<span id="cb41-25"><a href="#cb41-25" aria-hidden="true" tabindex="-1"></a>else, it jumps to QUILL&#39;s best estimate of where that page would fall --</span>
+<span id="cb41-26"><a href="#cb41-26" aria-hidden="true" tabindex="-1"></a>the prompt tells you which kind of jump you&#39;re about to make.</span>
+<span id="cb41-27"><a href="#cb41-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-28"><a href="#cb41-28" aria-hidden="true" tabindex="-1"></a>Braille (BRF) documents keep their own, more detailed page system (see</span>
+<span id="cb41-29"><a href="#cb41-29" aria-hidden="true" tabindex="-1"></a>Braille Mode above) and do not show this generic Page cell.</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Add the CHANGELOG
+entry</strong></label></li>
+</ul>
+<p>In <code>CHANGELOG.md</code>, in the "0.9.0 Beta 2" section, add this
+bullet immediately after the intro paragraph (before the existing
+<code>#886</code> bullet):</p>
+<div class="sourceCode" id="cb42"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Every document now shows a Page indicator (#872).** A beta tester asked whether QUILL could show real page numbers. It can, for PDFs -- QUILL now preserves each PDF&#39;s real page boundaries at import, so the status bar&#39;s new **Page** cell (on by default, right next to your line/column position) reports an exact &quot;3 of 12,&quot; and `Ctrl+Shift+G` (Go To Page) jumps exactly. For plain text, Markdown, and Word documents -- where a &quot;page&quot; has no real meaning until you print or export -- the same cell shows a clearly-labeled **estimate** based on word count instead: &quot;~3 of ~12 (estimated).&quot; The tilde and the word &quot;estimated&quot; always appear together, so an estimate is never mistaken for a fact; tune the words-per-page assumption in Preferences &gt; Navigation and QUILL Key. Braille documents are unaffected -- they keep their own, richer page system.</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 5: Add the release
+notes entry</strong></label></li>
+</ul>
+<p>In <code>docs/release notes/release0.9.0-beta2.md</code>:</p>
+<p>First, soften the "no new headline features" sentence in the intro.
+Change:</p>
+<div class="sourceCode" id="cb43"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>Keeping the promise made at Beta 1, there are **no new headline features here** —</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>just your reports, turned into fixes and polish, especially around getting the optional pieces you want.</span></code></pre></div>
+<p>to:</p>
+<div class="sourceCode" id="cb44"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>Keeping the promise made at Beta 1, this is overwhelmingly your reports, turned into fixes and polish, especially around getting the optional pieces you want — with **one exception**: a page indicator, because enough of you asked for it that it couldn&#39;t wait.</span></code></pre></div>
+<p>Then add a new section right after the "Getting the extras you want,
+reimagined" section (before "## A simpler installer, and a lighter
+one"):</p>
+<div class="sourceCode" id="cb45"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">## A page number, honestly presented</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>A tester asked directly: &quot;Are we going to be able to see proper page</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>numbers with QUILL?&quot; Now every document shows one, in the status bar,</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>on by default, right next to your line/column position.</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**PDFs get a real page count.** QUILL now preserves each PDF&#39;s actual</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>  page boundaries when you open it, so you see an exact &quot;3 of 12&quot; and</span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>  <span class="in">`Ctrl+Shift+G`</span> (Go To Page) jumps exactly.</span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Everything else gets an honest estimate.** Plain text, Markdown, and</span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>  Word documents don&#39;t have a real &quot;page&quot; until you print or export --</span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a>  it depends on font, margins, and paper size, none of which QUILL</span>
+<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a>  tracks while you write. So for these, the same cell shows &quot;~3 of ~12</span>
+<span id="cb45-14"><a href="#cb45-14" aria-hidden="true" tabindex="-1"></a>  (estimated)&quot; -- the tilde and the word &quot;estimated&quot; always travel</span>
+<span id="cb45-15"><a href="#cb45-15" aria-hidden="true" tabindex="-1"></a>  together, on purpose, so you never mistake a guess for a fact. Tune</span>
+<span id="cb45-16"><a href="#cb45-16" aria-hidden="true" tabindex="-1"></a>  the words-per-page assumption in Preferences &gt; Navigation and QUILL Key</span>
+<span id="cb45-17"><a href="#cb45-17" aria-hidden="true" tabindex="-1"></a>  if your pages run long or short.</span>
+<span id="cb45-18"><a href="#cb45-18" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Braille documents are untouched -- they keep their own, richer page</span>
+<span id="cb45-19"><a href="#cb45-19" aria-hidden="true" tabindex="-1"></a>  system.</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 6: Verify docs build
+cleanly</strong></label></li>
+</ul>
+<p>Run:
+<code>python -m pytest tests/unit -k "docs or changelog" -v</code>
+(best-effort sanity check; if no matching tests exist, this step is a
+no-op confirmation that no doc-format gate broke)</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 7:
+Commit</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb46"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add <span class="st">&quot;docs/superpowers/specs/2026-07-07-page-indicator-design.md&quot;</span> <span class="dt">\</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;docs/Product Requirement Documents and Specifications/QUILL-PRD.md&quot;</span> <span class="dt">\</span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;docs/user guide/userguide.md&quot;</span> <span class="dt">\</span></span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>        CHANGELOG.md <span class="dt">\</span></span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;docs/release notes/release0.9.0-beta2.md&quot;</span></span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;docs: document the page indicator across PRD, user guide, changelog, release notes (#872)&quot;</span></span></code></pre></div>
+<hr />
+<h3 id="task-8-full-regression-pass-and-close-872">Task 8: Full
+regression pass and close #872</h3>
+<p><strong>Files:</strong> none (verification only)</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 1: Run every touched
+test file together</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb47"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pytest</span> tests/unit/core/test_navigation.py tests/unit/core/test_settings.py <span class="dt">\</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>       tests/unit/ui/test_main_frame_statusbar_context.py <span class="dt">\</span></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>       tests/unit/ui/test_main_frame_navigation.py <span class="dt">\</span></span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>       tests/unit/io/test_pdf.py <span class="at">-v</span></span></code></pre></div>
+<p>Expected: PASS, all tests.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 2: Run the module size
+budget gate</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb48"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pytest</span> tests/unit/tools/test_module_size_budget.py <span class="at">-q</span></span></code></pre></div>
+<p>Expected: PASS (or already fixed via the rebaseline notes in Tasks
+3/5).</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 3: Run the smoke
+subset</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb49"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pytest</span> <span class="at">-m</span> smoke <span class="at">-q</span></span></code></pre></div>
+<p>Expected: PASS.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 4: Run ruff over every
+touched file</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb50"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="ex">ruff</span> check quill/core/navigation.py quill/core/settings.py quill/core/settings_specs.py <span class="dt">\</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>           quill/core/settings_normalizers.py quill/ui/main_frame.py <span class="dt">\</span></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>           quill/ui/main_frame_statusbar.py quill/io/pdf.py</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a><span class="ex">ruff</span> format <span class="at">--check</span> quill/core/navigation.py quill/core/settings.py quill/core/settings_specs.py <span class="dt">\</span></span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>           quill/core/settings_normalizers.py quill/ui/main_frame.py <span class="dt">\</span></span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>           quill/ui/main_frame_statusbar.py quill/io/pdf.py</span></code></pre></div>
+<p>Expected: all clean.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 5: Push the branch and
+open a PR</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb51"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push <span class="at">-u</span> origin feature/page-indicator</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="ex">gh</span> pr create <span class="at">--title</span> <span class="st">&quot;Add an always-on page indicator (#872)&quot;</span> <span class="at">--body</span> <span class="st">&quot;</span><span class="va">$(</span><span class="fu">cat</span> <span class="op">&lt;&lt;&#39;EOF&#39;</span></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="st">## Summary</span></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a><span class="st">- Exact page count for PDFs (real page boundaries preserved at import as</span></span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a><span class="st">  form feeds, reusing existing navigation.py machinery)</span></span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a><span class="st">- Clearly-labeled estimated page count (word-count based) for everything</span></span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a><span class="st">  else -- never presented as exact</span></span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a><span class="st">- Page indicator visible by default in the status bar, next to</span></span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a><span class="st">  line/column; suppressed for BRF/braille documents</span></span>
+<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a><span class="st">- Track-aware Go To Page (Ctrl+Shift+G)</span></span>
+<span id="cb51-11"><a href="#cb51-11" aria-hidden="true" tabindex="-1"></a><span class="st">- PRD, user guide, CHANGELOG, and Beta 2 release notes updated</span></span>
+<span id="cb51-12"><a href="#cb51-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-13"><a href="#cb51-13" aria-hidden="true" tabindex="-1"></a><span class="st">Closes #872.</span></span>
+<span id="cb51-14"><a href="#cb51-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-15"><a href="#cb51-15" aria-hidden="true" tabindex="-1"></a><span class="st">## Test plan</span></span>
+<span id="cb51-16"><a href="#cb51-16" aria-hidden="true" tabindex="-1"></a><span class="st">- [x] All new and existing unit tests pass</span></span>
+<span id="cb51-17"><a href="#cb51-17" aria-hidden="true" tabindex="-1"></a><span class="st">- [x] Module size budget gate passes</span></span>
+<span id="cb51-18"><a href="#cb51-18" aria-hidden="true" tabindex="-1"></a><span class="st">- [x] Smoke suite passes</span></span>
+<span id="cb51-19"><a href="#cb51-19" aria-hidden="true" tabindex="-1"></a><span class="st">- [x] ruff check/format clean</span></span>
+<span id="cb51-20"><a href="#cb51-20" aria-hidden="true" tabindex="-1"></a><span class="op">EOF</span></span>
+<span id="cb51-21"><a href="#cb51-21" aria-hidden="true" tabindex="-1"></a><span class="va">)</span><span class="st">&quot;</span></span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Step 6: Wait for CI, then
+close #872 once merged</strong></label></li>
+</ul>
+<p>Once CI is green and the PR is merged to <code>main</code>:</p>
+<div class="sourceCode" id="cb52"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="ex">gh</span> issue close 872 <span class="at">--comment</span> <span class="st">&quot;Shipped: an always-on Page status bar cell (exact for PDF, clearly-labeled estimate for everything else) plus a track-aware Go To Page. Documented in the PRD, user guide, CHANGELOG, and 0.9.0 Beta 2 release notes.&quot;</span></span></code></pre></div>
+</body>
+</html>

@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>math</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="math-in-quill-plan-of-record">Math in QUILL: plan of record</h1>
+<p>Status: in progress. Steps 1, 2, 4, 5, and 7 of the build order
+(section 5) have shipped (see
+<code>docs/superpowers/plans/2026-07-05-math-feature-completion.md</code>
+for steps 4-5's implementation plan). Step 3 (MathCAT speech/braille) is
+deferred: MathCAT has no pip-installable Python binding — the only
+existing "Python interface" is the GPL v2 NVDA add-on (Python
+3.11/wxPython 4.2.2-only, not reusable), so real integration means QUILL
+building its own PyO3/maturin binding against the MIT-licensed
+<code>libmathcat</code> Rust crate and shipping a compiled native wheel
+per platform — a native-build-pipeline decision on par with the existing
+<code>table_uia</code> C++ provider, deferred until that's decided. Step
+6 (DAISY MathML export) is explicitly skipped:
+<code>quill/io/daisy.py</code> is a DAISY 2.02 <em>text-only</em> writer
+(no OPF/NCX/EPUB3), which has no real MathML rendering/speech support in
+any DAISY 2.02 player, so embedding raw <code>&lt;math&gt;</code> there
+would be inert markup, not real accessibility — equations already export
+as readable literal text, which is left as-is until MathCAT (step 3) can
+produce real spoken math.</p>
+<p>What shipped: Math AutoCorrect-style abbreviations (seeded from the
+DAISY-published Word list) in the <code>math-equations</code> Quillin's
+manifest; <code>quill/core/math/</code> (canonical MathML model + a
+<code>latex2mathml</code>-backed LaTeX bridge, the <code>math</code>
+optional extra, unit-tested); the <code>math-tutor</code> AI agent
+(<code>quill/core/ai/agents/math-tutor.md</code>); the
+<code>math-equations</code> Quillin switched to MathJax's own default
+delimiters (<code>\(...\)</code> inline, single-line
+<code>$$...$$</code> display) so browser preview and HTML export render
+equations with zero template changes; and
+<code>quill/io/docx_math.py</code>, which splices real
+<code>&lt;m:oMath&gt;</code> Word equations into the native docx writer
+via a one-equation Pandoc round trip (falling back to literal text if
+Pandoc is unavailable), with regression tests locking in the
+(already-correct) docx read-side fidelity via both the MarkItDown and
+Pandoc read engines. Written 2026-07-05 from a source-site deep-dive
+(online.math.uh.edu/typing-math-in-ms-word/ and everything it links to:
+Microsoft's Math AutoCorrect and UnicodeMath/LaTeX linear-format docs,
+Unicode Technical Note 28, the DAISY Math AutoCorrect code list, and
+DAISY's MathCAT project for NVDA/JAWS math speech and braille) plus a
+read of QUILL's current math support.</p>
+<h2 id="0-where-we-actually-are-today">0. Where we actually are
+today</h2>
+<p>There is already a bundled Quillin:
+<code>quill/quillins_bundled/math-equations/</code>
+(<code>com.quill.bundled.math-equations</code>, Ctrl+Shift+E, Insert
+menu). It prompts for LaTeX or MathML text and inserts it verbatim,
+wrapped in <code>$...$</code> / <code>$$...$$</code> for LaTeX or raw
+for MathML starting with <code>&lt;math</code>. That is the entire
+feature. Its own README already flags the biggest gap: <strong>nothing
+renders it</strong> — no MathJax/KaTeX in
+<code>browser_preview.py</code> or <code>io/export.py</code>, so a
+reader sees literal <code>$E=mc^2$</code> text, not a formatted
+equation. There is also:</p>
+<ul>
+<li>No Math AutoCorrect-style shortcuts (<code>\alpha</code> -&gt;
+<code>alpha</code>, <code>\sqrt</code> -&gt; a radical template) — QUILL
+already has a general smart-trigger/abbreviation dispatch mechanism (see
+memory: Quillin Insert Automation, <code>=name(args)</code> triggers +
+contributed abbreviations) that a math Quillin could plug into instead
+of reinventing input handling.</li>
+<li>No MathML/OMML awareness in <code>quill/io</code> (docx equations
+are OMML — <code>&lt;m:oMath&gt;</code> — embedded in the
+WordprocessingML XML; grep of <code>quill/io</code> and
+<code>quill/core</code> for
+<code>oMath</code>/<code>OMML</code>/<code>MathML</code> found nothing
+outside the math Quillin itself).</li>
+<li>No math speech/braille integration — QUILL relies on JAWS/NVDA for
+text speech generally, but neither screen reader speaks a literal
+<code>$x^2+1$</code> string as math; they need real MathML plus (for
+NVDA) MathCAT, or Word's own equation object plus JAWS Math Viewer. A
+plain-text QUILL document has no way to hand either screen reader real
+math semantics.</li>
+</ul>
+<p>So "bring more magic" is three separable problems, not one:</p>
+<ol type="1">
+<li><strong>Fast, ergonomic input</strong> of math as you type.</li>
+<li><strong>Faithful storage and round-trip</strong> through QUILL's
+document model and every import/export path (docx, markdown, HTML, PDF
+read, DAISY, RTF).</li>
+<li><strong>Accessible output</strong> — sighted rendering in
+previews/exports, and actual spoken/brailled math for screen reader
+users, not just "the LaTeX source read as English words."</li>
+</ol>
+<h2 id="1-what-the-source-material-actually-establishes">1. What the
+source material actually establishes</h2>
+<p>Read directly, not from training-data memory, via WebFetch on
+2026-07-05:</p>
+<ul>
+<li><strong>Math AutoCorrect</strong> (Word): a fixed table of
+<code>\name</code> -&gt; Unicode substitution codes (<code>\alpha</code>
+-&gt; α, <code>\sqrt</code> -&gt; the radical structure, etc.),
+triggered by a following space, editable by the user, and independently
+listed by DAISY at <code>daisy.org/MSMathCodes</code>. This is a good,
+screen-reader-tested UX pattern we can copy without needing Word at
+all.</li>
+<li><strong>Linear format math</strong> (UnicodeMath and LaTeX): Word
+can render a typed linear string like <code>x^2/(y+1)</code> or
+<code>\frac{x^2}{y+1}</code> into a proper equation object. UnicodeMath
+is documented in the open <strong>Unicode Technical Note 28</strong>
+(unicode.org/notes/tn28) — a real, implementable spec, not a proprietary
+black box. LaTeX linear format is just... LaTeX math syntax.</li>
+<li><strong>Accessibility, concretely</strong>:
+<ul>
+<li>JAWS reads Word's native equation objects out of the box; it also
+has a dedicated <strong>Math Viewer</strong> (Insert+Spacebar+Equals)
+for exploring an equation structurally.</li>
+<li>NVDA 2026.1+ ships <strong>MathCAT</strong> built in; earlier
+versions need the MathCAT add-on. MathCAT's job: take
+<strong>MathML</strong> in, produce speech strings (in multiple
+languages, with configurable verbosity/engine commands),
+<strong>braille</strong> (Nemeth, UEB Technical, CMU, and other math
+braille codes), and structural navigation (Nvda+Alt+M) commands.</li>
+<li><strong>MathCAT is MIT-licensed, fully offline, and has a published
+Rust crate, a Python interface, and a C/C++ FFI</strong> (confirmed via
+WebFetch against the MathCAT repo/docs, not assumed). That is the single
+most important fact in this whole investigation: <strong>QUILL can embed
+the same math-speech/braille engine NVDA uses, directly in-process,
+without depending on which screen reader the user runs.</strong></li>
+<li>Word's linear-format LaTeX is a documented but Microsoft-flavored
+subset; real interop for import/export is better served by full
+LaTeX-math parsing (there's a large existing ecosystem:
+<code>pylatexenc</code>, <code>latex2mathml</code>, <code>sympy</code>)
+than by trying to clone Word's exact grammar.</li>
+</ul></li>
+</ul>
+<h2 id="2-the-magic-worth-building-ranked">2. The magic worth building,
+ranked</h2>
+<p>Ranked by (accessibility impact for a screen-reader-first product) x
+(feasibility without wx doing anything exotic) x (how much reuses stuff
+QUILL already has).</p>
+<h3 id="tier-1--do-this-first-highest-leverage">Tier 1 — do this first,
+highest leverage</h3>
+<p><strong>A. Math AutoCorrect-equivalent smart triggers.</strong> Ship
+a table of <code>\alpha</code>, <code>\sqrt</code>, <code>\frac</code>,
+<code>\sum</code>, <code>\int</code>, <code>\ge</code>,
+<code>\to</code>, … (seed from the DAISY-published Word list, which is
+itself derived from Word's built-in table, so shortcuts are
+muscle-memory compatible with anyone coming from Word) as contributed
+abbreviations/smart triggers in the existing insert automation system.
+Typing <code>\alpha </code> mid-sentence becomes <code>α</code>; typing
+<code>\sqrt(x)</code> becomes a linear-format square root the user can
+later upgrade to a full equation. Almost zero new architecture — this is
+exactly what the smart trigger dispatch was built for. Biggest bang for
+the least risk.</p>
+<p><strong>B. A real MathML data model + MathCAT-powered speech/braille,
+decoupled from any screen reader.</strong> This is the actual "magic":
+embed MathCAT (Python interface, offline, MIT) in
+<code>quill/core</code> behind a small <code>quill/core/math/</code>
+package:</p>
+<ul>
+<li><code>mathml.py</code> — canonical in-memory representation is
+MathML (the same input MathCAT and every screen reader math engine
+already expects).</li>
+<li><code>latex_bridge.py</code> — LaTeX &lt;-&gt; MathML conversion
+using an existing, mature library (evaluate <code>latex2mathml</code>
+first: pure Python, no native build, MIT- license family; fall back to
+<code>pylatexenc</code> + a small MathML serializer if coverage is
+thin). This is what turns <code>\frac{x}{y}</code> typed inline into a
+structure MathCAT can speak.</li>
+<li><code>speech.py</code> — thin wrapper around the MathCAT Python
+bindings:
+<code>mathml_to_speech(mathml, *, language, braille_code) -&gt; str</code>.
+Exposed to the UI as "Speak this equation" / "Describe this equation" —
+works identically whether the user runs JAWS, NVDA, VoiceOver, or
+nothing at all, because QUILL is doing the math-to-speech conversion
+itself and handing Prism a plain string to announce. <strong>This is the
+feature the source article doesn't have an equivalent for anywhere
+else</strong> — Word depends entirely on which AT you happen to run;
+QUILL would not.</li>
+<li>Braille: MathCAT's Nemeth/UEB-Technical output feeds QUILL's
+existing braille pipeline (liblouis pack, per Build Tools memory) for a
+literal braille math display, independent of JAWS/NVDA braille support
+too.</li>
+</ul>
+<p><strong>C. Fix the rendering gap the existing Quillin already
+flagged.</strong> Add MathJax (or KaTeX — smaller, faster, no MathML
+output mode complexity; MathJax has better MathML fidelity which matters
+more here since MathML is our canonical form) to
+<code>browser_preview.py</code>'s HTML template and
+<code>io/export.py</code> HTML export, gated the same way other optional
+web content is (local vendored copy, no CDN fetch — check
+<code>network_egress_audit.py</code>, since a CDN
+<code>&lt;script src&gt;</code> is a new outbound call site and would
+need an audit entry and explicit consent per this repo's own
+network-egress rule). Sighted users get real rendered equations in
+preview/export; screen reader users are unaffected either way since they
+get MathCAT speech instead of DOM/AT interrogation of the rendered
+math.</p>
+<h3 id="tier-2--real-magic-more-surface-area">Tier 2 — real magic, more
+surface area</h3>
+<p><strong>D. docx OMML round-trip.</strong> Word's native equations are
+OMML (<code>&lt;m:oMath&gt;</code>), not MathML or LaTeX. Pandoc already
+converts OMML &lt;-&gt; its own internal math AST &lt;-&gt; LaTeX-ish
+delimited math in Markdown/HTML output — this means <strong>QUILL may
+already get most of docx-equation-to-editable-text for free</strong>
+through the existing <code>quill/io/pandoc.py</code> bridge, since
+Pandoc is already a Tier-1 dependency for doc conversion. Verify
+empirically (round- trip a docx with a native Word equation through
+<code>convert_document_with_pandoc(..., to="gfm")</code> and see what
+the math renders as) before writing any bespoke OMML parser. If Pandoc's
+math fidelity is good enough, the OMML problem is a non-problem — just
+wire the existing bridge into the docx open/save path for
+equation-bearing runs, rather than adding a new format layer to
+<code>quill/io</code>.</p>
+<p><strong>E. Ink/handwriting equation entry.</strong> Out of scope for
+a screen-reader-first product — this is a sighted-only Word feature
+(draw with mouse/stylus, convert to math) with no accessible analogue.
+Skip; note why in the plan so it isn't re-proposed later.</p>
+<p><strong>F. AI-assisted math.</strong> QUILL already has an agent
+catalog (<code>quill/core/ai/agents/*.md</code>) and free-model
+infrastructure. A <code>math-tutor</code> or
+<code>equation-explainer</code> agent
+(<code>default_scope: selection</code>, low risk, no document mutation —
+pure explanation) could take a selected equation (LaTeX/MathML) and
+produce a plain-language walkthrough, which is itself an accessibility
+win independent of MathCAT (MathCAT describes structure; an AI agent can
+explain meaning/derivation on request). Cheap to add once (B) gives us a
+canonical MathML/LaTeX equation to hand the agent. Must stay read-only
+(<code>modify_document: deny</code> or <code>ask</code>) per the agent
+standards linter's rule that mutating permissions can never be
+<code>allow</code>.</p>
+<p><strong>G. Cross-format export fidelity.</strong> Once MathML is the
+canonical in-memory form: DAISY export (<code>quill/io/daisy.py</code>)
+can emit real MathML (DAISY/EPUB3 supports MathML natively — this
+directly serves QUILL's existing DAISY Talking Book export, issue #251),
+RTF math is genuinely hard (RTF has no good math object model) and
+should probably degrade to the linear LaTeX/UnicodeMath text form rather
+than trying to fake an OMML-in-RTF equivalent.</p>
+<h3 id="explicitly-out-of-scope">Explicitly out of scope</h3>
+<ul>
+<li>Reimplementing Word's Equation Editor UI (visual structure-building
+toolbox with fraction/radical/matrix templates drawn as nested boxes) is
+a multi-month wx custom-control project for marginal benefit over typed
+LaTeX/UnicodeMath + AutoCorrect-style shortcuts. Revisit only if user
+testing says typed math input isn't enough.</li>
+<li>Ink equations (see D above).</li>
+<li>Building a math-speech engine from scratch. MathCAT already exists,
+is MIT-licensed, and is the literal engine NVDA itself ships — there is
+no version of "build our own" that beats "embed the real thing."</li>
+</ul>
+<h2 id="3-should-this-be-a-quillin">3. Should this be a Quillin?</h2>
+<p>Split it — this is not an all-or-nothing question:</p>
+<ul>
+<li><strong>Input ergonomics (Tier 1-A, smart triggers/abbreviations)
+and the caret- level insert command (already-existing
+<code>math-equations</code> Quillin) stay a Quillin.</strong> That is
+exactly what the Quillin capability model (<code>ui.prompt</code>,
+<code>editor.write</code>, <code>ui.command</code>) is for, it is
+already built, and it needs no core changes.</li>
+<li><strong>The MathML data model, LaTeX&lt;-&gt;MathML bridge, and
+MathCAT speech/braille engine (Tier 1-B) must live in
+<code>quill/core/math/</code>, not in a Quillin.</strong> Quillins are
+sandboxed extensions with a narrow capability surface
+(<code>ui.*</code>, <code>editor.read/write</code>, no arbitrary native
+library loading per the extension schema/manifest model); embedding a
+compiled MathCAT binding and wiring it into the braille pipeline and
+Prism announcements is core platform work, same tier as
+<code>quill/platform/windows/prism_bridge.py</code> or
+<code>quill/stability</code>. The Quillin then becomes a thin UI layer
+that calls <code>quill.core.math</code> the same way the Table/CSV
+Studio's UIA provider is core and its menu commands are thin.</li>
+<li><strong>Rendering (Tier 1-C) is a core change</strong> to
+<code>browser_preview.py</code> and <code>io/export.py</code>, not
+something a Quillin's capability model can reach.</li>
+<li><strong>docx OMML (Tier 2-D)</strong> is core
+(<code>quill/io</code>), reusing the existing
+<code>quill/io/pandoc.py</code> bridge.</li>
+<li><strong>The AI agent (Tier 2-F)</strong> is a plain <code>.md</code>
+agent file, no code at all.</li>
+</ul>
+<p>So the honest shape of "is this a Quillin": no, it's a small
+<strong>core module</strong> (<code>quill/core/math/</code>) with a
+<strong>Quillin as its keyboard-facing front door</strong>, exactly
+mirroring how Table/CSV Studio has a native C++ UIA provider (core) plus
+command surface (thin), or how the insert-automation smart-trigger
+system is core infrastructure that the <code>insert-character</code> and
+<code>math-equations</code> Quillins merely call into.</p>
+<h2 id="4-cross-platform-reality-check">4. Cross-platform reality
+check</h2>
+<ul>
+<li><strong>MathCAT</strong>: Rust crate + Python bindings, MIT, offline
+— builds on Windows/macOS/Linux equally. No platform lock-in. This is
+what makes the "cross-platform" ask real instead of aspirational:
+MathCAT is precisely the mechanism that makes math speech NOT depend on
+JAWS (Windows-only) or NVDA (Windows-only) — it works the same
+in-process on macOS too, where QUILL currently has no equivalent to
+Prism's Windows screen-reader bridge for math specifically.</li>
+<li><strong>LaTeX/MathML conversion libraries</strong>
+(<code>latex2mathml</code>, <code>pylatexenc</code>) are pure-Python or
+have wheels for all three platforms already.</li>
+<li><strong>MathJax</strong> (Tier 1-C) is pure JS running inside
+whatever the preview renders in — already platform-agnostic since
+<code>browser_preview.py</code> opens a system/chosen browser.</li>
+<li><strong>Pandoc</strong> (Tier 2-D) is already a cross-platform
+external tool dependency QUILL depends on.</li>
+<li>Net: everything in Tier 1 and most of Tier 2 is naturally
+cross-platform. The only inherently Windows-flavored piece anywhere in
+this plan is JAWS's Math Viewer, which QUILL doesn't need to touch at
+all — MathCAT speech/braille sidesteps it entirely.</li>
+</ul>
+<h2 id="5-suggested-build-order-small-reviewable-prs">5. Suggested build
+order (small, reviewable PRs)</h2>
+<ol type="1">
+<li><strong>Smart-trigger math shortcuts</strong> (Tier 1-A). Pure data
++ reuse of existing dispatch. Smallest possible PR, immediate daily-use
+value.</li>
+<li><strong><code>quill/core/math/</code> MathML + LaTeX
+bridge</strong>, unit-tested in isolation (no MathCAT yet, no UI) — get
+the data model and LaTeX&lt;-&gt;MathML conversion right first, since
+everything else depends on it.</li>
+<li><strong>MathCAT integration</strong> behind
+<code>quill/core/math/speech.py</code> + a "Speak equation" / "Describe
+equation" command wired through the existing <code>math-equations</code>
+Quillin (add a second contributed command, don't fork a new Quillin).
+Validate on real JAWS/NVDA per this repo's screen-reader test-plan
+convention, since this is exactly the kind of feature that needs ears on
+it, not just tests passing (see project memory: no UI automation
+substitutes for a live screen-reader check).</li>
+<li><strong>MathJax rendering</strong> in preview/export (Tier 1-C) —
+needs a <code>network_egress_audit.py</code> entry if any remote fetch
+is involved; prefer vendoring the MathJax bundle to avoid that
+entirely.</li>
+<li><strong>Verify Pandoc's existing OMML fidelity empirically</strong>,
+then wire docx equation round-trip (Tier 2-D) only if the built-in
+fidelity check shows it's worth a dedicated code path.</li>
+<li><strong>DAISY MathML export</strong> (Tier 2-G), since the DAISY
+writer already exists and this is a small addition once (2) produces
+canonical MathML.</li>
+<li><strong><code>math-tutor</code> AI agent</strong> (Tier 2-F) — a
+Markdown file, whenever wanted; no dependency ordering on the rest.</li>
+</ol>
+<p>Steps 1 and 7 can ship independently of everything else and of each
+other. Steps 2-6 are a dependency chain (3 needs 2, 4 benefits from 2
+but doesn't strictly need it, 5 and 6 both need 2).</p>
+<h2 id="6-open-questions-for-whoever-picks-this-up">6. Open questions
+for whoever picks this up</h2>
+<ul>
+<li>Confirm MathCAT's Python binding packaging story (PyPI wheel vs.
+build-from-source via the Rust crate) before committing to step 3 — the
+WebFetch research confirmed bindings exist but not their exact
+distribution mechanism; check the MathCAT repo's <code>INSTALL</code>/CI
+config directly when this step starts.</li>
+<li>Pick <code>latex2mathml</code> vs.
+<code>pylatexenc</code>-plus-serializer for the LaTeX bridge by running
+both against a representative equation corpus (fractions, sums/integrals
+with limits, matrices, nested scripts) and comparing MathML output
+quality — don't guess, benchmark at step 2.</li>
+<li>Decide MathJax vs. KaTeX for step 4 by checking actual MathML-output
+fidelity needed for round-tripping rendered equations, since QUILL's
+canonical form is MathML, not the rendering library's native
+format.</li>
+</ul>
+</body>
+</html>

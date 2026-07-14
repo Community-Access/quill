@@ -100,6 +100,19 @@ class AIModelDialog:
                 wx.ALL,
                 12,
             )
+            # Machine-aware upgrade hint (Phase 3): when the saved choice is a smaller
+            # model than this machine can comfortably run, surface a one-step, spoken
+            # suggestion. Never auto-downloads — the user still picks below.
+            from quill.core.model_upgrade import suggest_llm_upgrade
+
+            saved_choice = load_model_choice()
+            if saved_choice != "auto":
+                suggestion = suggest_llm_upgrade(saved_choice, total_ram_gb())
+                if suggestion is not None:
+                    hint = wx.StaticText(self.dialog, label=suggestion.message())
+                    hint.SetName("Model upgrade suggestion")
+                    root.Add(hint, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 12)
+                    self._announce(suggestion.message())
             root.Add(wx.StaticText(self.dialog, label="On-device model"), 0, wx.LEFT | wx.RIGHT, 12)
             self._ids = ["auto", *MODELS.keys()]
             labels = [f"Recommended ({MODELS[rec].name})"]
@@ -180,13 +193,19 @@ class AIModelDialog:
 
         active = active_tier_id()
         tier_labels = [tiers[tier_id].label for tier_id in self._tier_order]
+        root.Add(
+            wx.StaticText(self.dialog, label="Active speed tier:"),
+            0,
+            wx.LEFT | wx.RIGHT | wx.TOP,
+            12,
+        )
         self.tier_choice = wx.Choice(self.dialog, choices=tier_labels)
         self.tier_choice.SetName("Active speed tier")
         self.tier_choice.SetSelection(
             self._tier_order.index(active) if active in self._tier_order else 0
         )
         self.tier_choice.Bind(wx.EVT_CHOICE, self._on_tier_change)
-        root.Add(self.tier_choice, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 12)
+        root.Add(self.tier_choice, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 12)
 
         model_labels = ["Recommended (automatic)"]
         for spec in MODELS.values():

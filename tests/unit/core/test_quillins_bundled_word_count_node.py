@@ -105,6 +105,9 @@ class _FakeServices:
     def announce(self, m: str) -> None:
         self.announced.append(m)
 
+    def is_verbosity_speech_enabled(self) -> bool:
+        return True
+
     def set_status(self, m: str) -> None:
         self.statuses.append(m)
 

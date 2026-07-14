@@ -20,10 +20,15 @@ from __future__ import annotations
 
 # (display name, GitHub profile URL), human contributors only, most
 # contributions first. Generated from the GitHub contributors API.
+# elettrona (Elena Brescacin, the Italian translation, PR #826) is listed
+# manually until the contributors API catches up; the refresh keeps her.
 CONTRIBUTORS: tuple[tuple[str, str], ...] = (
     ("accesswatch", "https://github.com/accesswatch"),
     ("taylorarndt", "https://github.com/taylorarndt"),
     ("mbabcock-acb", "https://github.com/mbabcock-acb"),
+    ("krperry", "https://github.com/krperry"),
+    ("kellylford", "https://github.com/kellylford"),
+    ("elettrona", "https://github.com/elettrona"),
 )
 
 

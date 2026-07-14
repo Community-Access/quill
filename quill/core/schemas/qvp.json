@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://quill.community-access.org/schemas/qvp.json",
+  "title": "QUILL Verbosity Pack (.qvp.json)",
+  "description": "A data-only, installable bundle of verbosity templates. QUILL ships no jsonschema runtime dependency; this file documents the format for humans and external tools, while quill/core/verbosity/qvp.py validates it by hand. Packs never contain or execute code.",
+  "type": "object",
+  "required": ["schema_version", "kind", "min_quill_version", "pack", "templates"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"type": "string", "minLength": 1},
+    "kind": {"const": "quill-verbosity-pack"},
+    "min_quill_version": {"type": "string", "minLength": 1},
+    "pack": {
+      "type": "object",
+      "required": ["name", "author", "description", "version", "license"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "author": {"type": "string", "minLength": 1},
+        "description": {"type": "string"},
+        "version": {"type": "string", "minLength": 1},
+        "license": {"type": "string", "minLength": 1},
+        "depends": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "templates": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "applies_to", "template"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "name": {"type": "string", "minLength": 1},
+          "applies_to": {"type": "string", "minLength": 1},
+          "template": {"type": "string"},
+          "tags": {"type": "array", "items": {"type": "string"}},
+          "preview_text": {"type": "string"},
+          "depends": {"type": "array", "items": {"type": "string"}},
+          "data_order": {"type": "array", "items": {"type": "string"}},
+          "separator": {"type": "string"},
+          "preview": {"type": "string"},
+          "speech_template": {"type": "string"},
+          "braille_template": {"type": "string"},
+          "visual_template": {"type": "string"},
+          "sound_event": {"type": "string"}
+        }
+      }
+    }
+  }
+}

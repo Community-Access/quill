@@ -29,7 +29,7 @@ def main() -> int:
         description="Generate third-party notices and enforce license gate."
     )
     parser.add_argument("--pyproject", type=Path, default=Path("pyproject.toml"))
-    parser.add_argument("--output", type=Path, default=Path("THIRD_PARTY_NOTICES.txt"))
+    parser.add_argument("--output", type=Path, default=Path("docs/legal/THIRD_PARTY_NOTICES.txt"))
     parser.add_argument("--project-root", type=Path, default=Path("."))
     args = parser.parse_args()
 

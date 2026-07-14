@@ -58,3 +58,30 @@ def test_apply_heading_style_returns_original_when_no_style_requested() -> None:
     )
     assert updated == source
     assert changed == 0
+
+
+def test_text_align_rejects_css_injection() -> None:
+    source = "# Title\n"
+    updated, changed = apply_heading_style(
+        source,
+        markup_kind="markdown",
+        style=HeadingStyle(font_family="Calibri", text_align="red; }body{display:none}"),
+        levels={1},
+    )
+    assert changed == 1
+    assert "display:none" not in updated
+    assert "text-align" not in updated
+    assert "font-family: Calibri" in updated
+
+
+def test_font_family_is_html_escaped() -> None:
+    source = "# Title\n"
+    updated, changed = apply_heading_style(
+        source,
+        markup_kind="markdown",
+        style=HeadingStyle(font_family='Arial"><script>alert(1)</script>'),
+        levels={1},
+    )
+    assert changed == 1
+    assert "<script>" not in updated
+    assert "&lt;script&gt;" in updated

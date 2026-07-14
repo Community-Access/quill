@@ -1,0 +1,22 @@
+# Caddyfile.example -- append this block to the same Caddy instance
+# already reverse-proxying GLOW on this server (see
+# /s/code/glow/web/Caddyfile.example for that precedent).
+#
+# Usage:
+#   Add this block to the server's existing Caddyfile, replacing the
+#   domain with your real one, then `caddy reload`.
+
+gateway.quillforall.org {
+    reverse_proxy web:8000
+    encode gzip
+
+    header {
+        X-Content-Type-Options nosniff
+        X-Frame-Options SAMEORIGIN
+        Referrer-Policy strict-origin-when-cross-origin
+        # The dashboard's session cookie is already Secure/HttpOnly/SameSite=Lax
+        # (app/config.py) -- HSTS here is an additional, server-level guarantee
+        # that the browser never even attempts a plain-HTTP connection.
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    }
+}

@@ -37,7 +37,7 @@ capability (`fs.read`, `fs.write`, `net`) and how a refusal is handled.
 
 ## Author Covenant
 
-- [ ] I have read [`docs/quillins.md`](../../docs/quillins.md)
+- [ ] I have read [`docs/quillins/quillins.md`](../../docs/quillins/quillins.md)
       and attest this Quillin upholds every promise in it
 - [ ] Minimum capabilities only; no silent network, telemetry, or tracking
 - [ ] Readable source (no obfuscation); no sandbox-escape; no malware

@@ -1,0 +1,43 @@
+[LIAM]
+The QUILL Cast, episode thirty. I'm Liam. Yesterday you built a vault; today we furnish it: tags, templates, daily notes, embeds, publishing, and sync.
+
+[JESSICA]
+I'm Jessica. Tags first, the second organizing dimension. Links connect notes to notes; tags connect notes to themes. Type a hash and a word anywhere, hash project, hash reading, and Show Tags opens the tag pane, every tag with its notes beneath it.
+
+[LIAM]
+The power detail: nesting rolls up. Tag things hash project slash quill and hash project slash garden, and asking for hash project finds both. Broad when you're browsing, precise when you're filing, same tags.
+
+[JESSICA]
+Templates, episode fifteen's snippets graduated into vault citizens: Insert Template pulls from your vault's Templates folder, fills the date and title automatically, asks for any prompts the template declares, and drops your cursor at the marked spot. A meeting-note template that asks who's it with and lands you in the agenda, one command.
+
+[LIAM]
+And on templates sits the daily-notes habit machine: Open Today's Note creates or opens a dated journal entry from your daily template, and Previous and Next Daily Note walk the journal like pages. Date patterns and the templates folder are configurable in Vault Settings. Daily notes plus tags plus search is a complete work journal, Friday's status report becomes one vault search.
+
+[JESSICA]
+Embeds: a link with an exclamation point in front doesn't just point at another note, it includes it. Keep one canonical note, your bio, a product description, standard terms, and embed it wherever needed, edit once, current everywhere. Speak Embed reads the embedded content in place, Resolve Embed expands it into real text when you want a flattened copy. The live preview from episode fourteen renders links and embeds properly for notes in the open vault.
+
+[PAUSE]
+
+[LIAM]
+Now leaving the machine. Export Vault as Website generates a small accessible site, one clean page per note, links and embeds resolved, ready to host anywhere static files go. Your vault becomes a shareable knowledge base for people who've never heard of QUILL, and because you wrote it structure-first, it's an accessible site by construction.
+
+[JESSICA]
+And Sync Vault: Git synchronization over your own remote, GitHub, or any Git host, including your own server. Commit, pull, push, from inside QUILL, and conflicts are listed for your decision, never auto-overwritten. Your notes, versioned and multi-machine, on infrastructure you own. Notice what wasn't said: no subscription service, no company's cloud, no monthly fee for your own thoughts.
+
+[LIAM]
+The integration payoff, and this is the real Vault thesis: it's not an app bolted onto QUILL, it's the same editor with a memory. Every skill from this whole course applies inside it. Read a note aloud, episode twenty-one. Run the accessibility audit on one, episode thirty-three soon. Ask Quill to summarize a note, episode twenty-six. Export a note to Word, episode seventeen. Your knowledge system inherits your entire toolbox.
+
+[JESSICA]
+A maturity note from living with it: vaults reward rhythm over architecture. The daily note you actually open beats the elaborate folder scheme you abandoned. Let structure emerge from linking; resist designing it in advance. The tools today, tags, templates, dailies, are rhythm tools. Trust them.
+
+[LIAM]
+Homework. One: create a Templates folder and one real template with a prompt and a cursor marker, then Insert Template into a fresh note. Two: open today's daily note, write three lines, tag one of them. Three: embed one note in another and use Speak Embed. Four: if you have any Git remote anywhere, try Sync Vault once, even with a test vault, and hear your notes travel.
+
+[JESSICA]
+Next episode: from a web of notes to a book with a spine, Story Studio, the manuscript organizer.
+
+[LIAM]
+I'm Liam.
+
+[JESSICA]
+I'm Jessica. Furnish the rooms you'll live in.

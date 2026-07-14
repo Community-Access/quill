@@ -14,6 +14,8 @@ Multi-press behaviour (Phase 2):
 
 from __future__ import annotations
 
+from collections.abc import Callable
+
 import wx
 
 from quill.core.copy_tray import CopyTray
@@ -26,10 +28,16 @@ class _TraySearchDialog:
     Shown via _show_modal_dialog(dlg.dialog, ...) by CopyTrayMixin.search_tray_slots.
     """
 
-    def __init__(self, parent: object, tray: CopyTray) -> None:
+    def __init__(
+        self,
+        parent: object,
+        tray: CopyTray,
+        announce_fn: Callable[[str], None] | None = None,
+    ) -> None:
         self._tray = tray
         self._slot_numbers: list[int] = []
         self._result_slot: int | None = None
+        self._announce_fn = announce_fn
         self.dialog = wx.Dialog(
             parent,
             title="Search Copy Tray Slots",
@@ -63,12 +71,12 @@ class _TraySearchDialog:
         self.dialog.SetSizer(root)
         self.dialog.Layout()
 
-        from quill.ui.dialog_contract import apply_modal_ids
+        from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids
 
         apply_modal_ids(self.dialog, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
 
         self._search.Bind(wx.EVT_TEXT, self._on_search)
-        self._results.Bind(wx.EVT_LISTBOX_DCLICK, self._on_activate)
+        apply_listbox_activation(self._results, self._on_activate)
         self._btn_paste.Bind(wx.EVT_BUTTON, self._on_paste)
 
         self._refresh([n for n, s in tray.all_slots() if not s.is_empty()])
@@ -100,6 +108,8 @@ class _TraySearchDialog:
         self._results.Set(labels)
         if labels:
             self._results.SetSelection(0)
+            if self._announce_fn is not None:
+                self._announce_fn(labels[0])
 
     def _on_activate(self, _event: object) -> None:
         sel = self._results.GetSelection()
@@ -145,7 +155,7 @@ class CopyTrayMixin:
         self._tray().copy_to(n, text)
         slot = self._tray().slot(n)
         label = f" ({slot.label})" if slot.label else ""
-        self._set_status(f"Copied to slot {n}{label}: {slot.preview(50)}")
+        self._set_status_quiet(f"Copied to slot {n}{label}: {slot.preview(50)}")
         self._announce(f"Copied to slot {n}{label}")
         self._update_paste_tray_labels()
         self._refresh_statusbar()
@@ -164,7 +174,7 @@ class CopyTrayMixin:
         self._tray().copy_to(n, text)
         slot = self._tray().slot(n)
         label = f" ({slot.label})" if slot.label else ""
-        self._set_status(f"Copied to slot {n}{label} (first empty): {slot.preview(50)}")
+        self._set_status_quiet(f"Copied to slot {n}{label} (first empty): {slot.preview(50)}")
         self._announce(f"Copied to slot {n} (first empty){label}")
         self._update_paste_tray_labels()
         self._refresh_statusbar()
@@ -223,7 +233,6 @@ class CopyTrayMixin:
         slot = self._tray().slot(n)
         label = f" ({slot.label})" if slot.label else ""
         self._set_status(f"Pasted from slot {n}{label}")
-        self._announce(f"Pasted from slot {n}{label}")
 
     def _peek_tray_slot(self, n: int) -> None:
         slot = self._tray().slot(n)
@@ -244,7 +253,7 @@ class CopyTrayMixin:
         if all(s.is_empty() for _, s in tray.all_slots()):
             self._announce("All copy tray slots are empty")
             return
-        dlg = _TraySearchDialog(self.frame, tray)
+        dlg = _TraySearchDialog(self.frame, tray, announce_fn=self._announce)
         result = self._show_modal_dialog(dlg.dialog, "Search Copy Tray Slots")
         n = dlg.selected_slot()
         dlg.close()
@@ -283,7 +292,9 @@ class CopyTrayMixin:
         from quill.ui.copy_tray_dialog import CopyTrayDialog
 
         tray = self._tray()
-        dlg = CopyTrayDialog(self.frame, tray, self._get_editor_selection())
+        dlg = CopyTrayDialog(
+            self.frame, tray, self._get_editor_selection(), announce_cb=self._announce
+        )
         result = self._show_modal_dialog(dlg.dialog, "Copy Tray")
         if result == wx.ID_OK and (text := dlg.selected_text_to_paste()):
             n = dlg.selected_slot()
@@ -304,7 +315,6 @@ class CopyTrayMixin:
             slot = tray.slot(n)
             label = f" ({slot.label})" if slot.label else ""
             self._set_status(f"Pasted from slot {n}{label}")
-            self._announce(f"Pasted from slot {n}{label}")
         dlg.close()
         self._update_paste_tray_labels()
         self._refresh_statusbar()

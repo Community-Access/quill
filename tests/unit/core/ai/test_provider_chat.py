@@ -172,6 +172,43 @@ def test_generate_maps_401_to_auth_message(monkeypatch: pytest.MonkeyPatch) -> N
     assert error == "Authentication failed. Check your API key."
 
 
+def test_generate_blank_required_key_short_circuits_before_network(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # A cloud provider with no key set must not reach the network and come back
+    # with a confusing 401; it should report the actionable "key required"
+    # message up front (#123).
+    def fail_if_called(*_args: object, **_kwargs: object):
+        raise AssertionError("urlopen must not be called for a blank required key")
+
+    monkeypatch.setattr(assistant_ai, "urlopen", fail_if_called)
+    settings = AssistantConnectionSettings(
+        provider="openai", host="https://api.openai.com", model="gpt-4o-mini"
+    )
+    text, error = generate_assistant_response(settings, "", "hi", max_attempts=1)
+    assert text is None
+    assert error is not None and "API key is required" in error
+
+
+def test_generate_stream_blank_required_key_short_circuits(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fail_if_called(*_args: object, **_kwargs: object):
+        raise AssertionError("urlopen must not be called for a blank required key")
+
+    monkeypatch.setattr(assistant_ai, "urlopen", fail_if_called)
+    settings = AssistantConnectionSettings(
+        provider="openai", host="https://api.openai.com", model="gpt-4o-mini"
+    )
+    deltas: list[str] = []
+    text, error = assistant_ai.generate_assistant_response_stream(
+        settings, "", "hi", deltas.append, max_attempts=1
+    )
+    assert text is None
+    assert error is not None and "API key is required" in error
+    assert deltas == []
+
+
 def test_generate_retries_then_reports_warming_up(monkeypatch: pytest.MonkeyPatch) -> None:
     calls = {"n": 0}
 

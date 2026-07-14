@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 
+from quill.core.speech.provider import TranscriptionResult, TranscriptionSegment
 from quill.core.watch_actions import (
     OUTCOME_DONE,
     OUTCOME_FAILED,
@@ -26,6 +27,7 @@ from quill.core.watch_actions import (
     _humanize_action_error,
     default_registry,
 )
+from quill.core.watch_transcribe import WhispererTranscribeAction
 
 
 def _item(path: Path) -> WatchItem:
@@ -480,3 +482,195 @@ def test_move_action_permission_error_humanized(tmp_path: Path) -> None:
     assert outcome.status == OUTCOME_FAILED
     assert "permission" in outcome.message.lower() or "folder" in outcome.message.lower()
     assert "Errno" not in outcome.message
+
+
+# ---------------------------------------------------------------------------
+# WhispererTranscribeAction (WATCH-9): offline audio transcription
+# ---------------------------------------------------------------------------
+
+
+def _result(text: str = "hello world", *, with_segments: bool = False) -> TranscriptionResult:
+    segments = ()
+    if with_segments:
+        segments = (
+            TranscriptionSegment(start_seconds=0.0, end_seconds=1.5, text="hello"),
+            TranscriptionSegment(start_seconds=1.5, end_seconds=3.0, text="world"),
+        )
+    return TranscriptionResult(full_text=text, segments=segments)
+
+
+def _transcriber(result: TranscriptionResult):
+    return lambda _path, _options: result
+
+
+def test_whisperer_transcribe_writes_sibling_transcript(tmp_path: Path) -> None:
+    audio = tmp_path / "interview.mp3"
+    audio.write_bytes(b"fake-audio")
+    captured: dict[str, object] = {}
+
+    def fake_transcribe(path: Path, options) -> TranscriptionResult:
+        captured["path"] = path
+        captured["model_id"] = options.get("model_id")
+        return _result("hello world")
+
+    action = WhispererTranscribeAction(on_transcribe=fake_transcribe)
+    outcome = action.run(_item(audio), {"model_id": "base"})
+
+    assert outcome.status == OUTCOME_DONE
+    transcript = audio.with_suffix(".txt")
+    assert outcome.result_path == transcript
+    assert transcript.read_text(encoding="utf-8") == "hello world\n"
+    assert captured["path"] == audio
+    assert captured["model_id"] == "base"
+
+
+class _FakeActionBackend:
+    def __init__(self, *_a: object, **_k: object) -> None: ...
+
+    def is_available(self) -> tuple[bool, None]:
+        return (True, None)
+
+    def respond(self, _prompt: str) -> str:
+        return "## Minutes\n- decided to ship"
+
+
+def test_whisperer_transcribe_then_runs_ai_action(tmp_path: Path, monkeypatch) -> None:
+    import quill.core.ai.model_manager as mm
+    import quill.core.ai.provider_backend as pb
+
+    monkeypatch.setattr(mm, "load_ai_enabled", lambda: True)
+    monkeypatch.setattr(pb, "ProviderChatBackend", _FakeActionBackend)
+
+    audio = tmp_path / "standup.mp3"
+    audio.write_bytes(b"x")
+    action = WhispererTranscribeAction(on_transcribe=_transcriber(_result("we decided to ship")))
+    outcome = action.run(_item(audio), {"transcript_action": "meeting-minutes"})
+
+    assert outcome.status == OUTCOME_DONE
+    # The transcript and the action document are both written next to the audio.
+    assert audio.with_suffix(".txt").read_text(encoding="utf-8") == "we decided to ship\n"
+    doc = audio.with_name("standup-meeting-minutes.md")
+    assert doc.read_text(encoding="utf-8").startswith("## Minutes")
+    assert "standup-meeting-minutes.md" in outcome.message
+
+
+def test_transcribe_action_skipped_when_ai_off_keeps_transcript(
+    tmp_path: Path, monkeypatch
+) -> None:
+    import quill.core.ai.model_manager as mm
+
+    monkeypatch.setattr(mm, "load_ai_enabled", lambda: False)
+    audio = tmp_path / "note.mp3"
+    audio.write_bytes(b"x")
+    action = WhispererTranscribeAction(on_transcribe=_transcriber(_result("hello")))
+    outcome = action.run(_item(audio), {"transcript_action": "meeting-minutes"})
+
+    assert outcome.status == OUTCOME_DONE  # the transcript still succeeds
+    assert audio.with_suffix(".txt").exists()
+    assert not audio.with_name("note-meeting-minutes.md").exists()
+    assert "AI is off" in outcome.message
+
+
+def test_whisperer_transcribe_srt_writes_timestamped_captions(tmp_path: Path) -> None:
+    audio = tmp_path / "talk.mp3"
+    audio.write_bytes(b"x")
+    action = WhispererTranscribeAction(on_transcribe=_transcriber(_result(with_segments=True)))
+    outcome = action.run(_item(audio), {"output_format": "srt"})
+    assert outcome.status == OUTCOME_DONE
+    srt = audio.with_suffix(".srt")
+    assert outcome.result_path == srt
+    body = srt.read_text(encoding="utf-8")
+    assert "00:00:00,000 --> 00:00:01,500" in body
+    assert "hello" in body and "world" in body
+
+
+def test_whisperer_transcribe_vtt_writes_webvtt(tmp_path: Path) -> None:
+    audio = tmp_path / "talk.mp3"
+    audio.write_bytes(b"x")
+    action = WhispererTranscribeAction(on_transcribe=_transcriber(_result(with_segments=True)))
+    outcome = action.run(_item(audio), {"output_format": "vtt"})
+    assert outcome.result_path == audio.with_suffix(".vtt")
+    assert audio.with_suffix(".vtt").read_text(encoding="utf-8").startswith("WEBVTT")
+
+
+def test_whisperer_transcribe_markdown_format(tmp_path: Path) -> None:
+    audio = tmp_path / "talk.mp3"
+    audio.write_bytes(b"x")
+    action = WhispererTranscribeAction(on_transcribe=_transcriber(_result("a sentence")))
+    outcome = action.run(_item(audio), {"output_format": "md"})
+    assert outcome.result_path == audio.with_suffix(".md")
+    assert "# Transcript" in audio.with_suffix(".md").read_text(encoding="utf-8")
+
+
+def test_whisperer_transcribe_srt_without_segments_falls_back_to_text(tmp_path: Path) -> None:
+    audio = tmp_path / "talk.mp3"
+    audio.write_bytes(b"x")
+    # Engine returned no timestamped segments -> never write an empty .srt.
+    action = WhispererTranscribeAction(on_transcribe=_transcriber(_result("plain text only")))
+    outcome = action.run(_item(audio), {"output_format": "srt"})
+    assert outcome.result_path == audio.with_suffix(".txt")
+    assert audio.with_suffix(".txt").read_text(encoding="utf-8") == "plain text only\n"
+
+
+def test_whisperer_transcribe_unknown_format_is_flagged() -> None:
+    action = WhispererTranscribeAction(on_transcribe=_transcriber(_result()))
+    problems = action.validate({"output_format": "docx"})
+    assert problems
+    assert "Unknown transcript format" in problems[0]
+
+
+def test_whisperer_transcribe_requires_no_consent_and_no_feature() -> None:
+    action = WhispererTranscribeAction(on_transcribe=_transcriber(_result()))
+    # Offline path: no per-profile consent and no feature flag required, so it is
+    # always available in the registry.
+    assert action.requires_consent is False
+    assert action.required_feature_id == ""
+
+
+def test_whisperer_transcribe_skips_non_audio(tmp_path: Path) -> None:
+    doc = tmp_path / "notes.txt"
+    doc.write_text("not audio")
+    action = WhispererTranscribeAction(on_transcribe=_transcriber(_result("should not run")))
+    outcome = action.run(_item(doc), {})
+    assert outcome.status == OUTCOME_SKIPPED
+    assert "supported audio" in outcome.message
+
+
+def test_whisperer_transcribe_engine_error_is_failed_outcome(tmp_path: Path) -> None:
+    audio = tmp_path / "clip.wav"
+    audio.write_bytes(b"x")
+
+    def boom(_path: Path, _options) -> TranscriptionResult:
+        raise RuntimeError("engine exploded")
+
+    action = WhispererTranscribeAction(on_transcribe=boom)
+    outcome = action.run(_item(audio), {})
+    assert outcome.status == OUTCOME_FAILED
+    assert "engine exploded" in outcome.message
+
+
+def test_whisperer_transcribe_injected_handler_validates_ok() -> None:
+    # With an injected handler and a valid format, validate() never probes the engine.
+    action = WhispererTranscribeAction(on_transcribe=_transcriber(_result()))
+    assert action.validate({}) == []
+    assert action.validate({"output_format": "vtt"}) == []
+
+
+def test_whisperer_transcribe_default_validate_reports_missing_model(monkeypatch) -> None:
+    # No injected handler: validate() reports the no-model guidance instead of
+    # silently succeeding, so the profile dry-run explains why it would not run.
+    import quill.core.speech.transcribe as transcribe_mod
+
+    monkeypatch.setattr(transcribe_mod, "has_installed_offline_model", lambda: False)
+    action = WhispererTranscribeAction()
+    problems = action.validate({})
+    assert problems
+    assert "Manage Speech Models" in problems[0]
+
+
+def test_default_registry_registers_real_transcribe_action() -> None:
+    registry = default_registry()
+    action = registry.get("bw_transcribe")
+    assert isinstance(action, WhispererTranscribeAction)
+    # No longer a placeholder: it is feature-ungated and consent-free (offline).
+    assert registry.is_available("bw_transcribe")

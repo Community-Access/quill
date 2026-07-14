@@ -15,7 +15,7 @@ from quill.core.notebook_store import (
     load_notebook,
     save_notebook,
 )
-from quill.ui.dialog_contract import apply_modal_ids, show_message_box
+from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.notebook_navigator_page import _NotebookNode, build_notebook_nodes
 
 
@@ -51,11 +51,10 @@ class NotebookUIMixin:
         try:
             nb = create_notebook(name, path=path)
         except OSError as exc:
-            show_message_box(
+            self._show_message_box(
                 f"Could not create notebook:\n{exc}",
                 "New Notebook",
                 wx.OK | wx.ICON_ERROR,
-                self.frame,
             )
             return
         self._active_notebook = nb
@@ -97,11 +96,10 @@ class NotebookUIMixin:
         try:
             nb = create_notebook_from_folder(folder, path=path, name=name)
         except OSError as exc:
-            show_message_box(
+            self._show_message_box(
                 f"Could not create notebook:\n{exc}",
                 "New Notebook from Folder",
                 wx.OK | wx.ICON_ERROR,
-                self.frame,
             )
             return
         self._active_notebook = nb
@@ -125,19 +123,17 @@ class NotebookUIMixin:
         try:
             nb = load_notebook(path)
         except NotebookFormatError as exc:
-            show_message_box(
+            self._show_message_box(
                 f"Could not open notebook:\n{exc}",
                 "Open Notebook",
                 wx.OK | wx.ICON_ERROR,
-                self.frame,
             )
             return
         except OSError as exc:
-            show_message_box(
+            self._show_message_box(
                 f"Could not read notebook file:\n{exc}",
                 "Open Notebook",
                 wx.OK | wx.ICON_ERROR,
-                self.frame,
             )
             return
         self._active_notebook = nb
@@ -150,11 +146,10 @@ class NotebookUIMixin:
         wx = self._wx
         nb = getattr(self, "_active_notebook", None)
         if nb is None:
-            show_message_box(
+            self._show_message_box(
                 "No notebook is open.",
-                "Save Snapshot",
+                "Save Version",
                 wx.OK | wx.ICON_INFORMATION,
-                self.frame,
             )
             return
         active_id = None
@@ -175,11 +170,11 @@ class NotebookUIMixin:
         open_ids = [e.id for e in getattr(nb, "entries", [])]
         with wx.TextEntryDialog(
             self.frame,
-            "Snapshot name:",
-            "Save Snapshot",
-            value=f"Snapshot {len(getattr(nb, 'snapshots', [])) + 1}",
+            "Version name:",
+            "Save Version",
+            value=f"Version {len(getattr(nb, 'snapshots', [])) + 1}",
         ) as dlg:
-            if self._show_modal_dialog(dlg, "Save Snapshot") != wx.ID_OK:
+            if self._show_modal_dialog(dlg, "Save Version") != wx.ID_OK:
                 return
             snap_name = dlg.GetValue().strip()
         if not snap_name:
@@ -190,29 +185,27 @@ class NotebookUIMixin:
             try:
                 save_notebook(nb, nb_path)
             except OSError as exc:
-                show_message_box(
-                    f"Snapshot saved in memory but could not write to disk:\n{exc}",
-                    "Save Snapshot",
+                self._show_message_box(
+                    f"Version saved in memory but could not write to disk:\n{exc}",
+                    "Save Version",
                     wx.OK | wx.ICON_WARNING,
-                    self.frame,
                 )
                 return
-        self._set_status(f'Snapshot "{snap_name}" saved.')
+        self._set_status(f'Version "{snap_name}" saved.')
 
     def manage_notebook_snapshots(self) -> None:
         wx = self._wx
         nb = getattr(self, "_active_notebook", None)
         if nb is None:
-            show_message_box(
+            self._show_message_box(
                 "No notebook is open.",
-                "Manage Snapshots",
+                "Manage Versions",
                 wx.OK | wx.ICON_INFORMATION,
-                self.frame,
             )
             return
-        dialog = wx.Dialog(self.frame, title="Manage Snapshots", size=(520, 420))
+        dialog = wx.Dialog(self.frame, title="Manage Versions", size=(520, 420))
         outer = wx.BoxSizer(wx.VERTICAL)
-        outer.Add(wx.StaticText(dialog, label="Snapshots:"), 0, wx.ALL, 8)
+        outer.Add(wx.StaticText(dialog, label="Versions:"), 0, wx.ALL, 8)
         listbox = wx.ListBox(dialog, style=wx.LB_SINGLE)
         for snap in getattr(nb, "snapshots", []):
             created = getattr(snap, "created", "")[:10]
@@ -246,9 +239,9 @@ class NotebookUIMixin:
             if snap is None:
                 return
             with wx.TextEntryDialog(
-                dialog, "New snapshot name:", "Rename Snapshot", value=snap.name
+                dialog, "New version name:", "Rename Version", value=snap.name
             ) as name_dlg:
-                if self._show_modal_dialog(name_dlg, "Rename Snapshot") != wx.ID_OK:
+                if self._show_modal_dialog(name_dlg, "Rename Version") != wx.ID_OK:
                     return
                 new_name = name_dlg.GetValue().strip()
             if new_name and new_name != snap.name:
@@ -270,7 +263,7 @@ class NotebookUIMixin:
         btn_delete.Bind(wx.EVT_BUTTON, on_delete)
         btn_close.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_CLOSE))
         try:
-            self._show_modal_dialog(dialog, "Manage Snapshots")
+            self._show_modal_dialog(dialog, "Manage Versions")
         finally:
             dialog.Destroy()
 
@@ -304,11 +297,10 @@ class NotebookUIMixin:
         wx = self._wx
         nb = getattr(self, "_active_notebook", None)
         if nb is None:
-            show_message_box(
+            self._show_message_box(
                 "No notebook is open.  Use File > Open Notebook to open one.",
                 "Go to Entry",
                 wx.OK | wx.ICON_INFORMATION,
-                self.frame,
             )
             return
         if not getattr(nb, "entries", []):
@@ -337,11 +329,10 @@ class NotebookUIMixin:
         wx = self._wx
         nb = getattr(self, "_active_notebook", None)
         if nb is None:
-            show_message_box(
+            self._show_message_box(
                 "No notebook is open.",
                 "Go to Heading in Notebook",
                 wx.OK | wx.ICON_INFORMATION,
-                self.frame,
             )
             return
         nodes = self._build_notebook_heading_nodes(nb)
@@ -366,11 +357,10 @@ class NotebookUIMixin:
         wx = self._wx
         nb = getattr(self, "_active_notebook", None)
         if nb is None:
-            show_message_box(
+            self._show_message_box(
                 "No notebook is open.",
                 "Go to Bookmark in Notebook",
                 wx.OK | wx.ICON_INFORMATION,
-                self.frame,
             )
             return
         bookmarks = getattr(self, "_bookmarks", {})
@@ -383,11 +373,10 @@ class NotebookUIMixin:
         wx = self._wx
         nb = getattr(self, "_active_notebook", None)
         if nb is None:
-            show_message_box(
+            self._show_message_box(
                 "No notebook is open.",
                 "Go to Sticky Note in Notebook",
                 wx.OK | wx.ICON_INFORMATION,
-                self.frame,
             )
             return
         self.manage_sticky_notes()

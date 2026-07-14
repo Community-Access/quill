@@ -19,8 +19,8 @@
     "navigate.forward_location": "Alt+Right",
     "tools.word_count": "Ctrl+Shift+W",
     "tools.spell_check_dialog": "F7",
-    "tools.next_misspelling": "Alt+F7",
-    "tools.previous_misspelling": "Shift+Alt+F7",
+    "tools.next_misspelling": "Ctrl+F7",
+    "tools.previous_misspelling": "Ctrl+Shift+F7",
     "help.switch_feature_profile": "Alt+Shift+P",
     "edit.copy_with_source": "Ctrl+Shift+C",
     "edit.undo": "Ctrl+Z",
@@ -29,12 +29,13 @@
     "edit.find": "Ctrl+F",
     "edit.find_next": "F3",
     "edit.find_previous": "Shift+F3",
-    "edit.find_all_matches": "Alt+F3",
+    "edit.find_all_matches": "Ctrl+Shift+F3",
     "edit.replace": "Ctrl+H",
     "edit.replace_all": "Ctrl+Shift+H",
     "edit.insert_link": "Ctrl+K",
     "help.context_help": "Ctrl+Shift+Grave, Shift+H",
     "help.key_cheatsheet": "Alt+Shift+/",
-    "help.why_unavailable": "Alt+F1"
+    "help.why_unavailable": "Alt+F1",
+    "tools.speech_batch_export": ""
   }
 }

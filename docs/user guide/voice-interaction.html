@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>voice-interaction</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="voice-interaction-in-quill">Voice Interaction in QUILL</h1>
+<p>QUILL can be driven by voice — hands-free, on your own device, with
+nothing uploaded. This page is the complete reference for what voice can
+do today, how each mode works, exactly which spoken commands are
+understood, and the safety rules that never change.</p>
+<p>Everything here is part of the <strong>Hey QUILL</strong> program. It
+is off by default, always off in Safe Mode, and every layer keeps
+recognition on your machine.</p>
+<h2 id="the-one-safety-rule">The one safety rule</h2>
+<p><strong>Voice can only run a curated, non-destructive allowlist of
+commands.</strong> Saying the wrong thing cannot close a document
+without saving, send, publish, or delete anything — those actions are
+simply not in voice's vocabulary. The same allowlist bounds the AI
+agent. If you ask voice something it does not recognize as a safe
+command, it tells you what it heard and does nothing.</p>
+<h2 id="turning-voice-on">Turning voice on</h2>
+<ol type="1">
+<li>Open <strong>Settings</strong> and turn on <strong>Voice commands
+(push-to-talk)</strong>. This one switch enables every voice mode
+below.</li>
+<li>Make sure an offline speech model is installed (QUILL offers to
+download one the first time you use voice; it is a one-time on-device
+download).</li>
+<li>Optionally assign keyboard shortcuts to the voice commands under
+<strong>Settings → Keyboard</strong>, so you can start them without the
+menu.</li>
+</ol>
+<p>Voice is unavailable in Safe Mode, and needs microphone-capture
+support (the optional <code>sounddevice</code> component, included in
+standard installs).</p>
+<h3 id="choosing-the-recognition-engine">Choosing the recognition
+engine</h3>
+<p>Voice interaction runs on an on-device speech engine, and you can
+choose which one under <strong>Settings → Voice recognition
+engine</strong>:</p>
+<ul>
+<li><strong>Follow main engine</strong> (default) — uses whatever engine
+you already use for dictation.</li>
+<li><strong>whisper.cpp</strong> — favors accuracy. A good choice for
+Voice Command and Conversation Mode when you want the most reliable
+recognition.</li>
+<li><strong>Vosk</strong> — fast and light, with low idle cost.
+<strong>Recommended for the always-listening "Hey QUILL" wake
+word</strong>, where a small, quick engine matters more than
+transcription polish.</li>
+</ul>
+<p>Whichever you pick, you need a model installed for that engine
+(download one from <strong>Tools → Speech → Manage Speech
+Models</strong>). If the chosen engine or its model isn't available,
+QUILL automatically falls back to your main engine, so voice always
+works.</p>
+<h2 id="the-four-ways-to-use-voice">The four ways to use voice</h2>
+<p>QUILL's voice support was built in four layers. Each one builds on
+the one before it, and they share the same on-device recognition and the
+same safe allowlist.</p>
+<h3 id="1-voice-command-push-to-talk">1. Voice Command
+(push-to-talk)</h3>
+<p><strong>Tools → Speech → Voice Command (Offline).</strong></p>
+<p>The simplest mode. Run the command, speak <strong>one</strong>
+command, run it again to stop and act. QUILL recognizes the phrase on
+your device and runs the matching command. Say <strong>"cancel"</strong>
+or <strong>"never mind"</strong> to abort.</p>
+<p>Best when you want to fire a single command without touching the
+keyboard.</p>
+<h3 id="2-voice-conversation-mode">2. Voice Conversation Mode</h3>
+<p><strong>Tools → Speech → Voice Conversation Mode.</strong></p>
+<p>The hands-free version. Run it once and QUILL listens for a command,
+then keeps a short <strong>follow-up window</strong> open after acting
+so you can chain commands — "next heading", then "read aloud", then
+"word count" — without arming again between them. A warm audio cue marks
+every state:</p>
+<table>
+<thead>
+<tr>
+<th>Cue</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rising three-note chime</td>
+<td>Conversation mode turned on</td>
+</tr>
+<tr>
+<td>Soft two-note</td>
+<td>The microphone is open; speak your command</td>
+</tr>
+<tr>
+<td>Gentle rise</td>
+<td>Your command was recognized (a brief "cancel" window follows)</td>
+</tr>
+<tr>
+<td>Sparkle</td>
+<td>The action finished</td>
+</tr>
+<tr>
+<td>Quiet tick</td>
+<td>QUILL is still working, so the wait is never silent</td>
+</tr>
+<tr>
+<td>Calm falling tone</td>
+<td>Nothing matched</td>
+</tr>
+<tr>
+<td>Settling tone</td>
+<td>Relaxed back to rest</td>
+</tr>
+</tbody>
+</table>
+<p>Run it again, or say <strong>"stop"</strong>, to turn conversation
+mode off.</p>
+<p>Your turn ends <strong>when you stop speaking</strong> — QUILL
+listens to the microphone's energy and finishes the turn after your
+pause, rather than cutting you off at a fixed time. You can make it more
+personal, too: set <strong>your name</strong> in Settings and QUILL uses
+it in its prompts ("Listening, Jeff."), with wording that varies
+naturally and follows the time of day. If you'd like the prompts
+<strong>spoken aloud</strong>, turn on <em>Speak prompts aloud</em>;
+QUILL keeps that silent whenever a screen reader is running, so it never
+talks over your reader.</p>
+<p><strong>Timing you can tune</strong> (Settings; set any to 0 to
+switch that part off):</p>
+<ul>
+<li><strong>Pause before a command ends</strong> — how long a pause
+finishes what you are saying (used by the silence detection above).</li>
+<li><strong>Cancel window</strong> — the beat after recognition during
+which "cancel" calls it off.</li>
+<li><strong>Follow-up window</strong> — how long QUILL keeps listening
+after acting.</li>
+<li><strong>Still-working tick interval</strong> — how often the
+"working" tick plays.</li>
+</ul>
+<p>The nine cues are ordinary <strong>Sound Events</strong> — retune or
+replace them in any sound pack from the Sound Events dialog, exactly
+like every other QUILL earcon.</p>
+<h3 id="3-hey-quill-wake-word">3. "Hey QUILL" wake word</h3>
+<p><strong>Tools → Speech → Listen for Hey QUILL.</strong></p>
+<p>Always-listening. QUILL listens continuously, on your device, for the
+phrase <strong>"Hey QUILL"</strong>. Two ways to use it:</p>
+<ul>
+<li><strong>"Hey QUILL, save file"</strong> — the trailing command runs
+straight away.</li>
+<li><strong>"Hey QUILL"</strong> on its own — QUILL wakes and listens
+for your next command.</li>
+</ul>
+<p>While it is on, the status bar shows that the microphone is live and
+plays a periodic reminder, so an open microphone is never a surprise.
+Run the command again, or say <strong>"stop"</strong>, to turn listening
+off instantly.</p>
+<p><strong>It stays off unless you say otherwise.</strong>
+Always-listening turns itself off when QUILL closes; a separate setting
+— <strong>Keep listening for "Hey QUILL" across restarts</strong> — lets
+you have it resume automatically at startup if you want that.</p>
+<h3 id="checking-what-voice-is-doing--speak-voice-status">Checking what
+voice is doing — Speak Voice Status</h3>
+<p><strong>Tools → Speech → Speak Voice Status</strong> tells you, at
+any moment, exactly what voice is up to: listening for "Hey QUILL", in
+conversation mode, capturing a command, or not listening at all. It is a
+quick way to confirm the microphone state — assign it a shortcut for an
+instant check.</p>
+<h3 id="4-ask-a-question--routed-to-ask-quill">4. Ask a question —
+routed to Ask Quill</h3>
+<p>When you speak something that is a <strong>question</strong> rather
+than a command — either starting with "ask" ("ask what a heading is") or
+shaped like a question ("how do I save my document") — voice hands it to
+<strong>Ask Quill</strong>, QUILL's AI assistant, with your question
+<strong>pre-filled and ready to send</strong>.</p>
+<p>You press Enter to send it, so a person is always in the loop for
+anything that reaches the AI. Ask Quill answers with its own
+spoken-reply and change-review tools. This needs AI to be set up; if it
+is not, Ask Quill offers to set it up rather than failing. Questions are
+only routed to AI — voice never sends anything to a network service on
+its own.</p>
+<h2 id="what-voice-can-run--the-command-allowlist">What voice can run —
+the command allowlist</h2>
+<p>These are the commands voice understands today, with the phrases that
+select each. Matching is forgiving: the command's own name works too,
+and close phrasings still match.</p>
+<table>
+<thead>
+<tr>
+<th>Say</th>
+<th>Runs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"save", "save file", "save document"</td>
+<td>Save</td>
+</tr>
+<tr>
+<td>"save all", "save everything"</td>
+<td>Save All</td>
+</tr>
+<tr>
+<td>"new", "new document", "new file"</td>
+<td>New</td>
+</tr>
+<tr>
+<td>"undo"</td>
+<td>Undo</td>
+</tr>
+<tr>
+<td>"redo"</td>
+<td>Redo</td>
+</tr>
+<tr>
+<td>"select all"</td>
+<td>Select All</td>
+</tr>
+<tr>
+<td>"bold", "make bold"</td>
+<td>Bold</td>
+</tr>
+<tr>
+<td>"italic", "make italic"</td>
+<td>Italic</td>
+</tr>
+<tr>
+<td>"uppercase", "make uppercase"</td>
+<td>Upper Case</td>
+</tr>
+<tr>
+<td>"lowercase", "make lowercase"</td>
+<td>Lower Case</td>
+</tr>
+<tr>
+<td>"title case"</td>
+<td>Title Case</td>
+</tr>
+<tr>
+<td>"sentence case"</td>
+<td>Sentence Case</td>
+</tr>
+<tr>
+<td>"bullet list", "bulleted list"</td>
+<td>Insert Bullet List</td>
+</tr>
+<tr>
+<td>"numbered list"</td>
+<td>Insert Numbered List</td>
+</tr>
+<tr>
+<td>"word count", "count words"</td>
+<td>Word Count</td>
+</tr>
+<tr>
+<td>"spell check", "check spelling"</td>
+<td>Spell Check</td>
+</tr>
+<tr>
+<td>"read aloud", "start reading", "pause reading"</td>
+<td>Read Aloud (start/pause)</td>
+</tr>
+<tr>
+<td>"stop reading", "stop read aloud"</td>
+<td>Stop Read Aloud</td>
+</tr>
+<tr>
+<td>"next heading"</td>
+<td>Next Heading</td>
+</tr>
+<tr>
+<td>"previous heading", "prior heading"</td>
+<td>Previous Heading</td>
+</tr>
+<tr>
+<td>"outline", "show outline"</td>
+<td>Outline Navigator</td>
+</tr>
+<tr>
+<td>"find", "search", "find text"</td>
+<td>Find</td>
+</tr>
+<tr>
+<td>"soft wrap", "word wrap"</td>
+<td>Toggle Soft Wrap</td>
+</tr>
+<tr>
+<td>"command palette", "commands"</td>
+<td>Command Palette</td>
+</tr>
+</tbody>
+</table>
+<p>Anywhere you can speak a command, you can also say
+<strong>"cancel"</strong>, <strong>"never mind"</strong>,
+<strong>"stop"</strong>, or <strong>"dismiss"</strong> to abort.</p>
+<h2 id="privacy-and-control-at-a-glance">Privacy and control at a
+glance</h2>
+<ul>
+<li><strong>On-device.</strong> All speech recognition uses the offline
+engine. No audio and no transcript leave your computer for any voice
+mode. (Only Ask Quill, when <em>you</em> press send on a routed
+question, contacts the AI you configured — with the consent you already
+granted it.)</li>
+<li><strong>Off by default.</strong> Every voice mode is off until you
+enable voice commands, and each listening session is something you
+start.</li>
+<li><strong>Safe Mode.</strong> All voice modes are disabled in Safe
+Mode.</li>
+<li><strong>Instant off.</strong> Running a mode's command again, or
+saying "stop", ends it immediately; always-listening also ends when
+QUILL closes unless you opt into persistence.</li>
+<li><strong>Perceivable.</strong> Warm audio cues and a visible status
+keep the state of a hands-free session — and a live microphone — always
+knowable.</li>
+</ul>
+<h2 id="roadmap">Roadmap</h2>
+<p>Voice interaction shipped in four phases, and the polish refinements
+followed: true silence detection (your turn ends when you stop
+speaking), personalized and optionally-spoken prompts with screen-reader
+parity, and the Speak Voice Status check are all in place. The one
+genuinely future item is a dedicated low-power keyword spotter for the
+wake word (so always-listening costs even less than it does today).</p>
+</body>
+</html>

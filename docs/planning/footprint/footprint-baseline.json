@@ -1,0 +1,1655 @@
+{
+  "generated_at": "2026-07-01T15:07:05Z",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.13.14",
+  "machine": {
+    "total_ram_gb": 7.5,
+    "has_gpu": false,
+    "models_dir_free_gb": 26.0
+  },
+  "process_rss_bytes": null,
+  "components": [
+    {
+      "name": "win32more",
+      "category": "site-packages",
+      "bytes": 141280213,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32more"
+    },
+    {
+      "name": "enchant",
+      "category": "site-packages",
+      "bytes": 95455736,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\enchant"
+    },
+    {
+      "name": "spacy",
+      "category": "site-packages",
+      "bytes": 89392533,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\spacy"
+    },
+    {
+      "name": "sympy",
+      "category": "site-packages",
+      "bytes": 68621934,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sympy"
+    },
+    {
+      "name": "wx",
+      "category": "site-packages",
+      "bytes": 65126752,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wx"
+    },
+    {
+      "name": "pandas",
+      "category": "site-packages",
+      "bytes": 62763432,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pandas"
+    },
+    {
+      "name": "vosk",
+      "category": "site-packages",
+      "bytes": 54103429,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\vosk"
+    },
+    {
+      "name": "pymupdf",
+      "category": "site-packages",
+      "bytes": 53024872,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pymupdf"
+    },
+    {
+      "name": "speech_recognition",
+      "category": "site-packages",
+      "bytes": 44845306,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\speech_recognition"
+    },
+    {
+      "name": "phonenumbers",
+      "category": "site-packages",
+      "bytes": 43813878,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\phonenumbers"
+    },
+    {
+      "name": "onnxruntime",
+      "category": "site-packages",
+      "bytes": 36806715,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\onnxruntime"
+    },
+    {
+      "name": "nuitka",
+      "category": "site-packages",
+      "bytes": 33759199,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\nuitka"
+    },
+    {
+      "name": "babel",
+      "category": "site-packages",
+      "bytes": 31339112,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\babel"
+    },
+    {
+      "name": "numpy",
+      "category": "site-packages",
+      "bytes": 31249015,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\numpy"
+    },
+    {
+      "name": "quill",
+      "category": "site-packages",
+      "bytes": 24242217,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\quill"
+    },
+    {
+      "name": "piper",
+      "category": "site-packages",
+      "bytes": 23919613,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\piper"
+    },
+    {
+      "name": "blis",
+      "category": "site-packages",
+      "bytes": 22641328,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\blis"
+    },
+    {
+      "name": "libx265-216-304e39bf60cb98de3b45888750436453.dll",
+      "category": "site-packages",
+      "bytes": 22559744,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\libx265-216-304e39bf60cb98de3b45888750436453.dll"
+    },
+    {
+      "name": "numpy.libs",
+      "category": "site-packages",
+      "bytes": 20990544,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\numpy.libs"
+    },
+    {
+      "name": "fb62009ad6f7d3457273__mypyc.cp313-win_amd64.pyd",
+      "category": "site-packages",
+      "bytes": 19886592,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\fb62009ad6f7d3457273__mypyc.cp313-win_amd64.pyd"
+    },
+    {
+      "name": "espeakng_loader",
+      "category": "site-packages",
+      "bytes": 18797078,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\espeakng_loader"
+    },
+    {
+      "name": "PIL",
+      "category": "site-packages",
+      "bytes": 15973239,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PIL"
+    },
+    {
+      "name": "fontTools",
+      "category": "site-packages",
+      "bytes": 15902389,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\fontTools"
+    },
+    {
+      "name": "mypy",
+      "category": "site-packages",
+      "bytes": 15397459,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\mypy"
+    },
+    {
+      "name": "cryptography",
+      "category": "site-packages",
+      "bytes": 10951072,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\cryptography"
+    },
+    {
+      "name": "thinc",
+      "category": "site-packages",
+      "bytes": 10856129,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\thinc"
+    },
+    {
+      "name": "pip",
+      "category": "site-packages",
+      "bytes": 10517290,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pip"
+    },
+    {
+      "name": "pythonwin",
+      "category": "site-packages",
+      "bytes": 10512674,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pythonwin"
+    },
+    {
+      "name": "pdfminer",
+      "category": "site-packages",
+      "bytes": 9327298,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pdfminer"
+    },
+    {
+      "name": "hf_xet",
+      "category": "site-packages",
+      "bytes": 9292245,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\hf_xet"
+    },
+    {
+      "name": "lxml",
+      "category": "site-packages",
+      "bytes": 9236919,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\lxml"
+    },
+    {
+      "name": "youtube_transcript_api",
+      "category": "site-packages",
+      "bytes": 9228294,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\youtube_transcript_api"
+    },
+    {
+      "name": "llama_cpp",
+      "category": "site-packages",
+      "bytes": 8706507,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\llama_cpp"
+    },
+    {
+      "name": "pygments",
+      "category": "site-packages",
+      "bytes": 8338701,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pygments"
+    },
+    {
+      "name": "pypdfium2_raw",
+      "category": "site-packages",
+      "bytes": 7440652,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pypdfium2_raw"
+    },
+    {
+      "name": "setuptools",
+      "category": "site-packages",
+      "bytes": 7027429,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools"
+    },
+    {
+      "name": "bin",
+      "category": "site-packages",
+      "bytes": 6282707,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\bin"
+    },
+    {
+      "name": "pyphen",
+      "category": "site-packages",
+      "bytes": 6191874,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pyphen"
+    },
+    {
+      "name": "mypyc",
+      "category": "site-packages",
+      "bytes": 5682302,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\mypyc"
+    },
+    {
+      "name": "pydantic_core",
+      "category": "site-packages",
+      "bytes": 5623354,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pydantic_core"
+    },
+    {
+      "name": "win32",
+      "category": "site-packages",
+      "bytes": 5426745,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32"
+    },
+    {
+      "name": "huggingface_hub",
+      "category": "site-packages",
+      "bytes": 5306052,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\huggingface_hub"
+    },
+    {
+      "name": "srsly",
+      "category": "site-packages",
+      "bytes": 4556360,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\srsly"
+    },
+    {
+      "name": "mpmath",
+      "category": "site-packages",
+      "bytes": 4554532,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\mpmath"
+    },
+    {
+      "name": "rdflib",
+      "category": "site-packages",
+      "bytes": 4399147,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\rdflib"
+    },
+    {
+      "name": "PyInstaller",
+      "category": "site-packages",
+      "bytes": 4237268,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller"
+    },
+    {
+      "name": "cramjam",
+      "category": "site-packages",
+      "bytes": 4212187,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\cramjam"
+    },
+    {
+      "name": "azure",
+      "category": "site-packages",
+      "bytes": 3940332,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\azure"
+    },
+    {
+      "name": "pydantic",
+      "category": "site-packages",
+      "bytes": 3665523,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pydantic"
+    },
+    {
+      "name": "celery",
+      "category": "site-packages",
+      "bytes": 3398959,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\celery"
+    },
+    {
+      "name": "magika",
+      "category": "site-packages",
+      "bytes": 3394900,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\magika"
+    },
+    {
+      "name": "comtypes",
+      "category": "site-packages",
+      "bytes": 3278889,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\comtypes"
+    },
+    {
+      "name": "win32comext",
+      "category": "site-packages",
+      "bytes": 3256791,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32comext"
+    },
+    {
+      "name": "prompt_toolkit",
+      "category": "site-packages",
+      "bytes": 3019179,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\prompt_toolkit"
+    },
+    {
+      "name": "_pytest",
+      "category": "site-packages",
+      "bytes": 2981110,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_pytest"
+    },
+    {
+      "name": "winrt",
+      "category": "site-packages",
+      "bytes": 2862174,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\winrt"
+    },
+    {
+      "name": "future",
+      "category": "site-packages",
+      "bytes": 2849966,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\future"
+    },
+    {
+      "name": "libstdc++-6-8dcf7f02b3b175d0bfea947a086cdaca.dll",
+      "category": "site-packages",
+      "bytes": 2660352,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\libstdc++-6-8dcf7f02b3b175d0bfea947a086cdaca.dll"
+    },
+    {
+      "name": "lib",
+      "category": "site-packages",
+      "bytes": 2653652,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\lib"
+    },
+    {
+      "name": "PyWin32.chm",
+      "category": "site-packages",
+      "bytes": 2646518,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyWin32.chm"
+    },
+    {
+      "name": "weasyprint",
+      "category": "site-packages",
+      "bytes": 2632469,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\weasyprint"
+    },
+    {
+      "name": "google",
+      "category": "site-packages",
+      "bytes": 2612654,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\google"
+    },
+    {
+      "name": "redis",
+      "category": "site-packages",
+      "bytes": 2593806,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\redis"
+    },
+    {
+      "name": "rich",
+      "category": "site-packages",
+      "bytes": 2560056,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\rich"
+    },
+    {
+      "name": "pptx",
+      "category": "site-packages",
+      "bytes": 2484927,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pptx"
+    },
+    {
+      "name": "ast_serialize",
+      "category": "site-packages",
+      "bytes": 2463662,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\ast_serialize"
+    },
+    {
+      "name": "_soundfile_data",
+      "category": "site-packages",
+      "bytes": 2391261,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_soundfile_data"
+    },
+    {
+      "name": "docx",
+      "category": "site-packages",
+      "bytes": 2298167,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\docx"
+    },
+    {
+      "name": "anyio",
+      "category": "site-packages",
+      "bytes": 2278580,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\anyio"
+    },
+    {
+      "name": "libheif-280d6396ff85554cc71255ff856b1526.dll",
+      "category": "site-packages",
+      "bytes": 2154496,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\libheif-280d6396ff85554cc71255ff856b1526.dll"
+    },
+    {
+      "name": "joblib",
+      "category": "site-packages",
+      "bytes": 1942947,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\joblib"
+    },
+    {
+      "name": "openpyxl",
+      "category": "site-packages",
+      "bytes": 1934864,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\openpyxl"
+    },
+    {
+      "name": "win32com",
+      "category": "site-packages",
+      "bytes": 1918595,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32com"
+    },
+    {
+      "name": "gunicorn",
+      "category": "site-packages",
+      "bytes": 1733496,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\gunicorn"
+    },
+    {
+      "name": "regex",
+      "category": "site-packages",
+      "bytes": 1720098,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\regex"
+    },
+    {
+      "name": "keynote_parser",
+      "category": "site-packages",
+      "bytes": 1689927,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\keynote_parser"
+    },
+    {
+      "name": "xlsxwriter",
+      "category": "site-packages",
+      "bytes": 1672889,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\xlsxwriter"
+    },
+    {
+      "name": "kombu",
+      "category": "site-packages",
+      "bytes": 1672411,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\kombu"
+    },
+    {
+      "name": "fsspec",
+      "category": "site-packages",
+      "bytes": 1663309,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\fsspec"
+    },
+    {
+      "name": "werkzeug",
+      "category": "site-packages",
+      "bytes": 1657632,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\werkzeug"
+    },
+    {
+      "name": "language_tags",
+      "category": "site-packages",
+      "bytes": 1603141,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\language_tags"
+    },
+    {
+      "name": "mutagen",
+      "category": "site-packages",
+      "bytes": 1432011,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\mutagen"
+    },
+    {
+      "name": "coverage",
+      "category": "site-packages",
+      "bytes": 1426079,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\coverage"
+    },
+    {
+      "name": "websockets",
+      "category": "site-packages",
+      "bytes": 1293114,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\websockets"
+    },
+    {
+      "name": "accessible_output2",
+      "category": "site-packages",
+      "bytes": 1291537,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\accessible_output2"
+    },
+    {
+      "name": "prism",
+      "category": "site-packages",
+      "bytes": 1186469,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\prism"
+    },
+    {
+      "name": "jinja2",
+      "category": "site-packages",
+      "bytes": 1168181,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\jinja2"
+    },
+    {
+      "name": "presidio_analyzer",
+      "category": "site-packages",
+      "bytes": 1116583,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\presidio_analyzer"
+    },
+    {
+      "name": "fastapi",
+      "category": "site-packages",
+      "bytes": 1073966,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\fastapi"
+    },
+    {
+      "name": "_pyinstaller_hooks_contrib",
+      "category": "site-packages",
+      "bytes": 995029,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_pyinstaller_hooks_contrib"
+    },
+    {
+      "name": "pyparsing",
+      "category": "site-packages",
+      "bytes": 970906,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pyparsing"
+    },
+    {
+      "name": "libde265-0-d968577f244af10cad49574add506206.dll",
+      "category": "site-packages",
+      "bytes": 940544,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\libde265-0-d968577f244af10cad49574add506206.dll"
+    },
+    {
+      "name": "jsonschema",
+      "category": "site-packages",
+      "bytes": 933975,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\jsonschema"
+    },
+    {
+      "name": "urllib3",
+      "category": "site-packages",
+      "bytes": 885369,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\urllib3"
+    },
+    {
+      "name": "_brotli.cp313-win_amd64.pyd",
+      "category": "site-packages",
+      "bytes": 856576,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_brotli.cp313-win_amd64.pyd"
+    },
+    {
+      "name": "click",
+      "category": "site-packages",
+      "bytes": 840910,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\click"
+    },
+    {
+      "name": "pywin32_system32",
+      "category": "site-packages",
+      "bytes": 825856,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pywin32_system32"
+    },
+    {
+      "name": "cffi",
+      "category": "site-packages",
+      "bytes": 798217,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\cffi"
+    },
+    {
+      "name": "packaging",
+      "category": "site-packages",
+      "bytes": 754274,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\packaging"
+    },
+    {
+      "name": "bs4",
+      "category": "site-packages",
+      "bytes": 753677,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\bs4"
+    },
+    {
+      "name": "msal",
+      "category": "site-packages",
+      "bytes": 743639,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\msal"
+    },
+    {
+      "name": "yaml",
+      "category": "site-packages",
+      "bytes": 729737,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\yaml"
+    },
+    {
+      "name": "dateutil",
+      "category": "site-packages",
+      "bytes": 729342,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\dateutil"
+    },
+    {
+      "name": "billiard",
+      "category": "site-packages",
+      "bytes": 725697,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\billiard"
+    },
+    {
+      "name": "flask",
+      "category": "site-packages",
+      "bytes": 705809,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask"
+    },
+    {
+      "name": "markdown",
+      "category": "site-packages",
+      "bytes": 696466,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\markdown"
+    },
+    {
+      "name": "xlrd",
+      "category": "site-packages",
+      "bytes": 690511,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\xlrd"
+    },
+    {
+      "name": "pyreadline3",
+      "category": "site-packages",
+      "bytes": 673554,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pyreadline3"
+    },
+    {
+      "name": "_sounddevice_data",
+      "category": "site-packages",
+      "bytes": 651925,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_sounddevice_data"
+    },
+    {
+      "name": "rpds",
+      "category": "site-packages",
+      "bytes": 630850,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\rpds"
+    },
+    {
+      "name": "httpx",
+      "category": "site-packages",
+      "bytes": 624906,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\httpx"
+    },
+    {
+      "name": "wtforms",
+      "category": "site-packages",
+      "bytes": 616861,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wtforms"
+    },
+    {
+      "name": "idna",
+      "category": "site-packages",
+      "bytes": 612698,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\idna"
+    },
+    {
+      "name": "humanfriendly",
+      "category": "site-packages",
+      "bytes": 604976,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\humanfriendly"
+    },
+    {
+      "name": "httpcore",
+      "category": "site-packages",
+      "bytes": 603840,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\httpcore"
+    },
+    {
+      "name": "starlette",
+      "category": "site-packages",
+      "bytes": 591546,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\starlette"
+    },
+    {
+      "name": "xdist",
+      "category": "site-packages",
+      "bytes": 579437,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\xdist"
+    },
+    {
+      "name": "pandas.libs",
+      "category": "site-packages",
+      "bytes": 575056,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pandas.libs"
+    },
+    {
+      "name": "wcwidth",
+      "category": "site-packages",
+      "bytes": 532867,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wcwidth"
+    },
+    {
+      "name": "tzdata",
+      "category": "site-packages",
+      "bytes": 522591,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\tzdata"
+    },
+    {
+      "name": "csvw",
+      "category": "site-packages",
+      "bytes": 513564,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\csvw"
+    },
+    {
+      "name": "typer",
+      "category": "site-packages",
+      "bytes": 510613,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\typer"
+    },
+    {
+      "name": "tinyhtml5",
+      "category": "site-packages",
+      "bytes": 503868,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\tinyhtml5"
+    },
+    {
+      "name": "markdown_it",
+      "category": "site-packages",
+      "bytes": 485203,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\markdown_it"
+    },
+    {
+      "name": "adodbapi",
+      "category": "site-packages",
+      "bytes": 481066,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\adodbapi"
+    },
+    {
+      "name": "requests",
+      "category": "site-packages",
+      "bytes": 460432,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests"
+    },
+    {
+      "name": "limits",
+      "category": "site-packages",
+      "bytes": 454805,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\limits"
+    },
+    {
+      "name": "olefile",
+      "category": "site-packages",
+      "bytes": 454453,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\olefile"
+    },
+    {
+      "name": "cloudpathlib",
+      "category": "site-packages",
+      "bytes": 447910,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\cloudpathlib"
+    },
+    {
+      "name": "markitdown",
+      "category": "site-packages",
+      "bytes": 445593,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\markitdown"
+    },
+    {
+      "name": "uvicorn",
+      "category": "site-packages",
+      "bytes": 441862,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\uvicorn"
+    },
+    {
+      "name": "pycparser",
+      "category": "site-packages",
+      "bytes": 425564,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pycparser"
+    },
+    {
+      "name": "tldextract",
+      "category": "site-packages",
+      "bytes": 418123,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\tldextract"
+    },
+    {
+      "name": "attr",
+      "category": "site-packages",
+      "bytes": 413656,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\attr"
+    },
+    {
+      "name": "mammoth",
+      "category": "site-packages",
+      "bytes": 403171,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\mammoth"
+    },
+    {
+      "name": "wrapt",
+      "category": "site-packages",
+      "bytes": 376303,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wrapt"
+    },
+    {
+      "name": "amqp",
+      "category": "site-packages",
+      "bytes": 370738,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\amqp"
+    },
+    {
+      "name": "smart_open",
+      "category": "site-packages",
+      "bytes": 368917,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\smart_open"
+    },
+    {
+      "name": "tqdm",
+      "category": "site-packages",
+      "bytes": 366937,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\tqdm"
+    },
+    {
+      "name": "charset_normalizer",
+      "category": "site-packages",
+      "bytes": 362604,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\charset_normalizer"
+    },
+    {
+      "name": "diskcache",
+      "category": "site-packages",
+      "bytes": 360667,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\diskcache"
+    },
+    {
+      "name": "pypdfium2",
+      "category": "site-packages",
+      "bytes": 353595,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pypdfium2"
+    },
+    {
+      "name": "pdfplumber",
+      "category": "site-packages",
+      "bytes": 347636,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pdfplumber"
+    },
+    {
+      "name": "execnet",
+      "category": "site-packages",
+      "bytes": 303013,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\execnet"
+    },
+    {
+      "name": "pefile.py",
+      "category": "site-packages",
+      "bytes": 301767,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pefile.py"
+    },
+    {
+      "name": "phonemizer",
+      "category": "site-packages",
+      "bytes": 299237,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\phonemizer"
+    },
+    {
+      "name": "librt",
+      "category": "site-packages",
+      "bytes": 298419,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\librt"
+    },
+    {
+      "name": "soupsieve",
+      "category": "site-packages",
+      "bytes": 298378,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\soupsieve"
+    },
+    {
+      "name": "include",
+      "category": "site-packages",
+      "bytes": 283591,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\include"
+    },
+    {
+      "name": "weasel",
+      "category": "site-packages",
+      "bytes": 281132,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\weasel"
+    },
+    {
+      "name": "preshed",
+      "category": "site-packages",
+      "bytes": 279243,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\preshed"
+    },
+    {
+      "name": "filelock",
+      "category": "site-packages",
+      "bytes": 277686,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\filelock"
+    },
+    {
+      "name": "coloredlogs",
+      "category": "site-packages",
+      "bytes": 272173,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\coloredlogs"
+    },
+    {
+      "name": "pathspec",
+      "category": "site-packages",
+      "bytes": 271037,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pathspec"
+    },
+    {
+      "name": "referencing",
+      "category": "site-packages",
+      "bytes": 259090,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\referencing"
+    },
+    {
+      "name": "platformdirs",
+      "category": "site-packages",
+      "bytes": 245655,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\platformdirs"
+    },
+    {
+      "name": "certifi",
+      "category": "site-packages",
+      "bytes": 241105,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\certifi"
+    },
+    {
+      "name": "pydub",
+      "category": "site-packages",
+      "bytes": 238908,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pydub"
+    },
+    {
+      "name": "isapi",
+      "category": "site-packages",
+      "bytes": 232709,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\isapi"
+    },
+    {
+      "name": "flask_limiter",
+      "category": "site-packages",
+      "bytes": 226905,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_limiter"
+    },
+    {
+      "name": "tinycss2",
+      "category": "site-packages",
+      "bytes": 225148,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\tinycss2"
+    },
+    {
+      "name": "flatbuffers",
+      "category": "site-packages",
+      "bytes": 219112,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flatbuffers"
+    },
+    {
+      "name": "81d243bd2c585b0f4821__mypyc.cp313-win_amd64.pyd",
+      "category": "site-packages",
+      "bytes": 218624,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\81d243bd2c585b0f4821__mypyc.cp313-win_amd64.pyd"
+    },
+    {
+      "name": "jwt",
+      "category": "site-packages",
+      "bytes": 217340,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\jwt"
+    },
+    {
+      "name": "confection",
+      "category": "site-packages",
+      "bytes": 203981,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\confection"
+    },
+    {
+      "name": "zopfli",
+      "category": "site-packages",
+      "bytes": 203676,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\zopfli"
+    },
+    {
+      "name": "wheel",
+      "category": "site-packages",
+      "bytes": 199927,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wheel"
+    },
+    {
+      "name": "rfc3986",
+      "category": "site-packages",
+      "bytes": 194336,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\rfc3986"
+    },
+    {
+      "name": "presidio_anonymizer",
+      "category": "site-packages",
+      "bytes": 190185,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\presidio_anonymizer"
+    },
+    {
+      "name": "_cffi_backend.cp313-win_amd64.pyd",
+      "category": "site-packages",
+      "bytes": 180224,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_cffi_backend.cp313-win_amd64.pyd"
+    },
+    {
+      "name": "libfuturize",
+      "category": "site-packages",
+      "bytes": 177633,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\libfuturize"
+    },
+    {
+      "name": "h11",
+      "category": "site-packages",
+      "bytes": 174881,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\h11"
+    },
+    {
+      "name": "spacy_legacy",
+      "category": "site-packages",
+      "bytes": 169803,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\spacy_legacy"
+    },
+    {
+      "name": "pyttsx3",
+      "category": "site-packages",
+      "bytes": 169587,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pyttsx3"
+    },
+    {
+      "name": "win32ctypes",
+      "category": "site-packages",
+      "bytes": 166021,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\win32ctypes"
+    },
+    {
+      "name": "typing_extensions.py",
+      "category": "site-packages",
+      "bytes": 160429,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\typing_extensions.py"
+    },
+    {
+      "name": "pathvalidate",
+      "category": "site-packages",
+      "bytes": 158393,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pathvalidate"
+    },
+    {
+      "name": "wasabi",
+      "category": "site-packages",
+      "bytes": 155263,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wasabi"
+    },
+    {
+      "name": "multipart",
+      "category": "site-packages",
+      "bytes": 154860,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\multipart"
+    },
+    {
+      "name": "build",
+      "category": "site-packages",
+      "bytes": 152725,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\build"
+    },
+    {
+      "name": "libgcc_s_seh-1-4533cf35dfa66119a6d90e741720acad.dll",
+      "category": "site-packages",
+      "bytes": 150016,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\libgcc_s_seh-1-4533cf35dfa66119a6d90e741720acad.dll"
+    },
+    {
+      "name": "colorama",
+      "category": "site-packages",
+      "bytes": 149429,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\colorama"
+    },
+    {
+      "name": "pillow_heif",
+      "category": "site-packages",
+      "bytes": 146831,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pillow_heif"
+    },
+    {
+      "name": "pypdfium2_cli",
+      "category": "site-packages",
+      "bytes": 138180,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pypdfium2_cli"
+    },
+    {
+      "name": "libpasteurize",
+      "category": "site-packages",
+      "bytes": 132424,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\libpasteurize"
+    },
+    {
+      "name": "pytest_cov",
+      "category": "site-packages",
+      "bytes": 132002,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pytest_cov"
+    },
+    {
+      "name": "pluggy",
+      "category": "site-packages",
+      "bytes": 130283,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pluggy"
+    },
+    {
+      "name": "cssselect2",
+      "category": "site-packages",
+      "bytes": 120685,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\cssselect2"
+    },
+    {
+      "name": "altgraph",
+      "category": "site-packages",
+      "bytes": 120295,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\altgraph"
+    },
+    {
+      "name": "spacy_loggers",
+      "category": "site-packages",
+      "bytes": 118574,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\spacy_loggers"
+    },
+    {
+      "name": "sounddevice.py",
+      "category": "site-packages",
+      "bytes": 111663,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sounddevice.py"
+    },
+    {
+      "name": "isodate",
+      "category": "site-packages",
+      "bytes": 103070,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\isodate"
+    },
+    {
+      "name": "tzlocal",
+      "category": "site-packages",
+      "bytes": 102689,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\tzlocal"
+    },
+    {
+      "name": "msal_extensions",
+      "category": "site-packages",
+      "bytes": 97809,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\msal_extensions"
+    },
+    {
+      "name": "catalogue",
+      "category": "site-packages",
+      "bytes": 95858,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\catalogue"
+    },
+    {
+      "name": "past",
+      "category": "site-packages",
+      "bytes": 91391,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\past"
+    },
+    {
+      "name": "itsdangerous",
+      "category": "site-packages",
+      "bytes": 90637,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\itsdangerous"
+    },
+    {
+      "name": "kokoro_onnx",
+      "category": "site-packages",
+      "bytes": 87697,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\kokoro_onnx"
+    },
+    {
+      "name": "wx_accessible_webview",
+      "category": "site-packages",
+      "bytes": 84558,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\wx_accessible_webview"
+    },
+    {
+      "name": "typing_inspection",
+      "category": "site-packages",
+      "bytes": 84415,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\typing_inspection"
+    },
+    {
+      "name": "dotenv",
+      "category": "site-packages",
+      "bytes": 81811,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\dotenv"
+    },
+    {
+      "name": "cymem",
+      "category": "site-packages",
+      "bytes": 78737,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\cymem"
+    },
+    {
+      "name": "aifc",
+      "category": "site-packages",
+      "bytes": 78544,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\aifc"
+    },
+    {
+      "name": "markdownify",
+      "category": "site-packages",
+      "bytes": 75996,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\markdownify"
+    },
+    {
+      "name": "defusedxml",
+      "category": "site-packages",
+      "bytes": 73347,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\defusedxml"
+    },
+    {
+      "name": "flask_wtf",
+      "category": "site-packages",
+      "bytes": 71239,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_wtf"
+    },
+    {
+      "name": "et_xmlfile",
+      "category": "site-packages",
+      "bytes": 70574,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\et_xmlfile"
+    },
+    {
+      "name": "uritemplate",
+      "category": "site-packages",
+      "bytes": 69540,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\uritemplate"
+    },
+    {
+      "name": "soundfile.py",
+      "category": "site-packages",
+      "bytes": 67278,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\soundfile.py"
+    },
+    {
+      "name": "webencodings",
+      "category": "site-packages",
+      "bytes": 66057,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\webencodings"
+    },
+    {
+      "name": "html_to_text",
+      "category": "site-packages",
+      "bytes": 65022,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\html_to_text"
+    },
+    {
+      "name": "pyproject_hooks",
+      "category": "site-packages",
+      "bytes": 63475,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pyproject_hooks"
+    },
+    {
+      "name": "libwinpthread-1-d3699d4b333d4ab6043328cf513321f4.dll",
+      "category": "site-packages",
+      "bytes": 62464,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\libwinpthread-1-d3699d4b333d4ab6043328cf513321f4.dll"
+    },
+    {
+      "name": "segments",
+      "category": "site-packages",
+      "bytes": 61461,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\segments"
+    },
+    {
+      "name": "pydyf",
+      "category": "site-packages",
+      "bytes": 56762,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pydyf"
+    },
+    {
+      "name": "ordlookup",
+      "category": "site-packages",
+      "bytes": 55695,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\ordlookup"
+    },
+    {
+      "name": "markupsafe",
+      "category": "site-packages",
+      "bytes": 53661,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\markupsafe"
+    },
+    {
+      "name": "audioop",
+      "category": "site-packages",
+      "bytes": 52890,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\audioop"
+    },
+    {
+      "name": "deprecated",
+      "category": "site-packages",
+      "bytes": 52615,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\deprecated"
+    },
+    {
+      "name": "annotated_types",
+      "category": "site-packages",
+      "bytes": 52454,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\annotated_types"
+    },
+    {
+      "name": "_pillow_heif.cp313-win_amd64.pyd",
+      "category": "site-packages",
+      "bytes": 50176,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_pillow_heif.cp313-win_amd64.pyd"
+    },
+    {
+      "name": "murmurhash",
+      "category": "site-packages",
+      "bytes": 47590,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\murmurhash"
+    },
+    {
+      "name": "click_repl",
+      "category": "site-packages",
+      "bytes": 47095,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\click_repl"
+    },
+    {
+      "name": "blinker",
+      "category": "site-packages",
+      "bytes": 45721,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\blinker"
+    },
+    {
+      "name": "pytesseract",
+      "category": "site-packages",
+      "bytes": 44590,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pytesseract"
+    },
+    {
+      "name": "jsonschema_specifications",
+      "category": "site-packages",
+      "bytes": 44233,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\jsonschema_specifications"
+    },
+    {
+      "name": "vine",
+      "category": "site-packages",
+      "bytes": 41814,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\vine"
+    },
+    {
+      "name": "snappy",
+      "category": "site-packages",
+      "bytes": 38782,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\snappy"
+    },
+    {
+      "name": "platform_utils",
+      "category": "site-packages",
+      "bytes": 38190,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\platform_utils"
+    },
+    {
+      "name": "ordered_set",
+      "category": "site-packages",
+      "bytes": 37402,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\ordered_set"
+    },
+    {
+      "name": "mdurl",
+      "category": "site-packages",
+      "bytes": 35542,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\mdurl"
+    },
+    {
+      "name": "six.py",
+      "category": "site-packages",
+      "bytes": 34703,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\six.py"
+    },
+    {
+      "name": "shellingham",
+      "category": "site-packages",
+      "bytes": 32650,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\shellingham"
+    },
+    {
+      "name": "iniconfig",
+      "category": "site-packages",
+      "bytes": 32181,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\iniconfig"
+    },
+    {
+      "name": "termcolor",
+      "category": "site-packages",
+      "bytes": 21063,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\termcolor"
+    },
+    {
+      "name": "pytest_timeout.py",
+      "category": "site-packages",
+      "bytes": 19081,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pytest_timeout.py"
+    },
+    {
+      "name": "srt.py",
+      "category": "site-packages",
+      "bytes": 18592,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\srt.py"
+    },
+    {
+      "name": "peutils.py",
+      "category": "site-packages",
+      "bytes": 18367,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\peutils.py"
+    },
+    {
+      "name": "_distutils_hack",
+      "category": "site-packages",
+      "bytes": 17853,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_distutils_hack"
+    },
+    {
+      "name": "cobble",
+      "category": "site-packages",
+      "bytes": 16774,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\cobble"
+    },
+    {
+      "name": "srt_tools",
+      "category": "site-packages",
+      "bytes": 16299,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\srt_tools"
+    },
+    {
+      "name": "libloader",
+      "category": "site-packages",
+      "bytes": 14611,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\libloader"
+    },
+    {
+      "name": "_sounddevice.py",
+      "category": "site-packages",
+      "bytes": 13837,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_sounddevice.py"
+    },
+    {
+      "name": "chunk",
+      "category": "site-packages",
+      "bytes": 13520,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\chunk"
+    },
+    {
+      "name": "attrs",
+      "category": "site-packages",
+      "bytes": 13321,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\attrs"
+    },
+    {
+      "name": "isympy.py",
+      "category": "site-packages",
+      "bytes": 11220,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\isympy.py"
+    },
+    {
+      "name": "requests_file",
+      "category": "site-packages",
+      "bytes": 11078,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests_file"
+    },
+    {
+      "name": "click_plugins",
+      "category": "site-packages",
+      "bytes": 10964,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\click_plugins"
+    },
+    {
+      "name": "pytest",
+      "category": "site-packages",
+      "bytes": 10795,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pytest"
+    },
+    {
+      "name": "ruff",
+      "category": "site-packages",
+      "bytes": 10114,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\ruff"
+    },
+    {
+      "name": "click_plugins.py",
+      "category": "site-packages",
+      "bytes": 8095,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\click_plugins.py"
+    },
+    {
+      "name": "mypy_extensions.py",
+      "category": "site-packages",
+      "bytes": 7754,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\mypy_extensions.py"
+    },
+    {
+      "name": "dlinfo",
+      "category": "site-packages",
+      "bytes": 6152,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\dlinfo"
+    },
+    {
+      "name": "_soundfile.py",
+      "category": "site-packages",
+      "bytes": 5914,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_soundfile.py"
+    },
+    {
+      "name": "click_didyoumean",
+      "category": "site-packages",
+      "bytes": 5620,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\click_didyoumean"
+    },
+    {
+      "name": "annotated_doc",
+      "category": "site-packages",
+      "bytes": 3314,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\annotated_doc"
+    },
+    {
+      "name": "readline.py",
+      "category": "site-packages",
+      "bytes": 2785,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\readline.py"
+    },
+    {
+      "name": "licensing",
+      "category": "site-packages",
+      "bytes": 2631,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\licensing"
+    },
+    {
+      "name": "_yaml",
+      "category": "site-packages",
+      "bytes": 2284,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_yaml"
+    },
+    {
+      "name": "brotli.py",
+      "category": "site-packages",
+      "bytes": 2027,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\brotli.py"
+    },
+    {
+      "name": "pypdfium2_cfg",
+      "category": "site-packages",
+      "bytes": 2016,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pypdfium2_cfg"
+    },
+    {
+      "name": "fitz",
+      "category": "site-packages",
+      "bytes": 1701,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\fitz"
+    },
+    {
+      "name": "OleFileIO_PL.py",
+      "category": "site-packages",
+      "bytes": 1350,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\OleFileIO_PL.py"
+    },
+    {
+      "name": "py.py",
+      "category": "site-packages",
+      "bytes": 329,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\py.py"
+    },
+    {
+      "name": "a1_coverage.pth",
+      "category": "site-packages",
+      "bytes": 206,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\a1_coverage.pth"
+    },
+    {
+      "name": "pywin32.pth",
+      "category": "site-packages",
+      "bytes": 185,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pywin32.pth"
+    },
+    {
+      "name": "distutils-precedence.pth",
+      "category": "site-packages",
+      "bytes": 151,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\distutils-precedence.pth"
+    },
+    {
+      "name": "coloredlogs.pth",
+      "category": "site-packages",
+      "bytes": 147,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\coloredlogs.pth"
+    },
+    {
+      "name": "pythoncom.py",
+      "category": "site-packages",
+      "bytes": 143,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pythoncom.py"
+    },
+    {
+      "name": "__editable__.acb_large_print-7.5.0.pth",
+      "category": "site-packages",
+      "bytes": 33,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\__editable__.acb_large_print-7.5.0.pth"
+    },
+    {
+      "name": "__editable__.acb_large_print_web-7.5.0.pth",
+      "category": "site-packages",
+      "bytes": 29,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\__editable__.acb_large_print_web-7.5.0.pth"
+    },
+    {
+      "name": "_editable_impl_quill.pth",
+      "category": "site-packages",
+      "bytes": 8,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_editable_impl_quill.pth"
+    },
+    {
+      "name": "pywin32.version.txt",
+      "category": "site-packages",
+      "bytes": 5,
+      "path": "C:\\Users\\jeffb\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pywin32.version.txt"
+    }
+  ],
+  "notes": [
+    "data dir: C:\\Users\\jeffb\\AppData\\Roaming\\Quill has no measured model/asset subdirs.",
+    "process RSS: psutil not installed (RSS unavailable)."
+  ]
+}

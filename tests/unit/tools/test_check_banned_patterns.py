@@ -3,10 +3,14 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
+import pytest
+
 from quill.tools.check_banned_patterns import (
     _REPO_ROOT,
     _BareWxVisitor,
+    _check_accept_focus_from_keyboard,
     _check_checklistbox,
+    _check_dead_region_attrs,
     _check_dialog_contract,
     _check_dialog_registry,
     _check_raw_xml,
@@ -22,6 +26,11 @@ def _bare_wx_violations(source: str) -> list[tuple[int, str]]:
     return visitor.violations
 
 
+# find_violations() walks and AST-parses the entire repository tree, which can
+# brush up against the global 30s pytest-timeout on a loaded CI runner (it has
+# flaked with a timeout there). Give this single whole-tree scan more headroom;
+# the rest of the suite keeps the default.
+@pytest.mark.timeout(180)
 def test_clean_tree_has_no_violations() -> None:
     assert find_violations() == []
 
@@ -229,3 +238,81 @@ def test_wx_message_box_ok_marker_exempts(tmp_path: Path) -> None:
     finally:
         module.unlink()
         target_dir.rmdir()
+
+
+def test_dead_region_attrs_enter_is_flagged(tmp_path: Path) -> None:
+    # BUG-REGION / #165: self._enter_region does not exist on MainFrame.
+    module = tmp_path / "mixin.py"
+    module.write_text(
+        "def show(self):\n    self._enter_region('dialog')\n",
+        encoding="utf-8",
+    )
+    violations = _check_dead_region_attrs([module])
+    assert len(violations) == 1
+    assert "BUG-REGION" in violations[0].message
+    assert "_region_tracker" in violations[0].message
+
+
+def test_dead_region_attrs_exit_is_flagged(tmp_path: Path) -> None:
+    module = tmp_path / "mixin.py"
+    module.write_text(
+        "def hide(self):\n    self._exit_region('dialog')\n",
+        encoding="utf-8",
+    )
+    violations = _check_dead_region_attrs([module])
+    assert len(violations) == 1
+    assert "BUG-REGION" in violations[0].message
+
+
+def test_dead_region_attrs_correct_form_is_clean(tmp_path: Path) -> None:
+    module = tmp_path / "mixin.py"
+    module.write_text(
+        "def show(self):\n"
+        "    self._region_tracker.enter('dialog')\n"
+        "    self._region_tracker.exit('dialog')\n",
+        encoding="utf-8",
+    )
+    assert _check_dead_region_attrs([module]) == []
+
+
+def test_accept_focus_from_keyboard_returning_false_is_flagged(tmp_path: Path) -> None:
+    # A11Y-TAB-1: overriding AcceptsFocusFromKeyboard to return False on a
+    # wx.Panel subclass causes wxPython tab traversal to skip the entire
+    # subtree, making all child controls (TextCtrl, ListBox, CheckBox)
+    # unreachable by keyboard.
+    module = tmp_path / "pages.py"
+    module.write_text(
+        "import wx\n\n\n"
+        "class _MyPage(wx.Panel):\n"
+        "    def AcceptsFocusFromKeyboard(self) -> bool:\n"
+        "        return False\n",
+        encoding="utf-8",
+    )
+    violations = _check_accept_focus_from_keyboard([module])
+    assert len(violations) == 1
+    assert "A11Y-TAB-1" in violations[0].message
+    assert "Hide()+Disable()" in violations[0].message
+
+
+def test_accept_focus_from_keyboard_returning_true_is_allowed(tmp_path: Path) -> None:
+    module = tmp_path / "pages.py"
+    module.write_text(
+        "import wx\n\n\n"
+        "class _MyPage(wx.Panel):\n"
+        "    def AcceptsFocusFromKeyboard(self) -> bool:\n"
+        "        return True\n",
+        encoding="utf-8",
+    )
+    assert _check_accept_focus_from_keyboard([module]) == []
+
+
+def test_accept_focus_from_keyboard_ok_marker_exempts(tmp_path: Path) -> None:
+    module = tmp_path / "pages.py"
+    module.write_text(
+        "import wx\n\n\n"
+        "class _ReadOnlyDisplay(wx.Panel):\n"
+        "    def AcceptsFocusFromKeyboard(self) -> bool:  # A11Y-TAB-1-OK: display-only\n"
+        "        return False\n",
+        encoding="utf-8",
+    )
+    assert _check_accept_focus_from_keyboard([module]) == []

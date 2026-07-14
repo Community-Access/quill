@@ -1,0 +1,32 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Audit log{% endblock %}
+{% block content %}
+<h1>Audit log</h1>
+<p>Every admin action, most recent first — "who did what and when" is
+  always answerable (PRD §10).</p>
+<table class="data-table">
+  <caption>Last 100 admin actions</caption>
+  <thead>
+    <tr>
+      <th scope="col">When</th>
+      <th scope="col">Admin</th>
+      <th scope="col">Action</th>
+      <th scope="col">Target</th>
+      <th scope="col">Reason</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for action in actions %}
+    <tr>
+      <td>{{ action.created_at.strftime("%Y-%m-%d %H:%M") }} UTC</td>
+      <td>{{ action.admin_id }}</td>
+      <td>{{ action.action }}</td>
+      <td>{{ action.target }}</td>
+      <td>{{ action.reason or "" }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5">No admin actions recorded yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

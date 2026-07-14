@@ -51,6 +51,9 @@ class _FakeEditor:
     def announce(self, message: str) -> None:
         self.announced.append(message)
 
+    def is_verbosity_speech_enabled(self) -> bool:
+        return True
+
     def read_file(self, path: str) -> str:
         return "SECRET FILE CONTENTS"
 

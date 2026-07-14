@@ -25,8 +25,25 @@ from quill.ui.profile_picker import ProfileEntry, ProfilePickerDialog, ProfilePi
 
 class ProfilePickerMixin:
     def _profile_picker_entries(self) -> list[ProfileEntry]:
+        from quill.core.onboarding_profiles import list_intent_profiles
+
+        # Build a map from technical profile id -> intent profile preview text so
+        # Alt+Shift+P shows the same "what you get" descriptions as the wizard.
+        intent_text: dict[str, str] = {}
+        for ip in list_intent_profiles():
+            if ip.technical_profile not in intent_text:
+                intent_text[ip.technical_profile] = ip.preview_text
+            else:
+                # Two intent profiles share the same technical base; concatenate.
+                intent_text[ip.technical_profile] += "\n\n---\n\n" + ip.preview_text
+
         entries: list[ProfileEntry] = [
-            ("built_in", profile.id, profile.name, profile.description)
+            (
+                "built_in",
+                profile.id,
+                profile.name,
+                intent_text.get(profile.id, profile.description),
+            )
             for profile in PROFILE_DEFINITIONS.values()
         ]
         for profile in self._load_custom_profiles().values():
@@ -72,7 +89,7 @@ class ProfilePickerMixin:
         else:
             self.features.switch_profile(result.profile_id)
             self._apply_accelerators()
-        self._set_status(f"Profile: {result.profile_name}")
+        self._set_status_quiet(f"Profile: {result.profile_name}")
         self._announce(f"Profile {result.profile_name}")
         self._persist_profile_startup_choices(result, config)
 
@@ -111,7 +128,7 @@ class ProfilePickerMixin:
         self._apply_accelerators()
         name = PROFILE_DEFINITIONS[target].name
         extension = normalize_extension(Path(str(path)).suffix)
-        self._set_status(f"Switched to {name} for {extension} files")
+        self._set_status_quiet(f"Switched to {name} for {extension} files")
         self._announce(f"Profile {name}")
 
     def _shift_held_at_launch(self) -> bool:

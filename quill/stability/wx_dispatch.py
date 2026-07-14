@@ -15,7 +15,7 @@ import threading
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, cast
 
 try:  # pragma: no cover - optional dependency in non-UI test environments
     import wx  # type: ignore
@@ -37,7 +37,11 @@ def _build_event(name: str) -> tuple[type[Any], Any]:
         import wx.lib.newevent as newevent  # type: ignore
     except ModuleNotFoundError:  # pragma: no cover
         return _FallbackEvent, None
-    return newevent.NewEvent()
+    # newevent.NewEvent() has no type stubs and the wx import is
+    # ``# type: ignore``'d, so mypy sees the return as Any. Cast to the
+    # declared return type at the boundary so the rest of the module
+    # keeps a clean (type[Any], Any) signature.
+    return cast(tuple[type[Any], Any], newevent.NewEvent())
 
 
 TaskProgressEvent, EVT_QUILL_TASK_PROGRESS = _build_event("progress")

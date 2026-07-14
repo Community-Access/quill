@@ -18,14 +18,19 @@ set and the suggestion corpus.
 
 from __future__ import annotations
 
+import logging
+import os
 import re
 import threading
+from collections import defaultdict
 from dataclasses import dataclass
 from difflib import get_close_matches
 from pathlib import Path
 
 from quill.core.paths import app_data_dir
 from quill.core.storage import read_json, write_json_atomic
+
+logger = logging.getLogger(__name__)
 
 _WORD_PATTERN = re.compile(r"[A-Za-z][A-Za-z']*")
 
@@ -104,6 +109,60 @@ _WORDLIST_CACHE: frozenset[str] | None = None
 _ENCHANT_DICT: object | None = None
 _ENCHANT_TRIED: bool = False
 
+# The Hunspell language the enchant backend validates against. en_US ships inside
+# pyenchant and is the default; other languages are downloaded on demand (PRD
+# 10.2.4) into managed_hunspell_dir() and discovered via ENCHANT_CONFIG_DIR.
+_DEFAULT_LANGUAGE = "en_US"
+_ACTIVE_LANGUAGE = _DEFAULT_LANGUAGE
+
+
+def managed_spell_dir() -> Path:
+    """The ENCHANT_CONFIG_DIR root holding downloaded dictionaries."""
+    return app_data_dir() / "spell"
+
+
+def managed_hunspell_dir() -> Path:
+    """Where downloaded ``<lang>.dic``/``.aff`` pairs live (enchant scans here)."""
+    return managed_spell_dir() / "hunspell"
+
+
+def active_language() -> str:
+    """The Hunspell language tag the backend currently validates against."""
+    return _ACTIVE_LANGUAGE
+
+
+def set_active_language(lang: str | None) -> None:
+    """Set the spell-check language (e.g. ``"en_US"``, ``"fr_FR"``).
+
+    A blank/None value resets to the default. Drops the cached enchant dict so the
+    next check resolves the new language (the next :func:`_try_enchant` rebuilds a
+    fresh broker, which also picks up a just-downloaded dictionary).
+    """
+    global _ACTIVE_LANGUAGE
+    new = (lang or _DEFAULT_LANGUAGE).strip() or _DEFAULT_LANGUAGE
+    if new == _ACTIVE_LANGUAGE:
+        return
+    _ACTIVE_LANGUAGE = new
+    reset_caches()
+
+
+# #316: length-bucketed wordlist caches, keyed on the wordlist frozenset
+# id so a reload of the bundled wordlist (reset_caches) automatically
+# rebuilds the buckets on next access.  This avoids the O(W) scan of the
+# ~370k-word bundled corpus on every call to ``suggest_words``.
+_LENGTH_BUCKETS_LOCK = threading.Lock()
+_LENGTH_BUCKETS_BY_WORDLIST_ID: dict[int, dict[int, list[str]]] = {}
+
+# #315: memoization cache for ``list_misspellings`` keyed on
+# (text, frozenset(dictionary)).  ``list_misspellings`` runs over every
+# word in the document on each call; spell-check-as-you-type and the
+# Spell Check dialog can fire it many times per second, so caching the
+# result for an unchanged text+dictionary pair keeps the hot path
+# cheap.  The key includes the dictionary's frozenset identity so a
+# user edit to the personal/document/project dictionaries invalidates
+# the cache automatically.
+_MISSPELLINGS_CACHE: dict[tuple[str, int], list[Misspelling]] = {}
+
 
 @dataclass(frozen=True, slots=True)
 class BackendInfo:
@@ -148,19 +207,29 @@ def _try_enchant() -> object | None:
         # back to the wordlist backend (a backend-selection race).
         resolved: object | None = None
         try:
+            # Point enchant at our managed dir so downloaded dictionaries are
+            # discoverable, then import. ENCHANT_CONFIG_DIR is read when a broker
+            # is constructed, so it must be set before the first broker is built;
+            # an empty managed dir is harmless (bundled en_US still resolves).
+            os.environ["ENCHANT_CONFIG_DIR"] = str(managed_spell_dir())
+            managed_hunspell_dir().mkdir(parents=True, exist_ok=True)
             import enchant  # type: ignore[import-not-found]
         except Exception:
             resolved = None
         else:
             try:
-                # Prefer en_US; fall back to the first installed English variant
-                # if en_US isn't available on this system.
-                if enchant.dict_exists("en_US"):
-                    resolved = enchant.Dict("en_US")
+                # A *fresh* broker rescans providers, so a dictionary downloaded
+                # earlier this session is picked up without a restart. Resolve the
+                # active language, then en_US, then the first English variant.
+                broker = enchant.Broker()
+                for lang in (_ACTIVE_LANGUAGE, "en_US"):
+                    if lang and broker.dict_exists(lang):
+                        resolved = broker.request_dict(lang)
+                        break
                 else:
-                    for lang in enchant.list_languages():
+                    for lang in broker.list_languages():
                         if lang.lower().startswith("en"):
-                            resolved = enchant.Dict(lang)
+                            resolved = broker.request_dict(lang)
                             break
             except Exception:
                 resolved = None
@@ -170,18 +239,22 @@ def _try_enchant() -> object | None:
 
 
 def preload() -> None:
-    """Warm the spell-check backend so the first check does not stall.
+    """Warm the spell-check backend *and* the suggestion index so first F7 is warm.
 
-    Resolves the active tier (pyenchant if present, otherwise the bundled
-    wordlist) and forces the wordlist into memory. Safe to call from a
-    background thread at startup; the underlying loaders are idempotent and
-    guarded by ``_BACKEND_LOCK``, so repeat calls are cheap no-ops once warm.
+    Resolves the validation tier (pyenchant if present, otherwise the bundled
+    wordlist) and — the other half of the warm-up (#527) — builds the
+    length-bucketed candidate index over the bundled corpus that
+    :func:`suggest_words` falls back on. That bucket build over the ~370k-word
+    corpus is the dominant one-time cost on the first spell review; doing it here
+    on the startup daemon thread keeps the first F7 from stalling even when
+    enchant is the active validator (its suggestions can still miss and fall
+    through to the corpus). Safe to call from a background thread; every loader is
+    idempotent and lock-guarded, so repeat calls are cheap no-ops once warm.
     """
-    if _try_enchant() is not None:
-        # Enchant resolves its own dictionary lazily; touching it is enough to
-        # avoid a first-use stall. The bundled wordlist is the fallback corpus.
-        return
-    _load_wordlist()
+    _try_enchant()  # resolve (and cache) the validation backend, if available
+    wordlist = _load_wordlist()  # the suggestion fallback corpus
+    if wordlist:
+        _length_buckets(wordlist)  # #527: prebuild the bucketed suggestion index
 
 
 def reset_caches() -> None:
@@ -191,12 +264,19 @@ def reset_caches() -> None:
     ``_WORDLIST_CACHE`` / ``_ENCHANT_DICT`` / ``_ENCHANT_TRIED`` globals by
     hand, which is fragile if any of those names change. This public helper
     is the supported entry point for "make spellcheck cold again".
+
+    Also drops the #315 misspellings memoization cache and the #316
+    length-bucketed wordlist caches so a perf-budget test exercising
+    the cold path stays reliable.
     """
     global _WORDLIST_CACHE, _ENCHANT_DICT, _ENCHANT_TRIED
     with _BACKEND_LOCK:
         _WORDLIST_CACHE = None
         _ENCHANT_DICT = None
         _ENCHANT_TRIED = False
+    with _LENGTH_BUCKETS_LOCK:
+        _LENGTH_BUCKETS_BY_WORDLIST_ID.clear()
+    _MISSPELLINGS_CACHE.clear()
 
 
 def backend_info() -> BackendInfo:
@@ -220,7 +300,76 @@ def backend_info() -> BackendInfo:
     )
 
 
-def is_known_word(token: str, extra: set[str] | None = None) -> bool:
+# Human-readable names for the language tags QUILL knows about. en_US is bundled;
+# the rest are downloadable (their release-asset components are "spell-<tag>").
+_LANGUAGE_NAMES: dict[str, str] = {
+    "en_US": "English (United States)",
+    "es_ES": "Spanish (Spain)",
+    "fr_FR": "French (France)",
+}
+
+
+def language_display_name(lang: str) -> str:
+    """A friendly name for a language tag, falling back to the tag itself."""
+    return _LANGUAGE_NAMES.get(lang, lang)
+
+
+def installed_languages() -> list[str]:
+    """Hunspell languages available now: bundled en_US plus any downloaded pair.
+
+    Cheap and filesystem-based (no enchant call): en_US always ships inside
+    pyenchant, and a downloaded language is a ``<tag>.dic`` in
+    :func:`managed_hunspell_dir`.
+    """
+    langs = {_DEFAULT_LANGUAGE}
+    hs = managed_hunspell_dir()
+    if hs.is_dir():
+        for dic in hs.glob("*.dic"):
+            langs.add(dic.stem)
+    return sorted(langs)
+
+
+def installable_languages() -> list[str]:
+    """Downloadable languages (have a pinned release asset) not yet installed."""
+    from quill.core import release_assets
+
+    installed = set(installed_languages())
+    out = [
+        component[len("spell-") :]
+        for component in release_assets.ASSETS
+        if component.startswith("spell-")
+    ]
+    return sorted(lang for lang in out if lang not in installed)
+
+
+def install_language(
+    lang: str,
+    progress: object | None = None,
+    *,
+    should_cancel: object | None = None,
+) -> Path:
+    """Download + verify + unpack the Hunspell dictionary for *lang* on demand.
+
+    Routes through :mod:`quill.core.release_assets` (pinned, SHA-256-verified,
+    Safe-Mode gated). On success the dictionary lands in
+    :func:`managed_hunspell_dir` and the backend cache is dropped so the new
+    language is usable without a restart. Raises ``release_assets.ReleaseAssetError``
+    (or ``DownloadCancelled``) on failure so the caller can degrade cleanly.
+    """
+    from quill.core import release_assets
+
+    target = release_assets.fetch_component(
+        f"spell-{lang}",
+        managed_hunspell_dir(),
+        progress=progress,  # type: ignore[arg-type]
+        should_cancel=should_cancel,  # type: ignore[arg-type]
+        label=f"Downloading {language_display_name(lang)} dictionary...",
+    )
+    reset_caches()
+    return target
+
+
+def is_known_word(token: str, extra: set[str] | frozenset[str] | None = None) -> bool:
     """Check whether *token* is spelled correctly.
 
     *extra* is the union of personal/document/project dictionaries.
@@ -233,18 +382,20 @@ def is_known_word(token: str, extra: set[str] | None = None) -> bool:
     enchant_dict = _try_enchant()
     if enchant_dict is not None:
         try:
-            # enchant.check is case-sensitive for proper nouns; try original
-            # casing first, then lowercase, then title case for sentence
-            # starts.
-            if enchant_dict.check(token):  # type: ignore[attr-defined]
-                return True
-            if enchant_dict.check(lowered):  # type: ignore[attr-defined]
-                return True
+            # enchant.check is case-sensitive for proper nouns; accept either the
+            # original casing (proper nouns) or the lowercase form (sentence
+            # starts). When a real dictionary (hunspell) answers cleanly its
+            # verdict is authoritative: a False means the word is misspelled.
+            # Do NOT fall through to the bundled wordlist here -- that ~370k-word
+            # dump contains junk entries (e.g. "teest") that would otherwise
+            # un-flag genuine typos. The wordlist is only a fallback for when
+            # enchant is absent or errors (handled below).
+            return bool(
+                enchant_dict.check(token)  # type: ignore[attr-defined]
+                or enchant_dict.check(lowered)  # type: ignore[attr-defined]
+            )
         except Exception:
-            pass
-        # If enchant returned False without raising, fall through to the
-        # bundled wordlist as a secondary check. Enchant's installed
-        # dictionary may be incomplete or minimal in some environments.
+            pass  # enchant errored; fall back to the bundled wordlist below
     wordlist = _load_wordlist()
     if wordlist:
         return lowered in wordlist
@@ -259,12 +410,28 @@ class Misspelling:
 
 
 def list_misspellings(text: str, dictionary: set[str]) -> list[Misspelling]:
+    """Return every misspelling in *text*, honouring *dictionary*.
+
+    #315: the result is memoized on the ``(text, frozenset(dictionary))``
+    key so repeated calls during spell-check-as-you-type and the Spell
+    Check dialog are cheap when neither input has changed. The
+    frozenset identity changes when a user edits their personal,
+    document, or project dictionary, so cache invalidation is
+    automatic; ``reset_caches()`` also clears the cache for perf
+    benchmarks.
+    """
+    dictionary_key = frozenset(item.lower() for item in dictionary)
+    cache_key = (text, hash(dictionary_key))
+    cached = _MISSPELLINGS_CACHE.get(cache_key)
+    if cached is not None:
+        return list(cached)
     misspellings: list[Misspelling] = []
     for match in _WORD_PATTERN.finditer(text):
         token = match.group(0)
-        if not is_known_word(token, dictionary):
+        if not is_known_word(token, dictionary_key):
             misspellings.append(Misspelling(word=token, start=match.start(), end=match.end()))
-    return misspellings
+    _MISSPELLINGS_CACHE[cache_key] = misspellings
+    return list(misspellings)
 
 
 def next_misspelling(text: str, cursor: int, dictionary: set[str]) -> Misspelling | None:
@@ -348,10 +515,44 @@ def suggest_words(word: str, dictionary: set[str], limit: int = 8) -> list[str]:
     # difflib over 370k strings is slow; constraining to +/- 2 characters
     # collapses that to a few thousand candidates without losing quality.
     target_len = len(lowered)
-    pool = [w for w in base if abs(len(w) - target_len) <= 2]
-    pool.extend(extras - set(pool))
+    # #316: length-bucketed candidate pool, see _length_buckets().
+    buckets = _length_buckets(base)
+    pool: list[str] = []
+    bucket_seen: set[str] = set()
+    for delta in (0, -1, 1, -2, 2):
+        for candidate in buckets.get(target_len + delta, ()):
+            if candidate in bucket_seen:
+                continue
+            bucket_seen.add(candidate)
+            pool.append(candidate)
+    pool.extend(extras - bucket_seen)
     matches = get_close_matches(lowered, pool, n=max(1, limit), cutoff=0.6)
     return matches[:limit]
+
+
+def _length_buckets(wordlist: frozenset[str]) -> dict[int, list[str]]:
+    """Return a ``{length: [words...]}`` view of *wordlist* (#316).
+
+    The buckets are cached on ``id(wordlist)`` so a reload of the
+    bundled wordlist (``reset_caches``) automatically rebuilds them
+    next time. Frozen inputs (``frozenset`` and the bundled
+    ``_STUB_WORDS``) keep stable ``id`` values for the life of the
+    process so the cache hit rate stays high in normal use.
+    """
+    key = id(wordlist)
+    cached = _LENGTH_BUCKETS_BY_WORDLIST_ID.get(key)
+    if cached is not None:
+        return cached
+    with _LENGTH_BUCKETS_LOCK:
+        cached = _LENGTH_BUCKETS_BY_WORDLIST_ID.get(key)
+        if cached is not None:
+            return cached
+        buckets: dict[int, list[str]] = defaultdict(list)
+        for word in wordlist:
+            buckets[len(word)].append(word)
+        frozen: dict[int, list[str]] = dict(buckets)
+        _LENGTH_BUCKETS_BY_WORDLIST_ID[key] = frozen
+        return frozen
 
 
 def add_word_to_scope(
@@ -391,6 +592,7 @@ def load_scope_dictionary(
         return set()
     raw = read_json(path, default=[])
     if not isinstance(raw, list):
+        logger.warning("Scope dictionary %s is malformed; falling back to empty set", path)
         return set()
     return {item.strip().lower() for item in raw if isinstance(item, str) and item.strip()}
 

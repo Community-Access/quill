@@ -1,0 +1,23 @@
+{
+  "schema": "quill.extension/1",
+  "id": "com.quill.elevenlabs",
+  "name": "ElevenLabs Scribe Transcription",
+  "version": "1.0.0",
+  "author": "QUILL Team",
+  "description": "Adds ElevenLabs Scribe as a cloud transcription provider with speaker diarization. Audio is uploaded to ElevenLabs only when you explicitly transcribe with this provider and have configured an API key -- never offline, never without consent. The QUILL host performs the upload under the network-egress audit; the extension itself handles no audio bytes or keys.",
+  "license": "MIT",
+  "min_quill_version": "0.7.0",
+  "categories": ["ai", "integration", "accessibility"],
+  "contributes": {
+    "transcription_providers": [
+      {
+        "id": "ext.quill.elevenlabs",
+        "display_name": "ElevenLabs Scribe",
+        "kind": "elevenlabs",
+        "description": "Cloud speech-to-text via ElevenLabs Scribe v1, with optional speaker diarization. Requires an ElevenLabs API key and per-use consent.",
+        "credential": "ElevenLabs API key",
+        "max_file_mb": 100
+      }
+    ]
+  }
+}

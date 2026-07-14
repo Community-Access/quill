@@ -157,8 +157,12 @@ def _maybe_write_file(archive: zipfile.ZipFile, name: str, path: Path | None) ->
 
 
 def _snapshot_task(task: object) -> dict[str, Any]:
-    if is_dataclass(task):
-        data = asdict(task)
+    # ``is_dataclass`` returns True for both dataclass *classes* and
+    # dataclass *instances*; ``asdict`` rejects the class form. Filter
+    # to instances only so the type checker is happy and the runtime
+    # never tries to ``asdict()`` a class.
+    if is_dataclass(task) and not isinstance(task, type):
+        data = asdict(task)  # type: ignore[arg-type]
     elif hasattr(task, "__dict__"):
         data = dict(task.__dict__)
     else:

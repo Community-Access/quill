@@ -1,0 +1,43 @@
+[LIAM]
+The QUILL Cast, episode thirty-four. I'm Liam. Today: braille, not as a checkbox, but as a production workflow, from file to embossed page.
+
+[JESSICA]
+I'm Jessica. Context for listeners who live mostly in speech: braille formats are unforgiving in a way audio never is. A BRF file is a physical grid, so many cells per line, so many lines per page, hard limits set by paper and machine. One line too long, and the embosser wraps it, and your careful formatting becomes soup.
+
+[LIAM]
+Which is why looks fine on screen is the most dangerous phrase in braille production, and why QUILL's braille mode replaces it with three better words: measured, verified, repaired.
+
+[JESSICA]
+The formats: QUILL works with BRF and BRL, the classic embosser-ready files, and PEF, the portable embosser format, with UEB workflows supported. Braille mode understands you're working in cells and lines, not characters and paragraphs, and your page geometry, cells per line, lines per page, is a setting the whole toolchain honors.
+
+[LIAM]
+The star: the Braille Repair submenu, NLS-style proofreading in the editor. Read Layout Metrics is the pre-flight: one command announces your longest line and longest page measured against your limits, with explicit width and depth warnings. Twenty-nine cell limit, longest line thirty-one? You know in two seconds, before any paper.
+
+[JESSICA]
+Then the repair loop, and it's genuinely satisfying: Go to Longest Line jumps to the worst offender. Fix it. Metrics again. Jump to the new longest. Like sanding down high spots until the surface reads flat. Go to Longest Page does the same for depth, and Remove Trailing Spaces, line or whole file, clears the invisible padding that pushes lines past limits. Trailing spaces are braille's silent killer: they don't read, but they count.
+
+[PAUSE]
+
+[LIAM]
+A word on page geometry, because it's the decision everything else hangs on. Cells per line and lines per page are physical facts about your embosser and paper, not preferences, so get them from the device manual or your agency's spec sheet, set them once, and let every metric check measure against reality. The most common production mistake we see isn't bad formatting, it's good formatting measured against the wrong grid.
+
+[JESSICA]
+And know your output formats. BRF is the universal workhorse, plain, portable, every embosser speaks it. PEF, the portable embosser format, carries its page geometry inside the file, so the document and its dimensions travel together, worth preferring when you're handing files to someone else's workflow. QUILL works with both, so the choice is about your destination, not your editor.
+
+[LIAM]
+A production pass, end to end, for something real, say a meeting agenda for embossing. Author it normally, all your part-two tools apply. Bring it to BRF. Set geometry for the target embosser. Read Layout Metrics. Run the repair loop until clean. Remove Trailing Spaces, whole file. Emboss one proof. The machine checks catch everything measurable, so your human proofread spends itself on language, where humans are irreplaceable.
+
+[JESSICA]
+And braille mode inherits the ecosystem, the running theme of this whole final part: compare two BRF revisions with the compare tools and hear what changed. The Spoken Echo keeps the metrics announcements. Verbosity profiles apply. And remember episode twenty-four: the same source document can leave as a DAISY talking book and a BRF, digital ears and physical fingertips, one master.
+
+[LIAM]
+Homework. One: open or export any BRF, set your limits, and run Read Layout Metrics, if you've never heard your document measured, it's a small revelation. Two: run one full repair loop. Three: take two revisions of the same BRF and run them through Compare, hearing exactly which lines changed between drafts is the braille proofreader's secret weapon.
+
+[JESSICA]
+Next episode, the second-to-last: opening the hood, Quillins, QUILL's extension system, and the developer console for building your own.
+
+[LIAM]
+I'm Liam.
+
+[JESSICA]
+I'm Jessica. Mind your cells.

@@ -2,9 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-SOURCE = (Path(__file__).resolve().parents[3] / "quill" / "ui" / "main_frame.py").read_text(
-    encoding="utf-8"
-)
+# open_status_bar_settings was extracted into the StatusBarMixin (GATE-11 #521),
+# so this contract is checked against main_frame_statusbar.py where it now lives.
+SOURCE = (
+    Path(__file__).resolve().parents[3] / "quill" / "ui" / "main_frame_statusbar.py"
+).read_text(encoding="utf-8")
 
 
 def test_status_bar_layout_dialog_parents_controls_to_dialog() -> None:
@@ -16,8 +18,7 @@ def test_status_bar_layout_dialog_parents_controls_to_dialog() -> None:
     # buttons nor Escape could exit the dialog. The fix parents every control
     # directly to the dialog in a single sizer (the working #119 pattern).
     start = SOURCE.index("def open_status_bar_settings")
-    end = SOURCE.index("def open_share_export_dialog")
-    body = SOURCE[start:end]
+    body = SOURCE[start:]
 
     assert 'wx.Dialog(self.frame, title="Status Bar Layout"' in body
     # No inner panel: controls share the dialog's sizer tree.
@@ -41,8 +42,7 @@ def test_status_bar_dialog_exposes_shown_hidden_state() -> None:
     # Spacebar toggle (EVT_CHECKLISTBOX) must keep that label and an
     # announcement in sync.
     start = SOURCE.index("def open_status_bar_settings")
-    end = SOURCE.index("def open_share_export_dialog")
-    body = SOURCE[start:end]
+    body = SOURCE[start:]
 
     # Item labels carry an explicit (shown)/(hidden) suffix.
     assert "def state_label(" in body

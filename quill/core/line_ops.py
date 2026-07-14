@@ -190,6 +190,84 @@ def number_lines(text: str, start: int = 1, separator: str = ". ") -> str:
     return "\n".join(out)
 
 
+_ROMAN_VALUES: tuple[tuple[int, str], ...] = (
+    (1000, "M"),
+    (900, "CM"),
+    (500, "D"),
+    (400, "CD"),
+    (100, "C"),
+    (90, "XC"),
+    (50, "L"),
+    (40, "XL"),
+    (10, "X"),
+    (9, "IX"),
+    (5, "V"),
+    (4, "IV"),
+    (1, "I"),
+)
+
+
+def to_roman_numeral(number: int) -> str:
+    """Render a positive integer as an uppercase Roman numeral."""
+    if number <= 0:
+        raise ValueError("Roman numerals only support positive integers")
+    remaining = number
+    parts: list[str] = []
+    for value, symbol in _ROMAN_VALUES:
+        count, remaining = divmod(remaining, value)
+        if count:
+            parts.append(symbol * count)
+    return "".join(parts)
+
+
+def number_lines_advanced(
+    text: str,
+    *,
+    start: int = 1,
+    increment: int = 1,
+    style: str = "digits",
+    pad_width: int = 0,
+    suffix: str = ". ",
+    align: str = "left",
+) -> str:
+    """Prefix non-blank lines with a running number (Text Monkey-style auto-number).
+
+    ``style`` is ``"digits"`` or ``"roman"``. ``pad_width`` zero-pads digit
+    numbering to a fixed width (ignored for Roman numerals). ``align`` controls
+    whether the rendered number is left- or right-justified within the widest
+    rendered number's column, independent of ``pad_width``.
+    """
+    lines = text.split("\n")
+    numbers: list[int | None] = []
+    current = start
+    for line in lines:
+        if line.strip() == "":
+            numbers.append(None)
+        else:
+            numbers.append(current)
+            current += increment
+
+    def render(value: int) -> str:
+        if style == "roman":
+            return to_roman_numeral(value)
+        rendered = str(value)
+        if pad_width:
+            rendered = rendered.zfill(pad_width)
+        return rendered
+
+    rendered_numbers = [render(value) if value is not None else None for value in numbers]
+    width = max((len(value) for value in rendered_numbers if value is not None), default=0)
+
+    out: list[str] = []
+    for line, rendered in zip(lines, rendered_numbers, strict=True):
+        if rendered is None:
+            out.append(line)
+            continue
+        label = rendered.rjust(width) if align == "right" else rendered.ljust(width)
+        out.append(f"{label}{suffix}{line}")
+    return "\n".join(out)
+
+
 def delete_to_line_start(text: str, cursor: int) -> tuple[str, int]:
     """Delete from the cursor back to the start of the line (EDS-9)."""
     start = text.rfind("\n", 0, cursor) + 1

@@ -1,0 +1,43 @@
+[JESSICA]
+The QUILL Cast, episode twenty-six. I'm Jessica. Setup's done; today we actually use the thing. Ask Quill, and the everyday AI writing actions.
+
+[LIAM]
+I'm Liam. Ask Quill is the centerpiece: one conversation that knows your document. Open it from the AI menu and talk naturally: tighten this section. What's the weakest argument in this draft? Summarize what I've written so far. It reads your document and your selection as context, so what does this mean refers to the actual paragraph under your cursor.
+
+[JESSICA]
+The contract from last episode, in action: when a conversation turn implies changing your document, the change arrives as an accessible preview, here's what I'd replace, with what, accept or reject. Accepted, it's one undo step. Rejected, nothing happened. You can interrogate a suggestion before deciding, that's what conversation is for.
+
+[LIAM]
+Around Ask Quill, the quick-action toolkit for when you don't need a chat, just a verb. Rewrite, tell it the direction, simpler, warmer, shorter. Summarize. Expand, notes into prose. Continue Writing, momentum from where you stopped. Fix Grammar. Generate Table of Contents. Translate, selection or document. Document Q and A, ask questions against a long file and get answers grounded in it.
+
+[JESSICA]
+Each one: select text or trust the cursor context, invoke from the AI menu or the palette, review the preview, decide. The rhythm becomes second nature in a day: invoke, listen, accept or reject. Notice you're always the last link in the chain, that's not accident, it's architecture.
+
+[PAUSE]
+
+[LIAM]
+The correction tier above episode twelve's engines: AI Spell Check catches real-word errors, their versus there in context, that no dictionary can. AI Grammar and Style Check goes further into agreement, clarity, and tone, with each proposed fix reviewable individually. And the AI Thesaurus suggests by meaning, describe the word you want, get candidates, instead of walking a static list.
+
+[JESSICA]
+The layering is worth restating: local engines first, free, instant, offline, AI pass second, for what rules can't see. It's an upgrade tier, never a replacement, your document workflow works fully with AI off.
+
+[LIAM]
+Custom instructions deserve a mention: you can give QUILL's AI standing guidance about you, I write UK English, I prefer plain language, never use the word utilize. Set once, honored across every feature. It's the difference between a tool and your tool.
+
+[JESSICA]
+Real-workflow sketches. The morning email: draft rough, Fix Grammar, accept, send, ninety seconds. The report polish: Ask Quill, what's unclear in this section, argue with its answer, accept two of its three suggestions. The reading assist: sixty-page PDF from episode seventeen, Document Q and A, what are the deadlines mentioned, with the answers pointing you where to verify. Notice in each case the human stayed in charge of meaning; the AI handled labor.
+
+[LIAM]
+And a habit recommendation from us, sincerely: reject things. Regularly. Not out of spite, out of calibration. The reject button is what keeps your judgment sharp and the tool in its lane. An AI feature you've never said no to is a feature you've stopped supervising.
+
+[JESSICA]
+Homework. One: run Rewrite on a paragraph you wrote, listen fully, then reject it, just to feel that the no is real. Two: run it again somewhere else and accept, then undo with one keystroke, then redo. You now trust the machinery bodily, not theoretically. Three: have one genuine Ask Quill conversation about a draft, at least three turns. Four: set one custom instruction that's true about your writing.
+
+[LIAM]
+Next episode: the AI Library, prompts you save, skills with steps, and the promotion ladder between them.
+
+[JESSICA]
+I'm Jessica.
+
+[LIAM]
+I'm Liam. Propose and dispose, in that order.

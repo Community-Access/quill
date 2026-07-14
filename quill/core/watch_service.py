@@ -151,6 +151,10 @@ class WatchService:
     def queue_counts(self) -> dict[str, int]:
         return self.queue.counts()
 
+    def primed_count(self) -> int:
+        """Pre-existing files claimed-and-ignored (profiles with process_existing off)."""
+        return self.queue.primed_count()
+
     def pause(self) -> None:
         self.queue.pause()
 

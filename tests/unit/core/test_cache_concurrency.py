@@ -40,9 +40,14 @@ def _hammer(target: object) -> list[BaseException]:
     return errors
 
 
+@pytest.mark.timeout(90)
 def test_thesaurus_index_loads_once_under_concurrent_first_access(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    # Same class of flakiness as test_reset_caches.py's thesaurus test: a real
+    # cold parse of the 18.5MB th_en_US_v2.dat, this time under a 16-thread
+    # thundering herd. Fast in isolation (~2s), but occasionally starved past
+    # the global 30s budget under full-suite resource contention.
     # Force a cold cache so every thread races on the first load.
     monkeypatch.setattr(thesaurus, "_INDEX", None, raising=False)
     monkeypatch.setattr(thesaurus, "_LOAD_ERROR", None, raising=False)

@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quill.app/schemas/pronunciation/1.json",
+  "title": "QUILL Pronunciation Dictionary",
+  "description": "A named, scoped collection of pronunciation entries applied to all QUILL speech (batch and live Read Aloud). See docs/planning/batch-document-to-speech-plan.md §4.7.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "entries"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable unique id; also the JSON file stem."
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name."
+    },
+    "scope": {
+      "enum": ["global", "project"],
+      "description": "Location: 'global' (app data dir) or 'project' (the project folder's .quill/pronunciation/). Authoritative from where the file is stored."
+    },
+    "engine": {
+      "type": ["string", "null"],
+      "enum": ["sapi5", "dectalk", "piper", "kokoro", "espeak", null],
+      "description": "null = all engines; otherwise the synthesizer this dictionary targets."
+    },
+    "enabled": {
+      "type": "boolean",
+      "description": "Default on/off; the per-user selection in settings overrides this."
+    },
+    "language": {
+      "type": "string",
+      "description": "Language scope (ISO 639-1, e.g. 'es'). Empty = applies to every language; otherwise applies only when synthesizing that language (base subtag compared, so 'es' matches 'es-ES' and 'es-419')."
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["term"],
+        "properties": {
+          "term": { "type": "string", "description": "The word or phrase to match." },
+          "replacement": { "type": "string", "description": "How to speak it (respelling, phoneme, or SSML per mode)." },
+          "mode": {
+            "enum": ["respelling", "phoneme", "ssml"],
+            "description": "respelling = plain phonetic text (all engines); phoneme/ssml = engine-native (advanced)."
+          },
+          "plain_fallback": {
+            "type": "string",
+            "description": "Respelling used when the engine cannot honour mode; required for phoneme/ssml so global entries degrade gracefully."
+          },
+          "whole_word": { "type": "boolean", "description": "Match on word boundaries (default true)." },
+          "case_sensitive": { "type": "boolean", "description": "Match case (default false)." },
+          "regex": { "type": "boolean", "description": "Treat term as a regular expression (advanced)." },
+          "enabled": { "type": "boolean", "description": "Per-entry toggle." },
+          "note": { "type": "string", "description": "Optional human comment." }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,46 @@
+[JESSICA]
+The QUILL Cast, episode twenty-eight, the top of the AI ladder. I'm Jessica. Today: agents, autonomy you can read before it happens.
+
+[LIAM]
+I'm Liam. Definitions first, because agent is the most abused word in modern software. In QUILL, an agent is goal-driven AI: you state an outcome, and instead of executing fixed steps, the AI proposes a plan, a readable sequence of intended actions, which QUILL shows you before anything runs.
+
+[JESSICA]
+That plan-first design is the entire philosophical move. Elsewhere, agentic means the software did things while you weren't looking. Here it means the software wrote down what it intends, and waited. You read the plan, trim it, approve it, and then watch execution, with every resulting change still arriving as the same reviewable preview as everything since episode twenty-six.
+
+[LIAM]
+Three layers of control, count them: the plan review before, the per-change preview during, and single-step undo after. Autonomy wrapped in three separate opportunities to say no. That's why this feature can exist in a product whose first promise is nothing changes silently.
+
+[JESSICA]
+Meet the residents. The single-shot agents handle bounded goals: Rewrite, Summarize, Expand, Table of Contents, small plans, quick approvals. The flagship demonstration is the Accessibility Tune-Up: aim it at a messy document and it drafts a real plan, normalize the heading hierarchy, repair the list formatting, flag the generic link text, tighten the dense paragraphs, presented step by step for your approval.
+
+[LIAM]
+Run the Tune-Up once just to read its plan, honestly, even if you reject everything. A well-formed plan for improving your document, written against your actual document, is the fastest education in what agents are.
+
+[PAUSE]
+
+[JESSICA]
+When is agent the right rung? The test from last episode: if the steps depend on what's in the document, it's agent territory. Fix this document according to these standards, where the fixes needed vary per document, that can't be a fixed-step skill. Judgment about what to do, not just how, is the boundary line.
+
+[LIAM]
+And the promotion path completes: a skill you keep hand-adjusting per document is a skill asking to become an agent. The Library's ladder runs all the way up, prompt, skill, agent, each rung earned by the work outgrowing the rung below.
+
+[JESSICA]
+The craft of reviewing plans, because this is genuinely the skill of the coming decade, and our audience gets to learn it with the safest training wheels in the industry. Read for scope: does the plan touch only what the goal implied? Read for order: do the steps build sensibly? Read for the unstated: what's missing that you'd have done? Trim what's overreaching, plans are editable, approval isn't all-or-nothing.
+
+[LIAM]
+Honest performance note, threading from episode twenty-five: ambitious plans benefit from stronger models. On a small free model, expect solid simple plans and occasional clumsiness on complex ones, QUILL deliberately simplifies agent strategies on smaller models so they finish instead of stalling. The architecture is identical either way; the ceiling moves with the model.
+
+[JESSICA]
+And the standing reassurance, one more time, because it's the reason any of this is comfortable: reject everything, and your document is untouched. Accept everything and hate it, control Z, once. The blast radius of a bad agent decision in QUILL is one keystroke wide.
+
+[LIAM]
+Homework. One: run the Accessibility Tune-Up on a genuinely messy document and read the whole plan aloud before deciding anything. Two: approve part of a plan, not all, practice partial consent. Three: pick your most hand-adjusted skill or workflow and write, in one sentence, the goal you'd hand an agent instead.
+
+[JESSICA]
+That's part five complete: connected, conversant, tooled, and now supervising autonomy. Part six is organization: next episode, the Accessible Vault, linked notes and backlinks rebuilt for the ear.
+
+[LIAM]
+I'm Liam.
+
+[JESSICA]
+I'm Jessica. Read the plan, then sign it.

@@ -1,0 +1,43 @@
+[JESSICA]
+The QUILL Cast, episode four. I'm Jessica. Today we tour the main window properly: the menu bar, the tabs, the status bar, and the layout logic that makes the whole app predictable.
+
+[LIAM]
+The shape is deliberately classic: menu bar on top, tabbed editing area in the middle, status bar at the bottom. No ribbons, no floating panels, no docking puzzles. A screen reader user can hold the entire geography in their head after one session.
+
+[JESSICA]
+Start with the menu bar, alt to enter, arrows to move, enter to choose, escape to leave. The menus are organized by intent: File for documents in and out. Edit for changing text. View for how things display. Format for structure and styling. Tools is the big one, reading, speech, GLOW, comparisons, macros, the workshop. AI, if your profile shows it, holds the assistant features. Window manages tabs. Help teaches.
+
+[LIAM]
+Two menu behaviors to notice. First, menus respect your profile, features that are off simply aren't listed, which is why your menu bar might differ from a friend's. Second, menu items show their keyboard shortcuts inline, so every trip through a menu is also a shortcut lesson.
+
+[JESSICA]
+The editing area: each document is a tab. Control tab cycles forward, control shift tab backward, and each landing announces the document name. The Window menu lists all open documents for direct jumps. Tabs aren't just files, either: as you'll see through the series, audit reports, comparison summaries, and AI results all open as tabs too. One mental model, everything is a readable document.
+
+[PAUSE]
+
+[LIAM]
+Now the status bar, which in QUILL is genuinely a narrator, not a decoration. When something happens, saved, twelve matches found, conversion complete, it lands in the status bar, and depending on your verbosity settings, it's also spoken. The critical design rule: the visual text always appears even when speech is suppressed. Information is never destroyed; you just choose the channel.
+
+[JESSICA]
+And because speech is fleeting, QUILL keeps receipts: press alt shift E for the Spoken Echo, the last twenty announcements in a list, newest first, that you can arrow through, re-read, and copy from. Screen reader stepped on an announcement? The Echo has it. This might be the feature you use most without ever planning to.
+
+[LIAM]
+Modal dialogs deserve a minute, because QUILL holds them to a written contract. Every dialog in the product is tracked in an internal inventory and must meet rules: reachable by keyboard, escapable with escape, focus placed sensibly on open and restored on close. There's literally an automated gate in QUILL's development process that fails the build if a dialog breaks the contract. You'll feel this as an absence, the absence of ever being trapped.
+
+[JESSICA]
+Focus behavior overall follows one law: nothing steals focus. Background work, downloads, conversions, transcription, runs in the background and reports through the status bar and notifications, not by yanking you out of your document. Your cursor is sacred ground.
+
+[LIAM]
+Last stop: notifications. Quieter events, an update available, a background task finishing, accumulate in a notification list you can review when you choose. Nothing nags; everything is findable.
+
+[JESSICA]
+Homework, and it's a listening exercise. One: walk every menu in your menu bar once, top to bottom, no clicking, just hear what exists. Two: do something, save, search, anything, then check the Spoken Echo and find its announcement. Three: open any dialog, tab through every control, press F1 on one of them, and escape out. That trip, dialog, tab, F1, escape, is the universal QUILL exploration move.
+
+[LIAM]
+Next episode is the one that changes how you use everything else: the command palette, or how to reach any of QUILL's hundreds of commands by typing three letters.
+
+[JESSICA]
+I'm Jessica.
+
+[LIAM]
+I'm Liam. Know your room.

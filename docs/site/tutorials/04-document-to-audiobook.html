@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>QUILL Tutorials - 04-document-to-audiobook</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="/assets/style.css" />
+</head>
+<body>
+<header class="site"><div class="wrap"><nav class="site" aria-label="Primary"><ul><li><a href="/index.html">QUILL home</a></li><li><a href="index.html">All tutorials</a></li><li><a href="/podcast/index.html">The QUILL Cast</a></li><li><a href="/docs/userguide.html">User guide</a></li></ul></nav></div></header>
+<h1
+id="tutorial-4-from-document-to-published-audiobook--voices-read-aloud-and-the-audio-studio">Tutorial
+4: From document to published audiobook — voices, Read Aloud, and the
+Audio Studio</h1>
+<p><strong>Goal:</strong> hear your document in the voice you want, then
+walk the Audio Studio's three journeys: narrate a folder of documents
+into a chaptered audiobook, combine a folder of recordings into one
+book, fix its chapters by ear, and publish the result — plus DAISY for
+accessible book players.</p>
+<p>Everything here is keyboard-first and announced; a screen reader
+narrates every step, and nothing is applied without your review.</p>
+<h2 id="1-pick-a-voice">1. Pick a voice</h2>
+<p><strong>Tools &gt; Speech &gt; Speech and Dictation...</strong> opens
+the speech hub. QUILL's voice lineup spans eras:</p>
+<ul>
+<li><strong>SAPI 5</strong> — the Windows voices you already have; zero
+downloads.</li>
+<li><strong>eSpeak NG</strong> and <strong>DECtalk</strong> — the
+classics, downloadable on demand (yes, Perfect Paul).</li>
+<li><strong>Kokoro</strong> — modern neural voices that run entirely on
+your machine (about a 114 MB one-time download; no cloud, no account).
+The QUILL Cast podcast is narrated by two of these.</li>
+<li><strong>ElevenLabs</strong> (optional) — a premium cloud voice if
+you have an account; every use is per-session consented.</li>
+<li><strong>Read in Browser</strong> (experimental, Settings &gt;
+Experimental) — an accessible reader page using your browser's voice
+catalog, including Edge's online natural voices. QUILL states plainly
+that online browser voices synthesize in the vendor's cloud.</li>
+</ul>
+<p>Every download is checksum-verified with visible progress.</p>
+<h2 id="2-read-aloud">2. Read aloud</h2>
+<p>Select text (or just place the caret) and use <strong>Tools &gt;
+Reading &amp; Dictation &gt; Read Aloud</strong>. Stop on a key. Try the
+same paragraph in two or three engines — voices are a taste, and QUILL
+does not judge.</p>
+<p>For fine control of a passage, the <strong>SSML Builder</strong>
+composes emphasis, pauses, and prosody from accessible controls — no
+hand-written tags — and plays natively on SAPI 5 and eSpeak NG.</p>
+<p>For a quick one-shot file, Palette &gt;
+<code>Generate Speech Audio</code> renders the current document to audio
+in the background. WAV always works; with the <strong>ffmpeg</strong>
+helper installed (Help &gt; Download Optional Components), you also get
+<strong>MP3, M4A, M4B, OGG, Opus, FLAC</strong>.</p>
+<h2 id="3-open-the-audio-studio-and-pick-a-journey">3. Open the Audio
+Studio and pick a journey</h2>
+<p>For anything bigger than one file, <strong>Tools &gt; Speech &gt;
+Audio Studio...</strong> is the workshop (also in the command palette,
+default binding <code>Ctrl+Shift+Grave, Y</code>). The first page asks
+the only question that matters:</p>
+<ul>
+<li><strong>Narrate documents</strong> — QUILL reads your files aloud
+into audio.</li>
+<li><strong>Combine audio files</strong> — you already recorded; QUILL
+builds the book.</li>
+<li><strong>Edit an existing audiobook</strong> — open any chaptered
+MP3/M4B and reshape it.</li>
+</ul>
+<p>The wizard remembers your last journey and pre-selects it. Every page
+is announced ("Step 2 of 7: What should I read?"), <strong>Back</strong>
+and <strong>Next</strong> move between steps, and <strong>Skip to
+summary</strong> fast-forwards when a saved project profile already
+fills every page — a repeat run is three keystrokes.</p>
+<h2 id="4-journey-one-narrate-documents">4. Journey one: narrate
+documents</h2>
+<p>Point <strong>What should I read?</strong> at a folder of documents
+(Word, Markdown, HTML, text). Filters, subfolders, and a size cap keep
+discovery honest; <strong>Count documents</strong> speaks the settled
+number.</p>
+<p>On <strong>Who should read it?</strong>:</p>
+<ul>
+<li>Pick the engine and voice, and <strong>Preview voice</strong> before
+committing.</li>
+<li><strong>Round-robin voices</strong> cycles a list you build —
+article 1 gets voice 1, article 2 voice 2, wrapping around.</li>
+<li><strong>Voice casting</strong> goes further: add a rule like
+<code>*interview* =</code> your guest voice, or <code>#1 =</code> your
+narrator, and every matching chapter is read by that voice. First
+matching rule wins; everything else follows the rotation. This is how
+dialogue-heavy fiction gets cast deliberately.</li>
+</ul>
+<p>On the output step, two boxes deserve attention:</p>
+<ul>
+<li><strong>Audition</strong> converts only the first document — judge
+the voice and pace in minutes before an overnight run.</li>
+<li><strong>Reuse unchanged audio from the last run</strong> (on by
+default) is the authoring loop: QUILL fingerprints each document's text
+plus every audio-shaping setting. Re-run after editing one chapter and
+the rest announce "Reused ... (unchanged since last run)". Only what
+changed is re-synthesized — draft with a fast local voice, then swap in
+your best voice for the money pass and everything rebuilds
+automatically.</li>
+</ul>
+<p>On the book page, type a half-remembered title and press <strong>Look
+up book details</strong> — Open Library and MusicBrainz (free, keyless;
+QUILL asks before the first contact) fill the author, genre, and year
+from the match you pick, and offer to download the jacket as
+<code>cover.jpg</code>. Tick the spoken credits if you want the book to
+introduce itself.</p>
+<p>Review the plain-sentence summary, optionally <strong>Save a job
+file</strong> (a portable <code>.quilljob</code> that pins the entire
+run — load it on the first page next time, or edit it in Notepad), and
+press <strong>Start</strong>. Progress is announced, per-file,
+cancelable, and minimizable to the status bar.</p>
+<h2 id="5-journey-two-combine-a-folder-of-recordings">5. Journey two:
+combine a folder of recordings</h2>
+<p>Recorded a memoir chapter per session? Point the combine journey at
+the folder: each file becomes a chapter titled from its name, and you
+always review the chapter list before the merge — rename, reorder,
+remove, import titles from a CSV or Audacity labels. Output is a real
+M4B (native chapters) or MP3 (chapter markers), with optional silence
+trimming, fades, tempo, and ACX loudness.</p>
+<p>Two scale-ups when you need them: <strong>Library mode</strong>
+builds every subfolder as its own audiobook, unattended, each titled
+after its folder; and the <strong>watch action</strong> ("Build
+audiobook from the folder") rebuilds a watched folder's master
+automatically whenever new recordings land.</p>
+<h2 id="6-journey-three-the-chapter-workbench">6. Journey three: the
+Chapter Workbench</h2>
+<p>Open any chaptered MP3 or M4B — or a chapterless three-hour
+recording, which opens as one big chapter, ready to carve.</p>
+<p>The built-in player anchors everything: Play/Pause, Previous/Next
+chapter, Rewind/Forward, a position slider that speaks human time, a
+pitch-preserved speed control, and <strong>Where am I?</strong> for the
+full audible glance. The player remembers where you stopped in every
+book. (Want gapless audio and exact seeking? Download the <strong>mpv
+player engine</strong> from <strong>Help &gt; Download Optional
+Components</strong> and playback upgrades to libmpv automatically; QUILL
+falls back to the built-in engine whenever mpv is absent.)</p>
+<p>The surgery, all by ear:</p>
+<ol type="1">
+<li>Play until you hear where a boundary belongs.</li>
+<li><strong>Split at playhead</strong> — the fix-a-bad-chapter
+move.</li>
+<li><strong>Set start to playhead</strong> retimes an existing boundary;
+<strong>Merge into previous</strong> and <strong>Restore
+original</strong> round it out.</li>
+</ol>
+<p>Two analysis helpers propose, never impose: <strong>Propose chapters
+from silences...</strong> scans the recording and lands a proposal in
+the list for review; <strong>Propose AI titles...</strong> slices each
+chapter's opening minute, transcribes it <em>on your machine</em> with
+the local speech model, sends only that text to your configured AI, and
+proposes a short title per chapter — review, rename, or <strong>Restore
+original</strong>. <strong>Check against ACX</strong> speaks a
+plain-words loudness verdict before you submit anywhere.</p>
+<p>Saving is honest about physics: an MP3 saves <strong>in
+place</strong> (tags only, audio untouched); an M4B saves as a new file
+via a lossless re-mux.</p>
+<h2 id="7-publish-it">7. Publish it</h2>
+<p>The Workbench's <strong>Publish...</strong> button offers explicit,
+consent-first paths:</p>
+<ul>
+<li><strong>Podcast feed</strong> — a complete <code>.rss</code> written
+next to the book, entirely offline, chapters linked for Podcasting 2.0
+apps.</li>
+<li><strong>Folder feed (all episodes)</strong> — run a whole show from
+one folder: every master becomes an episode with its own description
+(edited in an accessible list), true publication date, duration, and
+chapter link. One button regenerates the complete feed after every
+build; another writes an accessible <code>show-notes.html</code> beside
+it.</li>
+<li><strong>SFTP upload</strong> — the book and its companions go to
+your server through QUILL's own SSH machinery (strict host keys,
+password in the Windows Credential Manager), with spoken percent
+progress and a real <strong>Cancel</strong>.</li>
+<li><strong>Auphonic</strong> — professional mastering in your own
+account: <strong>Check account and load presets</strong> speaks your
+credit balance and fills the preset picker, then QUILL uploads, waits,
+and downloads the results next to the book. The token lives in the
+credential vault, manageable centrally in <strong>AI &gt; AI Hub &gt;
+Services</strong>.</li>
+</ul>
+<p>Build the episode, regenerate the feed, upload both — the entire show
+runs from QUILL.</p>
+<h2 id="8-daisy-talking-books">8. DAISY talking books</h2>
+<p><strong>File &gt; Export &gt; DAISY Talking Book</strong> writes a
+DAISY 2.02 text-only talking book — the standard for accessible book
+players and library services. Your headings become the DAISY navigation
+structure, so build a clean heading outline first (GLOW will happily
+check it: <a href="06-make-it-accessible-with-glow.html">tutorial
+6</a>).</p>
+<h2 id="9-round-trip-audio-in">9. Round trip: audio in</h2>
+<p>The same suite works in reverse — <code>Ctrl+F9</code> dictates
+offline via Whisper, and <strong>transcription</strong> turns a
+recording into a document privately. Feed a transcript to the
+<strong>Listening Companion</strong> and get meeting minutes, action
+items, or a summary, reviewably. QUILL Cast episode 24 walks this whole
+tutorial by ear.</p>
+<p><strong>Next:</strong> <a href="05-start-a-vault.html">Start an
+Accessible Vault</a>.</p>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "files": [
+    {
+      "path": "one_crazy_night.brf",
+      "description": "Paul Kropp / Manitoba Education alternate formats sample. Pure ASCII Braille (North American Braille Computer Code), CRLF line endings, form-feed (0x0C) page breaks, no BOM. 1725 lines, 69 form feeds, byte-identical round-trip target. Source for tests/unit/io/test_open_read.py and the BRF page map / page detection / save round-trip tests.",
+      "size_bytes": 58874,
+      "line_endings": "CRLF",
+      "page_breaks": 69,
+      "encoding": "ascii",
+      "braille_table": "NABCC / UEB-printable"
+    }
+  ]
+}

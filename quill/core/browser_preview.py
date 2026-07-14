@@ -150,6 +150,15 @@ def render_preview_body(text: str, kind: str, dark: bool = False) -> str:
 
 
 def render_preview_html(title: str, text: str, kind: str, start_anchor: str | None = None) -> str:
+    # Deliberately no ``<meta http-equiv="refresh">``: a preview page never
+    # force-reloads itself on a timer. Such a poll re-rendered the whole page
+    # once a second, which made the open tab flicker and, for a screen-reader
+    # or braille user reading the preview, re-announced from the top constantly.
+    # The in-app side preview updates by pushing fresh HTML to the WebView (no
+    # navigation at all -- the fully silent live option). The external browser
+    # preview is re-opened by QUILL after edits (debounced, not per keystroke),
+    # and this page restores scroll position on reload so the reader is not
+    # thrown back to the top each time.
     body = render_preview_body(text, kind)
     anchor_script = ""
     if start_anchor:
@@ -161,10 +170,28 @@ def render_preview_html(title: str, text: str, kind: str, start_anchor: str | No
             "});"
             "</script>"
         )
+    else:
+        # Silent scroll preservation across the live-edit reloads (SEC-safe,
+        # same-origin sessionStorage). When QUILL re-writes and re-opens this
+        # page after an edit, the browser reloads it; without this the pane
+        # jumps to the top, adding to the flicker a braille/screen-reader user
+        # feels. We stash scrollY continuously and restore it on load, keyed by
+        # the file path, so a live refresh lands the reader back where they were.
+        # No timer, no meta-refresh, no announcement -- purely visual continuity.
+        anchor_script = (
+            "<script>(function(){"
+            "var k='quillPreviewScroll:'+location.pathname;"
+            "try{var y=sessionStorage.getItem(k);"
+            "window.addEventListener('load',function(){"
+            "if(y!==null)window.scrollTo(0,parseFloat(y)||0);});"
+            "window.addEventListener('scroll',function(){"
+            "try{sessionStorage.setItem(k,String(window.scrollY));}catch(e){}}"
+            ",{passive:true});}catch(e){}"
+            "})();</script>"
+        )
     return (
         '<!doctype html><html><head><meta charset="utf-8">'
         '<meta name="viewport" content="width=device-width, initial-scale=1">'
-        '<meta http-equiv="refresh" content="1">'
         f"<title>{html.escape(title)}</title>"
         "<style>"
         ":root{color-scheme:light dark;}"
@@ -187,6 +214,7 @@ def render_preview_html(title: str, text: str, kind: str, start_anchor: str | No
         "th,td{border-color:#555;}"
         "}"
         "</style>"
+        '<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>'
         f"{anchor_script}</head><body>{body}</body></html>"
     )
 
@@ -308,6 +336,90 @@ def _render_table(header: str, rows: list[str]) -> str:
     return "".join(parts)
 
 
+# Hidden-codes vocabulary (docs/planning/rich-text-formatting-hidden-codes-design.md):
+# inline run spans ``[text]{font-family="Arial" ...}`` and paragraph alignment
+# fenced divs ``::: {align="center"}`` ... ``:::``. These render to styled HTML in
+# both the live preview and HTML export (which both flow through this renderer).
+_SPAN_CODE_RE = re.compile(r"\[([^\]]+)\]\{([^}]*)\}")
+_FENCE_OPEN_CODE_RE = re.compile(r"^:::+\s*\{([^}]*)\}\s*$")
+_FENCE_CLOSE_CODE_RE = re.compile(r"^:::+\s*$")
+_PAGEBREAK_CODE_RE = re.compile(r"^:::+\s*pagebreak\s*$", re.IGNORECASE)
+# Markdown thematic break: a line of 3+ of the same -, *, or _ (spaces allowed,
+# up to 3 leading spaces, CommonMark style). Renders to <hr>. A separator row
+# inside a GFM table contains "|" and is handled by the table path instead.
+_THEMATIC_BREAK_RE = re.compile(r"^ {0,3}([-*_])(?:[ \t]*\1){2,}[ \t]*$")
+_ATTR_PAIR_CODE_RE = re.compile(r'([A-Za-z][\w-]*)\s*=\s*"([^"]*)"|([A-Za-z][\w-]*)')
+_ALIGN_VALUES = {"left", "right", "center", "justify"}
+_LINE_HEIGHTS = {"1": "1", "1.5": "1.5", "2": "2"}
+# Named Word paragraph styles -> a few CSS declarations apiece, so the preview and
+# HTML export approximate Word's built-in styles.
+_NAMED_STYLE_CSS = {
+    "quote": ("font-style: italic", "border-left: 4px solid #ccc", "padding-left: 1rem"),
+    "title": ("font-size: 2em", "font-weight: bold"),
+    "subtitle": ("font-size: 1.3em", "color: #555"),
+    "caption": ("font-size: 0.85em", "font-style: italic", "color: #666"),
+}
+
+
+def _parse_code_attrs(raw: str) -> dict[str, str]:
+    attrs: dict[str, str] = {}
+    for match in _ATTR_PAIR_CODE_RE.finditer(raw):
+        if match.group(1) is not None:
+            attrs[match.group(1).lower()] = match.group(2)
+        elif match.group(3) is not None:
+            attrs.setdefault(match.group(3).lower(), "")
+    return attrs
+
+
+def _span_style_from_attrs(raw: str) -> str:
+    attrs = _parse_code_attrs(raw)
+    decl: list[str] = []
+    if attrs.get("font-family"):
+        decl.append(f"font-family: {html.escape(attrs['font-family'], quote=True)}")
+    size = attrs.get("font-size", "")
+    if size.isdigit():
+        decl.append(f"font-size: {size}pt")
+    if attrs.get("color"):
+        decl.append(f"color: {html.escape(attrs['color'], quote=True)}")
+    if attrs.get("highlight"):
+        decl.append(f"background-color: {html.escape(attrs['highlight'], quote=True)}")
+    decorations = []
+    if "underline" in attrs:
+        decorations.append("underline")
+    if "strike" in attrs:
+        decorations.append("line-through")
+    if decorations:
+        decl.append(f"text-decoration: {' '.join(decorations)}")
+    if "superscript" in attrs:
+        decl.append("vertical-align: super")
+        decl.append("font-size: smaller")
+    elif "subscript" in attrs:
+        decl.append("vertical-align: sub")
+        decl.append("font-size: smaller")
+    return "; ".join(decl)
+
+
+def _div_style_from_attrs(raw: str) -> str:
+    attrs = _parse_code_attrs(raw)
+    decl: list[str] = []
+    align = attrs.get("align", "").lower()
+    if align in _ALIGN_VALUES:
+        decl.append(f"text-align: {align}")
+    spacing = attrs.get("line-spacing", "")
+    if spacing in _LINE_HEIGHTS:
+        decl.append(f"line-height: {_LINE_HEIGHTS[spacing]}")
+    if attrs.get("space-before", "").isdigit():
+        decl.append(f"margin-top: {attrs['space-before']}pt")
+    if attrs.get("space-after", "").isdigit():
+        decl.append(f"margin-bottom: {attrs['space-after']}pt")
+    if attrs.get("indent", "").isdigit():
+        decl.append(f"margin-left: {attrs['indent']}pt")
+    if attrs.get("first-line-indent", "").isdigit():
+        decl.append(f"text-indent: {attrs['first-line-indent']}pt")
+    decl.extend(_NAMED_STYLE_CSS.get(attrs.get("pstyle", "").lower(), ()))
+    return "; ".join(decl)
+
+
 def _render_markdown(text: str) -> str:
     lines = text.splitlines()
     blocks: list[str] = []
@@ -364,6 +476,32 @@ def _render_markdown(text: str) -> str:
                 index += 1
             blocks.append(_render_table(header, rows))
             continue
+        if _PAGEBREAK_CODE_RE.match(stripped):
+            flush_paragraph()
+            flush_list()
+            blocks.append('<div style="page-break-after: always"></div>')
+            index += 1
+            continue
+        fence_open = _FENCE_OPEN_CODE_RE.match(stripped)
+        if fence_open:
+            flush_paragraph()
+            flush_list()
+            style = _div_style_from_attrs(fence_open.group(1))
+            blocks.append(f'<div style="{style}">' if style else "<div>")
+            index += 1
+            continue
+        if _FENCE_CLOSE_CODE_RE.match(stripped):
+            flush_paragraph()
+            flush_list()
+            blocks.append("</div>")
+            index += 1
+            continue
+        if _THEMATIC_BREAK_RE.match(stripped):
+            flush_paragraph()
+            flush_list()
+            blocks.append("<hr>")
+            index += 1
+            continue
         heading = re.match(r"^(#{1,6})\s+(.*)$", stripped)
         if heading:
             flush_paragraph()
@@ -403,6 +541,23 @@ def _render_markdown(text: str) -> str:
 
 
 def _render_inline(text: str) -> str:
+    # Hidden-codes run spans are resolved first, on the raw text, so their
+    # attribute values are read before html.escape mangles the quotes. The styled
+    # HTML is stashed behind a NUL sentinel (which escaping leaves untouched) and
+    # restored verbatim at the end, exactly as the export plain-text path stashes
+    # links.
+    placeholders: list[str] = []
+
+    def _stash_span(match: re.Match[str]) -> str:
+        style = _span_style_from_attrs(match.group(2))
+        inner = _render_inline(match.group(1))
+        if not style:
+            placeholders.append(inner)
+        else:
+            placeholders.append(f'<span style="{style}">{inner}</span>')
+        return f"\x00{len(placeholders) - 1}\x00"
+
+    text = _SPAN_CODE_RE.sub(_stash_span, text)
     escaped = html.escape(text)
     escaped = re.sub(r"`([^`]+)`", lambda m: f"<code>{m.group(1)}</code>", escaped)
     escaped = re.sub(
@@ -412,7 +567,7 @@ def _render_inline(text: str) -> str:
     )
     escaped = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", escaped)
     escaped = re.sub(r"(?<!\*)\*([^*]+)\*(?!\*)", r"<em>\1</em>", escaped)
-    return escaped
+    return re.sub(r"\x00(\d+)\x00", lambda m: placeholders[int(m.group(1))], escaped)
 
 
 def file_url(path: Path) -> str:

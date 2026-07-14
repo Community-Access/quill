@@ -34,6 +34,18 @@ def test_enqueue_assigns_state_and_returns_item(tmp_path: Path) -> None:
     assert queue.pending_count() == 1
 
 
+def test_prime_counts_unique_files_and_suppresses_enqueue(tmp_path: Path) -> None:
+    queue = WatchQueue()
+    a, b = tmp_path / "a.txt", tmp_path / "b.txt"
+    queue.prime(a)
+    queue.prime(b)
+    queue.prime(a)  # a repeat is not double-counted
+    assert queue.primed_count() == 2
+    # A primed file is treated as already-known, so enqueue is a no-op.
+    assert queue.enqueue(a, "p1", "open") is None
+    assert queue.pending_count() == 0
+
+
 def test_enqueue_deduplicates_same_source(tmp_path: Path) -> None:
     queue = WatchQueue()
     source = tmp_path / "a.txt"

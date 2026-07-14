@@ -1,0 +1,49 @@
+[LIAM]
+Welcome to The QUILL Cast. I'm Liam.
+
+[JESSICA]
+And I'm Jessica. This series is a complete audio course on QUILL, the free, screen-reader-first writing studio from Community Access. Thirty-four episodes, starting from absolutely nothing and ending with you using every feature the product has.
+
+[LIAM]
+And we mean starting from nothing. This episode assumes you've never seen QUILL. By the end of the series you'll be building audiobooks, rescuing scanned PDFs, running accessibility audits, and linking a knowledge vault. But today, we just answer: what is this thing, and why should you care?
+
+[JESSICA]
+QUILL is a writing environment for Windows, with macOS supported too. The one-sentence pitch: it's what a word processor looks like when blind users are the primary audience instead of an afterthought.
+
+[LIAM]
+That flips real decisions. In most software, accessibility is a compliance layer bolted on at the end. In QUILL, the spoken experience is the main experience. Menus are designed to be listened to. Every action announces its result. Every dialog can be escaped. Nothing steals your focus.
+
+[JESSICA]
+Three promises hold the whole product up, and you'll hear us return to them all series. Promise one: QUILL owns the essentials. The editor, keyboard focus, undo, and announcements always behave predictably. If something changes your document, you can always undo it, and you always find out it happened.
+
+[LIAM]
+Promise two: everything beyond the core is optional and off by default. Artificial intelligence, cloud services, extensions, folder automation, none of it exists until you turn it on. Out of the box, QUILL is a fast, quiet, honest text editor.
+
+[JESSICA]
+Promise three, my favorite: nothing leaves your computer without asking you. Every network connection in the entire application is tracked in an internal audit, and anything that would send your words anywhere tells you first, in plain language, and waits.
+
+[PAUSE]
+
+[LIAM]
+Who is it for? Blind and low-vision writers first, obviously. But the honest answer has grown: it's for anyone who lives on the keyboard. Novelists who want a manuscript organizer. Students converting inaccessible course readings. Committee secretaries turning recordings into minutes. Podcasters, journalers, note-takers, braille transcribers.
+
+[JESSICA]
+And the price is part of the design: QUILL is completely free. Every feature, forever, for everyone. There's an optional donations page and nothing else. If you've spent decades in a world where assistive software costs more than the computer it runs on, let that land for a second.
+
+[LIAM]
+Let's set expectations for how this series works, because we've built it to be followed. Episodes are short, focused, and sequenced. Part one, the next five episodes, gets you installed, oriented, and confident. Part two makes you fast at everyday editing. Then documents and formats, then speech, then AI, then organization tools, and finally the production and trust features that make QUILL special.
+
+[JESSICA]
+Every episode is hands-on. When we say press control shift P, press it. When we give homework, it's five minutes, and it's the five minutes that makes the episode stick. Full transcripts are published for every episode, so you can re-read anything at your own pace, in braille or speech.
+
+[LIAM]
+One more thing before we go. The two voices you're hearing right now are not humans in a studio. We're Kokoro neural voices, running on an ordinary computer with no cloud connection, and Kokoro is one of the speech engines that ships with QUILL. The product is literally narrating its own course. When we get to episode nineteen, you'll be able to make your documents sound like this too.
+
+[JESSICA]
+Next episode: installing QUILL and your first launch, including the setup wizard and the single most important choice it offers, your feature profile.
+
+[LIAM]
+I'm Liam.
+
+[JESSICA]
+And I'm Jessica. Welcome aboard.

@@ -22,6 +22,7 @@ app start via ``ContextHelpMixin._init_context_help()``).
 from __future__ import annotations
 
 import logging
+import threading
 from collections.abc import Callable
 
 import wx
@@ -32,13 +33,39 @@ from quill.ui.dialog_contract import apply_modal_ids
 _log = logging.getLogger(__name__)
 
 _renderer: HelpRenderer | None = None
+_renderer_lock = threading.Lock()
 
 
 def _get_renderer() -> HelpRenderer:
     global _renderer
-    if _renderer is None:
-        _renderer = HelpRenderer.from_file()
+    with _renderer_lock:
+        if _renderer is None:
+            _renderer = HelpRenderer.from_file()
     return _renderer
+
+
+def warm_help_topics() -> bool:
+    """Force ``HelpRenderer.from_file()`` to run once and cache the topics.
+
+    Called from :meth:`MainFrame._run_deferred_startup_tasks` so the first
+    ``F1`` / ``Shift+F1`` press is instant.  The first call to
+    ``_get_renderer()`` reads ``topics.json`` synchronously and decodes all
+    entries; on a cold machine + AV scan this can take several hundred
+    milliseconds, which is enough to trip the ``wx`` heartbeat watchdog
+    while a modal is open (#179).
+
+    Returns ``True`` on success, ``False`` if the topics file is missing or
+    corrupt.  Never raises — a corrupt ``topics.json`` must not break
+    startup; the dialog will fall back to a "no help available" topic.
+    """
+    try:
+        _get_renderer()
+        return True
+    except Exception:
+        _log.exception(
+            "warm_help_topics: HelpRenderer.from_file() failed; help will lazy-load on first F1"
+        )
+        return False
 
 
 def _find_named_ancestor_dialog(ctrl: wx.Window) -> wx.Window | None:

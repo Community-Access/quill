@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>PRIVACY</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="privacy-statement">Privacy Statement</h1>
+<p>This document describes how QUILL handles privacy for local and
+AI-assisted workflows.</p>
+<h2 id="core-privacy-commitments">Core privacy commitments</h2>
+<ol type="1">
+<li>QUILL is local-first by design.</li>
+<li>QUILL does not persist AI chat session transcripts by default.</li>
+<li>QUILL does not send network requests without explicit user
+action.</li>
+<li>QUILL does not store document content in API-key storage or
+credential vault records.</li>
+</ol>
+<h2 id="ai-interaction-data">AI interaction data</h2>
+<p>When you use cloud AI providers, the prompt content you choose to
+send is transmitted to that provider. Provider-side storage, retention,
+and policy behavior are controlled by that provider’s terms and
+settings, not QUILL.</p>
+<p>QUILL does not persist Ask Quill chat transcripts or Writing
+Assistant interaction transcripts by default. If you explicitly copy
+output into a document, that content is then part of your document and
+saved according to your normal file and backup workflow.</p>
+<h2 id="key-and-credential-handling">Key and credential handling</h2>
+<p>QUILL stores API keys using Windows Credential Manager when
+available. If Credential Manager is unavailable, QUILL falls back to
+DPAPI-encrypted local secret storage.</p>
+<p>QUILL does not store API keys in plaintext.</p>
+<h2 id="local-files-quill-may-create">Local files QUILL may create</h2>
+<p>QUILL may create local settings and state files under your app data
+directory (for example <code>%APPDATA%\Quill\...</code>), including:</p>
+<ul>
+<li>editor and application settings</li>
+<li>onboarding state</li>
+<li>feature and UI preferences</li>
+<li>optional encrypted secret metadata</li>
+</ul>
+<p>These files are local to your machine and are not uploaded by
+default.</p>
+<h3 id="developer-console-history">Developer Console history</h3>
+<p>If you use the QUILL Developer Console (QDC), each command you run is
+appended to a <code>history.jsonl</code> file in the app-data directory
+(up to 500 entries; oldest are removed first). Entries are passed
+through QUILL’s redaction layer before being written, so API keys and
+tokens that match known patterns (GitHub PATs, OpenAI keys, AWS access
+keys, Slack tokens, and long alphanumeric tokens) are replaced with
+<code>[TOKEN]</code> in the history file.</p>
+<p>If you believe sensitive data was stored before the redaction layer
+was active, you can delete the <code>history.jsonl</code> file from the
+app-data directory manually.</p>
+<h3 id="github-temporary-files">GitHub temporary files</h3>
+<p>When you open a file from a GitHub repository using <strong>File &gt;
+Open from Remote</strong>, QUILL downloads the file into a
+<code>github-temp</code> subdirectory of the app-data folder. These
+files are not automatically deleted when you close the tab or exit
+QUILL.</p>
+<p>If you work with private repositories, review the
+<code>github-temp</code> directory periodically and delete files you no
+longer need. The directory is local to your machine and is not shared or
+uploaded.</p>
+<h2 id="user-responsibility">User responsibility</h2>
+<p>You are responsible for reviewing AI-generated output before using,
+sharing, or publishing it. For sensitive content, use local models when
+possible and verify that cloud use meets your organization’s security
+and compliance requirements.</p>
+</body>
+</html>

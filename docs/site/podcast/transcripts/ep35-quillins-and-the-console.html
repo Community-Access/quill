@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>35: Quillins and the Developer Console - transcript - The QUILL Cast</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="alternate" type="application/rss+xml" title="The QUILL Cast" href="../feed.xml">
+</head>
+<body>
+<header class="site"><div class="wrap"><nav class="site" aria-label="Primary"><ul><li><a href="/index.html">QUILL home</a></li><li><a href="../index.html">All episodes</a></li><li><a href="/tutorials/index.html">Tutorials</a></li><li><a href="/docs/userguide.html">User guide</a></li></ul></nav></div></header>
+<main><div class="wrap">
+<h1>35: Quillins and the Developer Console - transcript</h1>
+<p><audio controls preload="none" aria-label="Play 35: Quillins and the Developer Console" style="width:100%;max-width:36em"><source src="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep35-quillins-and-the-console.mp3" type="audio/mpeg">Your browser does not support the audio element; <a href="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep35-quillins-and-the-console.mp3">download the MP3</a> instead.</audio></p>
+<p><a href="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep35-quillins-and-the-console.mp3">Download the MP3</a></p>
+<p><strong>Jessica:</strong> The QUILL Cast, episode thirty-five. I&#x27;m Jessica. Today we open the hood: Quillins, QUILL&#x27;s extension system, and the developer console where you can script the editor yourself.</p>
+<p><strong>Liam:</strong> I&#x27;m Liam. A Quillin is a plug-in, the name is QUILL&#x27;s own, and the architecture leads with a safety decision worth understanding: Quillins run in a separate worker process. A crashed extension cannot take down your editor. Fault isolation isn&#x27;t a setting, it&#x27;s the floor plan.</p>
+<p><strong>Jessica:</strong> What Quillins can do: add commands, contribute menu items, supply AI prompts, react to document events, automate workflows. QUILL ships several bundled ones, a word counter, writing-prompt packs, a document guardian, and each is described by a manifest, a small file declaring what it is and what it contributes, validated before anything loads.</p>
+<p><strong>Liam:</strong> Two languages: Python, and JavaScript on a Node runtime, so both major scripting communities can build. The Quillin Manager, under Preferences, Extensions, lists what&#x27;s installed, with enable and disable per extension.</p>
+<p><strong>Jessica:</strong> The honest state of the ecosystem, stated the QUILL way: third-party Quillin installation at large is deliberately gated while the sandboxing, signing, and review pipeline is finished, the roadmap has a hub and marketplace on it, and the project refuses to open the doors before the security model deserves it. Bundled and development Quillins work today; the bazaar comes when it&#x27;s safe. You&#x27;ve heard this pattern all course: capability when it&#x27;s ready, never before.</p>
+<p><strong>Liam:</strong> And remember the standing guarantee from episode two: Safe Mode disables all extensions with one flag. Whatever anyone&#x27;s code does, your clean room is always one restart away.</p>
+<hr>
+<p><strong>Jessica:</strong> Now the playground: the QUILL Developer Console, the QDC. It&#x27;s a real scripting console inside the editor, Python and TypeScript both, with an API into the application: read the current document, modify text, run commands, drive workflows, from code, interactively.</p>
+<p><strong>Liam:</strong> Accessibility of the console itself got real attention, screen-reader-friendly output, keyboard-first layout, transcripts of your session, because a development surface that blind developers can&#x27;t use would be a bitter joke in this particular product. The scripting console is how blind tinkerers become blind toolmakers.</p>
+<p><strong>Jessica:</strong> Safety in the console mirrors the house rules: first-run warnings, confirmation culture around dangerous operations, and your undo stack still guards the document, console edits are edits, control Z applies. Experiment freely; the escape hatches you&#x27;ve trusted for thirty-five episodes are all present.</p>
+<p><strong>Liam:</strong> The path from user to author, as the docs teach it: start in the console, poke the API, see your document respond to a line of code. Grow a script that&#x27;s actually useful. Wrap it in a manifest, and it&#x27;s a Quillin, testable in the console environment before you ever share it. The distance from I use this editor to I extended this editor is shorter here than in anything else we&#x27;ve used.</p>
+<p><strong>Jessica:</strong> Why this matters beyond hobbyists: every specialized workflow in our community, the braille transcriber&#x27;s ritual, the teacher&#x27;s grading pass, the law office&#x27;s document intake, is a Quillin someone could write. Extension systems are how software serves the niches its developers never imagined, and our community is nothing but underserved niches.</p>
+<p><strong>Liam:</strong> Homework. One: open the Quillin Manager and read what&#x27;s installed and enabled, know your own machine. Two: open the developer console, run one line, ask it for the current document&#x27;s word count or text, and feel the API answer. Three: if you script at all, in any language, skim the Quillin authoring documentation and let one idea form. No pressure. Ideas ferment.</p>
+<p><strong>Jessica:</strong> Next episode is the finale: the trust architecture in full, the safety nets when things go wrong, the community that builds all this, and where QUILL goes from here.</p>
+<p><strong>Liam:</strong> I&#x27;m Liam.</p>
+<p><strong>Jessica:</strong> I&#x27;m Jessica. The hood opens; nothing bites.</p>
+<p><a href="../index.html">Back to all episodes</a></p>
+</div></main>
+</body>
+</html>

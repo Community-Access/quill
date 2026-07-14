@@ -1,0 +1,22 @@
+{
+  "schema": "quill.extension/1",
+  "id": "com.quill.openaiwhisper",
+  "name": "OpenAI Whisper Transcription",
+  "version": "1.0.0",
+  "author": "QUILL Team",
+  "description": "Adds OpenAI Whisper as a cloud transcription provider. Audio is uploaded to OpenAI only when you explicitly transcribe with this provider and have configured an API key -- never offline, never without consent. The QUILL host performs the upload under the network-egress audit; the extension itself handles no audio bytes or keys.",
+  "license": "MIT",
+  "min_quill_version": "0.7.0",
+  "categories": ["ai", "integration", "accessibility"],
+  "contributes": {
+    "transcription_providers": [
+      {
+        "id": "ext.quill.openai-whisper",
+        "display_name": "OpenAI Whisper",
+        "kind": "openai_whisper",
+        "description": "Cloud speech-to-text via OpenAI's Whisper API. High accuracy across 99+ languages; requires an OpenAI API key and per-use consent.",
+        "max_file_mb": 25
+      }
+    ]
+  }
+}

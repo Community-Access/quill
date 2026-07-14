@@ -1,0 +1,52 @@
+[JESSICA]
+The QUILL Cast, episode twenty-nine, and part six begins: organization. I'm Jessica, and I have seniority rights on this episode, because the Accessible Vault is my favorite thing in the product.
+
+[LIAM]
+I'm Liam, riding shotgun. Set it up: what problem does the Vault solve?
+
+[JESSICA]
+Linked note-taking. The whole personal-knowledge movement, notes that link to notes, ideas connecting into a web. The famous tools for it are gorgeous and almost entirely visual, their signature feature is literally a picture, the graph view, floating dots and lines. Decoration, if you can't see it.
+
+[LIAM]
+So the Vault asks the sharp question: what is a knowledge graph, actually? Relationships. And relationships don't need pixels. What links here is a question with a spoken answer.
+
+[JESSICA]
+Foundations, and they're humble on purpose: a vault is just a folder of Markdown files. Tools, Vault, Open Vault, point at a folder, QUILL indexes it and announces, vault Notes, forty notes, one hundred twelve links. The index is a small cache you can delete without losing a word. No database, no lock-in, plain files that open in anything.
+
+[LIAM]
+Links are typed: double square brackets around a note's title, right in your text. Cursor on one, Follow Wikilink, and you're in that note. Link to a heading with a hash after the title, even to a specific block. A link to a note that doesn't exist offers to create it, and an ambiguous name gets a spoken chooser, never a guess.
+
+[JESSICA]
+And completion, so titles don't have to live in your memory: Complete Link or Tag at Cursor pops a filtered, spoken list as you type a half-finished link. The screen-reader answer to the floating autocomplete window.
+
+[PAUSE]
+
+[LIAM]
+Now the crown jewel. Stand in any note, run Show Backlinks.
+
+[JESSICA]
+And QUILL answers: five notes link here, then reads each one with the actual sentence its link lives in. Press enter, land in the source at the mention. That, friends, is the graph view, spoken. The first time it surprises you with a connection you'd forgotten making, you'll understand why this episode is my favorite.
+
+[LIAM]
+The neighborhood tools extend it: Note Neighborhood lists everything one hop away in both directions, links out and links in, your position in the web, audible. Unlinked Mentions finds places you wrote a note's name without linking, so you can stitch the web tighter with a keystroke.
+
+[JESSICA]
+Getting around a growing vault: Go to Note, a type-to-filter switcher, three letters and enter. Search Vault, full text across every note, regex and whole-word supported, results opening at their exact line. Rename Note is fearless: it updates the file, the heading, and every inbound link across the vault, no orphans, ever.
+
+[LIAM]
+Let's seed the workflows, three starters. Research: one note per source, links to one note per topic, and backlinks answer which sources discuss this, instantly. Fiction: a note per character and place, and from a character's note, backlinks list every scene that mentions them. Work: one note per project, one per person, and meetings link to both, six months later, everything about anything is one backlinks call away.
+
+[JESSICA]
+Starting advice, sincerely: start smaller than feels sensible. Ten notes with honest links beat a grand taxonomy you'll never finish. The web grows by use.
+
+[LIAM]
+Homework, the thirty-second full lesson. Make a folder, put three Markdown notes in it, open it as a vault. Link the three into a triangle. Stand in one, Show Backlinks, and listen to your own web speak.
+
+[JESSICA]
+Next episode: vault power, tags, templates, daily notes, embeds, publishing your vault as a website, and syncing it over your own Git remote.
+
+[LIAM]
+I'm Liam.
+
+[JESSICA]
+I'm Jessica. Go link something.

@@ -147,6 +147,47 @@ def test_html_escapes_title() -> None:
     assert "<title>A &amp; B</title>" in markdown_to_html("x", "A & B")
 
 
+def test_html_renders_run_span_as_styled_span() -> None:
+    out = markdown_to_html('[Hi]{font-family="Arial" font-size="14" color="#C00000"}', "Doc")
+    assert "font-family: Arial" in out
+    assert "font-size: 14pt" in out
+    assert "color: #C00000" in out
+    assert "<span style=" in out
+
+
+def test_html_renders_alignment_div() -> None:
+    out = markdown_to_html('::: {align="center"}\nCentered.\n:::', "Doc")
+    assert '<div style="text-align: center">' in out
+    assert "Centered." in out
+
+
+def test_plain_strips_run_span_and_alignment() -> None:
+    md = '[Hi]{font-family="Arial"} there\n::: {align="center"}\nCentered.\n:::'
+    assert markdown_to_plain_text(md) == "Hi there\nCentered."
+
+
+def test_html_renders_strike_super_sub() -> None:
+    out = markdown_to_html("[a]{strike} [b]{superscript} [c]{subscript}", "Doc")
+    assert "line-through" in out
+    assert "vertical-align: super" in out
+    assert "vertical-align: sub" in out
+
+
+def test_html_renders_line_spacing_and_named_style() -> None:
+    out = markdown_to_html('::: {line-spacing="2" pstyle="quote"}\nx\n:::', "Doc")
+    assert "line-height: 2" in out
+    assert "font-style: italic" in out  # quote named style
+
+
+def test_html_renders_page_break() -> None:
+    out = markdown_to_html("a\n::: pagebreak\nb", "Doc")
+    assert "page-break-after: always" in out
+
+
+def test_plain_strips_page_break() -> None:
+    assert markdown_to_plain_text("a\n::: pagebreak\nb") == "a\nb"
+
+
 # --------------------------------------------------------------------------- #
 # writers + dispatcher
 # --------------------------------------------------------------------------- #
@@ -170,11 +211,14 @@ def test_write_plain_text_honors_link_style(tmp_path: Path) -> None:
     assert target.read_text(encoding="utf-8") == "site (https://example.com)"
 
 
-def test_write_document_as_passes_link_style_to_plain(tmp_path: Path) -> None:
+def test_write_document_as_txt_is_verbatim_regardless_of_link_style(tmp_path: Path) -> None:
+    # A normal save to .txt round-trips the source verbatim; Markdown stripping
+    # (and link-style handling) only happens via the explicit "Save as plain
+    # text" command, which calls write_plain_text_document directly (#649).
     doc = _doc("[site](https://example.com)")
     target = tmp_path / "out.txt"
     write_document_as(doc, target, plain_text_link_style="url")
-    assert target.read_text(encoding="utf-8") == "https://example.com"
+    assert target.read_text(encoding="utf-8") == "[site](https://example.com)"
 
 
 def test_write_html_document_writes_html(tmp_path: Path) -> None:
@@ -207,11 +251,13 @@ def test_dispatch_by_extension(tmp_path: Path, name: str, expected_marker: str) 
     assert expected_marker in target.read_text(encoding="utf-8", errors="replace")
 
 
-def test_dispatch_txt_strips_markup(tmp_path: Path) -> None:
+def test_dispatch_txt_writes_verbatim(tmp_path: Path) -> None:
+    # Normal save to .txt no longer strips Markup; it writes the buffer verbatim
+    # so opening then saving a plain-text file does not mangle it (#649).
     doc = _doc("**Bold**")
     target = tmp_path / "a.txt"
     write_document_as(doc, target)
-    assert target.read_text(encoding="utf-8") == "Bold"
+    assert target.read_text(encoding="utf-8") == "**Bold**"
 
 
 def test_dispatch_md_is_verbatim(tmp_path: Path) -> None:
@@ -233,6 +279,109 @@ def test_write_requires_path() -> None:
         write_document_as(_doc("x"), None)
 
 
+def test_write_document_as_refuses_export_only_suffixes(tmp_path: Path) -> None:
+    from quill.io.export import UnsupportedSaveFormatError
+
+    doc = _doc("# Title\nbody")
+    for name in (
+        "a.pdf",
+        "a.epub",
+        "a.odt",
+        "a.doc",
+        "a.ppt",
+        "a.pptx",
+        "a.xls",
+        "a.xlsx",
+        "a.pages",
+        "a.sqlite",
+        "a.db",
+    ):
+        with pytest.raises(UnsupportedSaveFormatError):
+            write_document_as(doc, tmp_path / name)
+        # The refusal must be total: nothing written, document state untouched.
+        assert not (tmp_path / name).exists()
+        assert doc.modified is True
+        assert doc.path is None
+
+
+def test_write_document_as_still_allows_brf_and_unknown_text(tmp_path: Path) -> None:
+    doc = _doc("hello")
+    write_document_as(doc, tmp_path / "a.brf")
+    doc2 = _doc("hello")
+    write_document_as(doc2, tmp_path / "a.log")
+    assert (tmp_path / "a.brf").read_text(encoding="utf-8") == "hello"
+    assert (tmp_path / "a.log").read_text(encoding="utf-8") == "hello"
+
+
+def test_write_docx_marks_saved(tmp_path: Path) -> None:
+    doc = _doc("line one\nline two")
+    target = tmp_path / "out.docx"
+    result = write_document_as(doc, target)
+    assert result == target
+    assert doc.path == target
+    assert doc.modified is False
+
+
+def test_write_docx_keeps_line_breaks(tmp_path: Path) -> None:
+    docx = pytest.importorskip("docx")
+
+    doc = _doc("one\ntwo\nthree")
+    target = tmp_path / "breaks.docx"
+    write_document_as(doc, target)
+    paragraphs = [p.text for p in docx.Document(str(target)).paragraphs]
+    assert paragraphs == ["one", "two", "three"]
+
+
+def test_write_docx_engine_native_forced(tmp_path: Path) -> None:
+    docx = pytest.importorskip("docx")
+    from quill.io.export import write_docx_document
+
+    doc = _doc("one\ntwo")
+    target = tmp_path / "native.docx"
+    write_docx_document(doc, target, engine="native")
+    paragraphs = [p.text for p in docx.Document(str(target)).paragraphs]
+    assert paragraphs == ["one", "two"]
+    assert doc.path == target and doc.modified is False
+
+
+def test_write_docx_engine_pandoc_forced(tmp_path: Path) -> None:
+    docx = pytest.importorskip("docx")
+    from quill.core.external_tools import get_external_tool_status
+    from quill.io.export import write_docx_document
+
+    if not get_external_tool_status("pandoc").installed:
+        pytest.skip("pandoc not installed")
+    doc = _doc("alpha\nbeta")
+    target = tmp_path / "pandoc.docx"
+    write_docx_document(doc, target, engine="pandoc")
+    text = "\n".join(p.text for p in docx.Document(str(target)).paragraphs)
+    assert "alpha" in text and "beta" in text
+    assert doc.path == target and doc.modified is False
+
+
+def test_write_docx_engine_invalid_rejected(tmp_path: Path) -> None:
+    from quill.io.export import write_docx_document
+
+    with pytest.raises(ValueError, match="engine"):
+        write_docx_document(_doc("x"), tmp_path / "a.docx", engine="bogus")
+
+
+def test_write_document_as_forwards_docx_engine(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import quill.io.export as export_mod
+
+    recorded: list[str] = []
+
+    def _fake(document: Document, path: Path | None = None, *, engine: str = "auto") -> Path:
+        recorded.append(engine)
+        return Path(path or "")
+
+    monkeypatch.setattr(export_mod, "write_docx_document", _fake)
+    write_document_as(_doc("x"), tmp_path / "a.docx", docx_engine="pandoc")
+    assert recorded == ["pandoc"]
+
+
 def test_format_label_for_path() -> None:
     assert format_label_for_path(Path("a.rtf")) == "rich text"
     assert format_label_for_path(Path("a.html")) == "HTML"
@@ -246,3 +395,56 @@ def test_export_module_is_wx_free() -> None:
 
     source = Path(export_module.__file__).read_text(encoding="utf-8")
     assert "import wx" not in source
+
+
+# --------------------------------------------------------------------------- #
+# Word (.docx) export (#204)
+# --------------------------------------------------------------------------- #
+
+
+def test_format_label_for_docx_is_word() -> None:
+    assert format_label_for_path(Path("report.docx")) == "Word"
+
+
+def _pandoc_available() -> bool:
+    from quill.core.external_tools import get_external_tool_status
+
+    return get_external_tool_status("pandoc").installed
+
+
+@pytest.mark.skipif(not _pandoc_available(), reason="Pandoc not installed")
+def test_write_document_as_docx_produces_a_word_file(tmp_path: Path) -> None:
+    import zipfile
+
+    doc = Document(text="# Title\n\nSome **bold** text.\n\n- one\n- two\n")
+    target = tmp_path / "out.docx"
+    result = write_document_as(doc, target)
+    assert result == target
+    assert target.exists() and target.stat().st_size > 0
+    # A .docx is an OOXML zip; the body lives in word/document.xml.
+    with zipfile.ZipFile(target) as archive:
+        assert "word/document.xml" in archive.namelist()
+
+
+# --------------------------------------------------------------------------- #
+# write_document_as: .txt saves verbatim, not through Markdown stripping (#649)
+# --------------------------------------------------------------------------- #
+def test_write_document_as_txt_preserves_blank_lines(tmp_path: Path) -> None:
+    target = tmp_path / "notes.txt"
+    # Three+ consecutive line breaks and a Markdown-looking line must survive a
+    # normal save to .txt unchanged (the bug collapsed them and stripped markup).
+    text = "para one\n\n\n\npara two\n# not a heading here\n"
+    document = Document(text=text, path=target, line_ending="\n", encoding="utf-8")
+
+    write_document_as(document, target)
+
+    assert target.read_bytes() == text.encode("utf-8")
+
+
+def test_write_document_as_txt_preserves_crlf(tmp_path: Path) -> None:
+    target = tmp_path / "crlf.txt"
+    document = Document(text="a\nb\n\n\nc\n", path=target, line_ending="\r\n", encoding="utf-8")
+
+    write_document_as(document, target)
+
+    assert target.read_bytes() == b"a\r\nb\r\n\r\n\r\nc\r\n"

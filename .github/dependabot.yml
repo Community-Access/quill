@@ -5,6 +5,8 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
+    reviewers:
+      - "Community-Access/maintainers"
     labels:
       - "dependencies"
       - "security"
@@ -14,6 +16,8 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
+    reviewers:
+      - "Community-Access/maintainers"
     labels:
       - "dependencies"
       - "security"

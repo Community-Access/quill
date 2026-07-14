@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>dialogs</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="quill-dialog-regression-checklist">QUILL dialog regression
+checklist</h1>
+<p>This is the master manual regression checklist for every user-facing
+dialog in QUILL. Use it to verify that each dialog opens, is fully
+keyboard and screen-reader operable, has a working Escape and an
+explicit default, and returns focus to the editor on close.</p>
+<p>How to use this file:</p>
+<ul>
+<li>Work through a section, open each dialog with the listed keyboard
+command (or menu path when there is no default key), and confirm it
+behaves.</li>
+<li>Tick the checkbox when a dialog passes a full pass on the current
+build.</li>
+<li>When a dialog fails, leave it unticked and file or reference an
+issue next to it.</li>
+<li>Keep this file up to date: whenever a dialog is added, removed, or
+rebound, update the matching row in the same change. See the contributor
+rule in <code>.github/copilot-instructions.md</code> (“Keep dialogs.md
+current”).</li>
+</ul>
+<p>This manual checklist is the human companion to the machine-enforced
+dialog registry. The authoritative, source-of-truth inventory of every
+dialog <em>surface</em> is generated from code by
+<code>quill/tools/dialog_inventory.py</code> and committed as
+<code>tests/unit/ui/fixtures/dialog_inventory.json</code>; the A11Y-4
+banned-pattern gate and
+<code>tests/unit/ui/test_dialog_inventory.py</code> fail the build if
+any dialog is unregistered, unclassified, or on a bespoke surface.
+Regenerate the snapshot with
+<code>python -m quill.tools.dialog_inventory --write</code> whenever you
+add, move, or remove a dialog. See “Dialog Excellence Mandates” in the
+copilot instructions.</p>
+<p>What “passes” means for every dialog (the A11Y-4 contract):</p>
+<ol type="1">
+<li>It opens from the listed command or menu path.</li>
+<li>Tab and Shift+Tab reach every control in a sensible order.</li>
+<li>A screen reader announces the dialog title and each control.</li>
+<li>Enter activates the default action; Escape (and the close button)
+cancels.</li>
+<li>On close, focus returns to the editor.</li>
+<li>The dialog does not trap, freeze, or go silent.</li>
+</ol>
+<p>Automated companion tests and the manual QA plan:</p>
+<ul>
+<li><strong>Announcement and SR detection tests</strong> —
+<code>tests/accessibility/test_accessibility_suite.py</code> and
+<code>tests/accessibility/test_announcement_grammar.py</code> cover
+screen-reader announcement capture, SR detection, and announcement
+grammar. Run with <code>pytest tests/accessibility/ -q</code>.</li>
+<li><strong>Manual QA procedure</strong> —
+<code>docs/QUILL-PRD.md</code> §6 (“Dialog estate pass”) describes the
+full human-executed pass against this checklist, including the SR
+coverage matrix (NVDA full, JAWS spot, Narrator sanity) and the A11Y-4
+sign-off criteria.</li>
+</ul>
+<p>Legend: “QUILL key” is the prefix chord, default
+<code>Ctrl+Shift+Grave</code> (backtick). “via menu” means there is no
+default keybinding; reach it through the named menu or the command
+palette (<code>Ctrl+Shift+P</code>).</p>
+<h2 id="a.-file-open-save-and-session">A. File: open, save, and
+session</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Open File:
+<code>Ctrl+O</code></label></li>
+<li><label><input type="checkbox" />Save File:
+<code>Ctrl+S</code></label></li>
+<li><label><input type="checkbox" />Save As:
+<code>Ctrl+Shift+S</code></label></li>
+<li><label><input type="checkbox" />Reload in matching view (after Save
+As changes the format): native Yes/No prompt, shown after
+<code>Ctrl+Shift+S</code> when <code>save_as_surface_sync</code> is “Ask
+each time”</label></li>
+<li><label><input type="checkbox" />Page Setup: via File
+menu</label></li>
+<li><label><input type="checkbox" />Print:
+<code>Ctrl+P</code></label></li>
+<li><label><input type="checkbox" />Restore Backup: via File
+menu</label></li>
+<li><label><input type="checkbox" />Choose Encoding: via File
+menu</label></li>
+<li><label><input type="checkbox" />Open from URL: via File
+menu</label></li>
+<li><label><input type="checkbox" />Open from Remote…: QUILL key, then
+<code>Shift+O</code> (issues #154, #155, #156, #157)</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Site list (saved FTP, SFTP, WebDAV,
+S3 sites) and directory browser</label></li>
+<li><label><input type="checkbox" />New site / Edit site / Delete site
+buttons</label></li>
+<li><label><input type="checkbox" />Open button enabled only when a file
+is selected</label></li>
+</ul></li>
+<li><label><input type="checkbox" />Save to Remote…: QUILL key, then
+<code>W</code> (issues #154, #155, #156, #157)</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Site list and remote directory
+browser</label></li>
+<li><label><input type="checkbox" />Save button enabled only when a
+target file is selected</label></li>
+</ul></li>
+<li><label><input type="checkbox" />Save Copy to Remote…: via File
+menu</label></li>
+<li><label><input type="checkbox" />Manage Remote Sites…: QUILL key,
+then <code>Shift+M</code> (issues #154, #155, #156, #157)</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Add / Edit / Delete saved
+sites</label></li>
+<li><label><input type="checkbox" />Site editor sub-dialog with
+protocol-specific fields (FTP, SFTP, WebDAV, S3)</label></li>
+<li><label><input type="checkbox" />Site editor Save button disabled
+until the required fields are filled</label></li>
+</ul></li>
+<li><label><input type="checkbox" />Save Session: via File
+menu</label></li>
+<li><label><input type="checkbox" />Open Session: via File
+menu</label></li>
+</ul>
+<h3 id="a.1.-edit-over-ssh-issue-139">A.1. Edit over SSH (issue
+#139)</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />SSH Quick Connect: File &gt; Open
+over SSH &gt; Quick Connect… (no default key; command palette
+<code>Ctrl+Shift+P</code>)</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Host / port / username /
+authentication / password / key file path / start directory</label></li>
+<li><label><input type="checkbox" />Private key file field has a Browse
+button and a tooltip explaining supported formats (OpenSSH, PEM, PuTTY
+.ppk)</label></li>
+</ul></li>
+<li><label><input type="checkbox" />SSH Site Manager: File &gt; Open
+over SSH &gt; Site Manager… (no default key; command palette)</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Saved-sites list with New / Edit /
+Delete / Connect / Close</label></li>
+<li><label><input type="checkbox" />Site editor sub-dialog: friendly
+name, host, port, username, authentication, private key file path,
+default directory</label></li>
+<li><label><input type="checkbox" />Site editor Save button disabled
+until the required fields are filled</label></li>
+<li><label><input type="checkbox" />Private key file field has a Browse
+button and a tooltip explaining supported formats</label></li>
+</ul></li>
+</ul>
+<h2 id="b.-application-settings">B. Application settings</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Preferences hub (multi-page book
+control): <code>Ctrl+,</code></label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Category selector navigable by arrow
+keys with first-letter type-ahead, first category selected on
+open</label></li>
+<li><label><input type="checkbox" />Each category page opens its area
+with its <code>Open ...</code> button</label></li>
+</ul></li>
+<li><label><input type="checkbox" />Settings (tabbed, registry-driven):
+<code>Ctrl+,</code> then <code>Open General</code></label></li>
+<li><label><input type="checkbox" />Export settings to <code>.qsf</code>
+(button within Settings)</label></li>
+<li><label><input type="checkbox" />Import settings from
+<code>.qsf</code> (button within Settings)</label></li>
+<li><label><input type="checkbox" />Reset to Factory Defaults (button
+within Settings)</label></li>
+<li><label><input type="checkbox" />Export profile to <code>.qpf</code>
+(button within Settings)</label></li>
+<li><label><input type="checkbox" />Import profile from
+<code>.qpf</code> (button within Settings)</label></li>
+<li><label><input type="checkbox" />Customize Menus (Menu Editor, three
+tabs): Tools &gt; Customize &gt; Customize Menus…
+(<code>app.menu_editor</code>)</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />Top-Level Menus tab: reorder,
+rename, show/hide, and reset top-level menus</label></li>
+<li><label><input type="checkbox" />Menu Items tab: select a menu, then
+reorder, rename, show/hide its items</label></li>
+<li><label><input type="checkbox" />Context Menu tab: reorder, rename,
+show/hide context menu items</label></li>
+<li><label><input type="checkbox" />Rename Menu/Item (text entry,
+nested): Rename… button within any tab</label></li>
+</ul></li>
+<li><label><input type="checkbox" />GLOW Accessibility settings
+(accessible web form): Preferences (<code>Ctrl+,</code>) &gt; GLOW
+Accessibility</label></li>
+<li><label><input type="checkbox" />Command Palette:
+<code>Ctrl+Shift+P</code></label></li>
+</ul>
+<h2 id="c.-navigate">C. Navigate</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Go To Line:
+<code>Ctrl+G</code></label></li>
+<li><label><input type="checkbox" />Go To Page:
+<code>Ctrl+Shift+G</code></label></li>
+<li><label><input type="checkbox" />Outline Navigator:
+<code>Ctrl+Shift+O</code></label></li>
+<li><label><input type="checkbox" />Heading Organizer: QUILL key, then
+<code>O</code></label></li>
+<li><label><input type="checkbox" />Set Bookmark: via Navigate
+menu</label></li>
+<li><label><input type="checkbox" />Go To Bookmark: via Navigate
+menu</label></li>
+<li><label><input type="checkbox" />List Bookmarks:
+<code>Alt+Shift+B</code></label></li>
+</ul>
+<h2 id="d.-tools-text-analysis">D. Tools: text analysis</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Word Count:
+<code>Ctrl+Shift+W</code></label></li>
+<li><label><input type="checkbox" />Dictionary Status: via Tools
+menu</label></li>
+<li><label><input type="checkbox" />Spell Check:
+<code>F7</code></label></li>
+<li><label><input type="checkbox" />Misspelling List:
+<code>Alt+Shift+L</code></label></li>
+<li><label><input type="checkbox" />Thesaurus:
+<code>Shift+F7</code></label></li>
+<li><label><input type="checkbox" />Look Up (definitions/synonyms, with
+Add to Dictionary): editor context menu (<code>Shift+F10</code>) &gt;
+Look Up</label></li>
+</ul>
+<h2 id="e.-tools-accessibility">E. Tools: accessibility</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Validate Contrast: via Tools
+menu</label></li>
+<li><label><input type="checkbox" />Link Inventory and Alt-Text: via
+Tools menu</label></li>
+</ul>
+<h2 id="f.-tools-document-intake">F. Tools: document intake</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Document Intake Report:
+<code>Ctrl+Shift+I</code></label></li>
+<li><label><input type="checkbox" />Review Extraction Quality: via Tools
+menu</label></li>
+<li><label><input type="checkbox" />Report Bad Extraction: via Tools
+menu</label></li>
+</ul>
+<h2 id="g.-tools-read-aloud-and-ocr">G. Tools: read aloud and OCR</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Read Aloud Voice Settings: via Tools
+menu</label></li>
+<li><label><input type="checkbox" />Read Aloud Settings: via Tools
+menu</label></li>
+<li><label><input type="checkbox" />Generate Speech Audio: via Tools
+menu</label></li>
+<li><label><input type="checkbox" />OCR Image: via Tools
+menu</label></li>
+<li><label><input type="checkbox" />OCR Clipboard Image: via Tools
+menu</label></li>
+<li><label><input type="checkbox" />OCR Screen Capture: via Tools
+menu</label></li>
+<li><label><input type="checkbox" />OCR Screen Capture target chooser
+(nested in OCR Screen Capture): whole screen or active
+window</label></li>
+<li><label><input type="checkbox" />OCR Review (nested in OCR Image, OCR
+Clipboard Image, OCR Screen Capture): appears after OCR
+completes</label></li>
+</ul>
+<h2 id="h.-tools-sticky-notes">H. Tools: sticky notes</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />New Sticky Note: QUILL key, then
+<code>N</code></label></li>
+<li><label><input type="checkbox" />Manage Sticky Notes: via Tools
+menu</label></li>
+</ul>
+<h2 id="i.-tools-formats-and-external-tools">I. Tools: formats and
+external tools</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />External Tools and Formats: via
+Tools menu</label></li>
+<li><label><input type="checkbox" />Pandoc Conversion Wizard: via Tools
+menu</label></li>
+</ul>
+<h2 id="j.-tools-compare-documents">J. Tools: compare documents</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Compare with File: via Tools
+menu</label></li>
+<li><label><input type="checkbox" />Compare Open Documents: via Tools
+menu</label></li>
+<li><label><input type="checkbox" />Compare Difference List: via Tools
+menu</label></li>
+<li><label><input type="checkbox" />Compare Options: via Tools
+menu</label></li>
+</ul>
+<h2 id="j2.-tools-quillins-extensions">J2. Tools: Quillins
+(extensions)</h2>
+<p>The Quillins Manager always opens, even when third-party Quillins are
+disabled (SEC-8 <code>core.third_party_plugins</code> is locked off for
+1.0); it then reports that state and lists any installed Quillins
+read-only.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Quillins Manager (list, details,
+Enable/Disable/Reload/Remove): Tools &gt; Quillins &gt; Manage Quillins…
+(<code>tools.quillins_manager</code>)</label></li>
+</ul>
+<h2 id="k.-tools-keyboard">K. Tools: keyboard</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Keymap Editor: via Tools
+menu</label></li>
+<li><label><input type="checkbox" />Edit Keybinding (text entry, nested
+in Keymap Editor): Edit Keybinding… button or double-click within Keymap
+Editor</label></li>
+<li><label><input type="checkbox" />Export Keymap: via Tools
+menu</label></li>
+<li><label><input type="checkbox" />Import Keymap: via Tools
+menu</label></li>
+</ul>
+<h2 id="l.-tools-appearance-and-behavior">L. Tools: appearance and
+behavior</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Status Bar Layout: via Tools
+menu</label></li>
+<li><label><input type="checkbox" />Export and Back Up (share/backup
+export): Tools &gt; Customize &gt; Export and Back Up… (via
+menu)</label></li>
+<li><label><input type="checkbox" />Save export (file picker, nested in
+Export and Back Up): Save button within Export and Back Up</label></li>
+<li><label><input type="checkbox" />Import or Restore (share/backup
+import): Tools &gt; Customize &gt; Import or Restore… (via
+menu)</label></li>
+<li><label><input type="checkbox" />Open profile or backup (file picker,
+nested in Import or Restore): opens before the Import or Restore
+preview</label></li>
+</ul>
+<h2 id="m.-tools-watch-folder">M. Tools: watch folder</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Watch Folder Profiles: Tools &gt;
+Dictation and Watch Folder &gt; Watch Folder Profiles…
+(<code>tools.watch_folder_settings</code>)</label></li>
+<li><label><input type="checkbox" />Watch Queue Monitor: Tools &gt;
+Dictation and Watch Folder &gt; Watch Folder Queue…
+(<code>tools.watch_folder_status</code>)</label></li>
+</ul>
+<h2 id="n.-tools-notifications">N. Tools: notifications</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Notifications: via Tools
+menu</label></li>
+</ul>
+<h2 id="o.-tools-formatting">O. Tools: formatting</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Insert Link: <code>Ctrl+K</code>
+(shared accessible web form: display text + URL)</label></li>
+<li><label><input type="checkbox" />List Manager: QUILL key, then
+<code>L</code></label></li>
+<li><label><input type="checkbox" />YAML Structure Editor: via Tools
+menu</label></li>
+</ul>
+<h2 id="p.-tools-macros">P. Tools: macros</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Manage Macros: via Tools
+menu</label></li>
+</ul>
+<h2 id="q.-tools-ai-and-assistant">Q. Tools: AI and assistant</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />AI Model and Connection: via Tools
+menu</label></li>
+<li><label><input type="checkbox" />AI Connection Settings: via Tools
+menu</label></li>
+<li><label><input type="checkbox" />Forget API Key (confirmation): via
+Tools &gt; AI Assistant</label></li>
+<li><label><input type="checkbox" />Ask Quill Chat: via Tools
+menu</label></li>
+<li><label><input type="checkbox" />Train Writing Style: via Tools
+menu</label></li>
+<li><label><input type="checkbox" />Writing Assistant: via Tools
+menu</label></li>
+<li><label><input type="checkbox" />Prompt Studio: via Tools
+menu</label></li>
+<li><label><input type="checkbox" />Agent Center: via Tools
+menu</label></li>
+<li><label><input type="checkbox" />Accessibility Tune-Up: via Tools
+&gt; AI Assistant (Tools &gt; AI Assistant &gt; Accessibility
+Tune-Up…)</label></li>
+<li><label><input type="checkbox" />AI Hub: via Tools menu</label></li>
+</ul>
+<h2 id="r.-tools-bits-whisperer-speech">R. Tools: BITS Whisperer
+(speech)</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Announcement Backend: via Tools
+menu</label></li>
+<li><label><input type="checkbox" />BITS Model Manager: via Tools
+menu</label></li>
+<li><label><input type="checkbox" />BITS Model Status: via Tools
+menu</label></li>
+<li><label><input type="checkbox" />BITS Provider Center: via Tools
+menu</label></li>
+<li><label><input type="checkbox" />BITS Provider Selection: via Tools
+menu</label></li>
+<li><label><input type="checkbox" />BITS Readiness Check: via Tools
+menu</label></li>
+<li><label><input type="checkbox" />BITS Capability Matrix: via Tools
+menu</label></li>
+<li><label><input type="checkbox" />BITS Download Queue: via Tools
+menu</label></li>
+</ul>
+<h2 id="r2.-publishing">R2. Publishing</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Publishing Connections: File &gt;
+Publish &gt; Publishing Connections…</label></li>
+<li><label><input type="checkbox" />Verify Current Publishing
+Connection: File &gt; Publish &gt; Verify Current Publishing
+Connection</label></li>
+<li><label><input type="checkbox" />Browse Published Content: File &gt;
+Publish &gt; Browse Published Content…</label></li>
+<li><label><input type="checkbox" />Edit Publishing Connection: from
+Publishing Connections</label></li>
+<li><label><input type="checkbox" />Schedule Publish: File &gt; Publish
+&gt; Schedule Publish…</label></li>
+</ul>
+<h2 id="s.-help-features-and-profile">S. Help: features and profile</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Switch Feature Profile:
+<code>Alt+Shift+P</code></label></li>
+<li><label><input type="checkbox" />Feature Profile Health Check: via
+Help menu</label></li>
+<li><label><input type="checkbox" />Manage Individual Features: via Help
+menu (Help &gt; Feature Profiles &gt; Manage Individual
+Features…)</label></li>
+<li><label><input type="checkbox" />Why Don’t I See a Feature?: via Help
+menu</label></li>
+<li><label><input type="checkbox" />Profiles and Features: via Help
+menu</label></li>
+</ul>
+<h2 id="t.-help-startup-and-support">T. Help: startup and support</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Startup Wizard: via Help
+menu</label>
+<ul class="task-list">
+<li><label><input type="checkbox" />GLOW Accessibility Onboarding
+(accessible web form, from Startup Wizard sequence)</label></li>
+</ul></li>
+<li><label><input type="checkbox" />About Quill: via Help
+menu</label></li>
+<li><label><input type="checkbox" />What Can I Do Here?: via Help
+menu</label></li>
+<li><label><input type="checkbox" />Save Diagnostics: via Help
+menu</label></li>
+<li><label><input type="checkbox" />Report a Bug: via Help
+menu</label></li>
+<li><label><input type="checkbox" />BITS Whisperer About: via Help
+menu</label></li>
+</ul>
+<h2 id="u.-selection-and-quill-key">U. Selection and QUILL key</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />Selection Actions: QUILL key, then
+<code>A</code> (with text selected)</label></li>
+</ul>
+<h2 id="v.-nested-and-secondary-dialogs">V. Nested and secondary
+dialogs</h2>
+<p>These open only from inside another dialog or flow. Test each by
+reaching its parent first.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Add or Edit Watch Profile (from
+Watch Folder Profiles)</label></li>
+<li><label><input type="checkbox" />Browse for folder (from Add or Edit
+Watch Profile)</label></li>
+<li><label><input type="checkbox" />Watch profile dry-run preview (from
+Add or Edit Watch Profile, Preview (dry run) button)</label></li>
+<li><label><input type="checkbox" />Select font for HTML headings (from
+Heading Organizer)</label></li>
+<li><label><input type="checkbox" />Rename list item (from List
+Manager)</label></li>
+<li><label><input type="checkbox" />New list item (from List
+Manager)</label></li>
+<li><label><input type="checkbox" />Confirm list deletion (from List
+Manager)</label></li>
+<li><label><input type="checkbox" />New macro name (from Manage
+Macros)</label></li>
+<li><label><input type="checkbox" />Confirm profile option (from
+Profiles and Features)</label></li>
+<li><label><input type="checkbox" />Rename profile (from Profiles and
+Features)</label></li>
+<li><label><input type="checkbox" />Select profile template (from
+Profiles and Features)</label></li>
+<li><label><input type="checkbox" />Export profile (from Profiles and
+Features)</label></li>
+<li><label><input type="checkbox" />Import profile (from Profiles and
+Features)</label></li>
+<li><label><input type="checkbox" />Review AI Changes (from Ask Quill
+Chat, when approving an AI replacement that differs from the
+selection)</label></li>
+<li><label><input type="checkbox" />Add custom prompt (from Prompt
+Studio)</label></li>
+<li><label><input type="checkbox" />Run Python (from Tools, Python
+sandbox)</label></li>
+<li><label><input type="checkbox" />Confirm download model (from AI
+Model Settings)</label></li>
+<li><label><input type="checkbox" />Browse sticky note import and export
+(from Sticky Notes)</label></li>
+<li><label><input type="checkbox" />Add sticky note from document (from
+Sticky Notes)</label></li>
+<li><label><input type="checkbox" />Spell check ignore and learn (from
+Spell Check)</label></li>
+<li><label><input type="checkbox" />Confirm item deletion (from YAML
+Structure Editor)</label></li>
+<li><label><input type="checkbox" />Regex Helper (from
+Tools)</label></li>
+<li><label><input type="checkbox" />Update downloaded (from Check for
+Updates, after a successful download)</label></li>
+<li><label><input type="checkbox" />Remove Quillin confirm (from
+Quillins Manager, Remove… button)</label></li>
+<li><label><input type="checkbox" />Quillin permission request (from
+running a third-party Quillin that requests a consent-gated capability:
+fs.read, fs.write, or net)</label></li>
+<li><label><input type="checkbox" />Site editor sub-dialog (from Manage
+Remote Sites, New site… or Edit site… button)</label></li>
+</ul>
+<h2 id="w.-power-tools-and-recirculated-editor-conveniences">W. Power
+Tools and recirculated editor conveniences</h2>
+<p>Editor power-tool conveniences (EDS-1..20). These commands carry no
+default keybinding; reach each from its conventional menu home (or the
+command palette, <code>Ctrl+Shift+P</code>). As of the menu reorg
+(menus.md §3.7) these commands were recirculated out of the former
+power-tools monolith into their natural menus; the cohesive
+editor-behavior remainder lives under <strong>Tools &gt; Power
+Tools</strong>. Only the commands that present a dialog are listed here;
+the remaining power-tool commands act directly on the document and
+announce their result.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Insert Special Character (codepoint
+prompt): Insert &gt; Insert Special Character</label></li>
+<li><label><input type="checkbox" />Insert File Content (file picker):
+Insert &gt; Insert File Content</label></li>
+<li><label><input type="checkbox" />Number Lines (start prompt): Format
+&gt; Transform Lines &gt; Number Lines</label></li>
+<li><label><input type="checkbox" />Hard-Wrap Lines (width prompt):
+Format &gt; Transform Lines &gt; Hard-Wrap Lines</label></li>
+<li><label><input type="checkbox" />Count Matches (regex prompt): Search
+&gt; Count Matches</label></li>
+<li><label><input type="checkbox" />Extract Matches (regex prompt):
+Search &gt; Extract Matches</label></li>
+<li><label><input type="checkbox" />Go to Percent (percentage prompt):
+Navigate &gt; Go to Percent</label></li>
+<li><label><input type="checkbox" />Infer Indentation (adopt-unit
+confirm): Tools &gt; Power Tools &gt; Infer Indentation</label></li>
+<li><label><input type="checkbox" />Rename Current File (name prompt):
+File &gt; Rename Current File</label></li>
+<li><label><input type="checkbox" />Delete Current File (delete
+confirm): File &gt; Delete Current File</label></li>
+</ul>
+<h2 id="x.-notebook-workspace-dialogs">X. Notebook (Workspace)
+dialogs</h2>
+<p>Multi-document workspace commands (§10.4 Milestone 2). All custom
+surfaces are <code>hardened_custom</code> per the dialog contract.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />New Notebook (name prompt +
+file-save picker): File &gt; Notebook &gt; New Notebook</label></li>
+<li><label><input type="checkbox" />New Notebook from Folder (folder
+picker + name prompt + file-save picker): File &gt; Notebook &gt; New
+from Folder</label></li>
+<li><label><input type="checkbox" />Open Notebook (file-open picker
+filtered to <code>.quillnotebook</code>): File &gt; Notebook &gt; Open
+Notebook</label></li>
+<li><label><input type="checkbox" />Save Snapshot (name prompt): File
+&gt; Notebook &gt; Save Snapshot</label></li>
+<li><label><input type="checkbox" />Manage Snapshots (list with Rename /
+Delete buttons): <code>hardened_custom</code> (wires
+<code>apply_modal_ids</code>): File &gt; Notebook &gt; Manage
+Snapshots</label></li>
+<li><label><input type="checkbox" />Go to Entry in Notebook (tree
+navigator — <code>_show_tree_navigator</code>): Navigate &gt; Go to
+Entry in Notebook</label></li>
+<li><label><input type="checkbox" />Go to Heading in Notebook (tree
+navigator — <code>_show_tree_navigator</code>): Navigate &gt; Go to
+Heading in Notebook</label></li>
+</ul>
+<h2 id="y.-startup-only-dialogs">Y. Startup-only dialogs</h2>
+<p>These appear only during a specific startup condition. Test by
+reproducing the trigger.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Crash Recovery (after an unclean
+exit)</label></li>
+<li><label><input type="checkbox" />Untrusted Location Warning (opening
+a file from an untrusted folder)</label></li>
+<li><label><input type="checkbox" />Safe Mode banner / status-bar
+indicator (when <code>QUILL_SAFE_MODE=1</code> is set on the
+environment, or <code>quill --safe-mode</code> is passed): the status
+bar shows “Safe Mode — plugins, AI, and network disabled” and a one-shot
+announcement fires on first show. Verified manually by setting the env
+var before launch and confirming the AI / assistant surfaces and
+watch-folder network calls short-circuit per
+<code>quill/stability/safe_mode.py</code>. Cross-reference: the
+pre-release review’s N-10 / H-SAFE-1 fixes.</label></li>
+</ul>
+<h2 id="maintenance-note">Maintenance note</h2>
+<p>This checklist was generated from a full source scrub of
+<code>quill/ui/</code> (chiefly <code>quill/ui/main_frame.py</code>,
+plus <code>palette.py</code>, <code>assistant_panel.py</code>,
+<code>assistant_tools.py</code>, <code>ai_model_panel.py</code>,
+<code>train_style_dialog.py</code>, <code>sticky_notes.py</code>,
+<code>preview_dialog.py</code>, and <code>web_form.py</code>) and the
+bindings in <code>quill/core/keymap.py</code>. When you add or change a
+dialog, update the matching row here in the same change so this file
+stays a faithful, complete map.</p>
+<h2 id="cross-references">Cross-references</h2>
+<ul>
+<li><strong>Safe Mode</strong> — see
+<code>quill/stability/safe_mode.py</code> (env-var contract is
+<code>QUILL_SAFE_MODE=1</code>) and
+<code>quill/stability/__init__.py</code> (<code>SafeModeConfig</code>,
+<code>build_safe_mode_config</code>). When safe mode is active, the AI
+assistant surfaces in section Q, the BITS / Whisperer surfaces in
+section R, the watch-folder network calls in section M, and the Agent
+Center all short-circuit. Manual verification: launch with
+<code>set QUILL_SAFE_MODE=1</code>
+<ol start="1400" type="i">
+<li>/ <code>$env:QUILL_SAFE_MODE=1</code> (PowerShell) /
+<code>--safe-mode</code> (CLI flag); confirm the status-bar banner and
+the AI/assistant menu items are disabled.</li>
+</ol></li>
+</ul>
+</body>
+</html>

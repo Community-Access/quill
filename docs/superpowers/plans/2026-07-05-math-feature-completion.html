@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>2026-07-05-math-feature-completion</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1 id="math-feature-completion-steps-4-6-implementation-plan">Math
+Feature Completion (steps 4-6) Implementation Plan</h1>
+<blockquote>
+<p><strong>For agentic workers:</strong> REQUIRED SUB-SKILL: Use
+superpowers:subagent-driven-development (recommended) or
+superpowers:executing-plans to implement this plan task-by-task. Steps
+use checkbox (<code>- [x]</code>) syntax for tracking.</p>
+</blockquote>
+<p><strong>Goal:</strong> Make QUILL's math-equations feature actually
+render and round-trip correctly in the browser preview, HTML export, and
+Word (.docx) — both directions — building on the already-shipped
+<code>quill/core/math/</code> MathML/LaTeX bridge and the
+abbreviation/agent work from earlier in
+<code>docs/planning/math.md</code>.</p>
+<p><strong>Architecture:</strong> Switch the bundled
+<code>math-equations</code> Quillin's delimiters to ones MathJax already
+recognizes by default (<code>\(...\)</code> inline, <code>$$...$$</code>
+display, both on their own paragraph) so browser preview/export need
+zero code changes. For Word, teach the native python-docx writer
+(<code>quill/io/docx_writer.py</code>) to splice a real
+<code>&lt;m:oMath&gt;</code> fragment — obtained via a one-equation
+round trip through QUILL's existing Pandoc bridge — into the run stream
+wherever it finds one of those delimiters, falling back to plain literal
+text if Pandoc is unavailable. Lock in the (already-correct) docx
+read-side behavior with regression tests.</p>
+<p><strong>Tech Stack:</strong> Python 3.12+, python-docx
+(<code>docx.oxml.parse_xml</code>), Pandoc (via
+<code>quill.io.pandoc.convert_file_with_pandoc</code>), pytest.</p>
+<h2 id="global-constraints">Global Constraints</h2>
+<ul>
+<li>Preserve existing style/architecture: <code>quill/core</code> and
+<code>quill/io</code> stay wx-free and strict-typed
+(<code>mypy quill/core quill/io</code> must stay clean).</li>
+<li>Docx writing must never hard-fail because Pandoc is absent — degrade
+to plain text, matching the existing
+<code>python_docx_available()</code> fallback pattern.</li>
+<li>Run <code>ruff check .</code> / <code>ruff format --check .</code>
+and the relevant scoped <code>pytest</code> after every task.</li>
+<li>Quillin manifest changes must pass
+<code>python -m quill.tools.quillin_lint quill/quillins_bundled/math-equations --strict</code>.</li>
+<li>No CDN/network config changes are in scope here — the existing
+MathJax <code>&lt;script&gt;</code> tags in
+<code>quill/core/browser_preview.py:217</code> and
+<code>quill/io/export.py:226-227</code> are left untouched (verified:
+both <code>\(...\)</code> and <code>$$...$$</code> are MathJax's
+built-in defaults, and both <code>render_preview_body</code> and
+<code>markdown_to_rich</code> already pass backslashes and
+<code>$$</code> through unmodified — verified empirically this
+session).</li>
+<li>DAISY export (<code>quill/io/daisy.py</code>) is explicitly
+<strong>out of scope</strong> for this plan (confirmed with the user:
+DAISY 2.02 text-only has no real MathML rendering target; equations
+already export as readable literal text and that is left as-is).</li>
+</ul>
+<hr />
+<h3
+id="task-1-switch-math-equations-quillin-to-mathjax-default-delimiters">Task
+1: Switch math-equations Quillin to MathJax-default delimiters</h3>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify:
+<code>quill/quillins_bundled/math-equations/extension.py</code></li>
+<li>Modify:
+<code>quill/quillins_bundled/math-equations/manifest.json</code></li>
+<li>Modify:
+<code>quill/quillins_bundled/math-equations/README.md</code></li>
+<li>Modify:
+<code>tests/unit/core/test_quillins_bundled_math_equations.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Produces: inline equations wrapped as <code>\(...\)</code>;
+display/block equations wrapped as a single-line <code>$${eq}$$</code>
+on its own paragraph (blank line before/after, but no separate fence
+lines) — this is what Task 2 depends on (single-span, single-paragraph
+equations are what the docx splicer can find).</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" /><strong>Step 1: Update
+the failing tests first</strong></label></li>
+</ul>
+<p>Replace the delimiter-specific assertions in
+<code>tests/unit/core/test_quillins_bundled_math_equations.py</code>.
+Full replacement content for the affected test functions (everything
+else in the file is unchanged):</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_inline_latex_inserts_backslash_paren_delimiters() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    api <span class="op">=</span> _register_extension()</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    ctx <span class="op">=</span> _FakeCtx(prompts<span class="op">=</span>[<span class="st">&quot;E=mc^2&quot;</span>], choices<span class="op">=</span>[<span class="st">&quot;Inline  (</span><span class="ch">\\</span><span class="st">(...</span><span class="ch">\\</span><span class="st">))&quot;</span>])</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    api.handlers[<span class="st">&quot;insert_equation&quot;</span>](ctx)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> ctx.inserted <span class="op">==</span> [<span class="st">&quot;</span><span class="ch">\\</span><span class="st">(E=mc^2</span><span class="ch">\\</span><span class="st">)&quot;</span>]</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> ctx.announced <span class="op">==</span> [<span class="st">&quot;Inserted math equation&quot;</span>]</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_block_latex_inserts_single_line_double_dollar() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    api <span class="op">=</span> _register_extension()</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    ctx <span class="op">=</span> _FakeCtx(prompts<span class="op">=</span>[<span class="vs">r&quot;</span><span class="dv">\s</span><span class="vs">um_{n=1}</span><span class="dv">^</span><span class="vs">{</span><span class="er">\</span><span class="vs">infty} </span><span class="ch">\f</span><span class="vs">rac</span><span class="op">{1}</span><span class="vs">{n</span><span class="dv">^</span><span class="vs">2}&quot;</span>], choices<span class="op">=</span>[<span class="st">&quot;Block  ($$...$$)&quot;</span>])</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    api.handlers[<span class="st">&quot;insert_equation&quot;</span>](ctx)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="bu">len</span>(ctx.inserted) <span class="op">==</span> <span class="dv">1</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    snippet <span class="op">=</span> ctx.inserted[<span class="dv">0</span>]</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> snippet <span class="op">==</span> <span class="st">&quot;</span><span class="ch">\n</span><span class="st">$$</span><span class="ch">\\</span><span class="st">sum_{n=1}^{</span><span class="ch">\\</span><span class="st">infty} </span><span class="ch">\\</span><span class="st">frac</span><span class="sc">{1}</span><span class="st">{n^2}$$</span><span class="ch">\n</span><span class="st">&quot;</span></span></code></pre></div>
+<p>(These replace
+<code>test_inline_latex_inserts_dollar_delimiters</code> and
+<code>test_block_latex_inserts_double_dollar_with_newlines</code> by
+name.)</p>
+<p>Also replace every other <code>"Inline  ($...$)"</code> choice
+literal in the file with <code>"Inline  (\\(...\\))"</code> (the
+constant's new display text) — this affects
+<code>test_inline_selection_stripped_and_replaced</code>,
+<code>test_cancel_mode_choice_does_nothing</code>'s sibling, and the
+sample-corpus loop tests. Update these specific bodies:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_inline_selection_stripped_and_replaced() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    api <span class="op">=</span> _register_extension()</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    ctx <span class="op">=</span> _FakeCtx(</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        selection<span class="op">=</span><span class="st">&quot;</span><span class="ch">\\</span><span class="st">(x^2</span><span class="ch">\\</span><span class="st">)&quot;</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        prompts<span class="op">=</span>[<span class="st">&quot;x^2&quot;</span>],</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        choices<span class="op">=</span>[<span class="st">&quot;Inline  (</span><span class="ch">\\</span><span class="st">(...</span><span class="ch">\\</span><span class="st">))&quot;</span>],</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    api.handlers[<span class="st">&quot;insert_equation&quot;</span>](ctx)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> ctx.replaced <span class="op">==</span> [<span class="st">&quot;</span><span class="ch">\\</span><span class="st">(x^2</span><span class="ch">\\</span><span class="st">)&quot;</span>]</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> ctx.inserted <span class="op">==</span> []</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_handler_round_trips_all_samples_as_inline() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;Each sample equation re-inserted in inline mode produces </span><span class="ch">\\</span><span class="co">(...</span><span class="ch">\\</span><span class="co">).&quot;&quot;&quot;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    api <span class="op">=</span> _register_extension()</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    equations <span class="op">=</span> _extract_block_equations(_SAMPLES_FILE)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> eq <span class="kw">in</span> equations:</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        ctx <span class="op">=</span> _FakeCtx(prompts<span class="op">=</span>[eq], choices<span class="op">=</span>[<span class="st">&quot;Inline  (</span><span class="ch">\\</span><span class="st">(...</span><span class="ch">\\</span><span class="st">))&quot;</span>])</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        api.handlers[<span class="st">&quot;insert_equation&quot;</span>](ctx)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">assert</span> ctx.inserted, <span class="ss">f&quot;nothing inserted for: </span><span class="sc">{</span>eq<span class="sc">!r}</span><span class="ss">&quot;</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        snippet <span class="op">=</span> ctx.inserted[<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">assert</span> snippet.startswith(<span class="st">&quot;</span><span class="ch">\\</span><span class="st">(&quot;</span>) <span class="kw">and</span> snippet.endswith(<span class="st">&quot;</span><span class="ch">\\</span><span class="st">)&quot;</span>), (</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f&quot;inline delimiters missing for: </span><span class="sc">{</span>eq<span class="sc">!r}</span><span class="ss">&quot;</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">assert</span> eq <span class="kw">in</span> snippet</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_handler_round_trips_all_samples_as_block() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;Each sample equation re-inserted in block mode produces a single-line $$...$$.&quot;&quot;&quot;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    api <span class="op">=</span> _register_extension()</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    equations <span class="op">=</span> _extract_block_equations(_SAMPLES_FILE)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> eq <span class="kw">in</span> equations:</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        ctx <span class="op">=</span> _FakeCtx(prompts<span class="op">=</span>[eq], choices<span class="op">=</span>[<span class="st">&quot;Block  ($$...$$)&quot;</span>])</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        api.handlers[<span class="st">&quot;insert_equation&quot;</span>](ctx)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">assert</span> ctx.inserted, <span class="ss">f&quot;nothing inserted for: </span><span class="sc">{</span>eq<span class="sc">!r}</span><span class="ss">&quot;</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        snippet <span class="op">=</span> ctx.inserted[<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">assert</span> snippet <span class="op">==</span> <span class="ss">f&quot;</span><span class="ch">\n</span><span class="ss">$$</span><span class="sc">{</span>eq<span class="sc">}</span><span class="ss">$$</span><span class="ch">\n</span><span class="ss">&quot;</span>, <span class="ss">f&quot;unexpected block snippet for: </span><span class="sc">{</span>eq<span class="sc">!r}</span><span class="ss">&quot;</span></span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" /><strong>Step 2: Run the
+tests to verify they fail</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/core/test_quillins_bundled_math_equations.py -q</code>
+Expected: several FAIL (extension.py still produces <code>$...$</code>
+and the old multi-line block form).</p>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" /><strong>Step 3: Update
+<code>extension.py</code></strong></label></li>
+</ul>
+<p>Full new content:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">&quot;&quot;&quot;Math Equations - bundled Quillin for inserting LaTeX or MathML at the caret.</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">UX flow:</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">1. Strip LaTeX delimiters from the current selection (if any) to pre-fill the</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">   equation prompt.</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">2. Prompt for the equation text.</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">3. If the input starts with &#39;&lt;math&#39;, insert it verbatim as MathML.</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">4. Otherwise show a display-mode choice (Inline / Block) and wrap accordingly.</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">Inline equations use </span><span class="ch">\\</span><span class="co">(...</span><span class="ch">\\</span><span class="co">) and block equations use a single-line $$...$$</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">(on its own paragraph) rather than $...$ / a multi-line $$ fence: both are</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">MathJax&#39;s own default-recognized delimiters (no config needed in</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co">browser_preview.py / export.py), </span><span class="ch">\\</span><span class="co">(...</span><span class="ch">\\</span><span class="co">) has no ambiguity with ordinary</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">prose dollar amounts the way bare $...$ does, and keeping the whole equation</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co">on one line keeps it inside a single paragraph/run for quill.io.docx_math to</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co">splice a real Word equation into.</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co">Capabilities: ui.prompt, ui.choices, ui.announce, editor.read, editor.write,</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co">              ui.command.</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="co">&quot;&quot;&quot;</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> __future__ <span class="im">import</span> annotations</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>_INLINE <span class="op">=</span> <span class="st">&quot;Inline  (</span><span class="ch">\\</span><span class="st">(...</span><span class="ch">\\</span><span class="st">))&quot;</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>_BLOCK <span class="op">=</span> <span class="st">&quot;Block  ($$...$$)&quot;</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _strip_delimiters(text: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">tuple</span>[<span class="bu">str</span>, <span class="bu">str</span>]:</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;Return (equation_text, detected_mode) with LaTeX delimiters removed.&quot;&quot;&quot;</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>    t <span class="op">=</span> text.strip()</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> t.startswith(<span class="st">&quot;$$&quot;</span>) <span class="kw">and</span> t.endswith(<span class="st">&quot;$$&quot;</span>) <span class="kw">and</span> <span class="bu">len</span>(t) <span class="op">&gt;</span> <span class="dv">4</span>:</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> t[<span class="dv">2</span>:<span class="op">-</span><span class="dv">2</span>].strip(), <span class="st">&quot;block&quot;</span></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> t.startswith(<span class="st">&quot;</span><span class="ch">\\</span><span class="st">(&quot;</span>) <span class="kw">and</span> t.endswith(<span class="st">&quot;</span><span class="ch">\\</span><span class="st">)&quot;</span>) <span class="kw">and</span> <span class="bu">len</span>(t) <span class="op">&gt;</span> <span class="dv">4</span>:</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> t[<span class="dv">2</span>:<span class="op">-</span><span class="dv">2</span>].strip(), <span class="st">&quot;inline&quot;</span></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> t, <span class="st">&quot;inline&quot;</span></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> register(api):</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;Register the insert_equation handler.&quot;&quot;&quot;</span></span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> insert_equation(ctx):</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>        selection <span class="op">=</span> ctx.get_selection() <span class="kw">or</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>        default_eq, default_mode <span class="op">=</span> _strip_delimiters(selection)</span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>        raw <span class="op">=</span> ctx.prompt(</span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;Insert Equation&quot;</span>,</span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;LaTeX (e.g. E=mc^2) or MathML (&lt;math ...&gt;):&quot;</span>,</span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>            default_eq,</span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> raw <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span></span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>        eq <span class="op">=</span> raw.strip()</span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> eq:</span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>            ctx.announce(<span class="st">&quot;Insert equation cancelled&quot;</span>)</span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span></span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>        <span class="co"># MathML detected — insert verbatim, skip display-mode prompt</span></span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> eq.lstrip().startswith(<span class="st">&quot;&lt;math&quot;</span>):</span>
+<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> selection:</span>
+<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a>                ctx.replace_selection(eq)</span>
+<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
+<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a>                ctx.insert_text(eq)</span>
+<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a>            ctx.announce(<span class="st">&quot;Inserted MathML equation&quot;</span>)</span>
+<span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span></span>
+<span id="cb5-65"><a href="#cb5-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-66"><a href="#cb5-66" aria-hidden="true" tabindex="-1"></a>        <span class="co"># LaTeX — ask for display mode; surface detected mode as first choice</span></span>
+<span id="cb5-67"><a href="#cb5-67" aria-hidden="true" tabindex="-1"></a>        choices <span class="op">=</span> [_BLOCK, _INLINE] <span class="cf">if</span> default_mode <span class="op">==</span> <span class="st">&quot;block&quot;</span> <span class="cf">else</span> [_INLINE, _BLOCK]</span>
+<span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a>        chosen <span class="op">=</span> ctx.show_choices(<span class="st">&quot;Equation display mode&quot;</span>, choices)</span>
+<span id="cb5-69"><a href="#cb5-69" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> chosen <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb5-70"><a href="#cb5-70" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span></span>
+<span id="cb5-71"><a href="#cb5-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-72"><a href="#cb5-72" aria-hidden="true" tabindex="-1"></a>        snippet <span class="op">=</span> <span class="ss">f&quot;</span><span class="ch">\n</span><span class="ss">$$</span><span class="sc">{</span>eq<span class="sc">}</span><span class="ss">$$</span><span class="ch">\n</span><span class="ss">&quot;</span> <span class="cf">if</span> chosen <span class="op">==</span> _BLOCK <span class="cf">else</span> <span class="ss">f&quot;</span><span class="ch">\\</span><span class="ss">(</span><span class="sc">{</span>eq<span class="sc">}</span><span class="ch">\\</span><span class="ss">)&quot;</span></span>
+<span id="cb5-73"><a href="#cb5-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-74"><a href="#cb5-74" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> selection:</span>
+<span id="cb5-75"><a href="#cb5-75" aria-hidden="true" tabindex="-1"></a>            ctx.replace_selection(snippet)</span>
+<span id="cb5-76"><a href="#cb5-76" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb5-77"><a href="#cb5-77" aria-hidden="true" tabindex="-1"></a>            ctx.insert_text(snippet)</span>
+<span id="cb5-78"><a href="#cb5-78" aria-hidden="true" tabindex="-1"></a>        ctx.announce(<span class="st">&quot;Inserted math equation&quot;</span>)</span>
+<span id="cb5-79"><a href="#cb5-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-80"><a href="#cb5-80" aria-hidden="true" tabindex="-1"></a>    api.register_command(<span class="st">&quot;insert_equation&quot;</span>, insert_equation)</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" /><strong>Step 4: Run the
+tests to verify they pass</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/core/test_quillins_bundled_math_equations.py -q</code>
+Expected: all PASS.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" /><strong>Step 5: Update
+the manifest and README</strong></label></li>
+</ul>
+<p>In <code>quill/quillins_bundled/math-equations/manifest.json</code>,
+bump <code>"version"</code> from <code>"1.1.0"</code> to
+<code>"1.2.0"</code>.</p>
+<p>In <code>quill/quillins_bundled/math-equations/README.md</code>,
+replace:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>LaTeX equations are wrapped in <span class="in">`$`</span> (inline) or <span class="in">`$$`</span> (display) delimiters.</span></code></pre></div>
+<p>with:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>LaTeX equations are wrapped in <span class="in">`\(...\)`</span> (inline) or <span class="in">`$$...$$`</span> (display) delimiters — both are MathJax&#39;s own default math delimiters, so preview and HTML export need no extra configuration.</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" /><strong>Step 6: Lint and
+format</strong></label></li>
+</ul>
+<p>Run:
+<code>python -m quill.tools.quillin_lint quill/quillins_bundled/math-equations --strict</code>
+Expected: <code>PASS</code></p>
+<p>Run:
+<code>ruff check quill/quillins_bundled/math-equations tests/unit/core/test_quillins_bundled_math_equations.py &amp;&amp; ruff format --check quill/quillins_bundled/math-equations tests/unit/core/test_quillins_bundled_math_equations.py</code>
+Expected: no errors (run <code>ruff format</code> without
+<code>--check</code> first if formatting differs, then re-check).</p>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" /><strong>Step 7:
+Commit</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/quillins_bundled/math-equations tests/unit/core/test_quillins_bundled_math_equations.py</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(math-equations): switch to MathJax-default delimiters&quot;</span></span></code></pre></div>
+<hr />
+<h3
+id="task-2-splice-real-word-equations-into-the-native-docx-writer">Task
+2: Splice real Word equations into the native docx writer</h3>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Create: <code>quill/io/docx_math.py</code></li>
+<li>Modify: <code>quill/io/docx_writer.py</code></li>
+<li>Test: <code>tests/unit/io/test_docx_math.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes:
+<code>quill.io.pandoc.convert_file_with_pandoc(source_path, target_path, *, from_format, to_format, ...) -&gt; Path</code>
+(raises <code>PandocUnavailableError</code> /
+<code>PandocConversionError</code> on failure);
+<code>docx.oxml.parse_xml(xml_string)</code> (returns an lxml element
+appendable via <code>paragraph._p.append(...)</code>).</li>
+<li>Produces:
+<code>split_math_segments(text: str) -&gt; list[MathSegment]</code> and
+<code>omml_fragment_for_latex(latex: str, *, display: bool) -&gt; str | None</code>
+(returns <code>None</code>, not raises, when Pandoc is unavailable or
+the equation fails to convert) — Task 2's <code>rich_to_docx</code>
+change is the only consumer, but both are public functions other docx
+code can reuse later.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" /><strong>Step 1: Write the
+failing tests for <code>docx_math.py</code></strong></label></li>
+</ul>
+<p>Create <code>tests/unit/io/test_docx_math.py</code>:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">&quot;&quot;&quot;Segment-splitting and OMML-fragment generation for docx math splicing.&quot;&quot;&quot;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> __future__ <span class="im">import</span> annotations</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytest</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>pytest.importorskip(<span class="st">&quot;docx&quot;</span>)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.io.docx_math <span class="im">import</span> MathSegment, omml_fragment_for_latex, split_math_segments</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_split_plain_text_is_single_text_segment() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    segments <span class="op">=</span> split_math_segments(<span class="st">&quot;just some prose, no math&quot;</span>)</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> segments <span class="op">==</span> [MathSegment(is_math<span class="op">=</span><span class="va">False</span>, content<span class="op">=</span><span class="st">&quot;just some prose, no math&quot;</span>)]</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_split_inline_math_segment() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    segments <span class="op">=</span> split_math_segments(<span class="st">&quot;The formula </span><span class="ch">\\</span><span class="st">(x^2 + 1</span><span class="ch">\\</span><span class="st">) here.&quot;</span>)</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> segments <span class="op">==</span> [</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>        MathSegment(is_math<span class="op">=</span><span class="va">False</span>, content<span class="op">=</span><span class="st">&quot;The formula &quot;</span>),</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>        MathSegment(is_math<span class="op">=</span><span class="va">True</span>, content<span class="op">=</span><span class="st">&quot;x^2 + 1&quot;</span>, display<span class="op">=</span><span class="va">False</span>),</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>        MathSegment(is_math<span class="op">=</span><span class="va">False</span>, content<span class="op">=</span><span class="st">&quot; here.&quot;</span>),</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_split_display_math_segment() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>    segments <span class="op">=</span> split_math_segments(<span class="st">&quot;$$a^2+b^2=c^2$$&quot;</span>)</span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> segments <span class="op">==</span> [MathSegment(is_math<span class="op">=</span><span class="va">True</span>, content<span class="op">=</span><span class="st">&quot;a^2+b^2=c^2&quot;</span>, display<span class="op">=</span><span class="va">True</span>)]</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_split_multiple_math_segments() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>    segments <span class="op">=</span> split_math_segments(<span class="st">&quot;</span><span class="ch">\\</span><span class="st">(x</span><span class="ch">\\</span><span class="st">) and </span><span class="ch">\\</span><span class="st">(y</span><span class="ch">\\</span><span class="st">)&quot;</span>)</span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> [s.is_math <span class="cf">for</span> s <span class="kw">in</span> segments] <span class="op">==</span> [<span class="va">True</span>, <span class="va">False</span>, <span class="va">True</span>]</span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> segments[<span class="dv">0</span>].content <span class="op">==</span> <span class="st">&quot;x&quot;</span></span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> segments[<span class="dv">2</span>].content <span class="op">==</span> <span class="st">&quot;y&quot;</span></span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_split_no_dollar_ambiguity_from_plain_prose() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Regression guard: ordinary prose with a lone $ never becomes a math segment.</span></span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>    segments <span class="op">=</span> split_math_segments(<span class="st">&quot;It costs $5 today.&quot;</span>)</span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> segments <span class="op">==</span> [MathSegment(is_math<span class="op">=</span><span class="va">False</span>, content<span class="op">=</span><span class="st">&quot;It costs $5 today.&quot;</span>)]</span></code></pre></div>
+<p>Create <code>tests/unit/io/test_docx_writer_math.py</code>:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">&quot;&quot;&quot;End-to-end: math text through the native docx writer produces a real equation.&quot;&quot;&quot;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> __future__ <span class="im">import</span> annotations</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> zipfile</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytest</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>pytest.importorskip(<span class="st">&quot;docx&quot;</span>)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.io.docx_writer <span class="im">import</span> rich_to_docx_bytes</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.io.rtf_model <span class="im">import</span> markdown_to_rich</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_inline_math_produces_real_omath(tmp_path: Path) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    rich <span class="op">=</span> markdown_to_rich(<span class="st">&quot;Pythagorean theorem: </span><span class="ch">\\</span><span class="st">(a^2 + b^2 = c^2</span><span class="ch">\\</span><span class="st">)</span><span class="ch">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> rich_to_docx_bytes(rich)</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    out <span class="op">=</span> tmp_path <span class="op">/</span> <span class="st">&quot;math.docx&quot;</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>    out.write_bytes(data)</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> zipfile.ZipFile(out) <span class="im">as</span> z:</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>        xml <span class="op">=</span> z.read(<span class="st">&quot;word/document.xml&quot;</span>).decode(<span class="st">&quot;utf-8&quot;</span>)</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;m:oMath&quot;</span> <span class="kw">in</span> xml</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;Pythagorean theorem:&quot;</span> <span class="kw">in</span> xml</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_display_math_produces_real_omath(tmp_path: Path) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>    rich <span class="op">=</span> markdown_to_rich(<span class="st">&quot;$$a^2+b^2=c^2$$</span><span class="ch">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> rich_to_docx_bytes(rich)</span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>    out <span class="op">=</span> tmp_path <span class="op">/</span> <span class="st">&quot;math_block.docx&quot;</span></span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>    out.write_bytes(data)</span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> zipfile.ZipFile(out) <span class="im">as</span> z:</span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>        xml <span class="op">=</span> z.read(<span class="st">&quot;word/document.xml&quot;</span>).decode(<span class="st">&quot;utf-8&quot;</span>)</span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;m:oMath&quot;</span> <span class="kw">in</span> xml</span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_plain_text_unaffected(tmp_path: Path) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>    rich <span class="op">=</span> markdown_to_rich(<span class="st">&quot;Just an ordinary paragraph, $5 and all.</span><span class="ch">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> rich_to_docx_bytes(rich)</span>
+<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>    out <span class="op">=</span> tmp_path <span class="op">/</span> <span class="st">&quot;plain.docx&quot;</span></span>
+<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a>    out.write_bytes(data)</span>
+<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> zipfile.ZipFile(out) <span class="im">as</span> z:</span>
+<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a>        xml <span class="op">=</span> z.read(<span class="st">&quot;word/document.xml&quot;</span>).decode(<span class="st">&quot;utf-8&quot;</span>)</span>
+<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;m:oMath&quot;</span> <span class="kw">not</span> <span class="kw">in</span> xml</span>
+<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;$5&quot;</span> <span class="kw">in</span> xml</span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" /><strong>Step 2: Run the
+tests to verify they fail</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/io/test_docx_math.py tests/unit/io/test_docx_writer_math.py -q</code>
+Expected: FAIL with
+<code>ModuleNotFoundError: No module named 'quill.io.docx_math'</code>.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" /><strong>Step 3: Create
+<code>quill/io/docx_math.py</code></strong></label></li>
+</ul>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">&quot;&quot;&quot;Splicing real Word (OMML) equations into the native docx writer.</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co">The native writer (:mod:`quill.io.docx_writer`) has no math model of its own;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co">this module finds </span><span class="ch">\\</span><span class="co">(...</span><span class="ch">\\</span><span class="co">) / $$...$$ spans in plain paragraph text and turns</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co">each into a real &lt;m:oMath&gt; fragment by round-tripping the single equation</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co">through QUILL&#39;s existing Pandoc bridge (Pandoc already produces correct OMML</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co">from LaTeX math — verified empirically against pandoc 3.10). When Pandoc is</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="co">unavailable or a specific equation fails to convert, the caller keeps the</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="co">literal delimited text instead of hard-failing the whole docx write.</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="co">&quot;&quot;&quot;</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> __future__ <span class="im">import</span> annotations</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tempfile</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> xml.etree.ElementTree <span class="im">as</span> ET</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> zipfile</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dataclasses <span class="im">import</span> dataclass</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> defusedxml <span class="im">import</span> ElementTree <span class="im">as</span> DET</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.io.pandoc <span class="im">import</span> PandocConversionError, PandocUnavailableError, convert_file_with_pandoc</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>_MATH_OMML_NS <span class="op">=</span> <span class="st">&quot;{http://schemas.openxmlformats.org/officeDocument/2006/math}&quot;</span></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>_MATH_SPAN_RE <span class="op">=</span> re.<span class="bu">compile</span>(<span class="vs">r&quot;</span><span class="ch">\$\$</span><span class="kw">(</span><span class="dv">.</span><span class="op">+?</span><span class="kw">)</span><span class="ch">\$\$</span><span class="cf">|</span><span class="ch">\\\(</span><span class="kw">(</span><span class="dv">.</span><span class="op">+?</span><span class="kw">)</span><span class="ch">\\\)</span><span class="vs">&quot;</span>, re.DOTALL)</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span>(frozen<span class="op">=</span><span class="va">True</span>, slots<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> MathSegment:</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;One piece of a run&#39;s text: plain, or a single LaTeX equation.&quot;&quot;&quot;</span></span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>    is_math: <span class="bu">bool</span></span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>    content: <span class="bu">str</span></span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>    display: <span class="bu">bool</span> <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> split_math_segments(text: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[MathSegment]:</span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;Split *text* into plain-text and math segments.</span></span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a><span class="co">    Recognizes ``$$...$$`` (display) and ``</span><span class="ch">\\</span><span class="co">(...</span><span class="ch">\\</span><span class="co">)`` (inline) only — matching</span></span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a><span class="co">    the delimiters ``quill/quillins_bundled/math-equations`` now emits. A bare</span></span>
+<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a><span class="co">    ``$`` (e.g. an ordinary dollar amount) is never treated as math.</span></span>
+<span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a><span class="co">    &quot;&quot;&quot;</span></span>
+<span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a>    segments: <span class="bu">list</span>[MathSegment] <span class="op">=</span> []</span>
+<span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a>    pos <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> match <span class="kw">in</span> _MATH_SPAN_RE.finditer(text):</span>
+<span id="cb11-48"><a href="#cb11-48" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> match.start() <span class="op">&gt;</span> pos:</span>
+<span id="cb11-49"><a href="#cb11-49" aria-hidden="true" tabindex="-1"></a>            segments.append(MathSegment(is_math<span class="op">=</span><span class="va">False</span>, content<span class="op">=</span>text[pos : match.start()]))</span>
+<span id="cb11-50"><a href="#cb11-50" aria-hidden="true" tabindex="-1"></a>        display_latex, inline_latex <span class="op">=</span> match.group(<span class="dv">1</span>), match.group(<span class="dv">2</span>)</span>
+<span id="cb11-51"><a href="#cb11-51" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> display_latex <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb11-52"><a href="#cb11-52" aria-hidden="true" tabindex="-1"></a>            segments.append(MathSegment(is_math<span class="op">=</span><span class="va">True</span>, content<span class="op">=</span>display_latex, display<span class="op">=</span><span class="va">True</span>))</span>
+<span id="cb11-53"><a href="#cb11-53" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb11-54"><a href="#cb11-54" aria-hidden="true" tabindex="-1"></a>            segments.append(MathSegment(is_math<span class="op">=</span><span class="va">True</span>, content<span class="op">=</span>inline_latex, display<span class="op">=</span><span class="va">False</span>))</span>
+<span id="cb11-55"><a href="#cb11-55" aria-hidden="true" tabindex="-1"></a>        pos <span class="op">=</span> match.end()</span>
+<span id="cb11-56"><a href="#cb11-56" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> pos <span class="op">&lt;</span> <span class="bu">len</span>(text):</span>
+<span id="cb11-57"><a href="#cb11-57" aria-hidden="true" tabindex="-1"></a>        segments.append(MathSegment(is_math<span class="op">=</span><span class="va">False</span>, content<span class="op">=</span>text[pos:]))</span>
+<span id="cb11-58"><a href="#cb11-58" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> segments:</span>
+<span id="cb11-59"><a href="#cb11-59" aria-hidden="true" tabindex="-1"></a>        segments.append(MathSegment(is_math<span class="op">=</span><span class="va">False</span>, content<span class="op">=</span>text))</span>
+<span id="cb11-60"><a href="#cb11-60" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> segments</span>
+<span id="cb11-61"><a href="#cb11-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-62"><a href="#cb11-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-63"><a href="#cb11-63" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> omml_fragment_for_latex(latex: <span class="bu">str</span>, <span class="op">*</span>, display: <span class="bu">bool</span>) <span class="op">-&gt;</span> <span class="bu">str</span> <span class="op">|</span> <span class="va">None</span>:</span>
+<span id="cb11-64"><a href="#cb11-64" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;Return an ``&lt;m:oMath&gt;``/``&lt;m:oMathPara&gt;`` XML fragment for *latex*, or None.</span></span>
+<span id="cb11-65"><a href="#cb11-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-66"><a href="#cb11-66" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns None (never raises) when Pandoc is unavailable, fails, or the</span></span>
+<span id="cb11-67"><a href="#cb11-67" aria-hidden="true" tabindex="-1"></a><span class="co">    conversion produces no math element — callers fall back to plain text.</span></span>
+<span id="cb11-68"><a href="#cb11-68" aria-hidden="true" tabindex="-1"></a><span class="co">    &quot;&quot;&quot;</span></span>
+<span id="cb11-69"><a href="#cb11-69" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb11-70"><a href="#cb11-70" aria-hidden="true" tabindex="-1"></a>        <span class="cf">with</span> tempfile.TemporaryDirectory() <span class="im">as</span> tmpdir:</span>
+<span id="cb11-71"><a href="#cb11-71" aria-hidden="true" tabindex="-1"></a>            tmp <span class="op">=</span> Path(tmpdir)</span>
+<span id="cb11-72"><a href="#cb11-72" aria-hidden="true" tabindex="-1"></a>            source <span class="op">=</span> tmp <span class="op">/</span> <span class="st">&quot;eq.md&quot;</span></span>
+<span id="cb11-73"><a href="#cb11-73" aria-hidden="true" tabindex="-1"></a>            target <span class="op">=</span> tmp <span class="op">/</span> <span class="st">&quot;eq.docx&quot;</span></span>
+<span id="cb11-74"><a href="#cb11-74" aria-hidden="true" tabindex="-1"></a>            wrapped <span class="op">=</span> <span class="ss">f&quot;$$</span><span class="sc">{</span>latex<span class="sc">}</span><span class="ss">$$&quot;</span> <span class="cf">if</span> display <span class="cf">else</span> <span class="ss">f&quot;$</span><span class="sc">{</span>latex<span class="sc">}</span><span class="ss">$&quot;</span></span>
+<span id="cb11-75"><a href="#cb11-75" aria-hidden="true" tabindex="-1"></a>            source.write_text(wrapped, encoding<span class="op">=</span><span class="st">&quot;utf-8&quot;</span>)</span>
+<span id="cb11-76"><a href="#cb11-76" aria-hidden="true" tabindex="-1"></a>            convert_file_with_pandoc(source, target, from_format<span class="op">=</span><span class="st">&quot;gfm&quot;</span>, to_format<span class="op">=</span><span class="st">&quot;docx&quot;</span>)</span>
+<span id="cb11-77"><a href="#cb11-77" aria-hidden="true" tabindex="-1"></a>            <span class="cf">with</span> zipfile.ZipFile(target) <span class="im">as</span> archive:</span>
+<span id="cb11-78"><a href="#cb11-78" aria-hidden="true" tabindex="-1"></a>                xml <span class="op">=</span> archive.read(<span class="st">&quot;word/document.xml&quot;</span>).decode(<span class="st">&quot;utf-8&quot;</span>)</span>
+<span id="cb11-79"><a href="#cb11-79" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> (PandocUnavailableError, PandocConversionError, <span class="pp">OSError</span>, <span class="pp">KeyError</span>):</span>
+<span id="cb11-80"><a href="#cb11-80" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">None</span></span>
+<span id="cb11-81"><a href="#cb11-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-82"><a href="#cb11-82" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb11-83"><a href="#cb11-83" aria-hidden="true" tabindex="-1"></a>        root <span class="op">=</span> DET.fromstring(xml)</span>
+<span id="cb11-84"><a href="#cb11-84" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span>:  <span class="co"># noqa: BLE001 - malformed pandoc output degrades to plain text</span></span>
+<span id="cb11-85"><a href="#cb11-85" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">None</span></span>
+<span id="cb11-86"><a href="#cb11-86" aria-hidden="true" tabindex="-1"></a>    tag <span class="op">=</span> <span class="ss">f&quot;</span><span class="sc">{</span>_MATH_OMML_NS<span class="sc">}</span><span class="ss">oMathPara&quot;</span> <span class="cf">if</span> display <span class="cf">else</span> <span class="ss">f&quot;</span><span class="sc">{</span>_MATH_OMML_NS<span class="sc">}</span><span class="ss">oMath&quot;</span></span>
+<span id="cb11-87"><a href="#cb11-87" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> element <span class="kw">in</span> root.<span class="bu">iter</span>(tag):</span>
+<span id="cb11-88"><a href="#cb11-88" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> ET.tostring(element, encoding<span class="op">=</span><span class="st">&quot;unicode&quot;</span>)</span>
+<span id="cb11-89"><a href="#cb11-89" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="va">None</span></span></code></pre></div>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" /><strong>Step 4: Run
+<code>test_docx_math.py</code> to verify it passes</strong></label></li>
+</ul>
+<p>Run: <code>pytest tests/unit/io/test_docx_math.py -q</code> Expected:
+all PASS. (<code>test_docx_writer_math.py</code> still fails —
+<code>rich_to_docx</code> doesn't call this module yet.)</p>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" /><strong>Step 5: Wire
+<code>docx_math</code> into
+<code>rich_to_docx</code></strong></label></li>
+</ul>
+<p>In <code>quill/io/docx_writer.py</code>, add the import at the top
+(after the existing <code>from quill.io.rtf_model import ...</code>
+line):</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.io.docx_math <span class="im">import</span> split_math_segments, omml_fragment_for_latex</span></code></pre></div>
+<p>Replace the per-span loop body (currently
+<code>for span in paragraph.spans: run = para.add_run(span.text)</code>
+through the end of that <code>for</code> block, i.e. lines 144-167)
+with:</p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> span <span class="kw">in</span> paragraph.spans:</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> segment <span class="kw">in</span> split_math_segments(span.text):</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> segment.is_math:</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>                    fragment <span class="op">=</span> omml_fragment_for_latex(segment.content, display<span class="op">=</span>segment.display)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">if</span> fragment <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>                        <span class="im">from</span> docx.oxml <span class="im">import</span> parse_xml</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>                        para._p.append(parse_xml(fragment))</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>                        <span class="cf">continue</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>                    <span class="co"># Pandoc unavailable or conversion failed: keep the literal text</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>                    <span class="co"># rather than silently dropping the equation.</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>                    delimited <span class="op">=</span> (</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>                        <span class="ss">f&quot;$$</span><span class="sc">{</span>segment<span class="sc">.</span>content<span class="sc">}</span><span class="ss">$$&quot;</span> <span class="cf">if</span> segment.display <span class="cf">else</span> <span class="ss">f&quot;</span><span class="ch">\\</span><span class="ss">(</span><span class="sc">{</span>segment<span class="sc">.</span>content<span class="sc">}</span><span class="ch">\\</span><span class="ss">)&quot;</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>                    )</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>                    run <span class="op">=</span> para.add_run(delimited)</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>                <span class="cf">else</span>:</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>                    run <span class="op">=</span> para.add_run(segment.content)</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>                run.bold <span class="op">=</span> span.bold <span class="kw">or</span> <span class="va">None</span></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>                run.italic <span class="op">=</span> span.italic <span class="kw">or</span> <span class="va">None</span></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>                run.underline <span class="op">=</span> span.underline <span class="kw">or</span> <span class="va">None</span></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> span.strike:</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>                    run.font.strike <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>                <span class="co"># superscript and subscript share one w:vertAlign element, so set only</span></span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>                <span class="co"># the active one; assigning the other (even None) would clear it.</span></span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> span.superscript:</span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>                    run.font.superscript <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>                <span class="cf">elif</span> span.subscript:</span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>                    run.font.subscript <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> span.font_family:</span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>                    run.font.name <span class="op">=</span> span.font_family</span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> span.font_size_pt:</span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>                    run.font.size <span class="op">=</span> Pt(span.font_size_pt)</span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> span.color:</span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>                    rgb <span class="op">=</span> _parse_rgb(span.color)</span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">if</span> rgb <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>                        run.font.color.rgb <span class="op">=</span> RGBColor(<span class="op">*</span>rgb)</span>
+<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> span.highlight:</span>
+<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a>                    name <span class="op">=</span> _HIGHLIGHT_NAMES.get(span.highlight.lower(), <span class="st">&quot;YELLOW&quot;</span>)</span>
+<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a>                    run.font.highlight_color <span class="op">=</span> <span class="bu">getattr</span>(WD_COLOR_INDEX, name)</span></code></pre></div>
+<p>Note the spliced <code>&lt;m:oMath&gt;</code> branch does
+<code>continue</code>s past the run-formatting block (there is no
+<code>run</code> object for it to format — Word equations aren't
+formatted via <code>w:rPr</code> the way text runs are), while both the
+"fallback literal text" and "plain text" branches fall through to the
+existing formatting block unchanged.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" /><strong>Step 6: Run all
+math-related docx tests to verify they pass</strong></label></li>
+</ul>
+<p>Run:
+<code>pytest tests/unit/io/test_docx_math.py tests/unit/io/test_docx_writer_math.py tests/unit/io/test_docx_writer.py -q</code>
+Expected: all PASS (the pre-existing <code>test_docx_writer.py</code>
+suite must still pass unchanged — this confirms non-math text is
+untouched).</p>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" /><strong>Step 7: Scoped
+mypy, ruff, and full io suite</strong></label></li>
+</ul>
+<p>Run: <code>mypy quill/core quill/io</code> Expected: no new errors
+(add <code>cast</code>/type annotations if needed, following the pattern
+already used in <code>quill/core/math/mathml.py</code> for
+<code>defusedxml</code>).</p>
+<p>Run:
+<code>ruff check quill/io tests/unit/io/test_docx_math.py tests/unit/io/test_docx_writer_math.py &amp;&amp; ruff format --check quill/io tests/unit/io/test_docx_math.py tests/unit/io/test_docx_writer_math.py</code>
+Expected: no errors (run <code>ruff format</code> without
+<code>--check</code> first if needed).</p>
+<p>Run: <code>pytest tests/unit/io -q</code> Expected: all PASS (full
+regression check for the <code>io</code> layer).</p>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" /><strong>Step 8:
+Commit</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add quill/io/docx_math.py quill/io/docx_writer.py tests/unit/io/test_docx_math.py tests/unit/io/test_docx_writer_math.py</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(docx): splice real Word equations for math text in the native writer&quot;</span></span></code></pre></div>
+<hr />
+<h3
+id="task-3-lock-in-docx-math-read-fidelity-with-regression-tests">Task
+3: Lock in docx math read-fidelity with regression tests</h3>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Test: <code>tests/unit/io/test_structured_math.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes:
+<code>quill.io.structured.read_structured_document(path: Path, encoding: str = "utf-8", *, docx_engine: str = "auto") -&gt; Document</code>
+(returns a <code>Document</code> with <code>.text</code>);
+<code>quill.io.docx_writer.rich_to_docx_bytes</code>;
+<code>quill.io.rtf_model.markdown_to_rich</code>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" /><strong>Step 1: Write the
+regression test</strong></label></li>
+</ul>
+<p>Create <code>tests/unit/io/test_structured_math.py</code>:</p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">&quot;&quot;&quot;Regression: opening a docx with a real Word equation preserves the math as text.</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co">Locks in already-correct behavior (verified empirically against MarkItDown and</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co">Pandoc, both of which convert a native &lt;m:oMath&gt; equation back to readable</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co">LaTeX-ish text) so a future MarkItDown/Pandoc upgrade or engine-default change</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="co">cannot silently regress it.</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co">&quot;&quot;&quot;</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> __future__ <span class="im">import</span> annotations</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytest</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>pytest.importorskip(<span class="st">&quot;docx&quot;</span>)</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>pytest.importorskip(<span class="st">&quot;markitdown&quot;</span>)</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.io.docx_writer <span class="im">import</span> rich_to_docx_bytes</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.io.rtf_model <span class="im">import</span> markdown_to_rich</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.io.structured <span class="im">import</span> read_structured_document</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _write_math_docx(tmp_path: Path) <span class="op">-&gt;</span> Path:</span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>    rich <span class="op">=</span> markdown_to_rich(<span class="st">&quot;Pythagorean theorem: </span><span class="ch">\\</span><span class="st">(a^2 + b^2 = c^2</span><span class="ch">\\</span><span class="st">)</span><span class="ch">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> rich_to_docx_bytes(rich)</span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>    path <span class="op">=</span> tmp_path <span class="op">/</span> <span class="st">&quot;math.docx&quot;</span></span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>    path.write_bytes(data)</span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> path</span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_default_engine_preserves_equation_text(tmp_path: Path) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>    path <span class="op">=</span> _write_math_docx(tmp_path)</span>
+<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>    document <span class="op">=</span> read_structured_document(path, docx_engine<span class="op">=</span><span class="st">&quot;auto&quot;</span>)</span>
+<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;a&quot;</span> <span class="kw">in</span> document.text <span class="kw">and</span> <span class="st">&quot;2&quot;</span> <span class="kw">in</span> document.text</span>
+<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;Pythagorean theorem&quot;</span> <span class="kw">in</span> document.text</span>
+<span id="cb15-36"><a href="#cb15-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-37"><a href="#cb15-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-38"><a href="#cb15-38" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_pandoc_engine_preserves_equation_text(tmp_path: Path) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb15-39"><a href="#cb15-39" aria-hidden="true" tabindex="-1"></a>    path <span class="op">=</span> _write_math_docx(tmp_path)</span>
+<span id="cb15-40"><a href="#cb15-40" aria-hidden="true" tabindex="-1"></a>    document <span class="op">=</span> read_structured_document(path, docx_engine<span class="op">=</span><span class="st">&quot;pandoc&quot;</span>)</span>
+<span id="cb15-41"><a href="#cb15-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;a&quot;</span> <span class="kw">in</span> document.text <span class="kw">and</span> <span class="st">&quot;2&quot;</span> <span class="kw">in</span> document.text</span>
+<span id="cb15-42"><a href="#cb15-42" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> <span class="st">&quot;Pythagorean theorem&quot;</span> <span class="kw">in</span> document.text</span></code></pre></div>
+<p>Note: this test depends on Task 2 already being done (it writes the
+fixture docx via <code>rich_to_docx_bytes</code>, which now produces a
+real <code>&lt;m:oMath&gt;</code> for <code>\(...\)</code> text) — run
+Task 2 first.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" /><strong>Step 2: Run the
+test</strong></label></li>
+</ul>
+<p>Run: <code>pytest tests/unit/io/test_structured_math.py -q</code>
+Expected: PASS (this is locking in existing behavior, not adding new
+code — if it fails, <code>_write_math_docx</code>'s equation didn't
+actually splice; re-check Task 2).</p>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" /><strong>Step 3:
+Commit</strong></label></li>
+</ul>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add tests/unit/io/test_structured_math.py</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;test(io): lock in docx math round-trip via MarkItDown and Pandoc read engines&quot;</span></span></code></pre></div>
+<hr />
+<h2 id="self-review-notes">Self-Review Notes</h2>
+<ul>
+<li><strong>Spec coverage:</strong> Task 1 covers the delimiter switch
+this plan's own architecture depends on; Task 2 covers docx write (the
+concrete "Word" deliverable for the tutorial); Task 3 covers docx read
+(already correct, now regression-locked). Step 4 (MathJax rendering)
+needed no task — verified via
+<code>render_preview_body</code>/<code>markdown_to_rich</code>
+passthrough tests already run this session, so it's called out in Global
+Constraints instead of a task. DAISY (step 6) is explicitly out of scope
+per the user's decision.</li>
+<li><strong>Placeholder scan:</strong> all code blocks are complete,
+verified-in-spirit against the actual prototype run this session (the
+OMML splice in Task 2 Step 3/5 mirrors the working prototype at
+<code>C:\Users\jeffb\AppData\Local\Temp\claude\S--QUILL\4c2b5fed-871d-440f-b31a-f3a492f758aa\scratchpad\prototype_omath_splice.py</code>,
+adapted into the real module).</li>
+<li><strong>Type consistency:</strong> <code>MathSegment</code>,
+<code>split_math_segments</code>, <code>omml_fragment_for_latex</code>
+names and signatures match between Task 2's test file and implementation
+file.</li>
+</ul>
+</body>
+</html>

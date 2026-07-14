@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from quill.core.snippets import (
     Snippet,
     SnippetLibrary,
@@ -62,6 +64,34 @@ def test_render_snippet_applies_values_and_cursor_position() -> None:
     assert "Dear Quill" in result.text
     assert "Team" in result.text
     assert result.cursor == result.text.index("\n\n") + 1
+
+
+def test_extract_placeholders_matches_nested_braces() -> None:
+    """Regression for #287: the original pattern excluded `{`/`}` entirely,
+    so an example value containing literal placeholder-looking text broke
+    the match. A single level of nesting must now be allowed through."""
+    placeholders = extract_placeholders("${input:Hello ${world}}")
+    assert len(placeholders) == 1
+    assert placeholders[0].kind == "input"
+    assert placeholders[0].name == "Hello ${world}"
+
+
+def test_extract_placeholders_raises_on_empty_input_name() -> None:
+    with pytest.raises(ValueError, match="has no name after"):
+        extract_placeholders("${input:}")
+
+
+def test_extract_placeholders_raises_on_empty_choice_options() -> None:
+    with pytest.raises(ValueError, match="has no choice options"):
+        extract_placeholders("${choice:|}")
+
+
+def test_render_snippet_exposes_placeholder_name_in_missing_value_error() -> None:
+    """#287: render_snippet must surface the placeholder's friendly name
+    (not just the raw token) so a UI/caller can report what is missing
+    without re-parsing the token itself."""
+    with pytest.raises(ValueError, match="Workflow tested"):
+        render_snippet("Notes: ${input:Workflow tested}", {})
 
 
 def test_find_snippet_by_trigger_is_case_insensitive_and_respects_enabled_flag() -> None:

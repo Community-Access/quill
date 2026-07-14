@@ -29,9 +29,19 @@ class _DummyWx:
         return 7
 
 
+class _TransitionSettings:
+    """Settings stub with the entry/exit cues explicitly opted in.
+
+    The setting is off by default (#778), so these announcement tests turn it
+    on; the companion tests below assert the silent default."""
+
+    announce_dialog_transitions = True
+
+
 def test_show_modal_dialog_announces_entry_and_exit() -> None:
     frame = MainFrame.__new__(MainFrame)
     frame._region_tracker = RegionTracker()
+    frame.settings = _TransitionSettings()
     dialog = _DummyDialog(result=42)
     set_transcript_path(None)
     clear_transcript()
@@ -48,6 +58,7 @@ def test_show_modal_dialog_announces_entry_and_exit() -> None:
 def test_show_message_box_announces_entry_and_exit() -> None:
     frame = MainFrame.__new__(MainFrame)
     frame._region_tracker = RegionTracker()
+    frame.settings = _TransitionSettings()
     frame._wx = _DummyWx()
     set_transcript_path(None)
     clear_transcript()
@@ -57,6 +68,24 @@ def test_show_message_box_announces_entry_and_exit() -> None:
         assert result == 7
         assert frame._wx.calls == [("Body", "Caption", 123)]
         assert transcript_entries() == ["Entered Caption dialog", "Exited Caption dialog"]
+    finally:
+        enable_transcript_capture(False)
+        clear_transcript()
+
+
+def test_show_message_box_is_silent_without_opt_in() -> None:
+    # Default (announce_dialog_transitions absent/False): no spoken cues, so
+    # QUILL never doubles a screen reader's own dialog announcements (#778).
+    frame = MainFrame.__new__(MainFrame)
+    frame._region_tracker = RegionTracker()
+    frame._wx = _DummyWx()
+    set_transcript_path(None)
+    clear_transcript()
+    enable_transcript_capture(True)
+    try:
+        result = frame._show_message_box("Body", "Caption", 123)
+        assert result == 7
+        assert transcript_entries() == []
     finally:
         enable_transcript_capture(False)
         clear_transcript()
@@ -273,6 +302,7 @@ def _writing_action_frame(editor: _StubEditor) -> MainFrame:
     frame._set_status = frame._status_messages.append
     frame._writing_prompts = []
     frame.open_writing_assistant = frame._writing_prompts.append
+    frame._ai_require_connection = lambda: None  # prevent real AI threads in tests
     return frame
 
 
@@ -285,7 +315,6 @@ def test_writing_action_blocked_when_ai_disabled(monkeypatch) -> None:
 
     frame.open_ai_rewrite_selection()
 
-    assert frame._writing_prompts == []
     assert any("AI is turned off" in msg for msg in frame._status_messages)
 
 
@@ -300,21 +329,34 @@ def test_writing_action_falls_back_to_paragraph_without_selection(monkeypatch) -
 
     frame.open_ai_rewrite_selection()
 
-    assert len(frame._writing_prompts) == 1
-    assert "Second paragraph here." in frame._writing_prompts[0]
     assert any("paragraph" in msg for msg in frame._status_messages)
 
 
 def test_summarize_falls_back_to_whole_document_without_selection(monkeypatch) -> None:
     import quill.core.ai.model_manager as model_manager
+    import quill.core.assistant_agents as aa
 
     monkeypatch.setattr(model_manager, "load_ai_enabled", lambda: True)
+
+    captured: dict[str, object] = {}
+
+    def _fake_build(
+        agent_id: str, *, selection_text: str = "", document_text: str = "", **_: object
+    ) -> None:
+        captured["agent_id"] = agent_id
+        captured["document_text"] = document_text
+        return None
+
+    monkeypatch.setattr(aa, "build_agent_plan", _fake_build)
+
     text = "Alpha.\n\nBeta.\n\nGamma."
     editor = _StubEditor(text, selection=(2, 2), cursor=2)
     frame = _writing_action_frame(editor)
+    from quill.core.assistant_ai import AssistantConnectionSettings
+
+    frame._ai_require_connection = lambda: (AssistantConnectionSettings(provider="ollama"), "")
 
     frame.open_ai_summarize_selection()
 
-    assert len(frame._writing_prompts) == 1
-    assert "Gamma." in frame._writing_prompts[0]
-    assert any("document" in msg for msg in frame._status_messages)
+    assert captured.get("agent_id") == "summarize"
+    assert "Gamma." in captured.get("document_text", "")

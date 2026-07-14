@@ -118,7 +118,19 @@ class _DialogVisitor(ast.NodeVisitor):
 
     # -- scope tracking -------------------------------------------------
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
+        # A `class X(wx.Dialog)` subclass is a dialog surface even though it
+        # never contains a bare `wx.Dialog(...)` call site — without this the
+        # registry was blind to subclass-style dialogs (#802 review). Recorded
+        # inside the class scope so the hardening contract can inspect the
+        # class body.
         self._scope.append(node.name)
+        for base in node.bases:
+            kind = self._call_kind(base)
+            if kind is None:
+                continue
+            surface = _classify(kind)
+            if surface is not None:
+                self._record(f"subclass:{kind}", surface, node.lineno)
         self.generic_visit(node)
         self._scope.pop()
 

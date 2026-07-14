@@ -1,0 +1,46 @@
+[LIAM]
+The QUILL Cast, episode thirteen, the last of the everyday-editor arc. I'm Liam, and today is the full safety stack: every layer standing between your words and oblivion.
+
+[JESSICA]
+I'm Jessica. We previewed the net in episode three; now we tour it layer by layer, because knowing exactly how you're protected changes how bravely you work.
+
+[LIAM]
+Layer one: autosave and crash recovery. As you work, QUILL silently checkpoints your state. If QUILL exits abnormally, crash, power loss, force-close, the next launch detects it and offers restoration. Two design details make this trustworthy: recovery copies live separately from your real files, so a corrupt recovery can never contaminate an original, and the offer is explicit, you choose, QUILL never silently overwrites.
+
+[JESSICA]
+Layer two: backups on save. QUILL can keep backup copies as you save, so the previous state of the file survives the new one. Combined with layer one, the two classic disasters, the crash before saving and the save you regret, both have answers.
+
+[LIAM]
+Layer three: versions. Point-in-time copies of a document you can list and return to. Before a major restructure, cut a version; if the restructure goes sideways tomorrow, when undo history is gone, the version is still there. Undo protects you within a session, versions protect you across days.
+
+[JESSICA]
+Layer four: snapshots, and this one's about your whole workspace. A snapshot saves the set of documents you have open, your working context, as a named unit. Monday's grant application with its four reference files, saved as one snapshot; Thursday, reopen it and the entire desk reassembles. If you juggle projects, snapshots end the fifteen minutes of reopening ritual.
+
+[PAUSE]
+
+[LIAM]
+Layer five: the write mechanics themselves, invisible but foundational. QUILL writes settings and data atomically, meaning a new file is fully written and then swapped into place in one step. A crash mid-save leaves you the old intact file, never a half-written hybrid. You'll never see this layer work, which is precisely the point.
+
+[JESSICA]
+Layer six: the human layer, honest reporting. When a save fails, disk full, permissions, network drive gone, QUILL says so immediately and clearly. No failing silently, no pretending. The most dangerous data loss is the one you don't know happened; QUILL's contract is that you always know.
+
+[LIAM]
+And if the worst happens to QUILL itself, a crash, there's a diagnostic path: crash reports are bundled with secrets scrubbed, Help has Save Diagnostics and Report a Bug, and the logs folder is one menu item away. The same transparency the product applies to your data, it applies to its own failures.
+
+[JESSICA]
+Let's assemble the full timeline of protection, because layered is the whole trick. Second by second: undo. Minute by minute: autosave. Save by save: backups. Milestone by milestone: versions. Project by project: snapshots. Disaster by disaster: recovery. Each layer catches what the previous one can't reach.
+
+[LIAM]
+The behavioral payoff, and this is the real point of the episode: fear is expensive. Writers who fear loss save compulsively, restructure timidly, and avoid experiments. Once you genuinely trust the stack, you write braver. Delete the chapter, it's in a version. Try the wild reorganization, undo is one step. The safety stack isn't infrastructure; it's courage.
+
+[JESSICA]
+Homework. One: cut a version of a real document before making a big edit, then list versions and see it there. Two: build a snapshot of a multi-document working session, close everything, restore it. Three: find Save Diagnostics in the Help menu, don't send anything, just know where the flare gun is.
+
+[LIAM]
+That completes part two, you're now fast, safe, and fluent in the everyday editor. Part three begins next episode: documents and formats, starting with Markdown, the structure language QUILL speaks natively.
+
+[JESSICA]
+I'm Jessica.
+
+[LIAM]
+I'm Liam. Write brave.

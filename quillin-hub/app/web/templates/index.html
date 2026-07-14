@@ -1,97 +1,75 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quillin Hub | Discover Magic Plugins</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* High contrast and focus indicators for WCAG 2.2 AA */
-        :focus {
-            outline: 3px solid #2563eb !important;
-            outline-offset: 2px !important;
-        }
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border-width: 0;
-        }
-    </style>
-</head>
-<body class="bg-slate-50 text-slate-900 font-sans">
-    <!-- Skip to Content link for keyboard users -->
-    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white p-2 rounded z-50">
-        Skip to main content
-    </a>
+{% extends "_base.html" %}
+{% block title %}Quillin Hub | Discover QUILL extensions, agents, and packs{% endblock %}
+{% block content %}
+    <!-- Artifact type filter: real links, not color-only chips -->
+    <nav aria-label="Filter by artifact type" class="mb-8">
+        <h2 class="text-lg font-semibold mb-3 text-slate-800">Browse by type</h2>
+        <ul class="flex flex-wrap gap-2 list-none">
+            <li>
+                <a href="/" {% if not active_type %}aria-current="page"{% endif %}
+                   class="inline-block px-3 py-1 rounded-full border {% if not active_type %}bg-blue-600 text-white border-blue-600{% else %}bg-white text-slate-700 border-slate-300{% endif %}">
+                    All types
+                </a>
+            </li>
+            {% for t in artifact_types %}
+            <li>
+                <a href="/?type={{ t.id }}" {% if active_type and active_type.id == t.id %}aria-current="page"{% endif %}
+                   class="inline-block px-3 py-1 rounded-full border {% if active_type and active_type.id == t.id %}bg-blue-600 text-white border-blue-600{% else %}bg-white text-slate-700 border-slate-300{% endif %}">
+                    {{ t.plural }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </nav>
 
-    <header class="bg-white border-b border-slate-200 px-6 py-4" role="banner">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <h1 class="text-2xl font-bold text-blue-700">Quillin Hub</h1>
-            
-            <!-- Search Region -->
-            <form action="/search" method="GET" role="search" class="relative w-full md:w-auto">
-                <label for="search-input" class="sr-only">Search for Quillins</label>
-                <div class="flex gap-2">
-                    <input type="text" id="search-input" name="q" 
-                           placeholder="Search plugins..." 
-                           class="border border-slate-300 rounded-lg px-4 py-2 w-full md:w-64 focus:ring-2 focus:ring-blue-500"
-                           aria-required="false">
-                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                        Search
-                    </button>
+    <section aria-labelledby="featured-heading">
+        <h2 id="featured-heading" class="text-3xl font-bold mb-2 text-slate-800">
+            {% if active_type %}{{ active_type.plural }}{% else %}Featured artifacts{% endif %}
+        </h2>
+        {% if active_type %}
+        <p class="text-slate-600 mb-6">{{ active_type.description }} Installs into {{ active_type.installs_into }}.</p>
+        {% else %}
+        <p class="text-slate-600 mb-6">Extensions, AI agents, verbosity packs, sound packs, keyboard layouts, AI skills, and pronunciation dictionaries -- every one verified with the same checks QUILL itself runs.</p>
+        {% endif %}
+
+        {% if not artifacts %}
+        <p class="text-slate-600">Nothing published in this category yet. Be the first: <a href="/forge/" class="text-blue-700 underline">share your work</a>.</p>
+        {% endif %}
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for artifact in artifacts %}
+            <article class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow group">
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="text-xl font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">
+                        <a href="/artifact/{{ artifact.id }}">{{ artifact.name }}</a>
+                    </h3>
+                    {% if artifact.is_gold_standard %}
+                    <span class="bg-yellow-100 text-yellow-800 text-xs font-bold px-2 py-1 rounded uppercase">
+                        Gold Standard
+                    </span>
+                    {% endif %}
                 </div>
-            </form>
-        </div>
-    </header>
+                <p class="text-sm text-slate-500 mb-3">{{ artifact.artifact_type }}</p>
 
-    <main id="main-content" class="max-w-7xl mx-auto px-6 py-8" role="main">
-        <section aria-labelledby="featured-heading">
-            <h2 id="featured-heading" class="text-3xl font-bold mb-6 text-slate-800">Featured Quillins</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {% for plugin in plugins %}
-                <article class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow group">
-                    <div class="flex justify-between items-start mb-4">
-                        <h3 class="text-xl font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">
-                            <a href="/plugin/{{ plugin.id }}" aria-label="View details for {{ plugin.name }}">
-                                {{ plugin.name }}
-                            </a>
-                        </h3>
-                        {% if plugin.is_gold_standard %}
-                        <span class="bg-yellow-100 text-yellow-800 text-xs font-bold px-2 py-1 rounded uppercase" aria-label="Gold Standard Plugin">
-                            Gold Standard
+                <p class="text-slate-600 mb-6 leading-relaxed">
+                    {{ artifact.description }}
+                </p>
+
+                <div class="flex items-center justify-between mt-auto">
+                    <div class="flex flex-col">
+                        <span class="text-sm text-slate-500">v{{ artifact.version }}</span>
+                        <span class="text-xs {% if artifact.signer_key_id %}text-slate-500{% else %}text-red-700 font-semibold{% endif %}">
+                            {% if artifact.signer_key_id %}Signed by {{ artifact.signer_key_id }}{% else %}Unsigned{% endif %}
                         </span>
-                        {% endif %}
                     </div>
-                    
-                    <p class="text-slate-600 mb-6 leading-relaxed">
-                        {{ plugin.description }}
-                    </p>
-                    
-                    <div class="flex items-center justify-between mt-auto">
-                        <span class="text-sm text-slate-500">v{{ plugin.version }} • {{ plugin.author }}</span>
-                        <a href="/plugin/{{ plugin.id }}" 
-                           class="bg-slate-100 text-slate-700 px-4 py-2 rounded-lg font-medium hover:bg-blue-600 hover:text-white transition-all focus:ring-2 focus:ring-blue-500"
-                           aria-label="View more details about {{ plugin.name }}">
-                            Explore
-                        </a>
-                    </div>
-                </article>
-                {% endfor %}
-            </div>
-        </section>
-    </main>
-
-    <footer class="bg-slate-100 border-t border-slate-200 px-6 py-8 mt-12" role="contentinfo">
-        <div class="max-w-7xl mx-auto text-center text-slate-500 text-sm">
-            <p>&copy; 2026 Community Access. Built with accessibility at the core.</p>
+                    <a href="/artifact/{{ artifact.id }}"
+                       class="bg-slate-100 text-slate-700 px-4 py-2 rounded-lg font-medium hover:bg-blue-600 hover:text-white transition-all focus:ring-2 focus:ring-blue-500"
+                       aria-label="View details for {{ artifact.name }}">
+                        Explore
+                    </a>
+                </div>
+            </article>
+            {% endfor %}
         </div>
-    </footer>
-</body>
-</html>
+    </section>
+{% endblock %}

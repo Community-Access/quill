@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>scribe</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="scribe-for-documents--quill-integration-draft-spec">Scribe for
+Documents — QUILL Integration (Draft Spec)</h1>
+<ul>
+<li>Status: Draft / Proposed</li>
+<li>Owner: TBD</li>
+<li>Created: 2026-06-29</li>
+<li>Partner: Pneuma Solutions (Matt Campbell, Mike) — <strong>Scribe for
+Documents</strong></li>
+<li>Source: Matt Campbell email, 2026-06-29 (proposed REST API +
+OAuth)</li>
+</ul>
+<blockquote>
+<p>Purpose: a complete answer to Matt's questions and a concrete,
+accessible, QUILL-native integration design he and Mike can build
+against quickly. Scribe turns inaccessible documents (e.g. image-only
+PDFs) into accessible formats by streaming + converting them; this
+brings that power into QUILL without leaving the editor.</p>
+</blockquote>
+<h2 id="1-matts-proposal-restated">1. Matt's proposal (restated)</h2>
+<p>Three REST endpoints:</p>
+<ol type="1">
+<li><strong>Upload a new document</strong> → returns a URL QUILL opens
+in the user's default browser to watch the document stream and request
+conversions.</li>
+<li><strong>List documents</strong> in the user's account → each entry
+has a Scribe web-UI URL (to request more conversions) and the output
+formats already converted.</li>
+<li><strong>Download</strong> an already-converted output format.</li>
+</ol>
+<p>Auth: <strong>OAuth</strong> (Pneuma accounts have no passwords;
+web-UI auth, SSO-ready). Matt asks whether QUILL already uses OAuth, and
+what features/UX we want.</p>
+<h2 id="2-answers-to-matts-questions">2. Answers to Matt's
+questions</h2>
+<h3
+id="21-are-you-already-using-oauth-for-any-of-the-other-services-you-support">2.1
+"Are you already using OAuth for any of the other services you
+support?"</h3>
+<p><strong>Yes.</strong> QUILL already implements a complete OAuth
+<strong>authorization-code</strong> flow for <strong>Mastodon</strong>
+(<code>quill/core/mastodon/client.py</code>): register the app, open the
+provider's authorize URL in the user's browser
+(<code>webbrowser.open</code>), and exchange the returned code for an
+access token (<code>POST /oauth/token</code>). Tokens and client secrets
+are stored in the OS credential store, never in a plain file
+(<code>quill/platform/windows/credential_store.py</code>: env var →
+DPAPI-encrypted file → Windows Credential Manager; macOS keychain on
+Mac). Today that flow uses the <strong>out-of-band</strong> redirect
+(<code>urn:ietf:wg:oauth:2.0:oob</code> — the site shows a code to paste
+back), and we can also run a <strong>loopback redirect</strong>
+(<code>http://127.0.0.1:&lt;port&gt;</code>) to skip the paste step.</p>
+<p><strong>So OAuth is the right call and we're comfortable with
+it</strong> — we agree it beats a pasted API key for UX, and it gives
+you SSO/headless flexibility later. We'd reuse our existing pattern;
+ideally with <strong>PKCE</strong> and a <strong>loopback
+redirect</strong> for a no-copy/paste, fully
+keyboard-and-screen-reader-accessible sign-in.</p>
+<p>What we need from you to wire it (see §6 open questions):
+authorization + token endpoints, client registration (or a
+pre-registered QUILL client id), supported redirect URIs (loopback?
+OOB?), scopes, PKCE support, and refresh-token behavior.</p>
+<h3
+id="22-did-you-have-specific-ideas-about-features-and-how-it-should-work">2.2
+"Did you have specific ideas about features and how it should
+work?"</h3>
+<p>Yes — see §3 (UX), §4 (the three endpoints mapped to QUILL flows),
+and §5 (the magical round-trips). In short: <strong>Send to
+Scribe</strong> from the editor, a <strong>My Scribe Documents</strong>
+list that pulls converted outputs <strong>back into QUILL</strong> as
+editable documents, and an <strong>"open this inaccessible PDF with
+Scribe"</strong> offer at the moment the user hits a document QUILL
+can't read well. All optional, consent-gated, and private-by-default (a
+document only leaves the machine on an explicit action).</p>
+<h2 id="3-accessible-ux-quill-native">3. Accessible UX
+(QUILL-native)</h2>
+<ul>
+<li><strong>Surface:</strong> a small set of actions, e.g. under
+<strong>File → Convert with Scribe</strong> (or the AI/Documents area),
+plus a context offer when opening a low-text PDF.</li>
+<li><strong>Sign in once:</strong> "Connect Scribe…" runs the OAuth flow
+in the browser; on return, QUILL stores the token in the OS credential
+store and announces "Connected to Scribe as <account>." Connection state
+lives next to the other service connections.</li>
+<li><strong>Focus + progress, never la-la-land:</strong> every network
+step shows an accessible, cancelable progress dialog with spoken
+milestones (reusing QUILL's <code>AIProgressDialog</code> pattern);
+focus returns to a sensible place (the new document, or the list) when
+done. No silent waits.</li>
+<li><strong>Consent:</strong> before any upload, QUILL states plainly
+that the document will be sent to Scribe (Pneuma) for conversion, and
+asks once (remembered per choice). Disabled in <strong>Safe
+Mode</strong>; audited in the network-egress inventory (GATE-9).</li>
+</ul>
+<h2 id="4-the-three-endpoints--quill-flows">4. The three endpoints →
+QUILL flows</h2>
+<h3 id="41-upload-endpoint-1--send-to-scribe">4.1 Upload (endpoint 1) —
+"Send to Scribe"</h3>
+<p>From the current document/file (or a chosen file), QUILL uploads it,
+then <strong>opens the returned streaming URL</strong> in the default
+browser so the user watches the stream and picks conversions in Scribe's
+accessible web UI. QUILL records the returned document id so it can
+later list/download results. Large uploads run on a worker thread with
+cancelable progress.</p>
+<h3 id="42-list-endpoint-2--my-scribe-documents">4.2 List (endpoint 2) —
+"My Scribe Documents"</h3>
+<p>An accessible list (native list control) of the account's documents,
+each row showing title/date, <strong>already-converted formats</strong>,
+and an <strong>"Open in Scribe"</strong> link (the per-document web-UI
+URL) for requesting more. Selecting a converted format offers
+<strong>Download into QUILL</strong> (§4.3).</p>
+<h3 id="43-download-endpoint-3--open-the-converted-file-in-quill">4.3
+Download (endpoint 3) — "Open the converted file in QUILL"</h3>
+<p>QUILL downloads a chosen converted output and <strong>opens it as a
+new document</strong> (Markdown/HTML/RTF/DOCX/text all already supported
+by QUILL's readers), so the user goes straight from "inaccessible
+source" to "editable, accessible text" without leaving QUILL. Downloads
+are verified (size/type) and land in the user data dir or a chosen
+path.</p>
+<h2 id="5-magical-possibilities-where-this-gets-amazing">5. Magical
+possibilities (where this gets amazing)</h2>
+<ul>
+<li><strong>Inaccessible-PDF rescue, in place:</strong> when the user
+opens a PDF QUILL detects as image-only / low-text, QUILL offers
+<strong>"Send to Scribe to make this readable"</strong> — the exact
+moment the value is highest.</li>
+<li><strong>Round-trip editing:</strong> inaccessible source → Scribe →
+accessible Markdown/DOCX → open + edit in QUILL → export. The conversion
+becomes a normal step in a writing workflow, not a detour.</li>
+<li><strong>Watch-folder auto-convert:</strong> drop files in a watched
+folder; QUILL sends them to Scribe and opens the converted result when
+ready (mirrors the existing transcription watch-folder).</li>
+<li><strong>"Convert and read aloud"/"convert and summarize":</strong>
+chain a Scribe conversion into QUILL's Read Aloud or AI summary in one
+action.</li>
+<li><strong>Pick-up where you left off:</strong> the document list means
+a conversion requested on the web later is one click to pull into
+QUILL.</li>
+</ul>
+<h2 id="6-open-questions-for-pneuma-to-finalize-the-build">6. Open
+questions for Pneuma (to finalize the build)</h2>
+<ol type="1">
+<li><strong>OAuth endpoints + client:</strong> authorization URL, token
+URL, and either a way for QUILL to register a client or a pre-issued
+client id for "QUILL".</li>
+<li><strong>Redirect URIs:</strong> can you allow a
+<strong>loopback</strong> redirect
+(<code>http://127.0.0.1:&lt;random port&gt;</code>) for a no-paste flow?
+Is <strong>OOB</strong> (paste-the-code) also available as a
+fallback?</li>
+<li><strong>PKCE:</strong> supported? (We'd prefer PKCE for a public
+desktop client.)</li>
+<li><strong>Scopes:</strong> what scopes gate upload / list /
+download?</li>
+<li><strong>Tokens:</strong> access-token lifetime and
+<strong>refresh-token</strong> flow (so users don't re-auth constantly);
+revocation.</li>
+<li><strong>Upload API:</strong> content type / multipart vs presigned
+URL; max size; supported input formats; how the streaming URL and a
+stable <strong>document id</strong> are returned.</li>
+<li><strong>List API:</strong> shape of each entry (id, title, created,
+available formats, web-UI URL); pagination.</li>
+<li><strong>Download API:</strong> how a format is addressed (id +
+format), content type, and whether links are time-limited.</li>
+<li><strong>Rate limits / errors:</strong> limits and error shapes so
+QUILL can message them accessibly and back off.</li>
+<li><strong>Account display:</strong> is there a "who am I" call so
+QUILL can show the connected account name?</li>
+</ol>
+<h2 id="7-quill-integration-points-for-our-side">7. QUILL integration
+points (for our side)</h2>
+<ul>
+<li>Auth/flow: reuse the OAuth pattern in
+<code>quill/core/mastodon/client.py</code> (generalize to a small
+<code>scribe</code> client); tokens via
+<code>platform/windows/credential_store.py</code> (DPAPI/Credential
+Manager; macOS keychain).</li>
+<li>Network: a new <code>quill/core/scribe/</code> client;
+<strong>every</strong> call added to the
+<code>network_egress_audit</code> inventory (GATE-9); <strong>Safe
+Mode</strong> disables it.</li>
+<li>Browser hand-off: <code>webbrowser.open</code> (already used).</li>
+<li>UI: stock accessible dialogs + <code>AIProgressDialog</code>
+(cancelable, spoken progress); the dialog contract
+(<code>_show_modal_dialog</code>). Open converted outputs through
+QUILL's existing document readers.</li>
+<li>Privacy: opt-in, consent-gated upload (a document leaves the machine
+only on an explicit action), connection state surfaced and
+revocable.</li>
+</ul>
+<h2 id="8-phased-plan">8. Phased plan</h2>
+<ul>
+<li><strong>Phase 1 — Connect + Send + Open result.</strong> OAuth
+connect, "Send to Scribe" (upload + open streaming URL), "My Scribe
+Documents" list, download-into-QUILL.</li>
+<li><strong>Phase 2 — In-context rescue.</strong> Offer Scribe when
+opening an inaccessible PDF; "convert and read aloud / summarize"
+chaining.</li>
+<li><strong>Phase 3 — Automation.</strong> Watch-folder auto-convert;
+remembered preferences.</li>
+</ul>
+<h2 id="9-privacy--scope">9. Privacy &amp; scope</h2>
+<p>Optional and off until connected; documents are uploaded only on an
+explicit, consented action; disabled in Safe Mode; all egress audited.
+Windows-primary, macOS-supported (the OAuth + credential patterns
+already work on both).</p>
+</body>
+</html>

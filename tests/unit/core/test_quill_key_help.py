@@ -139,3 +139,149 @@ def test_unknown_mode_raises() -> None:
 
     with pytest.raises(ValueError):
         build_cheat_sheet(mode="nope", binding_lookup=_no_bindings, counts={})
+
+
+def test_browse_mode_browse_groups_are_alphabetical() -> None:
+    # #265: existing browse groups were not in alphabetical order. Pin the
+    # sort so a future edit cannot silently regress the order back.
+    groups = build_cheat_sheet(
+        mode=MODE_BROWSE,
+        binding_lookup=_no_bindings,
+        counts={},
+    )
+    by_title = {group.title: group for group in groups}
+    move_keys = [entry.key for entry in by_title["Move by structure"].entries]
+    assert move_keys == sorted(move_keys, key=str.lower)
+    jump_keys = [entry.key for entry in by_title["Jump to elements"].entries]
+    assert jump_keys == sorted(jump_keys, key=str.lower)
+    skip_keys = [entry.key for entry in by_title["Skip past containers"].entries]
+    assert skip_keys == sorted(skip_keys, key=str.lower)
+
+
+def test_browse_mode_chord_groups_grouped_by_category_and_alphabetical() -> None:
+    # #265: the cheat sheet must surface every Ctrl+Shift+Grave chord
+    # command, grouped by command prefix in fixed order
+    # (File / Edit / Format / Navigate / View / Tools / Help) and
+    # alphabetical within each group.
+    chord_map = {
+        "navigate.speak_window_title": "Ctrl+Shift+Grave, F",
+        "view.send_to_tray": "Ctrl+Shift+Grave, T",
+        "file.open_from_remote": "Ctrl+Shift+Grave, Shift+O",
+        "tools.dictation_toggle": "Ctrl+Shift+Grave, D",
+        "edit.copy_selection_for_email": "Ctrl+Shift+Grave, C",
+        "format.toggle_line_comment": "Ctrl+Shift+Grave, Shift+;",
+    }
+
+    def lookup(command_id: str) -> str | None:
+        return chord_map.get(command_id)
+
+    groups = build_cheat_sheet(
+        mode=MODE_BROWSE,
+        binding_lookup=lookup,
+        counts={},
+        chord_map=chord_map,
+        prefix="Ctrl+Shift+Grave",
+    )
+    titles = [group.title for group in groups]
+    # Chord groups appear after the structural groups, in fixed category order.
+    assert titles[-6:] == ["File", "Edit", "Format", "Navigate", "View", "Tools"]
+    by_title = {group.title: group for group in groups}
+    file_keys = [entry.key for entry in by_title["File"].entries]
+    assert file_keys == ["Shift+O"]
+    assert by_title["File"].entries[0].description == "Open From Remote"
+    navigate_keys = [entry.key for entry in by_title["Navigate"].entries]
+    assert navigate_keys == ["F"]
+    assert by_title["Navigate"].entries[0].description == "Speak Window Title"
+    tools_keys = [entry.key for entry in by_title["Tools"].entries]
+    assert tools_keys == ["D"]
+
+
+def test_browse_mode_chord_groups_respect_binding_lookup() -> None:
+    # #265: when binding_lookup returns None for a chord command, the
+    # command is treated as unbound and omitted from the cheat sheet.
+    chord_map = {
+        "navigate.speak_window_title": "Ctrl+Shift+Grave, F",
+        "view.send_to_tray": "Ctrl+Shift+Grave, T",
+    }
+
+    def lookup(command_id: str) -> str | None:
+        if command_id == "view.send_to_tray":
+            return None
+        return chord_map.get(command_id)
+
+    groups = build_cheat_sheet(
+        mode=MODE_BROWSE,
+        binding_lookup=lookup,
+        counts={},
+        chord_map=chord_map,
+        prefix="Ctrl+Shift+Grave",
+    )
+    titles = [group.title for group in groups]
+    assert "View" not in titles
+    navigate_group = next(g for g in groups if g.title == "Navigate")
+    assert [entry.key for entry in navigate_group.entries] == ["F"]
+
+
+def test_browse_mode_chord_groups_extract_second_key_from_full_binding() -> None:
+    # #265: when the live keymap still has the full chord string
+    # ("Ctrl+Shift+Grave, F") for the second key, the cheat sheet shows
+    # just the second-key segment ("F") to the user.
+    chord_map = {
+        "navigate.speak_window_title": "Ctrl+Shift+Grave, F",
+    }
+
+    def lookup(command_id: str) -> str | None:
+        # Live keymap returned the full chord string — the cheat sheet
+        # must trim it to just the second key.
+        return "Ctrl+Shift+Grave, F"
+
+    groups = build_cheat_sheet(
+        mode=MODE_BROWSE,
+        binding_lookup=lookup,
+        counts={},
+        chord_map=chord_map,
+        prefix="Ctrl+Shift+Grave",
+    )
+    navigate = next(g for g in groups if g.title == "Navigate")
+    assert navigate.entries[0].key == "F"
+
+
+def test_prefix_mode_does_not_include_chord_groups() -> None:
+    # #265: the prefix cheat sheet (shown right after pressing the QUILL
+    # key) stays a short list of follow-on mode gates. Chord commands
+    # appear only in browse mode.
+    chord_map = {
+        "navigate.speak_window_title": "Ctrl+Shift+Grave, F",
+        "view.send_to_tray": "Ctrl+Shift+Grave, T",
+    }
+    groups = build_cheat_sheet(
+        mode=MODE_PREFIX,
+        binding_lookup=_no_bindings,
+        counts={},
+        chord_map=chord_map,
+        prefix="Ctrl+Shift+Grave",
+    )
+    titles = [group.title for group in groups]
+    assert titles == ["QUILL key prefix"]
+
+
+def test_browse_mode_chord_groups_skip_unrelated_bindings() -> None:
+    # #265: only bindings whose prefix matches are surfaced. Bindings that
+    # do not start with the configured prefix are left out.
+    chord_map = {
+        "navigate.speak_window_title": "Ctrl+Shift+Grave, F",
+        "edit.copy": "Ctrl+C",  # not a QUILL chord
+    }
+
+    def lookup(command_id: str) -> str | None:
+        return chord_map.get(command_id)
+
+    groups = build_cheat_sheet(
+        mode=MODE_BROWSE,
+        binding_lookup=lookup,
+        counts={},
+        chord_map=chord_map,
+        prefix="Ctrl+Shift+Grave",
+    )
+    titles = [group.title for group in groups]
+    assert "Edit" not in titles

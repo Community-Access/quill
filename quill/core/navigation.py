@@ -18,6 +18,58 @@ def page_start_for_number(text: str, page_number: int) -> int | None:
     return starts[page_number - 1]
 
 
+def _word_starts(text: str) -> list[int]:
+    """Character offset of each word (maximal run of non-whitespace).
+
+    Matches the token count `text.split()` would produce (used by the
+    word-count status cell), so the page estimate always agrees with the
+    word count shown elsewhere in the status bar.
+    """
+    return [match.start() for match in re.finditer(r"\S+", text)]
+
+
+def estimate_page_count(text: str, words_per_page: int) -> int:
+    """Estimate a page count from word count alone.
+
+    This is an approximation for documents with no real page breaks
+    (plain text, Markdown, most DOCX) -- it has no knowledge of fonts,
+    margins, or paper size, and will not match a printed or exported
+    page count. Always returns at least 1.
+    """
+    words = len(_word_starts(text))
+    if words == 0:
+        return 1
+    return max(1, -(-words // words_per_page))  # ceiling division
+
+
+def estimate_page_for_position(text: str, position: int, words_per_page: int) -> int:
+    """Estimate which page `position` falls on, clamped to the total."""
+    starts = _word_starts(text)
+    if not starts:
+        return 1
+    position = max(0, min(position, len(text)))
+    words_before = sum(1 for start in starts if start < position)
+    page = words_before // words_per_page + 1
+    total = estimate_page_count(text, words_per_page)
+    return max(1, min(page, total))
+
+
+def estimate_page_start_for_number(text: str, page_number: int, words_per_page: int) -> int | None:
+    """Character offset where estimated `page_number` begins, or None if out of range."""
+    if page_number < 1:
+        return None
+    starts = _word_starts(text)
+    total = estimate_page_count(text, words_per_page)
+    if page_number > total:
+        return None
+    if page_number == 1:
+        return 0
+    index = (page_number - 1) * words_per_page
+    if index >= len(starts):
+        return len(text)
+    return starts[index]
+
+
 def parse_line_column(value: str) -> tuple[int, int | None]:
     raw = value.strip()
     if not raw:

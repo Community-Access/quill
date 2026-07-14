@@ -198,6 +198,9 @@ class _FakeButton:
     def SetLabel(self, label: str) -> None:  # noqa: N802
         self.label = label
 
+    def SetName(self, name: str) -> None:  # noqa: N802
+        self.name = name
+
 
 class _FakeStatic(_FakeButton):
     pass
@@ -209,6 +212,9 @@ class _FakeNotebook:
 
     def AddPage(self, *_args: object, **_kwargs: object) -> None:  # noqa: N802
         pass
+
+    def SetName(self, name: str) -> None:  # noqa: N802
+        self._name = name
 
     def Bind(self, *_args: object) -> None:  # noqa: N802
         pass

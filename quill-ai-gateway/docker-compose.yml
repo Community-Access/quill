@@ -1,0 +1,48 @@
+# Local/dev compose file, mirroring the shape of GLOW's web/docker-compose.yml
+# on the same host (redis + app service, env vars from .env). For
+# production, see docker-compose.prod.yml and README.md's deployment
+# section -- the two differ mainly in restart policy, log rotation, and
+# not bind-mounting source code.
+
+services:
+  redis:
+    image: redis:7-alpine
+    command: redis-server --maxmemory 64mb --maxmemory-policy allkeys-lru --save ""
+    expose:
+      - "6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_DB=quill_ai_gateway
+      - POSTGRES_USER=quill_ai_gateway
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    expose:
+      - "5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://quill_ai_gateway:${POSTGRES_PASSWORD}@postgres:5432/quill_ai_gateway
+      - REDIS_URL=redis://redis:6379/0
+      - OPENAI_API_KEY=${OPENAI_API_KEY:?set OPENAI_API_KEY in .env}
+      - GATEWAY_SECRET_KEY=${GATEWAY_SECRET_KEY:?set GATEWAY_SECRET_KEY in .env}
+      - GATEWAY_ADMIN_ALLOWLIST=${GATEWAY_ADMIN_ALLOWLIST:-}
+      - GATEWAY_PUBLIC_BASE_URL=${GATEWAY_PUBLIC_BASE_URL:-https://gateway.quillforall.org}
+      - GATEWAY_ALERT_WEBHOOK_URL=${GATEWAY_ALERT_WEBHOOK_URL:-}
+    depends_on:
+      - redis
+      - postgres
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+  postgres-data:

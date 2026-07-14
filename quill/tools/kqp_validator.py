@@ -27,7 +27,7 @@ from quill.core.keymap import _KQP_VERSION, DEFAULT_KEYMAP  # type: ignore[attr-
 _REQUIRED_FIELDS = ("kqp_version", "name", "bindings")
 
 
-def _validate_file(path: Path, strict: bool) -> list[str]:
+def validate_file(path: Path, strict: bool) -> list[str]:
     """Return a list of error/warning strings for the given .kqp file."""
     try:
         text = path.read_text(encoding="utf-8")
@@ -100,7 +100,7 @@ def main(argv: list[str] | None = None) -> int:
 
     any_errors = False
     for f in files:
-        issues = _validate_file(f, args.strict)
+        issues = validate_file(f, args.strict)
         if issues:
             any_errors = True
             print(f"{f}: {len(issues)} issue{'s' if len(issues) != 1 else ''}")

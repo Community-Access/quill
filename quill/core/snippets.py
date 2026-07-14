@@ -60,7 +60,7 @@ class ExpansionResult:
     cursor: int
 
 
-_PLACEHOLDER_PATTERN = re.compile(r"\$\{([^{}]+)\}")
+_PLACEHOLDER_PATTERN = re.compile(r"\$\{((?:[^{}]|\{[^{}]*\})*)\}")
 _DEFAULT_LIBRARY_VERSION = 1
 _SNIPPETS_RELATIVE_PATH = Path("snippets") / "snippets.json"
 
@@ -271,11 +271,17 @@ def extract_placeholders(body: str) -> list[Placeholder]:
             kind = kind.strip().lower()
             rest = rest.strip()
             if not rest:
-                continue
+                raise ValueError(
+                    f"Snippet placeholder '${{{token}}}' has no name after ':' "
+                    "(e.g. ${input:title}, not ${input:})"
+                )
             if kind == "choice":
                 options = [part.strip() for part in rest.split("|") if part.strip()]
                 if not options:
-                    continue
+                    raise ValueError(
+                        f"Snippet placeholder '${{{token}}}' has no choice options "
+                        "(e.g. ${choice:Yes|No})"
+                    )
                 placeholders.setdefault(
                     token,
                     Placeholder(token=token, kind="choice", name=rest, options=options),
@@ -295,23 +301,29 @@ def extract_placeholders(body: str) -> list[Placeholder]:
 
 
 def render_snippet(body: str, values: dict[str, str]) -> ExpansionResult:
+    placeholders_by_token = {p.token: p for p in extract_placeholders(body)}
     chunks: list[str] = []
     cursor: int | None = None
     index = 0
     for match in _PLACEHOLDER_PATTERN.finditer(body):
         chunks.append(body[index : match.start()])
         token = match.group(1).strip()
-        if token == "cursor":
+        placeholder = placeholders_by_token.get(token)
+        if placeholder is None:
+            chunks.append(match.group(0))
+        elif placeholder.kind == "cursor":
             if cursor is None:
                 cursor = len("".join(chunks))
-        elif token == "date":
+        elif placeholder.kind == "date":
             chunks.append(datetime.now().strftime("%Y-%m-%d"))
-        elif token == "time":
+        elif placeholder.kind == "time":
             chunks.append(datetime.now().strftime("%H:%M"))
         elif token in values:
             chunks.append(values[token])
         else:
-            chunks.append(token)
+            raise ValueError(
+                f"No value supplied for snippet placeholder '{placeholder.name}' (${{{token}}})"
+            )
         index = match.end()
     chunks.append(body[index:])
     text = "".join(chunks)

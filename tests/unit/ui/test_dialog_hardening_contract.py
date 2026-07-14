@@ -39,6 +39,9 @@ def _scope_source(tree: ast.AST, source: str, qualname: str) -> str:
     for node in ast.walk(tree):
         if isinstance(node, ast.ClassDef) and node.name == parts[0] and target == "__init__":
             return ast.get_source_segment(source, node) or ""
+        if isinstance(node, ast.ClassDef) and node.name == target:
+            # A wx.Dialog subclass surface: the class body is the scope.
+            return ast.get_source_segment(source, node) or ""
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == target:
             matches.append(node)
     if matches:
@@ -70,7 +73,11 @@ def test_every_hardened_dialog_wires_the_shared_contract() -> None:
             continue
         if "apply_modal_ids" not in scope:
             failures.append(f"{key}: missing apply_modal_ids() wiring")
-        if not any(token in scope for token in _SHOW_TOKENS):
+        # A `class X(wx.Dialog)` subclass surface owns its keyboard contract,
+        # but the accessible show path lives at its construction sites (which
+        # are themselves inventoried), so the show-token rule applies only to
+        # call-site surfaces.
+        if "subclass:" not in key and not any(token in scope for token in _SHOW_TOKENS):
             failures.append(f"{key}: missing an accessible show/ShowModal path")
 
     assert not failures, "Hardened dialogs drifted off the shared contract:\n" + "\n".join(failures)

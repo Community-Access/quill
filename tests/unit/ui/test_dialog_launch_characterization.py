@@ -14,6 +14,7 @@ exists to provide.
 
 from __future__ import annotations
 
+import quill.core.compliance as compliance_module
 import quill.ui.main_frame as main_frame_module
 from quill.ui.main_frame import MainFrame
 
@@ -58,12 +59,14 @@ def test_open_welcome_guide_opens_markdown_tab_and_resets_navigation() -> None:
     assert frame._status[-1] == "Opened welcome guide"
 
 
-def test_open_third_party_notices_opens_tab_and_announces(monkeypatch) -> None:
+def test_open_third_party_notices_opens_tab_and_announces(monkeypatch, tmp_path) -> None:
     frame = _build_frame()
-    frame._project_root_path = lambda: "ROOT"
-    frame._pyproject_path = lambda: "PYPROJECT"
+    fake_pyproject = tmp_path / "pyproject.toml"
+    fake_pyproject.write_text("")
+    frame._project_root_path = lambda: tmp_path
+    frame._pyproject_path = lambda: fake_pyproject
     monkeypatch.setattr(
-        main_frame_module,
+        compliance_module,
         "render_full_third_party_notices",
         lambda pyproject, root: "NOTICES BODY",
     )
@@ -90,33 +93,3 @@ def test_open_user_guide_falls_back_to_welcome_when_file_missing(monkeypatch) ->
     assert len(frame._tabs) == 1
     assert frame._tabs[0].text.startswith("# Welcome to Quill")
     assert frame._status[-1] == "User guide file not found; opened welcome guide instead."
-
-
-def test_show_startup_wizard_page_opens_preview_surface_and_announces(monkeypatch) -> None:
-    frame = _build_frame()
-    frame._build_startup_wizard_html = lambda: "<h1>Startup Wizard</h1>"
-
-    constructed: list[tuple[object, str, str]] = []
-    shown: list[int] = []
-
-    class _FakePreview:
-        def __init__(self, parent, title, body_html) -> None:
-            constructed.append((parent, title, body_html))
-
-        def show(self) -> None:
-            shown.append(1)
-
-    import quill.ui.preview_dialog as preview_dialog_module
-
-    monkeypatch.setattr(preview_dialog_module, "MarkdownPreviewDialog", _FakePreview)
-
-    frame.show_startup_wizard_page()
-
-    # The wizard renders through the sanctioned preview (web) surface, titled,
-    # shown once, and announced -- no document tab is opened for it.
-    assert len(constructed) == 1
-    assert constructed[0][1] == "Startup Wizard"
-    assert constructed[0][2] == "<h1>Startup Wizard</h1>"
-    assert shown == [1]
-    assert frame._tabs == []
-    assert frame._status[-1] == "Opened Startup Wizard overview"

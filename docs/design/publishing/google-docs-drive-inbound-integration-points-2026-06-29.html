@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>google-docs-drive-inbound-integration-points-2026-06-29</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="google-docs-and-drive-inbound-integration-points">Google Docs
+and Drive: Inbound Integration Points</h1>
+<p>Date: 2026-06-29 Source of record:
+<code>docs/planning/QUILL-Native-Google-Docs-Support-PRD.md</code>
+Scope: Identify exactly where the inbound (read-only) Google integration
+touchpoints embed in QUILL - connect an account, list/open Drive
+documents, and load a Google Doc into the editor - and explicitly fence
+off every content-send path until separately approved.</p>
+<p>This is a design and embed map only. No code is added and nothing is
+lit up. Building real OAuth + Drive + Docs network code is deliberately
+out of scope for this pass because it cannot be exercised safely or
+tested unattended, and because the standing instruction is to not light
+up sending content to Google.</p>
+<h2 id="in-scope-vs-out-of-scope-for-the-inbound-pass">1. In scope vs
+out of scope for the inbound pass</h2>
+<p>In scope (read-only):</p>
+<ul>
+<li>Connect / switch / disconnect a Google account (OAuth, read scopes
+only).</li>
+<li>List authorized Google documents (Drive Picker, recent, or pasted
+URL/ID).</li>
+<li>Open a Google Doc as a text-first projection into the QUILL
+editor.</li>
+<li>Open the current document in Google Docs (web) - a navigation
+action, not a write.</li>
+</ul>
+<p>Out of scope for now (all are content-send / mutation; defer behind a
+separate approval, mirroring how WordPress send stays locked):</p>
+<ul>
+<li>New Google Document (PRD 8.1, 9.5).</li>
+<li>Save a Copy to Google Drive (PRD 9.1).</li>
+<li>Synchronize Now / autosave writes / Update / Repair Synchronization
+(PRD 9.2).</li>
+<li>Comment/suggestion creation or resolution (PRD 5, Level B).</li>
+</ul>
+<h2 id="why-this-is-its-own-subsystem-not-a-publishing-provider">2. Why
+this is its own subsystem, not a publishing provider</h2>
+<p>The WordPress provider is a REST + application-password model that
+fits the <code>publishing_providers</code> framework. Google Docs is
+materially different:</p>
+<ul>
+<li>OAuth 2.0 with the system browser and a token store, not a static
+secret.</li>
+<li>Google Drive for listing/Picker and Google Docs API for the document
+model.</li>
+<li>A provider-independent semantic document model and a text-first
+projection (PRD sections 7, 10, 11), not HTML or Markdown
+round-tripping.</li>
+</ul>
+<p>So Google should be a sibling subsystem with its own File-menu
+surface and its own feature flag, reusing QUILL’s cross-cutting
+primitives (command registry, feature gating, credential storage, egress
+audit, task manager) rather than the
+<code>PublishingProviderClient</code> contract.</p>
+<h2 id="feature-gating-proposed">3. Feature gating (proposed)</h2>
+<ul>
+<li>Add <code>future.google_docs</code> to
+<code>quill/core/feature_catalog.py</code> with
+<code>locked_off=True</code>,
+<code>privacy="network after confirmation"</code>, category
+<code>future</code> - exactly mirroring <code>future.publishing</code>.
+While locked off, the menu is omitted and the palette filters the
+commands.</li>
+<li>Map every <code>google.*</code> command to
+<code>future.google_docs</code> in
+<code>quill/core/feature_command_map.py</code>, so a locked flag keeps
+them unreachable (the same mechanism that keeps
+<code>publishing.*</code> dark today).</li>
+</ul>
+<h2 id="inbound-command-and-menu-embed-map">4. Inbound command and menu
+embed map</h2>
+<p>Per PRD 9.1, add a File submenu (built only when
+<code>future.google_docs</code> is enabled), with handlers registered in
+the command registry alongside the existing <code>publishing.*</code>
+block in <code>quill/ui/main_frame.py</code>:</p>
+<ul>
+<li><code>google.connect_account</code> -&gt; Connect / Switch / Manage
+/ Disconnect account. Read-only OAuth consent in the system browser;
+token stored via the same credential path used by publishing secrets
+(Windows Credential Manager, DPAPI fallback). New core module
+suggestion: <code>quill/core/google_auth.py</code>.</li>
+<li><code>google.open_from_drive</code> -&gt; Google Picker in the
+default browser, returns a document id; loads read-only. Network listing
+only.</li>
+<li><code>google.open_from_link</code> -&gt; Paste a Google Docs URL or
+id; validate, extract id, check access, open read-only or launch
+authorization (PRD 9.4).</li>
+<li><code>google.recent_documents</code> -&gt; Previously authorized
+docs (local, no network until open).</li>
+<li><code>google.open_in_browser</code> -&gt; Open the current cloud doc
+in Google Docs (web).</li>
+</ul>
+<p>Out-of-scope commands (<code>google.new_document</code>,
+<code>google.save_copy_to_drive</code>, <code>google.sync_now</code>,
+<code>google.refresh</code>, …) are intentionally not registered in this
+pass. When they are, they must land behind the send approval, never as
+part of the inbound surface.</p>
+<h2 id="load-into-editor-flow-mirrors-the-wordpress-inbound-shape">5.
+Load-into-editor flow (mirrors the WordPress inbound shape)</h2>
+<ol type="1">
+<li><code>google.open_from_*</code> resolves an account + document
+id.</li>
+<li>A new core module (suggested <code>quill/core/google_docs.py</code>)
+fetches the Docs API document and maps it to QUILL’s semantic model,
+then projects to text-first content (PRD 10, 11). For a first inbound
+slice this can be a lossy but safe read-only projection; unsupported
+objects are preserved as labeled markers.</li>
+<li>The UI wraps the projection in a <code>Document</code> with
+<code>source_metadata["source_kind"] = "google_doc"</code> plus account,
+file id, revision id, and permission level - the analogue of the
+<code>publishing_remote</code> metadata in
+<code>_browse_publishing_content</code>.</li>
+<li>Open as a new tab via <code>_create_document_tab</code>. Title bar
+shows the read-only state form from PRD 9.3 (for example
+<code>... - Google Docs - Read only</code>).</li>
+</ol>
+<p>Because step 2 is read-only, no
+<code>requiredRevisionId</code>/<code>targetRevisionId</code> write path
+is created. The shadow snapshot and operation journal described in the
+PRD belong to the later sync (send) phase and are not built here.</p>
+<h2 id="safety-requirements-for-the-eventual-implementation">6. Safety
+requirements for the eventual implementation</h2>
+<ul>
+<li>OAuth scopes must be the minimum read scopes for the inbound slice;
+request write scopes only when the send phase is approved.</li>
+<li>Reuse <code>verified_ssl_context()</code> for every Google
+endpoint.</li>
+<li>Register each Google network call site in
+<code>quill/tools/network_egress_audit.py</code> (GATE-9) before it
+ships.</li>
+<li>Store only OAuth tokens via the OS credential store; never store
+Google passwords (PRD 5 non-goal) and never log tokens (respect
+<code>quill/stability/redaction.py</code>).</li>
+<li>Gate the whole subsystem under Safe Mode in addition to the feature
+flag, since it is a network + credential feature.</li>
+</ul>
+<h2 id="suggested-first-slice-when-approved">7. Suggested first slice
+(when approved)</h2>
+<ol type="1">
+<li><code>future.google_docs</code> flag (locked off) +
+command-to-feature mapping.</li>
+<li><code>quill/core/google_auth.py</code>: OAuth connect/disconnect
+with read scopes, token in credential store, egress entry. No document
+operations yet.</li>
+<li><code>quill/core/google_docs.py</code>: open-by-id read-only -&gt;
+semantic model -&gt; text-first projection; wx-free and
+strict-typed.</li>
+<li>UI: <code>google.connect_account</code>,
+<code>google.open_from_link</code>, and the read-only open into a tab;
+menu built only when the flag is enabled.</li>
+</ol>
+<p>Send (new/save-copy/sync) remains a separate, later, explicitly
+approved phase.</p>
+</body>
+</html>

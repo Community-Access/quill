@@ -23,6 +23,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from quill.core.error_codes import CodedError
 from quill.core.storage import read_json, write_json_atomic
 
 #: Bump when the package document shape changes incompatibly.
@@ -124,15 +125,16 @@ PRIVATE_SETTINGS_FIELDS: frozenset[str] = frozenset({
     "read_aloud_piper_model",
     "read_aloud_piper_model_dir",
     "read_aloud_espeak_executable",
-    "read_aloud_openvoice_executable",
     "watch_folder_path",
     "last_update_check",
     "skipped_update_version",
 })
 
 
-class PackageError(Exception):
+class PackageError(CodedError):
     """A package document is malformed or names an unknown section."""
+
+    code = "QUILL-SHARE-PACKAGE-MALFORMED"
 
 
 class PrivacyError(PackageError):

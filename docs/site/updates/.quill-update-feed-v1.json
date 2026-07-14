@@ -1,7 +1,7 @@
 {
-  "version": "0.1.1",
-  "download_url": "https://github.com/Community-Access/quill/releases/latest",
-  "published_at": "2026-05-30T00:00:00Z",
-  "notes": "Quill 0.1.1: guided installer handoff and update-path reliability improvements.",
-  "signature": "e8b9e9347bda9cdb3a810483ed0a1efac214b8147d410477161025dec9eb65f4"
+  "version": "0.9.0 Beta 1",
+  "download_url": "https://github.com/Community-Access/quill/releases/download/v0.9.0-beta.1/Quill-for-All-Setup-0.9.0.Beta.1.exe",
+  "published_at": "2026-07-07T01:52:07Z",
+  "notes": "The 0.9.0 beta. Rolls up everything through 0.8.0 (below) plus the features, fixes, and enhancements in this release — headlined by the new AI suite, the **Accessible Vault** (linked notes you can traverse by ear), the **GLOW accessibility suite** (guided document audit and repair, shipping as an experimental opt-in), the **ElevenLabs Read Aloud voice**, and a lighter, smaller install. **This is the final feature release before QUILL 1.0**: from this beta forward, no new features are added — only bug fixes and polish, driven by your reports, until 1.0 ships. This section doubles as the in-app release notes: the same text appears when you **Check for Updates** and any time from **Help > What's New**.\n\n### QUILL parla italiano - the first community translation\n\n- **Italian interface translat",
+  "signature": "9f6418b077b180a08951ab10d52ca007bc9c88b3e231eb62660236ab44c86f73"
 }

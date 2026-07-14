@@ -1,0 +1,43 @@
+[JESSICA]
+The QUILL Cast, episode fourteen, and welcome to part three: documents and formats. I'm Jessica. We start with Markdown, because it's the structure language everything else in QUILL builds on.
+
+[LIAM]
+I'm Liam. If Markdown is new to you: it's plain text with a few punctuation conventions that mean structure. A line starting with one hash is a top-level heading. Two hashes, a second-level heading. A line starting with a dash is a list item. Asterisks around words mean emphasis. That's genuinely most of it.
+
+[JESSICA]
+Why should a screen reader user care? Because Markdown makes structure audible and typeable. In a visual word processor, a heading is a font size you can't hear, applied through a dialog. In Markdown, a heading is two characters you type, hash space, and structure you can hear directly, your screen reader reads hash hash budget and you know exactly where you are.
+
+[LIAM]
+And structure pays compound interest across the whole product. Episode seven's jump-by-heading navigation? Reads your hashes. The section-move commands that lift a whole block? Defined by your headings. Story Studio's book binder in episode twenty-nine? Built from headings. The DAISY talking-book export? Headings become the navigation. One habit, hash space before your titles, powers a dozen features.
+
+[JESSICA]
+The core vocabulary in two minutes. Headings: hash through six hashes, one per level, always with a space after. Lists: dash space for bullets, one dot space for numbered. Emphasis: single asterisks around italics, double around bold. Links: square brackets around the text, parentheses around the address. Images: the same with an exclamation point in front, and the bracket text is the alt text, write it like the description it is.
+
+[LIAM]
+Block quotes: a greater-than sign. Code: backticks around inline code, triple backticks around blocks. Tables exist, pipes between columns, though we'll talk table strategy in later episodes. And a blank line between paragraphs, Markdown's one rule of breathing room.
+
+[PAUSE]
+
+[JESSICA]
+Now QUILL's Markdown comforts. The editor knows the format: heading navigation works, the outline is live, and formatting-and-markup commands help you apply and adjust structure without hand-counting hashes. The status and describe commands tell you the structure at your cursor.
+
+[LIAM]
+Preview: QUILL renders your Markdown as formatted output in an in-app side preview, control F6 focuses it, that updates silently as you type, no reloads, no announcement spam, plus an external browser preview when you want the full page experience. The in-app preview is the screen-reader-recommended one, it updates in place and keeps your position.
+
+[JESSICA]
+And the exit doors are everywhere: this same Markdown exports to Word with real heading styles, to HTML, to EPUB, to PDF workflows, next episode's whole topic. Write once in the most accessible format ever devised, deliver in whatever the recipient needs. That's the strategic reason Markdown-first is the QUILL way.
+
+[LIAM]
+A style guide in one breath: one first-level heading per document, don't skip levels, two never jumps to four, keep heading text short enough to hear comfortably, and always put the space after your hashes. Structure sins are exactly what the GLOW audits in episode thirty catch, so the habits you build today keep paying.
+
+[JESSICA]
+Homework. One: write a small real document in Markdown, three headings, a list, some bold, a link. Two: navigate it by heading and feel your own structure carry you. Three: open the preview, control F6 over, listen to how the rendered version reads, and back to the editor. Four: deliberately skip a heading level, then fix it, training your ear to notice.
+
+[LIAM]
+Next episode: rich formatting without the clutter, real fonts, colors, and alignment riding invisibly on plain text, the hidden codes system, Reveal Codes, and Illuminations.
+
+[JESSICA]
+I'm Jessica.
+
+[LIAM]
+I'm Liam. Hash space, and away you go.

@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import logging
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 
 from quill.core.paths import app_data_dir
 from quill.core.storage import read_json, write_json_atomic
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(slots=True)
@@ -44,7 +47,14 @@ class MacroManager:
                 steps=[str(step) for step in steps if isinstance(step, str) and step],
             )
         recording_name = raw.get("recording_name")
-        if not isinstance(recording_name, str) or not recording_name:
+        if isinstance(recording_name, str) and recording_name:
+            # Repair on load: if the referenced macro no longer exists
+            # (e.g. deleted via the Macros dialog), drop the stale
+            # recording_name so start_recording does not raise later.
+            if recording_name not in macros:
+                logger.debug("Dropping stale recording_name %r on load", recording_name)
+                recording_name = None
+        else:
             recording_name = None
         last_macro_name = raw.get("last_macro_name")
         if not isinstance(last_macro_name, str) or not last_macro_name:

@@ -1,0 +1,5770 @@
+# Italian translation for QUILL.
+# Copyright (C) 2026 Blind Information Technology Solutions (BITS) and
+# Community Access
+# This file is distributed under the same license as the QUILL project.
+# FIRST AUTHOR <elettrona@pm.me>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: QUILL 0.9.0\n"
+"Report-Msgid-Bugs-To: https://github.com/Community-Access/quill/issues\n"
+"POT-Creation-Date: 2026-07-07 05:10-0700\n"
+"PO-Revision-Date: 2026-07-05 22:42+0200\n"
+"Last-Translator: ELENA BRESCACIN <elettrona@pm.me>\n"
+"Language: it\n"
+"Language-Team: ITALIAN\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: quill/core/features.py:37
+msgid "Essential"
+msgstr "Essenziale"
+
+#: quill/core/features.py:38
+msgid "Core editing, file, and navigation features."
+msgstr "Funzionalità principali di modifica, gestione dei file e navigazione."
+
+#: quill/core/features.py:89
+msgid "Casual Writer"
+msgstr "Scrittore Occasionale"
+
+#: quill/core/features.py:91
+msgid ""
+"Everyday writing, formatting, and cleanup with guided power features. For"
+" papers, citations, and a table of contents, try the Author or Student "
+"profile instead."
+msgstr ""
+"Scrittura quotidiana, formattazione e correzione con funzioni avanzate e "
+"guidate. Se devi scrivere saggi, gestire citazioni o creare un sommario, "
+"prova invece il profilo Autore o Studente."
+
+#: quill/core/features.py:120
+msgid "Author or Student"
+msgstr "Autore o Studente"
+
+#: quill/core/features.py:122
+msgid ""
+"Long-form writing with a table of contents, footnotes, and MLA / Chicago "
+"/ APA citations — for papers, theses, and class assignments. Choose your "
+"citation style from Preferences > Profiles and Features."
+msgstr ""
+"Scrittura di testi lunghi con sommario, note a piè di pagina e citazioni "
+"MLA / Chicago / APA — per saggi, tesi e tesine scolastiche. Scegli il tuo"
+" stile di citazione in Preferenze > Profili e funzionalità."
+
+#: quill/core/features.py:153
+msgid "Reader and Student"
+msgstr "Lettore e Studente"
+
+#: quill/core/features.py:154
+msgid "Reading, highlights, references, and light writing workflows."
+msgstr "Lettura, evidenziazioni, riferimenti e attività di scrittura leggera."
+
+#: quill/core/features.py:176
+msgid "Office and Admin"
+msgstr "Ufficio e amministrazione"
+
+#: quill/core/features.py:177
+msgid "Reliable file work, sessions, cleanup, and printing."
+msgstr ""
+"Gestione affidabile dei file, sessioni di lavoro, pulizia del testo e "
+"stampa."
+
+#: quill/core/features.py:199
+msgid "Developer and Power Text"
+msgstr "Sviluppatore ed editing avanzato"
+
+#: quill/core/features.py:201
+msgid "Regular Expression, cleanup, inspection, and document analysis tools."
+msgstr ""
+"Espressioni regolari, pulizia, ispezione, e strumenti di analisi "
+"documenti."
+
+#: quill/core/features.py:226
+msgid "Low Vision"
+msgstr "Ipovisione"
+
+#: quill/core/features.py:228
+msgid "Higher contrast, larger reading aids, and friendly inspection tools."
+msgstr ""
+"Contrasto elevato, strumenti di lettura ingrandita e funzioni "
+"semplificate di ispezione."
+
+#: quill/core/features.py:251
+msgid "Braille and Screen Reader Power User"
+msgstr "Utente esperto di Braille e screen reader"
+
+#: quill/core/features.py:253
+msgid ""
+"Screen-reader-friendly navigation with advanced text tools surfaced "
+"calmly."
+msgstr ""
+"Navigazione ottimizzata per  screen reader e strumenti di testo avanzati "
+"accessibili senza distrazioni."
+
+#: quill/core/features.py:276
+msgid "Accessibility Professional"
+msgstr "Professionista dell'accessibilità"
+
+#: quill/core/features.py:277
+msgid "Reading, inspection, trust, and accessibility diagnostics."
+msgstr "Lettura, ispezione, affidabilità, e diagnosi di accessibilità."
+
+#: quill/core/features.py:299
+msgid "Full Quill"
+msgstr "Quill completo"
+
+#: quill/core/features.py:300
+msgid "Everything visible, including advanced and experimental paths."
+msgstr "Tutto visibile, inclusi i percorsi avanzati e sperimentali."
+
+#: quill/ui/agent_editor_host.py:95
+msgid "Run &Agent"
+msgstr "Esegui &Agente"
+
+#: quill/ui/agent_editor_host.py:142
+msgid "&Rewrite && Improve Selection"
+msgstr "&Riscrivi && migliora selezione"
+
+#: quill/ui/ai_chat_dialog.py:34
+msgid "AI Response"
+msgstr "Risposta IA"
+
+#: quill/ui/ai_chat_dialog.py:43
+#, python-brace-format
+msgid "Model: {model}  (via {provider})"
+msgstr "Modello: {model}  (via {provider})"
+
+#: quill/ui/ai_chat_dialog.py:58
+msgid "&Copy to Clipboard"
+msgstr "&Copia negli appunti"
+
+#: quill/ui/ai_chat_dialog.py:59 quill/ui/ai_hub_dialog.py:202
+msgid "&OK"
+msgstr "&OK"
+
+#: quill/ui/ai_chat_dialog.py:71 quill/ui/ai_chat_dialog.py:73
+msgid "OK"
+msgstr "OK"
+
+#: quill/ui/ai_hub_dialog.py:21
+msgid "Off (AI disabled)"
+msgstr "Spento (IA disabilitata)"
+
+#: quill/ui/ai_hub_dialog.py:22
+msgid "Ollama (local, free)"
+msgstr "Ollama (locale, gratis)"
+
+#: quill/ui/ai_hub_dialog.py:23
+msgid "OpenAI"
+msgstr "OpenAI"
+
+#: quill/ui/ai_hub_dialog.py:24
+msgid "Anthropic Claude"
+msgstr "Anthropic Claude"
+
+#: quill/ui/ai_hub_dialog.py:25
+msgid "Google Gemini"
+msgstr "Google Gemini"
+
+#: quill/ui/ai_hub_dialog.py:26
+msgid "OpenRouter"
+msgstr "OpenRouter"
+
+#: quill/ui/ai_hub_dialog.py:27
+msgid "Ollama Cloud"
+msgstr "Ollama Cloud"
+
+#: quill/ui/ai_hub_dialog.py:28
+msgid "Custom (OpenAI-compatible)"
+msgstr "Personalizzato (compatibile OpenAI)"
+
+#: quill/ui/ai_hub_dialog.py:160 quill/ui/ai_hub_dialog.py:1393
+msgid "AI Hub"
+msgstr "Centro IA"
+
+#: quill/ui/ai_hub_dialog.py:178
+msgid "AI settings sections"
+msgstr "Sezioni impostazioni IA"
+
+#: quill/ui/ai_hub_dialog.py:187
+msgid "Provider"
+msgstr "Provider"
+
+#: quill/ui/ai_hub_dialog.py:188
+msgid "Engines"
+msgstr "Motori"
+
+#: quill/ui/ai_hub_dialog.py:189
+msgid "On-Device"
+msgstr "Sul dispositivo"
+
+#: quill/ui/ai_hub_dialog.py:190
+msgid "Audio Services"
+msgstr "Servizi audio"
+
+#: quill/ui/ai_hub_dialog.py:191
+msgid "Services"
+msgstr "Servizi"
+
+#: quill/ui/ai_hub_dialog.py:192
+msgid "Instructions"
+msgstr "Istruzioni"
+
+#: quill/ui/ai_hub_dialog.py:193
+msgid "Sessions"
+msgstr "Sessioni"
+
+#: quill/ui/ai_hub_dialog.py:194
+msgid "Advanced"
+msgstr "Avanzate"
+
+#: quill/ui/ai_hub_dialog.py:203 quill/ui/audio_studio/wizard.py:165
+#: quill/ui/batch_wizard_pages.py:544 quill/ui/convert_file_dialog.py:182
+#: quill/ui/setup_wizard_pages.py:1026 quill/ui/simple_open_dialog.py:209
+msgid "Cancel"
+msgstr "Annulla"
+
+#: quill/ui/ai_hub_dialog.py:230
+msgid "AI provider:"
+msgstr "Provider IA:"
+
+#: quill/ui/ai_hub_dialog.py:243 quill/ui/ai_hub_dialog.py:465
+msgid "API key:"
+msgstr "Chiave API"
+
+#: quill/ui/ai_hub_dialog.py:251 quill/ui/ai_hub_dialog.py:822
+#: quill/ui/ai_hub_dialog.py:1241 quill/ui/ai_hub_dialog.py:1250
+msgid "Show"
+msgstr "Mostra"
+
+#: quill/ui/ai_hub_dialog.py:258
+msgid "Host URL (Ollama/custom only):"
+msgstr "URL host (solo Ollama/personalizzato)"
+
+#: quill/ui/ai_hub_dialog.py:267
+msgid "Model:"
+msgstr "Modello:"
+
+#: quill/ui/ai_hub_dialog.py:271
+msgid "&List models"
+msgstr "E&lenco Modelli:"
+
+#: quill/ui/ai_hub_dialog.py:281
+msgid "Test &Connection"
+msgstr "Test &Connessione"
+
+#: quill/ui/ai_hub_dialog.py:289
+msgid "Full Connection Settings..."
+msgstr "Impostazioni complete connessione..."
+
+#: quill/ui/ai_hub_dialog.py:325
+msgid "Listing models..."
+msgstr "Elenco modelli..."
+
+#: quill/ui/ai_hub_dialog.py:341
+msgid "No models were returned."
+msgstr "La richiesta non ha restituito alcun modello"
+
+#: quill/ui/ai_hub_dialog.py:346
+#, python-brace-format
+msgid "Loaded {n} models."
+msgstr "Caricati {n} modelli."
+
+#: quill/ui/ai_hub_dialog.py:375
+msgid ""
+"QUILL supports on-device AI via Ollama. Ollama runs large language models"
+" locally on your machine — no API key or internet connection needed.\n"
+"\n"
+"Install Ollama from https://ollama.com, pull a model (e.g. 'ollama pull "
+"llama3.2:1b-instruct-q4_K_M'), then select 'Ollama (local)' on the "
+"Provider tab and set the host below."
+msgstr ""
+"QUILL supporta l'IA direttamente sul dispositivo tramite Ollama. Ollama "
+"esegue modelli linguistici di grandi dimensioni in locale sul tuo "
+"computer — senza bisogno di chiavi API o connessione internet.\n"
+"\n"
+"Installa Ollama da https://ollama.com, scarica un modello (ad es. 'ollama"
+" pull llama3.2:1b-instruct-q4_K_M'), poi seleziona 'Ollama (local)' nella"
+" scheda Provider e imposta l'host qui sotto."
+
+#: quill/ui/ai_hub_dialog.py:385
+msgid "Ollama base URL:"
+msgstr "Base URL per Ollama:"
+
+#: quill/ui/ai_hub_dialog.py:398
+msgid ""
+"Recommended models (2025):\n"
+"  llama3.2:1b-instruct-q4_K_M  — fast, 1 GB\n"
+"  llama3.2:3b-instruct-q4_K_M  — better quality, 2 GB\n"
+"  mistral:7b-instruct-q4_K_M   — higher quality, 4 GB\n"
+"\n"
+"Vision models (for AI Image Description):\n"
+"  llava:7b-v1.6-mistral-q4_K_M"
+msgstr ""
+"Modelli consigliati (2025):\n"
+"  llama3.2:1b-instruct-q4_K_M  — veloce, 1 GB\n"
+"  llama3.2:3b-instruct-q4_K_M  — migliore qualità, 2 GB\n"
+"  mistral:7b-instruct-q4_K_M   — qualità più alta, 4 GB\n"
+"\n"
+"Modelli visivi (per descrivere immagini):\n"
+"  llava:7b-v1.6-mistral-q4_K_M"
+
+#: quill/ui/ai_hub_dialog.py:434
+msgid ""
+"QUILL's Import / Convert Document tool always runs the free, on-device "
+"services first: the built-in MarkItDown converter for born-digital files "
+"and the local Tesseract OCR engine for scans (install it from Tools > "
+"Reading & Dictation). Neither uploads anything, needs an account, or "
+"costs money.\n"
+"\n"
+"The optional cloud service below is the accuracy escalation for the "
+"hardest documents. It is paid, bring-your-own-key, and QUILL asks for "
+"your explicit consent before every single upload."
+msgstr ""
+"Lo strumento Importa/Converti documento in QUILL esegue sempre per primi "
+"i servizi gratuiti e locali sul dispositivo: il convertitore incluso "
+"MarkItDown per i file nati in formato digitale e il motore locale OCR "
+"Tesseract per le scansioni (installabile da Strumenti > Lettura & "
+"dettatura). Non ha bisogno di caricare dati, né di un account, nécosta "
+"denaro.\n"
+"\n"
+"Il servizio cloud opzionale indicato di seguito rappresenta una soluzione"
+" avanzata per migliorare l'accuratezza con i documenti più difficili. È "
+"un servizio a pagamento, necessita della tua chiave API, e QUILL chiede "
+"il tuo consenso esplicito prima di ogni singolo caricamento."
+
+#: quill/ui/ai_hub_dialog.py:449
+msgid "Datalab Chandra OCR Service (cloud, paid)"
+msgstr "Servizio OCR Datalab Chandra (cloud, a pagamento)"
+
+#: quill/ui/ai_hub_dialog.py:457
+msgid "&Enable the Datalab Chandra OCR Service"
+msgstr "Abilita il s&ervizio OCR Datalab Chandra"
+
+#: quill/ui/ai_hub_dialog.py:473
+msgid "Endpoint:"
+msgstr "Endpoint:"
+
+#: quill/ui/ai_hub_dialog.py:482
+msgid "Default mode:"
+msgstr "Modalità predefinita:"
+
+#: quill/ui/ai_hub_dialog.py:492
+msgid "Default output:"
+msgstr "Output predefinito:"
+
+#: quill/ui/ai_hub_dialog.py:504
+msgid "Add &page delimiters (recommended for navigation)"
+msgstr "Aggiungi delimitatori &pagina (consigliato per la navigazione)"
+
+#: quill/ui/ai_hub_dialog.py:513
+msgid ""
+"Confirm before upload: always on. QUILL never sends a document to this "
+"service without asking you first, every time."
+msgstr ""
+"Conferma prima di caricare: sempre attiva. QUILL non manderà mai un "
+"documento a questo servizio senza prima chiedertelo, ogni volta."
+
+#: quill/ui/ai_hub_dialog.py:522
+msgid "&Save Service Settings"
+msgstr "&Salva impostazioni servizio"
+
+#: quill/ui/ai_hub_dialog.py:523
+msgid "&Test Connection"
+msgstr "&Test Connessione"
+
+#: quill/ui/ai_hub_dialog.py:524
+msgid "&Copy Service Summary"
+msgstr "&Copia Sommario Servizio"
+
+#: quill/ui/ai_hub_dialog.py:533
+msgid "Visit Datalab &Website"
+msgstr "Visita sito &web Datalab"
+
+#: quill/ui/ai_hub_dialog.py:534
+msgid "&Get or Manage API Key"
+msgstr "Ottieni o &gestisci chiave API"
+
+#: quill/ui/ai_hub_dialog.py:535
+msgid "View &Pricing"
+msgstr "Mostra &prezzi"
+
+#: quill/ui/ai_hub_dialog.py:536
+msgid "P&rivacy and Security"
+msgstr "P&rivacy e sicurezza"
+
+#: quill/ui/ai_hub_dialog.py:537
+msgid "API &Documentation"
+msgstr "&Documentazione API"
+
+#: quill/ui/ai_hub_dialog.py:538
+msgid "Supported &File Types"
+msgstr "Tipi di &File supportati"
+
+#: quill/ui/ai_hub_dialog.py:551
+msgid "Auphonic audio post-production (cloud, your own account)"
+msgstr "Auphonic audio post-produzione (cloud, il tuo account)"
+
+#: quill/ui/ai_hub_dialog.py:559
+msgid ""
+"Auphonic masters finished audiobooks and podcast episodes (leveling, "
+"noise reduction, encoding). QUILL uses it from the Audio Studio's Chapter"
+" Workbench: Publish > Send to Auphonic. The API token is stored in the "
+"Windows Credential Manager, never in a settings file, and nothing is ever"
+" uploaded without a per-book confirmation."
+msgstr ""
+"Auphonic effettua la post-produzione di audiolibri ed episodi podcast "
+"(livello volumi, riduzione rumore, codifica). QUILL lo usa da dentro il "
+"Chapter Workbench di Audio Studio: Pubblica > Invia su Auphonic. Il token"
+" API è archiviato nel gestore credenziali di Windows, mai in un file di "
+"impostazioni, e niente viene mai caricato senza una conferma per ciascun "
+"libro."
+
+#: quill/ui/ai_hub_dialog.py:574
+msgid "API token:"
+msgstr "Token API"
+
+#: quill/ui/ai_hub_dialog.py:585
+msgid "Save Auphonic To&ken"
+msgstr "Salva to&ken Auphonic"
+
+#: quill/ui/ai_hub_dialog.py:587
+msgid "Check Acco&unt and Credits"
+msgstr "Controlla acco&unt e crediti"
+
+#: quill/ui/ai_hub_dialog.py:592
+msgid "Visit Auphonic &Website"
+msgstr "Visita sito &web Auphonic"
+
+#: quill/ui/ai_hub_dialog.py:593
+msgid "Auphonic API D&ocumentation"
+msgstr "D&ocumentazione API Auphonic"
+
+#: quill/ui/ai_hub_dialog.py:606
+msgid ""
+"The full plain-language overview of every conversion service is in Tools "
+"> Reading & Dictation > OCR and Conversion Services."
+msgstr ""
+"La panoramica completa e in linguaggio semplice per ogni servizio di "
+"conversione è disponibile in Strumenti > Lettura & Dettatura > OCR e "
+"servizi di conversione)."
+
+#: quill/ui/ai_hub_dialog.py:641
+msgid "The token could not be stored in the credential vault on this system."
+msgstr ""
+"Non è stato possibile memorizzare il token nel gestore delle credenziali "
+"su questo sistema."
+
+#: quill/ui/ai_hub_dialog.py:645
+msgid "Auphonic token saved to the credential vault."
+msgstr "Token Auphonic salvato nel gestore delle credenziali."
+
+#: quill/ui/ai_hub_dialog.py:647
+msgid "Auphonic token cleared."
+msgstr "Token Auphonic eliminato."
+
+#: quill/ui/ai_hub_dialog.py:657
+msgid "No Auphonic token entered. Paste one, or get it from auphonic.com."
+msgstr ""
+"Nessun token Auphonic inserito. Incollane uno, od ottienilo su "
+"auphonic.com."
+
+#: quill/ui/ai_hub_dialog.py:673
+#, python-brace-format
+msgid "Auphonic account {user}: {credits} credits available, {count} preset(s)."
+msgstr "Account Auphonic {user}: {credits} disponibili, {count} preset."
+
+#: quill/ui/ai_hub_dialog.py:675 quill/ui/audio_studio/publish_dialog.py:471
+msgid "(unnamed)"
+msgstr "(senza nome)"
+
+#: quill/ui/ai_hub_dialog.py:686
+msgid "Opened in your browser."
+msgstr "Aperto nel tuo browser."
+
+#: quill/ui/ai_hub_dialog.py:706
+msgid "Status: Ready. Cloud upload requires your consent each time."
+msgstr ""
+"Stato: pronto. Il caricamento su Cloud richiede il tuo consenso ogni "
+"volta."
+
+#: quill/ui/ai_hub_dialog.py:708
+msgid "Status: Needs API key."
+msgstr "Stato: Necessita chiave API."
+
+#: quill/ui/ai_hub_dialog.py:710
+msgid "Status: Not configured (optional)."
+msgstr "Stato: Non configurato (opzionale)."
+
+#: quill/ui/ai_hub_dialog.py:720
+msgid "The endpoint must start with https:// - not saved."
+msgstr "L'endpoint deve iniziare con https:// - non salvato."
+
+#: quill/ui/ai_hub_dialog.py:733
+msgid ""
+"Settings saved. The API key could not be stored in the credential vault "
+"on this system; set the DATALAB_API_KEY environment variable instead."
+msgstr ""
+"Impostazioni salvate. Non è stato possibile memorizzare la chiave API nel"
+" gestore delle credenziali di questo sistema; imposta invece la variabile"
+" d'ambiente DATALAB_API_KEY."
+
+#: quill/ui/ai_hub_dialog.py:740
+msgid "Datalab service settings saved."
+msgstr "Impostazioni servizio Datalab salvate"
+
+#: quill/ui/ai_hub_dialog.py:749
+msgid "No API key entered. Add one, or get a key from the Datalab website."
+msgstr ""
+"Nessuna chiave API inserita. Aggiungine una, od ottieni una chiave dal "
+"sito web di Datalab."
+
+#: quill/ui/ai_hub_dialog.py:754
+msgid "The endpoint must start with https://."
+msgstr "L'endpoint deve iniziare con https://."
+
+#: quill/ui/ai_hub_dialog.py:759
+msgid ""
+"API key present and the endpoint looks valid. Full validation happens on "
+"your first conversion - no document is uploaded by this test."
+msgstr ""
+"La chiave API è presente e l'endpoint sembra valido. La convalida "
+"completa avviene alla tua prima conversione - nessun documento viene "
+"caricato da questo test."
+
+#: quill/ui/ai_hub_dialog.py:786
+msgid "Service summary copied - no secrets included."
+msgstr "Riepilogo del servizio copiato - nessun dato sensibile incluso."
+
+#: quill/ui/ai_hub_dialog.py:788
+msgid "Could not open the clipboard."
+msgstr "Impossibile aprire gli appunti"
+
+#: quill/ui/ai_hub_dialog.py:800
+msgid ""
+"Audio transcription uses OpenAI Whisper (configure your OpenAI API key on"
+" the Provider tab). Speaker diarization (identifying who said what) uses "
+"Deepgram Nova-3 and requires a separate Deepgram API key."
+msgstr ""
+"La trascrizione degli audio  utilizza OpenAI Whisper (configura la tua "
+"chiave API OpenAI  nella scheda Provider). La diarizzazione del parlante "
+"(identificare chi ha detto cosa) utilizza Deepgram Nova-3 e richiede una "
+"chiave API separata di Deepgram."
+
+#: quill/ui/ai_hub_dialog.py:810
+msgid "Deepgram API key (for speaker diarization):"
+msgstr "Chiave API Deepgram - per diarizzazione del parlante"
+
+#: quill/ui/ai_hub_dialog.py:829
+msgid "Default maximum speakers (2-20):"
+msgstr "Numero massimo predefinito di parlanti (2-20)"
+
+#: quill/ui/ai_hub_dialog.py:846
+msgid ""
+"Privacy note: audio is sent to Deepgram's cloud for diarization. Set this"
+" to Off on the Provider tab to keep all processing local. Transcription "
+"(without diarization) stays within OpenAI."
+msgstr ""
+"Nota per la privacy: l'audio viene mandato al cloud di Deepgram per la "
+"diarizzazione. Impostalo su Spento nella scheda Provider per mantenere "
+"tutta l'elaborazione in locale. La trascrizione (senza diarizzazione) sta"
+" all'interno di OpenAI."
+
+#: quill/ui/ai_hub_dialog.py:868
+msgid "Writing Tasks"
+msgstr "Attività di scrittura"
+
+#: quill/ui/ai_hub_dialog.py:869
+msgid "Image Styles"
+msgstr "Stili immagine"
+
+#: quill/ui/ai_hub_dialog.py:885
+msgid "Task:"
+msgstr "Attività:"
+
+#: quill/ui/ai_hub_dialog.py:899
+msgid "Enable custom instructions for this task"
+msgstr "Abilita istruzioni personalizzate per questa attività"
+
+#: quill/ui/ai_hub_dialog.py:907
+msgid "Instructions (prepended to every AI call for this task):"
+msgstr "Istruzioni (anteposte a ogni chiamata IA per questa attività):"
+
+#: quill/ui/ai_hub_dialog.py:920
+msgid "Built-in default (shown when editor is empty):"
+msgstr "Predefinito di sistema (mostrato quando l'editor è vuoto):"
+
+#: quill/ui/ai_hub_dialog.py:931 quill/ui/ai_hub_dialog.py:1021
+msgid "Reset to &Default"
+msgstr "Reimposta al &Default"
+
+#: quill/ui/ai_hub_dialog.py:932 quill/ui/ai_hub_dialog.py:1022
+msgid "Copy Default to &Editor"
+msgstr "Copia default nell'&Editor"
+
+#: quill/ui/ai_hub_dialog.py:940
+msgid ""
+"Tip: leave the editor empty to use the built-in default. A * next to the "
+"task name means you have a custom override."
+msgstr ""
+"Suggerimento: lascia l'editor vuoto per usare il valore predefinito di "
+"sistema. Un asterisco (*) accanto al nome dell'attività indica la "
+"presenza di una personalizzazione."
+
+#: quill/ui/ai_hub_dialog.py:974
+msgid "Style:"
+msgstr "Stile:"
+
+#: quill/ui/ai_hub_dialog.py:990
+msgid "Include this style in the image style picker"
+msgstr "Includi questo stile nella scelta di stili per le immagini"
+
+#: quill/ui/ai_hub_dialog.py:997
+msgid "Override prompt text (leave empty to use the built-in default):"
+msgstr ""
+"Testo del prompt personalizzato (lascia vuoto per usare il valore "
+"predefinito di sistema):"
+
+#: quill/ui/ai_hub_dialog.py:1010
+msgid "Built-in default prompt:"
+msgstr "Prompt predefinito di sistema:"
+
+#: quill/ui/ai_hub_dialog.py:1030
+msgid ""
+"Tip: leave the editor empty to use the shipped prompt. A * means you have"
+" a custom override. Manage custom styles via Settings > AI > Image Prompt"
+" Styles."
+msgstr ""
+"Suggerimento: lascia l'editor vuoto per usare il prompt di sistema. Un "
+"asterisco (*) indica la presenza di una personalizzazione. Gestisci gli "
+"stili personalizzati in Impostazioni > IA > Stili prompt immagine."
+
+#: quill/ui/ai_hub_dialog.py:1192
+msgid ""
+"Data sent to cloud AI providers\n"
+"--------------------------------\n"
+"When cloud AI is enabled, QUILL sends your document text or selection to "
+"the provider you configured (e.g. OpenAI, Claude). The following "
+"operations send data:\n"
+"\n"
+"  - Ask Quill chat\n"
+"  - Rewrite, Summarize, Expand, Grammar check, Spell check\n"
+"  - AI Translate (when using AI provider, not LibreTranslate)\n"
+"  - AI Thesaurus\n"
+"  - Document Q&A\n"
+"  - TTS Read Aloud (text only, no document metadata)\n"
+"  - Transcribe / Translate Audio (audio file bytes)\n"
+"\n"
+"QUILL never sends your API key to any service other than the configured "
+"provider, never tracks usage, and never stores responses externally."
+msgstr ""
+"Dati inviati ai provider cloud IA\n"
+"--------------------------------\n"
+"Quando il cloud IA è attivo, QUILL invia il testo  del documento o la "
+"selezione al provider che hai configurato (es. OpenAI, Claude). Le "
+"seguenti operazioni inviano dati:\n"
+"\n"
+"  - Chiedi a Quill Chat\n"
+"  - Riscrittura, Riassunto, Espansione, Controllo grammaticale, Controllo"
+" ortografico\n"
+"  - Traduzione IA (quando si usano provider IA, non LibreTranslate)\n"
+"  - Thesaurus IA \n"
+"  - Domande&Risposte sul documento \n"
+"  - Lettura col TTS (solo testo, nessun metadato sui documenti)\n"
+"  - Trascrivere / tradurre audio (i byte dei file audio)\n"
+"\n"
+"QUILL non invia mai le tue chiavi API ad altri servizi tranne al provider"
+" configurato, non traccia l'utilizzo, e non salva le risposte "
+"all'esterno."
+
+#: quill/ui/ai_hub_dialog.py:1213
+msgid "&Reset AI Settings to Defaults"
+msgstr "&Riporta opzioni IA a valori predefiniti"
+
+#: quill/ui/ai_hub_dialog.py:1219
+msgid ""
+"Safe Mode: Launch with --safe-mode or set QUILL_SAFE_MODE=1 to disable "
+"all AI features and network calls at startup. This is useful for "
+"troubleshooting or privacy-sensitive environments."
+msgstr ""
+"Modalità provvisoria: avvia con --safe-mode o imposta QUILL_SAFE_MODE=1 "
+"per disattivare tutte le funzionalità IA e le connessioni in rete "
+"all'avvio. Questo è utile per la risoluzione dei problemi o in ambienti "
+"con misure di sicurezza restrittive."
+
+#: quill/ui/ai_hub_dialog.py:1238 quill/ui/ai_hub_dialog.py:1247
+msgid "Hide"
+msgstr "Nascondi"
+
+#: quill/ui/ai_hub_dialog.py:1266
+msgid "Testing..."
+msgstr "Test in corso..."
+
+#: quill/ui/ai_hub_dialog.py:1287
+#, python-brace-format
+msgid "Failed: {error}"
+msgstr "Fallito: {error}"
+
+#: quill/ui/ai_hub_dialog.py:1289
+msgid "Connection OK."
+msgstr "Connessione OK"
+
+#: quill/ui/ai_hub_dialog.py:1291
+#, python-brace-format
+msgid "Error: {exc}"
+msgstr "Errore: {exc}"
+
+#: quill/ui/ai_hub_dialog.py:1304
+msgid ""
+"Reset all AI settings to defaults? This clears the provider, model, and "
+"host settings (but not stored API keys)."
+msgstr ""
+"Ripristinare tutte le impostazioni IA ai valori predefiniti? Questo "
+"cancellerà le impostazioni di provider, modello e host (ma non le chiavi "
+"API memorizzate)."
+
+#: quill/ui/ai_hub_dialog.py:1307
+msgid "Reset AI Settings"
+msgstr "Ripristina impostazioni IA"
+
+#: quill/ui/ai_hub_dialog.py:1319
+msgid "AI settings reset to defaults."
+msgstr "Impostazioni IA ripristinate ai valori predefiniti."
+
+#: quill/ui/ai_hub_dialog.py:1383
+msgid "AI Hub settings saved."
+msgstr "Impostazioni centro IA salvate"
+
+#: quill/ui/ai_hub_engines_panel.py:49
+msgid ""
+"Choose which engine runs QUILL's agent. Native always works, using the "
+"provider you have already connected. Or bring the AI agent you already "
+"pay for: GitHub Copilot, OpenAI (ChatGPT), or Claude. Pick one and select"
+" Set Up to install the connector and sign in with your account — it runs "
+"on your existing subscription, with no extra key or per-word charge. "
+"Whichever engine you pick, QUILL owns every edit: the agent proposes, you"
+" approve a preview, and one keystroke undoes it."
+msgstr ""
+"Scegli quale motore esegue l'agente di QUILL. Quello nativo funziona "
+"sempre, utilizzando il provider che hai già connesso. Oppure porta "
+"l'agente IA che già paghi: GitHub Copilot, OpenAI (ChatGPT) o Claude. "
+"Scegline uno e seleziona Configura per installare il connettore e "
+"accedere con il tuo account — funziona sul tuo abbonamento esistente, "
+"senza chiavi extra o costi per parola. Qualunque motore tu scelga, QUILL "
+"possiede ogni modifica: l'agente propone, tu approvi un'anteprima e una "
+"sola pressione di un tasto annulla tutto."
+
+#: quill/ui/ai_hub_engines_panel.py:62
+msgid "AI engines:"
+msgstr "Motori IA:"
+
+#: quill/ui/ai_hub_engines_panel.py:68
+msgid "Set as &Active Engine"
+msgstr "Imposta come motore &attivo"
+
+#: quill/ui/ai_hub_engines_panel.py:69
+msgid "Set &Up / Install..."
+msgstr "Config&ura / installa..."
+
+#: quill/ui/ai_hub_engines_panel.py:70
+msgid "&Refresh"
+msgstr "Aggio&rna"
+
+#: quill/ui/ai_hub_engines_panel.py:99
+msgid "Active"
+msgstr "Attivo"
+
+#: quill/ui/ai_hub_engines_panel.py:101
+msgid "Available"
+msgstr "Disponibile"
+
+#: quill/ui/ai_hub_engines_panel.py:103
+msgid "Not installed"
+msgstr "Non installato"
+
+#: quill/ui/ai_hub_engines_panel.py:141
+#, python-brace-format
+msgid "{name} is already installed."
+msgstr "{name} è già installato"
+
+#: quill/ui/ai_hub_engines_panel.py:150
+#, python-brace-format
+msgid "Installing {name}..."
+msgstr "Installazione in corso per {name}..."
+
+#: quill/ui/ai_hub_engines_panel.py:151
+#, python-brace-format
+msgid "Installing {name}"
+msgstr "Installazione di {name}"
+
+#: quill/ui/ai_hub_engines_panel.py:158
+#, python-brace-format
+msgid "Installed {name}."
+msgstr "Installato {name}."
+
+#: quill/ui/ai_hub_engines_panel.py:160
+#, python-brace-format
+msgid "Could not install {name}: {error}"
+msgstr "Impossibile installare {name}: {error}"
+
+#: quill/ui/ai_hub_sessions_panel.py:44
+msgid ""
+"AI writing sessions are saved automatically as you chat in Ask Quill. "
+"Browse the branch tree of your most recent session to jump between "
+"branches or compare them — fully keyboard- and screen-reader-driven."
+msgstr ""
+"Le sessioni di scrittura IA vengono salvate automaticamente mentre chatti"
+" in Chiedi A Quill. Sfoglia l'alberatura dei rami della tua sessione più "
+"recente per saltare da un ramo all'altro o confrontarli — completamente "
+"gestibile da tastiera e screen reader."
+
+#: quill/ui/ai_hub_sessions_panel.py:52
+msgid "&Browse Session Branches..."
+msgstr "Esplora Rami &Sessione..."
+
+#: quill/ui/ai_hub_sessions_panel.py:73
+msgid "No saved AI writing sessions yet"
+msgstr "Ancora nessuna sessione di scrittura con IA salvata."
+
+#: quill/ui/ai_hub_sessions_panel.py:78
+msgid ""
+"No saved AI writing sessions yet. Start a conversation in Ask Quill "
+"(sessions are saved automatically as you chat), then return here to "
+"browse and compare its branches."
+msgstr ""
+"Ancora nessuna sessione di scrittura IA salvata. Avvia una conversazione "
+"in Chiedi A Quill (le sessioni vengono salvate automaticamente mentre "
+"chatti), poi torna qui per sfogliare e confrontare i suoi rami."
+
+#: quill/ui/ai_hub_sessions_panel.py:82
+msgid "AI Session Branches"
+msgstr "Rami Sessione IA"
+
+#: quill/ui/batch_wizard.py:60 quill/ui/batch_wizard_pages.py:109
+#: quill/ui/batch_wizard_pages.py:490
+msgid "Batch Conversion"
+msgstr "Conversione simultanea"
+
+#: quill/ui/batch_wizard_pages.py:84
+msgid ""
+"The Batch Conversion wizard converts every matching file in a folder\n"
+"you pick, using Pandoc.\n"
+"\n"
+"Supported input formats: Markdown, CommonMark, GitHub-Flavored Markdown,\n"
+"HTML, Word documents, OpenDocument Text, Rich Text Format, plain text,\n"
+"CSV / TSV tables, EPUB books, and LaTeX.\n"
+"\n"
+"Supported output formats: the same set plus PDF (export only).\n"
+"\n"
+"The conversion runs on a background thread. You can keep working in\n"
+"QUILL while it runs, and progress appears in the Status Page\n"
+"(Help menu).\n"
+"\n"
+"Press Next to choose a folder."
+msgstr ""
+"Il wizard di conversione simultanea converte ogni file corrispondente in "
+"una cartella\n"
+"che scegli, usando Pandoc.\n"
+"\n"
+"Formati input supportati: Markdown, CommonMark, GitHub-Flavored Markdown,"
+"\n"
+"HTML, documenti Word, OpenDocument Text, Rich Text Format, plain text,\n"
+"tabelle CSV / TSV, libri EPUB, e LaTeX.\n"
+"\n"
+"Formati output supportati: la stessa serie ppiù PDF (solo esportazione).\n"
+"\n"
+"La conversione avviene in background. Puoi continuare a lavorare in\n"
+"QUILL mentre è in esecuzione, e l'avanzamento appare nella pagina di "
+"stato\n"
+"(menu Aiuto).\n"
+"\n"
+"Premi Avanti per scegliere una cartella."
+
+#: quill/ui/batch_wizard_pages.py:116 quill/ui/setup_wizard_pages.py:259
+msgid "About this wizard:"
+msgstr "Info su questo Wizard:"
+
+#: quill/ui/batch_wizard_pages.py:136
+#, python-brace-format
+msgid "Pandoc detected: {version}"
+msgstr "Pandoc rilevato: {version}"
+
+#: quill/ui/batch_wizard_pages.py:139
+msgid ""
+"Pandoc was not detected on this computer. Install Pandoc 3.x from "
+"https://pandoc.org to use batch conversion."
+msgstr ""
+"Pandoc non trovato su questo computer. Installa Pandoc 3.x da "
+"https://pandoc.org per usare la conversione simultanea."
+
+#: quill/ui/batch_wizard_pages.py:177
+msgid "Folder and options"
+msgstr "Cartella e opzioni"
+
+#: quill/ui/batch_wizard_pages.py:186
+msgid "Source folder:"
+msgstr "Cartella origine"
+
+#: quill/ui/batch_wizard_pages.py:193
+msgid "Choose the folder to convert"
+msgstr "Scegli la cartella da convertire"
+
+#: quill/ui/batch_wizard_pages.py:203
+msgid "Include subfolders"
+msgstr "Includi sottocartelle"
+
+#: quill/ui/batch_wizard_pages.py:213
+msgid "Where to put converted files"
+msgstr "Dove mettere i file convertiti"
+
+#: quill/ui/batch_wizard_pages.py:232
+msgid "When an output file already exists"
+msgstr "Quando un file di output già esiste"
+
+#: quill/ui/batch_wizard_pages.py:263
+msgid "Please choose a folder first."
+msgstr "Prima scegli una cartella"
+
+#: quill/ui/batch_wizard_pages.py:266
+msgid "That path is not a folder."
+msgstr "Quel percorso non è una cartella."
+
+#: quill/ui/batch_wizard_pages.py:282
+msgid "Format and profile"
+msgstr "Formato e profilo"
+
+#: quill/ui/batch_wizard_pages.py:290
+msgid "Direction"
+msgstr "Direzione"
+
+#: quill/ui/batch_wizard_pages.py:292
+msgid "Import into QUILL (convert to Markdown)"
+msgstr "Importa in QUILL (converti in Markdown)"
+
+#: quill/ui/batch_wizard_pages.py:293
+msgid "Export from QUILL (convert from Markdown)"
+msgstr "Esporta da QUILL (converti da markdown)"
+
+#: quill/ui/batch_wizard_pages.py:305
+msgid "Source format:"
+msgstr "Formato origine:"
+
+#: quill/ui/batch_wizard_pages.py:316
+msgid "Target format:"
+msgstr "Formato destinazione:"
+
+#: quill/ui/batch_wizard_pages.py:327
+msgid "Profile:"
+msgstr "Profilo:"
+
+#: quill/ui/audio_studio/pages_shared.py:358 quill/ui/batch_wizard_pages.py:404
+msgid "Review and start"
+msgstr "Rivedi e inizia"
+
+#: quill/ui/audio_studio/pages_shared.py:420 quill/ui/batch_wizard_pages.py:430
+#, python-brace-format
+msgid "Source folder: {folder}"
+msgstr "Cartella origine: {folder}"
+
+#: quill/ui/batch_wizard_pages.py:431
+#, python-brace-format
+msgid "Recurse into subfolders: {value}"
+msgstr "Cerca in sottocartelle: {value}"
+
+#: quill/ui/audio_studio/pages_shared.py:419 quill/ui/batch_wizard_pages.py:432
+msgid "Yes"
+msgstr "Sì"
+
+#: quill/ui/audio_studio/pages_shared.py:419 quill/ui/batch_wizard_pages.py:432
+msgid "No"
+msgstr "No"
+
+#: quill/ui/batch_wizard_pages.py:434
+#, python-brace-format
+msgid "Direction: {value}"
+msgstr "Direzione: {value}"
+
+#: quill/ui/batch_wizard_pages.py:435
+msgid "Import"
+msgstr "Importa"
+
+#: quill/ui/batch_wizard_pages.py:435
+msgid "Export"
+msgstr "Esporta"
+
+#: quill/ui/batch_wizard_pages.py:437
+#, python-brace-format
+msgid "Source format: {value}"
+msgstr "Formato origine: {value}"
+
+#: quill/ui/batch_wizard_pages.py:440
+#, python-brace-format
+msgid "Target format: {value}"
+msgstr "Formato destinazione: {value}"
+
+#: quill/ui/batch_wizard_pages.py:443
+#, python-brace-format
+msgid "Profile: {value}"
+msgstr "Profilo: {value}"
+
+#: quill/ui/batch_wizard_pages.py:444
+#, python-brace-format
+msgid "Output layout: {value}"
+msgstr "Layout output: {value}"
+
+#: quill/ui/batch_wizard_pages.py:445
+msgid "Output subfolder per source folder"
+msgstr "Sottocartella di output per cartella origine"
+
+#: quill/ui/batch_wizard_pages.py:447
+msgid "Same folder as source"
+msgstr "stessa cartella dell'origine"
+
+#: quill/ui/batch_wizard_pages.py:449
+#, python-brace-format
+msgid "Overwrite: {value}"
+msgstr "Sovrascrivi: {value}"
+
+#: quill/ui/batch_wizard_pages.py:451
+msgid "Ask each time"
+msgstr "Chiedi ogni volta"
+
+#: quill/ui/batch_wizard_pages.py:452
+msgid "Never overwrite"
+msgstr "Non sovrascrivere mai"
+
+#: quill/ui/batch_wizard_pages.py:453
+msgid "Always overwrite"
+msgstr "Sovrascrivi sempre"
+
+#: quill/ui/batch_wizard_pages.py:457
+msgid "Press Start to begin. Progress appears in Help > Status Page."
+msgstr ""
+"Premi Avvia per iniziare. L'avanzamento appare nel menu Aiuto > Pagina di"
+" stato."
+
+#: quill/ui/batch_wizard_pages.py:540
+msgid "< Back"
+msgstr "< Indietro"
+
+#: quill/ui/batch_wizard_pages.py:541
+msgid "Next >"
+msgstr "Avanti >"
+
+#: quill/ui/batch_wizard_pages.py:542
+msgid "Start"
+msgstr "Avvia"
+
+#: quill/ui/audio_studio/wizard.py:252 quill/ui/batch_wizard_pages.py:574
+#: quill/ui/setup_wizard_pages.py:1055
+#, python-brace-format
+msgid "Step {step} of {total}"
+msgstr "Passo {step} di {total}"
+
+#: quill/ui/audio_studio/wizard.py:272 quill/ui/audio_studio/wizard.py:292
+#: quill/ui/audio_studio/wizard.py:302 quill/ui/batch_wizard_pages.py:607
+#: quill/ui/batch_wizard_pages.py:631
+msgid "Please complete this step"
+msgstr "Per favore completa questo passaggio"
+
+#: quill/ui/batch_wizard_pages.py:619
+msgid ""
+"Pandoc was not detected on this computer. Install Pandoc 3.x from "
+"https://pandoc.org and try again."
+msgstr ""
+"Pandoc non trovato su questo computer. Installa Pandoc 3.x da "
+"https://pandoc.org e riprova."
+
+#: quill/ui/batch_wizard_pages.py:622
+msgid "Pandoc not found"
+msgstr "Pandoc non trovato"
+
+#: quill/ui/concierge_menu.py:94
+msgid "What can I do &here?..."
+msgstr "Cosa Posso Fare &Qui?..."
+
+#: quill/ui/convert_file_dialog.py:76 quill/ui/convert_file_dialog.py:336
+msgid "Convert File"
+msgstr "Converti File"
+
+#: quill/ui/convert_file_dialog.py:79
+msgid "Convert File — choose a source, format, and output folder"
+msgstr ""
+"Converti un File — scegli una cartella origine, un formato, e una "
+"cartella destinazione"
+
+#: quill/ui/convert_file_dialog.py:87
+msgid ""
+"Convert a document to another format with Pandoc. Choose a source file, "
+"an output format, and where to save the result."
+msgstr ""
+"Converti un documento in un altro formato con Pandoc. Scegli un file "
+"origine, un formato output, e dove salvare il risultato."
+
+#: quill/ui/convert_file_dialog.py:98
+msgid "&Source file"
+msgstr "File &origine"
+
+#: quill/ui/convert_file_dialog.py:100
+msgid "Source file path"
+msgstr "Percorso file origine"
+
+#: quill/ui/convert_file_dialog.py:101
+msgid "Bro&wse..."
+msgstr "Sfo&glia..."
+
+#: quill/ui/convert_file_dialog.py:109
+msgid "Output &format"
+msgstr "&Formato output:"
+
+#: quill/ui/audio_studio/pages_documents.py:781
+#: quill/ui/convert_file_dialog.py:111
+msgid "Output format"
+msgstr "Formato output"
+
+#: quill/ui/convert_file_dialog.py:116
+msgid "Show &all Pandoc formats"
+msgstr "Mostra tutti i form&ati Pandoc"
+
+#: quill/ui/convert_file_dialog.py:117
+msgid "Show all Pandoc formats"
+msgstr "Mostra tutti i formati Pandoc"
+
+#: quill/ui/convert_file_dialog.py:128
+msgid "Auto (recommended)"
+msgstr "Automatico (consigliato)"
+
+#: quill/ui/convert_file_dialog.py:129
+msgid "QUILL picks the engine for this conversion: Pandoc."
+msgstr "QUILL recupera il motore per questa conversione: Pandoc."
+
+#: quill/ui/convert_file_dialog.py:133
+msgid "Pandoc"
+msgstr "Pandoc"
+
+#: quill/ui/convert_file_dialog.py:135
+msgid ""
+"Converts between many formats. Keeps structure: headings, lists, tables, "
+"links, and footnotes."
+msgstr ""
+"Converte fra tanti formati. Mantiene la struttura: intestazioni, elenchi,"
+" tabelle, link, e note a piè di pagina."
+
+#: quill/ui/convert_file_dialog.py:141
+msgid "MarkItDown"
+msgstr "MarkItDown"
+
+#: quill/ui/convert_file_dialog.py:143
+msgid ""
+"Reads Word, PowerPoint, Excel, or PDF into Markdown or plain text. Fast; "
+"headings, lists, and tables come through; images, comments, and fonts do "
+"not."
+msgstr ""
+"Legge file Word, PowerPoint, Excel o PDF in formato Markdown o testo "
+"normale. Veloce; intestazioni, elenchi e tabelle vengono mantenuti, "
+"mentre immagini, commenti e font no."
+
+#: quill/ui/convert_file_dialog.py:150
+msgid "Conversion &engine"
+msgstr "Motore conv&ersione"
+
+#: quill/ui/convert_file_dialog.py:152
+msgid "Conversion engine"
+msgstr "Motore conversione"
+
+#: quill/ui/convert_file_dialog.py:157
+msgid "Conversion engine description"
+msgstr "Descrizione motore conversione"
+
+#: quill/ui/convert_file_dialog.py:163
+msgid "Output f&older"
+msgstr "Cartella di &output"
+
+#: quill/ui/convert_file_dialog.py:165
+msgid "Output folder path"
+msgstr "Percorso cartella di output"
+
+#: quill/ui/convert_file_dialog.py:166
+msgid "Br&owse..."
+msgstr "Sf&oglia..."
+
+#: quill/ui/convert_file_dialog.py:173
+msgid "Convert File status"
+msgstr "Stato conversione file"
+
+#: quill/ui/convert_file_dialog.py:178
+msgid "&Convert File"
+msgstr "&Converti File"
+
+#: quill/ui/convert_file_dialog.py:180
+msgid "Convert and O&pen"
+msgstr "C&onverti e apri"
+
+#: quill/ui/convert_file_dialog.py:267
+msgid "Choose a file to convert"
+msgstr "Scegli un file da convertire"
+
+#: quill/ui/convert_file_dialog.py:271
+msgid "Convert File — Source"
+msgstr "Converti file - origine"
+
+#: quill/ui/convert_file_dialog.py:283
+msgid "Choose an output folder"
+msgstr "Scegli una cartella di output:"
+
+#: quill/ui/convert_file_dialog.py:287
+msgid "Convert File — Output Folder"
+msgstr "Converti file - cartella di output"
+
+#: quill/ui/convert_file_dialog.py:296
+msgid "Choose a source file before converting."
+msgstr "Scegli un file origine prima di convertire"
+
+#: quill/ui/convert_file_dialog.py:300
+msgid "The selected source file was not found."
+msgstr "Il file origine selezionato non è stato trovato."
+
+#: quill/ui/convert_file_dialog.py:305
+msgid "Choose an output format before converting."
+msgstr "Scegli un formato di output prima di convertire"
+
+#: quill/ui/convert_file_dialog.py:310
+msgid "Choose an output folder before converting."
+msgstr "Scegli una cartella di output prima di convertire"
+
+#: quill/ui/convert_file_dialog.py:314
+msgid "The output folder does not exist."
+msgstr "La cartella di output non esiste."
+
+#: quill/ui/crash_report_dialog.py:120 quill/ui/crash_report_dialog.py:256
+msgid "Report Crash"
+msgstr "Segnala crash"
+
+#: quill/ui/crash_report_dialog.py:133
+msgid ""
+"QUILL encountered an unexpected error and closed. You can review a "
+"redacted summary below and choose whether to send it to the developers. "
+"Nothing is sent unless you click 'Send report'."
+msgstr ""
+"QUILL ha incontrato un errore inaspettato e si è chiuso. Puoi rivedere un"
+"  riepilogo anonimo qui sotto e scegliere se inviarlo agli sviluppatori. "
+"Niente viene spedito a meno che non clicchi 'Invia report'."
+
+#: quill/ui/crash_report_dialog.py:144
+msgid "What we will send:"
+msgstr "Cosa invieremo:"
+
+#: quill/ui/crash_report_dialog.py:163
+msgid "What were you doing when this happened?"
+msgstr "Cosa stavi facendo quando è successo?"
+
+#: quill/ui/crash_report_dialog.py:172
+msgid "What command do you think triggered it?"
+msgstr "Quale comando pensi l'abbia provocato?"
+
+#: quill/ui/crash_report_dialog.py:180
+msgid "Expected behaviour"
+msgstr "Comportamento atteso"
+
+#: quill/ui/crash_report_dialog.py:192
+msgid "&Send report"
+msgstr "&Invia report"
+
+#: quill/ui/crash_report_dialog.py:195
+msgid "&Copy to clipboard"
+msgstr "&Copia negli appunti"
+
+#: quill/ui/crash_report_dialog.py:198
+msgid "Don't &send"
+msgstr "Non i&nviare"
+
+#: quill/ui/crash_report_dialog.py:213
+msgid "Local crash file: "
+msgstr "File locale dei crash: "
+
+#: quill/ui/hygiene_dialog.py:60
+msgid "Quill Eraser Review"
+msgstr "Revisione di Quill Eraser"
+
+#: quill/ui/hygiene_dialog.py:99
+msgid "Findings:"
+msgstr "Rilevamenti:"
+
+#: quill/ui/hygiene_dialog.py:107
+msgid "#"
+msgstr "#"
+
+#: quill/ui/hygiene_dialog.py:108
+msgid "Confidence"
+msgstr "Confidenza"
+
+#: quill/ui/hygiene_dialog.py:109
+msgid "Issue"
+msgstr "Problema"
+
+#: quill/ui/hygiene_dialog.py:110
+msgid "Line"
+msgstr "Riga"
+
+#: quill/ui/hygiene_dialog.py:114
+msgid "Detail"
+msgstr "Dettaglio"
+
+#: quill/ui/hygiene_dialog.py:129
+msgid "&Apply Fix"
+msgstr "&Applica correzione"
+
+#: quill/ui/hygiene_dialog.py:131
+msgid "&Ignore"
+msgstr "I&gnora"
+
+#: quill/ui/hygiene_dialog.py:133
+msgid "&Go to Issue"
+msgstr "&vai al problema"
+
+#: quill/ui/hygiene_dialog.py:135
+msgid "&Previous"
+msgstr "&Precedente"
+
+#: quill/ui/hygiene_dialog.py:137
+msgid "&Next"
+msgstr "&Successivo"
+
+#: quill/ui/hygiene_dialog.py:139
+msgid "&Rescan"
+msgstr "Rico&ntrolla"
+
+#: quill/ui/hygiene_dialog.py:141
+msgid "&Close"
+msgstr "C&hiudi"
+
+#: quill/ui/hygiene_dialog.py:262
+msgid ""
+"This issue could not be fixed automatically because the surrounding text "
+"has changed. Please rescan the document."
+msgstr ""
+"Questo problema non può essere corretto in automatico perché il testo che"
+" lo circonda è cambiato. Per favore ricontrolla il documento."
+
+#: quill/ui/hygiene_dialog.py:265
+msgid "Fix Not Applied"
+msgstr "Correzione non applicata"
+
+#: quill/ui/main_frame.py:15893
+msgid ""
+"QUILL is currently available in English only. When community translations"
+" are installed, they will appear here so you can switch the display "
+"language."
+msgstr ""
+"QUILL è attualmente solo in inglese. Quando le traduzioni della comunità "
+"saranno installate, appariranno qui e potrai cambiare la lingua "
+"dell'interfaccia."
+
+#: quill/ui/main_frame.py:15897
+msgid "No translations installed yet"
+msgstr "Ancora nessuna traduzione installata"
+
+#: quill/ui/main_frame.py:15902 quill/ui/main_frame.py:15923
+msgid "System default"
+msgstr "Predefinito del sistema"
+
+#: quill/ui/main_frame.py:15905
+msgid "Choose the language for menus, dialogs, and messages:"
+msgstr "Scegli la lingua dei menu, le finestre di dialogo, e i messaggi:"
+
+#: quill/ui/main_frame.py:15906
+msgid "Change Display Language"
+msgstr "Cambia lingua interfaccia"
+
+#: quill/ui/main_frame.py:15925
+#, python-brace-format
+msgid ""
+"Display language set to {name}. Restart QUILL to update all menus and "
+"dialogs."
+msgstr ""
+"Lingua interfaccia impostata in {name}. Riavvia QUILL per aggiornare "
+"tutti i menu e le finestre di dialogo."
+
+#: quill/ui/main_frame_format_codes.py:118
+msgid "&Font"
+msgstr "&Font"
+
+#: quill/ui/main_frame_format_codes.py:125
+#, python-brace-format
+msgid "{n} point"
+msgstr "{n} punto"
+
+#: quill/ui/main_frame_format_codes.py:126
+msgid "Font &Size"
+msgstr "Dimen&sione font"
+
+#: quill/ui/main_frame_format_codes.py:133
+msgid "&Left"
+msgstr "Si&nistra"
+
+#: quill/ui/main_frame_format_codes.py:134
+msgid "&Center"
+msgstr "&Centro"
+
+#: quill/ui/main_frame_format_codes.py:135
+msgid "&Right"
+msgstr "Dest&ra"
+
+#: quill/ui/main_frame_format_codes.py:136
+msgid "&Justify"
+msgstr "&Giustifica"
+
+#: quill/ui/main_frame_format_codes.py:137
+msgid "&Align"
+msgstr "&Allinea"
+
+#: quill/ui/main_frame_format_codes.py:145
+msgid "Text &Color"
+msgstr "&Colore testo"
+
+#: quill/ui/main_frame_format_codes.py:153
+msgid "&Highlight"
+msgstr "&Evidenzia"
+
+#: quill/ui/main_frame_format_codes.py:156
+msgid "&More Font Options..."
+msgstr "Altre o&pzioni font..."
+
+#: quill/ui/main_frame_format_codes.py:163
+msgid "Stri&kethrough"
+msgstr "Bar&rato"
+
+#: quill/ui/main_frame_format_codes.py:164
+msgid "Su&perscript"
+msgstr "A&pice"
+
+#: quill/ui/main_frame_format_codes.py:165
+msgid "Su&bscript"
+msgstr "Pe&dice"
+
+#: quill/ui/main_frame_format_codes.py:166
+msgid "Clear &Formatting"
+msgstr "Cancella &Formattazione"
+
+#: quill/ui/main_frame_format_codes.py:175
+msgid "Line &Spacing"
+msgstr "&Interlinea"
+
+#: quill/ui/main_frame_format_codes.py:183
+msgid "Paragraph Spa&cing"
+msgstr "Spa&ziatura paragrafo"
+
+#: quill/ui/main_frame_format_codes.py:191
+msgid "Paragraph &Indent"
+msgstr "R&ientro paragrafo"
+
+#: quill/ui/main_frame_format_codes.py:199
+msgid "Paragraph St&yle"
+msgstr "Sti&le paragrafo"
+
+#: quill/ui/main_frame_format_codes.py:202
+msgid "Insert Page Brea&k"
+msgstr "Inserisci in&terruzione pagina"
+
+#: quill/ui/main_frame_format_codes.py:207
+msgid "&Describe Formatting at Cursor"
+msgstr "&Descrivi formattazione al cursore"
+
+#: quill/ui/main_frame_format_codes.py:211
+msgid "Announce Formatting on Cursor &Move"
+msgstr "Annuncia formattazione al &Movimento del cursore"
+
+#: quill/ui/main_frame_hygiene.py:68
+msgid ""
+"Quill Eraser is designed for prose. This appears to be a codemeaningful. "
+"Prose rules are disabled.\n"
+"\n"
+"Would you like to run safe trailing-whitespace checks only?"
+msgstr ""
+"Quill Eraser è progettato per la prosa. Questo sembra essere codice di "
+"programmazione. Le regole per la prosa sono disabilitate. \n"
+"Vuoi eseguire solo i controlli sicuri sugli spazi vuoti a fine riga?"
+
+#: quill/ui/main_frame_hygiene.py:73 quill/ui/main_frame_hygiene.py:92
+#: quill/ui/main_frame_hygiene.py:114
+msgid "Quill Eraser"
+msgstr "Quill Eraser"
+
+#: quill/ui/main_frame_hygiene.py:91
+msgid "No text is selected. Check the entire document instead?"
+msgstr "Nessun testo selezionato. Controllare invece l'intero documento?"
+
+#: quill/ui/main_frame_hygiene.py:110
+msgid "Quill Eraser: no issues found."
+msgstr "Quill Eraser: nessun problema rilevato"
+
+#: quill/ui/main_frame_menu.py:143
+msgid "&New"
+msgstr "&Nuovo"
+
+#: quill/ui/main_frame_menu.py:144
+msgid "&Open..."
+msgstr "&Apri..."
+
+#: quill/ui/main_frame_menu.py:146
+msgid "Open &Recent"
+msgstr "Apri &Recente"
+
+#: quill/ui/main_frame_menu.py:148
+msgid "Open from &URL..."
+msgstr "Apri da &URL..."
+
+#: quill/ui/main_frame_menu.py:150
+msgid "&Quick Connect..."
+msgstr "Connessione &veloce..."
+
+#: quill/ui/main_frame_menu.py:151
+msgid "&Site Manager..."
+msgstr "&Gestore siti..."
+
+#: quill/ui/main_frame_menu.py:152
+msgid "Open over SS&H"
+msgstr "Apri in SS&H"
+
+#: quill/ui/main_frame_menu.py:156
+msgid "&Open from Remote..."
+msgstr "Apri da Re&moto..."
+
+#: quill/ui/main_frame_menu.py:160
+msgid "&Save to Remote"
+msgstr "&Salva in remoto"
+
+#: quill/ui/main_frame_menu.py:164
+msgid "Save &Copy to Remote..."
+msgstr "Salva &copia in remoto..."
+
+#: quill/ui/main_frame_menu.py:169
+msgid "&GitHub Repository..."
+msgstr "Repository &Github..."
+
+#: quill/ui/main_frame_menu.py:173
+msgid "GitHub File &URL..."
+msgstr "&URL del file Github..."
+
+#: quill/ui/main_frame_menu.py:177
+msgid "&Save to GitHub..."
+msgstr "&Salva su Github..."
+
+#: quill/ui/main_frame_menu.py:182
+msgid "&Manage Remote Sites..."
+msgstr "G&estisci siti remoti..."
+
+#: quill/ui/main_frame_menu.py:186
+msgid "Manage &GitHub Accounts..."
+msgstr "Gestisci account &Github..."
+
+#: quill/ui/main_frame_menu.py:188
+msgid "Open from &Remote"
+msgstr "Apri da &remoto"
+
+#: quill/ui/main_frame_menu.py:189
+msgid "&Snapshots"
+msgstr "&Snapshot"
+
+#: quill/ui/main_frame_menu.py:264
+msgid "P&ublish"
+msgstr "P&ubblica"
+
+#: quill/ui/audio_studio/chapter_workbench.py:196
+#: quill/ui/main_frame_menu.py:270
+msgid "&Save"
+msgstr "&Salva"
+
+#: quill/ui/audio_studio/chapter_workbench.py:198
+#: quill/ui/main_frame_menu.py:271
+msgid "Save &As..."
+msgstr "Salva con &nome..."
+
+#: quill/ui/main_frame_menu.py:272
+msgid "Save A&ll"
+msgstr "Salva &tutto"
+
+#: quill/ui/main_frame_menu.py:273
+msgid "Save As Plain &Text..."
+msgstr "Salva come testo &semplice..."
+
+#: quill/ui/main_frame_menu.py:282
+msgid "Import / Convert &Document (OCR)..."
+msgstr "Importa / Converti &Documento (OCR)..."
+
+#: quill/ui/main_frame_menu.py:287 quill/ui/main_frame_menu.py:332
+msgid "&Markdown..."
+msgstr "&Markdown..."
+
+#: quill/ui/main_frame_menu.py:291 quill/ui/main_frame_menu.py:336
+msgid "&HTML..."
+msgstr "&HTML..."
+
+#: quill/ui/main_frame_menu.py:295 quill/ui/main_frame_menu.py:340
+msgid "&Word Document..."
+msgstr "Documento &Word..."
+
+#: quill/ui/main_frame_menu.py:299 quill/ui/main_frame_menu.py:344
+msgid "&OpenDocument Text..."
+msgstr "&OpenDocument Text..."
+
+#: quill/ui/main_frame_menu.py:303 quill/ui/main_frame_menu.py:348
+msgid "&Rich Text Format..."
+msgstr "&Rich Text Format..."
+
+#: quill/ui/main_frame_menu.py:307 quill/ui/main_frame_menu.py:352
+msgid "&EPUB Book..."
+msgstr "Libro &EPUB..."
+
+#: quill/ui/main_frame_menu.py:311
+msgid "CSV / &TSV Table..."
+msgstr "&Tabella CSV / TSV..."
+
+#: quill/ui/main_frame_menu.py:315
+msgid "&LaTeX / TeX..."
+msgstr "&LaTeX / TeX..."
+
+#: quill/ui/main_frame_menu.py:320 quill/ui/main_frame_menu.py:369
+msgid "&Batch Conversion..."
+msgstr "Conversione sim&ultanea..."
+
+#: quill/ui/main_frame_menu.py:325 quill/ui/main_frame_menu.py:374
+msgid "Other Pandoc Format..."
+msgstr "Altro formato Pandoc..."
+
+#: quill/ui/main_frame_menu.py:327
+msgid "&Import"
+msgstr "&Importa"
+
+#: quill/ui/main_frame_menu.py:356
+msgid "&PDF Document..."
+msgstr "Documento &PDF..."
+
+#: quill/ui/main_frame_menu.py:360
+msgid "Plain &Text..."
+msgstr "Testo &Semplice..."
+
+#: quill/ui/main_frame_menu.py:364
+msgid "&DAISY Talking Book..."
+msgstr "Libro parlato &DAISY..."
+
+#: quill/ui/main_frame_menu.py:376
+msgid "&Export"
+msgstr "&Esporta"
+
+#: quill/ui/main_frame_menu.py:380
+msgid "Con&vert File..."
+msgstr "Con&verti file..."
+
+#: quill/ui/main_frame_menu.py:385
+msgid "&Reload from Disk"
+msgstr "&Ricarica da disco"
+
+#: quill/ui/main_frame_menu.py:386
+msgid "Check for E&xternal Changes..."
+msgstr "Controlla cambiamenti es&terni..."
+
+#: quill/ui/main_frame_menu.py:387
+msgid "Restore &Backup..."
+msgstr "Ripristina &Backup..."
+
+#: quill/ui/main_frame_menu.py:390
+msgid "Restore Previous &Version..."
+msgstr "Ripristina &versione precedente..."
+
+#: quill/ui/main_frame_menu.py:400
+msgid "&New Notebook..."
+msgstr "&Nuovo blocco note..."
+
+#: quill/ui/main_frame_menu.py:404
+msgid "New from &Folder..."
+msgstr "Nuovo da &Cartella..."
+
+#: quill/ui/main_frame_menu.py:408
+msgid "&Open Notebook..."
+msgstr "&Apri blocco note..."
+
+#: quill/ui/main_frame_menu.py:413
+msgid "&Save Version..."
+msgstr "&Salva versione..."
+
+#: quill/ui/main_frame_menu.py:417
+msgid "Restore &Version..."
+msgstr "Ripristina &Versione..."
+
+#: quill/ui/main_frame_menu.py:421
+msgid "&Manage Versions..."
+msgstr "&Gestisci versioni..."
+
+#: quill/ui/main_frame_menu.py:423
+msgid "&Notebook"
+msgstr "Blocco &note"
+
+#: quill/ui/main_frame_menu.py:426
+msgid "Pa&ge Setup..."
+msgstr "Impostazioni pa&gina..."
+
+#: quill/ui/main_frame_menu.py:427
+msgid "&Print..."
+msgstr "Stam&pa..."
+
+#: quill/ui/main_frame_menu.py:432
+msgid "&Close Document"
+msgstr "&Chiudi documento"
+
+#: quill/ui/main_frame_menu.py:434
+msgid "E&xit"
+msgstr "E&sci"
+
+#: quill/ui/main_frame_menu.py:493
+msgid "&Undo"
+msgstr "A&nnulla"
+
+#: quill/ui/main_frame_menu.py:494
+msgid "&Redo"
+msgstr "&Ripeti"
+
+#: quill/ui/main_frame_menu.py:498
+msgid "Cu&t\tCtrl+X"
+msgstr "&Taglia\tCtrl+X"
+
+#: quill/ui/main_frame_menu.py:499
+msgid "&Copy\tCtrl+C"
+msgstr "&Copia\tCtrl+C"
+
+#: quill/ui/main_frame_menu.py:500
+msgid "&Paste\tCtrl+V"
+msgstr "&Incolla\tCtrl+V"
+
+#: quill/ui/main_frame_menu.py:510
+#, python-brace-format
+msgid "Copy to Slot &{n}"
+msgstr "Copia nello slot &{n}"
+
+#: quill/ui/main_frame_menu.py:517
+#, python-brace-format
+msgid "Paste from Slot &{n}"
+msgstr "Incolla dallo slot &{n}"
+
+#: quill/ui/main_frame_menu.py:523
+msgid "Copy to &Next Empty Slot"
+msgstr "Copia nello slot &vuoto successivo"
+
+#: quill/ui/main_frame_menu.py:527
+msgid "&Search Tray Slots..."
+msgstr "&Cerca negli slot  appunti..."
+
+#: quill/ui/main_frame_menu.py:531
+msgid "Copy &Tray"
+msgstr "&Cronologia appunti"
+
+#: quill/ui/main_frame_menu.py:534
+msgid "Copy With &Attribution"
+msgstr "Copia con &attribuzione"
+
+#: quill/ui/main_frame_menu.py:537
+msgid "Select &All\tCtrl+A"
+msgstr "Seleziona &tutto\tCtrl+A"
+
+#: quill/ui/main_frame_menu.py:542
+msgid "Fin&d..."
+msgstr "Tro&va..."
+
+#: quill/ui/main_frame_menu.py:545
+msgid "Rep&lace..."
+msgstr "S&ostituisci..."
+
+#: quill/ui/main_frame_menu.py:549
+msgid "Find &Next"
+msgstr "Trova &successivo"
+
+#: quill/ui/main_frame_menu.py:553
+msgid "Find Pre&vious"
+msgstr "Trova pre&cedente"
+
+#: quill/ui/main_frame_menu.py:557
+msgid "Find All &Matches"
+msgstr "Trova tutte le &occorrenze"
+
+#: quill/ui/main_frame_menu.py:562
+msgid "&Word Prediction..."
+msgstr "&Suggerimenti parole..."
+
+#: quill/ui/main_frame_menu.py:569
+msgid "E&xtend Selection Mode"
+msgstr "E&stendi modalità selezione"
+
+#: quill/ui/main_frame_menu.py:577
+msgid "&Start Selection"
+msgstr "A&vvia Selezione"
+
+#: quill/ui/main_frame_menu.py:581
+msgid "&Complete Selection"
+msgstr "&Completa selezione"
+
+#: quill/ui/main_frame_menu.py:585
+msgid "&Reselect"
+msgstr "&Riseleziona"
+
+#: quill/ui/main_frame_menu.py:589
+msgid "&Go to Start of Selection"
+msgstr "&Vai a inizio selezione"
+
+#: quill/ui/main_frame_menu.py:594
+msgid "Select &Line"
+msgstr "Seleziona &riga"
+
+#: quill/ui/main_frame_menu.py:598
+msgid "Select &Paragraph"
+msgstr "Seleziona &paragrafo"
+
+#: quill/ui/main_frame_menu.py:602
+msgid "Select &Block"
+msgstr "Seleziona &blocco"
+
+#: quill/ui/main_frame_menu.py:606 quill/ui/main_frame_menu.py:2163
+msgid "E&xpand Selection"
+msgstr "Es&pandi selezione"
+
+#: quill/ui/main_frame_menu.py:610
+msgid "S&hrink Selection"
+msgstr "Ri&duci selezione"
+
+#: quill/ui/main_frame_menu.py:615
+msgid "Select to End of &Line"
+msgstr "Seleziona fino a &fine riga"
+
+#: quill/ui/main_frame_menu.py:620
+msgid "Select to Start of Li&ne"
+msgstr "Seleziona fino a i&nizio riga"
+
+#: quill/ui/main_frame_menu.py:627
+msgid "Select to End of &Document"
+msgstr "Seleziona fino a fine &documento"
+
+#: quill/ui/main_frame_menu.py:634
+msgid "Select to Start of D&ocument"
+msgstr "Seleziona fino a inizio d&ocumento"
+
+#: quill/ui/main_frame_menu.py:641
+msgid "&Set Temporary Mark"
+msgstr "&Imposta marcatore temporaneo"
+
+#: quill/ui/main_frame_menu.py:645
+msgid "&Jump to Previous Mark"
+msgstr "Salta a marcatore &precedente"
+
+#: quill/ui/main_frame_menu.py:650
+msgid "&Swap Cursor and Mark"
+msgstr "&Scambia cursore e marcatore"
+
+#: quill/ui/main_frame_menu.py:656
+msgid "&List Recent Marks"
+msgstr "E&lenca contrassegni recenti"
+
+#: quill/ui/main_frame_menu.py:661
+msgid "&Set Named Mark..."
+msgstr "I&mposta marcatore con nome..."
+
+#: quill/ui/main_frame_menu.py:665
+msgid "&Jump to Named Mark..."
+msgstr "Sal&ta a marcatore con nome..."
+
+#: quill/ui/main_frame_menu.py:669
+msgid "&Review Buffer"
+msgstr "&Rivedi buffer"
+
+#: quill/ui/main_frame_menu.py:671
+msgid "&Selection"
+msgstr "&Selezione"
+
+#: quill/ui/main_frame_menu.py:681
+msgid "Search in &Files..."
+msgstr "Cerca nei &file..."
+
+#: quill/ui/main_frame_menu.py:685
+msgid "&Replace Across Files..."
+msgstr "Sos&tituisci nei file..."
+
+#: quill/ui/main_frame_menu.py:725
+msgid "Toggle Soft &Wrap"
+msgstr "Attiva/disattiva Soft &Wrap"
+
+#: quill/ui/main_frame_menu.py:728
+msgid "Show &Tab Control"
+msgstr "Mostra controllo &Tab"
+
+#: quill/ui/main_frame_menu.py:733
+msgid "&Preview..."
+msgstr "Ante&prima..."
+
+#: quill/ui/main_frame_menu.py:737
+msgid "Preview &Side by Side"
+msgstr "Anteprima &fianco a fianco"
+
+#: quill/ui/main_frame_menu.py:741
+msgid "&Focus Preview"
+msgstr "Anteprima &focus"
+
+#: quill/ui/main_frame_menu.py:745
+msgid "&Browser Preview..."
+msgstr "Anteprima &browser..."
+
+#: quill/ui/main_frame_menu.py:748
+msgid "&Auto Side-by-Side Preview"
+msgstr "Anteprima &automatica fianco a fianco"
+
+#: quill/ui/main_frame_menu.py:754
+msgid "Show &Entries Panel"
+msgstr "Mostra pannello &elementi"
+
+#: quill/ui/main_frame_menu.py:759
+msgid "Reveal &Codes"
+msgstr "Rivela &Codici"
+
+#: quill/ui/main_frame_menu.py:797
+msgid "&Back Location"
+msgstr "&Indietro di una posizione"
+
+#: quill/ui/main_frame_menu.py:801
+msgid "&Forward Location"
+msgstr "&Avanti di una posizione"
+
+#: quill/ui/main_frame_menu.py:806
+msgid "&Go To Line..."
+msgstr "&Vai alla riga..."
+
+#: quill/ui/main_frame_menu.py:810
+msgid "Go To &Page..."
+msgstr "Vai a &pagina..."
+
+#: quill/ui/main_frame_menu.py:817
+msgid "Next &Heading"
+msgstr "&Intestazione successiva"
+
+#: quill/ui/main_frame_menu.py:821
+msgid "Pre&vious Heading"
+msgstr "Intestazione pre&cedente"
+
+#: quill/ui/main_frame_menu.py:825
+msgid "Next &Block"
+msgstr "&Blocco successivo"
+
+#: quill/ui/main_frame_menu.py:829
+msgid "Previous Bl&ock"
+msgstr "Bl&occo precedente"
+
+#: quill/ui/main_frame_menu.py:833
+msgid "Next Str&ucture"
+msgstr "Str&uttura successiva"
+
+#: quill/ui/main_frame_menu.py:837
+msgid "Previous Structu&re"
+msgstr "Struttu&ra precedente"
+
+#: quill/ui/main_frame_menu.py:841
+msgid "Next Re&gion"
+msgstr "Re&gione successiva"
+
+#: quill/ui/main_frame_menu.py:845
+msgid "Previous Regio&n"
+msgstr "Regio&ne precedente"
+
+#: quill/ui/main_frame_menu.py:849
+msgid "Match &Bracket"
+msgstr "Ab&bina parentesi"
+
+#: quill/ui/main_frame_menu.py:853
+msgid "Next &Token"
+msgstr "&Token successivo"
+
+#: quill/ui/main_frame_menu.py:857
+msgid "P&revious Token"
+msgstr "Token p&recedente"
+
+#: quill/ui/main_frame_menu.py:862
+msgid "Set Document &Language..."
+msgstr "Imposta &lingua documento..."
+
+#: quill/ui/main_frame_menu.py:867
+msgid "Speak &Window Title"
+msgstr "Pronuncia t&itolo finestra"
+
+#: quill/ui/main_frame_menu.py:871
+msgid "Speak &Full Path"
+msgstr "Pronuncia percorso &completo"
+
+#: quill/ui/main_frame_menu.py:875
+msgid "Speak &Status Summary"
+msgstr "Pronuncia &riassunto stato"
+
+#: quill/ui/main_frame_menu.py:881
+msgid "&Compare with File..."
+msgstr "&Confronta con file..."
+
+#: quill/ui/main_frame_menu.py:890 quill/ui/main_frame_menu.py:2047
+msgid "&Next Difference"
+msgstr "Differe&nza successiva"
+
+#: quill/ui/main_frame_menu.py:894 quill/ui/main_frame_menu.py:2048
+msgid "&Previous Difference"
+msgstr "Differenza &Precedente"
+
+#: quill/ui/main_frame_menu.py:899
+msgid "Read &Current Difference"
+msgstr "Leggi differenza &Corrente"
+
+#: quill/ui/main_frame_menu.py:906
+msgid "Toggle &Ignore Whitespace"
+msgstr "Attiva/disattiva &Ignora spazio bianco"
+
+#: quill/ui/main_frame_menu.py:910
+msgid "&Generate Accessible Report"
+msgstr "&Genera report accessibile"
+
+#: quill/ui/main_frame_menu.py:912
+msgid "&Compare"
+msgstr "&Confronta"
+
+#: quill/ui/main_frame_menu.py:916
+msgid "Outline &Navigator..."
+msgstr "&Navigatore della struttura..."
+
+#: quill/ui/main_frame_menu.py:920
+msgid "&Heading Organizer..."
+msgstr "&Organizzatore intestazioni..."
+
+#: quill/ui/main_frame_menu.py:925
+msgid "&Follow Link"
+msgstr "&Segui link"
+
+#: quill/ui/main_frame_menu.py:930
+msgid "Set &Bookmark..."
+msgstr "Imposta Segnali&bro..."
+
+#: quill/ui/main_frame_menu.py:934
+msgid "Go To &Bookmark..."
+msgstr "Vai a segnali&bro..."
+
+#: quill/ui/main_frame_menu.py:938
+msgid "List B&ookmarks..."
+msgstr "Elenc&o segnalibri..."
+
+#: quill/ui/main_frame_menu.py:943
+msgid "Go to &Entry in Notebook..."
+msgstr "Vai a &elemento in blocco note..."
+
+#: quill/ui/main_frame_menu.py:948
+msgid "Go to &Heading in Notebook..."
+msgstr "Vai a &intestazione in blocco note..."
+
+#: quill/ui/main_frame_menu.py:954
+msgid "Go to &Bookmark in Notebook..."
+msgstr "Vai a segnali&bro in blocco note..."
+
+#: quill/ui/main_frame_menu.py:960
+msgid "Go to Sticky &Note in Notebook..."
+msgstr "Vai a &nota importante nel blocco note..."
+
+#: quill/ui/main_frame_menu.py:1017
+msgid "&Bold"
+msgstr "&Grassetto"
+
+#: quill/ui/main_frame_menu.py:1018
+msgid "&Italic"
+msgstr "Cors&ivo"
+
+#: quill/ui/main_frame_menu.py:1021
+msgid "&Underline"
+msgstr "Sotto&lineato"
+
+#: quill/ui/main_frame_menu.py:1033
+msgid "&Indent"
+msgstr "Aumenta r&ientro"
+
+#: quill/ui/main_frame_menu.py:1037
+msgid "O&utdent"
+msgstr "Rid&uci rientro"
+
+#: quill/ui/main_frame_menu.py:1041
+msgid "Tab Key Inserts Tab &Character"
+msgstr "Tasto Tab inserisce &Carattere Tabulazione"
+
+#: quill/ui/main_frame_menu.py:1050
+msgid "&Upper Case"
+msgstr "Mai&uscole"
+
+#: quill/ui/main_frame_menu.py:1054
+msgid "&Lower Case"
+msgstr "Minusco&le"
+
+#: quill/ui/main_frame_menu.py:1058
+msgid "&Title Case"
+msgstr "Formato &Titolo"
+
+#: quill/ui/main_frame_menu.py:1062
+msgid "&Sentence Case"
+msgstr "Formato fra&se"
+
+#: quill/ui/main_frame_menu.py:1066
+msgid "To&ggle Case"
+msgstr "Attiva/disattiva maius&cole/minuscole"
+
+#: quill/ui/main_frame_menu.py:1068
+msgid "Change &Case"
+msgstr "S&cambia maiuscole/minuscole"
+
+#: quill/ui/main_frame_menu.py:1074
+msgid "Toggle Line &Comment"
+msgstr "Attiva/Disattiva &commento riga"
+
+#: quill/ui/main_frame_menu.py:1081
+msgid "Toggle &Block Comment"
+msgstr "Attiva/disattiva commento &blocco"
+
+#: quill/ui/main_frame_menu.py:1091
+msgid "Move Line &Up"
+msgstr "Sposta riga s&u"
+
+#: quill/ui/main_frame_menu.py:1095
+msgid "Move Line &Down"
+msgstr "Sposta riga &giù"
+
+#: quill/ui/main_frame_menu.py:1099
+msgid "Move Secti&on Up"
+msgstr "Sposta sezi&one su"
+
+#: quill/ui/main_frame_menu.py:1103
+msgid "Move Section Do&wn"
+msgstr "Sposta sezione g&iù"
+
+#: quill/ui/main_frame_menu.py:1108
+msgid "D&uplicate Line"
+msgstr "D&uplica riga"
+
+#: quill/ui/main_frame_menu.py:1112
+msgid "De&lete Line"
+msgstr "E&limina riga"
+
+#: quill/ui/main_frame_menu.py:1117
+msgid "&Join Lines"
+msgstr "U&nisci righe"
+
+#: quill/ui/main_frame_menu.py:1123
+msgid "&Quote Lines"
+msgstr "Formatta righe come &citazione"
+
+#: quill/ui/main_frame_menu.py:1126
+msgid "&Unquote Lines"
+msgstr "To&gli citazione da righe"
+
+#: quill/ui/main_frame_menu.py:1128
+msgid "&Line"
+msgstr "&Riga"
+
+#: quill/ui/main_frame_menu.py:1134
+msgid "Sort Lines &A to Z"
+msgstr "Ordina righe dalla &A alla Z"
+
+#: quill/ui/main_frame_menu.py:1138
+msgid "Sort Lines &Z to A"
+msgstr "Ordina righe dalla &Z alla A"
+
+#: quill/ui/main_frame_menu.py:1145
+msgid "&Reverse Lines"
+msgstr "Inve&rti righe"
+
+#: quill/ui/main_frame_menu.py:1150
+msgid "Remove &Duplicate Lines"
+msgstr "Rimuovi righe &duplicate"
+
+#: quill/ui/main_frame_menu.py:1152
+#, fuzzy
+msgid "Sort and &Filter"
+msgstr "Ordina e &Filtra"
+
+#: quill/ui/main_frame_menu.py:1158
+msgid "Trim Trailing &Whitespace"
+msgstr "Elimina &finali e spazi bianchi"
+
+#: quill/ui/main_frame_menu.py:1164
+msgid "&Normalize Whitespace"
+msgstr "&Normalizza spazio bianco"
+
+#: quill/ui/main_frame_menu.py:1170
+msgid "Convert Indentation to &Spaces"
+msgstr "Converti rientro in &spazi"
+
+#: quill/ui/main_frame_menu.py:1177
+msgid "Convert Indentation to &Tabs"
+msgstr "Converti rientro in più &tab"
+
+#: quill/ui/main_frame_menu.py:1181
+msgid "&Whitespace"
+msgstr "Spazio &bianco"
+
+#: quill/ui/main_frame_menu.py:1186
+#, fuzzy
+msgid "&HTML and Encoding"
+msgstr "&HTML e encoding"
+
+#: quill/ui/main_frame_menu.py:1191
+msgid "&Markdown"
+msgstr "&Markdown"
+
+#: quill/ui/main_frame_menu.py:1202
+msgid "&Auto-detect from file"
+msgstr "Rileva in &automatico da file"
+
+#: quill/ui/main_frame_menu.py:1207
+msgid "Plain text"
+msgstr "Testo Semplice"
+
+#: quill/ui/main_frame_menu.py:1211
+msgid "Document &Language"
+msgstr "&Lingua documento"
+
+#: quill/ui/main_frame_menu.py:1218
+msgid "Heading &1"
+msgstr "Intestazione &1"
+
+#: quill/ui/main_frame_menu.py:1221
+msgid "Heading &2"
+msgstr "Intestazione &2"
+
+#: quill/ui/main_frame_menu.py:1224
+msgid "Heading &3"
+msgstr "Intestazione &3"
+
+#: quill/ui/main_frame_menu.py:1227
+msgid "Heading &4"
+msgstr "Intestazione &4"
+
+#: quill/ui/main_frame_menu.py:1230
+msgid "Heading &5"
+msgstr "Intestazione &5"
+
+#: quill/ui/main_frame_menu.py:1233
+msgid "Heading &6"
+msgstr "Intestazione &6"
+
+#: quill/ui/main_frame_menu.py:1239
+msgid "Decrease Level"
+msgstr "Diminuisci Livello"
+
+#: quill/ui/main_frame_menu.py:1246
+msgid "Increase Level"
+msgstr "Aumenta Livello"
+
+#: quill/ui/main_frame_menu.py:1253
+msgid "&Style Headings..."
+msgstr "&Stilizza Intestazioni..."
+
+#: quill/ui/main_frame_menu.py:1257
+msgid "Insert &Link..."
+msgstr "Inserisci &Link..."
+
+#: quill/ui/main_frame_menu.py:1261
+msgid "Insert &Citation..."
+msgstr "Inserisci &Citazione..."
+
+#: quill/ui/main_frame_menu.py:1265
+msgid "Snippet &Gallery..."
+msgstr "&Galleria snippet..."
+
+#: quill/ui/main_frame_menu.py:1268
+msgid "&Heading"
+msgstr "In&testazione"
+
+#: quill/ui/main_frame_menu.py:1272
+msgid "B&ullet"
+msgstr "Elenco p&untato"
+
+#: quill/ui/main_frame_menu.py:1276
+msgid "&Numbered"
+msgstr "Elenco &Numerato"
+
+#: quill/ui/main_frame_menu.py:1282
+msgid "Toggle &Bullet"
+msgstr "Attiva/disattiva elenco &puntato"
+
+#: quill/ui/main_frame_menu.py:1286
+msgid "Toggle &Numbered"
+msgstr "Attiva/disattiva elenco &Numerato"
+
+#: quill/ui/main_frame_menu.py:1290
+msgid "&Task"
+msgstr "At&tività"
+
+#: quill/ui/main_frame_menu.py:1295
+msgid "List &Manager..."
+msgstr "Gestio&ne liste..."
+
+#: quill/ui/main_frame_menu.py:1299
+msgid "Structured List &Studio..."
+msgstr "Studio li&sta strutturata..."
+
+#: quill/ui/main_frame_menu.py:1303
+msgid "List Studio Se&ttings..."
+msgstr "Impos&tazioni Studio Lista..."
+
+#: quill/ui/main_frame_menu.py:1305
+msgid "&List"
+msgstr "&Lista"
+
+#: quill/ui/main_frame_menu.py:1308
+msgid "Insert Code &Block"
+msgstr "Inserisci &Blocco di codice"
+
+#: quill/ui/main_frame_menu.py:1312
+msgid "Insert &Footnote"
+msgstr "Inserisci &nota a piè pagina"
+
+#: quill/ui/main_frame_menu.py:1316
+msgid "Insert &Table..."
+msgstr "Inserisci &Tabella..."
+
+#: quill/ui/main_frame_menu.py:1321
+msgid "Insert &HTML Tag..."
+msgstr "Inserisci tag &HTML..."
+
+#: quill/ui/main_frame_menu.py:1325
+msgid "Insert &Markdown Tag..."
+msgstr "Inserisci tag &Markdown..."
+
+#: quill/ui/main_frame_menu.py:1329
+msgid "Insert S&nippet..."
+msgstr "Inserisci s&nippet..."
+
+#: quill/ui/main_frame_menu.py:1333
+msgid "Manage Snippets..."
+msgstr "Gestisci Snippet..."
+
+#: quill/ui/main_frame_menu.py:1339
+msgid "E&xpand Abbreviation"
+msgstr "E&spandi abbreviazione"
+
+#: quill/ui/main_frame_menu.py:1343
+msgid "Manage Abbrevi&ations..."
+msgstr "Gestisci abbrevi&azioni..."
+
+#: quill/ui/main_frame_menu.py:1348
+msgid "&Toggle Abbreviation Expansion"
+msgstr "Attiva/disat&tiva espansione abbreviazioni"
+
+#: quill/ui/main_frame_menu.py:1369
+msgid "Date and &Time"
+msgstr "Da&ta e ora"
+
+#: quill/ui/main_frame_menu.py:1379
+msgid "&Next Document"
+msgstr "Docume&nto Successivo"
+
+#: quill/ui/main_frame_menu.py:1383
+msgid "&Previous Document"
+msgstr "Documento &Precedente"
+
+#: quill/ui/main_frame_menu.py:1388
+msgid "Close &Other Documents\tCtrl+Shift+F4"
+msgstr "Chiudi altri D&ocumenti\tCtrl+Shift+F4"
+
+#: quill/ui/main_frame_menu.py:1394
+msgid "Send to S&ystem Tray"
+msgstr "Invia a S&ystem Tray"
+
+#: quill/ui/main_frame_menu.py:1606
+msgid "&Command Palette..."
+msgstr "Palette di &Comandi..."
+
+#: quill/ui/main_frame_menu.py:1610
+msgid "Story &Studio..."
+msgstr "Creatore &Storia..."
+
+#: quill/ui/main_frame_menu.py:1613
+msgid "&Open Vault..."
+msgstr "&Apri gestore..."
+
+#: quill/ui/main_frame_menu.py:1615
+msgid "Vault E&xplorer..."
+msgstr "Esplora &Gestori..."
+
+#: quill/ui/main_frame_menu.py:1619
+msgid "&Follow Wikilink"
+msgstr "&Segui link wiki"
+
+#: quill/ui/main_frame_menu.py:1622
+msgid "Show &Backlinks"
+msgstr "Mostra Lin&k di ritorno"
+
+#: quill/ui/main_frame_menu.py:1626
+msgid "Note &Neighborhood"
+msgstr "&Note correlate"
+
+#: quill/ui/main_frame_menu.py:1630
+msgid "&Unlinked Mentions"
+msgstr "Men&zioni non collegate"
+
+#: quill/ui/main_frame_menu.py:1634
+msgid "&Insert Link to Note..."
+msgstr "&Inserisci Link a nota..."
+
+#: quill/ui/main_frame_menu.py:1638
+msgid "&Complete Link or Tag..."
+msgstr "&Completa Link o tag..."
+
+#: quill/ui/main_frame_menu.py:1641
+msgid "&Rename Note..."
+msgstr "&Rinomina nota..."
+
+#: quill/ui/main_frame_menu.py:1644
+msgid "&Go to Note..."
+msgstr "&Vai alla nota..."
+
+#: quill/ui/main_frame_menu.py:1647
+msgid "&Search Vault..."
+msgstr "&Cerca gestore..."
+
+#: quill/ui/main_frame_menu.py:1649
+msgid "Show &Tags..."
+msgstr "Mostra &tag..."
+
+#: quill/ui/main_frame_menu.py:1653
+msgid "Spea&k Embed at Cursor"
+msgstr "Leg&gi elemento incorporato al cursore"
+
+#: quill/ui/main_frame_menu.py:1657
+msgid "&Resolve Embed Inline"
+msgstr "Most&ra incorporato nel testo"
+
+#: quill/ui/main_frame_menu.py:1661
+msgid "Insert &Template..."
+msgstr "Inserisci &Template..."
+
+#: quill/ui/main_frame_menu.py:1664
+msgid "Open Toda&y's Note"
+msgstr "Apri &Nota di oggi"
+
+#: quill/ui/main_frame_menu.py:1668
+msgid "&Previous Daily Note"
+msgstr "Nota giornaliera &Precedente"
+
+#: quill/ui/main_frame_menu.py:1671
+msgid "&Next Daily Note"
+msgstr "&Nota giornaliera Successiva"
+
+#: quill/ui/main_frame_menu.py:1676
+msgid "&Export Vault as Website..."
+msgstr "&Esporta gestore come sito web..."
+
+#: quill/ui/main_frame_menu.py:1678
+msgid "S&ync Vault"
+msgstr "Sincroni&zza gestore"
+
+#: quill/ui/main_frame_menu.py:1680
+msgid "Vault Se&ttings..."
+msgstr "Impos&tazioni gestore..."
+
+#: quill/ui/main_frame_menu.py:1682
+msgid "&Vault"
+msgstr "G&estore"
+
+#: quill/ui/main_frame_menu.py:1689
+msgid "&Word Count..."
+msgstr "&Conteggio parole..."
+
+#: quill/ui/main_frame_menu.py:1693 quill/ui/main_frame_menu.py:2143
+msgid "&Spell Check..."
+msgstr "Con&trollo ortografico..."
+
+#: quill/ui/main_frame_menu.py:1697
+msgid "Previous Mi&sspelling"
+msgstr "Errore o&rtografico precedente"
+
+#: quill/ui/main_frame_menu.py:1701
+msgid "Next &Misspelling"
+msgstr "Errore orto&grafico successivo"
+
+#: quill/ui/main_frame_menu.py:1705
+msgid "&Misspelling List..."
+msgstr "&Elenco errori ortografici..."
+
+#: quill/ui/main_frame_menu.py:1710
+msgid "Spell Check &Language..."
+msgstr "&Lingua controllo ortografico..."
+
+#: quill/ui/main_frame_menu.py:1719
+msgid "Add &Inline Note..."
+msgstr "Aggiungi nota &in linea..."
+
+#: quill/ui/main_frame_menu.py:1723
+msgid "Next Inline &Note"
+msgstr "&Nota in linea successiva"
+
+#: quill/ui/main_frame_menu.py:1727
+msgid "Previous Inline No&te"
+msgstr "No&ta in linea precedente"
+
+#: quill/ui/main_frame_menu.py:1731
+msgid "Speak Inline Note (double to &edit)"
+msgstr "Pronuncia nota in lin&ea (due volte per modificare)"
+
+#: quill/ui/main_frame_menu.py:1737
+msgid "&Thesaurus..."
+msgstr "&Thesaurus..."
+
+#: quill/ui/main_frame_menu.py:1741
+msgid "Dictionary &Status..."
+msgstr "&Stato dizionario..."
+
+#: quill/ui/main_frame_menu.py:1747
+msgid "Change &Display Language..."
+msgstr "Cambia &Lingua interfaccia..."
+
+#: quill/ui/main_frame_menu.py:1757
+msgid "GLOW &Audit Document"
+msgstr "Ispezion&a del documento con GLOW"
+
+#: quill/ui/main_frame_menu.py:1761
+msgid "GLOW Audit &Selection"
+msgstr "Ispeziona &Selezione con GLOW"
+
+#: quill/ui/main_frame_menu.py:1766
+msgid "GLOW &Fix Document"
+msgstr "Cor&reggi documento con GLOW"
+
+#: quill/ui/main_frame_menu.py:1770
+msgid "GLOW Fix &Selection"
+msgstr "Correggi &Selezione con GLOW"
+
+#: quill/ui/main_frame_menu.py:1779
+msgid "&Table Studio..."
+msgstr "&Studio tabelle..."
+
+#: quill/ui/main_frame_menu.py:1783
+msgid "Open CS&V in Table Studio..."
+msgstr "Apri CS&V in studio tabelle..."
+
+#: quill/ui/main_frame_menu.py:1788
+msgid "&Quill Eraser..."
+msgstr "&Quill Eraser..."
+
+#: quill/ui/main_frame_menu.py:1792
+msgid "Quill Eraser on &Selection..."
+msgstr "Quill Eraser su &Selezione..."
+
+#: quill/ui/main_frame_menu.py:1794
+#, fuzzy
+msgid "&Writing and Language"
+msgstr "S&crittura e lingua"
+
+#: quill/ui/main_frame_menu.py:1800
+msgid "&Start / Pause"
+msgstr "Riproduci/pau&sa"
+
+#: quill/ui/main_frame_menu.py:1804
+msgid "&Voice..."
+msgstr "&Voce..."
+
+#: quill/ui/main_frame_menu.py:1808
+msgid "Se&ttings..."
+msgstr "Impos&tazioni..."
+
+#: quill/ui/main_frame_menu.py:1812
+msgid "Generate &Audio..."
+msgstr "Genera &Audio..."
+
+#: quill/ui/main_frame_menu.py:1824
+msgid "Read in &Browser (Experimental)"
+msgstr "Leggi nel &Browser (sperimentale)"
+
+#: quill/ui/main_frame_menu.py:1828
+msgid "Announcement &Backend..."
+msgstr "&Backend annuncio..."
+
+#: quill/ui/main_frame_menu.py:1832
+msgid "Announcement &Trace (in Settings)..."
+msgstr "Annuncio &Traccia (in impostazioni)..."
+
+#: quill/ui/main_frame_menu.py:1835
+msgid "Read &Aloud"
+msgstr "Leggi a voce &alta"
+
+#: quill/ui/main_frame_menu.py:1838
+msgid "&Stop Reading"
+msgstr "&Ferma lettura"
+
+#: quill/ui/main_frame_menu.py:1842
+msgid "&Say Selected"
+msgstr "Pronuncia &Selezionato"
+
+#: quill/ui/main_frame_menu.py:1846
+msgid "&Read All"
+msgstr "&Leggi tutto"
+
+#: quill/ui/main_frame_menu.py:1851
+msgid "Toggle &Sound Notifications"
+msgstr "Attiva/disattiva notifiche &sonore"
+
+#: quill/ui/main_frame_menu.py:1855
+msgid "&Manage Sound Events..."
+msgstr "&Gestisci suoni degli eventi..."
+
+#: quill/ui/main_frame_menu.py:1860
+msgid "OCR &Image..."
+msgstr "OCR &Immagine..."
+
+#: quill/ui/main_frame_menu.py:1864
+msgid "OCR &Clipboard Image"
+msgstr "OCR Immagine negli &Appunti"
+
+#: quill/ui/main_frame_menu.py:1868
+msgid "OCR &Screen Capture..."
+msgstr "OCR Cattura &Schermo..."
+
+#: quill/ui/main_frame_menu.py:1872
+msgid "&Describe Image..."
+msgstr "&Descrivi immagine..."
+
+#: quill/ui/main_frame_menu.py:1881
+msgid "&Import / Convert Document..."
+msgstr "&Importa e Converti Documento..."
+
+#: quill/ui/main_frame_menu.py:1885
+msgid "&Review Last OCR Result..."
+msgstr "&Rivedi ultimo risultato OCR..."
+
+#: quill/ui/main_frame_menu.py:1891
+msgid "I&nstall Local OCR Engine (Tesseract)..."
+msgstr "I&nstalla motore locale OCR Tesseract..."
+
+#: quill/ui/main_frame_menu.py:1896
+msgid "OCR Service &Settings..."
+msgstr "Impostazioni &Servizio OCR..."
+
+#: quill/ui/main_frame_menu.py:1900
+msgid "OCR and Conversion Ser&vices..."
+msgstr "Ser&vizi conversione e OCR..."
+
+#: quill/ui/main_frame_menu.py:1905
+msgid "&Delete OCR Temporary Files"
+msgstr "&Elimina file temporanei OCR"
+
+#: quill/ui/main_frame_menu.py:1907
+msgid "&OCR and Document Conversion"
+msgstr "&OCR e conversione documento"
+
+#: quill/ui/main_frame_menu.py:1908
+#, fuzzy
+msgid "R&eading and Dictation"
+msgstr "L&ettura e dettatura"
+
+#: quill/ui/main_frame_menu.py:1917
+msgid "&Speech and Dictation..."
+msgstr "&Voce e dettatura"
+
+#: quill/ui/main_frame_menu.py:1922
+msgid "&Dictate (Offline)"
+msgstr "&Dettatura (Offline)"
+
+#: quill/ui/main_frame_menu.py:1930
+msgid "&Voice Command (Offline)"
+msgstr "C&omando vocale (Offline)"
+
+#: quill/ui/main_frame_menu.py:1936
+msgid "Voice &Conversation Mode"
+msgstr "Modalità &Conversazione vocale"
+
+#: quill/ui/main_frame_menu.py:1941
+msgid "Listen for &Hey QUILL"
+msgstr "In ascolto per &Hey QUILL"
+
+#: quill/ui/main_frame_menu.py:1945
+msgid "Speak Voice &Status"
+msgstr "Leggi &Stato Voce"
+
+#: quill/ui/main_frame_menu.py:1952
+msgid "Dictation &Microphone..."
+msgstr "&Microfono per dettatura..."
+
+#: quill/ui/main_frame_menu.py:1959
+msgid "&Locked Dictation (start/finish)"
+msgstr "Dettatura b&loccata (avvia/ferma)"
+
+#: quill/ui/main_frame_menu.py:1963
+msgid "&Pause or Resume"
+msgstr "&Pausa o riprendi"
+
+#: quill/ui/main_frame_menu.py:1967
+msgid "Speak &Status"
+msgstr "Leggi &stato"
+
+#: quill/ui/main_frame_menu.py:1971
+msgid "S&top (keep speech)"
+msgstr "Ferma (con&tinua lettura)"
+
+#: quill/ui/main_frame_menu.py:1975
+msgid "&Cancel (discard)"
+msgstr "Annulla (S&carta)"
+
+#: quill/ui/main_frame_menu.py:1980
+msgid "Dictation &Settings..."
+msgstr "Impo&stazioni dettatura..."
+
+#: quill/ui/main_frame_menu.py:1984
+msgid "Dictation &History && Review..."
+msgstr "Cronolo&gia e revisione dettatura..."
+
+#: quill/ui/main_frame_menu.py:1988
+msgid "&Locked Dictation"
+msgstr "Dettatura b&loccata"
+
+#: quill/ui/main_frame_menu.py:1993
+msgid "&Transcribe Audio or Video (Offline)..."
+msgstr "&Trascrivi audio o video (Offline)..."
+
+#: quill/ui/main_frame_menu.py:1998
+msgid "Generate &Captions (Offline)..."
+msgstr "Genera &sottotitoli (offline)..."
+
+#: quill/ui/main_frame_menu.py:2003
+msgid "Download &FFmpeg..."
+msgstr "Scarica &FFmpeg..."
+
+#: quill/ui/main_frame_menu.py:2008
+msgid "Download &Offline Speech Engine..."
+msgstr "Scarica motore vocale &offline..."
+
+#: quill/ui/main_frame_menu.py:2014
+msgid "Download Faster Whisper &Engine..."
+msgstr "Scarica motor&e Faster Whisper..."
+
+#: quill/ui/main_frame_menu.py:2019
+msgid "&Hugging Face Token..."
+msgstr "Token &Hugging Face..."
+
+#: quill/ui/main_frame_menu.py:2024
+msgid "&Export to Speech Audio..."
+msgstr "&Esporta in parlato..."
+
+#: quill/ui/main_frame_menu.py:2029
+msgid "Export to &Translated Speech Audio..."
+msgstr "Esporta in parlato &tradotto..."
+
+#: quill/ui/main_frame_menu.py:2034
+msgid "&Audio Studio..."
+msgstr "Audio &Studio..."
+
+#: quill/ui/main_frame_menu.py:2038
+msgid "Manage &Pronunciations..."
+msgstr "Gestisci &Pronunce..."
+
+#: quill/ui/main_frame_menu.py:2040
+msgid "&Speech"
+msgstr "V&oce"
+
+#: quill/ui/main_frame_menu.py:2044
+msgid "Compare with &File..."
+msgstr "Confronta con &File..."
+
+#: quill/ui/main_frame_menu.py:2045
+msgid "Compare &Open Documents..."
+msgstr "Confronta d&ocumenti aperti..."
+
+#: quill/ui/main_frame_menu.py:2049
+msgid "&Announce Current Difference"
+msgstr "&Annuncia differenza corrente"
+
+#: quill/ui/main_frame_menu.py:2050
+msgid "Difference &List..."
+msgstr "E&lenco differenze..."
+
+#: quill/ui/main_frame_menu.py:2051
+msgid "Toggle &Synchronized Navigation"
+msgstr "Attiva/disattiva navigazione &Sincronizzata"
+
+#: quill/ui/main_frame_menu.py:2052
+msgid "Compare O&ptions..."
+msgstr "Confronta o&pzioni..."
+
+#: quill/ui/main_frame_menu.py:2054
+msgid "Create Difference &Summary"
+msgstr "Crea rias&sunto differenze"
+
+#: quill/ui/main_frame_menu.py:2055
+msgid "Copy &Current Difference"
+msgstr "Copia differenza &Corrente"
+
+#: quill/ui/main_frame_menu.py:2056
+msgid "Copy A&ll Differences"
+msgstr "Copia tutte &le differenze"
+
+#: quill/ui/main_frame_menu.py:2057
+msgid "C&omparison"
+msgstr "C&onfronto"
+
+#: quill/ui/main_frame_menu.py:2060
+msgid "&Braille"
+msgstr "&Braille"
+
+#: quill/ui/main_frame_menu.py:2066 quill/ui/main_frame_menu.py:2325
+msgid "Watch Folder &Monitoring (in Settings)..."
+msgstr "&Monitoraggio cartella sorvegliata (in impostazioni)..."
+
+#: quill/ui/main_frame_menu.py:2070 quill/ui/main_frame_menu.py:2329
+msgid "Watch Folder &Profiles..."
+msgstr "&Profili cartella sorvegliata..."
+
+#: quill/ui/main_frame_menu.py:2074 quill/ui/main_frame_menu.py:2333
+msgid "Watch Folder &Queue..."
+msgstr "&Coda cartella sorvegliata..."
+
+#: quill/ui/main_frame_menu.py:2076 quill/ui/main_frame_menu.py:2335
+msgid "&Watch Folder"
+msgstr "Cartella &Sorvegliata"
+
+#: quill/ui/main_frame_menu.py:2094
+msgid "&Set Up AI... (start here)"
+msgstr "Configura IA... (Ini&zia qui)"
+
+#: quill/ui/main_frame_menu.py:2094
+msgid "&Set Up AI..."
+msgstr "Impo&sta IA..."
+
+#: quill/ui/main_frame_menu.py:2102
+msgid "&Ask Quill..."
+msgstr "Chiedi &A Quill..."
+
+#: quill/ui/main_frame_menu.py:2106
+msgid "Ask Quill by &Voice..."
+msgstr "Chiedi A Quill &vocalmente..."
+
+#: quill/ui/main_frame_menu.py:2114
+msgid "Accessibility &Tune-Up..."
+msgstr "Ot&timizza accessibilità..."
+
+#: quill/ui/main_frame_menu.py:2135
+msgid "Check Grammar with &AI..."
+msgstr "Controlla gr&ammatica con IA..."
+
+#: quill/ui/main_frame_menu.py:2139
+msgid "&Grammar and Style Check..."
+msgstr "Controllo &Grammatica e stile..."
+
+#: quill/ui/main_frame_menu.py:2147
+msgid "Spell Check &Interactive..."
+msgstr "Controllo ortografico &Interattivo..."
+
+#: quill/ui/main_frame_menu.py:2149
+msgid "&Proofread"
+msgstr "&Rivedi testo"
+
+#: quill/ui/main_frame_menu.py:2155
+msgid "&Rewrite Selection"
+msgstr "&Riscrivi selezione"
+
+#: quill/ui/main_frame_menu.py:2159
+msgid "&Summarize Selection"
+msgstr "Riassumi &Selezione"
+
+#: quill/ui/main_frame_menu.py:2167
+msgid "&Continue Writing"
+msgstr "&Continua a scrivere"
+
+#: quill/ui/main_frame_menu.py:2171
+msgid "Fix &Grammar"
+msgstr "Correggi &Grammatica"
+
+#: quill/ui/main_frame_menu.py:2175
+msgid "Generate &Table of Contents"
+msgstr "Genera &Indice dei contenuti"
+
+#: quill/ui/main_frame_menu.py:2177
+msgid "Trans&form Selection"
+msgstr "Tras&forma selezione"
+
+#: quill/ui/main_frame_menu.py:2183
+msgid "Translate &Selection..."
+msgstr "Traduci &Selezione..."
+
+#: quill/ui/main_frame_menu.py:2187
+msgid "Translate &Document..."
+msgstr "Traduci &Documento..."
+
+#: quill/ui/main_frame_menu.py:2189
+msgid "Tra&nslate"
+msgstr "Tra&duci"
+
+#: quill/ui/main_frame_menu.py:2195
+msgid "Read &Selection Aloud"
+msgstr "Leggi &selezione ad alta voce"
+
+#: quill/ui/main_frame_menu.py:2199
+msgid "Read &Document Aloud"
+msgstr "Leggi &documento ad alta voce"
+
+#: quill/ui/main_frame_menu.py:2203
+msgid "Sto&p AI Reading"
+msgstr "Interrom&pi lettura IA"
+
+#: quill/ui/main_frame_menu.py:2207
+msgid "E&xport Document as Audio..."
+msgstr "Es&porta documento come audio..."
+
+#: quill/ui/main_frame_menu.py:2209
+msgid "Read A&loud"
+msgstr "Leggi ad a&lta voce"
+
+#: quill/ui/main_frame_menu.py:2217
+msgid "Transcri&be Audio File..."
+msgstr "Trascri&vi file audio..."
+
+#: quill/ui/main_frame_menu.py:2227
+msgid "Transcript &Actions..."
+msgstr "&Azioni trascrizione..."
+
+#: quill/ui/main_frame_menu.py:2233
+msgid "Transcri&be Audio"
+msgstr "Trascri&vi audio"
+
+#: quill/ui/main_frame_menu.py:2239
+msgid "Document &Q&&A..."
+msgstr "Domande e risposte doc&umento..."
+
+#: quill/ui/main_frame_menu.py:2243
+msgid "AI T&hesaurus..."
+msgstr "T&hesaurus IA..."
+
+#: quill/ui/main_frame_menu.py:2247
+msgid "&Train Writing Style..."
+msgstr "Allena Stile Scrit&tura..."
+
+#: quill/ui/main_frame_menu.py:2251
+msgid "&Writing Instructions..."
+msgstr "Istru&zioni scrittura..."
+
+#: quill/ui/main_frame_menu.py:2253
+msgid "&More"
+msgstr "&Di più"
+
+#: quill/ui/main_frame_menu.py:2263
+msgid "AI &Library..."
+msgstr "&Libreria IA..."
+
+#: quill/ui/main_frame_menu.py:2273
+msgid "AI &Hub..."
+msgstr "&Centro IA..."
+
+#: quill/ui/main_frame_menu.py:2278
+msgid "Use Artificial &Intelligence"
+msgstr "Usa &Intelligenza Artificiale"
+
+#: quill/ui/main_frame_menu.py:2293
+msgid "Show &advanced AI features"
+msgstr "Mostra funzioni IA &avanzate"
+
+#: quill/ui/main_frame_menu.py:2318
+msgid "&Startup Wizard..."
+msgstr "Wizard di av&vio..."
+
+#: quill/ui/main_frame_menu.py:2340
+msgid "&Model Manager..."
+msgstr "Gestore &modello..."
+
+#: quill/ui/main_frame_menu.py:2344
+msgid "Model &Status"
+msgstr "&Stato del modello"
+
+#: quill/ui/main_frame_menu.py:2348
+msgid "Use &Recommended Model"
+msgstr "Usa modello &Raccomandato"
+
+#: quill/ui/main_frame_menu.py:2353
+msgid "Check &faster-whisper Engine"
+msgstr "Controlla &motore faster-whisper"
+
+#: quill/ui/main_frame_menu.py:2357
+msgid "Download &Queue..."
+msgstr "&Coda download..."
+
+#: quill/ui/main_frame_menu.py:2359
+msgid "Speech &Models"
+msgstr "&Modelli sintesi vocale"
+
+#: quill/ui/main_frame_menu.py:2364
+msgid "&Provider Center..."
+msgstr "Centro &Provider..."
+
+#: quill/ui/main_frame_menu.py:2368
+msgid "Provider &Status"
+msgstr "&Stato provider"
+
+#: quill/ui/main_frame_menu.py:2372
+msgid "Use Re&commended Provider"
+msgstr "Usa provider &consigliato"
+
+#: quill/ui/main_frame_menu.py:2376
+msgid "&Select Provider..."
+msgstr "&Seleziona provider..."
+
+#: quill/ui/main_frame_menu.py:2378
+msgid "&Providers"
+msgstr "&Provider"
+
+#: quill/ui/main_frame_menu.py:2383
+msgid "&Readiness Check"
+msgstr "Controllo p&reparazione"
+
+#: quill/ui/main_frame_menu.py:2387
+msgid "&Capability Matrix"
+msgstr "Matrice &Capacità"
+
+#: quill/ui/main_frame_menu.py:2389
+msgid "&Rollout"
+msgstr "&Rilascio"
+
+#: quill/ui/main_frame_menu.py:2391
+msgid "&BITS Whisperer"
+msgstr "&BITS Whisperer"
+
+#: quill/ui/main_frame_menu.py:2397
+msgid "&Post to Mastodon..."
+msgstr "&Posta su Mastodon..."
+
+#: quill/ui/main_frame_menu.py:2401
+msgid "Mastodon &Accounts..."
+msgstr "&Account Mastodon..."
+
+#: quill/ui/main_frame_menu.py:2403
+msgid "&Share"
+msgstr "Cond&ividi"
+
+#: quill/ui/main_frame_menu.py:2409
+msgid "Sticky &Notes..."
+msgstr "&Note importanti..."
+
+#: quill/ui/main_frame_menu.py:2413
+msgid "New Sticky &Note..."
+msgstr "Nuova &nota importante..."
+
+#: quill/ui/main_frame_menu.py:2424
+msgid "&Start Recording"
+msgstr "Avvia regi&strazione"
+
+#: quill/ui/main_frame_menu.py:2428
+msgid "S&top Recording"
+msgstr "Ferma regis&trazione"
+
+#: quill/ui/main_frame_menu.py:2432
+msgid "&Play Last Macro"
+msgstr "Ri&produci ultima macro"
+
+#: quill/ui/main_frame_menu.py:2436
+msgid "&Manage Macros..."
+msgstr "&Gestisci macro..."
+
+#: quill/ui/main_frame_menu.py:2438
+msgid "&Macros"
+msgstr "&Macro"
+
+#: quill/ui/main_frame_menu.py:2443
+msgid "Open &Python Console..."
+msgstr "Apri Console &Python..."
+
+#: quill/ui/main_frame_menu.py:2447
+msgid "Open &TypeScript Console..."
+msgstr "Apri console &TypeScript..."
+
+#: quill/ui/main_frame_menu.py:2452
+msgid "&Copy Diagnostic Summary"
+msgstr "&Copia Riassunto Diagnostica"
+
+#: quill/ui/main_frame_menu.py:2456
+msgid "&Restart TypeScript Worker"
+msgstr "&Riavvia TypeScript Worker"
+
+#: quill/ui/main_frame_menu.py:2458
+msgid "&Developer Console"
+msgstr "&Console Sviluppatori"
+
+#: quill/ui/main_frame_menu.py:2462
+msgid "Regular Expression &Helper..."
+msgstr "Aiuto &Espressioni Regolari..."
+
+#: quill/ui/main_frame_menu.py:2467
+msgid "External Tools and Format &Support..."
+msgstr "&Strumenti esterni e supporto formati..."
+
+#: quill/ui/main_frame_menu.py:2473
+msgid "&YAML Structure Editor..."
+msgstr "Editor struttura &YAML..."
+
+#: quill/ui/main_frame_menu.py:2479
+msgid "&Document Intake Report..."
+msgstr "Report classificazione &Documento..."
+
+#: quill/ui/main_frame_menu.py:2483
+msgid "&Review Extraction Quality..."
+msgstr "&Revisiona qualità estrazione..."
+
+#: quill/ui/main_frame_menu.py:2487
+msgid "R&eport Bad Extraction..."
+msgstr "S&egnala estrazione sbagliata..."
+
+#: quill/ui/main_frame_menu.py:2489
+msgid "Document &Intake"
+msgstr "Classif&icazione Documento"
+
+#: quill/ui/main_frame_menu.py:2493
+msgid "&Install Shell Integration..."
+msgstr "&Installa integrazione Shell..."
+
+#: quill/ui/main_frame_menu.py:2497
+msgid "&Remove Shell Integration"
+msgstr "&Rimuovi integrazione shell"
+
+#: quill/ui/main_frame_menu.py:2499
+msgid "&Advanced"
+msgstr "&Avanzate"
+
+#: quill/ui/main_frame_menu.py:2502
+msgid "&Quillins"
+msgstr "&Quillin"
+
+#: quill/ui/main_frame_menu.py:2508
+msgid "Pre&ferences..."
+msgstr "Pre&ferenze..."
+
+#: quill/ui/main_frame_menu.py:2512
+msgid "Customize &Menus..."
+msgstr "Personalizza &Menu..."
+
+#: quill/ui/main_frame_menu.py:2518
+msgid "&Profiles and Features..."
+msgstr "&Profili e funzionalità..."
+
+#: quill/ui/main_frame_menu.py:2521
+msgid "&Status Bar Layout..."
+msgstr "Layout Barra di &Stato..."
+
+#: quill/ui/main_frame_menu.py:2523
+msgid "&Export and Back Up..."
+msgstr "&Esporta e fai backup..."
+
+#: quill/ui/main_frame_menu.py:2524
+msgid "&Import or Restore..."
+msgstr "&Importa o ripristina..."
+
+#: quill/ui/main_frame_menu.py:2526
+msgid "&Keymap Editor..."
+msgstr "Editor &Mappatura tasti..."
+
+#: quill/ui/main_frame_menu.py:2527
+msgid "&Export Keymap..."
+msgstr "&Esporta mappatura tasti..."
+
+#: quill/ui/main_frame_menu.py:2528
+msgid "&Import Keymap..."
+msgstr "&Importa mappatura tasti..."
+
+#: quill/ui/main_frame_menu.py:2529
+msgid "&Reset Keymap"
+msgstr "&Reimposta mappatura tasti"
+
+#: quill/ui/main_frame_menu.py:2531
+msgid "Reset &Everything to Factory Defaults..."
+msgstr "Reimposta tutto a valor&e di fabbrica..."
+
+#: quill/ui/main_frame_menu.py:2534
+msgid "Show &Notifications"
+msgstr "Mostra &Notifiche"
+
+#: quill/ui/main_frame_menu.py:2535 quill/ui/main_frame_menu.py:2607
+msgid "Save &Diagnostics..."
+msgstr "Salva &Diagnostica..."
+
+#: quill/ui/main_frame_menu.py:2536
+msgid "Open &Logs Folder"
+msgstr "Apri cartella &Log"
+
+#: quill/ui/main_frame_menu.py:2540
+msgid "View &Startup Logs..."
+msgstr "Visualizza Log av&vio..."
+
+#: quill/ui/main_frame_menu.py:2544
+msgid "Open &Diagnostics Folder"
+msgstr "Apri cartella &Diagnostica"
+
+#: quill/ui/main_frame_menu.py:2546
+msgid "Check for &Updates"
+msgstr "Controlla ag&giornamenti"
+
+#: quill/ui/main_frame_menu.py:2547
+#, fuzzy
+msgid "&Customize and Support"
+msgstr "P&ersonalizza e Supporto"
+
+#: quill/ui/main_frame_menu.py:2558
+msgid "Help on This &Control\tF1"
+msgstr "Aiuto su questo &Controllo\tF1"
+
+#: quill/ui/main_frame_menu.py:2562
+msgid "&What Can I Do Here?\tShift+F1"
+msgstr "Cosa Posso Fare &Qui?\tShift+F1"
+
+#: quill/ui/main_frame_menu.py:2566
+msgid "Announce Mode &Shortcuts"
+msgstr "&Scorciatoie Modalità Annunci"
+
+#: quill/ui/main_frame_menu.py:2570
+msgid "Show Spoken &Echo"
+msgstr "Mostra f&eedback vocale"
+
+#: quill/ui/main_frame_menu.py:2574
+msgid "Status &Page"
+msgstr "&Pagina Stato"
+
+#: quill/ui/main_frame_menu.py:2578
+msgid "&Why Don't I See a Feature?"
+msgstr "Perché &non vedo una funzione?"
+
+#: quill/ui/main_frame_menu.py:2583
+msgid "&Download Optional Components..."
+msgstr "Scarica Compo&nenti opzionali..."
+
+#: quill/ui/main_frame_menu.py:2588
+msgid "Open User &Guide\tCtrl+F1"
+msgstr "Apri &Guida Utente\tCtrl+F1"
+
+#: quill/ui/main_frame_menu.py:2591
+msgid "Open &Third-Party Notices"
+msgstr "Apri Notifiche &Terze parti"
+
+#: quill/ui/main_frame_menu.py:2593
+msgid "Open &Welcome Guide"
+msgstr "Apri g&uida benvenuto"
+
+#: quill/ui/main_frame_menu.py:2594
+msgid "Open Keyboard &Reference"
+msgstr "Apri aiuto tastie&ra"
+
+#: quill/ui/main_frame_menu.py:2597
+msgid "&Personalise QUILL..."
+msgstr "&Personalizza QUILL..."
+
+#: quill/ui/main_frame_menu.py:2602
+msgid "Enable &Braille Mode..."
+msgstr "Abilita Modalità &Braille..."
+
+#: quill/ui/main_frame_menu.py:2613
+msgid "&Switch Profile..."
+msgstr "&Cambia Profilo..."
+
+#: quill/ui/main_frame_menu.py:2618
+msgid "Profile &Health Check..."
+msgstr "Controlla &Salute Profilo..."
+
+#: quill/ui/main_frame_menu.py:2625
+msgid "Manage &Individual Features..."
+msgstr "Gestisci s&ingole funzioni..."
+
+#: quill/ui/main_frame_menu.py:2632
+msgid "&Undo Last Profile Change"
+msgstr "Ann&ulla ultima modifica profilo"
+
+#: quill/ui/main_frame_menu.py:2636
+msgid "Reset to &Essential Profile"
+msgstr "Reimposta a profilo &Essenziale"
+
+#: quill/ui/main_frame_menu.py:2638
+msgid "Feature &Profiles"
+msgstr "Funzione &Profili"
+
+#: quill/ui/main_frame_menu.py:2641
+msgid "Report a &Bug..."
+msgstr "Segnala un &Bug..."
+
+#: quill/ui/main_frame_menu.py:2645
+msgid "Check for &Updates..."
+msgstr "Controlla A&ggiornamenti..."
+
+#: quill/ui/main_frame_menu.py:2646
+msgid "&What's New..."
+msgstr "No&vità..."
+
+#: quill/ui/main_frame_menu.py:2648
+msgid "Check for &GLOW Updates..."
+msgstr "Controlla aggiornamenti &GLOW..."
+
+#: quill/ui/main_frame_menu.py:2649
+msgid "&About Quill"
+msgstr "&Info su Quill"
+
+#: quill/ui/main_frame_menu.py:2655
+msgid "&File"
+msgstr "&File"
+
+#: quill/ui/main_frame_menu.py:2656
+msgid "&Edit"
+msgstr "&Modifica"
+
+#: quill/ui/main_frame_menu.py:2657
+msgid "&View"
+msgstr "&Visualizza"
+
+#: quill/ui/main_frame_menu.py:2658
+msgid "&Insert"
+msgstr "&Inserisci"
+
+#: quill/ui/main_frame_menu.py:2659
+msgid "F&ormat"
+msgstr "F&ormato"
+
+#: quill/ui/main_frame_menu.py:2660
+msgid "&Navigate"
+msgstr "&Naviga"
+
+#: quill/ui/main_frame_menu.py:2661
+msgid "&Search"
+msgstr "&Ricerca"
+
+#: quill/ui/main_frame_menu.py:2662
+msgid "&Tools"
+msgstr "&Strumenti"
+
+#: quill/ui/main_frame_menu.py:2663
+msgid "&AI"
+msgstr "I&A"
+
+#: quill/ui/main_frame_menu.py:2664
+msgid "&Window"
+msgstr "Fin&estra"
+
+#: quill/ui/main_frame_menu.py:2665 quill/ui/main_frame_menu.py:2682
+msgid "&Help"
+msgstr "&Aiuto"
+
+#: quill/ui/setup_wizard.py:34 quill/ui/setup_wizard_pages.py:946
+msgid "Personalise QUILL"
+msgstr "Personalizza QUILL"
+
+#: quill/ui/setup_wizard.py:67
+msgid "Setup Wizard"
+msgstr "Wizard iniziale"
+
+#: quill/ui/setup_wizard_pages.py:229
+msgid ""
+"QUILL is a screen-reader-friendly text editor built from the ground up\n"
+"for people who use NVDA, JAWS, Narrator, or braille displays.\n"
+"\n"
+"This short wizard asks you one question: what kind of writing do you do?\n"
+"Your answer sets a starting point. QUILL will show only what you need\n"
+"and keep everything else out of the way.\n"
+"\n"
+"Nothing here is permanent. You can change your profile any time from\n"
+"Help > Personalise QUILL. The whole wizard takes about two minutes.\n"
+"\n"
+"Press Next to begin."
+msgstr ""
+"QUILL è un editor testuale compatibile con gli screen reader costruito "
+"fin dall'dalla base \n"
+"per persone che usano NVDA, JAWS, Narrator, o display Braille.\n"
+"\n"
+"Questo breve wizard ti farà una sola breve domanda: che tipo di "
+"scritturafai?\n"
+"La tua risposta è un punto di partenza. QUILL mostrerà solo ciò che ti "
+"serve \n"
+"e metterà il resto fuori portata.\n"
+"\n"
+"Niente qui è permanente. Puoi cambiare il tuo profilo in ogni momento da"
+" \n"
+"Aiuto > Personalizza QUILL. L'intero Wizard dura circa 2 minuti.\n"
+"\n"
+"Premi Avanti per iniziare."
+
+#: quill/ui/setup_wizard_pages.py:252
+msgid "Welcome to QUILL"
+msgstr "Ti do il benvenuto in QUILL"
+
+#: quill/ui/setup_wizard_pages.py:296
+msgid "What kind of writing do you do?"
+msgstr "Che tipo di scrittura fai?"
+
+#: quill/ui/setup_wizard_pages.py:304
+msgid ""
+"Choose the option that best describes you. Arrow up and down to read "
+"about each one."
+msgstr ""
+"Scegli l'opzione che ti descrive meglio. Muovi le frecce su e giù per "
+"leggere informazioni su ciascuna."
+
+#: quill/ui/setup_wizard_pages.py:322
+msgid "About this choice:"
+msgstr "Info su questa scelta:"
+
+#: quill/ui/setup_wizard_pages.py:380
+msgid "A few optional extras"
+msgstr "Alcuni componenti extra facoltativi"
+
+#: quill/ui/setup_wizard_pages.py:387
+msgid "Add these to your starting profile. You can change them any time."
+msgstr ""
+"Aggiungi questi al tuo profilo iniziale. Puoi cambiarli in qualsiasi "
+"momento."
+
+#: quill/ui/setup_wizard_pages.py:395
+msgid "Include AI writing assistance (Ask Quill, grammar check, prompts)"
+msgstr ""
+"Includi assistenza scrittura con IA (chiedi a QUILL, controllo "
+"grammaticale, prompt)"
+
+#: quill/ui/setup_wizard_pages.py:403
+msgid "Include Braille Mode (BRF and BRL files, braille status bar)"
+msgstr "Includi Modalità Braille (file BRF e BRL, barra di stato Braille)"
+
+#: quill/ui/setup_wizard_pages.py:411
+msgid "Include typing automation (Smart Insert templates, abbreviations)"
+msgstr ""
+"Includi automazione di scrittura (template di Inserimento Intelligente, "
+"abbreviazioni)"
+
+#: quill/ui/setup_wizard_pages.py:418
+msgid "What this adds:"
+msgstr "Cosa aggiunge:"
+
+#: quill/ui/setup_wizard_pages.py:461
+msgid "No extras selected.\n"
+msgstr "Nessun extra selezionato.\n"
+
+#: quill/ui/setup_wizard_pages.py:464
+msgid ""
+"Press Next to continue. You can add any of these later\n"
+"from Help > Personalise QUILL."
+msgstr ""
+"Premi Avanti per continuare. Puoi aggiungere qualsiasi di questi più "
+"tardi \n"
+"dal menu Aiuto > Personalizza QUILL."
+
+#: quill/ui/setup_wizard_pages.py:469
+msgid "These extras will be added to your profile:\n"
+msgstr "Questi extra verranno aggiunti al tuo profilo:\n"
+
+#: quill/ui/setup_wizard_pages.py:473
+msgid ""
+"AI Writing Assistance:\n"
+"  - Ask Quill assistant (Alt+Q)\n"
+"  - AI grammar check and rewrite\n"
+"  - Writing prompts and skills\n"
+"  - Prompt Library\n"
+"  (requires an API key from your AI provider)\n"
+msgstr ""
+"Assistenza alla scrittura con IA:\n"
+"  - Chiedi all'assistente Quill (Alt+Q)\n"
+"  - controllo grammaticale e riscrittura con IA\n"
+"  - Estensioni e prompt di scrittura\n"
+"  - Libreria Prompt\n"
+"  (richiede una chiave API dal tuo provider IA)\n"
+
+#: quill/ui/setup_wizard_pages.py:484
+msgid ""
+"Braille Mode:\n"
+"  - Open and navigate BRF and BRL files\n"
+"  - Braille status bar cell\n"
+"  - Grade 1 and Grade 2 translation\n"
+"  - QUILL Braille Pack integration\n"
+msgstr ""
+"Modalità Braille:\n"
+"  - Apri e naviga file BRF e BRL\n"
+"  - Cella Braille per la barra di stato\n"
+"  - traduzione grado 1 e grado 2  - integrazione pacchetto Braille di "
+"QUILL\n"
+
+#: quill/ui/setup_wizard_pages.py:494
+msgid ""
+"Typing Automation:\n"
+"  - Smart Insert triggers (=bug(), =meeting(), =journal())\n"
+"  - Abbreviation expansion (qbug, qmeet, qlog, qtodo)\n"
+"  - BRF test content trigger (=brftest())\n"
+msgstr ""
+"Automazione di scrittura:\n"
+"  - Inserimento azioni intelligente (=bug(), =meeting(), =journal())\n"
+"  - Espansione abbreviazioni (qbug, qmeet, qlog, qtodo)\n"
+"  - azione di test per contenuti BRF (=brftest())\n"
+
+#: quill/ui/setup_wizard_pages.py:534
+msgid "Set up your AI connection"
+msgstr "Configura la tua connessione con l'IA"
+
+#: quill/ui/setup_wizard_pages.py:542
+msgid ""
+"AI providers, API keys, and models are all managed in AI Hub. Open it now"
+" to choose your provider, enter your key, and verify the connection — or "
+"do it any time from Tools > AI Hub after setup."
+msgstr ""
+"I provider IA, le chiavi API e i modelli si gestiscono tutti dal Centro "
+"IA. Aprilo ora per scegliere il tuo provider, inserisci la tua chiave e "
+"verifica la connessione — o puoi farlo in qualsiasi momento da Strumenti "
+"> Centro IA dopo la configurazione iniziale."
+
+#: quill/ui/setup_wizard_pages.py:551
+msgid "Open AI Hub..."
+msgstr "Apri centro IA..."
+
+#: quill/ui/setup_wizard_pages.py:569 quill/ui/setup_wizard_pages.py:909
+msgid "Off"
+msgstr "No"
+
+#: quill/ui/setup_wizard_pages.py:570
+msgid "Pentatonic (no dissonance)"
+msgstr "Pentatonica (nessuna dissonanza)"
+
+#: quill/ui/setup_wizard_pages.py:571
+msgid "Whole tone (even steps)"
+msgstr "Tono intero (intervalli regolari)"
+
+#: quill/ui/setup_wizard_pages.py:572
+msgid "Diatonic C major (familiar)"
+msgstr "Diatonica Do Maggiore (familiare)"
+
+#: quill/ui/setup_wizard_pages.py:573
+msgid "Chromatic (one semitone per level)"
+msgstr "Cromatica (un semitono per livello)"
+
+#: quill/ui/setup_wizard_pages.py:582
+msgid "Keyboard and Sound"
+msgstr "Tastiera e suoni"
+
+#: quill/ui/setup_wizard_pages.py:590
+msgid ""
+"Choose a keyboard layout and whether QUILL plays sound. Sound is always "
+"optional and never replaces speech."
+msgstr ""
+"Scegli un layout tastiera e se QUILL riproduce effetti sonori. Il suono è"
+" sempre opzionale e non sostituisce mai la sintesi vocale."
+
+#: quill/ui/setup_wizard_pages.py:602
+msgid "Keyboard pack:"
+msgstr "Layout tastiera:"
+
+#: quill/ui/setup_wizard_pages.py:605
+msgid "QUILL Default"
+msgstr "QUILL predefinito"
+
+#: quill/ui/setup_wizard_pages.py:606
+msgid "JAWS Compatible"
+msgstr "Per JAWS"
+
+#: quill/ui/setup_wizard_pages.py:607
+msgid "NVDA Compatible"
+msgstr "Per NVDA"
+
+#: quill/ui/setup_wizard_pages.py:608
+msgid "Narrator Compatible"
+msgstr "Per Narrator"
+
+#: quill/ui/setup_wizard_pages.py:617
+msgid "Play sound notifications (earcons)"
+msgstr "Riproduci notifiche sonore (earcon)"
+
+#: quill/ui/setup_wizard_pages.py:631
+msgid "Sound pack:"
+msgstr "Pacchetto suoni:"
+
+#: quill/ui/setup_wizard_pages.py:644
+#, python-format
+msgid "Custom: %s"
+msgstr "Personalizzato: %s"
+
+#: quill/ui/setup_wizard_pages.py:657
+msgid "Indentation tones:"
+msgstr "Toni per il rientro:"
+
+#: quill/ui/setup_wizard_pages.py:728
+msgid "Where should QUILL store your data?"
+msgstr "Dove QUILL dovrebbe archiviare i tuoi dati?"
+
+#: quill/ui/setup_wizard_pages.py:736
+msgid ""
+"Settings, dictionaries, autosaves, and recovery files go here. You can "
+"change this later from Help > Personalise QUILL or Preferences."
+msgstr ""
+"Le impostazioni, i dizionari, salvataggi automatici e i file di recupero "
+"finiscono qui. Puoi cambiarlo più tardi dal menu Aiuto > Personalizza "
+"QUILL o Preferenze."
+
+#: quill/ui/setup_wizard_pages.py:746
+msgid "In my Windows user profile (recommended)"
+msgstr "Nel mio profilo utente Windows (consigliato)"
+
+#: quill/ui/setup_wizard_pages.py:755
+msgid "Next to QUILL, on this portable drive"
+msgstr "Accanto a QUILL, in questo disco rimovibile"
+
+#: quill/ui/setup_wizard_pages.py:763
+msgid "Choose a folder:"
+msgstr "Scegli una cartella:"
+
+#: quill/ui/setup_wizard_pages.py:774
+msgid "No folder chosen"
+msgstr "Nessuna cartella scelta"
+
+#: quill/ui/setup_wizard_pages.py:776
+msgid "Choose..."
+msgstr "Scegli..."
+
+#: quill/ui/setup_wizard_pages.py:787
+msgid "Choose a folder for QUILL's data"
+msgstr "Scegli cartella per i dati di QUILL"
+
+#: quill/ui/setup_wizard_pages.py:819
+#, python-brace-format
+msgid "Data location: {target}"
+msgstr "Posizione dati: {target}"
+
+#: quill/ui/setup_wizard_pages.py:834
+msgid "You are all set!"
+msgstr "Sei al completo!"
+
+#: quill/ui/setup_wizard_pages.py:840
+msgid "Your QUILL is ready:"
+msgstr "Il tuo QUILL è pronto:"
+
+#: quill/ui/setup_wizard_pages.py:856
+msgid ""
+"Press Finish to start writing. Change anything later from Help > "
+"Personalise QUILL."
+msgstr ""
+"Premi Fine per iniziare a scrivere. Fai qualsiasi modifica più tardi dal "
+"menu Aiuto > Personalizza QUILL."
+
+#: quill/ui/setup_wizard_pages.py:874
+#, python-brace-format
+msgid "Profile: {name}"
+msgstr "Profilo: {name}"
+
+#: quill/ui/setup_wizard_pages.py:902
+msgid "Extras added:"
+msgstr "Extra aggiunti:"
+
+#: quill/ui/setup_wizard_pages.py:906
+#, python-brace-format
+msgid "Keyboard pack: {pack}"
+msgstr "Layout tastiera: {pack}"
+
+#: quill/ui/setup_wizard_pages.py:909
+#, python-brace-format
+msgid "Sound notifications: {state}"
+msgstr "Notifiche sonore: {state}"
+
+#: quill/ui/setup_wizard_pages.py:909
+msgid "On"
+msgstr "Sì"
+
+#: quill/ui/setup_wizard_pages.py:1023
+msgid "Back"
+msgstr "Indietro"
+
+#: quill/ui/setup_wizard_pages.py:1024
+msgid "Next"
+msgstr "Avanti"
+
+#: quill/ui/setup_wizard_pages.py:1025
+msgid "Finish"
+msgstr "Fine"
+
+#: quill/ui/simple_open_dialog.py:48
+msgid "Supported files (*.txt;*.md;*.html;*.htm;*.rtf)"
+msgstr "File supportati (*.txt;*.md;*.html;*.htm;*.rtf)"
+
+#: quill/ui/simple_open_dialog.py:51
+msgid "Plain text (*.txt)"
+msgstr "Testo Semplice (*.txt)"
+
+#: quill/ui/simple_open_dialog.py:53
+msgid "Markdown (*.md;*.markdown;*.mdown;*.mkd;*.mkdn)"
+msgstr "Markdown (*.md;*.markdown;*.mdown;*.mkd;*.mkdn)"
+
+#: quill/ui/simple_open_dialog.py:57
+msgid "HTML (*.html;*.htm;*.xhtml)"
+msgstr "HTML (*.html;*.htm;*.xhtml)"
+
+#: quill/ui/simple_open_dialog.py:60
+msgid "Rich Text (*.rtf)"
+msgstr "Rich Text (*.rtf)"
+
+#: quill/ui/simple_open_dialog.py:61
+msgid "All files (*.*)"
+msgstr "Tutti i file (*.*)"
+
+#: quill/ui/simple_open_dialog.py:147 quill/ui/simple_open_dialog.py:254
+msgid "Open File"
+msgstr "Apri File"
+
+#: quill/ui/simple_open_dialog.py:158
+msgid "&Path:"
+msgstr "&Percorso:"
+
+#: quill/ui/simple_open_dialog.py:168
+msgid "&Filter:"
+msgstr "&Filtra:"
+
+#: quill/ui/simple_open_dialog.py:179
+msgid "&Up"
+msgstr "S&u"
+
+#: quill/ui/simple_open_dialog.py:181
+msgid "&Hidden"
+msgstr "&Nascosto"
+
+#: quill/ui/simple_open_dialog.py:183
+msgid "&Recent"
+msgstr "&Recente"
+
+#: quill/ui/simple_open_dialog.py:189
+msgid "Use &Windows Dialog"
+msgstr "Usa dialogo di &Windows"
+
+#: quill/ui/simple_open_dialog.py:206
+msgid "&Open"
+msgstr "&Apri"
+
+#: quill/ui/simple_open_dialog.py:283
+msgid "Error: path does not exist: "
+msgstr "Errore: il percorso non esiste: "
+
+#: quill/ui/simple_open_dialog.py:296
+msgid "Error: not a file or directory: "
+msgstr "Errore: non un file o una cartella: "
+
+#: quill/ui/simple_open_dialog.py:381
+msgid "No recent files yet."
+msgstr "Ancora nessun file recente"
+
+#: quill/ui/simple_open_dialog.py:398
+msgid "Error: path no longer exists: "
+msgstr "Errore: Percorso non esiste più: "
+
+#: quill/ui/simple_open_dialog.py:440
+msgid "Error: permission denied: "
+msgstr "Errore: Permesso negato: "
+
+#: quill/ui/simple_open_dialog.py:443
+msgid "Error: cannot read directory: "
+msgstr "Errore: impossibile leggere la cartella: "
+
+#: quill/ui/single_convert_dialog.py:43
+#, python-brace-format
+msgid "Conversion complete. Open {filename} in a new window?"
+msgstr "Conversione completata. Aprire il file {filename} in una nuova finestra?"
+
+#: quill/ui/single_convert_dialog.py:50 quill/ui/single_convert_dialog.py:55
+msgid "Open in new window?"
+msgstr "Apri in nuova finestra?"
+
+#: quill/ui/audio_studio/__init__.py:39
+msgid "Choose a voice to preview"
+msgstr "Scegli voce da riprodurre in anteprima"
+
+#: quill/ui/audio_studio/__init__.py:68 quill/ui/audio_studio/wizard.py:66
+msgid "QUILL Audio Studio"
+msgstr "QUILL Audio Studio"
+
+#: quill/ui/audio_studio/chapter_workbench.py:76
+#: quill/ui/audio_studio/chapter_workbench.py:244
+#: quill/ui/audio_studio/chapter_workbench.py:869
+#: quill/ui/audio_studio/chapter_workbench.py:897
+msgid "Chapter Workbench"
+msgstr "Workbench del capitolo"
+
+#: quill/ui/audio_studio/chapter_workbench.py:94
+#, python-brace-format
+msgid "Editing {name}"
+msgstr "Modifica in corso {name}"
+
+#: quill/ui/audio_studio/chapter_workbench.py:103
+msgid "C&hapters (select to hear; edits apply on Save):"
+msgstr ""
+"Ca&pitoli (seleziona per ascoltare; le modifiche si applicano quando "
+"salvi):"
+
+#: quill/ui/audio_studio/chapter_workbench.py:110
+msgid "Chapters"
+msgstr "Capitoli"
+
+#: quill/ui/audio_studio/chapter_workbench.py:116
+msgid "Chapter t&itle:"
+msgstr "T&itolo capitolo:"
+
+#: quill/ui/audio_studio/chapter_workbench.py:118
+msgid "Chapter title"
+msgstr "Titolo capitolo"
+
+#: quill/ui/audio_studio/chapter_workbench.py:120
+msgid "Re&name"
+msgstr "Ri&nomina"
+
+#: quill/ui/audio_studio/chapter_workbench.py:128
+msgid "&Split at playhead"
+msgstr "Suddividi alla te&stina di riproduzione"
+
+#: quill/ui/audio_studio/chapter_workbench.py:129
+msgid "Set st&art to playhead"
+msgstr "Imposta inizio alla &testina di riproduzione"
+
+#: quill/ui/audio_studio/chapter_workbench.py:130
+msgid "&Merge into previous"
+msgstr "U&nisci a precedente"
+
+#: quill/ui/audio_studio/chapter_workbench.py:131
+msgid "Rest&ore original"
+msgstr "Ripristina &originale"
+
+#: quill/ui/audio_studio/chapter_workbench.py:139
+msgid "Propose chapters from s&ilences..."
+msgstr "Proponi capitoli da s&ilenzi..."
+
+#: quill/ui/audio_studio/chapter_workbench.py:142
+msgid ""
+"Scan the recording for silences with ffmpeg and propose chapter "
+"boundaries at the silence midpoints. The proposal lands in the list for "
+"review; nothing is applied blind."
+msgstr ""
+"Scansiona la registrazione alla ricerca di silenzi tramite ffmpeg e "
+"propone le divisioni dei capitoli in corrispondenza del punto centrale di"
+" ciascun silenzio. La proposta viene inserita nell'elenco per la "
+"revisione; nulla viene applicato alla cieca."
+
+#: quill/ui/audio_studio/chapter_workbench.py:148
+msgid "Check against &ACX"
+msgstr "Verifica requisiti &ACX"
+
+#: quill/ui/audio_studio/chapter_workbench.py:151
+msgid ""
+"Measure the book against Audible's ACX submission window and hear the "
+"verdict with plain recommendations for any failing criterion."
+msgstr ""
+"Verifica la conformità del libro rispetto ai requisiti di invio di "
+"Audible ACX e scopri il verdetto, con raccomandazioni chiare per ogni "
+"criterio non superato."
+
+#: quill/ui/audio_studio/chapter_workbench.py:156
+msgid "Propose AI tit&les..."
+msgstr "Proponi tito&li IA..."
+
+#: quill/ui/audio_studio/chapter_workbench.py:159
+msgid ""
+"Transcribe the opening minute of each chapter with the local speech "
+"model, then ask your configured AI for a short title. Proposals land in "
+"the list for review; nothing is applied blind."
+msgstr ""
+"Trascrive il primo minuto di ogni capitolo con il modello vocale nel "
+"dispositivo, quindi chiede all'IA configurata un titolo breve. Le "
+"proposte vengono inserite nell'elenco per la revisione; nulla viene "
+"applicato alla cieca."
+
+#: quill/ui/audio_studio/chapter_workbench.py:171
+msgid "Import chap&ters..."
+msgstr "Impor&ta capitoli..."
+
+#: quill/ui/audio_studio/chapter_workbench.py:172
+msgid "E&xport chapters..."
+msgstr "Es&porta capitoli..."
+
+#: quill/ui/audio_studio/chapter_workbench.py:173
+msgid "Split into &files..."
+msgstr "Suddividi in &file..."
+
+#: quill/ui/audio_studio/chapter_workbench.py:185
+msgid "Book details:"
+msgstr "Dettagli libro:"
+
+#: quill/ui/audio_studio/chapter_workbench.py:188
+msgid "Book ti&tle (album):"
+msgstr "Ti&tolo libro (album):"
+
+#: quill/ui/audio_studio/chapter_workbench.py:189
+#: quill/ui/audio_studio/pages_shared.py:56
+msgid "A&uthor:"
+msgstr "A&utore:"
+
+#: quill/ui/audio_studio/chapter_workbench.py:190
+msgid "Narrato&r:"
+msgstr "Nar&ratore:"
+
+#: quill/ui/audio_studio/chapter_workbench.py:191
+msgid "&Genre:"
+msgstr "&Genere:"
+
+#: quill/ui/audio_studio/chapter_workbench.py:192
+msgid "&Year:"
+msgstr "&Anno:"
+
+#: quill/ui/audio_studio/chapter_workbench.py:200
+msgid "&Publish..."
+msgstr "&Pubblica..."
+
+#: quill/ui/audio_studio/chapter_workbench.py:202
+#: quill/ui/audio_studio/feed_dialog.py:93
+#: quill/ui/audio_studio/publish_dialog.py:188
+msgid "Close"
+msgstr "Chiudi"
+
+#: quill/ui/audio_studio/chapter_workbench.py:212
+msgid "An M4B is saved as a new file; use Save As."
+msgstr "Un M4B è stato salvato come un nuovo file; usa Salva Con Nome"
+
+#: quill/ui/audio_studio/chapter_workbench.py:252
+#, python-brace-format
+msgid "{num}. {title} — starts {start}, runs {dur}"
+msgstr "{num}. {title} — inizia {start}, dura {dur}"
+
+#: quill/ui/audio_studio/chapter_workbench.py:289
+msgid "A chapter title cannot be empty."
+msgstr "Il titolo di un capitolo non può essere vuoto."
+
+#: quill/ui/audio_studio/chapter_workbench.py:294
+#, python-brace-format
+msgid "Renamed chapter to {title}"
+msgstr "Capitolo rinominato in {title}"
+
+#: quill/ui/audio_studio/chapter_workbench.py:299
+msgid "New chapter"
+msgstr "Nuovo capitolo"
+
+#: quill/ui/audio_studio/chapter_workbench.py:308
+#, python-brace-format
+msgid "Split at {pos}; now {count} chapters"
+msgstr "Diviso in {pos}; adesso {count} capitoli"
+
+#: quill/ui/audio_studio/chapter_workbench.py:324
+#, python-brace-format
+msgid "Chapter {num} now starts at {pos}"
+msgstr "Capitolo {num} ora inizia a {pos}"
+
+#: quill/ui/audio_studio/chapter_workbench.py:339
+#, python-brace-format
+msgid "Merged; {count} chapters remain"
+msgstr "Uniti; rimangono {count} capitoli"
+
+#: quill/ui/audio_studio/chapter_workbench.py:350
+#, python-brace-format
+msgid "Restored the original {count} chapters"
+msgstr "Ripristinati i {count} capitoli originali"
+
+#: quill/ui/audio_studio/chapter_workbench.py:359
+msgid "Import a chapter list"
+msgstr "Importa un elenco capitoli"
+
+#: quill/ui/audio_studio/chapter_workbench.py:377
+#, python-brace-format
+msgid "Imported {count} chapters from {name}"
+msgstr "Importati {count} capitoli da {name}"
+
+#: quill/ui/audio_studio/chapter_workbench.py:385
+msgid "Export the chapter list as:"
+msgstr "Esporta elenco capitoli come:"
+
+#: quill/ui/audio_studio/chapter_workbench.py:385
+msgid "Export chapters"
+msgstr "Esporta capitoli"
+
+#: quill/ui/audio_studio/chapter_workbench.py:394
+msgid "Save the chapter list as"
+msgstr "Salva elenco capitoli come"
+
+#: quill/ui/audio_studio/chapter_workbench.py:412
+#, python-brace-format
+msgid "Could not write that file: {error}"
+msgstr "Impossibile scrivere quel file: {error}"
+
+#: quill/ui/audio_studio/chapter_workbench.py:415
+#, python-brace-format
+msgid "Exported {count} chapters to {name}"
+msgstr "Esportati {count} capitoli in {name}"
+
+#: quill/ui/audio_studio/chapter_workbench.py:457
+msgid "Saving audiobook tags"
+msgstr "Salvataggio tag audiolibro"
+
+#: quill/ui/audio_studio/chapter_workbench.py:459
+#: quill/ui/audio_studio/chapter_workbench.py:495
+#, python-brace-format
+msgid "Saved {name}"
+msgstr "Salvato {name}"
+
+#: quill/ui/audio_studio/chapter_workbench.py:467
+#: quill/ui/audio_studio/pages_shared.py:145
+msgid "Save the book as"
+msgstr "Salva il libro come"
+
+#: quill/ui/audio_studio/chapter_workbench.py:493
+msgid "Saving audiobook"
+msgstr "Salvataggio audiolibro"
+
+#: quill/ui/audio_studio/chapter_workbench.py:500
+msgid "Choose a folder for the per-chapter files"
+msgstr "Scegli cartella per i file dei capitoli"
+
+#: quill/ui/audio_studio/chapter_workbench.py:513
+msgid "Splitting into chapter files"
+msgstr "Suddivisione in file dei capitoli"
+
+#: quill/ui/audio_studio/chapter_workbench.py:516
+#, python-brace-format
+msgid "Wrote {count} chapter file(s) to {folder}"
+msgstr "Ha scritto {count} file dei capitoli dentro {folder}"
+
+#: quill/ui/audio_studio/chapter_workbench.py:524
+msgid "Publishing is not available here."
+msgstr "Qui non è disponibile la pubblicazione"
+
+#: quill/ui/audio_studio/chapter_workbench.py:527
+msgid "Save your chapter edits first, then publish."
+msgstr "Prima salva le tue modifiche al capitolo, poi pubblica."
+
+#: quill/ui/audio_studio/chapter_workbench.py:543
+#: quill/ui/audio_studio/chapter_workbench.py:600
+#: quill/ui/audio_studio/chapter_workbench.py:683
+msgid "The book file is missing on disk."
+msgstr "Il file del libro manca nel disco."
+
+#: quill/ui/audio_studio/chapter_workbench.py:553
+msgid "Chapter"
+msgstr "Capitolo"
+
+#: quill/ui/audio_studio/chapter_workbench.py:561
+msgid "No silences were found; no changes made."
+msgstr "Nessun silenzio trovato; nessuna modifica effettuata."
+
+#: quill/ui/audio_studio/chapter_workbench.py:572
+#, python-brace-format
+msgid ""
+"Proposed {count} chapters from silences — review the list, rename or "
+"restore as needed."
+msgstr ""
+"Proposti {count} capitoli in base ai silenzi — rivedi l'elenco, rinomina "
+"o ripristina a seconda delle esigenze."
+
+#: quill/ui/audio_studio/chapter_workbench.py:579
+msgid "Proposing chapters from silences"
+msgstr "In corso proposta capitoli dai silenzi"
+
+#: quill/ui/audio_studio/chapter_workbench.py:592
+msgid ""
+"AI title proposals need a configured AI provider (and are unavailable in "
+"Safe Mode). Set one up in AI > AI Hub first."
+msgstr ""
+"Le proposte di titolo tramite IA richiedono un provider  IA configurato "
+"(e non sono disponibili in Modalità provvisoria). Impostalo prima da IA >"
+" Centro IA."
+
+#: quill/ui/audio_studio/chapter_workbench.py:605
+#, python-brace-format
+msgid ""
+"QUILL will transcribe the first minute of each of the {count} chapters "
+"with the local speech model (the audio never leaves this computer), then "
+"send only that transcribed text to your configured AI to suggest a short "
+"title per chapter. The proposals land in the list for review — Restore "
+"original undoes them. Continue?"
+msgstr ""
+"QUILL trascriverà il primo minuto di ciascuno dei {count} capitoli con il"
+" modello vocale sul dispositivo (l'audio non lascerà mai questo "
+"computer), quindi invierà solo il testo trascritto all'IA configurata al "
+"fine di suggerire un titolo breve per ogni capitolo.Le proposte verranno "
+"inserite nell'elenco per la revisione — 'Ripristina originale' annulla "
+"l'operazione.Continuare?"
+
+#: quill/ui/audio_studio/chapter_workbench.py:613
+msgid "Propose AI titles"
+msgstr "Proponi titoli IA"
+
+#: quill/ui/audio_studio/chapter_workbench.py:637
+msgid "No titles were proposed; no changes made."
+msgstr "Nessun titolo proposto; nessuna modifica effettuata."
+
+#: quill/ui/audio_studio/chapter_workbench.py:656
+msgid "The AI proposed no different titles; no changes made."
+msgstr "L'IA non ha proposto un titolo diverso. Nessuna modifica effettuata."
+
+#: quill/ui/audio_studio/chapter_workbench.py:663
+#, python-brace-format
+msgid ""
+"Proposed {count} new title(s) — review the list; Restore original undoes "
+"them."
+msgstr ""
+"Proposti {count} nuovi titoli — rivedi l'elenco; 'Ripristina originale' "
+"annulla l'operazione."
+
+#: quill/ui/audio_studio/chapter_workbench.py:669
+msgid "Transcribing chapter openings and asking the AI..."
+msgstr "Trascrivo le aperture dei capitoli e chiedo all'IA..."
+
+#: quill/ui/audio_studio/chapter_workbench.py:671
+msgid "Proposing AI chapter titles"
+msgstr "Propongo i titoli dei capitoli con IA"
+
+#: quill/ui/audio_studio/chapter_workbench.py:693
+msgid "Could not measure the book against ACX; check ffmpeg is installed."
+msgstr ""
+"Impossibile verificare il libro rispetto agli standard ACX; controlla che"
+" ffmpeg sia installato."
+
+#: quill/ui/audio_studio/chapter_workbench.py:700
+#: quill/ui/audio_studio/chapter_workbench.py:822
+#, python-brace-format
+msgid "ACX verdict: {verdict}."
+msgstr "Verdetto ACX: {verdict}."
+
+#: quill/ui/audio_studio/chapter_workbench.py:701
+#: quill/ui/audio_studio/chapter_workbench.py:820
+msgid "passes"
+msgstr "passati"
+
+#: quill/ui/audio_studio/chapter_workbench.py:701
+#: quill/ui/audio_studio/chapter_workbench.py:820
+msgid "fails"
+msgstr "falliti"
+
+#: quill/ui/audio_studio/chapter_workbench.py:708
+msgid "Checking against ACX"
+msgstr "Controllo requisiti ACX"
+
+#: quill/ui/audio_studio/chapter_workbench.py:740
+msgid "Propose chapters from silences"
+msgstr "Proponi capitoli dai silenzi"
+
+#: quill/ui/audio_studio/chapter_workbench.py:751
+msgid ""
+"ffmpeg will scan the recording for silences and propose chapter "
+"boundaries at the silence midpoints. The proposal lands in the Workbench "
+"list for review; nothing is applied blind."
+msgstr ""
+"ffmpeg scansionerà la registrazione alla ricerca di silenzi e proporrà i "
+"limiti dei capitoli in corrispondenza dei punti centrali del silenzio. La"
+" proposta arriverà nell'elenco del Workbench per la revisione; nulla "
+"viene applicato alla cieca."
+
+#: quill/ui/audio_studio/chapter_workbench.py:761
+msgid "Noise threshold (dB):"
+msgstr "Soglia rumore (dB):"
+
+#: quill/ui/audio_studio/chapter_workbench.py:766
+msgid "Noise threshold (dB)"
+msgstr "Soglia rumore (dB)"
+
+#: quill/ui/audio_studio/chapter_workbench.py:769
+msgid "Minimum silence (seconds):"
+msgstr "Silenzio minimo (secondi):"
+
+#: quill/ui/audio_studio/chapter_workbench.py:774
+msgid "Minimum silence (seconds)"
+msgstr "Silenzio minimo (secondi)"
+
+#: quill/ui/audio_studio/chapter_workbench.py:801
+msgid "ACX check"
+msgstr "Controllo ACX"
+
+#: quill/ui/audio_studio/chapter_workbench.py:813
+msgid ""
+"The ACX check could not run. Make sure ffmpeg is installed and the book "
+"file is still on disk."
+msgstr ""
+"Impossibile eseguire controllo ACX. Verifica che ffmpeg sia installato e "
+"il file del libro sia ancora su disco."
+
+#: quill/ui/audio_studio/chapter_workbench.py:825
+#, python-brace-format
+msgid "Integrated loudness: {lufs:.1f} LUFS (target {target} plus or minus {rng})"
+msgstr "Integrated loudness: {lufs:.1f} LUFS (target {target} più o meno {rng})"
+
+#: quill/ui/audio_studio/chapter_workbench.py:827
+#, python-brace-format
+msgid "True peak: {peak:.1f} dBFS (max {max})"
+msgstr "True peak: {peak:.1f} dBFS (max {max})"
+
+#: quill/ui/audio_studio/chapter_workbench.py:830
+#, python-brace-format
+msgid "Noise floor: {noise:.1f} dBFS (max {max})"
+msgstr "Noise floor: {noise:.1f} dBFS (max {max})"
+
+#: quill/ui/audio_studio/chapter_workbench.py:837
+msgid "What to fix:"
+msgstr "Cosa correggere:"
+
+#: quill/ui/audio_studio/chapter_workbench.py:868
+#, python-brace-format
+msgid "Could not open that audiobook: {error}"
+msgstr "Impossibile aprire quell'audiolibro: {error}"
+
+#: quill/ui/audio_studio/feed_dialog.py:35
+#: quill/ui/audio_studio/feed_dialog.py:209
+msgid "Folder Podcast Feed"
+msgstr "Cartella feed podcast"
+
+#: quill/ui/audio_studio/feed_dialog.py:46
+#, python-brace-format
+msgid "Podcast feed for {folder} ({count} episode(s) found)"
+msgstr "Feed podcast per {folder} ({count} episodi trovati)"
+
+#: quill/ui/audio_studio/feed_dialog.py:56
+msgid "Show ti&tle:"
+msgstr "Ti&tolo del podcast:"
+
+#: quill/ui/audio_studio/feed_dialog.py:57
+msgid "&Author:"
+msgstr "&Autore:"
+
+#: quill/ui/audio_studio/feed_dialog.py:58
+msgid "Show &description:"
+msgstr "&Descrizione podcast:"
+
+#: quill/ui/audio_studio/feed_dialog.py:60
+msgid "&Media URL base (where the audio will live):"
+msgstr "Base URL dei &media (dove risiederà l'audio):"
+
+#: quill/ui/audio_studio/feed_dialog.py:62
+msgid "&Feed URL (optional):"
+msgstr "URL del &feed (opzionale):"
+
+#: quill/ui/audio_studio/feed_dialog.py:64
+msgid "Cover image &URL (optional):"
+msgstr "&URL immagine copertina (opzionale):"
+
+#: quill/ui/audio_studio/feed_dialog.py:69
+msgid "&Episodes (oldest first = episode 1):"
+msgstr "&Episodi (Prima il meno recente = episodio 1):"
+
+#: quill/ui/audio_studio/feed_dialog.py:75
+msgid "Episodes"
+msgstr "Episodi"
+
+#: quill/ui/audio_studio/feed_dialog.py:81
+msgid "Episode t&itle (blank = from the file's tags):"
+msgstr "T&itolo episodio (vuoto = dai tag del file):"
+
+#: quill/ui/audio_studio/feed_dialog.py:82
+msgid "Episode descri&ption:"
+msgstr "Descri&zione episodio:"
+
+#: quill/ui/audio_studio/feed_dialog.py:84
+msgid "App&ly to selected episode"
+msgstr "App&lica a episodio selezionato"
+
+#: quill/ui/audio_studio/feed_dialog.py:89
+msgid "&Write feed.rss now"
+msgstr "Sc&rivi feed.rss ora"
+
+#: quill/ui/audio_studio/feed_dialog.py:91
+msgid "Write show &notes page"
+msgstr "Scrivi pagina &note episodio"
+
+#: quill/ui/audio_studio/feed_dialog.py:135
+#, python-brace-format
+msgid "{n}. {name}"
+msgstr "{n}. {name}"
+
+#: quill/ui/audio_studio/feed_dialog.py:139
+msgid "(described)"
+msgstr "(descritto)"
+
+#: quill/ui/audio_studio/feed_dialog.py:180
+msgid ""
+"Give the media URL base first — the public address where the audio will "
+"live."
+msgstr ""
+"Fornisci prima l'URL base dei media — l'indirizzo pubblico in cui "
+"risiederà l'audio."
+
+#: quill/ui/audio_studio/feed_dialog.py:192
+#, python-brace-format
+msgid ""
+"Wrote {name} with {count} episode(s). Upload it (and the audio) to your "
+"server; subscribers see every episode."
+msgstr ""
+"Scritto {name} con {count} episodi. Caricalo (insieme all'audio) sul tuo "
+"server; gli iscritti vedono ogni episodio."
+
+#: quill/ui/audio_studio/feed_dialog.py:204
+#, python-brace-format
+msgid "Wrote {name} next to the feed."
+msgstr "Scritto {name} accanto al feed."
+
+#: quill/ui/audio_studio/pages_audio.py:21
+msgid "Where are the recordings?"
+msgstr "Dove sono le registrazioni?"
+
+#: quill/ui/audio_studio/pages_audio.py:23
+msgid ""
+"Pick the folder of audio files. Each file becomes one chapter, in natural"
+" filename order, and you review the chapter list before the book is "
+"built."
+msgstr ""
+"Scegli la cartella dei file audio. Ciascun file diventerà un capitolo, "
+"nel naturale ordine dei nomi dei file, e potrai rivedere l'elenco dei "
+"capitoli prima che il libro venga creato."
+
+#: quill/ui/audio_studio/pages_audio.py:28
+msgid "&Folder of audio files:"
+msgstr "Cartella dei &file audio:"
+
+#: quill/ui/audio_studio/pages_audio.py:41
+msgid "Folder of audio files"
+msgstr "Cartella dei file audio"
+
+#: quill/ui/audio_studio/pages_audio.py:42
+#: quill/ui/audio_studio/pages_audio.py:161
+#: quill/ui/audio_studio/pages_documents.py:71
+msgid "B&rowse..."
+msgstr "Sfo&glia..."
+
+#: quill/ui/audio_studio/pages_audio.py:48
+#: quill/ui/audio_studio/pages_documents.py:77
+msgid "Include su&bfolders"
+msgstr "Includi sotto&cartelle"
+
+#: quill/ui/audio_studio/pages_audio.py:54
+msgid "&Library mode: every subfolder becomes its own audiobook"
+msgstr "Modalità &libreria: ogni sottocartella diventa un audiolibro autonomo"
+
+#: quill/ui/audio_studio/pages_audio.py:61
+msgid "&Trim leading and trailing silence from each recording"
+msgstr "&Taglia silenzio iniziale e finale da ciascuna registrazione"
+
+#: quill/ui/audio_studio/pages_audio.py:70
+msgid ""
+"MP3, M4A/M4B, WAV, FLAC, Opus and OGG files are accepted.\n"
+"Files that look like previous builds are set aside automatically.\n"
+"In library mode each book is titled after its subfolder and\n"
+"built without the review step."
+msgstr ""
+"Sono accettati file MP3, M4A/M4B, WAV, FLAC, Opus e OGG.\n"
+"I file che sembrano versioni precedenti vengono messi da parte "
+"automaticamente.\n"
+"In modalità libreria, ogni libro prende il titolo dalla sua sottocartella"
+" e\n"
+"viene creato senza la fase di revisione."
+
+#: quill/ui/audio_studio/pages_audio.py:107
+msgid "Choose the folder of audio files"
+msgstr "Scegli la cartella dei file audio"
+
+#: quill/ui/audio_studio/pages_audio.py:131
+msgid "Choose a folder of audio files that exists."
+msgstr "Scegli una cartella esistente per i file audio."
+
+#: quill/ui/audio_studio/pages_audio.py:142
+msgid "Open a book"
+msgstr "Apri un libro"
+
+#: quill/ui/audio_studio/pages_audio.py:144
+msgid ""
+"Pick a chaptered MP3 or M4B. It opens in the Chapter Workbench, where you"
+" can listen, rename, split at the playhead, retime boundaries, fix the "
+"tags, and save."
+msgstr ""
+"Scegli un file MP3 o M4B suddiviso in capitoli. Si aprirà nel Chapter "
+"Workbench, dove potrai ascoltare, rinominare, suddividere alla testina di"
+" riproduzione, regolare i limiti di tempo, correggere i tag e salvare."
+
+#: quill/ui/audio_studio/pages_audio.py:149
+msgid "&Audiobook file:"
+msgstr "File &audiolibro:"
+
+#: quill/ui/audio_studio/pages_audio.py:160
+msgid "Audiobook file"
+msgstr "File audiolibro"
+
+#: quill/ui/audio_studio/pages_audio.py:171
+msgid ""
+"An MP3 saves its edits in place (the audio is untouched).\n"
+"An M4B saves as a new file, losslessly. A file with no chapter\n"
+"markers opens as one chapter, ready to split up."
+msgstr ""
+"Un MP3 salva le modifiche direttamente sul file (l'audio non viene "
+"toccato).\n"
+"Un M4B viene salvato come nuovo file, senza perdita di qualità. Un file "
+"senza marcatori\n"
+"di capitolo si apre come un unico capitolo, pronto per essere suddiviso."
+
+#: quill/ui/audio_studio/pages_audio.py:199
+msgid "Open an audiobook"
+msgstr "Apri un audiolibro"
+
+#: quill/ui/audio_studio/pages_audio.py:200
+msgid "Audiobooks (*.mp3;*.m4b;*.m4a)|*.mp3;*.m4b;*.m4a|All files (*.*)|*.*"
+msgstr "Audiolibri (*.mp3;*.m4b;*.m4a)|*.mp3;*.m4b;*.m4a|All files (*.*)|*.*"
+
+#: quill/ui/audio_studio/pages_audio.py:216
+msgid "Choose an audiobook file that exists."
+msgstr "Scegli un file audiolibro che esiste."
+
+#: quill/ui/audio_studio/pages_documents.py:50
+msgid "What should I read?"
+msgstr "Cosa dovrei leggere?"
+
+#: quill/ui/audio_studio/pages_documents.py:51
+msgid "Pick the folder of documents and which file types to include."
+msgstr "Scegli cartella dei documenti e quali tipi di file includere."
+
+#: quill/ui/audio_studio/pages_documents.py:55
+msgid "&Source folder (documents to convert):"
+msgstr "Cartella &origine (documenti da convertire):"
+
+#: quill/ui/audio_studio/pages_documents.py:70
+msgid "Source folder"
+msgstr "Cartella origine"
+
+#: quill/ui/audio_studio/pages_documents.py:81
+msgid "File &types to include:"
+msgstr "&Tipi di file da includere:"
+
+#: quill/ui/audio_studio/pages_documents.py:91
+msgid "Only incl&ude files matching (globs, ; or , separated; blank = all):"
+msgstr ""
+"Incl&udi solo i file che corrispondono a (glob, separati da ; o ,; vuoto "
+"= tutti):"
+
+#: quill/ui/audio_studio/pages_documents.py:93
+msgid "Include files matching"
+msgstr "Includi file che corrispondono"
+
+#: quill/ui/audio_studio/pages_documents.py:95
+msgid "E&xclude files matching (globs, ; or , separated):"
+msgstr ""
+"Esc&ludi i file che corrispondono a (glob, separati da ; o ,; vuoto = "
+"tutti):"
+
+#: quill/ui/audio_studio/pages_documents.py:97
+msgid "Exclude files matching"
+msgstr "Escludi i file che corrispondono"
+
+#: quill/ui/audio_studio/pages_documents.py:102
+msgid "Skip files lar&ger than (MB, 0 = no limit):"
+msgstr "Salta i file più &grandi di (MB, 0 = senza limiti):"
+
+#: quill/ui/audio_studio/pages_documents.py:109
+msgid "Skip files larger than (MB)"
+msgstr "Salta file più grandi di (MB)"
+
+#: quill/ui/audio_studio/pages_documents.py:114
+msgid "Coun&t documents"
+msgstr "Con&ta documenti"
+
+#: quill/ui/audio_studio/pages_documents.py:118
+msgid "Press Count documents to preview the run."
+msgstr "Premi Conta Documenti per l'anteprima dell'esecuzione"
+
+#: quill/ui/audio_studio/pages_documents.py:152
+msgid "Choose the folder of documents to convert"
+msgstr "Scegli la cartella dei documenti da convertire"
+
+#: quill/ui/audio_studio/pages_documents.py:179
+msgid "Counting..."
+msgstr "Conteggio in corso..."
+
+#: quill/ui/audio_studio/pages_documents.py:196
+#, python-brace-format
+msgid "{count} document(s) found, about {words:,} words."
+msgstr "{count} documenti trovati, circa {words:,} parole."
+
+#: quill/ui/audio_studio/pages_documents.py:230
+msgid "Choose a source folder that exists."
+msgstr "Scegli una cartella origine che esiste."
+
+#: quill/ui/audio_studio/pages_documents.py:232
+msgid "Select at least one file type to include."
+msgstr "Scegli almeno un tipo di file da includere."
+
+#: quill/ui/audio_studio/pages_documents.py:252
+msgid "Who should read it?"
+msgstr "Chi dovrebbe leggerlo?"
+
+#: quill/ui/audio_studio/pages_documents.py:253
+msgid "Choose the voice — or a whole cast — and hear a preview."
+msgstr "Scegli la voce - o un intero gruppo - e ascolta un'anteprima."
+
+#: quill/ui/audio_studio/pages_documents.py:265
+msgid "&Engine:"
+msgstr "Motor&e"
+
+#: quill/ui/audio_studio/pages_documents.py:269
+msgid "Engine"
+msgstr "Motore"
+
+#: quill/ui/audio_studio/pages_documents.py:274
+msgid "&Voice:"
+msgstr "&Voce:"
+
+#: quill/ui/audio_studio/pages_documents.py:277
+msgid "Voice"
+msgstr "Voce"
+
+#: quill/ui/audio_studio/pages_documents.py:278
+msgid "&Preview voice"
+msgstr "Ante&prima voce"
+
+#: quill/ui/audio_studio/pages_documents.py:285
+msgid "R&ate (WPM):"
+msgstr "&Velocità (WPM):"
+
+#: quill/ui/audio_studio/pages_documents.py:287
+msgid "Rate (WPM)"
+msgstr "Velocità (WPM)"
+
+#: quill/ui/audio_studio/pages_documents.py:289
+msgid "&Kokoro speed:"
+msgstr "Velocità &Kokoro:"
+
+#: quill/ui/audio_studio/pages_documents.py:291
+msgid "Kokoro speed"
+msgstr "Velocità Kokoro"
+
+#: quill/ui/audio_studio/pages_documents.py:296
+msgid "Round-&robin voices (each article gets the next voice; optional):"
+msgstr "Voci a &rotazione (ogni articolo riceve la voce successiva; opzionale):"
+
+#: quill/ui/audio_studio/pages_documents.py:299
+msgid "Round-robin voice to add"
+msgstr "Voce a rotazione da aggiungere"
+
+#: quill/ui/audio_studio/pages_documents.py:300
+msgid "A&dd voice"
+msgstr "Ag&giungi voce"
+
+#: quill/ui/audio_studio/pages_documents.py:307
+msgid "Voice o&rder (the rotation; use the buttons below to reorder):"
+msgstr "O&rdine delle voci (la rotazione; usa i bottoni sotto per riordinare):"
+
+#: quill/ui/audio_studio/pages_documents.py:309
+msgid "Round-robin voice order"
+msgstr "Ordine rotazione voci"
+
+#: quill/ui/audio_studio/pages_documents.py:313
+msgid "Move U&p"
+msgstr "Sposta s&u"
+
+#: quill/ui/audio_studio/pages_documents.py:314
+msgid "Move Dow&n"
+msgstr "Sposta &giù"
+
+#: quill/ui/audio_studio/pages_documents.py:315
+msgid "Re&move"
+msgstr "Ri&muovi"
+
+#: quill/ui/audio_studio/pages_documents.py:326
+msgid ""
+"Voice cas&ting (optional): assign a voice to matching chapters. Patterns "
+"match the heading title (Chapter *, *interview*) or a section number "
+"(#1). First match wins; others use the rotation."
+msgstr ""
+"Assegnazione voci (opzionale): assegna una voce ai capi&toli "
+"corrispondenti. I pattern corrispondono al titolo dell'intestazione "
+"(Capitolo *, *intervista*) o a un numero di sezione (#1). La prima "
+"corrispondenza vince; gli altri usano la rotazione."
+
+#: quill/ui/audio_studio/pages_documents.py:333
+msgid "Casting pattern (title glob or #number)"
+msgstr "Pattern assegnazione (titolo glob oo #numero)"
+
+#: quill/ui/audio_studio/pages_documents.py:334
+msgid "Chapter * or #1"
+msgstr "Capitolo * o #1"
+
+#: quill/ui/audio_studio/pages_documents.py:336
+msgid "Casting voice"
+msgstr "Assegnazione voce"
+
+#: quill/ui/audio_studio/pages_documents.py:337
+msgid "Add r&ule"
+msgstr "Aggiungi re&gola"
+
+#: quill/ui/audio_studio/pages_documents.py:343
+msgid "Casting rules (first match &wins):"
+msgstr "Regole assegnazione (prima corrispondenza &vince):"
+
+#: quill/ui/audio_studio/pages_documents.py:345
+msgid "Casting rules"
+msgstr "Regole assegnazione"
+
+#: quill/ui/audio_studio/pages_documents.py:349
+msgid "Remove rule"
+msgstr "Rimuovi regola"
+
+#: quill/ui/audio_studio/pages_documents.py:357
+msgid "Also export in other &languages (translated):"
+msgstr "Importa anche in altre &lingue tradotte"
+
+#: quill/ui/audio_studio/pages_documents.py:364
+msgid "Translation language"
+msgstr "Lingua traduzione"
+
+#: quill/ui/audio_studio/pages_documents.py:367
+msgid "Translation voice"
+msgstr "Voce traduzione"
+
+#: quill/ui/audio_studio/pages_documents.py:368
+msgid "Add lan&guage"
+msgstr "Aggiungi lin&gua"
+
+#: quill/ui/audio_studio/pages_documents.py:374
+msgid "Languages &chosen (translated exports):"
+msgstr "Lingue s&celte (esportazione tradotta):"
+
+#: quill/ui/audio_studio/pages_documents.py:376
+msgid "Translation targets"
+msgstr "Destinazioni traduzione"
+
+#: quill/ui/audio_studio/pages_documents.py:380
+msgid "Remove la&nguage"
+msgstr "Rimuovi li&ngua"
+
+#: quill/ui/audio_studio/pages_documents.py:384
+msgid "Trans&late with:"
+msgstr "Tra&duci con"
+
+#: quill/ui/audio_studio/pages_documents.py:387
+msgid "AI provider (cloud)"
+msgstr "Provider IA (cloud)"
+
+#: quill/ui/audio_studio/pages_documents.py:387
+msgid "LibreTranslate (local)"
+msgstr "LibreTranslate (locale)"
+
+#: quill/ui/audio_studio/pages_documents.py:389
+msgid "Translate with"
+msgstr "Traduci con"
+
+#: quill/ui/audio_studio/pages_documents.py:404
+#, python-brace-format
+msgid "{engine} (not installed)"
+msgstr "{engine} (non installato)"
+
+#: quill/ui/audio_studio/pages_documents.py:623
+msgid "How should chapters work?"
+msgstr "Come dovrebbero funzionare i capitoli?"
+
+#: quill/ui/audio_studio/pages_documents.py:624
+msgid "Shape the chapter structure and the sound between chapters."
+msgstr "Dai forma alla struttura del capitolo e il suono tra i capitoli."
+
+#: quill/ui/audio_studio/pages_documents.py:628
+msgid "Chapter &mode:"
+msgstr "&Modalità capitolo:"
+
+#: quill/ui/audio_studio/pages_documents.py:631
+msgid "Single chaptered file"
+msgstr "File diviso in un solo capitolo"
+
+#: quill/ui/audio_studio/pages_documents.py:631
+msgid "Separate file per article"
+msgstr "Separa file per articolo"
+
+#: quill/ui/audio_studio/pages_documents.py:633
+msgid "Chapter mode"
+msgstr "Modalità capitolo"
+
+#: quill/ui/audio_studio/pages_documents.py:639
+msgid "Chapters start at heading le&vel:"
+msgstr "I capitoli iniziano al li&vello intestazione:"
+
+#: quill/ui/audio_studio/pages_documents.py:646
+msgid "Chapters start at heading level"
+msgstr "I capitoli iniziano al livello intestazione"
+
+#: quill/ui/audio_studio/pages_documents.py:656
+msgid "Preview chapter titles"
+msgstr "Anteprima titoli capitoli"
+
+#: quill/ui/audio_studio/pages_documents.py:661
+msgid "First chapter titles this choice would produce:"
+msgstr "Titoli del primo capitolo questa scelta produrrebbe:"
+
+#: quill/ui/audio_studio/pages_documents.py:663
+msgid "Chapter title preview"
+msgstr "Anteprima titolo capitolo"
+
+#: quill/ui/audio_studio/pages_documents.py:667
+msgid "Speak each &heading aloud"
+msgstr "Leggi ogni intesta&zione ad alta voce"
+
+#: quill/ui/audio_studio/pages_documents.py:670
+msgid "&Combine empty headings into the next article"
+msgstr "&Combina intestazioni vuote nel prossimo articolo"
+
+#: quill/ui/audio_studio/pages_documents.py:673
+msgid "Play a transition s&ounder between headings"
+msgstr "Riproduci uno stacchett&o fra le intestazioni"
+
+#: quill/ui/audio_studio/pages_documents.py:679
+msgid "Sounder &volume (0-100):"
+msgstr "&Volume stacchetto (0-100):"
+
+#: quill/ui/audio_studio/pages_documents.py:682
+msgid "Pause between &articles (ms):"
+msgstr "Pausa fra gli &articoli (ms):"
+
+#: quill/ui/audio_studio/pages_documents.py:685
+msgid "Pause between se&ntences (ms):"
+msgstr "Pausa fra le &frasi (ms):"
+
+#: quill/ui/audio_studio/pages_documents.py:689
+msgid "Trailing pad per section, anti-cli&pping (ms):"
+msgstr "Silenzio finale per sezione, anti-cli&pping (ms):"
+
+#: quill/ui/audio_studio/pages_documents.py:708
+msgid "Choose a source folder first."
+msgstr "Prima scegli una cartella origine."
+
+#: quill/ui/audio_studio/pages_documents.py:714
+msgid "Reading the documents..."
+msgstr "Lettura documenti in corso..."
+
+#: quill/ui/audio_studio/pages_documents.py:743
+msgid "No chapters would be produced."
+msgstr "Nessun capitolo verrebbe  prodotto."
+
+#: quill/ui/audio_studio/pages_documents.py:769
+msgid "Output and diagnostics"
+msgstr "Output e Diagnostica"
+
+#: quill/ui/audio_studio/pages_documents.py:770
+msgid "Choose the audio format and what happens to existing files."
+msgstr "Scegli il formato audio e cosa accade ai file esistenti."
+
+#: quill/ui/audio_studio/pages_documents.py:772
+msgid "Output &format:"
+msgstr "&Formato output:"
+
+#: quill/ui/audio_studio/pages_documents.py:776
+#: quill/ui/audio_studio/pages_shared.py:81
+msgid "MP3 (with chapter markers)"
+msgstr "MP3 (con marcatori capitoli)"
+
+#: quill/ui/audio_studio/pages_documents.py:777
+#: quill/ui/audio_studio/pages_shared.py:81
+msgid "M4B audiobook (native chapters)"
+msgstr "Audiolibro M4B (capitoli nativi)"
+
+#: quill/ui/audio_studio/pages_documents.py:778
+msgid "WAV"
+msgstr "WAV"
+
+#: quill/ui/audio_studio/pages_documents.py:785
+msgid "If an audio file already e&xists:"
+msgstr "Quando un file audio già e&siste:"
+
+#: quill/ui/audio_studio/pages_documents.py:787
+msgid "Skip (resume)"
+msgstr "Salta (riprendi)"
+
+#: quill/ui/audio_studio/pages_documents.py:787
+msgid "Overwrite"
+msgstr "Sovrascrivi"
+
+#: quill/ui/audio_studio/pages_documents.py:787
+msgid "Rename (keep both)"
+msgstr "Rinomina (mantieni entrambi)"
+
+#: quill/ui/audio_studio/pages_documents.py:789
+msgid "If an audio file already exists"
+msgstr "Se un file audio esiste già"
+
+#: quill/ui/audio_studio/pages_documents.py:795
+msgid "Normalize &loudness to audiobook (ACX) level"
+msgstr "Normalizza vo&lumi a livello audiolibro (ACX)"
+
+#: quill/ui/audio_studio/pages_documents.py:800
+msgid "Reuse unchan&ged audio from the last run (incremental rebuild)"
+msgstr ""
+"Riusa l'audio non &modificato dall'ultima esecuzione (ricostruzione "
+"incrementale)"
+
+#: quill/ui/audio_studio/pages_documents.py:805
+msgid "Dr&y run: write preview text only (don't synthesize)"
+msgstr "Simula&zione: scrivi solo il testo di anteprima (non sintetizzare)"
+
+#: quill/ui/audio_studio/pages_documents.py:810
+msgid "Save the te&xt sent to speech (one sidecar per document)"
+msgstr ""
+"Sal&va il testo inviato alla sintesi vocale (un file sidecar per "
+"documento)"
+
+#: quill/ui/audio_studio/pages_documents.py:816
+msgid "A&udition: convert only the first document, so you can judge the result"
+msgstr ""
+"A&udizione: converti solo il primo documento, così puoi giudicare il "
+"risultato"
+
+#: quill/ui/audio_studio/pages_documents.py:821
+msgid "&Temporary files folder (blank = system temp):"
+msgstr "Cartella file &temporanei (vuoto = temporanei di sistema):"
+
+#: quill/ui/audio_studio/pages_documents.py:824
+msgid "Temporary files folder"
+msgstr "Cartella file temporanei"
+
+#: quill/ui/audio_studio/pages_documents.py:825
+msgid "Browse temp&..."
+msgstr "Sfoglia &temporanei..."
+
+#: quill/ui/audio_studio/pages_documents.py:832
+msgid "Choose a folder for temporary files"
+msgstr "Scegli una cartella per i file temporanei"
+
+#: quill/ui/audio_studio/pages_shared.py:39
+msgid "Tell me about the book"
+msgstr "Parlami del libro"
+
+#: quill/ui/audio_studio/pages_shared.py:40
+msgid "Titles and tags travel with the book in every player."
+msgstr "Titoli e tag viaggiano col libro in ogni riproduttore."
+
+#: quill/ui/audio_studio/pages_shared.py:45
+msgid "Assemble the results into one audioboo&k"
+msgstr "Assembla il risultato in un audioli&bro"
+
+#: quill/ui/audio_studio/pages_shared.py:55
+msgid "Book ti&tle:"
+msgstr "Ti&tolo del libro:"
+
+#: quill/ui/audio_studio/pages_shared.py:57
+msgid "Narra&tor:"
+msgstr "Narra&tore:"
+
+#: quill/ui/audio_studio/pages_shared.py:58
+msgid "Gen&re:"
+msgstr "Gene&re:"
+
+#: quill/ui/audio_studio/pages_shared.py:59
+msgid "Yea&r:"
+msgstr "Ann&o:"
+
+#: quill/ui/audio_studio/pages_shared.py:62
+msgid "Look up book detai&ls..."
+msgstr "Ricerca dettag&li del libro..."
+
+#: quill/ui/audio_studio/pages_shared.py:67
+msgid "Cover ima&ge (auto-detected from the folder; optional):"
+msgstr "Imma&gine copertina (rilevata automaticamente dalla cartella; opzionale):"
+
+#: quill/ui/audio_studio/pages_shared.py:70
+msgid "Cover image"
+msgstr "Converti immagine"
+
+#: quill/ui/audio_studio/pages_shared.py:71
+msgid "Browse co&ver..."
+msgstr "Sfoglia co&pertina..."
+
+#: quill/ui/audio_studio/pages_shared.py:78
+msgid "Book for&mat:"
+msgstr "For&mato libro:"
+
+#: quill/ui/audio_studio/pages_shared.py:83
+msgid "Book format"
+msgstr "Formato libro"
+
+#: quill/ui/audio_studio/pages_shared.py:89
+msgid "Normalize the book to ACX (Audible) lou&dness"
+msgstr "Normalizza il libro a volume ACX (Au&dible)"
+
+#: quill/ui/audio_studio/pages_shared.py:95
+msgid "Fade &in at each chapter start (ms):"
+msgstr "Fade &in a inizio di ogni capitolo (ms):"
+
+#: quill/ui/audio_studio/pages_shared.py:98
+msgid "Fade out at each chapter &end (ms):"
+msgstr "Fade out a fin&e di ogni capitolo (ms):"
+
+#: quill/ui/audio_studio/pages_shared.py:101
+msgid "Book temp&o (1.0 = as recorded):"
+msgstr "Vel&ocità lettura (1.0 = registrazione originale):"
+
+#: quill/ui/audio_studio/pages_shared.py:110
+msgid "Book tempo"
+msgstr "Velocità lettura"
+
+#: quill/ui/audio_studio/pages_shared.py:114
+msgid "Add spo&ken opening and closing credits (uses the chosen voice)"
+msgstr ""
+"Aggiungi i crediti di apertura e c&hiusura parlati (utilizza la voce "
+"scelta)"
+
+#: quill/ui/audio_studio/pages_shared.py:123
+msgid "&Review chapters (rename/reorder/merge) before building"
+msgstr "&Rivedi capitoli (rinomina/riordina/unisci) prima di creare"
+
+#: quill/ui/audio_studio/pages_shared.py:132
+#: quill/ui/audio_studio/pages_shared.py:464
+msgid "You will review the chapter list before the book is built."
+msgstr "Revisionerai la lista dei capitoli prima che il libro venga creato"
+
+#: quill/ui/audio_studio/pages_shared.py:142
+msgid "Save the book &as (blank = the source folder):"
+msgstr "S&alva libro con nome (vuoto = cartella di origine):"
+
+#: quill/ui/audio_studio/pages_shared.py:146
+msgid "Browse boo&k..."
+msgstr "Sfoglia li&bro..."
+
+#: quill/ui/audio_studio/pages_shared.py:195
+msgid "Type the book's title first, then look it up."
+msgstr "Scrivi prima il titolo del libro, poi fai la ricerca."
+
+#: quill/ui/audio_studio/pages_shared.py:196
+#: quill/ui/audio_studio/pages_shared.py:210
+#: quill/ui/audio_studio/pages_shared.py:227
+#: quill/ui/audio_studio/pages_shared.py:235
+msgid "Look up book details"
+msgstr "Ricerca i dettagli del libro"
+
+#: quill/ui/audio_studio/pages_shared.py:205
+msgid ""
+"QUILL will contact Open Library and MusicBrainz — free, public book "
+"catalogs — to search for this title. Only the title and author you typed "
+"are sent. Continue?"
+msgstr ""
+"QUILL contatterà Open Library e MusicBrainz — cataloghi pubblici e "
+"gratuiti di libri — per cercare questo titolo. Verranno inviati solo "
+"titolo e autore che hai scritto. Continuare?"
+
+#: quill/ui/audio_studio/pages_shared.py:226
+msgid "No matches were found for that title."
+msgstr "Nessuna corrispondenza trovata per quel titolo."
+
+#: quill/ui/audio_studio/pages_shared.py:234
+msgid "Choose the matching book; its details fill the form:"
+msgstr "Scegli il libro corrispondente; i dettagli riempiono il form:"
+
+#: quill/ui/audio_studio/pages_shared.py:273
+#, python-brace-format
+msgid ""
+"The chosen match has a cover image on Open Library. Download it as {name}"
+" next to your audio and use it for the book?"
+msgstr ""
+"La corrispondenza scelta ha una immagine di copertina su Open Library. La"
+" scarico come {name} accanto al tuo audio e la uso per il libro?"
+
+#: quill/ui/audio_studio/pages_shared.py:278
+#: quill/ui/audio_studio/pages_shared.py:289
+msgid "Download cover art"
+msgstr "Scarica copertina"
+
+#: quill/ui/audio_studio/pages_shared.py:312
+msgid "Choose a cover image"
+msgstr "Scegli un'immagine di copertina"
+
+#: quill/ui/audio_studio/pages_shared.py:313
+msgid "Images (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png"
+msgstr "Immagini (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png"
+
+#: quill/ui/audio_studio/pages_shared.py:323
+msgid "Save the audiobook as"
+msgstr "Salva audiolibro con nome"
+
+#: quill/ui/audio_studio/pages_shared.py:359
+msgid ""
+"Everything below comes from your earlier answers; press Back to change "
+"any of it."
+msgstr ""
+"Tutto ciò che vedi qui sotto deriva dalle tue risposte precedenti; premi "
+"Indietro per modificare qualsiasi dato."
+
+#: quill/ui/audio_studio/pages_shared.py:370
+msgid "Save a &job file..."
+msgstr "Salva un &file di lavoro..."
+
+#: quill/ui/audio_studio/pages_shared.py:386
+msgid "Save this run as a job file"
+msgstr "Salva questa esecuzione come file di lavoro"
+
+#: quill/ui/audio_studio/pages_shared.py:398
+#, python-brace-format
+msgid "Could not write the job file: {error}"
+msgstr "Impossibile scrivere il file di lavoro: {error}"
+
+#: quill/ui/audio_studio/pages_shared.py:399
+#: quill/ui/audio_studio/pages_shared.py:411
+msgid "Save a job file"
+msgstr "Salva un file di lavoro"
+
+#: quill/ui/audio_studio/pages_shared.py:407
+#, python-brace-format
+msgid ""
+"Saved {name}. Load it from the Audio Studio's first page — or edit it in "
+"any text editor — to repeat this exact run."
+msgstr ""
+"Salvato {name}. Caricalo dalla prima pagina dell'Audio Studio — o "
+"modificalo in qualunque editor di testi — per ripetere questa esatta "
+"esecuzione."
+
+#: quill/ui/audio_studio/pages_shared.py:421
+#, python-brace-format
+msgid "Include subfolders: {value}"
+msgstr "Includi sottocartelle: {value}"
+
+#: quill/ui/audio_studio/pages_shared.py:423
+#, python-brace-format
+msgid "File types: {value}"
+msgstr "Tipi di file: {value}"
+
+#: quill/ui/audio_studio/pages_shared.py:424
+#, python-brace-format
+msgid "Engine: {value}"
+msgstr "Motore: {value}"
+
+#: quill/ui/audio_studio/pages_shared.py:425
+#, python-brace-format
+msgid "Voice: {value}"
+msgstr "Voce: {value}"
+
+#: quill/ui/audio_studio/pages_shared.py:425
+msgid "(engine default)"
+msgstr "(motore predefinito)"
+
+#: quill/ui/audio_studio/pages_shared.py:428
+#, python-brace-format
+msgid "Round-robin rotation: {value}"
+msgstr "Rotazione round-robin: {value}"
+
+#: quill/ui/audio_studio/pages_shared.py:432
+#, python-brace-format
+msgid "Translated editions: {value}"
+msgstr "Edizioni tradotte: {value}"
+
+#: quill/ui/audio_studio/pages_shared.py:436
+#, python-brace-format
+msgid "Output format: {value}"
+msgstr "Formato output: {value}"
+
+#: quill/ui/audio_studio/pages_shared.py:438
+#, python-brace-format
+msgid "Chapter mode: {value}"
+msgstr "Modalità capitoli: {value}"
+
+#: quill/ui/audio_studio/pages_shared.py:439
+msgid "one chaptered file per document"
+msgstr "un file suddiviso in capitoli per documento"
+
+#: quill/ui/audio_studio/pages_shared.py:441
+msgid "separate file per article"
+msgstr "separa il file per articolo"
+
+#: quill/ui/audio_studio/pages_shared.py:445
+#, python-brace-format
+msgid "Transition sounder: {value}"
+msgstr "Suono di transizione: {value}"
+
+#: quill/ui/audio_studio/pages_shared.py:446
+#, python-brace-format
+msgid "on, volume {vol}"
+msgstr "sì, volume {vol}"
+
+#: quill/ui/audio_studio/pages_shared.py:448
+msgid "off"
+msgstr "No"
+
+#: quill/ui/audio_studio/pages_shared.py:452
+msgid "Dry run: preview text only, nothing is synthesized."
+msgstr "Simulazione: solo anteprima, niente è sintetizzato."
+
+#: quill/ui/audio_studio/pages_shared.py:454
+msgid "Sources: the audio files already in the folder (no narration)."
+msgstr "Origini: i file audio già nella cartella (nessuna narrazione)."
+
+#: quill/ui/audio_studio/pages_shared.py:457
+#, python-brace-format
+msgid "Audiobook: {title}, saved as {fmt}."
+msgstr "Audiolibro: {title}, salvato come {fmt}."
+
+#: quill/ui/audio_studio/pages_shared.py:458
+msgid "(untitled)"
+msgstr "(senza titolo)"
+
+#: quill/ui/audio_studio/pages_shared.py:462
+msgid "The book is normalized to ACX (Audible) loudness."
+msgstr "Il libro è normalizzato coi volumi ACX (Audible)."
+
+#: quill/ui/audio_studio/pages_shared.py:466
+msgid "Press Start to begin. Progress is announced and can be minimized."
+msgstr ""
+"Premi Avvia per iniziare. L'avanzamento viene annunciato e può essere "
+"minimizzato."
+
+#: quill/ui/audio_studio/pages_start.py:19
+msgid "Welcome to the Audio Studio"
+msgstr "Ti do il benvenuto in Audio Studio"
+
+#: quill/ui/audio_studio/pages_start.py:20
+msgid "Choose what to make; the next steps adapt to your choice."
+msgstr "Scegli cosa creare; i passi successivi si adattano alla tua scelta."
+
+#: quill/ui/audio_studio/pages_start.py:24
+msgid "What would you like to make?"
+msgstr "Cosa vorresti creare?"
+
+#: quill/ui/audio_studio/pages_start.py:26
+msgid "Narrate documents into an audiobook or speech audio"
+msgstr "Leggi ad alta voce i documenti in un audiolibro o file vocale"
+
+#: quill/ui/audio_studio/pages_start.py:27
+msgid "Combine audio files into one chaptered audiobook"
+msgstr "Combina i file audio in un audiolibro diviso in capitoli."
+
+#: quill/ui/audio_studio/pages_start.py:28
+msgid "Edit an existing audiobook (chapters, tags, and cover)"
+msgstr "Modifica un audiolibro esistente (capitoli, tag, e copertina)."
+
+#: quill/ui/audio_studio/pages_start.py:48
+msgid ""
+"Narrating documents reads Word, Markdown, HTML, or text files\n"
+"aloud with any QUILL voice, one chapter per document or heading.\n"
+"Combining audio files merges a folder of recordings into one\n"
+"book, one chapter per file, with a review step before the merge.\n"
+"Editing opens a finished MP3 or M4B in the Chapter Workbench:\n"
+"listen, rename, split at the playhead, retime, fix tags, save."
+msgstr ""
+"La narrazione di documenti legge ad alta voce file Word, Markdown, HTML o"
+" di testo\n"
+"con qualsiasi voce QUILL, un capitolo per documento o per intestazione.\n"
+"La combinazione di file audio unisce una cartella di registrazioni in un "
+"unico\n"
+"libro, un capitolo per file, con una fase di revisione prima dell'unione."
+"\n"
+"La modifica apre un MP3 o M4B finito nel Chapter Workbench:\n"
+"ascolta, rinomina, suddividi alla testina di riproduzione, regola i "
+"tempi, correggi i tag, salva."
+
+#: quill/ui/audio_studio/pages_start.py:61
+msgid "&Load a job file..."
+msgstr "Carica un file di &lavoro..."
+
+#: quill/ui/audio_studio/player_panel.py:42
+msgid "Player"
+msgstr "Riproduttore"
+
+#: quill/ui/audio_studio/player_panel.py:58
+#: quill/ui/audio_studio/player_panel.py:186
+msgid "&Play"
+msgstr "Ri&produci"
+
+#: quill/ui/audio_studio/player_panel.py:59
+msgid "S&top"
+msgstr "In&terrompi"
+
+#: quill/ui/audio_studio/player_panel.py:60
+msgid "Pre&vious chapter"
+msgstr "Capitolo pre&cedente"
+
+#: quill/ui/audio_studio/player_panel.py:61
+msgid "Ne&xt chapter"
+msgstr "Capitolo s&uccessivo"
+
+#: quill/ui/audio_studio/player_panel.py:62
+msgid "Re&wind"
+msgstr "Indietro &veloce"
+
+#: quill/ui/audio_studio/player_panel.py:63
+msgid "&Forward"
+msgstr "Avan&ti Veloce"
+
+#: quill/ui/audio_studio/player_panel.py:65
+msgid "Where am &I?"
+msgstr "Dove &sono?"
+
+#: quill/ui/audio_studio/player_panel.py:67
+msgid "Spee&d:"
+msgstr "Velo&cità:"
+
+#: quill/ui/audio_studio/player_panel.py:69
+msgid "Playback speed"
+msgstr "Velocità riproduzione"
+
+#: quill/ui/audio_studio/player_panel.py:77
+msgid "Position"
+msgstr "Posizione"
+
+#: quill/ui/audio_studio/player_panel.py:81
+msgid "Volume"
+msgstr "Volume"
+
+#: quill/ui/audio_studio/player_panel.py:86
+#: quill/ui/audio_studio/player_panel.py:275
+msgid "No file loaded."
+msgstr "Nessun file caricato."
+
+#: quill/ui/audio_studio/player_panel.py:108
+#, python-brace-format
+msgid "Loading {name}..."
+msgstr "Caricamento {name}..."
+
+#: quill/ui/audio_studio/player_panel.py:164
+#, python-brace-format
+msgid "Chapter {num}: {title}, {duration}"
+msgstr "Capitolo {num}: {title}, {duration}"
+
+#: quill/ui/audio_studio/player_panel.py:186
+msgid "&Pause"
+msgstr "&Pausa"
+
+#: quill/ui/audio_studio/player_panel.py:192
+#, python-brace-format
+msgid "Chapter {num}: {title}"
+msgstr "Capitolo {num}: {title}"
+
+#: quill/ui/audio_studio/player_panel.py:194
+msgid "No chapters"
+msgstr "Nessun capitolo"
+
+#: quill/ui/audio_studio/player_panel.py:197
+#, python-brace-format
+msgid "{chapter} — {pos} of {total}"
+msgstr "{chapter} — {pos} di {total}"
+
+#: quill/ui/audio_studio/player_panel.py:220
+#, python-brace-format
+msgid "Resuming where you left off, at {pos}"
+msgstr "Riprendo da dove hai lasciato, a {pos}"
+
+#: quill/ui/audio_studio/player_panel.py:224
+#, python-brace-format
+msgid "Loaded: {count} chapters, {total}"
+msgstr "Caricato: {count} capitoli, {total}"
+
+#: quill/ui/audio_studio/player_panel.py:233
+msgid "End of book"
+msgstr "Fine del libro"
+
+#: quill/ui/audio_studio/player_panel.py:270
+msgid "This is the last chapter"
+msgstr "Questo è l'ultimo capitolo"
+
+#: quill/ui/audio_studio/player_panel.py:283
+#, python-brace-format
+msgid "Chapter {num} of {total}: {title}"
+msgstr "Capitolo {num} di {total}: {title}"
+
+#: quill/ui/audio_studio/player_panel.py:288
+#, python-brace-format
+msgid "{elapsed} into the chapter, {left} left in it"
+msgstr "{elapsed} nel capitolo, {left} rimanenti"
+
+#: quill/ui/audio_studio/player_panel.py:294
+#, python-brace-format
+msgid "{pos} of {total} in the book, {left} remaining"
+msgstr "{pos} di {total} nel libro, {left} rimanente"
+
+#: quill/ui/audio_studio/player_panel.py:307
+#, python-brace-format
+msgid "Speed {rate}"
+msgstr "Velocità {rate}"
+
+#: quill/ui/audio_studio/publish_dialog.py:58
+#: quill/ui/audio_studio/publish_dialog.py:213
+#: quill/ui/audio_studio/publish_dialog.py:216
+#: quill/ui/audio_studio/publish_dialog.py:610
+#: quill/ui/audio_studio/publish_dialog.py:623
+msgid "Publish Audiobook"
+msgstr "Pubblica audiolibro"
+
+#: quill/ui/audio_studio/publish_dialog.py:72
+#, python-brace-format
+msgid "Publishing {name}"
+msgstr "Sto pubblicando {name}"
+
+#: quill/ui/audio_studio/publish_dialog.py:83
+msgid ""
+"Podcast feed: writes a .rss file next to the book (no upload). Give the "
+"public URL where the audio will live."
+msgstr ""
+"Feed Podcast: scrive un file .rss accanto al libro (nessun caricamento). "
+"Fornisci l'URL pubblico dove l'audio risiederà."
+
+#: quill/ui/audio_studio/publish_dialog.py:93
+msgid "Public media URL"
+msgstr "URL pubblico dei media"
+
+#: quill/ui/audio_studio/publish_dialog.py:95
+msgid "Write &feed file"
+msgstr "Scrivi &file feed"
+
+#: quill/ui/audio_studio/publish_dialog.py:97
+msgid "Folder feed (all episodes)&..."
+msgstr "Feed della car&tella (tutti gli episodi)..."
+
+#: quill/ui/audio_studio/publish_dialog.py:109
+msgid ""
+"Upload over SFTP: the book and its companion files go to the chosen "
+"destination. The password is kept in the Windows Credential Manager, "
+"never in QUILL's settings."
+msgstr ""
+"Carica su SFTP: il libro e i suoi file di accompagnamento finiscono nella"
+" destinazione scelta. La password viene conservata nel gestore "
+"credenziali di Windows, mai nelle impostazioni di QUILL."
+
+#: quill/ui/audio_studio/publish_dialog.py:120
+msgid "Destination na&me:"
+msgstr "No&me destinazione:"
+
+#: quill/ui/audio_studio/publish_dialog.py:121
+msgid "&Host:"
+msgstr "&Host:"
+
+#: quill/ui/audio_studio/publish_dialog.py:123
+msgid "Port"
+msgstr "Porta"
+
+#: quill/ui/audio_studio/publish_dialog.py:124
+msgid "P&ort:"
+msgstr "P&orta:"
+
+#: quill/ui/audio_studio/publish_dialog.py:126
+msgid "&Username:"
+msgstr "Nome &utente:"
+
+#: quill/ui/audio_studio/publish_dialog.py:127
+msgid "Remote fol&der:"
+msgstr "Cartella &remota"
+
+#: quill/ui/audio_studio/publish_dialog.py:128
+msgid "Public URL &base (optional):"
+msgstr "URL pubblico di &base (opzionale):"
+
+#: quill/ui/audio_studio/publish_dialog.py:130
+msgid "Password"
+msgstr "Password"
+
+#: quill/ui/audio_studio/publish_dialog.py:131
+msgid "&Password:"
+msgstr "&Password:"
+
+#: quill/ui/audio_studio/publish_dialog.py:137
+msgid "Saved destinations"
+msgstr "Destinazioni salvate"
+
+#: quill/ui/audio_studio/publish_dialog.py:139
+msgid "Save des&tination"
+msgstr "Salva des&tinazione"
+
+#: quill/ui/audio_studio/publish_dialog.py:141
+msgid "&Upload book now"
+msgstr "&Carica libro ora"
+
+#: quill/ui/audio_studio/publish_dialog.py:153
+msgid ""
+"Auphonic: sends the book to your own Auphonic account for post-production"
+" (leveling, noise reduction). Needs your Auphonic API token; results "
+"download next to the book."
+msgstr ""
+"Auphonic: invia il libro al tuo account Auphonic personale per la post-"
+"produzione (livellamento dei volumi, riduzione del rumore). Richiede il "
+"tuo token API di Auphonic; i risultati vengono scaricati accanto al "
+"libro."
+
+#: quill/ui/audio_studio/publish_dialog.py:164
+msgid "Auphonic API token"
+msgstr "Token API Auphonic"
+
+#: quill/ui/audio_studio/publish_dialog.py:166
+msgid "Check &account and load presets"
+msgstr "Controlla &account e carica preset"
+
+#: quill/ui/audio_studio/publish_dialog.py:174
+msgid "Auphonic pr&eset:"
+msgstr "Pr&eset Auphonic:"
+
+#: quill/ui/audio_studio/publish_dialog.py:176
+#: quill/ui/audio_studio/publish_dialog.py:461
+msgid "(account default preset)"
+msgstr "(preset predefinito dell'account)"
+
+#: quill/ui/audio_studio/publish_dialog.py:177
+msgid "Auphonic preset"
+msgstr "Preset Auphonic"
+
+#: quill/ui/audio_studio/publish_dialog.py:181
+msgid "Send to Auphonic&..."
+msgstr "Invia su Auphonic&..."
+
+#: quill/ui/audio_studio/publish_dialog.py:272
+msgid "Give the public URL where the audio will live (or a URL base)."
+msgstr "Fornisci l'URL pubblico dove risiederà l'audio (o un URL di base)."
+
+#: quill/ui/audio_studio/publish_dialog.py:285
+#, python-brace-format
+msgid "Could not write the feed: {error}"
+msgstr "Impossibile scrivere il feed: {error}"
+
+#: quill/ui/audio_studio/publish_dialog.py:287
+#, python-brace-format
+msgid "Wrote {name} next to the book"
+msgstr "Scritto {name} accanto al libro"
+
+#: quill/ui/audio_studio/publish_dialog.py:291
+#, python-brace-format
+msgid ""
+"Wrote {name}. Upload it (and the audio) to your server, then subscribe to"
+" its public URL in any podcast app."
+msgstr ""
+"Scritto {name}. Caricalo (insieme all'audio) nel tuo server, poi "
+"iscriviti al suo URL pubblico in qualunque app di podcast."
+
+#: quill/ui/audio_studio/publish_dialog.py:322
+msgid "A destination needs at least a name and a host."
+msgstr "Una destinazione ha bisogno almeno di un nome e un host."
+
+#: quill/ui/audio_studio/publish_dialog.py:333
+#, python-brace-format
+msgid "Saved destination {name}"
+msgstr "Salvata destinazione {name}"
+
+#: quill/ui/audio_studio/publish_dialog.py:357
+msgid "Fill in at least the host and username first."
+msgstr "Prima compila almeno nome utente e host."
+
+#: quill/ui/audio_studio/publish_dialog.py:361
+msgid "Type the password (or save the destination with one)."
+msgstr "Digita la password (o salva la destinazione con una password)."
+
+#: quill/ui/audio_studio/publish_dialog.py:371
+msgid "Uploading audiobook"
+msgstr "Carico l'audiolibro"
+
+#: quill/ui/audio_studio/publish_dialog.py:372
+#, python-brace-format
+msgid "Connecting to {host}..."
+msgstr "Connessione a {host}..."
+
+#: quill/ui/audio_studio/publish_dialog.py:387
+#, python-brace-format
+msgid "Uploading {name}: {pct}%"
+msgstr "Carico {name}: {pct}%"
+
+#: quill/ui/audio_studio/publish_dialog.py:409
+#, python-brace-format
+msgid "Upload cancelled. Files already completed stay on {host}."
+msgstr "Caricamento annullato. I file già completati risiedono su {host}."
+
+#: quill/ui/audio_studio/publish_dialog.py:415
+#, python-brace-format
+msgid "Published {name}: {count} file(s) uploaded to {host}"
+msgstr "Pubblicato {name}: {count} file caricati su {host}"
+
+#: quill/ui/audio_studio/publish_dialog.py:420
+#, python-brace-format
+msgid "Uploading {name}..."
+msgstr "Caricamento di {name}..."
+
+#: quill/ui/audio_studio/publish_dialog.py:421
+msgid "Publishing audiobook"
+msgstr "Pubblico l'audiolibro"
+
+#: quill/ui/audio_studio/publish_dialog.py:450
+#: quill/ui/audio_studio/publish_dialog.py:486
+msgid "Paste your Auphonic API token first (from your Auphonic account settings)."
+msgstr ""
+"Prima incolla il tuo token API di Auphonic nelle impostazioni del tuo "
+"account Auphonic."
+
+#: quill/ui/audio_studio/publish_dialog.py:468
+#, python-brace-format
+msgid ""
+"Auphonic account {user}: {credits} credits available, {count} preset(s) "
+"loaded."
+msgstr ""
+"Account Auphonic {user}: {credits} crediti disponibili, {count} preset "
+"caricati."
+
+#: quill/ui/audio_studio/publish_dialog.py:477
+msgid "Checking your Auphonic account..."
+msgstr "Controllo il tuo account Auphonic..."
+
+#: quill/ui/audio_studio/publish_dialog.py:478
+msgid "Checking Auphonic account"
+msgstr "Controllo l'account Auphonic"
+
+#: quill/ui/audio_studio/publish_dialog.py:493
+msgid "your account's default preset"
+msgstr "il preset predefinito del tuo account"
+
+#: quill/ui/audio_studio/publish_dialog.py:496
+#, python-brace-format
+msgid ""
+"QUILL will upload {name} to your own Auphonic account for post-production"
+" with {preset} and download the results next to the book."
+msgstr ""
+"QUILL caricherà {name} nel tuo account Auphonic per la post-produzione "
+"{preset} e scaricherà il risultato accanto al libro."
+
+#: quill/ui/audio_studio/publish_dialog.py:502
+#, python-brace-format
+msgid "Your account has {credits} credits."
+msgstr "Il tuo account ha {credits} crediti."
+
+#: quill/ui/audio_studio/publish_dialog.py:505
+msgid "Continue?"
+msgstr "Continuare?"
+
+#: quill/ui/audio_studio/publish_dialog.py:506
+msgid "Send to Auphonic"
+msgstr "Invia su Auphonic"
+
+#: quill/ui/audio_studio/publish_dialog.py:522
+#: quill/ui/audio_studio/publish_dialog.py:601
+msgid "Auphonic production"
+msgstr "Produzione Auphonic"
+
+#: quill/ui/audio_studio/publish_dialog.py:523
+#, python-brace-format
+msgid "Uploading {name} to Auphonic..."
+msgstr "Carico {name} su Auphonic..."
+
+#: quill/ui/audio_studio/publish_dialog.py:547
+msgid "Uploading"
+msgstr "Caricamento"
+
+#: quill/ui/audio_studio/publish_dialog.py:567
+msgid "Downloading"
+msgstr "Sto scaricando"
+
+#: quill/ui/audio_studio/publish_dialog.py:578
+#, python-brace-format
+msgid "Auphonic: {status}..."
+msgstr "Auphonic: {status}..."
+
+#: quill/ui/audio_studio/publish_dialog.py:587
+msgid "Cancelled. The upload was stopped; no production started."
+msgstr "Annullato. Il caricamento è stato interrotto. Nessuna produzione avviata."
+
+#: quill/ui/audio_studio/publish_dialog.py:591
+msgid ""
+"Cancelled. The production continues in your Auphonic account; nothing was"
+" downloaded."
+msgstr ""
+"Annullato. La produzione continua nel tuo account Auphonic; niente è "
+"stato scaricato."
+
+#: quill/ui/audio_studio/publish_dialog.py:597
+#, python-brace-format
+msgid "Auphonic finished: {count} file(s) saved next to the book"
+msgstr "Auphonic terminato: {count} file salvati accanto al libro"
+
+#: quill/ui/audio_studio/publish_dialog.py:600
+#, python-brace-format
+msgid "Sending {name} to Auphonic..."
+msgstr "Invio di {name} a Auphonic in corso..."
+
+#: quill/ui/audio_studio/publish_dialog.py:610
+msgid "Publishing is disabled in Safe Mode."
+msgstr "La pubblicazione è disabilitata in Modalità Provvisoria."
+
+#: quill/ui/audio_studio/wizard.py:158
+msgid "< &Back"
+msgstr "< In&dietro"
+
+#: quill/ui/audio_studio/wizard.py:159
+msgid "&Next >"
+msgstr "Ava&nti >"
+
+#: quill/ui/audio_studio/wizard.py:161
+msgid "Skip to su&mmary"
+msgstr "Salta al so&mmario"
+
+#: quill/ui/audio_studio/wizard.py:163 quill/ui/audio_studio/wizard.py:258
+msgid "&Start"
+msgstr "Av&via"
+
+#: quill/ui/audio_studio/wizard.py:242
+#, python-brace-format
+msgid "Step {step} of {total}: {title}"
+msgstr "Passo {step} di {total}: {title}"
+
+#: quill/ui/audio_studio/wizard.py:258
+msgid "&Open in Workbench"
+msgstr "Apri in W&orkbench"
+
+#: quill/ui/audio_studio/wizard.py:334 quill/ui/audio_studio/wizard.py:344
+msgid "Load a job file"
+msgstr "Apri un file di lavoro"
+
+#: quill/ui/audio_studio/wizard.py:347
+#, python-brace-format
+msgid "Loaded {name}; review and start"
+msgstr "Caricato {name}; rivedi e inizia"
+
+#~ msgid ""
+#~ "OpenRouter gives access to many models with one key.\n"
+#~ "Sign up at openrouter.ai, then paste your key above and click Save Key."
+#~ msgstr ""
+#~ "OpenRouter ti permette di accedere a "
+#~ "molti modelli con un'unica chiave.\n"
+#~ "Registrati su openrouter.ai, poi incolla "
+#~ "la tua API Key qui sopra e "
+#~ "clicca su Salva chiave."
+
+#~ msgid ""
+#~ "OpenAI provides GPT-4o and other models.\n"
+#~ "Get your key from platform.openai.com under API keys.\n"
+#~ "Paste it above and click Save Key."
+#~ msgstr ""
+#~ "OpenAI fornisce GPT-4o e altri modelli.\n"
+#~ "Ottieni la tua chiave su "
+#~ "platform.openai.com nella sezione Chiavi API."
+#~ "\n"
+#~ "Incollala qui sopra e clicca su Salva chiave."
+
+#~ msgid ""
+#~ "Ollama runs models locally — no key required.\n"
+#~ "Install from ollama.com and run: ollama serve\n"
+#~ "Then pull a model, e.g.: ollama pull gemma3:4b"
+#~ msgstr ""
+#~ "Ollama esegue i modelli in locale — non è richiesta alcuna chiave.\n"
+#~ "Installa da ollama.com ed esegui: ollama serve \n"
+#~ "Poi scarica un modello, ad esempio: ollama pull gemma3:4b"
+
+#~ msgid ""
+#~ "Ollama Cloud hosts large models remotely.\n"
+#~ "Sign up at ollama.com, get your API key,\n"
+#~ "then paste it above and click Save Key."
+#~ msgstr ""
+#~ "Ollama Cloud ospita modelli di grandi dimensioni da remoto.\n"
+#~ "Registrati su ollama.com, ottieni la tua chiave API,\n"
+#~ "Poi incollala qui sopra e clicca su Salva chiave."
+
+#~ msgid "Ask AI"
+#~ msgstr "Chiedi all'IA"
+
+#~ msgid "&Provider:"
+#~ msgstr "&Provider:"
+
+#~ msgid "A&PI Key:"
+#~ msgstr "A&PI Key"
+
+#~ msgid "Paste key here and click Save Key"
+#~ msgstr "Incolla qui la chiave e clicca Salva chiave"
+
+#~ msgid "Sa&ve Key"
+#~ msgstr "Sal&va chiave"
+
+#~ msgid "Reload model list from provider"
+#~ msgstr "Ricarica lista modelli dal provider"
+
+#~ msgid "Pro&mpt:"
+#~ msgstr "Pro&mpt:"
+
+#~ msgid "&Send"
+#~ msgstr "&Invia"
+
+#~ msgid "C&lose"
+#~ msgstr "C&hiudi"
+
+#~ msgid "Send"
+#~ msgstr "Invia"
+
+#~ msgid "Key stored — paste new key to replace"
+#~ msgstr "Chiave archiviata - incolla una nuova chiave per cambiarla."
+
+#~ msgid "Enter your API key above."
+#~ msgstr "Immetti la tua chiave API qui sopra"
+
+#~ msgid "No models returned by provider."
+#~ msgstr "Nessun modello recuperato dal provider."
+
+#~ msgid "(no models available)"
+#~ msgstr "(nessun modello disponibile)"
+
+#~ msgid "{detail}  See setup advice above."
+#~ msgstr "{detail}  Vedi suggerimento configurazione qui sopra."
+
+#~ msgid "API key saved. Loading models..."
+#~ msgstr "API key salvata. Caricamento modelli..."
+
+#~ msgid "Paste a key above before clicking Save Key."
+#~ msgstr "Incolla una chiave qui sopra prima di cliccare Salva chiave."
+
+#~ msgid "Enter a prompt before sending."
+#~ msgstr "Immetti un prompt prima di inviare."
+
+#~ msgid "Select a model first."
+#~ msgstr "Prima seleziona un modello."
+
+#~ msgid "Save an API key for this provider first."
+#~ msgstr "Prima salva una API Key per questo provider."
+
+#~ msgid "Response received."
+#~ msgstr "Risposta ricevuta."
+
+#~ msgid "Error — see details."
+#~ msgstr "Errore - vedi dettagli."
+
+#~ msgid ""
+#~ "AI request failed:\n"
+#~ "\n"
+#~ "{error}"
+#~ msgstr ""
+#~ "Richiesta IA fallita:\n"
+#~ "\n"
+#~ "{error}"
+
+#~ msgid "Ask AI — Error"
+#~ msgstr "Chiedi all'IA - Errore"
+
+#~ msgid "&Save Snapshot..."
+#~ msgstr "&Salva Snapshot..."
+
+#~ msgid "&Manage Snapshots..."
+#~ msgstr "&Gestisci Snapshot..."
+
+#~ msgid "Press to start dictation, press again to stop and insert"
+#~ msgstr "Premi per iniziare la dettatura, premi ancora per fermarla e inserire"
+
+#~ msgid "Hey QUILL &Commands (in Settings)..."
+#~ msgstr "&Comandi Hey QUILL (in impostazioni)..."
+
+#~ msgid "&Manage Speech Models..."
+#~ msgstr "&Gestisci modelli vocali..."
+
+#~ msgid "&Writing Assistant..."
+#~ msgstr "Assistente &Scrittura..."
+
+#~ msgid "Agent &Center..."
+#~ msgstr "&Centro Agenti..."
+
+#~ msgid "AI &Spell Check..."
+#~ msgstr "Controllo ortogra&fico con IA..."
+
+#~ msgid "&Translate Audio File to English..."
+#~ msgstr "&Traduci file audio in inglese..."
+
+#~ msgid "AI &Assistant"
+#~ msgstr "&Assistente IA"
+
+#~ msgid "&Dictation and Watch Folder"
+#~ msgstr "&Dettatura e cartella sorvegliata"
+
+#~ msgid "Show &Parakeet Models"
+#~ msgstr "Mostra modelli &Parakeet"
+
+#~ msgid "Accessibility A&udit..."
+#~ msgstr "Ispe&zione accessibilità..."
+
+#~ msgid "&Keyboard Trap && Tab-Order Snapshot..."
+#~ msgstr "Snapshot &Trappole Tastiera e ordine dei tab..."
+
+#~ msgid "&Validate Contrast..."
+#~ msgstr "&Valida contrasto..."
+
+#~ msgid "Link Inventory && Alt-Text Catalo&g..."
+#~ msgstr "Inventario link e catalo&go testi alternativi..."
+
+#~ msgid "A&ccessibility"
+#~ msgstr "A&ccessibilità"
+
+#~ msgid "Bundled Ink pack (default)"
+#~ msgstr "Pacchetto di serie con effetto penna (predefinito)"
+
+#~ msgid "Choose a sound pack (.qsp)"
+#~ msgstr "Scegli pacchetto di suoni (.qsp)"
+

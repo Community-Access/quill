@@ -24,7 +24,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - id: pages
         uses: actions/configure-pages@v6
         with:
@@ -45,19 +45,27 @@ jobs:
           cp -R docs/site/. site-root/
 
           # 2. Every documentation page already rendered to HTML under docs/.
-          #    The site serves HTML only — no Markdown is published.
-          cp docs/*.html site-root/docs/ 2>/dev/null || true
+          #    The site serves HTML only — no Markdown is published. Files
+          #    nested under docs/<subdir>/ are flattened into site-root/docs/
+          #    so the site can link to them by bare filename (e.g.
+          #    /docs/userguide.html serves docs/user guide/userguide.html).
+          #    docs/site/ is excluded because the hand-built site shell is
+          #    already copied wholesale above.
+          find docs -name '*.html' \
+              -not -path 'docs/site/*' \
+              -not -name 'index.html' \
+              -exec cp {} site-root/docs/ \;
 
           # 3. Render the project's top-level contributor/governance docs to
           #    HTML so the site is self-contained (no links off to raw Markdown).
           render_root() { [ -f "$1" ] && pandoc "$1" -f gfm -t html5 -s --metadata title="$3" -o "site-root/docs/$2" || true; }
-          render_root CONTRIBUTING.md       contributing.html        "Contributing to QUILL"
-          render_root GOVERNANCE.md         governance.html          "QUILL Governance"
-          render_root CODE_OF_CONDUCT.md    code-of-conduct.html     "Code of Conduct"
-          render_root MAINTAINERS.md        maintainers.html         "QUILL Maintainers"
-          render_root SECURITY.md           security.html            "Security Policy"
-          render_root PRIVACY.md            privacy.html             "Privacy"
-          render_root RESPONSIBLE_AI_USE.md responsible-ai-use.html  "Responsible AI Use"
+          render_root docs/CONTRIBUTING.md       contributing.html        "Contributing to QUILL"
+          render_root docs/GOVERNANCE.md         governance.html          "QUILL Governance"
+          render_root docs/CODE_OF_CONDUCT.md    code-of-conduct.html     "Code of Conduct"
+          render_root docs/MAINTAINERS.md        maintainers.html         "QUILL Maintainers"
+          render_root docs/SECURITY.md           security.html            "Security Policy"
+          render_root docs/legal/PRIVACY.md      privacy.html             "Privacy"
+          render_root docs/legal/RESPONSIBLE_AI_USE.md responsible-ai-use.html "Responsible AI Use"
 
           # 4. Rewrite internal Markdown links to their published HTML targets so
           #    no served page points at a .md file. Order matters: handle the

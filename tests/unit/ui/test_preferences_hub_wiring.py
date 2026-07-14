@@ -1,12 +1,14 @@
 """Source-contract test for the multi-page Preferences hub wiring.
 
 The Preferences hub replaces the old "pick an area, press OK, then the area
-opens" ``wx.SingleChoiceDialog`` with a single platform-conditional book
-control: a left-hand category list (``wx.Listbook``) on Windows and Linux, and
-a top category toolbar (``wx.Toolbook``) on macOS. These assertions read the
-source as text (wxPython cannot be imported in headless CI) and pin the wiring
-that keeps the hub accessible: a book selector, first category selected on
-open, and one open button per area.
+opens" ``wx.SingleChoiceDialog`` with a single book control: a left-hand
+category list (``wx.Listbook``) on every platform. (macOS deliberately uses
+``wx.Listbook`` too — its native ``wx.Toolbook`` selector null-derefs in
+``wxToolBarTool::UpdateImages()`` when ``AddPage()`` is called without a
+per-tool bitmap, which segfaulted Cmd+, on macOS; see 6d1bc9e.) These
+assertions read the source as text (wxPython cannot be imported in
+headless CI) and pin the wiring that keeps the hub accessible: a book
+selector, first category selected on open, and one open button per area.
 """
 
 from pathlib import Path
@@ -19,12 +21,12 @@ def _open_preferences_source() -> str:
     return source[start:end]
 
 
-def test_preferences_uses_platform_conditional_book_control() -> None:
+def test_preferences_uses_listbook_on_every_platform() -> None:
     body = _open_preferences_source()
-    # macOS gets the toolbar selector; everyone else gets the category list.
-    assert 'sys.platform == "darwin"' in body
-    assert "wx.Toolbook(" in body
+    # Listbook is the selector on every platform; Toolbook is no longer
+    # wired because its native toolbar selector needs per-page bitmaps.
     assert "wx.Listbook(" in body
+    assert "wx.Toolbook(" not in body
 
 
 def test_preferences_no_longer_uses_single_choice_picker() -> None:

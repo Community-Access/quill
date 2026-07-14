@@ -84,7 +84,7 @@ class SshEditingMixin:
 
     # ------------------------------------------------------------- connect flow
     def _ssh_connect_and_browse(self, request: ConnectionRequest) -> None:
-        self._set_status(f"Connecting to {request.host}...")
+        self._set_status_quiet(f"Connecting to {request.host}...")
         self._announce(f"Connecting to {request.host}")
 
         def worker() -> None:
@@ -113,7 +113,6 @@ class SshEditingMixin:
 
     def _ssh_error(self, message: str) -> None:
         self._set_status(message)
-        self._announce(message)
         self._show_message_box(message, "SSH", self._wx.ICON_ERROR | self._wx.OK)
 
     def _on_ssh_connected(self, connection: SftpConnection, request: ConnectionRequest) -> None:
@@ -124,6 +123,7 @@ class SshEditingMixin:
             self.frame,
             list_dir=connection.service.list_dir,
             start_dir=request.default_dir,
+            announce_cb=self._announce,
         ).show()
         if remote_path is None:
             connection.close()
@@ -147,7 +147,7 @@ class SshEditingMixin:
         _connections, bindings = self._ssh_state()
         bindings[str(local_path)] = _RemoteBinding(connection, remote_path, newline)
         self.open_file(local_path)
-        self._set_status(f"Editing {remote_path} (saves upload back over SSH)")
+        self._set_status_quiet(f"Editing {remote_path} (saves upload back over SSH)")
         self._announce(f"Opened remote file {Path(remote_path).name}")
 
     def maybe_upload_remote_on_save(self) -> None:
@@ -172,7 +172,6 @@ class SshEditingMixin:
         else:
             message = f"Uploaded to {binding.remote_path}"
         self._set_status(message)
-        self._announce(message)
 
     def close_ssh_connections(self) -> None:
         """Close any open SSH connections (best effort, e.g. on app shutdown)."""

@@ -17,5 +17,5 @@ For open-ended questions and idea discussions, use GitHub Discussions.
 
 ## Security reports
 
-Do not file public issues for vulnerabilities. Follow `SECURITY.md` for private
-reporting instructions.
+Do not file public issues for vulnerabilities. Follow `docs/SECURITY.md` for
+private reporting instructions.

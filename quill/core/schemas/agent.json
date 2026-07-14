@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://quill.app/schemas/agent.json",
+  "title": "QUILL Agent Catalog entry (quill.agent/1)",
+  "description": "A declarative agent the AI Hub can list and any harness can run (PRD section 13). QUILL ships no jsonschema runtime dependency; quill/core/ai/agent_catalog.py is the authority that actually enforces this contract, and tests assert the two agree.",
+  "type": "object",
+  "required": ["schema", "id", "display_name", "system_prompt"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "quill.agent/1",
+      "description": "Schema discriminator; must be exactly quill.agent/1."
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+([._-][a-z0-9]+)*$",
+      "description": "Stable agent id, lowercase dotted/dashed segments."
+    },
+    "display_name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable name shown in the Hub catalog."
+    },
+    "description": {
+      "type": "string",
+      "description": "One-line summary of what the agent does."
+    },
+    "system_prompt": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The agent's system prompt / instructions."
+    },
+    "risk": {
+      "enum": ["low", "medium", "high", "critical"],
+      "description": "Agent risk level; the Permission Broker floors decisions by it."
+    },
+    "default_scope": {
+      "enum": [
+        "prompt_only",
+        "selection",
+        "current_section",
+        "document_summary",
+        "full_document",
+        "open_documents",
+        "workspace_summary",
+        "explicit_files",
+        "github"
+      ],
+      "description": "Default Context Builder scope for this agent."
+    },
+    "recommended_file_types": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "File extensions/types this agent is recommended for (no leading dot)."
+    },
+    "default_harness": {
+      "type": "string",
+      "description": "Preferred harness id, or 'auto' to let the registry choose."
+    },
+    "needs_tool_use": {
+      "type": "boolean",
+      "description": "True for agents that depend on the multi-step tool loop; the UI notes that small/free models handle these less reliably, but still offers them (graceful degradation)."
+    },
+    "tools": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Command ids the agent is expected to use; still floored to SAFE_TOOL_IDS at call time."
+    },
+    "permissions": {
+      "type": "object",
+      "description": "Per-category permission overrides fed to the broker (the broker floor still wins).",
+      "propertyNames": {
+        "enum": [
+          "read_selection",
+          "read_document",
+          "read_workspace",
+          "modify_selection",
+          "modify_document",
+          "create_file",
+          "github",
+          "terminal",
+          "web",
+          "memory",
+          "run_command"
+        ]
+      },
+      "additionalProperties": {
+        "enum": ["allow", "ask", "preview_required", "deny"]
+      }
+    }
+  }
+}

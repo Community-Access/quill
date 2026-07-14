@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>plan</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="quill-next-generation-pocket-sync-and-the-platform">QUILL Next
+Generation: Pocket, Sync, and the Platform</h1>
+<p>Vision document, 2026-07-04. Nothing here is committed work. It
+sketches the three big moves after 0.9.0: an iOS companion app, a
+GitHub-style sync layer, and where QUILL goes as a platform.</p>
+<h2 id="quill-pocket-ios">1. QUILL Pocket (iOS)</h2>
+<h3 id="why-the-phone-and-why-now">Why the phone, and why now</h3>
+<p>For a large share of blind and low-vision users, the iPhone is the
+primary computer. VoiceOver is arguably the most-used screen reader on
+earth, iOS braille display support is first-class and built into the OS,
+and the phone is always within reach. QUILL today lives where the
+serious writing happens - the desktop - but the ideas, the mail, the
+meeting, the walk where the chapter finally makes sense all happen away
+from the desk.</p>
+<p>QUILL Pocket is not “QUILL, but small.” The desktop is the writing
+desk; the phone is the capture device, the reader, and the voice. That
+division of labor is the whole design.</p>
+<h3 id="the-magical-core-capture-that-lands-where-it-belongs">The
+magical core: capture that lands where it belongs</h3>
+<p>The single feature that would feel like magic:</p>
+<ul>
+<li>Open Pocket (or invoke it from the Action Button / Shortcuts / share
+sheet).</li>
+<li>Talk. Whisper-quality transcription runs on-device or via the user’s
+own AI key (same free-first rules as desktop QUILL).</li>
+<li>The note lands in the Vault inbox, already transcribed, already
+tagged with time and optional context (“captured during Tuesday
+standup”), and it is sitting in desktop QUILL the next time the user
+opens it.</li>
+</ul>
+<p>No app-switching, no “which folder”, no cleanup session later. Speak,
+done, trust. For a writer who is blind, this collapses the distance
+between having an idea and owning it in their manuscript.</p>
+<p>Capture is more than voice:</p>
+<ul>
+<li>Camera OCR: point the phone at printed mail, a book page, a
+whiteboard, a package label. On-device recognition reads it aloud
+immediately and files the text into the Vault. This is Seeing AI-class
+utility, but the output goes somewhere durable instead of
+evaporating.</li>
+<li>Share sheet everywhere: any web page, email, or text selection on
+iOS can be sent to a QUILL notebook or a specific manuscript’s research
+folder.</li>
+<li>Audio memos kept alongside their transcripts, so the original voice
+is never lost (mirrors the Listening Companion model on desktop).</li>
+</ul>
+<h3 id="the-reader-your-books-your-voice-your-commute">The reader: your
+books, your voice, your commute</h3>
+<ul>
+<li>Read Aloud on the go: manuscripts, Vault notes, and imported
+documents with the same high-quality voices as desktop (Kokoro-class
+neural TTS), with per-document position sync. Stop reading chapter 12 on
+the couch, resume in the car.</li>
+<li>DAISY playback: QUILL already exports DAISY talking books; Pocket
+plays them natively with proper navigation by level, phrase, and
+page.</li>
+<li>Braille: full support for iOS-connected braille displays, so Pocket
+is usable eyes-free and ears-free. Reading in braille on the train, with
+the same document that opens on the desktop at home.</li>
+</ul>
+<h3 id="hey-quill-in-your-pocket">Hey QUILL in your pocket</h3>
+<p>The Hey QUILL voice-interaction plan (desktop) extends naturally:
+“Hey QUILL, what did I capture yesterday about the villain’s backstory?”
+or “read me my draft of chapter three” or “add a task to fix the
+timeline in act two.” Same allowlist-only safety law as desktop: voice
+can navigate, read, capture, and annotate; it cannot destroy.</p>
+<h3 id="light-editing-honest-scope">Light editing, honest scope</h3>
+<p>Pocket gets a clean, VoiceOver-native editor for notes and small
+revisions - not the full command surface. Trying to replicate 27k lines
+of desktop main_frame on a phone would produce a bad phone app and a
+worse writing tool. Fix a typo, reorder a scene list, answer a comment;
+save the ten-hour drafting session for the desk.</p>
+<h3 id="what-makes-it-meet-people-where-they-are">What makes it “meet
+people where they are”</h3>
+<ul>
+<li>VoiceOver-first, not VoiceOver-compatible: rotor actions for every
+list, custom actions instead of buried buttons, headings and landmarks
+that make a screen navigable in three swipes, haptics as a secondary
+channel.</li>
+<li>Works offline; sync is opportunistic.</li>
+<li>Free tier is genuinely useful (capture + read + sync via BYO
+storage), consistent with the “free AI for everyone” ethos.</li>
+</ul>
+<h2 id="quill-sync-github-like-sync-for-your-whole-setup">2. QUILL Sync:
+GitHub-like sync for your whole setup</h2>
+<h3 id="the-model-your-configuration-is-a-repository">The model: your
+configuration is a repository</h3>
+<p>QUILL already stores everything as schema-validated,
+atomically-written JSON (settings, keymaps, abbreviations, Quillin
+manifests) and Vault content as files. That is exactly the shape git was
+built for. So the sync layer borrows git’s ideas rather than inventing a
+database:</p>
+<ul>
+<li>Versioned: every settings change is a commit with a human-readable
+message (“Changed default voice to Kokoro it_IT”, auto-generated).
+History is browsable and speakable.</li>
+<li>Diffable: “what changed between my setup today and last Tuesday?” is
+a first-class, screen-reader-friendly question with a first-class
+answer.</li>
+<li>Rollback: one command restores any prior state of any synced scope.
+A bad keymap experiment is never a disaster again.</li>
+<li>Branch-like profiles: a “work” profile and a “home” profile share a
+common base with per-machine overlays (different audio devices,
+different braille displays, same abbreviations and AI setup).</li>
+</ul>
+<h3 id="transport-bring-your-own-or-use-ours">Transport: bring your own,
+or use ours</h3>
+<p>Three tiers, cheapest first, matching QUILL’s $0-to-Jeff
+philosophy:</p>
+<ol type="1">
+<li>BYO git remote: point QUILL Sync at a private GitHub/GitLab/Gitea
+repo. QUILL manages the plumbing (the user never sees a merge conflict
+marker); the user pays nothing and owns everything. The existing SSH
+client work (paramiko, key management) is directly reusable here.</li>
+<li>BYO folder: any synced folder (iCloud Drive, OneDrive, Dropbox,
+Syncthing) as the remote, using the same commit format on files. Zero
+accounts.</li>
+<li>Hosted QUILL Sync (later, optional): a small service for people who
+do not want to think about any of the above. This is the only tier that
+costs money to run, so it ships last and never becomes required.</li>
+</ol>
+<h3 id="security-is-non-negotiable">Security is non-negotiable</h3>
+<ul>
+<li>End-to-end encryption before anything leaves the machine. Sensitive
+settings are already DPAPI-protected locally; the sync payload is
+encrypted with a user passphrase-derived key, so a compromised remote
+leaks nothing.</li>
+<li>Secrets never sync in plaintext, and some (Windows
+credential-manager entries) never sync at all - the sync manifest
+explicitly marks scopes as syncable, encrypted-syncable, or
+local-only.</li>
+<li>Every outbound call goes through the existing network egress audit;
+sync is off until the user turns it on, per the consent-first rule.</li>
+</ul>
+<h3 id="sync-scopes-smallest-first">Sync scopes, smallest first</h3>
+<ol type="1">
+<li>Preferences, keymap, abbreviations, voice/verbosity settings,
+Quillin install list (manifests re-fetched, not blobs). Small,
+low-conflict, immediately valuable - “sit down at any machine and it is
+your QUILL.”</li>
+<li>Vault content: notes, links, tags. Text merges are handled with a
+CRDT-or-three-way strategy tuned for prose, and conflicts surface as an
+accessible “two versions” review flow, never as inline markers.</li>
+<li>Opt-in extras: AI conversation history, reading positions, Story
+Studio binder state.</li>
+</ol>
+<p>Scope 1 alone justifies the feature; scopes 2-3 are what make Pocket
+sing.</p>
+<h2 id="the-next-generation-quill-as-a-platform">3. The next generation:
+QUILL as a platform</h2>
+<p>Where this all points:</p>
+<ul>
+<li>One Companion, every surface. The desktop Companion agent, Hey QUILL
+voice, and Pocket are the same assistant with the same memory, reachable
+by keyboard, speech, or phone. Context follows the person, not the
+device.</li>
+<li>Accessible collaboration. Real-time co-editing in mainstream tools
+remains a screen-reader minefield. A QUILL-to-QUILL collaborative mode -
+built on the sync layer’s merge machinery, with spoken presence cues
+(“Sarah is editing chapter two”) and braille-aware change tracking -
+would be the first co-writing experience designed blind-first. This is
+the moonshot.</li>
+<li>Quillin exchange. Sync already carries the user’s Quillin list; the
+next step is a browsable, curated directory so extensions travel between
+users, not just between one user’s machines. Sandboxing and manifest
+validation are already in place.</li>
+<li>Publishing pipeline. Draft in QUILL, capture on Pocket, and publish
+out: DAISY, EPUB, WordPress, and podcast-style audio (QUILL Cast) from
+one manuscript. The read-side WordPress work is the seed.</li>
+<li>Local-first AI everywhere. The free-model catalog and local-engine
+work extend to Pocket via on-device models, so the whole loop - capture,
+transcribe, summarize, read back - can run with no cloud at all.</li>
+</ul>
+<h2 id="sequencing-sketch">Sequencing sketch</h2>
+<ol type="1">
+<li>Sync scope 1 (settings-as-a-repo, BYO remote). Pure desktop work,
+builds on existing storage and SSH code, valuable on day one.</li>
+<li>Vault sync (scope 2). Hard merge problems solved on desktop first,
+where debugging is easier.</li>
+<li>Pocket v1: capture + read + Vault browse, riding the now-proven
+sync.</li>
+<li>Pocket v2: camera OCR, DAISY playback, Hey QUILL voice.</li>
+<li>Platform bets: collaboration, Quillin exchange, hosted sync - in
+whatever order real users pull hardest.</li>
+</ol>
+</body>
+</html>

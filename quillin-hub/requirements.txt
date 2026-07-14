@@ -8,4 +8,5 @@ pygithub
 python-dotenv
 Werkzeug
 bandit
-
+# Direct requirement: quill.tools.signing uses nacl.signing for Ed25519.
+PyNaCl>=1.6.2

@@ -47,6 +47,9 @@ class FakeHost:
     def announce(self, message: str) -> None:
         self.announcements.append(message)
 
+    def is_verbosity_speech_enabled(self) -> bool:
+        return True
+
     def prompt(self, title: str, label: str, value: str = "") -> str | None:
         self.prompts.append((title, label, value))
         return self._answers.pop(0) if self._answers else value

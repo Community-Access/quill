@@ -1,6 +1,6 @@
 """autoupdate — vendored from accessibleapps/app_updater (MIT).
 
-See LICENSE in this directory and THIRD_PARTY_NOTICES.md at the repo root.
+See LICENSE in this directory and docs/legal/THIRD_PARTY_NOTICES.md.
 Upstream: https://github.com/accessibleapps/app_updater
 """
 

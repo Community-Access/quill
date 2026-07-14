@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>02-own-the-keyboard</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="tutorial-2-own-the-keyboard">Tutorial 2: Own the keyboard</h1>
+<p><strong>Goal:</strong> move anywhere in QUILL without the mouse, and
+bend the keymap to your hands.</p>
+<h2 id="1-the-quill-key-prefix-commands">1. The QUILL key (prefix
+commands)</h2>
+<p>QUILL has more commands than convenient key combinations, so it uses
+a prefix: press the <strong>QUILL key</strong>
+(<code>Ctrl+Shift+Grave</code> by default — the tilde key), then one
+more key.</p>
+<p>Try these:</p>
+<ol type="1">
+<li>QUILL key, then <code>S</code> — insert a snippet.</li>
+<li>QUILL key, then <code>X</code> — open the Copy Tray (a twelve-slot
+clipboard).</li>
+<li>QUILL key, then <code>Shift+M</code> — the remote sites
+manager.</li>
+</ol>
+<p>Press the QUILL key <strong>twice</strong> and Browse Mode locks on:
+letters and arrows act as navigation commands until you press
+<code>Escape</code> — the same idea as a screen reader's virtual cursor.
+One press arms exactly one command (Quick Nav); two presses lock the
+mode.</p>
+<h2 id="2-deep-navigation">2. Deep navigation</h2>
+<ul>
+<li>Jump by heading in Markdown documents; move by section; set and jump
+to named marks (palette &gt; <code>mark</code>).</li>
+<li>Bookmarks are per-document and survive restarts, and QUILL reopens
+every saved file at your last cursor position.</li>
+<li><code>Ctrl+Tab</code> cycles document tabs; the tab name is
+announced on switch.</li>
+</ul>
+<h2 id="3-the-keymap-editor">3. The Keymap Editor</h2>
+<p><strong>Preferences &gt; Keyboard</strong> opens the editor. Three
+things to try:</p>
+<ol type="1">
+<li><strong>Reverse lookup.</strong> In the search box, type a
+<em>shortcut</em> — <code>ctrl+alt+m</code>, or even
+<code>Control + Shift + K</code> (spelling and order are forgiving).
+QUILL tells you which command owns it, or that it is free.</li>
+<li><strong>Record Keys.</strong> Select a command, choose Record Keys,
+press the chord. Done. If the key is taken, QUILL names the owner by its
+friendly title and offers to move the key — informed, one step, no
+silent clobbering.</li>
+<li><strong>Run Diagnostics.</strong> Audits the whole keymap:
+duplicates, bindings to commands that no longer exist, unreadable
+entries, keys that are assigned but inert. <strong>Heal</strong> fixes
+the repairable ones in one click.</li>
+</ol>
+<p>Export your keymap as a <code>.kqp</code> keyboard pack to share it
+or carry it between machines.</p>
+<h2 id="4-ask-dont-wait-status-queries">4. Ask, don't wait: status
+queries</h2>
+<p>Instead of QUILL deciding what to announce, ask on demand (all in the
+palette): <strong>Where am I?</strong>, <strong>What changed?</strong>,
+<strong>Speak Status</strong>, and <strong>Describe Formatting at
+Cursor</strong> ("Arial, 14 point, centered, bold").</p>
+<h2 id="5-exercise">5. Exercise</h2>
+<ol type="1">
+<li>Rebind <strong>GLOW Audit Current Document</strong> to a key of your
+choice.</li>
+<li>Use reverse lookup to find out what <code>Ctrl+Shift+Z</code>
+does.</li>
+<li>Enter Browse Mode (QUILL key twice), navigate a long document by
+heading, press <code>Escape</code>.</li>
+<li>Open the Spoken Echo (<code>Alt+Shift+E</code>) and review what all
+of that announced.</li>
+</ol>
+<p><strong>Next:</strong> <a href="03-rescue-a-scanned-pdf.md">Rescue a
+scanned PDF</a>.</p>
+</body>
+</html>

@@ -1,0 +1,46 @@
+[JESSICA]
+The QUILL Cast, episode six, the last of our first-steps arc. I'm Jessica, and today we tune what QUILL says, because the right amount of talking is different for every listener.
+
+[LIAM]
+The problem, stated plainly: every screen reader user lives between two failure modes. Too quiet, and you miss the save that failed or the search that found nothing. Too chatty, and your tool talks over your thinking. Most software gives you nothing but a mute button. QUILL gives you an announcement system.
+
+[JESSICA]
+The model is simple to hold: everything QUILL might tell you belongs to a category, saves, searches, navigation, errors, background tasks. Each category can be spoken, shown silently on the status bar, or suppressed. And a verbosity profile is a named bundle of those choices.
+
+[LIAM]
+So the easy path for a new user: pick a baseline profile, quiet, balanced, or narrated, and live with it for two weeks. Find verbosity in the command palette, that's control shift P from last episode, and it takes you to the preferences.
+
+[JESSICA]
+The design law underneath, worth repeating from episode four: suppressing speech never destroys information. The status bar always gets the text, and the Spoken Echo, alt shift E, always keeps the last twenty announcements. You're choosing delivery, not choosing ignorance.
+
+[PAUSE]
+
+[LIAM]
+Now the runtime controls, the ones you reach mid-work. Quiet Mode, one command, mutes QUILL's own speech while you think, with a status badge so you know it's on. Meeting Mode is the stronger version, built for screen-sharing and calls, when the last thing you need is your editor narrating to a conference room.
+
+[JESSICA]
+And for pulling information instead of having it pushed, the status query commands: Where am I announces your position and context. What changed summarizes recent activity. Speak Status reads the status bar on demand. Some of the best QUILL users run quiet profiles and just... ask, when they want to know. Push versus pull; both are first-class.
+
+[LIAM]
+Two pieces of quiet machinery you'll benefit from without configuring. Repetition collapse: if the same announcement would fire five times in two seconds, arrowing across a long selection, say, QUILL collapses the spam. And an optional rate budget caps announcements per rolling window. Your ears, defended by default.
+
+[JESSICA]
+And my favorite command in this entire system: Why did QUILL say that. Something gets announced, you're puzzled, run the command, and QUILL explains itself, which event fired, which rule matched, which setting shaped the wording. Software that can explain its own behavior. Once you've used it, every other program feels evasive.
+
+[LIAM]
+For the power users, and you can file this for later: templates for individual announcements are editable, the order of spoken details is rearrangeable, whole configurations export as shareable profile packs, and there's even mastery step-down, where QUILL gradually shortens announcements for commands you've clearly learned. The tool gets quieter as you get stronger. Scoped resets mean you can always walk any of it back.
+
+[JESSICA]
+Here's the two-week starter plan we genuinely recommend. Week one: defaults, untouched. Week two: open the Spoken Echo at the end of each day and notice which announcements actually annoyed you, then adjust just those categories. Tuning from evidence beats tuning from theory, every time.
+
+[LIAM]
+Homework. One: find and try Quiet Mode, notice the badge, turn it back off. Two: run Where am I and What changed from the palette. Three: run Why did QUILL say that on any announcement, just to meet the explanation.
+
+[JESSICA]
+That completes first steps. You can install, save, navigate the window, reach any command, and shape the soundscape. Next episode begins part two, the everyday editor, starting with moving through text like you own it.
+
+[LIAM]
+I'm Liam.
+
+[JESSICA]
+I'm Jessica. Say less, hear more.

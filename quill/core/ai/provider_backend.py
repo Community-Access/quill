@@ -20,6 +20,7 @@ from quill.core.assistant_ai import (
     generate_assistant_response_stream,
     load_assistant_api_key,
     load_assistant_connection_settings,
+    load_provider_api_key,
     provider_requires_api_key,
 )
 
@@ -35,7 +36,16 @@ class ProviderChatBackend(AIBackend):
         api_key: str | None = None,
     ) -> None:
         self._settings = settings or load_assistant_connection_settings()
-        self._api_key = api_key if api_key is not None else load_assistant_api_key()
+        if api_key is not None:
+            self._api_key = api_key
+        else:
+            # Prefer the active provider's own key. The legacy active-key store is shared
+            # across providers, so after a provider switch it can hold a *different*
+            # provider's key (-> 401 "authentication failed") or be empty (-> "no key
+            # configured"). The per-provider key is unambiguous; fall back to the active
+            # store only for older installs that have just the one key.
+            provider = self._settings.provider.strip().lower()
+            self._api_key = load_provider_api_key(provider) or load_assistant_api_key()
 
     @property
     def settings(self) -> AssistantConnectionSettings:

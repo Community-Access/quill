@@ -1,0 +1,106 @@
+{% extends "_base.html" %}
+{% block title %}Quillin Hub | Forge report: {{ 'Passed' if results.status == 'PASS' else 'Needs work' }}{% endblock %}
+{% block content %}
+    <section aria-labelledby="report-heading" class="max-w-3xl mx-auto">
+        <h2 id="report-heading" class="text-3xl font-bold mb-2 text-slate-800">Forge report</h2>
+
+        <p class="text-lg mb-6" role="status">
+            {% if results.status == 'PASS' %}
+            <strong>Passed.</strong> Your
+            {% if hub_type %}{{ hub_type.label | lower }}{% else %}artifact{% endif %}
+            {% if results.metadata.get('name') %}"{{ results.metadata.get('name') }}"{% endif %}
+            cleared every check QUILL runs on its own bundled artifacts.
+            {% elif results.status == 'FAIL' %}
+            <strong>Needs work.</strong> The Forge found problems listed below. Fix them and
+            submit again -- warnings are advice, errors block publication.
+            {% else %}
+            <strong>Error.</strong> The Forge could not complete the checks. The details below
+            say what went wrong.
+            {% endif %}
+        </p>
+
+        {% if results.metadata %}
+        <section aria-labelledby="metadata-heading" class="bg-white border border-slate-200 rounded-xl p-6 mb-6 shadow-sm">
+            <h3 id="metadata-heading" class="text-xl font-bold mb-3 text-slate-800">What the Forge read from your file</h3>
+            <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2">
+                {% for key, value in results.metadata.items() %}
+                <div>
+                    <dt class="font-semibold text-slate-700">{{ key | capitalize }}</dt>
+                    <dd class="text-slate-600">{{ value }}</dd>
+                </div>
+                {% endfor %}
+            </dl>
+        </section>
+        {% endif %}
+
+        <section aria-labelledby="checks-heading" class="bg-white border border-slate-200 rounded-xl p-6 mb-6 shadow-sm">
+            <h3 id="checks-heading" class="text-xl font-bold mb-3 text-slate-800">Check results</h3>
+
+            {% set sig = results.reports.signature %}
+            <h4 class="font-semibold text-slate-800 mt-2">Signature</h4>
+            <p class="text-slate-700">
+                {% if sig and sig.verified %}
+                <span class="text-green-700 font-semibold">Verified</span>
+                -- signed by <code>{{ sig.signer_key_id }}</code>.
+                {% elif sig and sig.signed %}
+                <span class="text-red-700 font-semibold">Invalid</span>
+                -- {{ sig.error or 'signature did not match the publisher key' }}.
+                {% else %}
+                <span class="text-red-700 font-semibold">Unsigned</span>
+                -- every submission must carry a sidecar signed by
+                <code>quill-pubkey-2026</code>. Re-sign with
+                <code>python -m quill.tools.signing sign &lt;artifact&gt;</code>
+                and re-upload the <code>.minisig</code> alongside.
+                {% endif %}
+            </p>
+
+            <h4 class="font-semibold text-slate-800 mt-2">Validation</h4>
+            {% set validator = results.reports.validator %}
+            {% if not validator.errors and not validator.warnings %}
+            <p class="text-slate-600">OK -- no problems found.</p>
+            {% endif %}
+            {% if validator.errors %}
+            <ul class="list-disc pl-6 text-slate-700">
+                {% for issue in validator.errors %}
+                <li>Error: {{ issue }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% if validator.warnings %}
+            <ul class="list-disc pl-6 text-slate-600">
+                {% for issue in validator.warnings %}
+                <li>Warning: {{ issue }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            {% if results.reports.security %}
+            <h4 class="font-semibold text-slate-800 mt-4">Security scan</h4>
+            <p class="text-slate-700">{{ results.reports.security }}</p>
+            {% endif %}
+
+            {% if results.reports.watchdog %}
+            <h4 class="font-semibold text-slate-800 mt-4">Capability honesty</h4>
+            <pre class="text-slate-700 whitespace-pre-wrap">{{ results.reports.watchdog }}</pre>
+            {% endif %}
+        </section>
+
+        {% if results.status == 'PASS' %}
+        <section aria-labelledby="next-heading" class="bg-slate-100 border border-slate-200 rounded-xl p-6">
+            <h3 id="next-heading" class="text-xl font-bold mb-3 text-slate-800">Publish it (GitHub-native)</h3>
+            <ol class="list-decimal pl-6 space-y-2 text-slate-700">
+                <li>Read the <a href="{{ github.covenant }}" class="text-blue-700 underline">Quillin Author Covenant</a> -- every submission attests to it.</li>
+                <li><a href="{{ github.pull_request }}" class="text-blue-700 underline">Open a pull request</a> adding your artifact to the QUILL repository, or</li>
+                <li><a href="{{ github.issue }}" class="text-blue-700 underline">Open a prefilled submission issue</a> and a maintainer will guide you through the rest.</li>
+            </ol>
+            <p class="text-sm text-slate-500 mt-4">Submission reference: #{{ submission.id }} ({{ submission.original_filename }})</p>
+        </section>
+        {% else %}
+        <p>
+            <a href="/forge/submit" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 shadow-lg inline-block">
+                Fix and submit again
+            </a>
+        </p>
+        {% endif %}
+    </section>
+{% endblock %}

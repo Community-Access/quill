@@ -24,6 +24,46 @@ def test_detect_tool_prefers_bundled_path(monkeypatch, tmp_path: Path) -> None:
     assert status.version == "Pandoc 3.0"
 
 
+def test_detect_tool_finds_macos_well_known_path_when_not_on_path(
+    monkeypatch, tmp_path: Path
+) -> None:
+    """A Finder-launched .app bundle's PATH does not include /usr/local/bin or
+    /opt/homebrew/bin (those are only sourced by login/interactive shells), so
+    a pandoc installed via the pandoc.org .pkg installer -- not Homebrew --
+    is invisible to shutil.which() even though it is genuinely on disk. This
+    is exactly the report from @quillforall/@NightDrake (Mastodon): pandoc
+    installed from the website, QUILL still reports it missing."""
+    monkeypatch.delenv("QUILL_APP_ROOT", raising=False)
+    monkeypatch.setattr("quill.core.external_tools.sys.platform", "darwin")
+    monkeypatch.setattr("quill.core.external_tools.shutil.which", lambda _name: None)
+    fallback_dir = tmp_path / "usr-local-bin"
+    fallback_dir.mkdir()
+    executable = fallback_dir / "pandoc"
+    executable.write_text("binary", encoding="utf-8")
+    monkeypatch.setattr("quill.core.external_tools._MACOS_FALLBACK_DIRS", (str(fallback_dir),))
+    monkeypatch.setattr("quill.core.external_tools._tool_version", lambda *_args: None)
+
+    status = get_external_tool_status("pandoc")
+
+    assert status.installed is True
+    assert status.source == "system"
+    assert status.path == str(executable)
+
+
+def test_detect_tool_macos_fallback_is_a_noop_on_windows(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.delenv("QUILL_APP_ROOT", raising=False)
+    monkeypatch.setattr("quill.core.external_tools.sys.platform", "win32")
+    monkeypatch.setattr("quill.core.external_tools.shutil.which", lambda _name: None)
+    fallback_dir = tmp_path / "usr-local-bin"
+    fallback_dir.mkdir()
+    (fallback_dir / "pandoc").write_text("binary", encoding="utf-8")
+    monkeypatch.setattr("quill.core.external_tools._MACOS_FALLBACK_DIRS", (str(fallback_dir),))
+
+    status = get_external_tool_status("pandoc")
+
+    assert status.installed is False
+
+
 def test_format_tool_status_report_mentions_install_command(monkeypatch) -> None:
     monkeypatch.delenv("QUILL_APP_ROOT", raising=False)
     monkeypatch.setattr("quill.core.external_tools.shutil.which", lambda _name: None)

@@ -19,7 +19,7 @@ repos:
     hooks:
       - id: ruff-format
         name: ruff format
-        entry: ruff format
+        entry: ruff format --force-exclude
         language: system
         types_or: [python, pyi]
         require_serial: true
@@ -61,6 +61,28 @@ repos:
         language: system
         pass_filenames: false
         files: ^quill/.*\.py$
+        require_serial: true
+
+      - id: publishing-provider-registry
+        name: publishing provider registry
+        # Publishing framework: every in-tree provider definition must have a
+        # matching client, and every client must map back to a provider
+        # definition. This does not enable third-party provider loading.
+        entry: python -m quill.tools.check_publishing_providers
+        language: system
+        pass_filenames: false
+        files: ^quill/core/publishing.*\.py$
+        require_serial: true
+
+      - id: announce-gap
+        name: announce-gap gate (GATE-12)
+        # GATE-12: every dialog with a status StaticText updated via SetLabel
+        # must also announce the change via _announce() / announce_cb. Prevents
+        # the silent-status regression (#43 from the 2026-06-12 review).
+        entry: python -m quill.tools.check_announce_gap
+        language: system
+        pass_filenames: false
+        files: ^quill/(ui|devtools)/.*\.py$
         require_serial: true
 
       - id: docs-artifacts

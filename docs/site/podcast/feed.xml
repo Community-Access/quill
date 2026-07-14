@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>The QUILL Cast</title>
+    <link>https://community-access.github.io/quill/podcast/</link>
+    <description>A 36-episode, two-host audio course on QUILL, the free, screen-reader-first writing studio from Community Access. Liam and Jessica lead you from your very first launch to mastery of every feature family: the editor and keyboard, documents and formats, document rescue and OCR, the private speech suite, optional AI, the Accessible Vault, Story Studio, GLOW accessibility review, braille production, extensions, and the trust architecture underneath it all. Episode voices are generated with QUILL&#x27;s own on-device Kokoro neural speech engine.</description>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 05 Jul 2026 17:18:18 +0000</lastBuildDate>
+    <atom:link href="https://community-access.github.io/quill/podcast/feed.xml" rel="self" type="application/rss+xml"/>
+    <itunes:author>Community Access / BITS</itunes:author>
+    <itunes:subtitle>A complete audio course on the screen-reader-first writing studio</itunes:subtitle>
+    <itunes:summary>A 36-episode, two-host audio course on QUILL, the free, screen-reader-first writing studio from Community Access. Liam and Jessica lead you from your very first launch to mastery of every feature family: the editor and keyboard, documents and formats, document rescue and OCR, the private speech suite, optional AI, the Accessible Vault, Story Studio, GLOW accessibility review, braille production, extensions, and the trust architecture underneath it all. Episode voices are generated with QUILL&#x27;s own on-device Kokoro neural speech engine.</itunes:summary>
+    <itunes:explicit>false</itunes:explicit>
+    <itunes:category text="Technology"/>
+    <itunes:owner><itunes:name>Community Access / BITS</itunes:name><itunes:email>jeff@jeffbishop.com</itunes:email></itunes:owner>
+    <item>
+      <title>1: Welcome to QUILL</title>
+      <description>What QUILL is and who it is for: the three design promises (QUILL owns the essentials; everything optional is off by default; nothing leaves your computer without asking), why free matters, and how to follow this course. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep01-welcome-to-quill.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep01-welcome-to-quill.html</link>
+      <guid isPermaLink="false">quill-cast-ep01-welcome-to-quill</guid>
+      <pubDate>Thu, 02 Jul 2026 08:00:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep01-welcome-to-quill.mp3" length="1885149" type="audio/mpeg"/>
+      <itunes:duration>00:03:19</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>2: Install and First Launch</title>
+      <description>The installer, self-voicing setup, the wizard, and feature profiles - why smaller menus win for screen reader users. Plus the three day-one habits: F1, the optional components store, and the guaranteed Escape. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep02-install-and-first-launch.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep02-install-and-first-launch.html</link>
+      <guid isPermaLink="false">quill-cast-ep02-install-and-first-launch</guid>
+      <pubDate>Thu, 02 Jul 2026 08:01:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep02-install-and-first-launch.mp3" length="1872069" type="audio/mpeg"/>
+      <itunes:duration>00:03:18</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>3: Your First Document</title>
+      <description>Files in and out: new, open, save, recent files that respect removable drives, cursor position memory, and the silent crash-recovery net that is protecting you from day one. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep03-your-first-document.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep03-your-first-document.html</link>
+      <guid isPermaLink="false">quill-cast-ep03-your-first-document</guid>
+      <pubDate>Thu, 02 Jul 2026 08:02:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep03-your-first-document.mp3" length="1863645" type="audio/mpeg"/>
+      <itunes:duration>00:03:17</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>4: The Main Window</title>
+      <description>The menu bar by intent, tabs, and the status bar as narrator. The Spoken Echo (Alt+Shift+E), the dialog contract that means you can never be trapped, and why nothing ever steals focus. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep04-the-main-window.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep04-the-main-window.html</link>
+      <guid isPermaLink="false">quill-cast-ep04-the-main-window</guid>
+      <pubDate>Thu, 02 Jul 2026 08:03:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep04-the-main-window.mp3" length="1889757" type="audio/mpeg"/>
+      <itunes:duration>00:03:19</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>5: The Command Palette</title>
+      <description>Ctrl+Shift+P: reach any of hundreds of commands by typing a fragment. The palette as discovery tool, shortcut tutor, and the end of menu-path memorization. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep05-the-command-palette.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep05-the-command-palette.html</link>
+      <guid isPermaLink="false">quill-cast-ep05-the-command-palette</guid>
+      <pubDate>Thu, 02 Jul 2026 08:04:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep05-the-command-palette.mp3" length="1634829" type="audio/mpeg"/>
+      <itunes:duration>00:02:54</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>6: What QUILL Says</title>
+      <description>The verbosity system: profiles, Quiet and Meeting modes, status queries (Where am I? What changed?), anti-spam machinery, and the glorious &#x27;Why did QUILL say that?&#x27; explainer. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep06-what-quill-says.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep06-what-quill-says.html</link>
+      <guid isPermaLink="false">quill-cast-ep06-what-quill-says</guid>
+      <pubDate>Thu, 02 Jul 2026 08:05:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep06-what-quill-says.mp3" length="1842645" type="audio/mpeg"/>
+      <itunes:duration>00:03:15</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>7: Moving Through Text</title>
+      <description>Navigation as a vocabulary: characters to headings, bookmarks that survive restarts, selection marks, Go To Line, and the QUILL key&#x27;s Quick Nav and Browse Mode introduced. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep07-moving-through-text.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep07-moving-through-text.html</link>
+      <guid isPermaLink="false">quill-cast-ep07-moving-through-text</guid>
+      <pubDate>Thu, 02 Jul 2026 08:06:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep07-moving-through-text.mp3" length="1711917" type="audio/mpeg"/>
+      <itunes:duration>00:03:01</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>8: The QUILL Key</title>
+      <description>The prefix system in full: why chords exist, a tour of what lives behind the QUILL key, Browse Mode as the editor&#x27;s virtual cursor, and how to adopt chords without memorizing a chart. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep08-the-quill-key.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep08-the-quill-key.html</link>
+      <guid isPermaLink="false">quill-cast-ep08-the-quill-key</guid>
+      <pubDate>Thu, 02 Jul 2026 08:07:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep08-the-quill-key.mp3" length="1810029" type="audio/mpeg"/>
+      <itunes:duration>00:03:12</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>9: Make the Keyboard Yours</title>
+      <description>The Keymap Editor: two-way search including reverse shortcut lookup, Record Keys, informed one-step conflict swaps, keymap diagnostics with one-click Heal, and shareable keyboard packs. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep09-make-the-keyboard-yours.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep09-make-the-keyboard-yours.html</link>
+      <guid isPermaLink="false">quill-cast-ep09-make-the-keyboard-yours</guid>
+      <pubDate>Thu, 02 Jul 2026 08:08:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep09-make-the-keyboard-yours.mp3" length="1822917" type="audio/mpeg"/>
+      <itunes:duration>00:03:12</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>10: Editing Power Tools</title>
+      <description>Selection and marks, the undo contract (compound changes are one step), line surgery, section moves, case transforms, and the revived classics: Repeat, Restore Deleted Text, and Describe Character. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep10-editing-power-tools.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep10-editing-power-tools.html</link>
+      <guid isPermaLink="false">quill-cast-ep10-editing-power-tools</guid>
+      <pubDate>Thu, 02 Jul 2026 08:09:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep10-editing-power-tools.mp3" length="1972317" type="audio/mpeg"/>
+      <itunes:duration>00:03:28</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>11: Find, Replace, Navigate</title>
+      <description>Search with spoken match counts, replace-all as one undo step, a gentle first regular expression, and Search in Files across whole folders. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep11-find-replace-navigate.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep11-find-replace-navigate.html</link>
+      <guid isPermaLink="false">quill-cast-ep11-find-replace-navigate</guid>
+      <pubDate>Thu, 02 Jul 2026 08:10:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep11-find-replace-navigate.mp3" length="1755789" type="audio/mpeg"/>
+      <itunes:duration>00:03:05</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>12: Spelling and Word Tools</title>
+      <description>Misspelling navigation (Ctrl+F7) as the fair replacement for red squiggles, the spell dialog, custom dictionaries, downloadable languages, and the dictionary and thesaurus. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep12-spelling-and-word-tools.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep12-spelling-and-word-tools.html</link>
+      <guid isPermaLink="false">quill-cast-ep12-spelling-and-word-tools</guid>
+      <pubDate>Thu, 02 Jul 2026 08:11:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep12-spelling-and-word-tools.mp3" length="1780821" type="audio/mpeg"/>
+      <itunes:duration>00:03:08</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>13: Never Lose Work</title>
+      <description>The full safety stack layer by layer: undo, autosave, crash recovery, backups, versions, snapshots, atomic writes, and honest failure reporting. Safety as courage. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep13-never-lose-work.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep13-never-lose-work.html</link>
+      <guid isPermaLink="false">quill-cast-ep13-never-lose-work</guid>
+      <pubDate>Thu, 02 Jul 2026 08:12:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep13-never-lose-work.mp3" length="1913253" type="audio/mpeg"/>
+      <itunes:duration>00:03:22</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>14: Markdown and Structure</title>
+      <description>The structure language everything builds on: the core syntax in minutes, why structure is audible here, the live preview, and the style habits that pay off across a dozen later features. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep14-markdown-and-structure.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep14-markdown-and-structure.html</link>
+      <guid isPermaLink="false">quill-cast-ep14-markdown-and-structure</guid>
+      <pubDate>Thu, 02 Jul 2026 08:13:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep14-markdown-and-structure.mp3" length="1892037" type="audio/mpeg"/>
+      <itunes:duration>00:03:20</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>15: The Text-Supply Toolkit</title>
+      <description>The twelve-slot Copy Tray, snippets with prompts and cursor markers, auto-expanding abbreviations, and recorded macros - four tools that bring text to your cursor. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep15-clipboard-snippets-macros.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep15-clipboard-snippets-macros.html</link>
+      <guid isPermaLink="false">quill-cast-ep15-clipboard-snippets-macros</guid>
+      <pubDate>Thu, 02 Jul 2026 08:14:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep15-clipboard-snippets-macros.mp3" length="1820829" type="audio/mpeg"/>
+      <itunes:duration>00:03:12</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>16: Rich Formatting, Hidden Codes</title>
+      <description>Real fonts, colors, and alignment with a clean plain-text buffer: Describe Formatting at Cursor, Reveal Codes, and Illuminations - formatting that survives inside a plain .txt. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep16-rich-formatting-hidden-codes.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep16-rich-formatting-hidden-codes.html</link>
+      <guid isPermaLink="false">quill-cast-ep16-rich-formatting-hidden-codes</guid>
+      <pubDate>Thu, 02 Jul 2026 08:15:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep16-rich-formatting-hidden-codes.mp3" length="1845261" type="audio/mpeg"/>
+      <itunes:duration>00:03:14</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>17: Word, EPUB, PDF and Friends</title>
+      <description>Other people&#x27;s formats with dignity: Word round-trips with real heading styles, the EPUB navigator, honest PDF extraction quality, the import/export engine, and batch conversion. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep17-word-epub-pdf-and-friends.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep17-word-epub-pdf-and-friends.html</link>
+      <guid isPermaLink="false">quill-cast-ep17-word-epub-pdf-and-friends</guid>
+      <pubDate>Thu, 02 Jul 2026 08:16:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep17-word-epub-pdf-and-friends.mp3" length="1954629" type="audio/mpeg"/>
+      <itunes:duration>00:03:26</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>18: Document Rescue and OCR</title>
+      <description>Free first, local first, nothing uploaded: MarkItDown for born-digital files, the scanned-PDF escalation prompt, on-device Tesseract OCR with confidence honesty, and the verified engine install. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep18-document-rescue-ocr.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep18-document-rescue-ocr.html</link>
+      <guid isPermaLink="false">quill-cast-ep18-document-rescue-ocr</guid>
+      <pubDate>Thu, 02 Jul 2026 08:17:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep18-document-rescue-ocr.mp3" length="2091405" type="audio/mpeg"/>
+      <itunes:duration>00:03:40</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>19: Files Everywhere</title>
+      <description>FTP, SFTP, WebDAV, and S3 from three commands; GitHub editing with no Git installed; SSH editing with strict host keys; Open from URL - the end of the download-edit-reupload shuffle. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep19-files-everywhere.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep19-files-everywhere.html</link>
+      <guid isPermaLink="false">quill-cast-ep19-files-everywhere</guid>
+      <pubDate>Thu, 02 Jul 2026 08:18:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep19-files-everywhere.mp3" length="1852389" type="audio/mpeg"/>
+      <itunes:duration>00:03:15</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>20: Watch Folders and Automation</title>
+      <description>Teach QUILL to work while you&#x27;re elsewhere: auto-opening inbox folders, watch actions and pipelines, and the safety posture that keeps automation from becoming mystery. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep20-watch-folders-automation.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep20-watch-folders-automation.html</link>
+      <guid isPermaLink="false">quill-cast-ep20-watch-folders-automation</guid>
+      <pubDate>Thu, 02 Jul 2026 08:19:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep20-watch-folders-automation.mp3" length="1669413" type="audio/mpeg"/>
+      <itunes:duration>00:02:56</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>21: Read Aloud and the Voice Catalog</title>
+      <description>SAPI, eSpeak, DECtalk (hello, Paul), on-device Kokoro neural voices, the optional cloud voice, the browser reader, and the SSML Builder - a voice for every job. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep21-read-aloud-and-voices.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep21-read-aloud-and-voices.html</link>
+      <guid isPermaLink="false">quill-cast-ep21-read-aloud-and-voices</guid>
+      <pubDate>Thu, 02 Jul 2026 08:20:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep21-read-aloud-and-voices.mp3" length="1855869" type="audio/mpeg"/>
+      <itunes:duration>00:03:16</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>22: Dictation</title>
+      <description>You talk, QUILL types, offline: Whisper-powered hold-to-talk and locked dictation, model choices for real hardware, and the speak-fast-repair-fast workflow. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep22-dictation.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep22-dictation.html</link>
+      <guid isPermaLink="false">quill-cast-ep22-dictation</guid>
+      <pubDate>Thu, 02 Jul 2026 08:21:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep22-dictation.mp3" length="2439213" type="audio/mpeg"/>
+      <itunes:duration>00:04:18</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>23: Transcription and the Listening Companion</title>
+      <description>Recordings into documents, privately: local transcription with translation and speaker options, Transcript Actions from minutes to follow-up emails, and the no-syntax Action Builder. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep23-transcription-listening-companion.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep23-transcription-listening-companion.html</link>
+      <guid isPermaLink="false">quill-cast-ep23-transcription-listening-companion</guid>
+      <pubDate>Thu, 02 Jul 2026 08:22:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep23-transcription-listening-companion.mp3" length="1909893" type="audio/mpeg"/>
+      <itunes:duration>00:03:21</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>24: The Audio Studio</title>
+      <description>Documents out to sound, all grown up: the Audio Studio&#x27;s three journeys - narrate documents into audiobooks, combine recordings into chaptered books, and edit any audiobook in the Chapter Workbench - plus incremental rebuilds, voice casting, AI chapter titles, and publishing to a feed, a server, or Auphonic. DAISY export still closes the arc. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep24-the-audio-studio.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep24-the-audio-studio.html</link>
+      <guid isPermaLink="false">quill-cast-ep24-the-audio-studio</guid>
+      <pubDate>Sun, 05 Jul 2026 09:00:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep24-the-audio-studio.mp3" length="2770269" type="audio/mpeg"/>
+      <itunes:duration>00:04:49</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>25: Setting Up AI</title>
+      <description>Off by default, reviewable always, free for everyone: the setup wizard&#x27;s honest choices (local Ollama, free OpenRouter key, paid accounts, or Not Now) and the privacy architecture underneath. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep25-setting-up-ai.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep25-setting-up-ai.html</link>
+      <guid isPermaLink="false">quill-cast-ep25-setting-up-ai</guid>
+      <pubDate>Thu, 02 Jul 2026 08:24:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep25-setting-up-ai.mp3" length="1934133" type="audio/mpeg"/>
+      <itunes:duration>00:03:23</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>26: Ask Quill and Everyday AI</title>
+      <description>One conversation that knows your document, the quick-action toolkit, AI spell/grammar/thesaurus above the local engines, custom instructions, and the discipline of rejecting things. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep26-ask-quill-everyday-ai.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep26-ask-quill-everyday-ai.html</link>
+      <guid isPermaLink="false">quill-cast-ep26-ask-quill-everyday-ai</guid>
+      <pubDate>Thu, 02 Jul 2026 08:25:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep26-ask-quill-everyday-ai.mp3" length="1842573" type="audio/mpeg"/>
+      <itunes:duration>00:03:14</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>27: The AI Library - Prompts and Skills</title>
+      <description>A build-along up the ladder: saving your first prompt with variables, promoting it into a multi-step skill, sharing packs, and curating a bench that fits your actual week. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep27-ai-library-prompts-skills.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep27-ai-library-prompts-skills.html</link>
+      <guid isPermaLink="false">quill-cast-ep27-ai-library-prompts-skills</guid>
+      <pubDate>Thu, 02 Jul 2026 08:26:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep27-ai-library-prompts-skills.mp3" length="1824717" type="audio/mpeg"/>
+      <itunes:duration>00:03:14</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>28: Agents - Reviewable Autonomy</title>
+      <description>Plans you read before they run: the plan-review-execute contract, the Accessibility Tune-Up as flagship, partial approval, and the craft of reviewing plans. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep28-agents-reviewable-autonomy.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep28-agents-reviewable-autonomy.html</link>
+      <guid isPermaLink="false">quill-cast-ep28-agents-reviewable-autonomy</guid>
+      <pubDate>Thu, 02 Jul 2026 08:27:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep28-agents-reviewable-autonomy.mp3" length="1959261" type="audio/mpeg"/>
+      <itunes:duration>00:03:26</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>29: The Accessible Vault</title>
+      <description>Linked notes rebuilt for the ear: wikilinks, the spoken &#x27;what links here&#x27;, Note Neighborhood, unlinked mentions, fearless rename - the graph view without the graph. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep29-accessible-vault-basics.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep29-accessible-vault-basics.html</link>
+      <guid isPermaLink="false">quill-cast-ep29-accessible-vault-basics</guid>
+      <pubDate>Thu, 02 Jul 2026 08:28:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep29-accessible-vault-basics.mp3" length="1756941" type="audio/mpeg"/>
+      <itunes:duration>00:03:07</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>30: Vault Power</title>
+      <description>Tags that roll up, templates with prompts, daily notes, embeds, exporting your vault as an accessible website, and Git sync on infrastructure you own. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep30-vault-power.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep30-vault-power.html</link>
+      <guid isPermaLink="false">quill-cast-ep30-vault-power</guid>
+      <pubDate>Thu, 02 Jul 2026 08:29:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep30-vault-power.mp3" length="1879053" type="audio/mpeg"/>
+      <itunes:duration>00:03:17</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>31: Story Studio</title>
+      <description>Book-length writing with a keyboard-first binder: structure straight from your headings, character and plot-thread detail forms as front matter, and compile-to-manuscript. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep31-story-studio.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep31-story-studio.html</link>
+      <guid isPermaLink="false">quill-cast-ep31-story-studio</guid>
+      <pubDate>Thu, 02 Jul 2026 08:30:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep31-story-studio.mp3" length="1900773" type="audio/mpeg"/>
+      <itunes:duration>00:03:21</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>32: GLOW - Audit and Fix</title>
+      <description>Guided confidence, not a compliance dashboard: plain-language audits of the document in front of you, in-place selection fixes, and whole-document fixes with a before/after compare. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep32-glow-audit-and-fix.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep32-glow-audit-and-fix.html</link>
+      <guid isPermaLink="false">quill-cast-ep32-glow-audit-and-fix</guid>
+      <pubDate>Thu, 02 Jul 2026 08:31:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep32-glow-audit-and-fix.mp3" length="2275221" type="audio/mpeg"/>
+      <itunes:duration>00:04:00</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>33: GLOW for Files</title>
+      <description>Scored, graded audits of Word, PowerPoint, Excel, PDF, and EPUB; non-destructive Fix File that never touches the original; and the signature-verified engine update path. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep33-glow-for-files.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep33-glow-for-files.html</link>
+      <guid isPermaLink="false">quill-cast-ep33-glow-for-files</guid>
+      <pubDate>Thu, 02 Jul 2026 08:32:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep33-glow-for-files.mp3" length="1850397" type="audio/mpeg"/>
+      <itunes:duration>00:03:14</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>34: Braille Production</title>
+      <description>BRF, BRL, PEF and UEB workflows; Read Layout Metrics and the longest-line repair loop; trailing-space cleanup; and the honest cell-two display workaround story. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep34-braille-production.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep34-braille-production.html</link>
+      <guid isPermaLink="false">quill-cast-ep34-braille-production</guid>
+      <pubDate>Thu, 02 Jul 2026 08:33:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep34-braille-production.mp3" length="1935525" type="audio/mpeg"/>
+      <itunes:duration>00:03:24</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>35: Quillins and the Developer Console</title>
+      <description>The extension system: worker-process fault isolation, Python and JavaScript Quillins, the deliberately-gated marketplace, and the accessible scripting console that turns users into toolmakers. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep35-quillins-and-the-console.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep35-quillins-and-the-console.html</link>
+      <guid isPermaLink="false">quill-cast-ep35-quillins-and-the-console</guid>
+      <pubDate>Thu, 02 Jul 2026 08:34:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep35-quillins-and-the-console.mp3" length="1951125" type="audio/mpeg"/>
+      <itunes:duration>00:03:26</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+    <item>
+      <title>36: Trust, Community, and the Road Ahead</title>
+      <description>The finale: the five enforced safety rules, honest diagnostics, the community and its receipts, the public roadmap, and what QUILL proves about designing screen-reader-first. Full transcript: https://community-access.github.io/quill/podcast/transcripts/ep36-trust-community-finale.html</description>
+      <link>https://community-access.github.io/quill/podcast/transcripts/ep36-trust-community-finale.html</link>
+      <guid isPermaLink="false">quill-cast-ep36-trust-community-finale</guid>
+      <pubDate>Thu, 02 Jul 2026 08:35:00 +0000</pubDate>
+      <enclosure url="https://github.com/Community-Access/quill/releases/download/podcast-v1/ep36-trust-community-finale.mp3" length="2115933" type="audio/mpeg"/>
+      <itunes:duration>00:03:42</itunes:duration>
+      <itunes:explicit>false</itunes:explicit>
+    </item>
+  </channel>
+</rss>

@@ -67,8 +67,71 @@ def apply_modal_ids(
             button.SetLabel(cancel_label)
 
 
+def apply_listbox_activation(listbox: object, handler: Callable[[object], None]) -> None:
+    """Make a ``wx.ListBox`` activatable by keyboard as well as double-click.
+
+    A ``wx.ListBox`` emits no item-activated event (unlike ``wx.ListCtrl``'s
+    ``EVT_LIST_ITEM_ACTIVATED``), so binding only ``EVT_LISTBOX_DCLICK`` leaves the
+    action unreachable for keyboard and screen-reader users. This binds the
+    double-click **and** Enter / NumpadEnter / Space (when an item is selected),
+    calling *handler* for both. The key event is consumed on activation so the
+    dialog's default button does not also fire. *handler* takes the wx event, so an
+    existing double-click handler works unchanged.
+    """
+    import wx
+
+    listbox.Bind(wx.EVT_LISTBOX_DCLICK, handler)
+
+    def _on_key(event: object) -> None:
+        code = event.GetKeyCode()
+        has_selection = listbox.GetSelection() != wx.NOT_FOUND
+        if has_selection and code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER, wx.WXK_SPACE):
+            handler(event)
+            return  # consume so the modal default button does not also activate
+        event.Skip()
+
+    listbox.Bind(wx.EVT_KEY_DOWN, _on_key)
+
+
+def _selected_book_page(control: object) -> object | None:
+    """Return the currently selected page of a *book* control, else ``None``.
+
+    Book controls (``wx.Notebook`` and its ``Listbook`` / ``Treebook`` /
+    ``Choicebook`` / ``Toolbook`` / ``Simplebook`` / ``AuiNotebook`` siblings)
+    show only their selected page; the other pages are hidden. Detected by the
+    ``*book`` class-name suffix so a leaf control that merely exposes
+    ``GetSelection`` (``ListBox``, ``Choice``, ``ComboBox``) is never mistaken
+    for a page container.
+    """
+    if not type(control).__name__.lower().endswith("book"):
+        return None
+    get_selection = getattr(control, "GetSelection", None)
+    get_page = getattr(control, "GetPage", None)
+    if not callable(get_selection) or not callable(get_page):
+        return None
+    try:
+        index = get_selection()
+    except Exception:
+        return None
+    if not isinstance(index, int) or index < 0:
+        return None
+    try:
+        return get_page(index)
+    except Exception:
+        return None
+
+
 def _iter_descendant_controls(widget: object) -> Iterable[object]:
-    """Yield a widget's descendants in creation (tab) order, depth-first."""
+    """Yield a widget's descendants in creation (tab) order, depth-first.
+
+    A book control is confined to its selected page (see
+    :func:`_selected_book_page`): initial-focus routing must land on the first
+    control of the tab the user actually sees, never a hidden page's control and
+    never the tab strip itself (the notebook is not a preferred-focus class, so
+    it is skipped as a focus target regardless). This is what keeps a tabbed
+    dialog from opening with focus parked on the tab control instead of the
+    first field inside the active tab.
+    """
     get_children = getattr(widget, "GetChildren", None)
     if not callable(get_children):
         return
@@ -78,7 +141,11 @@ def _iter_descendant_controls(widget: object) -> Iterable[object]:
         return
     for child in children:
         yield child
-        yield from _iter_descendant_controls(child)
+        page = _selected_book_page(child)
+        if page is not None:
+            yield from _iter_descendant_controls(page)
+        else:
+            yield from _iter_descendant_controls(child)
 
 
 def _is_focusable(control: object) -> bool:
@@ -174,6 +241,29 @@ def focus_primary_control(
     return target
 
 
+# The "Entered/Exited <name> dialog" cues are opt-out via the
+# announce_dialog_transitions setting. Standalone dialogs call the module
+# helpers below directly (no MainFrame in scope), so the shell registers a
+# live lookup here at startup; None (bare unit tests, no shell) keeps the
+# cues on, matching the MainFrame wrappers' fallback for test doubles.
+_transition_announcement_policy: Callable[[], bool] | None = None
+
+
+def set_transition_announcement_policy(policy: Callable[[], bool] | None) -> None:
+    """Register the live announce_dialog_transitions lookup (None resets)."""
+    global _transition_announcement_policy
+    _transition_announcement_policy = policy
+
+
+def _transition_cues_enabled() -> bool:
+    if _transition_announcement_policy is None:
+        return True
+    try:
+        return bool(_transition_announcement_policy())
+    except Exception:
+        return True
+
+
 def show_modal_dialog(
     dialog: object,
     label: str,
@@ -183,14 +273,15 @@ def show_modal_dialog(
     exit_region: Callable[[str], None] | None = None,
 ) -> int:
     """Show a modal dialog with optional region and announcement hooks."""
+    speak_transitions = announce is not None and _transition_cues_enabled()
     if enter_region is not None:
         enter_region(label)
-    if announce is not None:
+    if speak_transitions:
         announce(f"Entered {label} dialog")
     try:
         result = dialog.ShowModal()
     finally:
-        if announce is not None:
+        if speak_transitions:
             announce(f"Exited {label} dialog")
         if exit_region is not None:
             exit_region(label)
@@ -213,11 +304,12 @@ def show_message_box(
     """
     import wx
 
-    if announce is not None:
+    speak_transitions = announce is not None and _transition_cues_enabled()
+    if speak_transitions:
         announce(f"Entered {caption} dialog")
     try:
         result = wx.MessageBox(message, caption, style, parent)
     finally:
-        if announce is not None:
+        if speak_transitions:
             announce(f"Exited {caption} dialog")
     return result

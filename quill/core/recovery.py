@@ -96,47 +96,49 @@ def _release_file_lock(fd: int) -> None:
 def begin_session(session_id: str) -> list[RecoveryOffer]:
     _validate_session_id(session_id)
     fd = _acquire_file_lock()
-    with _state_lock:
-        state = _load_state()
-        offers: list[RecoveryOffer] = []
-        previous_session = state.get("last_session_id")
-        previous_clean = bool(state.get("clean_exit", True))
-        if isinstance(previous_session, str) and previous_session and not previous_clean:
-            latest = latest_session_snapshot(previous_session)
-            if latest is not None and not _is_offer_dismissed(state, previous_session, latest):
-                cursor_position = _load_cursor_position(state, previous_session)
-                dismissal_count = _load_dismissal_count(state, previous_session)
-                offers.append(
-                    RecoveryOffer(
-                        session_id=previous_session,
-                        snapshot=latest,
-                        cursor_position=cursor_position,
-                        dismissal_count=dismissal_count,
+    try:
+        with _state_lock:
+            state = _load_state()
+            offers: list[RecoveryOffer] = []
+            previous_session = state.get("last_session_id")
+            previous_clean = bool(state.get("clean_exit", True))
+            if isinstance(previous_session, str) and previous_session and not previous_clean:
+                latest = latest_session_snapshot(previous_session)
+                if latest is not None and not _is_offer_dismissed(state, previous_session, latest):
+                    cursor_position = _load_cursor_position(state, previous_session)
+                    dismissal_count = _load_dismissal_count(state, previous_session)
+                    offers.append(
+                        RecoveryOffer(
+                            session_id=previous_session,
+                            snapshot=latest,
+                            cursor_position=cursor_position,
+                            dismissal_count=dismissal_count,
+                        )
                     )
-                )
-        state["last_session_id"] = session_id
-        state["clean_exit"] = False
-        _save_state(state)
-    if fd is not None:
-        _release_file_lock(fd)
+            state["last_session_id"] = session_id
+            state["clean_exit"] = False
+            _save_state(state)
+    finally:
+        if fd is not None:
+            _release_file_lock(fd)
     return offers
 
 
 def mark_clean_exit(session_id: str) -> None:
     _validate_session_id(session_id)
     fd = _acquire_file_lock()
-    with _state_lock:
-        state = _load_state()
-        last_session = state.get("last_session_id")
-        if last_session != session_id:
-            if fd is not None:
-                _release_file_lock(fd)
-            return
-        state["last_session_id"] = session_id
-        state["clean_exit"] = True
-        _save_state(state)
-    if fd is not None:
-        _release_file_lock(fd)
+    try:
+        with _state_lock:
+            state = _load_state()
+            last_session = state.get("last_session_id")
+            if last_session != session_id:
+                return
+            state["last_session_id"] = session_id
+            state["clean_exit"] = True
+            _save_state(state)
+    finally:
+        if fd is not None:
+            _release_file_lock(fd)
 
 
 def mark_recovery_offer_dismissed(offer: RecoveryOffer) -> None:
@@ -149,48 +151,90 @@ def mark_recovery_offer_recovered(offer: RecoveryOffer) -> None:
 
 
 def latest_session_snapshot(session_id: str) -> Path | None:
+    """Return the newest non-empty autosave ``.snap`` for *session_id*.
+
+    Calls ``stat()`` exactly once per candidate file (#356 / #289): the
+    previous implementation paid two syscalls per file (one to filter
+    non-empty, one to sort by mtime).
+    """
     _validate_session_id(session_id)
     root = app_data_dir() / "autosave" / session_id
     if not root.exists():
         return None
-    snapshots = sorted(root.glob("*.snap"), key=lambda item: item.stat().st_mtime, reverse=True)
-    if not snapshots:
+    candidates: list[tuple[Path, float, int]] = []
+    for path in root.glob("*.snap"):
+        try:
+            info = path.stat()
+        except OSError:
+            # Snapshot deleted between glob and stat (autosave cleanup).
+            continue
+        if info.st_size > 0:
+            candidates.append((path, info.st_mtime, info.st_size))
+    if not candidates:
         return None
-    return snapshots[0]
+    candidates.sort(key=lambda item: item[1], reverse=True)
+    return candidates[0][0]
 
 
 def read_recovery_snapshot(path: Path) -> tuple[str, bool]:
     """Read *path* and return ``(text, had_replacements)``.
 
     ``had_replacements`` is True when the file contained bytes that could not
-    be decoded as UTF-8 and were substituted with U+FFFD (the Unicode
-    replacement character).  The UI surfaces this as a status-bar note in the
-    recovery dialog so the user knows to inspect the recovered text.
+    be decoded as UTF-8. The caller decides how to surface that.
+
+    Reads the bytes first and decodes with ``errors="strict"`` (#356 / #301)
+    so a real UnicodeDecodeError is caught and a replacement is performed
+    explicitly; the previous ``errors="replace"`` call made it impossible
+    to distinguish "user typed U+FFFD" from "file had undecodable bytes".
     """
-    text = path.read_text(encoding="utf-8", errors="replace")
-    had_replacements = "�" in text
-    return text, had_replacements
+    raw_bytes = path.read_bytes()
+    try:
+        text = raw_bytes.decode("utf-8")
+    except UnicodeDecodeError:
+        text = raw_bytes.decode("utf-8", errors="replace")
+        return text, True
+    return text, False
 
 
-def save_cursor_position(session_id: str, position: int) -> None:
+#: Maximum caret offset the recovery layer will round-trip. Matches the
+#: editor's hard cap on document length so a corrupt value cannot survive a
+#: round trip and surface a bogus cursor offset to the next session.
+_MAX_CURSOR_POSITION = 10_000_000
+
+
+def save_cursor_position(
+    session_id: str,
+    position: int,
+    document_length: int | None = None,
+) -> None:
     """Persist the editor cursor *position* for *session_id*.
 
     Called from the UI on every autosave so the next session can restore the
     caret to where the user was working ("Resume from where I left off", §8.4).
+
+    The persisted value is clamped to ``[0, document_length or _MAX_CURSOR_POSITION]``
+    (#356 / #311). Out-of-bounds or non-int values are silently treated as 0
+    on load so a corrupt snapshot can never resurrect a bogus caret offset.
     """
     _validate_session_id(session_id)
+    upper_bound = document_length if document_length is not None else _MAX_CURSOR_POSITION
+    clamped_position = max(0, min(int(position), upper_bound))
     fd = _acquire_file_lock()
-    with _state_lock:
-        state = _load_state()
-        positions: dict[str, int] = {}
-        raw = state.get("cursor_positions")
-        if isinstance(raw, dict):
-            positions = {k: v for k, v in raw.items() if isinstance(k, str) and isinstance(v, int)}
-        positions[session_id] = int(position)
-        state["cursor_positions"] = positions
-        _save_state(state)
-    if fd is not None:
-        _release_file_lock(fd)
+    try:
+        with _state_lock:
+            state = _load_state()
+            positions: dict[str, int] = {}
+            raw = state.get("cursor_positions")
+            if isinstance(raw, dict):
+                positions = {
+                    k: v for k, v in raw.items() if isinstance(k, str) and isinstance(v, int)
+                }
+            positions[session_id] = clamped_position
+            state["cursor_positions"] = positions
+            _save_state(state)
+    finally:
+        if fd is not None:
+            _release_file_lock(fd)
 
 
 def _state_path() -> Path:
@@ -210,17 +254,19 @@ def _save_state(data: dict[str, object]) -> None:
 
 def _record_offer_outcome(offer: RecoveryOffer, *, outcome: str) -> None:
     fd = _acquire_file_lock()
-    with _state_lock:
-        state = _load_state()
-        state["last_recovery_offer"] = {
-            "session_id": offer.session_id,
-            "snapshot": str(offer.snapshot),
-            "outcome": outcome,
-            "recorded_at": datetime.now(UTC).isoformat(),
-        }
-        _save_state(state)
-    if fd is not None:
-        _release_file_lock(fd)
+    try:
+        with _state_lock:
+            state = _load_state()
+            state["last_recovery_offer"] = {
+                "session_id": offer.session_id,
+                "snapshot": str(offer.snapshot),
+                "outcome": outcome,
+                "recorded_at": datetime.now(UTC).isoformat(),
+            }
+            _save_state(state)
+    finally:
+        if fd is not None:
+            _release_file_lock(fd)
 
 
 def _is_offer_dismissed(state: dict[str, object], session_id: str, snapshot: Path) -> bool:
@@ -240,7 +286,13 @@ def _load_cursor_position(state: dict[str, object], session_id: str) -> int:
     if not isinstance(positions, dict):
         return 0
     raw = positions.get(session_id)
-    return int(raw) if isinstance(raw, int) else 0
+    if not isinstance(raw, int):
+        return 0
+    # Clamp on load too (#356 / #311): a value that survived save but was
+    # tampered with on disk must not surface a bogus caret offset.
+    if raw < 0 or raw > _MAX_CURSOR_POSITION:
+        return 0
+    return raw
 
 
 def _load_dismissal_count(state: dict[str, object], session_id: str) -> int:
@@ -253,14 +305,16 @@ def _load_dismissal_count(state: dict[str, object], session_id: str) -> int:
 
 def _increment_dismissal_count(session_id: str) -> None:
     fd = _acquire_file_lock()
-    with _state_lock:
-        state = _load_state()
-        counts: dict[str, int] = {}
-        raw = state.get("recovery_dismissal_counts")
-        if isinstance(raw, dict):
-            counts = {k: v for k, v in raw.items() if isinstance(k, str) and isinstance(v, int)}
-        counts[session_id] = counts.get(session_id, 0) + 1
-        state["recovery_dismissal_counts"] = counts
-        _save_state(state)
-    if fd is not None:
-        _release_file_lock(fd)
+    try:
+        with _state_lock:
+            state = _load_state()
+            counts: dict[str, int] = {}
+            raw = state.get("recovery_dismissal_counts")
+            if isinstance(raw, dict):
+                counts = {k: v for k, v in raw.items() if isinstance(k, str) and isinstance(v, int)}
+            counts[session_id] = counts.get(session_id, 0) + 1
+            state["recovery_dismissal_counts"] = counts
+            _save_state(state)
+    finally:
+        if fd is not None:
+            _release_file_lock(fd)

@@ -1,7 +1,13 @@
 from __future__ import annotations
 
+import logging
+import sys
 from pathlib import Path
 
+from quill.core.keymap_format import (
+    format_binding_for_display,
+    format_quill_key_chord,
+)
 from quill.core.keymap_packs import (
     KEYBOARD_PACK_CUSTOM,
     KEYBOARD_PACK_DEFAULT,
@@ -10,6 +16,13 @@ from quill.core.keymap_packs import (
     keyboard_pack_description,
     keyboard_pack_names,
     keyboard_pack_preview,
+)
+from quill.core.keymap_query import (
+    canonical_binding,
+    commands_for_keystroke,
+    diagnose_keymap,
+    duplicate_bindings,
+    find_keymap_conflicts,
 )
 from quill.core.paths import app_data_dir
 from quill.core.storage import read_json, write_json_atomic
@@ -22,9 +35,16 @@ __all__ = [
     "KeyboardPack",
     "KQP_EXTENSION",
     "build_keymap_for_pack",
+    "canonical_binding",
+    "commands_for_keystroke",
+    "diagnose_keymap",
+    "duplicate_bindings",
     "export_keyboard_pack",
     "export_keymap",
     "find_keymap_conflict",
+    "find_keymap_conflicts",
+    "format_binding_for_display",
+    "format_quill_key_chord",
     "import_keyboard_pack",
     "import_keymap",
     "keyboard_pack_description",
@@ -39,6 +59,8 @@ __all__ = [
     "save_keymap",
 ]
 
+logger = logging.getLogger(__name__)
+
 DEFAULT_KEYMAP: dict[str, str] = {
     "file.new": "Ctrl+N",
     "file.open": "Ctrl+O",
@@ -49,20 +71,48 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "file.manage_remote_sites": "Ctrl+Shift+Grave, Shift+M",  # QUILL-key chord
     "file.close_document": "Ctrl+W",
     "file.print": "Ctrl+P",
-    "window.next_document": "Ctrl+Shift+Grave, Tab",
-    "window.previous_document": "Ctrl+Shift+Grave, Shift+Tab",
+    # Restore points: no default key (assignable); the File menu item is the
+    # primary path.
+    "file.restore_previous_version": "",
+    "window.next_document": "Ctrl+Tab",
+    "window.previous_document": "Ctrl+Shift+Tab",
+    # Jump straight to the Nth open document. Alt+digit is otherwise unused and,
+    # unlike Ctrl+Alt+ chords, is not screen-reader-hostile (§10.8). Alt+0 = 10th.
+    "window.go_to_document_1": "Alt+1",
+    "window.go_to_document_2": "Alt+2",
+    "window.go_to_document_3": "Alt+3",
+    "window.go_to_document_4": "Alt+4",
+    "window.go_to_document_5": "Alt+5",
+    "window.go_to_document_6": "Alt+6",
+    "window.go_to_document_7": "Alt+7",
+    "window.go_to_document_8": "Alt+8",
+    "window.go_to_document_9": "Alt+9",
+    "window.go_to_document_10": "Alt+0",
+    "window.close_other_documents": "Ctrl+Shift+F4",
+    "navigate.speak_window_title": "Ctrl+Shift+Grave, F",
+    "navigate.speak_full_path": "Ctrl+Shift+Grave, P",
+    "navigate.speak_status_summary": "Ctrl+Shift+Grave, Q",
     "view.send_to_tray": "Ctrl+Shift+Grave, T",
     "view.toggle_soft_wrap": "Alt+Z",
+    "view.reveal_codes_toggle": "Alt+F3",  # WordPerfect Reveal Codes
     "view.toggle_tab_control": "Ctrl+Shift+Grave, Shift+T",
     "app.command_palette": "Ctrl+Shift+P",
     "app.preferences": "Ctrl+,",
-    "app.exit": "Alt+F4",
+    # #608: app.exit is bound to Ctrl+Q so it maps to Cmd+Q on macOS
+    # (the conventional Quit shortcut) and Alt+F4 on Windows is also
+    # wired by the wx stock accelerator on the file menu. Quote Lines
+    # was moved to Ctrl+Shift+Q to free up Ctrl+Q.
+    "app.exit": "Ctrl+Q",
     "navigate.go_to_line": "Ctrl+G",
     "navigate.go_to_page": "Ctrl+Shift+G",
     "navigate.next_region": "F6",
     "navigate.previous_region": "Shift+F6",
-    "navigate.back_location": "Alt+Left",
-    "navigate.forward_location": "Alt+Right",
+    # #609: on macOS, Alt+Left / Alt+Right collide with the system-standard
+    # Option+Left / Option+Right word-by-word movement (and with
+    # VoiceOver's word-by-word reading). Use Cmd+[ / Cmd+] on macOS,
+    # which is the conventional macOS back/forward chord.
+    "navigate.back_location": "Cmd+[" if sys.platform == "darwin" else "Alt+Left",
+    "navigate.forward_location": "Cmd+]" if sys.platform == "darwin" else "Alt+Right",
     "navigate.outline_navigator": "Ctrl+Shift+O",
     "navigate.match_bracket": "Ctrl+Shift+\\",
     "navigate.next_structure": "Alt+Down",
@@ -72,15 +122,62 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "tools.ask_quill_chat": "Alt+Q",
     "tools.word_count": "Ctrl+Shift+W",
     "tools.spell_check_dialog": "F7",
-    "tools.next_misspelling": "Alt+F7",
-    "tools.previous_misspelling": "Shift+Alt+F7",
+    "tools.next_misspelling": "Ctrl+F7",
+    "tools.previous_misspelling": "Ctrl+Shift+F7",
     "tools.misspelling_list": "Alt+Shift+L",
     "tools.thesaurus": "Shift+F7",
+    # Inline notes (sticky, content-anchored annotations).
+    "notes.add_inline_note": "Alt+Shift+I",
+    "notes.next_inline_note": "Alt+Shift+J",
+    "notes.previous_inline_note": "Alt+Shift+G",
+    "notes.speak_inline_note": "Alt+Shift+H",
     "tools.read_aloud_start_pause": "Ctrl+Shift+Grave, R",  # §10.8.2: P→R
     "tools.read_aloud_stop": "Ctrl+Shift+Grave, Shift+R",  # §10.8.2: Shift+P→Shift+R
     "tools.dictation_toggle": "Ctrl+Shift+Grave, D",
+    "tools.speech_dictate": "Ctrl+Shift+Grave, Shift+D",
+    "tools.speech_batch_export": "Ctrl+Shift+Grave, Y",  # Audio Studio
+    # Locked Dictation (offline Whisper). All remappable; the
+    # these are matched in the editor key handlers rather than the accelerator
+    # table (no menu accelerators) so Escape can be consumed only while recording.
+    "tools.dictation_lock_toggle": "Ctrl+F9",
+    "tools.dictation_pause": "Ctrl+Shift+F9",
+    "tools.dictation_status": "Alt+F9",
+    "tools.dictation_emergency_stop": "Escape",  # consumed only while recording
+    "tools.dictation_cancel": "Shift+Escape",  # consumed only while recording
     "tools.describe_image": "Ctrl+Shift+Grave, I",
     "tools.document_intake_report": "Ctrl+Shift+I",
+    # #357 keymap consolidation: AI commands move from inline F7/Shift+F7/F8/
+    # Shift+F8/Ctrl+Shift+T accelerators (which collided with the selection
+    # bindings at F8/Shift+F8/Ctrl+F8) to Ctrl+Alt+Shift+ chords, matching
+    # the EdSharp port convention. The chord class is reserved for AI so
+    # power users can find them by feel. Justifications name the screen-
+    # reader binding each chord displaces (NVDA review-cursor for the
+    # chord class; F7/F8 selection-start/complete for the displaced
+    # inline accelerators).
+    "tools.ai_spell_check": "Ctrl+Alt+Shift+S",  # §edsharp-ok — AI reserved chord class
+    "tools.ai_spell_check_interactive": "Ctrl+Alt+Shift+I",  # §edsharp-ok — AI reserved chord class
+    "tools.ai_grammar_style": "Ctrl+Alt+Shift+G",  # §edsharp-ok — AI reserved chord class
+    "tools.ai_translate_selection": "Ctrl+Alt+Shift+T",  # §edsharp-ok — AI reserved chord class
+    "tools.ai_thesaurus": "Ctrl+Alt+Shift+H",  # §edsharp-ok — AI reserved chord class
+    "tools.ai_switch_engine": "Ctrl+Alt+Shift+E",  # §edsharp-ok — AI reserved chord class
+    # #357 keymap consolidation: compare commands move from inline
+    # F8/Shift+F8/Ctrl+F8 accelerators (colliding with the selection
+    # bindings) to the same Ctrl+Alt+Shift+ chord class as the AI
+    # commands. The compare class also owns Ctrl+Alt+Shift+D for
+    # "Read Current Difference"; Alt+Shift+D stays free for
+    # view.toggle_dark_mode (different modifier stack).
+    "tools.compare_next_difference": (
+        "Ctrl+Alt+Shift+."
+    ),  # §edsharp-ok — compare reserved chord class
+    "tools.compare_previous_difference": (
+        "Ctrl+Alt+Shift+,"
+    ),  # §edsharp-ok — compare reserved chord class
+    "tools.compare_announce_difference": (
+        "Ctrl+Alt+Shift+D"
+    ),  # §edsharp-ok — compare reserved chord class
+    # view.toggle_dark_mode owns Alt+Shift+D, which does not collide with
+    # the Ctrl+Alt+Shift+D compare binding above (different modifier stack).
+    "view.toggle_dark_mode": "Alt+Shift+D",
     "help.switch_feature_profile": "Alt+Shift+P",
     "edit.copy_with_source": "Ctrl+Shift+C",
     "edit.copy_selection_for_email": "Ctrl+Shift+Grave, C",
@@ -98,16 +195,27 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "edit.find": "Ctrl+F",
     "edit.find_next": "F3",
     "edit.find_previous": "Shift+F3",
-    "edit.find_all_matches": "Alt+F3",
+    "edit.find_all_matches": "Ctrl+Shift+F3",  # was Alt+F3 (now Reveal Codes)
     "edit.replace": "Ctrl+H",
     "tools.search_in_files": "Ctrl+Shift+F",
     "tools.replace_in_files": "Ctrl+Shift+R",
-    "tools.sticky_note_capture": "Ctrl+Shift+Grave, N",
+    # Bare "N" after the QUILL-key prefix is intercepted for browse mode in
+    # QuillKeyMixin (before chord dispatch), so a bare-N chord here is dead.
+    # Sticky-note capture uses the free Shift+N second key (not intercepted).
+    "tools.sticky_note_capture": "Ctrl+Shift+Grave, Shift+N",
+    # Post to Mastodon: the QUILL-key chord + Shift+P ("Post"). Bare P is taken
+    # by navigate.speak_full_path; Shift+P is free and stays mnemonic.
+    "tools.post_to_mastodon": "Ctrl+Shift+Grave, Shift+P",
+    # #262: Batch Conversion wizard. QUILL-key chord (B is free in the
+    # second-key space). The entry moved out of the Tools menu and now
+    # sits in File > Import > Batch Conversion... and File > Export >
+    # Batch Conversion... (one in each, both invoking the same wizard).
+    "file.batch_conversion": "Ctrl+Shift+Grave, B",
     "edit.replace_all": "Ctrl+Shift+H",
     "edit.insert_link": "Ctrl+K",
     "edit.follow_link": "Ctrl+Enter",
     "edit.word_prediction": "Ctrl+.",  # freed Ctrl+Space for select_chunk (§4.22)
-    "edit.select_chunk": "Ctrl+Space",  # §4.22 EdSharp parity
+    "edit.select_chunk": "Ctrl+Space",  # §4.22 advanced-editor parity
     "view.preview": "Ctrl+Shift+V",
     "view.browser_preview": "Ctrl+Shift+Grave, V",  # §10.8.2: QUILL-key chord
     "view.split_preview": "Ctrl+Shift+Backslash",
@@ -119,8 +227,15 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "edit.list_marks": "Alt+M",
     "edit.select_paragraph": "",  # Ctrl+Alt+P removed (§10.8 screen-reader-hostile)
     "edit.select_block": "Ctrl+Shift+B",
-    "edit.expand_selection": "Alt+Shift+Up",
-    "edit.shrink_selection": "Alt+Shift+Down",
+    # PR1 (EdSharp port): section move takes the Alt+Shift+Up/Down slot. The
+    # previous expand/shrink selection pair migrates to the QUILL-key chord.
+    # J and Shift+J were free in the QUILL-key second-key space (verified
+    # against DEFAULT_KEYMAP and both profile JSONs); they sit adjacent to
+    # the existing I/H/G group of navigate/contrast/chord-prefix neighbours.
+    "edit.expand_selection": "Ctrl+Shift+Grave, J",  # was Alt+Shift+Up (§edsharp-ok)
+    "edit.shrink_selection": "Ctrl+Shift+Grave, Shift+J",  # was Alt+Shift+Down (§edsharp-ok)
+    "format.move_section_up": "Alt+Shift+Up",  # §edsharp-ok — markdown/html only
+    "format.move_section_down": "Alt+Shift+Down",  # §edsharp-ok — markdown/html only
     "edit.set_named_mark": "",
     "edit.jump_to_named_mark": "",
     "edit.open_review_buffer": "",
@@ -128,33 +243,77 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "edit.select_to_end_of_line": "Shift+End",
     "edit.select_to_start_of_document": "Ctrl+Shift+Home",
     "edit.select_to_end_of_document": "Ctrl+Shift+End",
-    "edit.quote_lines": "Ctrl+Q",  # §4.22 EdSharp parity
-    "edit.unquote_lines": "Ctrl+Shift+Q",  # §4.22 EdSharp parity
+    # #608: Quote Lines moved from Ctrl+Q to Ctrl+Shift+Q so Ctrl+Q is
+    # free for the system Quit shortcut on macOS (Cmd+Q maps to Ctrl+Q in
+    # wxPython). Unquote Lines moved from Ctrl+Shift+Q to Ctrl+Shift+K
+    # to keep the two commands as a near-mirror pair (Shift+Q -> Shift+K
+    # to stay in the home row). The legacy_rebinding entries below
+    # rewrite the prior pair on load for users who saved them to disk.
+    "edit.quote_lines": "Ctrl+Shift+Q",  # §4.22 advanced-editor parity; #608
+    "edit.unquote_lines": "Ctrl+Shift+K",  # §4.22 advanced-editor parity; #608
     "edit.duplicate_selection": "",  # §4.17; no default key to avoid Ctrl+D clash
-    "edit.reverse_lines": "Alt+Shift+Z",  # §4.22 EdSharp parity
+    "edit.reverse_lines": "Alt+Shift+Z",  # §4.22 advanced-editor parity
     "format.toggle_line_comment": "Ctrl+/",
     "format.toggle_block_comment": "Shift+Alt+A",
     "format.indent": "Ctrl+]",
     "format.outdent": "Ctrl+[",
+    # Toggle the Tab key between smart indent and literal tab insertion.
+    # Bound to a QUILL-key chord: plain Ctrl+M / Ctrl+Shift+M are the mark ring,
+    # and Ctrl+Alt+ chords are screen-reader-hostile (§10.8), so neither is usable.
+    "format.toggle_tab_insert_mode": "Ctrl+Shift+Grave, U",
     "format.list_manager": "Ctrl+Shift+Grave, L",
     "format.bold": "Ctrl+B",
     "format.italic": "Ctrl+I",
-    "format.heading_1": "Ctrl+Shift+Grave, 1",
-    "format.heading_2": "Ctrl+Shift+Grave, 2",
-    "format.heading_3": "Ctrl+Shift+Grave, 3",
-    "format.heading_4": "Ctrl+Shift+Grave, 4",
-    "format.heading_5": "Ctrl+Shift+Grave, 5",
-    "format.heading_6": "Ctrl+Shift+Grave, 6",
+    "format.describe_formatting": "Ctrl+Shift+D",
+    "format.heading_1": "Ctrl+Alt+1",  # §edsharp-ok — overrides NVDA switch-to-synth-1
+    "format.heading_2": "Ctrl+Alt+2",  # §edsharp-ok — overrides NVDA switch-to-synth-2
+    "format.heading_3": "Ctrl+Alt+3",  # §edsharp-ok — overrides NVDA switch-to-synth-3
+    "format.heading_4": "Ctrl+Alt+4",  # §edsharp-ok — overrides NVDA switch-to-synth-4
+    "format.heading_5": "Ctrl+Alt+5",  # §edsharp-ok — overrides NVDA switch-to-synth-5
+    "format.heading_6": "Ctrl+Alt+6",  # §edsharp-ok — overrides NVDA switch-to-synth-6
     "format.decrease_heading_level": "Alt+Shift+Left",
     "format.increase_heading_level": "Alt+Shift+Right",
+    "format.toggle_bullet_list": "Ctrl+Alt+7",  # §edsharp-ok — overrides NVDA review-cursor
+    "format.toggle_numbered_list": "Ctrl+Alt+8",  # §edsharp-ok — overrides NVDA review-cursor
     "format.insert_html_tag": "Ctrl+Shift+Grave, H",
-    "format.insert_markdown_tag": "Ctrl+Shift+Grave, M",
+    "format.insert_markdown_tag": "",  # M is reserved for paste-HTML-as-Markdown
+    "power.paste_html_as_markdown": "Ctrl+Shift+Grave, M",
+    "power.non_ascii_jump_to_source": "",  # assign via Keymap Editor; use from Non-ASCII report
+    "power.non_ascii_jump_to_report": "",  # assign via Keymap Editor; jump back to report
+    "power.open_snippet_gallery": "Ctrl+Shift+Grave, Shift+G",
     "format.insert_snippet": "Ctrl+Shift+Grave, S",
     "format.manage_snippets": "Ctrl+Shift+Grave, Shift+S",
     "format.expand_abbreviation": "Ctrl+Shift+Grave, A",
     "format.manage_abbreviations": "Ctrl+Shift+Grave, Shift+A",
     "format.toggle_abbreviation_expansion": "Ctrl+Shift+Grave, E",
-    "power.insert_special_character": "F2",  # §4.22 EdSharp parity
+    # Structured List Studio takes the primary F2 slot (its PRD names F2 the
+    # primary command); Insert Special Character moves to the adjacent Shift+F2.
+    "format.list_studio": "F2",
+    "format.list_studio_settings": "",  # no default key; assign via keymap editor
+    "story.open_studio": "",  # Story Studio binder; no default key, assign via keymap editor
+    "vault.open": "",  # Accessible Vault; no default keys, assign via keymap editor
+    "vault.explorer": "",
+    "vault.follow_link": "",
+    "vault.backlinks": "",
+    "vault.neighborhood": "",
+    "vault.unlinked_mentions": "",
+    "vault.insert_link": "",
+    "vault.complete": "",
+    "vault.rename": "",
+    "vault.quick_switch": "",
+    "vault.search": "",
+    "vault.tags": "",
+    "vault.speak_embed": "",
+    "vault.resolve_embed": "",
+    "vault.insert_template": "",
+    "vault.today": "",
+    "vault.prev_daily": "",
+    "vault.next_daily": "",
+    "vault.export_site": "",
+    "vault.sync": "",
+    "vault.settings": "",
+    "vault.publish_note": "",
+    "power.insert_special_character": "Shift+F2",  # §4.22 parity; F2 -> List Studio
     "power.number_lines": "Alt+Shift+N",  # §4.22 Number Items parity
     "power.trim_blank_lines": "Ctrl+Shift+Enter",  # §4.22 Trim Blanks parity
     "power.keep_unique_lines": "Alt+Shift+K",  # §4.22 Keep Unique parity
@@ -183,6 +342,10 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "help.key_cheatsheet": "Alt+Shift+/",
     # §8.1 — live contrast check announcement.
     "view.announce_contrast": "Ctrl+Shift+Grave, Shift+C",
+    # Spoken Echo — virtualise the last several announcements into a read-only
+    # review dialog (E for Echo). Alt+Shift+E is free (Alt+Shift+letter chords
+    # are used elsewhere, e.g. Z/N/K) and not screen-reader-hostile.
+    "view.spoken_echo": "Alt+Shift+E",
     # §8.2 — explain why the focused item is unavailable ("Why don't I see…?").
     "help.why_unavailable": "Alt+F1",
     # §10.8 — magic paste moves to QUILL key, V (handled in QuillKeyMixin prefix
@@ -227,14 +390,99 @@ DEFAULT_KEYMAP: dict[str, str] = {
 
 _PROFILES_DIR = Path(__file__).resolve().parent / "keymap"
 
+# Uppercased prefix of the QUILL-key leader chord, used by the 0.8.0 beta
+# Find force in ``merge_keymaps`` to recognize any saved Find binding that
+# still lives on the leader chord (e.g. "Ctrl+Shift+Grave, Z").
+_QUILL_LEADER_PREFIX = "CTRL+SHIFT+GRAVE"
+
+# Keymap defaults epoch (GATE-keymap-fwdcompat). The on-disk keymap.json is a
+# *delta* of the user's overrides relative to DEFAULT_KEYMAP plus this stamp.
+# Because non-overridden commands are absent from the file, any new or changed
+# default in DEFAULT_KEYMAP automatically reaches every existing user on the
+# next launch -- without a per-binding migration entry. That is the whole point
+# of the delta format: it removes the fragile "remember to add an old->new
+# rebinding for every default change" tax.
+#
+# The epoch is only needed for the one-time conversion of *legacy* keymap.json
+# files, which were full snapshots that pinned every command to its value at
+# save time (so a changed default never reached the user). A file whose stamp
+# is below ``KEYMAP_DEFAULTS_EPOCH`` -- including the unstamped legacy files --
+# gets the curated ``legacy_rebindings`` clean-up and the Find force applied,
+# then is rewritten as a stamped delta so it never needs that treatment again.
+#
+# Bump this ONLY to re-run the legacy-style clean-up against files already on
+# the current epoch (rare). Normal default changes need no bump and no
+# migration entry; just change DEFAULT_KEYMAP.
+KEYMAP_DEFAULTS_EPOCH = 1
+_DEFAULTS_EPOCH_KEY = "_defaults_epoch"
+
 
 def keymap_path() -> Path:
     return app_data_dir() / "keymap.json"
 
 
+def _keymap_overrides(merged: dict[str, str]) -> dict[str, str]:
+    """Return only the entries of *merged* that differ from DEFAULT_KEYMAP.
+
+    This is the delta persisted to disk: omitting defaults is what lets a
+    later DEFAULT_KEYMAP change reach the user automatically (see
+    ``KEYMAP_DEFAULTS_EPOCH``).
+    """
+    return {
+        command_id: chord
+        for command_id, chord in merged.items()
+        if command_id in DEFAULT_KEYMAP and chord != DEFAULT_KEYMAP[command_id]
+    }
+
+
+def _persisted_keymap_document(merged: dict[str, str]) -> dict[str, object]:
+    """The on-disk shape: the override delta plus the current epoch stamp."""
+    document: dict[str, object] = dict(_keymap_overrides(merged))
+    document[_DEFAULTS_EPOCH_KEY] = KEYMAP_DEFAULTS_EPOCH
+    return document
+
+
 def load_keymap() -> dict[str, str]:
-    raw = read_json(keymap_path(), default={})
-    return merge_keymaps(raw)
+    """Load the user's keymap from disk and return the cleaned merged map.
+
+    The on-disk file is a *delta* of the user's overrides relative to
+    ``DEFAULT_KEYMAP`` plus a ``_defaults_epoch`` stamp. ``merge_keymaps``
+    starts from ``DEFAULT_KEYMAP`` and applies only the saved overrides that
+    are still valid, so any command the user never customized always tracks
+    the current default.
+
+    When the on-disk file does not already match the canonical delta+epoch
+    shape -- a legacy full snapshot, an unstamped or older-epoch file, or one
+    that still carries entries equal to the default -- it is rewritten to the
+    canonical shape. That converts legacy snapshots to deltas once and stamps
+    the epoch so the one-time clean-up never runs again.
+    """
+    path = keymap_path()
+    if not path.exists():
+        return DEFAULT_KEYMAP.copy()
+    try:
+        raw = read_json(path, default=None)
+    except (ValueError, OSError):
+        raw = None
+    if not isinstance(raw, dict):
+        # A file that exists but does not parse is corrupt: quarantine it before
+        # falling back to defaults, so the user's bindings are recoverable and a
+        # bad file never crashes startup.
+        from quill.core.migration_backup import backup_corrupt_file
+
+        backup_corrupt_file("keymap", path)
+        return DEFAULT_KEYMAP.copy()
+    cleaned = merge_keymaps(raw)
+    desired = _persisted_keymap_document(cleaned)
+    if raw != desired:
+        try:
+            write_json_atomic(path, desired)
+        except OSError as exc:
+            # Persistence is best-effort: a read-only install or a locked
+            # file should not stop QUILL from launching with the cleaned
+            # map in memory. The cleanup will retry on the next launch.
+            logger.debug("Could not persist cleaned keymap to %s: %s", path, exc)
+    return cleaned
 
 
 def load_keymap_profile(name: str) -> dict[str, str]:
@@ -267,11 +515,17 @@ def list_keymap_profiles() -> list[str]:
         data = read_json(path, default={})
         if isinstance(data, dict) and "_name" in data:
             profiles.append(str(data["_name"]))
+        else:
+            logger.debug("Dropping malformed keymap profile: %s", path.name)
     return profiles
 
 
 def save_keymap(keymap: dict[str, str]) -> None:
-    write_json_atomic(keymap_path(), keymap)
+    # Persist only the override delta plus the epoch stamp, never the full
+    # map, so future DEFAULT_KEYMAP changes flow through to the user. Callers
+    # pass the full merged map; the delta is computed here so every save site
+    # (editor, reset, import, share) gets the forward-compatible shape.
+    write_json_atomic(keymap_path(), _persisted_keymap_document(keymap))
 
 
 def build_keymap_for_pack(name: str) -> dict[str, str]:
@@ -287,12 +541,25 @@ def merge_keymaps(raw: object) -> dict[str, str]:
     if not isinstance(raw, dict):
         return DEFAULT_KEYMAP.copy()
     merged = DEFAULT_KEYMAP.copy()
+    # A file stamped below the current epoch (or unstamped -- a legacy full
+    # snapshot) gets the one-time clean-up: the curated old->new rebindings and
+    # the leader-chord Find force. Files already on the current epoch are pure
+    # deltas of deliberate overrides, so we apply them as-is and never second-
+    # guess a binding the user chose after upgrading.
+    saved_epoch = raw.get(_DEFAULTS_EPOCH_KEY)
+    is_pre_epoch = not (isinstance(saved_epoch, int) and saved_epoch >= KEYMAP_DEFAULTS_EPOCH)
     legacy_rebindings = {
-        # Find returns to the conventional Ctrl+F. It had briefly defaulted to the
-        # QUILL-key prefix; rewrite that stale saved binding on load.
-        "edit.find": ("CTRL+SHIFT+GRAVE, F", "Ctrl+F"),
-        "window.next_document": ("CTRL+TAB", "Ctrl+Shift+Grave, Tab"),
-        "window.previous_document": ("CTRL+SHIFT+TAB", "Ctrl+Shift+Grave, Shift+Tab"),
+        # NOTE: edit.find is handled separately by the 0.8.0 beta force below,
+        # which overwrites *any* stale QUILL-key-leader Find binding with Ctrl+F
+        # (several pre-release builds defaulted it to different leader chords).
+        # #608: Quote Lines moves from Ctrl+Q to Ctrl+Shift+Q so Cmd+Q
+        # can quit on macOS. Unquote Lines moves from Ctrl+Shift+Q to
+        # Ctrl+Shift+K to stay in the home row and free Ctrl+Q entirely.
+        # Rewrite the prior pair on load for users who saved them.
+        "edit.quote_lines": ("Ctrl+Q", "Ctrl+Shift+Q"),
+        "edit.unquote_lines": ("Ctrl+Shift+Q", "Ctrl+Shift+K"),
+        # window.next_document / previous_document: Ctrl+Tab restored as default
+        # in #190; no legacy rebinding needed.
         "view.send_to_tray": ("CTRL+ALT+T", "Ctrl+Shift+Grave, T"),
         "view.toggle_tab_control": ("CTRL+ALT+SHIFT+T", "Ctrl+Shift+Grave, Shift+T"),
         "navigate.heading_organizer": ("CTRL+ALT+SHIFT+H", "Ctrl+Shift+Grave, O"),
@@ -301,15 +568,15 @@ def merge_keymaps(raw: object) -> dict[str, str]:
         "tools.dictation_toggle": ("CTRL+ALT+V", "Ctrl+Shift+Grave, D"),
         "edit.toggle_extend_selection_mode": ("F8", ""),
         "edit.copy_selection_for_email": ("CTRL+ALT+C", "Ctrl+Shift+Grave, C"),
-        "tools.sticky_note_capture": ("CTRL+ALT+SHIFT+N", "Ctrl+Shift+Grave, N"),
+        "tools.sticky_note_capture": ("CTRL+ALT+SHIFT+N", "Ctrl+Shift+Grave, Shift+N"),
         "view.browser_preview": ("CTRL+ALT+SHIFT+V", "Ctrl+Shift+Grave, V"),
         "format.list_manager": ("CTRL+ALT+L", "Ctrl+Shift+Grave, L"),
-        "format.heading_1": ("CTRL+ALT+1", "Ctrl+Shift+Grave, 1"),
-        "format.heading_2": ("CTRL+ALT+2", "Ctrl+Shift+Grave, 2"),
-        "format.heading_3": ("CTRL+ALT+3", "Ctrl+Shift+Grave, 3"),
-        "format.heading_4": ("CTRL+ALT+4", "Ctrl+Shift+Grave, 4"),
-        "format.heading_5": ("CTRL+ALT+5", "Ctrl+Shift+Grave, 5"),
-        "format.heading_6": ("CTRL+ALT+6", "Ctrl+Shift+Grave, 6"),
+        "format.heading_1": ("CTRL+SHIFT+GRAVE, 1", "Ctrl+Alt+1"),
+        "format.heading_2": ("CTRL+SHIFT+GRAVE, 2", "Ctrl+Alt+2"),
+        "format.heading_3": ("CTRL+SHIFT+GRAVE, 3", "Ctrl+Alt+3"),
+        "format.heading_4": ("CTRL+SHIFT+GRAVE, 4", "Ctrl+Alt+4"),
+        "format.heading_5": ("CTRL+SHIFT+GRAVE, 5", "Ctrl+Alt+5"),
+        "format.heading_6": ("CTRL+SHIFT+GRAVE, 6", "Ctrl+Alt+6"),
         "format.insert_html_tag": ("CTRL+ALT+H", "Ctrl+Shift+Grave, H"),
         "format.insert_markdown_tag": ("CTRL+ALT+M", "Ctrl+Shift+Grave, M"),
         "format.insert_snippet": ("CTRL+ALT+SPACE", "Ctrl+Shift+Grave, S"),
@@ -317,27 +584,65 @@ def merge_keymaps(raw: object) -> dict[str, str]:
         "format.expand_abbreviation": ("", "Ctrl+Shift+Grave, A"),
         "format.manage_abbreviations": ("", "Ctrl+Shift+Grave, Shift+A"),
         "format.toggle_abbreviation_expansion": ("", "Ctrl+Shift+Grave, E"),
+        # PR1 (EdSharp port): users from any pre-0.7.0 build who had the old
+        # Alt+Shift+Up/Down expand/shrink selection bindings saved in their
+        # keymap are migrated to the new QUILL-key chord home for those
+        # commands.  The new format.move_section_up/down defaults take the
+        # Alt+Shift+Up/Down slot.
+        "edit.expand_selection": ("ALT+SHIFT+UP", "Ctrl+Shift+Grave, J"),
+        "edit.shrink_selection": ("ALT+SHIFT+DOWN", "Ctrl+Shift+Grave, Shift+J"),
+        # Structured List Studio claims F2; migrate a saved F2 special-character
+        # binding to its new Shift+F2 home so the muscle-memory pair stays intact.
+        "power.insert_special_character": ("F2", "Shift+F2"),
     }
-    legacy_preview_conflict = (
-        str(raw.get("view.preview", "")).strip().upper() == "CTRL+SHIFT+P"
-        and str(raw.get("view.browser_preview", "")).strip().upper() == "CTRL+SHIFT+V"
-    )
+    # #609: on macOS, a user who saved Alt+Left / Alt+Right for
+    # back/forward location on a pre-#609 build has a saved entry that
+    # now collides with the system word-by-word shortcut. Rewrite it to
+    # the new macOS chord (Cmd+[ / Cmd+]) on first load.
+    if sys.platform == "darwin":
+        legacy_rebindings["navigate.back_location"] = ("Alt+Left", "Cmd+[")
+        legacy_rebindings["navigate.forward_location"] = ("Alt+Right", "Cmd+]")
     for command_id, binding in raw.items():
         if isinstance(command_id, str) and isinstance(binding, str):
+            # Reserved metadata keys (e.g. the epoch stamp) are not bindings.
+            if command_id.startswith("_"):
+                continue
+            # A binding for a command id that no longer ships in DEFAULT_KEYMAP
+            # is no longer valid; drop it so the default (which is to omit it)
+            # takes effect.
+            if command_id not in DEFAULT_KEYMAP:
+                logger.debug("Dropping keymap entry for unknown command: %r", command_id)
+                continue
             normalized = binding
-            if legacy_preview_conflict and command_id == "view.preview":
-                normalized = "Ctrl+Shift+V"
-            elif legacy_preview_conflict and command_id == "view.browser_preview":
-                normalized = "Ctrl+Alt+Shift+V"
-            legacy_binding = legacy_rebindings.get(command_id)
-            if legacy_binding is not None and normalized.strip().upper() == legacy_binding[0]:
-                normalized = legacy_binding[1]
+            if is_pre_epoch:
+                legacy_binding = legacy_rebindings.get(command_id)
+                if (
+                    legacy_binding is not None
+                    and normalized.strip().upper() == legacy_binding[0].upper()
+                ):  # noqa: E501
+                    normalized = legacy_binding[1]
+                # Find must be the conventional Ctrl+F. Several pre-release
+                # builds defaulted edit.find to a QUILL-key leader chord
+                # ("Ctrl+Shift+Grave, <key>"); overwrite any such legacy
+                # binding so upgraders are not stranded with Find unreachable.
+                if command_id == "edit.find" and normalized.strip().upper().startswith(
+                    _QUILL_LEADER_PREFIX
+                ):
+                    normalized = DEFAULT_KEYMAP["edit.find"]
+            # An empty binding means "use the default" — drop it so the
+            # default in DEFAULT_KEYMAP takes effect (do not store "" on top).
             if not normalized.strip():
-                merged[command_id] = ""
                 continue
             conflict = find_keymap_conflict(merged, command_id, normalized)
             if conflict is None:
                 merged[command_id] = normalized
+            else:
+                logger.debug(
+                    "Dropping keymap entry for %r: chord %r already taken by %r",
+                    command_id,
+                    normalized,
+                    conflict,
+                )
     return merged
 
 
@@ -406,9 +711,9 @@ def import_keyboard_pack(source: Path) -> tuple[str, str, dict[str, str]]:
     # Re-write the parsed payload to a temp buffer and run the same validator
     # the standalone ``quill.tools.kqp_validator`` runs, so the import path
     # uses the same rules as the CLI.
-    from quill.tools.kqp_validator import _validate_file  # local import: avoid cycles
+    from quill.tools.kqp_validator import validate_file  # local import: avoid cycles
 
-    issues = _validate_file(source, strict=False)
+    issues = validate_file(source, strict=False)
     if issues:
         joined = "; ".join(issues)
         raise ValueError(f"{source.name} failed keyboard pack validation: {joined}")
@@ -427,13 +732,17 @@ def find_keymap_conflict(
     keymap: dict[str, str],
     command_id: str,
     binding: str,
+    *,
+    quill_key_prefix: str | None = None,
 ) -> str | None:
-    candidate = binding.strip().upper()
-    if not candidate:
-        return None
-    for existing_command, existing_binding in keymap.items():
-        if existing_command == command_id:
-            continue
-        if existing_binding.strip().upper() == candidate:
-            return existing_command
-    return None
+    """Return the first other command bound to ``binding``, or None.
+
+    Delegates to :func:`quill.core.keymap_query.find_keymap_conflicts`, so the
+    comparison is canonical: a re-ordered or alias spelling ("Shift+Ctrl+K",
+    "control+shift+k") conflicts with a stored "Ctrl+Shift+K". Kept as a
+    first-match convenience wrapper for the editor's existing call site.
+    """
+    conflicts = find_keymap_conflicts(
+        keymap, command_id, binding, quill_key_prefix=quill_key_prefix
+    )
+    return conflicts[0] if conflicts else None

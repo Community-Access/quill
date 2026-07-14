@@ -1,9 +1,20 @@
+"""Dictation control for QUILL.
+
+**What this does today, honestly:** on Windows, dictation toggles the operating
+system's built-in dictation panel (the Win+H experience) via
+``launch_windows_dictation``. QUILL does not yet capture or transcribe audio
+itself. The ``engine``/``model``/``language`` fields on :class:`DictationSettings`
+and the ``list_dictation_devices`` helper are forward-looking placeholders from
+the offline speech engine work (issue #617); the controller currently ignores
+them and always drives the OS panel. Keeping this module truthful — rather than
+pretending a local vosk/whisper recognizer is wired up — is deliberate (Speech
+wave S0).
+"""
+
 from __future__ import annotations
 
-import json
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any
 
 try:  # pragma: no cover - Windows-only runtime hook
     # `launch_windows_dictation` is set to the real Windows shell
@@ -23,6 +34,14 @@ except ImportError:  # pragma: no cover - non-Windows fallback
 
 @dataclass(frozen=True, slots=True)
 class DictationSettings:
+    """Dictation configuration.
+
+    ``engine`` is one of ``"offline"`` / ``"windows"`` / ``"cloud"`` going
+    forward. Only ``"windows"`` is functional today; ``"offline"`` and
+    ``"cloud"`` are reserved for the #617 provider engine. The controller
+    currently launches the OS dictation panel regardless of these fields.
+    """
+
     engine: str = "windows"
     language: str = "en-US"
     model: str = "default"
@@ -74,30 +93,11 @@ class DictationController:
         return transcript
 
 
-def _transcribe_audio(recognizer: Any, audio: object, settings: DictationSettings) -> str:
-    """Transcribe one audio chunk using the configured local recognizer engine."""
-    engine = (settings.engine or "").strip().lower()
-    if engine == "whisper":
-        return str(
-            recognizer.recognize_whisper(
-                audio,
-                model=settings.model,
-                language=settings.language,
-            )
-        )
-    if engine == "vosk":
-        payload = recognizer.recognize_vosk(audio)
-        if isinstance(payload, str):
-            try:
-                data = json.loads(payload)
-            except json.JSONDecodeError:
-                return payload.strip()
-            return str(data.get("text", "")).strip()
-        if isinstance(payload, dict):
-            return str(payload.get("text", "")).strip()
-        return ""
-    raise DictationUnavailableError(f"Unsupported dictation engine: {settings.engine}")
-
-
 def list_dictation_devices() -> list[str]:
+    """Return available microphone device names.
+
+    Placeholder until in-app audio capture lands with the offline speech engine
+    (#617, Speech wave S3). Today dictation uses the OS panel, which manages its
+    own device selection, so this returns an empty list.
+    """
     return []

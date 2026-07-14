@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 
 from quill.core.paths import app_data_dir
+from quill.stability.redaction import redact_source_tokens
 
 _HISTORY_FILE = "console/history.jsonl"
 _MAX_ENTRIES = 500
@@ -32,7 +34,7 @@ def add_entry(language: str, source: str, success: bool) -> None:
     entry = {
         "timestamp": datetime.now(UTC).isoformat(),
         "language": language,
-        "source": source,
+        "source": redact_source_tokens(source),
         "success": success,
     }
     with path.open("a", encoding="utf-8") as fh:
@@ -40,8 +42,12 @@ def add_entry(language: str, source: str, success: bool) -> None:
     _trim(path)
 
 
-def load(max_entries: int = 200) -> list[HistoryEntry]:
-    """Return the most recent *max_entries* history entries (oldest first)."""
+def load(max_entries: int = 200, *, language: str | None = None) -> list[HistoryEntry]:
+    """Return the most recent *max_entries* history entries (oldest first).
+
+    Pass *language* (``"python"`` or ``"typescript"``) to filter to one
+    language only.
+    """
     path = _history_path()
     if not path.exists():
         return []
@@ -56,10 +62,13 @@ def load(max_entries: int = 200) -> list[HistoryEntry]:
             continue
         try:
             obj = json.loads(line)
+            lang = str(obj.get("language", "python"))
+            if language is not None and lang != language:
+                continue
             entries.append(
                 HistoryEntry(
                     timestamp=str(obj.get("timestamp", "")),
-                    language=str(obj.get("language", "python")),
+                    language=lang,
                     source=str(obj.get("source", "")),
                     success=bool(obj.get("success", True)),
                 )
@@ -77,14 +86,20 @@ def clear() -> None:
 
 
 def _trim(path: Path) -> None:
-    """Keep only the last _MAX_ENTRIES lines."""
+    """Keep only the last _MAX_ENTRIES lines (atomic write)."""
     try:
         lines = path.read_text(encoding="utf-8").splitlines()
     except OSError:
         return
-    if len(lines) > _MAX_ENTRIES:
-        trimmed = "\n".join(lines[-_MAX_ENTRIES:]) + "\n"
+    if len(lines) <= _MAX_ENTRIES:
+        return
+    trimmed = "\n".join(lines[-_MAX_ENTRIES:]) + "\n"
+    temp = path.with_suffix(".tmp")
+    try:
+        temp.write_text(trimmed, encoding="utf-8")
+        os.replace(temp, path)
+    except OSError:
         try:
-            path.write_text(trimmed, encoding="utf-8")
+            temp.unlink(missing_ok=True)
         except OSError:
             pass

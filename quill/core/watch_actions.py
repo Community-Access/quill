@@ -17,7 +17,10 @@ import shutil
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
+
+if TYPE_CHECKING:
+    from .speech.provider import TranscriptionResult
 
 logger = logging.getLogger(__name__)
 
@@ -629,9 +632,14 @@ def default_registry(
     on_run_macro: Callable[[Path, str], None] | None = None,
     on_ai: Callable[[Path, Mapping[str, object]], WatchActionOutcome] | None = None,
     on_ocr: Callable[[Path], str] | None = None,
+    on_transcribe: Callable[[Path, Mapping[str, object]], TranscriptionResult] | None = None,
     sandbox_runner: Callable[..., object] | None = None,
 ) -> WatchActionRegistry:
     """Build a registry pre-populated with the built-in actions and placeholders."""
+    # Imported here (not at module scope) so watch_transcribe can depend on this
+    # module's base types without an import-time cycle.
+    from .watch_transcribe import CloudTranscribeAction, WhispererTranscribeAction
+
     registry = WatchActionRegistry(feature_enabled=feature_enabled)
     registry.register(OpenAction(on_open=on_open))
     registry.register(MoveAction())
@@ -650,15 +658,11 @@ def default_registry(
             reason="GLOW accessibility auditing is not available yet.",
         )
     )
-    registry.register(
-        UnavailableAction(
-            action_id="bw_transcribe",
-            label="Transcribe audio (BITS Whisperer)",
-            required_feature_id="future.bits_whisperer",
-            description="Transcribe arriving audio into an editable document.",
-            reason="BITS Whisperer transcription is not available yet.",
-        )
-    )
+    registry.register(WhispererTranscribeAction(on_transcribe=on_transcribe))
+    registry.register(CloudTranscribeAction())
+    from .watch_audiobook import BuildAudiobookAction
+
+    registry.register(BuildAudiobookAction())
     return registry
 
 

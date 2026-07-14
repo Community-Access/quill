@@ -30,7 +30,12 @@ def _load_pyproject(path: Path) -> dict[str, object]:
 
 _DEPENDENCY_METADATA_OVERRIDES: dict[str, tuple[str, str]] = {
     "certifi": ("MPL-2.0", "https://github.com/certifi/python-certifi"),
+    "comtypes": ("MIT", "https://github.com/enthought/comtypes"),
+    "elevenlabs": ("MIT", "https://github.com/elevenlabs/elevenlabs-python"),
     "hatchling": ("MIT", "https://github.com/pypa/hatch"),
+    "accessible_output2": ("MIT", "https://github.com/accessibleapps/accessible_output2"),
+    "html_to_text": ("MIT", "https://github.com/accessibleapps/html_to_text"),
+    "libloader": ("MIT", "https://github.com/accessibleapps/libloader"),
     "keynote-parser": ("MIT", "https://pypi.org/project/keynote-parser/"),
     "llama-cpp-python": ("MIT", "https://github.com/abetlen/llama-cpp-python"),
     "markitdown": ("MIT", "https://github.com/microsoft/markitdown"),
@@ -42,7 +47,6 @@ _DEPENDENCY_METADATA_OVERRIDES: dict[str, tuple[str, str]] = {
     "pytest": ("MIT", "https://github.com/pytest-dev/pytest"),
     "pytest-timeout": ("MIT", "https://github.com/pytest-dev/pytest-timeout"),
     "pytest-xdist": ("MIT", "https://github.com/pytest-dev/pytest-xdist"),
-    "pyttsx3": ("MPL-2.0", "https://github.com/nateshmbhat/pyttsx3"),
     "regex": ("Apache-2.0 AND CNRI-Python", "https://github.com/mrabarnett/mrab-regex"),
     "ruff": ("MIT", "https://github.com/astral-sh/ruff"),
     "speechrecognition": ("BSD-3-Clause", "https://github.com/Uberi/speech_recognition"),
@@ -52,19 +56,26 @@ _DEPENDENCY_METADATA_OVERRIDES: dict[str, tuple[str, str]] = {
 
 _DEPENDENCY_USAGE_NOTES: dict[str, str] = {
     "certifi": "Trusted CA bundle for HTTPS verification.",
+    "comtypes": "Windows SAPI 5 text-to-speech integration.",
+    "elevenlabs": "Optional premium cloud TTS (audio export) via the ElevenLabs SDK.",
     "hatchling": "Build backend used for packaging metadata.",
+    "html_to_text": (
+        "Converts HTML from clipboard pastes to clean plain text"
+        " while preserving document structure (AccessibleApps, MIT)."
+    ),
     "keynote-parser": "Apple Keynote parsing for import workflows.",
     "llama-cpp-python": "Python bridge for on-device llama.cpp inference.",
     "markitdown": "Document conversion/import pipeline.",
     "mypy": "Static type checking in CI/dev workflows.",
     "prismatoid": "Screen-reader speech bridge on Windows.",
+    "accessible_output2": "Fallback screen-reader speech bridge on Windows.",
+    "libloader": "DLL loader used by accessible_output2 for screen-reader APIs.",
     "pyenchant": "Spell-check integration.",
     "pyobjc": "macOS bridge bindings for native integration.",
     "py2app": "macOS app packaging support.",
     "pytest": "Test runner.",
     "pytest-timeout": "Per-test timeout protection.",
     "pytest-xdist": "Parallel test execution.",
-    "pyttsx3": "System text-to-speech integration.",
     "regex": "Core regular expression engine.",
     "ruff": "Linting and formatting.",
     "speechrecognition": "Speech-recognition helper components.",
@@ -144,6 +155,21 @@ _BUNDLED_COMPONENTS: tuple[dict[str, str], ...] = (
         "homepage": "https://developer.apple.com/documentation/foundationmodels",
         "source": "",
         "notes": "On-device AI backend on supported macOS systems.",
+    },
+    {
+        "name": "liblouis",
+        "scope": "optional-braille-pack",
+        "version": "3.38.0",
+        "license": "LGPL-2.1-or-later",
+        "homepage": "https://github.com/liblouis/liblouis",
+        "source": "",
+        "notes": (
+            "Open-source braille translation and back-translation library. "
+            "Powers the QUILL Braille Pack's UEB, Standard American English, "
+            "and international language profiles. "
+            "Present only when the optional Braille Pack component is installed. "
+            "Copyright (C) the liblouis project contributors."
+        ),
     },
 )
 

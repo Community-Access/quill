@@ -38,8 +38,16 @@ class CommandPaletteDialog:
         self._registry = command_registry
         self._features = feature_manager
         self._announce_fn = announce_fn
-        # Include ALL commands; availability is checked per-item in _refresh_results.
-        self._commands: list[Command] = command_registry.list()
+        # Show only commands whose feature is visible in the current profile.
+        # Commands for OFF features are omitted entirely; the palette should
+        # reflect the user's chosen experience, not the full catalogue.
+        all_commands = command_registry.list()
+        if feature_manager is not None:
+            self._commands: list[Command] = [
+                cmd for cmd in all_commands if feature_manager.is_visible(cmd.feature_id)
+            ]
+        else:
+            self._commands = all_commands
         self._usage = load_palette_usage()
         self._filtered_commands: list[Command] = rank_commands(self._commands, "", self._usage)
 
@@ -57,6 +65,7 @@ class CommandPaletteDialog:
         self.search.ShowSearchButton(True)
         self.search.ShowCancelButton(True)
         self.search.SetDescriptiveText("Type command (>, :, ?, ~ prefixes supported)")
+        self.search.SetHint("Type command (>, :, ?, ~ prefixes supported)")
         root.Add(self.search, 0, wx.EXPAND | wx.ALL, 8)
 
         self.status = wx.StaticText(self.dialog, label="")
@@ -77,6 +86,11 @@ class CommandPaletteDialog:
         self.dialog.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
 
         self._refresh_results()
+
+    def _set_status(self, msg: str) -> None:
+        self.status.SetLabel(msg)
+        if self._announce_fn is not None and msg:
+            self._announce_fn(msg)
 
     def _is_available(self, command: Command) -> bool:
         if self._features is None:
@@ -150,21 +164,19 @@ class CommandPaletteDialog:
         for command in self._filtered_commands:
             binding = command.keybinding or ""
             label = f"{command.title} [{binding}]" if binding else command.title
-            if not self._is_available(command):
-                label = f"- {label}"
             labels.append(label)
         self.results.Set(labels)
         if labels:
             self.results.SetSelection(0)
             top = self._filtered_commands[0]
             available_count = sum(1 for cmd in self._filtered_commands if self._is_available(cmd))
-            self.status.SetLabel(
+            self._set_status(
                 f"{len(labels)} command(s), {available_count} available. "
                 f"Top match: {top.title}. "
                 "Down/Up to navigate, Enter to run."
             )
             return
-        self.status.SetLabel("No matching commands")
+        self._set_status("No matching commands")
 
     def _on_result_selected(self, _event: object) -> None:
         selected = self.results.GetSelection()
@@ -174,7 +186,7 @@ class CommandPaletteDialog:
             command = self._filtered_commands[selected]
             available = self._is_available(command)
             suffix = "" if available else " (unavailable)"
-            self.status.SetLabel(f"Selected: {command.title}{suffix}")
+            self._set_status(f"Selected: {command.title}{suffix}")
 
     def _run_selected(self) -> None:
         selected = self.results.GetSelection()
@@ -184,11 +196,7 @@ class CommandPaletteDialog:
             return
         command = self._filtered_commands[selected]
         if not self._is_available(command):
-            msg = f"{command.title} is not available in the current context."
-            if self._announce_fn is not None:
-                self._announce_fn(msg)
-            else:
-                self.status.SetLabel(msg)
+            self._set_status(f"{command.title} is not available in the current context.")
             return
         self._last_run_id: str | None = command.id
         self._registry.run(command.id)
@@ -229,8 +237,15 @@ class GoToAnythingDialog:
         from quill.core.commands import CommandRegistry
 
         if isinstance(command_registry, CommandRegistry):
-            # Include all commands; availability checked per-item.
-            self._commands = command_registry.list()
+            all_cmds = command_registry.list()
+            if feature_manager is not None:
+                self._commands = [
+                    cmd
+                    for cmd in all_cmds
+                    if feature_manager.is_visible(getattr(cmd, "feature_id", "core.app"))
+                ]
+            else:
+                self._commands = all_cmds
         else:
             self._commands = []
         self._usage = load_palette_usage()
@@ -254,6 +269,7 @@ class GoToAnythingDialog:
         self.search.SetDescriptiveText(
             "Type to search commands, headings, settings  (#headings  >commands)"
         )
+        self.search.SetHint("Type to search commands, headings, settings  (#headings  >commands)")
         root.Add(self.search, 0, wx.EXPAND | wx.ALL, 8)
 
         self.status = wx.StaticText(self.dialog, label="")
@@ -277,6 +293,11 @@ class GoToAnythingDialog:
         self.dialog.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
 
         self._refresh_results("")
+
+    def _set_status(self, msg: str) -> None:
+        self.status.SetLabel(msg)
+        if self._announce_fn is not None and msg:
+            self._announce_fn(msg)
 
     def _cmd_is_available(self, cmd: object) -> bool:
         if self._features is None:
@@ -348,7 +369,7 @@ class GoToAnythingDialog:
             item = self._filtered_results[sel]
             kind = str(item.get("kind", ""))
             label = str(item.get("label", ""))
-            self.status.SetLabel(f"[{kind}] {label}")
+            self._set_status(f"[{kind}] {label}")
 
     def _refresh_results(self, query: str) -> None:
         q = query.strip()
@@ -368,15 +389,12 @@ class GoToAnythingDialog:
             for cmd in ranked:
                 binding = getattr(cmd, "keybinding", "") or ""
                 label = f"{cmd.title} [{binding}]" if binding else cmd.title
-                available = self._cmd_is_available(cmd)
-                if not available:
-                    label = f"- {label}"
                 results.append({
                     "kind": "command",
                     "label": label,
                     "cmd_id": cmd.id,
                     "cmd": cmd,
-                    "available": available,
+                    "available": True,
                 })
 
         self._filtered_results = results
@@ -388,12 +406,12 @@ class GoToAnythingDialog:
         if labels:
             self.results.SetSelection(0)
             top = results[0]
-            self.status.SetLabel(
+            self._set_status(
                 f"{len(labels)} result(s). Top: [{top['kind']}] {top['label']}. "
                 "Down/Up to navigate, Enter to go."
             )
         else:
-            self.status.SetLabel("No results")
+            self._set_status("No results")
 
     def _activate_selected(self, frame: object) -> None:
         sel = self.results.GetSelection()
@@ -410,11 +428,7 @@ class GoToAnythingDialog:
             if not item.get("available", True):
                 cmd = item.get("cmd")
                 title = getattr(cmd, "title", str(item.get("cmd_id", "")))
-                msg = f"{title} is not available in the current context."
-                if self._announce_fn is not None:
-                    self._announce_fn(msg)
-                else:
-                    self.status.SetLabel(msg)
+                self._set_status(f"{title} is not available in the current context.")
                 return
             cmd_id = str(item.get("cmd_id", ""))
             if cmd_id:

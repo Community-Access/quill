@@ -45,8 +45,66 @@
           "clipboard.write",
           "ui.status",
           "ui.choices",
-          "storage"
+          "storage",
+          "settings.own.read",
+          "settings.own.write",
+          "settings.core.read",
+          "settings.core.write",
+          "document.directives",
+          "document.events",
+          "schedule",
+          "ui.log"
         ]
+      }
+    },
+    "categories": {
+      "type": "array",
+      "uniqueItems": true,
+      "description": "Taxonomy labels for the Quillins Manager filter. Zero or more from the allowed set.",
+      "items": {
+        "enum": [
+          "writing",
+          "accessibility",
+          "braille",
+          "productivity",
+          "developer",
+          "formatting",
+          "navigation",
+          "ai",
+          "integration",
+          "education",
+          "utilities"
+        ]
+      }
+    },
+    "requires": {
+      "type": "array",
+      "description": "Inter-Quillin dependencies. QUILL verifies each is installed and enabled before loading this Quillin.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+([._-][a-z0-9]+)*$",
+            "description": "Fully-qualified Quillin ID of the dependency."
+          },
+          "min_version": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+\\.\\d+$",
+            "description": "Minimum acceptable version of the dependency."
+          }
+        }
+      }
+    },
+    "net_allowed_hosts": {
+      "type": "array",
+      "uniqueItems": true,
+      "description": "Restricts the net capability to named hostnames. Wildcards (*.example.com) are allowed. When empty and net is declared, all outbound hosts are permitted with user consent.",
+      "items": {
+        "type": "string",
+        "description": "Hostname or *.hostname wildcard."
       }
     },
     "runtime": {
@@ -76,6 +134,11 @@
                 "description": "Must be namespaced under ext. to avoid colliding with built-in command ids."
               },
               "title": { "type": "string", "minLength": 1, "maxLength": 80 },
+              "description": {
+                "type": "string",
+                "maxLength": 400,
+                "description": "Optional one-liner shown in the command palette and keyboard reference."
+              },
               "run": {
                 "type": "object",
                 "description": "How the command executes. Exactly one of snippet or handler.",
@@ -114,8 +177,8 @@
             "properties": {
               "parent": {
                 "type": "string",
-                "description": "Top-level menu title to attach under, e.g. File, Edit, Insert, Format, Tools, Navigate, Search, Help.",
-                "enum": ["File", "Edit", "Insert", "Format", "Tools", "Navigate", "Search", "View", "Help"]
+                "description": "Top-level menu (e.g. File, Edit, Insert, Format, Tools, Navigate, Search, View, Help) or a conventional submenu parent (Date and Time) the host builds and exposes to Quillins.",
+                "enum": ["File", "Edit", "Insert", "Format", "Tools", "Navigate", "Search", "View", "Help", "Date and Time"]
               },
               "command": { "type": "string", "description": "A command id contributed above or a built-in command id." }
             }
@@ -151,16 +214,416 @@
               }
             }
           }
+        },
+        "sound_pack": {
+          "type": "string",
+          "description": "Relative path to a QSP directory inside the extension bundle (e.g. 'sounds/'). Loaded by SoundManager and merged with the active pack; extension events take precedence.",
+          "pattern": "^[A-Za-z0-9_./-]+/?$"
+        },
+        "sound_events": {
+          "type": "object",
+          "description": "Additional event IDs contributed by this extension. Keys are event IDs (must include the extension id as a prefix, e.g. 'com.example.foo.fired'); values are WAV filenames relative to sound_pack.",
+          "additionalProperties": { "type": "string" }
+        },
+        "abbreviations": {
+          "type": "array",
+          "description": "Declarative or dynamic abbreviations contributed to the Insert Automation registry. User-defined abbreviations always take priority.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["trigger", "description"],
+            "properties": {
+              "trigger": { "type": "string", "minLength": 1, "maxLength": 64 },
+              "expansion": { "type": "string", "description": "Literal expansion text. Supports ${cursor}, ${date}, ${time}, ${clipboard}." },
+              "handler": { "type": "string", "description": "Python handler name registered via api.register_command. Requires main + ui.command." },
+              "description": { "type": "string", "maxLength": 200 },
+              "category": { "type": "string", "maxLength": 64 },
+              "enabled_by_default": { "type": "boolean" },
+              "case_sensitive": { "type": "boolean" },
+              "file_extensions": { "type": "array", "items": { "type": "string" } }
+            },
+            "oneOf": [
+              { "required": ["expansion"] },
+              { "required": ["handler"] }
+            ]
+          }
+        },
+        "smart_triggers": {
+          "type": "array",
+          "description": "Typed = -prefixed triggers on the current line that dispatch to a command when Enter is pressed. Trigger names must be lowercase and must not include the = prefix.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["trigger", "command", "syntax", "description"],
+            "properties": {
+              "trigger": { "type": "string", "pattern": "^[a-z][a-z0-9._-]*$", "maxLength": 64 },
+              "command": { "type": "string", "description": "A command id contributed above or a built-in command id." },
+              "syntax": { "type": "string", "description": "Human-readable syntax example, e.g. =rand(paragraphs, lines)." },
+              "description": { "type": "string", "maxLength": 200 },
+              "category": { "type": "string", "maxLength": 64 },
+              "enabled_by_default": { "type": "boolean" },
+              "min_args": { "type": "integer", "minimum": 0 },
+              "max_args": { "type": "integer", "minimum": 0 },
+              "large_insert_threshold": { "type": "integer", "minimum": 1 },
+              "file_extensions": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "document_events": {
+          "type": "array",
+          "description": "Document lifecycle event subscriptions. Each entry names one event and a Python handler that runs when the event fires. Requires the document.events capability and a main module.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["event", "handler", "title", "description"],
+            "properties": {
+              "event": {
+                "type": "string",
+                "description": "The lifecycle event to subscribe to.",
+                "enum": [
+                  "document.opened",
+                  "document.activated",
+                  "document.before_save",
+                  "document.after_save",
+                  "document.before_close",
+                  "document.after_close",
+                  "document.created",
+                  "document.loaded_from_session",
+                  "smart_trigger.entered",
+                  "abbreviation.expanded",
+                  "quillin.enabled",
+                  "quillin.disabled",
+                  "quill.shutdown",
+                  "settings.changed"
+                ]
+              },
+              "handler": {
+                "type": "string",
+                "description": "Name of the Python function in main that handles this event."
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80,
+                "description": "Short, human-readable name shown in the event log and Quillin Manager."
+              },
+              "description": {
+                "type": "string",
+                "maxLength": 400,
+                "description": "What this handler does and why, shown in Quillin Manager."
+              },
+              "conditions": {
+                "type": "object",
+                "description": "Optional filter: the handler only fires when ALL conditions match.",
+                "additionalProperties": false,
+                "properties": {
+                  "file_extension": {
+                    "type": "string",
+                    "description": "Only fire for files with this extension, e.g. '.txt', '.brf'."
+                  },
+                  "file_path_pattern": {
+                    "type": "string",
+                    "description": "Only fire when the file path matches this glob pattern."
+                  },
+                  "content_pattern": {
+                    "type": "string",
+                    "description": "Only fire when the first 4 KB of the document matches this regex."
+                  }
+                }
+              },
+              "filter_extensions": {
+                "type": "array",
+                "description": "Shorthand list of file extensions to match (alternative to conditions.file_extension for multiple extensions).",
+                "items": { "type": "string" }
+              },
+              "enabled_by_default": {
+                "type": "boolean",
+                "description": "Whether this event subscription is active when the Quillin is first enabled. Defaults to true."
+              }
+            }
+          }
+        },
+        "preferences": {
+          "type": "array",
+          "description": "Preferences pages, tabs, and settings contributed by this Quillin. QUILL renders all controls using accessible stock widgets; Quillins declare structure as data and never instantiate wx controls directly.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "title", "description"],
+            "properties": {
+              "id": { "type": "string", "pattern": "^[a-z][a-z0-9_-]*$", "maxLength": 64 },
+              "title": { "type": "string", "minLength": 1, "maxLength": 80 },
+              "parent": { "type": "string", "maxLength": 80, "description": "Preferred parent Preferences area, e.g. 'Editing'. QUILL may override placement." },
+              "section": { "type": "string", "maxLength": 80 },
+              "placement": { "type": "string", "enum": ["page", "tab", "section"], "description": "Requested rendering placement. QUILL may adjust." },
+              "description": { "type": "string", "maxLength": 400 },
+              "tabs": {
+                "type": "array",
+                "description": "Tabs within the preferences page. Each tab contains sections; sections contain settings.",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["id", "title", "description", "order"],
+                  "properties": {
+                    "id": { "type": "string", "pattern": "^[a-z][a-z0-9_-]*$", "maxLength": 64 },
+                    "title": { "type": "string", "minLength": 1, "maxLength": 60 },
+                    "description": { "type": "string", "maxLength": 200 },
+                    "order": { "type": "integer", "minimum": 0 },
+                    "sections": { "$ref": "#/$defs/pref_sections" },
+                    "visible_when": { "$ref": "#/$defs/pref_condition" },
+                    "enabled_when": { "$ref": "#/$defs/pref_condition" }
+                  }
+                }
+              },
+              "sections": { "$ref": "#/$defs/pref_sections" },
+              "settings": { "$ref": "#/$defs/pref_settings" }
+            }
+          }
+        },
+        "status_bar": {
+          "type": "array",
+          "description": "Status bar cells contributed by this Quillin. Requires the ui.status capability and a main module. Cells are polled by the host and must return a string from their handler.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "label", "handler"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_-]*$",
+                "maxLength": 64,
+                "description": "Unique cell id within the Quillin."
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 40,
+                "description": "Static fallback text when no value has been pushed yet."
+              },
+              "handler": {
+                "type": "string",
+                "description": "Name of the Python function in main that returns the current cell string."
+              },
+              "tooltip": {
+                "type": "string",
+                "maxLength": 200,
+                "description": "Optional description spoken to screen-reader users when the cell receives focus."
+              },
+              "width": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 40,
+                "description": "Suggested character-width hint for the host's layout engine."
+              }
+            }
+          }
+        },
+        "schedule": {
+          "type": "array",
+          "description": "Background timers. Each entry runs a Python handler every interval_seconds. Requires the schedule capability and a main module. Handlers run on background threads so the editor never blocks.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "interval_seconds", "handler"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Unique timer id within the Quillin."
+              },
+              "interval_seconds": {
+                "type": "integer",
+                "minimum": 60,
+                "maximum": 86400,
+                "description": "Timer period in seconds (60 to 86400)."
+              },
+              "handler": {
+                "type": "string",
+                "description": "Name of the Python function in main that runs on each tick."
+              },
+              "description": {
+                "type": "string",
+                "maxLength": 200,
+                "description": "What this timer does, shown in the Quillin Manager."
+              }
+            }
+          }
+        },
+        "file_types": {
+          "type": "array",
+          "description": "File-type handlers. When a document whose extension matches opens, the handler fires (a specialized document.opened). Requires the document.events capability and a main module.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["extensions", "handler"],
+            "properties": {
+              "extensions": {
+                "type": "array",
+                "minItems": 1,
+                "description": "Lowercase, dot-prefixed file extensions handled, e.g. ['.csv', '.log'].",
+                "items": {
+                  "type": "string",
+                  "pattern": "^\\.[a-z0-9]{1,9}$"
+                }
+              },
+              "handler": {
+                "type": "string",
+                "description": "Name of the Python function in main that runs when a matching file opens."
+              },
+              "description": {
+                "type": "string",
+                "maxLength": 200,
+                "description": "What this handler does, shown in the Quillin Manager."
+              }
+            }
+          }
+        },
+        "snippet_gallery": {
+          "type": "array",
+          "description": "Named, parameterized templates shown in the Snippet Gallery (Insert > Snippet Gallery...). Pure text expansion; no code runs. No capability required.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "name", "body"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1, "maxLength": 64 },
+              "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+              "body": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000,
+                "description": "Template text. May contain {param_name} placeholders that match declared params."
+              },
+              "description": { "type": "string", "maxLength": 300 },
+              "category": { "type": "string", "maxLength": 40 },
+              "params": {
+                "type": "array",
+                "description": "Fill-in fields prompted before insertion. Each name must appear as a {name} placeholder in body.",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["name", "label"],
+                  "properties": {
+                    "name": { "type": "string", "minLength": 1 },
+                    "label": { "type": "string", "minLength": 1 },
+                    "default": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "transcription_providers": {
+          "type": "array",
+          "description": "Host-mediated cloud transcription providers. The Quillin declares the provider; QUILL performs the upload via the named 'kind' adapter under the network-egress audit, so the sandbox never handles audio bytes or the API key. Purely declarative: the Quillin runs no code and needs no 'net' capability (the host's call is audited).",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "display_name", "kind"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^ext\\.[a-z0-9]+([._-][a-z0-9]+)*$",
+                "description": "Namespaced under ext.; unique across enabled Quillins."
+              },
+              "display_name": { "type": "string", "minLength": 1, "maxLength": 80 },
+              "kind": {
+                "enum": ["openai_whisper", "groq", "elevenlabs"],
+                "description": "Host adapter that performs the transcription."
+              },
+              "description": { "type": "string", "maxLength": 400 },
+              "credential": {
+                "type": "string",
+                "maxLength": 128,
+                "description": "Credential-store label holding the API key. Empty uses the adapter default."
+              },
+              "max_file_mb": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "description": "Optional upload-size ceiling override, in MB."
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "pref_condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["setting", "equals"],
+      "properties": {
+        "setting": { "type": "string" },
+        "equals": {}
+      }
+    },
+    "pref_sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "title"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z][a-z0-9_-]*$" },
+          "title": { "type": "string", "minLength": 1, "maxLength": 80 },
+          "description": { "type": "string", "maxLength": 200 },
+          "order": { "type": "integer" },
+          "settings": { "$ref": "#/$defs/pref_settings" },
+          "visible_when": { "$ref": "#/$defs/pref_condition" },
+          "enabled_when": { "$ref": "#/$defs/pref_condition" }
+        }
+      }
+    },
+    "pref_settings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["key", "label", "type", "default", "description"],
+        "properties": {
+          "key": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$", "maxLength": 64 },
+          "label": { "type": "string", "minLength": 1, "maxLength": 80 },
+          "type": { "type": "string", "enum": ["boolean", "choice", "radio", "string", "text", "integer", "number", "path", "password", "list", "action", "info"] },
+          "default": {},
+          "description": { "type": "string", "maxLength": 400 },
+          "choices": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["value", "label"],
+              "properties": {
+                "value": {},
+                "label": { "type": "string" }
+              }
+            }
+          },
+          "minimum": { "type": "number" },
+          "maximum": { "type": "number" },
+          "step": { "type": "number" },
+          "placeholder": { "type": "string" },
+          "requires_restart": { "type": "boolean" },
+          "visible_when": { "$ref": "#/$defs/pref_condition" },
+          "enabled_when": { "$ref": "#/$defs/pref_condition" },
+          "advanced": { "type": "boolean" },
+          "sensitive": { "type": "boolean" },
+          "search_keywords": {
+            "type": "array",
+            "description": "Extra words users might type to find this setting in the Preferences search.",
+            "items": { "type": "string", "maxLength": 64 }
+          }
         }
       }
     }
   },
   "allOf": [
     {
-      "$comment": "A handler-based command requires an entry module (Python or Node.js).",
+      "$comment": "A handler-based command requires an entry module (Python or Node.js). The nested required:[commands] ensures this rule only fires when a commands array is actually present.",
       "if": {
         "properties": {
           "contributes": {
+            "required": ["commands"],
             "properties": {
               "commands": {
                 "contains": { "properties": { "run": { "required": ["handler"] } } }

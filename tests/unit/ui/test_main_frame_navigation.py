@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import sys
+import re
 import types
 from pathlib import Path
 
@@ -207,6 +207,10 @@ def _build_frame(text: str, insertion_point: int = 0) -> MainFrame:
             "browse_mode_preload_cache": False,
         },
     )()
+    # Session state normally set in __init__: the F6 region rotation reads tab-
+    # control visibility, and the Tab handler reads the literal-tab mode.
+    frame._tab_control_visible = bool(frame.settings.show_tab_control)
+    frame._tab_inserts_literal = False
     return frame
 
 
@@ -215,6 +219,62 @@ def test_navigate_next_region_focuses_status_bar() -> None:
     frame.navigate_next_region()
     assert frame._active_region == "Status Bar"
     assert frame.statusbar.focused is True
+
+
+def test_navigate_to_status_bar_does_not_announce_generic_region_message(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Entering the status bar via F6 must not emit the generic 'Focused Status
+    Bar region' message. The cell-focus announcement already names the region,
+    so emitting both makes a screen reader say 'Status Bar' twice on entry."""
+    import quill.ui.main_frame_statusbar as statusbar_module
+
+    spoken: list[str] = []
+    monkeypatch.setattr(statusbar_module, "announce", lambda message: spoken.append(message))
+
+    frame = _build_frame("hello")
+    frame.navigate_next_region()
+
+    assert frame._active_region == "Status Bar"
+    # The F6 landing arms the one-shot region-name flag consumed by the first
+    # cell focus (real cell focus is a wx event not fired in this fake harness).
+    assert frame._statusbar_entry_pending is True
+    assert not any("Focused Status Bar region" in message for message in spoken)
+
+
+def test_statusbar_speaks_region_name_on_entry_but_not_on_arrow(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The F6 landing speaks 'Status bar, <cell>, <value>'; arrowing to the next
+    cell speaks only that cell, so 'Status bar' is not repeated on every arrow
+    keystroke (#status-bar-region-repeat)."""
+    import quill.ui.main_frame_statusbar as statusbar_module
+
+    spoken: list[str] = []
+    monkeypatch.setattr(statusbar_module, "announce", lambda message: spoken.append(message))
+
+    frame = _build_frame("hello")
+    frame._statusbar_cells = [
+        statusbar_module._StatusBarCell(item="message", button=object()),
+        statusbar_module._StatusBarCell(item="line_column", button=object()),
+    ]
+    frame._active_statusbar_cell_index = 0
+
+    class _Event:
+        def Skip(self) -> None:
+            return None
+
+    # F6 landing: the entry flag is armed, so the first cell carries the region.
+    frame._statusbar_entry_pending = True
+    frame._on_statusbar_cell_focus(_Event(), "message")
+    assert spoken[-1].startswith("Status bar, ")
+    # The flag is one-shot: it is consumed by the landing announcement.
+    assert frame._statusbar_entry_pending is False
+
+    # Arrowing to the next cell speaks only the cell -- no "Status bar" prefix.
+    frame._on_statusbar_cell_focus(_Event(), "line_column")
+    assert not spoken[-1].startswith("Status bar")
+    assert "Position" in spoken[-1]
 
 
 def _attach_split_preview(frame: MainFrame) -> object:
@@ -273,6 +333,61 @@ def test_navigate_region_skips_preview_when_hidden() -> None:
     assert frame._active_region == "Editor"
 
 
+def test_document_tabs_region_present_when_tab_control_visible() -> None:
+    frame = _build_frame("hello")
+    frame._tab_control_visible = True
+    labels = frame._current_focus_region_labels()
+    assert "Document Tabs" in labels
+    # Rotation order: Editor -> Document Tabs -> Status Bar.
+    assert labels.index("Document Tabs") == labels.index("Editor") + 1
+
+
+def test_document_tabs_region_absent_when_tab_control_hidden() -> None:
+    frame = _build_frame("hello")
+    frame._tab_control_visible = False
+    assert "Document Tabs" not in frame._current_focus_region_labels()
+
+
+def test_misspellings_behind_message_counts_the_other_direction(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from quill.core.spellcheck import Misspelling
+    from quill.ui import main_frame as mf
+
+    # The unit env has no real spell backend, so drive the message logic with a
+    # single known misspelling at [0, 5) (a stand-in for "teest good").
+    miss = Misspelling(word="teest", start=0, end=5)
+    monkeypatch.setattr(mf, "list_misspellings", lambda _t, _d: [miss])
+    monkeypatch.setattr(
+        mf, "find_next_misspelling", lambda _t, c, _d: miss if c <= miss.start else None
+    )
+    monkeypatch.setattr(
+        mf, "find_previous_misspelling", lambda _t, c, _d: miss if c > miss.end else None
+    )
+    frame = _build_frame("teest good")
+    # Caret past the only misspelling: nothing ahead, one behind.
+    ahead = frame._misspellings_behind_message("teest good", 10, {"good"}, ahead=True)
+    assert ahead == "No misspellings ahead; 1 misspelling behind"
+    # Caret before it: nothing behind, one ahead.
+    behind = frame._misspellings_behind_message("teest good", 0, {"good"}, ahead=False)
+    assert behind == "No misspellings behind; 1 misspelling ahead"
+
+
+def test_misspellings_behind_message_reports_none_when_clean(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from quill.ui import main_frame as mf
+
+    monkeypatch.setattr(mf, "list_misspellings", lambda _t, _d: [])
+    monkeypatch.setattr(mf, "find_next_misspelling", lambda _t, _c, _d: None)
+    monkeypatch.setattr(mf, "find_previous_misspelling", lambda _t, _c, _d: None)
+    frame = _build_frame("good good")
+    assert (
+        frame._misspellings_behind_message("good good", 9, {"good"}, ahead=True)
+        == "No misspellings found"
+    )
+
+
 def test_match_bracket_moves_to_match() -> None:
     text = "alpha (one [two] three)"
     frame = _build_frame(text, insertion_point=text.index("["))
@@ -291,22 +406,30 @@ def test_navigate_next_heading_announces_level_and_ordinal() -> None:
     text = "# Top\nIntro\n## Child\nBody\n### Grandchild\nMore\n"
     frame = _build_frame(text, insertion_point=0)
     statuses: list[str] = []
-    frame._set_status = statuses.append  # type: ignore[method-assign]
+    # `_announce_navigation_move` routes through `_quill_feedback` rather than
+    # `_set_status` directly.  Override `_quill_feedback` to capture the
+    # announced message regardless of the user's browse_mode_feedback setting.
+    frame._quill_feedback = lambda message, **_kw: statuses.append(message)  # type: ignore[method-assign]
+    # The default browse_mode_move_detail is "position", so the announcement
+    # includes the line and column.  Pin it explicitly so a future default
+    # change does not silently drift the expected message.
+    frame.settings.browse_mode_move_detail = "position"
 
     frame.navigate_next_heading()
 
-    assert statuses == ["Moved to next heading, H2, 2 of 3: Child"]
+    assert statuses == ["Moved to next heading, H2, 2 of 3: Child at line 3, column 1"]
 
 
 def test_navigate_previous_heading_announces_level_and_ordinal() -> None:
     text = "# Top\nIntro\n## Child\nBody\n### Grandchild\nMore\n"
     frame = _build_frame(text, insertion_point=len(text))
     statuses: list[str] = []
-    frame._set_status = statuses.append  # type: ignore[method-assign]
+    frame._quill_feedback = lambda message, **_kw: statuses.append(message)  # type: ignore[method-assign]
+    frame.settings.browse_mode_move_detail = "position"
 
     frame.navigate_previous_heading()
 
-    assert statuses == ["Moved to previous heading, H3, 3 of 3: Grandchild"]
+    assert statuses == ["Moved to previous heading, H3, 3 of 3: Grandchild at line 5, column 1"]
 
 
 def test_select_line_announces_scope_and_word_count() -> None:
@@ -407,7 +530,7 @@ def test_statusbar_shows_line_and_column() -> None:
     frame._apply_statusbar_layout()
     assert frame.statusbar.fields_count == 6
     assert frame.statusbar.status[1] == "Ln 2, Col 2"
-    assert frame.statusbar.status[2] == "INS"
+    assert frame.statusbar.status[2] == "Insert"
 
 
 def test_statusbar_respects_order_and_hidden_items() -> None:
@@ -417,7 +540,7 @@ def test_statusbar_respects_order_and_hidden_items() -> None:
     frame._apply_statusbar_layout()
     assert frame.statusbar.fields_count == 5
     assert frame.statusbar.status[0] == "Ln 1, Col 2"
-    assert frame.statusbar.status[1] == "INS"
+    assert frame.statusbar.status[1] == "Insert"
 
 
 def test_refresh_title_uses_full_path_when_enabled() -> None:
@@ -428,7 +551,7 @@ def test_refresh_title_uses_full_path_when_enabled() -> None:
 
     frame._refresh_title()
 
-    assert frame.frame.title == f"{frame.document.path} * - Quill"
+    assert frame.frame.title == f"{frame.document.path} * - {main_frame_module._APP_TITLE_VERSION}"
 
 
 def test_statusbar_hides_file_path_when_title_uses_full_path() -> None:
@@ -464,6 +587,29 @@ def test_statusbar_hides_cells_for_disabled_features() -> None:
     assert "line_column" in items
 
 
+def test_statusbar_message_hides_when_it_duplicates_another_visible_cell() -> None:
+    """The generic Message cell has nothing left to say once another visible
+    cell is already showing the exact same text -- saying it twice through two
+    different cells is confusing noise, not extra information."""
+    frame = _build_frame("hello", insertion_point=0)
+    line_column_text = frame._statusbar_text_for_item("line_column")
+    frame._status_message = line_column_text
+
+    items = frame._statusbar_items()
+
+    assert "message" not in items
+    assert "line_column" in items
+
+
+def test_statusbar_message_stays_when_it_says_something_new() -> None:
+    frame = _build_frame("hello", insertion_point=0)
+    frame._status_message = "Saved"
+
+    items = frame._statusbar_items()
+
+    assert "message" in items
+
+
 def test_statusbar_hides_modified_message_when_title_shows_dirty_state() -> None:
     frame = _build_frame("hello", insertion_point=0)
     frame.document.modified = True
@@ -483,7 +629,30 @@ def test_refresh_title_uses_asterisk_text_dirty_style() -> None:
 
     frame._refresh_title()
 
-    assert frame.frame.title == "note.md * [modified] - Quill"
+    assert frame.frame.title == f"note.md * [modified] - {main_frame_module._APP_TITLE_VERSION}"
+
+
+def test_window_title_includes_app_version_for_screen_readers() -> None:
+    """#615: window title must surface the QUILL version so screen readers
+    announcing the focused window (JAWS Insert+T, NVDA+T, Narrator Caps+H)
+    speak the version. The Ctrl+JAWSKey+V path lives in the OS layer and
+    reads the launcher's VersionInfo, which the portable build does not
+    have; the window title is the only in-process channel that reaches
+    every screen reader.
+    """
+    frame = _build_frame("hello", insertion_point=0)
+    frame.settings.title_bar_path_mode = "name"
+    frame.settings.dirty_title_style = "asterisk"
+
+    frame._refresh_title()
+
+    assert main_frame_module._APP_TITLE_VERSION in frame.frame.title
+    assert "QUILL for All" in frame.frame.title
+    # The version string must include a SemVer-style "N.N.N" so JAWS does
+    # not announce only the brand. Assert the major.minor.patch triple is
+    # present without hardcoding the release (build_info drives the actual
+    # value, e.g. "0.8.0 Beta 1"), so this does not go stale on version bumps.
+    assert re.search(r"\d+\.\d+\.\d+", main_frame_module._APP_TITLE_VERSION)
 
 
 def test_feature_coverage_maps_new_surfaces_to_known_features() -> None:
@@ -550,7 +719,7 @@ def test_prompt_to_save_active_document_saves_when_requested() -> None:
     frame._wx = type("WX", (), {"ID_YES": 1, "ID_CANCEL": 0})()
     actions: list[str] = []
 
-    frame._prompt_unsaved_changes_action = lambda *_args: 1  # type: ignore[method-assign]
+    frame._prompt_unsaved_changes_action = lambda *_a, **_k: 1  # type: ignore[method-assign]
 
     def _save_file() -> None:
         actions.append("saved")
@@ -566,7 +735,7 @@ def test_prompt_to_save_active_document_cancels_when_requested() -> None:
     frame = _build_frame("one", insertion_point=0)
     frame.document.modified = True
     frame._wx = type("WX", (), {"ID_YES": 1, "ID_CANCEL": 0})()
-    frame._prompt_unsaved_changes_action = lambda *_args: 0  # type: ignore[method-assign]
+    frame._prompt_unsaved_changes_action = lambda *_a, **_k: 0  # type: ignore[method-assign]
 
     assert frame._prompt_to_save_active_document("closing") is False
 
@@ -575,7 +744,7 @@ def test_prompt_to_save_active_document_discards_when_requested() -> None:
     frame = _build_frame("one", insertion_point=0)
     frame.document.modified = True
     frame._wx = type("WX", (), {"ID_YES": 1, "ID_CANCEL": 0, "ID_NO": 2})()
-    frame._prompt_unsaved_changes_action = lambda *_args: 2  # type: ignore[method-assign]
+    frame._prompt_unsaved_changes_action = lambda *_a, **_k: 2  # type: ignore[method-assign]
 
     assert frame._prompt_to_save_active_document("closing") is True
 
@@ -583,43 +752,9 @@ def test_prompt_to_save_active_document_discards_when_requested() -> None:
 def test_confirm_discard_changes_accepts_reload_only() -> None:
     frame = _build_frame("one", insertion_point=0)
     frame._wx = type("WX", (), {"ID_YES": 1, "ID_CANCEL": 0})()
-    frame._prompt_unsaved_changes_action = lambda *_args: 1  # type: ignore[method-assign]
+    frame._prompt_unsaved_changes_action = lambda *_a, **_k: 1  # type: ignore[method-assign]
 
     assert frame._confirm_discard_changes() is True
-
-
-def test_show_startup_wizard_page_uses_rendered_html_preview(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    frame = MainFrame.__new__(MainFrame)
-    frame.frame = _Frame()
-    frame.settings = type("Settings", (), {"bw_provider_id": "", "bw_speech_model_id": ""})()
-    statuses: list[str] = []
-    frame._set_status = statuses.append  # type: ignore[method-assign]
-
-    captured: dict[str, object] = {}
-
-    class _PreviewDialog:
-        def __init__(self, parent: object, title: str, body_html: str) -> None:
-            captured["parent"] = parent
-            captured["title"] = title
-            captured["body_html"] = body_html
-
-        def show(self) -> None:
-            captured["shown"] = True
-
-    preview_module = types.ModuleType("quill.ui.preview_dialog")
-    preview_module.MarkdownPreviewDialog = _PreviewDialog
-    monkeypatch.setitem(sys.modules, "quill.ui.preview_dialog", preview_module)
-
-    frame.show_startup_wizard_page()
-
-    assert captured["parent"] is frame.frame
-    assert captured["title"] == "Startup Wizard"
-    assert "<!doctype html>" not in str(captured["body_html"])
-    assert "<h1 id='startup-wizard'>Startup Wizard</h1>" in str(captured["body_html"])
-    assert captured["shown"] is True
-    assert statuses == ["Opened Startup Wizard overview"]
 
 
 def test_compare_group_builder_classifies_case_only_changes() -> None:
@@ -665,7 +800,7 @@ def test_insert_key_toggles_overwrite_mode_status() -> None:
     event = _KeyEvent(45)
     frame._wx = type("WX", (), {"WXK_INSERT": 45})()
     frame._on_editor_key_down(event)
-    assert frame.statusbar.status[2] == "OVR"
+    assert frame.statusbar.status[2] == "Overwrite"
 
 
 def test_ctrl_shift_o_opens_outline_navigator_from_editor() -> None:
@@ -1235,7 +1370,7 @@ def test_profile_choice_label_includes_description() -> None:
     label = frame._profile_choice_label(profile)
 
     assert label.startswith("Essential — ")
-    assert profile.description in label
+    assert str(profile.description) in label
 
 
 def test_print_document_cancel_reports_cancelled() -> None:
@@ -1607,17 +1742,13 @@ def test_show_notifications_dialog_uses_close_for_affirmative_and_escape() -> No
         def SetEscapeId(self, value: int) -> None:
             self.escape_id = value
 
+        def SetSizer(self, _sizer: object) -> None:
+            return
+
         def Destroy(self) -> None:
             return
 
         def EndModal(self, _result: int) -> None:
-            return
-
-    class _Panel:
-        def __init__(self, _parent: object) -> None:
-            return
-
-        def SetSizer(self, _sizer: object) -> None:
             return
 
     class _BoxSizer:
@@ -1671,7 +1802,6 @@ def test_show_notifications_dialog_uses_close_for_affirmative_and_escape() -> No
         (),
         {
             "Dialog": _Dialog,
-            "Panel": _Panel,
             "BoxSizer": _BoxSizer,
             "StaticText": _StaticText,
             "ListBox": _ListBox,
@@ -1853,18 +1983,25 @@ def test_prompt_untrusted_location_uses_single_checkbox_dialog() -> None:
     assert captured["checkbox"] == "Trust this folder for future opens"
 
 
-def test_prompt_unsaved_changes_action_uses_native_message_dialog() -> None:
+def test_prompt_unsaved_changes_action_uses_native_yes_no_cancel() -> None:
+    # #23: the dialog must use the platform's native Yes/No/Cancel buttons
+    # without overriding labels, so the built-in Y/N/Esc keyboard
+    # accelerators fire on every platform (overriding labels with
+    # SetYesNoCancelLabels disables them on at least macOS Cocoa).
     frame = _build_frame("hello")
     captured: dict[str, object] = {}
+    dialogs: list[_MessageDialog] = []
 
     class _MessageDialog:
         def __init__(self, _parent: object, message: str, title: str, style: int) -> None:
             captured["message"] = message
             captured["title"] = title
             captured["style"] = style
+            self.set_label_calls: list[tuple[str, str, str]] = []
+            dialogs.append(self)
 
         def SetYesNoCancelLabels(self, yes: str, no: str, cancel: str) -> bool:
-            captured["labels"] = (yes, no, cancel)
+            self.set_label_calls.append((yes, no, cancel))
             return True
 
         def Destroy(self) -> None:
@@ -1884,19 +2021,25 @@ def test_prompt_unsaved_changes_action_uses_native_message_dialog() -> None:
         },
     )()
     frame._wx = wx
-    # Native wx.MessageDialog handles keys itself; we only own the labels and
-    # that ShowModal's result is returned unchanged.
-    frame._show_modal_dialog = lambda _dialog, _label: wx.ID_NO  # type: ignore[method-assign]
+    # Native wx.MessageDialog handles keys itself; we only own ShowModal's
+    # return value. _show_modal_dialog gets routed through the stub below
+    # so we can return a deterministic result without running the real one.
+    frame._show_modal_dialog = (
+        lambda _dialog, _label, **_kwargs: wx.ID_NO  # type: ignore[method-assign]
+    )
 
     result = frame._prompt_unsaved_changes_action(
         "Unsaved changes",
         "You have unsaved changes. Save before closing?",
-        "Save",
-        "Don't Save",
     )
 
     assert result == wx.ID_NO
-    assert captured["labels"] == ("Save", "Don't Save", "Cancel")
+    # Native labels = native accelerators; we MUST NOT call
+    # SetYesNoCancelLabels, because that override is what was disabling Y/N.
+    assert dialogs[0].set_label_calls == []
+    # Style must still request YES_NO + CANCEL + ICON_WARNING so the
+    # platform synthesises the three buttons (and their accelerators).
+    assert captured["style"] == wx.YES_NO | wx.CANCEL | wx.ICON_WARNING
 
 
 def test_prompt_table_shape_reprompts_invalid_values() -> None:
@@ -2027,5 +2170,131 @@ def test_open_quick_nav_reports_when_no_elements() -> None:
     assert presented == []
 
 
+def test_quick_nav_panel_context_adds_misspellings_and_search_hits() -> None:
+    # #513: the Quick Nav panel context augments the browse index with the
+    # document's misspellings and the active search's hits as nav types.
+    from quill.core.quick_nav import build_nav_index
+
+    text = "Here is teh misspelled word and another word.\n"
+    frame = _build_frame(text)
+    frame._browse_navigation_context = lambda: {"text": text, "links": []}  # type: ignore[method-assign]
+    frame._last_find_query = "word"
+    context = frame._quick_nav_panel_context()
+    assert context.get("misspellings"), "expected the misspelled 'teh' to be flagged"
+    assert len(context.get("search_hits", [])) == 2, "expected both 'word' hits"
+    kinds = {item.kind for item in build_nav_index(text, context)}
+    assert {"Misspelling", "Search hit"} <= kinds
+
+
+def test_quick_nav_panel_context_no_search_query_has_no_hits() -> None:
+    text = "plain text\n"
+    frame = _build_frame(text)
+    frame._browse_navigation_context = lambda: {"text": text}  # type: ignore[method-assign]
+    frame._last_find_query = ""
+    context = frame._quick_nav_panel_context()
+    assert "search_hits" not in context or context["search_hits"] == []
+
+
 def test_quick_nav_command_mapped_to_navigation_feature() -> None:
     assert feature_for_command("navigate.quick_nav") == "core.navigate"
+
+
+def test_page_cell_activates_go_to_page() -> None:
+    frame = _build_frame("hello", insertion_point=0)
+    called: list[bool] = []
+    frame.go_to_page = lambda: called.append(True)  # type: ignore[method-assign]
+    frame._activate_statusbar_cell("page")
+    assert called == [True]
+
+
+def test_page_cell_suppressed_when_braille_active() -> None:
+    frame = _build_frame("hello", insertion_point=0)
+    frame.document = Document(
+        text="hello\fworld",
+        source_metadata={
+            "source_kind": "brf",
+            "brf_suffix": "brf",
+            "brf_cell_width": 40,
+            "brf_line_height": 25,
+            "brf_non_ascii_offsets": [],
+            "brf_had_bom": False,
+            "brf_profile": "ueb_english",
+        },
+    )
+    frame.editor.GetCurrentPos = lambda: 0  # type: ignore[attr-defined]
+    frame._get_action_suggestion = lambda: None  # type: ignore[method-assign]
+    frame._ai_engine_should_autoshow = lambda: False  # type: ignore[method-assign]
+
+    items = frame._statusbar_items()
+
+    assert "braille" in items
+    assert "page" not in items
+
+
+def _go_to_page_wx(typed_value: str) -> object:
+    class _TextEntryDialog:
+        def __init__(self, _parent: object, message: str, _title: str, value: str) -> None:
+            self.message = message
+
+        def __enter__(self) -> _TextEntryDialog:
+            return self
+
+        def __exit__(self, *_args: object) -> None:
+            return None
+
+        def GetValue(self) -> str:
+            return typed_value
+
+    # _TextEntryDialog is assigned as the class itself (not a lambda/function):
+    # a plain function stored in a dynamically-created class's dict is bound
+    # as a method when read off an instance (implicit self), which would
+    # shift every positional argument by one. A class reference isn't a
+    # descriptor, so it stays a plain callable.
+    return type(
+        "WX",
+        (),
+        {
+            "TextEntryDialog": _TextEntryDialog,
+            "ICON_ERROR": 8,
+            "OK": 16,
+            "ID_OK": 1,
+        },
+    )()
+
+
+def test_go_to_page_exact_jumps_to_form_feed_boundary() -> None:
+    text = "page one\fpage two\fpage three"
+    frame = _build_frame(text, insertion_point=0)
+    frame._wx = _go_to_page_wx("2")
+    frame._show_modal_dialog = lambda dialog, title: frame._wx.ID_OK  # type: ignore[method-assign]
+    frame.go_to_page()
+    assert frame.editor.GetInsertionPoint() == text.index("page two")
+
+
+def test_go_to_page_estimated_prompt_says_estimated() -> None:
+    text = " ".join(["word"] * 900)  # 3 pages at 300/page
+    frame = _build_frame(text, insertion_point=0)
+    frame._wx = _go_to_page_wx("1")
+    frame._show_modal_dialog = lambda dialog, title: frame._wx.ID_OK  # type: ignore[method-assign]
+    # Capture the prompt text passed to TextEntryDialog by wrapping the
+    # constructor _go_to_page_wx already installed on frame._wx.
+    captured: list[str] = []
+    original = frame._wx.TextEntryDialog
+    frame._wx.TextEntryDialog = lambda parent, message, title, value: (
+        captured.append(message) or original(parent, message, title, value)
+    )
+    frame.go_to_page()
+    assert "estimated" in captured[0].lower()
+
+
+def test_go_to_page_estimated_out_of_range_reports_total() -> None:
+    text = " ".join(["word"] * 10)  # 1 page at 300/page
+    frame = _build_frame(text, insertion_point=0)
+    frame._wx = _go_to_page_wx("5")
+    frame._show_modal_dialog = lambda dialog, title: frame._wx.ID_OK  # type: ignore[method-assign]
+    messages: list[str] = []
+    frame._show_message_box = (  # type: ignore[method-assign]
+        lambda message, *_a, **_k: messages.append(message)
+    )
+    frame.go_to_page()
+    assert "1 page" in messages[0]

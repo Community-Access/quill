@@ -36,7 +36,13 @@ def test_resolve_base_url_rejects_master_ref(monkeypatch: pytest.MonkeyPatch) ->
 def test_resolve_base_url_rejects_unresolved_placeholder(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    placeholder_url = (
+        "https://raw.githubusercontent.com/owner/repo/"
+        "<REPLACE_WITH_COMMIT_SHA>/autoupdate/bootstrappers/"
+    )
     monkeypatch.delenv("QUILL_BOOTSTRAPPER_BASE_URL", raising=False)
+    monkeypatch.setattr("scripts.fetch_bootstrappers.DEFAULT_BASE_SHA", "<REPLACE_WITH_COMMIT_SHA>")
+    monkeypatch.setattr("scripts.fetch_bootstrappers.DEFAULT_BASE_URL", placeholder_url)
     with pytest.raises(ValueError, match="placeholder"):
         _resolve_base_url(None)
 

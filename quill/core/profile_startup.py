@@ -103,6 +103,7 @@ def load_profile_startup_config() -> ProfileStartupConfig:
 def save_profile_startup_config(config: ProfileStartupConfig) -> None:
     base = app_data_dir()
     payload = {
+        "schema_version": 1,  # persistence contract: enables future migration
         "prompt_on_startup": bool(config.prompt_on_startup),
         "prompt_on_modifier": bool(config.prompt_on_modifier),
         "extension_map": dict(config.extension_map),

@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>2026-07-07-download-components-experience-design</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1
+id="download-optional-components--the-warm-complete-experience-design">Download
+Optional Components — the warm, complete experience (design)</h1>
+<p>Extends GitHub issue #874 (the unified missing-component surface).
+#874 wired the <em>routing</em> into one picker; this spec makes that
+picker a first-class, delightful place: reordered by importance, with
+install <strong>and</strong> removal, sizes on every row, a rich
+description, and a "hear this voice" test — then routes the scattered
+startup prompts into it.</p>
+<h2 id="problem">Problem</h2>
+<p><code>quill/ui/optional_components_dialog.py</code>
+(<code>show_optional_components_picker</code>) is today a thin list:
+name / status / size / category columns, a Download button, and a
+one-line detail label. It works, but it is not the "magical" hub it
+should be, and several rough edges are user-visible:</p>
+<ol type="1">
+<li><strong>Order is by category, not importance.</strong>
+<code>gather_optional_components()</code>
+(<code>quill/core/optional_components.py</code>) emits engine → voices →
+tool → dictionaries. Users reach for Pandoc and the braille pack first;
+those should lead.</li>
+<li><strong>No removal.</strong> A component can be installed but never
+uninstalled from here, and there is no way to reclaim the disk or turn a
+feature back off.</li>
+<li><strong>Missing sizes.</strong> Spell-check dictionary rows pass
+<code>size_hint=""</code> (they show "—"); every row should state its
+size.</li>
+<li><strong>Thin description.</strong> The single detail line can't
+convey what a component enables, its size, and its impact.</li>
+<li><strong>No confidence check.</strong> After a voice engine installs,
+nothing lets the user <em>hear</em> it — the reassurance that the
+install actually worked.</li>
+<li><strong>Focus flow.</strong> The picker closes
+(<code>EndModal</code>) and the download runs behind it
+(<code>open_optional_components</code> in
+<code>quill/ui/main_frame_speech.py</code> dispatches after the modal
+closes). The user is dropped back to the document, not kept in the hub
+where the row now reads "Installed".</li>
+<li><strong>Scattered entry.</strong> The startup braille-pack prompt
+(<code>main_frame._maybe_prompt_braille_pack_install</code>) and #874's
+failure routes are separate journeys; several should simply land the
+user <em>here</em>, guided.</li>
+</ol>
+<h2 id="non-goals">Non-goals</h2>
+<ul>
+<li>Not a new download engine. Each component keeps its tested,
+progress-reporting installer (<code>_download_kokoro_models</code>,
+<code>install_piper</code>, <code>download_braille_pack</code>,
+<code>fetch_component</code>, …). This is a UI + orchestration layer
+over them.</li>
+<li>Not per-voice rows. Voice <em>engines</em> are one row each (Kokoro,
+Piper, eSpeak, DECtalk); individual voice-model downloads stay in the
+Voice Browser.</li>
+<li>Not removing bundled/system components. Remove targets only
+QUILL-downloaded copies under the <strong>active data dir</strong> (the
+portable data folder in portable mode, <code>%APPDATA%\Quill</code>
+otherwise — see Portable mode below); it never deletes a system Pandoc,
+an upgrader's <code>{app}</code> copy, or anything QUILL did not
+fetch.</li>
+</ul>
+<h2 id="design">Design</h2>
+<h3 id="1-importance-ordering">1. Importance ordering</h3>
+<p><code>OptionalComponent</code> gains an integer <code>priority</code>
+(lower = higher in the list); <code>gather_optional_components()</code>
+sorts by <code>(priority, name)</code>. Proposed order: Pandoc, braille
+pack, whisper.cpp, Kokoro, Piper, eSpeak, DECtalk, ffmpeg, libmpv,
+MathCAT, Vosk, then the spell-check dictionaries (alphabetical). The
+dialog renders in returned order (no re-sort in the UI).</p>
+<h3 id="2-sizes-on-every-row">2. Sizes on every row</h3>
+<p>Give the dictionary rows a real <code>size_hint</code>. Two options —
+decide in implementation:</p>
+<ul>
+<li><strong>(a)</strong> a static per-dictionary estimate ("~4 MB"),
+simplest; or</li>
+<li><strong>(b)</strong> read the pinned asset's size where one exists
+(the <code>release_assets</code> entries know their
+<code>filename</code>; a size field could be added). Recommend (a) for
+now (dictionaries are all a few MB), with a TODO for (b).</li>
+</ul>
+<h3 id="3-rich-description-box">3. Rich description box</h3>
+<p>Replace the one-line <code>optional_components_detail</code>
+StaticText with a <strong>read-only multiline</strong>
+<code>TextCtrl</code> (<code>wx.TE_MULTILINE | wx.TE_READONLY</code>).
+On row focus it shows: what the component enables, its size, its on-disk
+footprint/impact, its license note, and its current state ("Installed —
+Remove to free ~X and turn off Y" / "Not installed — Download to enable
+Y"). Copy is warm and concrete. The text is built by a wx-free
+<code>describe_component(component)</code> helper in
+<code>optional_components.py</code> so it is unit-testable.</p>
+<h3 id="4-install--remove-installed-state-controls">4. Install + Remove,
+installed-state controls</h3>
+<ul>
+<li>The <strong>Download</strong> button is disabled (and labeled
+"Installed") when the focused row is installed; enabled otherwise.</li>
+<li>A <strong>Remove</strong> button is enabled only when the focused
+row is installed and is a QUILL-downloaded copy that can be
+removed.</li>
+<li>Removal logic is wx-free in <code>optional_components.py</code>:
+<code>removable_path(component_id) -&gt; Path | None</code> (None =
+nothing QUILL can safely remove, e.g. a system Pandoc or bundled copy)
+and <code>remove_component(component_id) -&gt; bool</code> (delete that
+path, clear any discover cache). The dialog confirms, calls it, then
+refreshes the row.</li>
+</ul>
+<h3 id="5-remove-closes-the-loop-disable-dependent-features">5. Remove
+closes the loop (disable dependent features)</h3>
+<p>Removing a component turns off what it powered. Most engine
+availability is already <em>dynamic</em> (e.g.
+<code>kokoro_engine_ready()</code>,
+<code>discover_piper_executable()</code>), so read paths degrade on
+their own. What needs explicit handling is durable settings/menus that
+assume a component (e.g. braille translation surfaces, a selected Read
+Aloud engine that just went away). Introduce a small map,
+<code>COMPONENT_FEATURES: dict[str, tuple[str, ...]]</code>, from
+component_id to the feature ids it enables, and on removal:</p>
+<ul>
+<li>if the removed engine is the <em>active</em>
+<code>read_aloud_engine</code>, reset it to the always-present SAPI 5
+floor; and</li>
+<li>surface (do not silently flip) any feature the component gated, via
+the existing feature manager.</li>
+</ul>
+<p><strong>Open question for implementation:</strong> exact depth —
+reset active-engine + refresh menus (recommended) vs. also toggling
+<code>features.json</code> entries. Pin the concrete braille and Read
+Aloud call sites first, the way #874 pinned its sites.</p>
+<h3 id="6-hear-this-voice-test-button">6. Hear-this-voice test
+button</h3>
+<p>For voice-engine rows (Kokoro, Piper, eSpeak, DECtalk — those with an
+installed speech engine), a <strong>Test</strong> button synthesizes a
+short, fixed QUILL blurb in a default voice for that engine and plays
+it, so the user hears success. Wx-free core: <code>TEST_BLURB</code>
+constant + reuse of <code>synthesize_with_kokoro</code> /
+<code>synthesize_with_piper</code> / the eSpeak/DECtalk paths to a temp
+WAV; the dialog plays it on the UI thread and announces "Playing a
+sample of <engine>…". The button is hidden for non-voice components and
+disabled until the engine is installed.</p>
+<p><strong>Open question:</strong> the blurb text. Recommend one short,
+on-brand line (a new <code>TEST_BLURB</code> in
+<code>optional_components.py</code>), e.g. <em>"This is QUILL, reading
+to you with the <engine> voice."</em> — confirm wording.</p>
+<h3 id="7-keep-the-hub-open-focus-to-progress-then-back">7. Keep the hub
+open; focus to progress, then back</h3>
+<p>Restructure so the picker <strong>stays open</strong> and drives the
+download in place:</p>
+<ul>
+<li>Activating Download runs the component's installer, showing the
+existing <code>AIProgressDialog</code> (which takes focus and announces
+progress).</li>
+<li>On completion the progress dialog closes, <strong>focus returns to
+the picker</strong>, the row refreshes to "Installed", Download
+disables, Remove/Test enable, and the description updates — the user
+never leaves the hub.</li>
+<li>This replaces the current "return the chosen id and
+<code>EndModal</code>, dispatch after close" flow in
+<code>open_optional_components</code>; the dispatch table moves into the
+dialog (or a controller it calls back into).</li>
+</ul>
+<h3 id="8-route-the-scattered-prompts-here-with-a-guiding-popup">8.
+Route the scattered prompts here (with a guiding popup)</h3>
+<ul>
+<li><strong>Startup braille prompt</strong>
+(<code>_maybe_prompt_braille_pack_install</code>): instead of its own
+yes/no install, open the components dialog <strong>preselected on
+braille</strong> (using #874's <code>preselect</code>) and show a
+one-time guiding popup on landing: "You're in Download Optional
+Components. Braille pack is selected — press Download to set up braille
+translation, or Escape to skip." Gate the popup on a
+<code>seen_components_intro</code> setting so it shows once.</li>
+<li><strong>#874 failure routes</strong>
+(<code>_offer_optional_component</code> / <code>_nudge_once</code>):
+already land here preselected; they inherit the richer dialog
+automatically.</li>
+</ul>
+<h3 id="9-warm-and-fuzzy-throughout">9. Warm and fuzzy throughout</h3>
+<p>Encouraging, plain-language copy on buttons, descriptions, and
+announcements; the Test button; the guiding popup; and the stay-in-place
+flow together make the hub feel like a friendly setup assistant rather
+than a bare table.</p>
+<h2 id="testing">Testing</h2>
+<ul>
+<li><code>optional_components.py</code>: <code>priority</code> ordering;
+<code>describe_component</code> text for an installed vs not-installed
+component; <code>removable_path</code>/<code>remove_component</code>
+(returns None for a non-QUILL copy; deletes a fake app-data copy);
+dictionary rows now carry a non-empty size;
+<code>COMPONENT_FEATURES</code> maps only real feature ids. All wx-free,
+unit-tested.</li>
+<li>Source-contract tests (matching this beta's convention) for the
+dialog: Download disabled when installed, Remove present, Test present
+for voice rows, multiline read-only description, focus-returns-to-list
+after install.</li>
+<li><code>_maybe_prompt_braille_pack_install</code> routes to
+<code>open_optional_components( preselect="braille")</code> and shows
+the one-time popup.</li>
+<li>The Test path: <code>synthesize_*</code> called with the engine's
+default voice to a temp file (mocked synth), then played.</li>
+</ul>
+<h2 id="files-touched">Files touched</h2>
+<p><code>quill/core/optional_components.py</code> (priority,
+describe_component, removable_path/remove_component, COMPONENT_FEATURES,
+TEST_BLURB, dict sizes),
+<code>quill/ui/optional_components_dialog.py</code> (multiline
+description, Download/Remove/ Test buttons, installed-state gating,
+stay-open + focus-return flow),
+<code>quill/ui/main_frame_speech.py</code>
+(<code>open_optional_components</code> restructure, Test/ Remove
+dispatch), <code>quill/ui/main_frame.py</code>
+(<code>_maybe_prompt_braille_pack_install</code> reroute + guiding
+popup, #874 helpers), <code>quill/core/settings.py</code>
+(<code>seen_components_intro</code> and any nudge state), plus
+new/updated tests in
+<code>tests/unit/core/test_optional_components.py</code> and
+<code>tests/unit/ui/</code>.</p>
+<h2 id="decisions-settled-2026-07-07">Decisions (settled
+2026-07-07)</h2>
+<ol type="1">
+<li><strong>Remove → disable depth (§5):</strong> reset the active Read
+Aloud engine to the always-present SAPI 5 when the removed engine was
+the active one, and refresh the braille/menus; do <strong>not</strong>
+flip <code>features.json</code>. Engine availability is already dynamic
+(<code>discover_*</code> / <code>*_ready</code>), so features
+self-degrade and restore cleanly when the user re-downloads.</li>
+<li><strong>Test blurb (§6):</strong> a reassuring, engine-named line —
+<em>"Hello from QUILL. If you can hear this, the {engine} voice is
+installed and ready to read your writing aloud."</em> The Test button
+covers every voice engine, <strong>Kokoro included</strong> (Kokoro,
+Piper, eSpeak, DECtalk).</li>
+<li><strong>Dictionary sizes (§2):</strong> static per-dictionary
+estimates now (they are all a few MB); revisit exact sizes later.</li>
+<li><strong>Remove scope (§4):</strong> app-data copies only.
+<code>removable_path</code> returns None for a system Pandoc, an
+upgrader's <code>{app}</code> copy, or anything QUILL did not
+fetch.</li>
+</ol>
+<h2 id="portable-mode-must-hold-invariant">Portable mode (must-hold
+invariant)</h2>
+<p>Optional components already download into the <strong>active data
+dir</strong> resolved by <code>quill.core.paths.app_data_dir()</code>,
+which returns the portable data folder when the install is in portable
+mode (<code>mode == "portable"</code> + a portable root) and
+<code>%APPDATA%\Quill</code> otherwise (custom-path installs likewise).
+Every downloader routes through it —
+<code>default_kokoro_model_dir()</code>,
+<code>managed_piper_dir()</code>, <code>engine_packs_dir()</code>, the
+braille pack, and the spell-check dicts — so a portable install keeps
+its assets beside the executable and never writes to
+<code>%APPDATA%</code>.</p>
+<p>Because <code>removable_path</code> / <code>remove_component</code>
+resolve that same <code>app_data_dir()</code>, Remove automatically
+targets the portable copy in portable mode. The description box's
+footprint text must name the active data dir ("frees ~X in your QUILL
+data folder"), never a hardcoded <code>%APPDATA%</code>. Implementation
+must add a test that in portable mode the resolved download/remove path
+is under the portable root, not <code>%APPDATA%</code>.</p>
+<h2 id="round-2-requirements-2026-07-07">Round 2 requirements
+(2026-07-07)</h2>
+<h3 id="r1-every-component-has-a-verify-touch-point-prove-it-works">R1.
+Every component has a verify touch point ("prove it works")</h3>
+<p>The Test button generalises from voices to <strong>a per-type verify
+action on every component</strong>, so a user can always confirm what
+they installed actually works:</p>
+<ul>
+<li><strong>Voice engines</strong> (kokoro, piper, espeak, dectalk):
+speak <code>TEST_BLURB</code> in a default voice (as in §6).</li>
+<li><strong>STT engines</strong> (whispercpp, vosk): the self-test in R2
+below.</li>
+<li><strong>Tools</strong> (pandoc, ffmpeg, node): run the tool's
+version probe (<code>pandoc --version</code>,
+<code>ffmpeg -version</code>, <code>node --version</code> via the
+existing safe-subprocess wrapper) and show the reported version.</li>
+<li><strong>braille</strong>: translate a short sample with
+<code>lou_translate</code> and show the cells.</li>
+<li><strong>mathcat</strong>: load and speak a sample expression (falls
+back to "loaded OK").</li>
+<li><strong>libmpv</strong>: confirm the DLL loads via the existing
+loader.</li>
+<li><strong>spell dicts</strong>: check a known word validates in that
+language.</li>
+</ul>
+<p>Wx-free
+<code>verify_component(component_id) -&gt; VerifyResult</code> in
+<code>optional_components.py</code> (result = ok flag + a human line +
+optional detail), so the dialog just renders/announces it. Disabled
+until the component is installed.</p>
+<h3
+id="r2-whisper-and-vosk-stt-self-test--closing-the-confidence-loop">R2.
+Whisper (and Vosk) STT self-test — closing the confidence loop</h3>
+<p>To prove an offline STT engine works with no bundled audio asset,
+close the loop through TTS: synthesize a fixed known phrase with the
+always-present SAPI 5 voice to a temp WAV, transcribe it with the
+installed engine, and show the user what it heard — "Whisper heard:
+'<text>'". Pass when the transcription fuzzy-matches the known phrase
+(token overlap over a threshold), so normal recognition variance doesn't
+read as failure. Reuses the existing transcription path; announced for
+screen-reader users. This is the STT arm of R1's
+<code>verify_component</code>.</p>
+<h3 id="r3-rich-failure-info--one-click-bug-report">R3. Rich failure
+info + one-click bug report</h3>
+<p>Every download/install/verify failure must surface the <em>real</em>
+cause and offer to send it, not just flash a status line:</p>
+<ul>
+<li>Capture the full error: the exception message, the pip/stderr tail
+already logged to <code>quill.log</code> (Kokoro/Piper/engine installs
+write it), the component_id, and the resolved target path
+(portable-aware).</li>
+<li>Show it in a dialog with the detail in a read-only multiline box
+<strong>and a "Send bug report" button</strong> that routes into the
+existing feedback/diagnostics bundle flow (<code>feedback_hub</code> /
+Help &gt; Save Diagnostics), pre-seeded with the captured error and the
+diagnostics bundle (which now carries the logged pip error). The bundle
+stays redacted (no document content).</li>
+<li>A wx-free <code>DownloadFailure</code> record (component_id,
+message, detail, log_excerpt, target) carries the info from the core
+installers up to the dialog.</li>
+</ul>
+<h3 id="r4-catalog-completeness--add-the-missing-components">R4. Catalog
+completeness — add the missing components</h3>
+<p><code>gather_optional_components()</code> is missing two downloadable
+components; add both so the dialog has a touch point for everything
+QUILL can fetch:</p>
+<ul>
+<li><strong>piper</strong> — detector
+<code>discover_piper_executable() is not None</code>; installer
+<code>piper_install.install_piper</code>; category VOICES.</li>
+<li><strong>node</strong> — detector
+<code>node_install.is_node_available()</code>; installer
+<code>node_install.install_node_runtime</code>; category TOOL; "for Node
+Quillins and the Developer Console TypeScript interface".</li>
+</ul>
+<p>A guard test asserts every component QUILL can install (each
+<code>release_assets</code> asset + each <code>*_install</code> module +
+piper/node) appears in <code>gather_optional_components()</code>, so a
+future downloadable component can't silently miss the dialog again.</p>
+<h2 id="phasing">Phasing</h2>
+<ul>
+<li><strong>Phase 1</strong> — wx-free core: add piper + node (R4),
+<code>priority</code> ordering, dictionary sizes,
+<code>describe_component</code>, and the completeness guard test.</li>
+<li><strong>Phase 2</strong> — Remove:
+<code>removable_path</code>/<code>remove_component</code>
+(portable-aware), installed-state gating, engine-reset loop;
+portable-path test.</li>
+<li><strong>Phase 3</strong> — verify touch points (R1) incl. voice Test
+and Whisper/Vosk self-test (R2), rich failure + bug report (R3).</li>
+<li><strong>Phase 4</strong> — stay-open focus flow, reroute the startup
+braille prompt with the guiding popup, and the #874 failure routes.</li>
+</ul>
+</body>
+</html>

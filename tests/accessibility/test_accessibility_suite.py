@@ -24,13 +24,16 @@ def test_accessibility_announcements_are_captured_for_harnesses() -> None:
 
 
 def test_accessibility_screen_reader_detection_snapshot() -> None:
-    snapshot = '"narrator.exe","321","Console","1","10,000 K"\n'
-    result = detect_screen_reader(snapshot)
+    result = detect_screen_reader(["explorer.exe", "narrator.exe"])
     assert result.detected is True
     assert result.name == "Narrator"
 
 
-def test_accessibility_key_shortcuts_include_core_navigation() -> None:
+def test_accessibility_key_shortcuts_include_core_navigation(quill_data_dir: object) -> None:
+    # Isolate the data dir so this asserts the *default* bindings, not whatever
+    # a prior (non-isolated) test left in the real keymap store. load_keymap()
+    # reads and even rewrites keymap_path(); without an isolated QUILL_DATA_DIR
+    # this test is order-dependent under pytest-randomly.
     keymap = load_keymap()
     assert keymap["edit.find_next"] == "F3"
     assert keymap["edit.find_previous"] == "Shift+F3"
