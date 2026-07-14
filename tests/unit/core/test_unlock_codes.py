@@ -15,6 +15,7 @@ pytest.importorskip("nacl", reason="PyNaCl (the [signing] extra) is not installe
 from nacl import signing as nacl_signing  # noqa: E402
 
 from quill.core.unlock_codes import (  # noqa: E402
+    CODE_PREFIX,
     UnlockCodeStore,
     decode_code,
     encode_code,
@@ -75,8 +76,16 @@ def test_redeem_rejects_wrong_public_key(keypair):
 def test_redeem_rejects_tampered_code(keypair):
     sk, vk = keypair
     code = mint_code("core.adp", sk)
-    # Flip one character in the body -- must not verify.
-    tampered = code[:-1] + ("A" if code[-1] != "A" else "B")
+    # Flip the first body character (right after the "QUILL-" prefix), never
+    # the last: base32 without padding can leave unused zero-padding bits in
+    # the final character, which base64.b32decode truncates rather than
+    # validates -- flipping only those bits (a real, if rare, outcome when
+    # the character was already the all-zero symbol) silently round-trips to
+    # the *same* bytes, leaving the signature untouched and this test flaky.
+    # The first character always encodes real payload bits.
+    prefix_len = len(CODE_PREFIX)
+    first = code[prefix_len]
+    tampered = code[:prefix_len] + ("A" if first != "A" else "B") + code[prefix_len + 1 :]
     result = redeem_code(tampered, public_key_b64=_pubkey_b64(vk))
     assert not result.ok
 

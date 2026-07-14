@@ -93,6 +93,8 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/radio/recording.py::save_recording_settings": "content",
     "core/radio/recording_schedule.py::save_schedule": "content",
     "core/podcasts/subscriptions.py::save_library": "content",
+    "core/podcasts/episode_notes.py::save_episode_notes": "content",
+    "core/unlock_codes.py::save": "content",
     "core/speech/listening_positions.py::save_position_ms": "cache",
     "core/speech/synth_cache.py::save_cache": "cache",
     "core/palette.py::save_palette_usage": "cache",
