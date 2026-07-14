@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>vision-prompt-library-spec</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1 id="vision-prompt-library--pmdev-spec">Vision Prompt Library —
+PM/Dev Spec</h1>
+<p><strong>Issue:</strong> #195 <strong>Status:</strong> Draft —
+awaiting review <strong>Date:</strong> 2026-06-14 <strong>Feature
+area:</strong> Tools &gt; Describe Image with AI</p>
+<hr />
+<h2 id="section-1-executive-summary">Section 1: Executive Summary</h2>
+<p>Quill's "Describe Image with AI" feature today uses a single
+hardcoded prompt optimized for blind readers. The Image Description
+Toolkit (IDT) has evaluated 12 distinct prompt styles whose outputs vary
+substantially by use case — a screen-reader description, alt-text
+drafts, technical evaluations, and mood descriptions each benefit from a
+different instruction. This spec adds a prompt library to Quill so users
+can choose a style that fits their purpose, while keeping the default
+behavior unchanged for users who don't want to be bothered with the
+choice.</p>
+<hr />
+<h2 id="section-2-user-problem--opportunity">Section 2: User Problem
+&amp; Opportunity</h2>
+<h3 id="21-current-state-verified">2.1 Current state (verified)</h3>
+<table>
+<thead>
+<tr>
+<th>Surface</th>
+<th>Today</th>
+<th>Pain</th>
+<th>Who feels it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Describe Image with AI</td>
+<td>Single hardcoded prompt, always runs "accessibility" style</td>
+<td>No way to get a concise one-liner, alt-text variants, or a technical
+evaluation</td>
+<td>Power users with diverse needs</td>
+</tr>
+<tr>
+<td>Describe Image dialog</td>
+<td>No "try again" option — if the description is wrong style, user must
+restart the whole flow</td>
+<td>Extra clicks, re-picking image source, waiting again</td>
+<td>Anyone who wants to compare styles</td>
+</tr>
+<tr>
+<td>Settings &gt; AI</td>
+<td>No vision-specific options</td>
+<td>Can't set a preferred style once and forget it</td>
+<td>Casual users who want to pick once</td>
+</tr>
+</tbody>
+</table>
+<p>Verified: <code>quill/core/ai/vision.py:37</code> —
+<code>DEFAULT_IMAGE_DESCRIPTION_PROMPT</code> is hardcoded.
+<code>quill/ui/main_frame_image.py:392</code> —
+<code>describe_image()</code> is called with no <code>prompt=</code>
+argument. <code>describe_image()</code> already accepts
+<code>prompt=</code> (<code>vision.py:160</code>).</p>
+<h3 id="22-target-personas">2.2 Target personas</h3>
+<p><strong>Casual user (most common):</strong> Wants the existing
+behavior, doesn't care about style. Needs the feature to stay out of
+their way — no new dialogs unless they opt in.</p>
+<p><strong>Screen-reader user writing documents:</strong> Usually wants
+"accessibility" or "narrative" output. Setting a default once is enough;
+occasional "try again" is a bonus.</p>
+<p><strong>Content creator / web publisher:</strong> Needs alt-text
+variants at 25 / 50 / 100 words. The "aialttext" IDT style exists for
+this — they just need access to it.</p>
+<p><strong>Technical user or photographer:</strong> Wants composition
+analysis, orientation notes, lighting. "Technical" and "detailed" IDT
+styles serve this.</p>
+<p><strong>Researcher or teacher:</strong> Wants a concise one-sentence
+summary. "Simple" or "concise" IDT styles.</p>
+<h3 id="23-why-now">2.3 Why now</h3>
+<p>The plumbing is entirely in place.
+<code>describe_image(prompt=...)</code> already works. The 12 IDT
+prompts are evaluated and production-quality. The IDT and Quill share
+the same author, making the transfer straightforward.</p>
+<hr />
+<h2 id="section-3-design-principles">Section 3: Design Principles</h2>
+<ol type="1">
+<li><strong>Zero disruption by default.</strong> Users who never change
+a setting see identical behavior. The default style maps to the same
+"accessibility" intent as today's hardcoded prompt.</li>
+<li><strong>One click to try a different style, never more.</strong>
+Power users reach the picker from the review dialog — no need to restart
+the flow.</li>
+<li><strong>Opt-in picker, not forced picker.</strong> Showing a
+style-picker before every description is off by default. Users who want
+it can turn it on.</li>
+<li><strong>Prompt management is discoverable but not
+prominent.</strong> Accessible from Settings &gt; AI, not buried three
+menus deep — but not on the main toolbar either.</li>
+<li><strong>Built-in prompts are immutable; custom prompts are
+additive.</strong> Users can disable built-ins and add their own, but
+the shipped prompts are not editable in place (prevents accidental data
+loss).</li>
+<li><strong>Progressive involvement.</strong> The feature has three
+layers of engagement and never forces the user deeper than they want to
+go: (a) casual users see only the result, with no new choices; (b) users
+who open the style picker see names only — no prompt text, no clutter;
+(c) users who open Manage Image Prompts can read the full text of any
+style in a preview pane, and at that level can also create custom
+prompts. The prompt text is never visible unless the user explicitly
+seeks it out.</li>
+</ol>
+<hr />
+<h2 id="section-4-feature-scope--acceptance-criteria">Section 4: Feature
+Scope &amp; Acceptance Criteria</h2>
+<h3 id="41-in-scope-v1">4.1 In scope (v1)</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Setting / location</th>
+<th>Default</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>12 IDT built-in prompt styles</td>
+<td><code>quill/core/ai/vision_prompts.py</code> (constants)</td>
+<td>n/a</td>
+<td>Exact text from IDT <code>docs/archive/prompts.md</code></td>
+</tr>
+<tr>
+<td>Default prompt style setting</td>
+<td><code>QuillSettings.vision_default_prompt_style</code></td>
+<td><code>"accessibility"</code></td>
+<td>Applied silently when picker is off</td>
+</tr>
+<tr>
+<td>Opt-in pre-describe picker</td>
+<td><code>QuillSettings.vision_prompt_picker_enabled</code></td>
+<td><code>False</code></td>
+<td>When True, picker appears before each describe</td>
+</tr>
+<tr>
+<td>"Try a different prompt" in review dialog</td>
+<td>New button in <code>OcrReviewDialog</code></td>
+<td>Always visible in review dialog</td>
+<td>Shows picker, re-runs describe, updates text in dialog</td>
+</tr>
+<tr>
+<td>Disabled built-ins list</td>
+<td><code>QuillSettings.vision_disabled_builtin_styles</code></td>
+<td><code>[]</code></td>
+<td>List of style IDs to hide from picker</td>
+</tr>
+<tr>
+<td>User custom prompts</td>
+<td><code>QuillSettings.vision_custom_prompts</code></td>
+<td><code>[]</code></td>
+<td>List of <code>{id, title, prompt}</code> dicts</td>
+</tr>
+<tr>
+<td>Manage Image Prompts dialog</td>
+<td>Settings &gt; AI panel — "Image Prompt Styles..." button</td>
+<td>—</td>
+<td>Enable/disable built-ins, add/edit/delete custom prompts</td>
+</tr>
+</tbody>
+</table>
+<h3 id="42-explicitly-out-of-scope-v1">4.2 Explicitly out of scope
+(v1)</h3>
+<ul>
+<li><strong>"Run all styles"</strong> at once — useful but adds
+significant complexity (multiple background threads, result tabbing).
+Deferred to v2.</li>
+<li><strong>Per-document or per-image remembered style</strong> — style
+is global, not per-file.</li>
+<li><strong>Editing built-in prompt text</strong> — users can disable
+built-ins and create custom replacements, but not edit in-place.</li>
+<li><strong>Reordering built-in prompts</strong> — the 12 IDT styles
+appear in their canonical order.</li>
+<li><strong>Any Quillin / extension API changes</strong> — Approach C
+from the issue is a future concern.</li>
+<li><strong>Safe Mode behavior change</strong> —
+<code>QUILL_SAFE_MODE=1</code> already disables all AI including vision;
+no new gating needed.</li>
+</ul>
+<hr />
+<h2 id="section-5-architecture--technical-decisions">Section 5:
+Architecture &amp; Technical Decisions</h2>
+<h3 id="51-prompt-data-where-to-store">5.1 Prompt data: where to
+store</h3>
+<p><strong>Decision:</strong> Built-in prompts ship as module-level
+constants in a new <code>quill/core/ai/vision_prompts.py</code>. User
+preferences (disabled built-ins, custom prompts, default style, picker
+toggle) live in <code>QuillSettings</code> in
+<code>quill/core/settings.py</code>.</p>
+<p><strong>Alternatives:</strong></p>
+<ol type="1">
+<li>JSON file bundled with the package — adds a file to parse at
+runtime, no benefit over constants.</li>
+<li>Stored entirely in settings JSON — makes the settings file large;
+built-in prompt text shouldn't be in the user's settings file.</li>
+</ol>
+<p><strong>Rationale:</strong> Constants are testable without I/O.
+Settings fields follow the existing pattern for all other user
+preferences.</p>
+<h3 id="52-settings-additions-to-quillsettings">5.2 Settings additions
+to <code>QuillSettings</code></h3>
+<p>Four new fields on the <code>QuillSettings</code> dataclass (all
+backward-compatible; existing settings files simply won't have the keys
+and will fall back to defaults):</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>vision_default_prompt_style: <span class="bu">str</span> <span class="op">=</span> <span class="st">&quot;accessibility&quot;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>vision_prompt_picker_enabled: <span class="bu">bool</span> <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>vision_disabled_builtin_styles: <span class="bu">list</span>[<span class="bu">str</span>] <span class="op">=</span> field(default_factory<span class="op">=</span><span class="bu">list</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>vision_custom_prompts: <span class="bu">list</span>[<span class="bu">dict</span>] <span class="op">=</span> field(default_factory<span class="op">=</span><span class="bu">list</span>)</span></code></pre></div>
+<p><code>vision_default_prompt_style</code> is validated against the
+union of built-in IDs and user custom IDs; falls back to
+<code>"accessibility"</code> if the referenced style no longer
+exists.</p>
+<h3 id="53-describe-again-in-ocrreviewdialog--button-placement">5.3
+"Describe Again" in OcrReviewDialog — button placement</h3>
+<p><strong>Decision:</strong> Add a regular <code>wx.Button</code>
+labeled "Try a different prompt..." in a separate horizontal sizer row
+inserted between the text area and the
+<code>StdDialogButtonSizer</code>. Return a new constant
+<code>ID_RETRY = 5103</code> (wx.ID_HELP, which is an
+unused-in-this-dialog standard id) from <code>_end()</code> when this
+button is clicked.</p>
+<p><strong>Rationale:</strong> <code>wx.StdDialogButtonSizer</code> only
+places buttons with specific wx standard IDs
+(OK/Cancel/Apply/Yes/No/Help). Using <code>wx.ID_HELP</code> (5103) for
+the retry action is a minor convention abuse but avoids fighting the
+sizer layout. The alternative — a fully custom horizontal button sizer —
+would break the native button ordering on Windows and require auditing
+focus/tab order. This is noted as a known oddity.</p>
+<p><strong>Alternative considered:</strong> Separate "Describe again" as
+a toolbar/menu action outside the dialog. Rejected because the user is
+already in the review dialog looking at the result — the friction of
+dismissing it and re-invoking the flow is exactly the pain we're
+solving.</p>
+<h3 id="54-re-describe-loop-in-describe_image_with_ai">5.4 Re-describe
+loop in <code>describe_image_with_ai</code></h3>
+<p>When <code>OcrReviewDialog</code> returns <code>ID_RETRY</code>,
+<code>describe_image_with_ai()</code> in
+<code>main_frame_image.py</code>:</p>
+<ol type="1">
+<li>Shows the style picker (<code>wx.SingleChoiceDialog</code> listing
+enabled prompts).</li>
+<li>If cancelled, re-shows the <em>same</em> review dialog with the
+<em>same</em> text (no re-describe).</li>
+<li>If a style is chosen, runs
+<code>describe_image(..., prompt=chosen_prompt)</code> in a background
+thread (same progress dialog pattern).</li>
+<li>Re-shows <code>OcrReviewDialog</code> with the new description.</li>
+<li>Loop continues until user hits Insert, Copy, or Discard.</li>
+</ol>
+<p>This is a simple while loop in <code>describe_image_with_ai()</code>.
+No new threading primitives needed.</p>
+<h3 id="55-manage-image-prompts-dialog">5.5 Manage Image Prompts
+dialog</h3>
+<p>A new <code>quill/ui/vision_prompt_manager_dialog.py</code> provides
+a <code>VisionPromptManagerDialog</code>. It is opened from Settings
+&gt; AI panel (an existing settings dialog that already manages other AI
+fields). The dialog has:</p>
+<ul>
+<li>A <code>wx.ListBox</code> listing all built-in and custom prompts
+(disabled built-ins shown with a <code>[hidden]</code> marker).</li>
+<li>A <strong>read-only preview pane</strong> (<code>wx.TextCtrl</code>,
+<code>TE_MULTILINE | TE_READONLY</code>) below the list that shows the
+full prompt text for whichever style is currently selected. This is the
+only place in the UI where prompt text is visible — not in the picker,
+not in the review dialog. Users who pick by name and never open this
+dialog never see raw prompt text. The preview pane updates automatically
+as the user arrows through the list.</li>
+<li><strong>Enable / Disable</strong> toggle button for built-in
+prompts.</li>
+<li><strong>Add / Edit / Delete</strong> buttons for custom prompts; a
+text entry sub-dialog for the title and prompt text.</li>
+<li>"Close" closes and writes settings. No "Cancel" — changes are
+visible immediately in the list and saved on Close (following the
+pattern of other Quill settings panels that write on exit rather than
+transactionally).</li>
+</ul>
+<p>The dialog does <strong>not</strong> need to be in the main modal
+chain — it's opened via <code>_show_modal_dialog</code> like all other
+modal dialogs per the invariant.</p>
+<h3 id="56-runtime--safe-mode">5.6 Runtime / Safe Mode</h3>
+<p>No change needed. <code>load_ai_enabled()</code> already gates the
+entry point; <code>QUILL_SAFE_MODE=1</code> already returns early before
+image selection.</p>
+<hr />
+<h2 id="section-6-keyboard-walkthrough">Section 6: Keyboard
+Walkthrough</h2>
+<h3 id="path-a-casual-user-picker-off-uses-default-style">Path A: Casual
+user (picker off, uses default style)</h3>
+<ol type="1">
+<li>User presses the Describe Image with AI shortcut or navigates Tools
+menu. <strong>Expected:</strong> Image source picker appears (unchanged
+today).</li>
+<li>User picks a file. <strong>Expected:</strong> Progress dialog:
+"Asking the model to describe the image…" Screen reader announces the
+dialog title.</li>
+<li>AI returns. Progress closes. Review dialog opens.
+<strong>Expected:</strong> Screen reader announces "Describe Image.
+Review the recognized text below, then choose Insert, Copy, or Discard."
+Focus is on the text area. Text contains the description.</li>
+<li>User presses Tab to reach "Try a different prompt…" button.
+<strong>Expected:</strong> Screen reader announces "Try a different
+prompt…, button."</li>
+<li>User presses Tab past it to "Insert" (default). User presses Space
+or Enter. <strong>Expected:</strong> Text inserted at cursor. Dialog
+closes. Status bar: "Image description inserted."</li>
+</ol>
+<h3 id="path-b-user-with-picker-enabled">Path B: User with picker
+enabled</h3>
+<ol type="1">
+<li>User triggers Describe Image with AI. <strong>Expected:</strong>
+Image source picker appears (unchanged).</li>
+<li>User picks image. <strong>Expected:</strong> Style picker dialog
+opens: "Choose a description style — [list of enabled prompt titles]."
+Focus is on the list. Screen reader announces dialog title and first
+item.</li>
+<li>User arrows through list. <strong>Expected:</strong> Screen reader
+announces each style name.</li>
+<li>User presses Enter on "Concise." <strong>Expected:</strong> Picker
+closes. Progress dialog opens: "Asking the model to describe the
+image…"</li>
+<li>Continues as Path A from step 3.</li>
+</ol>
+<h3 id="path-c-user-tries-a-different-prompt-in-the-review-dialog">Path
+C: User tries a different prompt in the review dialog</h3>
+<ol type="1">
+<li>User is in the review dialog, unhappy with the result. User presses
+Tab to "Try a different prompt…" and activates it.
+<strong>Expected:</strong> Dialog stays open (or closes and re-opens —
+see open question §7.1). Style picker appears: "Choose a different style
+— [list]." Current style is shown selected in the list.</li>
+<li>User picks "Artistic." <strong>Expected:</strong> Picker closes.
+Progress dialog opens. New description retrieved.</li>
+<li>Review dialog re-opens (or updates) with the new text.
+<strong>Expected:</strong> Focus is on the text area. Screen reader
+announces the dialog title.</li>
+<li>User chooses Insert. <strong>Expected:</strong> New description
+inserted. Status: "Image description inserted."</li>
+</ol>
+<h3 id="path-d-manage-prompts-from-settings--ai">Path D: Manage prompts
+from Settings &gt; AI</h3>
+<ol type="1">
+<li>User opens Settings &gt; AI (existing path, no change).</li>
+<li>User Tabs to "Image Prompt Styles…" button and activates it.
+<strong>Expected:</strong> Manage Image Prompts dialog opens. Focus is
+on the list. Screen reader announces dialog title.</li>
+<li>User arrows through the list. <strong>Expected:</strong> Each
+built-in or custom prompt name announced. Disabled built-ins are
+indicated (e.g., "[hidden] Mood").</li>
+<li>User selects "Mood" and activates "Disable."
+<strong>Expected:</strong> Item label changes to "[hidden] Mood."</li>
+<li>User activates "Add." <strong>Expected:</strong> Sub-dialog opens
+with a text entry for Title and a multi-line text entry for Prompt text.
+User fills in and presses OK. New style appears at the bottom of the
+list.</li>
+<li>User activates "Close." <strong>Expected:</strong> Dialog closes.
+Settings saved. Focus returns to Settings &gt; AI panel.</li>
+</ol>
+<h3 id="path-e-error-case--ai-call-fails-on-retry">Path E: Error case —
+AI call fails on retry</h3>
+<ol type="1">
+<li>User activates "Try a different prompt…" and picks a style. Network
+fails. <strong>Expected:</strong> Progress dialog closes. Error message
+box: [error text]. Dialog returns to the previous review dialog text
+(the describe-again attempt failed, user can still insert the first
+result). <em>(See open question §7.2.)</em></li>
+</ol>
+<hr />
+<h2 id="section-7-accessibility-checklist">Section 7: Accessibility
+Checklist</h2>
+<ul>
+<li><strong>AutomationProperties / accessible names:</strong> Style
+picker is <code>wx.SingleChoiceDialog</code> (built-in accessible). "Try
+a different prompt…" button label is its accessible name — no extra
+annotation needed. Manage dialog list items are the style title
+strings.</li>
+<li><strong>Announcements:</strong> No new <code>_announce()</code>
+calls needed beyond what <code>show_modal_dialog</code> already provides
+for dialog open/close. The retry result (new description) is announced
+via focus landing on the text area in the review dialog (screen readers
+auto-read focused multiline text controls).</li>
+<li><strong>Focus restoration:</strong> Style picker closes → focus
+returns to review dialog text area (this is the natural behavior when a
+child dialog closes; must be verified in manual test). Manage dialog
+closes → focus returns to Settings &gt; AI panel.</li>
+<li><strong>Escape key:</strong> Style picker: Escape cancels (built-in
+<code>wx.SingleChoiceDialog</code> behavior). Review dialog "Try
+different prompt" picker cancellation: re-shows the existing review
+dialog (same text, no re-run). Manage dialog: Escape should be
+equivalent to Close (no changes discarded — there is no Cancel in this
+dialog; Escape should call Close handler).</li>
+<li><strong>Tab order in review dialog:</strong> existing order is
+TextCtrl → Insert → Copy → Discard. New order: TextCtrl → "Try a
+different prompt…" → Insert → Copy → Discard. "Try a different prompt"
+is above the standard buttons to make it easy to find without being the
+default action.</li>
+<li><strong>No color-only information.</strong> Disabled built-ins in
+the Manage dialog are indicated with text ("[hidden]"), not color
+alone.</li>
+</ul>
+<hr />
+<h2 id="section-8-open-questions">Section 8: Open Questions</h2>
+<p>These must be resolved before or during implementation:</p>
+<h3
+id="81-does-try-a-different-prompt-keep-the-review-dialog-open-while-the-ai-runs">8.1
+Does "Try a different prompt" keep the review dialog open while the AI
+runs?</h3>
+<p>The current flow for the progress dialog is modal and blocks the UI.
+If the review dialog stays open during re-describe, the progress dialog
+would be a child of the review dialog, which is itself a child of
+MainFrame. This works technically but is slightly unusual.</p>
+<p><strong>Proposed resolution:</strong> Close the review dialog when
+"Try a different prompt" is activated. Show the progress dialog parented
+to MainFrame. Re-open a new review dialog with the new text. This is
+cleaner and avoids stacked modals. The "retry" loop happens in
+<code>describe_image_with_ai()</code>, not inside the dialog.</p>
+<h3 id="82-what-happens-if-the-retry-ai-call-fails">8.2 What happens if
+the retry AI call fails?</h3>
+<p>If the first description succeeded but the retry fails, the user has
+lost the original text (the review dialog was closed per 8.1).</p>
+<p><strong>Proposed resolution:</strong> Keep the original description
+in a local variable in <code>describe_image_with_ai()</code>. If the
+retry errors, show the error and re-open the review dialog with the
+<em>original</em> text. This way the user can still insert the first
+result.</p>
+<h3
+id="83-should-the-style-picker-remember-the-last-picked-style-across-retries-within-the-same-session">8.3
+Should the style picker remember the last-picked style across retries
+within the same session?</h3>
+<p><strong>Proposed resolution:</strong> Yes. Within one invocation of
+<code>describe_image_with_ai()</code>, the picker should default-select
+whatever style was last used in that session (including the default
+style if this is the first retry). This is a simple local variable.</p>
+<hr />
+<h2 id="section-9-success-metrics">Section 9: Success Metrics</h2>
+<ul>
+<li>A user who never changes Settings can trigger Describe Image with AI
+and get the same result as today. Zero regressions.</li>
+<li>A user can go to Settings &gt; AI, disable two built-in styles, add
+a custom prompt, and confirm those changes appear in the style
+picker.</li>
+<li>The style picker shows only enabled styles in alphabetical order
+(built-ins in canonical IDT order first, custom prompts appended).</li>
+<li>The "Try a different prompt" button is reachable by keyboard from
+the review dialog in one Tab press from the text area.</li>
+<li>All paths in §6 can be completed keyboard-only without a mouse.</li>
+</ul>
+<hr />
+<h2 id="section-10-implementation-phases">Section 10: Implementation
+Phases</h2>
+<h3 id="phase-1-prompt-constants-and-settings-fields">Phase 1: Prompt
+constants and settings fields</h3>
+<p><strong>Goal:</strong> The 12 IDT prompt texts exist in the codebase.
+Settings can store and round-trip the four new fields. Zero user-visible
+change.</p>
+<p><strong>Deliverables:</strong></p>
+<ul>
+<li>Create <code>quill/core/ai/vision_prompts.py</code> — 12 constants
+(<code>PROMPT_NARRATIVE</code>, <code>PROMPT_ACCESSIBILITY</code>, etc.)
+and a <code>BUILTIN_PROMPT_STYLES: list[dict]</code> with
+<code>{id, title, prompt}</code> for each. The "accessibility" entry
+uses the IDT <code>accessibility</code> prompt text (replaces the
+current <code>DEFAULT_IMAGE_DESCRIPTION_PROMPT</code>; they are
+semantically equivalent and the IDT text is slightly richer).</li>
+<li>Modify <code>quill/core/settings.py</code> — add four fields to
+<code>QuillSettings</code>; add validation for
+<code>vision_default_prompt_style</code>.</li>
+</ul>
+<p><strong>Tests:</strong></p>
+<ul>
+<li><code>tests/unit/core/test_vision_prompts.py</code> — all 12 styles
+present, IDs are unique, default "accessibility" prompt is in the
+list.</li>
+<li><code>tests/unit/core/test_settings.py</code> — round-trip for all
+four new fields; unknown <code>vision_default_prompt_style</code> falls
+back to "accessibility".</li>
+</ul>
+<p><strong>Risk:</strong> Settings round-trip must not break existing
+settings files that lack the new keys. Mitigation:
+<code>data.get("key", default)</code> pattern already used throughout
+<code>settings.py</code>.</p>
+<h3 id="phase-2-default-style-applied-silently">Phase 2: Default style
+applied silently</h3>
+<p><strong>Goal:</strong> <code>describe_image_with_ai()</code> uses
+<code>vision_default_prompt_style</code> instead of the hardcoded
+constant. Picker still never appears (picker off by default).</p>
+<p><strong>Deliverables:</strong></p>
+<ul>
+<li>Modify
+<code>quill/ui/main_frame_image.py:describe_image_with_ai()</code> —
+resolve active prompt from settings before calling
+<code>describe_image()</code>. A
+<code>_resolve_active_prompt(settings) -&gt; str</code> helper returns
+the prompt text for the configured default style (or
+<code>DEFAULT_IMAGE_DESCRIPTION_PROMPT</code> as ultimate
+fallback).</li>
+</ul>
+<p><strong>Tests:</strong></p>
+<ul>
+<li><code>tests/unit/ui/</code> — can't unit-test wx easily; this is
+manual-test territory.</li>
+<li>Existing unit tests for <code>vision.py</code> are unaffected (they
+test the core, not the UI).</li>
+</ul>
+<p><strong>Risk:</strong> If <code>_resolve_active_prompt</code> is
+wrong, all descriptions use the wrong prompt. Mitigation: the helper is
+a pure function; unit-test it directly.</p>
+<h3
+id="phase-3-pre-describe-picker-opt-in--try-a-different-prompt-in-review-dialog">Phase
+3: Pre-describe picker (opt-in) + "Try a different prompt" in review
+dialog</h3>
+<p><strong>Goal:</strong>
+<code>vision_prompt_picker_enabled = True</code> shows a style picker
+before describing. The review dialog has a "Try a different prompt…"
+button that loops.</p>
+<p><strong>Deliverables:</strong></p>
+<ul>
+<li>Modify
+<code>quill/ui/main_frame_image.py:describe_image_with_ai()</code> — add
+the picker branch and the retry loop (while loop around the review
+dialog check for <code>ID_RETRY</code>).</li>
+<li>Modify <code>quill/ui/ocr_review_dialog.py</code> — add
+<code>ID_RETRY = 5103</code>, add "Try a different prompt…"
+<code>wx.Button</code> in a row above the
+<code>StdDialogButtonSizer</code>.</li>
+<li>Utility:
+<code>_show_style_picker(parent, styles, *, current_id=None) -&gt; str | None</code>
+— wraps <code>wx.SingleChoiceDialog</code>, returns chosen style ID or
+None if cancelled.</li>
+</ul>
+<p><strong>Tests:</strong></p>
+<ul>
+<li>Manual test: keyboard walkthrough paths B and C from §6.</li>
+<li>Unit test for <code>_show_style_picker</code> is not feasible (wx
+dialog); document as manual-only.</li>
+</ul>
+<p><strong>Risk:</strong> The retry loop in
+<code>describe_image_with_ai()</code> could grow complex. Mitigation:
+extract the "describe + show review" logic into a private
+<code>_run_describe_and_review(image_path, prompt, ...) -&gt; int</code>
+helper that returns the dialog choice. The while loop then becomes 5
+lines.</p>
+<h3
+id="phase-4-manage-image-prompts-dialog--settings--ai-integration">Phase
+4: Manage Image Prompts dialog + Settings &gt; AI integration</h3>
+<p><strong>Goal:</strong> Users can enable/disable built-in styles and
+add/edit/delete custom prompts from Settings &gt; AI.</p>
+<p><strong>Deliverables:</strong></p>
+<ul>
+<li>Create <code>quill/ui/vision_prompt_manager_dialog.py</code> —
+<code>VisionPromptManagerDialog</code>.</li>
+<li>Modify the Settings &gt; AI panel (wherever it lives in
+<code>main_frame.py</code> or a settings dialog module) — add "Image
+Prompt Styles…" button that opens
+<code>VisionPromptManagerDialog</code>.</li>
+<li>Add <code>vision_prompt_picker_enabled</code> checkbox to Settings
+&gt; AI panel (alongside the new button).</li>
+<li><code>vision_default_prompt_style</code> dropdown in Settings &gt;
+AI — populated from enabled styles.</li>
+</ul>
+<p><strong>Tests:</strong></p>
+<ul>
+<li>Manual: keyboard walkthrough path D from §6.</li>
+<li>Unit test for save/load of <code>vision_custom_prompts</code> in
+<code>test_settings.py</code> (list of dicts round-trip).</li>
+</ul>
+<p><strong>Risk:</strong> Locating the Settings &gt; AI panel code in
+<code>main_frame.py</code> (19k lines) — grep for the existing
+<code>assistant_prompt_style</code> setting binding to find the exact
+location. Add new controls adjacent to existing AI settings.</p>
+<hr />
+<h2 id="section-11-files-to-create--modify">Section 11: Files to Create
+/ Modify</h2>
+<h3 id="create">Create</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+<th>Lines (est.)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>quill/core/ai/vision_prompts.py</code></td>
+<td>12 IDT prompt constants + <code>BUILTIN_PROMPT_STYLES</code>
+list</td>
+<td>80–100</td>
+</tr>
+<tr>
+<td><code>quill/ui/vision_prompt_manager_dialog.py</code></td>
+<td>Manage built-in enable/disable + custom prompts</td>
+<td>150–200</td>
+</tr>
+<tr>
+<td><code>tests/unit/core/test_vision_prompts.py</code></td>
+<td>Prompt constants unit tests</td>
+<td>30–40</td>
+</tr>
+</tbody>
+</table>
+<h3 id="modify">Modify</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Changes</th>
+<th>Lines changed (est.)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>quill/core/settings.py</code></td>
+<td>Four new fields + validation</td>
+<td>+30</td>
+</tr>
+<tr>
+<td><code>quill/core/ai/vision.py</code></td>
+<td><code>DEFAULT_IMAGE_DESCRIPTION_PROMPT</code> can stay as fallback;
+no breaking change</td>
+<td>+0</td>
+</tr>
+<tr>
+<td><code>quill/ui/main_frame_image.py</code></td>
+<td>Picker branch, retry loop, <code>_resolve_active_prompt</code>,
+<code>_show_style_picker</code> helpers</td>
+<td>+60–80</td>
+</tr>
+<tr>
+<td><code>quill/ui/ocr_review_dialog.py</code></td>
+<td><code>ID_RETRY</code> constant, "Try a different prompt…" button and
+sizer row</td>
+<td>+20</td>
+</tr>
+<tr>
+<td><code>quill/ui/[settings dialog]</code></td>
+<td>"Image Prompt Styles…" button, picker toggle checkbox, default style
+dropdown</td>
+<td>+30–50</td>
+</tr>
+<tr>
+<td><code>tests/unit/core/test_settings.py</code></td>
+<td>New field round-trip tests</td>
+<td>+25</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="section-12-risks--known-issues">Section 12: Risks &amp; Known
+Issues</h2>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Probability</th>
+<th>Impact</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>wx.StdDialogButtonSizer</code> layout breaks with 4th standard
+button <code>ID_HELP</code></td>
+<td>Low</td>
+<td>Minor (cosmetic)</td>
+<td>Keep "Try a different prompt" in a separate sizer row above the
+<code>StdDialogButtonSizer</code>; test visually</td>
+</tr>
+<tr>
+<td>Retry loop loses original description on AI failure</td>
+<td>Medium</td>
+<td>Major (user work lost)</td>
+<td>Resolve in §8.2 — cache original text, re-show review dialog on
+retry failure</td>
+</tr>
+<tr>
+<td>Settings round-trip silently drops unknown
+<code>vision_custom_prompts</code> entries (e.g., after schema
+change)</td>
+<td>Low</td>
+<td>Minor</td>
+<td>Unit-test round-trip with unexpected dict keys inside custom prompt
+entries</td>
+</tr>
+<tr>
+<td><code>main_frame_image.py</code> grows beyond GATE-11 budget</td>
+<td>Medium</td>
+<td>Blocker if gate is tight</td>
+<td>Extract helpers into <code>_pick_and_describe.py</code> or similar
+if needed; check budget before implementation</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="section-13-implementation-guidance-for-ai-session-2">Section 13:
+Implementation Guidance for AI (Session 2)</h2>
+<h3 id="adjustments-expected">Adjustments expected</h3>
+<ul>
+<li>The spec doesn't specify the exact location of the Settings &gt; AI
+panel code in <code>main_frame.py</code>. Find it by searching for
+<code>assistant_prompt_style</code> binding — the new controls go
+adjacent.</li>
+<li>The spec says <code>ID_RETRY = 5103</code> maps to
+<code>wx.ID_HELP</code>. Verify this is correct for the installed wx
+version before using it. If <code>wx.ID_HELP</code> is already used
+elsewhere in the dialog infrastructure, use a different approach (e.g.,
+don't add it to <code>StdDialogButtonSizer</code> at all — just use a
+plain <code>wx.Button</code> with a custom ID &gt; 10000 and a separate
+sizer).</li>
+<li>Phase order is firm (1 → 2 → 3 → 4). Do not skip ahead — Phase 1
+must pass its unit tests before Phase 2 touches the UI.</li>
+</ul>
+<h3 id="when-to-ask-for-clarification">When to ask for
+clarification</h3>
+<ul>
+<li>If the <code>module_size_budget.json</code> gate for
+<code>main_frame_image.py</code> is already at or near its ceiling, stop
+and report before adding Phase 3 code.</li>
+<li>The keyboard walkthrough for Path C (§6) specifies that the review
+dialog closes before the retry. If implementing this causes a
+focus-restoration problem (focus doesn't return to the retry-result
+dialog), ping the user before applying a workaround.</li>
+</ul>
+<h3 id="after-implementation-what-will-be-manually-tested">After
+implementation: what will be manually tested</h3>
+<ol type="1">
+<li>Default user path: trigger Describe Image with AI, confirm output is
+same quality as today. Confirm settings file did not gain unexpected
+entries.</li>
+<li>Set <code>vision_prompt_picker_enabled = True</code> in Settings;
+trigger describe; confirm picker appears and "Concise" produces a
+shorter result.</li>
+<li>From review dialog, activate "Try a different prompt…", pick
+"Artistic", confirm new description appears in a fresh review
+dialog.</li>
+<li>Open Manage Image Prompts, disable "Mood", confirm it no longer
+appears in picker.</li>
+<li>Add a custom prompt "One sentence:", confirm it appears in picker
+and is used.</li>
+<li>Tab-only navigation for all five paths in §6. No mouse.</li>
+</ol>
+<hr />
+<h2 id="section-14-prompt-reference-idt-prompts-v1">Section 14: Prompt
+Reference (IDT Prompts v1)</h2>
+<p>Source: <a
+href="https://github.com/Community-Access/image-description-toolkit/blob/main/docs/archive/prompts.md">IDT
+docs/archive/prompts.md</a></p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Title</th>
+<th>First line / purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>narrative</code></td>
+<td>Narrative</td>
+<td>Scene overview, left-to-right, spatial relationships</td>
+</tr>
+<tr>
+<td><code>detailed</code></td>
+<td>Detailed</td>
+<td>Structured: SUBJECT / SETTING / COLORS / COMPOSITION / DETAILS</td>
+</tr>
+<tr>
+<td><code>concise</code></td>
+<td>Concise</td>
+<td>2–3 sentence summary: what, where, happening</td>
+</tr>
+<tr>
+<td><code>artistic</code></td>
+<td>Artistic</td>
+<td>Visual qualities: light, color relationships, mood</td>
+</tr>
+<tr>
+<td><code>technical</code></td>
+<td>Technical</td>
+<td>Orientation, lighting, composition, clarity, strengths/limits</td>
+</tr>
+<tr>
+<td><code>colorful</code></td>
+<td>Colorful</td>
+<td>Specific color names, lighting direction, one-sentence
+atmosphere</td>
+</tr>
+<tr>
+<td><code>simple</code></td>
+<td>Simple</td>
+<td>One sentence</td>
+</tr>
+<tr>
+<td><code>accessibility</code></td>
+<td>Accessibility <em>(default)</em></td>
+<td>Screen-reader optimized; left-to-right with sizes and positions</td>
+</tr>
+<tr>
+<td><code>comparison</code></td>
+<td>Comparison</td>
+<td>Analogies and familiar-object comparisons</td>
+</tr>
+<tr>
+<td><code>mood</code></td>
+<td>Mood</td>
+<td>Emotional atmosphere, psychological tone</td>
+</tr>
+<tr>
+<td><code>functional</code></td>
+<td>Functional</td>
+<td>Focus on function, purpose, verbs (illuminates, supports,
+connects…)</td>
+</tr>
+<tr>
+<td><code>aialttext</code></td>
+<td>AI Alt Text</td>
+<td>Three alt-text variants at 25 / 50 / 100 words</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>
