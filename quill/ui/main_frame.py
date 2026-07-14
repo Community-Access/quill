@@ -440,6 +440,7 @@ from quill.ui.main_frame_github_admin import GitHubAdminMixin
 from quill.ui.main_frame_github_extras import GitHubExtrasMixin
 from quill.ui.main_frame_github_items import GitHubItemsMixin
 from quill.ui.main_frame_glow import GlowFileMixin
+from quill.ui.main_frame_hotkeys import GlobalHotkeysMixin
 from quill.ui.main_frame_hygiene import HygieneMixin
 from quill.ui.main_frame_image import ImageCaptureMixin
 from quill.ui.main_frame_image_alt import ImageAltMixin
@@ -859,6 +860,7 @@ class MainFrame(
     LineCommandsMixin,
     ListStudioMixin,
     StoryStudioMixin,
+    GlobalHotkeysMixin,
     UnlockCodesMixin,
     VaultMixin,
     GitSyncMixin,
@@ -2443,6 +2445,7 @@ class MainFrame(
             self.create_sticky_note,
             self._binding_for("tools.sticky_note_capture"),
         )
+        self._register_global_hotkey_commands()
         self.commands.register(
             "tools.spell_check_dialog",
             "Spell Check...",
@@ -3908,46 +3911,9 @@ class MainFrame(
 
         self.frame.SetAcceleratorTable(wx.AcceleratorTable(entries))
 
-    def _reload_global_hotkeys(self) -> None:
-        if self._safe_mode:
-            return
-        self._unregister_global_hotkeys()
-        binding = self._binding_for("tools.sticky_note_capture")
-        parsed = self._parse_keybinding(binding)
-        if parsed is None:
-            return
-        if not hasattr(self.frame, "RegisterHotKey"):
-            # #18/#54: RegisterHotKey is Windows-only; on macOS the system-wide
-            # sticky-note hotkey cannot be registered. Say so instead of silently
-            # dropping the binding -- the in-app Tools > Sticky Note command and
-            # the QUILL-key chord still work. Only message when the user actually
-            # configured a single-keystroke global binding (a chord parses to None
-            # above and never reaches here).
-            if sys.platform == "darwin" and binding:
-                self._set_status(
-                    "System-wide sticky-note hotkey is not available on macOS; "
-                    "use the Tools menu or the QUILL-key chord instead."
-                )
-            return
-        flags, key_code = parsed
-        try:
-            self.frame.RegisterHotKey(int(self._sticky_note_hotkey_id), flags, key_code)
-        except Exception:
-            self._set_status("Sticky note hotkey could not be registered")
-
-    def _unregister_global_hotkeys(self) -> None:
-        if not hasattr(self.frame, "UnregisterHotKey"):
-            return
-        try:
-            self.frame.UnregisterHotKey(int(self._sticky_note_hotkey_id))
-        except Exception:
-            pass
-
-    def _on_global_hotkey(self, event: object) -> None:
-        if event.GetId() == int(self._sticky_note_hotkey_id):
-            self.create_sticky_note()
-            return
-        event.Skip()
+    # Global hotkeys (registration/dispatch/dialogs) live in GlobalHotkeysMixin
+    # (main_frame_hotkeys.py): a user-configurable, allowlist-bounded table
+    # that generalized the original single sticky-note RegisterHotKey.
 
     def _command_to_menu_id_map(self) -> dict[str, int]:
         return {
