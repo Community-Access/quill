@@ -109,6 +109,15 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "over a verified TLS context with a bounded timeout and response "
         "size. Disabled in Safe Mode via chapters.refuse_in_safe_mode."
     ),
+    "core/podcasts/transcripts.py::_fetch_transcript_bytes": (
+        "Single egress site for podcast transcripts: fetches one episode's "
+        "Podcasting 2.0 transcript file (VTT/SRT/JSON, parsed locally, no "
+        "further network activity) and caches the parsed text so reopening "
+        "never re-fetches. Reached only when the user opens the transcript "
+        "view for an episode that has a transcript_url. HTTPS-only over a "
+        "verified TLS context with a bounded timeout and response size. "
+        "Disabled in Safe Mode via refuse_in_safe_mode."
+    ),
     "core/podcasts/itunes_search.py::_http_json": (
         "Single egress site for Add Podcast's search: iTunes' free, keyless "
         "podcast search API. Reached only by the explicit Search action in "
