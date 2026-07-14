@@ -189,8 +189,8 @@ the value was for.</p>
 control's name from the neighbouring <code>wx.StaticText</code> (and the
 <code>&amp;</code>-mnemonic), and wxMSW exposes that association through
 MSAA/UIA. <strong>VoiceOver does not synthesize that
-association</strong>: a control is announced only by its own accessible
-name, which wxOSX takes from <code>wx.Window.SetName</code>. Two root
+association</strong>: a control is announced only by its own
+<code>NSAccessibility</code> label — and wxOSX never sets one. Two root
 causes:</p>
 <ul>
 <li><strong>Cause A</strong> — the control relies on a neighbouring
@@ -202,6 +202,27 @@ field, which does <strong>not</strong> inherit the composite's name, so
 even spin controls that set a name read as a bare number
 (support#69).</li>
 </ul>
+<h3 id="the-mechanism-learned-the-hard-way">The mechanism (learned the
+hard way)</h3>
+<p>Issue #1012 assumed wxOSX maps <code>wx.Window.SetName</code> to the
+NSAccessibility label. <strong>Live VoiceOver testing disproved
+that</strong>: wx's accessibility plumbing (<code>wxAccessible</code>)
+is MSW-only, and wxOSX bridges <em>nothing</em> into NSAccessibility —
+every <code>SetName</code> in the codebase (including the two "working"
+workarounds the issue cited) was inaudible on macOS. The existing #616
+editor role pin was likewise a silent no-op: on macOS
+<code>GetHandle()</code> returns the <code>NSView</code> as a bare
+<em>integer</em>, and calling
+<code>getattr(int, "setAccessibilityRole_")</code> finds nothing.</p>
+<p>What actually talks to VoiceOver: wrap the handle with PyObjC —
+<code>objc.objc_object(c_void_p=ctrl.GetHandle())</code> — and call
+<code>setAccessibilityLabel_(name)</code> on the resulting
+<code>NSView</code> (for multiline text controls, also on the scroll
+view's <code>documentView</code>, which is what VoiceOver focuses).
+PyObjC is already bundled by the <code>[macos]</code> extra.
+<code>SetName</code> is still applied everywhere (it feeds the label
+inference, tests, and the Alt+F1 announcer), but the native push is the
+part macOS hears.</p>
 <h2 id="the-fix--one-global-mechanism-not-per-site-edits">The fix — one
 global mechanism, not per-site edits</h2>
 <p>Everything lives in <code>quill/ui/accessible_names.py</code>:</p>

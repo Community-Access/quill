@@ -407,7 +407,11 @@ from quill.stability.memory_watch import should_trace_memory, start_memory_traci
 from quill.stability.task_manager import TaskManager
 from quill.stability.ui_responsiveness import mark_wx_main_thread
 from quill.stability.wx_heartbeat import HeartbeatState, WxHeartbeatTimer, WxHeartbeatWatchdog
-from quill.ui.accessible_names import ensure_accessible_names, set_accessible_name
+from quill.ui.accessible_names import (
+    ensure_accessible_names,
+    pin_macos_text_area_role,
+    set_accessible_name,
+)
 from quill.ui.context_help import ContextHelpMixin, warm_help_topics
 from quill.ui.csv_grid import CsvGridSurface
 from quill.ui.dialog_contract import (
@@ -4370,47 +4374,14 @@ class MainFrame(
                 pass
 
     def _pin_macos_editor_accessibility_role(self, editor: object) -> None:
-        """#616: pin the editor's NSAccessibility role to NSTextView.
+        """#616: pin the editor's NSAccessibility role/label for VoiceOver.
 
-        On macOS, wx's default accessibility shim may report the editor
-        as a generic group rather than a real text area, so VoiceOver
-        does not announce it as editable. Reach the underlying NSView
-        via ``GetHandle()`` and set the AX role explicitly to
-        ``NSTextView`` so the NSAccessibility tree reports the editor
-        as a native text area.
-
-        PyObjC (``AppKit``) is the macOS-only dep we already require for
-        other platform integration. The role-setting calls are wrapped
-        in try/except so an unexpected AppKit API change is a silent
-        no-op rather than a startup crash -- the editor still works,
-        VoiceOver just may not announce the role. py2app builds ship
-        without ``AppKit`` available in some configurations, so we
-        tolerate the import failure as well.
+        The original inline version called ``setAccessibilityRole_`` on the
+        bare int from ``GetHandle()`` (and imported a misnamed AppKit
+        constant), so it silently did nothing. The shared helper wraps the
+        handle via PyObjC first — see accessible_names.pin_macos_text_area_role.
         """
-        if sys.platform != "darwin":
-            return
-        try:
-            from AppKit import NSAccessibilityRoleTextAreaRole  # type: ignore[import-not-found]
-        except Exception:
-            return
-        handle = getattr(editor, "GetHandle", None)
-        if not callable(handle):
-            return
-        try:
-            ns_view = handle()
-        except Exception:
-            return
-        if ns_view is None:
-            return
-        setter_role = getattr(ns_view, "setAccessibilityRole_", None)
-        setter_label = getattr(ns_view, "setAccessibilityLabel_", None)
-        try:
-            if callable(setter_role):
-                setter_role(NSAccessibilityRoleTextAreaRole)
-            if callable(setter_label):
-                setter_label("Document")
-        except Exception:
-            pass
+        pin_macos_text_area_role(editor, "Document")
 
     def _on_container_focus(self, event: object) -> None:
         # Fires when focus lands directly on a layout container (splitter or

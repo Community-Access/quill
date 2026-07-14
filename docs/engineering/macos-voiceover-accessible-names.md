@@ -12,7 +12,7 @@ The same controls read correctly on Windows because NVDA/JAWS infer a
 control's name from the neighbouring `wx.StaticText` (and the `&`-mnemonic),
 and wxMSW exposes that association through MSAA/UIA. **VoiceOver does not
 synthesize that association**: a control is announced only by its own
-accessible name, which wxOSX takes from `wx.Window.SetName`. Two root causes:
+`NSAccessibility` label — and wxOSX never sets one. Two root causes:
 
 * **Cause A** — the control relies on a neighbouring `StaticText` and never
   calls `SetName()`.
@@ -20,6 +20,25 @@ accessible name, which wxOSX takes from `wx.Window.SetName`. Two root causes:
   (inner `NSTextField` + stepper). VoiceOver lands on the inner text field,
   which does **not** inherit the composite's name, so even spin controls that
   set a name read as a bare number (support#69).
+
+### The mechanism (learned the hard way)
+
+Issue #1012 assumed wxOSX maps `wx.Window.SetName` to the NSAccessibility
+label. **Live VoiceOver testing disproved that**: wx's accessibility plumbing
+(`wxAccessible`) is MSW-only, and wxOSX bridges *nothing* into
+NSAccessibility — every `SetName` in the codebase (including the two
+"working" workarounds the issue cited) was inaudible on macOS. The existing
+#616 editor role pin was likewise a silent no-op: on macOS `GetHandle()`
+returns the `NSView` as a bare *integer*, and calling `getattr(int,
+"setAccessibilityRole_")` finds nothing.
+
+What actually talks to VoiceOver: wrap the handle with PyObjC —
+`objc.objc_object(c_void_p=ctrl.GetHandle())` — and call
+`setAccessibilityLabel_(name)` on the resulting `NSView` (for multiline text
+controls, also on the scroll view's `documentView`, which is what VoiceOver
+focuses). PyObjC is already bundled by the `[macos]` extra. `SetName` is
+still applied everywhere (it feeds the label inference, tests, and the
+Alt+F1 announcer), but the native push is the part macOS hears.
 
 ## The fix — one global mechanism, not per-site edits
 

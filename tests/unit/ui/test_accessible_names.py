@@ -352,3 +352,102 @@ def test_show_modal_dialog_survives_a_walker_failure() -> None:
 
 def test_ensure_accessible_names_tolerates_windowless_objects() -> None:
     assert ensure_accessible_names(object()) == []
+
+
+# ---------------------------------------------------------------------------
+# macOS native NSAccessibility layer (fakes; the real path needs VoiceOver)
+# ---------------------------------------------------------------------------
+#
+# Live #1012 testing showed wx.Window.SetName is inaudible to VoiceOver:
+# wxOSX never bridges the wx name into NSAccessibility, so the helper must
+# additionally wrap GetHandle()'s bare NSView pointer with PyObjC and call
+# setAccessibilityLabel:. These fakes validate that plumbing cross-platform.
+
+
+class _FakeNSView:
+    def __init__(self, document_view: _FakeNSView | None = None) -> None:
+        self.label: str | None = None
+        self.role: str | None = None
+        self._document_view = document_view
+
+    def documentView(self) -> _FakeNSView:  # noqa: N802 - ObjC selector
+        if self._document_view is None:
+            raise AttributeError("documentView")  # plain NSView: no such selector
+        return self._document_view
+
+    def setAccessibilityLabel_(self, value: str) -> None:  # noqa: N802
+        self.label = value
+
+    def setAccessibilityRole_(self, value: str) -> None:  # noqa: N802
+        self.role = value
+
+
+class _FakeObjc:
+    def __init__(self, view: _FakeNSView) -> None:
+        self._view = view
+        self.wrapped: list = []
+
+    def objc_object(self, c_void_p=None) -> _FakeNSView:
+        self.wrapped.append(c_void_p)
+        return self._view
+
+
+class _HandleTextCtrl(TextCtrl):
+    def GetHandle(self) -> int:  # noqa: N802
+        return 0xBEEF
+
+
+def test_native_label_reaches_the_ns_view(monkeypatch) -> None:
+    import quill.ui.accessible_names as an
+
+    view = _FakeNSView()
+    fake_objc = _FakeObjc(view)
+    monkeypatch.setattr(an.sys, "platform", "darwin")
+    monkeypatch.setattr(an, "_objc_cache", fake_objc)
+    ctrl = _HandleTextCtrl(name="text")
+
+    set_accessible_name(ctrl, "&Word or phrase:")
+
+    assert ctrl.GetName() == "Word or phrase"
+    assert view.label == "Word or phrase"
+    assert fake_objc.wrapped == [0xBEEF]
+
+
+def test_native_label_targets_the_scrollviews_document_view(monkeypatch) -> None:
+    import quill.ui.accessible_names as an
+
+    inner = _FakeNSView()
+    scroll = _FakeNSView(document_view=inner)
+    monkeypatch.setattr(an.sys, "platform", "darwin")
+    monkeypatch.setattr(an, "_objc_cache", _FakeObjc(scroll))
+
+    set_accessible_name(_HandleTextCtrl(name="text"), "Notes")
+
+    assert inner.label == "Notes"
+    assert scroll.label == "Notes"
+
+
+def test_pin_macos_text_area_role_sets_role_and_label(monkeypatch) -> None:
+    import quill.ui.accessible_names as an
+    from quill.ui.accessible_names import pin_macos_text_area_role
+
+    inner = _FakeNSView()
+    scroll = _FakeNSView(document_view=inner)
+    monkeypatch.setattr(an.sys, "platform", "darwin")
+    monkeypatch.setattr(an, "_objc_cache", _FakeObjc(scroll))
+
+    pin_macos_text_area_role(_HandleTextCtrl(name="text"), "Document")
+
+    assert inner.role == "AXTextArea"
+    assert inner.label == "Document"
+
+
+def test_native_layer_is_inert_off_macos() -> None:
+    """On this (Windows) runner the darwin gate must short-circuit."""
+    import quill.ui.accessible_names as an
+
+    ctrl = _HandleTextCtrl(name="text")
+    set_accessible_name(ctrl, "Port:")
+
+    assert ctrl.GetName() == "Port"
+    assert an._objc_cache is None  # never even attempted the import

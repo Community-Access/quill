@@ -45,6 +45,8 @@ Windows CI.
 
 from __future__ import annotations
 
+import sys
+
 #: Controls that VoiceOver announces by their wx window name and that carry no
 #: visible label of their own — the "value only" bug surface. CheckBox /
 #: RadioButton / Button are absent on purpose: they are self-labeled.
@@ -226,7 +228,103 @@ def _set_name(control: object, name: str) -> bool:
         set_name(name)
     except Exception:  # noqa: BLE001
         return False
+    # The wx window name alone is NOT what VoiceOver speaks: wxOSX never
+    # bridges it (or wxAccessible, which is MSW-only) into NSAccessibility.
+    # Live VoiceOver testing of #1012 confirmed SetName-only changes are
+    # inaudible — the native label push below is the part that talks.
+    _macos_native_label(control, name)
     return True
+
+
+# Cached PyObjC module: None = not yet attempted, False = unavailable.
+_objc_cache: object = None
+
+
+def _objc_import() -> object:
+    """Import PyObjC's ``objc`` once (bundled by the [macos] extra)."""
+    global _objc_cache
+    if _objc_cache is None:
+        try:
+            import objc  # type: ignore[import-not-found]
+
+            _objc_cache = objc
+        except Exception:  # noqa: BLE001 - not installed / not macOS
+            _objc_cache = False
+    return _objc_cache
+
+
+def _macos_native_label(control: object, name: str) -> None:
+    """Push *name* onto the control's native ``NSAccessibility`` label.
+
+    On macOS, ``wx.Window.GetHandle()`` returns the underlying ``NSView``
+    as a bare integer; PyObjC's ``objc.objc_object(c_void_p=...)`` wraps it
+    so ``setAccessibilityLabel:`` can be called — the attribute VoiceOver
+    actually announces. Multiline text controls hand back the enclosing
+    ``NSScrollView``, while VoiceOver focuses its ``documentView``
+    (``NSTextView``), so the label is set on both. Guarded end to end: a
+    failure here must never break naming or dialog display, and on
+    non-darwin platforms this is an immediate no-op.
+    """
+    if sys.platform != "darwin":
+        return
+    objc = _objc_import()
+    if not objc:
+        return
+    get_handle = getattr(control, "GetHandle", None)
+    if not callable(get_handle):
+        return
+    try:
+        handle = get_handle()
+    except Exception:  # noqa: BLE001
+        return
+    if not handle:
+        return
+    try:
+        ns_view = objc.objc_object(c_void_p=handle)
+        try:
+            document_view = ns_view.documentView()
+        except Exception:  # noqa: BLE001 - not an NSScrollView
+            document_view = None
+        if document_view is not None:
+            document_view.setAccessibilityLabel_(name)
+        ns_view.setAccessibilityLabel_(name)
+    except Exception:  # noqa: BLE001
+        return
+
+
+def pin_macos_text_area_role(control: object, label: str) -> None:
+    """#616: pin a text control's NSAccessibility role to ``AXTextArea``.
+
+    wx's default shim may report the editor as a generic group, so VoiceOver
+    does not announce it as editable text. The role string is passed literally
+    rather than imported from AppKit (the constant's exported name has moved
+    between releases; the AX string is the stable contract). Silent no-op off
+    macOS, without PyObjC, or on any native failure.
+    """
+    if sys.platform != "darwin":
+        return
+    objc = _objc_import()
+    if not objc:
+        return
+    get_handle = getattr(control, "GetHandle", None)
+    if not callable(get_handle):
+        return
+    try:
+        handle = get_handle()
+    except Exception:  # noqa: BLE001
+        return
+    if not handle:
+        return
+    try:
+        ns_view = objc.objc_object(c_void_p=handle)
+        try:
+            target = ns_view.documentView() or ns_view
+        except Exception:  # noqa: BLE001 - not an NSScrollView
+            target = ns_view
+        target.setAccessibilityRole_("AXTextArea")
+        target.setAccessibilityLabel_(label)
+    except Exception:  # noqa: BLE001
+        return
 
 
 def _get_children(widget: object) -> list[object]:
