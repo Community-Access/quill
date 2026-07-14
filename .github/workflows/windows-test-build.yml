@@ -29,10 +29,16 @@ jobs:
       - name: Install build dependencies
         run: python -m pip install -e .[ui,spellcheck,dev]
 
-      - name: Build portable distribution (no installer, tokenless)
-        # Without --require-feedback-token a missing QUILL_FEEDBACK_GITHUB_TOKEN
-        # ships an empty bundled token: fine for a test build (Report a Bug
-        # falls back to a web link), never acceptable for a release.
+      - name: Build portable distribution (no installer, dummy token)
+        # The Windows build bakes a bundled feedback token unconditionally
+        # (#919: a distributable must never ship without one -- no opt-out).
+        # This TEST build has no access to the release secret, so it bakes a
+        # clearly-fake placeholder: the build passes the mandatory guard, but
+        # Report a Bug in this artifact will fail at submission -- do not use
+        # test builds to exercise the bug reporter. Releases (windows-release
+        # .yml) bake the real secret.
+        env:
+          QUILL_FEEDBACK_GITHUB_TOKEN: "quill-test-build-placeholder-token-not-functional"
         run: python scripts/build_windows_distribution.py --bundle-python --output-dir windows-distribution
 
       - name: Sanity-check the portable bundle
