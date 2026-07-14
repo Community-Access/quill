@@ -68,6 +68,12 @@ updates and `platform.windows.sr_announce.announce`.
    - `pip install -e ".[ui,dev]"`
 3. Run QUILL locally:
    - `python -m quill`
+   - Or use a run-from-source launcher, which syncs dependencies and opens
+     Quill in one step: `run-from-source.bat` (Windows),
+     `run-from-source.sh` (any shell), and `run-from-source.command`
+     (macOS — double-click in Finder, which runs `.command` files in Terminal
+     the way `.sh` files will not; #923). On macOS the first run may be blocked
+     by Gatekeeper quarantine; right-click and choose **Open** once to trust it.
 
 ## Making changes
 

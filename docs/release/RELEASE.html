@@ -241,9 +241,6 @@
   </style>
 </head>
 <body>
-<header id="title-block-header">
-<h1 class="title">RELEASE</h1>
-</header>
 <h1 id="quill-release-process">QUILL Release Process</h1>
 <p>This file documents the operational steps for cutting a QUILL
 release. It is the canonical checklist referenced from
@@ -279,7 +276,7 @@ manifest that the public feed still points at during pre-release.</li>
 <li><strong>Quillin Hub service code shipped.</strong>
 <code>quillin-hub/</code> is a Flask service in this repo; the registry
 API, Submission Forge, sync worker, and smoke test are all in-tree.
-Public deployment (<code>hub.quillforall.org</code> – DNS, hosting,
+Public deployment (<code>hub.quillforall.org</code> -- DNS, hosting,
 Postgres) is a separate ops track and is tracked separately from the
 release cut. The Ed25519 publisher signature gate
 (<code>quill/tools/signing.py</code> plus the Submission Forge
@@ -318,7 +315,7 @@ signed/notarized DMG runbook (start to finish)</h2>
 <p>Use this when onboarding a maintainer or standing up macOS release
 signing for the first time. This is the canonical operational path from
 fresh Apple account to a shipped, trusted DMG.</p>
-<h3 id="apple-account-and-certificate-setup-one-time">1) Apple account
+<h3 id="1-apple-account-and-certificate-setup-one-time">1) Apple account
 and certificate setup (one-time)</h3>
 <ol type="1">
 <li>Join and activate Apple Developer Program membership.</li>
@@ -338,7 +335,7 @@ download the <code>.p8</code> key file.</li>
 <code>Developer ID Application: Team Name (TEAMID)</code>).</li>
 </ul></li>
 </ol>
-<h3 id="local-prerequisites">2) Local prerequisites</h3>
+<h3 id="2-local-prerequisites">2) Local prerequisites</h3>
 <ol type="1">
 <li>Install GitHub CLI (<code>gh</code>) and authenticate with repo
 admin/maintainer scope.</li>
@@ -350,7 +347,7 @@ admin/maintainer scope.</li>
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cd</span> S<span class="op">:</span>\quill</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>gh auth status</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>gh repo set-default Community-Access<span class="op">/</span>quill</span></code></pre></div>
-<h3 id="create-release-environment">3) Create release environment</h3>
+<h3 id="3-create-release-environment">3) Create release environment</h3>
 <ol type="1">
 <li>Create the protected GitHub Actions environment:</li>
 </ol>
@@ -364,7 +361,8 @@ class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-
 <li>Restrict deployment branches as needed.</li>
 </ul></li>
 </ol>
-<h3 id="upload-all-required-secrets">4) Upload all required secrets</h3>
+<h3 id="4-upload-all-required-secrets">4) Upload all required
+secrets</h3>
 <ol type="1">
 <li>File secrets:</li>
 </ol>
@@ -386,7 +384,7 @@ class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-
 </ol>
 <div class="sourceCode" id="cb5"><pre
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>gh secret list <span class="op">-</span>e macos-release</span></code></pre></div>
-<h3 id="dry-run-on-branch">5) Dry run on branch</h3>
+<h3 id="5-dry-run-on-branch">5) Dry run on branch</h3>
 <ol type="1">
 <li>Trigger a manual build on your working branch:</li>
 </ol>
@@ -395,12 +393,12 @@ class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb6-
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>gh run list <span class="op">--</span>workflow macos-release<span class="op">.</span><span class="fu">yml</span> <span class="op">--</span>limit <span class="dv">5</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="dt">gh</span> run watch</span></code></pre></div>
 <ol start="2" type="1">
-<li>Confirm artifacts exist:
+<li><p>Confirm artifacts exist:</p>
 <ul>
 <li><code>Quill.dmg</code></li>
 <li><code>Quill.app</code> (if workflow uploads app bundle)</li>
 </ul></li>
-<li>If the run fails, triage quickly:
+<li><p>If the run fails, triage quickly:</p>
 <ul>
 <li>Certificate import errors: re-export <code>.p12</code>, recheck
 <code>P12_PASSWORD</code>.</li>
@@ -410,14 +408,14 @@ Keychain.</li>
 <code>.p8</code> source.</li>
 </ul></li>
 </ol>
-<h3 id="gate-beta-publication">6) Gate beta publication</h3>
+<h3 id="6-gate-beta-publication">6) Gate beta publication</h3>
 <ol type="1">
 <li>Do not publish external beta artifacts unless macOS workflow is
 green.</li>
 <li>Require the macOS signed/notarized workflow in PR/release policy for
 any beta that includes non-engineering testers.</li>
 </ol>
-<h3 id="release-execution">7) Release execution</h3>
+<h3 id="7-release-execution">7) Release execution</h3>
 <ol type="1">
 <li>Complete normal release pre-tag checks from this file.</li>
 <li>Push tag (<code>v&lt;X&gt;</code>) to trigger release
@@ -431,7 +429,7 @@ signed/notarized macOS DMG.</li>
 <li>Launch with no unidentified-developer warnings.</li>
 </ul></li>
 </ol>
-<h3 id="ongoing-operations">8) Ongoing operations</h3>
+<h3 id="8-ongoing-operations">8) Ongoing operations</h3>
 <ol type="1">
 <li>Track certificate and API key expiry on calendar.</li>
 <li>Rotate credentials before expiry and validate with a branch dry

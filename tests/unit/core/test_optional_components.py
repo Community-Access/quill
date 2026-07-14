@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
 import quill.core.optional_components as oc
 
 
@@ -9,10 +12,16 @@ def test_gather_includes_the_core_optional_components() -> None:
         "whispercpp",
         "kokoro",
         "espeak",
-        "dectalk",
         "audio_extras",
-        "mathcat",
     }.issubset(ids)
+    # DECtalk and MathCAT ship only Windows .dll's, so they are offered only on
+    # Windows and hidden on macOS (offering them on macOS advertised a download
+    # that could never work) -- see the win-only gate in gather_optional_components.
+    if sys.platform.startswith("win"):
+        assert {"dectalk", "mathcat"}.issubset(ids)
+    else:
+        assert "dectalk" not in ids
+        assert "mathcat" not in ids
     # Vosk is a third engine choice inside the guided offline-speech picker
     # (the "whispercpp" row), not its own hub row -- no separate "vosk" entry.
     assert "vosk" not in ids
@@ -21,6 +30,23 @@ def test_gather_includes_the_core_optional_components() -> None:
     # FFmpeg is no longer its own row: it is folded into the single "audio_extras"
     # row (Audio: export, playback & chapters) and fetched on demand.
     assert "ffmpeg" not in ids
+
+
+def test_dectalk_and_mathcat_are_hidden_on_macos(monkeypatch) -> None:
+    """#46: MathCAT (like DECtalk) ships only a Windows .dll, so neither should
+    be offered as a download on macOS -- offering them advertised a download
+    that could never work there."""
+    monkeypatch.setattr(oc.sys, "platform", "darwin")
+    ids = {c.component_id for c in oc.gather_optional_components()}
+    assert "mathcat" not in ids
+    assert "dectalk" not in ids
+
+
+def test_dectalk_and_mathcat_are_offered_on_windows(monkeypatch) -> None:
+    monkeypatch.setattr(oc.sys, "platform", "win32")
+    ids = {c.component_id for c in oc.gather_optional_components()}
+    assert "mathcat" in ids
+    assert "dectalk" in ids
 
 
 def test_status_reflects_detectors(monkeypatch) -> None:
@@ -34,6 +60,50 @@ def test_status_reflects_detectors(monkeypatch) -> None:
     assert by_id["whispercpp"].status_label == "Installed"
     assert by_id["kokoro"].installed is False
     assert by_id["kokoro"].status_label == "Available to download"
+
+
+def test_dictation_row_ready_requires_engine_and_model(monkeypatch) -> None:
+    """The Dictation row's Download/Test state must reflect a real model, not
+    just the whisper.cpp binary -- that was the whole point of #kokoro-focus's
+    follow-up: the Test button used to look identical whether or not a model
+    had ever been downloaded."""
+    from quill.core.speech import guided_setup
+    from quill.core.speech import transcribe as tr
+
+    monkeypatch.setattr(oc, "_whisper_installed", lambda: True)
+
+    def fake_options():
+        return [
+            guided_setup.OfflineSpeechEngineOption(
+                engine_id="whispercpp",
+                name="Whisper.cpp",
+                tagline="",
+                summary="",
+                installed=True,
+                install_supported=True,
+                recommended=True,
+            ),
+        ]
+
+    monkeypatch.setattr(guided_setup, "offline_speech_engine_options", fake_options)
+
+    # Engine installed, no model yet: installed is True but not effective_ready.
+    monkeypatch.setattr(tr, "provider_has_installed_model", lambda *a, **k: False)
+    row = next(c for c in oc.gather_optional_components() if c.component_id == "whispercpp")
+    assert row.installed is True
+    assert row.effective_ready is False
+
+    # Model downloaded too: now fully ready.
+    monkeypatch.setattr(tr, "provider_has_installed_model", lambda *a, **k: True)
+    row = next(c for c in oc.gather_optional_components() if c.component_id == "whispercpp")
+    assert row.effective_ready is True
+
+
+def test_effective_ready_defaults_to_installed_for_ordinary_components() -> None:
+    installed = oc.OptionalComponent("x", "X", "d", oc.TOOL, True, "")
+    missing = oc.OptionalComponent("y", "Y", "d", oc.TOOL, False, "")
+    assert installed.effective_ready is True
+    assert missing.effective_ready is False
 
 
 def test_a_broken_detector_never_crashes_the_list(monkeypatch) -> None:
@@ -85,6 +155,27 @@ def test_mathcat_detector_checks_the_engine_pack(tmp_path, monkeypatch) -> None:
     assert oc._mathcat_installed() is True
 
 
+def test_pdf_ocr_detector_reflects_module_availability(monkeypatch) -> None:
+    import quill.core.pdf_ocr_install as pdf_ocr_install
+
+    monkeypatch.setattr(pdf_ocr_install, "is_pdf_ocr_available", lambda: True)
+    assert oc._pdf_ocr_installed() is True
+    monkeypatch.setattr(pdf_ocr_install, "is_pdf_ocr_available", lambda: False)
+    assert oc._pdf_ocr_installed() is False
+
+
+def test_gather_includes_pdf_ocr() -> None:
+    ids = {c.component_id for c in oc.gather_optional_components()}
+    assert "pdf_ocr" in ids
+
+
+def test_pdf_ocr_removable_path_is_its_engine_pack_dir(tmp_path, monkeypatch) -> None:
+    import quill.core.pdf_ocr_install as pdf_ocr_install
+
+    monkeypatch.setattr(pdf_ocr_install, "pdf_ocr_pack_dir", lambda: tmp_path / "pdf-ocr")
+    assert oc._candidate_removable_path("pdf_ocr") == tmp_path / "pdf-ocr"
+
+
 def test_gather_includes_piper_and_node() -> None:
     """Piper and Node.js are downloadable, so they must have a touch point in the
     dialog (they were missing before the catalog-completeness pass)."""
@@ -96,9 +187,11 @@ def test_gather_includes_piper_and_node() -> None:
 def test_components_are_ordered_by_importance() -> None:
     comps = oc.gather_optional_components()
     ids = [c.component_id for c in comps]
-    # Pandoc leads, braille second (the user-facing importance order).
+    # Pandoc leads, PDF/Office extraction second, braille third (the
+    # user-facing importance order).
     assert ids[0] == "pandoc"
-    assert ids[1] == "braille"
+    assert ids[1] == "pdf_ocr"
+    assert ids[2] == "braille"
     # Spell-check dictionaries are grouped last.
     spell_positions = [i for i, cid in enumerate(ids) if cid.startswith("spell-")]
     non_spell_positions = [i for i, cid in enumerate(ids) if not cid.startswith("spell-")]
@@ -132,13 +225,25 @@ def test_every_hosted_release_asset_is_catalogued() -> None:
     map to the dynamic spell-<lang> rows and are checked separately. Vosk and
     libmpv are hosted assets but not their own hub rows: Vosk is a third engine
     choice inside the "whispercpp" row's guided picker, and libmpv is bundled
-    into the "audio_extras" row with MP3 chapter markers."""
+    into the "audio_extras" row with MP3 chapter markers. git-windows folds into
+    the "git" row, and gh-windows/gh-macos both fold into the single "gh" row
+    (the hub picks the right platform asset itself; see download_git/download_gh)."""
     from quill.core.release_assets import ASSETS
 
     ids = {c.component_id for c in oc.gather_optional_components()}
-    folded_into = {"vosk": "whispercpp", "libmpv": "audio_extras"}
+    folded_into = {
+        "vosk": "whispercpp",
+        "libmpv": "audio_extras",
+        "git-windows": "git",
+        "gh-windows": "gh",
+        "gh-macos": "gh",
+    }
+    # MathCAT ships only a Windows .dll (libmathcat_c.dll), so
+    # gather_optional_components() only offers it on Windows -- advertising it
+    # on macOS would offer a download that could never work (#46).
+    windows_only = {"mathcat"} if not sys.platform.startswith("win") else set()
     for key in ASSETS:
-        if key.startswith("spell-"):
+        if key.startswith("spell-") or key in windows_only:
             continue
         if key in folded_into:
             assert folded_into[key] in ids, f"{key!r}'s hub row {folded_into[key]!r} is missing"
@@ -322,6 +427,56 @@ def test_verify_component_stt_reports_what_it_heard(monkeypatch) -> None:
     assert captured.get("provider_id") == "whispercpp"
 
 
+def test_verify_component_stt_closes_the_temp_file_descriptor(monkeypatch) -> None:
+    """Regression: mkstemp's fd must be closed before SAPI can open the same path.
+
+    ``_verify_stt`` used to discard mkstemp's returned fd
+    (``Path(tempfile.mkstemp(...)[1])``), leaving the temp WAV open/locked from
+    this process. SAPI's ``SpFileStream.Open()`` then failed on every real run
+    with a generic COM error (E_INVALIDARG, "The parameter is incorrect")
+    because the file was still exclusively held open -- reproduced directly
+    against the real SAPI 5 backend on 2026-07-08.
+    """
+    import os
+    import tempfile as tempfile_mod
+    import types
+
+    from quill.core import read_aloud
+    from quill.core.speech import transcribe as tr
+
+    monkeypatch.setattr(tr, "provider_has_installed_model", lambda *a, **k: True)
+    monkeypatch.setattr(read_aloud, "synthesize_to_file_with_sapi5", lambda *a, **k: None)
+    monkeypatch.setattr(
+        tr,
+        "transcribe_audio_file",
+        lambda *a, **k: types.SimpleNamespace(
+            full_text="The quick brown fox jumps over the lazy dog."
+        ),
+    )
+
+    seen: dict = {}
+    real_mkstemp = tempfile_mod.mkstemp
+
+    def spying_mkstemp(*a, **k):
+        fd, path = real_mkstemp(*a, **k)
+        seen["fd"] = fd
+        return fd, path
+
+    monkeypatch.setattr(tempfile_mod, "mkstemp", spying_mkstemp)
+
+    result = oc.verify_component("whispercpp")
+    assert result.ok is True
+
+    # Closing an already-closed fd raises OSError -- the only reliable, portable
+    # way to prove _verify_stt itself closed it (not left it for GC to leak).
+    try:
+        os.close(seen["fd"])
+    except OSError:
+        pass
+    else:
+        raise AssertionError("_verify_stt left the mkstemp file descriptor open")
+
+
 def test_verify_component_stt_targets_the_selected_engine(monkeypatch) -> None:
     """Faster Whisper is now a testable STT engine, and its own model presence
     (not any engine's) gates the test."""
@@ -361,6 +516,61 @@ def test_verify_component_stt_flags_no_model(monkeypatch) -> None:
     # Speech Models via this remedy signal instead of offering a bug report.
     assert result.remedy == "models"
     assert not result.detail  # nothing to bug-report
+
+
+def test_verify_component_stt_uses_say_on_macos(monkeypatch) -> None:
+    """#29: on macOS the self-test synthesizes the clip with the built-in `say`
+    command (not the Windows-only SAPI 5 path), so it no longer always fails."""
+    import subprocess
+    import types
+
+    from quill.core.speech import transcribe as tr
+
+    monkeypatch.setattr(oc.sys, "platform", "darwin")
+    monkeypatch.setattr(tr, "provider_has_installed_model", lambda *a, **k: True)
+
+    say_calls: list[list[str]] = []
+
+    def fake_run(args, **kwargs):
+        say_calls.append(list(args))
+        # `say -o <path> <text>` -- write a stub audio file so the existence check passes.
+        out = next((args[i + 1] for i, a in enumerate(args) if a == "-o"), None)
+        if out is not None:
+            Path(out).write_bytes(b"fake-aiff")
+        return types.SimpleNamespace(returncode=0, stdout="", stderr="")
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+
+    def fake_transcribe(*_a, **k):
+        return types.SimpleNamespace(full_text="The quick brown fox jumps over the lazy dog.")
+
+    monkeypatch.setattr(tr, "transcribe_audio_file", fake_transcribe)
+
+    result = oc.verify_component("whispercpp")
+    assert result.ok is True
+    assert say_calls, "the macOS `say` path must be used to synthesize the clip"
+    assert say_calls[0][0] == "say"
+    assert "-o" in say_calls[0]
+
+
+def test_verify_component_stt_macos_say_failure_reports_not_ok(monkeypatch) -> None:
+    """When `say` itself fails (missing/broken), the self-test reports a
+    transcription failure rather than crashing."""
+    import subprocess
+    import types
+
+    from quill.core.speech import transcribe as tr
+
+    monkeypatch.setattr(oc.sys, "platform", "darwin")
+    monkeypatch.setattr(tr, "provider_has_installed_model", lambda *a, **k: True)
+    monkeypatch.setattr(
+        subprocess,
+        "run",
+        lambda *a, **k: types.SimpleNamespace(returncode=1, stdout="", stderr="say: not found"),
+    )
+    result = oc.verify_component("whispercpp")
+    assert result.ok is False
+    assert "transcribe" in result.summary.lower()
 
 
 def test_verify_component_tool_uses_availability(monkeypatch) -> None:
@@ -423,3 +633,35 @@ def test_audio_extras_installed_only_when_both_halves_present(monkeypatch) -> No
     assert oc._audio_extras_installed() is False
     monkeypatch.setattr(oc, "_mp3_installed", lambda: True)
     assert oc._audio_extras_installed() is True
+
+
+def _comp(installed: bool) -> oc.OptionalComponent:
+    return oc.OptionalComponent("x", "Name", "desc", "Tool", installed, "1 MB")
+
+
+def test_status_label_and_download_allowed_normal_install(monkeypatch) -> None:
+    """In a normal install (no offline marker) labels read Installed/Available."""
+    monkeypatch.setattr(oc, "_offline_edition", lambda: False)
+    assert oc.status_label_for(_comp(True)) == "Installed"
+    assert oc.status_label_for(_comp(False)) == "Available to download"
+    # Download is offered for not-yet-ready components, suppressed when ready.
+    assert oc.download_allowed(_comp(False)) is True
+    assert oc.download_allowed(_comp(True)) is False
+
+
+def test_status_label_and_download_allowed_offline_edition(monkeypatch) -> None:
+    """In the Offline Edition Download is always suppressed and labels say why."""
+    monkeypatch.setattr(oc, "_offline_edition", lambda: True)
+    assert oc.status_label_for(_comp(True)) == "Bundled (offline edition)"
+    assert oc.status_label_for(_comp(False)) == "Not included (needs internet)"
+    # No internet -> never offer Download, even for a missing component.
+    assert oc.download_allowed(_comp(True)) is False
+    assert oc.download_allowed(_comp(False)) is False
+
+
+def test_describe_component_offline_edition(monkeypatch) -> None:
+    monkeypatch.setattr(oc, "_offline_edition", lambda: True)
+    bundled = oc.describe_component(_comp(True))
+    missing = oc.describe_component(_comp(False))
+    assert "Bundled" in bundled and "offline edition" in bundled
+    assert "Not included in this offline edition" in missing

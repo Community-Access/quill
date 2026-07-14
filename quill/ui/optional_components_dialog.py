@@ -17,9 +17,17 @@ supplies (see :class:`ComponentsController`).
 from __future__ import annotations
 
 import threading
+from collections.abc import Callable
 from typing import Any, Protocol
 
-from quill.core.optional_components import OptionalComponent, describe_component, manage_target
+from quill.build_info import is_offline_edition
+from quill.core.optional_components import (
+    OptionalComponent,
+    describe_component,
+    download_allowed,
+    manage_target,
+    status_label_for,
+)
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box
 
 
@@ -35,8 +43,21 @@ class ComponentsController(Protocol):
     def remove(self, component_id: str) -> bool:
         """Remove the component (delete files, reset dependent state). True on success."""
 
-    def test(self, component_id: str) -> None:
-        """Prove the component works (play a voice sample / self-test); announces."""
+    def test(
+        self, component_id: str, *, on_state_change: Callable[[str], None] | None = None
+    ) -> None:
+        """Prove the component works (play a voice sample / self-test); announces.
+
+        ``on_state_change``, when the component is a voice, reports
+        "generating"/"playing"/"idle" so the caller can toggle a Stop button.
+        Ignored for non-voice components (engine/tool self-tests run to
+        completion quickly and only announce their result)."""
+
+    def stop_test(self, component_id: str) -> None:
+        """Cancel an in-progress voice preview started via test()."""
+
+    def is_previewable(self, component_id: str) -> bool:
+        """True when test() reports state changes (a voice component)."""
 
     def manage(self, component_id: str) -> None:
         """Open the component's own management dialog (models / voices)."""
@@ -56,22 +77,34 @@ def show_optional_components_picker(
     Remove and Test act in place and keep the dialog open. ``preselect`` focuses
     that row on open (used by the routed prompts / #874 failure points).
     """
+    _offline = bool(is_offline_edition())
     dialog = wx.Dialog(
         parent,
-        title="Download Optional Components",
+        title="Optional Components (Offline Edition)"
+        if _offline
+        else "Download Optional Components",
         style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
     )
     dialog.SetSize((760, 560))
     sizer = wx.BoxSizer(wx.VERTICAL)
 
-    intro = wx.StaticText(
-        dialog,
-        label=(
+    if _offline:
+        intro_label = (
+            "This is the Offline Edition: every optional component is already bundled, "
+            "so nothing needs to be downloaded and the list shows what is included. "
+            "Choose one and use Test to confirm it works. A row marked Not included was "
+            "not bundled with this build and needs internet to add."
+        )
+    else:
+        intro_label = (
             "Optional components QUILL can download on demand. Everything here is "
             "optional; the base app works without them. Choose one and select Download "
             "to fetch it (checksum-verified, with its own progress). For an installed "
             "component, Test proves it works and Remove deletes QUILL's copy."
-        ),
+        )
+    intro = wx.StaticText(
+        dialog,
+        label=intro_label,
         name="optional_components_intro",
     )
     sizer.Add(intro, 0, wx.EXPAND | wx.ALL, 10)
@@ -97,6 +130,7 @@ def show_optional_components_picker(
     sizer.Add(detail, 0, wx.EXPAND | wx.ALL, 10)
 
     chosen = {"id": ""}
+    testing = {"active": False}
     rows: list[OptionalComponent] = []
 
     def _selected() -> OptionalComponent | None:
@@ -111,7 +145,7 @@ def show_optional_components_picker(
             listing.DeleteAllItems()
             for i, comp in enumerate(rows):
                 listing.InsertItem(i, comp.name)
-                listing.SetItem(i, 1, comp.status_label)
+                listing.SetItem(i, 1, status_label_for(comp))
                 listing.SetItem(i, 2, comp.size_hint or "—")
                 listing.SetItem(i, 3, comp.category)
             target = 0
@@ -152,10 +186,28 @@ def show_optional_components_picker(
                 btn.Enable(False)
             return
         detail.SetValue(describe_component(comp))
-        # Download only when not installed; Test/Remove/Manage only when installed.
-        download_btn.Enable(not comp.installed)
-        download_btn.SetLabel("Installed" if comp.installed else "&Download")
-        test_btn.Enable(comp.installed)
+        # Download/Test key off effective_ready, not installed: most components
+        # agree, but the Dictation row is "installed" as soon as its engine
+        # binary exists even with no model downloaded yet -- Download must stay
+        # offered (it resumes the guided picker at the model step) and Test must
+        # stay off until the row is truly usable. Manage/Remove still key off
+        # installed so Manage Speech Models is reachable in that partial state.
+        ready = comp.effective_ready
+        can_download = download_allowed(comp)
+        download_btn.Enable(can_download)
+        # When Download is unavailable, the button label says why. In the Offline
+        # Edition it is always unavailable: "Bundled" for a present component or
+        # "Not included" for one the offline build did not bundle (no internet to
+        # fetch it). In a normal install an already-ready row just reads "Installed".
+        if can_download:
+            download_btn.SetLabel("&Download")
+        elif comp.installed:
+            download_btn.SetLabel("Bundled" if _offline else "Installed")
+        else:
+            download_btn.SetLabel("Not included" if _offline else "Installed")
+        test_btn.Enable(ready or testing["active"])
+        if not testing["active"]:
+            test_btn.SetLabel("&Test")
         remove_btn.Enable(comp.installed and controller.removable(comp.component_id))
         # Manage routes to the component's own models/voices dialog when relevant.
         target = manage_target(comp.component_id)
@@ -168,16 +220,29 @@ def show_optional_components_picker(
 
     def _on_download(_evt: Any = None) -> None:
         comp = _selected()
-        if comp is None or comp.installed:
+        if comp is None or not download_allowed(comp):
             return
         chosen["id"] = comp.component_id
         dialog.EndModal(wx.ID_OK)
 
+    def _on_state_change(state: str) -> None:
+        testing["active"] = state in ("generating", "playing")
+        test_btn.SetLabel("&Stop" if testing["active"] else "&Test")
+
     def _on_test(_evt: Any = None) -> None:
         comp = _selected()
-        if comp is None or not comp.installed:
+        if comp is None:
             return
-        controller.test(comp.component_id)  # announces its own result
+        if testing["active"]:
+            controller.stop_test(comp.component_id)
+            _on_state_change("idle")
+            return
+        if not comp.effective_ready:
+            return
+        if controller.is_previewable(comp.component_id):
+            controller.test(comp.component_id, on_state_change=_on_state_change)
+        else:
+            controller.test(comp.component_id)  # announces its own result
 
     def _on_remove(_evt: Any = None) -> None:
         comp = _selected()

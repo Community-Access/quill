@@ -8,7 +8,17 @@ import pytest
 
 from quill.core.shell_verbs import default_shell_verbs
 from scripts.build_windows_distribution import (
+    DEFAULT_BUNDLED_WHISPER_MODEL_ID,
+    FASTER_WHISPER_WHEELHOUSE_REQUIREMENTS,
+    KOKORO_WHEELHOUSE_REQUIREMENTS,
+    MP3_WHEELHOUSE_REQUIREMENTS,
+    VOSK_WHEELHOUSE_REQUIREMENTS,
+    _assert_bundled_token_nonempty,
+    _bundled_token_value,
     _prune_embedded_runtime,
+    _speech_asset_manifest,
+    _stage_pip_wheelhouse,
+    _stage_whisper_model,
     build_inno_setup_script,
     build_shell_verb_registry_lines,
     build_windows_distribution,
@@ -99,7 +109,11 @@ version = "2.4.6"
     # Node.js, the braille pack, whisper.cpp, Kokoro, DECtalk, and eSpeak-NG all
     # download on demand, so a default build bundles no optional tools.
     assert sorted(manifest["bundledTools"]) == []
-    assert manifest["docs"] == [r"docs\userguide.md"]
+    # manifest["docs"] is str(path.relative_to(portable_dir)), which uses the
+    # BUILD HOST's os.sep -- always backslash in the real shipped product
+    # (this script only ever really runs on windows-latest CI), but this test
+    # also runs as a plain unit test on macOS CI, where the host is POSIX.
+    assert manifest["docs"] == [str(Path("docs") / "userguide.md")]
     assert manifest["speechAssets"]["dectalk"]["downloadable"] is True
     assert manifest["speechAssets"]["espeak"]["downloadable"] is True
     assert manifest["speechAssets"]["piper"]["downloadable"] is True
@@ -195,11 +209,25 @@ def test_build_inno_setup_script_mentions_portable_bundle() -> None:
     assert "OpenJS.NodeJS" not in script
     assert "winget install --id OpenJS" not in script
     # The core bundle still ships, with the optional tools excluded from it so a
-    # locally staged dev copy never leaks into the installer.
-    assert (
-        'Excludes: "docs\\QUILL-PRD.md,tools\\pandoc\\*,tools\\speech\\dectalk\\*,tools\\speech\\espeak-ng\\*,tools\\speech\\piper\\*,tools\\speech\\whispercpp\\*,tools\\nodejs\\*,vendor\\braille-pack\\*,kokoro-models\\*,_tool-download\\*,_speech-download\\*,*\\__pycache__\\*"'
-        in script
-    )
+    # locally staged dev copy never leaks into the installer. Checked by
+    # membership (not a fixed order) since --bundle-offline reorders the same
+    # always-excluded terms ahead of the optional-component terms it can lift.
+    excludes_line = next(line for line in script.splitlines() if line.startswith("Source:"))
+    for term in (
+        "docs\\QUILL-PRD.md",
+        "tools\\pandoc\\*",
+        "tools\\speech\\dectalk\\*",
+        "tools\\speech\\espeak-ng\\*",
+        "tools\\speech\\piper\\*",
+        "tools\\speech\\whispercpp\\*",
+        "tools\\nodejs\\*",
+        "vendor\\braille-pack\\*",
+        "kokoro-models\\*",
+        "_tool-download\\*",
+        "_speech-download\\*",
+        "*\\__pycache__\\*",
+    ):
+        assert term in excludes_line, f"{term!r} missing from default (non-offline) Excludes"
     assert "User Guide" in script
     assert "userguide.html" in script
     assert 'Parameters: "-m quill"' in script
@@ -235,6 +263,58 @@ def test_build_inno_setup_script_mentions_portable_bundle() -> None:
     assert "HKLM" not in script
     # The script parses as plain ASCII text (catches stray bad characters).
     script.encode("ascii")
+
+
+def test_bundle_offline_lifts_optional_component_excludes() -> None:
+    """--bundle-offline includes locally staged optional components in the .exe.
+
+    Without the flag (the default/regular installer), any optional component
+    staged via --pandoc-dir/--dectalk-dir/--espeak-dir/--whisper-dir/--kokoro-dir/
+    --braille-pack-dir is still stripped from the compiled .exe -- only the
+    portable ZIP output carries it. This is what makes an "Offline Edition"
+    installer genuinely different from the regular one instead of a same-payload
+    duplicate under a misleading name.
+    """
+    online = build_inno_setup_script("0.9.0", bundle_offline_components=False)
+    offline = build_inno_setup_script("0.9.0", bundle_offline_components=True)
+
+    online_excludes = next(line for line in online.splitlines() if line.startswith("Source:"))
+    offline_excludes = next(line for line in offline.splitlines() if line.startswith("Source:"))
+
+    optional_component_terms = (
+        "tools\\pandoc\\*",
+        "tools\\speech\\dectalk\\*",
+        "tools\\speech\\espeak-ng\\*",
+        "tools\\speech\\whispercpp\\*",
+        "vendor\\braille-pack\\*",
+        "kokoro-models\\*",
+        "speech-models-bundled\\*",
+        "wheels\\kokoro\\*",
+        "wheels\\faster-whisper\\*",
+        "wheels\\vosk\\*",
+        "wheels\\mp3\\*",
+    )
+    for term in optional_component_terms:
+        assert term in online_excludes, f"{term!r} must be excluded from the regular installer"
+        assert term not in offline_excludes, f"{term!r} must NOT be excluded from --bundle-offline"
+    # Piper has no build-time staging mechanism at all (no --piper-dir flag, no
+    # wheelhouse) -- unlike the other five, --bundle-offline cannot lift this one
+    # because there is nothing it could ever include. It stays excluded either way.
+    assert "tools\\speech\\piper\\*" in online_excludes
+    assert "tools\\speech\\piper\\*" in offline_excludes
+
+    # Node.js has no --nodejs-dir staging flag on this script (it is not part of
+    # the offline-speech/braille bundle) and the build-artifact/dev-only entries
+    # are meaningless to ship either way, so both stay excluded regardless.
+    for always_excluded in (
+        "docs\\QUILL-PRD.md",
+        "tools\\nodejs\\*",
+        "_tool-download\\*",
+        "_speech-download\\*",
+        "*\\__pycache__\\*",
+    ):
+        assert always_excluded in online_excludes
+        assert always_excluded in offline_excludes
 
 
 def test_installer_clean_replaces_first_party_package_for_safe_upgrades() -> None:
@@ -817,6 +897,181 @@ def test_kokoro_is_not_bundled_and_installs_on_demand() -> None:
     assert "ui" in DEFAULT_BUNDLED_DEPENDENCY_GROUPS
 
 
+@pytest.mark.parametrize(
+    ("name", "requirements"),
+    [
+        ("kokoro", KOKORO_WHEELHOUSE_REQUIREMENTS),
+        ("faster-whisper", FASTER_WHISPER_WHEELHOUSE_REQUIREMENTS),
+        ("vosk", VOSK_WHEELHOUSE_REQUIREMENTS),
+        ("mp3", MP3_WHEELHOUSE_REQUIREMENTS),
+    ],
+)
+def test_stage_pip_wheelhouse_runs_pip_download(
+    monkeypatch, tmp_path: Path, name: str, requirements: tuple[str, ...]
+) -> None:
+    """--bundle-offline stages an on-demand engine's pip package tree as local
+    wheels, using the *same* interpreter that will later install them (so wheel
+    tags match) -- the fix for the Offline Edition still needing PyPI to
+    actually use Kokoro, Faster Whisper, Vosk, or MP3 support."""
+    captured: dict = {}
+
+    def fake_run(command, *, check):
+        captured["command"] = list(command)
+        assert check is True
+        # Simulate pip download actually producing a wheel.
+        target = Path(command[command.index("--dest") + 1])
+        (target / "fake_wheel-0.1-py3-none-any.whl").write_bytes(b"fake wheel")
+
+    monkeypatch.setattr("scripts.build_windows_distribution.subprocess.run", fake_run)
+    portable_dir = tmp_path / "portable"
+    python_exe = tmp_path / "python.exe"
+    result = _stage_pip_wheelhouse(portable_dir, python_exe, name, requirements)
+
+    assert result is True
+    cmd = captured["command"]
+    assert cmd[0] == str(python_exe)
+    assert cmd[1:4] == ["-m", "pip", "download"]
+    assert "--only-binary=:all:" in cmd
+    for req in requirements:
+        assert req in cmd
+    assert list((portable_dir / "wheels" / name).glob("*.whl"))
+
+
+def test_stage_pip_wheelhouse_reuses_already_staged(monkeypatch, tmp_path: Path) -> None:
+    portable_dir = tmp_path / "portable"
+    target = portable_dir / "wheels" / "kokoro"
+    target.mkdir(parents=True)
+    (target / "existing-0.1-py3-none-any.whl").write_bytes(b"x")
+
+    def fail_if_called(*args, **kwargs):
+        raise AssertionError("pip download should not run when already staged")
+
+    monkeypatch.setattr("scripts.build_windows_distribution.subprocess.run", fail_if_called)
+    assert (
+        _stage_pip_wheelhouse(
+            portable_dir, tmp_path / "python.exe", "kokoro", KOKORO_WHEELHOUSE_REQUIREMENTS
+        )
+        is True
+    )
+
+
+def test_speech_asset_manifest_reports_wheelhouse_presence(tmp_path: Path) -> None:
+    portable_dir = tmp_path / "portable"
+    portable_dir.mkdir()
+    manifest = _speech_asset_manifest(portable_dir, [])
+    assert manifest["kokoro_wheelhouse"]["bundled"] is False
+
+    wheel_dir = portable_dir / "wheels" / "kokoro"
+    wheel_dir.mkdir(parents=True)
+    (wheel_dir / "soundfile-0.14.0-py3-none-any.whl").write_bytes(b"x")
+    manifest = _speech_asset_manifest(portable_dir, [])
+    assert manifest["kokoro_wheelhouse"]["bundled"] is True
+    assert manifest["kokoro_wheelhouse"]["path"] == str(wheel_dir)
+
+
+def test_speech_asset_manifest_reports_whisper_model_presence(tmp_path: Path) -> None:
+    portable_dir = tmp_path / "portable"
+    portable_dir.mkdir()
+    manifest = _speech_asset_manifest(portable_dir, [])
+    assert manifest["whispercpp_model"]["bundled"] is False
+
+    model_dir = portable_dir / "speech-models-bundled" / "whispercpp"
+    model_dir.mkdir(parents=True)
+    model_path = model_dir / f"ggml-{DEFAULT_BUNDLED_WHISPER_MODEL_ID}.bin"
+    model_path.write_bytes(b"x")
+    manifest = _speech_asset_manifest(portable_dir, [])
+    assert manifest["whispercpp_model"]["bundled"] is True
+    assert manifest["whispercpp_model"]["path"] == str(model_path)
+
+
+def test_stage_whisper_model_downloads_and_verifies(monkeypatch, tmp_path: Path) -> None:
+    """--bundle-offline auto-fetches the default whisper.cpp GGML model (no
+    --whisper-dir needed, unlike the engine binary) so the Offline Edition's
+    required default transcription engine has something to transcribe with
+    immediately after install."""
+    captured: dict = {}
+
+    def fake_download(url, target, expected_sha256):
+        captured["url"] = url
+        captured["target"] = target
+        captured["sha256"] = expected_sha256
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(b"fake ggml model")
+
+    monkeypatch.setattr(
+        "scripts.build_windows_distribution._download_with_verification", fake_download
+    )
+    portable_dir = tmp_path / "portable"
+    result = _stage_whisper_model(portable_dir)
+
+    assert result is True
+    target = (
+        portable_dir
+        / "speech-models-bundled"
+        / "whispercpp"
+        / f"ggml-{DEFAULT_BUNDLED_WHISPER_MODEL_ID}.bin"
+    )
+    assert target.is_file()
+    assert captured["target"] == target
+    assert captured["sha256"]
+    assert "huggingface.co" in captured["url"]
+    assert DEFAULT_BUNDLED_WHISPER_MODEL_ID in captured["url"] or "ggml-tiny.bin" in captured["url"]
+
+
+def test_stage_piper_offline_stages_engine_and_starter_voice(monkeypatch, tmp_path: Path) -> None:
+    """--bundle-offline auto-stages Piper's SHA-pinned engine zip plus a
+    starter voice pair, closing the last tracked speech gap in the Offline
+    Edition (Piper previously always needed the internet on first use)."""
+    from quill.core.speech.piper_install import PIPER_DOWNLOAD_SHA256
+    from scripts.build_windows_distribution import _stage_piper_offline
+
+    calls: list[tuple[str, Path, str | None]] = []
+
+    def fake_download(url, target, expected_sha256):
+        calls.append((url, target, expected_sha256))
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(b"fake payload")
+
+    monkeypatch.setattr(
+        "scripts.build_windows_distribution._download_with_verification", fake_download
+    )
+    portable_dir = tmp_path / "portable"
+    assert _stage_piper_offline(portable_dir) is True
+
+    root = portable_dir / "speech-models-bundled" / "piper"
+    assert (root / "piper_windows_amd64.zip").is_file()
+    assert (root / "voices" / "en_US-lessac-medium.onnx").is_file()
+    assert (root / "voices" / "en_US-lessac-medium.onnx.json").is_file()
+    # The engine zip is verified against the runtime's own pinned hash; the
+    # voice URLs are the exact HuggingFace paths the runtime download uses.
+    assert calls[0][2] == PIPER_DOWNLOAD_SHA256
+    assert all("huggingface.co/rhasspy/piper-voices" in url for url, _t, _s in calls[1:])
+    # Already-staged files are reused (no re-download on a second run).
+    calls.clear()
+    assert _stage_piper_offline(portable_dir) is True
+    assert calls == []
+
+
+def test_stage_whisper_model_reuses_already_staged(monkeypatch, tmp_path: Path) -> None:
+    portable_dir = tmp_path / "portable"
+    target = (
+        portable_dir
+        / "speech-models-bundled"
+        / "whispercpp"
+        / f"ggml-{DEFAULT_BUNDLED_WHISPER_MODEL_ID}.bin"
+    )
+    target.parent.mkdir(parents=True)
+    target.write_bytes(b"already here")
+
+    def fail_if_called(*args, **kwargs):
+        raise AssertionError("download should not run when already staged")
+
+    monkeypatch.setattr(
+        "scripts.build_windows_distribution._download_with_verification", fail_if_called
+    )
+    assert _stage_whisper_model(portable_dir) is True
+
+
 def test_dev_cache_ignore_excludes_local_tool_caches_but_keeps_real_source(
     tmp_path: Path,
 ) -> None:
@@ -848,3 +1103,53 @@ def test_dev_cache_ignore_excludes_local_tool_caches_but_keeps_real_source(
     assert not (dest / "io" / ".mypy_cache").exists()
     assert not (dest / ".pytest_cache").exists()
     assert not (dest / ".ruff_cache").exists()
+
+
+# ---------------------------------------------------------------------------
+# Feedback-token build guard (#919: beta-2 upgrades shipped a tokenless
+# Report a Bug). The token is now ALWAYS required -- a distributable must bake
+# a non-empty BUNDLED_TOKEN on every build, with no opt-out. These lock the
+# helper that enforces it at the point that matters -- the file that actually
+# ships inside the bundled quill/ package.
+# ---------------------------------------------------------------------------
+
+
+def test_bundled_token_value_reads_a_real_token(tmp_path: Path) -> None:
+    token_file = tmp_path / "_feedback_token.py"
+    token_file.write_text('BUNDLED_TOKEN = "ghp_secretvalue"\n', encoding="utf-8")
+    assert _bundled_token_value(token_file) == "ghp_secretvalue"
+
+
+def test_bundled_token_value_treats_empty_and_missing_as_empty(tmp_path: Path) -> None:
+    empty = tmp_path / "_feedback_token.py"
+    empty.write_text('BUNDLED_TOKEN = ""\n', encoding="utf-8")
+    assert _bundled_token_value(empty) == ""
+    # The committed repo default IS the empty token (the file is gitignored-but-
+    # tracked empty); this is exactly the tokenless state the build must refuse
+    # to ship, so a missing file must also read as empty, never as "present".
+    assert _bundled_token_value(tmp_path / "does_not_exist.py") == ""
+
+
+def test_build_guard_refuses_an_empty_token(tmp_path: Path) -> None:
+    # The guard must fail when the bundled token file is empty -- the exact
+    # "No token" upgrade symptom. There is no opt-out.
+    (tmp_path / "quill").mkdir()
+    (tmp_path / "quill" / "_feedback_token.py").write_text('BUNDLED_TOKEN = ""\n', encoding="utf-8")
+    with pytest.raises(RuntimeError, match="empty BUNDLED_TOKEN"):
+        _assert_bundled_token_nonempty(tmp_path)
+
+
+def test_build_guard_refuses_a_missing_token_file(tmp_path: Path) -> None:
+    # A build that never copied the token into the bundle is just as broken as
+    # an empty one; the guard must catch it (not silently ship tokenless).
+    with pytest.raises(RuntimeError, match="missing from the runtime"):
+        _assert_bundled_token_nonempty(tmp_path)
+
+
+def test_build_guard_accepts_a_real_token(tmp_path: Path) -> None:
+    (tmp_path / "quill").mkdir()
+    (tmp_path / "quill" / "_feedback_token.py").write_text(
+        'BUNDLED_TOKEN = "ghp_realtoken"\n', encoding="utf-8"
+    )
+    # Must not raise -- a real token ships fine.
+    _assert_bundled_token_nonempty(tmp_path)

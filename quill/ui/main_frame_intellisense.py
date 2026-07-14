@@ -10,7 +10,7 @@ exactly as before.
 from __future__ import annotations
 
 from quill.core.intellisense import build_intellisense_suggestions, collect_document_words
-from quill.platform.windows.sr_announce import announce
+from quill.platform.sr_announce import announce
 
 
 class IntellisensePopupMixin:

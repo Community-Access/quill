@@ -1,0 +1,28 @@
+You are writing episode 21 of The QUILL Cast, a 54-episode audio course on QUILL.
+The previous episode is episode episode 20 and the next episode is episode episode 22.
+
+**Topic:** Rich Formatting, Hidden Codes
+
+**Goal:** Write a 3,500-4,500 word podcast script that walks the listener through this
+feature family with the same depth and honesty as the surrounding deep-dive episodes.
+The script must include:
+- 7-9 [PAUSE] markers for section breaks
+- Liam opens, Jessica recaps the previous episode, both set today's frame
+  (or Jessica opens, Liam recaps - vary the pattern, don't always make Jessica recap)
+- A "do this now" interactive beat before any hands-on segment
+  (e.g., "pause the audio, do the step, then come back")
+- A code-verified walkthrough of the actual feature
+- Honest corrections when docs/code drift apart (we verify against code)
+- 4-step homework at the end
+- Closing signoff
+
+**Code references to verify claims against:**
+quill/core/illuminations.py if exists, quill/core/format_codes.py if exists, quill/ui/main_frame.py (format commands)
+
+**File to write:**
+S:\QUILL\docs\podcast\scripts\ep21-rich-formatting-hidden-codes.txt
+
+**Format:** alternating [LIAM] / [JESSICA] / [PAUSE] markers, one turn per block.
+The TTS engine will speak each [LIAM]/[JESSICA] block as one voice turn.
+
+After writing, report back the final word count and [PAUSE] count.

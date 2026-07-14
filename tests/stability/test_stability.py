@@ -500,6 +500,38 @@ def test_format_args_for_log_empty_returns_no_args() -> None:
     assert format_args_for_log([]) == "(no args)"
 
 
+def test_format_args_for_log_redacts_security_cli_w_secret() -> None:
+    """#60/#73: the macOS ``security`` CLI passes the secret as ``-w <secret>``
+    in separate argv. ``-w`` has no secret-shaped keyword, and a short
+    non-hex secret slips past redact_command_arg's token regexes, so the
+    value following ``-w`` must be redacted explicitly before the generic
+    per-arg pass."""
+    secret = "sh0rt"  # short, non-hex -> would leak past the token regexes
+    args = [
+        "/usr/bin/security",
+        "add-generic-password",
+        "-a",
+        "quill",
+        "-s",
+        "api_key",
+        "-w",
+        secret,
+    ]
+    result = format_args_for_log(args)
+    assert "sh0rt" not in result
+    assert "[REDACTED]" in result
+    # basename + arg count preserved
+    assert result.startswith("security ")
+    assert "7 args" in result
+
+
+def test_format_args_for_log_leaves_trailing_w_alone() -> None:
+    """A ``-w`` with no value following it must not crash or mis-redact."""
+    assert format_args_for_log(["security", "add-generic-password", "-w"]) == (
+        "security add-generic-password -w — 2 args"
+    )
+
+
 def test_redact_text_for_bundle_drops_bearer_line_and_reports_stats() -> None:
     text = "normal log line\nBearer sk-LIVE-abcdef1234567890\nanother normal line\n"
     redacted, stats = redact_text_for_bundle_with_stats(text)

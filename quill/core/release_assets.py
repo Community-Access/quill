@@ -198,6 +198,57 @@ ASSETS: dict[str, ReleaseAsset] = {
         license="MIT (rhasspy/piper); byte-identical re-publish of the upstream release",
         version="2023.11.14-2",
     ),
+    # -------------------------------------------------------------------
+    # git / gh (docs/planning/github.md section 2: bundling git and the
+    # GitHub CLI so local-git accessibility (quill.core.local_git) and the
+    # gh-CLI bridge (quill.core.github.gh_bridge) work for a user who has
+    # never installed either). quill.core.git_binaries.resolve_git/resolve_gh
+    # already prefer a system install on PATH first -- these three entries
+    # exist purely as the fallback for someone who has neither.
+    #
+    # git-windows is repackaged from upstream MinGit: the official zip spreads
+    # cmd/, mingw64/, etc/, usr/ as separate top-level folders with no common
+    # parent, but fetch_component() only copies expect_member's immediate
+    # *parent folder* into the target (not the whole archive) -- so the raw
+    # MinGit zip would silently drop mingw64/etc/usr, which cmd/git.exe needs
+    # at runtime. Fixed by re-zipping the full MinGit tree under one wrapper
+    # folder ("git/"). expect_member is deliberately "git/LICENSE.txt" (a
+    # file that sits directly inside the wrapper, as siblings of cmd/, etc/,
+    # mingw64/, usr/) rather than "git/cmd/git.exe" -- anchoring on git.exe
+    # itself would resolve hits[0].parent to the "cmd/" folder and only copy
+    # that, reproducing the exact bug this repackaging exists to avoid. The
+    # installed layout is therefore <target>/cmd/git.exe with <target>/etc,
+    # mingw64, usr as siblings -- see quill.core.git_binaries's
+    # _vendor_candidate("git"), which expects the nested "cmd/git.exe" path.
+    # gh-windows/gh-macos needed no such restructuring (their expect_member's
+    # parent folder already contains nothing else).
+    "git-windows": ReleaseAsset(
+        component="git-windows",
+        tag="assets-v1",
+        filename="git-windows-pack.zip",
+        sha256="bb601200c17139b63b7665d75a85dd2d1ac989119a468c92e972554f4b74a62e",
+        expect_member="git/LICENSE.txt",
+        license="GPL-2.0 (Git for Windows MinGit; portable, no installer)",
+        version="v2.55.0.2",
+    ),
+    "gh-windows": ReleaseAsset(
+        component="gh-windows",
+        tag="assets-v1",
+        filename="gh-windows-pack.zip",
+        sha256="dcc5c3e87454c92eca40923d5a52745dd6949163003bfb8417fb9a77057a340b",
+        expect_member="bin/gh.exe",
+        license="MIT (cli/cli, the official GitHub CLI)",
+        version="v2.96.0",
+    ),
+    "gh-macos": ReleaseAsset(
+        component="gh-macos",
+        tag="assets-v1",
+        filename="gh-macos-pack.zip",
+        sha256="9c1f4d6aa261a09a6f6a11188ee93249d6761d27eff838663d408835a67f245e",
+        expect_member="bin/gh",
+        license="MIT (cli/cli, the official GitHub CLI)",
+        version="v2.96.0",
+    ),
 }
 
 

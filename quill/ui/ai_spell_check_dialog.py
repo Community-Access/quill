@@ -56,7 +56,7 @@ class AISpellCheckDialog:
         summary = wx.StaticText(
             self.dialog,
             label=f"AI found {n} spelling suggestion{'s' if n != 1 else ''}. "
-            "Review each one below. Accept or skip with Alt+A / Alt+S.",
+            "Review each one below and use the review buttons to accept or skip it.",
         )
         summary.Wrap(700)
         root.Add(summary, 0, wx.ALL, 8)

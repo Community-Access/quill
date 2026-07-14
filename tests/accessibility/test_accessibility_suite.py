@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import sys
+
 from quill.core.keymap import load_keymap
-from quill.platform.windows.sr_announce import (
+from quill.platform.sr_announce import (
     announce,
     clear_transcript,
     enable_transcript_capture,
@@ -35,6 +37,13 @@ def test_accessibility_key_shortcuts_include_core_navigation(quill_data_dir: obj
     # reads and even rewrites keymap_path(); without an isolated QUILL_DATA_DIR
     # this test is order-dependent under pytest-randomly.
     keymap = load_keymap()
-    assert keymap["edit.find_next"] == "F3"
-    assert keymap["edit.find_previous"] == "Shift+F3"
+    # macOS HIG uses Cmd+G / Cmd+Shift+G for Find Next/Previous (keymap.py
+    # DEFAULT_KEYMAP, #6) -- bare F3/Shift+F3 need the Fn key held on a stock
+    # MacBook, so darwin gets a no-Fn alternate.
+    if sys.platform == "darwin":
+        assert keymap["edit.find_next"] == "Cmd+G"
+        assert keymap["edit.find_previous"] == "Cmd+Shift+G"
+    else:
+        assert keymap["edit.find_next"] == "F3"
+        assert keymap["edit.find_previous"] == "Shift+F3"
     assert keymap["app.command_palette"] == "Ctrl+Shift+P"

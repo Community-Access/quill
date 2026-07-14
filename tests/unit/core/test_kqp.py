@@ -170,15 +170,19 @@ def test_round_trip(tmp_path: pytest.TempPathFactory) -> None:
     keymap = DEFAULT_KEYMAP.copy()
     # Use key sequences not assigned to any other command in DEFAULT_KEYMAP and
     # not subject to a legacy rebinding or the beta Find force (which rewrites
-    # any "Ctrl+Shift+Grave, *" edit.find binding to Ctrl+F).
+    # any "Ctrl+Shift+Grave, *" edit.find binding to Ctrl+F). Every letter (both
+    # plain and Shift+) is now claimed by some command's default (0.9.0 Beta 3's
+    # GitHub repo-admin commands took the last free Shift+ letters), so this test
+    # uses plain digits instead -- still free, and just as good for exercising
+    # the export/import round trip.
     keymap["edit.find_next"] = "Ctrl+Shift+Grave, Z"
-    keymap["tools.thesaurus"] = "Ctrl+Shift+Grave, Shift+Y"
+    keymap["tools.thesaurus"] = "Ctrl+Shift+Grave, 1"
     target = tmp_path / "trip.kqp"
     export_keyboard_pack(target, keymap, name="Trip Pack", description="Round trip test")
     name, description, merged = import_keyboard_pack(target)
     assert name == "Trip Pack"
     assert description == "Round trip test"
     assert merged["edit.find_next"] == "Ctrl+Shift+Grave, Z"
-    assert merged["tools.thesaurus"] == "Ctrl+Shift+Grave, Shift+Y"
+    assert merged["tools.thesaurus"] == "Ctrl+Shift+Grave, 1"
     # Untouched defaults survive.
     assert merged["file.save"] == DEFAULT_KEYMAP["file.save"]

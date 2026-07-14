@@ -156,11 +156,11 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
     ),
     SettingSpec(
         "tray_enabled",
-        "Enable system tray mode",
+        "Enable background mode",
         "general",
         "bool",
-        "Keep QUILL available from the system tray.",
-        keywords=("tray", "notification area", "minimize"),
+        "Keep QUILL available from the system tray (Windows) or menu bar (macOS).",
+        keywords=("tray", "notification area", "menu bar", "minimize"),
     ),
     SettingSpec(
         "show_tab_control",
@@ -526,23 +526,6 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         ),
         keywords=("word", "docx", "open", "structured"),
     ),
-    # editor_surface spec intentionally omitted while core.rich_text_lens is
-    # locked_off — re-add choices=(..., ("rich", "Rich text lens")) when ready.
-    SettingSpec(
-        "save_as_surface_sync",
-        "Reload after Save As to match the format",
-        "editing",
-        "choice",
-        "After Save As changes the file type, optionally reload the file so the "
-        "editing surface (Rich text or plain text) matches the new format. "
-        "Reloading replaces the editor contents with the saved file.",
-        choices=(
-            ("prompt", "Ask each time"),
-            ("always", "Reload automatically"),
-            ("never", "Keep current surface"),
-        ),
-        keywords=("save as", "convert", "rtf", "reload", "surface", "format"),
-    ),
     SettingSpec(
         "docx_read_engine",
         "Word document reading engine",
@@ -593,6 +576,46 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
             ("markdown", "Keep Markdown link"),
         ),
         keywords=("link", "url", "plain text", "export", "convert"),
+    ),
+    SettingSpec(
+        "content_handoff_format",
+        "Kept and sent content format",
+        "editing",
+        "choice",
+        "How content is formatted when you keep it in the Clip Library or send "
+        "it by email -- plain text, Markdown, or a rich HTML snippet. "
+        "Interchangeable at any time; nothing is baked in when you keep or "
+        "send it.",
+        choices=(("text", "Plain text"), ("markdown", "Markdown"), ("html", "HTML")),
+        keywords=("clip library", "email", "send", "format", "html", "markdown"),
+    ),
+    SettingSpec(
+        "auto_outline_style",
+        "AutoOutline numbering style",
+        "editing",
+        "choice",
+        "Numbering style used by Format > Update Outline Numbering: numeric "
+        "(1, 1.1, 1.1.1) or legal (I, A, 1). The number is inserted as literal "
+        "text, so it reads aloud, survives copy/paste, and exports cleanly.",
+        choices=(("numeric", "Numeric (1, 1.1, 1.1.1)"), ("legal", "Legal (I, A, 1)")),
+        keywords=("outline", "heading", "numbering", "legal", "agenda", "policy"),
+    ),
+    SettingSpec(
+        "clip_library_autocapture",
+        "Automatically keep everything you copy in the Clip Library",
+        "editing",
+        "bool",
+        (
+            "Off by default. When on, every selection you copy inside QUILL "
+            "(Edit > Copy, its keyboard shortcut, or a right-click Copy) is "
+            "remembered in the Clip Library automatically, with no separate "
+            "'Keep' action needed. This only sees copies made from within QUILL, "
+            "never the system clipboard at large, and never anything copied "
+            "before you turn this on. Because it means QUILL keeps a running "
+            "history of your copies rather than just what you explicitly choose "
+            "to keep, it stays off until you decide you want it."
+        ),
+        keywords=("clip library", "copy", "history", "automatic", "clipboard", "privacy"),
     ),
     SettingSpec(
         "autosave_interval_seconds",
@@ -953,26 +976,6 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("echo", "double-press", "review", "announcement", "virtualize"),
     ),
     SettingSpec(
-        "editor_control_kind",
-        "Editor control type (braille)",
-        "accessibility",
-        "choice",
-        (
-            "Which native control backs the editor. RichEdit is the default; some "
-            "braille displays show the first character of every line in cell two "
-            "with a rich control (the long-standing Microsoft Word quirk). "
-            "'Plain edit, like Notepad' uses a simple control that avoids the "
-            "offset and still reads correctly. Takes effect for documents opened "
-            "after the change (restart to apply everywhere). Windows only."
-        ),
-        choices=(
-            ("rich2", "RichEdit 3.0 (default)"),
-            ("rich", "RichEdit 2.0 (older engine)"),
-            ("plain", "Plain edit, like Notepad (best for braille)"),
-        ),
-        keywords=("braille", "richedit", "notepad", "plain", "jaws", "cell", "display"),
-    ),
-    SettingSpec(
         "announcement_trace_enabled",
         "Record announcement trace",
         "accessibility",
@@ -1051,6 +1054,19 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "text",
         "Comma-separated list of sound event IDs to silence, e.g. transcription_word_inserted.",
         keywords=("sound", "disable", "mute", "earcon", "events"),
+    ),
+    SettingSpec(
+        "voice_preview_announce_generating",
+        'Announce "Generating preview, please wait" for slow voice previews',
+        "accessibility",
+        "bool",
+        (
+            "When a voice preview (Voice Browser, or Test in Download Optional "
+            "Components) takes a moment to synthesize, speak a short heads-up "
+            "so it's clear something is happening. The matching earcon is "
+            "configured separately in the Sound Events dialog."
+        ),
+        keywords=("voice", "preview", "generating", "please wait", "announce", "sound"),
     ),
     SettingSpec(
         "verbosity_collapse_repeats",
@@ -1179,6 +1195,7 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
             ("piper", "Piper"),
             ("kokoro", "Kokoro"),
             ("espeak", "eSpeak"),
+            ("macos", "macOS (system voice)"),
             ("elevenlabs", "ElevenLabs (premium cloud)"),
         ),
         feature_id="core.read_aloud",
@@ -1800,6 +1817,38 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "mismatch. Off unless you have a specific reason to change it.",
         keywords=("ssh", "host key", "trust", "paramiko", "security"),
     ),
+    # --- Braille editor fix (#616/#813) --------------------------------------
+    # The QuillRichEdit braille fix, promoted from the Experimental tab after
+    # live JAWS + braille testing confirmed it (2026-07). Two checkboxes own the
+    # whole fix; both default ON and are forced on for upgraders (the retired
+    # experimental overrides are dropped on load). No feature_id: the fix applies
+    # to the editor itself, so the checkboxes are always visible.
+    SettingSpec(
+        "braille_editor_system_edit_fix",
+        "Fix braille cell alignment and selection dots (recommended)",
+        "braille",
+        "bool",
+        (
+            "Applies the system-edit emulation to the editor so braille displays "
+            "show text from cell 1 and mark selections with dots 7-8. Leave on "
+            "unless a specific display misbehaves. Windows only. RESTART QUILL "
+            "to apply everywhere."
+        ),
+        keywords=("braille", "cell", "alignment", "selection", "dots", "jaws", "fix", "editor"),
+    ),
+    SettingSpec(
+        "braille_editor_hide_border",
+        "Hide editor border (required for braille cell alignment)",
+        "braille",
+        "bool",
+        (
+            "Draws the editor with no border. Warning: showing the editor border "
+            "breaks braille cell alignment — text will no longer start at cell 1. "
+            "Leave this checked unless you do not use a braille display. RESTART "
+            "QUILL after changing this."
+        ),
+        keywords=("braille", "border", "cell", "alignment", "frame", "editor"),
+    ),
     # --- Braille Mode (BR-008) ---------------------------------------------
     SettingSpec(
         "braille_cells_per_line",
@@ -2130,104 +2179,6 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
             "speech",
             "web speech",
             "natural",
-        ),
-    ),
-    SettingSpec(
-        "experimental_editor_surfaces_enabled",
-        "Enable experimental editor surfaces (features may degrade based on the control selected)",
-        "experimental",
-        "bool",
-        (
-            "The safety gate for the editor-surface options below. The editor "
-            "surface is the control your document lives in, so changing it affects "
-            "everything you do — some features may degrade or behave differently on "
-            "a non-default surface. Until this is ticked (along with the master "
-            "switch above), the surface and border options are ignored and their "
-            "controls are disabled, so an accidental change can never affect your "
-            "editor."
-        ),
-        keywords=(
-            "experimental",
-            "editor",
-            "surface",
-            "acknowledge",
-            "degrade",
-            "control",
-            "testing",
-        ),
-    ),
-    SettingSpec(
-        "experimental_editor_surface",
-        "Editor surface (for testing)",
-        "experimental",
-        "choice",
-        (
-            "Which control backs the editor, for testing different surfaces. "
-            "'Default' follows the braille Editor control type (Accessibility). "
-            "RichEdit 3.0/2.0 are the native Windows rich controls; 'Notepad' is a "
-            "plain EDIT control; 'Rich text' is an experimental wx.RichTextCtrl; "
-            "'Notepad++ experiment' is the Scintilla control (wx.stc.StyledTextCtrl); "
-            "'QuillRichEdit' wraps the native Rich Edit control and adds RTF "
-            "load/save via its text object model. "
-            "RESTART QUILL after changing this so every document uses the new surface."
-        ),
-        choices=(
-            ("default", "Default (follow Accessibility setting)"),
-            ("rich2", "RichEdit 3.0"),
-            ("rich", "RichEdit 2.0"),
-            ("plain", "Notepad (plain edit control)"),
-            ("rtf", "Rich text (wx.RichTextCtrl, experimental)"),
-            ("win32", "Native Win32 EDIT (pywin32 spike, Windows only)"),
-            ("stc", "Notepad++ experiment (Scintilla, wx.stc.StyledTextCtrl)"),
-            ("richedit_rtf", "QuillRichEdit (native Rich Edit + RTF, experimental)"),
-        ),
-        keywords=(
-            "experimental",
-            "editor",
-            "surface",
-            "richedit",
-            "quillrichedit",
-            "notepad",
-            "rtf",
-            "win32",
-            "stc",
-            "scintilla",
-            "native",
-            "testing",
-        ),
-    ),
-    SettingSpec(
-        "editor_hide_border",
-        "Hide editor border",
-        "experimental",
-        "bool",
-        (
-            "Draw the editor with no border for a cleaner, Notepad-like frame. "
-            "RESTART QUILL after changing this."
-        ),
-        keywords=("experimental", "border", "margin", "notepad", "frame", "chrome"),
-    ),
-    SettingSpec(
-        "experimental_richedit_emulate_sysedit",
-        "QuillRichEdit: emulate a system edit control (braille test)",
-        "experimental",
-        "bool",
-        (
-            "Only affects the QuillRichEdit editor surface. Puts the native Rich "
-            "Edit control in 'emulate system edit' mode to test whether it fixes "
-            "the braille cell-2 offset and missing selection dots 7-8 that some "
-            "displays show on Rich Edit. Needs a braille display to judge. RESTART "
-            "QUILL after changing this."
-        ),
-        keywords=(
-            "experimental",
-            "braille",
-            "richedit",
-            "quillrichedit",
-            "emulate",
-            "cell",
-            "selection",
-            "dots",
         ),
     ),
 )

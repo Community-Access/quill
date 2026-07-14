@@ -40,6 +40,7 @@ from quill.ui.dialog_contract import (
     apply_listbox_activation,
     apply_modal_ids,
     focus_primary_control,
+    ok_cancel_platform_order,
     show_message_box,
 )
 
@@ -215,8 +216,10 @@ class RemoteSitesDialog(wx.Dialog):
         cancel = wx.Button(panel, id=wx.ID_CANCEL, label="&Cancel")
         ok.SetName("Open from selected site" if is_open else "Save to selected site")
         cancel.SetName("Cancel")
-        button_row.Add(ok, 0, wx.EXPAND | wx.RIGHT, 4)
-        button_row.Add(cancel, 0, wx.EXPAND)
+        # #53: native button order -- Cancel-left/OK-right on macOS.
+        first_btn, second_btn = ok_cancel_platform_order(ok, cancel)
+        button_row.Add(first_btn, 0, wx.EXPAND | wx.RIGHT, 4)
+        button_row.Add(second_btn, 0, wx.EXPAND)
         root.Add(button_row, 0, wx.EXPAND | wx.ALL, 8)
 
         panel.SetSizer(root)

@@ -6,6 +6,7 @@ from quill.core.keymap_query import (
     duplicate_bindings,
     find_keymap_conflicts,
     parse_binding,
+    rewrite_chord_prefixes,
 )
 
 
@@ -142,3 +143,52 @@ class TestDiagnostics:
         report = diagnose_keymap(keymap, known_commands=set(), dispatchable_commands=set())
         assert report.unknown_commands == ["ghost"]
         assert report.missing_dispatch == []
+
+
+class TestRewriteChordPrefixes:
+    """The QUILL-key prefix rebind: every stored chord must follow the new prefix."""
+
+    def test_rewrites_every_chord_under_the_old_prefix(self) -> None:
+        keymap = {
+            "file.save": "Ctrl+Shift+Grave, S",
+            "edit.find": "Ctrl+Shift+Grave, F",
+            "format.bold": "Ctrl+B",  # not a chord -- left alone
+            "unused": "",
+        }
+        out = rewrite_chord_prefixes(keymap, old_prefix="Ctrl+Shift+Grave", new_prefix="Ctrl+Alt+Q")
+        assert out["file.save"] == "Ctrl+Alt+Q, S"
+        assert out["edit.find"] == "Ctrl+Alt+Q, F"
+        assert out["format.bold"] == "Ctrl+B"
+        assert out["unused"] == ""
+
+    def test_does_not_mutate_input(self) -> None:
+        keymap = {"file.save": "Ctrl+Shift+Grave, S"}
+        rewrite_chord_prefixes(keymap, old_prefix="Ctrl+Shift+Grave", new_prefix="Ctrl+Alt+Q")
+        assert keymap["file.save"] == "Ctrl+Shift+Grave, S"
+
+    def test_preserves_second_key_modifiers(self) -> None:
+        keymap = {"power.command": "Ctrl+Shift+Grave, Shift+O"}
+        out = rewrite_chord_prefixes(keymap, old_prefix="Ctrl+Shift+Grave", new_prefix="Ctrl+Alt+Q")
+        assert out["power.command"] == "Ctrl+Alt+Q, Shift+O"
+
+    def test_canonicalises_non_canonical_saved_chord(self) -> None:
+        # A saved chord spelled "Shift+Ctrl+Grave, S" (modifiers out of order)
+        # still moves with the prefix because it is canonicalised first.
+        keymap = {"file.save": "Shift+Ctrl+Grave, S"}
+        out = rewrite_chord_prefixes(keymap, old_prefix="Ctrl+Shift+Grave", new_prefix="Ctrl+Alt+Q")
+        assert out["file.save"] == "Ctrl+Alt+Q, S"
+
+    def test_chord_under_a_different_prefix_is_left_alone(self) -> None:
+        keymap = {"other": "Ctrl+Alt+K, X"}
+        out = rewrite_chord_prefixes(keymap, old_prefix="Ctrl+Shift+Grave", new_prefix="Ctrl+Alt+Q")
+        assert out["other"] == "Ctrl+Alt+K, X"
+
+    def test_quill_alias_query_parses_to_the_bare_prefix(self) -> None:
+        # The keymap-editor search bug: typing "quill" must parse as the bare
+        # prefix (one segment, not a chord) so the editor can list chord commands
+        # instead of matching nothing.
+        parsed = parse_binding("quill", quill_key_prefix="Ctrl+Shift+Grave")
+        assert parsed is not None
+        assert not parsed.is_chord
+        assert len(parsed.segments) == 1
+        assert parsed.canonical == "Ctrl+Shift+Grave"

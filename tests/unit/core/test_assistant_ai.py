@@ -389,7 +389,11 @@ def test_list_models_reports_local_server_not_running(
     )
     _models, error = assistant_ai.list_assistant_models(settings, api_key="")
     assert error is not None
-    assert "not running" in error.lower()
+    # The "not_running" message was generalized to cover other local-AI servers
+    # (LM Studio, GPT4All) alongside Ollama, and no longer contains the literal
+    # phrase "not running" -- assert on the actionable, stable substrings instead.
+    assert "can't reach a local ai server" in error.lower()
+    assert "ollama serve" in error.lower()
 
 
 def test_list_models_retries_while_warming_up_then_succeeds(

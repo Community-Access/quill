@@ -30,6 +30,23 @@ class ClipboardImageEmpty(ScreenCaptureError):
     """Raised when the clipboard holds no image to recognize."""
 
 
+def _unsupported_message(action: str) -> str:
+    """Explain *why* capture is unavailable on macOS, not just that it is (#5).
+
+    macOS screen capture is gated behind a separate Screen Recording TCC
+    permission and is not yet wired into QUILL. Pointing the user at the system
+    screenshot shortcuts + the OCR import path reads as a deliberate gap with a
+    workaround, not a bare omission.
+    """
+    return (
+        f"{action} is only available on Windows. On macOS, screen capture is gated "
+        "behind the Screen Recording permission (System Settings > Privacy & "
+        "Security > Screen Recording) and is not yet wired into QUILL. Use the "
+        "system screenshot shortcuts (Cmd+Shift+3/4/5), then OCR the saved file via "
+        "File > Import."
+    )
+
+
 def _new_capture_path(dest_dir: Path, prefix: str) -> Path:
     dest_dir.mkdir(parents=True, exist_ok=True)
     return dest_dir / f"{prefix}-{uuid.uuid4().hex}.png"
@@ -44,7 +61,7 @@ def capture_clipboard_image(dest_dir: Path) -> Path:
     :class:`ScreenCaptureError` when Pillow is unavailable or the grab fails.
     """
     if os.name != "nt":  # pragma: no cover - Windows-only feature surface
-        raise ScreenCaptureError("Clipboard image capture is only available on Windows.")
+        raise ScreenCaptureError(_unsupported_message("Clipboard image capture"))
     try:
         from PIL import ImageGrab
     except ImportError as exc:  # pragma: no cover - Pillow is a bundled dependency
@@ -107,7 +124,7 @@ def capture_screen(dest_dir: Path, target: ScreenTarget = "screen") -> Path:
     PNG path; raises :class:`ScreenCaptureError` on any failure.
     """
     if os.name != "nt":  # pragma: no cover - Windows-only feature surface
-        raise ScreenCaptureError("Screen capture is only available on Windows.")
+        raise ScreenCaptureError(_unsupported_message("Screen capture"))
     try:
         from PIL import ImageGrab
     except ImportError as exc:  # pragma: no cover - Pillow is a bundled dependency

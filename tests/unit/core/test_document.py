@@ -9,7 +9,10 @@ def test_document_name_defaults_to_untitled() -> None:
 
 
 def test_document_name_uses_file_name() -> None:
-    document = Document(path=Path("C:\\tmp\\story.md"))
+    # Path segments, not a raw backslash-separated literal: pathlib.Path on
+    # POSIX doesn't split on "\\", so "C:\\tmp\\story.md" as one string has
+    # .name == the whole string, not "story.md".
+    document = Document(path=Path("tmp") / "story.md")
     assert document.name == "story.md"
 
 

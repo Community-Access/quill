@@ -241,14 +241,11 @@
   </style>
 </head>
 <body>
-<header id="title-block-header">
-<h1 class="title">macos-signed-notarized-release-day-checklist</h1>
-</header>
 <h1 id="quill-macos-signed-and-notarized-release-day-checklist">QUILL
 macOS Signed and Notarized Release Day Checklist</h1>
 <p>Last updated: 2026-07-02 Audience: Release maintainer Goal: Produce
 and verify a trusted QUILL macOS DMG end to end.</p>
-<h2 id="one-time-prerequisites">1. One-time prerequisites</h2>
+<h2 id="1-one-time-prerequisites">1. One-time prerequisites</h2>
 <ul>
 <li>Apple Developer Program membership is active.</li>
 <li>Developer ID Application certificate exists.</li>
@@ -265,7 +262,7 @@ and verify a trusted QUILL macOS DMG end to end.</p>
 Team Name (TEAMID)</li>
 </ul></li>
 </ul>
-<h2 id="local-tools-and-repo-preflight">2. Local tools and repo
+<h2 id="2-local-tools-and-repo-preflight">2. Local tools and repo
 preflight</h2>
 <p>Run in PowerShell:</p>
 <div class="sourceCode" id="cb1"><pre
@@ -276,7 +273,7 @@ class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-
 <ul>
 <li>.github/workflows/macos-release.yml</li>
 </ul>
-<h2 id="create-or-confirm-github-environment">3. Create or confirm
+<h2 id="3-create-or-confirm-github-environment">3. Create or confirm
 GitHub environment</h2>
 <p>Create environment:</p>
 <div class="sourceCode" id="cb2"><pre
@@ -287,7 +284,7 @@ class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-
 <li>Required reviewers enabled</li>
 <li>Deployment branch restrictions set as desired</li>
 </ul>
-<h2 id="upload-required-secrets">4. Upload required secrets</h2>
+<h2 id="4-upload-required-secrets">4. Upload required secrets</h2>
 <p>Set file-based secrets:</p>
 <div class="sourceCode" id="cb3"><pre
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="op">[</span>Convert<span class="op">]::</span>ToBase64String<span class="op">([</span>IO<span class="op">.</span><span class="fu">File</span><span class="op">]::</span>ReadAllBytes<span class="op">(</span><span class="st">&quot;C:\path\to\DeveloperID.p12&quot;</span><span class="op">))</span> <span class="op">|</span> gh secret <span class="fu">set</span> <span class="op">-</span>e macos-release BUILD_CERTIFICATE_BASE64</span>
@@ -314,7 +311,7 @@ class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb5-
 <li>APPLE_API_ISSUER</li>
 <li>APPLE_TEAM_ID</li>
 </ul>
-<h2 id="dry-run-on-branch">5. Dry run on branch</h2>
+<h2 id="5-dry-run-on-branch">5. Dry run on branch</h2>
 <p>Run on working branch first:</p>
 <div class="sourceCode" id="cb6"><pre
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>gh <span class="kw">workflow</span> run macos-release<span class="op">.</span><span class="fu">yml</span> <span class="op">--</span>ref <span class="op">&lt;</span>branch-name<span class="op">&gt;</span></span>
@@ -331,7 +328,7 @@ class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb7-
 <li>No codesign errors.</li>
 <li>No notarization rejection.</li>
 </ul>
-<h2 id="tag-time-release-run">6. Tag-time release run</h2>
+<h2 id="6-tag-time-release-run">6. Tag-time release run</h2>
 <p>After normal release checks in RELEASE.md are complete, push the
 version tag:</p>
 <div class="sourceCode" id="cb8"><pre
@@ -341,7 +338,7 @@ class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb8-
 <div class="sourceCode" id="cb9"><pre
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>gh run list <span class="op">--</span>workflow macos-release<span class="op">.</span><span class="fu">yml</span> <span class="op">--</span>limit <span class="dv">5</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="dt">gh</span> run watch</span></code></pre></div>
-<h2 id="artifact-and-trust-verification">7. Artifact and trust
+<h2 id="7-artifact-and-trust-verification">7. Artifact and trust
 verification</h2>
 <p>Verify in GitHub Actions artifacts/release assets:</p>
 <ul>
@@ -354,7 +351,7 @@ verification</h2>
 <li>Install without bypass commands.</li>
 <li>Launch with no unidentified developer warning.</li>
 </ul>
-<h2 id="external-beta-go-or-no-go">8. External beta go or no-go</h2>
+<h2 id="8-external-beta-go-or-no-go">8. External beta go or no-go</h2>
 <p>Go only if all are true:</p>
 <ul>
 <li>macOS workflow green.</li>
@@ -365,7 +362,7 @@ verification</h2>
 <li>Clean-machine install and launch succeeded.</li>
 </ul>
 <p>No-go if any are missing.</p>
-<h2 id="fast-triage-map">9. Fast triage map</h2>
+<h2 id="9-fast-triage-map">9. Fast triage map</h2>
 <ul>
 <li>Certificate import failed: re-export .p12 and re-check
 P12_PASSWORD.</li>
@@ -376,7 +373,7 @@ APPLE_TEAM_ID, and .p8 source key.</li>
 <li>Notary rejection: inspect workflow logs and confirm hardened runtime
 and entitlements are applied.</li>
 </ul>
-<h2 id="operations-hygiene">10. Operations hygiene</h2>
+<h2 id="10-operations-hygiene">10. Operations hygiene</h2>
 <ul>
 <li>Keep at least two maintainers with access to release credential
 process.</li>

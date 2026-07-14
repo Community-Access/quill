@@ -205,3 +205,13 @@ def bookmark_names(bookmarks: dict[str, int]) -> list[str]:
 
 def bookmark_position(bookmarks: dict[str, int], name: str) -> int | None:
     return bookmarks.get(name)
+
+
+def quick_slot_name(slot: int) -> str:
+    """Reserved bookmark name for numbered quick-bookmark slot 0-9.
+
+    Quick bookmarks are not a parallel storage system -- they are named
+    bookmarks with a generated, centralized name, so they get persistence,
+    save/load, and crash-safety for free from the existing bookmark store.
+    """
+    return f"Quick {slot}"

@@ -66,6 +66,45 @@ SETTINGS_SCHEMA_VERSION = 2
 #: differ from the default, never lost).
 UNGROUPED_KEY = "_ungrouped"
 
+#: Settings keys retired by the QuillRichEdit promotion (0.9.0-beta3): the
+#: editor-surface experiment is decided, so every surface knob is gone and the
+#: braille fix is on by default (``braille_editor_system_edit_fix`` +
+#: ``braille_editor_hide_border`` on the Braille tab). Old overrides — including
+#: an experimental-era ``editor_hide_border`` False — are dropped on load so
+#: every upgrader lands on the promoted default. The keys are stripped here (not
+#: just ignored by ``Settings.from_dict``) so the UI can surface the one-time
+#: "your editor settings were simplified" notice and rewrite the cleaned file.
+RETIRED_SETTINGS_KEYS = frozenset({
+    "editor_control_kind",
+    "editor_use_legacy_richedit",
+    "experimental_editor_surface",
+    "experimental_editor_surfaces_enabled",
+    "experimental_richedit_emulate_sysedit",
+    "editor_hide_border",
+    # The read-only rich text lens (never shipped on; superseded by rich mode).
+    "editor_surface",
+    # Post-Save-As surface reload sync (superseded by the Document Format
+    # switcher's explicit retargeting).
+    "save_as_surface_sync",
+})
+
+#: Retired keys actually seen in the loaded document this launch (consume-once
+#: via :func:`pop_retired_settings_keys`). In-process only, like
+#: ``migration_backup._recent_migrations``.
+_retired_keys_seen: list[str] = []
+
+
+def pop_retired_settings_keys() -> list[str]:
+    """Return and clear the retired keys found in the loaded settings file.
+
+    Non-empty exactly when the user upgraded across the QuillRichEdit promotion
+    with old surface overrides on disk; the UI surfaces the one-time migration
+    notice and saves the cleaned delta back.
+    """
+    seen = list(_retired_keys_seen)
+    _retired_keys_seen.clear()
+    return seen
+
 
 def _group_for_key(key: str) -> str:
     spec = find_spec(key)
@@ -135,9 +174,15 @@ def migrate(raw: object) -> dict[str, Any]:
     if not isinstance(raw, dict):
         return {}
     if "groups" in raw:
-        return _flatten_groups(raw.get("groups"))
-    # Legacy flat document: every key is already a candidate field.
-    return {str(key): value for key, value in raw.items() if key != "schema_version"}
+        flat = _flatten_groups(raw.get("groups"))
+    else:
+        # Legacy flat document: every key is already a candidate field.
+        flat = {str(key): value for key, value in raw.items() if key != "schema_version"}
+    for key in sorted(RETIRED_SETTINGS_KEYS & flat.keys()):
+        flat.pop(key)
+        if key not in _retired_keys_seen:
+            _retired_keys_seen.append(key)
+    return flat
 
 
 def _accepts(key: str, value: Any) -> bool:

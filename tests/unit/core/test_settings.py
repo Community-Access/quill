@@ -201,6 +201,53 @@ def test_settings_list_studio_settings_defaults_empty_and_ignores_garbage(
     assert load_settings().list_studio_settings == {}
 
 
+def test_content_handoff_format_defaults_and_round_trips(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    assert Settings().content_handoff_format == "text"
+    save_settings(Settings(content_handoff_format="html"))
+    assert load_settings().content_handoff_format == "html"
+
+
+def test_content_handoff_format_invalid_value_falls_back_to_text(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    (tmp_path / "settings.json").write_text(
+        '{"content_handoff_format": "not-a-format"}', encoding="utf-8"
+    )
+    assert load_settings().content_handoff_format == "text"
+
+
+def test_auto_outline_style_defaults_and_round_trips(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    assert Settings().auto_outline_style == "numeric"
+    save_settings(Settings(auto_outline_style="legal"))
+    assert load_settings().auto_outline_style == "legal"
+
+
+def test_auto_outline_style_invalid_value_falls_back_to_numeric(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    (tmp_path / "settings.json").write_text(
+        '{"auto_outline_style": "not-a-style"}', encoding="utf-8"
+    )
+    assert load_settings().auto_outline_style == "numeric"
+
+
+def test_clip_library_autocapture_defaults_off_and_round_trips(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    assert Settings().clip_library_autocapture is False
+    save_settings(Settings(clip_library_autocapture=True))
+    assert load_settings().clip_library_autocapture is True
+
+
 def test_settings_persists_tts_normalization(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
@@ -234,6 +281,17 @@ def test_settings_persists_batch_speech_chapter_fields(
     assert loaded.batch_speech_chapter_sound_volume == 60
     assert loaded.batch_speech_article_gap_ms == 2500
     assert loaded.batch_speech_intro_section_title == "Lead"
+
+
+def test_voice_preview_announce_generating_defaults_true_and_round_trips(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    assert Settings().voice_preview_announce_generating is True
+
+    save_settings(Settings(voice_preview_announce_generating=False))
+    loaded = load_settings()
+    assert loaded.voice_preview_announce_generating is False
 
 
 def test_settings_batch_speech_chapter_defaults_and_clamps(
@@ -633,6 +691,17 @@ def test_settings_round_trip_announce_screen_reader_detected(
     save_settings(Settings(announce_screen_reader_detected=True))
     loaded = load_settings()
     assert loaded.announce_screen_reader_detected is True
+
+
+def test_settings_round_trip_upgrade_prompt_kokoro_onnx(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # #kokoro-onnx: the one-time startup prompt persists that it has been shown
+    # so it never nags across launches. Defaults off; survives a round trip.
+    assert Settings().upgrade_prompt_kokoro_onnx is False
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    save_settings(Settings(upgrade_prompt_kokoro_onnx=True))
+    assert load_settings().upgrade_prompt_kokoro_onnx is True
 
 
 def test_verbosity_speech_setting_is_registered() -> None:

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib
 import subprocess
 import sys
 from pathlib import Path
@@ -11,10 +12,12 @@ import pytest
 from quill.ai_packs import all_packs
 from quill.core.ai.sdk_install import (
     PACK_INSTALLS,
+    PackInstall,
     PackInstallError,
     ai_packs_dir,
     install_command,
     install_pack,
+    is_pack_importable,
     manual_install_hint,
     pack_dir,
     pack_install_for,
@@ -149,3 +152,36 @@ def test_install_pack_reports_pip_failure(monkeypatch: pytest.MonkeyPatch, tmp_p
 
     with pytest.raises(PackInstallError, match="No matching distribution"):
         install_pack("openai_agents", dest_dir=tmp_path / "o", runner=runner)
+
+
+def test_is_pack_importable_detects_crash_interrupted_install(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Regression (support report): after Quill crashed mid on-demand SDK
+    install, the OpenAI engine "shows up as being active" but is unusable and
+    unswitchable. A ``pip install --target`` interrupted by the host process
+    dying can leave a package's ``__init__.py`` written while the rest of it
+    is missing: ``find_spec`` alone is satisfied (the file is right there),
+    but the module cannot actually import. ``is_pack_importable`` must catch
+    that, or a crashed install is reported "installed" forever with no signal
+    telling the Hub to offer Set Up again.
+    """
+    pkg_dir = tmp_path / "quill_crashed_sdk_pack"
+    pkg_dir.mkdir()
+    (pkg_dir / "__init__.py").write_text(
+        "from . import never_written_submodule\n", encoding="utf-8"
+    )
+    monkeypatch.syspath_prepend(str(tmp_path))
+    sys.modules.pop("quill_crashed_sdk_pack", None)
+    importlib.invalidate_caches()
+
+    fake_spec = PackInstall(
+        pack_id="crashed_test_pack",
+        display_name="Crashed Test Pack",
+        extra="ai-crashed-test",
+        requirement="crashed-test-pack>=0.1",
+        import_name="quill_crashed_sdk_pack",
+    )
+    monkeypatch.setitem(PACK_INSTALLS, "crashed_test_pack", fake_spec)
+
+    assert is_pack_importable("crashed_test_pack") is False

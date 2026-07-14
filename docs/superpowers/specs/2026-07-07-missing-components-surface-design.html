@@ -241,8 +241,8 @@
   </style>
 </head>
 <body>
-<h1 id="unified-missing-component-surface-design">Unified “missing
-component” surface — design</h1>
+<h1 id="unified-missing-component-surface--design">Unified "missing
+component" surface — design</h1>
 <p>Closes GitHub issue #874.</p>
 <h2 id="problem">Problem</h2>
 <p><code>quill/ui/optional_components_dialog.py</code> (Help &gt;
@@ -251,17 +251,17 @@ provides a single, accessible list of every optional component with
 install state and a one-click fetch — most of what #874 asked for
 already exists. Two real gaps remain:</p>
 <ol type="1">
-<li><strong>Piper voices aren’t tracked at all.</strong>
+<li><strong>Piper voices aren't tracked at all.</strong>
 <code>gather_optional_components()</code> covers whisper.cpp, Vosk,
 Kokoro, eSpeak, DECtalk, ffmpeg, Pandoc, the braille pack, libmpv, and
-MathCAT, but not Piper’s engine executable.</li>
+MathCAT, but not Piper's engine executable.</li>
 <li><strong>The dialog is only reachable from the Help menu.</strong>
-None of the “component missing” error messages a user actually hits the
+None of the "component missing" error messages a user actually hits the
 gap from (Kokoro synthesis failure, eSpeak/DECtalk/Piper pre-flight
 checks, Pandoc import/export failures, and three silent-fallback cases)
 link into it. A user has to already know the dialog exists rather than
-being routed there from the point of failure — the actual “meet people
-where they are” ask.</li>
+being routed there from the point of failure — the actual "meet people
+where they are" ask.</li>
 </ol>
 <h2 id="non-goals">Non-goals</h2>
 <ul>
@@ -269,7 +269,7 @@ where they are” ask.</li>
 <code>piper</code> entry — <code>optional_components.py</code> and
 <code>release_assets.py</code> already do the tracking #874 asked for;
 this is a UI-layer wiring pass over existing state.</li>
-<li>Not touched: Whisper’s dictation-preflight prompt and the
+<li>Not touched: Whisper's dictation-preflight prompt and the
 braille-pack install prompt. Both already offer a direct one-click
 action of their own; routing them through the generic picker would add a
 dialog hop and lose that directness for no benefit.</li>
@@ -279,7 +279,7 @@ pattern; individual voice selection and download stays in the Voice
 Browser.</li>
 </ul>
 <h2 id="design">Design</h2>
-<h3 id="add-piper-to-the-component-catalog">1. Add Piper to the
+<h3 id="1-add-piper-to-the-component-catalog">1. Add Piper to the
 component catalog</h3>
 <p><code>quill/core/optional_components.py</code>: new
 <code>_piper_installed()</code> detector
@@ -287,13 +287,13 @@ component catalog</h3>
 and a new <code>OptionalComponent("piper", ...)</code> entry in
 <code>gather_optional_components()</code>, category <code>VOICES</code>,
 alongside Kokoro/eSpeak/DECtalk.</p>
-<h3 id="pre-focus-the-picker">2. Pre-focus the picker</h3>
+<h3 id="2-pre-focus-the-picker">2. Pre-focus the picker</h3>
 <p><code>show_optional_components_picker()</code> gains an optional
 <code>preselect: str = ""</code> parameter. When non-empty and present
 among <code>components</code>, that row is selected/focused instead of
 row 0. Backward compatible — every existing caller (just the Help-menu
 entry point today) keeps working unchanged.</p>
-<h3 id="two-dispatch-helpers-on-mainframe">3. Two dispatch helpers on
+<h3 id="3-two-dispatch-helpers-on-mainframe">3. Two dispatch helpers on
 MainFrame</h3>
 <p><strong>Hard blockers</strong> (the action cannot proceed at all
 without the component; fire every time, matching current frequency):</p>
@@ -341,23 +341,23 @@ silent):</p>
 its format list and compressed formats are unavailable
 (<code>generate_speech_audio()</code>, where <code>formats</code> is
 built, <code>quill/ui/main_frame.py</code> ~18178-18192).</li>
-<li><code>libmpv</code>: <code>player_panel.py</code>’s
+<li><code>libmpv</code>: <code>player_panel.py</code>'s
 <code>create_engine(...)</code> call (~line 49) already falls back to
 <code>wx.media</code> whenever
 <code>audio_engine.preferred_backend()</code> returns <code>"wx"</code>
 because <code>find_libmpv()</code> found nothing — nudge right after
 that call when the backend chosen was <code>"wx"</code> for that reason,
 not the rarer found-but-broken-DLL case (which logs and falls back
-silently on its own merits, per <code>create_engine</code>’s docstring,
+silently on its own merits, per <code>create_engine</code>'s docstring,
 and is out of scope here).</li>
-<li><code>mathcat</code>: where “Read this part aloud” falls back to
-template-based equation reading instead of MathCAT’s natural
+<li><code>mathcat</code>: where "Read this part aloud" falls back to
+template-based equation reading instead of MathCAT's natural
 speech.</li>
 </ul>
-<h3 id="new-persisted-state">4. New persisted state</h3>
+<h3 id="4-new-persisted-state">4. New persisted state</h3>
 <p><code>Settings.nudged_missing_components: list[str] = field(default_factory=list)</code>
 — same shape as the existing <code>applied_recommended_updates</code>
-field. Marking a nudge “shown” is permanent (not per-session): once a
+field. Marking a nudge "shown" is permanent (not per-session): once a
 user has seen the ffmpeg/libmpv/MathCAT nudge, it never fires again
 regardless of their answer.</p>
 <h2 id="testing">Testing</h2>
@@ -367,9 +367,9 @@ present with correct installed/not-installed detection, mirroring the
 existing detector tests.</li>
 <li><code>show_optional_components_picker</code>: source-contract test
 asserting <code>preselect</code> exists and is used instead of an
-unconditional row-0 select (matching this beta-2 pass’s established
+unconditional row-0 select (matching this beta-2 pass's established
 wx-dialog test convention — constructing a real <code>wx.Dialog</code>
-isn’t exercised in this suite).</li>
+isn't exercised in this suite).</li>
 <li>Each of the 8 rewired/new call sites: source-contract test asserting
 the method body calls
 <code>_offer_optional_component</code>/<code>_nudge_once</code> with the
@@ -394,12 +394,12 @@ tests in <code>tests/unit/core/test_optional_components.py</code>,
 <code>tests/unit/core/test_settings.py</code>, and new
 <code>tests/unit/ui/</code> contract test files.</p>
 <h2 id="where-the-mathcat-read-this-part-aloud-fallback-lives">Where the
-MathCAT “Read this part aloud” fallback lives</h2>
+MathCAT "Read this part aloud" fallback lives</h2>
 <p>To confirm during planning: the exact call site inside the
 equation-reading handler where MathCAT unavailability currently falls
-back to template reading (per <code>optional_components.py</code>’s
-<code>_mathcat_installed</code> docstring reference, “Insert &gt;
-Explore Equation Structure…”). Not yet located to a line number; the
+back to template reading (per <code>optional_components.py</code>'s
+<code>_mathcat_installed</code> docstring reference, "Insert &gt;
+Explore Equation Structure..."). Not yet located to a line number; the
 implementation plan should pin this down as its first step, the same way
 the libmpv site was pinned down above.</p>
 </body>

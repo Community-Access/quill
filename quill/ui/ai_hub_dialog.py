@@ -15,6 +15,7 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from quill.core.i18n import _, lazy_gettext
+from quill.core.platform_nouns import credential_store_name
 from quill.ui.dialog_contract import apply_modal_ids
 
 _PROVIDER_CHOICES: tuple[tuple[str, object], ...] = (
@@ -252,6 +253,7 @@ class AIHubDialog:
         key_row.Add(self._key_ctrl, 1, wx.RIGHT, 4)
         key_row.Add(self._reveal_btn, 0)
         sizer.Add(key_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
+        self._set_key_field_enabled(self._settings.provider or "ollama")
 
         # Host (shown only for Ollama / custom)
         sizer.Add(
@@ -295,11 +297,29 @@ class AIHubDialog:
         self._test_btn.Bind(wx.EVT_BUTTON, self._on_test_connection)
         self._provider_choice.Bind(wx.EVT_CHOICE, self._on_hub_provider_changed)
         self._list_models_btn.Bind(wx.EVT_BUTTON, self._on_hub_list_models)
+        self._model_ctrl.Bind(wx.EVT_COMBOBOX, self._on_hub_model_selected)
+        # Discovered Ollama model -> live capabilities (from /api/show). Populated
+        # by "List models"; empty for providers that do not report capabilities.
+        self._ollama_capabilities: dict[str, list[str]] = {}
         return panel
 
     def _hub_provider(self) -> str:
         idx = self._provider_choice.GetSelection()
         return _PROVIDER_CHOICES[idx][0] if idx >= 0 else "ollama"
+
+    def _set_key_field_enabled(self, provider: str) -> None:
+        """Grey out the API key field for providers that don't need one.
+
+        Local Ollama (and any future no-key provider) needs no credential, so
+        the field must not read as a required prompt (#883-adjacent gap: this
+        dialog never consulted provider_requires_api_key, unlike the older
+        AssistantConnectionDialog).
+        """
+        from quill.core.ai.providers import provider_requires_api_key
+
+        requires_key = provider_requires_api_key(provider)
+        self._key_ctrl.Enable(requires_key)
+        self._reveal_btn.Enable(requires_key)
 
     def _populate_hub_models(self, provider: str, *, select: str = "") -> None:
         """Fill the model dropdown with recommended (free-first) ids for a provider."""
@@ -319,10 +339,41 @@ class AIHubDialog:
         # #883: repopulating the model combo can steal focus back to it on MSW
         # when the provider choice was navigated via arrow keys without opening
         # its dropdown; restore focus to the provider choice if that happened.
+        provider = self._hub_provider()
         had_focus = self._provider_choice.HasFocus()
-        self._populate_hub_models(self._hub_provider())
+        self._populate_hub_models(provider)
+        self._set_key_field_enabled(provider)
         if had_focus and not self._provider_choice.HasFocus():
             self._provider_choice.SetFocus()
+        # Auto-probe Ollama on selection: a consented localhost /api/tags ping
+        # so the user hears immediately whether Ollama is running (and how many
+        # models are available) instead of discovering it via a failed request.
+        if provider == "ollama":
+            self._auto_probe_ollama()
+
+    def _auto_probe_ollama(self) -> None:
+        import threading
+
+        self._test_label.SetLabel(_("Checking Ollama..."))
+
+        def _run() -> None:
+            import wx as _wx
+
+            from quill.core.ai.onboarding import list_provider_models
+
+            models, error = list_provider_models("ollama")
+            if error:
+                msg = error  # already plain-language (e.g. the "not running" message)
+            else:
+                msg = _(
+                    "Ollama running. {n} models available -- use List models to choose."
+                ).format(n=len(models))
+            _wx.CallAfter(self._on_auto_probe_done, msg)
+
+        threading.Thread(target=_run, daemon=True).start()  # GATE-40-OK: AI bg thread
+
+    def _on_auto_probe_done(self, message: str) -> None:
+        self._test_label.SetLabel(message)
 
     def _on_hub_list_models(self, _event: object) -> None:
         import threading
@@ -337,19 +388,65 @@ class AIHubDialog:
             from quill.core.ai.onboarding import list_provider_models
 
             models, error = list_provider_models(provider)
-            _wx.CallAfter(self._on_hub_models_listed, models, error)
+            # For local Ollama, enrich each discovered model with its REAL
+            # capabilities (queried dynamically via /api/show) so the user can
+            # see which models do vision/tools -- no hardcoded model-name list,
+            # so this stays correct as models are added or renamed. Best-effort:
+            # models whose capabilities can't be determined are shown by name
+            # only (never falsely labelled text-only).
+            capabilities: dict[str, list[str]] = {}
+            if not error and models and provider == "ollama":
+                from quill.core.ai.ollama_capabilities import enrich_capabilities
+                from quill.core.ai.providers import default_host_for_provider
+
+                host = self._host_ctrl.GetValue().strip() or default_host_for_provider(provider)
+                try:
+                    capabilities = enrich_capabilities(host, models)
+                except Exception:  # noqa: BLE001 - enrichment is best-effort
+                    capabilities = {}
+            _wx.CallAfter(self._on_hub_models_listed, models, error, capabilities)
 
         threading.Thread(target=_run, daemon=True).start()  # GATE-40-OK: model discovery
 
-    def _on_hub_models_listed(self, models: list, error: str) -> None:
+    def _on_hub_models_listed(
+        self, models: list, error: str, capabilities: dict | None = None
+    ) -> None:
         self._list_models_btn.Enable(True)
+        self._ollama_capabilities = {str(k): list(v) for k, v in (capabilities or {}).items()}
         if not models:
             self._test_label.SetLabel(error or _("No models were returned."))
             return
         current = self._model_ctrl.GetValue().strip()
         self._model_ctrl.Set(models)
         self._model_ctrl.SetValue(current if current in models else models[0])
-        self._test_label.SetLabel(_("Loaded {n} models.").format(n=len(models)))
+        if self._ollama_capabilities:
+            from quill.core.ai.ollama_capabilities import capability_summary
+
+            summary = capability_summary(models, self._ollama_capabilities)
+            self._test_label.SetLabel(
+                _("Loaded {n} models: {summary}").format(n=len(models), summary=summary)
+            )
+            self._announce_capability_for_current()
+        else:
+            self._test_label.SetLabel(_("Loaded {n} models.").format(n=len(models)))
+
+    def _on_hub_model_selected(self, _event: object) -> None:
+        self._announce_capability_for_current()
+
+    def _announce_capability_for_current(self) -> None:
+        # Speak the selected model's capability badge when we know it. Unknown
+        # capabilities are left unannounced (never claim "text only" on a guess);
+        # a plain completion model has no badge, so nothing is spoken -- keeping
+        # the chatter down for the common case.
+        model = self._model_ctrl.GetValue().strip()
+        caps = self._ollama_capabilities.get(model) if self._ollama_capabilities else None
+        if not caps:
+            return
+        from quill.core.ai.ollama_capabilities import capability_badge
+
+        badge = capability_badge(caps)
+        if badge:
+            self._announce(str(_("{model}: {badge}").format(model=model, badge=badge)))
 
     # ------------------------------------------------------------------
     # Tab: Engines (harnesses) — pick the agentic engine; install / sign in.
@@ -565,10 +662,10 @@ class AIHubDialog:
                     "Auphonic masters finished audiobooks and podcast episodes "
                     "(leveling, noise reduction, encoding). QUILL uses it from the "
                     "Audio Studio's Chapter Workbench: Publish > Send to Auphonic. "
-                    "The API token is stored in the Windows Credential Manager, "
+                    "The API token is stored in the {store}, "
                     "never in a settings file, and nothing is ever uploaded "
                     "without a per-book confirmation."
-                )
+                ).format(store=credential_store_name())
             ),
         )
         auphonic_note.Wrap(640)

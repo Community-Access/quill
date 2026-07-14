@@ -1,49 +1,156 @@
 [JESSICA]
-The QUILL Cast, episode two. I'm Jessica, here with Liam, and today we install QUILL and get through the first launch together, step by step.
+The QUILL Cast, episode two. I'm Jessica. Liam is here, and today we install QUILL for the first time, watch the first launch happen, and walk all the way through the setup wizard together. By the end of this episode you will be sitting in front of a working QUILL configured the way you want it.
 
 [LIAM]
-Step one, get the installer. QUILL is published by Community Access; download the Windows installer from the official releases page. It's a standard signed installer, arrow through it like any other: license, install location, finish. No bundled extras, no toolbar surprises, no account creation.
+And to do that properly, we are going to slow down. Most software asks you to install, double click, and figure it out. We are going to read every screen with you out loud, explain the tradeoffs on each one, and tell you which choices you can change later and which ones you actually cannot. If you are following along with the audio, the timing works: pause here if your installer is already downloaded, or pause later when we hit the wizard, and the whole thing will take you about ten minutes.
 
 [JESSICA]
-Step two, launch. The first thing QUILL does is talk to you, through your screen reader if you run one, or with its own built-in voice if you don't. That built-in voice matters: QUILL self-voices as a fallback, so even with no screen reader running, a blind user can install and configure it independently. Day one independence is a design goal.
+Welcome back, by the way, if you heard episode one. Quick recap. We are doing a fifty four episode audio course on QUILL, the free, screen reader first writing studio from Community Access. QUILL is built for Windows with macOS also supported, and the design rule for the whole product is simple: what a word processor looks like when blind users are the primary audience instead of an afterthought.
 
 [LIAM]
-Step three, the setup wizard. It's short, and it's worth taking slowly. The big question it asks is which feature profile you want. Let's explain profiles properly, because they're one of QUILL's best ideas and they confuse people coming from other software.
+Three promises hold the product up, and they will keep coming back through the series. First, QUILL owns the essentials. The editor, the keyboard, undo, and the announcements always behave predictably. Second, everything beyond the core is optional and off by default. AI, vault, braille, watch folders, Quillins, none of it is on until you turn it on. Third, nothing leaves your computer without asking first. Every network call in the whole application is tracked in an internal audit and tells you in plain language before it happens.
 
 [JESSICA]
-A profile is a named set of feature switches. Choose a focused writing profile and QUILL shows a small, calm menu system: files, editing, search, speech, help. Choose the full experience and everything is visible: AI, vault, braille, developer tools, the works.
-
-[LIAM]
-Here's the key: profiles hide, they never delete. Every feature is still there, and you can switch or customize profiles any time under Preferences, Profiles and Features. So the right answer for a new user is almost always the simpler profile. Menus you can hold in your head beat menus that impress.
-
-[JESSICA]
-Why does this matter so much for our audience specifically? Because a screen reader reads menus one item at a time, top to bottom. Every feature you don't use is a second of listening, every single time. Sighted users skim past clutter; we wade through it. Profiles are QUILL refusing to make you wade.
+Today's frame is even smaller than that. Today is about two things. Thing one: the installer, the very small one, and what it puts on your machine and what it deliberately does not. Thing two: the first launch, which is the moment QUILL opens and the setup wizard appears and asks you a few honest questions about what you want. Everything else in fifty four episodes depends on those two things going right.
 
 [PAUSE]
 
 [LIAM]
-Step four, land in the editor and take a breath. You're in a tabbed text editor. There's a menu bar at the top, the editing area in the middle, a status bar at the bottom. Type a sentence. Hear your screen reader echo normally, no special modes, no magic. It's just an editor, and that's the point.
+Let's start with the installer. The product name on disk is QUILL for All, version zero point nine point zero Beta two, published by Community Access. The download page lives on the QUILL GitHub releases. The installer is a standard signed Inno Setup executable, the kind you have installed a hundred times. License agreement, install location, finish. There is no bundled toolbar, no account creation, no telemetry opt-in checkbox pretending to be required, and no extra software offered along the way.
 
 [JESSICA]
-Do these three things before you finish today. First: press F1. Context-sensitive help works nearly everywhere in QUILL, whatever control you're on, F1 explains it. Make it a reflex now.
+A few specifics that matter. QUILL is a sixty four bit Windows application. The installer refuses to install on anything other than a sixty four bit compatible processor, which covers normal Intel and AMD PCs and also Windows on ARM, where QUILL's x64 runtime runs under emulation. The minimum supported Windows version is ten point zero. The default install path is your Program Files folder under QUILL for All, and the installer requests the lowest privilege level that will work, so most people will not see a User Account Control prompt at all. If you want it installed somewhere unusual, you can change the location on the install page; nothing forces the default.
 
 [LIAM]
-Second: open the Help menu and find Download Optional Components. Don't download anything yet, just listen to the list: offline speech engines, neural voices, spell-check languages, audio helpers. This is QUILL's app store, except everything is free and checksum-verified. We'll come back for these in later episodes.
+Here is the part that is easy to miss, and the part most worth noticing. The installer has no setup type page and no component selection page. Every checkbox you might expect, speech engines, voices, spell check dictionaries, OCR helpers, the braille translation pack, is not in the installer at all. Those pieces are downloaded on demand, later, from inside QUILL, when you first need them. The installer only ships the QUILL core, the editor, the wizard, the bundled extensions, and the things that are tiny and unconditional. The reason is in a comment in the installer script: keeping the installer small and verifying every optional piece at the moment of use, with a real checksum, is safer than shipping a huge bundle and trusting it for the next two years.
 
 [JESSICA]
-Third: press escape a few times in different places. Notice that escape always works, dialogs close, modes exit, you land back in your document. QUILL guarantees the escape hatch. Knowing you can always get out is what makes exploring safe.
+Two things on the install page are off by default and worth knowing about. First, a checkbox to register QUILL in the Open With list for common text formats, things like dot txt, dot md, dot rst, dot log, dot csv, dot json. If you check it, QUILL will appear in Windows Open With for those formats. It will not steal the default app from whatever you already use; you would have to pick QUILL in Open With yourself. Second, a checkbox to add right click entries to the Windows Explorer menu: OCR with Quill, Open in Quill, Read aloud in Quill, on the file types they make sense for. We will talk about what those do in much later episodes. For now, both checkboxes start unchecked, and there is no reason to change that on day one.
 
 [LIAM]
-A word about Safe Mode before we close, because it's good to know about on day one even though you may never need it. If QUILL is ever misbehaving, maybe an extension you installed months from now acts up, you can start it with the safe mode flag, and AI, folder automation, and extensions are all disabled. A guaranteed clean room. It's the product's own escape hatch.
+The install page also offers a small set of unchecked post install actions: view the README, view the User Guide in your browser, and launch QUILL. None of them are required and none of them run without your click. After Finish, your Start Menu and, if you chose it, your desktop have a single QUILL for All shortcut, and the install is done. On the first launch, two things happen that are worth knowing about, and the second one is what the rest of the episode is about.
 
 [JESSICA]
-Homework, five minutes. One: complete the wizard and pick a profile. Two: type and save a document anywhere, control S, done. Three: open Preferences, Profiles and Features, and just read what's on and off in your profile, don't change anything, just build the map.
+The first thing that happens on first launch is technical and quiet, and we will mention it because it is reassuring. The installer wrote a small marker file called quill new install dot txt into the install directory. When QUILL starts up, it checks for that marker and, if it sees it, runs the setup wizard even on a machine whose user profile says the wizard was already completed. That is how a reinstall, or a new install over an old one, still gets you the wizard. The marker gets removed as soon as the wizard actually runs, so it only fires on the next true first launch.
 
 [LIAM]
-Next episode: your first document, for real. Files, saving, reopening, recent files, and the quiet machinery already protecting your work.
+The second thing that happens is human and noisy, which is the screen reader. If you have NVDA, JAWS, or Narrator already running, QUILL works with it from the very first window. If you do not have a screen reader running, QUILL still talks. There is a built in announcement engine that uses a platform speech voice, and a transcript view, so the wizard stays navigable with the keyboard alone, no assistive technology required. That design choice is a direct result of an explicit goal: a blind user should be able to install QUILL and complete first launch setup by themselves on day one, with no sighted help.
+
+[PAUSE]
 
 [JESSICA]
-I'm Jessica.
+Now the wizard. If everything in your user profile looks already configured, and you did not just install, you will not see the wizard at all and you can skip to the homework at the end. For everyone else, this is the experience. The window title is Personalise QUILL. The wizard is modal, so it grabs focus until you Finish or Cancel, and it has seven pages plus a conditional eighth. The whole thing is designed to be tabbed through, not mouse driven, and each page announces itself and its current state.
 
 [LIAM]
-I'm Liam. See you in the editor.
+Page one is Welcome. It is mostly an introduction. The text says QUILL is a screen reader friendly text editor built from the ground up for people who use NVDA, JAWS, Narrator, or braille displays. It tells you the wizard asks one question, what kind of writing do you do, that your answer sets a starting point, and that nothing here is permanent. There is a Next button. Press it.
+
+[JESSICA]
+Page two is the one people remember, and the one that confuses people who are used to other software's idea of profiles. The question is "What kind of writing do you do?" and the answer is a list box, not a checkbox matrix. There are seven options, and each one is a starting point with a name, a one line tagline, and a multi paragraph preview that you can read with arrow keys. Arrow up and down through the list. The preview pane updates as you move, so you can hear what each profile will give you before you commit.
+
+[LIAM]
+Let me read the seven profiles out loud, because they are the heart of the wizard and the heart of the idea. One: Just a Text Editor. Open files, type, save. Nothing extra. Two: Writer, for documents, notes, journal entries, and reports. Three: Markdown and Web Author, for web content, HTML, Markdown, and encoding tools. Four: Accessibility Professional, for accessibility testers, document reviewers, and trusted document intake. Five: Braille Professional, for braille transcribers and teachers working with BRF, BRL, and UEB. Six: AI Powered Author, for writers who want AI assistance. Seven: Developer and Power User, for regex, macros, shell integration, and every tool available.
+
+[JESSICA]
+The default selection is Just a Text Editor, which is also the recommended starting point for a brand new user. Profiles do not delete features. Every feature is still installed and still available. What a profile does is hide the menu entries you do not need so that your screen reader has a short, calm menu to read. A profile is a filter, not a fence. You can switch profiles any time from a submenu on the Help menu called Switch Profile, or run the whole wizard again from Help, Personalise QUILL. That last path is important and worth writing down: Help, Personalise QUILL, brings this exact same wizard back at any point in the product's life, not just on first launch.
+
+[LIAM]
+A short honest correction is due right here. An earlier version of QUILL used the phrase Feature Profile for the same idea, and an earlier draft of this very audio course called the wizard's main choice a feature profile. The current code calls the choices intent profiles and the file is onboarding profiles dot py. The phrase feature profile still appears in some older help text and in the technical profile identifier behind each choice, which is why the menu entry that switches them is called Switch Profile. We updated the words; the idea is exactly the same.
+
+[PAUSE]
+
+[JESSICA]
+Page three is a few optional extras. The heading reads "A few optional extras." You see up to three checkboxes, depending on what the previous page already included. The first is Include AI writing assistance, with a preview of Ask Quill, grammar check, writing prompts, and the prompt library, plus a note that this needs an API key from your provider. The second is Include Braille Mode, with a preview of BRF and BRL file support, the braille status bar cell, and Grade one and Grade two translation. The third is Include typing automation, with a preview of Smart Insert triggers like equals bug, equals meeting, equals journal, plus abbreviation expansion like qbug, qmeet, qlog, qtodo.
+
+[LIAM]
+The checkboxes are suppressed if the intent profile you picked on page two already includes that extra, so the page stays short. If you chose AI Powered Author, the AI checkbox is hidden, because AI is already part of that profile. If you chose Braille Professional, the braille checkbox is hidden, because braille is already part of that profile. The Developer and Power User profile includes automation. The page has a "What this adds" preview box that updates as you check and uncheck.
+
+[JESSICA]
+Page four is conditional. It only appears if you have AI turned on, either because you picked the AI Powered Author profile, or because you checked the AI checkbox on the extras page. The heading is Set up your AI connection, and the page exists so the wizard can drop you straight into QUILL's AI Hub, where you can either paste in a key you already have or follow a guided path to a free key from a supported provider. We are going to spend an entire episode on the AI Hub later, episode thirty four, so do not feel pressure to configure AI right now. If you want AI, check the box and accept that you will be routed to the Hub after Finish; if you do not, leave the box unchecked and the page never appears.
+
+[LIAM]
+Page five is Keyboard and Sound. Four controls, arranged in a two column grid. Top row, keyboard pack: a dropdown with four choices, QUILL Default, JAWS Compatible, NVDA Compatible, Narrator Compatible. Most screen reader users will pick the one that matches their reader; QUILL Default works for everyone and is a safe choice if you are not sure. Second row, a checkbox to play sound notifications, also called earcons, with a note that sound is always optional and never replaces speech. Third row, sound pack, a dropdown of the sound packs that ship with QUILL, with any custom pack you have already configured preserved as a final entry so it does not get silently lost. Fourth row, indentation tones, with five choices including Off, Pentatonic, Whole tone, Diatonic, and Chromatic; if you have never heard of indentation tones, Off is a fine default.
+
+[JESSICA]
+Page six is Data Location, which is newer than the rest of the wizard and is tracked as issue six one five. The question is "Where should QUILL store your data?" The default, and the recommended choice, is In my Windows user profile, which puts your settings, dictionaries, autosaves, and recovery files under percent APPDATA percent, Quill. If you installed QUILL as part of a portable build, a second choice, Next to QUILL on this portable drive, becomes available and is the right choice for that case. A third choice, Choose a folder, lets you pick any other location, for example a network share or an encrypted vault.
+
+[LIAM]
+An important behavior here that is easy to miss. If you change the data location on an existing install, the change is queued as a pending migration and applied the next time QUILL starts up. It does not happen mid session. The reason is in the data location module: settings, the copy tray cache, and several other things are loaded once at startup and never reloaded, so an in session move would leave the running app in an inconsistent state. The wizard is honest about this; if you change the location on a re-run of the wizard, you will see the new path on the summary, and the actual move will happen on the next launch.
+
+[JESSICA]
+Page seven is Summary, the only page with no controls. The heading reads "You are all set!" and a preview box shows exactly what your QUILL is about to be. It lists the profile you picked by name, the bullet points from that profile's preview text, any extras you added, your keyboard pack, whether sound is on, and your data location. Below the preview is a single line of guidance: "Press Finish to start writing. Change anything later from Help, Personalise QUILL." That line is the load bearing sentence of the whole wizard. Read it, trust it, and press Finish.
+
+[PAUSE]
+
+[LIAM]
+Okay, that is the whole wizard. There is one moment we want to give you, and here is your do this now beat. If you have not installed QUILL yet, pause the audio right now, go get the installer from the QUILL GitHub releases page, run it, accept the defaults, and stop at the Welcome page of the wizard. If you have already installed it and the wizard is sitting in front of you, you can keep listening and follow along. Either way, when you come back to the audio, we will pick up at the moment Finish closes the wizard and you land in the editor.
+
+[JESSICA]
+A pause in the audio would be very natural here, but I will not insert a silence marker just for that. If you are following along hands on, take a real break. If you are listening on a walk, keep walking; everything else still makes sense in order.
+
+[LIAM]
+What happens when you press Finish. The wizard writes the profile choice and any extras into the QUILL settings, the wizard writes your keyboard and sound preferences into settings, and the data location choice is queued if it differs from the current location. Then the wizard closes, the editor gains focus, and you are looking at a fresh untitled document in a tab. If you used the Help, Personalise QUILL menu to get here, your existing documents and tabs are still open underneath; the wizard is layered on top and goes away when you Finish. The very first time, the wizard is the only thing on screen.
+
+[JESSICA]
+Three quick things to do in the editor before we move on. First, type a sentence and listen to your screen reader read it back the way you expect. There is nothing special about edit mode in QUILL. Press F1 with the cursor in the document. Context sensitive help works in nearly every screen in QUILL, and F1 explains whatever control you are on. The Help menu's first entry, after the back end of a couple of specialized dialogs, is Personalise QUILL, which is the wizard we just walked through, available any time. The Help menu also has Download Optional Components, and that is the entry point for everything we deliberately left out of the installer.
+
+[PAUSE]
+
+[LIAM]
+Download Optional Components is the only place you get the things the installer used to ship. The dialog opens with a single grouped list of components, each row showing the component's name, a one line description, its current state, and a button to Download, Test, or Remove depending on state. The list is sorted by importance, with the things most users will want at the top.
+
+[JESSICA]
+In priority order, the top of the list is Pandoc, which is the document conversion tool. Pandoc is what makes Word, ODT, EPUB, and RTF import and export work. The description says plain text and Markdown editing work without it. About forty five megabytes. Below Pandoc is the PDF and Office text extraction component, which is what reads text out of PDFs and Office documents without needing Pandoc or LibreOffice; this is the MarkItDown plus pdfplumber plus pypdf stack, about thirty megabytes. Scanned PDFs still need OCR, which is a separate menu action, either way.
+
+[LIAM]
+Third in the list is the Braille pack, which is the liblouis translation tables and BRF profiles that power the Translation submenu and BRF embossing. About nine megabytes. Reading with a braille display works without it; this is for QUILL's own translation. Then comes the Dictation offline speech engine, Whisper, Faster Whisper, or Vosk, with a model of your choice, about eight megabytes for the engine and a few hundred megabytes more for a model. After that, the voices: Kokoro neural voices, about one hundred and twenty megabytes; Piper neural voices, about twenty two; eSpeak NG, about forty; and DECtalk, about two.
+
+[JESSICA]
+Below the voices are the audio extras, which include FFmpeg for compressed audio export, mpv for gapless playback in the Audio Studio, and MP3 chapter marker support. About forty six megabytes for the basic bundle, plus another ninety the first time you export compressed audio. Then MathCAT, a math speech engine, about three megabytes. Then Node.js, about thirty megabytes, which is the runtime for Node based Quillins, and is genuinely the least needed of the lot. Then the spell check dictionaries, one per language, each a few megabytes.
+
+[LIAM]
+Everything is downloaded on demand and SHA two fifty six verified, and the dialog shows you the size before you click. Nothing in this list is required to use QUILL, and you can download and remove any of it at any time. The list is also the answer to the question we got in previews of this episode: where do I get the offline speech engine. Right there, on the row labeled Dictation.
+
+[PAUSE]
+
+[JESSICA]
+Now safe mode, because it is a one paragraph topic and it is genuinely worth knowing about on day one, even if you never need it. Safe mode is a startup flag that disables every optional and non essential surface, for the lifetime of that one process. Plugins, AI integrations, network services, file watchers, background indexing, custom themes, custom snippets, experimental features, and the startup restore all turn off. The core editor still works, and the recovery files for any of your unsaved work still surface.
+
+[LIAM]
+There are two ways to turn safe mode on. The first is the command line flag, double dash safe mode, on the QUILL executable. The second is the environment variable QUILL underscore SAFE MODE equals one. Both are checked in quill slash stability slash safe mode dot py, and both produce the same SafeModeConfig. There is no menu entry for safe mode, on purpose, because safe mode is a tool for when something is already wrong and the menu might be the thing that is wrong. If you ever install a Quillin that misbehaves, or a setting that gets corrupted, launch QUILL with the safe mode flag and you get a guaranteed clean room to fix the rest from.
+
+[JESSICA]
+That is the last of the day one topics, and we want to close with a couple of honest corrections, because we said at the top of the series that we would verify every claim against the code, and that means calling out where the docs and the code have drifted apart.
+
+[PAUSE]
+
+[LIAM]
+Correction one. The README file that ships with the installer, the one called README hyphen installer dot txt, still says the optional tools like DECtalk, eSpeak NG, Piper, Pandoc, and the Braille Pack are bundled inside the install directory. That is not true anymore. The installer has no components section; the optional tools are downloaded on demand from the Help, Download Optional Components dialog. The README also tells you to re-run the installer and choose Modify to add or remove tools, but the installer no longer has a Modify step that can do that. We have logged this; the README is on the list to be updated. The behavior in the product is the on demand one, not the README one.
+
+[JESSICA]
+Correction two. An earlier version of QUILL had a multi step Startup Wizard overview that fired on first launch as a separate dialog, plus a number of per feature prompts that fired the first time you opened each one. The unified setup wizard we walked through today replaces all of that, and the per feature prompts were removed in issue seven hundred. If you have heard older audio about QUILL or read older help pages, ignore the parts about a Startup Wizard overview. The wizard you are looking at is the wizard.
+
+[LIAM]
+Correction three. The Help menu has both Personalise QUILL and, as a submenu, Switch Profile. The first re-runs the whole wizard, the second switches profiles without the wizard. The two are different on purpose. The submenu also has a Profile Health Check entry, which is a diagnostic for when something you expected to be on or off is not behaving that way. We will come back to that in the troubleshooting episodes near the end of the series.
+
+[JESSICA]
+Correction four, and the one we have to be honest about. Episode one of this series said the course was thirty four episodes long. As we mapped the curriculum against the actual product, the right number is fifty four. We are not going back to re record episode one; we are using the right number from here forward, and that is fifty four. If you were planning around the earlier number, you have twenty more episodes than you thought. Welcome.
+
+[PAUSE]
+
+[LIAM]
+Let's do homework. Four steps, in order, taking about five minutes. Step one, complete the wizard if you have not. Pick the profile that honestly matches what you do today, not the profile you aspire to. You can change it any time. Step two, finish the wizard, land in the editor, type a sentence, press control S, and save it anywhere on your computer. The first save is a small ritual but it is the one that makes the editor feel real.
+
+[JESSICA]
+Step three, open the Help menu, find Download Optional Components, and just read the list. Do not download anything yet. The point is to build a mental map of what is available and what is installed. The dialog is sorted by importance, so you will see Pandoc, the PDF and Office extractor, the Braille pack, the dictation engine, the voices, the audio extras, MathCAT, Node, and the spell check dictionaries, in that order. Step four, open the Help, Personalise QUILL menu entry, see the wizard come back, and Finish it again without changing anything. The point of step four is to prove to yourself that the wizard is non destructive and re-runnable.
+
+[LIAM]
+Next episode is your first document, for real. Files, folders, saving, opening, recent files, position memory, the auto-recovery machinery that is already protecting you, and the open question of what a native QUILL file even is. We will answer all of that and you will leave the episode with a real first document you are not afraid of.
+
+[JESSICA]
+The QUILL Cast is a fifty four episode course, with full transcripts published for every episode so you can re-read anything at your own pace, in braille or speech. The voice you are listening to right now is the same Kokoro neural voice that ships with QUILL; when we get to the speech episodes, you will be able to make your own documents sound like this.
+
+[LIAM]
+I'm Liam.
+
+[JESSICA]
+And I'm Jessica. Welcome to QUILL.

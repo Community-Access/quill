@@ -34,6 +34,13 @@ def detect_screen_reader(process_names: list[str] | None = None) -> ScreenReader
 
     Pass *process_names* (a list of process image names) to test without touching
     the OS; when omitted, the live process list is read via the Windows API.
+
+    Narrator gets a second, API-level signal (#966): while it runs, Windows
+    publishes the named ``NarratorRunning`` event, checked with one cheap
+    ``OpenEventW`` call. That catches Narrator even when the process snapshot
+    misses it (elevation differences, a transient snapshot failure — the
+    field report showed exactly this: Narrator speaking while QUILL believed
+    no reader was present).
     """
     names = process_names if process_names is not None else _running_process_names()
     for image_name in names:
@@ -44,7 +51,30 @@ def detect_screen_reader(process_names: list[str] | None = None) -> ScreenReader
                 name=_KNOWN_SCREEN_READERS[lowered],
                 source=image_name.strip(),
             )
+    if process_names is None and narrator_event_present():
+        return ScreenReaderDetection(detected=True, name="Narrator", source="NarratorRunning")
     return ScreenReaderDetection(detected=False, name="none", source="")
+
+
+_SYNCHRONIZE = 0x00100000
+
+
+def narrator_event_present() -> bool:
+    """True while Windows' named ``NarratorRunning`` event exists (#966).
+
+    The documented liveness marker Narrator itself maintains: one
+    ``OpenEventW`` call, no process enumeration, no window creation.
+    Best-effort — any failure (including non-Windows) reads as "not running".
+    """
+    try:
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        handle = kernel32.OpenEventW(_SYNCHRONIZE, False, "NarratorRunning")
+        if handle:
+            kernel32.CloseHandle(handle)
+            return True
+        return False
+    except Exception:  # noqa: BLE001 - a probe must never raise
+        return False
 
 
 _TH32CS_SNAPPROCESS = 0x00000002

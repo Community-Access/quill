@@ -157,3 +157,24 @@ def test_mathcat_asset_is_pinned_pack_on_assets_v1() -> None:
     assert ra.is_pinned(asset) is True
     assert asset.url.endswith("/assets-v1/mathcat-pack.zip")
     assert "MIT" in asset.license
+
+
+@pytest.mark.parametrize(
+    ("component_id", "expect_member"),
+    [
+        ("git-windows", "git/LICENSE.txt"),
+        ("gh-windows", "bin/gh.exe"),
+        ("gh-macos", "bin/gh"),
+    ],
+)
+def test_git_gh_bundling_entries_are_pinned_real_uploads(
+    component_id: str, expect_member: str
+) -> None:
+    """docs/planning/github.md section 2: git/gh bundling manifest entries are
+    real, self-hosted re-publishes on assets-v1 (byte-identical to upstream
+    MinGit/gh CLI releases), pinned by SHA-256 like every other asset here."""
+    asset = ra.ASSETS[component_id]
+    assert ra.is_pinned(asset) is True
+    assert asset.expect_member == expect_member
+    assert asset.url.endswith(f"/assets-v1/{asset.filename}")
+    assert asset.version != "PENDING"

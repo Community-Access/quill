@@ -122,11 +122,15 @@ def test_announcement_engine_uses_system_speech_when_prism_is_missing(monkeypatc
     assert engine.state().active_backend == "speech"
 
 
-def test_force_speech_bypasses_screen_reader_suppression(monkeypatch) -> None:
-    # The QUILL key prefix/browse-mode chord has no focus or control change for
-    # a screen reader to pick up on its own, so callers narrating that
-    # internal-only state pass force_speech=True to still get spoken even
-    # while JAWS/NVDA/Narrator is running and no Prism backend is active.
+def test_live_screen_reader_always_wins_over_the_sapi_self_voice(monkeypatch) -> None:
+    # #966 (Narrator double-speech): this SAPI branch is only reachable when no
+    # speech bridge could be acquired — with NVDA/JAWS live, Prism or
+    # accessible_output2 handle announcements (including force_speech
+    # interrupts) before this point, so a detected-but-unbridged reader here is
+    # Narrator. The old force_speech bypass made QUILL's SAPI voice talk right
+    # over One Core; a running reader now suppresses the self-voice
+    # unconditionally, force_speech included. force_speech still speaks (and
+    # still matters) when no reader is running at all.
     voice = _FakeVoice()
     monkeypatch.setattr("quill.platform.windows.prism_bridge.sys.platform", "win32")
     monkeypatch.setattr("quill.platform.windows.prism_bridge._build_tts_voice", lambda: voice)
@@ -147,6 +151,16 @@ def test_force_speech_bypasses_screen_reader_suppression(monkeypatch) -> None:
     prism_bridge.flush_tts_for_tests()
     assert voice.messages == []
 
+    # Even force_speech must not double-talk over Narrator (#966).
+    assert engine.announce("QUILL key", force_speech=True) is None
+    prism_bridge.flush_tts_for_tests()
+    assert voice.messages == []
+
+    # With no reader running, force_speech (and routine announcements) speak.
+    monkeypatch.setattr(
+        "quill.platform.windows.prism_bridge._screen_reader_active",
+        lambda: False,
+    )
     assert engine.announce("QUILL key", force_speech=True) is None
     prism_bridge.flush_tts_for_tests()
     assert voice.messages == ["QUILL key"]
@@ -262,6 +276,13 @@ def test_macos_announce_error_logged(monkeypatch, caplog) -> None:
     import logging
 
     monkeypatch.setattr("quill.platform.windows.prism_bridge.sys.platform", "darwin")
+    # VoiceOver is running, so the darwin branch routes to the VoiceOver path
+    # whose failure is the subject of this test (not the VoiceOver-off self-voice path).
+    monkeypatch.setattr(
+        "quill.platform.windows.prism_bridge._macos_screen_reader_active",
+        lambda: True,
+        raising=False,
+    )
     monkeypatch.setattr(
         "quill.platform.windows.prism_bridge.import_module",
         lambda _name: (_ for _ in ()).throw(ImportError),

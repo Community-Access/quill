@@ -200,11 +200,13 @@ def recommended_models_for_provider(provider: str) -> list[str]:
                 "llama3.2:1b-instruct-q4_K_M",
                 "qwen2.5:1.5b-instruct-q4_K_M",
                 "qwen2.5:3b-instruct-q4_K_M",
+                "moondream:1.8b",
             ]
         return [
             "qwen2.5:7b-instruct-q4_K_M",
             "llama3.1:8b-instruct-q4_K_M",
             "qwen2.5:3b-instruct-q4_K_M",
+            "llava:7b",
         ]
     return ["gpt-4o-mini", "claude-sonnet-4-6", "gemini-2.5-flash"]
 
@@ -224,6 +226,14 @@ def recommended_model_guidance(provider: str) -> list[ModelRecommendation]:
                     framing="Balanced local writing",
                     reason="Slightly stronger output with modest resource use.",
                 ),
+                ModelRecommendation(
+                    model="moondream:1.8b",
+                    framing="Vision (image description)",
+                    reason=(
+                        "A multimodal model -- required for Describe Image / AI image "
+                        "description. Text-only models such as llama3.2 cannot read images."
+                    ),
+                ),
             ]
         return [
             ModelRecommendation(
@@ -235,6 +245,14 @@ def recommended_model_guidance(provider: str) -> list[ModelRecommendation]:
                 model="llama3.1:8b-instruct-q4_K_M",
                 framing="General local assistant",
                 reason="Reliable for rewriting, summarizing, and grammar tasks.",
+            ),
+            ModelRecommendation(
+                model="llava:7b",
+                framing="Vision (image description)",
+                reason=(
+                    "A multimodal model -- required for Describe Image / AI image "
+                    "description. Text-only models such as llama3.2 cannot read images."
+                ),
             ),
         ]
     if normalized == "openai":

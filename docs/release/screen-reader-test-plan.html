@@ -176,28 +176,30 @@
   </style>
 </head>
 <body>
-<header id="title-block-header">
-<h1 class="title">screen-reader-test-plan</h1>
-</header>
 <h1 id="quill-screen-reader-and-keyboard-test-plan">QUILL Screen-Reader
 and Keyboard Test Plan</h1>
 <p>Manual validation steps for every accessibility/focus/keyboard fix in
 the public beta quality pass. Each fix in the quality ledger has a
 matching case here.</p>
-<p>How to use this plan: - Test with NVDA and JAWS (and Narrator where
-noted) on a real Windows build. - For each case: follow the steps with
-the mouse unplugged (keyboard only), then again reading with the screen
-reader’s virtual/focus cursor. - Record Pass/Fail and the actual spoken
-text. “Expected” describes the intended announcement; exact wording
-varies by screen reader, but the field name, role, and state must be
-present and correct. - A case fails if focus is lost, a control is
-unnamed/misnamed, Tab cannot leave a field, or an error is not announced
-and focus is not placed to fix it.</p>
+<p>How to use this plan:</p>
+<ul>
+<li>Test with NVDA and JAWS (and Narrator where noted) on a real Windows
+build.</li>
+<li>For each case: follow the steps with the mouse unplugged (keyboard
+only), then again reading with the screen reader's virtual/focus
+cursor.</li>
+<li>Record Pass/Fail and the actual spoken text. "Expected" describes
+the intended announcement; exact wording varies by screen reader, but
+the field name, role, and state must be present and correct.</li>
+<li>A case fails if focus is lost, a control is unnamed/misnamed, Tab
+cannot leave a field, or an error is not announced and focus is not
+placed to fix it.</li>
+</ul>
 <p>General keyboard contract to confirm in every dialog: Tab / Shift+Tab
 move predictably, Escape cancels, Enter activates the default, and focus
 returns to a sensible place when the dialog closes.</p>
 <hr />
-<h2 id="a11y-001-notebook-tab-groups-have-accessible-names">A11Y-001 —
+<h2 id="a11y-001--notebook-tab-groups-have-accessible-names">A11Y-001 —
 Notebook tab groups have accessible names</h2>
 <p>Fix: six <code>wx.Notebook</code> tab groups were unnamed and
 announced generically; each now has a name.</p>
@@ -206,54 +208,54 @@ announced generically; each now has a name.</p>
 <ul>
 <li>Steps: Help &gt; Application Status. Tab to the tab control; arrow
 Left/Right across tabs.</li>
-<li>Expected: the tab control is announced as “System status sections”
-(tab list / page tab list role); tabs read “Status”, “Tasks &amp;
-Downloads”, “Features”, “Actions”; each page’s list is reachable and
+<li>Expected: the tab control is announced as "System status sections"
+(tab list / page tab list role); tabs read "Status", "Tasks &amp;
+Downloads", "Features", "Actions"; each page's list is reachable and
 named (see A11Y-002).</li>
 </ul></li>
 <li>TC-A11Y-001b — About dialogs
 <ul>
-<li>Steps: Help &gt; About (and the “About” tabbed dialog). Move to the
+<li>Steps: Help &gt; About (and the "About" tabbed dialog). Move to the
 tab control.</li>
-<li>Expected: the tab group is announced as “About sections”, not an
+<li>Expected: the tab group is announced as "About sections", not an
 unnamed tab control.</li>
 </ul></li>
 <li>TC-A11Y-001c — Word view / Rich text view / CSV view surfaces
 <ul>
 <li>Steps: open a document that offers the Word/Rich-text/CSV view; move
 to its view switcher tab control.</li>
-<li>Expected: announced as “Word view” / “Rich text view” / “CSV view”
+<li>Expected: announced as "Word view" / "Rich text view" / "CSV view"
 respectively.</li>
 </ul></li>
 <li>TC-A11Y-001d — Document tab bar
 <ul>
 <li>Steps: open two or more documents; move focus to the document tab
 control.</li>
-<li>Expected: announced as “Open documents” (not a bare/unnamed
+<li>Expected: announced as "Open documents" (not a bare/unnamed
 notebook).</li>
 </ul></li>
 </ul>
 <h2
-id="a11y-002-controls-use-human-readable-names-not-snake_case">A11Y-002
+id="a11y-002--controls-use-human-readable-names-not-snake_case">A11Y-002
 — Controls use human-readable names (not snake_case)</h2>
-<p>Fix: controls previously named like “status_overview” (spoken
+<p>Fix: controls previously named like "status_overview" (spoken
 letter-for-letter) now use readable names.</p>
 <ul>
 <li>TC-A11Y-002a — Application Status lists
 <ul>
-<li>Steps: Help &gt; Application Status; Tab through each tab’s
+<li>Steps: Help &gt; Application Status; Tab through each tab's
 list/control.</li>
-<li>Expected: the lists/fields are announced as “Status overview”,
-“Tasks and downloads”, “Features”, “Recent actions”, and the button as
-“Refresh” — never “status underscore overview” or similar.</li>
+<li>Expected: the lists/fields are announced as "Status overview",
+"Tasks and downloads", "Features", "Recent actions", and the button as
+"Refresh" — never "status underscore overview" or similar.</li>
 </ul></li>
 <li>TC-A11Y-002b — Verbosity preferences status line
 <ul>
 <li>Steps: open Verbosity preferences; navigate to the status line.</li>
-<li>Expected: announced as “Verbosity status”.</li>
+<li>Expected: announced as "Verbosity status".</li>
 </ul></li>
 </ul>
-<h2 id="focus-001-html-preview-fallback-opens-on-its-content">FOCUS-001
+<h2 id="focus-001--html-preview-fallback-opens-on-its-content">FOCUS-001
 — HTML preview fallback opens on its content</h2>
 <p>Fix: the <code>wx.html</code> fallback dialog opened with focus on
 the Close button; it now focuses the readable content.</p>
@@ -263,14 +265,14 @@ the Close button; it now focuses the readable content.</p>
 <li>Precondition: the <code>wx-accessible-webview</code> backend is
 absent (so the wx.html fallback is used). If your build has the WebView
 backend, this path is not exercised; note that and skip.</li>
-<li>Steps: open a dialog that renders HTML content (e.g. an
+<li>Steps: open a dialog that renders HTML content (e.g. an
 About/preview surface) in the fallback path.</li>
 <li>Expected: on open, the screen reader begins reading the content (the
-HTML view has focus), not “Close button”. Tab still reaches Close;
+HTML view has focus), not "Close button". Tab still reaches Close;
 Escape closes.</li>
 </ul></li>
 </ul>
-<h2 id="a11y-003-input-fields-have-accessible-names">A11Y-003 — Input
+<h2 id="a11y-003--input-fields-have-accessible-names">A11Y-003 — Input
 fields have accessible names</h2>
 <p>Fix: input controls that had only an adjacent visual label now carry
 an explicit accessible name.</p>
@@ -280,7 +282,7 @@ an explicit accessible name.</p>
 <li>Steps: open the Skill Library; Tab through the Skills list, the
 Description field, and (when running a skill with parameters) each
 parameter control.</li>
-<li>Expected: “Skills” (list), “Description” (text), and each parameter
+<li>Expected: "Skills" (list), "Description" (text), and each parameter
 field announced by its parameter label; no unnamed edit/combo/spin
 controls.</li>
 </ul></li>
@@ -288,8 +290,8 @@ controls.</li>
 <ul>
 <li>Steps: open the prompt-authoring dialog and the model-search dialog;
 Tab through the fields.</li>
-<li>Expected: fields announced as “Title”, “Tone”, “Audience”, “Goal”,
-“Template”, “Prompt”, and “Search models” respectively.</li>
+<li>Expected: fields announced as "Title", "Tone", "Audience", "Goal",
+"Template", "Prompt", and "Search models" respectively.</li>
 </ul></li>
 <li>TC-A11Y-003c — Web form dialog
 <ul>
@@ -300,10 +302,10 @@ areas or selects.</li>
 <li>TC-A11Y-003d — Sticky note editor
 <ul>
 <li>Steps: create/edit a sticky note (native fallback path).</li>
-<li>Expected: the two editors are announced as “Title” and “Note”.</li>
+<li>Expected: the two editors are announced as "Title" and "Note".</li>
 </ul></li>
 </ul>
-<h2 id="key-001-tab-is-not-trapped-in-prose-multiline-fields">KEY-001 —
+<h2 id="key-001--tab-is-not-trapped-in-prose-multiline-fields">KEY-001 —
 Tab is not trapped in prose multiline fields</h2>
 <p>Fix: <code>wx.TE_PROCESS_TAB</code> was removed from prose fields so
 Tab moves focus instead of inserting a tab character.</p>
@@ -338,24 +340,24 @@ the behavior and note it.</li>
 </ul></li>
 </ul>
 <h2
-id="a11y-004-validation-errors-move-focus-to-the-offending-field">A11Y-004
+id="a11y-004--validation-errors-move-focus-to-the-offending-field">A11Y-004
 — Validation errors move focus to the offending field</h2>
-<p>Fix: the GitHub “open repository” form announced an error but left
+<p>Fix: the GitHub "open repository" form announced an error but left
 focus on the button; it now moves focus to the field.</p>
 <ul>
 <li>TC-A11Y-004 — GitHub open-repository validation
 <ul>
 <li>Steps: open File &gt; Open from Remote &gt; GitHub (open-repository
-form). Leave the repository box empty (or enter a value without a “/”)
+form). Leave the repository box empty (or enter a value without a "/")
 and activate Load.</li>
-<li>Expected: the status message is announced (“Enter a repository
-name…” or “Repository must be in owner/repo format.”), AND focus moves
+<li>Expected: the status message is announced ("Enter a repository
+name..." or "Repository must be in owner/repo format."), AND focus moves
 to the repository edit field so you can correct it without hunting for
 it.</li>
 </ul></li>
 </ul>
 <h2
-id="editor-surface-wave-6-confirm-existing-behavior-no-code-changed">Editor
+id="editor-surface-wave-6--confirm-existing-behavior-no-code-changed">Editor
 surface (wave 6 — confirm existing behavior; no code changed)</h2>
 <p>These confirm the core editing surface is announced correctly. No fix
 was made here (the audit found it already correct), but verify on a real
@@ -364,7 +366,7 @@ build.</p>
 <li>TC-EDIT-001 — Editor control
 <ul>
 <li>Steps: open a document; move focus into the text area.</li>
-<li>Expected: announced as “Document”, edit/text-area role, multi-line;
+<li>Expected: announced as "Document", edit/text-area role, multi-line;
 typed text reads back; the selection is announced and stays visible when
 focus leaves.</li>
 </ul></li>
@@ -379,17 +381,17 @@ not trapped; it does not insert a tab character).</li>
 <li>Steps: open two+ documents; arrow across the document tab control;
 press Enter on one; toggle/focus the side preview (View &gt; Focus
 Preview).</li>
-<li>Expected: the tab control is “Open documents”; each tab announces
-its document name; Enter announces “Focused document <name>” and lands
-in the editor; the preview pane is announced as “Preview”.</li>
+<li>Expected: the tab control is "Open documents"; each tab announces
+its document name; Enter announces "Focused document <name>" and lands
+in the editor; the preview pane is announced as "Preview".</li>
 </ul></li>
 <li>TC-EDIT-004 — Status bar segments
 <ul>
 <li>Steps: invoke the focus-status-bar command; Tab across the cells;
 press Escape.</li>
-<li>Expected: each cell announces “Status bar, <label>, <value>”
-(e.g. language, position); Tab moves between cells; Escape announces
-“Returned to editor” and returns focus to the document.</li>
+<li>Expected: each cell announces "Status bar, <label>, <value>" (e.g.
+language, position); Tab moves between cells; Escape announces "Returned
+to editor" and returns focus to the document.</li>
 </ul></li>
 </ul>
 <hr />
@@ -397,11 +399,13 @@ press Escape.</li>
 id="regression-context-not-user-visible-no-sr-step-needed">Regression
 context (not user-visible, no SR step needed)</h2>
 <p>These fixes are verified by automated tests and need no manual SR
-check, listed so the plan is complete: - TEST-002: watchdog re-dump test
-made deterministic (unit test). - CALL-1 gate: undefined-private-method
-audit (CI gate).</p>
+check, listed so the plan is complete:</p>
+<ul>
+<li>TEST-002: watchdog re-dump test made deterministic (unit test).</li>
+<li>CALL-1 gate: undefined-private-method audit (CI gate).</li>
+</ul>
 <h2
-id="save-001-save-as-conversion-window-title-and-export-fidelity-0.9.0">SAVE-001
+id="save-001--save-as-conversion-window-title-and-export-fidelity-090">SAVE-001
 — Save As conversion, window title, and export fidelity (0.9.0)</h2>
 <p>Run with JAWS or NVDA on a real build. This is the manual
 verification (Task 9) carried over from the retired
@@ -410,7 +414,7 @@ are in <code>docs/qa/converter-bakeoff.md</code>.</p>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Original repro:</strong> new
 document, 8 lines, Ctrl-S, switch type to Word, name it, Enter. Verify:
-title bar reads “name.docx - QUILL for All …” (no [modified]); second
+title bar reads "name.docx - QUILL for All ..." (no [modified]); second
 Ctrl-S saves silently with no dialog; the save announcement speaks; the
 file opens in Word with 8 paragraphs.</label></li>
 <li><label><input type="checkbox" /><strong>Save As each type:</strong>
@@ -433,7 +437,7 @@ same doc — 8 phrases in the book (line breaks and headings map to
 phrases; it was built line-oriented).</label></li>
 <li><label><input type="checkbox" /><strong>First-line title:</strong>
 untitled doc starting <code># Trip Report</code>, Ctrl-S — name box
-pre-filled “Trip Report”.</label></li>
+pre-filled "Trip Report".</label></li>
 <li><label><input type="checkbox" /><strong>Engine preference:</strong>
 flip <code>docx_write_engine</code> to pandoc, Save As .docx, open in
 Word — structure present, fonts absent, matching the documented

@@ -291,3 +291,5 @@ submit anything. Export to Word only when it actually needs to leave QUILL.
 menu's **Math Tutor** agent — it walks through what each part means and
 names the formula if it's a well-known one, without solving anything or
 changing your document.*
+
+**Next:** [GitHub inside QUILL](08-github-inside-quill.md).

@@ -1,0 +1,173 @@
+[JESSICA]
+The QUILL Cast, episode thirteen. I'm Jessica. Today we pull on the single thread that runs through every other episode of this course: finding things, changing things at scale, and jumping around your own text with confidence.
+
+[LIAM]
+I'm Liam. And we are picking up exactly where episode twelve left us. In the power tools deep dive, Jessica mentioned that find and replace were seeded in the foundation tour, and she promised a fuller walk through the search family today. We are going to keep that promise in depth: find, replace, navigate, and the cross-file lens. By the end of this episode, search will not feel like a single toolbar button. It will feel like a workflow.
+
+[JESSICA]
+Quick frame for the listener who is new to the series. The series is fifty-four episodes total. This is thirteen. We are about a quarter of the way in. The previous three episodes gave you editing grammar, the power tools that build on it, and the deep dive into macros, snippets, and the regex helper. Today is the dedicated episode for the search family, and the next episode is compare and differences, the file-against-file view that pairs naturally with everything you will learn today.
+
+[LIAM]
+One thing I want to be honest about before we start, because honesty is the house style of this course. The first time you press control F to open Find in QUILL, what pops up is not a custom QUILL dialog. It is the native operating system find-and-replace dialog, the one VoiceOver and NVDA already know how to read perfectly, the one with Find Next, Replace, Replace All, and the familiar check boxes for case sensitive and whole word. The reason we use the native dialog is accessibility first: the screen reader behavior is reliable, the buttons are recognizable, the keyboard navigation is universal. The trade-off is that the native dialog does not have a regex toggle. We will explain how QUILL handles that gap in a moment. It is a deliberate design choice, and the trade-off is real. You deserve to know it.
+
+[JESSICA]
+Do this now, before we go any further. Open QUILL with any document on screen. A long document is better, but anything will do. Press control F. Hear the dialog open. Now press escape, do not run a search yet. What I want you to register is the shape of the dialog. There is a Find what field at the top, a direction toggle, two check boxes for Match case and Whole word, and the three action buttons: Find Next, Replace, Replace All. That is your mental model for the next twenty minutes. Memorize those four affordances: the two flags and the three actions. The rest of the single-document story is variations on those four.
+
+[PAUSE]
+
+[JESSICA]
+Let's walk the actual feature, code-verified. In quill.ui.main_frame, the function find_text calls _open_find_replace with replace set to False, and that function instantiates a wx.FindReplaceDialog with the title Find. The dialog is modeless, so the document stays editable behind it, and it is recreated each time you open it so toggling between Find and Replace works cleanly. Behind the dialog is a wx.FindReplaceData object that holds the current query and the two flags, kept alive on the frame as _find_replace_data so the dialog can keep reading and writing it.
+
+[LIAM]
+When you press Find Next, the dialog fires an EVT_FIND event, which the frame catches in _on_find_event. That handler captures the query string, builds a SearchOptions object from the flags, adds the term to the search history, and calls _find_relative, the same routine that Find Next and Find Previous both use. The search history is stored in search-history.json in your QUILL data directory, kept to the last one hundred unique terms, with the most recent first. That is the same file that seeds the find dialog next time you open it. Your recent searches are remembered.
+
+[JESSICA]
+The SearchOptions dataclass in quill.core.search is frozen and slotted, with four fields: case_sensitive, whole_word, use_regex, wildcard. The native dialog only ever produces the first two. The other two are produced by the rich modal that backs Find All Matches, and by the dialog for Search in Files. So when you read the source, those two fields are the bridge between the native dialog and the rich ones. They exist so the same _find_relative routine can serve both paths.
+
+[LIAM]
+When _find_relative locates a match, it posts a status message: Found next at position N, with an optional (wrapped) suffix. The position is one-based. The wrap suffix appears only if the search wrapped past the end of the document and back to the start, and only if announce_wrap is on in your settings. There is also a sound event posted to the sound manager: SEARCH_FOUND for a normal hit, SEARCH_WRAPPED when it wrapped, and SEARCH_NOT_FOUND when there were zero matches. The sound is small, two notes, and it is a confirmation you can hear without shifting focus. The screen reader gets the spoken status. Your ear gets the chord.
+
+[JESSICA]
+Find Previous, shift F3, runs the same _find_relative routine with reverse set to True. The code walks the list of matches in reverse, picks the last match whose end is less than or equal to the cursor, and moves the cursor to it. If you have a selection when you press them, the cursor is treated as the start of the selection for forward and the end for backward. The selection is honored. The wrap-around behavior is governed by a setting called wrap_find, on by default. We recommend the default for the first month, then customize to taste.
+
+[LIAM]
+Now the verb that changes things: replace. The keymap default is control H, and the function replace_text opens the same native dialog in its replace mode, with a second field for the replacement string. The Replace button replaces the currently selected match, or, if there is no selection, finds the next match and replaces it. The Replace All button replaces every match in the document in one shot.
+
+[JESSICA]
+A code-verified claim worth saying out loud, because it is the source of a common misreading. The function replace_all_text in main_frame is not its own giant workflow. It is a one-liner that calls _open_find_replace with replace set to True. The actual heavy lifting happens inside the native dialog's EVT_FIND_REPLACE_ALL event, wired up in _on_find_replace_all_event. That handler takes the full document text, calls the pure function replace_all from quill.core.search, which returns the new text plus a count, and if the count is greater than zero, sets the document text and posts: Replaced N occurrence or occurrences. The pure function does the matching, the dialog does the display, the handler does the wire-up.
+
+[LIAM]
+If zero matches were found, the status reads No replacements made, and the document is untouched. If one or more matches were replaced, the status reads Replaced N occurrence or occurrences, and the entire replacement is one undo step. We covered the undo contract in episode eleven. The whole point of that contract was that big operations undo atomically. Replace All of forty items is one control Z. You can be bold.
+
+[JESSICA]
+A honest correction. The user guide shipped with 0.9 says that Replace All has its own confirm-before-running dialog, the way destructive commands usually do. It does not. Replace All runs immediately when you press the button. The safety net is the undo contract: one control Z restores the original text. For the single-document case, the design is: act, then undo. We are being honest that the user guide is out of step with the shipped code on this one.
+
+[PAUSE]
+
+[LIAM]
+Now the second circle: Find All Matches. The keymap default is control shift F3. The function find_all_matches is a richer version of Find Next. It opens a modal web form, a custom QUILL dialog built with show_web_form, with a Find text field, a Search mode selector with four options Plain text, Whole word, Regular expression, Wildcard, and a Case sensitive checkbox. The seed value for the query is your last find query, or the most recent term in your search history. The mode is what unlocks the regular expression feature that the native dialog cannot show.
+
+[JESSICA]
+Once you submit, the function takes the full document text, calls find_matches from quill.core.search, gets back a list of match start-and-end tuples, and if the list is non-empty, builds a small report. The report is a numbered list, with up to twenty-five entries, each one showing the index, the line number, and the column number. If there are more than twenty-five matches, the report appends a line that reads, and N more. The report goes into a modal information box, with the title Find All Matches, and the status bar also gets a short message: Found N match or matches.
+
+[LIAM]
+Why a hard cap of twenty-five in the dialog itself. The honest answer is accessibility. A box with five hundred numbered lines is not a useful screen reader experience. Twenty-five is the upper bound where VoiceOver, NVDA, and JAWS all stay responsive. The full count is always in the status bar. If you need the full enumeration, switch to Search in Files with output mode Filenames with line numbers and counts, and the result opens in a generated tab where you can navigate at your own pace.
+
+[JESSICA]
+The mode selector maps to SearchOptions in a clean way. Plain text sets use_regex and wildcard to False. Whole word sets whole_word to True. Regular expression sets use_regex to True. Wildcard sets wildcard to True. The case sensitive checkbox is a separate flag, applied on top of whatever mode you chose. All four combinations are valid and all four are useful.
+
+[LIAM]
+Wildcard is the gentler cousin of regex. In the source, _wildcard_to_regex converts the query character by character. An asterisk becomes the non-greedy regex fragment .*, a question mark becomes a single character wildcard, and every other character is regex-escaped. So ship.txt in wildcard mode becomes ship\.txt, and report*draft becomes report.*?draft. You do not need to know regex to use wildcards. You use the same shell-style globs you have used in file managers for decades. The translation happens out of sight.
+
+[JESSICA]
+A regular expression is a search pattern with wildcards, that is all it is. Backslash D means any digit. Dot means any character. Plus means one or more of the previous thing. So backslash D plus finds every run of digits, every number in your document. The regex flavor in QUILL is the standard Python re module, with the optional regex package as an accelerator, and there is a half-second per-pattern timeout safety net so a pathological pattern can never freeze the editor. You will not notice the timeout on real text. It is there so a typo in a quantifier cannot lock the UI.
+
+[PAUSE]
+
+[LIAM]
+Now the third circle: Search in Files. The keymap default is control shift F. The function search_in_files calls _prompt_file_search with replace set to False, which builds a custom wx.Dialog with a FlexGridSizer, a starting-folder picker, a file pattern field, a search text field, a match mode choice with the same three options as the rich modal, an output format choice with four options, and the case-sensitive and whole-word checkboxes. The file pattern defaults to asterisk, which is the catch-all glob.
+
+[JESSICA]
+The output format choice has four options. Option one: Filenames only. Just the path of every file that has at least one match. Option two: Filenames with line numbers and counts. Path, match count, then for each matching line, the line number, the match count on that line, and the line text. Option three: Counts only. Path and total match count per file. Option four: Filename with line context. The default. Path, total match count, then up to ten matching lines with their numbers and text. The default is the most useful for the common case.
+
+[LIAM]
+When you submit, the function calls _run_background_task, which hands the work to a background thread. The thread walks the file tree, reads each matching file as utf-8, runs find_matches against the text, and groups the matches by line. The progress callback updates the status bar. When the work returns, the frame opens a generated tab titled Search dash the file pattern, renders the report using render_search_report from quill.core.file_search, and posts: Search complete, N match or matches in M file or files. The generated tab is a real editor tab. The header shows root, pattern, query, scanned files, and total match count. The body is the per-file breakdown in whatever output mode you chose.
+
+[JESSICA]
+The Search in Files match is informational. The report opens in a tab. It does not jump your cursor anywhere. To jump, you have to take a result and act on it, copy the path, open the file, run Find inside it. The report is the index; the navigation is the reader. That is a clean separation.
+
+[PAUSE]
+
+[LIAM]
+Now the partner workflow: Replace Across Files. The keymap default is control shift R. The function replace_in_files calls the same _prompt_file_search dialog with replace set to True, which adds a Replacement field and a Preview before replacing checkbox. The preview checkbox defaults to True.
+
+[JESSICA]
+With preview on, the function first runs the search and renders a Replace Preview tab, showing the root, the pattern, the query, the replacement string, the number of files with matches, and the total match count, followed by a per-file breakdown with the first ten matching lines. If the total match count is zero, the status reads No matches found, and nothing else happens. If the total is greater than zero, the dialog shows a Yes-No confirmation: Apply these replacements across files? The default is No. If you confirm Yes, the function runs the actual replacement, opens a Replace Results tab, and posts: Replaced N occurrence or occurrences in M file or files.
+
+[LIAM]
+With preview off, the function skips the confirmation and goes straight to the replacement. The Replace Results tab opens directly, with the same rendered report. We strongly recommend leaving preview on until you have done this a few times. The preview tab is your chance to spot a typo in the replacement string before it lands in a hundred files. The Yes-No confirmation is your second chance. The undo contract does not extend to cross-file replacement, because the file system is outside the editor's undo chain. The preview flow is your safety net.
+
+[JESSICA]
+A code-verified claim about cross-file replacement safety. The replace function in quill.core.file_search only writes a file if it actually had at least one match. Files with zero matches are not touched. The Files changed count in the report is the count of files that were actually modified. If the report says Files changed zero but Total matches N, that would be a bug. It cannot happen. The same options carry over: Plain text, Wildcard, Regular expression, case sensitive, whole word. There is no separate regex flavor for cross-file work.
+
+[PAUSE]
+
+[JESSICA]
+Now navigation, the verb that pairs with search. The first time you find a match, the cursor lands on it. From there, every movement verb from episode seven applies: paragraph, line, word, character, document. But there are also dedicated jump verbs that make sense after a search. Bookmarks. Heading jumps. Block jumps. Page math. We will walk them in that order.
+
+[LIAM]
+Bookmarks are persistent named jump points, stored in bookmarks.json in your QUILL data directory. The module that owns them is quill.core.bookmarks, and the on-disk shape is a name-to-character-offset dict, wrapped in a BookmarkVault dataclass. The load function is forgiving: a missing file or a malformed JSON file yields an empty vault instead of raising, so the editor can always start. Writes are atomic, same as the search history.
+
+[JESSICA]
+The post-search use case. You find a term, you read its context, you decide it is important, you bookmark it with a name like lighthouse-clause, you keep searching. The bookmarks accumulate as named pins. You can come back next session, open the document, jump to the bookmark by name, and the cursor lands exactly where it was. Search finds the term once. The bookmark remembers the term forever.
+
+[LIAM]
+Heading jumps live in quill.core.navigation. The function next_heading_start takes the text, the cursor, and a markup kind, and returns the character offset of the next heading at or after the cursor. Previous heading start returns the heading at or before the cursor. The function recognizes Markdown headings and HTML h1-through-h6 tags, and returns nothing for plain text. The pattern is a regex with multiline mode.
+
+[JESSICA]
+Block jumps are markup-agnostic. The function next_block_start walks the text split by line, identifies the start of every non-empty block, and returns the offset of the first block whose start is greater than the cursor. A block is a run of non-empty lines; an empty line is the separator. The function does not care whether the block is a paragraph, a list, a code fence, a quote. A block is a block. That is the right level of abstraction for the cross-format navigation story. Page math is a softer primitive: estimate_page_for_position does ceiling-division of the word count by words-per-page. It is an approximation, the source is honest about that. It will not match a printed or exported page count, but it is good enough for the status-bar indicator.
+
+[PAUSE]
+
+[JESSICA]
+Putting it together: a real workflow. Suppose you are reviewing a long report. You press control F, type a term like liability, and Find Next walks you through the eight matches. You find the one that is ambiguous, bookmark it as ambiguous-liability-1, and keep going. The next ambiguous match gets bookmarked as ambiguous-liability-2. When you are done, you have a handful of named pins. You move on to Search in Files to look for the term across a folder of related documents, and the report tab shows you which files have hits. For the file with the most hits, you open it, run Find inside it, and walk those matches too. Finally, you use Replace Across Files with preview on to update a term that has been deprecated, in every file at once.
+
+[LIAM]
+That is the full lifecycle: find, mark, widen, drill down, replace. The verbs layer. The native dialog does find and replace. Find All Matches does enumerated search. Search in Files does cross-folder search. Bookmarks do remember. Heading and block jumps do structural movement. Page math does soft location. None of them is the whole answer. Together, they are the answer.
+
+[JESSICA]
+One more honest correction. The release notes for 0.9 said Search in Files has a remember-search-history feature that pre-fills the query field from your last search across files. The rich modal does pre-fill from your last find query, which is usually the same thing, but the cross-file dialog does not have its own history separate from the find history. If you want a different history for cross-file work, that is a feature request we will track, and the channel is the bug report form in the Help menu.
+
+[LIAM]
+Three distinct sound events fire from the search routines: SEARCH_FOUND, the small success chord when a match is located. SEARCH_WRAPPED, a slightly different chord when the search wrapped past the end. SEARCH_NOT_FOUND, the down-chord when there were zero matches. They are short, two notes, and they layer on top of whatever your screen reader is already saying. The screen reader gives you the precise text. The sound gives you the shape. Together, you can search a document without ever looking at the status bar, just by listening to the chord pattern as you press F3.
+
+[JESSICA]
+And the keyboard contract is complete. Control F opens find. Control H opens replace. F3 finds next. Shift F3 finds previous. Control shift F3 finds all matches. Control shift F searches in files. Control shift R replaces across files. Control shift H is the standalone Replace All command. Eight keymap slots, eight actions, and they are all reachable from the command palette if you prefer to type the action name. The native dialog and the rich modal coexist. The native dialog is the default. The rich modal is the upgrade. Both speak.
+
+[LIAM]
+The undo contract revisited, because it matters here. A Replace All in a single document is one undo step. A Find All Matches does not modify the document and produces no undo entry. A Search in Files produces no undo entry. A Replace Across Files produces no undo entry, because the file system is outside the editor's undo chain. The preview flow is your safety net for cross-file work. Memorize that distinction. In-document edits are undoable. Cross-file edits are not, by design. The preview is the substitute for undo.
+
+[JESSICA]
+A accessibility note. The native dialog is read reliably by VoiceOver on macOS, NVDA on Windows, and JAWS on Windows. The rich modal that backs Find All Matches is built with show_web_form, the same accessible web form pattern used elsewhere in QUILL. The Search in Files dialog is a wx.Dialog with a FlexGridSizer, audited for keyboard navigation. Every control has a label, the tab order is left-to-right top-to-bottom, the Enter key submits, Escape cancels. If you find a keyboard trap, file a bug. The dialog inventory gate catches regressions in CI.
+
+[PAUSE]
+
+[LIAM]
+One pattern worth calling out: how search composes with the rest of the show. Find Next and Find Previous set the cursor. Once the cursor is set, every selection verb from episode eight works. You can select to the end of the line, to the next heading, to the bookmark you set last week. You can copy with source. You can run a macro that does the find-replace-style change. The find is one verb in a long chain of verbs. The more verbs you have, the richer the chain.
+
+[JESSICA]
+The search history is the bridge between sessions. The most recent one hundred terms, most recent first, persisted in search-history.json. When you open Find, the dialog seeds with the most recent term. When you open Find All Matches, the rich modal seeds with the same. When you open Search in Files, the query field seeds with the same. The verb Find remembers itself.
+[LIAM]
+Literal search is the default. The query is treated as a string of characters. The special regex characters, the dot, the asterisk, the brackets, the backslash, are all treated as themselves. Pattern search, which is what use_regex and wildcard enable, treats the query as a pattern. The native dialog is always literal. The rich modal and the cross-file dialog let you choose. The default is literal because it is the safe choice. Pattern search is opt-in.
+
+[JESSICA]
+And one more thing about patterns. The friendly regex error function in quill.core.search takes the raw Python regex error and rewrites it in plain English. Unterminated subpattern becomes the opening parenthesis does not have a closing parenthesis, with the position. Unterminated character set becomes the character class is missing a closing bracket. Nothing to repeat becomes the repeat marker has nothing to repeat. The friendly version is what the user sees. The raw version never reaches the user. If a pattern is bad, the user gets a sentence they can act on, not a stack trace. That is the QUILL way.
+
+[PAUSE]
+
+[LIAM]
+Now the homework. Four small steps. Step one: open a long document, press control F, search for a common word like the, and ride F3 through every hit. Listen to the match counts in the status bar. Press shift F3 to go backward. Get the feel of the F3 and shift F3 pair. Step two: do a Replace All on a safe term, something you can easily re-type if you have to, and then press control Z once. Notice the entire Replace All is one undo step. That is the safety net in action. Step three: open Find All Matches with control shift F3, switch the mode to Regular expression, and type backslash D plus in the query. See every number in your document light up. Read the matches aloud. Learn the rhythm of how regex feels when it works.
+
+[JESSICA]
+Step four: run Search in Files with control shift F across a folder of documents for a phrase you half-remember. Use the default output mode, Filename with line context. Read the generated tab. Notice the header shows the root, the pattern, the query, the number of scanned files, and the total match count. Notice the per-file breakdown shows path, count, and up to ten lines. That is the tool you will reach for when one document is not the whole story.
+
+[LIAM]
+Bonus step, if you have a folder of similar documents. Run Replace Across Files with control shift R, leave preview on, type a deprecated term and a replacement, and follow the preview tab to the Yes-No confirmation. Read the preview before you confirm. Notice the Files changed count and the Total replacements count in the report tab.
+
+[JESSICA]
+Next episode: compare and differences. The file-against-file view that pairs naturally with everything we did today. You will learn how to open two documents side by side, walk them in lockstep, see the differences highlighted, and merge changes with a keystroke. Compare is the natural follow-up to search, because once you have found every mention of a term across a folder, the next question is: which version of the document has the right version of the term.
+
+[LIAM]
+The series total is fifty-four episodes. We are at thirteen. The next forty-one cover formatting, conversion, accessibility, AI, the vault, the Quillins, the build-your-own arc, and the power-user arc. The pace does not change. The tools get deeper.
+
+[JESSICA]
+And a reminder of the honesty house style. The user guide on 0.9 mentions a confirm dialog for Replace All that does not exist in the code. The release notes mention a drag-to-reorder feature in the snippet gallery that does not exist in the code. The release notes mention a cross-file search history that does not exist as a separate feature. We will keep calling those out, because the user guide and the code have to converge. Until they do, you deserve to know which one is right. Trust the menu. Tell us when they disagree.
+
+[LIAM]
+One last thing. If you are listening in order, the previous episode was twelve, the power tools deep dive, and we promised there to circle back on regular expressions with the rich modal that backs Find All Matches. We circled back today. The promise is kept. The regex helper is the safest place to compose a pattern. Find All Matches is where you run it on a real document. Search in Files is where you run it across a folder. Three verbs, one grammar.
+
+[JESSICA]
+I'm Jessica.
+
+[LIAM]
+I'm Liam. Find, replace, navigate. Three verbs, one workflow.

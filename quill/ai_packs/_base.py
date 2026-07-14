@@ -8,8 +8,20 @@ capabilities, and the SDK-specific ``invoke`` (built lazily).
 
 Two design points keep this honest and testable:
 
-- **Lazy probing.** :func:`modules_missing` uses ``importlib.util.find_spec`` and
-  never imports the SDK, so importing a pack is free and safe in any environment.
+- **Verified probing.** :func:`modules_missing` first checks
+  ``importlib.util.find_spec`` (cheap, no execution) and, only when a spec is
+  actually located, attempts a real ``importlib.import_module`` to confirm the
+  module truly imports. A locatable spec alone is not proof a package is
+  usable: an on-demand pack install (:func:`quill.core.ai.sdk_install.install_pack`)
+  that was interrupted partway through — most commonly because the host
+  process crashed mid ``pip install --target`` — can leave some of a
+  package's files written and others missing or truncated. ``find_spec``
+  alone is fooled by that half-installed state (it only locates a file, never
+  parses or executes it), which is how a crashed install could get
+  permanently stuck reporting a pack as installed/available with no way to
+  retry. The extra import attempt is bounded to the pack's own declared
+  ``sdk_modules`` and any failure is contained (never raised), so probing
+  stays safe even against a badly broken install.
 - **Injectable transport.** :class:`SdkHarness` accepts an ``invoke`` override; a
   pack's real ``_make_invoke`` imports the SDK lazily, but tests (and advanced
   wiring) can inject a transport to exercise the gateway bridge without the SDK
@@ -42,14 +54,33 @@ Invoke = Callable[[AgentSpec, AIContext], str]
 
 
 def modules_missing(names: Sequence[str]) -> list[str]:
-    """Return the subset of ``names`` not importable, without importing them."""
+    """Return the subset of ``names`` that cannot be genuinely imported.
+
+    A two-step probe: ``find_spec`` first (cheap; catches the common "not
+    installed at all" case without importing anything), then — only for a
+    name whose spec *was* located — a real ``import_module`` to confirm the
+    module actually loads. That second step is what catches a pack install
+    that was interrupted partway through (e.g. QUILL crashed mid ``pip
+    install``): the spec can be found because some files landed on disk, but
+    the module itself fails to import because others didn't. Without it, a
+    crash-interrupted install would be reported as available forever, with no
+    signal telling the caller to retry it.
+    """
     missing: list[str] = []
     for name in names:
         try:
             if importlib.util.find_spec(name) is None:
                 missing.append(name)
+                continue
         except (ImportError, ValueError):
             # find_spec raises if a parent package is itself missing/broken.
+            missing.append(name)
+            continue
+        try:
+            importlib.import_module(name)
+        except Exception:
+            # Spec was located but the module itself would not load — the
+            # signature of a partially-completed on-demand install.
             missing.append(name)
     return missing
 

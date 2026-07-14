@@ -1,0 +1,198 @@
+[JESSICA]
+The QUILL Cast, episode twenty-seven. I'm Jessica. Today, two quiet but powerful pillars: publishing your writing to a website, and sharing your setup with another QUILL user, both without ever leaving the editor.
+
+[LIAM]
+I'm Liam. If you've ever finished a draft and thought, okay, now I copy this into a browser tab, log into WordPress, paste the title, paste the body, fix the formatting, and pray, this episode is for you. Same for the moment a friend asks how you got QUILL to do that thing, and the honest answer is, three weeks of menu tweaks and a keymap you cannot recreate by hand.
+
+[JESSICA]
+Before we get to the new material, a quick recap of episode twenty-six. We sat down with Ask QUILL, the everyday AI surface. The headline is the trust posture: you ask, QUILL thinks aloud, you confirm, QUILL acts. The free-model catalog matters, but the architecture matters more. Every action stays scoped to your session until you say go, the conversation history is yours, and the rewrite never touches the original file behind your back. That consent model is the spine of everything AI in QUILL, and it carries forward into today's episode, because publishing is the most consequential single click a writer can make.
+
+[LIAM]
+Two features, one episode, and they're related more than they look. Publishing moves your words out of QUILL and onto a website. Sharing moves your QUILL setup, the keymap, the snippets, the macros, the watch folders, out of your QUILL and onto another person's. Same shape: package your thing, name the destination, confirm, send. Same safety: nothing leaves without you clicking the button, and the privacy rules are structural, not decorative.
+
+[JESSICA]
+Let's start with publishing, because it's the one people ask about first.
+
+[PAUSE]
+
+[LIAM]
+The publishing feature family lives under a single submenu called Publish, and that submenu is parked inside the File menu. File, then Publish, then a list of commands that grows or shrinks depending on which features you've turned on. Two feature flags gate the menu, and we need to be honest about them, because they decide what you see and when.
+
+[JESSICA]
+First flag, future.publishing.read. The read side is the inbound tools: connections manager, verify connection, browse content from your site. As of this recording, the read side is unlocked in the standard build. You should see Publishing Connections and Browse Publishing Content in the menu without doing anything special.
+
+[LIAM]
+Second flag, future.publishing. The send side is the outbound tools: create draft, publish now, update remote, schedule. The send side is locked off by default, marked future, the honest name for an experimental gate. To turn it on, you go to Tools, Profiles and Features, find publishing in the feature list, and enable it. The gate exists because sending your words to a live website is irreversible in the moment, and QUILL's house style is to make you opt in to anything with that weight.
+
+[JESSICA]
+That's the honest answer to the question, "why doesn't my menu look like the screenshots?" It is gated, by design, and the gate is yours to open.
+
+[LIAM]
+Here's the do this now beat, before we go deeper. Pause the audio. Open QUILL. Look at the File menu. Find the Publish submenu. Tell me, out loud or to yourself, which entries are present. If you see Publishing Connections, Verify Current Publishing Connection, and Browse Publishing Content, the read side is on. If you also see Create Post Draft and Publish Post Now, the send side is on too. If the submenu isn't there at all, both gates are off. Take thirty seconds. I'll wait.
+
+[PAUSE]
+
+[JESSICA]
+Welcome back. Whatever you saw is correct, and the rest of the episode will make more sense now that you've looked.
+
+[LIAM]
+Let's walk a publishing workflow, end to end, against the code. The module is quill.core.publishing, and it's a wx-free pure domain layer. Roughly seven hundred and sixty lines, plus a clients module that knows how to talk to WordPress, a providers registry, a schedule validator, a compare module, a worker, a linkage registry, and a validation module. There's a lot here, but the surface is small.
+
+[JESSICA]
+Step one, the connection profile. A publishing connection is a named bundle of facts: provider, site URL, sign-in method, identifier, and a secret. The provider is registered in quill.core.publishing.providers, and right now exactly one provider is implemented: WordPress. That covers WordPress.com, self-hosted WordPress, and any host that exposes the standard WordPress REST API. The provider registry is open, the function is register_publishing_provider, so a Quillin or a future release can add Ghost, Hugo front-ends, anything that speaks a similar shape, but the only one shipped today is WordPress.
+
+[LIAM]
+The sign-in method for WordPress is application password. WordPress application passwords are the per-application random strings you generate inside your WordPress admin, Users, Profile, Application Passwords. QUILL never sees your main account password. The dialog shows a Reveal button beside the password field, defaulting to masked, and the button is keyboard reachable. The form has a Connection name field, a Publishing type chooser, a Site address, the sign-in method chooser, Username or email, and the Application password field. Verify Connection runs a live check against the site.
+
+[JESSICA]
+Step two, the secret's home. Once you verify, QUILL stores the application password. The storage policy is layered. First choice is the Windows credential manager, under the target name QUILL:publishing:<connection-id>:secret. If the credential manager is unavailable, for any reason, QUILL falls back to a local file, app data directory, publishing-secret-<id>.json, with the secret DPAPI-encrypted on Windows. The credential_manager_available probe is what picks the path. Either way, the secret never sits in plain text, never sits in a shared config file, and never leaves your machine except inside the HTTPS request to your site.
+
+[LIAM]
+Step three, the network rules. The validate endpoint security function is small and worth quoting the shape of. The site URL must be HTTPS. The one exception: HTTP is allowed for local loopback and private network endpoints, the localhost, 127 dot, ten dot, nineteen-two dot one-six-eight dot, seventeen-two dot sixteen through thirty-one ranges. That's how a developer running a local WordPress on their laptop still gets to test. Anywhere else, plain HTTP is refused with a clear message: Only HTTPS endpoints are allowed for remote publishing sites. HTTP is only supported for local loopback and private network endpoints.
+
+[JESSICA]
+The WordPress client itself uses Python's urllib with a verified TLS context from quill.core.net, the same verified ssl context that gates every other outbound call. No third-party HTTP library, no certificate warnings to dismiss, no opportunistic encryption. Verified TLS, period.
+
+[PAUSE]
+
+[LIAM]
+Now the workflow itself. Open QUILL, open a document, decide where it goes. If you want a brand new post, use Create Post Draft. If you want a brand new page, use Create Page Draft. If you have a document open that should overwrite an existing remote item, use Publish Post Now or Publish Page Now to send the current document, or Update Remote Content after opening a remote item for editing. Each of these commands, before sending, shows a confirmation dialog: site URL, title, status, and a final Yes or No. The send is opt-in, the dialog tells you exactly what is about to leave your machine, and Cancel is the same as a back button, nothing partial, no half-published state.
+
+[JESSICA]
+Schedule Publish opens a dedicated dialog. You pick a content type, enter a date as YYYY dash MM dash DD, a time as twenty-four hour HH colon MM, and a time zone from the full zoneinfo list. The validator at quill.core.publishing.schedule has two rules: the chosen time must have a time zone attached, and it must be in the future. That's it. The chosen instant is sent to the remote site, which is responsible for firing at that moment. QUILL doesn't run a background timer; the site does the scheduling. The status the site stores is "future", which is the WordPress convention for a scheduled post.
+
+[LIAM]
+The Compare With Remote command is the careful-writer's friend. Open a remote post in QUILL, edit locally, then ask to compare. QUILL fetches the current remote version, the local version, and your last known updated_at, and produces a PublishingComparison object with five booleans. Title differs, body differs, status differs, remote changed since last known, plus the last-known timestamp itself. The result is announced: "Compared this post with example.com. Title: matches. Status: matches. Body: differs." That last line is the one that saves you from clobbering a co-author's edit you didn't see.
+
+[JESSICA]
+The other careful-writer feature is the publishing linkage. When you open a remote item, QUILL writes a small file called publishing-linkage.json, keyed by the local path, recording the remote id, the site, the content kind, the status, and the last seen updated_at. The next time you open that local file, even if you open it from a fresh restart, QUILL knows it is a published item, and the Compare and Update commands route correctly. Without that linkage, the editing flow would be guessing, and the guess would sometimes be wrong.
+
+[PAUSE]
+
+[LIAM]
+The browse workflow. Browse Publishing Content opens a dialog with three filters at the top. Content to browse, defaulting to All content types, with a Posts only and Pages only variant if the provider supports both. Status to browse, with three options, Published and drafts, Published only, Drafts only. Open in Quill as, with two options, Readable Markdown, Raw HTML. The default is Readable Markdown, and that's the right choice most of the time.
+
+[JESSICA]
+The Readable Markdown choice is the smart one. QUILL converts the remote HTML body into Markdown, with one important escape hatch. If the body contains tags the converter can't represent safely, things like tables, iframes, SVGs, math, forms, video, QUILL falls back to opening the raw HTML instead. The detect logic is a simple list of opening tags, kept in the module for the same reason every other fallback is kept: it is the explicit, readable, testable thing, not magic. The Readable Markdown versus Raw HTML choice is in the dialog because some days, like a post heavy with a custom table, you want the raw HTML, and the choice should be yours.
+
+[LIAM]
+The browse itself runs on a background task. The dialog has a Load Content button, a Cancel button that appears only while loading, and a result list. Cancel calls task_manager.cancel on the active operation, the worker honours the cancellation check, and you get a "Browse cancelled" message in the summary box. No thread leaks, no zombie operations, no surprise results after you stopped waiting.
+
+[JESSICA]
+The browse and load operations are also the only ones that ever re-show a list of remote items in QUILL. Everything else, create, update, publish, schedule, takes a single document and a single decision. That asymmetry is on purpose: discovery is exploratory, mutation is targeted.
+
+[PAUSE]
+
+[LIAM]
+Now the second half of the episode, Share. Same shape, different payload, very different audience.
+
+[JESSICA]
+Share lives under Tools, then Customize and Support, then two entries: Export and Back Up, and Import or Restore. The naming is deliberate. Export and Back Up is one dialog with a mode toggle, not two separate dialogs, because the difference is what goes in the package, not how the dialog looks. Profile mode is for sharing with another person. Backup mode is for restoring on the same machine.
+
+[LIAM]
+The package format lives in quill.core.share_package. There are two extensions: dot quillprofile, for a profile, and dot quillbackup, for a backup. The document is JSON, with a schema version at the top, a name, a kind, and a set of named sections.
+
+[JESSICA]
+The sections are where the privacy story lives. There are thirteen section ids defined, but only eight are shareable. Settings, the feature profile, the keymap, snippets, macros, watch profiles, the personal dictionary, style models, and the window layout. Five are private: secrets, license, recent files, device paths, and telemetry ids. The writer is structural, not decorative: if you choose profile mode, the export code refuses to write a private section into the package, and the import code refuses to apply one if a hand-edited file managed to smuggle it in. There is a round-trip test and a privacy test in the test suite that enforces this, which is the only kind of enforcement that matters for a privacy contract.
+
+[LIAM]
+The dialog shows you the offer list with a checkbox for each section, all checked by default, and a kind chooser at the top with two radio buttons, Share a profile, privacy clean, and Back up everything. When you switch to profile mode, the checkboxes for any private section are unchecked and disabled. You cannot shoot yourself in the foot. The dialog also has a Name field, used as the file's default name and recorded in the package itself.
+
+[JESSICA]
+Import is the other half, and it has a rollback contract. Before applying any section, QUILL takes a snapshot of the feature manager state. If any section fails to apply, the snapshot is restored and the exception re-raised. The point is: a bad package never leaves your app half-changed, the worst case is the package was not applied. That is also the right worst case. Sections that succeed are listed in an Import notes dialog at the end, and any feature switched on to satisfy a dependency is announced by name, not silently.
+
+[LIAM]
+The same package layout means a profile you make for a friend is a small file, often under ten kilobytes, and a backup for yourself is bounded by the size of your snippets and macros. There is no email, no cloud sync, no account, no telemetry. The file is the file. You email it, you drop it on a thumb drive, you put it on your own network share. The only requirement is that the file reaches the other machine.
+
+[JESSICA]
+The two file types are intentionally not interchangeable in a friendly way. A profile will never carry your secrets, even if you really want it to. A backup is the only kind that carries private sections. Importing a profile that tries to set a feature a package writer hand-edited to inject secrets will be rejected by the applier; the private flag is checked before the section is even loaded.
+
+[LIAM]
+The connecting tissue between publishing and share, and the reason we put them in the same episode, is redaction. Stability code, specifically quill.stability.redaction, is the safety net under every log line and every crash bundle the publishing and share features could possibly produce.
+
+[JESSICA]
+Redaction has three entry points. Redact source tokens scrubs accidental API key pastes from console history, replacing long hex, base64-looking strings, JWTs, and known prefixes like ghp underscore, sk hyphen, AKIA, xoxb, xoxp with the literal string token or JWT. The replacement is conservative on purpose, false positives are fine, false negatives are not. Redact command arg does the same for subprocess arguments, replacing secret-shaped values wholesale and stripping the directory portion of Windows and POSIX paths. Redact text for bundle applies both rules to every line of a file going into a crash bundle, drops whole lines that are pure secrets, and caps the line length so a giant log line never leaks a single token verbatim.
+
+[LIAM]
+The crash bundle contract, which is enforced by the redaction function, says: every text file in a diagnostic zip is run through this helper before the file lands in the archive. The publish worker writes its request and response bodies to a log file under app data, diagnostics, publishing. The share exporter writes the assembled package to disk, and if the package ever ends up in a crash bundle, the secrets section, if it were somehow present, would be dropped by the line check. The remote site URL, your username, your application password, are all patterns the redaction rules are designed to mask, and the publishing code uses the same logger configuration as the rest of QUILL.
+
+[JESSICA]
+That is the quiet but real reason these two features belong together. Publishing talks to the network, share talks to the filesystem, and redaction is the floor under both, the thing that guarantees a token pasted into a site address by accident never shows up in a support bundle, never appears in a log line you read aloud to a colleague, never sneaks into a profile you hand to a friend.
+
+[LIAM]
+A few notes for accessibility and keyboard use, because both features lean on dialogs and both dialogs were built with the contract.
+
+[JESSICA]
+The Publishing Connections dialog has a list of saved connections, an Add button, an Edit button, a Remove button, a Use This Connection button, and a Verify Current Connection button. All reachable by tab, all named for screen readers, all with the standard Yes No confirmation on destructive actions like Remove. The connection list announces selection changes, and the summary text below the list updates as you arrow through, so a screen reader user always knows which connection is highlighted.
+
+[LIAM]
+The Edit Publishing Connection dialog has a labelled form, a Verify button that runs against the live site, and a Reveal button for the application password. The default tab order is connection name, publishing type, site address, sign-in method, identifier, application password, reveal, verify, OK, cancel. The sign-in method chooser drives which rows are visible, so changing the method hides or shows the identifier and password rows without you losing your place. The keyboard contract is the one defined by the dialog inventory gate, and the inventory covers it.
+
+[JESSICA]
+The Browse Publishing Content dialog is a list with three filters above, a Load button, a Cancel button that appears during loading, and an Open in Quill button that confirms the choice. The summary box at the bottom is a multiline read-only TextCtrl, named for screen readers, that shows the title, type, status, updated timestamp, and remote link for the highlighted item. The Cancel button is hidden when no load is running, so it is never announced as inert.
+
+[LIAM]
+The Share export and import dialogs are similar in spirit. The export dialog has a kind chooser, a name field, and a checklist of sections, with a confirmation when the file is written. The import dialog shows the package summary before any change is applied, and the summary tells you which sections will be touched. The same rollback contract applies: features snapshotted, applied section by section, restored on any failure.
+
+[PAUSE]
+
+[JESSICA]
+Now the part the brief asked us to flag honestly. A few claims worth correcting or sharpening.
+
+[LIAM]
+First, the brief that produced this episode referred to the publishing dialog as quill.ui.publishing_dialog. The actual module is quill.ui.publishing_tools. There is no publishing_dialog file. If you went looking, you would have found it empty, and we did not want to leave that on the floor.
+
+[JESSICA]
+Second, the episode numbering. The brief asked us to recap episode twenty-six as Ask QUILL everyday AI, and to set up episode twenty-eight as agents, reviewable autonomy. The scripts on disk currently number those topics differently, but we are following the brief as the source of truth for this run, so the recap and the setup will land where the brief puts them.
+
+[LIAM]
+Third, the feature flags. If you have not turned on future.publishing, the Create Draft, Publish Now, Update Remote, and Schedule Publish commands are not in the menu, and that is by design. The brief is honest about this, the code is honest about this, and we wanted to say it in your ear: turning it on is your choice, the gate exists for a reason, and the reasons are spelled out in the Profiles and Features page.
+
+[JESSICA]
+Fourth, the only implemented publishing provider today is WordPress. If a past claim said otherwise, it drifted. The provider registry is extensible, and adding more is a Quillin or a future release away, but the only thing that ships right now is WordPress over its REST API with application password auth.
+
+[LIAM]
+Fifth, share is a two-mode dialog, profile and backup, and the privacy boundary is structural. A profile cannot carry secrets, a backup is the only kind that does. The export dialog will not let you check a private section in profile mode, the writer will not emit one even if you tried, and the importer will refuse to apply one if a hand-edited file tried to smuggle it in. That is the contract, and it is enforced by tests.
+
+[JESSICA]
+That is the corrections segment. The rest of the episode is forward-looking, and the rest of the episode is also honest in the same way.
+
+[PAUSE]
+
+[LIAM]
+Let's close the loop with the four-step homework.
+
+[JESSICA]
+Step one. Open QUILL, look at the File menu, find the Publish submenu, and tell me, in writing or out loud, which entries are present. If the read side is on but the send side is off, decide whether you want to turn on the send side today. If yes, Profiles and Features, find publishing, enable it, restart. If no, that is a perfectly fine answer.
+
+[LIAM]
+Step two. If you have a WordPress site, self-hosted or WordPress.com, generate an application password in your user profile. Open Publishing Connections, add a connection, paste the site URL, paste the application password, and click Verify. The dialog will tell you whether the connection works. If the site is on plain HTTP and you are not on a private network, the dialog will refuse, and that refusal is correct.
+
+[JESSICA]
+Step three. Pick a finished draft in your QUILL. Open it, choose Create Post Draft, give it a title, and send. Read the result. Open the published post in your browser, then open it back in QUILL through Browse Publishing Content, with Readable Markdown selected, and see the body come back as Markdown. Then pick one of the paragraphs, change it locally, and run Compare With Remote. Listen to the announcement. Run Update Remote Content, confirm, and refresh your browser to see the change.
+
+[LIAM]
+Step four. Export a profile. Open Tools, Customize and Support, Export and Back Up. Choose Share a profile. Leave every shareable section checked, give the file a name, and save it somewhere you can find. Then open the file in a text editor. Read it. You will see exactly what the privacy story means in practice: settings, feature profile, keymap, snippets, maybe macros, maybe watch profiles, no secrets, no license, no recent files, no device paths, no telemetry. That is the package a friend would receive. The backup mode, by contrast, is the same dialog with Back up everything selected, and the resulting file is what you would use to restore QUILL on a new machine.
+
+[JESSICA]
+Four steps. One verification, one first publish, one round trip, one package inspection. The whole thing takes an hour, and the rest of the day, your publishing is one keyboard shortcut, and your sharing is a file you understand.
+
+[PAUSE]
+
+[LIAM]
+Next episode, episode twenty-eight, we change scale. The publishing we did today is you, in the driver's seat, one click at a time. Agents are you, in the back seat, watching the wheel turn. Reviewable autonomy, the topic, is the design discipline that makes the back seat safe: every action the agent takes is announced, the actions are scoped to what you approved, and the receipts are kept.
+
+[JESSICA]
+The free first, local first consent culture you heard about in the OCR episode, the conservative redaction under both features today, the explicit dialogs, all of it converges in agents. We will walk a QUILL agent, an Ask QUILL agent, and a Custom agent, and we will show the same three questions every time: what is the agent allowed to do, how do you know what it did, and how do you stop it. Same architecture, different scale.
+
+[LIAM]
+That is episode twenty-eight. We are at twenty-seven of fifty-four in The QUILL Cast, so the back half of the course is in sight. The voices that began in episode one, the welcome and the install, are still with you, the consistency is the point, and the rest of the journey is the rest of the journey.
+
+[JESSICA]
+I'm Jessica.
+
+[LIAM]
+I'm Liam. Publish boldly, share carefully.
+
+[JESSICA]
+The QUILL Cast is a fifty-four episode course on QUILL. Subscribe wherever you listen, and we will see you in episode twenty-eight.

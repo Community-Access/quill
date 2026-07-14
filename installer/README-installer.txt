@@ -1,4 +1,4 @@
-QUILL for All 0.9.0 Beta 2 — Windows Installer
+QUILL for All 0.9.0 Beta 3 — Windows Installer
 Publisher: Community Access
 
 Thank you for installing Quill.

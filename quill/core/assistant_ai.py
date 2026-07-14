@@ -265,6 +265,7 @@ def _message_for_category(
     endpoint: str,
     status_code: int | None = None,
     reason: object | None = None,
+    detail: str | None = None,
 ) -> str:
     if category == "auth_invalid":
         return "Authentication failed. Check your API key."
@@ -278,12 +279,19 @@ def _message_for_category(
     if category == "warming_up":
         return "The AI provider is warming up. Try again in a moment."
     if category == "not_running":
-        return "The local AI server is not running. Start Ollama and try again."
+        return (
+            "QUILL can't reach a local AI server. If you use Ollama, start it "
+            "(run 'ollama serve') and try again. If you use a different local AI "
+            "such as LM Studio or GPT4All, choose the Custom provider in AI Hub "
+            "and enter its OpenAI-compatible endpoint."
+        )
     if category == "timeout":
         return "Connection timed out. Check host URL and network connection."
     if category == "bad_response":
         return f"Received an invalid response from {endpoint}."
     if category == "http_error" and status_code is not None:
+        if detail:
+            return f"HTTP {status_code} from {endpoint}: {detail}"
         return f"HTTP {status_code} from {endpoint}."
     if reason is not None:
         return f"Failed to reach {endpoint}: {reason}"
@@ -458,6 +466,39 @@ def _category_for_url_error(exc: URLError) -> str:
     if "timed out" in text:
         return "timeout"
     return "unreachable"
+
+
+def _detail_from_http_error(exc: HTTPError) -> str | None:
+    """Extract a human-facing error detail from an HTTPError response body.
+
+    Ollama returns ``{"error": "model ... does not support images"}``; OpenAI and
+    OpenAI-compatible servers return ``{"error": {"message": "..."}}``. Anything
+    we cannot parse is left as ``None`` so the caller falls back to the status
+    code alone. Best-effort: a read/parse failure never raises.
+    """
+    try:
+        raw = exc.read()
+    except Exception:  # noqa: BLE001 - best-effort body extraction
+        return None
+    if not raw:
+        return None
+    try:
+        parsed = json.loads(raw.decode("utf-8", errors="replace"))
+    except (ValueError, UnicodeDecodeError):
+        return None
+    if not isinstance(parsed, dict):
+        return None
+    error = parsed.get("error")
+    if isinstance(error, str) and error.strip():
+        return error.strip()
+    if isinstance(error, dict):
+        message = error.get("message")
+        if isinstance(message, str) and message.strip():
+            return message.strip()
+    message = parsed.get("message")
+    if isinstance(message, str) and message.strip():
+        return message.strip()
+    return None
 
 
 def _extract_model_names(payload: object) -> list[str]:
@@ -1050,9 +1091,10 @@ def _post_chat(
             payload = json.loads(response.read().decode("utf-8", errors="replace"))
     except HTTPError as exc:
         category = _category_for_status(exc.code)
+        detail = _detail_from_http_error(exc)
         return None, _FetchError(
             category,
-            _message_for_category(category, endpoint=endpoint, status_code=exc.code),
+            _message_for_category(category, endpoint=endpoint, status_code=exc.code, detail=detail),
             exc.code,
         )
     except URLError as exc:

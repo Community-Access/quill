@@ -1,49 +1,121 @@
 [LIAM]
-Welcome to The QUILL Cast. I'm Liam.
+The QUILL Cast, episode one. I'm Liam.
 
 [JESSICA]
-And I'm Jessica. This series is a complete audio course on QUILL, the free, screen-reader-first writing studio from Community Access. Thirty-four episodes, starting from absolutely nothing and ending with you using every feature the product has.
+And I'm Jessica. Welcome to The QUILL Cast. This is a complete audio course on QUILL, the free, screen reader first writing studio from Community Access. Fifty-four episodes. Starting from absolutely nothing. Ending with you using every feature the product has, including the ones you did not know you wanted. The first episode is the one place where the host introductions happen, and we are going to spend the rest of the time earning the trust those introductions are about to ask for.
 
 [LIAM]
-And we mean starting from nothing. This episode assumes you've never seen QUILL. By the end of the series you'll be building audiobooks, rescuing scanned PDFs, running accessibility audits, and linking a knowledge vault. But today, we just answer: what is this thing, and why should you care?
+A quick note on how the two of us work. From this episode forward we will alternate turns, one voice at a time. I am the one who likes the keyboard shortcuts. Jessica is the one who likes the why. Together we are going to walk you through the whole product, one short episode at a time, and every episode will end with a small piece of homework you can do in five minutes.
 
 [JESSICA]
-QUILL is a writing environment for Windows, with macOS supported too. The one-sentence pitch: it's what a word processor looks like when blind users are the primary audience instead of an afterthought.
+And we mean starting from nothing. This episode assumes you have never seen QUILL, never installed it, and possibly never used a screen reader in anger. By the end of the series you will be building audiobooks, rescuing scanned PDFs, running accessibility audits, linking a knowledge vault, and shipping documents to readers in formats that actually reach them. But today, we just answer three questions. What is this thing. Who is it for. And how is the next fifty-three episodes going to feel.
+
+[PAUSE]
+
+[JESSICA]
+What is QUILL. The honest one line answer is: it is what a word processor looks like when blind users are the primary audience instead of an afterthought. The longer answer is that QUILL is an open source writing and document environment for Windows, with macOS also supported from the same code base, built around a screen reader first design rule. The README, which lives in the source tree and is the canonical place to read first, opens with the tagline QUILL for All, and the name is an acronym. Q U I L L. Quality, Usable, Inclusive, Lightweight, Literate. The word that does the work is Inclusive. The other four are commitments to how the inclusivity is delivered.
 
 [LIAM]
-That flips real decisions. In most software, accessibility is a compliance layer bolted on at the end. In QUILL, the spoken experience is the main experience. Menus are designed to be listened to. Every action announces its result. Every dialog can be escaped. Nothing steals your focus.
+A short word about what the product is on disk, because we will be referring back to it. The product name is QUILL for All, version zero point nine point zero, published by Community Access, open source under the MIT license. It is a wxPython desktop application. It runs on Windows ten and later, sixty-four bit, including Windows on ARM, and on macOS as a signed and notarized dot app. It is not a web app. It is not a subscription. It does not require an account, an email address, or a phone number to install and use. You download it, you run the installer, you write.
 
 [JESSICA]
-Three promises hold the whole product up, and you'll hear us return to them all series. Promise one: QUILL owns the essentials. The editor, keyboard focus, undo, and announcements always behave predictably. If something changes your document, you can always undo it, and you always find out it happened.
+One detail worth being precise about, because screen reader users sometimes hear wxPython and worry. wxPython is the cross platform widget toolkit that gives QUILL native controls on every operating system, which is what lets the screen reader integration be first class. The accessibility is not an add on. The platform's own accessibility tree is the surface the announcements are built on, and on Windows that is UI Automation, with NVDA, JAWS, and Narrator all reading from it. On macOS, VoiceOver reads from the AppKit accessibility tree. Same code path, same widgets, same announcements, just translated through the native bridge.
 
 [LIAM]
-Promise two: everything beyond the core is optional and off by default. Artificial intelligence, cloud services, extensions, folder automation, none of it exists until you turn it on. Out of the box, QUILL is a fast, quiet, honest text editor.
+That last sentence is the part we want to land, because it is the part that flips real decisions. In most software today, accessibility is a compliance layer bolted on at the end, audited once a year, and treated as a cost centre. In QUILL, the spoken experience is the main experience. Menus are designed to be listened to. Every action announces its result. Every dialog can be escaped. Nothing steals your focus. The screen reader is not a customer of the product; it is a first class input device. That changes every design conversation, and it is the reason the rest of this episode is the way it is.
 
 [JESSICA]
-Promise three, my favorite: nothing leaves your computer without asking you. Every network connection in the entire application is tracked in an internal audit, and anything that would send your words anywhere tells you first, in plain language, and waits.
+Three promises hold the whole product up, and you will hear us come back to them every few episodes. Promise one: QUILL owns the essentials. The editor, the keyboard focus, undo, and the screen reader announcements always behave predictably. If something changes your document, you can always undo it, and you always find out it happened. Promise two: everything beyond the core is optional and off by default. AI, the vault, braille production, watch folders, Quillins, the developer console, none of it is on until you turn it on. Out of the box, QUILL is a fast, quiet, honest text editor.
+
+[JESSICA]
+Promise three, which is my favourite: nothing leaves your computer without asking you. Every outbound network call in the entire application is tracked in an internal audit, in a file called network egress audit, and the build fails if a developer adds a new call without documenting it. Anything that would send your words anywhere, an AI provider, a publisher, a transcription service, a crash report, tells you first, in plain language, and waits for you to say yes. That third promise is the one that lets the second promise be honest. Off by default only means off by default if the things that turn it on cannot turn themselves on behind your back.
+
+[LIAM]
+The audit file is not just a comment in source code. It is a real, executable check that runs in continuous integration. When a developer adds a new network call, the build fails until they add a reviewed entry that says what the call is, what condition it runs under, and what the user is told before it happens. The list is short on purpose. A new entry is a small event, and a small event is one a maintainer can read, push back on, or ask to be reworded. The same rule applies to any new permission the app asks for, any new file location it reads from, and any new external engine it shells out to. The product is not afraid of features. It is afraid of surprises.
 
 [PAUSE]
 
 [LIAM]
-Who is it for? Blind and low-vision writers first, obviously. But the honest answer has grown: it's for anyone who lives on the keyboard. Novelists who want a manuscript organizer. Students converting inaccessible course readings. Committee secretaries turning recordings into minutes. Podcasters, journalers, note-takers, braille transcribers.
+Who is QUILL for. The short answer is blind and low-vision writers first. The honest answer has grown over the years, and it now includes anyone who lives on the keyboard. Novelists who want a manuscript organizer. Students converting inaccessible course readings into something their screen reader can actually read. Committee secretaries turning recordings into minutes. Podcasters producing transcripts. Journalers keeping daily notes. Braille transcribers producing UEB. Developers who want a real text editor that does not fight their screen reader. Teachers preparing accessible handouts. The common thread is not a diagnosis. The common thread is that the keyboard is the primary tool, and announcements are the primary feedback.
 
 [JESSICA]
-And the price is part of the design: QUILL is completely free. Every feature, forever, for everyone. There's an optional donations page and nothing else. If you've spent decades in a world where assistive software costs more than the computer it runs on, let that land for a second.
+And the price is part of the design. QUILL is completely free. Every feature, forever, for everyone. There is an optional donations page, and that is the entire monetization story. The license is MIT, the source is on GitHub, the binaries are signed, the bug reports steer the roadmap, and the word of mouth is the entire marketing department. If you have spent decades in a world where assistive software costs more than the computer it runs on, let that land for a second. We will say it again at the end of the series too, in episode thirty-six, because it is load bearing for the trust arc.
 
 [LIAM]
-Let's set expectations for how this series works, because we've built it to be followed. Episodes are short, focused, and sequenced. Part one, the next five episodes, gets you installed, oriented, and confident. Part two makes you fast at everyday editing. Then documents and formats, then speech, then AI, then organization tools, and finally the production and trust features that make QUILL special.
+There is a small honest correction we owe you right here, because we promised at the top of the series that we would verify every claim against the code. An earlier draft of this very script called the wizard's main choice a feature profile, which is the phrase the older help text still uses and which you will see in the technical profile identifier behind each choice. The current code, in quill slash core slash onboarding profiles dot py, calls the choices intent profiles and the file is onboarding profiles dot py. We updated the words. The idea is exactly the same: a starting point that hides what you do not need, that does not delete what you do not yet know you need, and that you can change any time.
+
+[PAUSE]
 
 [JESSICA]
-Every episode is hands-on. When we say press control shift P, press it. When we give homework, it's five minutes, and it's the five minutes that makes the episode stick. Full transcripts are published for every episode, so you can re-read anything at your own pace, in braille or speech.
+The right way to hold the intent profile concept in your head, in case you have used a screen reader for a long time and have been burned by wizards before, is as a menu filter rather than a feature gate. A gate says you cannot get to that menu entry, and the entry is hidden from the command palette, and the keyboard shortcut does nothing. A filter says the menu entry still exists and the keyboard shortcut still works, but the profile is configured so the entry is not surfaced by default. The filter is on you to override when you want it. The gate is enforced by the product. The intent profile in QUILL is a filter, and the technical profile identifier is the gate that lives underneath it for the things the product really does need to lock, like core editor and core file.
+
+[PAUSE]
 
 [LIAM]
-One more thing before we go. The two voices you're hearing right now are not humans in a studio. We're Kokoro neural voices, running on an ordinary computer with no cloud connection, and Kokoro is one of the speech engines that ships with QUILL. The product is literally narrating its own course. When we get to episode nineteen, you'll be able to make your documents sound like this too.
+Let's set expectations for how this series works, because we have built it to be followed, not skimmed. The course is fifty-four episodes. Total listening time, if you never pause, is roughly two and a quarter hours. The episodes are short on purpose, between five and ten minutes each, and they are sequenced. There is a reason episode four comes before episode five. The series is divided into six arcs. Arc one is the install and orient arc, which is the next six episodes, including this one. Arc two is the editing power tools. Arc three is documents and formats. Arc four is speech and audio. Arc five is AI and the vault. Arc six is the production and trust features, which is how the series ends.
 
 [JESSICA]
-Next episode: installing QUILL and your first launch, including the setup wizard and the single most important choice it offers, your feature profile.
+You do not have to listen in order. We have written transcripts for every episode, in plain Markdown, in HTML, and in EPUB, and the transcripts are the canonical source of truth. If you miss an episode, the transcript of the next one recaps the previous one in a paragraph, and the script is the right thing to read in braille at your own pace. If you only have five minutes today, pick an episode whose title sounds like the problem you actually have. But if you are new, start at episode one. The arc is built to compound, and the install arc pays for itself the first time you use the wizard.
+
+[LIAM]
+A note on transcripts and accessibility. The podcast hub publishes each episode in three forms. A built-in audio player with download, a downloadable script in plain text, and a downloadable HTML transcript with proper heading structure and aria labels. The HTML is the form a screen reader user will usually want, because the heading navigation matches the section breaks in the audio. The plain text is the form a braille reader will want, because it can be embossed directly. The script and the transcript are generated from the same source, so they never drift apart.
+
+[JESSICA]
+Every episode is hands on. When we say press control shift P, press it. When we say save the file, save the file. When we give homework, it is five minutes, and it is the five minutes that makes the episode stick. We have one more piece of structure worth mentioning, because you will see it in every transcript. The transcripts use three speaker markers. LIAM for Liam, JESSICA for Jessica, and PAUSE for section breaks. The PAUSE marker is also where you, the listener, take a breath and a beat. We use them in the audio too.
+
+[LIAM]
+A moment ago I said the next six episodes are the install arc. They are, in order. Episode two is install and first launch, the installer, the wizard, the first safe save. Episode three is your first document, which is mostly about what a native QUILL file is, what a folder is, and what the auto recovery machinery is already doing for you. Episode four is the main window, which is a tour of the tabs, the status bar, the menu structure, and the document model. Episode five is notebooks and versions, which is the project organization surface. Episode six is the command palette, which is the single most important power surface in the product. Episode seven is what QUILL says, which is the screen reader contract. That arc gets you to a place where you can use the product for real work without reading the rest of the series.
+
+[JESSICA]
+The rest of the arcs are dense, but you will be ready. The editing power tools arc covers search, replace, navigation, compare, snippets, macros, and the QUILL key. The documents and formats arc covers Markdown, rich text, Word, EPUB, PDF, and the document rescue work. The speech and audio arc covers read aloud, dictation, transcription, the audio studio, and the voice catalog. The AI and vault arc covers the agent, the prompt library, the reviewable autonomy model, and the linked knowledge vault. The final arc covers the trust and community features, the production tools, the bundled Quillins, the build your own Quillin work, and the finale on stability.
+
+[PAUSE]
+
+[LIAM]
+Before we go any further, here is a small interactive moment, because the rest of the episode is more useful if you have already poked at the product. If you are listening with a screen reader, with the keyboard, and you have not yet installed QUILL, pause the audio right now, go to the QUILLCast episode one page in the podcast hub, and you will find a link to the QUILL GitHub releases page. Download the Windows installer that matches your architecture. Run it, accept the defaults, and stop at the Welcome page of the setup wizard. If you are on macOS, the same path is a signed dot app under the macOS assets on the same releases page. If you are listening on a walk, keep walking. Nothing in the rest of this episode requires you to have the product open, and we will redo the install together in episode two.
+
+[JESSICA]
+For everyone who came back, or who is just listening, here is a useful mental image. QUILL on a fresh install is a single window with a menu bar at the top, a row of tabs under that, a single empty document in the editing area, and a thin status bar at the bottom. That is the whole product on day one. Every feature we are about to spend fifty-three more episodes on is either a menu, a dialog you can open from a menu, a panel you can pin, a key chord, or a Quillin you can install. There is no second window competing for focus, no chat sidebar stealing your cursor, no system tray icon humming in the background. The design is: open, write, save, close. Everything else is opt in.
+
+[LIAM]
+One more thing before we close, and this is the moment the episode becomes a little weird, on purpose. The two voices you are hearing right now are not humans in a recording studio. They are Kokoro neural voices, running locally on a developer's machine, with no cloud connection in the loop, and Kokoro is one of the speech engines that ships as an optional download with QUILL. The product is narrating its own course. The reason we did this is not a gimmick. The reason is that we wanted to prove, in the first three minutes of the very first episode, that on device speech in QUILL is good enough to carry a real audio product. By the time you reach episode twenty-one, you will be able to make your own documents sound like this.
+
+[JESSICA]
+And to be honest about it, the voices are not perfect. You will hear occasional emphasis land in the wrong place, occasional pace feel a beat off, occasional word choice that a human reader would have picked differently. We left those in on purpose. A polished human voice would have hidden the seams, and we want you to know what the on device speech is and is not. The neural voices are improving every quarter. The classic voices, eSpeak NG, DECtalk, SAPI, are still there for when you want total predictability. Both are real choices, and we will talk about how to choose between them in the speech arc.
+
+[PAUSE]
+
+[LIAM]
+Let's close with a short tour of the road ahead, because we want you to know what you are signing up for. The next six episodes are the install arc. Then the editing power tools, which is the heart of the product for most users. Then documents and formats, which is where QUILL becomes a real document environment instead of a really good text editor. Then speech and audio, which is the section a lot of blind and low vision users will care about most. Then AI and the vault, which is the section that needs the most care, because AI is the part of any product where the off by default promise is hardest to keep. We will keep it. The final arc is trust, community, production, and stability, which is how the course ends.
+
+[JESSICA]
+There is one correction we want to make on the record right now, because it is the kind of thing the course exists to be honest about. The original draft of this episode, which was a much shorter two-host conversation, said the course was thirty-four episodes. As we mapped the curriculum against the actual product, the right number is fifty-four. We are not going back to re-record episode one, because the corrected version is the one you are listening to. From this episode on, the number is fifty-four. If you were planning around the earlier number, you have twenty more episodes than you thought. Welcome.
+
+[LIAM]
+And there is one more thing worth saying before we hand it to the homework, because the marketing page on the website, which we will not link here because it will change, calls QUILL a quality, usable, inclusive, lightweight, literate editor. The website and the README also say QUILL is built for Windows with macOS supported. Both of those are true, and we have verified them. The thing neither of them says, and the thing we want to put in the first three minutes of the first episode, is that QUILL is also a project. It is a project that does not have a paid tier, does not have a sales team, and does not have a roadmap driven by a quarterly earnings call. The roadmap is driven by bug reports, by accessibility audits, and by the people who use the product every day and tell us what is in the way. That is the kind of product this is, and the rest of the course is the proof.
+
+[JESSICA]
+There is a reason that detail belongs in episode one rather than in the trust arc at the end. By the time you get to the trust arc, you will have used the product for real work, and the trust conversation will be about specific guarantees the product makes and how they are enforced. The reason it belongs in episode one is the orientation. Before you invest ten hours in an audio course, you deserve to know what kind of project you are investing in. The answer is: a small, accessibility-first, open source project that treats its users as collaborators, not as a market. The course is structured to teach you how to be a good collaborator in return, and the homework at the end of the trust arc will show you the exact paths.
+
+[PAUSE]
+
+[JESSICA]
+Homework. Four steps, in order, taking about five minutes. Step one, if you have not already, install QUILL using the default options and stop at the Welcome page of the setup wizard. If you are on a machine you cannot install on, read the wizard page in the docs instead. The point is to put the product or the product description in front of your eyes once before the next episode.
+
+[LIAM]
+Step two, open the Help menu and find the entry labelled User Guide. Read the first section, which is the Welcome section, all the way through. It is short, it is the same welcome you just heard, and reading it once in a different format is the cheapest way to start building a mental model. Step three, open the About dialog from the Help menu, and read the credits and the version line out loud to yourself, or to your screen reader. Knowing the exact version you are running is genuinely useful, because when you ask for help, the first thing anyone will ask is the version.
+
+[JESSICA]
+Step four, and this is the one we care about most. Find the donations page, which is linked from the QUILL website and from the About dialog. If you have ever been told that assistive software is expensive, click through and let yourself see, for yourself, that the entire QUILL project is funded by people giving what they can, voluntarily, and that there is no upgrade path and no paywall and no enterprise tier. That is a fact, and we want you to verify the fact.
+
+[LIAM]
+Next episode: installing QUILL and your first launch, including the setup wizard, the seven intent profiles, and the single most important choice the wizard offers, which is the data location. Episode two is the install arc, and you will leave it sitting in front of a working QUILL configured the way you want it.
+
+[JESSICA]
+The QUILL Cast is a fifty-four episode audio course on QUILL, with full transcripts published for every episode so you can re-read anything at your own pace, in braille or speech. Subscribe wherever you listen, and we will see you in episode two.
 
 [LIAM]
 I'm Liam.
 
 [JESSICA]
-And I'm Jessica. Welcome aboard.
+And I'm Jessica. Welcome to QUILL.

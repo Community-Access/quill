@@ -1,7 +1,7 @@
 """Hidden-codes run/paragraph formatting commands for ``MainFrame``.
 
 Implements the editor commands for the rich-text "hidden codes" feature
-(``docs/planning/rich-text-formatting-hidden-codes-design.md``): font family, point size,
+(``the QUILL PRD hidden-codes appendix``): font family, point size,
 text color, highlight, and paragraph alignment, plus the "describe formatting at
 cursor" interrogation hotkey. Each command materializes an *invisible* Pandoc
 attribute span (``[text]{...}``) or alignment fenced div (``::: {align=...}``)
@@ -29,7 +29,7 @@ from quill.core.tagging import (
     build_span_insertion,
 )
 from quill.io.rtf_model import format_at_markdown_offset
-from quill.platform.windows.sr_announce import announce
+from quill.platform.sr_announce import announce
 
 # Menu presets. Leaf items use plain Append (no keymap command), so they stay
 # clear of the menu_lint binding/label gate while remaining keyboard-navigable.
@@ -289,6 +289,12 @@ class FormatCodesMixin:
         if not self._feature_enabled("core.format"):
             self._set_status(f"{label} is unavailable in this profile")
             return
+        # Rich mode: the same commands apply *real* formatting via the TOM
+        # instead of inserting hidden-code spans (mode-polymorphic contract).
+        if self._current_editor_mode() == "rich":
+            if not self._rich_apply_run_attrs(attrs, status, label):
+                self._set_status(f"{label} is not available in Rich Text yet")
+            return
         if self._active_markup_surface() != "markdown":
             self._set_status(f"{label} is only available in Markdown documents")
             return
@@ -398,6 +404,11 @@ class FormatCodesMixin:
         if not self._feature_enabled("core.format"):
             self._set_status(f"{label} is unavailable in this profile")
             return
+        if self._current_editor_mode() == "rich":
+            # No TOM mapping for these paragraph attributes yet; an honest
+            # message beats hidden codes silently landing in rich plain text.
+            self._set_status(f"{label} is not available in Rich Text yet")
+            return
         if self._active_markup_surface() != "markdown":
             self._set_status(f"{label} is only available in Markdown documents")
             return
@@ -411,6 +422,8 @@ class FormatCodesMixin:
         """Wrap the selection (or current paragraph) in an alignment fenced div."""
         if not self._feature_enabled("core.format"):
             self._set_status("Alignment is unavailable in this profile")
+            return
+        if self._rich_format_command("set_alignment", f"{which.capitalize()} alignment", which):
             return
         if self._active_markup_surface() != "markdown":
             self._set_status("Alignment is only available in Markdown documents")
@@ -478,6 +491,13 @@ class FormatCodesMixin:
         navigation does not chatter. Reads the run/paragraph context at the caret in
         the canonical markup and announces the spoken phrase.
         """
+        # Rich mode answers from the live control (ITextFont/ITextPara), not
+        # from parsing markup: "Arial, 14 point, bold, centered".
+        rich_phrase = self.describe_caret_formatting_rich()
+        if rich_phrase is not None:
+            self._set_status(f"Formatting: {rich_phrase}")
+            announce(rich_phrase)
+            return
         if self._active_markup_surface() != "markdown":
             self._set_status("Formatting description is available in Markdown documents")
             return

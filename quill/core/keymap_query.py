@@ -36,6 +36,7 @@ __all__ = [
     "duplicate_bindings",
     "find_keymap_conflicts",
     "parse_binding",
+    "rewrite_chord_prefixes",
 ]
 
 #: Modifier spellings we accept, mapped to their canonical label. Windows-first
@@ -222,6 +223,37 @@ def bindings_equivalent(
     left = canonical_binding(first, quill_key_prefix=quill_key_prefix)
     right = canonical_binding(second, quill_key_prefix=quill_key_prefix)
     return left is not None and left == right
+
+
+def rewrite_chord_prefixes(
+    keymap: Mapping[str, str], *, old_prefix: str, new_prefix: str
+) -> dict[str, str]:
+    """Return a copy of *keymap* with every QUILL-key chord moved to a new prefix.
+
+    Each binding stored as ``"<old_prefix>, <second-key>"`` is rewritten to
+    ``"<new_prefix>, <second-key>"``; bindings not under the old prefix (and
+    empty values) are copied unchanged. Bindings are canonicalised first, so a
+    non-canonical saved spelling of a chord still moves with the prefix. The
+    second-key portion is preserved verbatim from the canonical form.
+
+    Used when the user rebinds the QUILL key itself: chord dispatch matches the
+    stored chord string against the live prefix, so every stored chord must
+    follow the prefix or those commands go inert.
+    """
+    old_canonical = canonical_binding(old_prefix, quill_key_prefix=old_prefix) or str(old_prefix)
+    out: dict[str, str] = {}
+    for command_id, binding in keymap.items():
+        if not binding:
+            out[command_id] = binding
+            continue
+        bound = canonical_binding(binding, quill_key_prefix=old_prefix)
+        if bound and ", " in bound:
+            first, _, rest = bound.partition(", ")
+            if first == old_canonical:
+                out[command_id] = f"{new_prefix}, {rest}"
+                continue
+        out[command_id] = binding
+    return out
 
 
 def find_keymap_conflicts(

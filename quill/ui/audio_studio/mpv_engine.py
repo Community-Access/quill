@@ -54,6 +54,11 @@ def find_libmpv() -> Path | None:
     if override:
         path = Path(override)
         candidates += [path] if path.suffix else [path / name for name in _DLL_NAMES]
+    # Offline Edition bundles libmpv under {app}/tools/mpv so the player finds
+    # it on an air-gapped machine without the on-demand download.
+    app_root = os.environ.get("QUILL_APP_ROOT", "").strip()
+    if app_root:
+        candidates += [Path(app_root) / "tools" / "mpv" / name for name in _DLL_NAMES]
     try:
         pack = mpv_pack_dir()
         candidates += [pack / name for name in _DLL_NAMES]

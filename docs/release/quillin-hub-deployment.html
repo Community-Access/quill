@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>quillin-hub-deployment</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1 id="quillin-hub-deployment-runbook">Quillin Hub deployment
+runbook</h1>
+<p>The Quillin Hub is a Flask app that serves the Quillin, AI agent, and
+skill-pack storefront. This is the runbook for going from "the container
+builds" to "the storefront is serving verified artifacts".</p>
+<h2 id="topology">Topology</h2>
+<ul>
+<li>One Flask process (Gunicorn, 4 workers).</li>
+<li>One PostgreSQL database.</li>
+<li>One cron job (or scheduled worker) running
+<code>worker/sync_to_pages.py</code> against the QUILL GitHub
+repository.</li>
+<li>Public static assets served by the reverse proxy (nginx /
+Caddy).</li>
+</ul>
+<p>The Hub is a read-heavy storefront with a low write rate (one
+submission per publisher per release). 4 workers is plenty.</p>
+<h2 id="environment">Environment</h2>
+<table>
+<thead>
+<tr>
+<th>Var</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DATABASE_URL</code></td>
+<td>SQLAlchemy URL. <code>postgresql://hub:&lt;pw&gt;@db/hub</code> in
+production, <code>sqlite:///&lt;tmp&gt;/hub.db</code> in tests.</td>
+</tr>
+<tr>
+<td><code>SIGNING_PUBLIC_KEY_PATH</code></td>
+<td>Path to the rotated publisher public key. Overrides the bundled
+<code>quillin-hub/quill-pub.key</code>.</td>
+</tr>
+<tr>
+<td><code>GITHUB_TOKEN</code></td>
+<td>Used by the sync worker to enumerate the QUILL repo. Without it, the
+worker logs a 401 and skips the run.</td>
+</tr>
+<tr>
+<td><code>SECRET_KEY</code></td>
+<td>Flask session secret. Generate with
+<code>python -c "import secrets; print(secrets.token_hex(32))"</code>.</td>
+</tr>
+<tr>
+<td><code>UPLOAD_FOLDER</code></td>
+<td>Where submitted artifacts land. Must be writable by the Flask
+process. Defaults to a tmp dir in dev.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="bootstrap">Bootstrap</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Apply the schema.</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">flask</span> <span class="at">--app</span> quillin-hub/app db upgrade</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Seed the publisher public key if rotating.</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># (otherwise the bundled quillin-hub/quill-pub.key is used)</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> /secure/quill-pub.key /srv/hub/quill-pub.key</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> 0644 /srv/hub/quill-pub.key</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">SIGNING_PUBLIC_KEY_PATH</span><span class="op">=</span>/srv/hub/quill-pub.key</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Run the sync worker once to populate the storefront.</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="va">GITHUB_TOKEN</span><span class="op">=</span><span class="va">$(</span><span class="fu">cat</span> /secure/gh.token<span class="va">)</span> <span class="ex">python</span> <span class="at">-m</span> quillin-hub.worker.sync_to_pages</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Start the app.</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="ex">gunicorn</span> <span class="at">-w</span> 4 <span class="at">-b</span> 0.0.0.0:8000 <span class="st">&#39;quillin-hub.app:create_app()&#39;</span></span></code></pre></div>
+<h2 id="reverse-proxy">Reverse proxy</h2>
+<p>nginx snippet:</p>
+<pre class="nginx"><code>server {
+    listen 443 ssl http2;
+    server_name hub.quillforall.org;
+
+    ssl_certificate     /etc/letsencrypt/live/hub.quillforall.org/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/hub.quillforall.org/privkey.pem;
+
+    client_max_body_size 40m;   # 32 MB submission + 8 MB signature + headers
+
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}</code></pre>
+<p><code>client_max_body_size</code> is the headline knob: 32 MB
+submission cap matches
+<code>quillin-hub/app/forge/forms.py::_MAX_UPLOAD_BYTES</code>. 40 MB
+leaves room for the sidecar and multipart overhead.</p>
+<h2 id="health-check">Health check</h2>
+<p>The Hub has no <code>/healthz</code> endpoint today. Add one if
+you're putting this behind a load balancer:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="at">@web_bp.route</span>(<span class="st">&quot;/healthz&quot;</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> healthz():</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {<span class="st">&quot;ok&quot;</span>: <span class="va">True</span>}, <span class="dv">200</span></span></code></pre></div>
+<p>(Tracked for a follow-up; not in the launch cut.)</p>
+<h2 id="smoke-test">Smoke test</h2>
+<p><code>quillin-hub/smoke_test.py</code> is the post-deploy
+verification. It uses a throwaway SQLite DB, signs test artifacts with a
+throwaway keypair, and exercises every route + the real Submission Forge
+pipeline. Run it from a clean checkout:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">-e</span> ../   <span class="co"># the main QUILL package</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install <span class="at">-r</span> requirements.txt</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> smoke_test.py</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 22/22 checks passed</span></span></code></pre></div>
+<p>Any failure means a regression in either the storefront or the Forge;
+do not roll forward until it is green.</p>
+<h2 id="sync-worker">Sync worker</h2>
+<p><code>worker/sync_to_pages.py</code> enumerates the QUILL GitHub repo
+and upserts every Quillin, AI agent, and skill pack into the Hub's
+<code>artifacts</code> table. The worker is idempotent: it filters by
+<code>manifest_id</code> and upserts, so it is safe to run on a cron
+every 15 minutes.</p>
+<pre class="cron"><code>*/15 * * * * cd /srv/hub &amp;&amp; GITHUB_TOKEN=$(cat /secure/gh.token) /usr/bin/python3 -m quillin_hub.worker.sync_to_pages &gt;&gt; /var/log/hub-sync.log 2&gt;&amp;1</code></pre>
+<p>What it does, per run:</p>
+<ul>
+<li>Lists <code>quill/quillins_bundled/*</code> and upserts each as a
+<code>quillin</code>.</li>
+<li>For each Quillin directory, lists any <code>*.sqp</code> and upserts
+them as <code>skill-pack</code> artifacts (so skill packs are reachable
+both from the parent Quillin and from the standalone search).</li>
+<li>Lists <code>quill/core/ai/agents/*</code> and upserts each
+<code>.md</code> and <code>.json</code> as an <code>agent</code>
+artifact, reading front matter / JSON metadata.</li>
+<li>For every single-file artifact (agent or skill pack), reads the
+matching <code>&lt;file&gt;.minisig</code> sidecar from main and stores
+the key id in <code>signer_key_id</code> for the storefront badge.</li>
+</ul>
+<p>The worker <strong>does not</strong> verify the signature against the
+public key when syncing from main -- main is post-review by definition,
+and the sidecar is the human-readable provenance. The desktop app does
+the actual verification at download time.</p>
+<h2 id="submission-forge-cap">Submission Forge cap</h2>
+<p>The Submission Forge accepts artifacts up to 32 MB
+(<code>_MAX_UPLOAD_BYTES</code> in <code>app/forge/forms.py</code>).
+Anything bigger is rejected with "archive expands beyond the 32 MB
+submission limit". Larger artifacts should land via a GitHub PR using
+the prefilled links the Forge generates on the report page.</p>
+<h2 id="failure-modes">Failure modes</h2>
+<ul>
+<li><strong>DB connection drops</strong> -- Gunicorn workers will 500.
+The reverse proxy should retry on 502/503/504 with a 1 s backoff.
+PostgreSQL reconnects are handled by SQLAlchemy.</li>
+<li><strong>Sync worker 401</strong> -- the GitHub token rotated or
+expired. The worker prints "Skipping <root>: 401" for every root. Rotate
+the token and re-run.</li>
+<li><strong>Bad sidecar floods the Forge</strong> -- the
+<code>audit_submission</code> returns FAIL and the artifact does not
+become a row. No cleanup needed.</li>
+<li><strong>Database migration</strong> -- the schema is currently
+managed by <code>db.create_all()</code> in dev. For production, switch
+to <code>flask --app quillin-hub/app db upgrade</code> with a real
+migrations directory (deferred to the next cut).</li>
+</ul>
+<h2 id="rollback">Rollback</h2>
+<p>There is no in-place schema migration framework yet, so "rollback" is
+a redeploy against the previous commit. The storefront is
+forward-compatible: an artifact row in the DB renders even if its
+backing code path is missing. The Forge is the only place where runtime
+changes can break submissions, and a Forge regression is surfaced
+immediately by the smoke test.</p>
+</body>
+</html>

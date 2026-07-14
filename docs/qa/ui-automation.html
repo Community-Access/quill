@@ -241,9 +241,6 @@
   </style>
 </head>
 <body>
-<header id="title-block-header">
-<h1 class="title">ui-automation</h1>
-</header>
 <h1 id="windows-ui-automation-regression-suite">Windows UI-Automation
 Regression Suite</h1>
 <p>Date established: 2026-07-04. Location: <code>tests/uia/</code>
@@ -269,7 +266,7 @@ types real keystrokes into the focused window and steals foreground. On
 a machine with JAWS or NVDA running it fights the screen reader
 (verified: JAWS intercepted harness keys and opened its Dictionary
 Manager). Run it in CI, a VM, or a dedicated Windows session — never on
-a developer’s working desktop.</li>
+a developer's working desktop.</li>
 <li><strong>It observes; it never decides.</strong> The CI workflow is
 informational only: not a required check, gates nothing, files nothing,
 fixes nothing. A red run is a report for a human to read. This is
@@ -286,7 +283,7 @@ default suite and existing CI are untouched.</p>
 <h2 id="how-the-harness-works">How the harness works</h2>
 <ul>
 <li>Each test gets a fresh, isolated app profile (its own
-<code>QUILL_DATA_DIR</code> under the user’s home, honoring the
+<code>QUILL_DATA_DIR</code> under the user's home, honoring the
 dev-build constraint), pre-seeded so nothing modal blocks automation:
 setup wizard marked complete, trust consent accepted at the current
 version, update checks off (no network), announcement trace on.</li>
@@ -295,7 +292,7 @@ version, update checks off (no network), announcement trace on.</li>
 yields a handle with <code>spoken()</code> / <code>wait_spoken()</code>
 for spoken-output assertions. Teardown terminates the app and deletes
 the profile.</li>
-<li><code>a11y_scan.py</code> walks a window’s UIA tree into flat
+<li><code>a11y_scan.py</code> walks a window's UIA tree into flat
 records (control type, accessible name, keyboard focusability).
 <code>unnamed_focusable()</code> is the axe-style failure list: anything
 a user can Tab to that has no accessible name is a bug.

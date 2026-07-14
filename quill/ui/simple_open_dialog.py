@@ -16,7 +16,7 @@ Keyboard:
 - Enter in the list (or double-click) -> activate: navigate into a directory
   or open the selected file.
 - Backspace in the list -> go up one directory.
-- Ctrl+H in the path or list -> toggle hidden files.
+- Ctrl+H in the path or list -> toggle hidden files (Cmd+Shift+. on macOS).
 - Escape -> cancel.
 
 The dialog returns a :class:`SimpleOpenResult` from :meth:`SimpleOpenDialog.show`
@@ -26,6 +26,7 @@ native dialog" from "user cancelled".
 
 from __future__ import annotations
 
+import sys
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from pathlib import Path
@@ -37,6 +38,14 @@ from quill.ui.dialog_contract import (
     apply_modal_ids,
     show_modal_dialog,
 )
+
+
+def _toggle_hidden_key_pressed(event: wx.KeyEvent) -> bool:
+    """Hidden-files toggle: Ctrl+H on Windows, Cmd+Shift+. on macOS (Cmd+H = Hide) (#51)."""
+    if sys.platform == "darwin":
+        return event.CmdDown() and event.ShiftDown() and event.GetKeyCode() == ord(".")
+    return event.ControlDown() and event.GetKeyCode() in (ord("H"), ord("h"))
+
 
 # ---------------------------------------------------------------------------
 # Filter definitions
@@ -301,7 +310,7 @@ class SimpleOpenDialog:
         # keyboard map.
         if event.ControlDown() and event.GetKeyCode() in (ord("L"), ord("l")):
             return
-        if event.ControlDown() and event.GetKeyCode() in (ord("H"), ord("h")):
+        if _toggle_hidden_key_pressed(event):
             self._show_hidden = not self._show_hidden
             self._btn_hidden.SetValue(self._show_hidden)
             self._populate()
@@ -328,7 +337,7 @@ class SimpleOpenDialog:
         if key == wx.WXK_BACK:
             self._go_up()
             return
-        if event.ControlDown() and key in (ord("H"), ord("h")):
+        if _toggle_hidden_key_pressed(event):
             self._show_hidden = not self._show_hidden
             self._btn_hidden.SetValue(self._show_hidden)
             self._populate()

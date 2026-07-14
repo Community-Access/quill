@@ -53,6 +53,12 @@ _VISIBILITY_VALUES = frozenset(value for value, _ in VISIBILITIES)
 #: Mastodon's classic per-post character ceiling (instances may allow more).
 DEFAULT_CHARACTER_LIMIT = 500
 
+#: Per-instance fetched character limits, keyed by normalized base URL, so the
+#: compose dialog's live counter can reflect an instance like poliversity.it
+#: that allows 9999 characters instead of the classic 500 (#922). Fetched once
+#: per instance per process and reused; cleared only by a fresh process.
+_CHARACTER_LIMIT_CACHE: dict[str, int] = {}
+
 _USER_AGENT = f"{CLIENT_NAME}/{__version__}"
 _TIMEOUT_SECONDS = 30
 
@@ -202,24 +208,133 @@ def verify_credentials(instance_url: str, token: str) -> str:
     return f"@{username}@{host}"
 
 
-def post_status(instance_url: str, token: str, text: str, visibility: str = "public") -> str:
+def post_status(
+    instance_url: str,
+    token: str,
+    text: str,
+    visibility: str = "public",
+    language: str | None = None,
+) -> str:
     """Publish *text* and return the new post's URL.
 
     Raises :class:`MastodonError` for empty text, an unknown visibility, or any
     API failure.
+
+    *language*, when given, is sent as the post's ``language`` (an ISO 639-1 code
+    such as ``"en"`` or ``"it"``) so the instance files the post under the right
+    language preset instead of the account's default (#922). ``None`` omits the
+    field and lets the instance choose.
     """
     if not text.strip():
         raise MastodonError("Nothing to post: the text is empty.")
     if visibility not in _VISIBILITY_VALUES:
         raise MastodonError(f"Unknown visibility: {visibility!r}")
     base = normalize_instance_url(instance_url)
+    data: dict[str, str] = {"status": text, "visibility": visibility}
+    if language:
+        data["language"] = language
     result = _http_json(
         "POST",
         f"{base}/api/v1/statuses",
-        data={"status": text, "visibility": visibility},
+        data=data,
         token=token,
     )
     return str(result.get("url") or result.get("uri") or "")
+
+
+def _max_characters_from_configuration(result: object) -> int | None:
+    """Read ``configuration.statuses.max_characters`` from an instance body.
+
+    Returns the value when present and positive, otherwise ``None`` so the
+    caller can try another endpoint rather than assuming the default. The
+    ``configuration.statuses`` shape is shared by ``/api/v2/instance`` (Mastodon
+    4.0+, glitch-soc) and some forks' ``/api/v1/instance`` responses.
+    """
+    if not isinstance(result, dict):
+        return None
+    configuration = result.get("configuration")
+    if not isinstance(configuration, dict):
+        return None
+    statuses = configuration.get("statuses")
+    if not isinstance(statuses, dict):
+        return None
+    try:
+        value = int(statuses.get("max_characters") or 0)
+    except (TypeError, ValueError):
+        return None
+    return value if value > 0 else None
+
+
+def instance_character_limit(instance_url: str) -> int:
+    """Return the per-instance max post length, falling back to the default.
+
+    Mastodon 4.0+ (and glitch-soc) answer ``GET /api/v2/instance`` with
+    ``configuration.statuses.max_characters`` (#922; e.g. poliversity.it returns
+    9999). Non-Mastodon forks such as GoToSocial and Pleroma/Akkoma often do NOT
+    implement ``/api/v2/instance`` -- they answer ``GET /api/v1/instance`` with a
+    top-level ``max_toot_chars`` (and sometimes the same nested
+    ``configuration.statuses.max_characters``). So this tries v2 first, then v1,
+    so the compose counter reflects a fork's real limit instead of wrongly
+    capping at the 500 default.
+
+    The result is cached per normalized base URL for the process lifetime, so
+    the counter refreshes without re-querying on every keystroke. Any
+    network/API/parse failure (both endpoints unreachable) falls back to
+    :data:`DEFAULT_CHARACTER_LIMIT` so posting never breaks because the limit
+    lookup failed.
+    """
+    base = normalize_instance_url(instance_url)
+    cached = _CHARACTER_LIMIT_CACHE.get(base)
+    if cached is not None:
+        return cached
+
+    limit = DEFAULT_CHARACTER_LIMIT
+    # Primary: /api/v2/instance -> configuration.statuses.max_characters.
+    value: int | None = None
+    try:
+        v2 = _http_json("GET", f"{base}/api/v2/instance")
+        value = _max_characters_from_configuration(v2)
+        if value is not None:
+            limit = value
+    except MastodonError:
+        value = None
+
+    # Fallback: /api/v1/instance -> max_toot_chars (or nested configuration),
+    # for non-Mastodon forks that do not implement v2. Tried only when v2 did
+    # not yield a usable limit (404/missing field).
+    if value is None:
+        try:
+            v1 = _http_json("GET", f"{base}/api/v1/instance")
+        except MastodonError:
+            v1 = None
+        if isinstance(v1, dict):
+            raw = v1.get("max_toot_chars")
+            if raw is not None:
+                if isinstance(raw, int | float | str):
+                    try:
+                        parsed = int(raw)
+                    except (TypeError, ValueError):
+                        parsed = 0
+                else:
+                    parsed = 0
+                if parsed > 0:
+                    limit = parsed
+                else:
+                    nested = _max_characters_from_configuration(v1)
+                    if nested is not None:
+                        limit = nested
+            else:
+                nested = _max_characters_from_configuration(v1)
+                if nested is not None:
+                    limit = nested
+
+    _CHARACTER_LIMIT_CACHE[base] = limit
+    return limit
+
+
+def clear_character_limit_cache() -> None:
+    """Clear the in-memory per-instance character-limit cache (test hook)."""
+    _CHARACTER_LIMIT_CACHE.clear()
 
 
 __all__ = [
@@ -228,7 +343,9 @@ __all__ = [
     "AppCredentials",
     "MastodonError",
     "authorize_url",
+    "clear_character_limit_cache",
     "exchange_code",
+    "instance_character_limit",
     "normalize_instance_url",
     "post_status",
     "register_app",

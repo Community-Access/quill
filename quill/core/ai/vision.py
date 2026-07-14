@@ -180,6 +180,24 @@ def describe_image(
     if policy_error:
         return None, policy_error
     model = (settings.model or "").strip() or default_model_for_provider(provider)
+    # Pre-flight (dynamic, no hardcoded model list): ask Ollama /api/show for the
+    # model's real capabilities. If it confirms the model lacks "vision", fail
+    # fast with an actionable message before a doomed request. If capabilities
+    # are unknown (Ollama down, old version without the capabilities field), do
+    # NOT guess -- proceed and let the server answer; its error body is surfaced
+    # by _detail_from_http_error. This stays correct as models are added/renamed.
+    if provider == "ollama":
+        from quill.core.ai.ollama_capabilities import fetch_model_capabilities
+
+        caps = fetch_model_capabilities(host, model)
+        if caps is not None and not any(c.lower() == "vision" for c in caps):
+            badge = ", ".join(caps) if caps else "text only"
+            return None, (
+                f"Your local model '{model}' cannot read images (capabilities: "
+                f"{badge}). Install a vision-capable model (for example, run "
+                "'ollama pull llava') and select it in AI Hub > AI Model & "
+                "Connection, then try again."
+            )
     if image_path.suffix.lower() in {".heic", ".heif"}:
         try:
             raw = _heic_to_jpeg_bytes(image_path)

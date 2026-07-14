@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>macos-platform-validation</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="macos-platform-review--status">macOS platform review —
+status</h1>
+<p>Status of the macOS platform review. Every item is <strong>fixed in
+code</strong>; nothing remains for the dev side to do. What's left is
+Mac validation, which needs real hardware — so this file is now a record
+of what shipped plus the checklist a Mac tester runs, and the community
+help ask lives in the 0.9.0-beta2 release notes (see <em>A favor to ask
+Mac users</em> there).</p>
+<p>The dev box is Windows, so every fix was made without Mac hardware:
+each is either inert on Windows and exercised by a unit test, or is a
+platform-branch edit whose Mac behaviour a tester confirms below.</p>
+<h2 id="support-inbox-community-accesssupport">Support inbox
+(Community-Access/support)</h2>
+<table>
+<thead>
+<tr>
+<th>Issue</th>
+<th>Title</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a
+href="https://github.com/Community-Access/support/issues/67">support#67</a></td>
+<td>Keyboard shortcuts replace Polish diacritical marks</td>
+<td>Fixed in code; routed to the community for Mac validation in the
+release notes. Close once a comment confirms it.</td>
+</tr>
+<tr>
+<td><a
+href="https://github.com/Community-Access/support/issues/69">support#69</a></td>
+<td>Disconnected controls/labels in Settings on macOS</td>
+<td>Fixed in code; routed to the community for Mac validation in the
+release notes. Close once a comment confirms it.</td>
+</tr>
+<tr>
+<td><a
+href="https://github.com/Community-Access/support/issues/66">support#66</a></td>
+<td>"product-feedback"</td>
+<td>Out of scope — filed against the Git Going workshop, not QUILL</td>
+</tr>
+</tbody>
+</table>
+<p>#67 and #69 are <code>OPEN / needs-triage</code> in the support repo
+as of 2026-07-10. The release notes link both and ask Mac users to
+comment; close as completed once a comment confirms the fix. No longer
+an internal dev action item.</p>
+<hr />
+<h2 id="shipped--needs-mac-validation">Shipped — needs Mac
+validation</h2>
+<p>Each entry names the evidence and what a tester checks. Grouped by
+when it shipped; earlier-batch rows are already in the CHANGELOG and are
+listed for tester reference.</p>
+<h3 id="shipped-this-pass-2026-07-10">Shipped this pass
+(2026-07-10)</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Fix</th>
+<th>Evidence</th>
+<th>What a Mac tester verifies</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#21 / #75</td>
+<td>"macOS (system voice)" wired as a first-class Read Aloud engine
+(Speech Hub engine option + voice picker + preview, Read Aloud
+pause/stop, batch export) via the <code>say</code> CLI backend (pyobjc
+voice catalog with <code>say -v ?</code> fallback). Off-darwin inert; 10
+new unit tests.</td>
+<td><code>quill/core/read_aloud.py</code>,
+<code>settings.py</code>/<code>settings_specs.py</code>,
+<code>speech/{batch_export,document_speech,project_profile}.py</code>,
+<code>ui/{main_frame,batch_speech_runner,voice_browser_dialog}.py</code></td>
+<td>Voice picker lists system voices; Preview speaks; Read Aloud reads
+with pause/stop; export-to-file produces audio.</td>
+</tr>
+<tr>
+<td>#37</td>
+<td>Windows-only UI strings adapt via gettext-wrapped
+<code>quill/core/platform_nouns.py</code>: "Keychain" on darwin (AI Hub,
+SFTP publish, GitHub sign-in, forget-key, trust-consent); "System
+dictation"; "In my user profile"; "Cmd+Alt" in help text. Windows
+strings unchanged.</td>
+<td><code>quill/core/platform_nouns.py</code>,
+<code>ui/{ai_hub_dialog,audio_studio/publish_dialog,main_frame_github,main_frame,main_frame_speech,setup_wizard_pages,keymap_editor}.py</code>,
+<code>tools/network_egress_audit.py</code></td>
+<td>API-key/publish/forget-key messages say "Keychain"; dictation status
+says "System dictation"; wizard says "In my user profile"; help chord
+says "Cmd+Alt".</td>
+</tr>
+<tr>
+<td>#2 / #10</td>
+<td>The five remaining <code>quill.platform.windows.sr_announce</code> /
+<code>announce_engine</code> import sites now import the
+platform-neutral shims. The <code>tts_init_failed</code> deferred import
+stays direct so its monkeypatch test keeps working.</td>
+<td><code>ui/main_frame.py</code>,
+<code>ui/main_frame_intellisense.py</code>,
+<code>ui/main_frame_format_codes.py</code>, three tests</td>
+<td>No behaviour change; macOS announce routing now lives behind a
+neutral facade. Covered by existing accessibility tests.</td>
+</tr>
+<tr>
+<td>#6</td>
+<td>Dark Mode read via wx
+<code>SystemSettings.GetAppearance().IsDark()</code>; Increase Contrast
+detection kept. Dead <code>is_dark_mode_enabled</code> /
+<code>is_reduce_motion_enabled</code> / <code>macos_appearance()</code>
+helpers (no UI consumer) deleted.</td>
+<td><code>quill/platform/macos/high_contrast.py</code>,
+<code>quill/platform/high_contrast.py</code>,
+<code>tests/unit/platform/macos/test_high_contrast_appearance.py</code></td>
+<td>QUILL's theme follows Dark Mode when toggled in System
+Settings.</td>
+</tr>
+<tr>
+<td>#3 / #13</td>
+<td>The dialog-inventory and network-egress gates now tag each
+discovered site with a <code>platform</code> field
+(<code>"darwin"</code> when it sits inside a
+<code>sys.platform == "darwin"</code> branch, <code>""</code>
+otherwise), via a conservative AST guard detector
+(<code>quill/tools/platform_guard.py</code>). The classification
+snapshot shape is unchanged, so existing consumers are unaffected. The
+live scan confirms <strong>0</strong> dialog and <strong>0</strong>
+egress sites are Mac-only today.</td>
+<td><code>quill/tools/platform_guard.py</code>,
+<code>quill/tools/dialog_inventory.py</code>,
+<code>quill/tools/network_egress_audit.py</code>,
+<code>tests/unit/tools/test_platform_guard.py</code></td>
+<td>N/A — gate metadata. A future Mac-only dialog/egress added inside a
+darwin guard will now be tagged in
+<code>python -m quill.tools.dialog_inventory</code> output.</td>
+</tr>
+<tr>
+<td>#64</td>
+<td>eSpeak live Read Aloud pipes &gt;8000-char sentences via
+<code>--stdin</code> (mirrors the batch overflow guard).</td>
+<td><code>quill/core/read_aloud.py</code>
+<code>_run_espeak_live</code></td>
+<td>Read Aloud with eSpeak over a very long sentence does not
+fail/truncate.</td>
+</tr>
+<tr>
+<td>#11</td>
+<td>Tray terminology is platform-neutral: <code>_TRAY_NOUN</code> ("menu
+bar" on darwin), Settings label/description, Help topic body.</td>
+<td><code>main_frame.py:759</code>, <code>settings_specs.py</code>,
+<code>help/topics.json</code></td>
+<td>Settings and Help say "menu bar", not "system tray", on macOS.</td>
+</tr>
+<tr>
+<td>#7 / F8</td>
+<td>Extend-selection caret movement matches native Mac semantics: Option
+= word, Cmd = line/document.</td>
+<td><code>main_frame.py</code>
+<code>_move_extend_selection_caret</code></td>
+<td>Option+Left/Right extends by word; Cmd+Left/Right to line start/end;
+Cmd+Home/End to document start/end.</td>
+</tr>
+<tr>
+<td>#18 / #54</td>
+<td>The system-wide sticky-note hotkey path emits a clear status on
+darwin (RegisterHotKey is Windows-only) instead of silently
+dropping.</td>
+<td><code>main_frame.py</code> <code>_reload_global_hotkeys</code></td>
+<td>On darwin, a single-keystroke sticky-note hotkey shows the "not
+available on macOS" status; the Tools command and QUILL-key chord still
+work.</td>
+</tr>
+<tr>
+<td>#39</td>
+<td>The close handler no longer <code>Hide()+Veto()</code> on darwin
+when no tray icon was created.</td>
+<td><code>main_frame.py</code> <code>_on_close</code> tray branch</td>
+<td>With tray mode on, closing the window closes normally (refusal
+announced once); it never vanishes with no restore path.</td>
+</tr>
+<tr>
+<td>#42</td>
+<td>The diagnostic bundle collects recent macOS crash reports from
+<code>~/Library/Logs/DiagnosticReports/</code> (darwin-only, redacted,
+capped).</td>
+<td><code>quill/stability/crash_report.py</code>
+<code>_collect_macos_diagnostic_reports</code></td>
+<td>Help &gt; Save Diagnostics on macOS includes any recent
+<code>Quill*.crash</code>/<code>.ips</code> under <code>macos/</code>.
+Inert on Windows.</td>
+</tr>
+<tr>
+<td>#53</td>
+<td>OK/Cancel rows use native order (Cancel-left/OK-right on macOS) via
+<code>ok_cancel_platform_order</code>.</td>
+<td><code>dialog_contract.py</code>,
+<code>vision_prompt_manager_dialog.py</code>,
+<code>remote_sites_dialog.py</code>,
+<code>voice_browser_dialog.py</code>, <code>main_frame.py</code></td>
+<td>The four dialogs show Cancel left, affirmative right on macOS.</td>
+</tr>
+<tr>
+<td>#52</td>
+<td>Paste-HTML-as-Markdown tries the macOS <code>public.html</code>
+pasteboard flavour on darwin; Windows CF_HTML path unchanged.</td>
+<td><code>main_frame_power_tools.py</code>
+<code>_power_tools_clipboard_html</code></td>
+<td>Copy rich text from Safari/Notes; QUILL-key + M pastes converted
+Markdown on macOS.</td>
+</tr>
+</tbody>
+</table>
+<h3
+id="shipped-in-earlier-batches-in-changelog-listed-for-mac-validation">Shipped
+in earlier batches (in CHANGELOG; listed for Mac validation)</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Fix</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>#1 / #43</td>
+<td>Keychain uses PyObjC <code>SecItemAdd</code> first;
+<code>security -w</code> CLI is a fallback with a one-time leak
+warning.</td>
+<td><code>quill/platform/macos/keychain.py:124-151</code></td>
+</tr>
+<tr>
+<td>#2</td>
+<td>Self-voicing fallback: when VoiceOver is off, darwin self-voices via
+<code>macos/tts.py</code>.</td>
+<td><code>quill/platform/windows/prism_bridge.py:308-330</code></td>
+</tr>
+<tr>
+<td>#35</td>
+<td>Portable mode on macOS routes credentials to Keychain with a
+warning.</td>
+<td><code>quill/platform/windows/credential_store.py</code></td>
+</tr>
+<tr>
+<td>#41</td>
+<td>LibreOffice import finds
+<code>/Applications/LibreOffice.app/Contents/MacOS</code> on darwin
+after PATH.</td>
+<td><code>quill/core/external_tools.py</code></td>
+</tr>
+<tr>
+<td>#46</td>
+<td>MathCAT gated Windows-only (ships only a Windows .dll).</td>
+<td><code>quill/core/optional_components.py:788-815</code></td>
+</tr>
+<tr>
+<td>#47</td>
+<td>Braille pack <code>lou_translate.exe</code> gated Windows-only;
+macOS shows a Homebrew message.</td>
+<td><code>quill/core/braille_pack.py:52-60</code></td>
+</tr>
+<tr>
+<td>#48</td>
+<td>External-engine resolution checks Homebrew/MacPorts/nvm for
+Finder-launched apps; allowlist has <code>node</code> not
+<code>node.exe</code>.</td>
+<td><code>quill/core/ai/external_engine.py</code></td>
+</tr>
+<tr>
+<td>#58</td>
+<td>PDF extractor classifies encrypted vs damaged vs scanned vs
+unavailable distinctly.</td>
+<td><code>quill/io/pdf.py:23-83</code></td>
+</tr>
+<tr>
+<td>#4</td>
+<td>Keymap pack overrides dropped on darwin when macOS-reserved or
+colliding.</td>
+<td><code>quill/core/keymap.py</code>
+<code>_apply_darwin_pack_overrides</code></td>
+</tr>
+<tr>
+<td>#8 / #61 / #74</td>
+<td><code>duti</code> missing returns a status;
+<code>lsregister -f</code> refresh; <code>_app_path</code> walks to the
+<code>.app</code> bundle.</td>
+<td><code>quill/platform/macos/shell_integration.py</code></td>
+</tr>
+<tr>
+<td>#29</td>
+<td>STT self-test synthesizes its clip via <code>say -o</code> on
+darwin.</td>
+<td><code>quill/core/optional_components.py:396-449</code></td>
+</tr>
+<tr>
+<td>#65 / #78</td>
+<td>eSpeak pause keeps the cursor at the sentence start when
+interrupted.</td>
+<td><code>quill/core/read_aloud.py</code></td>
+</tr>
+<tr>
+<td>#76</td>
+<td>Window menu has standard stock items and is registered as the system
+Window menu on darwin.</td>
+<td><code>quill/ui/main_frame_menu.py</code></td>
+</tr>
+<tr>
+<td>#38</td>
+<td>persona_launcher writes a <code>.command</code> script (shebang +
+chmod 0755) on darwin.</td>
+<td><code>quill/core/persona_launcher.py</code></td>
+</tr>
+<tr>
+<td>#40</td>
+<td>The dead <code>Ctrl+Alt+Shift+</code> / <code>Alt+Shift+D</code>
+chords are routed to AI/compare/dark-mode commands.</td>
+<td><code>quill/core/keymap.py:165-188</code></td>
+</tr>
+<tr>
+<td>#51</td>
+<td>"Toggle hidden files" is <code>Cmd+Shift+.</code> on darwin (not
+Ctrl+H, which is system Hide).</td>
+<td><code>quill/ui/simple_open_dialog.py:43-47</code></td>
+</tr>
+<tr>
+<td>#55</td>
+<td><code>EnginesPanel._after_install</code> guards all four
+post-install widget calls against a destroyed panel.</td>
+<td><code>quill/ui/ai_hub_engines_panel.py:184-196</code></td>
+</tr>
+<tr>
+<td>#59</td>
+<td><code>bundled_subpath</code> values use forward slashes.</td>
+<td><code>quill/core/external_tools.py</code></td>
+</tr>
+<tr>
+<td>#60 / #73</td>
+<td>Redaction covers the <code>security</code> CLI <code>-w</code>
+short-secret form.</td>
+<td><code>quill/stability/redaction.py:131-141</code></td>
+</tr>
+<tr>
+<td>#7 (dispatch)</td>
+<td>Platform dispatch delegates via module-level
+<code>sys.platform</code> gates.</td>
+<td><code>quill/platform/dispatch.py:28-49</code></td>
+</tr>
+<tr>
+<td>#50</td>
+<td>macOS <code>shell_integration</code> has direct unit tests.</td>
+<td><code>tests/unit/platform/macos/test_shell_integration.py</code></td>
+</tr>
+<tr>
+<td>#36</td>
+<td>feedback-hub in py2app includes, <code>.[feedback]</code> installed,
+mandatory token generated.</td>
+<td><code>scripts/setup_macos.py:95</code>,
+<code>macos-release.yml</code>, <code>build_macos.sh</code> — needs Mac
+bundle validation that the package lands in the <code>.app</code></td>
+</tr>
+</tbody>
+</table>
+<h3
+id="needs-mac-hardware-validation-only--no-code-change-expected">Needs
+Mac hardware (validation only — no code change expected)</h3>
+<ul>
+<li><strong>NSSound / afplay Read Aloud.</strong>
+<code>_NSSoundBackend</code> and the <code>_LiveWavPlayer</code> afplay
+path are unit-tested with fakes. Confirm on a real Mac that earcons and
+Piper/Kokoro/ElevenLabs/<code>say</code> Read Aloud produce audible
+output, and that the 16-entry live-sound retention is generous enough
+under real firing rates.</li>
+<li><strong>MacOpenFile cold-launch race + doc-switch chord.</strong>
+Confirm Finder/Dock/<code>open -a</code> file-open end-to-end (including
+the cold-launch race where the Apple Event arrives before
+<code>MainFrame</code> finishes constructing), and that the
+<code>Cmd+Shift+]</code>/<code>[</code> doc-switch chord and the
+<code>Cmd+Alt+F</code>/<code>Cmd+Alt+M</code>/
+<code>Cmd+Alt+Space</code> darwin alternates do not collide with the
+tester's setup.</li>
+</ul>
+<hr />
+<h2 id="mac-tester-validation-checklist">Mac tester validation
+checklist</h2>
+<p>Run these on a real Mac (VoiceOver + a non-VoiceOver pass) against a
+build from main after this pass.</p>
+<ol type="1">
+<li><strong>F8 selection semantics.</strong> Selection mode on (F8).
+Option+Left/Right extends by word; Cmd+Left/Right to line start/end;
+Cmd+Home/End to document start/end.</li>
+<li><strong>macOS (system voice) Read Aloud engine (#21/#75).</strong>
+In Speech Hub, pick the "macOS (system voice)" engine: voice picker
+lists system voices; Preview speaks; Read Aloud reads with pause/stop;
+batch export-to-file produces audio.</li>
+<li><strong>Tray mode.</strong> Enable tray mode; close the window — it
+closes normally with a one-time "not available on macOS" status (must
+NOT vanish with no restore path). Settings/Help say "menu bar", not
+"system tray".</li>
+<li><strong>Sticky-note hotkey.</strong> Bind a single-keystroke
+sticky-note hotkey; on darwin you get the "not available on macOS"
+status. Tools &gt; Sticky Note and the QUILL-key chord still create a
+note.</li>
+<li><strong>OK/Cancel order.</strong> Voice Browser, Remote Sites
+(Open/Save), Vision Prompt Manager, Magic Paste — Cancel left,
+affirmative right on macOS.</li>
+<li><strong>Paste HTML as Markdown.</strong> Copy rich text from Safari;
+QUILL-key + M pastes converted Markdown (not plain text).</li>
+<li><strong>Diagnostic bundle.</strong> Help &gt; Save Diagnostics — the
+zip includes any recent
+<code>macos/Quill*.crash</code>/<code>.ips</code>; no secrets (redaction
+stats in metadata.json).</li>
+<li><strong>eSpeak long Read Aloud.</strong> Read Aloud with eSpeak over
+a &gt;8000-char sentence completes without truncation/failure.</li>
+<li><strong>Platform-aware strings (#37).</strong> AI Hub Auphonic note,
+Audio Studio SFTP publish note, GitHub sign-in failure, and
+Forget-API-key confirmation all say "Keychain"; dictation status says
+"System dictation"; the first-run wizard says "In my user profile"; the
+keymap editor's example chord says "Cmd+Alt".</li>
+<li><strong>Dark Mode (#6).</strong> Toggle Dark Mode in System
+Settings; QUILL's theme follows it.</li>
+<li><strong>New Mac shortcuts (community ask).</strong> Cmd+Alt+F /
+Cmd+Alt+M / Cmd+Alt+Space, and Cmd+G / Cmd+Shift+G for Find
+Next/Previous — confirm none collides with your setup and they feel
+natural; comment via the release-notes ask if not.</li>
+<li><strong>Bundle items from earlier batches</strong> (Keychain,
+LibreOffice, MathCAT/braille gating, engine resolution, Window menu,
+.command persona shortcut, etc.) per the "Shipped in earlier batches"
+table.</li>
+</ol>
+<p>support#67 (diacriticals) and support#69 (Settings speech labels) are
+fixed in code and are <strong>not</strong> on this internal checklist —
+they are routed to the community for validation via the release notes,
+which link both issues.</p>
+<hr />
+<h2 id="build-gates">Build gates</h2>
+<p>All gates green this pass: <code>ruff check</code>,
+<code>dialog_button_contract</code>, <code>check_banned_patterns</code>,
+<code>module_size_budget</code> (GATE-11 rebaselined with
+<code>_rebaseline_2026_07_10_macos_say_read_aloud_engine</code> and
+<code>_rebaseline_2026_07_10_macos_windows_strings_sweep</code>), and
+the smoke/unit suites for the touched modules (read_aloud,
+platform_nouns, settings, speech, voice_browser, i18n/catalogs,
+accessibility, network_egress_audit, dialog inventory, setup wizard,
+keymap editor, github, ai_hub, assistant_ai, platform_guard). The new
+<code>platform</code> field on the dialog-inventory and network-egress
+gates is pinned by <code>tests/unit/tools/test_platform_guard.py</code>
+plus sanctioned-platform-tag tests in both gate test files; the
+classification snapshot shape is unchanged, so
+<code>check_banned_patterns</code> and the snapshot consumer tests are
+unaffected. No Mac-only gate is exercised locally; the macOS CI test job
+runs the <code>darwin</code>-gated tests. The <code>.pot</code> was
+regenerated and the Italian <code>.mo</code> recompiled (3 invalidated
+entries cleared to English fallback). The release notes
+<code>.html</code>/<code>.epub</code> were regenerated to match the
+edited <code>.md</code> (docs-artifact parity).</p>
+</body>
+</html>

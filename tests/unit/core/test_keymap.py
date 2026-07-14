@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -187,7 +188,14 @@ def test_keyboard_pack_names_include_default() -> None:
 
 def test_build_keymap_for_pack_applies_overlay() -> None:
     keymap = build_keymap_for_pack("VS Code")
-    assert keymap["file.open"] == "Ctrl+P"
+    # On macOS, _apply_darwin_pack_overrides (#4) correctly rejects the pack's
+    # file.open -> Ctrl+P override: at Mac runtime (Ctrl folds to Cmd) that
+    # collides with the existing file.print -> Ctrl+P default, so file.open
+    # stays at its DEFAULT_KEYMAP value instead of silently stealing Print.
+    if sys.platform == "darwin":
+        assert keymap["file.open"] == DEFAULT_KEYMAP["file.open"]
+    else:
+        assert keymap["file.open"] == "Ctrl+P"
     assert keymap["format.duplicate_line"] == "Shift+Alt+Down"
     assert keymap["file.save"] == DEFAULT_KEYMAP["file.save"]
 
@@ -197,13 +205,35 @@ def test_previous_misspelling_shortcut_is_available() -> None:
 
 
 def test_replace_shortcut_is_available() -> None:
-    assert DEFAULT_KEYMAP["edit.replace"] == "Ctrl+H"
+    # Ctrl+H becomes Cmd+H on macOS (system Hide) -- dead by default, so
+    # DEFAULT_KEYMAP uses a darwin alternate (#4).
+    expected = "Cmd+Alt+F" if sys.platform == "darwin" else "Ctrl+H"
+    assert DEFAULT_KEYMAP["edit.replace"] == expected
+
+
+def test_bundled_profiles_do_not_override_platform_aware_defaults() -> None:
+    profiles = ("profile_default.json", "profile_minimal.json", "profile_sr_friendly.json")
+    for profile_name in profiles:
+        path = Path("quill/core/keymap") / profile_name
+        data = json.loads(path.read_text(encoding="utf-8"))
+        bindings = data.get("bindings", {})
+        for command_id in (
+            "app.exit",
+            "navigate.back_location",
+            "navigate.forward_location",
+            "window.next_document",
+            "window.previous_document",
+        ):
+            assert command_id not in bindings, f"{profile_name} should not override {command_id}"
 
 
 def test_snippet_shortcuts_are_available() -> None:
     # word_prediction moved to Ctrl+. (§4.22); Ctrl+Space freed for select_chunk
     assert DEFAULT_KEYMAP["edit.word_prediction"] == "Ctrl+."
-    assert DEFAULT_KEYMAP["edit.select_chunk"] == "Ctrl+Space"
+    # Ctrl+Space becomes Cmd+Space on macOS (Spotlight) -- dead by default, so
+    # DEFAULT_KEYMAP uses a darwin alternate (#32).
+    expected_select_chunk = "Cmd+Alt+Space" if sys.platform == "darwin" else "Ctrl+Space"
+    assert DEFAULT_KEYMAP["edit.select_chunk"] == expected_select_chunk
     assert DEFAULT_KEYMAP["format.insert_snippet"] == "Ctrl+Shift+Grave, S"
     assert DEFAULT_KEYMAP["format.manage_snippets"] == "Ctrl+Shift+Grave, Shift+S"
 
@@ -434,6 +464,62 @@ def test_legacy_macos_alt_right_forward_location_rewritten_to_cmd_close_bracket(
     assert merged["navigate.forward_location"] == "Cmd+]"
 
 
+# ---------------------------------------------------------------------------
+# macOS document-switching: Ctrl+Tab / Ctrl+Shift+Tab never reach the app.
+#
+# wx's ACCEL_CTRL maps to Cmd (not the physical Control key) in a macOS
+# accelerator table, so the Windows default "Ctrl+Tab" becomes Cmd+Tab --
+# macOS's own reserved App Switcher shortcut -- and a literal physical
+# Ctrl+Tab press does not match ACCEL_CTRL there either. Neither variant
+# ever reaches the app, so the key falls through to generic focus
+# traversal (moving focus onto toolbar buttons) instead of switching
+# documents. macOS gets the conventional Safari/Xcode tab-cycling chord.
+# ---------------------------------------------------------------------------
+
+
+def test_default_keymap_uses_ctrl_tab_on_windows() -> None:
+    if sys.platform == "darwin":
+        return
+    assert DEFAULT_KEYMAP["window.next_document"] == "Ctrl+Tab"
+    assert DEFAULT_KEYMAP["window.previous_document"] == "Ctrl+Shift+Tab"
+
+
+def test_default_keymap_uses_cmd_shift_bracket_on_macos_for_document_switch() -> None:
+    if sys.platform != "darwin":
+        return
+    assert DEFAULT_KEYMAP["window.next_document"] == "Cmd+Shift+]"
+    assert DEFAULT_KEYMAP["window.previous_document"] == "Cmd+Shift+["
+
+
+def test_legacy_macos_ctrl_tab_next_document_rewritten_to_cmd_shift_close_bracket(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A macOS user who saved the old Ctrl+Tab next-document binding (which
+    can never fire there -- see above) has it rewritten to Cmd+Shift+]."""
+    monkeypatch.setattr(sys, "platform", "darwin")
+    merged = keymap_module.merge_keymaps({"window.next_document": "Ctrl+Tab"})
+    assert merged["window.next_document"] == "Cmd+Shift+]"
+
+
+def test_legacy_macos_ctrl_shift_tab_previous_document_rewritten_to_cmd_shift_open_bracket(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A macOS user who saved the old Ctrl+Shift+Tab previous-document
+    binding has it rewritten to Cmd+Shift+[."""
+    monkeypatch.setattr(sys, "platform", "darwin")
+    merged = keymap_module.merge_keymaps({"window.previous_document": "Ctrl+Shift+Tab"})
+    assert merged["window.previous_document"] == "Cmd+Shift+["
+
+
+def test_non_macos_ctrl_tab_binding_is_not_rewritten(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The legacy rewrite is macOS-only: Windows/Linux keep Ctrl+Tab as-is."""
+    monkeypatch.setattr(sys, "platform", "win32")
+    merged = keymap_module.merge_keymaps({"window.next_document": "Ctrl+Tab"})
+    assert merged["window.next_document"] == "Ctrl+Tab"
+
+
 def test_default_keymap_has_no_ctrl_q_collision() -> None:
     # #608 pin: no two commands in the default keymap may share Ctrl+Q,
     # because that chord is now reserved for app.exit (which maps to
@@ -475,3 +561,86 @@ def test_corrupt_keymap_file_is_quarantined_then_defaults(
     backups = list((tmp_path / "migration-backups").glob("keymap-corrupt-*.json"))
     assert len(backups) == 1
     assert backups[0].read_text(encoding="utf-8") == "not json at all"
+
+
+# ---------------------------------------------------------------------------
+# #4: macOS keyboard-pack collision guard
+# ---------------------------------------------------------------------------
+
+
+def test_darwin_runtime_chord_folds_ctrl_to_cmd() -> None:
+    # On macOS wx maps ACCEL_CTRL to Cmd, so a stored "Ctrl+G" fires as Cmd+G.
+    assert keymap_module._darwin_runtime_chord("Ctrl+G") == "Cmd+G"
+    assert keymap_module._darwin_runtime_chord("Ctrl+Shift+S") == "Cmd+Shift+S"
+    # An explicit Cmd chord is left as-is; F-keys have no Ctrl to fold.
+    assert keymap_module._darwin_runtime_chord("Cmd+G") == "Cmd+G"
+    assert keymap_module._darwin_runtime_chord("F12") == "F12"
+    assert keymap_module._darwin_runtime_chord("not-a-chord??") is None
+
+
+def test_is_macos_reserved_runtime_chord() -> None:
+    assert keymap_module._is_macos_reserved_runtime_chord("F12") is True
+    assert keymap_module._is_macos_reserved_runtime_chord("F11") is True
+    assert keymap_module._is_macos_reserved_runtime_chord("Cmd+H") is True
+    assert keymap_module._is_macos_reserved_runtime_chord("Cmd+Q") is True
+    # Option+<single letter> is a dead-key/diacritical (support#67).
+    assert keymap_module._is_macos_reserved_runtime_chord("Alt+A") is True
+    # Shift+F12 and Alt+Shift+A are NOT reserved.
+    assert keymap_module._is_macos_reserved_runtime_chord("Shift+F12") is False
+    assert keymap_module._is_macos_reserved_runtime_chord("Alt+Shift+A") is False
+    assert keymap_module._is_macos_reserved_runtime_chord("Cmd+G") is False
+
+
+def test_apply_darwin_pack_overrides_drops_runtime_collision() -> None:
+    # Simulate a darwin DEFAULT_KEYMAP where edit.find_next is Cmd+G (the real Mac
+    # default). A pack binding navigate.go_to_line to "Ctrl+G" fires as Cmd+G and
+    # must be dropped so it does not clobber find_next.
+    merged = {"edit.find_next": "Cmd+G", "navigate.go_to_line": "Ctrl+L"}
+    keymap_module._apply_darwin_pack_overrides(dict(merged), {"navigate.go_to_line": "Ctrl+G"})
+    # The override is dropped; the darwin default for go_to_line is preserved.
+    result = dict(merged)
+    keymap_module._apply_darwin_pack_overrides(result, {"navigate.go_to_line": "Ctrl+G"})
+    assert result["navigate.go_to_line"] == "Ctrl+L"
+
+
+def test_apply_darwin_pack_overrides_drops_reserved_f12() -> None:
+    base = {"file.save_as": "Ctrl+Shift+S"}
+    keymap_module._apply_darwin_pack_overrides(base, {"file.save_as": "F12"})
+    assert base["file.save_as"] == "Ctrl+Shift+S"
+
+
+def test_apply_darwin_pack_overrides_drops_option_letter_deadkey() -> None:
+    base = {"edit.insert_link": "Ctrl+K"}
+    keymap_module._apply_darwin_pack_overrides(base, {"edit.insert_link": "Alt+A"})
+    assert base["edit.insert_link"] == "Ctrl+K"
+
+
+def test_apply_darwin_pack_overrides_applies_safe_override() -> None:
+    base = {"edit.select_line": "Ctrl+L"}
+    keymap_module._apply_darwin_pack_overrides(base, {"edit.select_line": "Cmd+L"})
+    assert base["edit.select_line"] == "Cmd+L"
+
+
+def test_build_keymap_for_pack_darwin_drops_reserved_f12(monkeypatch) -> None:
+    monkeypatch.setattr(keymap_module.sys, "platform", "darwin")
+    for pack_name in ("Quill Writer", "Microsoft Word"):
+        keymap = build_keymap_for_pack(pack_name)
+        # The pack overrides file.save_as to F12; on macOS F12 is the Mission
+        # Control default and must not be bound. The darwin default wins.
+        assert keymap["file.save_as"] != "F12"
+
+
+def test_build_keymap_for_pack_darwin_drops_vscode_open_collision(monkeypatch) -> None:
+    # VS Code binds file.open to Ctrl+P, which fires as Cmd+P on macOS and collides
+    # with file.print (Ctrl+P -> Cmd+P). The guard drops it; the darwin default wins.
+    monkeypatch.setattr(keymap_module.sys, "platform", "darwin")
+    keymap = build_keymap_for_pack("VS Code")
+    assert keymap["file.open"] == DEFAULT_KEYMAP["file.open"]
+    assert keymap["file.open"] != "Ctrl+P"
+
+
+def test_build_keymap_for_pack_off_darwin_is_verbatim(monkeypatch) -> None:
+    # Regression: on Windows the pack overlay is applied verbatim (no guard).
+    monkeypatch.setattr(keymap_module.sys, "platform", "win32")
+    keymap = build_keymap_for_pack("VS Code")
+    assert keymap["file.open"] == "Ctrl+P"

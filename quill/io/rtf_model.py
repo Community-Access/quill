@@ -22,7 +22,7 @@ unchanged. The rich model is an **overlay** over that markup:
 The supported inline subset matches the canonical markup grammar: ``**bold**``,
 ``*italic*`` and ``[label](url)`` links, plus heading and bullet paragraph styles.
 The "hidden codes" design note
-(``docs/planning/rich-text-formatting-hidden-codes-design.md``) extends that grammar with a
+(``the QUILL PRD hidden-codes appendix``) extends that grammar with a
 small, explicit-value vocabulary that is invisible in the editor and materialized
 only at export:
 

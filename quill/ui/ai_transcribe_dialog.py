@@ -312,6 +312,11 @@ class AIProgressDialog:
         self._status_fn = status_fn
         self._title = title
         self._minimized = False
+        # Set only once switch_to_ok() has run -- the caller's reopen-the-hub
+        # follow-up. Dismissing the completed dialog via the window's own close
+        # box, Alt+F4, or Escape doesn't fire the relabeled button's click event,
+        # so _on_dialog_close below is the fallback that still runs it (#kokoro-focus).
+        self._completion_on_ok: Callable[[], None] | None = None
 
         self.dialog = wx.Dialog(
             parent,
@@ -346,6 +351,24 @@ class AIProgressDialog:
         from quill.ui.dialog_contract import apply_modal_ids
 
         apply_modal_ids(self.dialog, escape_id=wx.ID_CANCEL)
+        self.dialog.Bind(wx.EVT_CLOSE, self._on_dialog_close)
+
+    def _on_dialog_close(self, event: object) -> None:
+        """Destroy the dialog, running the completion follow-up if one is due.
+
+        Handles the window's own close box, Alt+F4, and (on some platforms)
+        Escape -- none of which fire the relabeled OK button's click event, so
+        without this the caller's on_ok (e.g. reopening the Download Optional
+        Components hub) was silently skipped.
+        """
+        on_ok = self._completion_on_ok
+        self._completion_on_ok = None
+        try:
+            self.dialog.Destroy()
+        except Exception:  # noqa: BLE001
+            pass
+        if on_ok is not None:
+            on_ok()
 
     def _minimize(self) -> None:
         """Hide the dialog and continue showing progress in the status bar."""
@@ -404,12 +427,15 @@ class AIProgressDialog:
             self.close()
             return
 
+        self._completion_on_ok = on_ok
+
         def _apply() -> None:
             self._label.SetLabel(message)
             self._label.Wrap(440)
             self._gauge.SetValue(100)
 
             def _on_click(_e: object) -> None:
+                self._completion_on_ok = None
                 try:
                     self.dialog.Destroy()
                 except Exception:  # noqa: BLE001

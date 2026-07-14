@@ -19,7 +19,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from quill.ui.dialog_contract import apply_modal_ids, focus_primary_control
+from quill.ui.dialog_contract import (
+    apply_modal_ids,
+    focus_primary_control,
+    ok_cancel_platform_order,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -40,6 +44,7 @@ class VoiceBrowserResult:
     dectalk_rate: int = 200
     kokoro_speed: float = 1.0
     espeak_rate: int = 175
+    macos_rate: int = 175
 
 
 class VoiceBrowserDialog:
@@ -83,6 +88,7 @@ class VoiceBrowserDialog:
         piper_model_dir: Path,
         settings: object,
         preview_fn: Callable[..., None],
+        preview_stop_fn: Callable[[], None] | None = None,
         engine_available: dict[str, bool] | None = None,
         elevenlabs_api_key: str = "",
         has_preview_sample: Callable[[str, str], bool] | None = None,
@@ -100,6 +106,8 @@ class VoiceBrowserDialog:
         self._settings = settings
         self._elevenlabs_api_key = elevenlabs_api_key
         self._preview_fn = preview_fn
+        self._preview_stop_fn = preview_stop_fn or (lambda: None)
+        self._previewing = False
         self._engine_available: dict[str, bool] = engine_available or {}
         # Whether a bundled pre-recorded preview clip exists for (engine, voice).
         self._has_preview_sample = has_preview_sample or (lambda _e, _v: False)
@@ -184,6 +192,13 @@ class VoiceBrowserDialog:
             sb, min=75, max=650, initial=getattr(s, "read_aloud_rate", 175)
         )
         self._rate_spin.SetName("Rate (words per minute)")
+        # support#69: a wx.SpinCtrl is a composite; VoiceOver focuses the inner
+        # TextCtrl, which does not inherit the parent's SetName. Name the child
+        # too so the number box is announced with its label (mirrors kok_spin).
+        for _child in self._rate_spin.GetChildren():
+            if isinstance(_child, wx.TextCtrl):
+                _child.SetName("Rate (words per minute)")
+                break
         rate_row.Add(self._rate_lbl, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
         rate_row.Add(self._rate_spin, 1, wx.EXPAND)
         settings_box.Add(rate_row, 0, wx.EXPAND | wx.ALL, 4)
@@ -193,7 +208,11 @@ class VoiceBrowserDialog:
         self._vol_spin = wx.SpinCtrl(
             sb, min=0, max=100, initial=getattr(s, "read_aloud_volume", 100)
         )
-        self._vol_spin.SetName("Volume")
+        self._vol_spin.SetName("Volume (0 to 100)")
+        for _child in self._vol_spin.GetChildren():
+            if isinstance(_child, wx.TextCtrl):
+                _child.SetName("Volume (0 to 100)")
+                break
         vol_row.Add(self._vol_lbl, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
         vol_row.Add(self._vol_spin, 1, wx.EXPAND)
         settings_box.Add(vol_row, 0, wx.EXPAND | wx.ALL, 4)
@@ -203,7 +222,11 @@ class VoiceBrowserDialog:
         self._pitch_spin = wx.SpinCtrl(
             sb, min=0, max=100, initial=getattr(s, "read_aloud_pitch", 50)
         )
-        self._pitch_spin.SetName("Pitch")
+        self._pitch_spin.SetName("Pitch (0 to 100)")
+        for _child in self._pitch_spin.GetChildren():
+            if isinstance(_child, wx.TextCtrl):
+                _child.SetName("Pitch (0 to 100)")
+                break
         pitch_row.Add(self._pitch_lbl, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
         pitch_row.Add(self._pitch_spin, 1, wx.EXPAND)
         settings_box.Add(pitch_row, 0, wx.EXPAND | wx.ALL, 4)
@@ -264,8 +287,10 @@ class VoiceBrowserDialog:
             ok_btn = wx.Button(parent, id=wx.ID_OK)
             cancel_btn = wx.Button(parent, id=wx.ID_CANCEL)
             btn_row.AddStretchSpacer()
-            btn_row.Add(ok_btn, 0, wx.RIGHT, 6)
-            btn_row.Add(cancel_btn, 0)
+            # #53: native button order -- Cancel-left/OK-right on macOS.
+            first_btn, second_btn = ok_cancel_platform_order(ok_btn, cancel_btn)
+            btn_row.Add(first_btn, 0, wx.RIGHT, 6)
+            btn_row.Add(second_btn, 0)
             apply_modal_ids(parent, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
 
         root.Add(btn_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
@@ -307,6 +332,7 @@ class VoiceBrowserDialog:
             list_elevenlabs_voices,
             list_espeak_voices,
             list_kokoro_voices,
+            list_macos_voices,
             list_piper_catalog_voices,
             list_voices,
         )
@@ -319,6 +345,8 @@ class VoiceBrowserDialog:
             return list_kokoro_voices()
         if eng == "espeak":
             return list_espeak_voices()
+        if eng == "macos":
+            return list_macos_voices()
         if eng == "elevenlabs":
             return list_elevenlabs_voices(self._elevenlabs_api_key)
         # sapi5 — every installed system voice, whatever its language, so a
@@ -339,6 +367,8 @@ class VoiceBrowserDialog:
         if eng == "espeak":
             raw = str(getattr(s, "read_aloud_espeak_voice", "") or "en-gb")
             return raw.split("+")[0]  # strip stored variant for list matching
+        if eng == "macos":
+            return str(getattr(s, "read_aloud_macos_voice", "") or "")
         if eng == "elevenlabs":
             return str(getattr(s, "read_aloud_elevenlabs_voice", "") or "")
         return str(getattr(s, "read_aloud_voice", "") or "")
@@ -393,7 +423,7 @@ class VoiceBrowserDialog:
 
     def _update_settings_panel(self, eng: str) -> None:
         s = self._settings
-        has_rate = eng in {"sapi5", "dectalk", "espeak"}
+        has_rate = eng in {"sapi5", "dectalk", "espeak", "macos"}
         has_vol_pitch = eng == "sapi5"
         has_kokoro = eng == "kokoro"
         has_any = has_rate or has_vol_pitch or has_kokoro
@@ -407,6 +437,9 @@ class VoiceBrowserDialog:
         elif eng == "espeak":
             self._rate_spin.SetRange(80, 450)
             self._rate_spin.SetValue(getattr(s, "read_aloud_espeak_rate", 175))
+        elif eng == "macos":
+            self._rate_spin.SetRange(80, 450)
+            self._rate_spin.SetValue(getattr(s, "read_aloud_macos_rate", 175))
 
         if has_vol_pitch:
             self._vol_spin.SetValue(getattr(s, "read_aloud_volume", 100))
@@ -513,8 +546,10 @@ class VoiceBrowserDialog:
             detail = f"{detail} — {not_dl}" if detail else not_dl
         self._detail_lbl.SetLabel(detail)
         # Preview works when the voice is ready (real synthesis) or when a
-        # bundled sample clip exists for it.
-        self._preview_btn.Enable(ready or has_sample)
+        # bundled sample clip exists for it. Stays enabled whenever a preview
+        # is actually running, even if the newly-selected row isn't ready --
+        # otherwise the Stop button goes disabled out from under the user.
+        self._preview_btn.Enable(ready or has_sample or self._previewing)
         # Rate/volume/pitch/speed/character apply to real synthesis only.
         self._set_voice_settings_enabled(ready)
 
@@ -531,6 +566,9 @@ class VoiceBrowserDialog:
         return self._engine_available.get(eng, True) and bool(getattr(voice, "installed", True))
 
     def _do_preview(self) -> None:
+        if self._previewing:
+            self._stop_preview()
+            return
         idx = self._voice_lb.GetSelection()
         wx = self._wx
         if idx == wx.NOT_FOUND or idx >= len(self._displayed_voices):
@@ -543,7 +581,18 @@ class VoiceBrowserDialog:
         if not ready and not self._has_preview_sample(eng, v.id):
             return
         voice_id = self._espeak_combined_voice_id(v.id) if eng == "espeak" else v.id
-        self._preview_fn(eng, voice_id, live=ready)
+        self._preview_fn(eng, voice_id, live=ready, on_state_change=self._on_preview_state)
+
+    def _on_preview_state(self, state: str) -> None:
+        """Toggle the Preview button between its idle and Stop labels."""
+        self._previewing = state in ("generating", "playing")
+        label = "&Stop Preview" if self._previewing else "&Preview Selected Voice"
+        self._preview_btn.SetLabel(label)
+
+    def _stop_preview(self) -> None:
+        """Cancel the active preview via the same path a new preview would use."""
+        self._preview_stop_fn()
+        self._on_preview_state("idle")
 
     def _do_download(self) -> None:
         eng = self._current_engine_id()
@@ -629,6 +678,11 @@ class VoiceBrowserDialog:
                 self._rate_spin.GetValue()
                 if eng == "espeak"
                 else getattr(s, "read_aloud_espeak_rate", 175)
+            ),
+            "macos_rate": (
+                self._rate_spin.GetValue()
+                if eng == "macos"
+                else getattr(s, "read_aloud_macos_rate", 175)
             ),
         }
 

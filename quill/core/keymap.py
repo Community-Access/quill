@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import sys
+from collections.abc import Mapping
 from pathlib import Path
 
 from quill.core.keymap_format import (
@@ -69,13 +70,29 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "file.open_from_remote": "Ctrl+Shift+Grave, Shift+O",  # QUILL-key chord (R taken by read-aloud)
     "file.save_to_remote": "Ctrl+Shift+Grave, W",  # QUILL-key chord
     "file.manage_remote_sites": "Ctrl+Shift+Grave, Shift+M",  # QUILL-key chord
+    # GitHub remote (File > Open from Remote submenu). The single-letter
+    # chord space is nearly full (every unshifted A-Z is taken; see the
+    # github.* block below), so these five take the last free Shift+
+    # letters — I for Items is the one strong mnemonic left.
+    "file.open_github_repository": "Ctrl+Shift+Grave, Shift+Y",  # QUILL-key chord
+    "file.open_github_file_url": "Ctrl+Shift+Grave, Shift+W",  # QUILL-key chord
+    "file.github_save_back": "Ctrl+Shift+Grave, Shift+Q",  # QUILL-key chord
+    "file.github_manage_accounts": "Ctrl+Shift+Grave, Shift+Z",  # QUILL-key chord
+    "file.open_github_items": "Ctrl+Shift+Grave, Shift+I",  # QUILL-key chord (I = Items)
     "file.close_document": "Ctrl+W",
     "file.print": "Ctrl+P",
     # Restore points: no default key (assignable); the File menu item is the
     # primary path.
     "file.restore_previous_version": "",
-    "window.next_document": "Ctrl+Tab",
-    "window.previous_document": "Ctrl+Shift+Tab",
+    # On macOS, wx's ACCEL_CTRL maps to Cmd (not the physical Control key) in
+    # the accelerator table, so "Ctrl+Tab" here becomes Cmd+Tab -- macOS's own
+    # reserved App Switcher shortcut, which never reaches the app. A literal
+    # physical Ctrl+Tab press does not match ACCEL_CTRL on macOS either, so it
+    # falls through to generic focus traversal instead of switching documents.
+    # Use the conventional macOS tab-cycling chord (matching Safari/Xcode,
+    # and pairing with the Cmd+[ / Cmd+] back/forward chord above) instead.
+    "window.next_document": "Cmd+Shift+]" if sys.platform == "darwin" else "Ctrl+Tab",
+    "window.previous_document": "Cmd+Shift+[" if sys.platform == "darwin" else "Ctrl+Shift+Tab",
     # Jump straight to the Nth open document. Alt+digit is otherwise unused and,
     # unlike Ctrl+Alt+ chords, is not screen-reader-hostile (§10.8). Alt+0 = 10th.
     "window.go_to_document_1": "Alt+1",
@@ -93,7 +110,13 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "navigate.speak_full_path": "Ctrl+Shift+Grave, P",
     "navigate.speak_status_summary": "Ctrl+Shift+Grave, Q",
     "view.send_to_tray": "Ctrl+Shift+Grave, T",
-    "view.toggle_soft_wrap": "Alt+Z",
+    # support#67: bare Alt+<letter> is a macOS Option deadkey (Alt+Z would
+    # steal a diacritical the user types). The pack guard
+    # (_is_macos_reserved_runtime_chord) already drops bare Alt+letter on
+    # darwin; apply the same policy to DEFAULT_KEYMAP -- disable on darwin
+    # so Option+Z types its character. The command stays available via the
+    # command palette and menu; a Mac-validated remap is the follow-up.
+    "view.toggle_soft_wrap": "" if sys.platform == "darwin" else "Alt+Z",
     "view.reveal_codes_toggle": "Alt+F3",  # WordPerfect Reveal Codes
     "view.toggle_tab_control": "Ctrl+Shift+Grave, Shift+T",
     "app.command_palette": "Ctrl+Shift+P",
@@ -119,12 +142,24 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "navigate.previous_structure": "Alt+Up",
     "navigate.heading_organizer": "Ctrl+Shift+Grave, O",
     "navigate.list_bookmarks": "Alt+Shift+B",
-    "tools.ask_quill_chat": "Alt+Q",
+    # support#67: bare Alt+Q is a macOS Option deadkey -- disable on darwin
+    # (see view.toggle_soft_wrap above). Reachable via the command palette.
+    "tools.ask_quill_chat": "" if sys.platform == "darwin" else "Alt+Q",
     "tools.word_count": "Ctrl+Shift+W",
     "tools.spell_check_dialog": "F7",
+    "tools.spell_check_ranked": "Alt+Shift+F7",
+    "tools.spell_check_word_at_cursor": "Alt+F7",
     "tools.next_misspelling": "Ctrl+F7",
     "tools.previous_misspelling": "Ctrl+Shift+F7",
     "tools.misspelling_list": "Alt+Shift+L",
+    "tools.misspelling_list_ranked": "Ctrl+Shift+L",
+    "file.open_from_favorite_folder": "Ctrl+Alt+Shift+O",
+    "file.add_favorite_folder": "Ctrl+Alt+Shift+A",
+    "file.remove_favorite_folder": "Ctrl+Alt+Shift+R",
+    "edit.toggle_fold": "Ctrl+Alt+Shift+F",
+    "navigate.next_fold": "Alt+Shift+]",
+    "navigate.previous_fold": "Alt+Shift+[",
+    "tools.list_folds": "Ctrl+Alt+Shift+L",
     "tools.thesaurus": "Shift+F7",
     # Inline notes (sticky, content-anchored annotations).
     "notes.add_inline_note": "Alt+Shift+I",
@@ -136,6 +171,11 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "tools.dictation_toggle": "Ctrl+Shift+Grave, D",
     "tools.speech_dictate": "Ctrl+Shift+Grave, Shift+D",
     "tools.speech_batch_export": "Ctrl+Shift+Grave, Y",  # Audio Studio
+    "radio.play_pause": "Ctrl+Shift+Grave, N",  # Internet Radio (N = the last free plain letter)
+    "radio.stop": "Ctrl+Shift+Grave, 0",  # Internet Radio
+    "radio.mute_toggle": "Ctrl+Shift+Grave, 9",  # Internet Radio
+    "podcasts.play_pause": "Ctrl+Shift+Grave, 8",  # Podcasts
+    "podcasts.stop": "Ctrl+Shift+Grave, 7",  # Podcasts
     # Locked Dictation (offline Whisper). All remappable; the
     # these are matched in the editor key handlers rather than the accelerator
     # table (no menu accelerators) so Escape can be consumed only while recording.
@@ -193,10 +233,15 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "edit.say_selected": "",  # Shift+Space — conditional intercept in _on_editor_key_down
     "edit.read_all": "Alt+F8",
     "edit.find": "Ctrl+F",
-    "edit.find_next": "F3",
-    "edit.find_previous": "Shift+F3",
+    # macOS HIG: Find Next/Previous are Cmd+G / Cmd+Shift+G. The bare F3 /
+    # Shift+F3 defaults need the Fn key held on a stock MacBook (F-keys default
+    # to brightness/media), so the darwin alternates give a no-Fn path (#6).
+    "edit.find_next": "Cmd+G" if sys.platform == "darwin" else "F3",
+    "edit.find_previous": "Cmd+Shift+G" if sys.platform == "darwin" else "Shift+F3",
     "edit.find_all_matches": "Ctrl+Shift+F3",  # was Alt+F3 (now Reveal Codes)
-    "edit.replace": "Ctrl+H",
+    # Ctrl+H becomes Cmd+H on macOS (system Hide) -- dead by default. The darwin
+    # alternate Cmd+Alt+F mirrors the Mac/VS Code Replace convention (#30).
+    "edit.replace": "Cmd+Alt+F" if sys.platform == "darwin" else "Ctrl+H",
     "tools.search_in_files": "Ctrl+Shift+F",
     "tools.replace_in_files": "Ctrl+Shift+R",
     # Bare "N" after the QUILL-key prefix is intercepted for browse mode in
@@ -215,16 +260,26 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "edit.insert_link": "Ctrl+K",
     "edit.follow_link": "Ctrl+Enter",
     "edit.word_prediction": "Ctrl+.",  # freed Ctrl+Space for select_chunk (§4.22)
-    "edit.select_chunk": "Ctrl+Space",  # §4.22 advanced-editor parity
+    # Ctrl+Space becomes Cmd+Space on macOS (Spotlight) -- dead by default. The
+    # darwin alternate Cmd+Alt+Space avoids the system shortcuts (#32).
+    "edit.select_chunk": "Cmd+Alt+Space"
+    if sys.platform == "darwin"
+    else "Ctrl+Space",  # §4.22 advanced-editor parity
     "view.preview": "Ctrl+Shift+V",
     "view.browser_preview": "Ctrl+Shift+Grave, V",  # §10.8.2: QUILL-key chord
     "view.split_preview": "Ctrl+Shift+Backslash",
     "view.focus_preview": "Ctrl+F6",
-    "view.switch_editing_lens": "Ctrl+Shift+Grave, K",
+    # The Document Format switcher (One Editor, Every Format): took over the
+    # chord the retired Rich text lens command held.
+    "format.switch_document_format": "Ctrl+Shift+Grave, K",
     "edit.set_mark": "Ctrl+Shift+M",
-    "edit.pop_mark": "Ctrl+M",
+    # Ctrl+M becomes Cmd+M on macOS (system Minimize) -- dead by default. The
+    # darwin alternate Cmd+Alt+M avoids Minimize (#31).
+    "edit.pop_mark": "Cmd+Alt+M" if sys.platform == "darwin" else "Ctrl+M",
     "edit.exchange_point_mark": "Ctrl+Shift+X",
-    "edit.list_marks": "Alt+M",
+    # support#67: bare Alt+M is a macOS Option deadkey -- disable on darwin
+    # (see view.toggle_soft_wrap above). Reachable via the command palette.
+    "edit.list_marks": "" if sys.platform == "darwin" else "Alt+M",
     "edit.select_paragraph": "",  # Ctrl+Alt+P removed (§10.8 screen-reader-hostile)
     "edit.select_block": "Ctrl+Shift+B",
     # PR1 (EdSharp port): section move takes the Alt+Shift+Up/Down slot. The
@@ -312,8 +367,51 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "vault.export_site": "",
     "vault.sync": "",
     "vault.settings": "",
+    "sync.sync_folder": "",
+    # GitHub repository admin (Tools > GitHub). Mnemonic where the alphabet
+    # allows it (F=Fork, V=Visibility, B=Branch default, L=Lock/protect,
+    # X=delete/remove, U=mUltiple); the rest take whatever Shift+ letter was
+    # still free once the read-only GitHub commands above claimed theirs.
+    "github.create_repository": "Ctrl+Shift+Grave, Shift+K",  # QUILL-key chord
+    "github.fork_repository": "Ctrl+Shift+Grave, Shift+F",  # QUILL-key chord (F = Fork)
+    "github.rename_repository": "Ctrl+Shift+Grave, Shift+E",  # QUILL-key chord
+    "github.change_repository_visibility": "Ctrl+Shift+Grave, Shift+V",  # V = Visibility
+    "github.change_default_branch": "Ctrl+Shift+Grave, Shift+B",  # B = Branch
+    "github.configure_branch_protection": "Ctrl+Shift+Grave, Shift+L",  # L = Lock/protect
+    "github.delete_branch": "Ctrl+Shift+Grave, Shift+X",  # QUILL-key chord (X = remove)
+    "github.commit_multiple_files": "Ctrl+Shift+Grave, Shift+U",  # U = mUltiple files
+    # GitHub Tier 2 (Organizations/Releases/Actions dispatch/Notifications/
+    # Security alerts). No default chords -- the leader-chord space is fully
+    # claimed; reachable via the menu and the Command Palette.
+    "github.browse_organization": "",
+    "github.create_release": "",
+    "github.dispatch_workflow": "",
+    "github.view_notifications": "",
+    "github.view_security_alerts": "",
+    # GitHub Tier 3 (Codespaces + Copilot CLI, needs live-device
+    # verification -- see quill/core/github/gh_bridge.py). No default
+    # chords -- the leader-chord space is fully claimed.
+    "github.list_codespaces": "",
+    "github.create_codespace": "",
+    "github.copilot_suggest": "",
+    "github.copilot_explain": "",
+    # Local git (Tools > Local Git). No default chords -- the single-letter
+    # leader-chord space is fully claimed (see the github.* block above);
+    # these are reachable via the menu and the Command Palette, and freely
+    # assignable in Preferences > Keyboard Shortcuts like every command.
+    "localgit.uncommitted_changes": "",
+    "localgit.switch_branch": "",
+    "localgit.stash_changes": "",
+    "localgit.manage_stashes": "",
+    "localgit.blame_at_cursor": "",
+    "localgit.bisect_start": "",
+    "localgit.bisect_reset": "",
+    "localgit.resolve_conflicts": "",
+    "localgit.interactive_rebase": "",
+    "localgit.rebase_abort": "",
     "vault.publish_note": "",
     "power.insert_special_character": "Shift+F2",  # §4.22 parity; F2 -> List Studio
+    "edit.insert_emoji": "Alt+.",  # Accessible Emoji Picker
     "power.number_lines": "Alt+Shift+N",  # §4.22 Number Items parity
     "power.trim_blank_lines": "Ctrl+Shift+Enter",  # §4.22 Trim Blanks parity
     "power.keep_unique_lines": "Alt+Shift+K",  # §4.22 Keep Unique parity
@@ -335,7 +433,9 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # Alt+H is reserved for the Help menu mnemonic; Ctrl+Shift+H is edit.replace_all;
     # Ctrl+Alt+ is banned by §10.8 (screen-reader-hostile). Use the QUILL-key chord.
     "help.context_help": "Ctrl+Shift+Grave, Shift+H",
-    "document.summary": "Alt+I",
+    # support#67: bare Alt+I is a macOS Option deadkey -- disable on darwin
+    # (see view.toggle_soft_wrap above). Reachable via the command palette.
+    "document.summary": "" if sys.platform == "darwin" else "Alt+I",
     # §8.2 — universal "Go to anything" palette (Quill+G).
     "navigate.go_to_anything": "Ctrl+Shift+Grave, G",
     # §8.1 — QUILL-key cheatsheet overlay (Alt+?).
@@ -533,8 +633,120 @@ def build_keymap_for_pack(name: str) -> dict[str, str]:
     merged = DEFAULT_KEYMAP.copy()
     if pack is None:
         return merged
-    merged.update(pack.bindings)
+    if sys.platform == "darwin":
+        # #4: packs are written Windows-flavored (Ctrl+.../Alt+...) and applied
+        # verbatim on Windows, but on macOS wx maps ACCEL_CTRL to Cmd, so a pack's
+        # literal chord can land on a macOS system-reserved shortcut or collide
+        # with a darwin-aware DEFAULT_KEYMAP binding the curated defaults chose.
+        # DEFAULT_KEYMAP was hand-audited for Mac; the packs were not. Apply the
+        # pack on macOS through the collision guard so a system-reserved or
+        # colliding override is dropped (the darwin default wins) rather than
+        # silently clobbering another command.
+        _apply_darwin_pack_overrides(merged, pack.bindings)
+    else:
+        merged.update(pack.bindings)
     return merged
+
+
+# macOS system-reserved chords a Quill binding must never steal on the Mac side
+# of the Ctrl->Cmd accelerator mapping (#4). F9-F12 are the stock Mission
+# Control / Spaces / Dashboard defaults; the Cmd+ chords are app-level ones
+# (hide / minimize / quit / close / Spotlight / app switcher / window cycle).
+_MACOS_RESERVED_RUNTIME_CHORDS: frozenset[str] = frozenset({
+    "Cmd+H",
+    "Cmd+M",
+    "Cmd+Q",
+    "Cmd+W",
+    "Cmd+Space",
+    "Cmd+Tab",
+    "Cmd+Grave",
+    "F9",
+    "F10",
+    "F11",
+    "F12",
+})
+
+
+def _darwin_runtime_chord(chord: str) -> str | None:
+    """The chord as it fires on macOS, where wx maps ACCEL_CTRL to Cmd (#4).
+
+    A pack stores ``"Ctrl+G"``; on macOS that fires as Cmd+G. To detect
+    collisions against DEFAULT_KEYMAP's darwin ``"Cmd+G"`` entries, fold a
+    leading Ctrl token to Cmd for comparison only. Storage is unchanged -- this
+    is a comparison-time view, not a rewrite of the binding.
+    """
+    canonical = canonical_binding(chord, quill_key_prefix=_QUILL_LEADER_PREFIX)
+    if canonical is None:
+        return None
+    if canonical.startswith("Ctrl+"):
+        return "Cmd+" + canonical[len("Ctrl+") :]
+    return canonical
+
+
+def _is_macos_reserved_runtime_chord(runtime_chord: str) -> bool:
+    """True when *runtime_chord* (already Ctrl->Cmd folded) is macOS-reserved.
+
+    Also flags ``Option+<single letter>`` (Alt with no other modifier): on macOS
+    that is a dead-key / diacritical (Alt+A = å, Alt+E = acute accent, ...), so a
+    pack binding there would steal a character the user types (support#67).
+    """
+    if runtime_chord in _MACOS_RESERVED_RUNTIME_CHORDS:
+        return True
+    if runtime_chord.startswith("Alt+") and runtime_chord.count("+") == 1:
+        key = runtime_chord[len("Alt+") :]
+        if len(key) == 1 and key.isalpha():
+            return True
+    return False
+
+
+def _apply_darwin_pack_overrides(merged: dict[str, str], pack_bindings: Mapping[str, str]) -> None:
+    """Apply a keyboard pack's bindings on macOS with collision review (#4).
+
+    Drops a pack override (keeping the darwin-aware DEFAULT_KEYMAP value for that
+    command) when it would land on a macOS system-reserved chord or collide with a
+    binding already present in *merged* once both are viewed at Mac runtime
+    (Ctrl->Cmd). A user who wants the Windows app's exact chord can still rebind it
+    explicitly via the keymap editor, which runs the full conflict review in
+    :func:`merge_keymaps`.
+    """
+    runtime_merged: dict[str, str | None] = {
+        command: _darwin_runtime_chord(chord) for command, chord in merged.items()
+    }
+    for command_id, raw_chord in pack_bindings.items():
+        chord = raw_chord.strip()
+        if not chord:
+            # Empty pack binding means "use the default"; keep DEFAULT_KEYMAP.
+            continue
+        runtime = _darwin_runtime_chord(chord)
+        if runtime is None:
+            logger.debug(
+                "Pack override %r -> %r dropped on macOS: unparseable chord (#4).",
+                command_id,
+                raw_chord,
+            )
+            continue
+        if _is_macos_reserved_runtime_chord(runtime):
+            logger.debug(
+                "Pack override %r -> %r dropped on macOS: system-reserved chord (#4).",
+                command_id,
+                raw_chord,
+            )
+            continue
+        collides = any(
+            other != command_id and other_runtime == runtime
+            for other, other_runtime in runtime_merged.items()
+            if other_runtime is not None
+        )
+        if collides:
+            logger.debug(
+                "Pack override %r -> %r dropped on macOS: collides with a "
+                "darwin-aware default (#4).",
+                command_id,
+                raw_chord,
+            )
+            continue
+        merged[command_id] = chord
+        runtime_merged[command_id] = runtime
 
 
 def merge_keymaps(raw: object) -> dict[str, str]:
@@ -559,7 +771,8 @@ def merge_keymaps(raw: object) -> dict[str, str]:
         "edit.quote_lines": ("Ctrl+Q", "Ctrl+Shift+Q"),
         "edit.unquote_lines": ("Ctrl+Shift+Q", "Ctrl+Shift+K"),
         # window.next_document / previous_document: Ctrl+Tab restored as default
-        # in #190; no legacy rebinding needed.
+        # in #190; no cross-platform legacy rebinding needed (the macOS-only
+        # rewrite lives in the darwin block below).
         "view.send_to_tray": ("CTRL+ALT+T", "Ctrl+Shift+Grave, T"),
         "view.toggle_tab_control": ("CTRL+ALT+SHIFT+T", "Ctrl+Shift+Grave, Shift+T"),
         "navigate.heading_organizer": ("CTRL+ALT+SHIFT+H", "Ctrl+Shift+Grave, O"),
@@ -602,6 +815,12 @@ def merge_keymaps(raw: object) -> dict[str, str]:
     if sys.platform == "darwin":
         legacy_rebindings["navigate.back_location"] = ("Alt+Left", "Cmd+[")
         legacy_rebindings["navigate.forward_location"] = ("Alt+Right", "Cmd+]")
+        # A macOS user who saved the pre-Mac-fix Ctrl+Tab / Ctrl+Shift+Tab
+        # document-switch bindings has an entry that can never fire (Ctrl+Tab
+        # maps to Cmd+Tab, the reserved App Switcher shortcut). Rewrite it to
+        # the new macOS chord on first load.
+        legacy_rebindings["window.next_document"] = ("Ctrl+Tab", "Cmd+Shift+]")
+        legacy_rebindings["window.previous_document"] = ("Ctrl+Shift+Tab", "Cmd+Shift+[")
     for command_id, binding in raw.items():
         if isinstance(command_id, str) and isinstance(binding, str):
             # Reserved metadata keys (e.g. the epoch stamp) are not bindings.

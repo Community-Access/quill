@@ -67,6 +67,24 @@ def apply_modal_ids(
             button.SetLabel(cancel_label)
 
 
+def ok_cancel_platform_order(ok_btn: object, cancel_btn: object) -> tuple[object, object]:
+    """Return ``(first, second)`` for a manual OK/Cancel button sizer row.
+
+    macOS reads Cancel on the left and the affirmative (OK) button on the
+    right; Windows/Linux read OK on the left and Cancel on the right (#53).
+    Use this when a dialog builds its own button ``BoxSizer`` instead of
+    ``wx.StdDialogButtonSizer`` so the pair follows native muscle memory. The
+    caller still owns the ``Add`` calls (and any stretch spacer / border gap),
+    and both buttons must carry their stock ``wx.ID_OK`` / ``wx.ID_CANCEL`` ids
+    so :func:`apply_modal_ids` and the dialog button-contract audit keep working.
+    """
+    import sys
+
+    if sys.platform == "darwin":
+        return cancel_btn, ok_btn
+    return ok_btn, cancel_btn
+
+
 def apply_listbox_activation(listbox: object, handler: Callable[[object], None]) -> None:
     """Make a ``wx.ListBox`` activatable by keyboard as well as double-click.
 

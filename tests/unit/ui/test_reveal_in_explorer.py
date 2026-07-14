@@ -5,6 +5,7 @@ which fails outright on macOS/Linux with "Explorer could not be found"."""
 from __future__ import annotations
 
 from pathlib import Path
+from types import SimpleNamespace
 
 from quill.ui.main_frame import MainFrame
 
@@ -90,3 +91,46 @@ def test_reveal_in_explorer_reports_missing_path(tmp_path) -> None:
     frame._reveal_in_explorer(missing)
 
     assert "no longer exists" in frame._status[-1]
+
+
+def test_open_containing_folder_uses_open_dash_r_on_macos(monkeypatch, tmp_path) -> None:
+    import quill.ui.main_frame as main_frame_module
+
+    frame = _build_frame(tmp_path)
+    target = tmp_path / "notes.txt"
+    target.write_text("hello", encoding="utf-8")
+    frame.document = SimpleNamespace(path=target, name=target.name)
+    monkeypatch.setattr(main_frame_module.sys, "platform", "darwin")
+    calls: list[list[str]] = []
+    import subprocess
+
+    monkeypatch.setattr(subprocess, "Popen", lambda args, **kw: calls.append(args))
+
+    frame.open_containing_folder()
+
+    assert calls == [["open", str(target.parent)]]
+    assert "Opened folder" in frame._status[-1]
+
+
+def test_run_current_file_uses_open_on_macos(monkeypatch, tmp_path) -> None:
+    import sys
+
+    import quill.ui.main_frame_power_tools as power_tools_module
+
+    frame = _build_frame(tmp_path)
+    target = tmp_path / "script.py"
+    target.write_text("print('hi')", encoding="utf-8")
+    frame.document = SimpleNamespace(path=target, name=target.name, modified=False)
+    frame.save_file = lambda: None
+    frame._set_status = lambda message: frame._status.append(message)
+    monkeypatch.setattr(sys, "platform", "darwin")
+    monkeypatch.setattr(power_tools_module, "is_dangerous_executable", lambda _path: False)
+    calls: list[list[str]] = []
+    import subprocess
+
+    monkeypatch.setattr(subprocess, "Popen", lambda args, **kw: calls.append(args))
+
+    frame.run_current_file()
+
+    assert calls == [["open", str(target)]]
+    assert "Running script.py" in frame._status[-1]

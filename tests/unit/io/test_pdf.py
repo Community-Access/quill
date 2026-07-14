@@ -139,6 +139,104 @@ def test_extract_pdf_text_distinguishes_missing_extractor_from_scanned_pdf(
     assert "ocr" in scanned.text.lower()
 
 
+def test_encrypted_pdf_reports_encrypted_not_scanned(monkeypatch, tmp_path: Path) -> None:
+    # #58: a password-protected PDF must be reported as encrypted (supply/remove
+    # the password), not as scanned/image-only (which would point at OCR).
+    monkeypatch.setattr(pdf_module, "_is_encrypted_pdf", lambda _path: True)
+
+    def _raise(_path: Path) -> PdfExtractionResult:
+        raise ValueError("encrypted, password required")
+
+    monkeypatch.setattr(pdf_module, "_extract_with_pdfplumber", _raise)
+    monkeypatch.setattr(pdf_module, "_extract_with_pypdf", _raise)
+
+    result = pdf_module.extract_pdf_text(tmp_path / "locked.pdf")
+    assert result.engine == "encrypted"
+    assert "encrypted" in result.text.lower()
+    assert "password" in result.text.lower()
+    assert "ocr" not in result.text.lower()
+
+
+def test_damaged_pdf_reports_damaged_not_scanned(monkeypatch, tmp_path: Path) -> None:
+    # #58: a corrupt PDF that parse-fails must be reported as damaged (repair /
+    # re-export), not as scanned/image-only (OCR).
+    monkeypatch.setattr(pdf_module, "_is_encrypted_pdf", lambda _path: False)
+
+    def _raise(_path: Path) -> PdfExtractionResult:
+        raise ValueError("malformed cross-reference table")
+
+    def _empty(_path: Path) -> PdfExtractionResult:
+        return PdfExtractionResult(
+            text="",
+            quality_score=0,
+            engine="pypdf",
+            page_count=0,
+            extracted_pages=0,
+            page_scores=[],
+        )
+
+    monkeypatch.setattr(pdf_module, "_extract_with_pdfplumber", _raise)
+    monkeypatch.setattr(pdf_module, "_extract_with_pypdf", _empty)
+
+    result = pdf_module.extract_pdf_text(tmp_path / "corrupt.pdf")
+    assert result.engine == "damaged"
+    assert "damaged" in result.text.lower() or "corrupt" in result.text.lower()
+    # The damaged message must not point the user at the OCR remedy (the scanned
+    # path). It may mention that OCR won't help; it must not instruct OCR.
+    assert "choose ocr" not in result.text.lower()
+    assert "file > import" not in result.text.lower()
+
+
+def test_is_encrypted_pdf_false_for_plain_pdf_via_stub(monkeypatch, tmp_path: Path) -> None:
+    # A readable (non-encrypted) PDF reads is_encrypted=False -> not encrypted.
+    class _PlainReader:
+        is_encrypted = False
+
+        def __init__(self, _path: str) -> None: ...
+
+    fake_pypdf = types.ModuleType("pypdf")
+    fake_pypdf.PdfReader = _PlainReader  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "pypdf", fake_pypdf)
+    assert pdf_module._is_encrypted_pdf(tmp_path / "plain.pdf") is False
+
+
+def test_is_encrypted_pdf_true_when_empty_password_fails(monkeypatch, tmp_path: Path) -> None:
+    class _LockedReader:
+        is_encrypted = True
+
+        def __init__(self, _path: str) -> None: ...
+
+        def decrypt(self, _pw: str) -> int:
+            return 0  # no password matched
+
+    fake_pypdf = types.ModuleType("pypdf")
+    fake_pypdf.PdfReader = _LockedReader  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "pypdf", fake_pypdf)
+    assert pdf_module._is_encrypted_pdf(tmp_path / "locked.pdf") is True
+
+
+def test_is_encrypted_pdf_false_when_empty_password_unlocks(monkeypatch, tmp_path: Path) -> None:
+    # Permissions-only encryption (empty user password opens it) is readable ->
+    # must NOT be reported as encrypted.
+    class _EmptyPasswordReader:
+        is_encrypted = True
+
+        def __init__(self, _path: str) -> None: ...
+
+        def decrypt(self, _pw: str) -> int:
+            return 1  # user password matched
+
+    fake_pypdf = types.ModuleType("pypdf")
+    fake_pypdf.PdfReader = _EmptyPasswordReader  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "pypdf", fake_pypdf)
+    assert pdf_module._is_encrypted_pdf(tmp_path / "perm.pdf") is False
+
+
+def test_is_encrypted_pdf_false_when_pypdf_absent(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.setitem(sys.modules, "pypdf", None)
+    assert pdf_module._is_encrypted_pdf(tmp_path / "any.pdf") is False
+
+
 def test_pdfplumber_extraction_joins_pages_with_form_feed(monkeypatch, tmp_path: Path) -> None:
     class _StubPage:
         def __init__(self, text: str) -> None:

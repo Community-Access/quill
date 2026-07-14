@@ -93,6 +93,44 @@ def _release_file_lock(fd: int) -> None:
     os.close(fd)
 
 
+_LOG_ERROR_MARKERS = ("ERROR", "CRITICAL", "Traceback (most recent call last):")
+# How much of the tail of quill.log to scan for error evidence (#940/#948):
+# routine idle-sweep entries run every few minutes, so a few hundred KB
+# comfortably covers the final minutes before an unclean exit without
+# reading a log that may have rotated across many prior sessions.
+_LOG_TAIL_SCAN_BYTES = 262_144
+
+
+def _log_shows_actionable_error(logs_dir: Path) -> bool:
+    """True when ``quill.log`` has real error evidence near its end.
+
+    #940/#948: two crash-recovery reports had nothing in their log but
+    routine idle-sweep heartbeat entries -- no exception, no traceback --
+    consistent with the process being killed externally (an OS shutdown, a
+    forced close) rather than a QUILL-internal crash. Offering "Quill
+    detected an unclean exit" for that case gives the user a dialog with
+    nothing actionable behind it. Gate the offer on the log actually
+    containing error-level evidence; a log with none is treated the same as
+    a clean exit for recovery-offer purposes (the autosave snapshot itself
+    is untouched by this -- only the *offer* is suppressed).
+    """
+    log_path = logs_dir / "quill.log"
+    if not log_path.is_file():
+        # No log at all is itself unusual/inconclusive; err toward still
+        # offering recovery rather than silently discarding a real crash
+        # whose log write failed.
+        return True
+    try:
+        size = log_path.stat().st_size
+        with log_path.open("rb") as handle:
+            if size > _LOG_TAIL_SCAN_BYTES:
+                handle.seek(size - _LOG_TAIL_SCAN_BYTES)
+            tail = handle.read().decode("utf-8", errors="replace")
+    except OSError:
+        return True
+    return any(marker in tail for marker in _LOG_ERROR_MARKERS)
+
+
 def begin_session(session_id: str) -> list[RecoveryOffer]:
     _validate_session_id(session_id)
     fd = _acquire_file_lock()
@@ -102,7 +140,12 @@ def begin_session(session_id: str) -> list[RecoveryOffer]:
             offers: list[RecoveryOffer] = []
             previous_session = state.get("last_session_id")
             previous_clean = bool(state.get("clean_exit", True))
-            if isinstance(previous_session, str) and previous_session and not previous_clean:
+            if (
+                isinstance(previous_session, str)
+                and previous_session
+                and not previous_clean
+                and _log_shows_actionable_error(app_data_dir() / "logs")
+            ):
                 latest = latest_session_snapshot(previous_session)
                 if latest is not None and not _is_offer_dismissed(state, previous_session, latest):
                     cursor_position = _load_cursor_position(state, previous_session)

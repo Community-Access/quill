@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from quill.core.a11y_regions import RegionTracker
-from quill.platform.windows.sr_announce import (
+from quill.platform.sr_announce import (
     clear_transcript,
     enable_transcript_capture,
     set_transcript_path,

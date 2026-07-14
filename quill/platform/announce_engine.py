@@ -10,6 +10,12 @@ from quill.platform.windows.prism_bridge import (  # noqa: F401
     AnnouncementBackendState,
     AnnouncementEngine,
     normalize_backend_name,
+    prewarm_tts_engine,
 )
 
-__all__ = ["AnnouncementBackendState", "AnnouncementEngine", "normalize_backend_name"]
+__all__ = [
+    "AnnouncementBackendState",
+    "AnnouncementEngine",
+    "normalize_backend_name",
+    "prewarm_tts_engine",
+]

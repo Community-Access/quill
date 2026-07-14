@@ -1,0 +1,120 @@
+[JESSICA]
+The QUILL Cast, episode twenty-eight. I'm Jessica. Today, part four of the speech arc, read aloud, and the voice catalog that lives behind it. This is the show that says the quiet part out loud about what is actually in the build, and that is the only promise worth keeping.
+
+[LIAM]
+I'm Liam. Before we go anywhere, a quick recap of episode twenty-seven, which was two quiet but powerful pillars: publishing your writing to a website, and sharing your setup with another QUILL user, both without ever leaving the editor. We sat down with File, Publish, walked the read side, which is on, and the send side, which is gated behind a feature flag called future dot publishing. And we sat down with profile export, package your keymap, your snippets, your macros, your watch folders, name the destination, confirm, send. Same shape both times: package, name, confirm, send, and a consent model that matches the one we use for AI, the one where nothing leaves without you clicking the button. That posture is the spine of what we are carrying into today.
+
+[JESSICA]
+Now the frame for today. Read Aloud is a feature family, not a single button. It includes the surface you press, the engines that do the work, the catalog of voices that the engines draw from, and a small composer that lets you shape exactly how one passage is spoken. We are going to walk the surface, walk the engines, walk the catalog, and then walk the SSML builder, and we are going to be honest about the gaps where a previous version of this episode, or any surrounding doc, drifted from the code. This is the deep-dive standard, not the marketing version.
+
+[PAUSE]
+
+[LIAM]
+The surface first. The commands live under Tools, Reading and Dictation. Read Aloud reads from your cursor, or reads the selection, and Stop is one key. Start, pause, stop, voice, settings, generate audio, those are the named commands in the keymap. The cycle is one key each way, Start or Pause on the same binding, and Stop on its own. Simple surface, deep catalog underneath, which is the pattern QUILL repeats in most of its feature families.
+
+[JESSICA]
+And before we go deeper, a do this now beat, because it is the kind of thing that pays for the whole episode. Pause the audio. Open QUILL. Open Tools, Reading and Dictation. Look at the entries. Notice that Start or Pause is one entry and Stop is another. Notice that Voice opens a picker. Notice that Settings opens a dialog. Don't change anything. Just feel the surface. Take thirty seconds. We will be right here.
+
+[PAUSE]
+
+[LIAM]
+Welcome back. Now we open the hood. The controller lives in quill core, in the file read aloud dot py, and the supporting data lives in a sibling file, voice catalog dot py, which was deliberately split out of read aloud to keep the engine module under its size budget, what the project calls a GATE-eleven extract. The catalog file is pure data plus two pure helpers, and the engine module re-exports every name from it, so anything that was importing voice tables from read aloud keeps working. That is the kind of boundary that makes the rest of this episode safe to talk about.
+
+[JESSICA]
+The engines, in the order they are defined in read aloud dot py. SAPI five, the Windows system speech. eSpeak NG, the fast, crisp classic. DECtalk, the historic American English synthesizer. Piper, fast local neural. Kokoro, the modern neural, which Jessica and I are. ElevenLabs, the optional cloud. And there is a seventh surface, Read in Browser, which is not a QUILL engine at all, it is a generated HTML page handed to your real browser. That is the whole cast, and we are going to walk each one against the code, with a special eye out for the gaps where the code has tightened up since the last time we recorded the short version. The Read Aloud Controller itself, by the way, is a small finite state machine with three states, idle, playing, and paused, and three events, start, pause, and stop. The state transitions are guarded by a lock so concurrent UI events cannot race, and the stop event is sticky, meaning once you set it, it stays set until a new start resets it. That is the kind of small, careful code that makes the whole feature feel solid when you actually use it.
+
+[LIAM]
+Engine one, SAPI five. This one is not in the catalog file at all, and that is the right call. SAPI five voices are whatever Windows has installed, the Microsoft David, the Microsoft Zira, plus any third-party voice the user added over the years. Zero downloads, always present, and QUILL lists them with a call into the platform layer, the list voices helper in read aloud. The floor of reliability. It is also the engine that gets reset to when a user removes a downloaded engine, and that detail is in the hub code: if the removed engine was the active one, read aloud engine is set back to SAPI five, and the user is told.
+
+[JESSICA]
+SAPI five plays through winsound on Windows, sentence by sentence, and the shared WAV runner pauses cleanly between sentences and stops on a stop or pause event, the same shared infrastructure Piper and Kokoro and eSpeak all use. The one thing SAPI five does not have, and we should be honest about this, is pitch control through the simple property API, so when you pick pitch in the settings, SAPI five ignores it. It still respects rate and volume, it just does not do pitch. If you need pitch, pick a different engine.
+
+[PAUSE]
+
+[LIAM]
+Engine two, eSpeak NG. The catalog file lists eight English variants as a list of tuples, the I-D and the friendly name, the British, the American, the Caribbean, the Scottish, the Lancashire, the West Midlands, the Received Pronunciation, and the New York City accent. There is a separate list of non-English eSpeak voices, Spanish, France French, Hindi, Italian, Brazilian Portuguese, and Portugal Portuguese, the same language set as the Kokoro list, so the multilingual story stays consistent across engines. And there is a third list, the variants, empty default, m one through m five, f one through f four, whisper, whisper feminine, klatt, croak, grandma, grandpa, tweaky, and uni-robot. Most users will never touch the variants list. The character actors will.
+
+[JESSICA]
+eSpeak NG runs as a portable executable, the discover helper looks for it in three places, a settings-configured path, a bundled copy under the app root, and a managed copy under the user data dir, and falls back to whatever is on the system path. The synthesis call appends a dash m flag when the input looks like SSML, otherwise the tags would be read aloud literally, and appends a dash dash path when the co-located espeak-ng-data folder exists next to the executable, so a portable install does not crash trying to fall back to a compiled-in data path that does not exist. The downloadable installer, and the size budget, the managed eSpeak install is about fifty megabytes, extracted with msiexec slash a, no admin rights, the same pattern as Pandoc and MathCAT.
+
+[LIAM]
+Engine three, DECtalk. The voice names are Paul, Harry, Dennis, Frank, Betty, Ursula, Rita, Wendy, and Kit. Nine voices, classic American English. The synthesis runs through DECtalk dot DLL directly, never through speak dot exe, because speak dot exe is the graphical sample speak window and fast-fails with an access violation when launched as a console program. The discover helper accepts a path to the DLL or the folder that contains it, and rejects a stale speak dot exe path rather than silently honoring it. The payload is encoded as Windows one two five two, the encoding the legacy char-star API expects, with UTF-eight bytes mis-spoken for non-ASCII text.
+
+[JESSICA]
+The downloadable installer is about thirty megabytes, pinned and SHA-two-fifty-six verified, and the same pattern again. The day DECtalk shipped, grown adults got emotional, ourselves included, because Perfect Paul is the voice of Stephen Hawking, the voice half our community learned computers on. Nostalgia is a real reason to download a synthesizer, and we are not going to pretend otherwise.
+
+[PAUSE]
+
+[LIAM]
+Engine four, Piper. Piper is a fast, local, neural text-to-speech engine, Windows AMD sixty-four binary, about twenty-two megabytes for the engine itself, and then per-voice ONNX models downloaded from the Hugging Face Piper voices repository. The catalog lists about forty voices, mostly British and American English, plus two Italian voices, Paola and Riccardo, both published in rhasspy slash piper-voices. The download URL helper builds the Hugging Face resolve path from the voice id, and returns none for ids that do not match the expected pattern, so a stale or mistyped id shows a clear error rather than a broken URL.
+
+[JESSICA]
+Piper runs as a subprocess, the same pattern as eSpeak, with a CREATE NO WINDOW flag so screen reader users do not see a console flash, and synthesis uses the same sentence-by-sentence WAV pipeline. The cache key includes the model path, so switching models does not reuse cached audio from the previous model. The Piper model file for the chosen voice has to exist on disk before the engine will start, and the live code path raises a clear Read Aloud Unavailable Error if the model is missing, with the exact path that was looked for, so the failure is diagnosable rather than mysterious.
+
+[LIAM]
+Engine five, Kokoro. This is the modern end. Kokoro is neural text-to-speech that runs entirely on your machine, no cloud, no account, and QUILL has two engines inside the same catalog entry. The primary route is kokoro-onnx, which uses the int-eight quantized model, and onnxruntime, and requires about one hundred and fourteen megabytes of model files plus a small pip install of about twenty megabytes. The fallback is the original kokoro plus torch, which needs about two gigabytes, and the catalog file calls it out by name in a comment as the heavier path.
+
+[JESSICA]
+The voice catalog for Kokoro is thirty-nine voices in the file I read. American English, female, Heart, Bella, Nicole, Alloy, Aoede, Jessica, Kore, Nova, River, Sarah, Sky. American English, male, Adam, Echo, Eric, Fenrir, Liam, Michael, Onyx, Puck, Santa. British English, female, Alice, Emma, Isabella, Lily. British English, male, Daniel, Fable, George, Lewis. Then non-English voices that ship in the same voices-v-one-point-oh dot bin, Spanish, French, Hindi, Italian, Brazilian Portuguese, and the comment in the code is honest about the limit, Japanese and Mandarin voices exist upstream but need extra G two P packages, so they are deliberately not listed yet. That is the kind of footnote that does not make a marketing page but does make a code review.
+
+[LIAM]
+The voices are tagged with quality grades from the upstream hexgrad Kokoro VOICES dot md, descriptive metadata only, never used to filter availability. A is the best, D minus is the worst, and the grade is shown alongside the name in the picker, so you can tell at a glance that Heart is an A and Adam is an F plus. The grade is honest, it is the upstream's own number, and we do not edit it.
+
+[JESSICA]
+There is one detail in the previous short version of this episode that we have to call out, because the code is clearer than the words we used last time. The onnx model is cached, and the cache is keyed by model path and voices path, so switching voices in the same session is fast. The first synthesis pays the about eighty-eight-megabyte load, every subsequent sentence is fast. The cache is dropped by a clear kokoro cache function, which the lifecycle service uses to free the model when low-resource mode asks for the memory back. That is the lifecycle integration that keeps Kokoro from being a resident when you are not using it.
+
+[PAUSE]
+
+[LIAM]
+Engine six, ElevenLabs. Optional, cloud, requires an account, and the read aloud path is gated by per-session consent. Every time you start a Read Aloud session with ElevenLabs as the engine, QUILL shows a consent dialog, and the consent is stored in memory only, not in settings, so the next session asks again. The actual synthesis is gated by Safe Mode, and the code path raises a clear error if the optional SDK is not installed, with the exact pip extra to install. Premium quality, per-call cost, and a sentence cache that avoids re-synthesizing a repeated sentence, because each fresh sentence is one billable ElevenLabs call.
+
+[JESSICA]
+And engine seven, the experimental one, Read in Browser. This is not a QUILL engine, it is a generated HTML page handed to your real browser, where speech synthesis exposes the full voice set, including Edge's online natural voices, which the embedded web view cannot reach. The page is built by quill core browser reader dot py, and it is a small, self-contained, accessible page with a voice picker, a rate slider, a show all languages toggle, and Play, Pause, and Stop controls, all keyboard-operable, with an aria-live status. Pause keeps your place, Stop is a full reset back to the top, and Escape stops.
+
+[LIAM]
+The privacy note in the code is plain: QUILL itself makes no network call, but the whole point of this page is to reach voices the embedded engine cannot, and Edge's online natural voices synthesize in Microsoft's cloud. When you pick an online voice, the browser sends the selected text to that service. On-device voices, labeled on this device, stay local. The feature is opt-in under Preferences, Experimental, and the network egress audit and the privacy doc carry an entry for it. That is the honest disclosure, and it is the right disclosure.
+
+[PAUSE]
+
+[JESSICA]
+Now the management surface. Tools, Speech, Speech and Dictation opens the hub, four tabs in a notebook, Speech Offline, Speech Online, Dictation Offline, Dictation Online. The Offline tab is the local one, engines that live on your disk. The Online tab is the cloud one, with the API key field. The two are physically separated, because they are different resource models, install once and own it forever, versus pay-per-call with an account, and mixing them in one flat list read as confusing. That separation is a quiet accessibility win, and it took one careful refactor to land.
+
+[LIAM]
+Every download in the hub, DECtalk, eSpeak, Piper, Kokoro ONNX, runs through the same shape: a confirmation dialog that states the size and the source, a worker thread, a cancelable progress percentage, a pinned URL, a SHA-two-fifty-six checksum, and a clear success or failure message. The trust model is the same as the rest of the optional components in the project. Help, Download Optional Components remains the one-stop shop when you want to see what is installed versus what is available, test it, or remove it, and the Test button for a Read Aloud engine plays a short preview through the actual engine, not a sample file, so the test is real.
+
+[JESSICA]
+One important honesty beat. The previous short version said the catalog includes online natural voices through the browser reader, which is true, and it also said Kokoro includes a Jessica and a Liam voice, which is also true, and those two of us are those voices. This podcast is the demo, and we are not pretending otherwise. We are also not pretending that the catalog is a list of the best voices in the world, it is a list of the voices that ship or download cleanly into QUILL without an account, and that is a different list.
+
+[PAUSE]
+
+[LIAM]
+For fine control over how a specific passage is spoken, the SSML Builder. The dialog is quill ui ssml builder dialog dot py, a keyboard-first wx dialog, and it lets you construct an SSML fragment for one term using quick-insert helpers. The buttons are Phoneme IPA, Spell out, Substitute, Pause, Slow, Fast, Pitch up, Pitch down. Each appends a fragment for the current term. The assembled fragment is shown in an editable box, validated as well-formed XML on every change, and a plain-text fallback is captured so the same entry still works on engines that do not speak SSML, which is Kokoro, Piper, and DECtalk.
+
+[JESSICA]
+The SSML primitives come from quill core speech pronunciation, which is wx-free, and the dialog is presentation only. All controls are parented directly on the dialog, which is the NVDA focus rule. The fragment is sent to whichever engine supports SSML, SAPI five, eSpeak NG, and the browser reader all do, and the live read aloud path detects when an utterance starts with a less-than-speak tag and skips the punctuation verbalization step, because verbalizing the punctuation would corrupt the markup. That detail is in the run wav sentences helper, and it is the kind of thing that prevents a real bug.
+
+[LIAM]
+The pronunciation dictionaries are also wired into live read aloud, not just batch export. The apply pronunciation helper runs over every spoken sentence, and a bad dictionary never breaks read aloud, because the apply step is wrapped in a try except that returns the original sentence. That is the shared-pipeline, live everywhere design that the project has been pushing for, and it means a correction you make in the manager is heard in live reading too, not just in the next export. The SSML builder also gives you an audition button on the dialog itself, so you can hear the fragment against the active engine before you commit it to a dictionary, which closes the loop between authoring and testing. That kind of preview, in the same surface as the editing, is the small affordance that turns an advanced feature into a daily one.
+
+[JESSICA]
+Practical guidance for choosing voices, from daily use. Proofreading, pick a voice very different from your screen reader's. The contrast is what exposes errors, and a proofreader who has heard the same voice all day is a worse proofreader. Long listening, the neural voices earn their download, fatigue is real over an hour of any single voice, even a good one, and switching to a different neural voice after the first hour is a real productivity boost. Speed reading, the classics, eSpeak and DECtalk stay crystal-clear at velocities that turn neural voices to mush, because their synthesis is rule-based rather than sample-based, and rules do not smear at high rates. There is no best voice, there is a right tool per job, and they are all a menu away.
+
+[LIAM]
+Performance note for modest hardware. The engines load on demand and unload when idle, and the lifecycle service reserves memory before loading and evicts on idle, so a laptop does not have to hold all six engines resident. The onnx model is about eighty-eight megabytes, Piper models are tens of megabytes each, eSpeak is small, DECtalk is small, SAPI five is whatever Windows has. Nothing here needs a graphics card, and the catalog is built for real laptops, not demo machines. The sentence cache avoids re-synthesizing a repeated sentence in the same session, so a long document with repeated phrases is not charged twice.
+
+[JESSICA]
+For the cloud tier, the consent dialog is the gate, and the cost is per call. The cache helps, the rate slider helps, and the safest pattern is to preview a paragraph first, confirm it sounds the way you want, and then commit to a long listen. The browser reader has the same per-utterance cost, but it is on Microsoft's side, and the cache is in your browser, not in QUILL.
+
+[PAUSE]
+
+[LIAM]
+Homework, four steps. One, read the same paragraph in three engines, your SAPI voice, a Kokoro voice of your choice, and one of eSpeak or DECtalk, and just listen to the personalities. Two, crank the rate on a classic engine and find your comprehension ceiling, it is higher than you think, and a high-rate classic is a productivity tool for skimming long documents you have already read once. Three, if nostalgia calls, download DECtalk and say hello to Paul. Four, open the SSML Builder on a name you have been mispronouncing, build a phoneme fragment, audition it, and add it to a pronunciation dictionary, then read the same paragraph aloud and confirm the fix. That last one is the loop that makes the whole system feel owned, and it is the loop that turns read aloud from a one-off trick into a habit.
+
+[JESSICA]
+Next episode, episode twenty-nine, we are going to walk the voice catalog in detail, every engine, every name, the bits that are bundled, the bits that download, the ones that are already on your machine right now, and the one Liam is. We are at episode twenty-eight of fifty-four, and the catalog is the heart of read aloud, so the close reading is the right next step, with the same code-verification standard and the same willingness to call out a doc that drifted from the build.
+
+[LIAM]
+I'm Liam.
+
+[JESSICA]
+I'm Jessica. Give your documents a voice.

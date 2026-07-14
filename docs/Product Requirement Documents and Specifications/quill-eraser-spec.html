@@ -241,14 +241,14 @@
   </style>
 </head>
 <body>
-<h1 id="quill-eraser-product-requirement-document">Quill Eraser —
+<h1 id="quill-eraser--product-requirement-document">Quill Eraser —
 Product Requirement Document</h1>
 <p><strong>Version:</strong> 1.0<br />
 <strong>Date:</strong> 2026-06-17<br />
 <strong>Author:</strong> Jeff Bishop<br />
 <strong>Status:</strong> Implemented (MVP shipped in QUILL 0.6.0)</p>
 <hr />
-<h2 id="overview">1. Overview</h2>
+<h2 id="1-overview">1. Overview</h2>
 <p>Quill Eraser is a deterministic, rule-based text hygiene checker
 built into QUILL. It catches common mechanical writing problems — extra
 spaces, trailing whitespace, missing spaces after punctuation, excessive
@@ -260,7 +260,7 @@ always produces the same output. This is a deliberate design choice that
 separates Quill Eraser from AI writing tools: it is a mechanical
 proofreader, not a style advisor.</p>
 <hr />
-<h2 id="goals">2. Goals</h2>
+<h2 id="2-goals">2. Goals</h2>
 <ul>
 <li>Give writers a fast, offline way to catch spacing and punctuation
 mechanics errors before sharing or publishing.</li>
@@ -274,20 +274,20 @@ and feature-catalog registration.</li>
 engine is fully testable in isolation.</li>
 </ul>
 <hr />
-<h2 id="non-goals">3. Non-goals</h2>
+<h2 id="3-non-goals">3. Non-goals</h2>
 <ul>
 <li>Style advice (sentence length, passive voice, readability) — that is
-the AI writing layer’s job.</li>
+the AI writing layer's job.</li>
 <li>Grammar checking — deferred to AI grammar tools.</li>
 <li>Spelling — covered by the existing spell-check commands.</li>
 <li>PDF, DOCX, or other non-text formats — Quill Eraser operates on the
-editor’s text buffer only.</li>
+editor's text buffer only.</li>
 <li>Custom user-defined rules in this release — the engine exposes a
 <code>HygieneRule</code> ABC and <code>extra_rules</code> parameter for
 future extension.</li>
 </ul>
 <hr />
-<h2 id="user-stories">4. User stories</h2>
+<h2 id="4-user-stories">4. User stories</h2>
 <p><strong>U-1. Trailing whitespace cleanup</strong><br />
 As a writer finishing a document, I want to remove all trailing spaces
 at once so my file is clean before sharing.</p>
@@ -308,14 +308,10 @@ As a screen-reader user, I want every finding and every fix to be
 announced so I can work through the list entirely by keyboard without
 visual feedback.</p>
 <hr />
-<h2 id="architecture">5. Architecture</h2>
-<h3 id="core-package-quillcorehygiene">5.1 Core package:
+<h2 id="5-architecture">5. Architecture</h2>
+<h3 id="51-core-package-quillcorehygiene">5.1 Core package:
 <code>quill/core/hygiene/</code></h3>
 <table>
-<colgroup>
-<col style="width: 34%" />
-<col style="width: 65%" />
-</colgroup>
 <thead>
 <tr>
 <th>Module</th>
@@ -356,12 +352,8 @@ findings</td>
 </table>
 <p>The entire <code>quill/core/hygiene/</code> package has no
 <code>wx</code> imports and is fully strict-typed under mypy.</p>
-<h3 id="ui-layer">5.2 UI layer</h3>
+<h3 id="52-ui-layer">5.2 UI layer</h3>
 <table>
-<colgroup>
-<col style="width: 34%" />
-<col style="width: 65%" />
-</colgroup>
 <thead>
 <tr>
 <th>Module</th>
@@ -384,14 +376,14 @@ with <code>ListCtrl</code>, detail pane, and action buttons</td>
 </table>
 <p>The mixin is wired into <code>MainFrame</code> via the MRO. Menu
 items and bindings are in <code>main_frame_menu.py</code>.</p>
-<h3 id="settings">5.3 Settings</h3>
+<h3 id="53-settings">5.3 Settings</h3>
 <p>Four new fields in <code>quill/core/settings.py</code>:</p>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>hygiene_min_confidence: <span class="bu">str</span> <span class="op">=</span> <span class="st">&quot;high&quot;</span>          <span class="co"># &quot;high&quot; | &quot;medium&quot; | &quot;low&quot;</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>hygiene_allow_double_space_after_period: <span class="bu">bool</span> <span class="op">=</span> <span class="va">False</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>hygiene_max_blank_lines: <span class="bu">int</span> <span class="op">=</span> <span class="dv">2</span>              <span class="co"># 1..10</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>hygiene_rules_disabled: <span class="bu">str</span> <span class="op">=</span> <span class="st">&quot;&quot;</span>              <span class="co"># comma-separated rule IDs</span></span></code></pre></div>
-<h3 id="feature-catalog">5.4 Feature catalog</h3>
+<h3 id="54-feature-catalog">5.4 Feature catalog</h3>
 <pre><code>&quot;core.hygiene&quot;: FeatureDefinition(
     &quot;core.hygiene&quot;,
     &quot;Quill Eraser&quot;,
@@ -402,14 +394,8 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a hr
     dependencies=(&quot;core.editor&quot;,),
 )</code></pre>
 <hr />
-<h2 id="built-in-rules-mvp">6. Built-in rules (MVP)</h2>
+<h2 id="6-built-in-rules-mvp">6. Built-in rules (MVP)</h2>
 <table>
-<colgroup>
-<col style="width: 22%" />
-<col style="width: 15%" />
-<col style="width: 27%" />
-<col style="width: 35%" />
-</colgroup>
 <thead>
 <tr>
 <th>Rule ID</th>
@@ -464,13 +450,13 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a hr
 </tbody>
 </table>
 <hr />
-<h2 id="ignored-range-categories">7. Ignored range categories</h2>
+<h2 id="7-ignored-range-categories">7. Ignored range categories</h2>
 <p>The engine never reports findings inside these ranges:</p>
 <ul>
 <li>HTTP/HTTPS/FTP/WWW URLs</li>
 <li>Email addresses</li>
-<li>Decimal numbers (e.g. <code>3.14</code>)</li>
-<li>Time patterns (e.g. <code>14:30</code>)</li>
+<li>Decimal numbers (e.g. <code>3.14</code>)</li>
+<li>Time patterns (e.g. <code>14:30</code>)</li>
 <li>Absolute and relative file paths</li>
 <li>Markdown fenced code blocks (when
 <code>is_markdown=True</code>)</li>
@@ -480,7 +466,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a hr
 <code>[text](url)</code> (when <code>is_markdown=True</code>)</li>
 </ul>
 <hr />
-<h2 id="code-file-behaviour">8. Code-file behaviour</h2>
+<h2 id="8-code-file-behaviour">8. Code-file behaviour</h2>
 <p>Files with extensions in <code>_CODE_EXTENSIONS</code> (Python,
 JavaScript, TypeScript, HTML, CSS, JSON, YAML, etc.) trigger a
 prompt:</p>
@@ -494,43 +480,50 @@ prompt:</p>
 <code>yml</code>) are identified but not treated differently in this
 release — the trailing-space check is the only safe-only rule.</p>
 <hr />
-<h2 id="dialog-ux">9. Dialog UX</h2>
+<h2 id="9-dialog-ux">9. Dialog UX</h2>
 <p>The review dialog (<code>HygieneReviewDialog</code>) is modeless so
 the user can navigate to issues in the editor while the dialog remains
 open.</p>
-<p>Controls: - <strong>Summary label</strong> — “N issues found” with
-optional ignored count. - <strong>Findings list</strong>
-(<code>wx.ListCtrl</code>) — columns: <code>#</code>, Confidence, Issue,
-Line. - <strong>Detail pane</strong> (<code>wx.StaticBoxSizer</code> +
+<p>Controls:</p>
+<ul>
+<li><strong>Summary label</strong> — "N issues found" with optional
+ignored count.</li>
+<li><strong>Findings list</strong> (<code>wx.ListCtrl</code>) — columns:
+<code>#</code>, Confidence, Issue, Line.</li>
+<li><strong>Detail pane</strong> (<code>wx.StaticBoxSizer</code> +
 multiline read-only <code>wx.TextCtrl</code>) — shows title, confidence,
-location, found text, suggested text, and rule description. -
-<strong>Apply Fix</strong> — applies fix, marks as resolved, advances to
-next finding. - <strong>Ignore</strong> — hides the finding for this
-session; does not apply a fix. - <strong>Go to Issue</strong> — selects
-the offending range in the editor and announces location. -
-<strong>Previous / Next</strong> — navigate the list. -
-<strong>Rescan</strong> — re-runs the engine and refreshes the list. -
-<strong>Close</strong> — destroys the dialog.</p>
-<p>If the text at a finding’s position has changed between scan and
+location, found text, suggested text, and rule description.</li>
+<li><strong>Apply Fix</strong> — applies fix, marks as resolved,
+advances to next finding.</li>
+<li><strong>Ignore</strong> — hides the finding for this session; does
+not apply a fix.</li>
+<li><strong>Go to Issue</strong> — selects the offending range in the
+editor and announces location.</li>
+<li><strong>Previous / Next</strong> — navigate the list.</li>
+<li><strong>Rescan</strong> — re-runs the engine and refreshes the
+list.</li>
+<li><strong>Close</strong> — destroys the dialog.</li>
+</ul>
+<p>If the text at a finding's position has changed between scan and
 Apply Fix, a message box explains why the fix could not be applied and
 prompts the user to rescan.</p>
 <hr />
-<h2 id="accessibility">10. Accessibility</h2>
+<h2 id="10-accessibility">10. Accessibility</h2>
 <ul>
 <li>All button actions trigger <code>_announce()</code> on
 <code>MainFrame</code> for screen-reader feedback.</li>
 <li>Dialog uses
 <code>apply_modal_ids(dlg, affirmative_id=wx.ID_CLOSE, escape_id=wx.ID_CLOSE)</code>
 for keyboard contract.</li>
-<li><code>ListCtrl</code> has an accessible name (“Findings list”).</li>
+<li><code>ListCtrl</code> has an accessible name ("Findings list").</li>
 <li>Detail <code>TextCtrl</code> is read-only and word-wrapped, named
-“Issue detail”.</li>
+"Issue detail".</li>
 <li><code>Rescan</code> fires the engine on the same scope (document or
 selection) so the announcement summarises new findings without losing
 context.</li>
 </ul>
 <hr />
-<h2 id="testing">11. Testing</h2>
+<h2 id="11-testing">11. Testing</h2>
 <p>41 unit tests in <code>tests/unit/core/test_hygiene_rules.py</code>
 covering:</p>
 <ul>
@@ -545,7 +538,7 @@ front matter, link URL, decimal numbers, times)</li>
 <li>Deduplication of overlapping findings</li>
 </ul>
 <hr />
-<h2 id="future-directions-out-of-scope-for-mvp">12. Future directions
+<h2 id="12-future-directions-out-of-scope-for-mvp">12. Future directions
 (out of scope for MVP)</h2>
 <ul>
 <li><strong>User-defined rules</strong> via a Quillin contribution point

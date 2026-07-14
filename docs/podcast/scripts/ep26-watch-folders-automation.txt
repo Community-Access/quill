@@ -1,0 +1,162 @@
+[JESSICA]
+The QUILL Cast, episode twenty-six. I'm Jessica. Today, the quietest feature family in the entire course, and the one that does the most work while you are somewhere else: watch folders, and the broader automation surface that hangs off them.
+
+[LIAM]
+I'm Liam. Quick recap of episode twenty-five first, because it sets up the right mindset. Episode twenty-five was files that don't live on your computer. We walked through FTP, SFTP, HTTPS WebDAV, S3, GitHub with no Git installed, and SSH editing. The throughline was: the file is somewhere, you are here, QUILL spans the gap without making you change applications. The same throughline carries into today, except now the gap is time, not just distance. A file arrives, you are not at the keyboard, QUILL does the thing you would have done, the file is ready when you come back.
+
+[JESSICA]
+That is the whole pitch. Watch folders let you declare: this folder is a loading dock, when a matching file lands in it, run this action, and tell me what you did. The action can be a single tab opening, or it can be a whole pipeline, but the contract is the same. The folder is the trigger, the action is the response, the receipts are recorded.
+
+[LIAM]
+Before we go any further, the do this now beat, because this one is a small one with an outsized payoff. Pause the audio. Open QUILL. Open the Tools menu. Look for Watch Folders. If you are on the Essential profile, the entry is present but the feature itself is what we call quiet, meaning it is discoverable and switchable but not on yet. If you are on Casual Writer, it is explicitly off, and you turn it on from Profiles and Features. The setting that actually drives the running engine is a separate switch called watch folder enabled, and it defaults to false. We will come back to the difference between the feature flag and the run switch in a minute. For now, just look at the menu, see what is there, and come back. Thirty seconds, I'll wait.
+
+[PAUSE]
+
+[JESSICA]
+Welcome back. Whatever you saw is correct, and the rest of the episode will make the picture sharper. We are going to walk the actual code, name the actual modules, and call out two places where the previous short version of this script drifted from the code. The honest corrections are at the end of the episode, so anyone who heard the first cut knows what changed.
+
+[LIAM]
+Let's start with the architecture, because the architecture is what makes the rest of the episode make sense. The watch subsystem is a stack of small modules, all in quill.core, all wx-free. The seam between the editor and the watch engine is a single facade, the WatchService, and the UI layer constructs it once and calls high-level methods on it. Everything else is pieces.
+
+[JESSICA]
+The pieces. WatchProfile is one named rule: a folder, a set of filters, exactly one action, and post-action handling. It is a frozen dataclass, slot-built, and its normalized method clamps the inputs to safe ranges. The poll interval is clamped to between two seconds and three hundred seconds, so a typo cannot turn a five-second check into a tight loop. Suffixes get cleaned, empty ones dropped, duplicates removed, and the default suffix set is the thirteen formats QUILL knows it can read. The default is dot txt, md, html, htm, json, csv, tsv, docx, pptx, epub, pdf, odt, rtf.
+
+[LIAM]
+The profile carries a schedule mode, which is the part that surprises people. Three modes, not two. Always, which is the obvious one. Window, which means the profile is armed but dormant outside a daily time-of-day window. Quiet hours, which is the inverse, the profile is always active except during a quiet window. The window supports midnight wrap, so twenty-two hundred to zero seven hundred is a legal quiet range and the window math, the _within_window helper, handles it explicitly. A zero-width window is treated as empty, so a typo that sets start equal to end does not silently run forever, it gets a validation problem.
+
+[JESSICA]
+The post-action is the part that turns a watch folder from a file cop into a real pipeline. Three values, leave, move, delete. Leave is the default and the safe one, the source file stays put, the action's result is the output. Move relocates the source to a destination folder you specify, and the destination is validated up front, so a profile that points at a folder that has been deleted or remapped surfaces a clear error before it runs. Delete is the loud one, and the action is the only thing that earns it, because a watch folder with delete on a typo is a way to lose work.
+
+[LIAM]
+Above the profile sits the WatchProfileStore, the durable record. It is a thread-safe wrapper around an ordered list, with a re-entrant lock, atomic JSON persistence through core.storage.write_json_atomic, and the standard QUILL pattern of schema version at the top of the file. Every method that mutates calls _save_locked under the lock, and _load rebuilds the in-memory list with deduplication of profile ids, so a hand-edited file with a duplicate id cannot corrupt the store.
+
+[JESSICA]
+Above the store sits the WatchManager, the multi-profile poller. This is the WATCH-1 isolated-failure layer. The manager starts one polling thread per enabled, valid profile, and each thread catches and logs its own exceptions. A profile whose folder is on a temporarily disconnected network share never stalls the other profiles. The error bookkeeping is real, the manager tracks last error message and consecutive error count per profile, and consecutive errors reset to zero on the first successful scan, so a transient blip does not make a profile look permanently broken. That is the M-4 fix from the bug tracker, and it is the kind of detail you only notice when the announcement says it.
+
+[LIAM]
+And the per-profile polling loop, worth reading aloud. If the profile has process_existing off, which is the default, the poller runs a one-time prescan and calls prime on every file already in the folder, reserving the de-duplication slot so the file is never enqueued or actioned. Then the regular loop starts. On each tick, it checks the schedule, walks the matching files through iter_matching_files, and pushes every detection into the shared queue with the profile id and the action id. The whole loop is wrapped in try, except, so a single bad file does not crash the poller, and the only way out of the loop is the stop event being set.
+
+[JESSICA]
+The matching is strict, and that strictness is the safety net. iter_matching_files applies four filters in order, the folder must exist, the suffix must be in the profile's set, the filename must match at least one of the comma-separated patterns if any are configured, and the file must meet the minimum size and the minimum age. Minimum age defaults to two seconds, and that number is not arbitrary, it is the settle time that lets a partially written file finish being written before QUILL touches it. A scanner that drops a five-megabyte image into a watched folder will not have that image read mid-write, because the file's mtime has to be at least two seconds old before the poller will consider it.
+
+[PAUSE]
+
+[LIAM]
+Now the queue, and the queue is where the durability story lives. WatchQueue is a single re-entrant lock guarding all item state and the paused sets, with an atomic claim transition that guarantees no item is processed twice across overlapping profiles. The de-duplication key is the resolved source path, so two profiles that both watch the same folder will each see the same file, but only one of them will get to enqueue it. The other enqueue returns None silently. That is the WATCH-3 exactly-once claim, and it is the difference between watch folders that work and watch folders that double-process every file.
+
+[JESSICA]
+The queue has five states. Queued, processing, done, failed, skipped. The lifecycle is explicit, not implicit. A queued item transitions to processing on claim, processing transitions to one of the three terminal states, and failed items retry with bounded exponential backoff, doubling from a five-second base up to a five-minute cap, with a default maximum of three attempts. An item caught mid-processing by a crash is re-queued on load, so a hard quit during a transcribe job does not leave a ghost in the queue. The queue persists atomically after every state change, and persistence is the storage module's temp-file plus os.replace pattern, not a best-effort write.
+
+[LIAM]
+The pause model is two-level. Globally pause the entire queue, and every profile stops processing. Per-profile pause, and just that profile's items stop. Both pauses are honored at the claim step, not the enqueue step, so items still flow into the queue when paused, they just sit there queued until the pause lifts. There is a manual retry, you can pick a failed item from the monitor and re-queue it with the backoff window reset, and there is a clear finished operation that drops only done and skipped items so the de-duplication set is also cleaned.
+
+[JESSICA]
+And the work itself runs on a single daemon thread, the WatchWorker, called quill-watch-worker. Single thread is the design choice, not a limitation. The point is that side effects are predictable: an action never overlaps itself, a file is never processed twice, and a partial failure cannot leave the source file in an in-between state. The worker pulls one item, looks up the profile that produced it, runs the bound action through the action registry, applies post-action handling, and records the outcome. If the profile no longer exists, the item is marked skipped with a clear message. If the action crashes, the registry catches it and returns a failed outcome, the worker records that outcome, and the queue retries or fails it the same way it would for any other failure.
+
+[PAUSE]
+
+[LIAM]
+The action registry is the seam. WatchActionRegistry is a typed mapping from action id to action, with feature gating and consent gating. Every action declares a required feature id, empty string means always available, and the registry's is_available checks that feature against the feature manager. Every action can also declare requires_consent, and the registry refuses to run the action until the per-profile options include consent equals true. That is the no-silent-network contract, and it is enforced in the same place for every action, not duplicated in each action's run method.
+
+[JESSICA]
+Let's walk the built-in actions, because the lineup is broader than the previous short version of this script made it sound. There are ten registered actions in the default registry. Open in editor, the simple one, hands the file to the editor through a caller-supplied callback and announces the open. Move to folder and Copy to folder, the two filesystem movers, both with destination validation. Convert to another format, which delegates to the IO writers and the bundled Pandoc, with three target formats in the dialog, markdown, html, plain text.
+
+[LIAM]
+Run a macro, the one that replays a saved macro over each file, also caller-supplied because the macro replay is editor-side. Run a Python transform, the sandboxed one, which reads the file as document text, hands it to a saved transform, enforces import and wall-clock limits, and writes the transform's result back next to the source. Run an AI action, which is consent-gated and supports three modes, summarize, tag, rewrite, and delegates the AI call to a caller-supplied handler so the action stays wx-free.
+
+[JESSICA]
+Then the heavier ones. OCR image to text, gated by the core.ocr feature, offline by default, with no consent required because OCR never leaves the machine. Transcribe audio offline, the BITS Whisperer consolidation's offline path, runs whisper.cpp or Faster Whisper on the audio and writes a sibling transcript, with four output formats, txt, srt, vtt, md, and a graceful fallback to plain text if the engine returned no timestamped segments. Transcribe audio via OpenAI Whisper, the cloud path, gated by future.ai and by an OpenAI API key, requires per-profile consent because the audio leaves the machine, and is skipped cleanly if the file is over twenty-five megabytes.
+
+[LIAM]
+And two more. Build audiobook from the folder, the WATCH-10 action that turns a folder of audio into a chaptered master the moment a new file lands, with one chapter per file in natural order and the folder name as album metadata, coalescing naturally so a batch of dropped files produces one rebuild rather than one per file. And the placeholder, Audit and fix accessibility, registered under the GLOW action id, with required feature future.glow and a clear reason that the action is not available yet. The placeholder is intentional, the registry's register method accepts replace equals true so the real GLOW action can supersede it without a schema change.
+
+[PAUSE]
+
+[JESSICA]
+Now the monitor, because watch folders are useless without a way to see what they did. The Watch Queue Monitor lives at Tools, Watch Folder Status, and is a modeless dialog. The dialog is built in main_frame.py, the show_watch_folder_status method, and the layout is a summary line at the top, a single-select list box in the middle, and five buttons along the bottom: pause or resume, retry, open result, clear finished, refresh. The list box is named for screen readers as Watch queue items, and the summary is named Watch queue summary.
+
+[LIAM]
+Each list box row is a queue item, formatted as state dash name, with the attempt count appended if it has been retried, and the humanized outcome message appended if there is one. Selecting an item and pressing open result opens the file the action produced, falling back to the source if no result path was set. Retry only works on failed items, and the worker is woken immediately so the retried item jumps the idle wait. Clear finished is the safe clearing, it drops only the done and skipped items, and it cleans the de-duplication set so the same source can be enqueued again later. Refresh is a manual repaint for the case where the listener is wired but the screen has not updated.
+
+[JESSICA]
+The button labels are all named for screen readers, with the access key marked the standard way, the ampersand before the underlined letter. Pause or resume toggles the global pause, retry operates on the selected item, open result navigates into the result file or the source if no result, clear finished drops the terminal items, and refresh re-reads from the queue. The dialog passes through the modal id contract, affirmative id is the close button, escape id is the close button, and the focus lands on the list box when the dialog opens, so a screen reader user arrives at the content, not the chrome.
+
+[PAUSE]
+
+[LIAM]
+The schedule mode, one more time, because it is the thing that most users will want to set once they trust the system. Always is the default, and it is the right choice for a downloads folder or a scanner output folder. Window is the right choice for a folder that should only be processed during business hours, the office dropbox that should not churn while the family is asleep. Quiet hours is the right choice for a folder that should be processed during the day but never after midnight, the recorder that drops lecture audio overnight and should not be transcribed until morning.
+
+[JESSICA]
+Process existing files on start is the second switch that surprises people. It defaults to false for a reason. When you first enable a profile, QUILL walks the folder and reserves the de-duplication slots for every matching file, so the files already there are not enqueued or actioned. The poller then waits for genuinely new arrivals. This is the right default, because enabling a profile should never re-run an action on every file you have ever saved. The switch exists for the cases where you do want it, the first time you set up a profile, the occasional deliberate re-run, and the priming count is exposed through the queue so an empty monitor with primed files is self-explanatory.
+
+[LIAM]
+The safety posture, in one paragraph. Watch folders are gated by the core.watch_folder feature flag, and the setting watch folder enabled defaults to false, so the running engine is off until you turn it on. The feature flag itself is quiet in the Essential profile and explicitly off in the Casual Writer profile, which means the entry is discoverable but the engine is not running. The new account onboarding also lists watch folders as off, so a fresh install is a clean install. The two ways the engine can be turned off, the feature flag and the run switch, are independent, so a power user can hide the feature entirely in the Casual Writer profile or just leave the run switch off and forget about it.
+
+[JESSICA]
+Safe Mode does what you would expect. The SafeModeConfig carries disable file watchers equals true, and the config is built whenever the env var QUILL_SAFE_MODE equals one or the command line includes safe mode. So Safe Mode is the clean-room guarantee, no background automation, no startup restore, no plugins, no AI integrations, no network services, all of it. The watch engine is part of the clean room. If you ever want to prove to yourself that QUILL is not phoning home, run it in Safe Mode, set up a watch folder, and watch nothing happen. That is the house style: the dangerous surface is off by default, and the off switch is yours, not ours.
+
+[PAUSE]
+
+[LIAM]
+The receive a verdict architecture, in one paragraph. Every action run produces a WatchActionOutcome, a frozen dataclass with three fields, status, message, result path. Status is one of done, failed, or skipped. Message is a humanized string, not a stack trace, and the humanization rule lives in one place, the _humanize_action_error helper, which maps PermissionError, FileNotFoundError, NotADirectoryError, IsADirectoryError, and the broader OSError family into plain-language messages that name the action and suggest a fix. Unknown error types fall through to str of the error, so a new exception class is never hidden, the original is still logged at the call site for the developer, and the user gets a readable message.
+
+[JESSICA]
+The monitor listens through a single listener callback, the WatchService constructs it from a queue listener passed in by the UI, and the listener emits events for enqueued, claimed, retry, done, failed, skipped, paused, resumed, profile paused, profile resumed, and cleared. The UI subscribes to the same listener through wx.CallAfter, so every state change is delivered on the UI thread, the dialog refreshes, the list box updates, and the screen reader announces the change. A bad listener never breaks the queue, the _emit method catches and logs, so a UI bug cannot stall a background poller.
+
+[LIAM]
+The consent model, one more time, because it is the part of the architecture that pays for itself. Three actions declare requires_consent equals true: the AI action, the cloud transcription action, and any Quillin action that opts in. The registry refuses to run them until the per-profile options include consent equals true. That means the consent is per profile, not per app. A user can have an AI summarize profile for one folder and a non-consenting open profile for another folder, and the same UI does not need to ask twice. The consent is structural, the export format, and a profile that ships without consent cannot be retroactively activated by editing the file, the action refuses to run.
+
+[PAUSE]
+
+[JESSICA]
+Now the part the brief asked us to flag honestly. A few claims worth correcting or sharpening.
+
+[LIAM]
+First, the previous short version of this script said watch folders are off by default. The truth is finer. The feature flag core.watch_folder is quiet in the Essential profile, explicitly off in the Casual Writer profile, and the onboarding profile sets it to off as well. The runtime switch watch folder enabled is a separate setting and defaults to false. Net effect: the engine is not running on a fresh install, and you opt in through the feature manager and through the run switch. The shape of the opt-in is two switches, not one, and we want you to know there are two.
+
+[JESSICA]
+Second, the previous short version described a "flagship combination" of transcript action plus transcript that lands in episode twenty-six-four. That number is a typo. The transcript action feature and the meeting-minutes flow are surfaced in the speech and audio deep dives later in the series, not in this episode. The transcript action is real, the watch pipeline is real, and you can wire it today, but the deep dive is a later episode, and we will say so when we get there.
+
+[LIAM]
+Third, the previous short version said actions "announce and record what they did, the notification list from episode four keeps the receipts." That is approximately right but not exactly right. Actions do not push into the notification list directly. They return a WatchActionOutcome, the queue records the outcome as the item's message, the monitor displays the message, and the runtime emits a status bar update. If you want a notification-list entry, the start and stop handlers for the run switch do push a notification, and the monitor opening is itself announced. The action's outcome is not in the notification list, it is in the monitor.
+
+[JESSICA]
+Fourth, the previous short version said OCR is an action that runs offline. That is correct, the OcrAction is gated by core.ocr and does not require consent. We mention it here so listeners know the offline path is real, and so anyone who followed the OCR episodes can connect the watch-action shape to the OCR engine they already have.
+
+[LIAM]
+Fifth, the previous short version did not name the GLOW placeholder action. The registry ships with a UnavailableAction registered under the glow_audit action id, gated by future.glow, with the reason GLOW accessibility auditing is not available yet. It is not a hidden action, it appears in the action chooser, and selecting it produces a clear skipped outcome. We think that is better than hiding it, because the discoverability matches the design system and the refused run is honest.
+
+[JESSICA]
+Now the four-step homework, and the homework is the same shape as the rest of the course, small steps, real receipts.
+
+[LIAM]
+Step one. Open QUILL, look at the Tools menu, find Watch Folders, and tell me in writing or out loud which entries are present. If Watch Folders is present but the run switch is off, decide whether you want to turn it on today. If yes, open Settings, find Watch Folders, toggle the run switch, and restart. If no, that is a perfectly fine answer. The point of the step is to know what your install looks like, not to enable everything.
+
+[JESSICA]
+Step two. Pick one folder that genuinely receives files you care about, the downloads folder for most people. Create a watch profile named for that folder, point it at the folder, leave subfolders off, leave process existing off, leave the default suffix set, set the action to Open in editor, enable the profile. Save. The poller will prime the existing files, claim zero items, and sit there waiting. Then drop one new file in. By the time you tab back to QUILL, the file is a tab. Listen for the status bar update. That is the smallest useful watch folder, and the smallest proof.
+
+[LIAM]
+Step three. Add a second profile with the same folder but a different action, say Move to folder pointed at a subfolder named processed, and leave the action's destination validation honest, pick a real folder. Drop a file in the watched folder. The first profile opens it as a tab, the second profile moves the file to processed. Both actions run, in order, on the same file, because the queue is exactly-once, and the file is open in QUILL and present in processed. The receipt is the monitor, which shows two done items with their messages.
+
+[JESSICA]
+Step four. Open the Watch Queue Monitor. Pause the queue. Drop a file in the watched folder. Watch the file appear in the list as queued. Press resume. Watch the item transition to processing and then to done, with the action's message in the row. Open the result, see the file open. Clear finished, see the row disappear, and the list return to its empty primed state. That is the full lifecycle, in one minute of clicks, and it is the muscle memory that makes the heavier pipelines feel safe.
+
+[PAUSE]
+
+[LIAM]
+Next episode, episode twenty-seven, we change direction. Everything since episode one was about getting words in, getting words out, getting words into the shape you wanted. Episode twenty-seven is about sending words to other people and sending your setup to other people, the publishing and share deep dive. Same architecture, same trust posture, different audience.
+
+[JESSICA]
+We will walk the File Publish submenu, the connection profiles, the credential storage, the verified TLS, the Compare With Remote flow, the publishing-linkage registry, and the share package format with its thirteen section ids and the eight that are shareable. The structural privacy boundary is the part worth understanding, and the tests that enforce it.
+
+[LIAM]
+We are at twenty-six of fifty-four in The QUILL Cast, so the back half of the course is in sight. The voices that began in episode one are still with you, the consistency is the point, and the rest of the journey is the rest of the journey.
+
+[JESSICA]
+I'm Jessica.
+
+[LIAM]
+I'm Liam. Let the folder do the fetching.
+
+[JESSICA]
+The QUILL Cast is a fifty-four episode course on QUILL. Subscribe wherever you listen, and we will see you in episode twenty-seven.

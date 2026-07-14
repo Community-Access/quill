@@ -1,0 +1,121 @@
+[LIAM]
+The QUILL Cast, episode thirty-four. I'm Liam. We're five episodes into the artificial intelligence arc, and today we do the foundation work. Before any of the everyday writing actions, before Ask Quill, before agents, somebody has to decide how AI runs on this computer, and QUILL puts that decision in your hands, in plain language, in one short wizard.
+
+[JESSICA]
+I'm Jessica. A quick recap of where we are. Episode thirty-three closed the speech arc with the Audio Studio: documents becoming audiobooks, recordings becoming chaptered books, finished books becoming published shows, all from one keyboard-first studio. That was part five on speech, and we are now firmly in part six: artificial intelligence, the way QUILL does it. And the way QUILL does AI is not the way the rest of the industry does AI, so today is a bit of an orientation as much as a tutorial.
+
+[LIAM]
+Three rules govern everything in this part. Rule one: AI is off until you turn it on. A fresh QUILL with no setup has an AI menu, and the only AI item in it, until setup is done, is Set Up AI. Nothing happens without you. Rule two: you choose who, if anyone, sees your words. No text leaves your machine unless you have actively connected a provider, and the connection is per-provider, not global. Rule three, the big one, the safety story in one sentence: AI never changes your document silently. Every edit arrives as a preview you accept or reject, and an accepted change is one undo step. The AI proposes, you decide, and control Z is always loaded.
+
+[JESSICA]
+Honest correction before we go any further, because the script you may have heard in an earlier version of this episode named the AI menu items as Set Up AI, AI Library, and a list of actions, and it was mostly right but it had a couple of errors. The full menu in the build I am reading from has Set Up AI as the top item, then Ask Quill and Ask Quill by Voice, then a divider, then the Accessibility Tune-Up agent, then a context section that is hidden in the gentle Basic experience mode, then submenus for Proofread, Transform Selection, Translate, Read Aloud, Transcribe Audio, and More, then AI Library, then AI Hub, then the master switch Use Artificial Intelligence, and a check item for Show Advanced AI Features. The earlier script also implied that the wizard verifies a free key automatically, and that is not quite right. The wizard leads you to a free path, you paste a key, and a separate Verify step confirms it. Today's script uses the real names and the real flow.
+
+[PAUSE]
+
+[LIAM]
+The on-ramp is one menu item: AI, Set Up AI. You can also reach it from the AI Hub, from the AI Library when a feature would otherwise fail with a no-key message, and from any AI menu action when AI is on but the active connection is not actually configured. The wizard is a small dialog, one step shown at a time, every step with a clear heading announced on arrival for screen-reader users, and every step cancellable with the Not Now button at the bottom right. Nothing is applied until you reach the configure step's Next. There are no dead ends.
+
+[JESSICA]
+There is a moment, before we go further, where you should pause the audio. If you have QUILL open, go to the AI menu now. If you do not have it open, that is fine, you can come back. The point of the pause is this: take fifteen seconds to hear the menu in its fresh state, before any setup. Notice what is there, notice what is not, notice that the only AI item is Set Up AI, notice that the everyday actions appear, but they are waiting. You are looking at the same product, in the same state, that we are describing. Press play when you are ready.
+
+[PAUSE]
+
+[LIAM]
+The wizard's first step is a welcome. The actual heading in the code is Meet QUILL'S AI, and the body explains that QUILL has a friendly AI that helps you write, fix, summarize, and turn recordings into finished documents, only when you ask, always with a preview, and never sending your work anywhere unless you choose to. Then it says, let's set it up in a few seconds, you can change anything later, and you can stop at any point. That is the tone for the whole wizard: no jargon, no pressure, no broken configurations.
+
+[JESSICA]
+Step two is the one real decision: how would you like AI to run? A radio box with three choices. The code calls them onboarding paths, and they are, in order, set up an AI provider, use an AI agent you already pay for, and not right now. Each choice shows a one-line summary in the list and a reassuring paragraph in the detail pane below, and the detail updates live when you arrow between options.
+
+[LIAM]
+Path one, set up an AI provider, is the recommended path and the one most people will take. The detail says, connect one or more AI providers, cloud accounts like Claude, OpenAI, Gemini, OpenRouter, or Ollama Cloud, paste a key once, give you the most capable models, or run on your device with Ollama, completely private and free, your writing never leaves your machine. It needs Ollama installed and running with a model pulled, for example, ollama pull llama three point two. You will pick which provider and model is the default. Cloud is the simplest, most capable choice if you are not sure. Your text is sent only to the provider you choose, only when you run an AI action, after a preview you approve. That last sentence is the safety contract in one breath.
+
+[JESSICA]
+Path two, use an AI agent you already pay for, is new in this part. The detail says, already pay for GitHub Copilot, ChatGPT, or Claude? Use it as QUILL'S agent, no second API key, no per-word charge on your card, and it runs on your plan's models. QUILL adds the connector on demand and signs you in, then every agent and Ask Quill runs on your chosen engine. And because QUILL owns every edit, the agent proposes and you approve, each change is a reviewable preview and a single undo, exactly like the rest of QUILL. You will finish set-up on the AI Hub's Engines tab, which opens right after this. This is the right path for someone who already pays for an AI subscription and does not want a second bill.
+
+[LIAM]
+Path three, not right now. The detail is short and warm: no problem, QUILL works beautifully without AI, you can turn it on whenever you like from AI, Set Up AI, with no pressure and nothing lost. The button on the dialog that backs out of the wizard at any step is labelled Not Now, with a mnemonic on the N, so escape and that button do the same thing. Not Now is a fully supported answer. Some of the best QUILL users never set up AI at all, and the product treats that as a valid life.
+
+[PAUSE]
+
+[JESSICA]
+Step three, the connect step, is where path one and path two diverge. For path one you land on Connect Your AI Providers, and the wizard walks you through adding one or more providers. You pick a provider from the combo, you check an allow box, and for cloud providers you paste a key, for Ollama on your device you do not. The button to commit is Verify and Add Provider. A status line under the wizard says what is happening, like checking for Ollama or verifying Claude, and the screen reader announces the result when it arrives.
+
+[LIAM]
+For cloud providers, Get API Key opens the exact signup page for the selected provider in your browser. The sign-up URLs in the build I am reading from are platform.openai.com slash api keys for OpenAI, AI Studio dot google dot com slash app slash API key for Gemini, console dot anthropic dot com for Claude, openrouter dot ai slash keys for OpenRouter, and ollama dot com for Ollama Cloud. One click, the right page, you copy the key, you paste it, you click Verify and Add. If the browser does not open, the status line shows the URL so you can paste it yourself. If the verify fails, the error from the provider is shown back to you, and nothing was saved. You stay in the wizard.
+
+[JESSICA]
+For Ollama on your device, the flow is different and gentler. The combo shows Ollama on your device, the key field is disabled, the Get API Key button is disabled, and the allow box wording is specific: allow QUILL to use Ollama on this computer for AI actions, your writing stays on your machine. Click Verify and Add, and the wizard checks, off the UI thread, that a usable Ollama is actually running on this computer with at least one model pulled. If it is, the wizard announces the model it found. If it is not, the wizard tells you, in plain words, what is missing. It never commits a broken configuration.
+
+[LIAM]
+The allow box is required to add a provider. The label changes per provider. For Ollama, it is the on-device wording I just read. For every cloud provider, it is allow QUILL to send my writing to name when I run an AI action. This is the one-time ask. Once granted, that provider is in your standing share consent, and you will not be nagged about it again at every chat. The list of granted providers is stored locally, in a small file under the AI folder in your QUILL data directory.
+
+[JESSICA]
+You can add several providers in one pass, the verified ones move into an Added Providers list and out of the combo, and you only need one to continue. Already-configured providers appear here on relaunch, with their stored keys, so re-running the wizard after a long break does not make you re-paste anything. The Remove button on the added list is the way to forget a key, and the code is explicit: forgetting a key also withdraws consent, so re-adding the same provider will ask you again.
+
+[PAUSE]
+
+[LIAM]
+Step four is the model step, cloud providers only, and it is the wizard's secret kindness. You see Choose Your Default Provider and Model as the heading. The default provider is one of the providers you just added. The model combo is preloaded with curated suggestions for that provider, a strong free OpenRouter model leads the list if you are configuring OpenRouter, and there is a read-only description below that explains the selected model in plain language: what it is good for, what it costs, whether it is local or cloud. A List All Available Models button reaches out to the provider, off the UI thread, and replaces the suggestions with the account's actual offering, with Ollama that means the locally installed models.
+
+[JESSICA]
+The wizard's model verification is the part that saves you from the silent-failure trap. When you click Next on the model step, the wizard checks that the chosen model actually responds. It uses a short timeout, twelve seconds, and a single attempt, so it fails fast instead of hanging. If the model answers, the wizard commits. If it does not, you stay on the step with a clear error, the model is not changed, and nothing in your configuration was saved. This is the difference between a wizard that helps you and a wizard that lies to you, and it is the same principle as every other safety step in QUILL: surface the failure, do not paper over it.
+
+[LIAM]
+For Ollama on your device, the flow is simpler. There is no model step. The model defaults to whatever ollama status found when you verified, and if you want a different model, the description on the model step, if you do go through it for a local provider, tells you to run ollama pull, then the model id, in a terminal first. QUILL is opinionated about not pretending a model is available when it is not.
+
+[JESSICA]
+Step five is the celebration step, and the heading is You're All Set. For a configured path, the wizard prints a short list of what is now possible. The actual list, from the code, is: Ask Quill, Alt Q, chat about your document, ask anything; turn a recording into minutes, action items, or notes, AI, Transcribe Audio; build your own AI actions in plain language, AI, AI Library, Build Action. Then the line: everything previews before it changes your work, and one keystroke undoes it. Below that is a checkbox, kept checked by default, labelled Keep It Simple, Show Only The Essentials, Basic Mode.
+
+[LIAM]
+Basic Mode is the wizard's gift to someone who is new to all of this. The menu code gates the more powerful agentic entries on a check of the current experience mode. In Basic Mode, the Concierge suggestions, the action ring for the current file type, and the full Agent catalog are hidden from the menu. Everyday features, Proofread, Translate, Read Aloud, the quick transforms, stay. Advanced entries are still reachable from the command palette, and a check item at the bottom of the AI menu, Show Advanced AI Features, flips you back to Advanced in one click. There is no harm in Basic, and you can switch at any time, the menu rebuilds immediately.
+
+[JESSICA]
+If you picked path two, the agent path, the celebration step is different. The wizard closes, the AI Hub opens on its Engines tab, deferred through Call After so the Hub does not nest inside the still-unwinding wizard modal, and the Hub's Engines tab is where you pick GitHub Copilot, OpenAI Agents, or Claude Agent, click Set Up to install the connector, and sign in with your existing account. Every change that engine proposes on a document, once you start using it, is still a reviewable preview you approve, one keystroke to undo. The subscription does not change that.
+
+[LIAM]
+If you picked path three, Not Right Now, the celebration step is just two lines: no problem, AI is off for now, and turn it on any time from AI, Set Up AI. The wizard marks setup as completed so it does not nag you again on next launch, AI stays off, the rest of the product is fully usable.
+
+[PAUSE]
+
+[JESSICA]
+Before we leave the wizard, a house word on price, because the brief calls it out and it is true. You never need to pay to use QUILL'S AI. The on-device Ollama path is free, no key, no account, no network. The OpenRouter free path, your own free key, preselects a strong free model, and OpenRouter's free tier is genuinely free, with rate limits applied to your own quota, not a shared pool. The two paths rhyme with QUILL itself being free, and assistive capability gated by subscription is the old world QUILL is choosing to leave behind.
+
+[LIAM]
+The free model the wizard preselects is not a marketing line, it is data. The free model catalog classifies a model as free when the provider reports zero prompt and completion pricing, or, for OpenRouter, when its id ends in the documented colon free suffix. The classifier keeps working as OpenRouter rotates its free line-up, so the wizard's preselection stays sensible. The curated offline default, in case the catalog has never been touched, leads with meta llama slash llama three point three seventy B instruct colon free, then a few alternates. The best free model the catalog can find is what the wizard selects, not a hand-picked marketing pick.
+
+[JESSICA]
+And the honest coda on what free local can do. A free local model is not a frontier datacenter model. QUILL adapts, the agent harness uses simpler task strategies on smaller models so things answer instead of stalling, and the everyday writing actions you will meet next episode work well on free models. The most ambitious agent plans, long-document reasoning, multi-step tool loops, benefit from stronger ones. Set expectations, then be pleasantly surprised. That is the house tone, and it is the difference between a product that disappoints you and a product that earns your trust.
+
+[PAUSE]
+
+[LIAM]
+The privacy architecture deserves a quick walk, because part seven on the AI privacy and consent contract does it justice, and today is the orientation. Every network call in the entire application is registered in an internal egress audit, a file in the tools directory that lists every outbound call site with a written justification, and an automated gate fails the build if anyone adds an unregistered one. Consent is per-action and specific: QUILL says, in words, what is being sent and to whom, before the network call goes out. Keys live in encrypted credential storage, never in plain config, and on Windows the storage is DPAPI-backed through the platform windows credential manager. And Safe Mode, from episode two, kills all of it with one flag when you want a guaranteed quiet machine.
+
+[JESSICA]
+The redaction story is part of the same architecture. QUILL has a central redaction module that scrubs secrets, paths, and tokens from any log, crash bundle, or diagnostic that leaves the process. It matches the standard name equals value forms, api key, token, secret, password, bearer, modern API key prefixes like sk dash, ghp, AKIA, JWT-style ey J tokens, hex and base64-looking long strings, Windows and POSIX user paths, email addresses. Anything that looks like a secret is replaced wholesale. The crash bundle you might send to support, the redaction rules are run on it before it leaves.
+
+[LIAM]
+And the operational rule: the redaction module is the single point through which every logger and bundle builder passes sensitive strings. That is the only way the contract is testable, and it is how the security story stays consistent across the product. If you ever see a key shape in a log, that is a bug, and the redactor's test suite is what catches it.
+
+[JESSICA]
+One more honest correction, and this is the kind of thing that drifts in docs. The earlier draft of this episode talked about a Test Connection button on the wizard. The button label in the code is Verify and Add Provider, not Test Connection, and the verification runs the moment you click it, with the result announced through the status line. There is a separate Test step in the model step, also labelled by the code, that runs when you commit a chosen model. Test Connection is a reasonable English name for the action, but it is not the label on the button, and the script should not invent labels. That is the rule we hold ourselves to in this series.
+
+[PAUSE]
+
+[LIAM]
+So the practical, do-this-now homework, in four steps, is this. One: open the AI menu right now and find Set Up AI. Do not click it yet, just find it. Notice where it sits, at the top, with the start-here suffix if you have not run setup yet. That is your on-ramp and your re-run point. Two: open the wizard, read the welcome, and pick a path. Including Not Right Now. The point of the exercise is to see how the choices are presented, in plain language, with the trade-offs stated up front, not to commit. Three: if you did connect something, paste the key, click Verify and Add, and listen to the announcement. If you did not, that is also fine. Four: find the AI privacy documentation from the Help menu and skim what gets sent when, before you ever send it. You are now informed.
+
+[JESSICA]
+And one more, for free. Open the AI menu after you finish the wizard, if you finished one, and look for Show Advanced AI Features at the bottom. If you are in Basic, it is unchecked. Click it, watch the menu rebuild, and the agentic entries appear. Click it again, and they hide. That single check item is the dial between the gentle product and the full power-user surface, and the wizard's keep-it-simple checkbox puts you in Basic by default. Either way is the right way.
+
+[LIAM]
+Next episode, the payoff of this whole setup. Episode thirty-five, Ask Quill and the everyday writing actions, with the review-everything contract in action. We will turn the configuration you set up today into actual habits, and the habits into a writing flow.
+
+[JESSICA]
+A quick number, because the show notes ask for it. The QUILL Cast is a fifty-four-episode audio course. This is episode thirty-four, and next is thirty-five. We are in the home stretch of the artificial-intelligence part, with the AI Library, the AI Toolkit, every-day writing style, agents with reviewable autonomy, accessible vault basics, vault power, glow audit and fix, glow for files, braille production, the Quillins and the console, and the trust and community finale to come. The pace from here is one episode per topic, with deep dives where the surface area earns them.
+
+[LIAM]
+I'm Liam.
+
+[JESSICA]
+I'm Jessica. Your words, your rules, your call. Until episode thirty-five.

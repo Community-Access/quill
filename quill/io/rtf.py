@@ -17,7 +17,7 @@ import re
 from pathlib import Path
 
 from quill.core.document import Document
-from quill.io.rtf_safety import scan_rtf_safety
+from quill.io.rtf_safety import RtfSafetyReport, scan_rtf_safety
 
 __all__ = [
     "markdown_to_rtf",
@@ -669,6 +669,19 @@ def rtf_to_markdown(rtf: str) -> str:
 # --------------------------------------------------------------------------- #
 # io contract
 # --------------------------------------------------------------------------- #
+def read_rtf_sanitized(path: Path) -> RtfSafetyReport:
+    """Read + sanitize an RTF file for a native rich ingest (no conversion).
+
+    Rich mode loads real RTF into the native control, so the same
+    :func:`quill.io.rtf_safety.scan_rtf_safety` gate that protects the
+    conversion path runs here first — embedded objects and binary payloads are
+    stripped, remote references flagged — and the *sanitized* RTF is what
+    reaches the control. Every RTF ingest goes through safety, no exceptions.
+    """
+    raw = path.read_text(encoding=_detect_rtf_encoding(path), errors="replace")
+    return scan_rtf_safety(raw)
+
+
 def read_rtf_document(path: Path) -> Document:
     """Read an RTF file into a Document whose text is Markdown-style markup.
 
@@ -700,11 +713,34 @@ def read_rtf_document(path: Path) -> Document:
 
 
 def write_rtf_document(document: Document, path: Path | None = None) -> Path:
-    """Write a Document's Markdown-style markup out as valid RTF."""
+    """Write a Document's Markdown-style markup out as valid RTF.
+
+    When the document has a Header/Footer Builder spec (#892), real
+    ``{\\header}``/``{\\footer}`` groups (with a live PAGE field) are injected
+    into the output — best-effort, never the reason a save fails.
+    """
     target_path = path or document.path
     if target_path is None:
         raise ValueError("A path is required to save this document.")
     rtf = markdown_to_rtf(document.text)
+    try:
+        import datetime
+
+        from quill.core.header_footer_store import HeaderFooterStore, key_for
+        from quill.io.header_footer_export import inject_rtf_header_footer
+
+        spec = HeaderFooterStore.load().get(key_for(document.path or target_path))
+        if spec is not None:
+            name = Path(target_path).name
+            rtf = inject_rtf_header_footer(
+                rtf,
+                spec,
+                title=name.rsplit(".", 1)[0] if "." in name else name,
+                filename=name,
+                date=datetime.date.today().isoformat(),
+            )
+    except Exception:  # noqa: BLE001 - header export must never break a save
+        pass
     target_path.write_text(rtf, encoding=_RTF_ENCODING, errors="replace")
     document.mark_saved(target_path)
     return target_path

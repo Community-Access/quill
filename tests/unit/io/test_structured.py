@@ -288,7 +288,8 @@ def test_read_structured_pages_gracefully_handles_missing_deps(tmp_path: Path, m
 
     assert "Pages import not available" in document.text
     assert "pip install keynote-parser" in document.text
-    assert "pip install markitdown" in document.text
+    assert "Download Optional Components" in document.text
+    assert "PDF and Office text extraction" in document.text
     assert document.source_metadata["source_kind"] == "pages"
     assert document.source_metadata["quality_score"] == 0
 

@@ -4,6 +4,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 from quill.core.document import Document
+from quill.core.storage import write_text_atomic
 
 # Braille text family (#226 / BR-004). Saving any of these must round-trip
 # byte-for-byte (#235 / BR-012): no line-ending normalization, no trailing
@@ -106,8 +107,10 @@ def write_text_document(document: Document, path: Path | None = None) -> Path:
         return _write_brf_document(document, target_path)
 
     text = _normalize_line_endings(document.text, document.line_ending)
-    with target_path.open("w", encoding=document.encoding, newline="") as file_handle:
-        file_handle.write(text)
+    # Write atomically (temp + os.replace) so a crash mid-save can't corrupt the
+    # user's document at its real location — the previous file stays intact
+    # until the new one is fully written and fsynced.
+    write_text_atomic(target_path, text, encoding=document.encoding, newline="")
     document.mark_saved(target_path)
     return target_path
 
@@ -135,8 +138,7 @@ def _write_brf_document(document: Document, target_path: Path) -> Path:
             f"{target_path.name} was saved with {count} non-braille-ASCII "
             f"character{plural} preserved as-is."
         )
-    with target_path.open("w", encoding=encoding, newline="") as file_handle:
-        file_handle.write(text)
+    write_text_atomic(target_path, text, encoding=encoding, newline="")
     document.mark_saved(target_path)
     return target_path
 

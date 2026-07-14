@@ -1,4 +1,4 @@
-"""Platform-neutral high-contrast detection (routes to the OS implementation)."""
+"""Platform-neutral accessibility detection (routes to the OS impl)."""
 
 from __future__ import annotations
 

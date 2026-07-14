@@ -1,0 +1,161 @@
+[JESSICA]
+The QUILL Cast, episode forty-one. I'm Jessica. You have a vault. You can open it, index it, follow links in it, search it, rename safely, and listen to its graph by ear. Today we furnish the rooms. Tags, templates, daily notes, embeds, publishing the vault as a website, and syncing it over your own Git remote. The same foundations, more on top, in the same screen-reader-first posture.
+
+[LIAM]
+I'm Liam. Recap of episode forty, because today is the second half of the vault. Last time Jessica and I walked through the foundation: a vault is a folder of plain Markdown files, scanned once at open, indexed in memory, re-indexed incrementally on every save. Wikilinks in five shapes, plus a sixth embed shape we held for today. Show Backlinks read the graph aloud with the actual linking sentence, so a relationship is not a picture, it is a question with a spoken answer. Unlinked Mentions scanned the whole vault for the note's title appearing in plain prose, so a writer can find where they almost wrote the connection. Go to Note, Search Vault, Rename Note, the fearless rename that touched every inbound link in one confirmed step. The thesis of episode forty was that the vault is the cornerstone of organization in QUILL. Almost every feature in the rest of this course is either a vault feature or a vault-friendly view over the same notes.
+
+[JESSICA]
+And the reassurance carried forward, because it carries forward into today's episode. Nothing in this hour changes silently. Insert Template will not overwrite your text, Speak Embed does not edit, Resolve Embed Inline is one undoable edit with a clean revert, Sync Vault reports conflicts and never force-resolves them, and the publish path is gated behind a feature flag that is locked off in this release. The accessibility work is in the design, not on top.
+
+[LIAM]
+We have thirteen episodes remaining in this fifty-four-episode course. Story Studio is next, then the GLOW accessibility-audit episodes, then braille production, the Quillins manager, build-your-own-quillin, the trust-and-community finale, and the two power-user stability episodes at the end. Today's episode is the last organization episode before we move into long-form production. If something here is your moment to take a personal vault seriously, this is the right time to do it.
+
+[PAUSE]
+
+[JESSICA]
+Tags first, the second organizing dimension. Links connect notes to notes. Tags connect notes to themes. The model in code is in quill core vault tags.py, and it is one index: every tag to the notes that carry it. Two sources feed the index. Inline hash tags, a hash sign immediately followed by a letter, then word characters, slashes, or hyphens. That letter-first rule is what keeps ATX headings, hash space heading, from being misread as a tag. The second source is front matter, a top-of-file YAML block with a tags key, either a flow list or a single string. Both are honored, in the order they appear, with duplicates removed.
+
+[LIAM]
+Two of those rules matter for trust. First, the front matter is masked out before the rest of the note is scanned for headings, tags, block ids, and links. A key called tags with a hash sign inside a quoted value does not get misread as a tag, because the YAML region is blanked. Second, the same masking applies to links. A code sample that mentions double brackets is text, not a wikilink, and the indexer leaves it alone. Those two defensive details carry over from the foundation episode; they are the small things that make the index trustworthy.
+
+[JESSICA]
+Now the power detail of tags, the part that earns the feature its hour. Tags nest. If you tag a note hash project slash quill, the index records that note under three keys, the leaf, the parent, and the ancestor. Asking the tag pane for hash project finds the note, alongside any note tagged hash project plain, alongside any note tagged hash project slash garden. Broad when you are browsing, precise when you are filing, the same tags. The result is that hash area slash sub slash leaf answers to hash area, hash area slash sub, and hash area slash sub slash leaf. The on-disk note is not reorganized. The index just rolls up.
+
+[LIAM]
+And there are three tag-driven surfaces in the UI, all keyboard-driven, all in main frame vault.py. Show Tags, the command registered as vault dot tags, opens a spoken filter over every tag, each row announced as hash tag name, count notes. Enter on a row drills into the notes for the tag, listed by title; enter on a note title opens it. Complete Link or Tag at Cursor, the same command that completes a wikilink, also completes a hash tag. Type hash proj, trigger the command, and a spoken list of matching tags opens, sorted most-used first. The tag suggestions function in tags.py returns existing tags starting with the prefix, most-used first, with a default limit of twenty. The empty prefix returns the most-used tags, so an unprompted completion is still useful, not a blank list.
+
+[JESSICA]
+The integration with the editor is what makes tags feel like part of the writing flow, not a separate system. You can put a tag anywhere in your prose, mid-sentence, at the end of a line, in a list, and the index picks it up at the next save. The on-save handler in main frame vault.py runs apply note change on just the saved note and rebuilds the resolver and the link index on top. Tag counts, backlinks, the neighborhood, all of it reflects the save immediately. There is no full rescan unless the vault is closed and reopened.
+
+[PAUSE]
+
+[LIAM]
+Templates, the second feature. The model is in quill core vault templates.py, and the docstring there is worth quoting. A tiny substitution pass, deliberately built on the same idea as the snippet gallery rather than a second engine. Five tokens. Double brace date, with an optional format, and double brace time, same shape. Double brace title, the note title. Double brace prompt colon question, an answered prompt where the UI speaks the question. And double brace cursor, a marker whose position is returned so focus lands there, announced. The cursor marker is removed, not substituted with text. That is the full set.
+
+[JESSICA]
+Where templates live, and how you reach them. Insert Template, the command registered as vault dot insert template, scans a folder inside your vault called Templates, the default name, and lists every dot md file in it. The folder name is configurable in Vault Settings, the same dialog that configures the daily-note pattern. The list is announced, you type to filter, you press enter on a template, and the prompt loop begins. For every double brace prompt colon question in the template, in first-seen order, the UI shows a text entry dialog with the question as the prompt. A cancel on any prompt cancels the whole insert. None of your text is touched.
+
+[LIAM]
+Then the template renders. The render function takes the template text, the current date, the note title, and the answers, and returns a tuple of the rendered text and the cursor offset. The offset is where double brace cursor was, and the editor lands there, announced. The whole insert is one edit. The function returns minus one when the template has no double brace cursor, in which case the editor's caret stays where it was after the insert. Unanswered prompts and unknown formats degrade to empty string, not an exception, so a half-finished template does not crash the command.
+
+[JESSICA]
+A real example, because the model is small. A meeting-note template could be, hash space double brace date colon YYYY dash MM dash DD, blank line, double brace prompt colon who is it with, double brace prompt colon agenda, double brace cursor, double brace prompt colon follow-ups, hash space notes, and a closing double brace prompt colon next meeting. When you Insert Template into a fresh note, the title token fills from the note filename. The date fills with today's date. The four prompts are asked in order. The cursor lands at the agenda line. You write. The note is a real meeting note, in your structure, in your language, and the only thing you typed was the answers.
+
+[LIAM]
+The Templates folder is the way the habit lives. Drop a meeting template in, a project status template, a one-on-one template, a research-log template, a session-prep template, a daily-review template, a learning-note template. Drop a dozen. The list becomes your library of starts. And because templates are just dot md files in a folder, you can hand one to a friend, drop one in a new vault, edit one in any text editor, and the change is picked up the next time the command runs. No proprietary format, no locked schema, no platform tax.
+
+[PAUSE]
+
+[JESSICA]
+Daily notes, the habit machine built on top of templates. The path math is in quill core vault dailynotes.py, and it is a small file. The default pattern is the literal string Journal slash double brace date colon YYYY dash MM dash DD dot md, exported as a constant. A configured pattern like Inbox slash double brace date colon YYYY slash MM slash DD dot md is just as valid. The function daily note relpath takes the pattern and a date and returns a vault-relative path, with posix separators, no backslashes, even on Windows. Shift daily, the helper used by the Previous and Next commands, returns a tuple of the new relative path and the new date, so the UI can announce both.
+
+[LIAM]
+Three commands, all on the Vault menu. Open Today's Note, vault dot open today, takes today's date, resolves the path, checks whether the file exists, and either opens the file or creates it. The create path writes a minimal scaffold, a single H1 with the date in ISO form and two blank lines, and then opens it. No template is applied; the daily scaffold is just the date and a blank page. This is honest and worth saying out loud, because a few drafts of this episode said daily notes are pulled from the Templates folder. They are not. Open Today's Note writes a date scaffold; Insert Template is a separate command that you would run after opening today's note if you want a richer start.
+
+[JESSICA]
+Previous Daily Note and Next Daily Note, registered as vault dot prev daily and vault dot next daily, walk by a stored cursor date. The first time you call Previous after Open Today's Note, the cursor is today, and the previous call lands on yesterday. Each call shifts the cursor by one day in the requested direction, so the journal reads like pages. The cursor is per-frame, not per-vault, which means it persists across vault switches in the same session but resets when the app restarts. The announce on open is a single line, the ISO date and either opened or created.
+
+[LIAM]
+An honest drift to call out, and we promised at the start of the series that we would name the gaps. The early brief for this episode described the daily scaffold as auto-pulling from a template. The current code does not do that. The opening-of-daily-note path writes only the H1 and a blank body. The feature would be a small, additive change, and it is on the roadmap under vault-power follow-ups, but the recorder would be wrong to call it shipped today. If you want a richer start, run Insert Template after the daily note opens. If you want the merge, it is a fair request to put on the issue tracker.
+
+[JESSICA]
+And a small detail. The cursor reset. When the user opens today's note, the cursor date is set to today. When the user opens a daily note for an arbitrary date, the daily cursor is not updated. The daily cursor is for the journal walk, not for the most-recently-opened note. The two states are separate.
+
+[PAUSE]
+
+[LIAM]
+Embeds, the third feature, the part of wikilinks we held for this episode. The embed shape is double exclamation mark double brackets, the same inner shapes as a wikilink plus the leading bang, so exclamation double brackets Note double brackets, exclamation double brackets Note hash Heading double brackets, exclamation double brackets Note hash caret block id double brackets, and the same-note anchor variants. The parser in quill core vault links.py matches the leading exclamation and sets a flag on the WikiLink dataclass, embed boolean true. Everything else, the alias, the heading, the block, the offset, is the same shape.
+
+[JESSICA]
+What an embed does. An embed pulls the target's content into the source for rendering and preview. A whole-note embed pulls the body. A heading embed pulls that heading and the text under it, down to the next heading of the same or higher level. A block embed pulls the line that carries the caret block id, the marker itself stripped. The function is resolve embed content in quill core vault render.py, and it returns a string. An empty string when the target or anchor is missing, not an exception.
+
+[LIAM]
+Two surface commands, both in main frame vault.py. Speak Embed at Cursor, vault dot speak embed, reads the content of the embed at the caret, without changing the text. The announce is the title of the embedded note, the words embedded from, then the content, and a different announce for the empty case. The position in the document is unchanged. Resolve Embed Inline, vault dot resolve embed, replaces the embed at the caret with its content as one undoable edit. The announce is resolved embed inline. One undo, and the embed is back. Both are operable from the keyboard and from the command palette.
+
+[JESSICA]
+The cycle handling is what makes embeds safe. The function expand embeds in render.py takes a seen set, defaults to empty, and adds the current path and the target path on every recursion. If a cycle is detected, the embed becomes the literal string circular embed colon target, instead of recursing forever. A missing target becomes missing embed colon target. Both are honest, visible, announced, and never silent. The preview, the export, and the in-app compiler all use the same expand embeds function.
+
+[LIAM]
+A real example, the canonical bio. One note, your author bio, with your name, your pronouns, your one-paragraph standfirst, your three-book credit, your contact line. Anywhere you need it, an interview answer, a contributor page, a submission template, an event introduction, you write exclamation double brackets Bio double brackets, and the bio is there, fresh, because the embed pulls it at render time. Edit the bio once, every place that embeds it shows the new version. The bio is a single source of truth, and the embed is a pointer, not a copy.
+
+[JESSICA]
+One more detail. The in-app preview renders embeds in place, so a note you are reading in preview shows its embeds expanded. That is the same resolver path the static-site export uses, which is why the two agree. The on-disk plain-text buffer keeps the literal exclamation double brackets Note double brackets, so search and find still work on the source form.
+
+[PAUSE]
+
+[LIAM]
+Do this now, the hands-on beat. Pause the audio if you want to actually do the steps. In the test vault from episode forty, alpha, bravo, charlie, add a fourth note called delta dot md. Give it the body, hash Delta, blank line, the line see Bravo and Charlie, then on a new line, the line written today. At the end of that line, add a hash tag, hash status slash quill. Save. Now in QUILL, run Show Tags. You should hear a row, hash status slash quill, one note, because delta is the only note tagged. Open that row. The notes for the tag are delta. That is the tag-pane flow.
+
+[JESSICA]
+Then in delta, add an exclamation embed, exclamation double brackets Bravo double brackets, on its own line. Save. Open the live preview. You should see Bravo's body expanded in place inside delta. Now stand with the caret on that embed and run Speak Embed at Cursor. You should hear, embedded from Bravo, then Bravo's body. Then run Resolve Embed Inline. The embed should be replaced with the body, the announce is resolved embed inline, and a single undo restores the embed. That is the embed surface, end to end. Pause now if you want to actually do this. Come back when you have heard the embed announced, and ideally when you have resolved one and undone it once.
+
+[LIAM]
+The reason we want you to do this now, before we keep going, is the same reason we did the do-this-now beats in the style-profile and the audible-vault episodes. The features we describe in the next ten minutes are easiest to remember if your ears have already heard them. The audible shape of a resolved embed, embedded from Bravo colon Bravo body, is a sentence you will recognize on the second encounter. Without that, the rest of the hour is abstract. With it, the rest of the hour is a tour of features you have already used.
+
+[PAUSE]
+
+[JESSICA]
+Leaving the single-machine, the next two features are about the vault as an object that can leave your disk. The first is publishing as a static website. The model is in quill core vault site_export.py. Build site takes the in-memory vault, the resolver, and a Markdown-to-HTML function injected by the caller, and returns a dict of output relative path to HTML, with no disk IO. Write site, a thin wrapper, takes the dict and an output folder and writes the files, creating parents. The dict has one entry per note plus one index dot html, the alphabetical list of every note.
+
+[LIAM]
+The page template is a small constant, the underscore page string in site_export.py. Doctype, html, head with charset and viewport, title, body, main, h1 with the note title, the rendered body, a nav element with aria-label Vault and a single link, All notes, pointing at index dot html. No client-side JavaScript, no tracking, no third-party fonts. The body is rendered Markdown with wikilinks resolved to anchors and embeds inlined, using the same render links html and expand embeds functions the in-app preview uses. So a published vault looks like the preview, plus a chrome wrapper and an index.
+
+[JESSICA]
+The Export Vault as Website command, registered as vault dot export site, picks an output folder with a directory dialog, then runs the build and the write on a background task. The work function captures the current vault and resolver, calls build site with the app's render preview body as the Markdown converter, and then write site. The done callback announces the page count and the output folder. So the export is non-blocking, the UI stays responsive, and the work happens off the editor thread.
+
+[LIAM]
+Two honest points about the export. The output is plain HTML and the page template's minimal styles. If you want custom styling, drop a dot css in the output folder, add a link tag in the index dot html; the export does not write any css for you. The export's link resolution uses the same relative dot html anchors used by the publish-a-single-note path, so an exported vault and a published vault share one anchor scheme. If you ever see an exported page with a broken link that the in-app preview shows as resolved, that is a bug, and the maintainers want to hear about it.
+
+[JESSICA]
+Honest drift to call out. The previous version of this episode described the export as accessible by construction. The export is accessible by careful defaults, lang attribute on the html element, viewport meta, semantic main and nav, aria-label on the nav, relative anchors. It is not accessible by a higher power. If you customize the output, the accessibility of your site is the accessibility of your customization. The default is good; the default is not a promise about what you change.
+
+[PAUSE]
+
+[LIAM]
+Sync Vault, the second leaving-the-machine feature. The model is in quill core vault sync.py. QUILL never hosts sync. The vault is plain files, so any file sync already works, including Dropbox, iCloud, OneDrive, Syncthing, a USB stick, an SFTP mount. Sync Vault is an opt-in convenience for the user's own Git remote, commit and pull and push, with conflict detection surfaced as a spoken, itemized list instead of a visual diff. The subprocess runner is injected, so this core stays wx-free and unit-testable with a fake runner.
+
+[JESSICA]
+The run order. Git add dash A. Git status dash porcelain, to check there is anything to commit. If there is, git commit dash m vault sync. Git pull dash dash no edit origin main. Then another git status dash porcelain, and detect conflicts scans the output for the porcelain codes that mean a merge conflict. If there are conflicts, the run stops there. Git push origin main. The whole sequence is one SyncResult with a tuple of SyncStep records, each carrying the command, the return code, and the combined stdout and stderr.
+
+[LIAM]
+The conflict handling is the part that earns the feature. When detect conflicts finds any conflicted paths, the result is not ok, the message is N note or notes changed in both places, resolve, then sync again, and the conflicts tuple is the file list. The UI's on sync done handler in main frame vault.py shows a vault list titled sync conflicts, with one row per conflicted path. The user opens a conflicted file in their editor of choice, resolves it, comes back, runs Sync Vault again. The merge is the user's, never auto-merged, never force-overwritten, never silently picked.
+
+[JESSICA]
+Safe Mode handling, consistent across the product. Sync Vault checks QUILL underscore SAFE MODE equals one, and if so sets the status, vault sync is disabled in safe mode, and returns without running. The same gate is in Open AI features, watch folders, and Quillin contributions. The announcement is always at the status line, never an exception.
+
+[LIAM]
+And what Sync Vault is not. It is not a hosted service. It is not a QUILL cloud. It is not a backup tool, although the remote is a backup, that is a property of the Git remote. The remote, the branch, the commit message, the timeout, are all parameters in run vault sync, with sensible defaults, origin, main, vault sync, one hundred twenty seconds. It is a thin, accessible wrapper over a small sequence of Git commands, with conflict surfacing that is built for ears, not for eyes.
+
+[JESSICA]
+An honest correction to make on the record. The first draft of this episode referred to the sync as GitHub-specific. It is not. Any Git host that accepts a push over the user's local Git credentials works, GitHub, GitLab, Bitbucket, Codeberg, a self-hosted Gitea, a bare repo on a server you own. The host is a property of the remote URL, which is configured by the user in the Git command line, not by QUILL.
+
+[PAUSE]
+
+[LIAM]
+Quick code-verified recap, the mechanics, for anyone taking notes. Tags. Two sources, inline hash and front matter, both honored. Nested tags roll up. The pane announces hash tag, count notes. Templates. A folder of dot md files, configurable. Five tokens, date, time, title, prompt, cursor. Insert Template prompts for each double brace prompt, renders, and lands the cursor at the marker. Daily notes. A pattern, default Journal slash double brace date colon YYYY dash MM dash DD dot md. Open Today's Note writes a date scaffold if missing, opens otherwise. Previous and Next walk the cursor. Embeds. Exclamation double brackets Note double brackets, with the same inner shapes. Speak Embed reads, Resolve Embed Inline replaces, both as one undoable edit. Cycles are detected. Export. Build site, write site, the same resolver as the preview. Sync. Git add, commit, pull, push, with conflicts surfaced. Safe Mode disables it.
+
+[JESSICA]
+And the meta-claim that matters for accessibility. Every one of those features is operable from the keyboard, announces its result through the screen reader, is reachable from the Tools menu and the command palette, and survives a re-bind through the keymap. The vault-power surface is not a second-class surface. It is the same first-class feature surface as the editor, and the accessibility work is in the design.
+
+[PAUSE]
+
+[LIAM]
+Homework, four steps, in order, the same shape we have used since episode one. Step one. In the test vault, create a Templates folder. Inside it, create a dot md file called meeting dot md, with a date token, two prompt tokens, and a cursor marker. In a fresh note, run Insert Template, choose meeting, answer the prompts, and write a few lines. Save. Run Show Tags and confirm the new tag, if any, appears in the pane. Step two. In the test vault, add a daily note for today via Open Today's Note. Write three lines. Tag one of them with a new tag you have not used before. Save. Run Show Tags. The new tag should be in the list, with one note.
+
+[JESSICA]
+Step three. In the test vault, create a note called bio dot md with a paragraph of placeholder text. In another note, add an exclamation embed, exclamation double brackets Bio double brackets. Run Speak Embed at Cursor. Then run Resolve Embed Inline. Undo. Edit bio, save. Speak Embed again on the same line. You should hear the new content. Step four. Pick a small test vault, an empty folder with two or three notes. Set up a local Git repo on it, with a remote URL of your choice, GitHub, Codeberg, a local bare repo, anything that accepts a push. Run Sync Vault once, and listen to the announcements. If the announcements do not match the lines in this episode, the build has drifted and we want to hear about it.
+
+[LIAM]
+Next episode, forty-two. Story Studio, the manuscript organizer built into QUILL. A folder of plain text files, an optional sidecar that is advisory not authoritative, an ordered spine of chapters, a structured set of character and place and research notes, a built-in element schema, and the same editor with a memory for a whole book. The thesis will be the same as today's. The vault gave you a web of notes. Story Studio gives you a spine. Same discipline, same plain files, same keyboard-first design.
+
+[JESSICA]
+I'm Jessica.
+
+[LIAM]
+I'm Liam. Furnish the rooms you will live in.
+
+[JESSICA]
+The QUILL Cast is a fifty-four-episode audio course on QUILL. This was episode forty-one, the second half of the Accessible Vault. The next thirteen episodes, from forty-two through fifty-four, complete part six, then parts seven and eight, then the finale. Until then, tag your themes, template your habits, embed your canonicals, publish your vault, and own your own sync.
+
+[LIAM]
+And if a tag rolls up to a parent you did not know you needed, that is the feature working.

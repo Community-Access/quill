@@ -7,7 +7,7 @@ import pytest
 from quill.core.a11y_regions import RegionTracker
 from quill.core.document import Document
 from quill.core.locations import LocationRing
-from quill.platform.windows.sr_announce import (
+from quill.platform.sr_announce import (
     clear_transcript,
     enable_transcript_capture,
     transcript_entries,

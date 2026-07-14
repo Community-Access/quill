@@ -39,23 +39,14 @@ def _redirect_comtypes_gen_dir() -> None:
     for the SAPI type library and writes them to disk. Its default location is
     inside the comtypes package, which is read-only under a per-machine install
     (e.g. Program Files) -- the write fails and SAPI init raises, so QUILL falls
-    back to the screen reader for no good reason. Redirect the cache to QUILL's
-    writable data dir; if even that is unavailable, fall back to in-memory
-    codegen (``gen_dir = None``) so SAPI still works without any disk write.
+    back to the screen reader for no good reason. Thin wrapper over the shared
+    ``comtypes_setup`` redirect (every comtypes call site in QUILL calls it, not
+    just this one -- see that module's docstring for why relying on this
+    function alone, via import-order side effect, was not robust enough).
     """
-    if _cc is None:
-        return
-    try:
-        from quill.core.paths import app_data_dir
+    from quill.platform.windows.comtypes_setup import ensure_comtypes_gen_dir_redirected
 
-        gen_dir = app_data_dir() / "comtypes_gen"
-        gen_dir.mkdir(parents=True, exist_ok=True)
-        _cc.gen_dir = str(gen_dir)
-    except Exception:  # noqa: BLE001 - never let cache setup break import
-        try:
-            _cc.gen_dir = None  # in-memory codegen; no disk write required
-        except Exception:  # noqa: BLE001
-            pass
+    ensure_comtypes_gen_dir_redirected()
 
 
 _redirect_comtypes_gen_dir()

@@ -1,0 +1,126 @@
+[JESSICA]
+The QUILL Cast, episode thirty. I'm Jessica. Today: dictation. You speak, QUILL types, and, importantly for a lot of what people actually dictate, the audio never leaves the room. We are at episode thirty of fifty-four, and this is the deep dive on the feature family that turned speech into text on your own machine.
+
+[LIAM]
+I'm Liam. The recap first, in one breath. Episode twenty-nine walked the voice catalog for read aloud. SAPI five, eSpeak, Kokoro, Piper, the engines, the names, the bundled versus downloaded distinction, the multilingual set. That catalog is the TTS half, the half that turns text into speech. Today's episode is the mirror half, the STT half, the half that turns speech into text. The privacy posture is the same, the engines live on your disk, no cloud round trip. The plumbing is similar, the safety story is similar, and the design discipline carries over: one dependable gesture, honest error handling, and an undoable edit at the end.
+
+[JESSICA]
+Frame for today. We will cover the actual gesture and what it does, the supporting keys, the state machine the controller runs, the recovery folder that protects your words, the model choice and the engine download, the offline guarantee and how it is enforced in code, a few craft tips from real use, and the limits of the feature. We will verify the claims against the source. And there is one honest correction we need to make, because the prior short version of this script said hold-to-dictate was removed in a past refactor, which is true, and then went on to use it as an example throughout, which is the part we are correcting. The architecture still has hold paths in the controller for completeness, but no key in the keymap points at them, the menu does not expose them, and a user cannot trigger hold-to-dictate from the current build. We will say so when we get there.
+
+[LIAM]
+A do-this-now beat before any hands-on segment. Pause the audio. Open QUILL. Open the Tools menu, then Speech, then Speech and Dictation. You will land on a four-tab notebook. Speech Offline, Speech Online, Dictation Offline, Dictation Online. Click into Dictation Offline. Look at the list of engines. Look at the install state of the small model. If the engine is already installed, great. If not, the dialog will offer a download. Do not download yet if you are in a hurry, this is just the orientation pass. Read the model descriptions. Note the approximate size of the small model. Come back when you have a rough sense of the surface. That thirty seconds is the spine of this episode.
+
+[PAUSE]
+
+[PAUSE]
+
+[JESSICA]
+Let's start with the privacy point, because it is the headline. QUILL dictation runs on the whisper.cpp speech recognition engine, executing entirely on your own processor. Not cloud dictation with a privacy policy, local dictation with physics. The audio cannot leak because it never travels. The first thing the controller does when you start a session is open the microphone. The next thing is save the captured audio to a recovery folder under your QUILL data directory. The next thing is hand the audio to whisper.cpp, which returns a transcript. The transcript goes to the editor. The audio file stays on your disk. Nothing in that pipeline opens a network socket.
+
+[LIAM]
+And the offline guarantee is enforced in code, not promised in marketing. The whisper.cpp provider, the file quill/core/speech/providers/whispercpp.py, drives a local command-line executable, whisper-cli, main, or whisper, on a narrow allowlist, and downloads GGML models over HTTPS from the Hugging Face whisper.cpp repository. The download is pinned to a specific git revision, not main, with a per-file sha256 that the download verifies. The download only runs on an explicit user action, and it is blocked in Safe Mode. The provider file is honest about it in the docstring: lazy, safe, on-device, with a clear speakable error if anything goes wrong. The single outbound HTTPS call is recorded in the network-egress audit, and there are no others in the speech path.
+
+[JESSICA]
+The reason that privacy point matters beyond principle: the things people dictate are the things that should not transit a server. First drafts. Private journals. Medical notes. Legal thoughts. Client work. Therapy reflections. The dictation feature is the right answer for an audience that does not want their words to live on someone else's hard drive. For this audience, offline dictation is not a lesser version of the cloud kind. It is the correct kind.
+
+[LIAM]
+Now the gesture, because the rest of the episode hangs off it. One gesture, on purpose. Control F9 starts Locked Dictation, a hands-free session. You speak freely, a sentence or three paragraphs, whatever feels right. Control F9 again to finish. Your words land at the cursor as one undoable edit. Because the transcript is inserted through the same atomic replace the rest of the editor uses, every editing tool from the previous two parts applies to it instantly. Control Z undoes the whole dictation. Control F7 walks misspellings. The repair stack you already know is the repair stack for dictated text.
+
+[JESSICA]
+The supporting keys, all remappable in the keymap. Control Shift F9 pauses and resumes the session, for the doorbell moments, the spouse moments, the sudden interruption moments. Alt F9 speaks the current state without changing anything, am I still recording, ask. Escape stops and keeps the speech, so the recording is preserved in the recovery folder and can be reviewed. Shift Escape cancels and discards the audio, with a deliberate two-key chord so a stray Escape cannot destroy your work. The default keymap sets it all: tools.dictation_lock_toggle on Control F9, tools.dictation_pause on Control Shift F9, tools.dictation_status on Alt F9, tools.dictation_emergency_stop on Escape, and tools.dictation_cancel on Shift Escape.
+
+[LIAM]
+Important UX detail on the Escape family. Escape and Shift Escape are only consumed by the dictation hotkey mixin while a session is recording. The rest of the time they behave like normal Escape, and the existing Escape behavior in the editor is unchanged. That is the right rule, the dictation feature should not steal a global key the editor needs for other work. The mixin checks the controller's is_busy state before consuming the key, and the key routing lives in the editor's key-down handler so the rest of the keymap is undisturbed.
+
+[PAUSE]
+
+[JESSICA]
+Now the state machine, because it is the part of dictation that does not lie. The controller is quill/core/speech/dictation/controller.py, and it is built around an explicit state enum, not a bare boolean. The PRD is emphatic about this: a single is_recording flag is forbidden, the active state must be unmistakable, and no two recording states may be active simultaneously. The enum has sixteen states. The ones a user touches are few: IDLE when nothing is happening, LOCKED_RECORDING when the microphone is live, PAUSED when you hit Control Shift F9, TRANSCRIBING when whisper.cpp is working, INSERTING when the transcript lands in the editor, REVIEW_REQUIRED when the transcript was preserved for review instead of inserted, and COMPLETED when the cycle ends. The rest are scaffolding for safe transitions.
+
+[LIAM]
+And the legal transitions are data, not control flow. The file quill/core/speech/dictation/states.py holds a dictionary from each state to the set of states it may legally move to. The controller consults that table on every transition. An illegal transition, for example jumping from IDLE to INSERTING without going through the recording states, logs an error and forces the machine back to a safe known state. That is the kind of defensive code that pays off the first time a race condition or a stray callback tries to do the wrong thing. The transition table also defines ACTIVE_RECORDING_STATES, the set of states in which the microphone is genuinely capturing, and STOPPABLE_STATES, the set of states from which a session can still be safely stopped. The single-recorder invariant is checked against those sets, not against a stored flag.
+
+[JESSICA]
+Here is the honest correction we promised. The prior short version of this script claimed an earlier version of dictation had a press-and-hold mode, hold a key, talk, release, and that it was removed because a held key repeats and announces itself endlessly under a screen reader. That story is roughly right in spirit, but the code today still has a hold path. Look at the controller: there is a start_hold method, a release_hold method, a DictationMode.HOLD, a DictationState.HOLD_RECORDING, even a min_hold_seconds setting to ignore accidental taps. The architecture is intact. What is gone is the user-facing surface for it. The keymap has no binding for tools.dictation_hold. The menu does not expose a Hold submenu, only a Locked Dictation submenu. The hotkey mixin does not register a hold command. The only references to hold in the UI are the HOLD_RECORDING state name in the status announcement and a leftover watchdog probe that looks up tools.dictation_hold and falls through silently when it is unbound. So if you went looking for Hold-to-Dictate, you would not find it, and the prior script's framing, the gesture was removed, is correct in user experience terms. The hold paths are dormant in the architecture, kept for completeness and to make a future bring-back a small change rather than a redesign.
+
+[LIAM]
+That is the kind of architectural residue you get when you remove a feature honestly. The state machine still accommodates it, the config still has the knob, the watchdog even has the missing-keyup recovery that would have mattered for hold. The user-facing surface is the part that shrunk, and the keymap is the source of truth. The previous version of the script framed it as a single choice between two gestures, and that framing was right at the gesture level. We are correcting only the part that could mislead a listener into thinking the controller is two-flavored, when in practice the user has one gesture, and the one gesture is Control F9.
+
+[PAUSE]
+
+[LIAM]
+Safety nets, because dictated words deserve the same treatment as typed ones. The first safety net is the recovery folder. The file quill/core/speech/dictation/recovery.py defines DictationRecoveryRepository, and its job is to treat every dictation as a recoverable transaction. The layout is simple: under your QUILL data directory, recovery/dictation holds three files per session, a wav, a json sidecar, and a txt transcript. The wav is the captured audio, sixteen kilohertz mono PCM. The json sidecar carries only the small anchor context, the document id, the caret position, the prefix and suffix characters, never the wider document body, so a recovered dictation cannot leak the surrounding text. The transcript is written once transcription succeeds.
+
+[JESSICA]
+The sequencing is the part that matters. Before whisper.cpp runs, before transcription even starts, the audio is moved into the recovery folder. The controller's _finish method moves the captured WAV into the recovery repo, writes the sidecar, and only then kicks off the worker that calls whisper.cpp. If the editor crashes, if the machine loses power, if the user closes the laptop mid-dictation, the audio is on disk. On next launch, the controller calls list_incomplete, finds the orphaned sessions, and announces them, N dictation recordings await review, open Tools, Speech, Locked Dictation, Dictation History. The Dictation History and Review window lists them. You can insert the transcript at the cursor, copy it to the clipboard, or discard the whole session. Speech is never silently lost.
+
+[LIAM]
+The second safety net is the watchdog. The watchdog is a wx.Timer that runs at two hertz, every five hundred milliseconds, while a session is active. It calls controller.tick, which enforces the maximum locked-recording duration. The default is five minutes, set in DictationConfig, configurable in settings, and the PRD calls it out as a sensible default. Hit the cap and the controller stops the session, plays the stop earcon, and starts transcription. The watchdog also probes for focus loss, if the QUILL main frame is no longer the foreground window while recording, the controller calls on_focus_lost, stops and preserves the speech, and announces focus lost. The setting dictation_stop_on_focus_loss defaults to true, and the controller consults the setting rather than hard-coding the behavior, so a user who wants dictation to keep recording when they alt-tab can flip it.
+
+[JESSICA]
+The third safety net is the safe-insert contract. The controller's _LiveDictationServices insert method checks whether the editor is read-only, and checks whether the saved selection start and end still match the live editor. If the document moved, if the anchor became invalid, the insert is refused, the transcript is preserved to the recovery folder, the session lands in REVIEW_REQUIRED, and the controller announces Dictation saved for review, it could not be inserted here. The Dictation History and Review window picks it up from there. The transcript does not get silently dropped, and it does not get inserted at a wrong place. Both failure modes are guarded.
+
+[LIAM]
+The fourth safety net is the safe-mode gate. The preflight in main_frame_dictation_hotkeys.py checks the safe_mode flag, and if it is set, announces Dictation is disabled in Safe Mode and returns without starting a session. The voice surfaces ride on the same preflight, the same engine, the same microphone. The opt-in is per-feature, the opt-out is global, and Safe Mode is the global lever.
+
+[PAUSE]
+
+[JESSICA]
+Setup, the one-time model download. The first time you trigger dictation, the preflight checks whether the offline speech engine is installed. The engine is the whisper.cpp binary, about eight megabytes, and it is no longer bundled with the installer, deliberately, because most users do not need dictation and most users should not pay the disk cost for a feature they will not use. The download is one click, a yes-no confirmation, the install is verified by the same checksum discipline the rest of QUILL uses, and once it is on your disk it stays on your disk. The preflight offers the download right in the moment you tried to dictate, rather than asking you to wander to a settings page first.
+
+[LIAM]
+Model choice, after the engine is on disk. The Speech and Dictation hub lists the curated whisper.cpp model tiers in Dictation Offline. Tiny, about seventy-five megabytes, the smallest download, good for testing and simple voice commands. Base, about one forty-five, a step up. Small, about four sixty-five, the recommended starting point, solid transcription without a huge download. Small English with speaker detection, same size, English only, marks who is speaking. Medium, about one and a half gigabytes, slower on modest hardware, higher accuracy. Large-v3, the largest, best local quality, with a download to match. The provider is honest about the trade-offs in the model descriptions, and the recommendation, small, is the same in the catalog file and the dialog.
+
+[JESSICA]
+For genuinely low-powered machines, there is a second provider, Vosk, downloadable on demand. Vosk is Kaldi-based, does not need a GPU, runs comfortably on a very low-end CPU with a roughly forty-megabyte English model, and is the accessibility-reach option for old hardware. The trade-off is English-only and lower accuracy than the larger whisper.cpp models, but it exists precisely so an old laptop can still dictate, and the Speech and Dictation hub makes the choice discoverable. If your machine can run small comfortably, run small. If it cannot, run Vosk. The hub helps you choose sensibly.
+
+[LIAM]
+There is also a faster-whisper option, CTranslate2-based, which trades the whisper.cpp binary for the faster-whisper Python package, with the same model tiers and a recommended starting point at small. The Speech and Dictation hub shows it as an alternative provider. The choice between whisper.cpp and faster-whisper is mostly about which backend you trust on your hardware, and the hub's offline-online tab split keeps the choice navigable.
+
+[JESSICA]
+Once a model is installed, the prewarm kicks in. The main frame schedules a CallLater four seconds after startup, on a background thread, that loads the dictation model into memory. The first dictation is fast because the model is already warm. The cached provider object, _dictation_provider, holds the loaded model across sessions, and the lifecycle service tracks it for the idle-unload and low-resource policy, so an idle machine can free the model and a returning machine can re-warm it. The prewarm is best-effort, never raises, never blocks the UI. If you want to skip it, the setting warm_dictation_model is on by default and can be turned off.
+
+[PAUSE]
+
+[LIAM]
+Accuracy talk, honestly. Whisper, the family, was trained on the messy real world, and the small model on a modern CPU is impressive. Casual speech, accents, umms, partial phrases, handled well. It is not perfect. Homophones will trip it, names will trip it, rare proper nouns will trip it. The earlier the model tier, the more you will see this. The insight is the workflow. Dictate a rough paragraph, control F7 walks the misspellings from the spelling episode, a read-aloud pass catches the word swaps, the punctuation cleanup macro from the macros episode smooths the rough edges. Speak fast, repair fast. Dictation plus QUILL's correction stack is a complete system, not a finished one.
+
+[JESSICA]
+The intelligent-spacing behavior is worth a beat, because it is the kind of detail that makes dictated text feel like text. The function normalize_for_insertion in quill/core/speech/dictation/insertion.py takes the raw whisper transcript and the prefix_char and suffix_char captured at recording start, and decides exactly what string to splice into the editor. The rules are conservative, deliberately. Strip stray whitespace. Add at most one joining space between adjoining words. Never emit a space before punctuation. Add a trailing space when the caret is not immediately before more text, so the next spoken phrase or typed word does not run into this one. The settings knob dictation_intelligent_spacing is on by default. Turn it off if you want the transcript inserted verbatim, and the controller will skip the spacing rules.
+
+[LIAM]
+Craft tips from real use. The microphone is half the accuracy. A modest USB headset beats every laptop's built-in array, and a quiet room beats a busy one. Speak in phrases, not single words, the engine uses context. Say punctuation while drafting. Period. Comma. New paragraph. If you forget, the punctuation cleanup macro is the mechanical pass, the same one we covered in the macros episode. And the single most useful habit, after you finish a dictation, read the paragraph back through read aloud. The ear catches word swaps the eye glides past, and the read-aloud voice is exactly the right correction surface for the ear-catching loop.
+
+[JESSICA]
+Where dictation shines. First drafts, because speaking outruns typing and silences the inner editor. Journaling, because spoken thoughts genuinely feel different from typed ones, and the difference is the point. Hands-free capture during injury or fatigue, the same reason voice commands exist. The capture moment, an idea arrives, you do not want to context-switch into a typing posture, control F9, say it, control F9, done, faster than any typed note. The transcript is in the document, undoable, editable, the idea is captured without losing the thread.
+
+[PAUSE]
+
+[LIAM]
+Where it does not shine. Precise editing. Nobody wants to navigate by voice when they have the full QUILL keymap in their hands. The design reflects that split. Voice for capture, keyboard for control. Dictate the clay, sculpt with keys. Voice-command control of the app, the things voice surfaces do in the next episode, is a separate, deliberately narrower surface. Full voice control of the editor is not a current goal, and the next episode is where the design choice lives.
+
+[PAUSE]
+
+[JESSICA]
+The menu surface, for navigation. The Tools menu has a Speech submenu, and the Speech submenu has a Locked Dictation submenu. The Locked Dictation submenu carries Locked Dictation start/finish, Pause or Resume, Speak Status, Stop keep speech, Cancel discard, a separator, then Dictation Settings, and Dictation History and Review. The Dictation Settings dialog is where the four controller knobs live: max locked seconds, stop on focus loss, intelligent spacing, and the onboarding reset. The Dictation History and Review dialog is the recovery surface, the one the startup announcement points to when there are pending sessions.
+
+[LIAM]
+The microphone chooser is at Tools, Speech, Dictation Microphone, and it lets you pick the input device for capture. The device choice persists in settings, and the controller loads it at session start. If you have a USB headset, plug it in before you open the chooser, and pick the headset index. If the microphone does not work, the preflight announces Dictation needs microphone support, the optional sounddevice package, or the microphone could not be opened, check your input device and Windows microphone permissions. Both messages are speakable and the second one is the actual Windows privacy dialog answer, the OS-level microphone permission that Windows 10 and 11 introduced.
+
+[JESSICA]
+One last design story, the one that earns the episode. The PRD that this feature follows has a phrase, the protected transaction, and it means the user explicitly starts, the active state is unmistakable, there is always a dependable stop, audio is secured before transcription, the transcript stays tied to its document context, failure recovers rather than loses, and the machine always returns to a known state. Every choice we have walked through lives under that phrase. The one dependable gesture. The state machine. The recovery folder. The focus-loss stop. The max-duration stop. The safe-insert contract. The safe-mode gate. The review-required fallback. The design discipline is the point, and the engineering is the proof.
+
+[LIAM]
+Homework. Step one, finish the model download from the hub if you paused it, and dictate one honest paragraph. Control F9 in, speak, control F9 out, and let the words land. Step two, mid-session, try Alt F9 for status and Control Shift F9 to pause and resume, so the supporting keys are in your hands. Step three, dictate something longer, then run the full repair pass, control F7 to walk the misspellings, read-aloud listen to catch the word swaps, the punctuation cleanup macro to smooth the rough edges. Step four, for one day, capture every stray idea by dictation instead of typing, and notice what changes in the texture of the ideas.
+
+[JESSICA]
+Next episode, we step from dictation, which is dictation, into voice, which is control. Voice command, the push-to-talk gesture. Voice conversation mode, the hands-free back-and-forth. The Hey QUILL wake word, always listening for the wake phrase. And the routing trick that decides whether a spoken question goes to a command or to Ask Quill. The dictation engine is the substrate, and the safety boundary is the same allowlist, twenty-four commands, enforced in code, the next layer on top of what we have built today.
+
+[LIAM]
+I'm Liam.
+
+[JESSICA]
+I'm Jessica.
+
+[LIAM]
+And that is the QUILL Cast, episode thirty of fifty-four. Say the words.

@@ -156,6 +156,47 @@ section.band > .wrap > p.intro { color: var(--muted); max-width: var(--measure);
 .card ul li { margin: 0.2rem 0; }
 .card .more { margin-top: auto; font-weight: 600; }
 
+/* Podcast cover and subscription block */
+.podcast-cover {
+  max-width: 22rem;
+  margin: 1.25rem 0;
+}
+.podcast-cover img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.podcast-cover figcaption {
+  margin-top: 0.45rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+.cover-description {
+  max-width: var(--measure);
+  margin: 0 0 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.cover-description summary {
+  cursor: pointer;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+}
+.cover-description p {
+  margin: 0;
+  padding: 0 1rem 1rem;
+  color: var(--muted);
+}
+.podcast-subscribe {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
 /* Feature list */
 .features { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); margin-top: 1.25rem; }
 .feature { background: var(--surface-2); border-radius: var(--radius); padding: 1rem 1.1rem; border: 1px solid var(--border); }

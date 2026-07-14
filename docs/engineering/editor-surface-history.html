@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>editor-surface-history</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1
+id="editor-surface-history-how-quill-ended-up-with-one-editor">Editor
+Surface History: how QUILL ended up with one editor</h1>
+<p>Canonical engineering record, written 2026-07-11 as part of the
+QuillRichEdit promotion (0.9.0-beta3, the "One Editor, Every Format"
+plan). It preserves the verdicts and post-mortems from the
+editor-surface experiments so the deleted code cannot be casually
+reintroduced without this history. The full analysis lived in
+<code>docs/planning/editor-surface-experiments.md</code> (retired with
+the experiment; recoverable from git history).</p>
+<h2 id="the-outcome-what-ships">The outcome (what ships)</h2>
+<p><strong>QuillRichEdit is QUILL's one editor surface on
+Windows</strong>: the same native Rich Edit control
+(<code>RICHEDIT50W</code>, a <code>wx.TextCtrl</code> with
+<code>TE_RICH2 | TE_NOHIDESEL</code>) QUILL always shipped, plus a
+wrapper (<code>quill/ui/richedit_rtf_surface.py</code>) that adds native
+RTF load/save and formatting through the Text Object Model (TOM), and
+the braille fix applied by default:</p>
+<ul>
+<li><code>SES_EMULATESYSEDIT</code> via <code>EM_SETEDITSTYLE</code> —
+text renders from braille cell 1 (#616) and selections show dots 7-8
+(#813).</li>
+<li>A borderless frame (<code>wx.BORDER_NONE</code>) — live testing
+showed the visible border itself pushes braille output out of cell 1, so
+the hidden border is part of the fix, not cosmetics.</li>
+</ul>
+<p>Both halves are plain checkboxes on the Braille tab
+(<code>braille_editor_system_edit_fix</code>,
+<code>braille_editor_hide_border</code>), default ON, forced on for
+upgraders (the retired surface overrides are dropped from the settings
+delta on load). Confirmed working by live JAWS + braille hardware
+testing, 2026-07.</p>
+<p>macOS keeps the native <code>wx.TextCtrl</code> (an
+<code>NSTextView</code> underneath); its rich path is described in the
+PRD (converted rich, then the native NSTextView wrapper).</p>
+<h2 id="the-dead-ends-and-why-they-stay-dead">The dead ends, and why
+they stay dead</h2>
+<h3
+id="scintilla--wxstc--the-notepad-experiment-nvda-only-jaws-impossible">Scintilla
+/ wx.stc — the "Notepad++ experiment" (NVDA-only; JAWS impossible)</h3>
+<p>The most instructive failure. Scintilla was attractive (fast on huge
+documents, true multi-level undo/redo), and NVDA read and tracked it
+well. JAWS could not follow the caret. Three bridging rounds all failed
+on live hardware (2026-07-03):</p>
+<ol type="1">
+<li><strong>Caret mirror</strong> — a hidden classic caret positioned to
+match Scintilla's.</li>
+<li><strong>Classic message answers</strong> — responding to
+<code>WM_GETTEXT</code> / <code>WM_GETTEXTLENGTH</code> /
+<code>EM_GETSEL</code> / <code>EM_EXGETSEL</code> from the Scintilla
+HWND.</li>
+<li><strong>Geometry set</strong> — round 2 plus
+<code>EM_POSFROMCHAR</code> / <code>EM_CHARFROMPOS</code> so JAWS could
+map offsets to screen positions.</li>
+</ol>
+<p>Verdict: JAWS's Notepad++ support is script-side and
+window-class-keyed; a foreign app cannot impersonate it by answering
+messages. The bridge was removed, the surface labeled NVDA-only, and the
+negative result pinned in tests while the surface existed. <strong>Do
+not retry a JAWS/Scintilla bridge.</strong></p>
+<h3 id="raw-win32-edit-host-via-pywin32-silent-offset-corruption">Raw
+Win32 EDIT host via pywin32 (silent offset corruption)</h3>
+<p>Hosting the classic EDIT control directly worked for typing and
+selection but kept CRLF line endings in the control while QUILL's model
+is LF-only. Every offset-anchored feature (search, spell, bookmarks, AI
+ranges) skewed silently past the first line break — the worst failure
+mode: no crash, wrong behavior. Translating at every boundary duplicated
+the whole editor contract for no accessibility win over
+<code>SES_EMULATESYSEDIT</code> on the Rich Edit.</p>
+<h3 id="wxrichtextctrl-invisible-to-screen-readers">wx.RichTextCtrl
+(invisible to screen readers)</h3>
+<p>wxWidgets' own rich-text widget renders its document itself; there is
+no native text control underneath, so JAWS/NVDA saw nothing they could
+read as a document. API-compatible enough for a demo, unusable for
+QUILL's audience.</p>
+<h3 id="the-read-only-rich-text-lens-superseded">The read-only "rich
+text lens" (superseded)</h3>
+<p><code>quill/ui/rich_text_surface.py</code> behind the locked-off
+<code>core.rich_text_lens</code> flag offered a read-only formatted view
+next to the markup editor. Rich mode on the native control delivers
+editable formatting instead; the lens and the
+<code>view.switch_editing_lens</code> command retired with it.</p>
+<h3
+id="em_streamin--em_streamout-ctypes-callback-hard-crash-use-the-tom">EM_STREAMIN
+/ EM_STREAMOUT ctypes callback (hard crash; use the TOM)</h3>
+<p>The first native RTF I/O attempt drove
+<code>EM_STREAMIN</code>/<code>EM_STREAMOUT</code> with a ctypes
+<code>EDITSTREAM</code> callback. msftedit access-violates the moment it
+invokes a Python callback — a hard, reproducible crash on a real
+<code>RICHEDIT50W</code> (post-mortem 2026-07-08). The shipped path
+avoids Python callbacks entirely: <code>EM_GETOLEINTERFACE</code> -&gt;
+<code>IRichEditOle</code> -&gt; QueryInterface to
+<code>ITextDocument</code> (comtypes + the tom type library) -&gt;
+<code>Open</code>/<code>Save</code> with <code>tomRTF</code> against a
+file. Verified crash-free on-device. <strong>Never wire an EDITSTREAM
+callback from Python.</strong></p>
+<h3 id="the-margin-lever-that-didnt-help-alone">The margin lever that
+didn't help alone</h3>
+<p><code>editor_zero_richedit_margins</code>
+(<code>EM_SETMARGINS</code>) was tried for the cell-2 offset and removed
+in beta2 (commit <code>094b630</code>) after testing showed it did not
+fix alignment by itself. If a residual left-offset ever reappears with
+the promoted default, margin zeroing returns <em>inside</em>
+<code>braille_editor_system_edit_fix</code>, not as a separate
+setting.</p>
+<h2 id="surface-ranking-at-the-end-of-the-experiment">Surface ranking at
+the end of the experiment</h2>
+<p>For the record, the final preference order before consolidation:
+richedit_rtf (promoted) &gt; rich2 (the previous default, same control
+unwrapped) &gt; plain (EDIT semantics without RTF; superseded by
+<code>SES_EMULATESYSEDIT</code>) &gt; rich &gt; win32 (offset skew) &gt;
+rtf (SR-invisible) &gt; stc (NVDA-only). The retired settings:
+<code>editor_control_kind</code>,
+<code>experimental_editor_surface</code>,
+<code>experimental_editor_surfaces_enabled</code>,
+<code>experimental_richedit_emulate_sysedit</code>,
+<code>editor_hide_border</code>.</p>
+<h2 id="safety-valve-decision-deliberate">Safety-valve decision
+(deliberate)</h2>
+<p>No hidden fallback combo ships. If a future regression demands a
+comparison surface, it returns as a new experimental setting then; QUILL
+does not carry seven dead surfaces to hedge. The only in-code fallback
+is inside <code>create_richedit_rtf</code> itself: any failure yields a
+stock multiline <code>wx.TextCtrl</code>, so the editor can never fail
+to build.</p>
+</body>
+</html>

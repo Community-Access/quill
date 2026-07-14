@@ -79,7 +79,36 @@ OPTIONS = {
     # finder cannot resolve, so it cannot be listed here. build_macos.sh instead
     # lifts any native binary out of python311.zip before signing.
     "packages": ["quill", "PIL"],
-    "includes": ["wx"],
+    # nacl (PyNaCl) is imported lazily/function-locally by quill.tools.signing
+    # (and under TYPE_CHECKING only), so py2app's import tracer can miss it --
+    # list it explicitly so the macOS build bundles Quillin signature
+    # verification (see pyproject [ui] / requirements.txt). nacl ships a
+    # native libsodium binding (cffi); if notarization fails on its .so,
+    # build_macos.sh's native-binary-out-of-zip lift (the protobuf path)
+    # should cover it -- verify on a real build.
+    # PyObjC (objc + AppKit/Foundation) is imported lazily too -- inside
+    # _AppKitBridge.__init__ (quill/ui/nstextview_rtf_surface.py, the macOS
+    # rich text bridge), _pin_macos_editor_accessibility_role (the #616
+    # VoiceOver role pin), and the macOS clipboard-collector change counter --
+    # so the tracer misses all of it. List it explicitly so rich RTF/Word
+    # editing works out of the box on the Mac with nothing for the user to
+    # install (and so the VoiceOver role pin actually ships; a missed AppKit
+    # made it a silent no-op in the .app). The pyobjc wheel is installed by
+    # macos-release.yml via the [macos] extra.
+    # feedback_hub is imported lazily/function-locally by
+    # quill.core.issue_submit / quill.core.feedback_token / main_frame.report_bug,
+    # so the tracer misses it too -- list it explicitly so the macOS build
+    # bundles the Report-a-Bug direct-submission dialog (#11; the [feedback]
+    # extra is installed in macos-release.yml). Without this, a Mac .app falls
+    # back to the bare web-link path even though the bundled token is present.
+    # PyGithub (top-level module `github`) is imported function-locally by
+    # quill.core.github.github_provider, guarded by require_pygithub(). The
+    # File > Open > GitHub Repository... menu item is always shown, so without
+    # bundling PyGithub the shipped .app raises GitHubDependencyError ("pip
+    # install quill[github]") -- useless advice inside a packaged app. List it
+    # explicitly and install the [github] extra in macos-release.yml so the
+    # feature actually works in the DMG.
+    "includes": ["wx", "nacl", "github", "feedback_hub", "objc", "AppKit", "Foundation"],
     "plist": {
         "CFBundleName": APP_DISPLAY_NAME,
         "CFBundleDisplayName": APP_DISPLAY_NAME,

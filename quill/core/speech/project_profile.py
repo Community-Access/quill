@@ -32,7 +32,7 @@ PROFILE_FILENAME = "speech-project.json"
 #     to False so older project folders load without an upgrade.
 PROFILE_VERSION = 2
 
-_VALID_ENGINES = {"sapi5", "dectalk", "piper", "kokoro", "espeak"}
+_VALID_ENGINES = {"sapi5", "dectalk", "piper", "kokoro", "espeak", "macos"}
 _VALID_FORMATS = {"wav", "mp3", "m4a", "m4b", "opus", "flac", "ogg"}
 _VALID_EXISTING = {"skip", "overwrite", "rename"}
 _VALID_CHAPTER_MODES = {"none", "single", "separate"}

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>release0.7.0-github</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="quill-070-beta-1--meet-you-where-you-are">QUILL 0.7.0 Beta 1 —
+Meet You Where You Are</h1>
+<p>QUILL 0.7.0 is a community release. Yes, it is a major step forward
+for screen-reader-first writing, editing, AI-assisted authorship,
+automation, braille, code review, and extension-powered workflows. The
+bigger story is <strong>who is helping QUILL become what it is
+becoming</strong>.</p>
+<p>Kelly Ford, Taylor Arndt, Shane Popplestone, Michael Babcock, and
+many others have helped lift this project. Some are testing. Some are
+contributing code. Some are filing issues, describing real-world
+workflows, stress-testing accessibility, and improving design direction.
+All of that matters.</p>
+<blockquote>
+<p>"I started QUILL, but the community is lifting it to levels I could
+never reach alone. This release is about meeting people where they are,
+then giving them a path to grow." — Jeff Bishop</p>
+</blockquote>
+<h2 id="what-is-in-this-release">What is in this release</h2>
+<ul>
+<li><strong>Meet People Where They Are</strong> — a complete reimagining
+of first-run setup. A redesigned startup wizard asks what kind of
+writing you do and shows a plain-English, screen-reader-readable preview
+of exactly what you will get. Seven intent profiles replace the old nine
+technical ones in the wizard. Menus, the Command Palette, and the Go to
+Anything dialog all reflect your chosen profile instantly — commands for
+features you have not enabled simply do not appear. Pressing Cancel on
+first run starts you in the simplest possible editor rather than leaving
+you with raw defaults.</li>
+<li><strong>Insert Automation</strong> turns typed abbreviations, smart
+triggers, <code>.LOG</code> files, document directives, and append
+anchors into one safe automation system.</li>
+<li><strong>The Quillin Extension Platform</strong> now supports
+settings pages, searchable preferences, tabs, document events, lifecycle
+events, status-bar cells, dependencies, network allowlists, command
+descriptions, developer logging, announcement priority, scaffolding
+tools, and stronger validation.</li>
+<li><strong>AI Writing Toolkit</strong> ships a complete, keyboard-first
+AI writing layer: grammar check, AI Thesaurus (Ctrl+Alt+Shift+H),
+rewrite, summarize, expand, generate table of contents, Document
+Q&amp;A, translation, and AI read-aloud. Every feature supports six
+providers — Anthropic Claude, OpenAI, Google Gemini, OpenRouter, Ollama,
+and custom endpoints. Custom per-task instructions let you shape how the
+AI behaves for each task. Prompt caching keeps costs down automatically:
+Claude marks system prompts as cacheable, OpenAI caches prefixes over
+1024 tokens, and local Ollama models cache in-process. No mouse required
+for any of it.</li>
+<li><strong>Braille Mode</strong> opens and edits braille text files
+while preserving bytes, form feeds, line endings, and layout. It adds
+braille-aware status, page navigation, page tools, and optional
+liblouis-powered translation through the QUILL Braille Pack.</li>
+<li><strong>Compare Mode</strong> is now a first-class keyboard-driven
+workflow with difference navigation, speech announcements, and optional
+sound cues.</li>
+<li><strong>Code-aware editing</strong> adds language profiles, token
+movement, manual language selection, and optional indentation
+tones.</li>
+<li><strong>Text encoding tools</strong> help you find non-ASCII
+characters, jump to them, convert them to HTML entities, and save copies
+in narrower encodings without silent data loss.</li>
+<li><strong>Word and RTF export</strong> lets you save documents as
+<code>.docx</code> or rich text through Pandoc, preserving real Word
+heading structure when the source contains structure.</li>
+<li><strong>Pandoc Import / Export and Batch Conversion (issue
+#262)</strong> extends that foundation with a curated Tier-1 format list
+(Markdown, CommonMark, GFM, HTML, DOCX, ODT, RTF, plain text, CSV/TSV,
+EPUB, LaTeX, plus PDF export), a four-page batch wizard, and live
+progress in the Status Page.</li>
+<li><strong>Citation insertion</strong> formats MLA 9, Chicago 17, and
+APA 7 citations from a simple labelled form.</li>
+<li><strong>The Snippet Gallery</strong> (Insert &gt; Snippet Gallery...
+or QUILL key, Shift+G) collects parameterized templates from all enabled
+Quillins into one browseable picker. Smart Insert ships three built-in
+entries.</li>
+<li><strong>The Vision Prompt Library</strong>, contributed by Kelly
+Ford, gives Describe Image with AI twelve evaluated prompt styles and a
+full management dialog.</li>
+<li><strong>Math Equations</strong>, contributed by Robert Danaraj, adds
+Insert &gt; Insert Equation... (Ctrl+Shift+E) for LaTeX and MathML
+insertion, with Browser Preview and HTML export rendering via MathJax 3.
+Delivered as a sandboxed Quillin rather than a core patch.</li>
+<li><strong>The Dynamic Keyboard Reference</strong> now reflects the
+active command registry, your current bindings, and QUILL key
+layers.</li>
+<li><strong>Sound notifications</strong> and <strong>indentation
+tones</strong> add optional non-speech feedback without making existing
+setups noisier.</li>
+<li><strong>Major accessibility and startup fixes</strong> make bug
+reporting, JAWS focus, image description, first run, the user guide,
+update notifications, and macOS setup more reliable.</li>
+</ul>
+<h2 id="edsharp-port">EdSharp port</h2>
+<p>A foundational piece of QUILL for All is the <strong>EdSharp
+port</strong> — a screen-reader-safe rendering of Ed Sharp's classic
+keyboard-driven editing layer. EdSharp users will recognize heading
+shortcuts (<code>Ctrl+1</code> through <code>Ctrl+6</code>),
+section-move (<code>Alt+Shift+Up</code> / <code>Alt+Shift+Down</code>),
+list toggle (<code>Ctrl+Shift+L</code>), and the new <strong>Section
+status cell</strong> that announces the current heading depth and lets
+you jump by section number from the status bar. The port is wired into
+the existing QUILL command system, so every shortcut is rebindable
+through the Keyboard Manager.</p>
+<h2 id="quill-key-branding-and-menu-label-clarity">QUILL Key branding
+and menu label clarity</h2>
+<p>The QUILL Key is the editor's signature feature — a
+<code>Ctrl+Shift+\`` prefix that opens the chord language for power-user workflows. In 0.7.0 Beta 1 the user-visible chord now reads </code>QUILL
+Key +
+<key><code> everywhere it appears: every menu, the About &gt; Keyboard Reference, the cheat sheet, and the status bar. The stored binding (</code>Ctrl+Shift+Grave<code>) is unchanged; only the display label moves. A new CI audit gate (</code>menu_lint`)
+flags any menu or context-menu item that has a binding but no visible
+label (or vice versa), so blank menu slots cannot slip through.</p>
+<h2 id="day-to-day-fixes">Day-to-day fixes</h2>
+<ul>
+<li>Bug report dialog now accepts typing immediately (#244).</li>
+<li>JAWS focus after launch no longer falls silent (#259).</li>
+<li>Describe Image with AI works again (#265).</li>
+<li>First-run wizard is reachable on every install path (#266).</li>
+<li>The user guide opens safely without locked-down plugins.</li>
+<li>Update notifications are more reliable.</li>
+<li>macOS builds install and store keys correctly.</li>
+</ul>
+<h2 id="installation">Installation</h2>
+<p>This release ships three artifacts:</p>
+<ul>
+<li><strong><code>Quill-for-All-Setup-0.7.0 Beta 1.exe</code></strong> —
+the Windows installer for QUILL for All. Run it as Administrator.</li>
+<li><strong><code>Quill-Portable-v0.7.0-beta.1.zip</code></strong> — the
+Windows portable bundle with embedded Python and all bundled tools
+(Pandoc, DECtalk, eSpeak-NG, Piper, Kokoro). Extract and run
+<code>run-quill.cmd</code>.</li>
+<li><strong><code>Quill-macOS-0.7.0-beta.1.dmg</code></strong> — the
+macOS disk image for macOS 12 or later (Apple Silicon and Intel). Open
+the DMG and drag QUILL to Applications.</li>
+</ul>
+<p>The portable zip is for users who cannot or prefer not to install on
+Windows.</p>
+<h2 id="running-from-source">Running from source</h2>
+<p>If you prefer to run from source, see the <a
+href="https://github.com/Community-Access/quill/blob/main/docs/release%20notes/release0.7.0.md#running-quill-070-from-source">Running
+QUILL 0.7.0 from source</a> section of the full release notes.</p>
+<h2 id="upgrading-from-050">Upgrading from 0.5.0</h2>
+<p>If you are upgrading from QUILL 0.5.0, read <strong>What works
+differently now</strong> in the full release notes. It lists the few
+places where menus, habits, or installer choices changed. The full notes
+are in this repository under <a
+href="https://github.com/Community-Access/quill/blob/main/docs/release%20notes/release0.7.0.md"><code>docs/release notes/release0.7.0.md</code></a>
+and cover every implementation detail, including the full Quillin
+platform specification, AI provider configuration, and per-feature
+keyboard shortcuts.</p>
+<h2 id="closing">Closing</h2>
+<blockquote>
+<p>"We are building something free, cross-platform, assistive-technology
+friendly, and community-driven. Wait until you see what contributions
+are coming next." — Jeff Bishop</p>
+</blockquote>
+<p>To everyone testing, contributing code, suggesting workflows,
+challenging the design, sharing feedback, building community, and
+cheering QUILL on: thank you. The product is better because of you.</p>
+<p>— The QUILL team</p>
+</body>
+</html>

@@ -28,9 +28,15 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          # On a PR, check out (and later push to) the PR's source branch;
-          # on a main push, the branch itself.
-          ref: ${{ github.head_ref || github.ref_name }}
+          # On a fork PR the head branch lives on the contributor's fork, not
+          # this repo, so checking out github.head_ref from this repo fails
+          # (the branch isn't here). Check out the fork at the PR head SHA
+          # instead (#925). On a same-repo PR the head repo IS this repo, so this
+          # still resolves to this repo at the head SHA and the regen commit can
+          # push back to github.head_ref below; on a push there is no
+          # pull_request context and we fall back to this repo's ref.
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.event.pull_request.head.sha || github.head_ref || github.ref_name }}
           # default GITHUB_TOKEN is persisted so we can push the regen commit back
           persist-credentials: true
 

@@ -2,231 +2,342 @@
   "podcast": {
     "title": "The QUILL Cast",
     "subtitle": "A complete audio course on the screen-reader-first writing studio",
-    "description": "A 36-episode, two-host audio course on QUILL, the free, screen-reader-first writing studio from Community Access. Liam and Jessica lead you from your very first launch to mastery of every feature family: the editor and keyboard, documents and formats, document rescue and OCR, the private speech suite, optional AI, the Accessible Vault, Story Studio, GLOW accessibility review, braille production, extensions, and the trust architecture underneath it all. Episode voices are generated with QUILL's own on-device Kokoro neural speech engine.",
+    "description": "A 54-episode, two-host audio course on QUILL, the free, screen-reader-first writing studio from Community Access. Liam and Jessica lead you from your very first launch to mastery of every feature family: the editor and keyboard, documents and formats, document rescue and OCR, the private speech suite, optional AI, the Accessible Vault, Story Studio, GLOW accessibility review, braille production, extensions, and the trust architecture underneath it all. Episode voices are generated with QUILL's own on-device Kokoro neural speech engine.",
     "author": "Community Access / BITS",
     "email": "jeff@jeffbishop.com",
     "language": "en-us",
     "site_url": "https://community-access.github.io/quill/podcast/",
     "audio_base_url": "https://github.com/Community-Access/quill/releases/download/podcast-v1/",
     "category": "Technology",
+    "cover_url": "https://community-access.github.io/quill/podcast/cover.png",
+    "cover_alt": "Dark blue QUILL Cast cover with large gold QUILL text, a faint quill watermark, and a teal, gold, and pink audio waveform.",
+    "cover_description": "The square cover uses a deep indigo-to-near-black background. Centered near the top, small pale letters spell THE above large gold QUILL text; CAST appears in white below. Behind the title is a faint oversized gold quill angled from upper left to lower right. Across the middle is a horizontal audio waveform made of rounded bars that shift from teal on the left through yellow and gold to coral pink on the right. Under the waveform, white text says A screen-reader-first audio course, followed by Liam & Jessica in gold. The site address appears along the bottom in muted gray.",
     "explicit": false
   },
   "episodes": [
     {
       "slug": "ep01-welcome-to-quill",
       "title": "1: Welcome to QUILL",
-      "description": "What QUILL is and who it is for: the three design promises (QUILL owns the essentials; everything optional is off by default; nothing leaves your computer without asking), why free matters, and how to follow this course.",
-      "pubdate": "2026-07-02T08:00:00Z"
+      "description": "What QUILL is and who it is for: the three design promises, why free matters, and how to follow this course.",
+      "pubdate": "2026-07-02T08:01:00Z"
     },
     {
       "slug": "ep02-install-and-first-launch",
       "title": "2: Install and First Launch",
-      "description": "The installer, self-voicing setup, the wizard, and feature profiles - why smaller menus win for screen reader users. Plus the three day-one habits: F1, the optional components store, and the guaranteed Escape.",
-      "pubdate": "2026-07-02T08:01:00Z"
+      "description": "The installer, self-voicing setup, the wizard, and feature profiles - why smaller menus win for screen reader users.",
+      "pubdate": "2026-07-02T08:02:00Z"
     },
     {
       "slug": "ep03-your-first-document",
       "title": "3: Your First Document",
-      "description": "Files in and out: new, open, save, recent files that respect removable drives, cursor position memory, and the silent crash-recovery net that is protecting you from day one.",
-      "pubdate": "2026-07-02T08:02:00Z"
+      "description": "Files in and out: new, open, save, recent files, cursor position memory, and the silent crash-recovery net.",
+      "pubdate": "2026-07-02T08:03:00Z"
     },
     {
       "slug": "ep04-the-main-window",
       "title": "4: The Main Window",
-      "description": "The menu bar by intent, tabs, and the status bar as narrator. The Spoken Echo (Alt+Shift+E), the dialog contract that means you can never be trapped, and why nothing ever steals focus.",
-      "pubdate": "2026-07-02T08:03:00Z"
-    },
-    {
-      "slug": "ep05-the-command-palette",
-      "title": "5: The Command Palette",
-      "description": "Ctrl+Shift+P: reach any of hundreds of commands by typing a fragment. The palette as discovery tool, shortcut tutor, and the end of menu-path memorization.",
+      "description": "The menu bar by intent, tabs, the status bar as narrator, the Spoken Echo, the dialog contract, and why nothing steals focus.",
       "pubdate": "2026-07-02T08:04:00Z"
     },
     {
-      "slug": "ep06-what-quill-says",
-      "title": "6: What QUILL Says",
-      "description": "The verbosity system: profiles, Quiet and Meeting modes, status queries (Where am I? What changed?), anti-spam machinery, and the glorious 'Why did QUILL say that?' explainer.",
+      "slug": "ep05-notebooks-and-versions",
+      "title": "5: Notebooks and Versions",
+      "description": "Workspace notebooks as a single-window project binder, version snapshots, sticky notes, and the file menu's Notebook submenu.",
       "pubdate": "2026-07-02T08:05:00Z"
     },
     {
-      "slug": "ep07-moving-through-text",
-      "title": "7: Moving Through Text",
-      "description": "Navigation as a vocabulary: characters to headings, bookmarks that survive restarts, selection marks, Go To Line, and the QUILL key's Quick Nav and Browse Mode introduced.",
+      "slug": "ep06-the-command-palette",
+      "title": "6: The Command Palette",
+      "description": "Ctrl+Shift+P: reach any of hundreds of commands by typing a fragment. The palette as discovery tool and shortcut tutor.",
       "pubdate": "2026-07-02T08:06:00Z"
     },
     {
-      "slug": "ep08-the-quill-key",
-      "title": "8: The QUILL Key",
-      "description": "The prefix system in full: why chords exist, a tour of what lives behind the QUILL key, Browse Mode as the editor's virtual cursor, and how to adopt chords without memorizing a chart.",
+      "slug": "ep07-what-quill-says",
+      "title": "7: What QUILL Says",
+      "description": "The verbosity system: profiles, Quiet and Meeting modes, status queries, anti-spam machinery, and the Why did QUILL say that? explainer.",
       "pubdate": "2026-07-02T08:07:00Z"
     },
     {
-      "slug": "ep09-make-the-keyboard-yours",
-      "title": "9: Make the Keyboard Yours",
-      "description": "The Keymap Editor: two-way search including reverse shortcut lookup, Record Keys, informed one-step conflict swaps, keymap diagnostics with one-click Heal, and shareable keyboard packs.",
+      "slug": "ep08-moving-through-text",
+      "title": "8: Moving Through Text",
+      "description": "Navigation as a vocabulary: characters to headings, bookmarks, selection marks, Go To Line, Quick Nav and Browse Mode.",
       "pubdate": "2026-07-02T08:08:00Z"
     },
     {
-      "slug": "ep10-editing-power-tools",
-      "title": "10: Editing Power Tools",
-      "description": "Selection and marks, the undo contract (compound changes are one step), line surgery, section moves, case transforms, and the revived classics: Repeat, Restore Deleted Text, and Describe Character.",
+      "slug": "ep09-the-quill-key",
+      "title": "9: The QUILL Key",
+      "description": "The prefix system in full: why chords exist, a tour of what lives behind the QUILL key, Browse Mode, and how to adopt chords.",
       "pubdate": "2026-07-02T08:09:00Z"
     },
     {
-      "slug": "ep11-find-replace-navigate",
-      "title": "11: Find, Replace, Navigate",
-      "description": "Search with spoken match counts, replace-all as one undo step, a gentle first regular expression, and Search in Files across whole folders.",
+      "slug": "ep10-make-the-keyboard-yours",
+      "title": "10: Make the Keyboard Yours",
+      "description": "The Keymap Editor: two-way search, Record Keys, conflict swaps, diagnostics with one-click Heal, and shareable keyboard packs.",
       "pubdate": "2026-07-02T08:10:00Z"
     },
     {
-      "slug": "ep12-spelling-and-word-tools",
-      "title": "12: Spelling and Word Tools",
-      "description": "Misspelling navigation (Ctrl+F7) as the fair replacement for red squiggles, the spell dialog, custom dictionaries, downloadable languages, and the dictionary and thesaurus.",
+      "slug": "ep11-editing-power-tools",
+      "title": "11: Editing Power Tools",
+      "description": "Selection and marks, the undo contract, line surgery, section moves, case transforms, and the classics: Repeat and Restore Deleted Text.",
       "pubdate": "2026-07-02T08:11:00Z"
     },
     {
-      "slug": "ep13-never-lose-work",
-      "title": "13: Never Lose Work",
-      "description": "The full safety stack layer by layer: undo, autosave, crash recovery, backups, versions, snapshots, atomic writes, and honest failure reporting. Safety as courage.",
+      "slug": "ep12-power-tools-deep-dive",
+      "title": "12: Power Tools Deep Dive",
+      "description": "The Format submenus, the Insert menu's hidden muscle, Tools/Advanced, Work Personas, List Studio, and the editing lens switcher.",
       "pubdate": "2026-07-02T08:12:00Z"
     },
     {
-      "slug": "ep14-markdown-and-structure",
-      "title": "14: Markdown and Structure",
-      "description": "The structure language everything builds on: the core syntax in minutes, why structure is audible here, the live preview, and the style habits that pay off across a dozen later features.",
+      "slug": "ep13-find-replace-navigate",
+      "title": "13: Find, Replace, Navigate",
+      "description": "Search with spoken match counts, replace-all as one undo step, a gentle first regular expression, and Search in Files.",
       "pubdate": "2026-07-02T08:13:00Z"
     },
     {
-      "slug": "ep15-clipboard-snippets-macros",
-      "title": "15: The Text-Supply Toolkit",
-      "description": "The twelve-slot Copy Tray, snippets with prompts and cursor markers, auto-expanding abbreviations, and recorded macros - four tools that bring text to your cursor.",
+      "slug": "ep14-compare-and-differences",
+      "title": "14: Compare and Differences",
+      "description": "File-vs-file and document-vs-document compare, the F8 layer, difference list, and the original-untouched promise.",
       "pubdate": "2026-07-02T08:14:00Z"
     },
     {
-      "slug": "ep16-rich-formatting-hidden-codes",
-      "title": "16: Rich Formatting, Hidden Codes",
-      "description": "Real fonts, colors, and alignment with a clean plain-text buffer: Describe Formatting at Cursor, Reveal Codes, and Illuminations - formatting that survives inside a plain .txt.",
+      "slug": "ep15-spelling-and-word-tools",
+      "title": "15: Spelling and Word Tools",
+      "description": "Misspelling navigation (Ctrl+F7), the spell dialog, custom dictionaries, downloadable languages, and the dictionary and thesaurus.",
       "pubdate": "2026-07-02T08:15:00Z"
     },
     {
-      "slug": "ep17-word-epub-pdf-and-friends",
-      "title": "17: Word, EPUB, PDF and Friends",
-      "description": "Other people's formats with dignity: Word round-trips with real heading styles, the EPUB navigator, honest PDF extraction quality, the import/export engine, and batch conversion.",
+      "slug": "ep16-languages-and-thesaurus",
+      "title": "16: Languages and Thesaurus",
+      "description": "Spell check languages, the AI Thesaurus, Markdown profile, citation style, inline notes, and language profiles for AI.",
       "pubdate": "2026-07-02T08:16:00Z"
     },
     {
-      "slug": "ep18-document-rescue-ocr",
-      "title": "18: Document Rescue and OCR",
-      "description": "Free first, local first, nothing uploaded: MarkItDown for born-digital files, the scanned-PDF escalation prompt, on-device Tesseract OCR with confidence honesty, and the verified engine install.",
+      "slug": "ep17-never-lose-work",
+      "title": "17: Never Lose Work",
+      "description": "The full safety stack: undo, autosave, crash recovery, backups, versions, snapshots, atomic writes, and honest failure reporting.",
       "pubdate": "2026-07-02T08:17:00Z"
     },
     {
-      "slug": "ep19-files-everywhere",
-      "title": "19: Files Everywhere",
-      "description": "FTP, SFTP, WebDAV, and S3 from three commands; GitHub editing with no Git installed; SSH editing with strict host keys; Open from URL - the end of the download-edit-reupload shuffle.",
+      "slug": "ep18-markdown-and-structure",
+      "title": "18: Markdown and Structure",
+      "description": "The structure language everything builds on: core syntax, why structure is audible, the live preview, and the style habits that pay off.",
       "pubdate": "2026-07-02T08:18:00Z"
     },
     {
-      "slug": "ep20-watch-folders-automation",
-      "title": "20: Watch Folders and Automation",
-      "description": "Teach QUILL to work while you're elsewhere: auto-opening inbox folders, watch actions and pipelines, and the safety posture that keeps automation from becoming mystery.",
+      "slug": "ep19-the-text-supply-toolkit",
+      "title": "19: The Text-Supply Toolkit",
+      "description": "The twelve-slot Copy Tray, snippets with prompts and cursor markers, auto-expanding abbreviations, and recorded macros.",
       "pubdate": "2026-07-02T08:19:00Z"
     },
     {
-      "slug": "ep21-read-aloud-and-voices",
-      "title": "21: Read Aloud and the Voice Catalog",
-      "description": "SAPI, eSpeak, DECtalk (hello, Paul), on-device Kokoro neural voices, the optional cloud voice, the browser reader, and the SSML Builder - a voice for every job.",
+      "slug": "ep20-snippet-gallery-and-prompts",
+      "title": "20: Snippet Gallery and Prompts",
+      "description": "Placeholder grammar, smart triggers, the AI Library's three tabs, the snippet vs abbreviation distinction, and starter packs.",
       "pubdate": "2026-07-02T08:20:00Z"
     },
     {
-      "slug": "ep22-dictation",
-      "title": "22: Dictation",
-      "description": "You talk, QUILL types, offline: Whisper-powered hold-to-talk and locked dictation, model choices for real hardware, and the speak-fast-repair-fast workflow.",
+      "slug": "ep21-rich-formatting-hidden-codes",
+      "title": "21: Read Aloud and Voices",
+      "description": "Read Aloud across the six engines, the cloud voice option, the SSML Builder, the on-device languages, and voice casting.",
       "pubdate": "2026-07-02T08:21:00Z"
     },
     {
-      "slug": "ep23-transcription-listening-companion",
-      "title": "23: Transcription and the Listening Companion",
-      "description": "Recordings into documents, privately: local transcription with translation and speaker options, Transcript Actions from minutes to follow-up emails, and the no-syntax Action Builder.",
+      "slug": "ep22-word-epub-pdf-and-friends",
+      "title": "22: Word, EPUB, PDF and Friends",
+      "description": "Other people's formats with dignity: Word round-trips, the EPUB navigator, honest PDF extraction, and batch conversion.",
       "pubdate": "2026-07-02T08:22:00Z"
     },
     {
-      "slug": "ep24-the-audio-studio",
-      "title": "24: The Audio Studio",
-      "description": "Documents out to sound, all grown up: the Audio Studio's three journeys - narrate documents into audiobooks, combine recordings into chaptered books, and edit any audiobook in the Chapter Workbench - plus incremental rebuilds, voice casting, AI chapter titles, and publishing to a feed, a server, or Auphonic. DAISY export still closes the arc.",
-      "pubdate": "2026-07-05T09:00:00Z"
+      "slug": "ep23-document-rescue-ocr",
+      "title": "23: Document Rescue and OCR",
+      "description": "Free first, local first, nothing uploaded: MarkItDown for born-digital files, on-device Tesseract OCR, and the verified engine install.",
+      "pubdate": "2026-07-02T08:23:00Z"
     },
     {
-      "slug": "ep25-setting-up-ai",
-      "title": "25: Setting Up AI",
-      "description": "Off by default, reviewable always, free for everyone: the setup wizard's honest choices (local Ollama, free OpenRouter key, paid accounts, or Not Now) and the privacy architecture underneath.",
+      "slug": "ep24-ocr-and-image-describe",
+      "title": "24: OCR and Image Describe",
+      "description": "Single-image OCR paths, clipboard and screen-capture entry, the image-describe flow, and the local speech model for offline captions.",
       "pubdate": "2026-07-02T08:24:00Z"
     },
     {
-      "slug": "ep26-ask-quill-everyday-ai",
-      "title": "26: Ask Quill and Everyday AI",
-      "description": "One conversation that knows your document, the quick-action toolkit, AI spell/grammar/thesaurus above the local engines, custom instructions, and the discipline of rejecting things.",
+      "slug": "ep25-files-everywhere",
+      "title": "25: Files Everywhere",
+      "description": "FTP, SFTP, WebDAV, and S3 from three commands; GitHub editing with no Git installed; SSH with strict host keys; Open from URL.",
       "pubdate": "2026-07-02T08:25:00Z"
     },
     {
-      "slug": "ep27-ai-library-prompts-skills",
-      "title": "27: The AI Library - Prompts and Skills",
-      "description": "A build-along up the ladder: saving your first prompt with variables, promoting it into a multi-step skill, sharing packs, and curating a bench that fits your actual week.",
+      "slug": "ep26-watch-folders-automation",
+      "title": "26: Watch Folders and Automation",
+      "description": "Teach QUILL to work while you're elsewhere: auto-opening inbox folders, watch actions and pipelines, and the safety posture.",
       "pubdate": "2026-07-02T08:26:00Z"
     },
     {
-      "slug": "ep28-agents-reviewable-autonomy",
-      "title": "28: Agents - Reviewable Autonomy",
-      "description": "Plans you read before they run: the plan-review-execute contract, the Accessibility Tune-Up as flagship, partial approval, and the craft of reviewing plans.",
+      "slug": "ep27-publishing-and-share",
+      "title": "27: Publishing and Share",
+      "description": "File/Publish submenu, Tools/Share submenu, the connection model, two feature flags, WordPress, and redaction of secrets.",
       "pubdate": "2026-07-02T08:27:00Z"
     },
     {
-      "slug": "ep29-accessible-vault-basics",
-      "title": "29: The Accessible Vault",
-      "description": "Linked notes rebuilt for the ear: wikilinks, the spoken 'what links here', Note Neighborhood, unlinked mentions, fearless rename - the graph view without the graph.",
+      "slug": "ep28-read-aloud-and-voices",
+      "title": "28: Agents - Reviewable Autonomy",
+      "description": "Plans you read before they run: the plan-review-execute contract, Accessibility Tune-Up as flagship, partial approval, and the craft of reviewing plans.",
       "pubdate": "2026-07-02T08:28:00Z"
     },
     {
-      "slug": "ep30-vault-power",
-      "title": "30: Vault Power",
-      "description": "Tags that roll up, templates with prompts, daily notes, embeds, exporting your vault as an accessible website, and Git sync on infrastructure you own.",
+      "slug": "ep29-voice-catalog-walkthrough",
+      "title": "29: Voice Catalog Walkthrough",
+      "description": "The full voice catalog: SAPI unfiltered, Kokoro, Piper, eSpeak world, DECtalk, and the cloud voice. A voice for every job.",
       "pubdate": "2026-07-02T08:29:00Z"
     },
     {
-      "slug": "ep31-story-studio",
-      "title": "31: Story Studio",
-      "description": "Book-length writing with a keyboard-first binder: structure straight from your headings, character and plot-thread detail forms as front matter, and compile-to-manuscript.",
+      "slug": "ep30-dictation",
+      "title": "30: Dictation",
+      "description": "You talk, QUILL types, offline: Whisper-powered hold-to-talk and locked dictation, model choices, and the speak-fast-repair-fast workflow.",
       "pubdate": "2026-07-02T08:30:00Z"
     },
     {
-      "slug": "ep32-glow-audit-and-fix",
-      "title": "32: GLOW - Audit and Fix",
-      "description": "Guided confidence, not a compliance dashboard: plain-language audits of the document in front of you, in-place selection fixes, and whole-document fixes with a before/after compare.",
+      "slug": "ep31-voice-and-conversation",
+      "title": "31: Voice and Conversation",
+      "description": "Tools/Speech walked top to bottom, the curated allowlist of voice commands, Voice Command vs Voice Conversation Mode vs Hey QUILL wake word.",
       "pubdate": "2026-07-02T08:31:00Z"
     },
     {
-      "slug": "ep33-glow-for-files",
-      "title": "33: GLOW for Files",
-      "description": "Scored, graded audits of Word, PowerPoint, Excel, PDF, and EPUB; non-destructive Fix File that never touches the original; and the signature-verified engine update path.",
+      "slug": "ep32-transcription-listening-companion",
+      "title": "32: Transcription and the Listening Companion",
+      "description": "Recordings into documents, privately: local transcription, Transcript Actions from minutes to follow-up emails, and the no-syntax Action Builder.",
       "pubdate": "2026-07-02T08:32:00Z"
     },
     {
-      "slug": "ep34-braille-production",
-      "title": "34: Braille Production",
-      "description": "BRF, BRL, PEF and UEB workflows; Read Layout Metrics and the longest-line repair loop; trailing-space cleanup; and the honest cell-two display workaround story.",
+      "slug": "ep33-the-audio-studio",
+      "title": "33: The Audio Studio",
+      "description": "Documents out to sound, all grown up: three journeys, incremental rebuilds, voice casting, AI chapter titles, publishing, and DAISY export.",
       "pubdate": "2026-07-02T08:33:00Z"
     },
     {
-      "slug": "ep35-quillins-and-the-console",
-      "title": "35: Quillins and the Developer Console",
-      "description": "The extension system: worker-process fault isolation, Python and JavaScript Quillins, the deliberately-gated marketplace, and the accessible scripting console that turns users into toolmakers.",
+      "slug": "ep34-setting-up-ai",
+      "title": "34: Setting Up AI",
+      "description": "Off by default, reviewable always, free for everyone: the wizard's honest choices and the privacy architecture underneath.",
       "pubdate": "2026-07-02T08:34:00Z"
     },
     {
-      "slug": "ep36-trust-community-finale",
-      "title": "36: Trust, Community, and the Road Ahead",
-      "description": "The finale: the five enforced safety rules, honest diagnostics, the community and its receipts, the public roadmap, and what QUILL proves about designing screen-reader-first.",
+      "slug": "ep35-ask-quill-everyday-ai",
+      "title": "35: Ask Quill and Everyday AI",
+      "description": "One conversation that knows your document, the quick-action toolkit, AI spell/grammar/thesaurus above the local engines, and custom instructions.",
       "pubdate": "2026-07-02T08:35:00Z"
+    },
+    {
+      "slug": "ep36-ai-library-prompts-and-skills",
+      "title": "36: The AI Library - Prompts and Skills",
+      "description": "A build-along up the ladder: saving prompts, promoting to skills, sharing packs, and the promotion continuum.",
+      "pubdate": "2026-07-02T08:36:00Z"
+    },
+    {
+      "slug": "ep37-the-ai-toolkit",
+      "title": "37: The AI Toolkit",
+      "description": "Proofread, Transform Selection, Translate, Read Aloud, Transcribe Audio, the More submenu, and the 16-agent Run Agent catalog.",
+      "pubdate": "2026-07-02T08:37:00Z"
+    },
+    {
+      "slug": "ep38-every-day-writing-style",
+      "title": "38: Every-Day Writing Style",
+      "description": "AI style customization: writing style, tone, custom instructions per session and globally, and how style propagates to all AI verbs.",
+      "pubdate": "2026-07-02T08:38:00Z"
+    },
+    {
+      "slug": "ep39-agents-reviewable-autonomy",
+      "title": "39: The AI Library - Prompts and Skills",
+      "description": "A build-along up the ladder: saving your first prompt with variables, promoting it into a multi-step skill, and sharing packs.",
+      "pubdate": "2026-07-02T08:39:00Z"
+    },
+    {
+      "slug": "ep40-accessible-vault-basics",
+      "title": "40: The Accessible Vault",
+      "description": "Linked notes rebuilt for the ear: wikilinks, the spoken what links here, Note Neighborhood, unlinked mentions, and fearless rename.",
+      "pubdate": "2026-07-02T08:40:00Z"
+    },
+    {
+      "slug": "ep41-vault-power",
+      "title": "41: Vault Power",
+      "description": "Tags that roll up, templates with prompts, daily notes, embeds, exporting your vault as an accessible website, and Git sync.",
+      "pubdate": "2026-07-02T08:41:00Z"
+    },
+    {
+      "slug": "ep42-story-studio",
+      "title": "42: Story Studio",
+      "description": "Book-length writing with a keyboard-first binder: structure from your headings, character and plot-thread detail forms as front matter, and compile-to-manuscript.",
+      "pubdate": "2026-07-02T08:42:00Z"
+    },
+    {
+      "slug": "ep43-story-studio-practice",
+      "title": "43: Story Studio Practice",
+      "description": "Hands-on build-along: a fresh folder, three Markdown files, a character with role/goal/motivation/arc, a place, a plot thread, and compile.",
+      "pubdate": "2026-07-02T08:43:00Z"
+    },
+    {
+      "slug": "ep44-story-studio-vault-ai",
+      "title": "44: Story Studio + Vault + AIs",
+      "description": "Composition: a Story Studio project paired with an Accessible Vault of worldbuilding, Ask Quill for manuscript-wide consistency, one source feeding every export.",
+      "pubdate": "2026-07-02T08:44:00Z"
+    },
+    {
+      "slug": "ep45-glow-audit-and-fix",
+      "title": "45: GLOW - Audit and Fix",
+      "description": "Guided confidence: plain-language audits of the document in front of you, in-place selection fixes, and whole-document fixes with before/after compare.",
+      "pubdate": "2026-07-02T08:45:00Z"
+    },
+    {
+      "slug": "ep46-glow-for-files",
+      "title": "46: GLOW for Files",
+      "description": "Scored, graded audits of Word, PowerPoint, Excel, PDF, and EPUB; non-destructive Fix File; and the signature-verified engine update path.",
+      "pubdate": "2026-07-02T08:46:00Z"
+    },
+    {
+      "slug": "ep47-author-tools-mega",
+      "title": "47: Author Tools Mega",
+      "description": "One manuscript, six finished artifacts: a guided walkthrough of GLOW audit, compile, Word, EPUB, PDF, DAISY, audiobook, and braille, in order.",
+      "pubdate": "2026-07-02T08:47:00Z"
+    },
+    {
+      "slug": "ep48-the-bundled-quillins",
+      "title": "48: The Bundled Quillins",
+      "description": "A walkthrough of the bundled Quillins (word-count, table-studio, csv-studio, spell-check helpers, and the rest) and how each contributes.",
+      "pubdate": "2026-07-02T08:48:00Z"
+    },
+    {
+      "slug": "ep49-braille-production",
+      "title": "49: Braille Production",
+      "description": "BRF, BRL, PEF and UEB workflows; Read Layout Metrics and the longest-line repair loop; trailing-space cleanup; and the cell-two display workaround.",
+      "pubdate": "2026-07-02T08:49:00Z"
+    },
+    {
+      "slug": "ep50-quillins-and-the-console",
+      "title": "50: Quillins and the Developer Console",
+      "description": "The extension system: worker-process fault isolation, Python and JavaScript Quillins, the deliberately-gated marketplace, and the accessible scripting console.",
+      "pubdate": "2026-07-02T08:50:00Z"
+    },
+    {
+      "slug": "ep51-build-your-own-quillin",
+      "title": "51: Build Your Own Quillin",
+      "description": "Build-along: a minimal Quillin in Python (and JavaScript), manifest.json, worker-process fault isolation, install path, and lint with quillin_lint.",
+      "pubdate": "2026-07-02T08:51:00Z"
+    },
+    {
+      "slug": "ep52-trust-community-finale",
+      "title": "52: Trust, Community, and the Road Ahead",
+      "description": "The rules, the community and its receipts, the public roadmap, and what QUILL proves about designing screen-reader-first.",
+      "pubdate": "2026-07-02T08:52:00Z"
+    },
+    {
+      "slug": "ep53-accessibility-power-user",
+      "title": "53: Accessibility Power User",
+      "description": "The companion to the finale: the QuillRichEdit experimental lever, the full keyboard-pack tour, the verbosity deep-dive, and the dialog-cue gate.",
+      "pubdate": "2026-07-02T08:53:00Z"
+    },
+    {
+      "slug": "ep54-power-user-stability",
+      "title": "54: Power User Stability",
+      "description": "The finale: HTML and Encoding, file recovery, Help menu diagnostics, redaction deep-dive, Profile Health Check, and the safety contract that holds it all up.",
+      "pubdate": "2026-07-02T08:54:00Z"
     }
   ]
 }

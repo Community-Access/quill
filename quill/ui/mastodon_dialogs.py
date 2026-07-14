@@ -21,6 +21,29 @@ from quill.core.mastodon import accounts as account_store
 from quill.core.mastodon import client
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 
+#: Post language presets offered in the compose dialog (#922). The first entry
+#: is the "let the instance decide" default (no language field sent). The rest
+#: are common ISO 639-1 two-letter codes; Mastodon files a post under the chosen
+#: language's preset so a post written in one language is not mis-shelved under
+#: the account's default. Kept short on purpose -- the field is a hint, not a
+#: full locale picker.
+LANGUAGES: tuple[tuple[str | None, str], ...] = (
+    (None, "Default (instance)"),
+    ("en", "English"),
+    ("it", "Italian"),
+    ("fr", "French"),
+    ("es", "Spanish"),
+    ("de", "German"),
+    ("pt", "Portuguese"),
+    ("nl", "Dutch"),
+    ("pl", "Polish"),
+    ("ru", "Russian"),
+    ("ja", "Japanese"),
+    ("zh", "Chinese"),
+    ("ar", "Arabic"),
+    ("hi", "Hindi"),
+)
+
 
 class MastodonComposeDialog:
     """Compose-and-post dialog. After a Post, ``posted_url`` is set."""
@@ -44,13 +67,17 @@ class MastodonComposeDialog:
         self._spell_review = spell_review
         self._accounts = accounts
         self.posted_url: str | None = None
+        # Per-instance character limit for the selected account (#922). Starts at
+        # the classic default; _refresh_character_limit updates it from the
+        # instance's own /api/v2/instance when an account is selected.
+        self._character_limit = client.DEFAULT_CHARACTER_LIMIT
 
         self.dialog = wx.Dialog(
             parent,
             title="Post to Mastodon",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize((560, 470))
+        self.dialog.SetSize((560, 520))
         root = wx.BoxSizer(wx.VERTICAL)
 
         root.Add(wx.StaticText(self.dialog, label="Post from &account:"), 0, wx.LEFT | wx.TOP, 12)
@@ -69,13 +96,24 @@ class MastodonComposeDialog:
         self._count = wx.StaticText(self.dialog, label="")
         root.Add(self._count, 0, wx.LEFT | wx.BOTTOM, 12)
 
-        root.Add(wx.StaticText(self.dialog, label="&Visibility:"), 0, wx.LEFT, 12)
+        # Visibility and language sit side by side so the dialog does not grow
+        # taller just for the new chooser (#922).
+        options_row = wx.BoxSizer(wx.HORIZONTAL)
+
+        options_row.Add(wx.StaticText(self.dialog, label="&Visibility:"), 0, wx.RIGHT, 8)
         self._visibility = wx.Choice(
             self.dialog, choices=[label for _, label in client.VISIBILITIES]
         )
         self._visibility.SetName("Visibility")
         self._visibility.SetSelection(0)
-        root.Add(self._visibility, 0, wx.EXPAND | wx.ALL, 12)
+        options_row.Add(self._visibility, 1, wx.EXPAND | wx.RIGHT, 12)
+
+        options_row.Add(wx.StaticText(self.dialog, label="&Language:"), 0, wx.RIGHT, 8)
+        self._language = wx.Choice(self.dialog, choices=[label for _, label in LANGUAGES])
+        self._language.SetName("Post language")
+        self._language.SetSelection(0)
+        options_row.Add(self._language, 1, wx.EXPAND)
+        root.Add(options_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 12)
 
         buttons = wx.StdDialogButtonSizer()
         post_button = wx.Button(self.dialog, wx.ID_OK, "&Post")
@@ -95,15 +133,39 @@ class MastodonComposeDialog:
             escape_id=wx.ID_CANCEL,
         )
         self._text.Bind(wx.EVT_TEXT, lambda _e: self._update_count())
+        self._account_choice.Bind(wx.EVT_CHOICE, lambda _e: self._refresh_character_limit())
         post_button.Bind(wx.EVT_BUTTON, self._on_post)
-        self._update_count()
+        # Fetch the selected account's real per-instance limit now, then update
+        # the counter against it. Best-effort: a failed lookup keeps the default.
+        self._refresh_character_limit()
         self._text.SetInsertionPointEnd()
         self._text.SetFocus()
 
+    def _refresh_character_limit(self) -> None:
+        """Look up the selected account's instance character limit (#922).
+
+        Runs a one-time unauthenticated GET /api/v2/instance (cached per instance
+        for the process lifetime) under a busy cursor so the live counter
+        reflects e.g. poliversity.it's 9999 instead of the classic 500. Any
+        failure leaves the default in place and never blocks posting.
+        """
+        account = self._selected_account()
+        if account is None:
+            self._character_limit = client.DEFAULT_CHARACTER_LIMIT
+            self._update_count()
+            return
+        try:
+            with self._wx.BusyCursor():
+                self._character_limit = client.instance_character_limit(account.instance_url)
+        except client.MastodonError:
+            self._character_limit = client.DEFAULT_CHARACTER_LIMIT
+        self._update_count()
+
     def _update_count(self) -> None:
         used = len(self._text.GetValue())
-        remaining = client.DEFAULT_CHARACTER_LIMIT - used
-        self._count.SetLabel(f"{used} characters, {remaining} remaining")
+        remaining = self._character_limit - used
+        limit = self._character_limit
+        self._count.SetLabel(f"{used} characters, {remaining} remaining (limit {limit})")
 
     def _selected_account(self) -> account_store.MastodonAccount | None:
         if not self._accounts:
@@ -131,13 +193,20 @@ class MastodonComposeDialog:
                 self._text.SetFocus()
                 return
         visibility = client.VISIBILITIES[max(0, self._visibility.GetSelection())][0]
+        # None (the first "Default (instance)" entry) omits the language field so
+        # the instance keeps its default; any other choice sends the ISO 639-1
+        # code so a post written in one language is not mis-shelved under the
+        # account's default language (#922).
+        language = LANGUAGES[max(0, self._language.GetSelection())][0]
         token = account_store.access_token_for(account.id)
         if not token:
             self._announce("That account is not signed in. Remove and re-add it.")
             return
         try:
             with self._wx.BusyCursor():
-                self.posted_url = client.post_status(account.instance_url, token, text, visibility)
+                self.posted_url = client.post_status(
+                    account.instance_url, token, text, visibility, language=language
+                )
         except client.MastodonError as error:
             self._announce(f"Could not post: {error}")
             return

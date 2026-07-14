@@ -24,7 +24,7 @@ session metadata).
 
 from __future__ import annotations
 
-import os
+import sys
 import webbrowser
 from collections.abc import Callable
 from pathlib import Path
@@ -58,6 +58,32 @@ from quill.core.run_target import classify_target, is_dangerous_executable, targ
 from quill.core.set_ops import format_lines, lines_common_to_both, lines_in_first_not_second
 from quill.core.storage import read_json, write_json_atomic
 from quill.core.unicode_insert import CodepointError, parse_codepoint
+
+
+def _clipboard_change_counter() -> int | None:
+    """The OS clipboard change counter, or None where unavailable.
+
+    Windows: ``GetClipboardSequenceNumber`` — one cheap user32 call, no
+    clipboard open, bumps on every copy from ANY application (#964). macOS:
+    ``NSPasteboard.generalPasteboard().changeCount()`` via PyObjC when
+    present. None (Linux / missing bridge) makes the watcher fall back to
+    reading and comparing the clipboard text each tick.
+    """
+    if sys.platform == "win32":
+        try:
+            import ctypes
+
+            return int(ctypes.windll.user32.GetClipboardSequenceNumber())
+        except Exception:  # noqa: BLE001 - a probe must never raise
+            return None
+    if sys.platform == "darwin":
+        try:
+            from AppKit import NSPasteboard  # type: ignore[import-not-found]
+
+            return int(NSPasteboard.generalPasteboard().changeCount())
+        except Exception:  # noqa: BLE001
+            return None
+    return None
 
 
 class PowerToolsActionsMixin:
@@ -113,16 +139,11 @@ class PowerToolsActionsMixin:
 
     def _power_tools_clipboard_text(self) -> str:
         wx = self._wx
-        clipboard = getattr(wx, "TheClipboard", None)
-        if clipboard is None or not clipboard.Open():
+        if getattr(wx, "TheClipboard", None) is None:
             return ""
-        try:
-            data = wx.TextDataObject()
-            if clipboard.GetData(data):
-                return str(data.GetText())
-            return ""
-        finally:
-            clipboard.Close()
+        from quill.ui.clipboard_retry import read_clipboard_text
+
+        return read_clipboard_text(wx)
 
     def _power_tools_clipboard_html(self) -> str:
         """Return the clipboard's HTML payload, if any.
@@ -133,25 +154,57 @@ class PowerToolsActionsMixin:
         """
         wx = self._wx
         clipboard = getattr(wx, "TheClipboard", None)
-        if clipboard is None or not clipboard.Open():
+        if clipboard is None:
             return ""
-        try:
-            data_format = wx.DataFormat("HTML Format")
-            if not clipboard.IsSupported(data_format):
-                return ""
-            data = wx.CustomDataObject(data_format)
-            if not clipboard.GetData(data):
-                return ""
-            raw = data.GetData()
+        from quill.ui.clipboard_retry import with_clipboard_read_retry
+
+        payload = ""
+        fragment = ""
+
+        def _attempt() -> bool:
+            nonlocal payload
+            if not clipboard.Open():
+                return False
             try:
-                payload = bytes(raw).decode("utf-8", errors="replace")
-            except (TypeError, ValueError):
-                payload = str(raw)
-            return extract_cf_html_fragment(payload)
+                # Windows exposes HTML as the CF_HTML "HTML Format" flavour;
+                # macOS exposes it as the public.html UTI (no CF_HTML header,
+                # so extract_cf_html_fragment returns the raw HTML as-is). Try
+                # the platform-native flavour(s) and use the first supported
+                # one (#52). The Windows single-flavour path is unchanged.
+                candidate_formats = (
+                    ("public.html", "Apple HTML pasteboard type", "HTML Format")
+                    if sys.platform == "darwin"
+                    else ("HTML Format",)
+                )
+                data_format = None
+                for name in candidate_formats:
+                    fmt = wx.DataFormat(name)
+                    if clipboard.IsSupported(fmt):
+                        data_format = fmt
+                        break
+                if data_format is None:
+                    # Not a retry-worthy failure: the clipboard opened fine,
+                    # it simply has no HTML flavour on it.
+                    return True
+                data = wx.CustomDataObject(data_format)
+                if not clipboard.GetData(data):
+                    return False
+                raw = data.GetData()
+                try:
+                    payload = bytes(raw).decode("utf-8", errors="replace")
+                except (TypeError, ValueError):
+                    payload = str(raw)
+                return True
+            finally:
+                clipboard.Close()
+
+        try:
+            with_clipboard_read_retry(wx, _attempt)
+            if payload:
+                fragment = extract_cf_html_fragment(payload)
         except Exception:
             return ""
-        finally:
-            clipboard.Close()
+        return fragment
 
     # ------------------------------------------- HTML clipboard -> Markdown
     def paste_html_as_markdown(self) -> None:
@@ -318,11 +371,52 @@ class PowerToolsActionsMixin:
         )
         if copy_event is not None and active:
             self.editor.Bind(copy_event, self._on_power_tools_collect_copy)
+        # #964 (Dean Martineau): the collector is system-wide, EdSharp-style —
+        # copy anywhere in Windows and it lands in the QUILL document. The
+        # in-app EVT_TEXT_COPY bind above stays for instant response; this
+        # watcher catches every other application's copies by polling the OS
+        # clipboard change counter (a single cheap Win32 call per tick, no
+        # clipboard open unless it actually changed).
+        if active:
+            self._start_collector_watch()
+        else:
+            self._stop_collector_watch()
         self._announce(
-            "Clipboard collector on; copies append to this document"
+            "Clipboard collector on; anything you copy, in any program, appends to this document"
             if active
             else "Clipboard collector off"
         )
+
+    def _start_collector_watch(self) -> None:
+        wx = self._wx
+        timer_cls = getattr(wx, "Timer", None)
+        if timer_cls is None:  # headless tests
+            return
+        self._power_tools_collector_seq = _clipboard_change_counter()
+        timer = getattr(self, "_power_tools_collector_timer", None)
+        if timer is None:
+            timer = timer_cls(self.frame)
+            self.frame.Bind(wx.EVT_TIMER, self._on_collector_tick, timer)
+            self._power_tools_collector_timer = timer
+        timer.Start(750)
+
+    def _stop_collector_watch(self) -> None:
+        timer = getattr(self, "_power_tools_collector_timer", None)
+        if timer is not None:
+            try:
+                timer.Stop()
+            except Exception:  # noqa: BLE001 - teardown is best-effort
+                pass
+
+    def _on_collector_tick(self, _event: object) -> None:
+        if not getattr(self, "_power_tools_clipboard_collector", False):
+            self._stop_collector_watch()
+            return
+        counter = _clipboard_change_counter()
+        if counter is not None and counter == getattr(self, "_power_tools_collector_seq", None):
+            return  # nothing new on the clipboard; no clipboard open needed
+        self._power_tools_collector_seq = counter
+        self.collect_clipboard_now()
 
     def _on_power_tools_collect_copy(self, event: object) -> None:
         event.Skip()
@@ -338,6 +432,12 @@ class PowerToolsActionsMixin:
         clip = self._power_tools_clipboard_text()
         if not clip:
             return
+        # The system watcher and the in-app copy event can both fire for one
+        # copy (and the counter ticks for our own writes): collect each
+        # distinct clipboard payload once.
+        if clip == getattr(self, "_power_tools_last_collected", None):
+            return
+        self._power_tools_last_collected = clip
         updated = append_collected(self.editor.GetValue(), clip)
         self._replace_document_text(updated)
         self.document.set_text(updated)
@@ -604,7 +704,7 @@ class PowerToolsActionsMixin:
             self._set_status("Refusing to launch an executable or script for safety")
             return
         try:
-            os.startfile(str(path))  # type: ignore[attr-defined]  # noqa: S606
+            self._open_with_default_app(path)
         except OSError as error:
             self._set_status(f"Could not run file: {error}")
             return
@@ -635,11 +735,109 @@ class PowerToolsActionsMixin:
             self._set_status(f"Path does not exist: {target.value}")
             return
         try:
-            os.startfile(str(path))  # type: ignore[attr-defined]  # noqa: S606
+            self._open_with_default_app(path)
         except OSError as error:
             self._set_status(f"Could not open path: {error}")
             return
         self._set_status(f"Opened {path.name}")
+
+    # ------------------------------------------- Send / Copy as Email (#900)
+
+    def _email_fragment(self) -> object:
+        """Build a Fragment from the current selection, or the whole document
+        when nothing is selected -- #900's "the document, a selection, or a
+        kept fragment" framing."""
+        from quill.core.fragment import Fragment
+
+        start, end = self.editor.GetSelection()
+        text = self.editor.GetValue()
+        markup = text[start:end] if start != end else text
+        title = getattr(self.document, "name", "") or "QUILL document"
+        return Fragment(markup=markup, title=title, source="Document")
+
+    def _email_format(self) -> object:
+        from quill.core.fragment import FragmentFormat
+
+        raw = str(getattr(self.settings, "content_handoff_format", "text"))
+        try:
+            return FragmentFormat(raw)
+        except ValueError:
+            return FragmentFormat.TEXT
+
+    def send_as_email(self) -> None:
+        """Open the user's mail client with the selection (or document) as the body."""
+        from quill.core.email_handoff import build_mailto
+
+        frag = self._email_fragment()
+        if not frag.markup.strip():
+            self._set_status("Nothing to send: the document is empty.")
+            return
+        url = build_mailto(frag, self._email_format(), subject=frag.title)
+        webbrowser.open(url)
+        self._set_status("Opened your mail client with this content as the body.")
+
+    def copy_as_email_body(self) -> None:
+        """Copy the selection (or document), rendered for email, to the clipboard.
+
+        The practical alternative to Send as Email: many mail clients silently
+        truncate or reject a long mailto: body, so this puts the same rendered
+        content straight on the clipboard to paste into a compose window.
+        """
+        import wx
+
+        from quill.core.fragment import render_fragment
+
+        frag = self._email_fragment()
+        if not frag.markup.strip():
+            self._set_status("Nothing to copy: the document is empty.")
+            return
+        text = render_fragment(frag, self._email_format())
+        if wx.TheClipboard.Open():
+            wx.TheClipboard.SetData(wx.TextDataObject(text))
+            wx.TheClipboard.Close()
+        self._set_status("Copied to the clipboard as an email body.")
+
+    # ------------------------------------------- AutoOutline (#894)
+
+    def apply_auto_outline_numbering(self) -> None:
+        """Number every heading by nesting level, as literal text (Format menu).
+
+        Always operates on the whole document -- heading numbering is only
+        meaningful with full document context, unlike most power-tools
+        transforms that fall back to the whole document only when nothing
+        is selected.
+        """
+        from quill.core.auto_outline import OutlineStyle, apply_auto_outline
+
+        if self._document_is_read_only():
+            self._set_status("Document is read-only")
+            return
+        style_raw = str(getattr(self.settings, "auto_outline_style", "numeric"))
+        style = OutlineStyle.LEGAL if style_raw == "legal" else OutlineStyle.NUMERIC
+        text = self.editor.GetValue()
+        updated = apply_auto_outline(text, style)
+        if updated == text:
+            self._set_status("No headings to number.")
+            return
+        self._replace_document_text(updated)
+        self.document.set_text(updated)
+        self._set_status("Outline numbering updated.")
+
+    def remove_auto_outline_numbering(self) -> None:
+        """Strip any AutoOutline numbers from headings (Format menu)."""
+        from quill.core.auto_outline import remove_outline_numbers
+
+        if self._document_is_read_only():
+            self._set_status("Document is read-only")
+            return
+        text = self.editor.GetValue()
+        updated = remove_outline_numbers(text)
+        if updated == text:
+            self._set_status("No outline numbering to remove.")
+            return
+        self._replace_document_text(updated)
+        self.document.set_text(updated)
+        self._set_status("Outline numbering removed.")
 
     # ------------------------------------------- EDS-20 rename/delete on disk
     def rename_current_file(self) -> None:

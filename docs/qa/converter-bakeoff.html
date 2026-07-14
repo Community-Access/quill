@@ -176,17 +176,14 @@
   </style>
 </head>
 <body>
-<header id="title-block-header">
-<h1 class="title">converter-bakeoff</h1>
-</header>
-<h1 id="word-.docx-converter-bake-off">Word (.docx) Converter
+<h1 id="word-docx-converter-bake-off">Word (.docx) Converter
 Bake-Off</h1>
 <p>Date: 2026-07-04. Environment: Windows 11, Python 3.x (QUILL dev
 env), Pandoc 3.10, MarkItDown (bundled), python-docx (bundled). mammoth
 1.12.0 and PyDocX 0.9.10 were evaluated in a throwaway virtual
 environment; neither is a QUILL dependency.</p>
 <h2 id="why-this-exists">Why this exists</h2>
-<p>The Save As conversion work (fix.md, Caroline’s 0.8.0 report) added a
+<p>The Save As conversion work (fix.md, Caroline's 0.8.0 report) added a
 user-facing engine preference for reading and writing Word documents.
 This bake-off puts evidence behind the engine descriptions and records a
 documented verdict on the two external candidates (mammoth, pydocx) so
@@ -206,16 +203,11 @@ list</li>
 centered paragraph</li>
 </ul>
 <p>Each engine converts every fixture; scoring counts marker strings
-that must survive (e.g. the nested list item, the footnote bodies, the
+that must survive (e.g. the nested list item, the footnote bodies, the
 link URL).</p>
 <h2 id="results-fixtures-fully-passed-of-7">Results (fixtures fully
 passed, of 7)</h2>
 <table>
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
-</colgroup>
 <thead>
 <tr>
 <th>Engine</th>
@@ -239,7 +231,7 @@ file</td>
 <tr>
 <td>python-docx raw extract</td>
 <td>4 of 7</td>
-<td>loses tables, footnotes, and link URLs entirely – body paragraph
+<td>loses tables, footnotes, and link URLs entirely -- body paragraph
 text only; ~3-40 ms</td>
 </tr>
 <tr>
@@ -265,7 +257,7 @@ QUILL supports</td>
 </table>
 <h2 id="verdicts">Verdicts</h2>
 <p><strong>MarkItDown stays the default read engine.</strong> It passed
-the full corpus, it is already bundled, and its output is Markdown –
+the full corpus, it is already bundled, and its output is Markdown --
 exactly what the editor wants.</p>
 <p><strong>Pandoc is the offered alternative read engine</strong>
 (<code>docx_read_engine = pandoc</code>). Its output preserved the most
@@ -274,16 +266,16 @@ external, so the preference degrades to the MarkItDown chain when Pandoc
 is missing.</p>
 <p><strong>python-docx remains write-side and last-resort read fallback
 only.</strong> As a reader it is a paragraph-text extractor: tables,
-footnotes, and hyperlink URLs do not survive. As a writer it is QUILL’s
+footnotes, and hyperlink URLs do not survive. As a writer it is QUILL's
 native, hidden-codes-preserving path and is not in question.</p>
 <p><strong>pydocx: rejected, permanently.</strong> It cannot even be
 imported on Python 3.10+ (it uses <code>collections.Hashable</code>,
 removed in 3.10), its last release was 2016, and it only ever produced
 HTML one-way. Recorded here so the evaluation never needs repeating.</p>
-<p><strong>mammoth: not adopted – no current gap for it to
+<p><strong>mammoth: not adopted -- no current gap for it to
 fill.</strong> It is well maintained and passed the corpus via its HTML
 writer, but MarkItDown already covers the docx-to-Markdown route at
-equal fidelity, and mammoth’s own Markdown writer is its weaker path.
+equal fidelity, and mammoth's own Markdown writer is its weaker path.
 Decision tree (fix.md Part 5) stands: if a future fidelity gap appears
 in MarkItDown, mammoth is the candidate, and it would be
 <strong>bundled</strong> (small, pure-Python, BSD; a frozen build cannot

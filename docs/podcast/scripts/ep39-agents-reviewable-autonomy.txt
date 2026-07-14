@@ -1,0 +1,141 @@
+[JESSICA]
+The QUILL Cast, episode thirty-nine. I'm Jessica. Today: agents, reviewable autonomy, the top of the AI ladder we have been climbing since episode thirty-four.
+
+[LIAM]
+I'm Liam. Last episode, thirty-eight, was every-day writing style: samples, distilled guide, prompt-based conditioning, applied to every AI generation, fully local, fully reversible. The lever was rhythm and tone. Today we go up one more rung, and the lever changes shape. We are no longer conditioning how Quill writes. We are delegating what Quill should do, and asking it to write that down before it does it.
+
+[JESSICA]
+That is the entire shift. Custom instructions told Quill the rules. Style profiles told Quill the voice. Agents tell Quill the outcome, and then ask for the plan.
+
+[PAUSE]
+
+[LIAM]
+Definitions first, because the word agent is the most overused word in modern software, and we want the listener to be precise. In QUILL, an agent is a goal-driven instruction set that produces a reviewable plan before it produces any change. It is a named, declared bundle of behavior, living in a file, with a known identity, a known risk level, and a known set of permissions. It is not magic, it is not autonomy in the marketing sense, and it is not software that does things while you are not looking.
+
+[JESSICA]
+Verified against code, because the brief asked us to be honest about drift. There are two agent surfaces in QUILL right now, and they coexist, and the listener should know that. The first is the older single-shot agent layer in quill/core/assistant_agents.py, which ships seven fixed AgentProfile records: rewrite, research, summarize, qa, accessibility, expand, toc. Each is a prompt template with a goal, audience, and tone, and the result of running one is a text generation. The second is the new declarative catalog in quill/core/ai/agent_catalog.py, where every agent is a Markdown file with YAML front matter, validated against the agent schema. Sixteen bundled agent files live under quill/core/ai/agents, including accessibility-editor, plain-language-rewriter, summarizer, researcher, code-doctor, math-tutor, and the rest. The catalog is the path of record for new work. The older layer is still wired and still useful. We are telling you both, because pretending they are the same thing would be a lie.
+
+[LIAM]
+The format of the new catalog, and this is the part that matters for trust. An agent file is a Markdown document with front matter. The front matter carries metadata: id, display name, description, risk level, default scope, recommended file types, default harness, an optional tools list, and optional permission overrides. The body of the Markdown is the agent's system prompt, the instructions the model reads, written in plain prose, as long and as richly formatted as the author likes. The whole point of the format is that the prompt is reviewable in a text editor and diffable in version control, not trapped on one JSON line. The README in the agents folder is explicit: to review or edit an agent, read or change the body.
+
+[JESSICA]
+And the body of one is small, on purpose. The accessibility-editor agent, for instance, is five lines. It tells the model to look for screen-reader-hostile structure, missing or skipped heading levels, link text like click here, tables used for layout, images without described purpose, ambiguous lists, and to propose concrete minimal fixes. Five lines. You can read it aloud, in full, before you ever run it. That is the design.
+
+[PAUSE]
+
+[LIAM]
+Now the moment the design becomes a feature. When you run an agent, QUILL does not let the model touch your document. The model produces a proposal, and the proposal is converted into a structured plan. For the bundled single-shot agents wired through the menu, the plan is one AI call and one text result, surfaced in the agent result dialog. For the Accessibility Tune-Up, the flagship agent experience, the plan is built by a deterministic scanner in quill/core/accessibility_agent.py, then turned into a checklist dialog. We will walk both in this episode, in that order.
+
+[JESSICA]
+The Accessibility Tune-Up first, because it is the one a listener can drive on a real document in front of them. From the menu, AI, Accessibility Tune-Up. The command id registered in main frame is tools.ai_accessibility_agent, and the handler is make_document_accessible. Verified.
+
+[LIAM]
+What happens next, exactly, with no magic. The handler reads the current document, figures out the markup context, and calls build_plan from the accessibility agent module with the document name, the document text, the markup, and a scope label that defaults to current document. The build_plan function does not call any model. It runs the same GLOW audit primitives that the audit-and-fix feature has been using, plain language checks, and link-text checks, and structures the findings into an ordered list of AgentStep records. Each step has an id, a category, a title, a rationale, a before snippet, an after snippet, a line number, and a flag saying whether it is automatically fixable. The categories, in display order, are structure, alt text, link text, plain language, and cleanup.
+
+[JESSICA]
+Then a dialog opens, titled Accessibility Tune-Up, 860 by 620, with a header explaining the audit, a one-line summary built by summarize_plan, and a CheckListBox listing every step. Each item is a screen-reader-friendly label: the category, the title, the line number, and a needs-review tag for advisory steps that the scanner cannot auto-fix. Auto-fixable steps are pre-checked. Advisory steps are listed but unchecked, because writing real alt text or choosing a better heading is a human judgement call.
+
+[LIAM]
+The detail pane below the list shows the rationale and a before snippet, or a before-and-after pair for auto-fixable steps, or a context snippet and a needs-judgement note for advisory ones. The Apply button is the only mutation control. Closing the dialog without clicking Apply is a no-op. That is the entire shape of the feature.
+
+[JESSICA]
+The do-this-now beat, before we keep going. If you have a document open, take a moment. Open the AI menu, choose Accessibility Tune-Up. The dialog should open. Read the header. Read the summary line. Look at the list. If you have a real document, look at how many of the steps are pre-checked, and how many are tagged needs review. Pick one step. Read its rationale. Read its before and after. Make a decision: do you want it applied, or not? Pause the audio. Come back when you have either ticked or unticked at least one step.
+
+[LIAM]
+When you come back, two things to notice. First, the list is editable. The checkboxes are not a vote of confidence you have to honor. You can uncheck an auto-fixable step if you disagree with the proposed change. You can leave a needs-review step unchecked because you want to handle it yourself. The plan is a starting point, not a verdict. Second, when you click Apply, the only thing that runs is apply_plan from the same module, called with the set of step ids you actually checked. Advisory steps and unchecked steps are reported as skipped. Auto-fixable steps you accepted are applied in plan order, deterministically, and the result is a single text replacement the editor records as one undo step.
+
+[JESSICA]
+And the safety trail is real. The plan reports findings before the run, the result reports findings after, and the difference is what the agent actually did. If you accept everything and hate the result, control Z, once, the document is exactly where it was. The blast radius of a bad agent decision in QUILL is one keystroke wide.
+
+[PAUSE]
+
+[LIAM]
+Now the agent catalog, and the multi-step kind of agent, because the brief asked us to walk the family, not just the most visible member. The multi-step agents live in the same agents folder, but they declare needs_tool_use in their front matter, which signals that the agent depends on the multi-step tool loop rather than a single generate-and-apply pass. The model in the loop sees the tools the gateway exposes and chooses, in a strict JSON protocol, the next tool to call or a final answer. The planner that drives this loop is in quill/core/ai/tool_planner.py, and the model is told the available tools, the running transcript, and the rule that it must reply with exactly one JSON object per step.
+
+[JESSICA]
+The tools themselves are defined in quill/core/ai/agent_tools.py, one file, twelve descriptors, used by every harness. Read tools: read_selection, read_document, read_outline, read_section, read_app_state, audit_accessibility. Write tools: replace_selection, insert, apply_patch, run_command. Plus web_search and web_fetch, which ask consent and are off unless configured. Every one of these goes through the SafeEditorToolGateway. None of them touches the document directly.
+
+[LIAM]
+The gateway, in quill/core/ai/tool_gateway.py, is the single audited surface. Every tool call resolves a permission through the broker, records a redacted activity entry, emits a normalized AgentEvent, and routes medium or larger edits through build_diff_review for the accessible one-undo preview we have used since episode twenty-six. The host injects editor callbacks. The broker decides. The gateway is the only place that maps tool names to actual edits.
+
+[JESSICA]
+And the broker, in quill/core/ai/permissions.py, is the place that answers one question: given this agent's risk level and the user's safety profile, may this tool category run, and how. The answer is one of allow, ask, preview_required, or deny. The four user profiles, Careful, Balanced, Power User, and Locked Down, set a default per category. The agent's risk level is a floor that can only tighten, never loosen. The run_command category has a non-negotiable floor, hard-coded in the broker, that targets the SAFE_TOOL_IDS allowlist from quill/core/ai/agent.py. Twenty-three safe command ids, no profile can permit a command id outside that list.
+
+[PAUSE]
+
+[LIAM]
+Let us make that real with one example, because numbers beat adjectives. Take the Accessibility Editor agent. Its front matter declares risk medium, default scope full_document, and permissions read_document ask, modify_document preview_required. On the default Balanced profile, read_document is already ask, so nothing changes. modify_document is already preview_required, so nothing changes. The risk floor for medium is ask, which is not as strict as preview_required, so the preview stands. The user gets the diff review. Good.
+
+[JESSICA]
+Now the same agent on a Power User profile. read_document drops to allow, the agent can read the whole document without asking. modify_document stays preview_required, which the PRD calls the one-undo guarantee on document-wide edits. The agent can read freely and still has to preview the patch. Also good, the design holds across the profile.
+
+[LIAM]
+And the same agent under Locked Down. read_document flips to deny, modify_document to deny. The agent cannot read the document to plan a fix and cannot apply a fix if it had one. The user gets a refusal, the document is untouched, and the agent editor surfaces a one-line reason. That is the entire safety model in three rows of a table.
+
+[JESSICA]
+The shared editing discipline, threaded through every surface, and worth naming once more. Every mutating tool takes an undo checkpoint through the host before it acts. Every apply is logged with a redacted ActivityEntry carrying the agent id, the harness, and the summary. Every preview and every refusal emits an AgentEvent the streaming event bridge carries to the announcer. The screen reader gets a discrete announcement at every step. The audit log survives the session. There is no quiet path through the system.
+
+[PAUSE]
+
+[LIAM]
+Partial consent, which is the part the brief asked us to be specific about, and the part the previous short version gestured at without naming. Partial consent is the property that lets you approve part of a plan, not all of it. The Accessibility Tune-Up supports it through the CheckListBox: you can uncheck any auto-fixable step, leave any advisory step unchecked, and the apply step only takes the union of the step ids you actually checked. The agent catalog supports it through the same preview gate: a multi-step agent that wants to apply a patch produces a DiffReview, the user can accept some hunks and reject others, the gateway's apply method records exactly what was applied. The code is explicit about it. The DiffReviewDialog docstring says, present the diff as a navigable checklist of added, removed, changed hunks, the reader can apply all, some, or none, applying is handed back to the caller as a single replacement text so the editor records it as one undo unit.
+
+[JESSICA]
+That single-undo property is the lever that makes partial consent safe. Even when you apply half a plan, the apply is one text replacement, one undo checkpoint, one entry in the activity log. You can always step back to the document as it was before the agent touched it. You cannot step back to the document as it was between two accepted hunks, because the model was always going to write a single result, and we will not invent intermediate states that never existed. That is the honesty line.
+
+[LIAM]
+And the standing reassurance, one more time, because it is the reason any of this is comfortable. Reject everything, and your document is untouched. Accept everything and hate it, control Z, once. Accept three of seven steps, and the four you skipped are still missing from your document, the three you accepted are now there, and undo takes the whole thing back. The blast radius of a bad agent decision in QUILL is one keystroke wide.
+
+[PAUSE]
+
+[JESSICA]
+When is the agent rung the right one. The test from last episode, expanded. If the steps depend on what is in the document, the work is agent territory. Fix this document according to these standards, where the fixes vary per document, cannot be a fixed-step skill. Judgment about what to do, not just how, is the boundary line. The Accessibility Tune-Up is the clearest case: the same audit on two different documents produces two different plans, ordered by category and line, with different hunks, different advisory steps, different findings before and after.
+
+[LIAM]
+The promotion path we have been climbing completes here, and we want to name it as a whole, not in pieces. The AI library has four rungs. Prompts, single lines, no model conditioning, the lowest rung. Skills, reusable prompt-plus-instructions packs, the second. Agents, named identities with risk and permissions and tools, the third. And beyond that, the multi-step agent with the tool loop, the rung this episode is really about. A skill you keep hand-adjusting per document is a skill asking to become an agent. An agent you keep hand-driving turn by turn is an agent asking to become a multi-step agent. The Library's ladder runs all the way up, each rung earned by the work outgrowing the rung below.
+
+[JESSICA]
+The craft of reviewing plans, which is genuinely the skill of the coming decade, and the skill our audience gets to learn with the safest training wheels in the industry. Read for scope. Does the plan touch only what the goal implied, or has the agent wandered? Read for order. Do the steps build sensibly, or is the agent fixing the same paragraph three different ways? Read for the unstated. What is missing that you would have done? A accessibility audit that proposes alt text for every image is incomplete if it does not flag the two images that genuinely need it. A rewrite that tightens sentences is incomplete if it leaves the broken structure underneath. The plan is editable, the checklist is editable, approval is not all-or-nothing.
+
+[LIAM]
+Honest performance note, threaded from the engine episodes. Ambitious plans benefit from stronger models. On a small free model, expect solid simple plans and occasional clumsiness on complex ones. QUILL deliberately simplifies agent strategies on smaller models so they finish instead of stalling. The architecture is identical either way. The ceiling moves with the model. The README in the agents folder is explicit about it, too. Multi-step agents should declare needs_tool_use, small free models are unreliable at the tool loop, QUILL notes works best with a stronger model, but still offers the agent. Graceful degradation, never a hard block.
+
+[JESSICA]
+The full safety story, stated without softening, because honesty is the house rule. The agent never edits your document directly. Every mutating tool call goes through the gateway. The gateway asks the broker, the broker asks the profile and the risk floor, the gateway then either shows you a diff, asks you to confirm, runs silently if the decision is allow, or refuses. After the apply, the gateway emits an event, logs the activity, takes an undo checkpoint, announces a status. The chain is: agent proposes, gateway mediates, broker arbitrates, preview lets you see, apply is one undoable text replacement, log records what happened, announce tells the screen reader. There is no path through that chain that skips a step.
+
+[PAUSE]
+
+[LIAM]
+Three small things to know about the menu, before homework, so the listener can find the feature. The Accessibility Tune-Up sits under AI, Accessibility Tune-Up, command id tools.ai_accessibility_agent. The older single-shot agents sit under AI, AI Library, where each profile has an entry that runs it. The new agent catalog, when you are ready to browse it as a library, is reachable through the Agent Center, command id tools.ai_agent_center. The older layer is still there, still useful, still wired. The catalog is the path of record.
+
+[JESSICA]
+And one honest correction while we are here, because a previous draft of this episode said the agents folder shipped twelve bundled agents. Verified against the directory: the folder ships sixteen. The earlier number was wrong. Sixteen bundled agent files, plus the README, plus the agent lint enforces the authoring standard. If you run the lint and see sixteen agents, that is the count you should expect.
+
+[LIAM]
+The author surface, briefly, because a few listeners are going to want to write their own. A new agent is a Markdown file in the catalog, named after the id, validated by validate_agent, lintable with python -m quill.tools.agent_lint path. The lint is strict: the file name must match the id, the description must be a real one-line summary, the system prompt must be substantive, a mutating permission may never be allow, it must keep a human in the loop, the default harness must be a known harness, recommended file types and tools must be in canonical form. A user-saved agent lives in app data agents, loaded after the bundled ones, so a user agent with the same id shadows the bundled one. That is the documented precedence. Promote-to-agent, when you turn a skill into an agent, writes there.
+
+[JESSICA]
+And the bigger picture. The agent catalog is the same shape as Claude Code subagents, the same shape as the Claude Agent SDK, the same shape as QUILL's own skill packs. The choice was deliberate: portable agent files, reviewable in a text editor, diffable in version control, inspectable in code review. The agent is not a black box you configure through a UI. It is a document you read, edit, and version. That is the same posture as the skill packs, the same posture as the prompt library, the same posture we have been building since the library episode.
+
+[PAUSE]
+
+[JESSICA]
+Homework, four steps, in order. One. Run the Accessibility Tune-Up on a genuinely messy document. Read the whole plan aloud before deciding anything. Note how many steps are auto-fixable, how many are advisory, how the steps are ordered by category and line. Two. Approve part of a plan, not all of it. Pick the three you most agree with, leave the rest unchecked, click Apply, read the result report, count findings before and after, undo with control Z, confirm the document is back where it was. Three. Pick your most hand-adjusted skill or workflow from the AI library and write, in one sentence, the goal you would hand an agent instead. The sentence test is the boundary line we described earlier. Four. Run the agent standards linter once, even if you have not authored an agent, so the command is in your fingers: python -m quill.tools.agent_lint quill/core/ai/agents. The output should be sixteen clean agents and the README skipped. If it is not, that is news.
+
+[LIAM]
+And one more thing for the listener who asked about the partial-apply path during a live test. When you click Apply on a multi-hunk review, the dialog does not lock. You can read each hunk's detail, untick any hunk you do not want, and then click Apply. The apply step takes whatever you have ticked at that moment. The list of checked items is the source of truth, not what was pre-checked when the dialog opened. So if you come back to a half-decided dialog later, the checked list is still the checked list, and Apply honors it. This matters because it is the one place in QUILL where a UI control is intentionally readable but not silently authoritative.
+
+[JESSICA]
+Next episode, episode forty, opens part seven of the course. The Accessible Vault. Linked notes, backlinks, search, tags, embeds, templates, all rebuilt for the ear, screen-reader-first, the same way every other feature in this series has been. After forty through fifty-four, the course covers the vault, story studio, glow in depth, braille production, quillins, trust, and the two power-user episodes that close us out. Fifteen episodes to go after today, fifty-four total in the series. We named that number in episode one and we still owe you every one of them.
+
+[LIAM]
+I'm Liam.
+
+[JESSICA]
+I'm Jessica. Read the plan, then sign it. And if you have not run the Accessibility Tune-Up on a real document, the homework is waiting.
+
+[LIAM]
+The QUILL Cast is a fifty-four-episode audio course on QUILL. This was episode thirty-nine. Until episode forty, supervise well.
+
+[JESSICA]
+And remember: the agent proposes, the gateway mediates, the broker arbitrates, and you decide.

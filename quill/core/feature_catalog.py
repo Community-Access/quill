@@ -146,17 +146,6 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
         category="accessibility",
         dependencies=("core.editor",),
     ),
-    "core.rich_text_lens": FeatureDefinition(
-        "core.rich_text_lens",
-        "Rich Text Lens",
-        description=(
-            "Native wxPython rich-text editing surface for .rtf files. Locked off "
-            "pending fuller screen-reader testing; RTF files continue to open as "
-            "plain text in the meantime. Remove locked_off to re-enable."
-        ),
-        category="editor",
-        locked_off=True,
-    ),
     "core.bw_whisperer": FeatureDefinition(
         "core.bw_whisperer",
         "BITS Whisperer",
@@ -267,6 +256,30 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
         aliases=("notes", "sticky", "sticky notes"),
         description="Inline sticky notes attached to document positions.",
         dependencies=("core.editor",),
+        category="core",
+    ),
+    "core.radio": FeatureDefinition(
+        "core.radio",
+        "Internet Radio",
+        aliases=("internet radio", "radio", "radio browser", "acb media"),
+        description=(
+            "Browse and play internet radio stations (RadioBrowser search, "
+            "bundled ACB Media stations, custom stations, and the website "
+            "link finder), with a status bar mini-player and system tray "
+            "controls."
+        ),
+        category="core",
+    ),
+    "core.podcasts": FeatureDefinition(
+        "core.podcasts",
+        "Podcasts",
+        aliases=("podcasts", "podcast manager", "opml"),
+        description=(
+            "Subscribe to podcasts (iTunes search, feed URL, or OPML import), "
+            "download or stream episodes with pause/resume, organize shows "
+            "into nested folders, and play through a shared player with a "
+            "status bar mini-player and system tray controls."
+        ),
         category="core",
     ),
     "core.notebook": FeatureDefinition(

@@ -185,7 +185,7 @@ that no content-send path is lit up in a public build.</p>
 <p>This review intentionally changes no behavior. It is a checkpoint
 over the existing implementation plus recommendations for a future,
 separately approved inbound-only release.</p>
-<h2 id="summary-of-findings">1. Summary of findings</h2>
+<h2 id="1-summary-of-findings">1. Summary of findings</h2>
 <ul>
 <li>The WordPress provider is fully implemented in <code>main</code> for
 both directions: inbound (verify, browse, load) and outbound (create,
@@ -200,16 +200,17 @@ is filtered out of the command palette, so nothing - inbound or outbound
 <li>The network layer is already hardened: an HTTPS-only endpoint
 policy, verified TLS contexts, egress-audit registration, and OS-backed
 secret storage.</li>
-<li>Conclusion: “do not light up the code to send content to WordPress”
+<li>Conclusion: "do not light up the code to send content to WordPress"
 is already satisfied by the locked feature flag. No change was required
 to keep send dark.</li>
 </ul>
-<h2 id="where-the-inbound-touchpoints-embed">2. Where the inbound
+<h2 id="2-where-the-inbound-touchpoints-embed">2. Where the inbound
 touchpoints embed</h2>
-<h3 id="add-an-account-connection">2.1 Add an account (connection)</h3>
+<h3 id="21-add-an-account-connection">2.1 Add an account
+(connection)</h3>
 <ul>
-<li>Command: <code>publishing.connections</code> (“Publishing
-Connections…”).</li>
+<li>Command: <code>publishing.connections</code> ("Publishing
+Connections...").</li>
 <li>Registered: <code>quill/ui/main_frame.py</code> (command registry)
 -&gt; handler <code>MainFrame._open_publishing_connections</code>
 (<code>main_frame.py:12470</code>).</li>
@@ -226,10 +227,10 @@ passwords are stored via Windows Credential Manager, falling back to
 DPAPI-protected JSON (<code>save_publishing_secret</code> /
 <code>load_publishing_secret</code>).</li>
 </ul>
-<h3 id="show-pages-and-posts">2.2 Show pages and posts</h3>
+<h3 id="22-show-pages-and-posts">2.2 Show pages and posts</h3>
 <ul>
-<li>Command: <code>publishing.browse_content</code> (“Browse Publishing
-Content…”).</li>
+<li>Command: <code>publishing.browse_content</code> ("Browse Publishing
+Content...").</li>
 <li>Handler: <code>MainFrame._browse_publishing_content</code>
 (<code>main_frame.py:12499</code>).</li>
 <li>Dialog: <code>BrowsePublishingContentDialog</code>
@@ -243,7 +244,7 @@ on <code>QuillTaskManager</code> with a real Cancel button.</li>
 <code>context=edit</code>, <code>status=publish,draft</code>, and a
 trimmed <code>_fields</code> projection.</li>
 </ul>
-<h3 id="load-one-into-the-editor">2.3 Load one into the editor</h3>
+<h3 id="23-load-one-into-the-editor">2.3 Load one into the editor</h3>
 <ul>
 <li>Inside the browse dialog, selecting an item loads it via
 <code>load_publishing_remote_item</code>
@@ -262,7 +263,7 @@ id, content kind, status, updated-at) are what later enable
 compare/update - they are the linkage that an outbound flow would
 consume, and they are harmless to populate on the inbound path.</li>
 </ul>
-<h2 id="safety-posture-verified">3. Safety posture (verified)</h2>
+<h2 id="3-safety-posture-verified">3. Safety posture (verified)</h2>
 <ul>
 <li>Endpoint policy: <code>_validate_endpoint_security</code>
 (<code>publishing.py:715</code>) is called at the top of verify, browse,
@@ -291,7 +292,7 @@ header, never persisted in the connection profile.</li>
 <code>feature_for_command</code> -&gt; <code>future.publishing</code>
 (<code>quill/core/feature_command_map.py:317-328</code>).</li>
 </ul>
-<h2 id="confirmation-send-is-not-lit">4. Confirmation: send is not
+<h2 id="4-confirmation-send-is-not-lit">4. Confirmation: send is not
 lit</h2>
 <p>Outbound commands exist and are registered for keymap/palette
 stability (<code>publishing.create_draft</code>,
@@ -301,7 +302,7 @@ stability (<code>publishing.create_draft</code>,
 all map to <code>future.publishing</code> and are therefore unreachable
 while it is locked off. No outbound path is exposed in a public build,
 and this review adds none.</p>
-<h2 id="recommendations">5. Recommendations</h2>
+<h2 id="5-recommendations">5. Recommendations</h2>
 <ol type="1">
 <li>(Implemented 2026-06-30, on branch
 <code>feature/publishing-google-wp-polish</code>.) Split the feature so
@@ -316,7 +317,7 @@ built in two independently gated halves
 (<code>main_frame_menu.py</code>). <code>future.publishing_read</code>
 is on by default only in the Full Quill profile; off elsewhere,
 individually enableable via Manage Individual Features. This lets a
-release expose “open my WordPress posts/pages in QUILL” while keeping
+release expose "open my WordPress posts/pages in QUILL" while keeping
 create/update/publish/schedule locked.</li>
 <li>Consider tightening HTTP allowance. <code>_is_local_host</code>
 currently permits <code>http</code> to private LAN ranges (10/8,

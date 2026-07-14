@@ -100,6 +100,57 @@ def _write_store(credentials: dict[str, str]) -> None:
 # ---------------------------------------------------------------------------
 
 
+def _macos_keychain_load(cred_name: str) -> str:
+    """Read a secret from the macOS login Keychain (best-effort)."""
+    try:
+        from quill.platform.macos.keychain import get_secret
+
+        return (get_secret(cred_name) or "").strip()
+    except Exception:  # noqa: BLE001 - keychain unavailable
+        return ""
+
+
+def _macos_keychain_save(cred_name: str, secret: str) -> None:
+    """Write (or clear, when *secret* is empty) a Keychain entry (best-effort)."""
+    try:
+        from quill.platform.macos.keychain import delete_secret as _kc_delete
+        from quill.platform.macos.keychain import set_secret as _kc_set
+
+        if secret:
+            _kc_set(cred_name, secret)
+        else:
+            _kc_delete(cred_name)
+    except Exception:  # noqa: BLE001 - keychain unavailable
+        pass
+
+
+def _macos_keychain_delete(cred_name: str) -> bool:
+    """Remove a Keychain entry, returning whether it existed (best-effort)."""
+    try:
+        from quill.platform.macos.keychain import delete_secret as _kc_delete
+        from quill.platform.macos.keychain import get_secret as _kc_get
+
+        existed = _kc_get(cred_name) is not None
+        _kc_delete(cred_name)
+        return existed
+    except Exception:  # noqa: BLE001 - keychain unavailable
+        return False
+
+
+def _portable_macos_warn() -> None:
+    """Log once-per-call that portable credential storage is Windows-only.
+
+    Portable mode has no DPAPI-equivalent single-folder store off Windows. On
+    macOS the login Keychain is the best available store, so credentials are
+    routed there instead of being silently dropped (#35) -- but the user is
+    told, because Keychain storage is system-level and not portable.
+    """
+    logger.warning(
+        "Portable credential storage is Windows-only; on macOS keys are kept "
+        "in the login Keychain, not the portable folder."
+    )
+
+
 def load_secret(cred_name: str) -> str:
     """Return the secret for *cred_name*, or ``""`` when not found."""
     env_val = os.environ.get(_cred_to_env_var(cred_name), "").strip()
@@ -107,29 +158,30 @@ def load_secret(cred_name: str) -> str:
         return env_val
 
     if is_portable_mode():
-        if not _IS_WINDOWS:
-            return ""
-        stored = _read_store().get(cred_name, "")
-        if not stored:
-            return ""
-        try:
-            from quill.platform.windows.dpapi import unprotect_secret
+        if _IS_WINDOWS:
+            stored = _read_store().get(cred_name, "")
+            if not stored:
+                return ""
+            try:
+                from quill.platform.windows.dpapi import unprotect_secret
 
-            return unprotect_secret(stored, entropy=_PORTABLE_STORE_ENTROPY).strip()
-        except Exception:
-            logger.warning("failed to decrypt portable key '%s'", cred_name)
+                return unprotect_secret(stored, entropy=_PORTABLE_STORE_ENTROPY).strip()
+            except Exception:
+                logger.warning("failed to decrypt portable key '%s'", cred_name)
+            return ""
+        # No DPAPI-equivalent single-folder store off Windows. On macOS fall
+        # back to the login Keychain with a warning so a key is not silently
+        # lost (#35); other platforms have no secure store.
+        if _IS_MACOS:
+            _portable_macos_warn()
+            return _macos_keychain_load(cred_name)
         return ""
 
     if not _IS_WINDOWS:
         # macOS: the login Keychain is the real store (#160). Other platforms
         # have no secure store, so a key simply isn't persisted there.
         if _IS_MACOS:
-            try:
-                from quill.platform.macos.keychain import get_secret
-
-                return (get_secret(cred_name) or "").strip()
-            except Exception:  # noqa: BLE001 - keychain unavailable
-                return ""
+            return _macos_keychain_load(cred_name)
         return ""
     try:
         from quill.platform.windows.credential_manager import (
@@ -152,35 +204,27 @@ def save_secret(cred_name: str, secret: str) -> None:
         return  # never overwrite an env-var override
 
     if is_portable_mode():
-        if not _IS_WINDOWS:
-            return
-        store = _read_store()
-        if secret:
-            from quill.platform.windows.dpapi import protect_secret
+        if _IS_WINDOWS:
+            store = _read_store()
+            if secret:
+                from quill.platform.windows.dpapi import protect_secret
 
-            store[cred_name] = protect_secret(secret, entropy=_PORTABLE_STORE_ENTROPY)
-        else:
-            store.pop(cred_name, None)
-        _write_store(store)
+                store[cred_name] = protect_secret(secret, entropy=_PORTABLE_STORE_ENTROPY)
+            else:
+                store.pop(cred_name, None)
+            _write_store(store)
+            return
+        # Portable mode off Windows: route macOS to the Keychain with a warning
+        # rather than silently dropping the save (#35).
+        if _IS_MACOS:
+            _portable_macos_warn()
+            _macos_keychain_save(cred_name, secret)
         return
 
     if not _IS_WINDOWS:
         # macOS: persist to the login Keychain (#160). Empty secret clears it.
         if _IS_MACOS:
-            try:
-                from quill.platform.macos.keychain import (
-                    delete_secret as _kc_delete,
-                )
-                from quill.platform.macos.keychain import (
-                    set_secret as _kc_set,
-                )
-
-                if secret:
-                    _kc_set(cred_name, secret)
-                else:
-                    _kc_delete(cred_name)
-            except Exception:  # noqa: BLE001 - keychain unavailable
-                pass
+            _macos_keychain_save(cred_name, secret)
         return
     try:
         from quill.platform.windows.credential_manager import (
@@ -205,31 +249,24 @@ def save_secret(cred_name: str, secret: str) -> None:
 def delete_secret(cred_name: str) -> bool:
     """Remove *cred_name* from the active store.  Returns True when found."""
     if is_portable_mode():
-        if not _IS_WINDOWS:
+        if _IS_WINDOWS:
+            store = _read_store()
+            if cred_name in store:
+                del store[cred_name]
+                _write_store(store)
+                return True
             return False
-        store = _read_store()
-        if cred_name in store:
-            del store[cred_name]
-            _write_store(store)
-            return True
+        # Portable mode off Windows: route macOS to the Keychain with a warning
+        # rather than silently reporting nothing-to-delete (#35).
+        if _IS_MACOS:
+            _portable_macos_warn()
+            return _macos_keychain_delete(cred_name)
         return False
 
     if not _IS_WINDOWS:
         # macOS: remove from the login Keychain, reporting whether it existed.
         if _IS_MACOS:
-            try:
-                from quill.platform.macos.keychain import (
-                    delete_secret as _kc_delete,
-                )
-                from quill.platform.macos.keychain import (
-                    get_secret as _kc_get,
-                )
-
-                existed = _kc_get(cred_name) is not None
-                _kc_delete(cred_name)
-                return existed
-            except Exception:  # noqa: BLE001 - keychain unavailable
-                return False
+            return _macos_keychain_delete(cred_name)
         return False
     try:
         from quill.platform.windows.credential_manager import (

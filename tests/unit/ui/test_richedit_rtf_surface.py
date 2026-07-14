@@ -1,12 +1,12 @@
-"""QuillRichEdit surface (native Rich Edit wrapper, "richedit_rtf") with RTF via TOM.
+"""QuillRichEdit — QUILL's one editor surface — with RTF via TOM.
 
-Contract-level tests (no live wx/COM): the setting round-trips, the combo offers
-the surface, the Experimental-tab explainer covers it, MainFrame dispatches it,
-the factory tags the surface + falls back safely, RTF I/O uses the Text Object
-Model (not the crashing EM_STREAM callback), and the wrapper degrades cleanly
-without a real HWND. The end-to-end RTF round-trip is verified on-device (a real
-RICHEDIT50W + comtypes), which CI has no handle for. See
-docs/planning/editor-surface-experiments.md §8.
+Contract-level tests (no live wx/COM): QuillRichEdit is the default (and only)
+surface every document tab is built on, the braille fix is applied from the
+Braille-tab settings by default, the factory tags the surface + falls back
+safely, RTF I/O uses the Text Object Model (not the crashing EM_STREAM
+callback), and the wrapper degrades cleanly without a real HWND. The
+end-to-end RTF round-trip is verified on-device (a real RICHEDIT50W +
+comtypes), which CI has no handle for.
 """
 
 from __future__ import annotations
@@ -15,10 +15,6 @@ import inspect
 
 from quill.core.settings import Settings
 from quill.core.settings_specs import SETTING_SPECS
-
-
-def _surface_spec():
-    return next(spec for spec in SETTING_SPECS if spec.key == "experimental_editor_surface")
 
 
 class _FakeSurface:
@@ -34,36 +30,82 @@ class _FakeSurface:
         return self._value
 
 
-def test_settings_accept_richedit_rtf_surface() -> None:
-    loaded = Settings.from_dict({"experimental_editor_surface": "richedit_rtf"})
-    assert loaded.experimental_editor_surface == "richedit_rtf"
+def test_quill_richedit_is_the_one_editor_surface() -> None:
+    """Every document tab is built through create_richedit_rtf — no kind ladder.
 
-
-def test_settings_still_reject_unknown_surfaces() -> None:
-    loaded = Settings.from_dict({"experimental_editor_surface": "bogus"})
-    assert loaded.experimental_editor_surface == "default"
-
-
-def test_combo_offers_quill_richedit_surface() -> None:
-    choices = dict(_surface_spec().choices)
-    assert "richedit_rtf" in choices
-    assert "QuillRichEdit" in choices["richedit_rtf"]
-
-
-def test_explainer_covers_every_surface_choice() -> None:
-    from quill.ui.main_frame import MainFrame
-
-    source = inspect.getsource(MainFrame._build_experimental_explainer)
-    for value, _label in _surface_spec().choices:
-        assert f'"{value}": (' in source, f"no explainer text for surface {value!r}"
-
-
-def test_main_frame_dispatches_richedit_rtf_surface() -> None:
+    The default-surface pin: the surface experiment is decided, so the old
+    editor_control_kind / experimental override dispatch must stay gone.
+    """
     from quill.ui.main_frame import MainFrame
 
     source = inspect.getsource(MainFrame._create_document_tab)
-    assert 'kind == "richedit_rtf"' in source
     assert "create_richedit_rtf" in source
+    for retired in (
+        "editor_control_kind",
+        "experimental_editor_surface",
+        "experimental_acknowledged",
+        'kind == "richedit_rtf"',
+        "create_stc_editor",
+        "create_win32_edit_host",
+        "create_rtf_editor",
+    ):
+        assert retired not in source, f"retired surface dispatch resurfaced: {retired}"
+
+
+def test_braille_fix_settings_default_on_and_round_trip() -> None:
+    # Both halves of the braille fix ship ON by default (#616/#813).
+    settings = Settings()
+    assert settings.braille_editor_system_edit_fix is True
+    assert settings.braille_editor_hide_border is True
+    loaded = Settings.from_dict({
+        "braille_editor_system_edit_fix": False,
+        "braille_editor_hide_border": False,
+    })
+    assert loaded.braille_editor_system_edit_fix is False
+    assert loaded.braille_editor_hide_border is False
+
+
+def test_braille_fix_specs_live_on_the_braille_tab() -> None:
+    specs = {spec.key: spec for spec in SETTING_SPECS}
+    fix = specs["braille_editor_system_edit_fix"]
+    border = specs["braille_editor_hide_border"]
+    assert fix.group == "braille" and border.group == "braille"
+    assert "recommended" in fix.label.lower()
+    assert "cell" in fix.label.lower() and "dots" in fix.label.lower()
+    # The border explainer carries the honest warning about what unchecking does.
+    assert "braille cell alignment" in border.label.lower()
+    assert "breaks braille cell alignment" in border.description.lower()
+
+
+def test_main_frame_applies_fix_and_borderless_by_default() -> None:
+    """The fix-applied + borderless-by-default pins.
+
+    _create_document_tab must honor both Braille-tab checkboxes, defaulting
+    each to True so a missing attribute can never silently disable the fix.
+    """
+    from quill.ui.main_frame import MainFrame
+
+    source = inspect.getsource(MainFrame._create_document_tab)
+    assert '"braille_editor_system_edit_fix", True' in source
+    assert '"braille_editor_hide_border", True' in source
+    assert "BORDER_NONE" in source
+    assert "emulate_system_edit=" in source
+
+
+def test_border_uncheck_warns_at_decision_time() -> None:
+    # Unchecking Hide editor border must warn (it breaks cell alignment) and
+    # re-check unless the user explicitly confirms.
+    from pathlib import Path
+
+    source = Path("quill/ui/main_frame.py").read_text(encoding="utf-8")
+    start = source.index("def _confirm_show_editor_border(self")
+    body = source[start : source.index("\n    def ", start + 1)]
+    assert "breaks braille cell alignment" in body
+    assert "cell 1" in body
+    wiring = source.index('spec.key == "braille_editor_hide_border"')
+    window = source[wiring : wiring + 500]
+    assert "_confirm_show_editor_border" in window
+    assert "SetValue(True)" in window
 
 
 def test_factory_falls_back_and_tags_surface_kind() -> None:
@@ -187,30 +229,37 @@ def test_phase3_probes_are_safe_without_a_handle() -> None:
     assert "SES_EMULATESYSEDIT" in summary and "#813" in summary
 
 
-def test_emulate_sysedit_setting_round_trips() -> None:
-    loaded = Settings.from_dict({"experimental_richedit_emulate_sysedit": True})
-    assert loaded.experimental_richedit_emulate_sysedit is True
-    assert Settings().experimental_richedit_emulate_sysedit is False  # off by default
+def test_retired_surface_overrides_are_dropped_on_load() -> None:
+    """The upgrade-force scenario: old overrides cannot hold the fix off.
 
+    A user who had editor_control_kind = "plain" for braille, or the
+    experimental combo set to any surface, or an experimental-era
+    editor_hide_border False — all land on the promoted default with the fix
+    on, and the retired keys are reported for the one-time migration notice.
+    """
+    from quill.core.settings_migration import (
+        from_versioned,
+        pop_retired_settings_keys,
+    )
 
-def test_main_frame_gates_and_passes_the_emulate_lever() -> None:
-    from quill.ui.main_frame import MainFrame
-
-    source = inspect.getsource(MainFrame._create_document_tab)
-    assert "experimental_richedit_emulate_sysedit" in source
-    assert "emulate_system_edit=" in source
-    assert "acknowledged and" in source  # only when the experimental gates are on
-
-
-def test_everything_is_gated_behind_both_experimental_flags() -> None:
-    # The whole QuillRichEdit surface (and therefore all of its RTF/formatting/
-    # braille capabilities, which only exist once it is instantiated) is only
-    # activated when BOTH experimental gates are acknowledged -- so nothing here
-    # can reach a user who has not opted into experimental editor surfaces.
-    from quill.ui.main_frame import MainFrame
-
-    source = inspect.getsource(MainFrame._create_document_tab)
-    assert "experimental_acknowledged" in source
-    assert "experimental_editor_surfaces_enabled" in source
-    # The surface override (incl. richedit_rtf) is applied only under `acknowledged`.
-    assert "if acknowledged and override" in source
+    pop_retired_settings_keys()  # clear anything a previous test left behind
+    raw = {
+        "schema_version": 2,
+        "groups": {
+            "accessibility": {"editor_control_kind": "plain"},
+            "experimental": {
+                "experimental_editor_surface": "stc",
+                "experimental_editor_surfaces_enabled": True,
+                "experimental_richedit_emulate_sysedit": False,
+                "editor_hide_border": False,
+            },
+        },
+    }
+    loaded = from_versioned(raw)
+    assert loaded.braille_editor_system_edit_fix is True
+    assert loaded.braille_editor_hide_border is True
+    for retired in ("editor_control_kind", "editor_hide_border"):
+        assert not hasattr(loaded, retired)
+    seen = pop_retired_settings_keys()
+    assert "editor_control_kind" in seen and "editor_hide_border" in seen
+    assert pop_retired_settings_keys() == []  # consume-once

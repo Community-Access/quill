@@ -27,6 +27,9 @@ STATUS_BAR_ITEMS: tuple[str, ...] = (
     # Tab key behaviour: "Indent" (smart line indent) or "Tab char" (literal
     # tab insertion). Toggled with QUILL Key + U.
     "tab_mode",
+    # One Editor, Every Format: the Document Format switcher cell. Shows the
+    # current format ("Format: Markdown"); activating it opens the switcher.
+    "document_format",
     "selection",
     "encoding",
     "line_endings",
@@ -62,6 +65,12 @@ STATUS_BAR_ITEMS: tuple[str, ...] = (
     # default; auto-surfaces once the user picks a non-Native agentic engine,
     # and is the click target for the quick engine switcher.
     "ai_engine",
+    # Internet Radio mini-player: station + play/pause/stopped state. Hidden
+    # by default; auto-surfaces the first time a station is played.
+    "radio_player",
+    # Podcasts mini-player + download activity. Hidden by default;
+    # auto-surfaces the first time an episode plays or downloads.
+    "podcast_player",
 )
 
 
@@ -94,6 +103,8 @@ def _default_status_bar_hidden() -> list[str]:
         "braille",
         "section_heading",
         "ai_engine",
+        "radio_player",
+        "podcast_player",
     ]
 
 

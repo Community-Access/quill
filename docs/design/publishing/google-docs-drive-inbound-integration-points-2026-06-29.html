@@ -189,7 +189,7 @@ lit up. Building real OAuth + Drive + Docs network code is deliberately
 out of scope for this pass because it cannot be exercised safely or
 tested unattended, and because the standing instruction is to not light
 up sending content to Google.</p>
-<h2 id="in-scope-vs-out-of-scope-for-the-inbound-pass">1. In scope vs
+<h2 id="1-in-scope-vs-out-of-scope-for-the-inbound-pass">1. In scope vs
 out of scope for the inbound pass</h2>
 <p>In scope (read-only):</p>
 <ul>
@@ -211,8 +211,8 @@ separate approval, mirroring how WordPress send stays locked):</p>
 (PRD 9.2).</li>
 <li>Comment/suggestion creation or resolution (PRD 5, Level B).</li>
 </ul>
-<h2 id="why-this-is-its-own-subsystem-not-a-publishing-provider">2. Why
-this is its own subsystem, not a publishing provider</h2>
+<h2 id="2-why-this-is-its-own-subsystem-not-a-publishing-provider">2.
+Why this is its own subsystem, not a publishing provider</h2>
 <p>The WordPress provider is a REST + application-password model that
 fits the <code>publishing_providers</code> framework. Google Docs is
 materially different:</p>
@@ -226,11 +226,11 @@ projection (PRD sections 7, 10, 11), not HTML or Markdown
 round-tripping.</li>
 </ul>
 <p>So Google should be a sibling subsystem with its own File-menu
-surface and its own feature flag, reusing QUILL’s cross-cutting
+surface and its own feature flag, reusing QUILL's cross-cutting
 primitives (command registry, feature gating, credential storage, egress
 audit, task manager) rather than the
 <code>PublishingProviderClient</code> contract.</p>
-<h2 id="feature-gating-proposed">3. Feature gating (proposed)</h2>
+<h2 id="3-feature-gating-proposed">3. Feature gating (proposed)</h2>
 <ul>
 <li>Add <code>future.google_docs</code> to
 <code>quill/core/feature_catalog.py</code> with
@@ -245,8 +245,8 @@ commands.</li>
 them unreachable (the same mechanism that keeps
 <code>publishing.*</code> dark today).</li>
 </ul>
-<h2 id="inbound-command-and-menu-embed-map">4. Inbound command and menu
-embed map</h2>
+<h2 id="4-inbound-command-and-menu-embed-map">4. Inbound command and
+menu embed map</h2>
 <p>Per PRD 9.1, add a File submenu (built only when
 <code>future.google_docs</code> is enabled), with handlers registered in
 the command registry alongside the existing <code>publishing.*</code>
@@ -270,16 +270,16 @@ in Google Docs (web).</li>
 </ul>
 <p>Out-of-scope commands (<code>google.new_document</code>,
 <code>google.save_copy_to_drive</code>, <code>google.sync_now</code>,
-<code>google.refresh</code>, …) are intentionally not registered in this
-pass. When they are, they must land behind the send approval, never as
-part of the inbound surface.</p>
-<h2 id="load-into-editor-flow-mirrors-the-wordpress-inbound-shape">5.
+<code>google.refresh</code>, ...) are intentionally not registered in
+this pass. When they are, they must land behind the send approval, never
+as part of the inbound surface.</p>
+<h2 id="5-load-into-editor-flow-mirrors-the-wordpress-inbound-shape">5.
 Load-into-editor flow (mirrors the WordPress inbound shape)</h2>
 <ol type="1">
 <li><code>google.open_from_*</code> resolves an account + document
 id.</li>
 <li>A new core module (suggested <code>quill/core/google_docs.py</code>)
-fetches the Docs API document and maps it to QUILL’s semantic model,
+fetches the Docs API document and maps it to QUILL's semantic model,
 then projects to text-first content (PRD 10, 11). For a first inbound
 slice this can be a lossy but safe read-only projection; unsupported
 objects are preserved as labeled markers.</li>
@@ -296,7 +296,7 @@ shows the read-only state form from PRD 9.3 (for example
 <code>requiredRevisionId</code>/<code>targetRevisionId</code> write path
 is created. The shadow snapshot and operation journal described in the
 PRD belong to the later sync (send) phase and are not built here.</p>
-<h2 id="safety-requirements-for-the-eventual-implementation">6. Safety
+<h2 id="6-safety-requirements-for-the-eventual-implementation">6. Safety
 requirements for the eventual implementation</h2>
 <ul>
 <li>OAuth scopes must be the minimum read scopes for the inbound slice;
@@ -312,7 +312,7 @@ Google passwords (PRD 5 non-goal) and never log tokens (respect
 <li>Gate the whole subsystem under Safe Mode in addition to the feature
 flag, since it is a network + credential feature.</li>
 </ul>
-<h2 id="suggested-first-slice-when-approved">7. Suggested first slice
+<h2 id="7-suggested-first-slice-when-approved">7. Suggested first slice
 (when approved)</h2>
 <ol type="1">
 <li><code>future.google_docs</code> flag (locked off) +

@@ -15,6 +15,7 @@ working"; and the wizard's "keep it simple" checkbox puts a newcomer in Basic mo
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -56,6 +57,8 @@ __all__ = [
     "list_provider_models",
     "verify_model",
     "ollama_status",
+    "ollama_installed_models",
+    "pull_ollama_model",
 ]
 
 EXPERIENCE_BASIC = "basic"
@@ -464,20 +467,22 @@ def configured_cloud_providers() -> list[tuple[str, str]]:
     return [(opt.id, opt.name) for opt in CLOUD_PROVIDER_OPTIONS if stored_provider_key(opt.id)]
 
 
-def verify_model(provider_id: str, model: str) -> tuple[bool, str]:
+def verify_model(provider_id: str, model: str, *, host: str = "") -> tuple[bool, str]:
     """Quick check that *provider_id* + *model* actually returns a response.
 
     Uses a short timeout and a single attempt so it fails fast instead of hanging — the
     point is to catch a model that isn't installed/available (a common cause of a chat
     that "just sits there") before it's saved as the active connection. Never raises;
-    returns ``(ok, detail)`` where ``detail`` is a reason on failure.
+    returns ``(ok, detail)`` where ``detail`` is a reason on failure. ``host`` overrides
+    the provider's default endpoint -- for local Ollama, this is what makes verifying
+    against a remote/self-hosted server (not just localhost) actually work.
     """
     from quill.core.ai.providers import default_host_for_provider, default_model_for_provider
     from quill.core.assistant_ai import AssistantConnectionSettings, generate_assistant_response
 
     settings = AssistantConnectionSettings(
         provider=provider_id,
-        host=default_host_for_provider(provider_id),
+        host=host.strip() or default_host_for_provider(provider_id),
         model=(model or "").strip() or default_model_for_provider(provider_id),
     )
     try:
@@ -495,20 +500,21 @@ def verify_model(provider_id: str, model: str) -> tuple[bool, str]:
     return (bool(text and text.strip()), "" if (text and text.strip()) else "No response.")
 
 
-def list_provider_models(provider_id: str) -> tuple[list[str], str]:
+def list_provider_models(provider_id: str, *, host: str = "") -> tuple[list[str], str]:
     """Return ``(models, error_message)`` for a provider, using its stored key.
 
     Lists what the provider actually exposes — locally installed models for Ollama, or
     the account's available models for a cloud provider — so the wizard can offer the
     full set instead of only the curated suggestions. Never raises; ``error_message`` is
-    "" on success.
+    "" on success. ``host`` overrides the provider's default endpoint (local Ollama on a
+    remote/self-hosted server, not just localhost).
     """
     from quill.core.ai.providers import default_host_for_provider, default_model_for_provider
     from quill.core.assistant_ai import AssistantConnectionSettings, list_assistant_models
 
     settings = AssistantConnectionSettings(
         provider=provider_id,
-        host=default_host_for_provider(provider_id),
+        host=host.strip() or default_host_for_provider(provider_id),
         model=default_model_for_provider(provider_id),
     )
     try:
@@ -600,6 +606,78 @@ def ollama_status(host: str = "http://localhost:11434") -> tuple[bool, str, str]
             "",
         )
     return True, "", models[0]
+
+
+def ollama_installed_models(host: str = "http://localhost:11434") -> list[str]:
+    """Return the models currently installed on a local Ollama server, or ``[]``.
+
+    Lets the wizard's model picker separate "ready now" (already pulled) from
+    "available to pull" (a curated recommendation the server doesn't have yet) so it
+    can offer a Pull action instead of just telling the user to run a terminal command.
+    Never raises.
+    """
+    from quill.core.ai.providers import default_model_for_provider
+    from quill.core.assistant_ai import AssistantConnectionSettings, list_assistant_models
+
+    settings = AssistantConnectionSettings(
+        provider="ollama", host=host, model=default_model_for_provider("ollama")
+    )
+    try:
+        models, error = list_assistant_models(settings, "", timeout_seconds=3.0, max_attempts=1)
+    except Exception:  # noqa: BLE001 - any failure means "no models known"
+        return []
+    return [] if error else list(models)
+
+
+def pull_ollama_model(
+    model: str,
+    *,
+    host: str = "http://localhost:11434",
+    on_progress: Callable[[str], None] | None = None,
+    timeout_seconds: float = 1800.0,
+) -> tuple[bool, str]:
+    """Pull *model* into a local Ollama server. Returns ``(ok, message)``.
+
+    Drives Ollama's own streaming ``/api/pull`` endpoint -- the same one the ``ollama
+    pull`` CLI command uses -- so the wizard can offer a one-click alternative to "open a
+    terminal and type this" without depending on the ``ollama`` executable being on
+    PATH; the HTTP API is already how QUILL talks to Ollama everywhere else.
+    ``on_progress``, when given, is called with a short human-readable status line (e.g.
+    "downloading -- 45%") as the pull proceeds. The long default timeout accommodates
+    multi-gigabyte models on a slow connection. Never raises -- a failure is reported
+    through the return value, not an exception.
+    """
+    import json
+    import urllib.request
+
+    url = f"{host.rstrip('/')}/api/pull"
+    body = json.dumps({"name": model, "stream": True}).encode("utf-8")
+    request = urllib.request.Request(url, data=body, headers={"Content-Type": "application/json"})
+    try:
+        with urllib.request.urlopen(request, timeout=timeout_seconds) as response:
+            for raw_line in response:
+                line = raw_line.decode("utf-8", errors="replace").strip()
+                if not line:
+                    continue
+                try:
+                    payload = json.loads(line)
+                except ValueError:
+                    continue
+                if "error" in payload:
+                    return False, str(payload["error"])
+                status = str(payload.get("status", ""))
+                total = payload.get("total")
+                completed = payload.get("completed")
+                if on_progress is not None and status:
+                    if isinstance(total, int) and isinstance(completed, int) and total > 0:
+                        on_progress(f"{status} -- {completed * 100 // total}%")
+                    else:
+                        on_progress(status)
+                if status == "success":
+                    return True, ""
+        return True, ""
+    except Exception as exc:  # noqa: BLE001 - report the reason, never crash the UI
+        return False, str(exc)
 
 
 def apply_on_device_setup(*, host: str = "http://localhost:11434", model: str = "") -> None:

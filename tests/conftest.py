@@ -14,6 +14,29 @@ from pathlib import Path
 import pytest
 
 
+def pytest_configure(config: pytest.Config) -> None:
+    """Force pytest's ``tmp_path`` base directory under ``$HOME``.
+
+    ``paths.app_data_dir()`` only honours a ``QUILL_DATA_DIR`` override when
+    it resolves under ``Path.home()`` (H-1-core: rejects an override that
+    could redirect to an attacker-controlled path). Nearly every test that
+    isolates ``QUILL_DATA_DIR`` does so via the ``tmp_path`` fixture -- but
+    pytest's default tmp base is the OS temp directory, which on Windows
+    happens to live under ``%USERPROFILE%`` (home-relative) but on macOS is
+    ``/private/var/folders/...`` -- never under ``$HOME``. Every such test on
+    macOS therefore silently failed the H-1-core check and fell through to
+    the *real* ``~/.quill`` directory, reading and writing real state and
+    cross-contaminating later tests. This was invisible until now because
+    the macOS release CI job always segfaulted before pytest could report
+    the resulting failures (see the voice_browser_dialog fix). Forcing
+    basetemp under ``$HOME`` makes ``tmp_path`` satisfy the guard -- and
+    thus provide real isolation -- on every platform, not just by accident
+    on Windows.
+    """
+    if config.option.basetemp is None:
+        config.option.basetemp = str(Path.home() / ".quill-pytest-tmp")
+
+
 @pytest.fixture(autouse=True, scope="session")
 def _enable_dev_build_for_tests() -> None:
     """Patch paths._DEV_BUILD=True for the whole test session."""

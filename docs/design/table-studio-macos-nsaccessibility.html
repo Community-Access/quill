@@ -241,9 +241,6 @@
   </style>
 </head>
 <body>
-<header id="title-block-header">
-<h1 class="title">table-studio-macos-nsaccessibility</h1>
-</header>
 <h1
 id="table-studio-on-macos-the-nsaccessibility-bridge-design-spike">Table
 Studio on macOS: the NSAccessibility bridge (design spike)</h1>
@@ -257,7 +254,7 @@ real grid semantics when Table Studio comes to macOS. The cross-platform
 principle at the bottom is the contract the shipped Windows bridge
 already follows.</p>
 </blockquote>
-<h2 id="status-spike-design-not-yet-built">Status: Spike design / not
+<h2 id="status-spike-design--not-yet-built">Status: Spike design / not
 yet built</h2>
 <h2 id="what-this-will-do">What this will do</h2>
 <p>Expose the <code>wx.grid.Grid</code> widget as a proper
@@ -273,7 +270,7 @@ that:</p>
 <li>Receives the <code>NSView*</code> handle of the wxMac grid window
 via <code>grid.GetHandle()</code> cast through
 <code>NSView*</code>.</li>
-<li>Subclasses <code>NSObject</code> and declares it as the grid’s
+<li>Subclasses <code>NSObject</code> and declares it as the grid's
 <code>accessibilityOverrideValue:forAttribute:</code> delegate.</li>
 <li>Implements the required NSAccessibility protocol methods:
 <ul>
@@ -310,11 +307,15 @@ available as a safety net.</p>
 <h2 id="testing">Testing</h2>
 <p>Test with VoiceOver (VO+F3 for item chooser, VO+Right to navigate
 cells) and <code>Accessibility Inspector.app</code>.</p>
-<p>Key VoiceOver behaviors to verify: - VO announces “Grid, N rows, M
-columns” on entry. - VO announces column header on horizontal movement.
-- VO announces row header on vertical movement. - VO correctly says
-“blank” for empty cells. - VO enters and exits edit mode on VO+Space. -
-Braille display shows row/col coordinates.</p>
+<p>Key VoiceOver behaviors to verify:</p>
+<ul>
+<li>VO announces "Grid, N rows, M columns" on entry.</li>
+<li>VO announces column header on horizontal movement.</li>
+<li>VO announces row header on vertical movement.</li>
+<li>VO correctly says "blank" for empty cells.</li>
+<li>VO enters and exits edit mode on VO+Space.</li>
+<li>Braille display shows row/col coordinates.</li>
+</ul>
 <h2 id="build">Build</h2>
 <pre><code># Requires Xcode Command Line Tools + Python headers
 clang++ -std=c++17 -arch x86_64 -arch arm64 \   # universal binary

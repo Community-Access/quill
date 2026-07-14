@@ -42,14 +42,11 @@ _PIN_MACOS_ROLE_PATTERN = (
     r".*?(?=^    def |\Z)"
 )
 _MACOS_EDITOR_BRANCH_PATTERN = (
-    r'if\s+sys\.platform\s*==\s*"darwin":\s*\n\s*editor\s*=\s*wx\.TextCtrl\('
-    r"[^)]*style\s*=\s*wx\.TE_MULTILINE\s*\)"
+    r"editor\s*=\s*create_nstextview_rtf\(wx,\s*splitter,\s*wx\.TE_MULTILINE\)"
 )
-# The non-macOS branch now selects the RichEdit version via ``rich_flag``
-# (TE_RICH2 default, TE_RICH opt-in for the braille A/B), keeping TE_NOHIDESEL.
-_WIN_EDITOR_BRANCH_PATTERN = (
-    r"style\s*=\s*wx\.TE_MULTILINE\s*\|\s*rich_flag\s*\|\s*wx\.TE_NOHIDESEL"
-)
+# The non-macOS branch builds QuillRichEdit — the one editor surface — through
+# create_richedit_rtf (which applies TE_RICH2 | TE_NOHIDESEL internally).
+_WIN_EDITOR_BRANCH_PATTERN = r"editor\s*=\s*create_richedit_rtf\("
 
 
 def test_apply_silent_accessible_is_noop_on_macos() -> None:
@@ -79,22 +76,29 @@ def test_create_document_tab_drops_rich2_and_nohidesel_on_macos() -> None:
     body = re.search(_CREATE_DOCUMENT_TAB_PATTERN, MAIN_FRAME, re.MULTILINE | re.DOTALL)
     assert body is not None, "_create_document_tab not found"
     src = body.group(0)
-    # The macOS branch exists and uses wx.TE_MULTILINE alone.
+    # The macOS branch exists and passes wx.TE_MULTILINE alone; the factory
+    # (create_nstextview_rtf) constructs the plain TextCtrl with exactly that
+    # style, so wx keeps the native NSTextView mapping.
     assert re.search(_MACOS_EDITOR_BRANCH_PATTERN, src), (
-        "macOS branch must build the editor with wx.TE_MULTILINE alone"
+        "macOS branch must build the editor via create_nstextview_rtf with TE_MULTILINE alone"
+    )
+    factory = (
+        Path(__file__).resolve().parents[3] / "quill" / "ui" / "nstextview_rtf_surface.py"
+    ).read_text(encoding="utf-8")
+    assert "wx_module.TextCtrl(parent, style=style)" in factory, (
+        "the macOS factory must construct a plain multiline TextCtrl (NSTextView mapping)"
     )
 
-    # The other branch (Windows / Linux) keeps TE_RICH2 + TE_NOHIDESEL
-    # so the Windows screen-reader behaviour from #170 / #5890 is
-    # untouched.
+    # The other branch (Windows / Linux) builds QuillRichEdit — the one
+    # editor surface — whose factory applies TE_RICH2 | TE_NOHIDESEL, so the
+    # Windows screen-reader behaviour from #170 / #5890 is untouched.
     assert re.search(_WIN_EDITOR_BRANCH_PATTERN, src), (
-        "non-macOS branch must keep the rich_flag | TE_NOHIDESEL style for rich kinds"
+        "non-macOS branch must build the editor through create_richedit_rtf"
     )
-    # All three control kinds remain available: RichEdit 3.0 (default), RichEdit
-    # 2.0, and a plain Notepad-style EDIT control for braille.
-    assert "wx.TE_RICH2" in src, "RichEdit 3.0 (default) must remain"
-    assert "wx.TE_RICH if" in src, "RichEdit 2.0 (legacy) option must remain"
-    assert 'kind == "plain"' in src, "plain Notepad-style control option must exist"
+    # The braille fix rides the same construction: both Braille-tab settings
+    # are honored with default True (fix-applied and borderless-by-default).
+    assert "braille_editor_system_edit_fix" in src
+    assert "braille_editor_hide_border" in src
 
     # After construction the macOS branch must call the role pinner.
     assert "_pin_macos_editor_accessibility_role(editor)" in src, (

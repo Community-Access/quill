@@ -207,14 +207,25 @@ class NotebookUIMixin:
         outer = wx.BoxSizer(wx.VERTICAL)
         outer.Add(wx.StaticText(dialog, label="Versions:"), 0, wx.ALL, 8)
         listbox = wx.ListBox(dialog, style=wx.LB_SINGLE)
-        for snap in getattr(nb, "snapshots", []):
+        snapshots = getattr(nb, "snapshots", [])
+        for snap in snapshots:
             created = getattr(snap, "created", "")[:10]
             listbox.Append(f"{snap.name}  ({created})", snap.id)
+        if not snapshots:
+            # A silently empty list gives a screen-reader user no explanation --
+            # a placeholder row (kept focusable, unlike main_frame_sessions.py's
+            # disabled-item pattern, so the text is actually announced) plus
+            # disabled Rename/Delete matches the "(No open documents in
+            # workspace)" precedent elsewhere in this codebase.
+            listbox.Append("(No versions saved yet)", None)
         outer.Add(listbox, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
         btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
         btn_rename = wx.Button(dialog, label="Re&name")
         btn_delete = wx.Button(dialog, label="&Delete")
         btn_close = wx.Button(dialog, wx.ID_CLOSE, label="&Close")
+        if not snapshots:
+            btn_rename.Enable(False)
+            btn_delete.Enable(False)
         btn_sizer.Add(btn_rename, 0, wx.RIGHT, 4)
         btn_sizer.Add(btn_delete, 0, wx.RIGHT, 4)
         btn_sizer.Add(btn_close, 0)

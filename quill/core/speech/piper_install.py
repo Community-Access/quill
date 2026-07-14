@@ -11,6 +11,14 @@ context, the downloaded archive is checked against a pinned SHA-256 before it is
 extracted, blocked in Safe Mode, and only on an explicit user action. Windows-only
 — on macOS and Linux install Piper from https://github.com/rhasspy/piper/releases.
 wx-free.
+
+**Offline Edition:** ``--bundle-offline`` builds stage the engine zip and
+starter voice model(s) under ``{app}/speech-models-bundled/piper`` (see
+``_stage_piper_offline`` in ``scripts/build_windows_distribution.py``).
+:func:`install_piper` prefers that staged zip — verified against the same
+pinned SHA-256 — and :func:`install_bundled_piper_voice` copies a staged voice
+into the user's piper-models folder, so choosing Piper under the Offline
+Edition never needs the internet.
 """
 
 from __future__ import annotations
@@ -62,6 +70,88 @@ def managed_piper_dir() -> Path:
     return models.app_data_dir() / "speech" / "piper"
 
 
+def bundled_piper_offline_dir() -> Path | None:
+    """The Offline Edition's staged Piper bundle, when this build ships one.
+
+    ``_stage_piper_offline`` in ``scripts/build_windows_distribution.py``
+    stages the SHA-256-verified engine zip plus starter voice model(s) under
+    ``{app}/speech-models-bundled/piper`` (the same root the bundled
+    whisper.cpp model uses), so a Piper install under the Offline Edition
+    never touches the network. Returns None on every non-Offline build (the
+    common case).
+    """
+    app_root = os.environ.get("QUILL_APP_ROOT", "").strip()
+    if not app_root:
+        return None
+    candidate = Path(app_root) / "speech-models-bundled" / "piper"
+    try:
+        return candidate if candidate.is_dir() else None
+    except OSError:
+        return None
+
+
+def _bundled_piper_zip() -> Path | None:
+    """The staged ``piper_windows_amd64.zip``, when the Offline bundle has it."""
+    root = bundled_piper_offline_dir()
+    if root is None:
+        return None
+    candidate = root / "piper_windows_amd64.zip"
+    return candidate if candidate.is_file() else None
+
+
+def bundled_piper_voice_paths(voice_id: str) -> tuple[Path, Path] | None:
+    """The staged (.onnx, .onnx.json) pair for *voice_id*, or None.
+
+    The Offline Edition stages starter voice models under
+    ``{bundle}/voices/`` so the first Piper voice needs no HuggingFace fetch.
+    """
+    root = bundled_piper_offline_dir()
+    if root is None:
+        return None
+    onnx = root / "voices" / f"{voice_id}.onnx"
+    meta = root / "voices" / f"{voice_id}.onnx.json"
+    if onnx.is_file() and meta.is_file():
+        return onnx, meta
+    return None
+
+
+def list_bundled_piper_voices() -> list[str]:
+    """Voice ids the Offline bundle stages (empty on non-Offline builds)."""
+    root = bundled_piper_offline_dir()
+    if root is None:
+        return []
+    try:
+        return sorted(
+            path.name.removesuffix(".onnx")
+            for path in (root / "voices").glob("*.onnx")
+            if path.with_name(f"{path.name}.json").is_file()
+        )
+    except OSError:
+        return []
+
+
+def install_bundled_piper_voice(voice_id: str, dest_dir: Path | None = None) -> Path | None:
+    """Copy a bundled voice into the user's piper-models dir; None when not bundled.
+
+    The offline counterpart of the on-demand HuggingFace voice download: same
+    destination (``<app data>/piper-models``), same file pair, no network.
+    Best-effort — any copy failure returns None so the caller falls back to
+    the download path.
+    """
+    pair = bundled_piper_voice_paths(voice_id)
+    if pair is None:
+        return None
+    dest = Path(dest_dir) if dest_dir is not None else models.app_data_dir() / "piper-models"
+    try:
+        dest.mkdir(parents=True, exist_ok=True)
+        onnx_target = dest / pair[0].name
+        shutil.copy2(pair[0], onnx_target)
+        shutil.copy2(pair[1], dest / pair[1].name)
+    except OSError:
+        return None
+    return onnx_target
+
+
 def install_piper(
     progress: ProgressCallback | None = None,
     *,
@@ -83,6 +173,17 @@ def install_piper(
         )
     dest = Path(dest_dir) if dest_dir is not None else managed_piper_dir()
     dest.mkdir(parents=True, exist_ok=True)
+    # Offline Edition first: a staged, SHA-256-verified engine zip installs
+    # with zero network access (the same pinned hash gates it here as online).
+    bundled = _bundled_piper_zip()
+    if bundled is not None:
+        if progress is not None:
+            progress(0.5, "Installing Piper from the offline bundle...")
+        _verify_sha256(bundled, PIPER_DOWNLOAD_SHA256)
+        piper_path = _extract_piper_from_zip(bundled, dest)
+        if progress is not None:
+            progress(1.0, "Done.")
+        return piper_path
     staging = Path(tempfile.mkdtemp(prefix="quill_piper_dl_"))
     try:
         # Asset-first: prefer QUILL's own hosted, SHA-verified copy so a rhasspy

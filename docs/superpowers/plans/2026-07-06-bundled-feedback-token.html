@@ -249,7 +249,7 @@ superpowers:subagent-driven-development (recommended) or
 superpowers:executing-plans to implement this plan task-by-task. Steps
 use checkbox (<code>- [ ]</code>) syntax for tracking.</p>
 </blockquote>
-<p><strong>Goal:</strong> Let QUILL’s “Report a Bug” dialog file GitHub
+<p><strong>Goal:</strong> Let QUILL's "Report a Bug" dialog file GitHub
 issues for ordinary users who have never configured a personal GitHub
 token, by bundling one narrowly-scoped, issues-only token into the
 shipped app at build time.</p>
@@ -272,25 +272,30 @@ unset (unlike <code>generate_build_info.py</code>, which requires
 <code>build/version.toml</code>) — dev checkouts, tests, and CI runs
 without the secret must be unaffected.</li>
 <li>The generated module is gitignored, matching
-<code>quill/_build_info.py</code>’s existing entry.</li>
-<li>A user’s personally-configured token (from the secure store) must
+<code>quill/_build_info.py</code>'s existing entry.</li>
+<li>A user's personally-configured token (from the secure store) must
 still take priority over the bundled one — this is already
-<code>effective_github_token()</code>’s existing behavior and must not
+<code>effective_github_token()</code>'s existing behavior and must not
 change.</li>
 <li>No network calls in this feature (out of scope: the future
 quillin-hub proxy).</li>
 </ul>
 <hr />
 <h3 id="task-1-generator-script">Task 1: Generator script</h3>
-<p><strong>Files:</strong> - Create:
-<code>tools/generate_feedback_token.py</code> - Test:
-<code>tests/unit/tools/test_generate_feedback_token.py</code></p>
-<p><strong>Interfaces:</strong> - Produces:
-<code>tools/generate_feedback_token.py</code> is a standalone script
-(like <code>tools/generate_build_info.py</code>) with a
-<code>main() -&gt; int</code> entry point and a
+<p><strong>Files:</strong></p>
+<ul>
+<li>Create: <code>tools/generate_feedback_token.py</code></li>
+<li>Test:
+<code>tests/unit/tools/test_generate_feedback_token.py</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Produces: <code>tools/generate_feedback_token.py</code> is a
+standalone script (like <code>tools/generate_build_info.py</code>) with
+a <code>main() -&gt; int</code> entry point and a
 <code>write_module(token: str, output_path: Path) -&gt; None</code>
-helper that later tasks/tests can call directly.</p>
+helper that later tasks/tests can call directly.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 test</strong></label></li>
@@ -411,10 +416,16 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat: add generator for the bundled feedback-hub GitHub token&quot;</span></span></code></pre></div>
 <hr />
 <h3 id="task-2-gitignore-entry">Task 2: Gitignore entry</h3>
-<p><strong>Files:</strong> - Modify: <code>.gitignore</code></p>
-<p><strong>Interfaces:</strong> - Consumes: nothing. - Produces:
-<code>quill/_feedback_token.py</code> is untracked, matching
-<code>quill/_build_info.py</code>.</p>
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>.gitignore</code></li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: nothing.</li>
+<li>Produces: <code>quill/_feedback_token.py</code> is untracked,
+matching <code>quill/_build_info.py</code>.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Add the
 entry</strong></label></li>
@@ -429,7 +440,7 @@ Verify</strong></label></li>
 </ul>
 <p>Run: <code>git check-ignore -v quill/_feedback_token.py</code>
 Expected: prints the <code>.gitignore</code> line that matches (confirms
-it would be ignored even though the file doesn’t exist yet —
+it would be ignored even though the file doesn't exist yet —
 <code>git check-ignore</code> works on paths regardless of
 existence)</p>
 <ul class="task-list">
@@ -443,17 +454,22 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="
 <h3 id="task-3-wire-the-bundled-token-into-effective_github_token">Task
 3: Wire the bundled token into
 <code>effective_github_token()</code></h3>
-<p><strong>Files:</strong> - Modify:
-<code>quill/core/feedback_token.py</code> - Test:
-<code>tests/unit/core/test_feedback_token.py</code> (new)</p>
-<p><strong>Interfaces:</strong> - Consumes:
-<code>quill._feedback_token.BUNDLED_TOKEN</code> (str) when the
-generated module exists; falls back to <code>""</code> when it doesn’t
-(import error). - Produces:
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>quill/core/feedback_token.py</code></li>
+<li>Test: <code>tests/unit/core/test_feedback_token.py</code> (new)</li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: <code>quill._feedback_token.BUNDLED_TOKEN</code> (str)
+when the generated module exists; falls back to <code>""</code> when it
+doesn't (import error).</li>
+<li>Produces:
 <code>effective_github_token(*, import_from_env: bool = True) -&gt; str</code>
 keeps its existing public signature and return type; behavior changes
 only in that a bundled token is now tried as a
-<code>resolve_token()</code> candidate before the env-var fallback.</p>
+<code>resolve_token()</code> candidate before the env-var fallback.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Write the failing
 tests</strong></label></li>
@@ -613,7 +629,7 @@ they pass</strong></label></li>
 Expected: 4 passed</p>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 5: Run the full
-existing test suite for this module’s callers</strong></label></li>
+existing test suite for this module's callers</strong></label></li>
 </ul>
 <p>Run:
 <code>pytest tests/unit/core/test_feedback_token.py tests/unit/core/test_issue_submit.py -v</code>
@@ -629,21 +645,27 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="
 <hr />
 <h3 id="task-4-wire-the-generator-into-both-build-scripts">Task 4: Wire
 the generator into both build scripts</h3>
-<p><strong>Files:</strong> - Modify:
-<code>scripts/build_windows_distribution.py:1304-1312</code>
-(immediately before the <code>shutil.copytree</code> call) - Modify:
-<code>scripts/build_macos.sh</code> (already has a
+<p><strong>Files:</strong></p>
+<ul>
+<li>Modify: <code>scripts/build_windows_distribution.py:1304-1312</code>
+(immediately before the <code>shutil.copytree</code> call)</li>
+<li>Modify: <code>scripts/build_macos.sh</code> (already has a
 <code>generate_build_info.py</code> call from the earlier mac
-version-stamping fix; add the new call alongside it)</p>
-<p><strong>Interfaces:</strong> - Consumes:
-<code>tools/generate_feedback_token.py</code>’s <code>main()</code>
-(Task 1), run as a subprocess/CLI, not imported. - Produces: nothing new
-for later tasks — this is the last task in the plan.</p>
+version-stamping fix; add the new call alongside it)</li>
+</ul>
+<p><strong>Interfaces:</strong></p>
+<ul>
+<li>Consumes: <code>tools/generate_feedback_token.py</code>'s
+<code>main()</code> (Task 1), run as a subprocess/CLI, not
+imported.</li>
+<li>Produces: nothing new for later tasks — this is the last task in the
+plan.</li>
+</ul>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 1: Add the call in
 <code>build_windows_distribution.py</code></strong></label></li>
 </ul>
-<p>Insert immediately before line 1304’s comment
+<p>Insert immediately before line 1304's comment
 (<code># Copy the Quill package source...</code>):</p>
 <div class="sourceCode" id="cb9"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;Generating bundled feedback-hub token (quill/_feedback_token.py)...&quot;</span>)</span>
@@ -651,7 +673,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a hr
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>        [<span class="bu">str</span>(python_exe), <span class="bu">str</span>(source_root <span class="op">/</span> <span class="st">&quot;tools&quot;</span> <span class="op">/</span> <span class="st">&quot;generate_feedback_token.py&quot;</span>)],</span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        check<span class="op">=</span><span class="va">False</span>,  <span class="co"># best-effort: an unset QUILL_FEEDBACK_GITHUB_TOKEN must not fail the build</span></span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div>
-<p>Note: use <code>python_exe</code> (the build’s own interpreter,
+<p>Note: use <code>python_exe</code> (the build's own interpreter,
 already in scope at this point in the function — the same variable used
 two statements above for the <code>pip install</code> call), not the
 bare <code>python</code> on PATH.</p>
@@ -692,7 +714,7 @@ the file the user saved it to):</p>
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="va">QUILL_FEEDBACK_GITHUB_TOKEN</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$(</span><span class="fu">cat</span> /s/token.txt<span class="va">)</span><span class="st">&quot;</span> <span class="ex">python</span> tools/generate_feedback_token.py</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-c</span> <span class="st">&quot;from quill.core.feedback_token import effective_github_token; print(bool(effective_github_token(import_from_env=False)))&quot;</span></span></code></pre></div>
 <p>Expected: <code>True</code>, and no token value printed anywhere in
-this step’s output.</p>
+this step's output.</p>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Step 5:
 Commit</strong></label></li>

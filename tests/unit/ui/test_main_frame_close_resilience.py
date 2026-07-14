@@ -398,3 +398,182 @@ def test_on_editor_caret_activity_swallows_runtime_error() -> None:
     # Drive the caret handler directly. It must return without raising,
     # even though the dead editor raises from _maybe_play_indent_tone.
     MainFrame._on_editor_caret_activity(frame, event)  # type: ignore[arg-type]
+
+
+# ---------------------------------------------------------------------------
+# #920: an OS-initiated session end (Windows shutdown/restart/logoff) must be
+# recorded as a clean exit, not a crash. The crash-recovery clean-exit marker
+# is only ever set inside _on_close; an OS session end can end the process
+# without _on_close running, so _on_session_end marks it clean best-effort.
+# ---------------------------------------------------------------------------
+
+
+def test_on_session_end_marks_clean_exit_and_skips(monkeypatch: pytest.MonkeyPatch) -> None:
+    """#920: an OS session end is a clean exit -- mark the session clean so the
+    next launch does not falsely offer crash recovery, then Skip() so the
+    process can end."""
+    marked: list[str] = []
+    monkeypatch.setattr(mf, "mark_clean_exit", lambda sid: marked.append(sid))
+    frame = MainFrame.__new__(MainFrame)
+    frame.session_id = "os-shutdown-session"
+    skipped: list[bool] = []
+    event = SimpleNamespace(Skip=lambda: skipped.append(True))
+
+    frame._on_session_end(event)
+
+    assert marked == ["os-shutdown-session"], "the session must be marked clean"
+    assert skipped == [True], "the OS session end must be allowed to proceed"
+
+
+def test_on_session_end_swallows_marker_failure_and_still_skips(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """#920: if the marker write itself raises (a transient FS error during
+    shutdown), the handler must still Skip() so the OS shutdown is never
+    blocked by a recovery-marker write."""
+
+    def _raise(*_a: object, **_k: object) -> None:
+        raise OSError("disk unavailable during shutdown")
+
+    monkeypatch.setattr(mf, "mark_clean_exit", _raise)
+    frame = MainFrame.__new__(MainFrame)
+    frame.session_id = "os-shutdown-session"
+    skipped: list[bool] = []
+    event = SimpleNamespace(Skip=lambda: skipped.append(True))
+
+    frame._on_session_end(event)  # must not raise
+
+    assert skipped == [True], "a failed marker write must not block the session end"
+
+
+def test_main_frame_binds_os_session_end_events() -> None:
+    """#920 source-contract guard: the OS session-end events must be bound to
+    the clean-exit marker handler, so an OS shutdown is never misreported as a
+    crash. Reads main_frame.py as text (the UI test bar; no real wx needed)."""
+    import pathlib
+
+    src = pathlib.Path(mf.__file__).read_text("utf-8")
+    assert "EVT_QUERY_END_SESSION" in src, "must bind EVT_QUERY_END_SESSION (#920)"
+    assert "EVT_END_SESSION" in src, "must bind EVT_END_SESSION (#920)"
+    assert "_on_session_end" in src, "must wire the session-end handler (#920)"
+
+
+# ---------------------------------------------------------------------------
+# Close-while-busy: Alt+F4 / the window X must not silently abandon a
+# protected background job (e.g. an Audio Studio export) without asking.
+# ---------------------------------------------------------------------------
+
+
+def test_on_close_does_not_prompt_when_nothing_is_protected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    frame = _frame_for_close(monkeypatch)
+    prompted: list[object] = []
+    frame._confirm_close_with_busy_jobs = lambda labels: prompted.append(labels) or True  # type: ignore[method-assign]
+    event = SimpleNamespace(Skip=lambda: None, Veto=lambda: None)
+
+    frame._on_close(event)
+
+    assert prompted == [], "no protected job registered -> no busy-close prompt at all"
+
+
+def test_on_close_vetoes_when_user_declines_to_close_while_busy(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    frame = _frame_for_close(monkeypatch)
+    frame._protected_background_jobs = {1: "Batch speech export (3 file(s))"}
+    frame._confirm_close_with_busy_jobs = lambda labels: False  # type: ignore[method-assign]
+    skipped: list[bool] = []
+    vetoed: list[bool] = []
+    event = SimpleNamespace(Skip=lambda: skipped.append(True), Veto=lambda: vetoed.append(True))
+
+    frame._on_close(event)
+
+    assert vetoed == [True], "declining the busy-close prompt must veto the close"
+    assert skipped == []
+
+
+def test_on_close_proceeds_when_user_confirms_close_while_busy(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    frame = _frame_for_close(monkeypatch)
+    frame._protected_background_jobs = {1: "Batch speech export (3 file(s))"}
+    seen_labels: list[list[str]] = []
+
+    def _confirm(labels: list[str]) -> bool:
+        seen_labels.append(labels)
+        return True
+
+    frame._confirm_close_with_busy_jobs = _confirm  # type: ignore[method-assign]
+    skipped: list[bool] = []
+    vetoed: list[bool] = []
+    event = SimpleNamespace(Skip=lambda: skipped.append(True), Veto=lambda: vetoed.append(True))
+
+    frame._on_close(event)
+
+    assert seen_labels == [["Batch speech export (3 file(s))"]]
+    assert skipped == [True], "confirming must let the close proceed normally"
+    assert vetoed == []
+
+
+def test_on_close_survives_a_raising_busy_prompt(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Mirrors the existing #210 guarantee for the save prompt: a bug in the
+    # busy-close prompt must never trap the window open.
+    frame = _frame_for_close(monkeypatch)
+    frame._protected_background_jobs = {1: "Batch speech export (3 file(s))"}
+    frame._confirm_close_with_busy_jobs = _raise  # type: ignore[method-assign]
+    skipped: list[bool] = []
+    vetoed: list[bool] = []
+    event = SimpleNamespace(Skip=lambda: skipped.append(True), Veto=lambda: vetoed.append(True))
+
+    frame._on_close(event)
+
+    assert skipped == [True]
+    assert vetoed == []
+
+
+class _SyncThread:
+    """Runs its target immediately on .start() instead of on a real thread,
+    so a test doesn't race the background worker."""
+
+    def __init__(self, target=None, daemon=None, **kw):
+        self._target = target
+
+    def start(self) -> None:
+        if self._target:
+            self._target()
+
+
+def test_run_background_task_registers_and_clears_protected_jobs(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """protect_on_close=True registers the job while it runs and removes it
+    when it finishes; an ordinary (non-protected) task never touches the
+    registry at all -- this is what keeps the close-prompt precise instead of
+    firing for routine background activity."""
+    monkeypatch.setattr(mf.threading, "Thread", _SyncThread)
+    frame = MainFrame.__new__(MainFrame)
+    frame._wx = SimpleNamespace(CallAfter=lambda fn, *a: fn(*a))
+    frame._set_status = lambda _msg: None  # type: ignore[method-assign]
+    frame._track_background_task_start = lambda _label: 1  # type: ignore[method-assign]
+    frame._track_background_task_progress = lambda *a, **k: None  # type: ignore[method-assign]
+    frame._track_background_task_finish = lambda *a, **k: None  # type: ignore[method-assign]
+    frame._cancel_preview_cue_timer = lambda: None  # type: ignore[method-assign]
+
+    seen_mid_run: dict[int, str] = {}
+
+    def _work(_progress: object) -> str:
+        # The job must already be registered by the time work() runs.
+        seen_mid_run.update(getattr(frame, "_protected_background_jobs", {}))
+        return "done"
+
+    frame._run_background_task(
+        "Batch speech export (1 file(s))", _work, lambda _r: None, protect_on_close=True
+    )
+
+    assert seen_mid_run == {1: "Batch speech export (1 file(s))"}
+    assert frame._protected_background_jobs == {}, "must be cleared once the job finishes"
+
+    # An ordinary task never registers anything.
+    frame._run_background_task("Find and Replace", lambda _p: "ok", lambda _r: None)
+    assert frame._protected_background_jobs == {}

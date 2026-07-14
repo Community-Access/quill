@@ -3061,7 +3061,7 @@
   {
     "id": "view.send_to_tray",
     "title": "Send to Tray",
-    "body": "Hide QUILL to the system tray, keeping it running in the background. Restore it from the tray icon.",
+    "body": "Hide QUILL to the background, keeping it running. Restore it from the tray icon (Windows) or menu-bar item (macOS).",
     "keystrokes": [
       "Ctrl+Shift+Grave, T"
     ],
@@ -3077,13 +3077,13 @@
     "user_guide_section": "view-and-display"
   },
   {
-    "id": "view.switch_editing_lens",
-    "title": "Switch Editing Lens",
-    "body": "Switch the editing lens for the current document, changing how it is presented and edited (for example plain versus structured views).",
+    "id": "format.switch_document_format",
+    "title": "Switch Document Format",
+    "body": "Open the Document Format switcher for the current document: move between Plain text, Markdown, HTML, and Rich Text (RTF) mid-session. The current format is checked and shown in the status bar; conversions warn before anything lossy.",
     "keystrokes": [
       "Ctrl+Shift+Grave, K"
     ],
-    "user_guide_section": "view-and-display"
+    "user_guide_section": "format-menu"
   },
   {
     "id": "view.toggle_dark_mode",

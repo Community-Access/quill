@@ -29,7 +29,13 @@ from quill.core.keymap import (
     format_binding_for_display,
     save_keymap,
 )
-from quill.core.keymap_query import bindings_equivalent, parse_binding
+from quill.core.keymap_query import (
+    bindings_equivalent,
+    canonical_binding,
+    parse_binding,
+    rewrite_chord_prefixes,
+)
+from quill.core.platform_nouns import primary_command_chord_label
 from quill.ui.dialog_contract import apply_modal_ids
 
 #: Commands that take part in the QUILL Quick Nav single-key browse layer. They
@@ -109,9 +115,9 @@ class KeymapEditorMixin:
                 dialog,
                 label=(
                     "Search by command name, or type or record a shortcut such as "
-                    "Ctrl+Alt+M to see what it does. You can write control, ctrl, or "
-                    "ctl, in any order. Select a command and choose Edit to change "
-                    "its key."
+                    f"{primary_command_chord_label()}+M to see what it does. You can "
+                    "write control, ctrl, or ctl, in any order. Select a command and "
+                    "choose Edit to change its key."
                 ),
             ),
             0,
@@ -138,8 +144,10 @@ class KeymapEditorMixin:
         controls = wx.BoxSizer(wx.HORIZONTAL)
         edit_button = wx.Button(dialog, label="&Edit Keybinding...")
         diagnostics_button = wx.Button(dialog, label="Run &Diagnostics...")
+        quill_key_button = wx.Button(dialog, label="Change &QUILL Key...")
         controls.Add(edit_button, 0, wx.RIGHT, 8)
         controls.Add(diagnostics_button, 0, wx.RIGHT, 8)
+        controls.Add(quill_key_button, 0, wx.RIGHT, 8)
         root.Add(controls, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         buttons = dialog.CreateButtonSizer(wx.OK)
@@ -160,6 +168,31 @@ class KeymapEditorMixin:
                 return list(entries)
             parsed = parse_binding(text, quill_key_prefix=prefix)
             if parsed is not None:
+                # Typing the QUILL key alone ("quill", "qk", or the bare prefix
+                # like "Ctrl+Shift+Grave") used to show nothing: it parses as the
+                # bare prefix, which no single command is bound to (real QUILL-key
+                # commands use the "prefix, <second-key>" chord). Treat it as
+                # "show me everything behind the QUILL key" so the user can see
+                # and rebind those chords.
+                prefix_canonical = canonical_binding(prefix, quill_key_prefix=prefix)
+                if prefix_canonical is not None and parsed.canonical == prefix_canonical:
+                    chord_needle = f"{prefix_canonical}, "
+                    matches = [
+                        (title, command_id)
+                        for title, command_id in entries
+                        if (
+                            canonical_binding(
+                                self._binding_for(command_id), quill_key_prefix=prefix
+                            )
+                            or ""
+                        ).startswith(chord_needle)
+                    ]
+                    display = format_binding_for_display(prefix_canonical, prefix=prefix)
+                    feedback.SetLabel(
+                        f"{len(matches)} command(s) are behind the QUILL key ({display}). "
+                        "Select one and choose Edit to change its chord."
+                    )
+                    return matches
                 matches = [
                     (title, command_id)
                     for title, command_id in entries
@@ -226,8 +259,19 @@ class KeymapEditorMixin:
             self._run_keymap_diagnostics(parent=dialog)
             refresh_list()
 
+        def change_quill_key(_event: object = None) -> None:
+            new_prefix = self._rebind_quill_key(parent=dialog)
+            if new_prefix:
+                # `prefix` is the closures' shared view of the active prefix;
+                # rebinding it here makes compute_filtered / label_for follow
+                # the new QUILL key without reopening the dialog.
+                nonlocal prefix
+                prefix = new_prefix
+                refresh_list()
+
         edit_button.Bind(wx.EVT_BUTTON, edit_selected)
         diagnostics_button.Bind(wx.EVT_BUTTON, run_diagnostics)
+        quill_key_button.Bind(wx.EVT_BUTTON, change_quill_key)
         record_button.Bind(wx.EVT_BUTTON, record_keys)
         listbox.Bind(wx.EVT_LISTBOX_DCLICK, edit_selected)
         search.Bind(wx.EVT_TEXT, lambda _e: refresh_list())
@@ -313,6 +357,105 @@ class KeymapEditorMixin:
         self._reload_shortcuts_from_keymap()
         self._set_status(f"Updated keybinding for {command_id}")
         return True
+
+    def _rebind_quill_key(self, *, parent: object = None) -> str | None:
+        """Rebind the QUILL key prefix and rewrite every chord to follow it.
+
+        Returns the new canonical prefix when applied, or ``None`` when
+        cancelled or rejected. The QUILL key is the chord prefix
+        (``settings.quill_key_binding``, default ``Ctrl+Shift+Grave``); every
+        QUILL-key command is stored as ``"<prefix>, <second-key>"`` and chord
+        dispatch (:meth:`_chord_command_for_event`) matches that stored form
+        against the live prefix. So changing the prefix requires rewriting
+        every stored chord to the new prefix, or those commands go inert
+        (pressed prefix enters QUILL-key mode, but no chord matches).
+        """
+        wx = self._wx
+        old_prefix = self._quill_key_prefix()
+        old_canonical = canonical_binding(old_prefix, quill_key_prefix=old_prefix) or old_prefix
+        with wx.TextEntryDialog(
+            parent or self.frame,
+            (
+                "Enter the new QUILL key prefix (the chord starter), for "
+                "example Ctrl+Shift+Grave or Ctrl+Alt+Q. Every QUILL-key "
+                "chord will be rewritten to use it."
+            ),
+            "Change the QUILL Key",
+            value=old_prefix,
+        ) as entry:
+            if self._show_modal_dialog(entry, "Change the QUILL Key") != wx.ID_OK:
+                return None
+            raw = entry.GetValue().strip()
+        if not raw:
+            self._set_status("QUILL key change cancelled")
+            return None
+        parsed = parse_binding(raw, quill_key_prefix=old_prefix)
+        if parsed is None or parsed.is_chord or len(parsed.segments) != 1:
+            self._show_message_box(
+                "That is not a valid QUILL key prefix. It must be a single "
+                "key combination such as Ctrl+Shift+Grave or Ctrl+Alt+Q, "
+                "not a two-key chord.",
+                "Change the QUILL Key",
+                wx.ICON_ERROR | wx.OK,
+            )
+            return None
+        new_canonical = parsed.canonical
+        if not self._binding_is_dispatchable(new_canonical):
+            self._show_message_box(
+                f"QUILL cannot bind "
+                f"'{format_binding_for_display(new_canonical, prefix=old_prefix)}' "
+                "as the QUILL key. Choose a different combination.",
+                "Change the QUILL Key",
+                wx.ICON_ERROR | wx.OK,
+            )
+            return None
+        if new_canonical == old_canonical:
+            self._set_status("QUILL key unchanged")
+            return None
+        # Another command already uses this combination on its own.
+        conflicts = [
+            cid
+            for cid, binding in self.keymap.items()
+            if binding and canonical_binding(binding, quill_key_prefix=old_prefix) == new_canonical
+        ]
+        if conflicts:
+            titles = self._keymap_command_titles()
+            owners = ", ".join(titles.get(cid, cid) for cid in conflicts)
+            answer = self._show_message_box(
+                f"{format_binding_for_display(new_canonical, prefix=old_prefix)} is already "
+                f"assigned to {owners}.\n\nUse it as the QUILL key anyway? The other "
+                f"command{'s' if len(conflicts) > 1 else ''} will become unassigned.",
+                "Change the QUILL Key",
+                wx.ICON_WARNING | wx.YES_NO | wx.NO_DEFAULT,
+            )
+            if answer != wx.ID_YES:
+                self._set_status("QUILL key change cancelled")
+                return None
+            for cid in conflicts:
+                self.keymap[cid] = ""
+        # Rewrite every stored chord from the old prefix to the new prefix.
+        rewritten_map = rewrite_chord_prefixes(
+            self.keymap, old_prefix=old_prefix, new_prefix=new_canonical
+        )
+        rewritten = sum(
+            1
+            for cid, binding in self.keymap.items()
+            if binding and rewritten_map.get(cid) != binding
+        )
+        self.keymap = rewritten_map
+        self.settings.quill_key_binding = new_canonical
+        from quill.core.settings import save_settings as _save_settings
+
+        _save_settings(self.settings)
+        save_keymap(self.keymap)
+        self._mark_keyboard_pack_custom()
+        self._reload_shortcuts_from_keymap()
+        self._set_status(
+            f"QUILL key changed to "
+            f"{format_binding_for_display(new_canonical, prefix=new_canonical)} "
+            f"({rewritten} chord(s) rewritten)"
+        )
+        return new_canonical
 
     # ----- record-keys capture ----------------------------------------------
 

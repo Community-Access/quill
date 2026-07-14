@@ -1,0 +1,1511 @@
+<h1 id="quill-0.9.0-beta-3">QUILL 0.9.0 Beta 3</h1>
+<h2
+id="one-editor.-every-format.-a-community-moving-forward-together.">One
+Editor. Every Format. A Community Moving Forward Together.</h2>
+<p><em>From Community Access. Free. Optional by design. Private by
+default. Built with you.</em></p>
+<p>QUILL 0.9.0 Beta 3 is more than another beta. It is a celebration of
+what becomes possible when people test boldly, report honestly, imagine
+generously, and build together.</p>
+<p>At the heart of this release is one transformative promise:
+<strong>One Editor, Every Format</strong>. The braille correction
+explored with the community in Beta 2 is now proven, polished, and
+enabled by default for everyone. RTF and Word documents become genuinely
+editable rich documents. A single Document Format switcher lets one
+living document move among plain text, Markdown, HTML, Rich Text, and
+Word without forcing you into a different editing world.</p>
+<p>Around that centerpiece is an extraordinary collection of
+community-powered progress: every open community bug report addressed,
+portable updates made clearer, imports made safer, Narrator treated as a
+first-class screen reader, GitHub transformed from a viewing window into
+a working environment, local git conflicts made understandable, the
+Offline Edition made truly offline, and a constellation of small
+accessibility-first tools designed to make daily work faster and more
+humane.</p>
+<p>Every shortcut is explained. Every important safeguard is named.
+Every limitation is stated honestly. Nothing here asks you to discover
+essential behavior by accident.</p>
+<p>This is the full, friendly companion to the <strong>“0.9.0 Beta
+3”</strong> section of <code>CHANGELOG.md</code>. The shorter summaries
+shown under <strong>Help &gt; What’s New</strong> and <strong>Check for
+Updates</strong> come from that changelog. This document tells the
+complete story: what changed, why it matters, how to use it, and how the
+community helped make it real.</p>
+<hr />
+<h2 id="the-heart-of-beta-3-one-editor-every-format">The Heart of Beta
+3: One Editor, Every Format</h2>
+<p>For years, document formats have tried to dictate the experience: one
+tool for plain text, another for Markdown, another for rich text,
+another for Word. Beta 3 turns that relationship around. The format now
+serves the writer. The editor remains familiar.</p>
+<h3 id="the-braille-fix-graduates-enabled-for-everyone-by-default">The
+braille fix graduates — enabled for everyone by default</h3>
+<p>In Beta 2, we asked braille display users to step into an
+experimental space, test a proposed correction, and tell us exactly what
+happened. You did. Your reports confirmed that it works.</p>
+<p>Text now begins in <strong>braille cell 1</strong>, eliminating the
+long-standing “cell two” behavior that RichEdit controls share with
+Microsoft Word. When text is selected, the display now shows
+<strong>dots 7-8</strong>, restoring the tactile selection feedback
+braille users expect.</p>
+<p>In Beta 3, the experiment becomes the standard. There is nothing
+special to turn on, no Experimental tab to find, and no restart ritual.
+Every document opens in the same native Windows editor QUILL users
+already know, now carrying the braille correction automatically.</p>
+<p>Two straightforward checkboxes under <strong>Preferences &gt;
+Braille</strong> control the complete behavior, and both are checked by
+default:</p>
+<ul>
+<li><strong>Fix braille cell alignment and selection dots
+(recommended)</strong> — enables the system-edit emulation that starts
+braille output in cell 1 and exposes selection dots.</li>
+<li><strong>Hide editor border (required for braille cell
+alignment)</strong> — testing revealed that the visible editor border
+itself shifts braille output away from cell 1. The borderless frame is
+therefore a functional part of the correction, not merely a visual
+preference. If you uncheck it, QUILL warns you clearly that braille cell
+alignment will break before applying the change.</li>
+</ul>
+<p>Users who experimented with alternate editor surfaces in earlier
+betas are brought forward automatically. Those retired experimental
+settings are removed during upgrade, the new default is applied, and
+QUILL explains once, in plain language, that the editor settings were
+simplified.</p>
+<p>This is exactly how a beta should work: the community tests an idea,
+the evidence guides the decision, and a better default reaches
+everyone.</p>
+<h3
+id="rich-text-becomes-real-rtf-documents-are-truly-formatted-in-the-editor">Rich
+text becomes real: RTF documents are truly formatted in the editor</h3>
+<p>Open an <code>.rtf</code> file in Beta 3 and the formatting is no
+longer flattened, simulated, or merely described. It is there, alive in
+the document.</p>
+<p>Bold text is genuinely bold. Headings carry real sizes.
+<strong>Ctrl+B</strong> applies true bold formatting. <strong>Insert
+&gt; Heading 2</strong> creates an actual heading. <strong>Describe
+Formatting at Cursor</strong> reads the live document state and can
+report, for example: “Arial, 14 point, bold, centered.”</p>
+<p>The guiding rule is simple and powerful: <strong>bold means bold —
+and QUILL speaks the language of the document you are
+editing.</strong></p>
+<ul>
+<li>In Markdown, <strong>Ctrl+B</strong> continues to wrap the selection
+in <code>**</code>, exactly as it always has.</li>
+<li>In HTML, the same command produces <code>&lt;strong&gt;</code>.</li>
+<li>In RTF, it applies real rich-text bold.</li>
+</ul>
+<p>One command. One familiar intention. The correct result for the
+current format.</p>
+<p>Rich mode changes presentation, not the trusted foundation beneath
+it. Search, spell check, AI commands, read aloud, bookmarks, inline
+notes, and braille continue working with the same document text they
+always have. Autosave also protects the full rich document: snapshots
+include formatting as well as text, so crash recovery can restore your
+bold, headings, and other formatting rather than recovering only the
+words.</p>
+<p>Plain-text documents remain respectfully plain. The first time you
+use a formatting command in a <code>.txt</code> file, QUILL asks once
+what you intend:</p>
+<ul>
+<li>Treat the document as Markdown.</li>
+<li>Convert it to Rich Text.</li>
+<li>Keep it as plain text.</li>
+</ul>
+<p>Choose <strong>stay plain</strong>, and QUILL remembers the answer
+instead of asking repeatedly.</p>
+<h3
+id="word-documents-become-editable-without-pretending-nothing-can-be-lost">Word
+documents become editable — without pretending nothing can be lost</h3>
+<p>A <code>.docx</code> file can now open for genuine rich editing and
+save back as a real Word document.</p>
+<p>Word files can contain structures QUILL’s editor cannot fully
+preserve, including tables, images, comments, tracked changes, headers,
+and footers. Rather than hiding that reality, QUILL meets it with
+clarity at the moment it matters:</p>
+<ul>
+<li>A <strong>clean Word file</strong>, containing nothing QUILL cannot
+carry, opens directly in rich mode.</li>
+<li>A Word file containing unsupported features identifies those
+features specifically and asks how you want to proceed: open for reading
+and plain editing, which is the safe default; edit as Rich Text while
+understanding exactly what cannot survive a save; or edit a copy while
+leaving the original untouched.</li>
+<li>The first rich save over a flagged original automatically creates a
+<strong>timestamped backup</strong> beside it.</li>
+</ul>
+<p>QUILL never silently rewrites a complex Word file while asking you to
+trust that everything survived. The editor gives you meaningful choices,
+protects the original, and lets you decide.</p>
+<h3 id="one-switcher-connects-the-formats">One switcher connects the
+formats</h3>
+<p>The new <strong>Document Format</strong> switcher brings the promise
+together.</p>
+<p>Open it through any of these paths:</p>
+<ul>
+<li><strong>Format &gt; Document Format…</strong></li>
+<li><strong>Ctrl+Shift+Grave, K</strong></li>
+<li>The Command Palette</li>
+<li>The new <strong>Format</strong> cell on the status bar, which
+displays the current format and opens the switcher when you press Enter
+on it</li>
+</ul>
+<p>From there, the current document can move among:</p>
+<ul>
+<li>Plain text</li>
+<li>Markdown</li>
+<li>HTML</li>
+<li>Rich Text (RTF)</li>
+<li>Word (<code>.docx</code>)</li>
+</ul>
+<p>The conversion is meaningful, not cosmetic. Moving a Markdown draft
+into Rich Text turns <code># headings</code> into real headings. Moving
+a rich document into Markdown first produces a specific warning naming
+anything that will not survive the conversion.</p>
+<p>A format change also never silently overwrites the old file. The next
+save proposes a filename with the correct extension — for example,
+<code>notes.md</code> becomes <code>notes.rtf</code> — so the file on
+disk always tells the truth about the format inside it.</p>
+<h3 id="rich-editing-on-macos-ready-from-the-first-launch">Rich editing
+on macOS — ready from the first launch</h3>
+<p>Rich mode ships ready to use on the Mac. The macOS editor remains the
+same native text view VoiceOver users already know, and the application
+now <strong>bundles everything required for rich mode</strong>. There is
+nothing additional to install and nothing to configure.</p>
+<p>Open an <code>.rtf</code> or Word document and it appears formatted.
+<strong>Ctrl+B</strong> applies genuine bold and announces “Bold.”
+<strong>Insert &gt; Heading 2</strong> applies a real heading.
+<strong>Describe Formatting at Cursor</strong> reports the live
+formatting, such as “Helvetica, 14 point, bold.”</p>
+<p>If the rich-text bridge is ever unavailable on a particular system,
+QUILL does not collapse or strand the document. It opens the same
+content as editable text and places a clear explanation in the status
+area. Nothing breaks, nothing is discarded, and VoiceOver continues
+reading the same native control.</p>
+<h4
+id="mac-and-voiceover-testers-your-experience-is-the-promotion-gate">Mac
+and VoiceOver testers: your experience is the promotion gate</h4>
+<p>Please put this through a real workflow:</p>
+<ol type="1">
+<li>Open an <code>.rtf</code> file.</li>
+<li>Apply formatting.</li>
+<li>Save it.</li>
+<li>Close and reopen it.</li>
+<li>Confirm that the formatting survived.</li>
+</ol>
+<p>For VoiceOver users, please also test whether typing echo, arrow-key
+review, and selection announcements continue to work normally. Check
+whether formatted content — such as a bold word or a sized heading —
+reads and navigates correctly.</p>
+<p>Send the result through <strong>Help &gt; Report a Bug</strong> and
+include your macOS version. A report that says “it works perfectly” is
+every bit as valuable as a failure report. Real-hardware evidence in
+both directions is the promotion gate, just as braille users’ Beta 2
+reports made the Windows correction ready for everyone.</p>
+<hr />
+<h2 id="community-reports-real-repairs">Community Reports, Real
+Repairs</h2>
+<p>Every bug report is a person encountering friction while trying to
+create, read, learn, or contribute. Beta 3 treats those reports
+accordingly: not as loose tickets to close, but as invitations to make
+QUILL more trustworthy.</p>
+<h3 id="portable-updates-now-offer-an-actual-next-step">Portable updates
+now offer an actual next step</h3>
+<p>A community member on Mastodon reported that a portable update
+finished with only <strong>Open folder</strong> and
+<strong>Close</strong>. QUILL downloaded the correct portable ZIP, but
+offered no in-app path to use it. The user had to open the folder,
+locate the archive, and extract it manually.</p>
+<p>The underlying detection was already correct: portable installations
+received the portable ZIP rather than the Windows installer. The problem
+came afterward. The completion dialog knew how to act on
+<code>.exe</code> and <code>.msi</code> files, but a <code>.zip</code>
+fell through to a bare folder-opening path.</p>
+<p>Beta 3 adds an <strong>Extract now</strong> button for portable
+updates. QUILL extracts the ZIP into a ready-to-run sibling folder and
+reveals that folder instead of leaving you at the raw archive.</p>
+<p>QUILL still does not replace its own running files while open. You
+must copy your <code>data</code> folder and swap the folders yourself,
+just as with any portable application update. What disappears is the
+needless archaeology of locating and unpacking the download.</p>
+<h3
+id="pandoc-imports-can-no-longer-succeed-with-an-empty-document">Pandoc
+imports can no longer “succeed” with an empty document</h3>
+<p>A community member reported — and correctly identified the root cause
+of — a serious import failure. Using <strong>File &gt; Import &gt; EPUB
+Book</strong> could produce an entirely empty document while QUILL
+announced success.</p>
+<p>Pandoc emits UTF-8. QUILL’s shared subprocess helper had been
+decoding that output using the operating system’s default locale
+encoding. On Windows systems whose locale uses a legacy code page rather
+than UTF-8, decoding could fail and leave QUILL with no text, yet the
+import path still reported success.</p>
+<p>Beta 3 makes two important corrections:</p>
+<ul>
+<li>Subprocess output is always decoded as UTF-8, with a safe fallback
+so even genuinely non-UTF-8 bytes cannot crash the process or silently
+blank the result.</li>
+<li>The Pandoc import path now fails loudly when no output is received
+instead of handing the user an empty page and calling it success.</li>
+</ul>
+<p>Because many tools share this subprocess helper, the change
+strengthens far more than EPUB import. It is a broader reliability
+improvement across every feature that travels through that path.</p>
+<h3 id="speech-and-dictation-opens-again">Speech and Dictation opens
+again</h3>
+<p>Four testers independently found the same crash. Opening
+<strong>Tools &gt; Speech &gt; Speech and Dictation</strong> raised a
+<code>TypeError</code> instead of displaying the dialog, whether the
+Offline or Online tab was involved.</p>
+<p>The dialog constructor had gained two required arguments —
+<code>kokoro_ok</code> and <code>kokoro_can_install</code> — but its
+caller had not been updated to supply them. Beta 3 now populates both
+values using the same availability logic already used for Vosk, and the
+Speech and Dictation dialog opens normally again.</p>
+<h3
+id="the-kokoro-installation-message-now-points-to-the-menu-that-actually-exists">The
+Kokoro installation message now points to the menu that actually
+exists</h3>
+<p>While investigating Kokoro, the same tester found that selecting it
+before its optional component was installed produced outdated
+directions: “Tools &gt; Speech &gt; Install Kokoro ONNX will fetch it.”
+That menu item had already moved into <strong>Help &gt; Download
+Optional Components</strong> in an earlier release.</p>
+<p>The message now sends users to the correct place.</p>
+<h3
+id="a-keystroke-can-no-longer-arrive-before-the-editor-exists-and-bring-down-macos">A
+keystroke can no longer arrive before the editor exists and bring down
+macOS</h3>
+<p>On macOS, an extremely early or late keystroke — before the first
+document tab finished initializing or after the last one closed — could
+trigger
+<code>AttributeError: 'MainFrame' object has no attribute 'editor'</code>
+inside the global keyboard hook.</p>
+<p>Two neighboring checks already guarded against that lifecycle edge
+case; one still accessed the editor directly. All three checks are now
+consistent and defensive.</p>
+<h3 id="on-macos-the-letter-g-is-a-letter-again">On macOS, the letter G
+is a letter again</h3>
+<p>One of the most surprising reports in this cycle came from a
+completely blank document: pressing <strong>G</strong>, uppercase or
+lowercase, opened Find instead of typing the character. Every other
+letter behaved normally.</p>
+<p>The cause lived in the keyboard-shortcut hint shown at the right side
+of a menu item. <strong>Find Next</strong> uses <strong>Cmd+G</strong>
+on macOS. QUILL embeds that visible hint after a literal tab in the menu
+label, and wxWidgets interprets the text after that tab as a second
+keyboard shortcut, separate from QUILL’s own shortcut system.</p>
+<p>wxWidgets recognizes modifier words such as “Ctrl,” “Alt,” and
+“Shift,” but not “Cmd.” Rather than rejecting the unsupported hint, it
+dropped “Cmd,” retained the bare <strong>G</strong>, and registered that
+single letter as a system-level shortcut for Find Next. The shortcut
+then intercepted every G before it could reach the editor.</p>
+<p>This could affect every macOS-only <code>Cmd+something</code> hint,
+not only Find Next. Beta 3 changes how the hint is built so wxWidgets
+receives a modifier name it understands, while the visible shortcut
+continues to read <strong>Cmd+G</strong> exactly as Mac users
+expect.</p>
+<h3 id="portable-updates-now-describe-the-manual-swap-honestly">Portable
+updates now describe the manual swap honestly</h3>
+<p>After downloading a portable update and restarting, a user reasonably
+asked why the old version still appeared.</p>
+<p>Portable updates have never installed themselves automatically in any
+QUILL release. The downloaded ZIP has always required a manual
+replacement step. Previously, that meant choosing <strong>Open
+folder</strong> and extracting it yourself. With the new <strong>Extract
+now</strong> button, QUILL performs the extraction, but you still swap
+the new folder into place.</p>
+<p>If QUILL’s wording suggested that the update would apply
+automatically “on next launch,” the wording was the bug. Beta 3 tightens
+both this document and the in-app dialog so <strong>swap it into
+place</strong> is unmistakably described as the manual step it has
+always been.</p>
+<h3
+id="tree-navigator-dialogs-no-longer-expand-a-root-that-is-intentionally-hidden">Tree-navigator
+dialogs no longer expand a root that is intentionally hidden</h3>
+<p><strong>Go to Entry in Notebook</strong> and related tree-navigation
+dialogs could open with a <code>wxAssertionError</code>. The underlying
+correction had already reached the development branch before Beta 2
+froze, but it belongs in this record for anyone who encountered the
+problem on a Beta 2 build.</p>
+<p>The dialogs no longer attempt to expand their intentionally hidden
+root node.</p>
+<h3 id="narrator-becomes-a-first-class-citizen">Narrator becomes a
+first-class citizen</h3>
+<p>George Kerscher reported that QUILL’s self-voice spoke at the same
+time as Narrator, especially in the Command Palette. Beta 3 addresses
+both the detection problem and the announcement path.</p>
+<h4 id="narrator-detection-now-uses-the-windows-api-marker">Narrator
+detection now uses the Windows API marker</h4>
+<p>In addition to its process check, QUILL now reads the marker Windows
+maintains while Narrator is active: the named
+<code>NarratorRunning</code> system event. This is one inexpensive API
+call with no process scan.</p>
+<p>Narrator can no longer escape detection because of timing, process
+visibility, or elevation differences.</p>
+<h4 id="quill-announcements-now-travel-through-narrator">QUILL
+announcements now travel through Narrator</h4>
+<p>QUILL now raises announcements as <strong>UI Automation notification
+events</strong>, the channel Narrator has supported since Windows 10
+version 1709.</p>
+<p>Status changes, Command Palette narration, and other QUILL feedback
+can therefore arrive in the user’s own One Core voice, spoken by
+Narrator itself — just as dedicated bridges deliver announcements
+through JAWS or NVDA.</p>
+<p>If the notification channel is unavailable on a particular system,
+the message is placed in the status bar. The old failure mode is removed
+unconditionally: when any screen reader is running, QUILL’s SAPI
+self-voice is silenced, including announcements previously marked as
+“forced.” QUILL will no longer talk over the screen reader.</p>
+<p>One important caveat remains. The direct Narrator path is verified in
+code and automated tests, but it still needs real Narrator users to
+confirm the complete experience. Please test Beta 3 and report through
+<strong>Help &gt; Report a Bug</strong> whether announcements arrive
+once, through One Core, and in the expected voice.</p>
+<h3
+id="starter-snippet-packs-now-behave-like-an-accessible-list">Starter
+Snippet Packs now behave like an accessible list</h3>
+<p>In Beta 2, <strong>Install Starter Snippet Packs</strong> required
+pressing Space on an invisible checkbox that provided no feedback before
+Enter would work.</p>
+<p>The interface is now a standard multi-select list. Arrow to
+<code>daily-writing</code> and press Enter to install it. Hold Shift or
+Ctrl to select several packs, and your screen reader announces the
+selected state as you move.</p>
+<h3 id="the-application-status-page-remembers-where-you-are">The
+Application Status page remembers where you are</h3>
+<p>A tester supplied precise reproduction steps: open <strong>Help &gt;
+Status Page</strong>, move down through any list, and watch focus jump
+back to the first row before you can act.</p>
+<p>The page refreshes every two seconds to keep task and download
+progress current. Each refresh had been rebuilding the lists without
+preserving the focused row.</p>
+<p>Beta 3 keeps focus anchored across refreshes. You can now navigate
+the lists under <strong>Status</strong>, <strong>Tasks &amp;
+Downloads</strong>, and <strong>Features</strong> without being pulled
+back to the top.</p>
+<h3
+id="creating-a-notebook-on-macos-can-no-longer-crash-through-window-activation">Creating
+a Notebook on macOS can no longer crash through window activation</h3>
+<p>Shannon Dyer encountered a hard macOS crash while creating a
+Notebook:
+<code>SystemError: ActivateEvent returned a result with an exception set</code>.</p>
+<p>A window-activation handler collided with a wx assertion while
+dialogs were being torn down. That handler exists only to return focus
+to the document, so it is now fully contained. A focus-restoration
+attempt can no longer take down the entire application.</p>
+<h3 id="crash-and-feedback-reports-now-identify-the-exact-beta">Crash
+and feedback reports now identify the exact beta</h3>
+<p>Two reports arrived for a bug already corrected in Beta 2, yet they
+appeared to be regressions because every 0.9.0 beta identified itself
+only as “0.9.0.”</p>
+<p>Reports now include the full version string, such as <strong>0.9.0
+Beta 2</strong>, making an older installation immediately
+recognizable.</p>
+<p>If you encounter the Profiles and Features crash involving
+<code>_LazyString</code>, update to the current beta; that issue was
+already fixed there.</p>
+<h3
+id="quill-no-longer-offers-crash-recovery-when-there-is-no-crash-evidence">QUILL
+no longer offers crash recovery when there is no crash evidence</h3>
+<p>Two automatic crash-recovery submissions contained only normal
+background activity until the application stopped. There was no
+exception, no error, and no actionable trace. That pattern is consistent
+with an external termination — such as a forced shutdown or killed task
+— rather than a crash inside QUILL.</p>
+<p>Beta 3 turns that observation into a real behavior change. Before
+showing crash recovery, QUILL now looks for genuine evidence in the log:
+an <code>ERROR</code>, a <code>CRITICAL</code>, or a traceback.</p>
+<p>An inconclusive exit no longer produces the <strong>“Quill detected
+an unclean exit”</strong> dialog because there is nothing meaningful to
+diagnose. A real crash still records an error and offers recovery
+exactly as before.</p>
+<p>The autosave snapshot is never removed or altered by this decision.
+It remains on disk either way. The only change is whether QUILL asks you
+to recover after an exit for which the log contains no evidence of a
+crash.</p>
+<h3 id="insert-date-and-times-submenu-now-actually-opens">Insert &gt;
+Date and Time’s submenu now actually opens</h3>
+<p>Jayson Smith reported it precisely: open the Insert menu, arrow up to
+<strong>Date and Time</strong>, press Right Arrow to open the submenu,
+and land in the <strong>Format</strong> menu instead.</p>
+<p>The cause was a startup ordering gap, not a keyboard-handling bug.
+QUILL builds its menu bar before Quillins finish loading — deliberately,
+so a slow or misbehaving Quillin can never delay the window appearing or
+bring the whole launch down. But nothing rebuilt the menu bar afterward,
+so the bundled <code>insert-tools</code> Quillin’s three contributions
+(Insert Date, Insert Time, Insert Date and Time) never actually landed
+inside the <strong>Date and Time</strong> submenu. The submenu itself
+was still there — created unconditionally — just permanently empty. With
+nothing inside to open, Right Arrow had nowhere to go but onward to the
+next top-level menu.</p>
+<p>QUILL now rebuilds the menu bar once Quillin loading finishes at
+startup, and again after any enable, disable, install, remove, or reload
+in the Quillins Manager. The <strong>Date and Time</strong> submenu
+opens correctly now, and so does every other menu location a Quillin
+contributes to.</p>
+<h3
+id="manage-versions-no-longer-renders-as-a-silent-unexplained-blank-list">Manage
+Versions no longer renders as a silent, unexplained blank list</h3>
+<p>While tracking down the Date and Time submenu fix above, we found a
+related rough edge already noted in planning as “Snapshots vs Versions”:
+<strong>File &gt; Notebook &gt; Manage Versions</strong> on a notebook
+that had never had a Version saved showed a genuinely empty list — no
+placeholder, no explanation. Tabbing into it told you nothing about
+whether the feature was working.</p>
+<p>The list now shows <strong>“(No versions saved yet)”</strong> and
+disables Rename and Delete until there is something to act on, matching
+the “(No open documents in workspace)” pattern QUILL already uses in the
+Snapshots menu.</p>
+<h3
+id="a-per-machine-install-no-longer-needs-administrator-elevation-to-run-at-full-speed">A
+per-machine install no longer needs administrator elevation to run at
+full speed</h3>
+<p>Tyler Rodick installed QUILL system-wide (Program Files, all users)
+instead of per-user, and noticed something specific: startup was several
+seconds faster the first time he ran it as administrator than it was
+running normally afterward.</p>
+<p>The cause was a gap in a fix QUILL already had. comtypes — the
+library behind SAPI speech, Narrator’s UIA announcement bridge, and the
+Rich Edit rich-text object model — writes a generated wrapper file to
+disk the first time it touches each of those three COM interfaces. Its
+default location is inside its own package folder, which a per-machine
+install makes read-only without elevation. QUILL already redirected this
+cache to a writable per-user folder, but only did the redirecting once,
+from inside the SAPI code path — Narrator’s and Rich Edit’s own comtypes
+calls only inherited that redirect if SAPI happened to run first in the
+same session. Whichever one ran first without that accident of ordering
+fell back to comtypes’ own read-only default and degraded silently.</p>
+<p>Every comtypes call site now requests the redirect itself before
+touching comtypes, rather than counting on another feature to have
+already done it. None of the three depends on session ordering anymore,
+on any install type, with or without administrator elevation.</p>
+<hr />
+<h2 id="github-grows-from-a-viewer-into-a-workspace">GitHub Grows from a
+Viewer into a Workspace</h2>
+<p>Beta 2 introduced the read-only GitHub Items viewer. Beta 3 begins
+unifying the best ideas from GHManage and fastgh and moves QUILL toward
+something much bigger: a keyboard-first GitHub environment where
+information can be found, understood, and — with explicit consent —
+acted upon.</p>
+<h3
+id="github-items-gains-pins-favorites-real-search-automatic-repository-awareness-and-view-upstream">GitHub
+Items gains pins, favorites, real search, automatic repository
+awareness, and View Upstream</h3>
+<p>The first group of improvements adds five everyday capabilities:</p>
+<ul>
+<li><strong>Pinned repositories.</strong> The <strong>Pinned…</strong>
+button holds a short, intentional list of the repositories you use most.
+Select one to load it immediately, or pin and unpin the currently loaded
+repository from the same menu. You no longer need to retype
+<code>owner/repo</code> every time.</li>
+<li><strong>Favorites.</strong> Press <strong>Ctrl+D</strong> on any
+selected issue, pull request, branch, or release to bookmark it.
+<strong>Favorites…</strong> lists bookmarks from every repository and
+opens the selected item in your browser. These bookmarks remain entirely
+on your machine.</li>
+<li><strong>Full GitHub search syntax.</strong> Press
+<strong>Ctrl+F</strong>, enter a GitHub query such as
+<code>label:bug is:open crash</code> or <code>author:alice is:pr</code>,
+and press Enter. Search is scoped to the loaded repository. Clear the
+search to restore the normal list.</li>
+<li><strong>Local git awareness.</strong> When the document you are
+editing lives inside a git clone whose <code>origin</code> points to
+GitHub, the repository field fills itself in automatically. This works
+for any file regardless of how it was opened, not only files reached
+through QUILL’s GitHub commands.</li>
+<li><strong>View Upstream.</strong> Load a repository that’s a fork, and
+the <strong>View Upstream</strong> button enables itself the moment
+QUILL confirms it. Press it and the parent repository loads in its place
+— the only path there before was retyping the parent’s name by
+hand.</li>
+</ul>
+<h3
+id="pull-request-differences-become-something-you-can-understand-not-a-wall-of-symbols">Pull-request
+differences become something you can understand, not a wall of
+symbols</h3>
+<p>Select a pull request and choose <strong>Diff…</strong> to browse its
+changed files in an accessible list.</p>
+<p>QUILL sends each file’s before-and-after content through the same
+comparison engine used by <strong>Compare Documents</strong>. Instead of
+forcing you through a dense stream of plus and minus signs, it presents
+a numbered walk through meaningful changes, such as:</p>
+<blockquote>
+<p>Difference 2 of 5. Text changed at line 41. main: … this PR: …</p>
+</blockquote>
+<p>The changed words are described directly.</p>
+<ul>
+<li>A newly added file is read as its content.</li>
+<li>A deleted file is announced as deleted.</li>
+<li>A binary or oversized file falls back honestly to its available
+change counts.</li>
+</ul>
+<h3
+id="batch-operations-are-powerful-and-deliberately-fenced-by-consent">Batch
+operations are powerful — and deliberately fenced by consent</h3>
+<p>The GitHub Items list now supports multi-selection. Select several
+rows, press <strong>Batch…</strong>, and close, reopen, or add a label
+to all selected items at once.</p>
+<p>This is the deliberate exception to the viewer’s read-only
+foundation, so the boundaries are explicit:</p>
+<ul>
+<li>Batch actions require a signed-in account.</li>
+<li>Anonymous viewing remains fully read-only.</li>
+<li>Before anything changes, the confirmation identifies the exact
+action and the exact item numbers involved.</li>
+<li>If some items fail, QUILL tells you which ones failed and why, while
+allowing successful items to complete.</li>
+</ul>
+<h3
+id="ai-can-turn-a-hundred-comment-thread-into-a-useful-starting-point">AI
+can turn a hundred-comment thread into a useful starting point</h3>
+<p>A hundred-comment issue late at night is not a humane reading
+experience.</p>
+<p>Press <strong>Summarize</strong> on an issue or pull request and
+QUILL’s AI creates a brief, plain-prose TL;DR covering:</p>
+<ul>
+<li>What the thread is about</li>
+<li>Where it currently stands</li>
+<li>What remains unresolved</li>
+<li>The apparent next step</li>
+</ul>
+<p>The summary appears in the details pane and is announced. It uses the
+same AI connection, privacy, and consent gates as every other QUILL AI
+feature. Nothing is transmitted or generated until you choose
+<strong>Summarize</strong>.</p>
+<p>The viewer and every GitHub feature continue to honor QUILL’s token,
+consent, and Safe Mode controls. Branch comparison, a wiki browser, and
+additional parts of the broader unification review remain on the
+roadmap; notifications move from roadmap to reality later in this
+release.</p>
+<hr />
+<h2 id="github-stops-being-a-one-way-window">GitHub Stops Being a
+One-Way Window</h2>
+<p>Before Beta 3, QUILL could show you a great deal of GitHub while
+changing very little. You could browse a repository, open a file, save
+that one file back, list issues and pull requests, and perform limited
+batch labeling or state changes. Creating repositories, opening and
+merging pull requests, or deleting obsolete branches still pushed you
+into the browser.</p>
+<p>The planning document at <code>docs/planning/github.md</code>
+examines how far QUILL can go without adding a dependency on the
+<code>gh</code> CLI. Beta 3 ships the part of that plan we can support
+confidently: repository administration, richer item actions,
+organization browsing, releases, workflow dispatch, notifications, and
+security alerts.</p>
+<h3 id="a-new-tools-github-command-center">A new Tools &gt; GitHub
+command center</h3>
+<p><strong>Tools &gt; GitHub</strong> is a new submenu containing eight
+repository commands:</p>
+<ul>
+<li><strong>Create Repository…</strong> — provide a name and
+description, choose public or private visibility, and optionally select
+an organization. After creation, QUILL offers to synchronize a local
+folder immediately. Say yes and move directly from “no repository” to “a
+local folder pushing to GitHub” without opening a browser.</li>
+<li><strong>Fork Repository…</strong> — fork the repository and receive
+the same offer to create or connect a local synchronized folder.</li>
+<li><strong>Rename Repository…</strong> — change the repository name
+from within QUILL.</li>
+<li><strong>Change Repository Visibility…</strong> — move between public
+and private visibility with an explicit confirmation.</li>
+<li><strong>Change Default Branch…</strong> — select the branch GitHub
+should treat as the default.</li>
+<li><strong>Delete Branch…</strong> — remove a branch through a guarded
+workflow.</li>
+<li><strong>Configure Branch Protection…</strong> — choose a branch, set
+the number of required approving reviews, specify required status
+checks, or select an option to clear existing protection.</li>
+<li><strong>Commit Multiple Files…</strong> — choose several local files
+and commit them together in one atomic commit. This is intentionally
+different from <strong>Save to GitHub</strong>, which handles only the
+currently open document.</li>
+</ul>
+<h3 id="the-items-viewer-gains-an-actions-menu">The Items viewer gains
+an Actions menu</h3>
+<p>Alongside <strong>Batch…</strong>, the Issues, Pull Requests,
+Branches, and Commits viewer now includes <strong>Actions…</strong> with
+commands for:</p>
+<ul>
+<li><strong>New Issue…</strong></li>
+<li><strong>New Pull Request…</strong></li>
+<li><strong>Merge Pull Request…</strong> when a pull request is
+selected</li>
+<li><strong>Delete Branch…</strong> when a branch is selected</li>
+<li><strong>Re-run Workflow</strong> when a workflow run is
+selected</li>
+<li><strong>View Artifacts…</strong> when a workflow run is
+selected</li>
+<li><strong>Reply to Thread…</strong></li>
+<li><strong>Edit This Comment…</strong></li>
+<li><strong>Delete This Comment…</strong></li>
+</ul>
+<p>The comment actions build on the existing <strong>Alt+N</strong> and
+<strong>Alt+P</strong> navigation. Move to the relevant comment, then
+reply to, edit, or delete that specific comment.</p>
+<h3
+id="download-a-workflow-runs-build-artifacts-without-your-token-leaking-to-a-third-party">Download
+a workflow run’s build artifacts, without your token leaking to a third
+party</h3>
+<p>Choosing <strong>View Artifacts…</strong> on a workflow run opens a
+small list of that run’s build artifacts — name, size, and whether
+GitHub has already let it expire. From there:</p>
+<ul>
+<li><strong>Download Selected…</strong> or <strong>Download
+All…</strong> ask for a destination folder, then save each artifact as a
+zip file.</li>
+<li>If a file of that name already exists, QUILL asks before overwriting
+it.</li>
+<li>A progress dialog with <strong>Cancel</strong> tracks the download;
+you can stop it at any point.</li>
+<li><strong>Open Run in Browser</strong> takes you straight to the run
+on GitHub.</li>
+</ul>
+<p>The download itself needed a deliberate design decision, not a
+default one. GitHub’s artifact download link redirects to a short-lived,
+signed URL hosted elsewhere (Azure Blob Storage in production) — and
+your GitHub token must never travel to that second host. Standard
+redirect-following would send it there anyway, and reaching into
+PyGithub’s private internals to work around that felt like the wrong
+kind of shortcut. QUILL instead follows the redirect itself: it blocks
+the automatic follow, reads the redirect target, and makes exactly one
+more request to that address with no <code>Authorization</code> header
+attached. Your token only ever goes to <code>github.com</code>.</p>
+<h3 id="signed-in-actions-remain-signed-in-actions">Signed-in actions
+remain signed-in actions</h3>
+<p>None of the write commands operates anonymously. Each requires an
+authenticated account. When you are not signed in, QUILL offers to begin
+sign-in from the point of need instead of simply refusing and leaving
+you to find another route.</p>
+<p>Four high-consequence actions require stronger confirmation than an
+ordinary Yes/No prompt:</p>
+<ul>
+<li>Renaming a repository</li>
+<li>Changing repository visibility</li>
+<li>Deleting a branch</li>
+<li>Merging a pull request</li>
+</ul>
+<p>For those operations, you must retype the exact repository name,
+branch name, or pull-request number. These are the actions for which an
+accidental Enter can be particularly difficult to reverse.</p>
+<p>Every other write action uses a clear confirmation that names
+precisely what is about to change.</p>
+<p>All thirteen GitHub commands — the eight new administration commands
+plus the five browsing commands present since QUILL 0.5.0 — now appear
+in the Command Palette and ship with default QUILL Key chords. Every
+chord can be reassigned in Preferences.</p>
+<h3
+id="organizations-releases-workflows-notifications-and-security-alerts">Organizations,
+releases, workflows, notifications, and security alerts</h3>
+<p>Five additional commands complete the read-mostly side of the
+plan:</p>
+<ul>
+<li><strong>Browse Organization Repositories…</strong> — choose from the
+organizations associated with your account and then browse that
+organization’s repositories. Teams remain intentionally out of
+scope.</li>
+<li><strong>Create Release…</strong> — choose a tag, supply optional
+release notes or use GitHub’s automatically generated notes from merged
+pull requests, and create the release as a draft or publish it.</li>
+<li><strong>Dispatch Workflow…</strong> — run a workflow against a
+branch or tag, equivalent to choosing <strong>Run workflow</strong> on
+GitHub’s website.</li>
+<li><strong>Notifications…</strong> — open a genuine inbox spanning all
+repositories rather than only the repository currently loaded.</li>
+<li><strong>Security Alerts…</strong> — review a repository’s open
+Dependabot alerts.</li>
+</ul>
+<h3
+id="codespaces-and-copilot-cli-needs-your-help-to-confirm-it-actually-works">Codespaces
+and Copilot CLI — needs your help to confirm it actually works</h3>
+<p>Four more Tools &gt; GitHub commands round out this release’s GitHub
+work, and they work a little differently from everything above: instead
+of talking to GitHub’s API directly, they run your own installed
+<code>gh</code> command-line tool.</p>
+<p><strong>Codespaces…</strong> lists your active Codespaces — name,
+repository, current state — and lets you Stop or Delete one from a menu.
+<strong>Create Codespace…</strong> asks for a repository and an optional
+branch and creates a new one. This is the one command in QUILL’s entire
+GitHub integration that carries a real cost: Codespaces consume GitHub
+compute and storage minutes, and the confirmation dialog says exactly
+that before anything happens, rather than the general “this changes
+something on GitHub” wording every other GitHub command uses.</p>
+<p><strong>Ask Copilot for a Command…</strong> and <strong>Explain a
+Command…</strong> are small but genuinely useful: describe what you’re
+trying to do in plain language and get a suggested git or
+<code>gh</code> command back, or paste in a command you don’t recognize
+and get a plain-language explanation of what it does.</p>
+<p>We are asking for your help here specifically. These four commands
+are thoroughly unit-tested against a simulated <code>gh</code> tool —
+the argument-building and response-parsing logic is solid — but none of
+it has been exercised against a real Codespaces-enabled repository or
+real Copilot CLI access on an actual device. If you use Codespaces or
+Copilot CLI, please try these commands and tell us what happened through
+<strong>Help &gt; Report a Bug</strong>, good or bad.</p>
+<p><strong>Don’t have <code>git</code> or <code>gh</code>
+installed?</strong> Both are now available right from <strong>Help &gt;
+Download Optional Components</strong> — a portable copy of Git for
+Windows, and the GitHub CLI for Windows and macOS, each
+checksum-verified the same way every other optional download is. QUILL
+always prefers a copy you already have on your system first; these exist
+purely so Tools &gt; Local Git and these four Codespaces/Copilot
+commands work for someone who has never installed either.</p>
+<h3
+id="what-is-not-included-because-confidence-matters-more-than-pretending">What
+is not included — because confidence matters more than pretending</h3>
+<p>Before implementing these commands, we checked the actual boundaries
+of PyGithub instead of assuming that every GitHub capability had a
+stable wrapper.</p>
+<p>Several ideas from the original plan remain out for concrete
+reasons:</p>
+<ul>
+<li><strong>Discussions</strong> has a PyGithub entry point, but it
+requires a hand-written GraphQL field-selection string. Shipping that
+without live repository validation would mean shipping a guess.</li>
+<li><strong>Projects (v2)</strong> has no PyGithub support. The library
+supports only the classic Projects API that GitHub has been sunsetting,
+so building against it would produce a feature that fails on many modern
+repositories.</li>
+<li><strong>Packages</strong> has no PyGithub support.</li>
+<li><strong>Transferring a repository to another owner</strong> also
+lacks a wrapped method. This was initially described as renaming in the
+plan, but transfer is the actual operation.</li>
+</ul>
+<p>Discussions, Projects v2, Packages, and repository transfer remain
+legitimate future candidates when they can be implemented and verified
+responsibly.</p>
+<hr />
+<h2 id="local-git-reimagined-for-screen-reader-users">Local Git,
+Reimagined for Screen Reader Users</h2>
+<p>This section is not about GitHub. It is about <code>git</code> itself
+— and it may be the capability in Beta 3 of which we are proudest.</p>
+<p>Traditional git tools expose complex operations as punctuation-heavy
+text and visually arranged changes. QUILL starts from a different
+question: what would these workflows look like if structure, sequence,
+context, and choice were communicated directly?</p>
+<h3 id="merge-conflicts-become-a-guided-conversation">Merge conflicts
+become a guided conversation</h3>
+<p>Anyone who has worked with git has eventually encountered conflict
+markers:</p>
+<pre class="text"><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+=======
+&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code></pre>
+<p>A screen reader encounters those markers as line noise unless the
+user manually reconstructs the surrounding structure. The git CLI,
+GitHub Desktop, and most graphical merge tools were not designed around
+that experience. None of them is also the trusted editor in which a
+screen reader user already writes.</p>
+<p>QUILL is.</p>
+<p>Open <strong>Tools &gt; Local Git &gt; Resolve Conflicts…</strong>
+and QUILL parses each conflicted file into meaningful parts. It then
+walks through the conflicts one at a time, announcing language such
+as:</p>
+<blockquote>
+<p>Conflict 1 of 3: your version says X; their version says Y.</p>
+</blockquote>
+<p>For each conflict, choose to:</p>
+<ul>
+<li>Keep yours</li>
+<li>Keep theirs</li>
+<li>Keep both</li>
+<li>Enter a different replacement</li>
+</ul>
+<p>The process continues through every conflict in every affected file,
+preserving structure and making the decision explicit.</p>
+<h3
+id="interactive-rebase-becomes-an-accessible-list-instead-of-editable-syntax">Interactive
+rebase becomes an accessible list instead of editable syntax</h3>
+<p><code>git rebase -i</code> normally opens a generated text file and
+expects you to reorder commits and change commands such as
+<code>pick</code>, <code>squash</code>, <code>reword</code>, or
+<code>drop</code> without damaging the syntax.</p>
+<p><strong>Interactive Rebase…</strong> replaces that fragile visual
+editing task with a real dialog:</p>
+<ul>
+<li>One commit appears on each row.</li>
+<li>Each row has an action selected from a dropdown.</li>
+<li><strong>Move Up</strong> and <strong>Move Down</strong> reorder
+commits directly.</li>
+</ul>
+<p>Under the hood, QUILL uses the same mechanism employed by graphical
+git clients: git can send its generated todo list to any program named
+as the sequence editor. QUILL becomes that program and returns the
+structured list built in the accessible dialog.</p>
+<p>If a rebase step causes a conflict, the same guided conflict resolver
+opens automatically. Resolve the conflict, and QUILL continues the
+rebase.</p>
+<h3 id="the-rest-of-the-local-git-toolkit">The rest of the local git
+toolkit</h3>
+<p>The new local git experience also includes:</p>
+<ul>
+<li><strong>Uncommitted Changes…</strong> — stage or unstage work
+through an accessible comparison rather than a raw diff.</li>
+<li><strong>Switch Branch…</strong> — change branches with a guard that
+prevents uncommitted work from following you unexpectedly.</li>
+<li><strong>Stash Changes…</strong> and <strong>Manage Stashes…</strong>
+— create and manage stashes through guided interfaces.</li>
+<li><strong>Who Wrote This Line…</strong> — make git blame useful by
+speaking the result for the current line.</li>
+<li><strong>Start Bisect…</strong> and <strong>End Bisect</strong> —
+turn <code>git bisect</code> into a plain conversation asking whether
+the current version is good or bad.</li>
+</ul>
+<p>These commands do not contact GitHub or any network service. They
+operate entirely through local git and work with any repository you
+point QUILL toward.</p>
+<p>We tested them against real repositories performing real operations:
+divergent branches producing a real merge conflict, and an interactive
+rebase that encountered a conflict partway through and then had to
+continue. Subprocess orchestration earns trust by surviving the actual
+workflow, not by looking correct on paper.</p>
+<p>Everything across these three GitHub chapters — browsing and saving
+files, working issues and pull requests, administering a repository, and
+resolving a merge conflict — is also taught end to end in <a
+href="../tutorials/08-github-inside-quill.md">Tutorial 8: GitHub inside
+QUILL</a>.</p>
+<hr />
+<h2 id="headers-and-footers-become-part-of-the-document">Headers and
+Footers Become Part of the Document</h2>
+<p>Beta 2’s Header/Footer Builder could apply headers and footers during
+printing, but the saved files themselves did not contain them.</p>
+<p>Beta 3 carries them into the document:</p>
+<ul>
+<li>Save as <code>.docx</code> and the header or footer becomes a real
+Word header or footer.</li>
+<li>Page numbers use a live Word field, so Word continues renumbering
+them as the document changes.</li>
+<li>Save as <code>.rtf</code> and QUILL writes the equivalent native RTF
+header and footer groups.</li>
+<li>Roman numeral numbering carries through.</li>
+<li>A custom starting page number carries through.</li>
+<li>A different first page carries through.</li>
+</ul>
+<p>An empty header/footer specification changes nothing, and a header
+can never become the reason a save fails.</p>
+<hr />
+<h2 id="quill-sync-let-trusted-tools-carry-the-work">QUILL Sync: Let
+Trusted Tools Carry the Work</h2>
+<p>We explored what it would mean to build a complete QUILL
+synchronization service: QUILL accounts, QUILL-hosted storage, a custom
+synchronization engine, and the operational burden that comes with all
+of it.</p>
+<p>We chose not to build a new cloud merely because we could.</p>
+<p>Cloud-synchronized folders and git already solve the essential
+problems well. Beta 3 lets QUILL work with those systems instead of
+competing with them. Two focused capabilities deliver practical
+synchronization without making QUILL a storage provider.</p>
+<h3
+id="synchronize-settings-through-a-folder-you-already-trust">Synchronize
+settings through a folder you already trust</h3>
+<p>The existing <strong>“Where should QUILL store your data?”</strong>
+option was originally created so users could move their application data
+away from the system drive. It also serves as a straightforward settings
+synchronization mechanism.</p>
+<p>Point QUILL’s data location to a folder already synchronized by
+OneDrive, Dropbox, Google Drive, or iCloud. Your settings, snippets,
+dictionaries, and keymap then travel with that folder across devices.
+QUILL writes normal files; the provider’s sync client handles
+transport.</p>
+<p>The setup wizard now explains this use clearly and names the
+important limitation: do not run QUILL simultaneously on two devices
+that share the same synchronized data folder. This path has no
+cross-device conflict-resolution system.</p>
+<h3 id="synchronize-any-folder-with-github">Synchronize any folder with
+GitHub</h3>
+<p><strong>Tools &gt; Sync Folder with GitHub…</strong> works with any
+folder: notes, a writing project, source code, or an entire body of
+work.</p>
+<p>When the selected folder is already a git repository with a remote,
+QUILL commits, pulls, and pushes it in the background.</p>
+<p>When the folder is not yet configured, QUILL explains exactly what it
+proposes to do:</p>
+<blockquote>
+<p>This runs <code>git init</code>, then adds the remote repository you
+provide as <code>origin</code>.</p>
+</blockquote>
+<p>Nothing changes until you approve. Provide the repository URL and the
+folder becomes synchronized.</p>
+<p>If the same file changed in both locations, QUILL lists the conflicts
+by name and stops. It never resolves the situation through a silent
+overwrite.</p>
+<p>The engine is familiar because it is the same foundation used by
+Accessible Vault’s <strong>Sync Vault</strong> command, generalized from
+vaults to any folder.</p>
+<p>QUILL relies on your installed git and the credentials git already
+knows — an SSH key or the account stored in your system’s git credential
+manager. It does not create or store a second set of credentials. The
+behavior mirrors a normal <code>git push</code> from the terminal.</p>
+<p>Like every network-touching feature, folder synchronization is
+disabled in Safe Mode.</p>
+<p>The reasoning behind this approach, including the larger
+synchronization design that was considered and rejected, is preserved in
+<code>docs/engineering/sync-engine-history.md</code>.</p>
+<hr />
+<h2 id="small-features-enormous-everyday-impact">Small Features,
+Enormous Everyday Impact</h2>
+<p>Some features change an architecture. Others remove one interruption,
+one unnecessary dialog, one repeated search, or one inaccessible ritual
+from a person’s day. Beta 3 makes room for both.</p>
+<p>These accessibility-first additions came from real workflows and
+direct requests. They are small enough to feel natural and powerful
+enough to become habits.</p>
+<h3 id="the-clipboard-collector-now-reaches-beyond-quill">The Clipboard
+Collector now reaches beyond QUILL</h3>
+<p>Dean Martineau asked for the behavior familiar from EdSharp: turn on
+the collector, copy from anywhere, and let every captured item flow into
+the active document.</p>
+<p>That is now exactly what happens.</p>
+<p>While <strong>Toggle Clipboard Collector</strong> is enabled, QUILL
+watches the system clipboard. Copy text from a browser, an email, a
+terminal, or another application and QUILL appends it to the open
+document, saving as it goes.</p>
+<p>The implementation is intentionally light. QUILL performs one
+inexpensive check roughly once per second and touches the clipboard only
+when its contents have actually changed. Copies made within QUILL still
+arrive immediately, and each distinct clipboard item is collected
+exactly once.</p>
+<h3 id="quill-can-become-thunderbirds-external-editor">QUILL can become
+Thunderbird’s external editor</h3>
+<p>Martin Courcelles asked to write email in QUILL. The happy discovery
+is that the underlying behavior already works.</p>
+<p>QUILL’s one-process-per-file model matches what Thunderbird’s
+<strong>External Editor Revived</strong> add-on expects. The user guide
+now includes a complete <strong>Using QUILL as an external
+editor</strong> walkthrough:</p>
+<ol type="1">
+<li>Install the Thunderbird add-on.</li>
+<li>Point it to <code>quill.exe</code>.</li>
+<li>Press <strong>Ctrl+E</strong> in a Thunderbird compose window.</li>
+<li>Write using the full QUILL editing environment.</li>
+<li>Save and close the QUILL document.</li>
+<li>The text returns to the Thunderbird message.</li>
+</ol>
+<h3 id="the-windows-installer-can-add-quill-to-path">The Windows
+installer can add QUILL to PATH</h3>
+<p>The installer now includes an optional <strong>Add Quill to
+PATH</strong> task. It is unchecked by default and appears beside the
+existing file-association choices.</p>
+<p>Enable it and the command <code>quill</code> resolves from any
+terminal or from a shortcut’s <strong>Target</strong> field without
+requiring the complete installation path.</p>
+<p>The change is per-user only. It requires no elevation and affects no
+other Windows account.</p>
+<p>Already installed Beta 2 or an earlier build? Run the installer again
+and select the task to add it retroactively.</p>
+<h3 id="a-temporary-bookmark-for-right-here-right-now">A temporary
+bookmark for “right here, right now”</h3>
+<p>Sometimes you do not need a named landmark, a list, or a persistent
+record. You simply need to mark this exact place and return a few
+moments later.</p>
+<ul>
+<li><strong>Ctrl+Shift+K</strong> sets one unnamed bookmark at the
+cursor. There is no dialog. QUILL announces: “Temporary bookmark
+set.”</li>
+<li><strong>Alt+Shift+K</strong> returns to it immediately. There is no
+picker. QUILL announces: “Jumped to temporary bookmark.”</li>
+</ul>
+<p>Setting another temporary bookmark replaces the previous one without
+prompting. Only one exists at a time.</p>
+<p>It does <strong>not</strong> persist across sessions. Closing and
+reopening QUILL clears it. That is deliberate: this is disposable
+working memory for the next few minutes, not a replacement for the
+existing unlimited, persistent <strong>Set Bookmark…</strong>,
+<strong>Go To Bookmark…</strong>, and <strong>List Bookmarks…</strong>
+commands.</p>
+<h3 id="ten-numbered-quick-bookmarks-each-one-keystroke-away">Ten
+numbered quick bookmarks, each one keystroke away</h3>
+<p>Beta 3 also adds ten fixed bookmark slots numbered 0 through 9.</p>
+<ul>
+<li><strong>Alt+Shift+0</strong> through <strong>Alt+Shift+9</strong>
+sets the corresponding slot at the cursor. For example: “Quick bookmark
+3 set.”</li>
+<li><strong>Ctrl+Alt+Shift+0</strong> through
+<strong>Ctrl+Alt+Shift+9</strong> jumps directly to that slot. QUILL
+announces “Jumped to quick bookmark 3,” or “Quick bookmark 3 is not set”
+when the slot is empty.</li>
+</ul>
+<p>These are direct chords. There is no menu to open and no bookmark
+mode to enter first.</p>
+<p>Internally, the slots are stored as normal named bookmarks with
+generated names such as <strong>Quick 3</strong>. That means they
+persist per document across restarts just like existing named bookmarks.
+There is nothing new to configure and no separate storage system to
+maintain.</p>
+<h3 id="altf7-checks-only-the-word-under-the-cursor">Alt+F7 checks only
+the word under the cursor</h3>
+<p>Press <strong>Alt+F7</strong> to run <strong>Spell Check
+Word</strong> on the current word.</p>
+<p>When the word is correct, QUILL says so and returns you immediately
+to your work.</p>
+<p>When the word is misspelled, a compact list opens with the same
+choices available from the right-click spelling menu:</p>
+<ul>
+<li>Suggested replacements</li>
+<li><strong>Add to Dictionary</strong></li>
+<li><strong>Ignore</strong></li>
+</ul>
+<p>Arrow to an option and press Enter, or press Escape to cancel without
+changing anything.</p>
+<p>This is the focused-word spelling workflow familiar from Microsoft
+Office. Use <strong>F7</strong> for a systematic review of the full
+document. Use <strong>Alt+F7</strong> when you need an answer about the
+one word at the cursor.</p>
+<h3 id="ranked-spelling-puts-the-most-repeated-problem-first">Ranked
+spelling puts the most repeated problem first</h3>
+<p>Press <strong>Ctrl+Shift+L</strong> to open a misspelling list ranked
+by frequency.</p>
+<p>The existing <strong>Misspelling List</strong> on
+<strong>Alt+Shift+L</strong> remains unchanged and continues to present
+words in document order. The new ranked view begins with the misspelling
+that occurs most often and shows the count in each entry, for
+example:</p>
+<blockquote>
+<p>teh (Ln 12, Col 4, 8 occurrences)</p>
+</blockquote>
+<p>This Kurzweil 1000-inspired feature came directly from a longtime
+user. In an OCR document or a draft containing a repeated typo,
+correcting the most frequent problem first can eliminate a large portion
+of the noise immediately.</p>
+<p>Arrow through the list and press Enter to jump to an occurrence,
+exactly as in the regular misspelling list. Users who prefer reviewing
+from the beginning of the document can continue using
+<strong>Alt+Shift+L</strong>.</p>
+<h3
+id="ranked-spelling-review-brings-the-full-f7-workflow-into-frequency-order">Ranked
+Spelling Review brings the full F7 workflow into frequency order</h3>
+<p><strong>Alt+Shift+F7</strong> opens the complete guided Spelling
+Review, but orders issues from most frequent to least frequent.</p>
+<p>It includes every action available in the normal F7 dialog:</p>
+<ul>
+<li><strong>Change</strong></li>
+<li><strong>Change All</strong></li>
+<li><strong>Ignore Once</strong></li>
+<li><strong>Ignore All</strong></li>
+<li><strong>Add to Dictionary</strong></li>
+<li><strong>Undo Last</strong></li>
+</ul>
+<p>This is designed for difficult documents: rough OCR, systematic
+autocorrect failures, and files containing the same few errors dozens of
+times.</p>
+<p>Choose <strong>Change All</strong> on the first item and the ranking
+recalculates immediately. The most frequent remaining issue rises to the
+top, allowing you to keep clearing the largest groups of errors
+first.</p>
+<p><strong>F7</strong> and <strong>Alt+Shift+F7</strong> use the same
+dialog and the same actions. Only the presentation order changes:
+document order for F7, frequency order for Alt+Shift+F7.</p>
+<h3
+id="favorite-folders-remember-what-matters-not-merely-what-was-recent">Favorite
+folders remember what matters, not merely what was recent</h3>
+<p>Windows recent folders answer one question: what did you open
+lately?</p>
+<p>Favorite folders answer a different and often more useful one: what
+must always be easy to reach?</p>
+<p>A folder holding a document your supervisor might request at any
+moment may deserve permanent prominence even if you have not opened it
+in months. Beta 3 adds a short, curated favorites list modeled on a
+valued Kurzweil 1000 workflow.</p>
+<ul>
+<li><strong>Ctrl+Alt+Shift+A — Add Favorite Folder.</strong> Adds the
+folder containing the current document. An untitled document must be
+saved first because QUILL needs a real folder path.</li>
+<li><strong>Ctrl+Alt+Shift+R — Remove Favorite Folder…</strong> Opens
+the favorites list and lets you choose one to remove.</li>
+<li><strong>Ctrl+Alt+Shift+O — Open From Favorite Folder…</strong> Opens
+the new Quick Open experience scoped to your favorite folders.</li>
+</ul>
+<p>All three commands also appear under <strong>File &gt; Favorite
+Folders</strong> for users who prefer menu navigation.</p>
+<h3 id="quick-open-searches-across-favorite-folders-as-you-type">Quick
+Open searches across favorite folders as you type</h3>
+<p>Press <strong>Ctrl+Alt+Shift+O</strong> and a compact dialog opens
+with focus already in the search box.</p>
+<p>Begin typing any part of a filename. The results below filter live
+and case-insensitively across every favorite folder, following the same
+type-to-filter rhythm as <strong>Ctrl+P</strong> in Visual Studio
+Code.</p>
+<p>Each result identifies the favorite folder it came from, which
+matters when multiple folders contain similarly named files. Arrow to a
+result and press Enter, or choose <strong>OK</strong>, to open it. Press
+Escape or <strong>Cancel</strong> to leave everything unchanged.</p>
+<p>By default, the search includes only files at the top level of each
+favorite folder. It does not recurse into subfolders. That keeps results
+immediate even when a favorite contains a large nested tree and
+reinforces the intentionally curated nature of the feature.</p>
+<p>Enable <strong>Include subfolders</strong> when a deeper search is
+needed. Recursive results are capped at a few thousand files so a very
+large favorite cannot freeze the dialog.</p>
+<p>QUILL does not impose a single project-root or workspace model like
+Visual Studio Code, so Quick Open deliberately searches the user’s
+chosen favorites rather than attempting to scan the entire computer.</p>
+<h3
+id="accessible-code-folding-reduces-clutter-without-hiding-content-from-you">Accessible
+code folding reduces clutter without hiding content from you</h3>
+<p>QUILL can now fold heading sections and fenced code blocks — the
+<code>```</code> through <code>```</code> structure used in Markdown and
+embedded code — while preserving complete access to every word.</p>
+<p>The commands are:</p>
+<ul>
+<li><strong>Ctrl+Alt+Shift+F — Toggle Fold.</strong> Folds or unfolds
+the smallest foldable region containing the cursor. QUILL announces
+exactly what happened, such as “Folded: 14 lines under ‘Chapter Two’” or
+“Unfolded: ‘Chapter Two.’”</li>
+<li><strong>Alt+Shift+] — Next Fold.</strong> Moves to the next foldable
+boundary, whether expanded or folded, and announces the label, state,
+and line count: “‘Chapter Three,’ expanded, 22 lines.”</li>
+<li><strong>Alt+Shift+[ — Previous Fold.</strong> Performs the same
+navigation in reverse.</li>
+<li><strong>Ctrl+Alt+Shift+L — List Folds…</strong> Opens a complete
+list of foldable regions, each with its current state and line count.
+Select one to jump to it directly.</li>
+</ul>
+<p>The accessibility design is intentionally different from folding in
+most editors.</p>
+<p>Mainstream folding generally hides lines visually and makes ordinary
+arrow navigation skip silently over the collapsed content. A screen
+reader user may have no reliable way to know whether text was removed,
+folded, or simply bypassed.</p>
+<p>QUILL never creates that uncertainty.</p>
+<p><strong>The document text is never changed, and normal character,
+word, and line navigation is never intercepted.</strong> Fold state
+exists for the four folding commands to describe and use. Arrow through
+a folded region normally and every word remains available exactly as
+though the region were expanded.</p>
+<p>Folding changes the behavior of fold-specific jump commands. It never
+makes reachable content silently unreachable.</p>
+<h3
+id="insert-emoji-3781-emoji-findable-by-ear-described-in-words">Insert
+Emoji — 3,781 emoji, findable by ear, described in words</h3>
+<p>QUILL already has Insert Special Character for the case where you
+know exactly which Unicode code point you want. Emoji are the opposite
+problem: you don’t know the code point, you might not even remember the
+exact name, and you cannot see a picture grid to recognize one by eye.
+Every mainstream emoji picker is built around that grid — rows of small
+pictures meant to be scanned visually — which makes the entire category
+of feature effectively unusable without sight. Insert Emoji is built the
+other way around, from the ground up, for browsing and finding by
+ear.</p>
+<p><strong>Insert &gt; Insert Emoji… (Alt+Period)</strong> opens on
+every complete, standard emoji Unicode currently defines — 3,781 of
+them, current as of Unicode’s 16.0 emoji release — organized into the
+same nine categories Unicode itself uses:</p>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Emoji</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>People &amp; Body</td>
+<td>2,261</td>
+</tr>
+<tr>
+<td>Flags</td>
+<td>270</td>
+</tr>
+<tr>
+<td>Objects</td>
+<td>264</td>
+</tr>
+<tr>
+<td>Symbols</td>
+<td>224</td>
+</tr>
+<tr>
+<td>Travel &amp; Places</td>
+<td>218</td>
+</tr>
+<tr>
+<td>Smileys &amp; Emotion</td>
+<td>169</td>
+</tr>
+<tr>
+<td>Animals &amp; Nature</td>
+<td>159</td>
+</tr>
+<tr>
+<td>Food &amp; Drink</td>
+<td>131</td>
+</tr>
+<tr>
+<td>Activities</td>
+<td>85</td>
+</tr>
+</tbody>
+</table>
+<p><em>(“People &amp; Body” includes every skin-tone and gesture variant
+Unicode defines as its own standalone emoji, which is why it dwarfs the
+others.)</em></p>
+<p>The dialog is two ways into the same list. <strong>Search</strong>,
+at the top, live-filters as you type and matches in order of confidence:
+the emoji symbol itself, if you paste or type one in; a legacy typed
+alias like <code>:)</code>, <code>:D</code>, or <code>&lt;3</code>, for
+the smiley shorthand habit many people already have; a match against the
+emoji’s official Unicode name or one of its keywords; and, as a last
+resort, a match inside the emoji’s own written description — so a
+half-remembered phrase like “melting” or “puddle” can still surface the
+right result even when that word never appears in the emoji’s official
+name or keyword list. <strong>Category</strong>, a list on the left, is
+the browse path: pick a category and its emoji fill the results list,
+for exploring rather than searching.</p>
+<p>Whichever way you got there, arrowing through the results list
+updates a live <strong>description pane</strong> with everything QUILL
+knows about the selected emoji: category and subgroup, official name,
+keywords, any legacy typed alias, and — the piece that makes this
+genuinely usable without sight — a real, original one-to-two-sentence
+description of what the emoji actually looks like: colors, shape,
+expression, pose. Press <strong>Insert</strong>, or press Enter directly
+on a result, and it lands at your cursor; <strong>Cancel</strong> or
+Escape backs out with nothing inserted.</p>
+<p>Two more entries sit at the very top of the category list, ahead of
+Unicode’s nine groupings: <strong>Favorites</strong> and
+<strong>Recent</strong>. Select any emoji and press <strong>Add to
+Favorites</strong> to star it for one-step access from then on — the
+button relabels to <strong>Remove from Favorites</strong> once it is,
+and works from any view, search results included.
+<strong>Recent</strong> fills itself in automatically: the last 30 emoji
+you’ve actually inserted, most-recently-used first, so the ones you
+reach for constantly never need a search or a category dig again.
+Removing something from Favorites, or clearing out Recent, only changes
+what shows up in those two shortcuts — the emoji itself is never touched
+and is still exactly as findable under its normal category or by search
+as it always was.</p>
+<p>Every one of those 3,781 descriptions is text QUILL generated itself,
+purpose-built for this feature — from Unicode’s own official names,
+categories, and keywords, through an AI model, in QUILL’s own words —
+rather than copied or scraped from another picker’s site, which would
+have carried real licensing risk. The whole catalog, descriptions
+included, ships as a single bundled file built entirely offline ahead of
+time; using the picker itself makes no network connection at all, in
+Safe Mode or anywhere else.</p>
+<hr />
+<h2
+id="introducing-the-offline-edition-and-real-polish-for-the-ai-setup-wizard-and-audio-studio">Introducing
+the Offline Edition, and Real Polish for the AI Setup Wizard and Audio
+Studio</h2>
+<h3 id="a-build-for-machines-with-no-internet-at-all">A build for
+machines with no internet at all</h3>
+<p>QUILL normally keeps its everyday installer small by downloading its
+bigger optional pieces — Pandoc, offline speech engines, neural voices,
+the braille pack, and more — only when you actually reach for them.</p>
+<p>The new <strong>Offline Edition</strong> build inverts that: every
+optional component ships inside the installer and the portable bundle up
+front. QUILL is fully functional the moment it’s installed, with no
+internet connection ever needed. That makes it the right choice for an
+air-gapped machine, a locked-down work laptop, or anywhere your first
+login can’t reach the internet.</p>
+<p><strong>Help &gt; Download Optional Components</strong> reflects the
+difference honestly: under the Offline Edition, each component shows as
+already <strong>Bundled</strong> — or, for the handful the offline build
+doesn’t carry, <strong>Not included</strong> — instead of offering a
+Download button that has nothing left to fetch. The regular, smaller
+installer and portable download are unchanged and remain the default for
+everyone else.</p>
+<p>The section right after this one covers a real gap a community member
+found in the Offline Edition’s first pass, and how it was closed.</p>
+<h3 id="the-ai-setup-wizard-treats-ollama-fairly">The AI Setup Wizard
+treats Ollama fairly</h3>
+<p>A never-configured install’s saved settings default to provider
+“Ollama” — a reasonable default, but the wizard’s “remember what you
+already set up” logic mistook that default for proof you’d deliberately
+added Ollama. The result: on first run, the wizard silently marked
+Ollama as already configured, quietly dropped it from the Provider list,
+and left only key-requiring cloud providers to choose from — even on a
+machine where Ollama had never been touched.</p>
+<p>The wizard now confirms a local Ollama server actually answers before
+treating it as configured. A related, simpler bug in the AI Hub’s
+Provider tab is fixed alongside it: the API key field stayed active for
+every provider regardless of whether one was actually needed, making
+Ollama’s key field look required when nothing ever enforced it. It now
+greys out correctly for Ollama and any other no-key provider.</p>
+<p>Two smaller Setup Wizard rough edges are fixed in the same pass.
+Reaching the Connect step (or removing a provider from the Added list)
+could land focus straight in an API key field instead of the Provider
+list — jarring, and easy to misread as “Ollama needs a key too.” Focus
+now always starts on the Provider list itself. The Remove button also
+used to look clickable the instant anything was added, whether or not
+you’d actually selected an entry; it now stays disabled until a real
+selection exists.</p>
+<h3
+id="ollama-wherever-it-actually-runs-and-pull-a-model-without-a-terminal">Ollama,
+wherever it actually runs — and pull a model without a terminal</h3>
+<p>The Setup Wizard always assumed Ollama lived at
+<code>localhost</code>, even though reaching an Ollama server on another
+machine on your network was never actually wired up end to end. A new
+<strong>Ollama server address</strong> field on the Connect step — shown
+only when Ollama is selected, defaulting to localhost — now genuinely
+drives the verify, model-list, and Finish steps, so a LAN or self-hosted
+Ollama is a real, working choice.</p>
+<p>Choosing your default model used to mean opening a terminal and
+typing <code>ollama pull &lt;model&gt;</code> yourself. The Model step
+now shows which recommended models are already installed and offers a
+<strong>Pull model</strong> button on the rest, with live download
+progress, selecting the model for you the moment it’s ready.</p>
+<h3
+id="preferences-lands-you-on-the-right-control-when-you-switch-tabs">Preferences
+lands you on the right control when you switch tabs</h3>
+<p>Using Ctrl+Tab or Ctrl+Shift+Tab to move between Preferences tabs —
+or clicking a different one — moved the visible page but left keyboard
+focus wherever it had been, so a screen reader sometimes announced just
+“Panel” instead of the new tab’s first real field. Switching tabs now
+always moves focus to that tab’s first control, matching the routing
+every other tabbed dialog in QUILL already uses.</p>
+<h3
+id="audio-studio-gets-a-working-cancel-button-an-honest-log-and-a-tidier-wav-output">Audio
+Studio gets a working Cancel button, an honest log, and a tidier WAV
+output</h3>
+<p>Generating audio for a whole folder of documents had no Cancel button
+at all, and pressing Escape just dinged — there was no way to stop a run
+short of quitting QUILL outright. Cancel (and Escape) now work properly:
+whatever file is currently synthesizing finishes normally, so you never
+end up with a half-written audio file, and the run stops cleanly before
+starting the next one.</p>
+<p>The diagnostics log used to record only which document was up next,
+not the chunk-by-chunk progress the on-screen dialog already showed — so
+glancing at the log during (or after) a run told you far less than
+watching the screen did. The log now mirrors that same chunk-by-chunk
+detail.</p>
+<p>Choosing WAV as your export format used to drop the file right next
+to your source document, the same place MP3 already lands — awkward for
+a format that tends to produce large files. WAV output now goes into an
+<strong>Audio Output</strong> subfolder beside the document it came
+from; exporting recursively through nested folders gives each subfolder
+its own Audio Output folder rather than funneling everything into one
+shared location at the top.</p>
+<h3 id="quill-warns-before-altf4-abandons-real-work-in-progress">QUILL
+warns before Alt+F4 abandons real work in progress</h3>
+<p>Closing QUILL while an Audio Studio export was running used to exit
+immediately, mid-job, with no warning at all. QUILL now asks first —
+close and stop the job now, or leave QUILL open so it can finish — and
+mentions <strong>File &gt; Send to Tray</strong> as a way to keep it
+running quietly in the background instead. Routine background activity
+(search and replace, dictation, downloads) is unaffected; only genuinely
+hard-to-redo jobs like an Audio Studio export trigger the warning.</p>
+<hr />
+<h2 id="the-offline-edition-is-finally-true-to-its-name">The Offline
+Edition Is Finally True to Its Name</h2>
+<p>A community member installed the Offline Edition and discovered that
+Kokoro neural voices still requested an internet connection on first use
+— inside a build whose defining promise is that the internet should not
+be required.</p>
+<p>That report did not become a one-line patch. It triggered an audit of
+every optional speech component QUILL offers. Beta 3 closes every gap
+found in that audit except one clearly documented remaining
+limitation.</p>
+<h3 id="what-offline-edition-is-supposed-to-mean">What “Offline Edition”
+is supposed to mean</h3>
+<p>The Offline Edition should be self-contained: the components a user
+can reasonably expect to use are already on the computer, and normal
+operation requires no internet connection after installation.</p>
+<p>Kokoro’s voice model files were already included. The missing piece
+was the software engine that reads those models. Kokoro’s underlying
+package and several supporting libraries were still being installed the
+first time the voice was selected.</p>
+<p>On a truly offline computer, the model was present but unusable
+because the engine tried to cross a network connection that did not
+exist.</p>
+<h3 id="kokoro-now-installs-and-speaks-entirely-from-local-files">Kokoro
+now installs and speaks entirely from local files</h3>
+<p>The Offline Edition now contains everything required to install
+Kokoro neural voices. No connection is needed during first use or any
+later use.</p>
+<h3 id="whisper.cpp-now-includes-its-starter-model">whisper.cpp now
+includes its starter model</h3>
+<p>QUILL’s default speech-to-text engine, <strong>whisper.cpp</strong>,
+now ships with its starter model already present.</p>
+<p>This was the most important gap in the audit. whisper.cpp is not
+merely an optional engine a user might choose later; it is the
+transcription path QUILL reaches for automatically. An Offline Edition
+unable to transcribe until it downloaded a model was not genuinely
+offline. That contradiction is now resolved.</p>
+<h3
+id="faster-whisper-vosk-and-mp3-chapter-markers-are-locally-complete">Faster
+Whisper, Vosk, and MP3 chapter markers are locally complete</h3>
+<p>Three smaller optional components receive the same treatment:</p>
+<ul>
+<li><strong>Faster Whisper</strong></li>
+<li><strong>Vosk</strong></li>
+<li><strong>MP3 chapter-marker support</strong></li>
+</ul>
+<p>Choose any of them in the Offline Edition and installation completes
+without a network connection.</p>
+<p>Vosk also becomes more reliable in the process. It depended on one
+supporting library that previously came only from the internet even when
+the verified Vosk package itself was available locally. That final
+external dependency is now bundled.</p>
+<p>A second, more fundamental Vosk problem surfaced during this beta’s
+own build process: Vosk also lists a subtitle-file helper library as a
+dependency that QUILL never actually uses, and that library has never
+published a ready-to-install package — only its source code. Because the
+Offline Edition build only ever installs verified, ready-to-install
+packages (never source code that would need to be compiled), it rejected
+that one unused dependency every time, which meant the Offline Edition
+installer could not be built at all until this was found and fixed. It
+now fetches exactly what Vosk actually needs and skips the one piece it
+doesn’t.</p>
+<h3 id="piper-arrives-with-an-engine-and-a-ready-to-speak-voice">Piper
+arrives with an engine and a ready-to-speak voice</h3>
+<p>Piper is now fully prepared for offline use as well.</p>
+<p>The Offline Edition bundles:</p>
+<ul>
+<li>Piper’s engine</li>
+<li>Integrity verification against the same pinned fingerprint at build
+time and again during installation</li>
+<li>A ready-to-use starter voice: <strong>Lessac, US English, medium
+quality</strong></li>
+</ul>
+<p>Select Piper after an Offline Edition installation and it speaks
+without contacting the network. Additional voices remain available from
+the online catalog whenever a connection is available and the user
+chooses to download them.</p>
+<h3 id="the-one-remaining-offline-gap">The one remaining offline
+gap</h3>
+<p><strong>Node.js-based Quillins</strong> still require an internet
+connection the first time they are used, even in the Offline
+Edition.</p>
+<p>This is a known and tracked limitation, not an overlooked dependency.
+It remains on the list for future work.</p>
+<hr />
+<h2 id="built-by-the-community-not-merely-released-to-it">Built by the
+Community, Not Merely Released to It</h2>
+<p>Every fix in Beta 3 traces to a specific community report. Nine
+reports, spanning issues <strong>#939 through #953</strong>, are now
+closed with an explanation of what was discovered and, where a change
+was needed, what was done.</p>
+<p>The two reports containing no crash evidence — <strong>#940</strong>
+and <strong>#948</strong> — were not dismissed as unreproducible. They
+inspired QUILL to recognize that pattern itself and stop presenting
+crash recovery when the log contains nothing actionable.</p>
+<p>Ranked spelling and favorite folders came directly from a tester’s
+side-by-side comparison with another product. The same conversation also
+called for an instant single-word spelling check, and
+<strong>Alt+F7</strong> arrives in this release alongside them.</p>
+<p>The braille correction moved from experiment to default because
+braille users tested it.</p>
+<p>The macOS corrections exist because testers described experiences
+that sounded improbable until the underlying toolkit behavior made them
+completely explainable.</p>
+<p>The Offline Edition became genuinely offline because a community
+member tested its promise rather than assuming the label was enough.</p>
+<p>This is not simply how QUILL improves. <strong>This is how QUILL is
+built.</strong></p>
+<hr />
+<h2 id="toward-1.0-together">Toward 1.0 — Together</h2>
+<p>Beta 3 moves the 0.9.0 cycle closer to 1.0 with a stronger editor,
+clearer safeguards, deeper accessibility, and a growing set of workflows
+shaped by the people who use them.</p>
+<p>Please keep exploring. Open the formats that matter to you. Try the
+braille behavior, Narrator announcements, VoiceOver rich editing,
+portable update flow, local git tools, GitHub commands, spell-checking
+workflows, folder favorites, folding, speech engines, and offline
+installation.</p>
+<p>When something surprises you — beautifully or badly — use
+<strong>Help &gt; Report a Bug</strong> and tell us what happened.</p>
+<p>A successful report matters. A failure report matters. A strange edge
+case matters. A feature request grounded in real work matters.</p>
+<p>Thank you for testing. Thank you for challenging assumptions. Thank
+you for helping turn an editor into a community-built place where more
+people can create, contribute, and belong.</p>
+<p><strong>QUILL 0.9.0 Beta 3 is here. One editor. Every format. Built
+with you.</strong></p>

@@ -126,6 +126,73 @@ def test_begin_session_does_not_offer_empty_snapshot(
     assert offers == []
 
 
+def test_begin_session_suppresses_offer_when_log_has_no_error_evidence(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # Regression for #940/#948: two crash-recovery reports had a log with
+    # only routine idle-sweep heartbeat entries, no exception or traceback --
+    # consistent with an external termination (OS shutdown, forced close),
+    # not a QUILL bug. That case should not surface "Quill detected an
+    # unclean exit" with nothing actionable behind it.
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    previous = str(uuid4())
+    current = str(uuid4())
+    session_root = tmp_path / "autosave" / previous
+    session_root.mkdir(parents=True)
+    (session_root / "doc.snap").write_text("recovered text", encoding="utf-8")
+    logs_dir = tmp_path / "logs"
+    logs_dir.mkdir(parents=True)
+    (logs_dir / "quill.log").write_text(
+        "2026-07-10 10:22:41 INFO quill.stability.task_manager: "
+        "Task finished operation_id=abc name=lifecycle-idle-sweep duration_ms=0.1\n",
+        encoding="utf-8",
+    )
+    begin_session(previous)
+    offers = begin_session(current)
+    assert offers == []
+
+
+def test_begin_session_still_offers_when_log_has_a_traceback(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    previous = str(uuid4())
+    current = str(uuid4())
+    session_root = tmp_path / "autosave" / previous
+    session_root.mkdir(parents=True)
+    (session_root / "doc.snap").write_text("recovered text", encoding="utf-8")
+    logs_dir = tmp_path / "logs"
+    logs_dir.mkdir(parents=True)
+    (logs_dir / "quill.log").write_text(
+        "2026-07-10 10:22:41 ERROR quill.ui.main_frame: Unhandled exception\n"
+        "Traceback (most recent call last):\n"
+        '  File "main_frame.py", line 42, in on_click\n'
+        "ValueError: boom\n",
+        encoding="utf-8",
+    )
+    begin_session(previous)
+    offers = begin_session(current)
+    assert len(offers) == 1
+    assert offers[0].session_id == previous
+
+
+def test_begin_session_still_offers_when_log_is_missing(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # No log at all is inconclusive, not evidence of "nothing happened" --
+    # err toward still offering recovery rather than silently discarding a
+    # real crash whose log write itself failed.
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    previous = str(uuid4())
+    current = str(uuid4())
+    session_root = tmp_path / "autosave" / previous
+    session_root.mkdir(parents=True)
+    (session_root / "doc.snap").write_text("recovered text", encoding="utf-8")
+    begin_session(previous)
+    offers = begin_session(current)
+    assert len(offers) == 1
+
+
 def test_concurrent_begin_session_serialize_via_lock(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:

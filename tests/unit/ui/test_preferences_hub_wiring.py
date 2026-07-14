@@ -29,6 +29,11 @@ def test_preferences_uses_listbook_on_every_platform() -> None:
     assert "wx.Toolbook(" not in body
 
 
+def test_preferences_menu_uses_stock_app_menu_id() -> None:
+    source = Path("quill/ui/main_frame_menu.py").read_text(encoding="utf-8")
+    assert "self._id_preferences = wx.ID_PREFERENCES" in source
+
+
 def test_preferences_no_longer_uses_single_choice_picker() -> None:
     body = _open_preferences_source()
     # The old "choose then OK then open" indirection is gone.

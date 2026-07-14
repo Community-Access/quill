@@ -241,7 +241,7 @@
   </style>
 </head>
 <body>
-<h1 id="quill-0.8.0-beta-1---fresh-install-regression-test-plan">QUILL
+<h1 id="quill-080-beta-1---fresh-install-regression-test-plan">QUILL
 0.8.0 Beta 1 - Fresh-Install Regression Test Plan</h1>
 <p>Goal: validate the 0.8.0 Beta 1 installer exactly as a brand-new user
 would experience it, with no state carried over from any prior QUILL
@@ -260,20 +260,20 @@ features are present.</p>
 deliberately left pointing at the prior release, so a freshly installed
 0.8.0 build will NOT advertise an update to itself. That is expected for
 this beta.</p>
-<h2 id="get-to-a-truly-clean-machine">1. Get to a truly clean
+<h2 id="1-get-to-a-truly-clean-machine">1. Get to a truly clean
 machine</h2>
 <p>Pick ONE of the two approaches. Approach A is the most
 trustworthy.</p>
-<h3 id="a.-windows-sandbox-recommended---guarantees-never-installed">A.
-Windows Sandbox (recommended - guarantees “never installed”)</h3>
+<h3 id="a-windows-sandbox-recommended---guarantees-never-installed">A.
+Windows Sandbox (recommended - guarantees "never installed")</h3>
 <p>Windows Sandbox is a disposable, clean Windows instance. Nothing from
 your current machine is present, so it is the truest test of a
 first-time install.</p>
 <ol type="1">
-<li>Enable it once: Start -&gt; “Turn Windows features on or off” -&gt;
-check “Windows Sandbox” -&gt; reboot. (Requires Windows Pro/Enterprise
+<li>Enable it once: Start -&gt; "Turn Windows features on or off" -&gt;
+check "Windows Sandbox" -&gt; reboot. (Requires Windows Pro/Enterprise
 and virtualization enabled in BIOS.)</li>
-<li>Launch “Windows Sandbox” from the Start menu.</li>
+<li>Launch "Windows Sandbox" from the Start menu.</li>
 <li>Copy <code>Quill-for-All-Setup-0.8.0 Beta 1.exe</code> into the
 sandbox (drag-drop or shared folder).</li>
 <li>Run the installer inside the sandbox.</li>
@@ -283,14 +283,14 @@ is a fresh machine. Great for repeating the test.</li>
 <p>Note: a sandbox has no screen reader installed. To exercise the
 screen-reader announcements, use Approach B on a real machine with
 JAWS/NVDA, or install NVDA portable inside the sandbox.</p>
-<h3 id="b.-clean-your-current-machine-manual-reset">B. Clean your
-current machine (manual reset)</h3>
+<h3 id="b-clean-your-current-machine-manual-reset">B. Clean your current
+machine (manual reset)</h3>
 <p>Use this on your real machine (with your screen reader) but reset all
 QUILL state first so it behaves as a first install.</p>
 <ol type="1">
 <li>Uninstall any existing QUILL:
 <ul>
-<li>Settings -&gt; Apps -&gt; Installed apps -&gt; “QUILL for All” -&gt;
+<li>Settings -&gt; Apps -&gt; Installed apps -&gt; "QUILL for All" -&gt;
 Uninstall, or run the uninstaller in
 <code>%LOCALAPPDATA%\Programs\QUILL for All</code>.</li>
 </ul></li>
@@ -304,7 +304,7 @@ dir)</li>
 <li><code>%APPDATA%\Quill</code> (settings, keymap, recovery, AI)</li>
 <li><code>%LOCALAPPDATA%\Quill</code> (caches, if present)</li>
 </ul></li>
-<li>Confirm no Start Menu shortcut remains under “QUILL for All”.</li>
+<li>Confirm no Start Menu shortcut remains under "QUILL for All".</li>
 </ol>
 <p>Or just run the cleanup script in this folder, which stops QUILL,
 runs the uninstaller, removes both data dirs, and verifies the machine
@@ -322,16 +322,16 @@ class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-
 <p>Important: back up <code>%APPDATA%\Quill</code> first if you have
 real projects/settings you want to keep - deleting it is what makes the
 test a true fresh install.</p>
-<h2 id="install">2. Install</h2>
+<h2 id="2-install">2. Install</h2>
 <ol type="1">
 <li>Run <code>Quill-for-All-Setup-0.8.0 Beta 1.exe</code>.</li>
-<li>Confirm the installer title/version reads “QUILL for All 0.8.0 Beta
-1”.</li>
+<li>Confirm the installer title/version reads "QUILL for All 0.8.0 Beta
+1".</li>
 <li>Accept defaults (per-user, all components) unless you are
 specifically testing component selection.</li>
 <li>Finish and launch QUILL from the Start menu shortcut.</li>
 </ol>
-<h2 id="first-run-fresh-state-checks">3. First-run / fresh-state
+<h2 id="3-first-run--fresh-state-checks">3. First-run / fresh-state
 checks</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />First-run setup wizard appears
@@ -340,15 +340,15 @@ flag).</label></li>
 <li><label><input type="checkbox" />App launches with no crash dialog;
 screen reader announces the window on foreground (the post-show idle
 fix).</label></li>
-<li><label><input type="checkbox" />About QUILL (Help menu) shows “0.8.0
-Beta 1” and the build stamp.</label></li>
+<li><label><input type="checkbox" />About QUILL (Help menu) shows "0.8.0
+Beta 1" and the build stamp.</label></li>
 <li><label><input type="checkbox" />Help -&gt; Check for Updates does
 NOT report a newer version (feed left on prior release on
 purpose).</label></li>
 <li><label><input type="checkbox" />Settings, keymap, and recovery files
 get created under <code>%APPDATA%\Quill</code>.</label></li>
 </ul>
-<h2 id="bundled-dependencies-and-features-present">4. Bundled
+<h2 id="4-bundled-dependencies-and-features-present">4. Bundled
 dependencies and features present</h2>
 <p>Verify these are present in the install dir without any extra
 download:</p>
@@ -375,7 +375,7 @@ download on demand).</label></li>
 <li><label><input type="checkbox" />whisper.cpp offline engine:
 <code>...\tools\speech\whispercpp\whisper-cli.exe</code> plus
 <code>whisper.dll</code> and the <code>ggml*.dll</code> runtime
-libraries (the “speechwhisper” installer component). Bundled from
+libraries (the "speechwhisper" installer component). Bundled from
 whisper.cpp v1.9.1 (CPU build, <code>whisper-bin-x64.zip</code>). The
 Whisper <em>model</em> still downloads on first use via Tools -&gt;
 Speech -&gt; Manage Speech Models.</label></li>
@@ -386,7 +386,7 @@ Speech -&gt; Manage Speech Models.</label></li>
 engine binaries/wheels above are bundled; only the large model weights
 are fetched when you first pick a model.</li>
 </ul>
-<h2 id="core-regression-pass">5. Core regression pass</h2>
+<h2 id="5-core-regression-pass">5. Core regression pass</h2>
 <p>Run a quick smoke across the main surfaces:</p>
 <ul class="task-list">
 <li><label><input type="checkbox" />New document, type, save (atomic
@@ -414,7 +414,7 @@ confirm a crash bundle is written with secrets redacted.</label></li>
 <li><label><input type="checkbox" />Uninstall cleanly; confirm install
 dir is removed.</label></li>
 </ul>
-<h2 id="record-results">6. Record results</h2>
+<h2 id="6-record-results">6. Record results</h2>
 <p>For each failure, capture: the step, expected vs actual, the
 screen-reader announcement (or silence), and the crash-bundle path if
 one was produced. File issues against the 0.8.0 Beta 1 milestone.</p>

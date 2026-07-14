@@ -11,9 +11,11 @@ in :mod:`quill.ui.agent_editor_host`). Native is therefore registered with a
 placeholder responder that raises if anything tries to *run* through this
 registry, making the selection-only contract explicit rather than silently wrong.
 
-Building is cheap and import-safe: registering the packs only *probes* their SDKs
-via ``importlib.util.find_spec`` (see :func:`quill.ai_packs._base.modules_missing`)
-and never imports them.
+Building the registry itself is cheap and import-free: it only constructs and
+registers each pack. A caller asking a harness whether it is ready
+(``is_available()``) is what probes its SDK — first via ``importlib.util.find_spec``,
+then (only once a spec is located) a real import, to tell a genuinely usable install
+apart from one merely present on disk; see :func:`quill.ai_packs._base.modules_missing`.
 """
 
 from __future__ import annotations

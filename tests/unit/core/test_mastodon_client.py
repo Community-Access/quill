@@ -84,3 +84,153 @@ def test_post_status_rejects_empty_text_and_bad_visibility(monkeypatch: pytest.M
         client.post_status("mastodon.social", "tok", "   ", "public")
     with pytest.raises(client.MastodonError):
         client.post_status("mastodon.social", "tok", "hi", "bogus")
+
+
+def test_post_status_omits_language_when_default(monkeypatch: pytest.MonkeyPatch) -> None:
+    # #922: language=None (the compose dialog's "Default (instance)") must NOT
+    # add a language field, so the instance keeps its own default preset.
+    calls = _stub_http(monkeypatch, {"url": "x"})
+    client.post_status("mastodon.social", "tok", "hi", "public", language=None)
+    assert "language" not in calls[0]["data"]
+
+
+def test_post_status_sends_language_when_given(monkeypatch: pytest.MonkeyPatch) -> None:
+    # #922: an explicit ISO 639-1 code is sent as the post's language so a post
+    # written in Italian is filed under the Italian preset, not the account default.
+    calls = _stub_http(monkeypatch, {"url": "x"})
+    client.post_status("mastodon.social", "tok", "ciao", "public", language="it")
+    assert calls[0]["data"]["language"] == "it"
+
+
+def test_instance_character_limit_reads_v2_instance_max(monkeypatch: pytest.MonkeyPatch) -> None:
+    # #922: poliversity.it allows 9999; the compose counter must reflect that.
+    client.clear_character_limit_cache()
+    _stub_http(
+        monkeypatch,
+        {"configuration": {"statuses": {"max_characters": 9999}}},
+    )
+    assert client.instance_character_limit("poliversity.it") == 9999
+
+
+def test_instance_character_limit_falls_back_on_api_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    # #922: a failed lookup must never block posting -- fall back to the default.
+    client.clear_character_limit_cache()
+
+    def _fail(*_a, **_k):
+        raise client.MastodonError("unreachable")
+
+    monkeypatch.setattr(client, "_http_json", _fail)
+    assert client.instance_character_limit("broken.example") == client.DEFAULT_CHARACTER_LIMIT
+
+
+def test_instance_character_limit_caches_per_instance(monkeypatch: pytest.MonkeyPatch) -> None:
+    # #922: the second lookup for the same instance must reuse the cached value
+    # and NOT hit the network again (the counter refreshes on every keystroke
+    # indirectly via account switches; the fetch itself is one-time).
+    client.clear_character_limit_cache()
+    calls = _stub_http(
+        monkeypatch,
+        {"configuration": {"statuses": {"max_characters": 9999}}},
+    )
+    client.instance_character_limit("poliversity.it")
+    client.instance_character_limit("poliversity.it")
+    client.instance_character_limit("poliversity.it")
+    # One normalized base URL -> one network call across three lookups.
+    assert len(calls) == 1
+
+
+def _stub_http_by_url(monkeypatch: pytest.MonkeyPatch, by_suffix: dict[str, object]) -> list[str]:
+    """Route _http_json responses by URL suffix; record the URLs hit, in order."""
+    calls: list[str] = []
+
+    def _fake(method, url, *, data=None, token=None):
+        calls.append(url)
+        for suffix, response in by_suffix.items():
+            if url.endswith(suffix):
+                if isinstance(response, Exception):
+                    raise response
+                return response
+        raise client.MastodonError(f"no stub for {url}")
+
+    monkeypatch.setattr(client, "_http_json", _fake)
+    return calls
+
+
+def test_instance_character_limit_falls_back_to_v1_max_toot_chars(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # A non-Mastodon fork (GoToSocial/Pleroma) that does NOT implement v2 must
+    # still get its real limit via /api/v1/instance -> max_toot_chars.
+    client.clear_character_limit_cache()
+    calls = _stub_http_by_url(
+        monkeypatch,
+        {
+            "/api/v2/instance": client.MastodonError("404"),
+            "/api/v1/instance": {"max_toot_chars": 5000},
+        },
+    )
+    assert client.instance_character_limit("gotosocial.example") == 5000
+    assert calls == [
+        "https://gotosocial.example/api/v2/instance",
+        "https://gotosocial.example/api/v1/instance",
+    ]
+
+
+def test_instance_character_limit_falls_back_to_v1_when_v2_has_no_limit(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # v2 answers but carries no configuration.statuses.max_characters -- try v1.
+    client.clear_character_limit_cache()
+    _stub_http_by_url(
+        monkeypatch,
+        {
+            "/api/v2/instance": {"domain": "fork.example"},
+            "/api/v1/instance": {"max_toot_chars": 2048},
+        },
+    )
+    assert client.instance_character_limit("fork.example") == 2048
+
+
+def test_instance_character_limit_v1_reads_nested_configuration(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # Some forks put the limit under configuration.statuses.max_characters on v1
+    # rather than a top-level max_toot_chars.
+    client.clear_character_limit_cache()
+    _stub_http_by_url(
+        monkeypatch,
+        {
+            "/api/v2/instance": client.MastodonError("404"),
+            "/api/v1/instance": {"configuration": {"statuses": {"max_characters": 4096}}},
+        },
+    )
+    assert client.instance_character_limit("akkoma.example") == 4096
+
+
+def test_instance_character_limit_v2_preferred_over_v1(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # When both endpoints answer, the richer v2 value wins.
+    client.clear_character_limit_cache()
+    calls = _stub_http_by_url(
+        monkeypatch,
+        {
+            "/api/v2/instance": {"configuration": {"statuses": {"max_characters": 9999}}},
+            "/api/v1/instance": {"max_toot_chars": 500},
+        },
+    )
+    assert client.instance_character_limit("mastodon.example") == 9999
+    assert calls == ["https://mastodon.example/api/v2/instance"]  # v1 never queried
+
+
+def test_instance_character_limit_both_endpoints_fail(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Neither v2 nor v1 available -> default 500, never raise.
+    client.clear_character_limit_cache()
+    _stub_http_by_url(
+        monkeypatch,
+        {
+            "/api/v2/instance": client.MastodonError("down"),
+            "/api/v1/instance": client.MastodonError("down"),
+        },
+    )
+    assert client.instance_character_limit("offline.example") == client.DEFAULT_CHARACTER_LIMIT

@@ -414,7 +414,15 @@ def test_explore_walks_into_a_child_and_announces_its_label() -> None:
 
 
 @_needs_latex2mathml
-def test_explore_read_aloud_announces_full_reading() -> None:
+def test_explore_read_aloud_announces_full_reading(monkeypatch) -> None:
+    # Pin the template reading: on a machine where the optional MathCAT engine
+    # is downloaded, speech.speak would route through it and phrase things in
+    # MathCAT's own vocabulary ("eigh squared ... is equal to"), making this
+    # flow test environment-dependent. The engine has its own coverage; this
+    # test is about the explore flow.
+    from quill.core.math import speech
+
+    monkeypatch.setattr(speech, "mathcat_available", lambda: False)
     api = _register_extension()
     ctx = _FakeCtx(
         prompts=["a^2 + b^2 = c^2"],
@@ -448,7 +456,11 @@ def test_explore_none_from_show_choices_ends_the_session() -> None:
 
 
 @_needs_latex2mathml
-def test_explore_descends_into_a_fraction_for_numerator_and_denominator() -> None:
+def test_explore_descends_into_a_fraction_for_numerator_and_denominator(monkeypatch) -> None:
+    # Template reading pinned for the same reason as the read-aloud test above.
+    from quill.core.math import speech
+
+    monkeypatch.setattr(speech, "mathcat_available", lambda: False)
     api = _register_extension()
     ctx = _FakeCtx(
         prompts=[r"x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}"],

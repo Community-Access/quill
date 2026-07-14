@@ -16,6 +16,7 @@ consent), keyed by :attr:`OptionalComponent.component_id`.
 from __future__ import annotations
 
 import logging
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -44,10 +45,69 @@ class OptionalComponent:
     # Display priority: lower sorts higher in the dialog (importance order).
     # Left at the default for dictionaries, which are grouped and sorted by name.
     priority: int = 500
+    # None means "same as installed" for every ordinary single-download
+    # component. The Dictation row is the one exception: the engine binary
+    # alone isn't usable without a downloaded model, so it passes its own
+    # two-tier readiness here. Read via effective_ready, never this field
+    # directly, so every other call site keeps its current behavior for free.
+    ready: bool | None = None
 
     @property
     def status_label(self) -> str:
         return "Installed" if self.installed else "Available to download"
+
+    @property
+    def effective_ready(self) -> bool:
+        """Whether Download/Test should treat this component as fully usable.
+
+        Distinct from ``installed`` (which drives status_label/Manage/Remove):
+        for most components the two agree, but the Dictation row is installed
+        as soon as an engine binary is present even with no model downloaded
+        yet -- not actually usable, so Download/Test must not treat it as done.
+        """
+        return self.installed if self.ready is None else self.ready
+
+
+def _offline_edition() -> bool:
+    """True when this running build is the self-contained Offline Edition.
+
+    Lazy import so the core status model stays wx-free and import-cycle-free;
+    a missing marker (source/dev checkout, or a slim install built before the
+    marker existed) means a normal install where extras fetch on demand.
+    """
+    try:
+        from quill.build_info import is_offline_edition
+
+        return bool(is_offline_edition())
+    except Exception:  # noqa: BLE001 - never let build-info lookup break the list
+        return False
+
+
+def status_label_for(component: OptionalComponent) -> str:
+    """The Status-column text for *component*, offline-edition aware.
+
+    In a normal install this is just ``component.status_label``. In the Offline
+    Edition every component is bundled, so a present one reads "Bundled" rather
+    than "Installed", and a missing one (a stager failed at build time, or a
+    component with no offline bundler) reads "Not included" rather than
+    "Available to download" -- the Download action is suppressed either way
+    (no internet to fetch it).
+    """
+    if not _offline_edition():
+        return component.status_label
+    return "Bundled (offline edition)" if component.installed else "Not included (needs internet)"
+
+
+def download_allowed(component: OptionalComponent) -> bool:
+    """Whether the Download action should be offered for *component*.
+
+    Always False in the Offline Edition (extras are already bundled or not
+    included, and the target machine is expected to have no internet). In a
+    normal install, True unless the component is already effectively ready
+    (Download resumes/refreshes; Test stays off until truly usable)."""
+    if _offline_edition():
+        return False
+    return not component.effective_ready
 
 
 # Read Aloud engine id a voice component provides, so removing it can reset the
@@ -181,11 +241,28 @@ def _candidate_removable_path(component_id: str) -> Path | None:
             from quill.core.math.mathcat_engine import pack_dir
 
             return pack_dir()
+        if component_id == "pdf_ocr":
+            from quill.core.pdf_ocr_install import pdf_ocr_pack_dir
+
+            return pdf_ocr_pack_dir()
         if component_id.startswith("spell-"):
             from quill.core.spellcheck import managed_hunspell_dir
 
             lang = component_id[len("spell-") :]
             return managed_hunspell_dir() / f"{lang}.dic"
+        if component_id == "git":
+            # git and gh share one vendor directory (quill.core.git_binaries); the
+            # "cmd" subfolder is git's own top-level entry within it, distinct from
+            # gh's flat executable -- so Remove for one never touches the other's
+            # files (remove_component special-cases the full git cleanup below).
+            from quill.core.git_binaries import vendor_dir
+
+            return vendor_dir() / "cmd"
+        if component_id == "gh":
+            from quill.core.git_binaries import vendor_dir
+
+            exe = "gh.exe" if sys.platform == "win32" else "gh"
+            return vendor_dir() / exe
     except Exception:  # noqa: BLE001 - a missing helper just means "not removable"
         return None
     return None
@@ -234,6 +311,26 @@ def remove_component(component_id: str) -> bool:
             try:
                 if sibling.is_file():
                     sibling.unlink()
+                    removed_any = True
+            except OSError:
+                continue
+        return removed_any
+    # git and gh share one vendor directory (quill.core.git_binaries.vendor_dir);
+    # removing "git" must only delete MinGit's own top-level entries, never gh's
+    # flat executable that happens to live alongside them.
+    if component_id == "git":
+        from quill.core.git_binaries import vendor_dir
+
+        root = vendor_dir()
+        removed_any = False
+        for name in ("cmd", "etc", "mingw64", "usr", "LICENSE.txt"):
+            sub = root / name
+            try:
+                if sub.is_dir():
+                    shutil.rmtree(sub)
+                    removed_any = True
+                elif sub.is_file():
+                    sub.unlink()
                     removed_any = True
             except OSError:
                 continue
@@ -341,8 +438,9 @@ def verify_component(component_id: str) -> VerifyResult:
 
     Voice engines are handled by the dialog (it plays a spoken sample via the
     existing voice preview); here they just confirm readiness. STT engines run
-    the SAPI->transcribe loop; tools report their version/response; the rest do a
-    presence/load check. Never raises -- any failure becomes ``ok=False``.
+    a speak->transcribe loop (SAPI 5 on Windows, the built-in ``say`` command on
+    macOS); tools report their version/response; the rest do a presence/load
+    check. Never raises -- any failure becomes ``ok=False``.
     """
     try:
         if component_id in ("whispercpp", "fasterwhisper", "vosk"):
@@ -370,10 +468,47 @@ def verify_component(component_id: str) -> VerifyResult:
     return result
 
 
+def _synthesize_test_clip(text: str, audio_path: Path) -> None:
+    """Synthesize the STT self-test clip on the current platform (#29).
+
+    Windows uses SAPI 5 (the system voice); macOS uses the built-in ``say``
+    command so the self-test is not a hard Windows-only dependency that always
+    fails on a Mac. Raises on any failure; the caller reports ``ok=False``.
+    """
+    if sys.platform == "darwin":
+        _synthesize_test_clip_with_say(text, audio_path)
+        return
+    from quill.core.read_aloud import synthesize_to_file_with_sapi5
+
+    synthesize_to_file_with_sapi5(text, audio_path)
+
+
+def _synthesize_test_clip_with_say(text: str, audio_path: Path) -> None:
+    """macOS test clip via the built-in ``say`` command (#29).
+
+    ``say -o <path>`` writes AIFF by default, which the STT providers read via
+    soundfile/ffmpeg. No new dependency: ``say`` ships with macOS.
+    """
+    import subprocess
+
+    completed = subprocess.run(
+        ["say", "-o", str(audio_path), text],
+        check=False,
+        capture_output=True,
+        text=True,
+        errors="replace",
+    )
+    if completed.returncode != 0 or not audio_path.exists():
+        raise RuntimeError(
+            "macOS `say` could not synthesize the test clip: "
+            f"{completed.stderr.strip() or 'unknown error'}"
+        )
+
+
 def _verify_stt(component_id: str) -> VerifyResult:
+    import os
     import tempfile
 
-    from quill.core.read_aloud import synthesize_to_file_with_sapi5
     from quill.core.speech.transcribe import provider_has_installed_model, transcribe_audio_file
 
     # Gate on the *selected* engine, not any engine, so testing Faster Whisper
@@ -384,18 +519,23 @@ def _verify_stt(component_id: str) -> VerifyResult:
             "The engine is installed, but no speech model has been downloaded yet.",
             remedy="models",
         )
-    wav = Path(tempfile.mkstemp(prefix="quill_stt_test_", suffix=".wav")[1])
+    # macOS `say` writes AIFF; SAPI 5 writes WAV. Match the suffix to the platform
+    # so the clip is written in a format the synth path actually produces (#29).
+    suffix = ".aiff" if sys.platform == "darwin" else ".wav"
+    fd, audio_path_str = tempfile.mkstemp(prefix="quill_stt_test_", suffix=suffix)
+    os.close(fd)  # mkstemp's fd must be closed or SAPI's own Open() of the same path fails
+    audio = Path(audio_path_str)
     try:
-        synthesize_to_file_with_sapi5(_STT_TEST_PHRASE, wav)
-        result = transcribe_audio_file(wav, provider_id=component_id)
+        _synthesize_test_clip(_STT_TEST_PHRASE, audio)
+        result = transcribe_audio_file(audio, provider_id=component_id)
         heard = (getattr(result, "full_text", "") or "").strip()
     except Exception as exc:  # noqa: BLE001
         return VerifyResult(False, "The speech engine could not transcribe a test clip.", str(exc))
     finally:
         try:
-            wav.unlink(missing_ok=True)
+            audio.unlink(missing_ok=True)
         except OSError:
-            # Best-effort cleanup of the temp WAV; a leftover temp file is
+            # Best-effort cleanup of the temp clip; a leftover temp file is
             # harmless and must never mask the transcription result above.
             pass
     if _fuzzy_match(_STT_TEST_PHRASE, heard):
@@ -450,6 +590,8 @@ def _verify_presence(component_id: str) -> VerifyResult:
         "braille": _braille_pack_installed,
         "mathcat": _mathcat_installed,
         "audio_extras": _audio_extras_installed,
+        "git": _git_installed,
+        "gh": _gh_installed,
     }
     detector = detectors.get(component_id)
     if detector is None:
@@ -483,6 +625,26 @@ def _whisper_installed() -> bool:
     from quill.core.speech.providers.whispercpp import resolve_whisper_executable
 
     return resolve_whisper_executable() is not None
+
+
+def _dictation_ready() -> bool:
+    """True when some offline STT engine is installed AND has a downloaded
+    model -- the Dictation row's real "ready to dictate" state.
+
+    ``_whisper_installed`` (the row's ``installed`` detector) only checks for
+    the whisper.cpp binary, so it goes True the moment the engine is fetched
+    even with no model yet -- Download/Test must not treat that as "done"
+    (the Test button offered no way to tell it wasn't actually usable).
+    Checks all three guided-picker engines, not just whisper.cpp, so a user
+    who set up Faster Whisper or Vosk instead still reads as ready.
+    """
+    from quill.core.speech import guided_setup
+    from quill.core.speech.transcribe import provider_has_installed_model
+
+    for opt in guided_setup.offline_speech_engine_options():
+        if opt.installed and _safe(lambda pid=opt.engine_id: provider_has_installed_model(pid)):
+            return True
+    return False
 
 
 def _vosk_installed() -> bool:
@@ -534,6 +696,14 @@ def _braille_pack_installed() -> bool:
 
 
 def _libmpv_installed() -> bool:
+    import os
+
+    # Offline Edition bundles libmpv under {app}/tools/mpv.
+    app_root = os.environ.get("QUILL_APP_ROOT", "").strip()
+    if app_root:
+        for name in ("libmpv-2.dll", "mpv-2.dll", "libmpv.dll"):
+            if (Path(app_root) / "tools" / "mpv" / name).is_file():
+                return True
     from quill.core.speech.engine_install import engine_packs_dir
 
     pack = engine_packs_dir() / "mpv"
@@ -556,6 +726,24 @@ def _mp3_installed() -> bool:
     from quill.core.speech.engine_install import is_mp3_available
 
     return is_mp3_available()
+
+
+def _pdf_ocr_installed() -> bool:
+    from quill.core.pdf_ocr_install import is_pdf_ocr_available
+
+    return is_pdf_ocr_available()
+
+
+def _git_installed() -> bool:
+    from quill.core.git_binaries import git_available
+
+    return git_available()
+
+
+def _gh_installed() -> bool:
+    from quill.core.git_binaries import gh_available
+
+    return gh_available()
 
 
 def _audio_extras_installed() -> bool:
@@ -588,6 +776,21 @@ def gather_optional_components() -> list[OptionalComponent]:
             priority=10,
         ),
         OptionalComponent(
+            "pdf_ocr",
+            "PDF and Office text extraction",
+            "Reads text out of PDFs and Office documents (Word/PowerPoint/Excel) "
+            "without Pandoc or LibreOffice installed -- MarkItDown for Office and "
+            "PDF, pdfplumber and pypdf as the PDF text floor. Scanned/image-only "
+            "PDFs still need OCR (File > Import > OCR) either way. Plain-text and "
+            "Markdown editing, and any format Pandoc already handles, work without it.",
+            TOOL,
+            _safe(_pdf_ocr_installed),
+            "~30 MB",
+            note="MarkItDown (MIT, microsoft/markitdown), pdfplumber (MIT), and pypdf "
+            "(BSD-3-Clause); fetched via pip from PyPI.",
+            priority=15,
+        ),
+        OptionalComponent(
             "braille",
             "Braille pack (translation and BRF export)",
             "liblouis translation tables and BRF profiles that power the Translation "
@@ -606,12 +809,17 @@ def gather_optional_components() -> list[OptionalComponent]:
             "Dictation (offline speech)",
             "Private, on-device dictation and transcription. Opens a guided setup "
             "where you choose an engine (Whisper, Faster Whisper, or Vosk) and a "
-            "model to match your computer, then test it. SAPI 5 dictation works "
-            "without any of this.",
+            "model to match your computer, then test it. "
+            + (
+                "SAPI 5 dictation works without any of this."
+                if sys.platform.startswith("win")
+                else "This is the only dictation path on macOS (there is no SAPI 5)."
+            ),
             SPEECH_ENGINE,
             _safe(_whisper_installed),
             "~8 MB",
             priority=30,
+            ready=_safe(_dictation_ready),
         ),
         OptionalComponent(
             "kokoro",
@@ -641,15 +849,6 @@ def gather_optional_components() -> list[OptionalComponent]:
             _safe(_espeak_installed),
             "~40 MB",
             priority=60,
-        ),
-        OptionalComponent(
-            "dectalk",
-            "DECtalk voices",
-            "The classic DECtalk Read Aloud voices.",
-            VOICES,
-            _safe(_dectalk_installed),
-            "~2 MB",
-            priority=70,
         ),
         OptionalComponent(
             "audio_extras",
@@ -682,19 +881,73 @@ def gather_optional_components() -> list[OptionalComponent]:
             note="Provided by the OpenJS Foundation; QUILL fetches the official build.",
             priority=110,
         ),
-        OptionalComponent(
-            "mathcat",
-            "MathCAT math speech engine",
-            "Real natural-language speech for equations — used by Insert > Explore "
-            'Equation Structure...\'s "Read this part aloud". Equations are still '
-            "readable without it, via a simpler built-in template reading.",
-            SPEECH_ENGINE,
-            _safe(_mathcat_installed),
-            "~3 MB",
-            note="MathCAT (MIT, daisy/MathCATForC); fetched from QUILL's pinned release.",
-            priority=100,
-        ),
     ]
+    # DECtalk and MathCAT ship only Windows .dll's (DECtalk.dll / libmathcat_c.dll),
+    # so offering either on macOS advertised a download that could never work (#46).
+    if sys.platform.startswith("win"):
+        out.append(
+            OptionalComponent(
+                "dectalk",
+                "DECtalk voices",
+                "The classic DECtalk Read Aloud voices.",
+                VOICES,
+                _safe(_dectalk_installed),
+                "~2 MB",
+                priority=70,
+            )
+        )
+        out.append(
+            OptionalComponent(
+                "mathcat",
+                "MathCAT math speech engine",
+                "Real natural-language speech for equations — used by Insert > Explore "
+                'Equation Structure...\'s "Read this part aloud". Equations are still '
+                "readable without it, via a simpler built-in template reading.",
+                SPEECH_ENGINE,
+                _safe(_mathcat_installed),
+                "~3 MB",
+                note="MathCAT (MIT, daisy/MathCATForC); fetched from QUILL's pinned release.",
+                priority=100,
+            )
+        )
+        out.append(
+            OptionalComponent(
+                "git",
+                "Git (for Local Git tools)",
+                "A portable copy of Git, used by Tools > Local Git (interactive rebase, "
+                "merge conflict resolution, stash, blame, bisect) when git is not "
+                "already installed on this computer. QUILL always prefers a system git "
+                "on PATH first; this download exists only as a fallback for a user who "
+                "has never installed either.",
+                TOOL,
+                _safe(_git_installed),
+                "~40 MB",
+                note="Git for Windows MinGit (GPL-2.0); byte-identical re-publish of the "
+                "portable, no-installer release.",
+                priority=105,
+            )
+        )
+    # gh (the GitHub CLI) is self-hosted for Windows and macOS; there is no Linux
+    # asset, but a Linux user typically already has gh via their distro's package
+    # manager, so this only offers where QUILL has something real to download.
+    if sys.platform.startswith("win") or sys.platform == "darwin":
+        out.append(
+            OptionalComponent(
+                "gh",
+                "GitHub CLI (for Codespaces and Copilot commands)",
+                "A portable copy of the official GitHub CLI, used by Tools > GitHub's "
+                "Codespaces and Copilot suggest/explain commands when gh is not "
+                "already installed. QUILL always prefers a system gh on PATH first; "
+                "this download exists only as a fallback for a user who has never "
+                "installed it.",
+                TOOL,
+                _safe(_gh_installed),
+                "~14 MB",
+                note="GitHub CLI (MIT, cli/cli); byte-identical re-publish of the "
+                "official release.",
+                priority=106,
+            )
+        )
     out.extend(_dictionary_components())
     out.sort(key=lambda c: (c.priority, c.name))
     return out
@@ -744,6 +997,20 @@ def describe_component(component: OptionalComponent) -> str:
     if component.note:
         lines.append(component.note)
     size = component.size_hint or "size varies"
+    offline = _offline_edition()
+    if offline:
+        lines.append("")
+        if component.installed:
+            lines.append(
+                f"Status: Bundled — included in this offline edition ({size}). Use "
+                "Test to confirm it works."
+            )
+        else:
+            lines.append(
+                "Status: Not included in this offline edition (requires internet to "
+                "add). The base app works without it."
+            )
+        return "\n".join(lines)
     if component.installed:
         lines.append("")
         lines.append(

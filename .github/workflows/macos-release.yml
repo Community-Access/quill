@@ -10,6 +10,44 @@ permissions:
   contents: write
 
 jobs:
+  # Run the Python test suite on macOS so the skipif(sys.platform != "darwin")
+  # tests (Keychain, high-contrast, sr_detect, etc.) actually execute somewhere.
+  # Before this, every darwin-gated test had never run in CI, letting Mac-only
+  # regressions ship undetected. Runs in parallel with the build so it never
+  # blocks signing/packaging, but surfaces failures on every tag and dispatch.
+  test:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[ui,spellcheck,macos,dev,feedback,github]"
+
+      - name: Run test suite (excluding slow tests)
+        # History: this job segfaulted at 99% on every 0.9.0 Beta 2/Beta 3 run.
+        # Root cause was wx.YieldIfNeeded() in test_voice_browser_dialog.py --
+        # the only CI-reachable native-event-loop pump in the suite; dispatching
+        # a session's worth of stale deferred Cocoa events crashed the process.
+        # Fixed by removing the (unneeded) yields from that test file. Do not
+        # "fix" any recurrence with pytest-forked: os.fork() is unsafe once
+        # Cocoa runtime state exists, and trying it here crashed ~364 UI tests
+        # ("+[NSResponder initialize] may have been in progress in another
+        # thread when fork() was called").
+        #
+        # --timeout=400 (pyproject.toml's ini default is 30s): this job -- unlike
+        # Windows's, which already excludes tests/unit/tools -- runs the AST/
+        # full-source-scan gate tests (test_dialog_inventory.py,
+        # test_check_banned_patterns.py, tests/unit/tools/*, etc). Those
+        # comfortably clear 30s locally but can exceed it on a loaded shared
+        # runner; matches the same fix already applied to windows-release.yml.
+        run: pytest -m "not slow" -q --timeout=400
+
   build:
     runs-on: macos-26
     environment: macos-release
@@ -56,7 +94,7 @@ jobs:
       - name: Install macOS build dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e ".[ui,spellcheck,macos]"
+          python -m pip install -e ".[ui,spellcheck,macos,feedback,github]"
 
       - name: Import Apple signing certificate
         env:

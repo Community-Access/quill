@@ -1,0 +1,9 @@
+# tests/corpus/ fixtures represent real document content used for
+# byte-for-byte round-trip tests (e.g. tests/unit/io/test_open_read.py).
+# Without this, Git's line-ending normalization is governed entirely by
+# each checkout machine's local core.autocrlf default, which differs
+# between Windows and macOS/Linux CI runners -- the same committed file
+# can check out with different bytes on different platforms, defeating
+# the whole point of a byte-identical fixture. -text disables any EOL
+# conversion so every checkout gets the exact bytes that were committed.
+tests/corpus/** -text

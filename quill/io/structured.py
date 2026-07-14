@@ -194,13 +194,18 @@ def _read_spreadsheet_via_markitdown(path: Path) -> Document | None:
 
 
 def _read_spreadsheet_via_libreoffice(path: Path) -> Document | None:
+    from quill.core.external_tools import libreoffice_executable
+
+    soffice = libreoffice_executable()
+    if soffice is None:
+        return None
     try:
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir_path = Path(tmpdir)
             converted_path = tmpdir_path / f"{path.stem}.xlsx"
             subprocess.run(
                 [
-                    "soffice",
+                    soffice,
                     "--headless",
                     "--convert-to",
                     "xlsx",
@@ -230,13 +235,18 @@ def _read_legacy_office_via_libreoffice(
     source_kind: str,
     fallback_engine: str,
 ) -> tuple[str, dict[str, object]]:
+    from quill.core.external_tools import libreoffice_executable
+
+    soffice = libreoffice_executable()
+    if soffice is None:
+        return _missing_legacy_office_text(path, source_kind)
     try:
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir_path = Path(tmpdir)
             converted_path = tmpdir_path / f"{path.stem}{converted_suffix}"
             subprocess.run(
                 [
-                    "soffice",
+                    soffice,
                     "--headless",
                     "--convert-to",
                     converted_suffix.lstrip("."),
@@ -357,8 +367,8 @@ def _missing_spreadsheet_text(path: Path) -> tuple[str, dict[str, object]]:
     return (
         (
             f"(Spreadsheet import not available for {path.name}.)\n\n"
-            "Install MarkItDown support for spreadsheet extraction: "
-            "pip install markitdown[xlsx,xls]\n"
+            'Open Help > Download Optional Components and download "PDF and '
+            'Office text extraction" for spreadsheet extraction.\n'
         ),
         {
             "source_kind": path.suffix.lower().lstrip("."),
@@ -372,7 +382,9 @@ def _missing_legacy_office_text(path: Path, source_kind: str) -> tuple[str, dict
     return (
         (
             f"({source_kind.upper()} import not available for {path.name}.)\n\n"
-            "Install MarkItDown support and LibreOffice for legacy Office extraction.\n"
+            'Open Help > Download Optional Components and download "PDF and '
+            'Office text extraction", and install LibreOffice, for legacy '
+            "Office extraction.\n"
         ),
         {
             "source_kind": source_kind,

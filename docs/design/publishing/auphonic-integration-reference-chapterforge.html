@@ -242,12 +242,12 @@
 </head>
 <body>
 <blockquote>
-<p><strong>Archived reference.</strong> This is ChapterForge’s Auphonic
+<p><strong>Archived reference.</strong> This is ChapterForge's Auphonic
 integration design, kept when ChapterForge was consolidated into QUILL
-(2026-07-04). QUILL’s own shipped client is the compact
+(2026-07-04). QUILL's own shipped client is the compact
 <code>quill/core/publish/auphonic.py</code> (API-token auth, simple-API
 upload/poll/download, credential-vault storage) reached from the Chapter
-Workbench’s Publish dialog. Mine this document when growing that client
+Workbench's Publish dialog. Mine this document when growing that client
 (OAuth flow, credit balance, multitrack, preset UX).</p>
 </blockquote>
 <h1 id="auphonic-integration">Auphonic Integration</h1>
@@ -305,34 +305,34 @@ chapters)</li>
 </tbody>
 </table>
 <h2 id="setup">Setup</h2>
-<h3 id="enable-beta-features">0. Enable beta features</h3>
+<h3 id="0-enable-beta-features">0. Enable beta features</h3>
 <p>Open <strong>Tools &gt; Settings</strong>, go to the
 <strong>General</strong> tab, and check <strong>Enable beta features
 (Auphonic integration)</strong>. Click OK. The <strong>Auphonic</strong>
 menu will appear in the menu bar.</p>
-<h3 id="get-an-auphonic-account">1. Get an Auphonic account</h3>
-<p>Sign up at https://auphonic.com. New accounts receive free
-credits.</p>
-<h3 id="register-a-desktop-oauth-app-admin-developer-step">2. Register a
-desktop OAuth app (admin / developer step)</h3>
+<h3 id="1-get-an-auphonic-account">1. Get an Auphonic account</h3>
+<p>Sign up at <a href="https://auphonic.com">https://auphonic.com</a>.
+New accounts receive free credits.</p>
+<h3 id="2-register-a-desktop-oauth-app-admin--developer-step">2.
+Register a desktop OAuth app (admin / developer step)</h3>
 <p>Contact Auphonic support to register a desktop OAuth application. You
 will receive a <strong>Client ID</strong> and <strong>Client
 Secret</strong>. These are set per deployment:</p>
 <ul>
-<li><p>For development: set environment variables before launching:</p>
+<li>For development: set environment variables before launching:
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="va">$env</span><span class="op">:</span><span class="va">AUPHONIC_CLIENT_ID</span> <span class="op">=</span> <span class="st">&quot;your-client-id&quot;</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="va">$env</span><span class="op">:</span><span class="va">AUPHONIC_CLIENT_SECRET</span> <span class="op">=</span> <span class="st">&quot;your-client-secret&quot;</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>python main<span class="op">.</span><span class="fu">py</span></span></code></pre></div></li>
-<li><p>For production builds: the build pipeline injects these at build
-time (same pattern as the GitHub feedback token).</p></li>
+<li>For production builds: the build pipeline injects these at build
+time (same pattern as the GitHub feedback token).</li>
 </ul>
-<h3 id="connect-from-inside-chapterforge">3. Connect from inside
+<h3 id="3-connect-from-inside-chapterforge">3. Connect from inside
 ChapterForge</h3>
 <ol type="1">
 <li>Open <strong>Auphonic &gt; Connect Account</strong></li>
 <li>Click <strong>Connect Auphonic</strong> - your browser opens to
-Auphonic’s authorization page</li>
+Auphonic's authorization page</li>
 <li>Log in and approve access</li>
 <li>Return to ChapterForge - the dialog shows your credit balance</li>
 </ol>
@@ -355,11 +355,6 @@ background</li>
 History</strong> to download results.</p>
 <h2 id="built-in-presets">Built-in Presets</h2>
 <table>
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
-</colgroup>
 <thead>
 <tr>
 <th>Preset</th>
@@ -418,7 +413,7 @@ hidden from results even if Auphonic returns them</li>
 <ul>
 <li>Minimum charge: 3 minutes per production</li>
 <li>Re-running with changed settings on the same input does not trigger
-a new charge (per Auphonic’s pricing FAQ)</li>
+a new charge (per Auphonic's pricing FAQ)</li>
 <li>Creating a new production from the same audio does trigger a new
 charge</li>
 <li>ChapterForge shows your available balance before submission and the
@@ -437,13 +432,9 @@ review-before-publish</li>
 <h2 id="data-storage">Data Storage</h2>
 <p>All Auphonic job data is stored locally in
 <code>%APPDATA%\ChapterForge\auphonic.db</code> (SQLite). Nothing is
-sent to ChapterForge’s servers.</p>
+sent to ChapterForge's servers.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <table>
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
 <thead>
 <tr>
 <th>Problem</th>
@@ -452,15 +443,15 @@ sent to ChapterForge’s servers.</p>
 </thead>
 <tbody>
 <tr>
-<td>“Not connected to Auphonic”</td>
+<td>"Not connected to Auphonic"</td>
 <td>Open Connect Account and click Connect</td>
 </tr>
 <tr>
-<td>“Insufficient credits”</td>
+<td>"Insufficient credits"</td>
 <td>Purchase credits at auphonic.com or use a shorter file</td>
 </tr>
 <tr>
-<td>“File contains a video stream”</td>
+<td>"File contains a video stream"</td>
 <td>Convert to audio-only before using (e.g., extract audio with
 ffmpeg)</td>
 </tr>

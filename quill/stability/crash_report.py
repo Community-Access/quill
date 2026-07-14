@@ -15,6 +15,7 @@ import json
 import logging
 import platform
 import sys
+import time
 import zipfile
 from collections.abc import Mapping, Sequence
 from dataclasses import asdict, is_dataclass
@@ -31,6 +32,65 @@ from quill.stability.redaction import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def _display_version() -> str:
+    """The channel-annotated version ("0.9.0 Beta 2"), never the bare number.
+
+    Falls back to ``__version__`` when build metadata is absent (dev runs).
+    """
+    try:
+        from quill.build_info import get_short_version
+
+        return str(get_short_version())
+    except Exception:  # noqa: BLE001 - version lookup must never break a report
+        return __version__
+
+
+def _collect_macos_diagnostic_reports(
+    *, max_files: int = 5, max_age_days: int = 7, max_file_chars: int = 200_000
+) -> dict[str, str]:
+    """Collect recent macOS crash reports for this process (darwin only).
+
+    Reads ``~/Library/Logs/DiagnosticReports/`` for ``.crash`` / ``.ips`` files
+    whose name references Quill and that were modified within *max_age_days*.
+    Returns ``{archive_label: raw_text}`` for the most recent *max_files*, each
+    truncated to *max_file_chars*. Non-darwin platforms return an empty dict so
+    the diagnostic bundle is unchanged on Windows/Linux (#42).
+    """
+    if sys.platform != "darwin":
+        return {}
+    reports_dir = Path.home() / "Library" / "Logs" / "DiagnosticReports"
+    if not reports_dir.is_dir():
+        return {}
+    cutoff = time.time() - max_age_days * 86400
+    candidates: list[tuple[float, Path]] = []
+    for entry in reports_dir.iterdir():
+        if not entry.is_file():
+            continue
+        name = entry.name.lower()
+        if not (name.endswith(".crash") or name.endswith(".ips")):
+            continue
+        if "quill" not in name:
+            continue
+        try:
+            mtime = entry.stat().st_mtime
+        except OSError:
+            continue
+        if mtime < cutoff:
+            continue
+        candidates.append((mtime, entry))
+    candidates.sort(reverse=True)
+    collected: dict[str, str] = {}
+    for _mtime, entry in candidates[:max_files]:
+        try:
+            text = entry.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        if len(text) > max_file_chars:
+            text = text[:max_file_chars] + "\n...[truncated]\n"
+        collected[f"macos/{entry.name}"] = text
+    return collected
 
 
 def build_diagnostic_bundle(
@@ -65,7 +125,11 @@ def build_diagnostic_bundle(
     redaction_stats: dict[str, BundleRedactionStats] = {}
 
     payload: dict[str, Any] = {
-        "quill_version": __version__,
+        # #967/#968 triage lesson: bare __version__ says "0.9.0" for every
+        # beta, so a crash from Beta 1 was indistinguishable from Beta 2 and a
+        # fixed bug looked like a regression. Use the channel-annotated
+        # display version ("0.9.0 Beta 2") everywhere reports carry a version.
+        "quill_version": _display_version(),
         "python_version": sys.version.splitlines()[0],
         "platform": platform.platform(),
         "system": platform.system(),
@@ -96,6 +160,13 @@ def build_diagnostic_bundle(
                 continue
             text = path.read_text(encoding="utf-8", errors="replace")
             redacted, file_stats = redact_text_for_bundle_with_stats(text)
+            redaction_stats[label] = file_stats
+            redacted_texts[label] = redacted
+
+        # #42: macOS-native forensic data -- recent crash reports from
+        # ~/Library/Logs/DiagnosticReports/. Inert on non-darwin (returns {}).
+        for label, raw_text in _collect_macos_diagnostic_reports().items():
+            redacted, file_stats = redact_text_for_bundle_with_stats(raw_text)
             redaction_stats[label] = file_stats
             redacted_texts[label] = redacted
 

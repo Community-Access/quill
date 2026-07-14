@@ -241,33 +241,42 @@
   </style>
 </head>
 <body>
-<h1 id="the-quill-cast--podcast-pipeline">The QUILL Cast — podcast
+<h1 id="the-quill-cast-podcast-pipeline">The QUILL Cast — podcast
 pipeline</h1>
-<p>A <strong>36-episode</strong>, two-host audio course that leads a
+<p>A <strong>54-episode</strong>, two-host audio course that leads a
 brand-new user from installation to every feature family QUILL has, in
-seven parts:</p>
+eight parts:</p>
 <ol type="1">
-<li><strong>First steps</strong> (1–6): welcome, install, files, the
-window, the palette, what QUILL says.</li>
-<li><strong>The everyday editor</strong> (7–13): navigation, the QUILL
-key, the keymap, editing power tools, search, spelling, the safety
-stack.</li>
-<li><strong>Documents and formats</strong> (14–18): Markdown, the
-text-supply toolkit, hidden-codes formatting, Word/EPUB/PDF, document
-rescue and OCR.</li>
-<li><strong>Files and automation</strong> (19–20): remote/GitHub/SSH,
-watch folders.</li>
-<li><strong>Speech</strong> (21–24): voices, dictation, transcription
-and the Listening Companion, audio export/audiobooks/DAISY.</li>
-<li><strong>AI</strong> (25–28): setup and free paths, Ask Quill, the
-Library, agents.</li>
-<li><strong>Organization, production, trust</strong> (29–36): Vault,
-Story Studio, GLOW, braille, Quillins and the console, the finale.</li>
+<li><strong>First steps</strong> (1–7): welcome, install, your first
+document, the main window, notebooks and versions, the command palette,
+what QUILL says.</li>
+<li><strong>The everyday editor</strong> (8–17): moving through text,
+the QUILL key, the keymap editor, editing power tools, the power tools
+deep dive, find and replace, compare, spelling and word tools, languages
+and thesaurus, never lose work.</li>
+<li><strong>Documents and formats</strong> (18–24): Markdown, the
+text-supply toolkit, the snippet gallery and prompts, read aloud and
+voices, Word/EPUB/PDF, document rescue and OCR, OCR and image
+describe.</li>
+<li><strong>Files and automation</strong> (25–27): files everywhere,
+watch folders, publishing and share.</li>
+<li><strong>AI</strong> (28–39): agents, the voice catalog walkthrough,
+voice and conversation, transcription and the Listening Companion, the
+audio studio, setting up AI, Ask Quill, the AI library, the AI toolkit,
+and every-day writing style.</li>
+<li><strong>Organization and production</strong> (40–51): the Accessible
+Vault, vault power, Story Studio, the practice build-along, Story Studio
+plus Vault plus AIs, GLOW audit, GLOW for files, the author tools mega,
+the bundled Quillins, braille production, the developer console, and
+build your own Quillin.</li>
+<li><strong>Trust, community, and the road ahead</strong> (52).</li>
+<li><strong>The power-user finish</strong> (53–54): accessibility power
+user, and the final stability and redaction deep-dive.</li>
 </ol>
-<p>The hosts, Liam and Jessica, are QUILL's own on-device
+<p>The hosts, Liam and Jessica, are QUILL’s own on-device
 <strong>Kokoro</strong> neural voices (<code>am_liam</code> and
 <code>af_jessica</code>) — the podcast is produced with the same speech
-engine the product ships. Total series length is roughly 2¼ hours.</p>
+engine the product ships. Total series length is roughly 4 hours.</p>
 <h2 id="layout">Layout</h2>
 <pre class="text"><code>docs/podcast/
   episodes.json         Series + per-episode metadata (titles, descriptions,
@@ -277,6 +286,8 @@ engine the product ships. Total series length is roughly 2¼ hours.</p>
                         text and double as the published transcripts.
   tools/generate_kokoro.py
                         Synthesizes every episode to WAV + MP3 with Kokoro.
+   tools/make_cover.py   Draws the 3000x3000 podcast cover PNG locally with
+                                    Pillow; no network service is used.
   tools/build_feed.py   Builds the RSS feed, the accessible episode index
                         page, and per-episode transcript pages under
                         docs/site/podcast/ (served by GitHub Pages).
@@ -286,7 +297,7 @@ engine the product ships. Total series length is roughly 2¼ hours.</p>
 <ol type="1">
 <li>Kokoro model files (<code>kokoro-v1.0.onnx</code>,
 <code>voices-v1.0.bin</code>) must be in <code>tools/models/</code> or
-pointed at via <code>QUILL_KOKORO_MODEL_DIR</code>. QUILL's own Kokoro
+pointed at via <code>QUILL_KOKORO_MODEL_DIR</code>. QUILL’s own Kokoro
 download (Voice Picker, or <code>kokoro-models.zip</code> on the
 <code>assets-v1</code> release) provides them.</li>
 <li><code>pip install kokoro-onnx soundfile numpy</code>; ffmpeg on PATH
@@ -310,21 +321,28 @@ never touches the product release or autoupdate feed — the same model as
 <div class="sourceCode" id="cb3"><pre
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>gh release upload podcast-v1 docs<span class="op">/</span>podcast<span class="op">/</span>audio<span class="op">/*.</span><span class="fu">mp3</span> <span class="op">--</span>repo Community-Access<span class="op">/</span>quill</span></code></pre></div>
 <ol start="2" type="1">
-<li>Rebuild the feed and site pages, then commit
+<li>Rebuild the cover art, feed, and site pages, then commit
 <code>docs/site/podcast/</code>:</li>
 </ol>
 <div class="sourceCode" id="cb4"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>python docs<span class="op">/</span>podcast<span class="op">/</span>tools<span class="op">/</span>build_feed<span class="op">.</span><span class="fu">py</span></span></code></pre></div>
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>python docs<span class="op">/</span>podcast<span class="op">/</span>tools<span class="op">/</span>make_cover<span class="op">.</span><span class="fu">py</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>python docs<span class="op">/</span>podcast<span class="op">/</span>tools<span class="op">/</span>build_feed<span class="op">.</span><span class="fu">py</span></span></code></pre></div>
 <p>The feed lands at
 <code>https://community-access.github.io/quill/podcast/feed.xml</code>
-with enclosures pointing at the release assets; the episode index and
-full transcripts are plain accessible HTML alongside it.</p>
+with enclosures pointing at the release assets and the 3000x3000 cover
+attached through RSS <code>&lt;image&gt;</code> and iTunes
+<code>&lt;itunes:image&gt;</code> tags. The episode index and full
+transcripts are plain accessible HTML alongside it, including the cover
+alt text and long description from <code>episodes.json</code>.</p>
 <h2 id="writing-more-episodes">Writing more episodes</h2>
 <p>Add <code>scripts/epNN-slug.txt</code> in the marker format, add the
 matching entry to <code>episodes.json</code>, generate, upload, rebuild
 the feed. Keep turns short (a few sentences), alternate hosts naturally,
 use <code>[PAUSE]</code> as a section break, and write for the ear: no
 markdown, no symbols the TTS would read literally, keystrokes spelled
-the way they should be spoken.</p>
+the way they should be spoken. Each script is 3,500–4,500 words with
+seven to nine <code>[PAUSE]</code> markers, a “do this now” interactive
+beat before any hands-on segment, code-verified claims against the
+running code, and a four-step homework block.</p>
 </body>
 </html>

@@ -72,7 +72,14 @@ class CoalescedUiReporter:
         self.ui_callback = ui_callback
         self.min_interval_seconds = min_interval_seconds
         self._lock = threading.Lock()
-        self._last_emit = 0.0
+        # time.monotonic()'s epoch is undefined (on Windows it's tied to
+        # system uptime via GetTickCount64) -- seeding this at 0.0 meant the
+        # very first report() on a freshly-booted machine with under
+        # min_interval_seconds of uptime would compute now - 0.0 as SMALLER
+        # than the interval and silently skip scheduling the first flush.
+        # -inf guarantees the first report always schedules regardless of
+        # the clock's absolute value.
+        self._last_emit = float("-inf")
         self._pending: tuple[tuple[Any, ...], dict[str, Any]] | None = None
         self._scheduled = False
 

@@ -209,13 +209,9 @@ class CopyTrayDialog:
         self._btn_pin.SetLabel("Un&pin" if slot.pinned else "P&in")
 
     def _clipboard_text(self) -> str:
-        text = ""
-        if wx.TheClipboard.Open():
-            data = wx.TextDataObject()
-            if wx.TheClipboard.GetData(data):
-                text = data.GetText()
-            wx.TheClipboard.Close()
-        return text
+        from quill.ui.clipboard_retry import read_clipboard_text
+
+        return read_clipboard_text(wx)
 
     # -- event handlers --
 

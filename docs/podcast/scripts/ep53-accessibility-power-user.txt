@@ -1,0 +1,151 @@
+[LIAM]
+The QUILL Cast, episode fifty-three. I'm Liam. We called episode fifty-two the finale, and the response was clear: there is more to say, and the audience for it is the people who use QUILL hardest. So this episode and the next are the second wind. If you stayed on because the finale felt too short, this stretch is for you.
+
+[JESSICA]
+I'm Jessica. Last episode, the finale in name, was the five rules, no silent network, no silent installs, atomic saves, consent is specific, escape hatches guaranteed. The community underneath, the public roadmap, the donations page called Golden Quills, the way every release is shaped by an issue a real person filed. The character of the product, summarized as: when you design for the screen reader first, you do not get a lesser editor, you get a better one, for everyone who loves the keyboard. We are picking up that thread, because the accessibility contract only holds if the people who rely on it most, the power users, can actually bend QUILL to fit their hands.
+
+[LIAM]
+Today: Accessibility Power User. The features, the command palette, the keyboard combinations, the announcement system, the verbosity architecture, and the parts of QUILL that only really pay off once you stop using the mouse and stop reading the screen. We are not recommending a beginner workflow. We are opening the hood.
+
+[JESSICA]
+One honest note before we start. The earlier episode on the Announcement System, episode seven, talked about how QUILL speaks everything. That part of the product is mature. The verbosity system that grew on top of it is younger, and it is more powerful but less polished. We will call out the rough edges, because pretending they don't exist is the opposite of the trust we finished the series with.
+
+[PAUSE]
+
+[JESSICA]
+Start with the announcement spine, because everything else sits on it. Every visible result in QUILL, every save, every format change, every check, every permission request, passes through one method on the main frame called underscore announce. That method writes the message to the status bar, records it in the Spoken Echo history, and asks the announcement engine to actually speak it.
+
+[LIAM]
+The Spoken Echo is the review surface for that stream. It's a real dialog titled Spoken Echo, accessible name, Spoken Echo dash read-only history of recent announcements, opened from the Help menu, Show Spoken Echo, or by running the command view.spoken echo from the command palette. Newest first, arrow through it, select to copy, the dialog contract from episode three is fully honored. If something important scrolled past in speech, this is where you go to re-read it.
+
+[JESSICA]
+And a small power-user gesture, sometimes called the double-press trick. Settings has a flag called spoken echo on double press. When it is on, and you press the same informational command twice within a short window, the second press does not re-run the command. It opens the Spoken Echo. Spelling, word count, status summary, the commands you would have to run twice to verify, become single-gesture reviewers. It is a tiny, humane feature, and it is on by default.
+
+[LIAM]
+There is a real engineering reason this is in the product. A spoken announcement, once it has been spoken, is gone. You cannot un-hear it, you cannot scroll back through it, you cannot copy it. The Spoken Echo is the persistent, reviewable trace of that ephemeral stream, and the double-press gesture is the entry point. The same idea shows up elsewhere in the product, the announcement history, the reviewable compare output from GLOW, the live transcript when dictation is on, the help status page. QUILL keeps making the temporary permanent, and the moment you have used it once you stop noticing the seams.
+
+[JESSICA]
+The Echo is not a transcript of everything QUILL has ever said in this session. It is a rolling window, newest entries kept, oldest discarded when the buffer fills, and the buffer is sized for short-term review, not archival. That is the right shape for the job. If you need a full session log, that is what startup logs and the diagnostic bundle are for, and episode fifty-four will treat them properly. The Echo is the last-minute, I-just-did-that, what-did-it-say surface. Different job, different tool.
+
+[PAUSE]
+
+[LIAM]
+The status bar, that thin strip at the bottom of the window, is not decoration. The verbosity system treats it as the always-on visual floor. The default channel mix has four channels: speech, braille, sound, and visual. Every profile, every mode, every per-verb override, can suppress any channel, but the visual channel is mathematically forced on. Even with speech and sound off, the status bar still shows what just happened.
+
+[JESSICA]
+That is the rule, and the code is honest about it. In the verbosity channels module, the constant ALWAYS_ON_CHANNELS contains only the visual channel, and the function route_channels ORs it into every request. The accessibility floor is enforced, not configured. You can mute every audio output in the product and the status bar will still tell you what you did.
+
+[LIAM]
+If you have ever wondered why the status bar text often says the same thing the screen reader just said, that is the reason. The screen reader is the courtesy, the status bar is the contract. They are not duplicates by accident. They are duplicates by design, so that whichever channel you have available, the answer reaches you.
+
+[JESSICA]
+And a power-user move worth knowing: pressing F6 lands focus in the status bar, and you can arrow between its cells. Each cell is independently labeled, so a screen reader reads, Cell one, line 1 of 240, cell two, Plain Text, cell three, Normal, and so on. You can hear the document's status without changing focus to the document itself. This is the keyboard answer to glancing at a status strip.
+
+[LIAM]
+And the announcement itself has another layer worth knowing, the throttle. The verbosity controller keeps a small piece of state called AnnouncementThrottle, and it does two things that protect your ears. First, it collapses consecutive identical announcements so the same line does not get spoken twice in a row, which would happen, for example, when an action's status message and the action's result message carry the same payload. Second, it enforces a budget so a flurry of small actions does not turn into an audio firehose. The visual channel, the status bar, is never throttled, so the floor is preserved. The throttling is on the spoken channel only. This is the same shape as Quiet Mode, suppress speech, keep the strip, and again, the contract is consistent.
+
+[JESSICA]
+The budget is configurable, settings drive it, and the controller exposes its config so anyone can audit it. Power users will not usually need to touch it, but it is there if you find the speech either too quiet or too busy. The defaults are conservative. Turn it up if you want every beep; turn it down if you want only the highlights. The status bar will not change either way.
+
+[PAUSE]
+
+[LIAM]
+Do this now. Pause the audio, open any document you have been working in, and run the command Verbosity Preferences. It is in the command palette under that name, or you can run the keybinding if one is set. Look at the four profiles: Beginner, Normal, Expert, Quiet. Read their descriptions, but do not change anything yet. Just look. Resume the audio when you have seen all four.
+
+[JESSICA]
+That is your frame. Beginner is full context for every action, all channels, friendly chimes. Normal is informative but not chatty, and it is the default for a fresh install. Expert suppresses routine confirmations, errors still speak, sound is errors-only. Quiet mutes speech and earcons entirely, leaving braille and the visual floor, the meeting-room profile, the one you switch to when you are presenting.
+
+[LIAM]
+The profile is a single object, frozen, immutable, defined in the verbosity profiles module. Beginner, Normal, Expert, Quiet, the four built-ins. The verbosity controller holds one at a time and applies it to every announcement that flows through the underscore announce choke point. The path is byte-for-byte unchanged when you have not engaged verbosity, and that is on purpose. Until the controller exists, announcements work the way they have for years. The moment you open Verbosity Preferences for the first time, the controller is created, and Quiet, Meeting, the undo stack, the history, the mastery tracker, all become live.
+
+[JESSICA]
+That is also the moment a subtle behavior kicks in. The legacy announcement verbosity setting, the old minimal, normal, verbose knob from before the verbosity rebuild, finally has a real consumer. The verbosity system maps minimal to Expert, normal to Normal, verbose to Beginner. So if you had the legacy setting on minimal and you open Verbosity Preferences, you will see Expert selected. Nothing is lost in the translation. The behavior you had is preserved under its new name.
+
+[LIAM]
+And the announcement history has its own settings, also in Verbosity Preferences. Verbosity history enabled is on by default. Verbosity history limit defaults to one hundred entries. Verbosity history clear on exit is off by default. The history is the underlying record that the What Changed command and the Spoken Echo both read from. If you set the limit very low, What Changed will sometimes return nothing recent, and that is the right answer, there is nothing recent. If you turn the history off, both surfaces go quiet. The defaults exist because most users want both, and the settings are there for the power users who do not.
+
+[JESSICA]
+The mastery tracker is the piece of the system you do not see most directly, and that is on purpose. With verbosity mastery enabled, the engine tracks how often each verb fires, and at the configured threshold, default twenty-five occurrences, the engine considers that verb mastered and starts suppressing the longer explanation in favor of the short form. Beginner users get the long form. Power users, in practice, get the short form for the verbs they have used enough. The product teaches you, then gets out of the way, but the path between the two is gradual, not a switch. It is one of the few places QUILL uses telemetry on its own output, and it stays inside the process, never sent anywhere.
+
+[PAUSE]
+
+[LIAM]
+The two modes, Quiet and Meeting, are the everyday switches. Both are toggle commands, both are reversible, both go through the undo stack. Quiet is the gentle one, speech and earcons off, braille and status bar on, perfect for sharing a screen with a sighted colleague or stepping into a call. Meeting is the strict one, hard mutes every earcon, speech goes through a reduced set, braille and the visual floor remain. Meeting is the sibling of Quiet, not a replacement. Choose the one that matches the social context.
+
+[JESSICA]
+The keybinding question. We will be honest with you here, because we promised in episode fifty-two to be honest. As of this recording, the seven verbosity commands, Toggle Quiet Mode, Toggle Meeting Mode, Undo Verbosity Change, Announcement History, Verbosity Preferences, Where Am I, What Changed, Speak Status Bar, are registered in the command registry, and they all run. They are reachable from the command palette and from the keymap. They are not, however, in any visible menu in the menu bar. There is no View submenu for verbosity, no Tools submenu for it either. The repository is mid-refactor on that point. If you are following along and you do not see them in the menus, you are not missing anything. The command palette is the stable entry.
+
+[LIAM]
+The honest correction is the same as the recommendation. If you use these commands often, bind keys for them. Open Verbosity Preferences, find the chord field, type your preferred shortcut, save. The Verbosity Preferences panel knows about every verbosity command, and it is the single place to assign, change, and review your keys. Episode nine on making the keyboard yours walked through the same flow for other commands; today, apply it to these.
+
+[JESSICA]
+And the undo stack, Undo Verbosity Change, is the safety net. It reverses the most recent transition: a Quiet toggle, a Meeting toggle, an override apply, a profile change. It is bounded to twenty entries, more than you will ever need, and it announces what it undid. Nothing you do to your verbosity setup is permanent unless you want it to be.
+
+[LIAM]
+A note on the difference between this undo and Edit Undo. Edit Undo is Control Z in the document, and it walks the text history. Verbosity Undo is its own key, on its own stack, and it walks verbosity state transitions. The two stacks are independent. If you just toggled Quiet and then typed twelve characters and tried to undo, you would be undoing text, not Quiet. To undo the Quiet, run the Undo Verbosity Change command, by default bound somewhere you should set, or via the command palette. Two different Z's for two different kinds of mistake.
+
+[JESSICA]
+And Meeting Mode, in practice. Suppose you join a video call and you want to be typing notes without anyone hearing the earcons fire. Toggle Meeting. The status bar badge changes to show M, and the spoken channel routes through a reduced set. Braille and the visual floor still work. When you leave the call, toggle Meeting again. The badge clears. The undo stack has both transitions recorded, so if you ever toggle by accident, two presses of Undo Verbosity Change put everything back. The same dance with Quiet for less strict situations, a phone call, sharing a screen, dictating in a quiet room.
+
+[PAUSE]
+
+[LIAM]
+The four status-query commands are the everyday reading aids. Where Am I speaks your current line, total lines, and column. What Changed speaks the most recent announcement recorded in history, so if a long edit just happened and the speech went by, this reads it back. Speak Status Bar reads the current status bar message, useful when a long operation just finished and you missed the announcement. These four are the spoken-equivalent of glancing at the document, glancing at the history, glancing at the strip.
+
+[JESSICA]
+Together they form a low-stakes information loop. You never have to remember, where was I, what just happened, what does the strip say. One key each, and the answer is spoken. For someone who works in speech full time, this loop is the difference between feeling oriented and feeling lost after a long paste or a find operation.
+
+[LIAM]
+A fifth power-user command lives in the same family and is often overlooked: Announce Contrast Ratio. It announces the editor's current foreground and background contrast as a WCAG grade, AAA excellent, AA good, AA large text only marginal, below AA insufficient. The screen reader and the sighted reader see the same numbers. If you are picking a theme for a long session, this is the command that tells you which theme is actually the safest for your eyes, and it lives at view.announce contrast in the command palette. Power-user move: after every theme change, run it once. The announcement is plain, the verdict is honest, and the result is in front of you.
+
+[JESSICA]
+And the context shortcuts command, Announce Mode Shortcuts, is a similar earner. Press the binding, and QUILL tells you the most useful keys for the region focus is in right now. In the QUILL browse mode, you get headings, links, lists, list items, tables, bookmarks, paragraphs, sentences, table of contents, left and right bracket to skip, escape to exit. In the editor, you get the standard editing chords. In the status bar, you get arrow and tab navigation. This is the command you run when you are in an unfamiliar mode and you want a fast orientation, and it costs nothing.
+
+[LIAM]
+And Accessibility Tune-Up, the AI-driven accessibility audit agent, lives in the AI menu as Accessibility Tune-Up. It is the AI feature designed specifically for the audience this episode is for, screen-reader users producing documents for sighted readers. It runs, it announces, it summarizes its plan, and it applies its changes to a new document, never silently to the original. The contract from episode fifty-two, propose, then dispose, in that order, always, holds.
+
+[JESSICA]
+A drift we should call out. Some of the older episodes describe Accessibility Tune-Up as living in the Tools menu, in the Accessibility section, alongside spell check and word count. The current build moved it to the AI menu, near Ask Quill and the proofing tools, with a comment in the code that says it stays first-class for the screen-reader audience. It is still the same command, the same key, the same flow. The menu location is the only thing that moved. If you remember it as a Tools item, the AI menu is the new home.
+
+[LIAM]
+And while we are on menu drift, a related one. The Announce Contrast Ratio command is in the registry, accessible by command palette, but it is not in any visible menu either. This is the same class of issue as the verbosity commands, in-progress menu work, not a missing feature. If you cannot find a command you have read about, the command palette is the most stable entry point. Type the verb, see the matches, press enter. The dialog contract, the spoken announcement, the keybinding opportunity, all of it works the same way whether the command is in a menu or not.
+
+[JESSICA]
+This is a good moment to say out loud, because the earlier episodes did not, the difference between a command being registered and a command being menu-exposed. The command registry is the system of record. Every action QUILL knows how to perform lives there, with a stable id, a name, a handler, and an optional keybinding. The menus are presentation, and presentation lags. When you read about a command in the user guide or hear about it in this series, you should treat the command palette as the source of truth and the menus as a convenience that is still filling in.
+
+[PAUSE]
+
+[LIAM]
+A practical stack for accessibility power users, in the order you should turn them on. One, decide your profile. Start in Normal, the default. If you are interrupted often, switch to Expert. If you present, switch to Quiet, but use Meeting when you need strict earcon muting. Two, learn the four status queries, Where Am I, What Changed, Speak Status Bar, and the command palette, and bind all four to keys. Three, turn on the double-press Spoken Echo gesture if you like the convenience; turn it off if you find it surprising. Four, run a real session, write something, and use Show Spoken Echo after long edits to verify what QUILL is actually saying about your document.
+
+[JESSICA]
+And the safety valve. Verbosity Safe Mode, which the code documents as the escape hatch for when a custom verbosity setup misbehaves, ignores every custom override and falls back to the built-in behavior without deleting the user's customizations. The environment variable is QUILL_SAFE_MODE equals one, and there is a sibling variable QUILL_VERBOSITY_SAFE_MODE equals one. Set either, restart QUILL, and you get the clean room. Your customizations are still there, ready when you unset the variable and restart again.
+
+[LIAM]
+The verbosity Safe Mode is the same idea as the application-wide Safe Mode from episode fifty-two, but scoped to one subsystem. It is the proof that a complex system can have escape hatches at every layer. Application Safe Mode disables AI, watch folders, Quillins. Verbosity Safe Mode disables your verbosity customizations, with the same non-destructive shape. The two are independent. You can be in application Safe Mode and out of verbosity Safe Mode, and vice versa, and both are right answers to different problems.
+
+[JESSICA]
+The future, briefly, and tied to what episode fifty-four will cover. The verbosity architecture was designed to be extended. There is a QVP pack format, a JSON-based bundle that ships a set of templates, channel mixes, and per-verb overrides you can install alongside the built-ins. There is a template library for hand-authored templates, a preview lab where you can audition a profile against built-in scenarios before you apply it, and a feedback tuning subsystem that records positive and negative signals on announcements. None of those are casual features, and we will not pretend they are. The next episode will treat them with the same honesty we are using here.
+
+[LIAM]
+A small word about the feedback subsystem, because it is worth knowing it exists. Feedback tuning lets you mark announcements as helpful or unhelpful, and the engine uses those signals to nudge its own behavior over time. It is local to your profile, never sent off-machine, and it has a clean, scoped reset. The point of the subsystem is to let the product adapt to you, the way a good pair of noise-cancelling headphones adapts to the room, not by guessing, but by measuring what you actually want. Episode fifty-four will go deeper.
+
+[JESSICA]
+The verbosity rebuild is also the place where the dialog inventory gate from the engineering side, episode forty-five touched this through GLOW, comes home. Every dialog that surfaces a verbosity choice is registered in a source-driven inventory, classified as native, web, or hardened custom, and a test fails the build if a new dialog is added without being added to the inventory. The contract is the same as the one we walked through for GLOW: a new surface forces a deliberate classification. That is why every Verbosity dialog you encounter is keyboard-complete, has the right close button, and uses the modal contract from the dialog inventory chapter. The accessibility promise is enforced in CI, not promised in a style guide.
+
+[PAUSE]
+
+[LIAM]
+Homework, the penultimate homework of the series. Four steps, in order. One, open Verbosity Preferences, read all four profiles, and pick the one that matches your real environment, not the one you wish you had. Two, run Where Am I, What Changed, and Speak Status Bar once each, and bind all three to keys you can reach without looking. Three, in a real document, turn on double-press Spoken Echo, run a spelling check twice in a row, and watch the Echo open on the second press. Then turn the gesture off if it does not fit. Four, set the QUILL_SAFE_MODE environment variable, restart QUILL, and confirm that your customizations are still there when you unset it and restart again.
+
+[JESSICA]
+And a small reminder that you are almost done with the series. The transcripts and the user guide go deeper than any episode can, and the product itself teaches you as you go, that was always its best feature. When you have finished the homework, you are ready for the last episode.
+
+[LIAM]
+Episode fifty-four is the second-to-last of fifty-four. Topic: Power User Stability, the parts of QUILL that get quieter as you get more confident. Crash reports with secrets scrubbed out, the diagnostic bundle, the safe mode escapes, the kind of features you only learn to love the day something goes wrong and they save your work. If you have stayed with us through fifty-three episodes, you deserve a final hour that respects that.
+
+[JESSICA]
+I'm Jessica.
+
+[LIAM]
+I'm Liam. Bind the keys, learn the four queries, and we'll see you for the last one.

@@ -233,6 +233,149 @@ def test_kokoro_install_logs_runner_launch_failure(tmp_path: Path, caplog) -> No
     assert any("pip runner could not start" in r.getMessage() for r in caplog.records)
 
 
+def test_kokoro_install_uses_bundled_wheelhouse_offline(monkeypatch, tmp_path: Path) -> None:
+    """When the Offline Edition's local wheelhouse is present, install_kokoro_onnx
+    resolves entirely from disk (--no-index --find-links) instead of PyPI."""
+    wheelhouse = tmp_path / "app-root" / "wheels" / "kokoro"
+    wheelhouse.mkdir(parents=True)
+    (wheelhouse / "kokoro_onnx-0.5.0-py3-none-any.whl").write_bytes(b"x")
+    monkeypatch.setenv("QUILL_APP_ROOT", str(tmp_path / "app-root"))
+    monkeypatch.setattr(ei, "is_kokoro_onnx_available", lambda: True)
+    captured: dict = {}
+    ei.install_kokoro_onnx(
+        dest_dir=tmp_path / "kok", python_executable="py.exe", runner=_make_runner(captured)
+    )
+    cmd = captured["command"]
+    assert "--no-index" in cmd
+    assert "--find-links" in cmd and cmd[cmd.index("--find-links") + 1] == str(wheelhouse)
+
+
+def test_kokoro_install_falls_back_to_pypi_without_wheelhouse(monkeypatch, tmp_path: Path) -> None:
+    """No bundled wheelhouse (the regular installer, portable, or a source run)
+    means the existing live-PyPI install path is unchanged."""
+    monkeypatch.delenv("QUILL_APP_ROOT", raising=False)
+    monkeypatch.setattr(ei, "is_kokoro_onnx_available", lambda: True)
+    captured: dict = {}
+    ei.install_kokoro_onnx(
+        dest_dir=tmp_path / "kok", python_executable="py.exe", runner=_make_runner(captured)
+    )
+    cmd = captured["command"]
+    assert "--no-index" not in cmd
+    assert "--find-links" not in cmd
+
+
+def test_kokoro_install_ignores_wheelhouse_when_requirements_overridden(
+    monkeypatch, tmp_path: Path
+) -> None:
+    """An explicit `requirements` override (tests / advanced callers) is used
+    as-is, matching the Vosk pinned-wheel pattern -- it skips the bundled
+    wheelhouse lookup entirely rather than mixing the two."""
+    wheelhouse = tmp_path / "app-root" / "wheels" / "kokoro"
+    wheelhouse.mkdir(parents=True)
+    (wheelhouse / "kokoro_onnx-0.5.0-py3-none-any.whl").write_bytes(b"x")
+    monkeypatch.setenv("QUILL_APP_ROOT", str(tmp_path / "app-root"))
+    monkeypatch.setattr(ei, "is_kokoro_onnx_available", lambda: True)
+    captured: dict = {}
+    ei.install_kokoro_onnx(
+        dest_dir=tmp_path / "kok",
+        requirements=("kokoro-onnx==0.5.0",),
+        python_executable="py.exe",
+        runner=_make_runner(captured),
+    )
+    cmd = captured["command"]
+    assert "--no-index" not in cmd
+    assert "kokoro-onnx==0.5.0" in cmd
+
+
+def test_bundled_wheelhouse_dir_none_without_app_root(monkeypatch) -> None:
+    monkeypatch.delenv("QUILL_APP_ROOT", raising=False)
+    assert ei._bundled_wheelhouse_dir("kokoro") is None
+
+
+def test_bundled_wheelhouse_dir_none_when_empty(monkeypatch, tmp_path: Path) -> None:
+    empty = tmp_path / "wheels" / "kokoro"
+    empty.mkdir(parents=True)
+    monkeypatch.setenv("QUILL_APP_ROOT", str(tmp_path))
+    assert ei._bundled_wheelhouse_dir("kokoro") is None
+
+
+def test_bundled_wheelhouse_dir_found_when_populated(monkeypatch, tmp_path: Path) -> None:
+    wheelhouse = tmp_path / "wheels" / "kokoro"
+    wheelhouse.mkdir(parents=True)
+    (wheelhouse / "soundfile-0.14.0-py3-none-any.whl").write_bytes(b"x")
+    monkeypatch.setenv("QUILL_APP_ROOT", str(tmp_path))
+    assert ei._bundled_wheelhouse_dir("kokoro") == wheelhouse
+
+
+def test_bundled_wheelhouse_dir_is_name_scoped(monkeypatch, tmp_path: Path) -> None:
+    """Each engine's wheelhouse is independent -- a populated kokoro wheelhouse
+    must not be mistaken for a faster-whisper one."""
+    kokoro = tmp_path / "wheels" / "kokoro"
+    kokoro.mkdir(parents=True)
+    (kokoro / "kokoro_onnx-0.5.0-py3-none-any.whl").write_bytes(b"x")
+    monkeypatch.setenv("QUILL_APP_ROOT", str(tmp_path))
+    assert ei._bundled_wheelhouse_dir("faster-whisper") is None
+
+
+def test_faster_whisper_install_uses_bundled_wheelhouse_offline(
+    monkeypatch, tmp_path: Path
+) -> None:
+    wheelhouse = tmp_path / "app-root" / "wheels" / "faster-whisper"
+    wheelhouse.mkdir(parents=True)
+    (wheelhouse / "faster_whisper-1.0-py3-none-any.whl").write_bytes(b"x")
+    monkeypatch.setenv("QUILL_APP_ROOT", str(tmp_path / "app-root"))
+    monkeypatch.setattr(ei, "is_faster_whisper_available", lambda: True)
+    captured: dict = {}
+    ei.install_faster_whisper(
+        dest_dir=tmp_path / "fw", python_executable="py.exe", runner=_make_runner(captured)
+    )
+    cmd = captured["command"]
+    assert "--no-index" in cmd
+    assert "--find-links" in cmd and cmd[cmd.index("--find-links") + 1] == str(wheelhouse)
+
+
+def test_mp3_install_uses_bundled_wheelhouse_offline(monkeypatch, tmp_path: Path) -> None:
+    wheelhouse = tmp_path / "app-root" / "wheels" / "mp3"
+    wheelhouse.mkdir(parents=True)
+    (wheelhouse / "mutagen-1.48.1-py3-none-any.whl").write_bytes(b"x")
+    monkeypatch.setenv("QUILL_APP_ROOT", str(tmp_path / "app-root"))
+    monkeypatch.setattr(ei, "is_mp3_available", lambda: True)
+    captured: dict = {}
+    ei.install_mp3_support(
+        dest_dir=tmp_path / "mp3", python_executable="py.exe", runner=_make_runner(captured)
+    )
+    cmd = captured["command"]
+    assert "--no-index" in cmd
+    assert "--find-links" in cmd and cmd[cmd.index("--find-links") + 1] == str(wheelhouse)
+
+
+def test_vosk_install_prefers_bundled_wheelhouse_over_pinned_wheel(
+    monkeypatch, tmp_path: Path
+) -> None:
+    """The wheelhouse also captures vosk's transitive cffi dependency (a full
+    `pip download` closure), so --no-index is finally safe for Vosk here --
+    unlike the single pinned assets-v1 wheel path below it, which cannot."""
+    wheelhouse = tmp_path / "app-root" / "wheels" / "vosk"
+    wheelhouse.mkdir(parents=True)
+    (wheelhouse / "vosk-0.3.45-py3-none-win_amd64.whl").write_bytes(b"x")
+    (wheelhouse / "cffi-1.16.0-cp313-cp313-win_amd64.whl").write_bytes(b"x")
+    monkeypatch.setenv("QUILL_APP_ROOT", str(tmp_path / "app-root"))
+    monkeypatch.setattr(ei, "is_vosk_available", lambda: True)
+
+    def fail_if_called(progress):
+        raise AssertionError("assets-v1 pinned-wheel fetch should not run when a wheelhouse exists")
+
+    monkeypatch.setattr(ei, "_maybe_fetch_vosk_wheel", fail_if_called)
+    captured: dict = {}
+    ei.install_vosk(
+        dest_dir=tmp_path / "vosk", python_executable="py.exe", runner=_make_runner(captured)
+    )
+    cmd = captured["command"]
+    assert "--no-index" in cmd
+    assert "--find-links" in cmd and cmd[cmd.index("--find-links") + 1] == str(wheelhouse)
+    assert "vosk>=0.3.45" in cmd
+
+
 def test_install_mp3_support_builds_wheel_only_command(monkeypatch, tmp_path: Path) -> None:
     monkeypatch.setattr(ei, "is_mp3_available", lambda: True)
     captured: dict = {}

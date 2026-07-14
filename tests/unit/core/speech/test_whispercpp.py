@@ -71,6 +71,47 @@ def test_resolve_executable_rejects_disallowed_basename(tmp_path: Path) -> None:
     assert whispercpp.resolve_whisper_executable(str(evil)) is None
 
 
+def test_resolve_executable_rejects_openai_whisper_cli(tmp_path: Path) -> None:
+    # Issue #931: the bare ``whisper.exe`` is the openai-whisper PyPI package
+    # CLI, not whisper.cpp. Accepting it made QUILL feed whisper.cpp flags
+    # (-m/-f/-oj/-of) to a program that speaks --model/--output_format, so its
+    # argparse exited with code 2 ("Transcription failed (code 2)"). It must be
+    # rejected on the configured path, in bundled dirs, and on PATH.
+    fake = tmp_path / "whisper.exe"
+    fake.write_text("", encoding="utf-8")
+    assert whispercpp.resolve_whisper_executable(str(fake)) is None
+    bare = tmp_path / "whisper"
+    bare.write_text("", encoding="utf-8")
+    assert whispercpp.resolve_whisper_executable(str(bare)) is None
+
+
+def test_resolve_executable_does_not_pick_openai_whisper_in_engine_dir(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # A bare ``whisper.exe`` sitting in the QUILL-managed engine dir must not be
+    # mistaken for whisper.cpp (issue #931). Only whisper-cli / main qualify.
+    monkeypatch.setattr(whispercpp.shutil, "which", lambda _name: None)
+    monkeypatch.delenv("QUILL_APP_ROOT", raising=False)
+    engine_dir = tmp_path / "speech-engine"
+    engine_dir.mkdir(parents=True)
+    (engine_dir / "whisper.exe").write_text("", encoding="utf-8")
+    assert whispercpp.resolve_whisper_executable() is None
+
+
+def test_resolve_executable_does_not_pick_openai_whisper_on_path(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # If only the openai-whisper ``whisper``/``whisper.exe`` is on PATH, QUILL
+    # reports "not installed" rather than running the wrong CLI (issue #931).
+    monkeypatch.setattr(
+        whispercpp.shutil,
+        "which",
+        lambda name: str(tmp_path / "whisper.exe") if name in ("whisper", "whisper.exe") else None,
+    )
+    monkeypatch.delenv("QUILL_APP_ROOT", raising=False)
+    assert whispercpp.resolve_whisper_executable() is None
+
+
 def test_resolve_executable_finds_bundled_under_app_root(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
@@ -149,6 +190,96 @@ def _sample_model_info(sha256: str) -> SpeechModelInfo:
         revision="5359861c739e955e79d9a303bcbc70fb988958b1",
         sha256=hashlib.sha256(b"hello model bytes").hexdigest(),
     )
+
+
+def test_transcribe_uses_bundled_model_when_no_downloaded_copy(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """The Offline Edition bundles the default model under QUILL_APP_ROOT;
+    transcription must find and use it with no download step at all."""
+    bundled = tmp_path / "app" / "speech-models-bundled" / "whispercpp" / "ggml-tiny.bin"
+    bundled.parent.mkdir(parents=True)
+    bundled.write_bytes(b"bundled model")
+    monkeypatch.setenv("QUILL_APP_ROOT", str(tmp_path / "app"))
+    assert whispercpp._model_path("tiny") == bundled
+
+
+def test_downloaded_copy_takes_priority_over_bundled(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """A user's own downloaded model (e.g. a fresher one) wins over the
+    bundled copy shipped with the app -- same precedence as Kokoro's models."""
+    bundled = tmp_path / "app" / "speech-models-bundled" / "whispercpp" / "ggml-tiny.bin"
+    bundled.parent.mkdir(parents=True)
+    bundled.write_bytes(b"bundled model")
+    monkeypatch.setenv("QUILL_APP_ROOT", str(tmp_path / "app"))
+    downloaded = whispercpp._downloaded_model_path("tiny")
+    downloaded.parent.mkdir(parents=True)
+    downloaded.write_bytes(b"downloaded model")
+    assert whispercpp._model_path("tiny") == downloaded
+
+
+def test_bundled_whisper_model_path_none_without_app_root(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("QUILL_APP_ROOT", raising=False)
+    assert whispercpp._bundled_whisper_model_path("tiny") is None
+
+
+def test_bundled_whisper_model_path_none_when_file_missing(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("QUILL_APP_ROOT", str(tmp_path / "app"))
+    assert whispercpp._bundled_whisper_model_path("tiny") is None
+
+
+def test_remove_model_never_deletes_bundled_copy(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Remove must only ever touch the user-downloaded copy -- the bundled
+    model shipped with the Offline Edition installer is never writable/
+    removable, matching how Kokoro's Remove works."""
+    bundled = tmp_path / "app" / "speech-models-bundled" / "whispercpp" / "ggml-tiny.bin"
+    bundled.parent.mkdir(parents=True)
+    bundled.write_bytes(b"bundled model")
+    monkeypatch.setenv("QUILL_APP_ROOT", str(tmp_path / "app"))
+    provider = whispercpp.WhisperCppProvider()
+    provider.remove_model("tiny")
+    assert bundled.is_file()  # untouched
+
+
+def test_list_installed_models_synthesizes_bundled_entry(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """A bundled model (no download-time JSON record) still shows as
+    installed in Manage Speech Models, same as a real download would."""
+    bundled = tmp_path / "app" / "speech-models-bundled" / "whispercpp" / "ggml-tiny.bin"
+    bundled.parent.mkdir(parents=True)
+    bundled.write_bytes(b"bundled model")
+    monkeypatch.setenv("QUILL_APP_ROOT", str(tmp_path / "app"))
+    provider = whispercpp.WhisperCppProvider()
+    installed = provider.list_installed_models()
+    assert any(m.id == "tiny" and m.path == bundled for m in installed)
+
+
+def test_list_installed_models_prefers_recorded_over_bundled(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """A real, recorded download for a model id is never shadowed by a
+    synthesized bundled entry for that same id."""
+    monkeypatch.delenv("QUILL_SAFE_MODE", raising=False)
+
+    def _fake_download(info, target, progress):
+        Path(target).write_bytes(b"FAKEMODEL")
+
+    monkeypatch.setattr(whispercpp, "_download_to_file", _fake_download)
+    bundled = tmp_path / "app" / "speech-models-bundled" / "whispercpp" / "ggml-tiny.bin"
+    bundled.parent.mkdir(parents=True)
+    bundled.write_bytes(b"bundled model")
+    monkeypatch.setenv("QUILL_APP_ROOT", str(tmp_path / "app"))
+    provider = whispercpp.WhisperCppProvider()
+    provider.download_model("tiny")
+    installed = [m for m in provider.list_installed_models() if m.id == "tiny"]
+    assert len(installed) == 1
+    assert installed[0].installed_at  # the real, recorded entry, not the synthesized one
 
 
 def test_download_to_file_uses_hf_hub_download(

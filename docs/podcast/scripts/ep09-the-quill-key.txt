@@ -1,0 +1,124 @@
+[JESSICA]
+The QUILL Cast, episode nine. I'm Jessica. This is episode nine of fifty-four, the episode where one small key gets the whole hour, because one small key is doing a lot of work. Today, the QUILL key. The prefix system, the chords, the sticky second keyboard that lives behind it, the cheat sheet, and the honest list of things that live in the second-key space.
+
+[LIAM]
+I'm Liam. Quick recap of last episode before we go deeper. Episode eight was moving through text, and we ended with the first proper introduction of the QUILL key. To review: the QUILL key, by default, is control shift grave, the tilde key. One press arms a single command, the next key you hit, and then you are back to typing. Two presses lock Browse Mode on, and the letters and arrows keep acting as navigation commands until you press escape. If you use a screen reader on the web, you already know this idea. It is the virtual cursor pattern, brought into the editor.
+
+[JESSICA]
+That was a one-paragraph version of last episode. The whole of episode eight was four layers of movement: standard arrows, structural jumps, remembered places, then the Go To Line workhorse. Bookmark belongs to its specific document and survives restarts. Marks work for the point-and-mark crowd. Browse Mode is the umbrella. Today we pull that umbrella apart and look at the spokes.
+
+[PAUSE]
+
+[LIAM]
+First, why a prefix at all. Arithmetic. There are only so many control-and-alt combinations on a standard keyboard, and every application on your machine, your screen reader very much included, is fighting over them. JAWS, NVDA, and Narrator each have their own modifier empire. Add your word processor, your IDE, your email client, and the namespace is exhausted before lunch. A prefix multiplies the space. The QUILL key plus every letter, every digit, every shifted key, and every named key on your keyboard is a fresh, conflict-free sub-namespace. The same trick is used by Emacs, by vim, by the great keyboard programs of history, and by the screen readers you already use. We did not invent the idea. We just gave it a name, and a default that tries hard to step on no one.
+
+[JESSICA]
+And the default matters. The choice of control shift grave, the tilde key, was deliberate. Tilde is rarely used for anything in Windows, Mac, or Linux, and combining it with control and shift makes the keypress even less likely to collide with another program. A standard screen reader does not bind that key. The plain control shift grave, with no further keys pressed, is therefore a quiet corner of the keyboard we can use as a launch pad. If it does collide with anything in your particular setup, the binding is just a binding. You can move it. That is what the Keymap Editor is for, and that is the whole of episode ten.
+
+[LIAM]
+Let us name the residents, but please, do not try to memorize this list. Just hear the shape, the way you would hear the shape of a neighborhood. QUILL key then S: insert a snippet. QUILL key then shift S: manage snippets. We do snippets properly in episode fifteen. QUILL key then X: the Copy Tray, a twelve-slot clipboard we explore in episode fifteen as well. QUILL key then shift one through shift ten, and shift minus, shift equals, copy into tray slots one through twelve directly.
+
+[JESSICA]
+QUILL key then shift O: open a file from a remote server, the SSH-aware open. QUILL key then W: save to a remote. QUILL key then shift M: manage remote sites. Those light up in episode eighteen. There are chords for verbosity modes, for marks, for the review buffer, for batch conversion, for sticky notes, for posting to Mastodon, for browser preview, for switching the editing lens, for the List Manager, for AI features when AI is enabled. The pattern, once you see it, is the same every time: a command that is frequent but not constant, a command that deserves a key but not one of the precious bare control combos, lives behind the prefix.
+
+[LIAM]
+And the notation, because the way we speak these chords out loud is itself a small contract. In the source, in the keymap editor, and in the control reference document, the chord is written as a string with a comma, like this: ctrl shift grave comma S. The user-facing display label in menus, in the About box, in the status bar, and in the cheat sheet, rewrites that to the friendlier form, QUILL key plus S. The dispatch grammar is never changed, only the label that you see. So when you read the docs, expect the comma form. When we say it aloud, we always say QUILL key, then the key.
+
+[PAUSE]
+
+[JESSICA]
+Time for the first hands-on beat. Do this now, and we will still be here when you come back. Pause the audio. Open a fresh document in QUILL, any document at all. Press and release the QUILL key, the default is control shift grave. Do not press anything else. Look at the status bar, and listen, if you use speech. The status bar should read, "QUILL key prefix active." You will also hear a small sound, a soft two-note entry tone, that we ship with the installer, and you can replace with your own WAV file in preferences. If you have a screen reader, it should speak the words "QUILL key" so you know the prefix is armed. That is the prefix state, which is the first of the two states this episode is built around. Now press escape to leave the prefix without firing any command. Come back to the audio when you are ready.
+
+[LIAM]
+The prefix state is the polite, one-shot state. It waits for exactly one follow-on key, and then it is done. The waiting is governed by a timeout you can set in preferences, called the QUILL key prefix timeout, in seconds, default around a second and a half, with zero meaning no timeout at all. The prefix also exits cleanly on escape. If you press a key that is not a configured chord, the status bar reads "unrecognized QUILL key chord" and the prefix is consumed anyway, so the key never leaks through as a typed character. That last guarantee matters. Pressing the QUILL key and then an unknown letter will not type that letter into your document.
+
+[JESSICA]
+The second state is Browse Mode, and it is the larger idea. There are two ways to get into it. The first is the way episode eight introduced: press the QUILL key twice, in a row. That locks Browse Mode on, and the lock sticks until you press escape. The second is the way you will probably actually use it: press the QUILL key once, then press the letter N. Browse Mode is now active, and the question is, active for how long. There is a separate timeout for the follow-on state, with named presets, instant, fast, normal, slow, custom, and unlimited, and a setting called sticky browse mode that makes N behave like the double-press from the moment you enter.
+
+[LIAM]
+In Browse Mode, your hands live on the home row. The letters stand for movements, and the arrows keep working too. H is heading, A is link, L is list, I is list item, T is table, Q is block quote, B is bookmark, the apostrophe is code block, C is table of contents, P is paragraph, S is sentence. Tab is next block, and shift tab is previous block. The square brackets are skip forward and skip backward past a list or a table. Numbers one through six jump to the next or previous heading of that exact level, with shift going backwards. The period repeats the last action. Shift escape refreshes the navigation cache. Escape exits. Question mark, pressed as shift slash, shows the cheat sheet for what you are doing right now.
+
+[JESSICA]
+Why that set of letters, in that order. Because every one of them is a single keystroke that maps to an English word for the thing you are moving to. H for heading, A for anchor, which is what links are in HTML, L for list, I for item, T for table, Q for quote, B for bookmark, the apostrophe for code because the backtick is the prefix, and so on. You do not have to learn an arbitrary code. You are learning the first letter of a word. The mental load is what you already know.
+
+[LIAM]
+There is a setting the smart user turns on early. It is called browse mode feedback, and it has four values: speech only, sound only, speech and sound, and silent. There is a second setting, browse mode move detail, with three values: line and column, line only, and say nothing. And a third, browse mode wrap, which controls whether hitting the bottom of a heading list wraps back to the top. None of these is right for everyone. They are the kind of dial you set once, with intent, and then forget about, because the editor stops getting in your way.
+
+[PAUSE]
+
+[JESSICA]
+Back to the prefix state, and to discovery. The most common question is, how do I know what is behind the prefix without a cheat sheet pinned to the wall. Three answers, and you should know all three because they have different costs. The first is the command palette, episode five. Type a verb, the palette shows you the command, and right next to the command name is the chord, including any QUILL key chord. The second is the Keymap Editor itself, which is episode ten, and which lists every binding in the app. The third is the control reference document, in the Help menu, which is generated from the same source of truth as the app, so it can never drift out of date.
+
+[LIAM]
+And the fourth answer, which is the most immediate: the cheat sheet that lives inside the app. With the prefix armed, press question mark. The cheat sheet dialog opens, with a status announcement first, then a readable list. The dialog is grouped by purpose, and for Browse Mode it also shows live counts: how many headings at each level are in this document, how many links, how many tables, how many bookmarks. Those counts are pulled from the navigation cache that Browse Mode uses anyway, so they are free. You see exactly what you can move to, with how many of each, before you start moving.
+
+[JESSICA]
+One beat on conflicts, because this audience knows the pain. The screen reader you use is a sibling program with its own modifier empire. The default QUILL key was chosen to dodge JAWS, NVDA, and Narrator conventions, but every user's setup is different. If you discover a collision, the fix is not to live with it. Open preferences, find the QUILL key binding setting, change it. The prefix state machine reads the configured prefix every time, so the change takes effect on the next press, no restart required. And the same change updates the cheat sheet, the menus, the keymap editor, and the control reference, because the display label is computed from the live setting, not from a hard-coded string.
+
+[LIAM]
+A note on what happens if you press the QUILL key on a Mac. The default binding, control shift grave, has a problem on macOS, and we will be honest about it. wx's control-down reports the command key on a Mac, not the physical control key, and the raw control modifier is exposed through a separate method. We check both, so the physical control shift grave press does work, but the conventional Mac shortcut, command shift grave, is reserved by the system for cycling windows, so it never reaches the app. The result is the default binding is usable on a Mac, but only by pressing the physical control key. If that is awkward in your setup, rebind the prefix, or use the Windows layout. We say this because the cross-platform story is part of the design, and we would rather you hear it from us than discover it on day one.
+
+[PAUSE]
+
+[JESSICA]
+Now the part that surprises people. The second-key space is not just the QUILL key plus letters. The dispatch layer accepts bare keys, modifier combos, and named keys. So a binding can be the QUILL key plus shift one, which copies into Copy Tray slot one. It can be the QUILL key plus shift F, which speaks the window title. It can be the QUILL key plus the grave key itself, which is a real chord we use to lock sticky browse mode from the prefix. Whatever sits in the second slot, the dispatch layer parses it and fires the command if there is a match. This is why the keymap editor insists that the second key be something the dispatcher understands. A binding that parses as text but cannot be fired is a binding that does nothing, and the diagnostics flag exactly that case as assigned but inert.
+
+[LIAM]
+And this is where the cheat sheet earns its keep. The cheat sheet reads the live keymap, walks every binding of the form "prefix comma second-key", and groups the results by the command prefix. File commands together, edit commands together, format, navigate, view, tools, help, and the catch-all power group. Within each group, the entries are sorted alphabetically by the command id, not by the second key, which keeps the listing stable as you rebind things. If a command has no second key, because the chord was unbound, it is omitted from the cheat sheet. A blank row would be clutter.
+
+[JESSICA]
+There is also a real-time conflict detection. When you assign a key in the Keymap Editor, the editor calls into the core to ask, in the wx-free layer, is this chord already used, and by what. The check is canonical, which means a re-ordered or alias spelling, say, shift control K versus control shift K, compares equal to a stored control shift K. The check also understands the QUILL key alias, so you can type the word quill, or the abbreviation qk, and it expands to your current prefix. That is the second discovery path: instead of remembering a chord, you can type it into the search box of the editor and see who owns it.
+
+[LIAM]
+Let us tour the residents one more time, this time grouped by purpose, the way the cheat sheet groups them. File: shift O opens from remote, W saves to remote, shift M manages remote sites, B runs the batch conversion wizard, which lives in both the import and export submenus. Edit: A expands an abbreviation, shift A manages abbreviations, S inserts a snippet, shift S manages snippets, E toggles abbreviation expansion, C copies the current selection for email, M pastes the HTML clipboard as Markdown, the so-called magic paste, X opens the Copy Tray dialog, J expands the selection, shift J shrinks the selection.
+
+[JESSICA]
+Format: L opens the List Manager, H inserts an HTML tag, U toggles whether the tab key inserts a tab or indents. Navigate: G opens the Go To Anything palette, also called Quick Nav, O opens the heading organizer, F speaks the window title, P speaks the full path of the current document, Q speaks a status summary, K switches the editing lens. View: T sends the selection to the tray, shift T toggles tab control, V opens the browser preview, shift C announces the current contrast. Tools: R starts or pauses read-aloud, shift R stops read-aloud, D toggles dictation, shift D starts the speech dictate workflow, Y opens the Audio Studio, I describes the current image, shift N captures a sticky note, shift P posts to a connected Mastodon account.
+
+[LIAM]
+Help: shift H opens the context help, the Alt I summary, the shift slash cheat sheet. And we should mention the alias for power users. In the keymap editor, you can type the word quill, or quill key, or the abbreviation qk, and the parser expands it to your current prefix. So instead of typing the full control shift grave in the search box, you type quill S, and the editor knows you mean a chord that begins with the QUILL key and ends with S. This is the same parser the cheat sheet uses under the hood, and it is forgiving of modifier order, case, and the usual control-versus-ctl aliasing.
+
+[PAUSE]
+
+[JESSICA]
+Time for the second hands-on beat, and this one takes a minute, so pause the audio. Open a document with a few headings, a list, and at least one link. If you do not have a Markdown file handy, type a few lines into a new document, save it as something ending in .md, and you are set. Then: press the QUILL key once, then N. You are now in Browse Mode. Press H a few times. The cursor should hop to the next heading, then the next. Press shift H. It should hop backwards. Press 1. The cursor should jump to the next level one heading. Press L. List. Press A. Link. Press escape. You are typing again. Try the cheat sheet: QUILL key, then question mark. Read the counts at the top, they should match your document. Close the dialog. Come back when you are done.
+
+[LIAM]
+What you just felt is the second keyboard. The first keyboard is the one you already know, the one with the bare control combos and the arrows and the function row. The second keyboard lives behind the prefix. It is not a different physical device, it is a different state of attention. In the first keyboard, every key is a character or a command, and the commands are the ones the whole world knows. In the second keyboard, every key is a move, and the moves are the ones that make sense in a long document. The transition between the two is one keystroke, and the transition back is one keystroke, and that asymmetry is the design.
+
+[JESSICA]
+The honest adoption story, because nobody learns a prefix system in a day, and you should not try. Pick two chords that serve you, our suggestion would be the snippet insert chord, QUILL key S, and the Copy Tray open chord, QUILL key X, and use them for a week until they are reflexes. Then adopt two more, perhaps the heading organizer, QUILL key O, and the Go To Anything palette, QUILL key G. Vocabulary grows by use, not by studying the dictionary. If a chord is not earning its place, drop it. There is no score.
+
+[LIAM]
+And one honest correction to common folklore, because we verify against code. The QUILL key does not, by itself, do anything to text. It is a prefix, not a modifier. There is no command called "the QUILL key." It is the key that arms the next key, and nothing more. If you press it and walk away, the prefix expires on the timeout, and the editor is unchanged. If you press it twice quickly, you enter Browse Mode, but the document is also unchanged. The point of the prefix is to multiply the keyboard, not to act on text directly. The verbs all live one keystroke further along.
+
+[JESSICA]
+A second correction, also from the code. The browse-mode period key, which repeats the last action, only repeats QUILL key actions. It is not a generic repeat. If your last QUILL key action was to jump to the next heading, period jumps to the next heading again. If your last action was to jump to the next link, period jumps to the next link. If you have not yet done a QUILL key action in this session, the period key is silent, and the status bar tells you so. This is the right design: repeat means repeat the most recent semantic action, not repeat the most recent keystroke.
+
+[PAUSE]
+
+[LIAM]
+The cheat sheet dialog, one more pass, because it is worth a second look. The dialog is a wx TextCtrl in read-only mode, with the standard modal contract, so a screen reader can read it, a keyboard user can tab through it, and the close button is the only way out besides escape. The text inside is grouped by purpose, prefixed with the group title, and the follow-on key and the description sit on one line, with the live count, when one exists, in parentheses. The title bar says QUILL Key Help when you opened it from Browse Mode, and QUILL Key Prefix Help when you opened it from the prefix state. The two are not the same. The prefix cheat sheet lists the mode gates, N for browse, G for quick nav, A for selection actions, the QUILL key again for sticky, question mark for help, escape to cancel. The browse cheat sheet lists the structural movement keys, plus the chord commands, grouped.
+
+[JESSICA]
+And the cheat sheet is rebuilt every time you open it. There is no cached version that could go stale. The active second-key for every command is read from the live keymap, the counts come from the navigation cache, and the order is by command id within group. If you rebind QUILL key comma S from S to, say, shift S, the cheat sheet immediately reflects that. If you add a chord through the keymap editor, the cheat sheet immediately reflects that too. The cheat sheet is a function of the editor's current state, not a static document.
+
+[LIAM]
+One last thing before homework, and it is the question we get the most. Do I have to use the QUILL key. The answer is no. The QUILL key is the default prefix, and every chord in the app is rebindable. If you would rather use the bare key that some other chord is currently sitting on, you can move that chord to a QUILL key chord and reclaim the bare key. The Keymap Editor supports this, and the diagnostics check that the new key is actually dispatchable. You are never trapped by a default. The defaults are a starting point, and the editor exists to make changing them a calm experience.
+
+[JESSICA]
+Homework. Four steps, and you can do them in any order. Step one: press the QUILL key once, then S, and meet the snippet picker. If you have no snippets yet, escape out. Episode fifteen fixes that. Step two: enter Browse Mode, with either the double-press or QUILL key then N, navigate somewhere with at least three different letters, then escape. Step three: open the control reference from the Help menu, and skim the chord table, just to see the size of the second keyboard. Step four: open preferences, find the QUILL key binding setting, and read the description. Do not change it yet, just read it. Knowing where to change it is half the comfort.
+
+[PAUSE]
+
+[LIAM]
+Next episode, the Keymap Editor itself, where every key in the application becomes yours to move. The search that doubles as a reverse lookup. The conflict detection. The keyboard packs that ship as starting points, Quill Default, Quill Writer, Quill Navigation, Quill Review, Windows Notepad, Notepad Plus Plus, VS Code, Microsoft Word. The diagnostics that keep a customized layout healthy. And the honest story of what customization can and cannot do for you. If the QUILL key is the noun, the Keymap Editor is the verb that moves it.
+
+[JESSICA]
+Across the next forty-five episodes of this fifty-four-episode course, we will keep pointing you at menus, palette entries, and shortcuts. Most of those shortcuts are defaults we chose, with care, and you can override any of them. That is the deal. The defaults are a starting point. The editor is the tool for making them yours. See you in episode ten.
+
+[LIAM]
+I'm Liam. One press, then the magic word.
+
+[JESSICA]
+I'm Jessica. Thanks for listening.

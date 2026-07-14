@@ -7,26 +7,33 @@ class SecurityWatchdog:
     Analyzes source code for security vulnerabilities and capability honesty.
     """
 
-    # Banned modules that often indicate sandbox escape attempts
+    # Banned modules that often indicate sandbox escape attempts. No manifest
+    # capability grants raw process execution, so subprocess is an outright
+    # ban rather than a capability-honesty check (same reasoning as ctypes).
     BANNED_MODULES = {
         "ctypes",
         "pickle",
         "marshal",
-        "builtin_function_or_method",
+        "subprocess",
         "platformdirs",  # Use QUILL's internal API instead
     }
 
-    # Modules that require specific capabilities
+    # Dangerous calls that bypass static analysis outright, regardless of
+    # capability declarations. Bare-name form (eval(...)) and attribute form
+    # (os.system(...), subprocess.call(...)) are both checked.
+    BANNED_CALLS = {"eval", "exec", "system", "popen"}
+
+    # Modules that require at least one of the listed capabilities. Values
+    # are tuples because the manifest schema (quill/core/schemas/extension.json)
+    # uses granular ids like "fs.read"/"fs.write", not a bare "fs".
     CAPABILITY_MAP = {
-        "os": "fs",
-        "shutil": "fs",
-        "glob": "fs",
-        "requests": "net",
-        "urllib": "net",
-        "http": "net",
-        "socket": "net",
-        "threading": "stability",
-        "multiprocessing": "stability",
+        "os": ("fs.read", "fs.write"),
+        "shutil": ("fs.read", "fs.write"),
+        "glob": ("fs.read", "fs.write"),
+        "requests": ("net",),
+        "urllib": ("net",),
+        "http": ("net",),
+        "socket": ("net",),
     }
 
     def __init__(self, manifest):
@@ -58,14 +65,19 @@ class SecurityWatchdog:
                 if issue:
                     issues.append(issue)
 
-            # Check for dangerous function calls (eval, exec)
+            # Check for dangerous function calls: eval/exec (bare name) and
+            # os.system / os.popen / subprocess.call-style (attribute) calls.
             elif isinstance(node, ast.Call):
+                called_name = None
                 if isinstance(node.func, ast.Name):
-                    if node.func.id in ("eval", "exec"):
-                        issues.append((
-                            node.lineno,
-                            f"CRITICAL: Forbidden use of {node.func.id()}(). Sandbox escape risk.",
-                        ))
+                    called_name = node.func.id
+                elif isinstance(node.func, ast.Attribute):
+                    called_name = node.func.attr
+                if called_name in self.BANNED_CALLS:
+                    issues.append((
+                        node.lineno,
+                        f"CRITICAL: Forbidden use of {called_name}(). Sandbox escape risk.",
+                    ))
 
         return issues
 
@@ -81,13 +93,13 @@ class SecurityWatchdog:
             )
 
         # 2. Check for capability honesty
-        for mod, cap in self.CAPABILITY_MAP.items():
+        for mod, caps in self.CAPABILITY_MAP.items():
             if module_name == mod or module_name.startswith(f"{mod}."):
-                if cap not in self.declared_capabilities:
+                if not self.declared_capabilities.intersection(caps):
                     return (
                         line_no,
-                        f"WATCHDOG: Module '{module_name}' requires '{cap}' capability,"
-                        " which is not declared in manifest.",
+                        f"WATCHDOG: Module '{module_name}' requires one of {sorted(caps)}"
+                        " capability, none of which is declared in manifest.",
                     )
 
         return None

@@ -10,9 +10,12 @@ QUILL focuses on three SDKs — **OpenAI Agents**, **Claude Agent**, and **GitHu
 Copilot** — which cover the field; other frameworks were intentionally dropped to
 keep the surface small and well-tested.
 
-Importing this package does NOT import any SDK. SDKs are probed (never imported at
-module load) via :func:`quill.ai_packs._base.modules_missing`, and only imported
-inside a session when the pack actually runs.
+Importing this package, and constructing a pack (``all_packs()``, ``register_all()``),
+does NOT import any SDK. SDKs are only probed on demand via
+:func:`quill.ai_packs._base.modules_missing` (called from ``is_available()``), which
+does attempt a real import once a module's spec is located — needed to tell a genuinely
+usable install from one merely present on disk (see that function's docstring) — before
+the SDK is imported for real inside a session when the pack actually runs.
 """
 
 from __future__ import annotations

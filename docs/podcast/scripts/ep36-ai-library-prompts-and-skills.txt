@@ -1,0 +1,127 @@
+[LIAM]
+The QUILL Cast, episode thirty-six. I'm Liam. Last episode Jessica opened Ask Quill and walked you through the everyday writing actions. Today we leave the menu verbs behind and walk into the workshop. We are going to look at the AI Library, the single tabbed home for Prompts, Skills, and Agents, and we are going to build a real prompt and a real skill together. Rung one and rung two of a three-rung ladder. Agents are the third rung, and we will save them for next week.
+
+[JESSICA]
+I'm Jessica. Before we go further, a short honest correction, because the previous short version of this episode was the one that lived in this slot before today's rewrite, and the previous short version was not the deep-dive version. It got the broad shape right, the Library is a tabbed home, there is a Promote button, the ladder is real. What it under-developed was the mechanics. It said "P Q P pack" and "S Q P pack" without naming the schema strings, said skills export, without saying how, and left out the part where the Library is one uniform shape over three different stores. Today's episode fixes that. Same topic, real depth, code-verified.
+
+[LIAM]
+Quick recap of episode thirty-five, in one breath. We opened the AI menu, met Ask Quill, and walked the everyday actions: Rewrite, Summarize, Expand, Continue Writing, Fix Grammar, Spell Check, Thesaurus, Document Q and A, and Translate. We named the layering: the local engines stay on by default, free, instant, offline, and the AI tier is a correction layer on top, opt-in, gated by the same review contract as everything else. We said every change is a preview you accept or reject, and an accepted change is one undo step. We said the contract is enforced in code, not just promised. That contract is the floor under everything we do today. Same preview, same reject, same undo. We are not relaxing the rules because we are now making our own tools. We are inheriting the rules, and they still apply.
+
+[JESSICA]
+And one framing note before the build-along. The AI Library is not a new product. It is a unification. Prompts, skills, and agents used to live in three different dialogs, with three different shapes, and three different save paths. The prompt library dialog managed a JSON-backed store of named prompts. The skill library dialog parsed and ran .sqp files, but nothing was saved, so there was no "my skills" to manage. The agent catalog was a folder of Markdown files. Three different surfaces, three different mental models. The Library collapses all of that into one tabbed home with one uniform list shape and one set of verbs. Run, Import, Export, Enable, Disable, Remove, Promote. The code that does the unification is in quill core ai library, and it is the most important file to keep in your head today, so we will come back to it.
+
+[PAUSE]
+
+[LIAM]
+Here is your do this now beat, and we mean it: pause the audio, do the step, then come back. Open QUILL. If you do not have a document open, open a new one. From the AI menu, choose AI Library. The dialog opens, and you land on the Prompts tab. Notice the list. It is sorted by category, then by name. The five categories are Editing, Writing, Structure, Research, and Custom, and the category column is the first thing you see, which is the right priority for a writing tool, what kind of work, before which specific tool. Scroll through the built-ins. Read two or three. Notice how they are phrased. Every one of them is short, specific, and explicit about the shape of the answer it wants back. Continue the episode when you have read at least three.
+
+[JESSICA]
+That little exercise is not filler. The built-in prompts are a free course in prompt design, and we will come back to that. Press play when you are back, and we will start the build-along.
+
+[PAUSE]
+
+[LIAM]
+Welcome back. The first thing to understand is the data model. The AI Library reads from three existing stores. Prompts come from quill core prompt library, specifically the PromptLibrary class, which is backed by an atomic JSON file under your app data dir. Skills come from quill core skill store, a new persistent store of installed .sqp files, also under app data. Agents come from the agent catalog, which is a folder of Markdown files, both bundled and user. The Library itself, in quill core ai library, defines a uniform LibraryItem dataclass and three list functions, list_prompts, list_skills, list_agents, that turn each store's native objects into the same shape. One dialog code path, three sources.
+
+[JESSICA]
+The uniform shape has six fields. kind, which is "prompt", "skill", or "agent". id, a stable string. name, what shows in the list. description, one line. detail, the body shown in the preview pane, which is prompt text, skill source, or agent system prompt depending on the kind. is_builtin, a bool. enabled, a bool. The dialog code never has to know which store an item came from. It just sees a LibraryItem, decides what verbs to show, and runs them. That is what "uniform" means in code, and it is why the menu only needs one Promote button, not three.
+
+[LIAM]
+And one of those fields is not just data. It is logic. The LibraryItem has a can_promote property, and a promote_label property. can_promote is True when the kind is "prompt" or "skill", because those are the two rungs that have a rung above them. can_promote is False for agents, because agents are the top of the ladder. promote_label is "Promote to Skill" for prompts and "Promote to Agent" for skills. The dialog reads those properties to enable the Promote button and to label it correctly. Small detail, big consequence: the same button behaves correctly for both rungs, and the dialog code does not branch on kind to decide what to show. The item knows.
+
+[JESSICA]
+There is one nuance the previous short version did not surface. The agent list, in code, marks every agent as is_builtin is True. That is technically true for the bundled ones, and it is also true for user-promoted agents, which is a small lie. The Library treats them as built-ins for sorting and display purposes, but the agent catalog actually loads user agents from a separate user_agents_dir, so a promoted agent is a real, editable Markdown file the user owns. The display is uniform. The provenance is not. Worth knowing when you want to edit one of your promoted agents by hand, which you absolutely can.
+
+[PAUSE]
+
+[LIAM]
+Now the build-along, rung one. Our running example, borrowed from a real listener, is the same shape every week. You take rough project notes, scattered thoughts, half-finished sentences, and you turn them into a status update for a manager. Same shape weekly, different content. By the end of rung one, you have a reusable prompt that does this in one click. By the end of rung two, you have a multi-step skill that does it better.
+
+[JESSICA]
+The mechanics of creating a prompt, as the code models them. PromptLibrary has an add method, name, text, category, optional shortcut, and it returns a new Prompt with a fresh uuid. The category is validated against the five known categories, and anything unknown is silently coerced to Custom. That is a small kindness, and it is the reason the Library does not break if someone types a typo. The text can use three placeholders: {selection}, {document}, and {title}. {selection} is your current selection, the default. {document} is the whole document. {title} is the document's name. When you run a prompt, the Library fills those holes with the current context and ships the rendered text to the AI.
+
+[LIAM]
+So step one of the build-along. Click New Prompt. Name it "Status Update from Notes". Category: Custom. Shortcut: leave it blank for now, you can set it later. Text, and this is the part worth writing slowly: "Rewrite the following rough project notes as a professional status update for a manager. Use three sections, Progress, Blockers, Next Steps. Keep the whole thing under 200 words. Do not invent facts that are not in the notes. Match the formal tone of an internal update." Then a blank line, and the placeholder: {selection}. Save.
+
+[JESSICA]
+That prompt is rung one. A reusable template with one hole for the input. Every Monday, you select your messy notes, you run the prompt, the Library fills {selection} with your text, the AI returns a preview, and you accept or reject. The whole loop is thirty seconds on a good day, ten seconds on a quiet one. That is the rung-one skill: noticing a transformation you have typed into Ask Quill more than twice, and saving it with a hole for the input. The AI is not doing anything magical. It is doing the same thing you would have asked for in chat, but you no longer have to retype the ask.
+
+[LIAM]
+Two design choices in the prompt we just wrote that are worth naming. First, "Do not invent facts that are not in the notes." That is a guardrail, and it is exactly the kind of phrase the built-in prompts use. Constraints improve output. Second, "under 200 words." A length target tells the model where to stop, and it is one of the highest-leverage things you can add to a prompt. The Summarize built-in, by the way, uses one fifth of the original length as its target. The grammar built-in asks for "list only the corrections needed, do not rewrite the whole passage." Every built-in prompt is a study in how to constrain a model into being useful. Read them. Steal their phrasings.
+
+[JESSICA]
+And one thing the code does that you do not see, and it is worth knowing. Built-in prompts cannot be removed. The remove method in PromptLibrary raises ValueError if you try to remove a built-in. But you can override the text and the enabled state of a built-in. The save method, in code, writes your overrides to a separate builtin_overrides section in the JSON store, so the original is preserved and your override applies on top. If you want a customized version of "Improve Clarity", you can edit it, save it, and it ships with your text. If you later want to revert, the underlying original is still there. That is a quietly thoughtful design choice, and it is the reason the Library feels safe to experiment with.
+
+[PAUSE]
+
+[LIAM]
+Rung two: Skills. Open the Skills tab. You will see whatever is installed. Out of the box, the bundled ai-writing-skills Quillin contributes four: Accessible Rewrite, Research and Draft, Meeting Notes to Action Items, and Argument Strengthener. The Meeting Notes to Action Items skill is a great example to study, and we will. But first, what is a skill, in code?
+
+[JESSICA]
+A skill is a Markdown file with YAML front matter, .sqp extension, schema id quill.skill/1. The front matter carries metadata: name, description, author, version, and an optional parameters list. The body is a series of level-1 headings, one per step, like "# Step 1: ...". The body of each step is the prompt text sent to the model for that step. Special fenced code blocks inside a step control data injection, conditional branching, and result handling. The four kinds of block you will see in real skills are input, condition, output, and use-prompt or use-skill. Output blocks are how a step says "put the result into the selection, or the clipboard, or just show it as a label." Condition blocks let a step branch to a different step number based on what the model produced. Use-prompt and use-skill let one step call a saved prompt or another skill, with parameters.
+
+[LIAM]
+That is a lot of moving parts. Let us make it concrete with the Accessible Rewrite skill, the simplest of the bundled ones. Two steps. Step 1: "Review the following text for plain-language accessibility issues. List the problems as a numbered list. Focus on sentence length over twenty-five words, passive voice, unexplained jargon, abstract nouns. Be concise. If no issues, say no issues found." The text to review is injected via an input block that fills {selection}. Step 2: "Rewrite the text below to fix the issues identified in Step 1. Target reading level: {parameters.reading_level}. Preserve all factual content. Return only the rewritten text." And then the magic: the prompt template says "Issues to fix: {step1.output}". Step 2 references Step 1's output by name. That is how steps feed each other, and that is what makes a skill a workflow, not just a list of prompts.
+
+[JESSICA]
+And the skill front matter carries one parameter, reading_level, with four choices, Grade 6, Grade 8, Grade 10, No target, defaulting to Grade 8. The runner, in code, collects all parameter values up front, fills them into the context, and every step that references {parameters.reading_level} gets the user's choice. The skill is interactive. You run it, the Library asks for the parameters, you pick, the runner does the rest. The output block at the end of Step 2 says accept_into: selection, which means the rewritten text goes back into the document where you started. One click, two AI calls, one changed document, all previewed.
+
+[LIAM]
+Now the build-along, rung two. Our status-update example climbs the ladder. Step 1: "Summarize the following rough project notes into factual bullet points, one bullet per distinct fact. Do not infer or add information. If a bullet is ambiguous, write unclear." Body: {selection}. Step 2: "Rewrite the following bullet list as a professional status update with three sections, Progress, Blockers, Next Steps, under 200 words. Preserve all facts from the bullets. Do not add facts that are not in the bullets. Match the formal tone of an internal update." Body: {step1.output}. Output block: format text, label "Status update", accept_into selection.
+
+[JESSICA]
+Two things to notice. Step 2 is the prompt we wrote in rung one, basically, but with one crucial change. Instead of {selection}, it now uses {step1.output}. The skill engine, in code, fills {step1.output} with the text Step 1 actually produced, the factual bullets. So the AI in Step 2 is rewriting bullets, not the raw notes. The output is structurally better, because Step 1 has already done the summarization, and Step 2 only has to do the styling. Splitting the work is why a skill beats a single mega-prompt, and it is why rung two exists.
+
+[LIAM]
+And the second thing to notice, the part the previous short version did not say. There is a real Promote button. You do not have to copy-paste your rung-one prompt into a new skill by hand. In the Library, select the Status Update from Notes prompt, click Promote to Skill, and the Library calls prompt_to_skill_source, the function in quill core ai library, with your prompt's name, text, and description. That function generates valid .sqp source: a front matter block with the schema, name, description, author "You", version 1.0.0, and a body that is one step whose prompt is your prompt text. The dialog then adds the source to the SkillStore, which writes a .sqp file to your installed-skills dir, and reloads the Skills tab, already on your new skill. The ladder is not a metaphor. It is a button.
+
+[JESSICA]
+Worth pausing on the mechanism, because it is the heart of the Library. The promote functions are pure string transforms. prompt_to_skill_source takes a name and a prompt text and returns a .sqp string. skill_to_agent_markdown takes an installed skill and returns a Markdown string with front matter for a new agent. They are unit-testable, side-effect-free, and the dialog only has to persist or display the result. That separation is why the Library feels coherent: the hard work of converting one rung into the next is a small, testable function, and the dialog is a thin shell over it.
+
+[PAUSE]
+
+[LIAM]
+When to climb the ladder, because that is the question. Rung one, a prompt, is the right shape when the transformation is a single, well-defined verb. Rewrite this paragraph in formal tone. Summarize this chapter. Translate this selection. One input, one output, no intermediate stages. Rung two, a skill, is the right shape when the work has distinct stages you want enforced identically every run. Analyze then rewrite. Extract then format. Draft then critique. The multi-step shape is also the right shape when you want the model to do one small job well at each step, because smaller jobs are higher quality.
+
+[JESSICA]
+And rung three, agents, is the right shape when the steps themselves depend on what is in the document, when the work is not a fixed pipeline but an open-ended task the AI has to plan. Agents get a reviewable plan before they run, and they can use tools. We will cover them next week. Today's rule of thumb: if you can write down the steps in advance and the steps do not change based on intermediate results, make it a skill. If the steps have to be invented based on the document, make it an agent.
+
+[LIAM]
+Two more practical things before homework. The Library's PQP file format, for sharing prompts. PQP stands for "QUILL Prompt Pack", and the schema id is "quill.prompt-pack/1". A PQP file is a JSON object with a schema field, a name, and a prompts list, where each prompt has a name, text, and category. The Library exports prompts to .pqp files, and imports them by name. The export_pqp method takes an optional list of prompt ids, so you can export a single prompt, a curated subset, or the whole library. The import_pqp method skips prompts whose name already exists, so re-importing the same pack is idempotent, no duplicates. The Skills analog is .sqp, and the export and import flows are symmetric: export_sqp writes a skill's source to a path, import_sqp reads a path and installs it.
+
+[JESSICA]
+And Quillin extensions can contribute prompts, too. The PromptLibrary class has a load_quillin_prompts method that reads a prompts.json file from a Quillin's directory. The Quillin's name becomes the prompt's source field, and the prompts are held in memory only, not persisted, so a Quillin prompt is ephemeral, and you can disable or override it without touching your own library. That is the same shape Quillins use for everything else: a sandboxed contribution, opt-in, easy to remove.
+
+[PAUSE]
+
+[LIAM]
+A short note on safety, because the contract still applies. When you run a prompt from the Library, the AI's response goes through the same preview pathway we covered in episode thirty-five. You see a diff, you accept or reject, an accepted change is one undo step. When you run a skill, every step's output is captured in a step result, and the final output, the one that hits your document, also goes through the preview. The skill engine does not silently overwrite. It proposes, you decide. The Library inherits the contract, it does not relax it. That is the rule, and there are no exceptions for "but I wrote this prompt myself."
+
+[JESSICA]
+And one honesty moment about the previous short version of this episode. It said the Library "stays a prompt" when the work is one transformation, and "makes it a skill" when there are distinct stages. That is still right. It also said "if the steps themselves would depend on what's in the document, that's rung three, next episode." That is still right too. What the short version under-explained was the mechanism, how the promote button actually works, what the .sqp file looks like, how a step references another step's output, what the parameters block is for. Today's episode fills in the mechanics, and the mechanism is more interesting than the metaphor.
+
+[LIAM]
+The mindset shift this episode is really about: from using AI features to owning AI tools. A prompt library that fits your actual week, five entries, six entries, deeply yours, beats a hundred generic ones. Curate like a craftsperson. Name things well. Prune what you stopped using. Share what proved out. The Library is the place where AI becomes a workshop, and the workshop is yours.
+
+[JESSICA]
+Homework, four steps, designed to be done in one sitting. Step one: create the status-update prompt, or your own weekly equivalent, and run it on a real piece of input. Notes from this week, an email you have been putting off, a section of a longer document. Run it. Accept one, reject one, feel the loop. Step two: promote it into a two-step skill, summarize then style, and compare the output to the single prompt. Run both on the same input. The skill will probably be better, and you will see why, because Step 1's bullets make Step 2's job easier. Step three: read three built-in prompts and steal one phrasing trick. The grammar prompt's "list only the corrections needed, do not rewrite the whole passage" is a great one. Borrow it. Step four: export your first pack. Select two or three of your custom prompts, click Export, save a .pqp file somewhere safe. Sharing is a habit you want to build on day one.
+
+[LIAM]
+And a bonus step, free of charge. Open the Accessible Rewrite skill, the bundled one, and read its source. It is twenty lines of Markdown. Notice how clean the structure is, front matter, two steps, one input block, one output block. That is a skill you could have written. The format is approachable, and reading one is the fastest way to learn the shape. Once you have read it, run it on a paragraph you wrote. Notice the difference between Step 1's "list of issues" and Step 2's "rewritten text." Notice the {step1.output} reference that ties them together. That is the whole of rung two in thirty lines.
+
+[PAUSE]
+
+[JESSICA]
+Next episode, rung three, agents, plans you review before they run, the safety tune-up that shows the whole idea at its best, and the part where the AI gets to choose its own steps. Then we leave the Library and spend episode thirty-eight on the personal style mirror, every-day writing style, the inductive counterpart to today's rules-based writing instructions. Same AI, different lever.
+
+[LIAM]
+A quick number for the show notes. The QUILL Cast is a fifty-four-episode audio course on QUILL. This is episode thirty-six. We are twenty episodes from the finale, and the AI part of the series is four episodes in, with the toolkit next, style mirror after, agents with reviewable autonomy after that. The Library is the foundation. Everything from here on uses it, the toolkit runs Library items as verbs, the style mirror conditions the AI before any Library item fires, the agents graduate from Library skills. Today's build-along is the muscle memory the rest of the AI part will rely on.
+
+[JESSICA]
+A final thought, since this is the build-along episode. The skill engine in code has a max nesting depth of two, which means a step can call another skill, and that skill can call another skill, but no further. That is a deliberate safety bound, and it is the kind of detail you only find by reading the runner. The Library is not a free-for-all. It is a tool with guardrails, and the guardrails are in the code, not just in the menu. That is the same trust story we have been telling since episode twenty-six, told again in the workshop register. Tools with rules, you in charge, the AI proposing, you deciding.
+
+[LIAM]
+I'm Liam.
+
+[JESSICA]
+I'm Jessica. Build your bench. Until episode thirty-seven.

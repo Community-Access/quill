@@ -12,6 +12,7 @@ from quill.core.sound_pack import SoundPack
 from quill.platform.sound_player import (
     _COOLDOWN_S,
     SoundPlayer,
+    _NSSoundBackend,
     _NullBackend,
     _WavBackend,
     _WinsoundBackend,
@@ -35,6 +36,10 @@ class _RecordingBackend:
 
     def play_wav(self, wav: bytes) -> None:
         self.played.append(wav)
+
+    def set_volume(self, volume: float) -> None:
+        # Plain recording backend models "no volume control" — silently ignored.
+        pass
 
     def shutdown(self, timeout: float = 2.0) -> None:
         self.shutdown_called = True
@@ -65,6 +70,12 @@ def test_recording_backend_satisfies_protocol() -> None:
 
 def test_null_backend_satisfies_protocol() -> None:
     assert isinstance(_NullBackend(), _WavBackend)
+
+
+def test_nssound_backend_satisfies_protocol() -> None:
+    # __new__ bypasses __init__ (which imports AppKit, unavailable off macOS);
+    # the protocol check only inspects methods, not construction.
+    assert isinstance(_NSSoundBackend.__new__(_NSSoundBackend), _WavBackend)
 
 
 # ---------------------------------------------------------------------------
@@ -287,23 +298,222 @@ def test_winsound_backend_queue_drops_excess() -> None:
 
 
 # ---------------------------------------------------------------------------
+# _NSSoundBackend (macOS fallback when sound_lib is absent -- no AppKit needed
+# to test: __new__ bypasses the real __init__'s `from AppKit import NSSound`,
+# and play_wav's `from Foundation import NSData` is satisfied via a fake
+# module injected into sys.modules, same idea as the winsound fake above.)
+# ---------------------------------------------------------------------------
+
+
+def test_nssound_backend_plays_and_tracks_live_sounds(monkeypatch) -> None:
+    import sys
+    import types
+
+    played: list[bytes] = []
+
+    class _FakeSound:
+        def __init__(self, data: bytes) -> None:
+            self._data = data
+
+        def play(self) -> None:
+            played.append(self._data)
+
+    class _FakeNSSoundClass:
+        @classmethod
+        def alloc(cls) -> _FakeNSSoundClass:
+            return cls()
+
+        def initWithData_(self, data: bytes) -> _FakeSound:
+            return _FakeSound(data)
+
+    class _FakeNSData:
+        @staticmethod
+        def dataWithBytes_length_(data: bytes, length: int) -> bytes:
+            assert length == len(data)
+            return data
+
+    monkeypatch.setitem(sys.modules, "Foundation", types.SimpleNamespace(NSData=_FakeNSData))
+
+    backend = _NSSoundBackend.__new__(_NSSoundBackend)
+    backend._NSSound = _FakeNSSoundClass  # type: ignore[attr-defined]
+    backend._live = []  # type: ignore[attr-defined]
+
+    backend.play_wav(b"earcon-bytes")
+
+    assert played == [b"earcon-bytes"]
+    assert len(backend._live) == 1  # type: ignore[attr-defined]
+
+
+def test_nssound_backend_applies_master_volume_to_each_sound(monkeypatch) -> None:
+    """#10: NSSound has no global volume, so the master level must be applied to
+    each played sound via setVolume_ — without this the earcon volume slider had
+    no effect on macOS."""
+    import sys
+    import types
+
+    applied: list[float] = []
+
+    class _FakeSound:
+        def __init__(self, data: bytes) -> None:
+            self._data = data
+
+        def play(self) -> None:
+            pass
+
+        def setVolume_(self, volume: float) -> None:
+            applied.append(volume)
+
+    class _FakeNSSoundClass:
+        @classmethod
+        def alloc(cls) -> _FakeNSSoundClass:
+            return cls()
+
+        def initWithData_(self, data: bytes) -> _FakeSound:
+            return _FakeSound(data)
+
+    class _FakeNSData:
+        @staticmethod
+        def dataWithBytes_length_(data: bytes, length: int) -> bytes:
+            return data
+
+    monkeypatch.setitem(sys.modules, "Foundation", types.SimpleNamespace(NSData=_FakeNSData))
+
+    backend = _NSSoundBackend.__new__(_NSSoundBackend)
+    backend._NSSound = _FakeNSSoundClass  # type: ignore[attr-defined]
+    backend._live = []  # type: ignore[attr-defined]
+    backend._volume = 1.0  # type: ignore[attr-defined]
+
+    # Default volume is full; a fresh sound gets 1.0.
+    backend.play_wav(b"a")
+    # Lower the master volume and play again — the new sound gets 0.25.
+    backend.set_volume(0.25)
+    backend.play_wav(b"b")
+
+    assert applied == [1.0, 0.25]
+
+
+def test_nssound_backend_set_volume_clamps(monkeypatch) -> None:
+    backend = _NSSoundBackend.__new__(_NSSoundBackend)
+    backend._volume = 1.0  # type: ignore[attr-defined]
+    backend.set_volume(2.0)  # type: ignore[attr-defined]
+    assert backend._volume == 1.0  # type: ignore[attr-defined]
+    backend.set_volume(-1.0)  # type: ignore[attr-defined]
+    assert backend._volume == 0.0  # type: ignore[attr-defined]
+
+
+def test_nssound_backend_bounds_live_sound_history(monkeypatch) -> None:
+    import sys
+    import types
+
+    class _FakeSound:
+        def play(self) -> None:
+            pass
+
+    class _FakeNSSoundClass:
+        @classmethod
+        def alloc(cls) -> _FakeNSSoundClass:
+            return cls()
+
+        def initWithData_(self, data: bytes) -> _FakeSound:
+            return _FakeSound()
+
+    class _FakeNSData:
+        @staticmethod
+        def dataWithBytes_length_(data: bytes, length: int) -> bytes:
+            return data
+
+    monkeypatch.setitem(sys.modules, "Foundation", types.SimpleNamespace(NSData=_FakeNSData))
+
+    backend = _NSSoundBackend.__new__(_NSSoundBackend)
+    backend._NSSound = _FakeNSSoundClass  # type: ignore[attr-defined]
+    backend._live = []  # type: ignore[attr-defined]
+
+    for i in range(_NSSoundBackend._MAX_LIVE + 5):
+        backend.play_wav(bytes([i % 256]))
+
+    assert len(backend._live) <= _NSSoundBackend._MAX_LIVE  # type: ignore[attr-defined]
+
+
+def test_nssound_backend_playback_failure_never_raises() -> None:
+    backend = _NSSoundBackend.__new__(_NSSoundBackend)
+
+    class _RaisingNSSound:
+        @classmethod
+        def alloc(cls) -> _RaisingNSSound:
+            raise RuntimeError("boom")
+
+    backend._NSSound = _RaisingNSSound  # type: ignore[attr-defined]
+    backend._live = []  # type: ignore[attr-defined]
+
+    backend.play_wav(b"anything")  # must not raise
+
+
+def test_nssound_backend_shutdown_clears_live_sounds() -> None:
+    backend = _NSSoundBackend.__new__(_NSSoundBackend)
+    backend._NSSound = object()  # type: ignore[attr-defined]
+    backend._live = ["sound-a", "sound-b"]  # type: ignore[attr-defined]
+
+    backend.shutdown()
+
+    assert backend._live == []  # type: ignore[attr-defined]
+
+
+# ---------------------------------------------------------------------------
+# _detect_backend fallback ordering (sound_lib -> winsound -> NSSound -> null)
+# ---------------------------------------------------------------------------
+
+
+def test_detect_backend_falls_back_to_nssound(monkeypatch) -> None:
+    """When sound_lib and winsound are both unavailable (the macOS case),
+    _detect_backend must try NSSound before giving up to _NullBackend."""
+    import quill.platform.sound_player as sp
+
+    class _StubNSSoundBackend:
+        pass
+
+    def _raise() -> None:
+        raise RuntimeError("unavailable")
+
+    monkeypatch.setattr(sp, "_SoundLibBackend", _raise)
+    monkeypatch.setattr(sp, "_WinsoundBackend", _raise)
+    monkeypatch.setattr(sp, "_NSSoundBackend", _StubNSSoundBackend)
+
+    backend = sp._detect_backend()
+
+    assert isinstance(backend, _StubNSSoundBackend)
+
+
+def test_detect_backend_falls_back_to_null_when_everything_unavailable(
+    monkeypatch,
+) -> None:
+    import quill.platform.sound_player as sp
+
+    def _raise() -> None:
+        raise RuntimeError("unavailable")
+
+    monkeypatch.setattr(sp, "_SoundLibBackend", _raise)
+    monkeypatch.setattr(sp, "_WinsoundBackend", _raise)
+    monkeypatch.setattr(sp, "_NSSoundBackend", _raise)
+
+    backend = sp._detect_backend()
+
+    assert isinstance(backend, sp._NullBackend)
+
+
+# ---------------------------------------------------------------------------
 # #332 -- public set_volume / unregister_event(s) (was private _backend._output)
 # ---------------------------------------------------------------------------
 
 
 class _VolumeRecordingBackend(_RecordingBackend):
-    """Recording backend that exposes a settable Output.volume for set_volume."""
+    """Recording backend that captures the volume set via set_volume."""
 
     def __init__(self) -> None:
         super().__init__()
         self.volume: float | None = None
-        outer = self
 
-        class _Output:
-            def set_volume(inner_self, v: float) -> None:  # noqa: N805
-                outer.volume = v
-
-        self._output = _Output()
+    def set_volume(self, volume: float) -> None:
+        self.volume = volume
 
 
 def test_set_volume_clamps_and_forwards_to_backend() -> None:

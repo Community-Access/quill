@@ -49,6 +49,17 @@ def _find_install_root() -> Path | None:
     return None
 
 
+def braille_install_supported() -> bool:
+    """Whether QUILL's pinned, managed braille-pack download can run here.
+
+    The pinned asset ships the Windows ``lou_translate.exe`` binary, so the
+    managed download is Windows-only. On macOS liblouis is best installed via
+    Homebrew (``brew install liblouis``); :func:`is_braille_pack_installed`
+    detects a Homebrew install via PATH/module lookup without the download.
+    """
+    return sys.platform == "win32"
+
+
 def is_braille_pack_installed() -> bool:
     """Return True when a liblouis-backed braille pack is available."""
     import os

@@ -12,7 +12,7 @@ The excepthook integration is covered by
 
 from __future__ import annotations
 
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 
 import pytest
 
@@ -470,14 +470,19 @@ def test_build_payload_redacts_paths_in_user_supplied_context() -> None:
 
     exc_type, exc_value, exc_tb = _raise_and_capture()
     # A Windows path that the redaction contract definitely flags
-    # (drive-letter + backslashes) -- independent of host OS because
-    # the contract operates on text.
-    crash = Path("C:/Users/alice/secret/notes.txt")
+    # (drive-letter + backslashes). build_crash_report_payload only ever
+    # str()s local_crash_file, never touches the filesystem with it, so
+    # PureWindowsPath is safe here and -- unlike a plain Path -- its str()
+    # is always backslash-separated regardless of the host OS running this
+    # test; a plain Path("C:/Users/alice/...") built on a POSIX host keeps
+    # its forward slashes, which _WINDOWS_PATH_RE (backslash-only) never
+    # matches, letting the path leak through unredacted.
+    crash = PureWindowsPath("C:/Users/alice/secret/notes.txt")
     payload = build_crash_report_payload(
         exc_type=exc_type,
         exc_value=exc_value,
         exc_tb=exc_tb,
-        local_crash_file=crash,
+        local_crash_file=crash,  # type: ignore[arg-type]
         app_version="0.7.0",
         portable=False,
         screen_reader_name=None,
@@ -485,7 +490,7 @@ def test_build_payload_redacts_paths_in_user_supplied_context() -> None:
         active_document=None,
     )
     # The raw Windows path must NOT survive in the body.
-    assert "C:/Users/alice" not in payload.body
+    assert r"C:\Users\alice" not in payload.body
     # The body should still contain *something* about the local
     # crash file (the contract rewrites the path slot, not the
     # whole line).

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>10-podcasts</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="tutorial-10-podcasts">Tutorial 10: Podcasts</h1>
+<p><strong>Goal:</strong> subscribe to a show, organize your library
+into folders, download an episode for offline listening, and control
+playback without ever leaving the keyboard — QUILL's own podcast client,
+built on the same "one player that outlives any dialog" idea as <a
+href="09-internet-radio.md">Internet Radio</a>.</p>
+<p>Podcasts need a network connection to subscribe and download, and are
+disabled entirely in Safe Mode. Everything below lives under
+<strong>Tools &gt; Media &gt; Podcasts...</strong>.</p>
+<h2 id="1-subscribe-to-a-show">1. Subscribe to a show</h2>
+<ol type="1">
+<li><strong>Tools &gt; Media &gt; Podcasts...</strong> opens the Podcast
+Manager: an empty folder tree on the left, an empty episode list on the
+right, the first time you use it.</li>
+<li>Press <strong>Add Podcast...</strong>. Three ways in, all on the
+same dialog:
+<ul>
+<li>Type a show name in the search box and press <strong>Search</strong>
+— this queries Apple's free iTunes Search directory. Arrow to a result
+and press <strong>Subscribe to Selected</strong>.</li>
+<li>Already know the feed address? Paste it into <strong>Add by Feed
+URL</strong> and press <strong>Add</strong> — skips the search
+entirely.</li>
+<li>Coming from another podcast app? <strong>Import OPML...</strong>
+reads its whole exported subscription list — folders included — in one
+step.</li>
+</ul></li>
+<li>Close the Add Podcast dialog. Your new show appears in the Podcast
+Manager's tree, and its episodes fill the list on the right when you
+select it.</li>
+</ol>
+<h2 id="2-organize-into-folders">2. Organize into folders</h2>
+<p>Press <strong>New Folder...</strong> to create one, nested under
+whatever's selected in the tree — select a folder first, then New Folder
+again, to nest one inside it. There's no drag-and-drop yet; moving a
+show between folders is a planned follow-up (see the end of this
+tutorial).</p>
+<p>Not ready to unsubscribe from a show but don't want new episodes
+right now? Right-click it in the tree (or open its context menu with
+Menu/Shift+F10) and choose <strong>Pause Downloads for This
+Podcast</strong> — it stays in your library, episodes and all, but QUILL
+stops fetching or downloading anything new for it until you choose
+<strong>Resume Downloads for This Podcast</strong> later.</p>
+<h2 id="3-download-an-episode-for-offline-listening">3. Download an
+episode for offline listening</h2>
+<p>Select an episode in the list and press <strong>Download</strong>, or
+reach the same action from its right-click context menu. Downloads run
+on their own dedicated background thread, so a big backlog never slows
+down anything else QUILL is doing — an AI request, a transcription job —
+while it works through the queue.</p>
+<p>Two separate pause controls, worth knowing apart:</p>
+<ul>
+<li><strong>Pause All Downloads</strong> / <strong>Resume All
+Downloads</strong> — reachable from the tray menu, the status bar's
+Podcasts cell, or the Podcast Manager — stops the queue from
+<em>starting</em> anything new. Whatever's already mid-transfer keeps
+running to completion.</li>
+<li><strong>Pause Download</strong> on one specific episode (its button,
+or its context menu) halts that one transfer immediately, right where it
+is. Choosing <strong>Resume Download</strong> later picks the file back
+up from the exact byte it stopped at — nothing already downloaded is
+thrown away.</li>
+</ul>
+<p>Try it: start downloading a longer episode, then immediately pause
+just that one episode. Its status column shows "Paused." Resume it and
+watch the status move back through "Downloading" to "Downloaded."</p>
+<h2 id="4-play-an-episode-and-control-speed">4. Play an episode, and
+control speed</h2>
+<p>Select an episode and press <strong>Play/Pause</strong>, double-click
+it, or use its context menu. Starting a different episode always
+replaces whatever was playing — QUILL never plays two things at once,
+whether that's two episodes or an episode and a radio station. Closing
+the Podcast Manager never stops playback, exactly like Browse Stations
+in Internet Radio.</p>
+<p>Your place in an episode is saved automatically. Come back to it
+later — even much later, even after closing QUILL — and it resumes
+exactly where you stopped.</p>
+<p>The <strong>Speed</strong> control on the player row sets playback
+rate for whichever podcast you currently have selected, from 0.75x up to
+2.0x. It's remembered per show, so a fast-talking interview show and a
+slow, dense lecture series can each have their own comfortable
+speed.</p>
+<h2 id="5-control-it-without-opening-the-dialog">5. Control it without
+opening the dialog</h2>
+<ul>
+<li><strong>The status bar.</strong> A <strong>Podcasts</strong> cell
+appears the first time you play an episode. Press Enter, or click it, to
+play/pause. Its context menu adds Stop and Pause/Resume All
+Downloads.</li>
+<li><strong>The system tray.</strong> Send QUILL to the tray and its
+right-click menu carries the same controls for when the window is
+hidden.</li>
+<li><strong>The keyboard, from anywhere in the editor.</strong> Your
+QUILL Key (<strong>Ctrl+Shift+Grave</strong>), then <strong>8</strong>,
+toggles play/pause; then <strong>7</strong> stops. Deliberately parked
+right next to Radio's N/0/9 chords, not on top of them. Remap either in
+<strong>Preferences &gt; Keyboard Shortcuts</strong>.</li>
+</ul>
+<h2 id="6-take-your-library-with-you">6. Take your library with you</h2>
+<p><strong>Export OPML...</strong> on the Podcast Manager writes your
+whole subscription list — folder structure included — to a standard
+<code>.opml</code> file that any other podcast app can read. Bring it
+back into QUILL (or take it somewhere else) with <strong>Import
+OPML...</strong>, the same button you used in step 1.</p>
+<h2 id="whats-not-here-yet">What's not here yet</h2>
+<p>No video podcasts — audio only, matching every other playback surface
+in QUILL. Chapter navigation and transcript viewing/export are parsed
+from the feed already but have no UI of their own yet; a separate Inbox
+view, a cross-show reorderable Play Queue, local (imported-file)
+podcasts, and richer sorting/filtering are the next planned phases — see
+<code>docs/planning/podcasts.md</code> if you want the full roadmap.</p>
+<h2 id="the-shape-of-it">The shape of it</h2>
+<p>Subscribe with a search, a URL, or an OPML import; organize into
+folders; download with two pause controls that mean genuinely different
+things; play through one shared player that never stops just because you
+closed a dialog. Right-click nearly anything for the full set of
+actions, and reach the essentials — play, pause, stop — from the status
+bar, the tray, or the keyboard without ever opening the Podcast Manager
+at all.</p>
+</body>
+</html>

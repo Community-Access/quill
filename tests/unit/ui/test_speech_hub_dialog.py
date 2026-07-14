@@ -95,6 +95,32 @@ def test_open_speech_hub_builds_four_kwargs_sets() -> None:
     assert "cloud_providers = [" in src
 
 
+def test_common_dict_kwargs_supplies_every_speech_setup_dialog_required_arg() -> None:
+    """Regression for #949/#950: SpeechSetupDialog.__init__ requires kokoro_ok
+    and kokoro_can_install as keyword-only args (alongside the already-passed
+    vosk_ok/vosk_can_install), but common_dict_kwargs in open_speech_hub never
+    supplied them -- every call to Tools > Speech > Speech and Dictation raised
+    'TypeError: SpeechSetupDialog.__init__() missing 2 required keyword-only
+    arguments' since common_dict_kwargs is spread into both the offline and
+    online SpeechSetupDialog constructions."""
+    setup_dialog_src = (
+        Path(__file__).resolve().parents[3] / "quill" / "ui" / "speech_setup_dialog.py"
+    ).read_text(encoding="utf-8")
+    assert "kokoro_ok: bool," in setup_dialog_src
+    assert "kokoro_can_install: bool," in setup_dialog_src
+
+    main_frame_src = _read_main_frame_source()
+    assert '"kokoro_ok": is_kokoro_onnx_available(),' in main_frame_src
+    assert '"kokoro_can_install": kokoro_onnx_install_supported(),' in main_frame_src
+    # Both must live inside common_dict_kwargs (spread into both dictation
+    # kwargs dicts), not bolted onto only one of them.
+    common_start = main_frame_src.index("common_dict_kwargs: dict = {")
+    common_end = main_frame_src.index("}", common_start)
+    common_block = main_frame_src[common_start:common_end]
+    assert '"kokoro_ok": is_kokoro_onnx_available(),' in common_block
+    assert '"kokoro_can_install": kokoro_onnx_install_supported(),' in common_block
+
+
 def test_open_speech_hub_callers_use_named_tab_constants() -> None:
     src = _read_main_frame_source()
     assert "self.open_speech_hub(TAB_SPEECH_OFFLINE)" in src

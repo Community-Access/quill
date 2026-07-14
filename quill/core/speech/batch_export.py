@@ -121,6 +121,9 @@ class BatchExportOptions:
     espeak_rate: int = 175
     espeak_pitch: int | None = None  # 0-99; None = engine default
     espeak_word_gap_ms: int | None = None  # extra silence between words; None = default
+    # macOS system voice (say CLI) — #21/#75
+    macos_voice: str = ""
+    macos_rate: int = 175
     # Pronunciation dictionaries (§4.7): the resolved active set for this engine
     # and (the source folder as) project. Applied as a silent text transform before
     # synthesis — batch writes audio files to disk and never reads aloud.
@@ -197,6 +200,7 @@ def _synthesize_one(text: str, output_path: Path, opts: BatchExportOptions) -> N
         synthesize_to_file_with_sapi5,
         synthesize_with_espeak,
         synthesize_with_kokoro,
+        synthesize_with_macos,
         synthesize_with_piper,
     )
 
@@ -255,6 +259,13 @@ def _synthesize_one(text: str, output_path: Path, opts: BatchExportOptions) -> N
             rate=opts.espeak_rate,
             pitch=opts.espeak_pitch,
             word_gap_ms=opts.espeak_word_gap_ms,
+        )
+    elif engine == "macos":
+        synthesize_with_macos(
+            text,
+            output_path,
+            voice=opts.macos_voice,
+            rate=opts.macos_rate,
         )
     else:
         raise ReadAloudUnavailableError(f"Unknown engine: {engine!r}")

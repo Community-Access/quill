@@ -444,6 +444,14 @@ def main() -> int:
         activate_ai_packs()
     except Exception:  # noqa: BLE001 - an optional pack must never break startup
         pass
+    # Add an on-demand-installed PDF/Office text-extraction pack to sys.path
+    # (#909's own optional-extra fix).
+    try:
+        from quill.core.pdf_ocr_install import activate_pdf_ocr_pack
+
+        activate_pdf_ocr_pack()
+    except Exception:  # noqa: BLE001 - an optional pack must never break startup
+        pass
     log_listener = configure_logging(app_data_dir() / "logs")
     setup_fault_handler()
     _install_excepthook()
@@ -504,6 +512,7 @@ def main() -> int:
                 safe_mode=safe_mode,
                 diagnostics_mode=diagnostics_mode,
                 cold_import_seconds=_import_main_frame_seconds,
+                persona_name=parsed.persona,
             )
         finally:
             release_primary_instance()
@@ -577,6 +586,12 @@ def _parse_cli_arguments(arguments: list[str]) -> Namespace:
         metavar=("LEFT", "RIGHT"),
         default=None,
         help="Open two files in compare mode. Example: --diff old.kt new.kt",
+    )
+    parser.add_argument(
+        "--persona",
+        default=None,
+        metavar="NAME",
+        help="Launch directly into a saved Work Persona (Tools > Work Personas...).",
     )
     return parser.parse_args(arguments)
 

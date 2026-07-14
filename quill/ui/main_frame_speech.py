@@ -346,8 +346,18 @@ class SpeechCommandsMixin:
             def remove(self, component_id: str) -> bool:
                 return frame._remove_optional_component(component_id)
 
-            def test(self, component_id: str) -> None:
-                frame._test_optional_component(component_id)
+            def test(
+                self, component_id: str, *, on_state_change: Callable[[str], None] | None = None
+            ) -> None:
+                frame._test_optional_component(component_id, on_state_change=on_state_change)
+
+            def stop_test(self, component_id: str) -> None:
+                frame._stop_active_voice_preview()
+
+            def is_previewable(self, component_id: str) -> bool:
+                from quill.core import optional_components as oc
+
+                return oc.read_aloud_engine_for_component(component_id) is not None
 
             def manage(self, component_id: str) -> None:
                 frame._manage_component_models_or_voices(component_id)
@@ -384,10 +394,13 @@ class SpeechCommandsMixin:
             "espeak": lambda: self.download_espeak_exe(on_done=_back),
             "dectalk": lambda: self.download_dectalk_exe(on_done=_back),
             "pandoc": lambda: self.download_pandoc(on_done=_back),
+            "pdf_ocr": lambda: self.download_pdf_ocr_support(on_done=_back),
             "node": lambda: self.download_node_runtime(on_done=_back),
             "braille": lambda: self.download_braille_pack(on_done=_back),
             "audio_extras": lambda: self.download_audio_extras(on_done=_back),
             "mathcat": lambda: self.download_mathcat(on_done=_back),
+            "git": lambda: self.download_git(on_done=_back),
+            "gh": lambda: self.download_gh(on_done=_back),
         }
         action = actions.get(chosen)
         if action is not None:
@@ -415,7 +428,9 @@ class SpeechCommandsMixin:
         self._set_status(f"Removed {component_id}.")
         return True
 
-    def _test_optional_component(self, component_id: str) -> None:
+    def _test_optional_component(
+        self, component_id: str, *, on_state_change: Callable[[str], None] | None = None
+    ) -> None:
         """Prove *component_id* works: voices play a spoken sample; other
         components run their wx-free self-test on a worker and announce the
         result. Expected "get one more piece" states (no model / no voice) route
@@ -445,7 +460,13 @@ class SpeechCommandsMixin:
                     return
                 chosen = picked
             self._announce(f"Playing {chosen.name}.")
-            self._preview_voice(engine, chosen.id, live=True, text=oc.voice_preview_phrase())
+            self._preview_voice(
+                engine,
+                chosen.id,
+                live=True,
+                text=oc.voice_preview_phrase(),
+                on_state_change=on_state_change,
+            )
             return
 
         def _work(_progress: Callable[[str, int, int], None]) -> object:
@@ -808,11 +829,27 @@ class SpeechCommandsMixin:
         live status progress (no cancel affordance — the fetch is ~9 MB),
         blocked in Safe Mode. Refreshes the menu on success so Translation
         appears without a restart."""
-        from quill.core.braille_pack import install_braille_pack, is_braille_pack_installed
+        from quill.core.braille_pack import (
+            braille_install_supported,
+            install_braille_pack,
+            is_braille_pack_installed,
+        )
 
         wx = self._wx
         if bool(getattr(self, "_safe_mode", False)):
             self._announce("Downloading the braille pack is disabled in Safe Mode.")
+            return
+        if not braille_install_supported():
+            # The pinned pack ships the Windows lou_translate.exe binary; on
+            # macOS the managed download cannot run. Point to Homebrew, which
+            # is_braille_pack_installed() detects via PATH/module lookup (#47).
+            self._show_message_box(
+                "The managed braille pack download is Windows-only. On macOS "
+                "install liblouis with Homebrew (brew install liblouis); QUILL "
+                "will detect it automatically.",
+                "Braille Pack",
+                wx.ICON_INFORMATION | wx.OK,
+            )
             return
         if is_braille_pack_installed():
             again = self._show_message_box(
@@ -913,6 +950,67 @@ class SpeechCommandsMixin:
                 on_done(ok)
 
         self._run_background_task("Downloading MathCAT math speech engine", _work, _finished)
+
+    def download_pdf_ocr_support(self, *, on_done: Callable[[bool], None] | None = None) -> None:
+        """Install the free PDF/Office text-extraction pack (MarkItDown, pdfplumber,
+        pypdf) on demand -- the pip-installable "pdf-ocr" extra, wheel-only into
+        a user-writable engine-pack, same shape as MathCAT's download. Import
+        already works for Markdown/plain text and anything Pandoc handles
+        without it; this adds native Word/PowerPoint/Excel/PDF text reading."""
+        from quill.core.optional_components import _pdf_ocr_installed
+        from quill.core.pdf_ocr_install import missing_pdf_ocr_modules
+
+        wx = self._wx
+        if bool(getattr(self, "_safe_mode", False)):
+            self._announce("Downloading components is disabled in Safe Mode.")
+            return
+        if _pdf_ocr_installed():
+            again = self._show_message_box(
+                "PDF and Office text extraction is already installed. Download it again anyway?",
+                "PDF and Office Text Extraction",
+                wx.ICON_QUESTION | wx.YES_NO,
+            )
+            if again != wx.YES:
+                if on_done is not None:
+                    on_done(True)
+                return
+        proceed = self._show_message_box(
+            "QUILL will download PDF and Office text extraction (about 30 MB): "
+            "MarkItDown, pdfplumber, and pypdf. This lets Import read text out "
+            "of Word, PowerPoint, Excel, and PDF documents natively. Scanned or "
+            "image-only PDFs still need File > Import > OCR either way. "
+            "Continue?",
+            "Download PDF and Office Text Extraction",
+            wx.ICON_INFORMATION | wx.YES_NO,
+        )
+        if proceed != wx.YES:
+            return
+
+        def _work(progress):
+            from quill.core.pdf_ocr_install import install_pdf_ocr_support
+
+            install_pdf_ocr_support(
+                progress=lambda fraction, message: progress(message, int(fraction * 100), 100)
+            )
+            return True
+
+        def _finished(result: object) -> None:
+            ok = bool(result)
+            if ok:
+                self._announce(
+                    "PDF and Office text extraction installed. Import will use it "
+                    "the next time it runs."
+                )
+            else:
+                still_missing = ", ".join(missing_pdf_ocr_modules())
+                self._announce(
+                    "PDF and Office text extraction could not be installed"
+                    + (f" ({still_missing})." if still_missing else ".")
+                )
+            if on_done is not None:
+                on_done(ok)
+
+        self._run_background_task("Downloading PDF and Office text extraction", _work, _finished)
 
     def download_pandoc(self, *, on_done: Callable[[bool], None] | None = None) -> None:
         """Fetch the official, pinned Pandoc build on demand (footprint unbundle).
@@ -1591,13 +1689,18 @@ class SpeechCommandsMixin:
             target=_run, daemon=True
         ).start()
 
-    def download_kokoro_engine(self) -> None:
+    def download_kokoro_engine(self, *, skip_confirm: bool = False) -> None:
         """Install the optional Kokoro ONNX engine packages on demand.
 
         Installs ``kokoro-onnx`` and ``soundfile`` (~20 MB + onnxruntime) via
         pip into a user-writable engine-pack folder. Use this when the Kokoro
         model files are already downloaded but the Python packages are missing.
         Runs on a worker thread behind a progress dialog.
+
+        ``skip_confirm`` suppresses the built-in "install ~20 MB?" confirmation
+        for callers that already obtained consent (e.g. the one-time startup
+        prompt in :meth:`MainFrame._maybe_prompt_kokoro_package_install`), so the
+        user is not asked twice.
         """
         import threading
 
@@ -1625,16 +1728,17 @@ class SpeechCommandsMixin:
                 wx.ICON_INFORMATION | wx.OK,
             )
             return
-        confirm = self._show_message_box(
-            "Download and install the Kokoro ONNX engine (~20 MB)? "
-            "This enables Kokoro's high-quality neural text-to-speech. "
-            "You will also need to download the Kokoro models (~114 MB) from "
-            "Manage Voices if you have not done so already.",
-            "Install Kokoro ONNX",
-            wx.ICON_QUESTION | wx.YES_NO,
-        )
-        if confirm != wx.YES:
-            return
+        if not skip_confirm:
+            confirm = self._show_message_box(
+                "Download and install the Kokoro ONNX engine (~20 MB)? "
+                "This enables Kokoro's high-quality neural text-to-speech. "
+                "You will also need to download the Kokoro models (~114 MB) from "
+                "Manage Voices if you have not done so already.",
+                "Install Kokoro ONNX",
+                wx.ICON_QUESTION | wx.YES_NO,
+            )
+            if confirm != wx.YES:
+                return
         cancel = threading.Event()
         progress = AIProgressDialog(
             self.frame,
@@ -2032,14 +2136,15 @@ class SpeechCommandsMixin:
             self._start_dictation()
 
     def _start_dictation(self) -> None:
+        from quill.core.platform_nouns import primary_command_chord_label
         from quill.core.speech.capture import MicRecorder, capture_available
 
         wx = self._wx
         if not capture_available():
             self._show_message_box(
                 "Offline dictation needs microphone-capture support (the optional "
-                "'sounddevice' package). You can also use Windows dictation with "
-                "Ctrl+Alt+V.",
+                "'sounddevice' package). You can also use system dictation with "
+                f"{primary_command_chord_label()}+V.",
                 "Dictate (Offline)",
                 wx.ICON_INFORMATION | wx.OK,
             )

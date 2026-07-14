@@ -734,7 +734,12 @@ class _DataLocationPage(_WizardPage):
             self,
             label=_(
                 "Settings, dictionaries, autosaves, and recovery files go here. "
-                "You can change this later from Help > Personalise QUILL or Preferences."
+                "You can change this later from Help > Personalise QUILL or Preferences. "
+                "Tip: choosing a folder that a service like OneDrive, Dropbox, Google "
+                "Drive, or iCloud already keeps in sync is a simple way to carry your "
+                "QUILL settings between devices — QUILL just writes to the folder; the "
+                "sync client does the rest. Do not run QUILL from two devices against "
+                "the same folder at the same time."
             ),
             name="wizard.data_location_desc",
         )
@@ -743,7 +748,7 @@ class _DataLocationPage(_WizardPage):
 
         self._appdata_radio = wx.RadioButton(
             self,
-            label=_("In my Windows user profile (recommended)"),
+            label=_("In my user profile (recommended)"),
             name="wizard.data_location_appdata",
             style=wx.RB_GROUP,
         )

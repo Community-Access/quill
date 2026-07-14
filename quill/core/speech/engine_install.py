@@ -19,6 +19,16 @@ Safety mirrors the model / ffmpeg download paths: blocked in Safe Mode, on an
 explicit user action only, wheel-only, and the only network touch is the runtime
 pip reaching PyPI (documented in the network-egress audit as a subprocess egress).
 wx-free.
+
+Every ``install_*`` function here (Faster Whisper, Vosk, Kokoro ONNX, MP3
+support) first checks for a bundled offline wheelhouse via
+:func:`_bundled_wheelhouse_dir` -- the Offline Edition installer
+(``--bundle-offline`` in ``scripts/build_windows_distribution.py``) stages each
+engine's full dependency tree as local wheels under ``{app}/wheels/<name>``.
+When present, the pip install resolves entirely from disk
+(``--no-index --find-links``) and never touches PyPI; the "explicit user
+action only" click still gates the install itself, it just no longer needs a
+network connection to complete under the Offline Edition.
 """
 
 from __future__ import annotations
@@ -181,6 +191,33 @@ def is_kokoro_onnx_available() -> bool:
     return importlib.util.find_spec(_KOKORO_ONNX_MODULE) is not None
 
 
+def _bundled_wheelhouse_dir(name: str) -> Path | None:
+    """A pre-downloaded pip wheelhouse for engine *name*, shipped with the app.
+
+    The Offline Edition build stages each on-demand engine's full dependency
+    tree (kokoro-onnx's onnxruntime/phonemizer-fork/espeakng-loader/Babel,
+    Faster Whisper's ctranslate2/huggingface_hub, Vosk's cffi, mutagen, ...) as
+    local wheels under ``{app}/wheels/<name>`` (see ``_stage_pip_wheelhouse``
+    in ``scripts/build_windows_distribution.py``), downloaded with the exact
+    same embedded Python that will later install them, so the wheel tags
+    always match. When present, the matching ``install_*`` function below
+    resolves entirely from disk (``pip install --no-index --find-links``)
+    instead of touching PyPI. Returns None when no bundled wheelhouse exists
+    (the regular installer and portable builds never stage one, so this is
+    the common case).
+    """
+    app_root = os.environ.get("QUILL_APP_ROOT", "").strip()
+    if not app_root:
+        return None
+    candidate = Path(app_root) / "wheels" / name
+    try:
+        if candidate.is_dir() and any(candidate.glob("*.whl")):
+            return candidate
+    except OSError:
+        return None
+    return None
+
+
 def install_kokoro_onnx(
     progress: ProgressCallback | None = None,
     *,
@@ -190,13 +227,17 @@ def install_kokoro_onnx(
     timeout_seconds: float = _INSTALL_TIMEOUT_S,
     runner: Callable[..., object] | None = None,
 ) -> Path:
-    """Download and install the Kokoro ONNX engine packages, returning the pack folder.
+    """Install the Kokoro ONNX engine packages, returning the pack folder.
 
     Mirrors :func:`install_faster_whisper` exactly: wheel-only into a
     user-writable engine-pack folder, activated on ``sys.path`` immediately.
     Installs ``kokoro-onnx`` and ``soundfile``; ``onnxruntime`` is a transitive dep.
-    Raises :class:`EngineInstallError` on Safe Mode, unavailable pip, a
-    non-zero pip exit, or if the engine still cannot be imported afterward.
+    When the Offline Edition's bundled wheelhouse is present
+    (:func:`_bundled_wheelhouse_dir`), this resolves entirely from local
+    disk and never touches the network; otherwise it downloads from PyPI like
+    every other on-demand engine. Raises :class:`EngineInstallError` on Safe
+    Mode, unavailable pip, a non-zero pip exit, or if the engine still cannot
+    be imported afterward.
     """
     if os.environ.get("QUILL_SAFE_MODE") == "1":
         raise EngineInstallError("Downloading speech engines is disabled in Safe Mode.")
@@ -213,13 +254,23 @@ def install_kokoro_onnx(
     if not python_exe:
         raise EngineInstallError("Could not locate the Python runtime to install into.")
 
+    # An explicit `requirements` override (tests / advanced callers) is used
+    # as-is, skipping the bundled-wheelhouse lookup, same as the Vosk pattern.
+    wheelhouse = _bundled_wheelhouse_dir("kokoro") if requirements is None else None
+    extra_args = ("--no-index", "--find-links", str(wheelhouse)) if wheelhouse is not None else ()
+
     if progress is not None:
         progress(0.05, "Preparing to install Kokoro ONNX...")
-    command = _pip_command(dest, reqs, python_exe)
+    command = _pip_command(dest, reqs, python_exe, extra_args=extra_args)
     run = runner if runner is not None else _default_runner
     _LOG.info("Kokoro ONNX install: running %s", " ".join(command))
     if progress is not None:
-        progress(0.15, "Downloading Kokoro ONNX packages (this may take a few minutes)...")
+        label = (
+            "Installing Kokoro ONNX from the offline bundle..."
+            if wheelhouse is not None
+            else "Downloading Kokoro ONNX packages (this may take a few minutes)..."
+        )
+        progress(0.15, label)
 
     try:
         result = run(command, timeout_seconds=timeout_seconds)
@@ -271,8 +322,10 @@ def install_mp3_support(
     """Install MP3 chapter-marker support (mutagen) wheel-only into an engine-pack.
 
     Mirrors :func:`install_kokoro_onnx`: pure-Python and small, activated on
-    ``sys.path`` immediately. Raises :class:`EngineInstallError` on Safe Mode,
-    unavailable pip, a non-zero pip exit, or if mutagen still cannot import.
+    ``sys.path`` immediately, and prefers the Offline Edition's bundled
+    wheelhouse (:func:`_bundled_wheelhouse_dir`) over PyPI when present.
+    Raises :class:`EngineInstallError` on Safe Mode, unavailable pip, a
+    non-zero pip exit, or if mutagen still cannot import.
     """
     if os.environ.get("QUILL_SAFE_MODE") == "1":
         raise EngineInstallError("Downloading components is disabled in Safe Mode.")
@@ -286,13 +339,20 @@ def install_mp3_support(
     python_exe = python_executable or sys.executable
     if not python_exe:
         raise EngineInstallError("Could not locate the Python runtime to install into.")
+    wheelhouse = _bundled_wheelhouse_dir("mp3")
+    extra_args = ("--no-index", "--find-links", str(wheelhouse)) if wheelhouse is not None else ()
     if progress is not None:
         progress(0.05, "Preparing to install MP3 support...")
-    command = _pip_command(dest, _MP3_REQUIREMENTS, python_exe)
+    command = _pip_command(dest, _MP3_REQUIREMENTS, python_exe, extra_args=extra_args)
     run = runner if runner is not None else _default_runner
     _LOG.info("MP3 support install: running %s", " ".join(command))
     if progress is not None:
-        progress(0.15, "Downloading MP3 support (mutagen)...")
+        label = (
+            "Installing MP3 support from the offline bundle..."
+            if wheelhouse is not None
+            else "Downloading MP3 support (mutagen)..."
+        )
+        progress(0.15, label)
     try:
         result = run(command, timeout_seconds=timeout_seconds)
     except Exception as exc:  # noqa: BLE001
@@ -354,32 +414,45 @@ def install_vosk(
         progress(0.05, "Preparing to install Vosk...")
 
     # An explicit `requirements` override (tests / advanced callers) is used as-is.
-    # Otherwise prefer QUILL's pinned assets-v1 wheel (source resilience), and fall
-    # back to PyPI when it is not uploaded yet or on a non-Windows platform.
+    # Otherwise prefer, in order: the Offline Edition's bundled wheelhouse (fully
+    # offline, no PyPI at all -- and unlike the assets-v1 wheel below, a `pip
+    # download`-built wheelhouse captures vosk's transitive `cffi` dependency too,
+    # so --no-index is safe here in a way it never was for the single pinned
+    # wheel); then QUILL's pinned assets-v1 wheel (source resilience); then PyPI.
     if requirements is not None:
         reqs: tuple[str, ...] = tuple(requirements)
         extra_args: tuple[str, ...] = ()
     else:
-        local_wheel = _maybe_fetch_vosk_wheel(progress)
-        if local_wheel is not None:
-            # Pin vosk to our verified wheel by passing the file path as the
-            # requirement -- pip installs exactly that file, not a PyPI-resolved
-            # vosk. We deliberately do NOT pass --no-index: vosk depends on
-            # ``cffi`` at install time, and under --no-index + --target pip has no
-            # source for cffi (not even the base env), so it fails with
-            # "No matching distribution found for cffi". Leaving the index enabled
-            # lets the dependency resolve while vosk itself stays pinned to the
-            # verified wheel.
-            reqs = (str(local_wheel),)
-            extra_args = ()
-        else:
+        wheelhouse = _bundled_wheelhouse_dir("vosk")
+        if wheelhouse is not None:
             reqs = _VOSK_REQUIREMENTS
-            extra_args = ()
+            extra_args = ("--no-index", "--find-links", str(wheelhouse))
+        else:
+            local_wheel = _maybe_fetch_vosk_wheel(progress)
+            if local_wheel is not None:
+                # Pin vosk to our verified wheel by passing the file path as the
+                # requirement -- pip installs exactly that file, not a PyPI-resolved
+                # vosk. We deliberately do NOT pass --no-index: vosk depends on
+                # ``cffi`` at install time, and under --no-index + --target pip has
+                # no source for cffi (not even the base env) without a wheelhouse
+                # to supply it, so it fails with "No matching distribution found
+                # for cffi". Leaving the index enabled lets the dependency resolve
+                # while vosk itself stays pinned to the verified wheel.
+                reqs = (str(local_wheel),)
+                extra_args = ()
+            else:
+                reqs = _VOSK_REQUIREMENTS
+                extra_args = ()
 
     command = _pip_command(dest, reqs, python_exe, extra_args=extra_args)
     run = runner if runner is not None else _default_runner
     if progress is not None:
-        progress(0.15, "Downloading Vosk (this can take a few minutes)...")
+        label = (
+            "Installing Vosk from the offline bundle..."
+            if "--no-index" in extra_args
+            else "Downloading Vosk (this can take a few minutes)..."
+        )
+        progress(0.15, label)
 
     try:
         result = run(command, timeout_seconds=timeout_seconds)
@@ -446,7 +519,8 @@ def _maybe_fetch_vosk_wheel(progress: ProgressCallback | None) -> Path | None:
         return None
     try:
         from quill.core.release_assets import ASSETS, fetch_file, is_pinned
-    except Exception:  # noqa: BLE001 - release_assets should always import; be defensive
+    except Exception:
+        _LOG.warning("Could not import release_assets for the Vosk wheel fetch.", exc_info=True)
         return None
     asset = ASSETS.get("vosk")
     if asset is None or not is_pinned(asset):
@@ -455,7 +529,8 @@ def _maybe_fetch_vosk_wheel(progress: ProgressCallback | None) -> Path | None:
         return fetch_file(
             "vosk", _vosk_download_dir(), progress=progress, label="Downloading Vosk..."
         )
-    except Exception:  # noqa: BLE001 - any download/verify failure -> PyPI fallback
+    except Exception:
+        _LOG.warning("Vosk wheel fetch from assets-v1 failed; falling back to PyPI.", exc_info=True)
         return None
 
 
@@ -471,9 +546,11 @@ def install_faster_whisper(
     """Download and install the Faster Whisper engine, returning its pack folder.
 
     Installs wheel-only into a user-writable engine-pack folder and activates it on
-    ``sys.path`` so the engine is immediately importable. Raises
-    :class:`EngineInstallError` on Safe Mode, an unsupported runtime, a non-zero
-    pip exit, or if the engine still cannot be imported afterward.
+    ``sys.path`` so the engine is immediately importable, preferring the Offline
+    Edition's bundled wheelhouse (:func:`_bundled_wheelhouse_dir`) over PyPI when
+    present. Raises :class:`EngineInstallError` on Safe Mode, an unsupported
+    runtime, a non-zero pip exit, or if the engine still cannot be imported
+    afterward.
 
     ``runner`` defaults to :func:`quill.stability.safe_subprocess.run_subprocess_safely`
     (injectable for tests); it must return an object with ``returncode``,
@@ -494,12 +571,20 @@ def install_faster_whisper(
     if not python_exe:
         raise EngineInstallError("Could not locate the Python runtime to install into.")
 
+    wheelhouse = _bundled_wheelhouse_dir("faster-whisper") if requirements is None else None
+    extra_args = ("--no-index", "--find-links", str(wheelhouse)) if wheelhouse is not None else ()
+
     if progress is not None:
         progress(0.05, "Preparing to install Faster Whisper...")
-    command = _pip_command(dest, reqs, python_exe)
+    command = _pip_command(dest, reqs, python_exe, extra_args=extra_args)
     run = runner if runner is not None else _default_runner
     if progress is not None:
-        progress(0.15, "Downloading Faster Whisper (this can take a few minutes)...")
+        label = (
+            "Installing Faster Whisper from the offline bundle..."
+            if wheelhouse is not None
+            else "Downloading Faster Whisper (this can take a few minutes)..."
+        )
+        progress(0.15, label)
 
     try:
         result = run(command, timeout_seconds=timeout_seconds)

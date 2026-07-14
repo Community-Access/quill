@@ -181,7 +181,7 @@ Generation: Pocket, Sync, and the Platform</h1>
 <p>Vision document, 2026-07-04. Nothing here is committed work. It
 sketches the three big moves after 0.9.0: an iOS companion app, a
 GitHub-style sync layer, and where QUILL goes as a platform.</p>
-<h2 id="quill-pocket-ios">1. QUILL Pocket (iOS)</h2>
+<h2 id="1-quill-pocket-ios">1. QUILL Pocket (iOS)</h2>
 <h3 id="why-the-phone-and-why-now">Why the phone, and why now</h3>
 <p>For a large share of blind and low-vision users, the iPhone is the
 primary computer. VoiceOver is arguably the most-used screen reader on
@@ -190,7 +190,7 @@ and the phone is always within reach. QUILL today lives where the
 serious writing happens - the desktop - but the ideas, the mail, the
 meeting, the walk where the chapter finally makes sense all happen away
 from the desk.</p>
-<p>QUILL Pocket is not “QUILL, but small.” The desktop is the writing
+<p>QUILL Pocket is not "QUILL, but small." The desktop is the writing
 desk; the phone is the capture device, the reader, and the voice. That
 division of labor is the whole design.</p>
 <h3 id="the-magical-core-capture-that-lands-where-it-belongs">The
@@ -199,14 +199,14 @@ magical core: capture that lands where it belongs</h3>
 <ul>
 <li>Open Pocket (or invoke it from the Action Button / Shortcuts / share
 sheet).</li>
-<li>Talk. Whisper-quality transcription runs on-device or via the user’s
+<li>Talk. Whisper-quality transcription runs on-device or via the user's
 own AI key (same free-first rules as desktop QUILL).</li>
 <li>The note lands in the Vault inbox, already transcribed, already
-tagged with time and optional context (“captured during Tuesday
-standup”), and it is sitting in desktop QUILL the next time the user
+tagged with time and optional context ("captured during Tuesday
+standup"), and it is sitting in desktop QUILL the next time the user
 opens it.</li>
 </ul>
-<p>No app-switching, no “which folder”, no cleanup session later. Speak,
+<p>No app-switching, no "which folder", no cleanup session later. Speak,
 done, trust. For a writer who is blind, this collapses the distance
 between having an idea and owning it in their manuscript.</p>
 <p>Capture is more than voice:</p>
@@ -217,7 +217,7 @@ immediately and files the text into the Vault. This is Seeing AI-class
 utility, but the output goes somewhere durable instead of
 evaporating.</li>
 <li>Share sheet everywhere: any web page, email, or text selection on
-iOS can be sent to a QUILL notebook or a specific manuscript’s research
+iOS can be sent to a QUILL notebook or a specific manuscript's research
 folder.</li>
 <li>Audio memos kept alongside their transcripts, so the original voice
 is never lost (mirrors the Listening Companion model on desktop).</li>
@@ -238,9 +238,9 @@ the same document that opens on the desktop at home.</li>
 </ul>
 <h3 id="hey-quill-in-your-pocket">Hey QUILL in your pocket</h3>
 <p>The Hey QUILL voice-interaction plan (desktop) extends naturally:
-“Hey QUILL, what did I capture yesterday about the villain’s backstory?”
-or “read me my draft of chapter three” or “add a task to fix the
-timeline in act two.” Same allowlist-only safety law as desktop: voice
+"Hey QUILL, what did I capture yesterday about the villain's backstory?"
+or "read me my draft of chapter three" or "add a task to fix the
+timeline in act two." Same allowlist-only safety law as desktop: voice
 can navigate, read, capture, and annotate; it cannot destroy.</p>
 <h3 id="light-editing-honest-scope">Light editing, honest scope</h3>
 <p>Pocket gets a clean, VoiceOver-native editor for notes and small
@@ -248,8 +248,8 @@ revisions - not the full command surface. Trying to replicate 27k lines
 of desktop main_frame on a phone would produce a bad phone app and a
 worse writing tool. Fix a typo, reorder a scene list, answer a comment;
 save the ten-hour drafting session for the desk.</p>
-<h3 id="what-makes-it-meet-people-where-they-are">What makes it “meet
-people where they are”</h3>
+<h3 id="what-makes-it-meet-people-where-they-are">What makes it "meet
+people where they are"</h3>
 <ul>
 <li>VoiceOver-first, not VoiceOver-compatible: rotor actions for every
 list, custom actions instead of buried buttons, headings and landmarks
@@ -257,33 +257,33 @@ that make a screen navigable in three swipes, haptics as a secondary
 channel.</li>
 <li>Works offline; sync is opportunistic.</li>
 <li>Free tier is genuinely useful (capture + read + sync via BYO
-storage), consistent with the “free AI for everyone” ethos.</li>
+storage), consistent with the "free AI for everyone" ethos.</li>
 </ul>
-<h2 id="quill-sync-github-like-sync-for-your-whole-setup">2. QUILL Sync:
-GitHub-like sync for your whole setup</h2>
+<h2 id="2-quill-sync-github-like-sync-for-your-whole-setup">2. QUILL
+Sync: GitHub-like sync for your whole setup</h2>
 <h3 id="the-model-your-configuration-is-a-repository">The model: your
 configuration is a repository</h3>
 <p>QUILL already stores everything as schema-validated,
 atomically-written JSON (settings, keymaps, abbreviations, Quillin
 manifests) and Vault content as files. That is exactly the shape git was
-built for. So the sync layer borrows git’s ideas rather than inventing a
+built for. So the sync layer borrows git's ideas rather than inventing a
 database:</p>
 <ul>
 <li>Versioned: every settings change is a commit with a human-readable
-message (“Changed default voice to Kokoro it_IT”, auto-generated).
+message ("Changed default voice to Kokoro it_IT", auto-generated).
 History is browsable and speakable.</li>
-<li>Diffable: “what changed between my setup today and last Tuesday?” is
+<li>Diffable: "what changed between my setup today and last Tuesday?" is
 a first-class, screen-reader-friendly question with a first-class
 answer.</li>
 <li>Rollback: one command restores any prior state of any synced scope.
 A bad keymap experiment is never a disaster again.</li>
-<li>Branch-like profiles: a “work” profile and a “home” profile share a
+<li>Branch-like profiles: a "work" profile and a "home" profile share a
 common base with per-machine overlays (different audio devices,
 different braille displays, same abbreviations and AI setup).</li>
 </ul>
 <h3 id="transport-bring-your-own-or-use-ours">Transport: bring your own,
 or use ours</h3>
-<p>Three tiers, cheapest first, matching QUILL’s $0-to-Jeff
+<p>Three tiers, cheapest first, matching QUILL's $0-to-Jeff
 philosophy:</p>
 <ol type="1">
 <li>BYO git remote: point QUILL Sync at a private GitHub/GitLab/Gitea
@@ -314,18 +314,18 @@ sync is off until the user turns it on, per the consent-first rule.</li>
 <ol type="1">
 <li>Preferences, keymap, abbreviations, voice/verbosity settings,
 Quillin install list (manifests re-fetched, not blobs). Small,
-low-conflict, immediately valuable - “sit down at any machine and it is
-your QUILL.”</li>
+low-conflict, immediately valuable - "sit down at any machine and it is
+your QUILL."</li>
 <li>Vault content: notes, links, tags. Text merges are handled with a
 CRDT-or-three-way strategy tuned for prose, and conflicts surface as an
-accessible “two versions” review flow, never as inline markers.</li>
+accessible "two versions" review flow, never as inline markers.</li>
 <li>Opt-in extras: AI conversation history, reading positions, Story
 Studio binder state.</li>
 </ol>
 <p>Scope 1 alone justifies the feature; scopes 2-3 are what make Pocket
 sing.</p>
-<h2 id="the-next-generation-quill-as-a-platform">3. The next generation:
-QUILL as a platform</h2>
+<h2 id="3-the-next-generation-quill-as-a-platform">3. The next
+generation: QUILL as a platform</h2>
 <p>Where this all points:</p>
 <ul>
 <li>One Companion, every surface. The desktop Companion agent, Hey QUILL
@@ -334,13 +334,13 @@ by keyboard, speech, or phone. Context follows the person, not the
 device.</li>
 <li>Accessible collaboration. Real-time co-editing in mainstream tools
 remains a screen-reader minefield. A QUILL-to-QUILL collaborative mode -
-built on the sync layer’s merge machinery, with spoken presence cues
-(“Sarah is editing chapter two”) and braille-aware change tracking -
+built on the sync layer's merge machinery, with spoken presence cues
+("Sarah is editing chapter two") and braille-aware change tracking -
 would be the first co-writing experience designed blind-first. This is
 the moonshot.</li>
-<li>Quillin exchange. Sync already carries the user’s Quillin list; the
+<li>Quillin exchange. Sync already carries the user's Quillin list; the
 next step is a browsable, curated directory so extensions travel between
-users, not just between one user’s machines. Sandboxing and manifest
+users, not just between one user's machines. Sandboxing and manifest
 validation are already in place.</li>
 <li>Publishing pipeline. Draft in QUILL, capture on Pocket, and publish
 out: DAISY, EPUB, WordPress, and podcast-style audio (QUILL Cast) from

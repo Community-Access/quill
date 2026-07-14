@@ -47,3 +47,23 @@ def test_no_binding_returns_plain_label() -> None:
     frame = _build_frame(keybinding_for=lambda _cid: None)
     label = frame._menu_label("&About", "help.about")
     assert label == "&About"
+
+
+def test_cmd_binding_label_translates_to_ctrl_for_native_accelerator() -> None:
+    """macOS-only variant of #612: DEFAULT_KEYMAP spells the Command key "Cmd"
+    (Find &Next uses "Cmd+G" on darwin), but wx's menu-label accelerator
+    parser does not reliably recognize the literal token "Cmd" -- it drops
+    the modifier and keeps the bare key, silently binding plain G/g as a
+    native accelerator that intercepted every G/g keystroke in the editor.
+    "Ctrl" is what wx already renders as the Command-key glyph on macOS, so
+    the native-parsed tab slot must say "Ctrl+G", never "Cmd+G"."""
+    frame = _build_frame(keybinding_for=lambda _cid: "Cmd+G")
+    label = frame._menu_label("Find &Next", "edit.find_next")
+    assert label == "Find &Next\tCtrl+G"
+    assert "Cmd" not in label
+
+
+def test_cmd_shift_binding_label_translates_to_ctrl_for_native_accelerator() -> None:
+    frame = _build_frame(keybinding_for=lambda _cid: "Cmd+Shift+G")
+    label = frame._menu_label("Find &Previous", "edit.find_previous")
+    assert label == "Find &Previous\tCtrl+Shift+G"

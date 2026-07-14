@@ -43,6 +43,8 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
 
+from quill.tools.platform_guard import build_parent_map, platform_for_node
+
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 _PACKAGE_ROOT = _REPO_ROOT / "quill"
 SNAPSHOT_PATH = _REPO_ROOT / "tests" / "unit" / "ui" / "fixtures" / "dialog_inventory.json"
@@ -94,6 +96,11 @@ class DialogSurface:
     qualname: str
     kind: str
     line: int
+    #: ``"darwin"`` when the surface sits inside a ``sys.platform == "darwin"``
+    #: (or equivalent) branch -- i.e. it can only be exercised on a Mac -- and
+    #: ``""`` otherwise. AST-derived, so it is a lower bound: an untagged surface
+    #: may still be Mac-reachable via a guard this heuristic does not model.
+    platform: str = ""
 
 
 def _classify(kind: str) -> str | None:
@@ -110,8 +117,9 @@ def _classify(kind: str) -> str | None:
 class _DialogVisitor(ast.NodeVisitor):
     """Collect dialog surfaces with a stable, line-independent qualname key."""
 
-    def __init__(self, module: str) -> None:
+    def __init__(self, module: str, parents: dict[ast.AST, ast.AST] | None = None) -> None:
         self._module = module
+        self._parents = parents or {}
         self._scope: list[str] = []
         self._seen: dict[str, int] = {}
         self.surfaces: list[DialogSurface] = []
@@ -130,7 +138,7 @@ class _DialogVisitor(ast.NodeVisitor):
                 continue
             surface = _classify(kind)
             if surface is not None:
-                self._record(f"subclass:{kind}", surface, node.lineno)
+                self._record(f"subclass:{kind}", surface, node)
         self.generic_visit(node)
         self._scope.pop()
 
@@ -150,7 +158,7 @@ class _DialogVisitor(ast.NodeVisitor):
         if kind is not None:
             surface = _classify(kind)
             if surface is not None:
-                self._record(kind, surface, node.lineno)
+                self._record(kind, surface, node)
         self.generic_visit(node)
 
     @staticmethod
@@ -166,7 +174,7 @@ class _DialogVisitor(ast.NodeVisitor):
             return func.id
         return None
 
-    def _record(self, kind: str, surface: str, line: int) -> None:
+    def _record(self, kind: str, surface: str, node: ast.AST) -> None:
         qualname = ".".join(self._scope) if self._scope else "<module>"
         base = f"{self._module}::{qualname}::{kind}"
         index = self._seen.get(base, 0)
@@ -179,7 +187,8 @@ class _DialogVisitor(ast.NodeVisitor):
                 module=self._module,
                 qualname=qualname,
                 kind=kind,
-                line=line,
+                line=node.lineno,
+                platform=platform_for_node(self._parents, node),
             )
         )
 
@@ -188,7 +197,7 @@ def scan_module(path: Path) -> list[DialogSurface]:
     """Scan one module for dialog surfaces."""
     module = path.relative_to(_REPO_ROOT).as_posix()
     tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
-    visitor = _DialogVisitor(module)
+    visitor = _DialogVisitor(module, build_parent_map(tree))
     visitor.visit(tree)
     return visitor.surfaces
 
@@ -204,6 +213,11 @@ def scan_dialog_surfaces(root: Path = _PACKAGE_ROOT) -> list[DialogSurface]:
 def surface_map(surfaces: Iterable[DialogSurface]) -> dict[str, str]:
     """Map stable key -> classification (the committed registry shape)."""
     return {surface.key: surface.surface for surface in surfaces}
+
+
+def platform_map(surfaces: Iterable[DialogSurface]) -> dict[str, str]:
+    """Map stable key -> platform tag (``"darwin"`` or ``""``)."""
+    return {surface.key: surface.platform for surface in surfaces}
 
 
 def load_snapshot() -> dict[str, str]:
@@ -235,9 +249,13 @@ def main() -> int:
     counts: dict[str, int] = {}
     for surface in surfaces:
         counts[surface.surface] = counts.get(surface.surface, 0) + 1
+    mac_only = sorted(surface.key for surface in surfaces if surface.platform)
     print(f"QUILL exposes {len(surfaces)} dialog surfaces:")
     for surface_name in sorted(counts):
         print(f"  {surface_name}: {counts[surface_name]}")
+    print(f"  macOS-only (inside a sys.platform == 'darwin' guard): {len(mac_only)}")
+    for key in mac_only:
+        print(f"    {key}")
     return 0
 
 

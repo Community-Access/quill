@@ -138,6 +138,23 @@ class EnginesPanel:
             self._reload()
             return
         if target.available:
+            from quill.core.ai import harness_credentials as hc
+
+            if target.harness_id in hc.SUPPORTED_PACK_IDS:
+                # Installed, but still needs an API key -- the harness reads it
+                # from the environment, so unlike Copilot's OAuth flow there is
+                # nothing more to "install"; this is the remaining setup step.
+                from quill.ui.harness_api_key_dialog import HarnessApiKeyDialog
+
+                HarnessApiKeyDialog(
+                    self._parent_dialog,
+                    target.harness_id,
+                    target.display_name,
+                    self._show_modal,
+                    announce=self._announce,
+                ).show()
+                self._reload()
+                return
             self.status.SetLabel(_("{name} is already installed.").format(name=target.display_name))
             return
         self._install_pack(target.harness_id, target.display_name)
@@ -165,7 +182,15 @@ class EnginesPanel:
         threading.Thread(target=worker, daemon=True).start()  # GATE-40-OK: install worker
 
     def _after_install(self, message: str) -> None:
-        self.setup_btn.Enable(True)
-        self.status.SetLabel(message)
-        self._announce(message)
-        self._reload()
+        # The install runs on a background thread; if the user closes the AI
+        # Hub before it finishes, this queued wx.CallAfter still fires against
+        # already-destroyed widgets (#915). The install itself already ran (or
+        # failed) in the background regardless -- there's simply no panel left
+        # to update, so treat a dead widget as nothing to do rather than crash.
+        try:
+            self.setup_btn.Enable(True)
+            self.status.SetLabel(message)
+            self._announce(message)
+            self._reload()
+        except RuntimeError:
+            return

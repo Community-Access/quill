@@ -60,7 +60,7 @@ class MenuBuilderMixin:
         self._id_save_as = wx.ID_SAVEAS
         self._id_exit = wx.ID_EXIT
         self._id_palette = wx.NewIdRef()
-        self._id_preferences = wx.NewIdRef()
+        self._id_preferences = wx.ID_PREFERENCES
         self._id_menu_editor = wx.NewIdRef()
         self._id_open_url = wx.NewIdRef()
         self._id_open_remote = wx.NewIdRef()
@@ -71,6 +71,7 @@ class MenuBuilderMixin:
         self._id_github_file_url = wx.NewIdRef()
         self._id_github_save_back = wx.NewIdRef()
         self._id_github_manage_accounts = wx.NewIdRef()
+        self._id_github_items = wx.NewIdRef()
         self._id_ssh_quick_connect = wx.NewIdRef()
         self._id_ssh_site_manager = wx.NewIdRef()
         self._id_close_document = wx.NewIdRef()
@@ -84,6 +85,8 @@ class MenuBuilderMixin:
         self._id_clear_recent_sessions = wx.NewIdRef()
         self._id_page_setup = wx.NewIdRef()
         self._id_print = wx.NewIdRef()
+        self._id_print_studio = wx.NewIdRef()
+        self._id_header_footer = wx.NewIdRef()
         self._id_save_plain_text = wx.NewIdRef()
         self._id_clear_recent = wx.NewIdRef()
         # #262: Pandoc Import / Export menu ids (one per Tier-1 format).
@@ -145,6 +148,23 @@ class MenuBuilderMixin:
         self._recent_menu = wx.Menu()
         file_menu.AppendSubMenu(self._recent_menu, _("Open &Recent"))
         self._refresh_recent_menu()
+        self._id_open_from_favorite_folder = wx.NewIdRef()
+        self._id_add_favorite_folder = wx.NewIdRef()
+        self._id_remove_favorite_folder = wx.NewIdRef()
+        favorites_menu = wx.Menu()
+        favorites_menu.Append(
+            self._id_open_from_favorite_folder,
+            self._menu_label(_("&Open From Favorite Folder..."), "file.open_from_favorite_folder"),
+        )
+        favorites_menu.Append(
+            self._id_add_favorite_folder,
+            self._menu_label(_("&Add Current Folder to Favorites"), "file.add_favorite_folder"),
+        )
+        favorites_menu.Append(
+            self._id_remove_favorite_folder,
+            self._menu_label(_("&Remove Favorite Folder..."), "file.remove_favorite_folder"),
+        )
+        file_menu.AppendSubMenu(favorites_menu, _("Favorite &Folders"))
         file_menu.Append(self._id_open_url, _("Open from &URL..."))
         ssh_menu = wx.Menu()
         ssh_menu.Append(self._id_ssh_quick_connect, _("&Quick Connect..."))
@@ -175,6 +195,10 @@ class MenuBuilderMixin:
         remote_menu.Append(
             self._id_github_save_back,
             self._menu_label(_("&Save to GitHub..."), "file.github_save_back"),
+        )
+        remote_menu.Append(
+            self._id_github_items,
+            self._menu_label(_("GitHub &Items..."), "file.open_github_items"),
         )
         remote_menu.AppendSeparator()
         remote_menu.Append(
@@ -425,6 +449,14 @@ class MenuBuilderMixin:
         # --- Print ---
         file_menu.Append(self._id_page_setup, _("Pa&ge Setup..."))
         file_menu.Append(self._id_print, self._menu_label(_("&Print..."), "file.print"))
+        file_menu.Append(
+            self._id_print_studio,
+            self._menu_label(_("Print &Studio..."), "file.print_studio"),
+        )
+        file_menu.Append(
+            self._id_header_footer,
+            self._menu_label(_("&Header and Footer..."), "file.header_footer"),
+        )
         file_menu.AppendSeparator()
         # --- Close ---
         file_menu.Append(
@@ -774,6 +806,10 @@ class MenuBuilderMixin:
         self._id_next_block = wx.NewIdRef()
         self._id_previous_block = wx.NewIdRef()
         self._id_outline_navigator = wx.NewIdRef()
+        self._id_toggle_fold = wx.NewIdRef()
+        self._id_next_fold = wx.NewIdRef()
+        self._id_previous_fold = wx.NewIdRef()
+        self._id_list_folds = wx.NewIdRef()
         self._id_heading_organizer = wx.NewIdRef()
         self._id_match_bracket = wx.NewIdRef()
         self._id_next_token = wx.NewIdRef()
@@ -921,6 +957,23 @@ class MenuBuilderMixin:
         )
         navigate_menu.AppendSeparator()
         navigate_menu.Append(
+            self._id_toggle_fold,
+            self._menu_label(_("Toggle &Fold"), "edit.toggle_fold"),
+        )
+        navigate_menu.Append(
+            self._id_next_fold,
+            self._menu_label(_("Ne&xt Fold"), "navigate.next_fold"),
+        )
+        navigate_menu.Append(
+            self._id_previous_fold,
+            self._menu_label(_("Pre&vious Fold"), "navigate.previous_fold"),
+        )
+        navigate_menu.Append(
+            self._id_list_folds,
+            self._menu_label(_("List &Folds..."), "tools.list_folds"),
+        )
+        navigate_menu.AppendSeparator()
+        navigate_menu.Append(
             self._id_follow_link,
             self._menu_label(_("&Follow Link"), "edit.follow_link"),
         )
@@ -1011,7 +1064,20 @@ class MenuBuilderMixin:
         self._id_insert_code_block = wx.NewIdRef()
         self._id_insert_footnote = wx.NewIdRef()
         self._id_insert_table = wx.NewIdRef()
+        self._id_insert_emoji = wx.NewIdRef()
         format_menu = wx.Menu()
+
+        # --- Document Format (One Editor, Every Format) ---
+        # The switcher leads the menu: it decides what every command below
+        # *means* (rich mode applies real formatting; markup modes insert
+        # tags). Also reachable from the palette, the Ctrl+Shift+Grave, K
+        # chord, and the status bar Format cell — one handler behind all four.
+        self._id_switch_document_format = wx.NewIdRef()
+        format_menu.Append(
+            self._id_switch_document_format,
+            self._menu_label(_("&Document Format..."), "format.switch_document_format"),
+        )
+        format_menu.AppendSeparator()
 
         # --- Character formatting (most common) ---
         format_menu.Append(self._id_format_bold, self._menu_label(_("&Bold"), "format.bold"))
@@ -1367,6 +1433,10 @@ class MenuBuilderMixin:
         # ``wx.Menu`` with a single visible item is still a navigable
         # submenu, not a bug.
         insert_menu.AppendSubMenu(date_time_menu, _("Date and &Time"))
+        insert_menu.Append(
+            self._id_insert_emoji,
+            self._menu_label(_("Insert &Emoji..."), "edit.insert_emoji"),
+        )
         self._id_next_document = wx.NewIdRef()
         self._id_previous_document = wx.NewIdRef()
         # Accelerator-only ids for Go to Document 1..10 (Alt+1..Alt+9, Alt+0).
@@ -1402,9 +1472,12 @@ class MenuBuilderMixin:
         self._id_sticky_notes = wx.NewIdRef()
         self._id_new_sticky_note = wx.NewIdRef()
         self._id_spell_check = wx.NewIdRef()
+        self._id_spell_check_ranked = wx.NewIdRef()
+        self._id_spell_check_word = wx.NewIdRef()
         self._id_previous_misspelling = wx.NewIdRef()
         self._id_next_misspelling = wx.NewIdRef()
         self._id_misspelling_list = wx.NewIdRef()
+        self._id_misspelling_list_ranked = wx.NewIdRef()
         self._id_dictionary_status = wx.NewIdRef()
         self._id_ocr_image = wx.NewIdRef()
         self._id_table_studio = wx.NewIdRef()
@@ -1576,6 +1649,7 @@ class MenuBuilderMixin:
         self._id_dev_copy_diagnostic = wx.NewIdRef()
         self._id_dev_restart_ts_worker = wx.NewIdRef()
         self._id_open_story_studio = wx.NewIdRef()
+        self._id_work_personas = wx.NewIdRef()
         self._id_vault_open = wx.NewIdRef()
         self._id_vault_follow_link = wx.NewIdRef()
         self._id_vault_backlinks = wx.NewIdRef()
@@ -1597,6 +1671,34 @@ class MenuBuilderMixin:
         self._id_vault_export_site = wx.NewIdRef()
         self._id_vault_sync = wx.NewIdRef()
         self._id_vault_settings = wx.NewIdRef()
+        self._id_git_sync_folder = wx.NewIdRef()
+        self._id_github_create_repo = wx.NewIdRef()
+        self._id_github_fork_repo = wx.NewIdRef()
+        self._id_github_rename_repo = wx.NewIdRef()
+        self._id_github_change_visibility = wx.NewIdRef()
+        self._id_github_change_default_branch = wx.NewIdRef()
+        self._id_github_branch_protection = wx.NewIdRef()
+        self._id_github_delete_branch = wx.NewIdRef()
+        self._id_github_commit_multiple = wx.NewIdRef()
+        self._id_github_browse_org = wx.NewIdRef()
+        self._id_github_create_release = wx.NewIdRef()
+        self._id_github_dispatch_workflow = wx.NewIdRef()
+        self._id_github_notifications = wx.NewIdRef()
+        self._id_github_security_alerts = wx.NewIdRef()
+        self._id_github_list_codespaces = wx.NewIdRef()
+        self._id_github_create_codespace = wx.NewIdRef()
+        self._id_github_copilot_suggest = wx.NewIdRef()
+        self._id_github_copilot_explain = wx.NewIdRef()
+        self._id_localgit_uncommitted = wx.NewIdRef()
+        self._id_localgit_switch_branch = wx.NewIdRef()
+        self._id_localgit_stash_changes = wx.NewIdRef()
+        self._id_localgit_manage_stashes = wx.NewIdRef()
+        self._id_localgit_blame = wx.NewIdRef()
+        self._id_localgit_bisect_start = wx.NewIdRef()
+        self._id_localgit_bisect_reset = wx.NewIdRef()
+        self._id_localgit_resolve_conflicts = wx.NewIdRef()
+        self._id_localgit_interactive_rebase = wx.NewIdRef()
+        self._id_localgit_rebase_abort = wx.NewIdRef()
         tools_menu = wx.Menu()
         tools_menu.Append(
             self._id_palette,
@@ -1605,6 +1707,10 @@ class MenuBuilderMixin:
         tools_menu.Append(
             self._id_open_story_studio,
             self._menu_label(_("Story &Studio..."), "story.open_studio"),
+        )
+        tools_menu.Append(
+            self._id_work_personas,
+            self._menu_label(_("Work &Personas..."), "tools.work_personas"),
         )
         vault_menu = wx.Menu()
         vault_menu.Append(self._id_vault_open, self._menu_label(_("&Open Vault..."), "vault.open"))
@@ -1677,6 +1783,132 @@ class MenuBuilderMixin:
             self._id_vault_settings, self._menu_label(_("Vault Se&ttings..."), "vault.settings")
         )
         tools_menu.AppendSubMenu(vault_menu, _("&Vault"))
+        tools_menu.Append(
+            self._id_git_sync_folder,
+            self._menu_label(_("S&ync Folder with GitHub..."), "sync.sync_folder"),
+        )
+        github_admin_menu = wx.Menu()
+        github_admin_menu.Append(
+            self._id_github_create_repo,
+            self._menu_label(_("&Create Repository..."), "github.create_repository"),
+        )
+        github_admin_menu.Append(
+            self._id_github_fork_repo,
+            self._menu_label(_("&Fork Repository..."), "github.fork_repository"),
+        )
+        github_admin_menu.Append(
+            self._id_github_rename_repo,
+            self._menu_label(_("&Rename Repository..."), "github.rename_repository"),
+        )
+        github_admin_menu.Append(
+            self._id_github_change_visibility,
+            self._menu_label(_("Change &Visibility..."), "github.change_repository_visibility"),
+        )
+        github_admin_menu.Append(
+            self._id_github_change_default_branch,
+            self._menu_label(_("Change &Default Branch..."), "github.change_default_branch"),
+        )
+        github_admin_menu.Append(
+            self._id_github_branch_protection,
+            self._menu_label(
+                _("Configure Branch &Protection..."), "github.configure_branch_protection"
+            ),
+        )
+        github_admin_menu.Append(
+            self._id_github_delete_branch,
+            self._menu_label(_("&Delete Branch..."), "github.delete_branch"),
+        )
+        github_admin_menu.Append(
+            self._id_github_commit_multiple,
+            self._menu_label(_("Commit &Multiple Files..."), "github.commit_multiple_files"),
+        )
+        github_admin_menu.AppendSeparator()
+        github_admin_menu.Append(
+            self._id_github_browse_org,
+            self._menu_label(
+                _("Browse &Organization Repositories..."), "github.browse_organization"
+            ),
+        )
+        github_admin_menu.Append(
+            self._id_github_create_release,
+            self._menu_label(_("Create &Release..."), "github.create_release"),
+        )
+        github_admin_menu.Append(
+            self._id_github_dispatch_workflow,
+            self._menu_label(_("Dispatch &Workflow..."), "github.dispatch_workflow"),
+        )
+        github_admin_menu.Append(
+            self._id_github_notifications,
+            self._menu_label(_("&Notifications..."), "github.view_notifications"),
+        )
+        github_admin_menu.Append(
+            self._id_github_security_alerts,
+            self._menu_label(_("&Security Alerts..."), "github.view_security_alerts"),
+        )
+        github_admin_menu.AppendSeparator()
+        github_admin_menu.Append(
+            self._id_github_list_codespaces,
+            self._menu_label(_("Code&spaces..."), "github.list_codespaces"),
+        )
+        github_admin_menu.Append(
+            self._id_github_create_codespace,
+            self._menu_label(_("Create Codespace..."), "github.create_codespace"),
+        )
+        github_admin_menu.Append(
+            self._id_github_copilot_suggest,
+            self._menu_label(_("Ask Copilot for a Command..."), "github.copilot_suggest"),
+        )
+        github_admin_menu.Append(
+            self._id_github_copilot_explain,
+            self._menu_label(_("Explain a Command..."), "github.copilot_explain"),
+        )
+        tools_menu.AppendSubMenu(github_admin_menu, _("&GitHub"))
+        local_git_menu = wx.Menu()
+        local_git_menu.Append(
+            self._id_localgit_uncommitted,
+            self._menu_label(_("&Uncommitted Changes..."), "localgit.uncommitted_changes"),
+        )
+        local_git_menu.Append(
+            self._id_localgit_switch_branch,
+            self._menu_label(_("Switch &Branch..."), "localgit.switch_branch"),
+        )
+        local_git_menu.AppendSeparator()
+        local_git_menu.Append(
+            self._id_localgit_stash_changes,
+            self._menu_label(_("&Stash Changes..."), "localgit.stash_changes"),
+        )
+        local_git_menu.Append(
+            self._id_localgit_manage_stashes,
+            self._menu_label(_("Manage St&ashes..."), "localgit.manage_stashes"),
+        )
+        local_git_menu.AppendSeparator()
+        local_git_menu.Append(
+            self._id_localgit_blame,
+            self._menu_label(_("&Who Wrote This Line..."), "localgit.blame_at_cursor"),
+        )
+        local_git_menu.AppendSeparator()
+        local_git_menu.Append(
+            self._id_localgit_bisect_start,
+            self._menu_label(_("Start &Bisect..."), "localgit.bisect_start"),
+        )
+        local_git_menu.Append(
+            self._id_localgit_bisect_reset,
+            self._menu_label(_("&End Bisect"), "localgit.bisect_reset"),
+        )
+        local_git_menu.AppendSeparator()
+        local_git_menu.Append(
+            self._id_localgit_resolve_conflicts,
+            self._menu_label(_("&Resolve Conflicts..."), "localgit.resolve_conflicts"),
+        )
+        local_git_menu.Append(
+            self._id_localgit_interactive_rebase,
+            self._menu_label(_("&Interactive Rebase..."), "localgit.interactive_rebase"),
+        )
+        local_git_menu.Append(
+            self._id_localgit_rebase_abort,
+            self._menu_label(_("A&bort Rebase"), "localgit.rebase_abort"),
+        )
+        tools_menu.AppendSubMenu(local_git_menu, _("&Local Git"))
         tools_menu.AppendSeparator()
 
         # Writing & Language -----------------------------------------------
@@ -1690,6 +1922,16 @@ class MenuBuilderMixin:
             self._menu_label(_("&Spell Check..."), "tools.spell_check_dialog"),
         )
         writing_menu.Append(
+            self._id_spell_check_ranked,
+            self._menu_label(
+                _("Spell Check (&Ranked by Frequency)..."), "tools.spell_check_ranked"
+            ),
+        )
+        writing_menu.Append(
+            self._id_spell_check_word,
+            self._menu_label(_("Spell Check &Word"), "tools.spell_check_word_at_cursor"),
+        )
+        writing_menu.Append(
             self._id_previous_misspelling,
             self._menu_label(_("Previous Mi&sspelling"), "tools.previous_misspelling"),
         )
@@ -1700,6 +1942,12 @@ class MenuBuilderMixin:
         writing_menu.Append(
             self._id_misspelling_list,
             self._menu_label(_("&Misspelling List..."), "tools.misspelling_list"),
+        )
+        writing_menu.Append(
+            self._id_misspelling_list_ranked,
+            self._menu_label(
+                _("Misspelling List (&Ranked by Frequency)..."), "tools.misspelling_list_ranked"
+            ),
         )
         self._id_spell_language = wx.NewIdRef()
         writing_menu.Append(
@@ -2023,6 +2271,139 @@ class MenuBuilderMixin:
             self._menu_label(_("Manage &Pronunciations..."), "tools.speech_pronunciations"),
         )
         tools_menu.AppendSubMenu(speech_menu, _("&Speech"))
+
+        # Media (Internet Radio, Podcasts) -------------------------------------
+        radio_enabled = self._feature_enabled("core.radio")
+        podcasts_enabled = self._feature_enabled("core.podcasts")
+        if radio_enabled or podcasts_enabled:
+            media_menu = wx.Menu()
+        if radio_enabled:
+            id_radio_browse = wx.NewIdRef()
+            id_radio_add_custom = wx.NewIdRef()
+            id_radio_find_streams = wx.NewIdRef()
+            id_radio_play_pause = wx.NewIdRef()
+            id_radio_stop = wx.NewIdRef()
+            id_radio_mute = wx.NewIdRef()
+            id_radio_volume_up = wx.NewIdRef()
+            id_radio_volume_down = wx.NewIdRef()
+            media_menu.Append(
+                id_radio_browse, self._menu_label(_("&Browse Stations..."), "radio.browse")
+            )
+            media_menu.Append(
+                id_radio_add_custom,
+                self._menu_label(_("Add &Custom Station..."), "radio.add_custom_station"),
+            )
+            media_menu.Append(
+                id_radio_find_streams,
+                self._menu_label(_("&Find Streams from a Website..."), "radio.find_streams"),
+            )
+            media_menu.AppendSeparator()
+            media_menu.Append(
+                id_radio_play_pause, self._menu_label(_("&Play/Pause"), "radio.play_pause")
+            )
+            media_menu.Append(id_radio_stop, self._menu_label(_("&Stop"), "radio.stop"))
+            media_menu.Append(
+                id_radio_mute, self._menu_label(_("&Mute/Unmute"), "radio.mute_toggle")
+            )
+            media_menu.AppendSeparator()
+            media_menu.Append(
+                id_radio_volume_up, self._menu_label(_("Volume &Up"), "radio.volume_up")
+            )
+            media_menu.Append(
+                id_radio_volume_down, self._menu_label(_("Volume &Down"), "radio.volume_down")
+            )
+            self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_internet_radio(), id=id_radio_browse)
+            self.frame.Bind(
+                wx.EVT_MENU,
+                lambda _e: self._radio_open_add_custom(None),
+                id=id_radio_add_custom,
+            )
+            self.frame.Bind(
+                wx.EVT_MENU, lambda _e: self._radio_open_link_finder(), id=id_radio_find_streams
+            )
+            self.frame.Bind(
+                wx.EVT_MENU, lambda _e: self.radio_toggle_play_pause(), id=id_radio_play_pause
+            )
+            self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_stop(), id=id_radio_stop)
+            self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_mute_toggle(), id=id_radio_mute)
+            self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_volume_up(), id=id_radio_volume_up)
+            self.frame.Bind(
+                wx.EVT_MENU, lambda _e: self.radio_volume_down(), id=id_radio_volume_down
+            )
+        if podcasts_enabled:
+            if radio_enabled:
+                media_menu.AppendSeparator()
+            id_podcasts_open = wx.NewIdRef()
+            id_podcasts_add = wx.NewIdRef()
+            id_podcasts_import_opml = wx.NewIdRef()
+            id_podcasts_export_opml = wx.NewIdRef()
+            id_podcasts_play_pause = wx.NewIdRef()
+            id_podcasts_stop = wx.NewIdRef()
+            id_podcasts_pause_downloads = wx.NewIdRef()
+            id_podcasts_resume_downloads = wx.NewIdRef()
+            media_menu.Append(
+                id_podcasts_open, self._menu_label(_("&Podcasts..."), "podcasts.open_manager")
+            )
+            media_menu.Append(
+                id_podcasts_add, self._menu_label(_("&Add Podcast..."), "podcasts.add")
+            )
+            media_menu.Append(
+                id_podcasts_import_opml,
+                self._menu_label(_("&Import OPML..."), "podcasts.import_opml"),
+            )
+            media_menu.Append(
+                id_podcasts_export_opml,
+                self._menu_label(_("&Export OPML..."), "podcasts.export_opml"),
+            )
+            media_menu.AppendSeparator()
+            media_menu.Append(
+                id_podcasts_play_pause,
+                self._menu_label(_("Podcast Play/Pa&use"), "podcasts.play_pause"),
+            )
+            media_menu.Append(
+                id_podcasts_stop, self._menu_label(_("Podcast &Stop"), "podcasts.stop")
+            )
+            media_menu.AppendSeparator()
+            media_menu.Append(
+                id_podcasts_pause_downloads,
+                self._menu_label(_("Pause All &Downloads"), "podcasts.pause_all_downloads"),
+            )
+            media_menu.Append(
+                id_podcasts_resume_downloads,
+                self._menu_label(_("Resume All D&ownloads"), "podcasts.resume_all_downloads"),
+            )
+            self.frame.Bind(
+                wx.EVT_MENU, lambda _e: self.open_podcast_manager(), id=id_podcasts_open
+            )
+            self.frame.Bind(
+                wx.EVT_MENU, lambda _e: self._podcast_open_add_dialog(), id=id_podcasts_add
+            )
+            self.frame.Bind(
+                wx.EVT_MENU,
+                lambda _e: self._podcast_open_import_opml(),
+                id=id_podcasts_import_opml,
+            )
+            self.frame.Bind(
+                wx.EVT_MENU, lambda _e: self._podcast_export_opml(), id=id_podcasts_export_opml
+            )
+            self.frame.Bind(
+                wx.EVT_MENU,
+                lambda _e: self.podcast_toggle_play_pause(),
+                id=id_podcasts_play_pause,
+            )
+            self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_stop(), id=id_podcasts_stop)
+            self.frame.Bind(
+                wx.EVT_MENU,
+                lambda _e: self.podcast_pause_all_downloads(),
+                id=id_podcasts_pause_downloads,
+            )
+            self.frame.Bind(
+                wx.EVT_MENU,
+                lambda _e: self.podcast_resume_all_downloads(),
+                id=id_podcasts_resume_downloads,
+            )
+        if radio_enabled or podcasts_enabled:
+            tools_menu.AppendSubMenu(media_menu, _("&Media"))
 
         # Comparison (was Compare Documents) ----------------------------------
         compare_menu = wx.Menu()
@@ -2631,7 +3012,11 @@ class MenuBuilderMixin:
         help_menu.Append(self._id_whats_new, _("&What's New..."))
         if self._feature_enabled("core.glow"):
             help_menu.Append(self._id_check_glow_updates, _("Check for &GLOW Updates..."))
-        help_menu.Append(self._id_about_quill, _("&About Quill"))
+        # On macOS the Application menu already shows "About Quill" via the
+        # wx.ID_ABOUT binding below, so appending it to Help too produced a
+        # duplicate entry. Windows has no Application menu, so it stays here.
+        if sys.platform != "darwin":
+            help_menu.Append(self._id_about_quill, _("&About Quill"))
 
         # MENU-REORDER (menus.md Phase 1): every top-level menu is attached to the
         # bar here, in one place, in the conventional Windows order. Menu *content*
@@ -2648,6 +3033,21 @@ class MenuBuilderMixin:
         menu_bar.Append(ai_menu, _("&AI"))
         menu_bar.Append(window_menu, _("&Window"))
         menu_bar.Append(help_menu, _("&Help"))
+
+        # #76: on macOS, tell wx this is the system Window menu. AppKit then
+        # moves it to its conventional slot (just left of Help) and merges in
+        # the standard items a Mac user expects -- Minimize (Cmd+M), Zoom,
+        # Bring All to Front, and the live window list -- alongside Quill's own
+        # Next/Previous/Close-Other/Send-to-Tray entries. Without SetWindowMenu
+        # the Window menu is an ordinary menu missing all the standard items.
+        # Guarded like the SetHelpMenu hint below so a wx build without the API
+        # degrades gracefully.
+        if sys.platform == "darwin":
+            try:
+                if hasattr(menu_bar, "SetWindowMenu"):
+                    menu_bar.SetWindowMenu(window_menu)
+            except Exception:  # noqa: BLE001
+                pass
 
         # #613: on macOS, tell wx that the "Help" menu is the system
         # Help menu so the OS moves it to the rightmost position (where
@@ -2680,6 +3080,21 @@ class MenuBuilderMixin:
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.new_file(), id=self._id_new)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_file(), id=self._id_open)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_url(), id=self._id_open_url)
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.open_from_favorite_folder(),
+            id=self._id_open_from_favorite_folder,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.add_favorite_folder(),
+            id=self._id_add_favorite_folder,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.remove_favorite_folder(),
+            id=self._id_remove_favorite_folder,
+        )
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.open_from_remote(),
@@ -2736,6 +3151,10 @@ class MenuBuilderMixin:
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_session(), id=self._id_open_session)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.page_setup(), id=self._id_page_setup)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.print_document(), id=self._id_print)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.print_studio(), id=self._id_print_studio)
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.edit_header_footer(), id=self._id_header_footer
+        )
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.save_as_plain_text(),
@@ -2880,7 +3299,150 @@ class MenuBuilderMixin:
             wx.EVT_MENU, lambda _e: self.configure_vault_settings(), id=self._id_vault_settings
         )
         self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.sync_folder_with_github(),
+            id=self._id_git_sync_folder,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.github_create_repository(),
+            id=self._id_github_create_repo,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.github_fork_repository(),
+            id=self._id_github_fork_repo,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.github_rename_repository(),
+            id=self._id_github_rename_repo,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.github_change_repository_visibility(),
+            id=self._id_github_change_visibility,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.github_change_default_branch(),
+            id=self._id_github_change_default_branch,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.github_configure_branch_protection(),
+            id=self._id_github_branch_protection,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.github_delete_branch(),
+            id=self._id_github_delete_branch,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.github_commit_multiple_files(),
+            id=self._id_github_commit_multiple,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.github_browse_organization(),
+            id=self._id_github_browse_org,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.github_create_release(),
+            id=self._id_github_create_release,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.github_dispatch_workflow(),
+            id=self._id_github_dispatch_workflow,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.github_view_notifications(),
+            id=self._id_github_notifications,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.github_view_security_alerts(),
+            id=self._id_github_security_alerts,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.github_list_codespaces(),
+            id=self._id_github_list_codespaces,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.github_create_codespace(),
+            id=self._id_github_create_codespace,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.github_copilot_suggest(),
+            id=self._id_github_copilot_suggest,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.github_copilot_explain(),
+            id=self._id_github_copilot_explain,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.local_git_uncommitted_changes(),
+            id=self._id_localgit_uncommitted,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.local_git_switch_branch(),
+            id=self._id_localgit_switch_branch,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.local_git_stash_changes(),
+            id=self._id_localgit_stash_changes,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.local_git_manage_stashes(),
+            id=self._id_localgit_manage_stashes,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.local_git_blame_at_cursor(),
+            id=self._id_localgit_blame,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.local_git_bisect_start(),
+            id=self._id_localgit_bisect_start,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.local_git_bisect_reset(),
+            id=self._id_localgit_bisect_reset,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.local_git_resolve_conflicts(),
+            id=self._id_localgit_resolve_conflicts,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.local_git_interactive_rebase(),
+            id=self._id_localgit_interactive_rebase,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.local_git_rebase_abort(),
+            id=self._id_localgit_rebase_abort,
+        )
+        self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.open_story_studio(), id=self._id_open_story_studio
+        )
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.open_work_personas(), id=self._id_work_personas
         )
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.open_general_preferences(), id=self._id_preferences
@@ -3575,6 +4137,10 @@ class MenuBuilderMixin:
             lambda _e: self.open_outline_navigator(),
             id=self._id_outline_navigator,
         )
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.toggle_fold(), id=self._id_toggle_fold)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.next_fold(), id=self._id_next_fold)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.previous_fold(), id=self._id_previous_fold)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.list_folds(), id=self._id_list_folds)
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.open_heading_organizer(),
@@ -3724,6 +4290,11 @@ class MenuBuilderMixin:
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.join_lines(), id=self._id_join_lines)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.quote_lines(), id=self._id_quote_lines)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.unquote_lines(), id=self._id_unquote_lines)
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.switch_document_format(),
+            id=self._id_switch_document_format,
+        )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.format_bold(), id=self._id_format_bold)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.format_italic(), id=self._id_format_italic)
         self.frame.Bind(
@@ -3803,6 +4374,11 @@ class MenuBuilderMixin:
             lambda _e: self.format_insert_table(),
             id=self._id_insert_table,
         )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.insert_emoji(),
+            id=self._id_insert_emoji,
+        )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.insert_html_tag(), id=self._id_insert_html_tag)
         self.frame.Bind(
             wx.EVT_MENU,
@@ -3867,6 +4443,16 @@ class MenuBuilderMixin:
         )
         self.frame.Bind(
             wx.EVT_MENU,
+            lambda _e: self.spell_check_ranked(),
+            id=self._id_spell_check_ranked,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.spell_check_word_at_cursor(),
+            id=self._id_spell_check_word,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
             lambda _e: self.previous_misspelling(),
             id=self._id_previous_misspelling,
         )
@@ -3879,6 +4465,11 @@ class MenuBuilderMixin:
             wx.EVT_MENU,
             lambda _e: self.open_misspelling_list(),
             id=self._id_misspelling_list,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.open_misspelling_list_ranked(),
+            id=self._id_misspelling_list_ranked,
         )
         self.frame.Bind(
             wx.EVT_MENU,

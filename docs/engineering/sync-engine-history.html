@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>sync-engine-history</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1
+id="sync-engine-history-why-quill-sync-reuses-infrastructure-instead-of-building-one">Sync
+Engine History: why QUILL Sync reuses infrastructure instead of building
+one</h1>
+<p>Canonical engineering record, written 2026-07-12 as part of shipping
+"QUILL Sync" for 0.9.0 Beta 3. It preserves the reasoning behind a
+deliberate, considered decision: build the large custom sync engine
+described in the retired <code>docs/planning/quill-sync-plan.md</code>
+(recoverable from git history), or reuse infrastructure that already
+exists and is already trusted. QUILL chose reuse.</p>
+<h2 id="the-outcome-what-ships">The outcome (what ships)</h2>
+<p><strong>"QUILL Sync" is two small, honest features, not one large
+service:</strong></p>
+<ol type="1">
+<li><strong>Sync via a folder (local or cloud).</strong>
+<code>quill/core/data_location.py</code> already let a user relocate
+QUILL's entire settings/snippets/dictionaries/ keymap directory to any
+folder they choose — this shipped in an earlier release (#615) for a
+different reason (letting people keep QUILL's data off the system drive)
+and turns out to already be exactly the mechanism a lightweight sync
+story needs: point that folder at one already mirrored by OneDrive,
+Dropbox, Google Drive, iCloud, a NAS share, or a USB drive, and QUILL's
+data travels with it. Nothing new was built here beyond documentation
+and framing (the wizard's "Data Location" page, the user guide, and the
+PRD now describe this explicitly as a sync strategy, with the honest
+caveat that QUILL has no cross-device conflict resolution — do not run
+QUILL from two devices against the same folder at once).</li>
+<li><strong>Sync Folder with GitHub, generalized.</strong> Accessible
+Vault's "Sync Vault"
+(<code>quill/core/vault/sync.py::run_vault_sync</code>) already
+implements commit/pull/push over a user's own git remote, with conflicts
+surfaced as a spoken, itemized list rather than a silent auto-merge —
+and it turns out to have zero Vault-specific logic in it at all.
+<code>quill/core/git_sync.py</code> gives that exact engine a
+general-purpose, non-Vault-branded home (plus two small pieces Vault
+didn't need: checking whether a folder is even a git repository with a
+remote yet, and setting one up when it isn't), and
+<code>quill/ui/main_frame_git_sync.py</code> wires it to <strong>Tools
+&gt; Sync Folder with GitHub...</strong> — any folder, not just a
+Vault.</li>
+</ol>
+<p>Both rely entirely on infrastructure QUILL already shipped and
+trusted: <code>data_location.py</code>'s relocation mechanism, and the
+exact git commit/pull/push implementation Vault Sync already used in
+production. There is exactly one git-sync engine in the tree, not
+two.</p>
+<h2 id="the-road-not-taken-and-why-it-stays-not-taken">The road not
+taken, and why it stays not taken</h2>
+<p><code>docs/planning/quill-sync-plan.md</code> (2026-07-04, retired
+2026-07-12) designed a full QUILL-native sync service: a
+<code>quill/core/sync/</code> engine with its own SQLite state store and
+content-addressed version history, a <code>SyncAdapter</code> interface,
+and per-provider OAuth adapters for OneDrive (Microsoft Graph), Dropbox,
+and Google Drive (plus a GitHub "advanced mode" adapter), a Sync Center
+dialog, a first-run wizard, and a six-phase, multi-release rollout —
+each provider needing its own app registration, consent-screen
+verification, and long external lead times (Google's OAuth verification
+review alone was flagged as "the single longest external lead time in
+the plan").</p>
+<p>That design was not wrong on its own terms — it is a careful,
+thorough, accessibility-first spec for what a <em>first-class,
+QUILL-branded</em> sync product would need. It was explicitly decided
+against for 0.9.0 Beta 3, on a direct instruction: <strong>"we will not
+spin up our own sync process."</strong> The reasoning that decision made
+explicit:</p>
+<ul>
+<li><strong>A folder is already a solved sync problem.</strong>
+OneDrive, Dropbox, Google Drive, and iCloud already replicate a folder's
+contents across devices, reliably, with their own conflict handling, at
+zero cost to QUILL in code, maintenance, or OAuth app registrations.
+QUILL relocating its data directory onto such a folder gets the same
+outcome as a purpose-built "Settings sync" adapter, for work already
+done.</li>
+<li><strong>Git is already a solved sync problem for structured,
+versioned content.</strong> It has its own conflict detection, its own
+credential model (SSH keys, or the system's git credential manager), and
+its own remote-hosting options (GitHub being the obvious one, but not
+the only one). Building a parallel version-vector/conflict-resolution
+engine inside QUILL to do a worse version of what git already does well
+was the single largest piece of scope in the original plan (Layer 1: the
+Local Sync Engine, SQLite state, content-addressed blob store, version
+vectors, a journal) — cut entirely by reusing git instead.</li>
+<li><strong>No new OAuth surface, no new credential storage, no new
+external app registrations, no new long external lead times</strong>
+(Google's verification review, Dropbox's production-approval process) —
+all avoided, because QUILL never becomes a client of any cloud
+provider's API.</li>
+</ul>
+<p>The multi-provider OAuth adapter layer, the SQLite-backed
+version-vector engine, the Sync Center dialog, and the phased
+six-release rollout remain undone <strong>by decision, not
+oversight.</strong> If a first-class QUILL-branded sync product with
+per-provider App Folder scopes, encrypted recovery, and a phone
+companion is ever pursued, the analysis in
+<code>quill-sync-plan.md</code>'s prior git history is the place to
+resume from — but nothing in the shipped 0.9.0 Beta 3 "QUILL Sync"
+depends on it, and Beta 3 does not build toward it.</p>
+</body>
+</html>

@@ -65,5 +65,5 @@ part aloud** is the one part that upgrades: install the free MathCAT engine
 same natural-language math speech engine NVDA itself ships; without it, or
 if MathCAT fails on a given formula, the same command keeps working with
 navigator's simpler template-based reading — nothing breaks either way. See
-`quill.core.math.speech` and `quill.core.math.mathcat_engine`, and
-`docs/planning/math.md` for the full architecture writeup.
+`quill.core.math.speech` and `quill.core.math.mathcat_engine`, and the QUILL
+PRD §5.94 for the full architecture writeup.

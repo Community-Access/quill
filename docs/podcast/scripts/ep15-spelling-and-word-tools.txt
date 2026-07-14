@@ -1,0 +1,118 @@
+[LIAM]
+The QUILL Cast, episode fifteen. I'm Liam. Today we are pulling on the thread that runs through every other word tool you have ever used: spelling, the dictionary, and the thesaurus, and the navigation and correction workflow that turns proofreading from a reading job into a focused, keyboard-driven review job.
+
+[JESSICA]
+I'm Jessica. Quick recap of episode fourteen, because we ended on a deliberate pivot. Episode fourteen was compare and differences. Two systems, one new and one older, both shipping, both useful, both reachable from the keyboard. We walked the keyboard-first Compare with File dialog, then the multi-document Tools Comparison menu, and we were honest about the fact that there are two compare systems in the codebase because they cover different shapes of problem. The new one is structured and screen-reader-native. The session-based one can compare more than two documents at a time and produces a summary. Both are real. That was the lesson: the right tool for the shape of the question.
+
+[LIAM]
+Today is a different shape. Spelling is per-word, not per-document. It is the smallest unit of correction, repeated, and it has to be the friendliest thing in your editor, because you will do it a thousand times. The good news is that QUILL takes spelling seriously. The spell check engine has three tiers, the dictionary system has three scopes, the thesaurus ships a real database, and the navigation commands give you a fair replacement for the red squiggle that sighted readers get in their peripheral vision. The bad news is that there is one small drift in the earlier podcasts that we will correct, because verification is part of the house style of this course.
+
+[JESSICA]
+Before we open anything, a quick map of where we are in the series. The series is fifty-four episodes total. We just landed on fifteen. The next three episodes are sixteen, languages and thesaurus in depth, seventeen, never lose work, and eighteen, markdown and structure. By the time you finish episode eighteen you will have a complete everyday-editor skill set. The AI tier of spell and grammar lands later, in the AI arc, and we will name the doors to that arc at the end of this episode. For now, everything is local, offline, and free.
+
+[LIAM]
+One honest correction before we get into keystrokes. The earlier outline for this episode said the misspelling navigation was bound to F7, with Ctrl+F7 as the Spell Check dialog. It is the other way around in the current default keymap. F7 opens the Spell Check dialog. Ctrl+F7 jumps to the next misspelling, and Ctrl+Shift+F7 jumps to the previous. We are correcting it now so the rest of the episode lands cleanly. The earlier outline also said add to dictionary lives in the dialog only. It does live in the dialog, but it also lives in the right-click context menu, so we will show you both.
+
+[PAUSE]
+
+[JESSICA]
+Do this now, before we go any further. Open QUILL with a document on screen, ideally a real one you have been working on. Press Ctrl+F7. Listen. If you hear a status message like Next misspelling, and the cursor jumps to a flagged word, congratulations, your dictionary is doing its job. If you hear No misspellings ahead, the document is clean in that direction, and the engine will tell you how many are behind. Press it a second time, then press Ctrl+Shift+F7 to walk back. Three keystrokes, you now have a working mental model for the next twenty minutes. Pause the audio. Walk the document. We will be here when you come back.
+
+[LIAM]
+Welcome back. If you only remember one thing from the navigation half of this episode, it is why this control exists at all. Sighted readers get a red squiggle under misspelled words. That squiggle is peripheral. It catches the eye while you are doing something else, and your brain files it under things to deal with later. Speech users have no periphery. We have to be told. Ctrl+F7 is the fair replacement. The errors become a list you walk, in order, in one direction, and you can stop anywhere. That is the contract. We will come back to the contract in the homework.
+
+[JESSICA]
+The underlying navigation is in quill.core.spellcheck. The two functions that do the work are next_misspelling and previous_misspelling. Both take the document text, the current cursor position, and the active dictionary. The active dictionary is a set of words the user has accepted as correct, plus whatever the spell-check backend itself knows. Next misspelling starts a regex scan at the cursor position, finds the next whole word that the dictionary rejects, and returns it as a Misspelling dataclass with the word, the start, and the end. Previous misspelling walks backward from the cursor and returns the most recent misspelling strictly behind it. Both are O-distance-to-next-mistake, not O-N, so the navigation is cheap even on a long document.
+
+[LIAM]
+When you press Ctrl+F7, the function in main_frame.py is next_misspelling. It calls find_next_misspelling, gets back a Misspelling, then either moves the caret to the start of the word or extends the selection to include it, depending on whether extend-selection mode is on. The word gets selected. The status line reads Next misspelling, with the word in quotes, and a sound event is posted to the sound manager so you hear the difference between hitting a misspelling and bouncing off the end of the document. The selection itself is important. With the word selected, the next keystroke is a correction, not a re-selection. That is the speed-up.
+
+[JESSICA]
+And here is the part that matters for a screen-reader workflow. The bare result no next misspelling is misleading. If the cursor is just past a misspelling, there is no next one, but the document is not clean. The function _misspellings_behind_message counts misspellings in the opposite direction and announces a sentence like No misspellings ahead, three misspellings behind. You always know whether to reverse or to stop. That is a small detail that pays off the moment you have written a long document and the cursor is somewhere in the middle.
+
+[PAUSE]
+
+[LIAM]
+Now the dialog, F7. The function is open_spell_check_dialog, and it opens the F7 Spelling Review modal. The dialog title is Spelling Review. The dialog is a custom QUILL dialog, not a native operating system one, because the screen-reader review experience is a first-class feature here. The dialog takes a snapshot of the document text, builds a ReviewSession, and walks every misspelling in scope. Scope is the selection if you have a non-empty selection, otherwise the whole document. The session model lives in quill.core.spelling.session, and it owns the navigation state, the counters, the per-issue changes, and the undo stack. The dialog is presentation only.
+
+[JESSICA]
+Inside the dialog, each issue is presented with a bold label that reads Not in dictionary, colon, word, and a read-only context field that shows a few words on either side. The change-to field is a single-line edit, the suggestions list is a stock wx listbox, and the action row has Change, Change All, Ignore Once, Ignore All, Add to Dictionary, Undo Last, and Close. Every button has a mnemonic, every label has an accelerator. The dialog also has an Alt-W chord that reselects the word in the context, so if you lost your place, you can re-anchor without leaving the dialog. This is what keyboard-first looks like in QUILL. The contract is the dialog contract from the design system, not a custom one-off.
+
+[LIAM]
+The verbs are the verbs you expect from a spell dialog, with one refinement. Replace, Change in the dialog, replaces the current occurrence and advances. Change All replaces every remaining occurrence of this word in scope. Ignore Once skips this occurrence. Ignore All skips every remaining occurrence for this session. Add to Dictionary adds the word to your personal dictionary, and we will come back to the three scopes of dictionary in a moment. Undo Last reverses the most recent change. The whole session is one logical operation, but the per-issue Undo Last means a mistaken Add to Dictionary does not require closing the dialog and starting over.
+
+[JESSICA]
+Behind those verbs is the ReviewSession, and the session is honest about counters. It tracks reviewed, changed, changed-all, ignored-once, ignored-all, and added-to-dictionary. When the dialog closes, the status line speaks a summary, something like Reviewed fifteen issues, changed nine, ignored four, added two to dictionary. The counters are not a vanity feature. They are how a screen-reader user confirms that the work was done, because there is no visual highlight to glance at. Numbers in the status line are the receipt.
+
+[PAUSE]
+
+[LIAM]
+Now the context menu, the third entrance. Right-click, or Shift+F10, on a misspelled word. The context menu grows a Spelling Suggestions submenu, with up to eight suggestions, then a separator, then an Add to dictionary submenu. The Add to dictionary submenu is the second honest correction we owe you. The earlier outline said Add to Dictionary is a single button. It is a submenu of three: Personal dictionary, Document dictionary, Project dictionary. Choosing any of them routes through _add_word_to_dictionary_scope, which writes the word to a JSON file via write_json_atomic. The menu is also where AI Spell Check and AI Grammar Style live, on the same submenu, but those are AI tier, and we will not open that door yet.
+
+[JESSICA]
+The three dictionary scopes are the most important part of this whole episode, because the wrong scope is a common source of frustration. Personal lives in your QUILL data directory, at app_data_dir slash dictionaries slash personal.json. Add a word once and it is accepted in every document, on every project, for the rest of your life. Document lives next to the document itself, with the suffix dot quill-dict dot json. It only applies to that one document. Project lives at the project root, as dot quill-dictionary dot json, and applies to every document in that folder. The three are merged into a single set every time the editor runs list_misspelling or next_misspelling.
+
+[LIAM]
+The right scope depends on the kind of word. A made-up character name in a novel you are writing alone is personal. A company-internal jargon word that only this report uses is document. A project vocabulary that every file in a software project shares is project. The default, if you do not think about it, is personal, and that is the right default for most people. The Dictionary Status dialog, in the Tools menu, tells you the count and the path for each scope, so you can audit what you have added. It also tells you which spell-check backend is active, and whether the thesaurus data is installed, and that audit is worth running once a month.
+
+[JESSICA]
+There is one more navigation tool, and it is worth a minute. Alt+Shift+L opens the Misspelling List, which is the dedicated navigator for every misspelling in the document. It is a tree view. Every misspelling is a node, with the word and a short context line. Arrow into the list, press Enter on any node, the editor jumps to that word and selects it. For a long document, dozens of misspellings, this is faster than hammering Ctrl+F7, and it gives you a real overview before you start the walk. The list is a tree because misspelling lists can grow, and a flat list of forty identical-looking entries is harder to scan than a structured view with context.
+
+[LIAM]
+And here is the part we are honest about. The engine behind both navigation and dialogs is a three-tier fallback. The first tier is pyenchant plus Hunspell, if enchant is installed, and that gives the best quality, including morphological suggestions, so flagged becomes flag, flagged, flags. The second tier is the bundled English wordlist, about three hundred and seventy thousand words, and the third tier is a tiny built-in stub. Suggestions, when enchant is absent, come from a length-bucketed index over the bundled corpus. That is the trade-off: a Hunspell dictionary is smaller, sharper, and it understands the grammar of the language. The bundled wordlist is a flat set, and its suggestions are diff-match. Both are real. The Dictionary Status dialog tells you which one is active.
+
+[PAUSE]
+
+[JESSICA]
+Now the thesaurus, the second half of the episode. The thesaurus in QUILL is backed by the LibreOffice MyThes en_US data file, which lives at quill slash data slash th_en_US underscore v2 dot dat. It is roughly eighteen megabytes. The first lookup parses the file into an in-memory dictionary keyed by lowercase headword, and that takes well under a second on a modern machine. Once the index is warm, lookups are instant. The data file is curated, not machine-generated, so the synonyms are real synonyms, with the right part of speech tagged. The shift plus F7 command opens the thesaurus, and it is bound to tools dot thesaurus in the default keymap.
+
+[LIAM]
+When you press Shift+F7, the function show_thesaurus does three things. It first checks is_available, which just confirms the data file is on disk. If the data file is missing, you get a friendly dialog explaining the path and pointing you at the optional thesaurus component, and the status line reads Thesaurus data not installed. If the data is present, the function looks at the editor. A selected word takes priority, and if the selection is a single alphabetic word or an apostrophe-bearing one, that is the lookup. Otherwise the function walks the text to find the word at the caret, and if the caret is not inside a word, it offers a text-entry dialog so you can type the word you want. Three ways in, all of them keyboard-driven.
+
+[JESSICA]
+The lookup returns a ThesaurusEntry, which is a word and a tuple of Meaning objects. Each Meaning has a part of speech and a tuple of synonyms. The thesaurus dialog, which is a wx SingleChoiceDialog, builds a flat list of choices, but groups them by part of speech, so screen readers naturally announce the grouping. The list reads noun, synonym, synonym, synonym, verb, synonym, synonym, adjective, synonym. The dialog title is Thesaurus, the prompt is Synonyms for word, choose one to copy to the clipboard or replace the word in the editor, and the second dialog asks whether to replace the word in place or copy the synonym to the clipboard.
+
+[LIAM]
+Replace in place is the elegant one. The function preserves the original casing. If the original word started with a capital, the replacement starts with a capital, so London in your prose does not become london after a synonym swap. The status line reads Replaced word with synonym, and the editor is updated atomically. Copy to clipboard is the safer one when you are not sure the synonym fits, and it is also the only option when the cursor was not on a word. The clipboard path uses wx.TheClipboard with a Flush, so the synonym survives even if you close QUILL immediately after.
+
+[PAUSE]
+
+[LIAM]
+Now the part that almost everybody gets wrong on the first try. The spell-check language. English is the default and it ships bundled. Two other languages, Spanish, tag es underscore ES, and French, tag fr underscore FR, are downloadable. They are fetched from QUILL's verified release assets, the same channel that ships the offline speech engines. The download lives at app_data_dir slash spell slash hunspell, the file pair is a dot dic and a dot aff, and the next time the spell-check engine resolves a dictionary, the new language is picked up without a restart. The drop-down is in the Tools menu, under Writing, and the command is navigate dot set language, bound to Ctrl+Shift+L.
+
+[JESSICA]
+The download flow is the same Download Optional Components hub we walked in episode two. The hub is in the Help menu, the row for a spell language shows Install, and on click the verified download starts, with a progress dialog, a cancel button, and the SHA-256 check that gates every release asset. When the download finishes, the chooser reopens with the new language marked as installed, and on apply the active language is set, the cached dictionary is dropped, and the next F7 validates against the new language. The same hub is also where you remove a language you no longer need. The audit trail is the same as every other optional component.
+
+[LIAM]
+The honest correction here is that the earlier outline of this episode said the thesaurus ships a real database, and that is correct. It also said the dictionary is a real one, and that is correct. It did not call out that the thesaurus is currently English-only, and we will tell you the truth. The MyThes en_US data file covers English. If you switch the spell-check language to Spanish, the spell checker switches with you, but the thesaurus stays English. That is a known limitation of the bundled data, and the right way to think about it is: spell check is a real backend with three languages, thesaurus is a real database with one. Episode sixteen will go deeper on language setups and on adding new thesaurus data when we have it.
+
+[JESSICA]
+A note on language detection, because the earlier outline promised one. There is no automatic language detection in the spell checker. The engine validates against the active language, full stop. If you paste a French paragraph into a document whose language is en underscore US, the paragraph will be flagged. The fix is to open the language chooser, Ctrl+Shift+L, pick French, and the next F7 walks the French misspellings. The status line announces the change. If you have a mixed document, English and French in the same file, you can only spell-check one language at a time, and the honest answer is to pick the dominant language and use the personal dictionary for the rare foreign word.
+
+[PAUSE]
+
+[LIAM]
+Let us talk about the AI tier, briefly, so the door is named. AI Spell Check is bound to Ctrl+Alt+Shift+S. AI Grammar Style is Ctrl+Alt+Shift+G. AI Thesaurus is Ctrl+Alt+Shift+H. All three are AI commands, and like every AI command in QUILL, they require a configured engine and an API key, they run on a background thread, they post a status message when they start and when they finish, and they show a review-everything dialog so nothing lands in the document without your explicit approval. The AI spell checker catches what rule engines cannot, their versus there in context, subject-verb slips, double negatives, the kind of things a writer catches by reading aloud. The AI thesaurus suggests by meaning rather than by list, so you can ask for a word that means roughly moving forward through difficulty and get progress, momentum, advance.
+
+[JESSICA]
+The layering is important. Everything we covered today is local, offline, and free. The AI tier is an upgrade, never a requirement. If you never configure an AI engine, every command on this episode keeps working. The spell checker keeps using the bundled backend. The thesaurus keeps using the MyThes data. The dictionary scopes keep writing JSON. The AI tier is a separate orbit, and the contract is the same review-everything contract we will cover in the AI arc. If you have an engine configured, the AI spell command is a complement to Ctrl+F7, not a replacement. Walk the rule-engine misspellings first, then run AI on the rest.
+
+[LIAM]
+A workflow recipe, our standard document-finish pass, the one to steal. Step one, Ctrl+F7, walk the document forward, fix or accept every misspelling. Step two, Ctrl+Shift+F7 if you started in the middle, walk back to confirm. Step three, F7, the Spell Check dialog, for any document longer than a page, because the dialog gives you a clean review summary at the end. Step four, read the document once with Read Aloud, which is coming in episode nineteen, because ears catch grammar that eyes and engines miss. Step five, if you have an AI engine configured, AI Grammar Style, review every suggestion, accept the ones that improve the sentence. Five steps, three different nets, ten minutes, very little escapes.
+
+[JESSICA]
+Homework, four steps. Step one, open a real document, press Ctrl+F7, and walk the misspellings. Fix at least three. Step two, add at least one legitimate word to your personal dictionary, something you know is real but the engine does not. A name. A piece of jargon. An invented word from your project. Step three, put your cursor on a boring adjective in the same document, press Shift+F7, and replace it with a thesaurus synonym. Notice the casing. Step four, visit Help, Download Optional Components, and see which spell-check languages are waiting. Grab Spanish or French if your life is multilingual, and verify the new language by opening a short paragraph in that language and pressing F7. If you do not have multilingual text, skip step four, the previous three are the core.
+
+[LIAM]
+Coming up on episode sixteen, we go deeper on the language side. How to set the document's language for spell check, how to download the optional components cleanly, how to remove a language you no longer need, and a full thesaurus walkthrough, including the parts we did not have room for today, like the lazy index build, the singular-plural fallback, and the thesaurus data path. Episode seventeen is the one our listeners have been asking for since the foundation tour, the full safety stack: autosave, crash recovery, versions, snapshots, and backups. Episode eighteen is markdown and structure. The everyday-editor arc closes at episode eighteen, and the AI arc opens at nineteen.
+
+[JESSICA]
+A small coda. The series is fifty-four episodes, and the everyday-editor arc is roughly a third of that. We chose the order carefully, so each episode builds on the ones before it. If you have been following in order, you now have a complete local word toolkit: search, replace, navigate, compare, spell, dictionary, thesaurus. Everything from here is either a refinement of what you have, a new orbit like AI or the audio studio, or a power user topic. You are not late. You are exactly on time.
+
+[PAUSE]
+
+[LIAM]
+I'm Liam.
+
+[JESSICA]
+I'm Jessica. Spell it like you mean it.

@@ -244,7 +244,7 @@ _CHORD_COMMAND_TITLES: dict[str, str] = {
     "edit.copy_selection_for_email": "Copy Selection For Email",
     "tools.sticky_note_capture": "Sticky Note Capture",
     "view.browser_preview": "Browser Preview",
-    "view.switch_editing_lens": "Switch Editing Lens",
+    "format.switch_document_format": "Switch Document Format",
     "format.list_manager": "List Manager",
     "format.insert_html_tag": "Insert HTML Tag",
     "power.paste_html_as_markdown": "Paste HTML As Markdown",

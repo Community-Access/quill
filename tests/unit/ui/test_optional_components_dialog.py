@@ -32,8 +32,17 @@ def test_dialog_uses_a_readonly_multiline_description() -> None:
 
 def test_dialog_gates_download_when_installed() -> None:
     src = _src("optional_components_dialog.py")
-    assert "download_btn.Enable(not comp.installed)" in src
-    assert "test_btn.Enable(comp.installed)" in src
+    # Download/Test key off effective_ready, not installed: most components
+    # agree, but the Dictation row is "installed" as soon as its engine binary
+    # exists even with no model downloaded yet (#kokoro-focus follow-up).
+    # Download itself is gated through download_allowed(), not a bare "not
+    # ready" check: the Offline Edition build always disables Download since
+    # every component is already bundled or was never included at build time
+    # (Offline Edition awareness).
+    assert "can_download = download_allowed(comp)" in src
+    assert "download_btn.Enable(can_download)" in src
+    assert 'test_btn.Enable(ready or testing["active"])' in src
+    assert "comp.effective_ready" in src
 
 
 def test_dialog_delegates_to_controller_and_uses_the_seam() -> None:
@@ -76,6 +85,8 @@ def test_hub_downloads_reopen_the_hub_when_done() -> None:
         "self.download_braille_pack(on_done=_back)",
         "self.download_audio_extras(on_done=_back)",
         "self.download_mathcat(on_done=_back)",
+        "self.download_git(on_done=_back)",
+        "self.download_gh(on_done=_back)",
     ):
         assert handler in src, f"hub dispatch missing reopen-hub for {handler}"
     assert "on_ok=(lambda: on_done(True)) if on_done else" in src
@@ -111,3 +122,27 @@ def test_manage_routes_to_speech_models_and_voices() -> None:
     assert "def _manage_component_models_or_voices" in src
     assert "self.open_speech_models()" in src  # STT engines -> Manage Speech Models
     assert "self.choose_read_aloud_configuration()" in src  # voice engines -> Manage Voices
+
+
+def test_test_button_toggles_to_stop_for_voice_rows() -> None:
+    src = _src("optional_components_dialog.py")
+    assert '"&Stop"' in src
+    assert "controller.stop_test(" in src
+    assert "controller.is_previewable(" in src
+
+
+def test_controller_protocol_supports_preview_state() -> None:
+    src = _src("optional_components_dialog.py")
+    assert "def stop_test(self, component_id: str) -> None:" in src
+    assert "def is_previewable(self, component_id: str) -> bool:" in src
+
+
+def test_test_button_stays_enabled_across_a_selection_change_mid_preview() -> None:
+    """Regression (voice-preview-feedback final review): a running preview must
+    not strand the user with a disabled-but-labeled-Stop button just because
+    they navigated to a not-yet-downloaded row. Enable() has to key off
+    ``testing["active"]`` in addition to the newly-selected row's readiness --
+    keying off ``ready`` alone (the pre-fix expression) meant Stop went
+    unreachable the moment focus moved to a not-ready row."""
+    src = _src("optional_components_dialog.py")
+    assert 'test_btn.Enable(ready or testing["active"])' in src

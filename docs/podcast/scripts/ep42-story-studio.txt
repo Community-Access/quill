@@ -1,0 +1,164 @@
+[JESSICA]
+The QUILL Cast, episode forty-two. I'm Jessica. Today is for the long-haul writers, the novelists, the memoirists, the thesis writers, anyone whose work has outgrown one file. Story Studio, the manuscript organizer built into QUILL.
+
+[LIAM]
+I'm Liam. And before we go anywhere, a brief recap of episode forty-one, which closed the vault section. Last time we furnished the vault with the rhythm tools: tags with their nested rollup behavior, templates that ask their own prompts, daily notes as a journaling habit, embeds for the canonical bio and standard terms, the static-site export, and Git-based vault sync that you own end to end. The thesis we landed on was that the vault is not an app bolted onto QUILL, it is the same editor with a memory. Every skill you have accumulated across the course applies inside a note. Story Studio is the same idea at a different scale: the same editor, with a memory for a whole book.
+
+[JESSICA]
+That's the right frame. The vault gave you a web of notes; Story Studio gives you a spine. Same discipline, same plain files, same keyboard-first design, but with an outline that runs from chapter one to the final page. Twelve episodes left in this fifty-four-episode course, and Story Studio is the bridge between organization, which has been our theme for the last two episodes, and the production work we are about to do.
+
+[LIAM]
+And an honest statement of intent for this episode. We are going to walk through Story Studio against the code, the way we have walked through every feature for the last twenty episodes. That means we will name the files, we will quote the constants, and when a doc and a piece of code disagree, we will say so out loud. There is one such disagreement sitting in the brief for this episode, and we will get to it.
+
+[PAUSE]
+
+[JESSICA]
+Let's start with the mental model, because it is the most important thing in this episode and the simplest. A Story Studio project is a folder on your disk. Inside the folder you have ordinary plain text files: your chapters, your scenes, your character notes, your research, your brainstorm pages. Optionally, beside those files, one sidecar file named project.quillstory.json that holds three things: a title for the project, an ordered list of relative paths that make up the manuscript spine, and a list of structured element records for the non-manuscript parts of your bible. That is the whole data model. Title, manuscript list, elements list. Schema version one, pinned as a constant in the source.
+
+[LIAM]
+And here is the part that matters for trust. The sidecar is advisory, not authoritative. The source code for that is in quill core story storage, and the comment is unambiguous: when the sidecar is absent, the folder is still a project. The load_project function checks for project.quillstory.json, and when it does not find it, it walks the folder, collects every file whose suffix, lowercased, is dot md, dot markdown, or dot txt, sorts them by name, and uses that as the manuscript spine. The title defaults to the folder's own name. So the simplest possible workflow is: make a folder, drop three or four markdown files in it, and you have a project. If you delete the sidecar later, you do not lose a single word of prose.
+
+[JESSICA]
+That property, the folder as source of truth, is why Story Studio can be honest in a way that proprietary binders cannot. The same files are usable in any text editor, syncing through any cloud service, versioned with any version control, indexed by any search tool. Story Studio is one reader and one writer of the same files you would have had without it. The brief for this episode asked us to verify that property against the code, and the code agrees: the sidecar is a hint.
+
+[LIAM]
+We are going to verify that against the actual code, and we are going to look at one specific way the original brief got it wrong. The brief named the sidecar as carrying the binder structure, the chapter list, and the element records. The code is more modest. The sidecar holds the title, the ordered list of manuscript paths, and the element records. The binder structure is not stored anywhere on disk. It is derived, every time you open the project, from the heading outline of the manuscript files. That is a feature, not an oversight, and we will get to why in a moment.
+
+[PAUSE]
+
+[JESSICA]
+Do this now. Pause the audio. Open your file manager, and create a new empty folder somewhere you can find easily. Name it after a project you have been meaning to start, anything you like, a novel, a memoir, a thesis, a long-form essay. Inside that folder, create three small markdown files. Give each one a handful of ATX headings, a hash, a space, and a title, with a paragraph or two of placeholder prose underneath. We are going to come back to that folder in a few minutes. Pause for a moment, then come back when you have three small files with headings.
+
+[LIAM]
+Good. Welcome back. You have, in your hands, a Story Studio project that does not know it is a Story Studio project yet. Let's open it and see what happens, in the order it actually happens against the code in main_frame_story_studio and story_studio_dialog.
+
+[JESSICA]
+The command is registered as story.open_studio. In the UI it lives in the Tools menu, with the label "Story Studio". The handler is in main_frame_story_studio.py, and the first thing it does is show a directory picker. The dialog title is "Choose a story project folder", and it carries the DD_DIR_MUST_EXIST style, so it is impossible to point the tool at a path that does not exist. The picker runs through the standard modal contract, which means Tab, Escape, and the labelled buttons all behave as you would expect. If you cancel, the status bar reads "Story Studio cancelled" and nothing changes. If you confirm, the chosen path goes into a local Path object, and the handler calls load_project on that folder.
+
+[LIAM]
+And here is the first code-verified correction, small but worth saying. The brief for this episode describes the picker as "Choose Story Project". The code says "Choose a story project folder". When a doc and the code disagree, the code wins. The pattern is consistent with how we have handled this for the last twenty episodes: the team that built this was honest, and the code is the source of truth.
+
+[PAUSE]
+
+[JESSICA]
+After the folder is chosen, load_project runs. As we said, if the sidecar exists, it is read and parsed. If it does not exist, the folder is scanned, the text files are sorted by name, and a project is synthesized with the folder's name as the title. The synthesized project has no elements; the only fields are title and the manuscript path list. If the sidecar exists but is corrupt, the loader falls back to an empty project rather than raising, so a hand-written mistake never blocks you from opening the folder. That means a broken sidecar is recoverable, not catastrophic.
+
+[LIAM]
+A side note on what counts as a manuscript file, because the code is explicit. The synthesizer looks at the suffix, lowercased, and accepts only the three plain-text formats that writers already use: dot md, dot markdown, and dot txt. An RST file, an AsciiDoc file, a Word document, even a perfectly readable plain text file with no recognized extension, is ignored by the synthesizer. If you want it to be part of the spine, rename the file to one of the three suffixes, or add an explicit entry to the sidecar. The synthesizer is a friendly default, not a constraint. The sidecar, when present, is the authority.
+
+[JESSICA]
+And another small detail worth knowing. The manuscript spine, whether it comes from the sidecar or from the folder scan, is a tuple of relative POSIX paths. The validator in the model is strict: backslashes are rejected, absolute paths are rejected, drive letters are rejected, parent-traversal segments are rejected. A valid path looks like "heroine.md" or "subfolder/heroine.md". The discipline pays off in two ways. The project is portable across machines, and a hand-edited sidecar can neither leak machine-specific paths nor escape the project folder. If you ever copy a sidecar between a Windows machine and a Mac, the relative paths travel unchanged.
+
+[PAUSE]
+
+[LIAM]
+The dialog then appears. The title bar reads "Story Studio - " followed by the project title. Inside, a static text label that reads "Binder", a tree control named "Story binder" so screen readers announce it by purpose, and at the bottom two action buttons, "Edit details..." with the Alt-E mnemonic, and "Compile manuscript..." with the Alt-C mnemonic. A standard Close button rounds out the bottom from the dialog button sizer, and apply_modal_ids wires it as the affirmative button labelled "&Close" with the ID_CLOSE constant.
+
+[JESSICA]
+Arrow up and down through the tree. The root is your project title. Its first child is the Manuscript group, and inside that group is one node per manuscript file, in the order the sidecar says, or alphabetical order when the sidecar is missing. Under each file, the headings appear, derived on the fly from the markdown headings, one through six hashes, a space, and the title. The headings are nested by level, so a Part contains its Chapters, and each Chapter contains its Scenes, all from the heading outline of the file itself. After the Manuscript group come the element groups, in this exact order: Characters, Places, Plot threads, Research, Brainstorm. A kind with no members is hidden, so an empty Brainstorm group will not appear in your binder at all.
+
+[LIAM]
+And that is the architectural point. The binder is a derived view, never stored. The code that builds it, build_binder in quill core story binder, walks the project, reads each manuscript file through an injected read_text callable, calls iter_headings on it, and nests the headings by level. If you edit a heading in your file, the next time you open the binder, the change is reflected. There is no drag-and-drop ritual. There is no second structure to maintain. The structure of your book is the heading outline of your files. Episode fourteen's hash-space habit, the one we taught you for navigable documents, has now organized an entire novel.
+
+[JESSICA]
+A small navigation note, because it matters with screen readers. Activation only opens things the binder considers openable. The openable types are "manuscript", "heading", and "element". The non-openable types, "root" and "group", expand and collapse when you activate them, they do not open a file. So pressing Enter on "Characters" is a tree toggle; pressing Enter on a specific character is an open. That is by design, and it keeps the binder's keyboard model clean.
+
+[PAUSE]
+
+[LIAM]
+A second code-verified correction, this one a bit deeper. In an earlier revision of the binder code, activating an openable node sometimes nested the file-open prompt under the live binder modal, which caused focus churn with screen readers. The fix in story_studio_dialog.py is to call EndModal with ID_CLOSE on the binder first, then defer the actual file open with CallAfter. You, the user, see the binder close cleanly, then the file appears in a new tab a moment later. The same pattern is used for the Compile button: the binder ends its modal first, then the compile callback runs, then the compiled document opens in a tab. EndModal ID_CLOSE is the same constant apply_modal_ids wires to the "&Close" button, so the keyboard contract stays clean: pressing Escape on the binder is the same as clicking Close, and it is the same as activating an openable node, all three paths land on ID_CLOSE.
+
+[JESSICA]
+And a quiet piece of defensive reading built into the binder. The read_text callable injected into the binder catches both OSError and UnicodeDecodeError and returns an empty string in their place, so a stray non-UTF-8 file in your project does not crash the binder; it just contributes no headings, and you carry on. The same defensive try-block lives in the main mixin's read_text closure. The only place that bails out instead of swallowing is the element details form, which we will get to in a moment. If the form cannot read the file, the status bar tells you and the form does not open, because opening a form on an empty body would let Save overwrite the real file with nothing. That is a deliberate asymmetry, and the source comment in main_frame_story_studio calls it out as a review fix from issue 784.
+
+[PAUSE]
+
+[LIAM]
+Now the story-bible side. Stand on a character in the binder, press Alt-E, and a small details dialog appears. The dialog title is "Details - " followed by the file's stem, so for heroine.md the title bar reads "Details - heroine". The form is a labelled field per element kind, in a two-column flex grid, with the labels on the left and text controls on the right. For a Character, the fields are Role, Goal, Motivation, and Arc, in that order. For a Plot thread, the single field is Status. For a Location, it is Significance. For a Research item, it is Source. Brainstorm has no defaults at all. Every form, regardless of kind, ends with a universal Tags row, which is the last row in every form and is a comma-separated list of strings.
+
+[JESSICA]
+A few subtleties worth naming. Each label has a unique Alt-letter mnemonic, computed against the other labels in the same form so no two collide, and the text control next to it is given a name equal to the field label, so a screen reader announces the field's purpose as you tab into it. Tab moves field to field, Alt-letter jumps to a field, and the standard OK and Cancel buttons route through apply_modal_ids. OK is labelled "&Save" with ID_OK. If you cancel, the status bar reads "Details unchanged". If you save, the file is rewritten with the merged fields at the top, fenced by two lines of three dashes, and the original prose body preserved underneath, unchanged.
+
+[LIAM]
+A blank field is dropped on save. The collect_fields function in quill core story fields is explicit about this: an empty value is omitted, so the file never accumulates empty keys like "goal: ". That keeps the front matter clean and round-trip safe. The "type" key, if it is already in the file, is preserved but not shown in the form, so a kind marker that someone hand-wrote is never accidentally stripped. And any unknown key already in the file is preserved as its own row in the form, with the same key as the label, so a hand-edited front matter does not get clobbered on round-trip. The form just adds new labelled fields to the ones you already had.
+
+[JESSICA]
+What does that look like on disk. A character's file with a goal and tags would have, at the top, a line of three dashes, then a "role:" line, a "goal:" line, a "motivation:" line, an "arc:" line, a "tags:" line followed by a bullet for each tag indented underneath, then a closing line of three dashes, then the prose. Lists are serialized as "key:" on its own line followed by "- value" entries. The codec is a small deliberate subset of YAML, no third-party dependency, round-trip safe. The front-matter module in quill core story frontmatter is one of the cleanest pieces of code in the project.
+
+[LIAM]
+A few codec details, because they show up in the wild and they are worth knowing. A front-matter block is only recognized when the file's very first line is exactly three dashes, optionally followed by a carriage return for Windows-authored files. The closing fence is the next line that is exactly three dashes. If there is no closing fence, the parser treats the file as having no front matter at all, so a stray "---" inside your prose never swallows your prose. Scalar values that need quoting are quoted, and backslashes are escaped so round-tripping stays clean. If you write the file by hand and use a leading dash, a leading apostrophe, a leading quote, or a leading hash, the serializer will quote the value for you.
+
+[JESSICA]
+It is also worth pausing on what this means for the rest of QUILL. Because the file is plain text with a leading front-matter block, you can edit it in any editor, sync it through any cloud service, search it with any tool, and version it with any version control. Story Studio is not the keeper of your data; it is one reader and one writer of the same files you would have had without it. That is why the binder can be a derived view, and why the compile is a one-button concatenation, and why the sidecar is a hint. Most of the system is small.
+
+[PAUSE]
+
+[LIAM]
+And the same front matter is what compile_manuscript strips when you ask for the whole book in one document. The compile logic lives in core story compile, and it is tiny on purpose: it walks the manuscript paths in the order the sidecar says, calls split_front_matter on each, takes the body, joins them with a blank line. No custom export engine, no transformation, just front matter removed and bodies concatenated. The result is plain text. The join separator is two newlines in a row, which is what a default markdown paragraph separator wants, so the compiled text is a valid markdown document out of the gate.
+
+[JESSICA]
+Time to compile. Stand anywhere in the binder and press Alt-C, the mnemonic for "Compile manuscript...". The button handler closes the binder via EndModal ID_CLOSE, then CallAfters the compile, so the binder is fully gone before the new tab is created. compile_manuscript walks the spine, joins the bodies, and the result is handed to a callback that opens it as a new document tab. The new tab's title is the project title with "(compiled)" appended, sanitized so unusual characters do not break the display name. The status bar reads "Compiled manuscript opened in a new tab. Use File > Export to save it (Markdown, HTML, Word, DAISY, and more)."
+
+[LIAM]
+From there you are in the export pipeline you already know. Compile is a no-op for empty manuscripts: if the joined text is just whitespace, the status bar reads "Story Studio: the manuscript is empty, nothing to compile" and nothing opens. And the read_text function used for compile is the same defensive read_text used for binder construction, so a single misbehaving file yields an empty body for that file, the other files still compile, and you get a usable manuscript. That is the right behavior for a long-running project, where one bad encoding should never freeze the whole pipeline.
+
+[JESSICA]
+A small honesty moment about file ordering, because the code is explicit and the behavior is not always what people expect. The manuscript spine is whatever the sidecar says, in the order it says it. When the sidecar is synthesized from a bare folder, the order is alphabetical, by file name. That means a manuscript called "10-chapter.md" sorts before "2-chapter.md", and you can shoot yourself in the foot. The fix is one of three: a sidecar with explicit ordering, numeric prefixes that sort the way you want, or a Quillin that rewrites the spine into a sensible order. It is a known sharp edge.
+
+[LIAM]
+There is a related nuance for the path field on element records. The model only accepts relative POSIX paths, and the validator rejects backslashes, absolute paths, drive letters, and parent-traversal segments. So a sidecar copied from a Windows machine to a Mac, where the path was originally written as "heroine.md" already in relative form, is fine. A sidecar where someone wrote an absolute path or a path with backslashes will silently drop that element, and you will wonder why the binder is missing a character. If you see a missing member, the first place to look is the path field.
+
+[JESSICA]
+And one more piece of honesty, in the spirit of verify against code. The current binder dialog does not expose an "Add element" button. The dialog supports editing elements that are already in the sidecar, and it supports opening the files, and it supports compile. It does not support creating a new character, place, plot thread, research item, or brainstorm from inside the binder. That is a known product gap, and the team has been honest about it. For today's workflow, you create an element by hand-editing the sidecar, by running a Quillin, or by external tooling. The dialog itself is a reader and editor, not a creator.
+
+[PAUSE]
+
+[LIAM]
+The combination move for the ambitious writer, and the one that makes Story Studio feel less like a feature and more like an operating system for book-scale work, is pairing it with the Accessible Vault. The vault from episodes forty and forty-one is a web of linked notes, with backlinks, tags, templates, daily notes, embeds, and a static site export. The manuscript is a Studio project. Standing in a character's vault note, Show Backlinks lists every scene that mentions them. Your story bible answers questions instead of just storing answers.
+
+[JESSICA]
+The same file format is the bridge. A Story Studio character file is plain markdown with optional front matter. A vault note is plain markdown with optional front matter. The grammar is the same. Move a file from one world to the other, and it is still readable. That is why the two systems can be combined without an importer-exporter dance, and why the next episode, episode forty-three, will spend its time on the practice of moving between them.
+
+[LIAM]
+And the supporting cast from part two all report for duty at book scale. Bookmarks from episode eleven, the ones that survive restarts, hold your place in chapter twelve. Snapshots reassemble the whole writing session. Versions, cut before every major revision, give you the safety stack from episode thirteen guarding a hundred thousand words the same as it guarded one paragraph. Long-form writing is where those episodes compound. A project with forty chapters and twenty characters is not a different kind of work; it is the same work, with the same safety net, scaled up.
+
+[JESSICA]
+So the mental model, to close out the explanation. Your project is a folder. Your structure is your headings. Your bible is plain text with optional front matter. Your compile is a one-button concatenation with front matter stripped. The binder is a derived view that lets you move through a hundred thousand words with arrows and Enter. The remaining power is in the sidecar and the file system, which is the point: every word is in a file you can open with any tool, including the ones we have not built yet.
+
+[LIAM]
+That posture, the folder as source of truth, the binder as derived view, the sidecar as a hint, is the same posture the vault takes. The vault from the last two episodes does not own your notes; it indexes them. Story Studio does not own your manuscript; it views it. When you understand that, the rest of the feature falls into place, and the tool feels calm rather than coercive. You are not learning a new application. You are learning a new way of seeing the files you already have.
+
+[JESSICA]
+A note for the long-haul writer who is feeling some resistance. We have built up to this episode across forty-one prior ones, and the temptation is to treat Story Studio as the new thing you have to learn on top of everything else. It is not. It is the same editor, the same keyboard habits, the same export pipeline, the same bookmarks and snapshots and versions, organized around a heading outline. If episode fourteen's hash-space habit is second nature, Story Studio is just that habit at a different scale.
+
+[LIAM]
+Homework. Four steps, in increasing depth, and you can stop after any one of them and still have learned something real.
+
+[JESSICA]
+Step one. Take any markdown file you already have, one with a few headings, and put it in a fresh folder. Open Story Studio on that folder, and hear your headings become a binder. That alone is worth the episode. It is the moment the heading habit and the binder view become the same thing.
+
+[LIAM]
+Step two. Add a character. Create a new file in the folder, name it heroine.md or whatever your protagonist is called, write one line inside. Hand-edit the sidecar, project.quillstory.json, to register the new file as a Character element with a relative path, a kind, a title, and an id. Reopen Story Studio, and the Characters group is now there with one member.
+
+[JESSICA]
+Step three. Open the element, fill in Goal and Tags in the details form, save. Then open the same file as plain text in QUILL, or in any text editor, and read the front matter the form wrote. See the leading and trailing fences, the key-value lines, the tag list. That round-trip is the contract Story Studio makes with the rest of the world.
+
+[LIAM]
+Step four. Press Compile, see the whole book open in one tab, and from there export it to your favorite format from episode seventeen. Word for an editor, EPUB for an e-reader, DAISY from episode twenty-four for a talking book, or straight into the audiobook pipeline. Your novel, narrated by episode twenty-one's voices, chapters intact, headings and all.
+
+[JESSICA]
+Take your time with each step; this is practice, not a race. The point is to build a feel for the binder, for the sidecar, for the form, for the compile button, and to notice how each of them leaves the underlying files alone. By the end of the homework, you should be able to look at a project folder and predict, without opening QUILL, what the binder is going to show you.
+
+[PAUSE]
+
+[LIAM]
+Next episode, episode forty-three, we put our hands on Story Studio for a full practice run. We will open a project, build a binder from real files, edit an element, compile the manuscript, and look honestly at a couple of places where docs and code have drifted. Same verify-against-code discipline, same honesty about gaps, same depth. Twelve episodes left in the course after that, and Story Studio is the foundation for the production work we are about to do.
+
+[JESSICA]
+That is the setup for episode forty-three, Story Studio practice. Until then, open the binder, write the next sentence, and trust that your headings are doing more work than they look like they are doing.
+
+[LIAM]
+I'm Liam.
+
+[JESSICA]
+I'm Jessica. Go write chapter forty. We believe in you.

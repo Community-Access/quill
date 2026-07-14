@@ -65,6 +65,25 @@ def test_general_preferences_factory_functions_present() -> None:
     assert "_make_text" in body
 
 
+def test_general_preferences_int_spin_names_its_inner_textctrl() -> None:
+    """support#69: VoiceOver reads a SpinCtrl's inner TextCtrl child, not the
+    outer control's Name. The "float" kind (SpinCtrlDouble) already named its
+    inner TextCtrl; the "int" kind (SpinCtrl) -- used for Read Aloud
+    rate/volume/pitch and every other integer setting -- did not, so those
+    controls were announced with no label on macOS."""
+    source = _main_frame_source()
+    start = source.index("def _make_spin_int(")
+    end = source.index("\n\n", start)
+    body = source[start:end]
+
+    assert "GetChildren()" in body, (
+        "_make_spin_int must walk its children to name the inner TextCtrl, "
+        "matching _make_spin_float's fix"
+    )
+    assert "isinstance(_child, wx.TextCtrl)" in body
+    assert "_child.SetName(_spec.label)" in body
+
+
 # ---------------------------------------------------------------------------
 # open_profiles_and_features_settings — keyboard_pack_choice
 # ---------------------------------------------------------------------------

@@ -188,11 +188,14 @@ def _security_scan(upload_path: str, manifest: dict[str, Any]) -> tuple[str | No
 
     watchdog = SecurityWatchdog(manifest)
     issues: list[str] = []
-    for root, _dirs, files in os.walk(upload_path):
-        for filename in files:
-            if filename.endswith(".py"):
-                for line_no, message in watchdog.scan_file(os.path.join(root, filename)):
-                    issues.append(f"{filename} line {line_no}: {message}")
+    try:
+        for root, _dirs, files in os.walk(upload_path):
+            for filename in files:
+                if filename.endswith(".py"):
+                    for line_no, message in watchdog.scan_file(os.path.join(root, filename)):
+                        issues.append(f"{filename} line {line_no}: {message}")
+    except (OSError, RecursionError) as exc:  # noqa: BLE001 - report, never crash the Forge
+        issues.append(f"watchdog scan error: {exc}")
     if issues:
         watchdog_report = "\n".join(issues)
 

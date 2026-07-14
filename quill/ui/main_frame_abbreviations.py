@@ -127,11 +127,9 @@ class AbbreviationsMixin:
         try:
             import wx
 
-            if wx.TheClipboard.Open():
-                obj = wx.TextDataObject()
-                got = wx.TheClipboard.GetData(obj)
-                wx.TheClipboard.Close()
-                return obj.GetText() if got else ""
+            from quill.ui.clipboard_retry import read_clipboard_text
+
+            return read_clipboard_text(wx)
         except Exception:  # noqa: BLE001
             pass
         return ""

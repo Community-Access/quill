@@ -51,7 +51,7 @@ class AIGrammarCheckDialog:
             self.dialog,
             label=(
                 f"AI found {n} grammar and style suggestion{'s' if n != 1 else ''}. "
-                "Select issues to accept. Press Alt+A to accept, Alt+S to skip."
+                "Select issues and use the review buttons to accept or skip each one."
             ),
         )
         summary.Wrap(760)

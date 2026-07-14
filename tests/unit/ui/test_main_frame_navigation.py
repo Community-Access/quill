@@ -1118,6 +1118,103 @@ def test_go_to_bookmark_without_bookmarks_announces() -> None:
     assert frame._status_message == "No bookmarks available. Bookmarks are named jump points."
 
 
+def test_set_temp_bookmark_then_go_to_it_round_trips() -> None:
+    frame = _build_frame("alpha\nbeta\ngamma\n", insertion_point=12)
+    frame._temp_bookmark = None
+    frame._active_tab = lambda: frame._document_tabs[frame._active_tab_index]  # type: ignore[method-assign]
+
+    frame.set_temp_bookmark()
+    assert frame._status_message == "Temporary bookmark set"
+    assert frame._temp_bookmark == 12
+
+    frame.editor.SetInsertionPoint(0)
+    frame.go_to_temp_bookmark()
+
+    assert frame.editor.GetInsertionPoint() == 12
+    assert frame._status_message == "Jumped to temporary bookmark"
+
+
+def test_go_to_temp_bookmark_when_unset_announces() -> None:
+    frame = _build_frame("alpha\n", insertion_point=0)
+    frame._temp_bookmark = None
+
+    frame.go_to_temp_bookmark()
+
+    assert frame._status_message == "No temporary bookmark set"
+
+
+def test_toggle_fold_folds_then_unfolds_heading_section() -> None:
+    frame = _build_frame("# Title\nBody line one\nBody line two\n", insertion_point=0)
+    frame._folded_regions = set()
+
+    frame.toggle_fold()
+    assert frame._status_message == 'Folded: 3 lines under "Title"'
+    assert len(frame._folded_regions) == 1
+
+    frame.toggle_fold()
+    assert frame._status_message == 'Unfolded: "Title"'
+    assert frame._folded_regions == set()
+
+
+def test_toggle_fold_with_no_region_announces() -> None:
+    frame = _build_frame("plain text, no headings\n", insertion_point=0)
+    frame._folded_regions = set()
+
+    frame.toggle_fold()
+
+    assert frame._status_message == "No foldable region at the cursor"
+
+
+def test_next_fold_jumps_to_next_heading_and_announces_state() -> None:
+    text = "# One\nAAA\n# Two\nBBB\n"
+    frame = _build_frame(text, insertion_point=0)
+    frame._folded_regions = set()
+
+    frame.next_fold()
+
+    assert frame.editor.GetInsertionPoint() == text.index("# Two")
+    assert frame._status_message == '"Two", expanded, 2 lines'
+
+
+def test_previous_fold_jumps_back_and_announces_folded_state() -> None:
+    text = "# One\nAAA\n# Two\nBBB\n"
+    frame = _build_frame(text, insertion_point=len(text))
+    frame._folded_regions = {(0, text.index("# Two"))}
+
+    frame.previous_fold()
+
+    assert frame.editor.GetInsertionPoint() == text.index("# Two")
+    assert frame._status_message == '"Two", expanded, 2 lines'
+
+    frame.editor.SetInsertionPoint(text.index("# Two"))
+    frame.previous_fold()
+
+    assert frame.editor.GetInsertionPoint() == 0
+    assert frame._status_message == '"One", folded, 2 lines'
+
+
+def test_list_folds_jumps_to_selected_region() -> None:
+    text = "# One\nAAA\n# Two\nBBB\n"
+    frame = _build_frame(text, insertion_point=0)
+    frame._folded_regions = set()
+    two_start = text.index("# Two")
+    frame._show_tree_navigator = lambda **_kwargs: (two_start, len(text))  # type: ignore[method-assign]
+
+    frame.list_folds()
+
+    assert frame.editor.GetInsertionPoint() == two_start
+    assert frame._status_message == '"Two", expanded, 2 lines'
+
+
+def test_list_folds_with_no_regions_announces() -> None:
+    frame = _build_frame("plain text\n", insertion_point=0)
+    frame._folded_regions = set()
+
+    frame.list_folds()
+
+    assert frame._status_message == "No foldable regions in this document"
+
+
 def test_selection_action_specs_adapt_to_scope() -> None:
     frame = _build_frame("alpha beta gamma", insertion_point=0)
 
@@ -1376,7 +1473,7 @@ def test_profile_choice_label_includes_description() -> None:
 def test_print_document_cancel_reports_cancelled() -> None:
     frame = _build_frame("alpha", insertion_point=0)
     frame._print_data = object()
-    frame._build_text_printout = lambda *_args: type(  # type: ignore[method-assign]
+    frame._build_text_printout = lambda *_args, **_kwargs: type(  # type: ignore[method-assign]
         "_Printout",
         (),
         {"Destroy": lambda self: None},
@@ -2298,3 +2395,188 @@ def test_go_to_page_estimated_out_of_range_reports_total() -> None:
     )
     frame.go_to_page()
     assert "1 page" in messages[0]
+
+
+def test_focus_is_in_document_surface_before_editor_exists(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Regression for #951 (macOS): a global EVT_CHAR_HOOK can fire before the
+    # first document tab creates self.editor/self.notebook (or after the last
+    # tab closes and they're torn down); _focus_is_in_document_surface used to
+    # read self.editor/self.notebook directly, unlike the already-defensive
+    # getattr(self, "_documents_panel", None) two lines above it, so an early
+    # or late keystroke raised AttributeError instead of just reporting "not
+    # in the document surface."
+    import wx as real_wx
+
+    class _FocusedWidget:
+        def GetParent(self) -> object | None:
+            return None
+
+    monkeypatch.setattr(real_wx.Window, "FindFocus", staticmethod(lambda: _FocusedWidget()))
+
+    frame = MainFrame.__new__(MainFrame)
+    frame._wx = real_wx
+
+    assert frame._focus_is_in_document_surface() is False
+
+
+class _CharHookEvent:
+    def __init__(self, key_code: int, *, ctrl: bool, alt: bool, shift: bool) -> None:
+        self._key_code = key_code
+        self._ctrl = ctrl
+        self._alt = alt
+        self._shift = shift
+        self.skipped = False
+
+    def GetKeyCode(self) -> int:
+        return self._key_code
+
+    def ControlDown(self) -> bool:
+        return self._ctrl
+
+    def AltDown(self) -> bool:
+        return self._alt
+
+    def ShiftDown(self) -> bool:
+        return self._shift
+
+    def Skip(self) -> None:
+        self.skipped = True
+
+
+def test_alt_shift_digit_sets_quick_bookmark_directly() -> None:
+    # Numbered quick bookmarks are a direct chord, not a Quick Nav sub-mode --
+    # Alt+Shift+3 must set slot 3 in one keystroke with no modal step.
+    frame = _build_frame("alpha\nbeta\ngamma\n", insertion_point=7)
+    frame._bookmarks = {}
+    frame._active_tab = lambda: frame._document_tabs[frame._active_tab_index]  # type: ignore[method-assign]
+    frame._focus_is_in_document_surface = lambda: True  # type: ignore[method-assign]
+    frame._handle_quill_key_mode_event = lambda _event: False  # type: ignore[method-assign]
+
+    event = _CharHookEvent(ord("3"), ctrl=False, alt=True, shift=True)
+    frame._on_char_hook(event)
+
+    assert frame._bookmarks == {"Quick 3": 7}
+    assert frame._status_message == "Quick bookmark 3 set"
+    assert event.skipped is False
+
+
+def test_ctrl_alt_shift_digit_jumps_to_quick_bookmark_directly() -> None:
+    frame = _build_frame("alpha\nbeta\ngamma\n", insertion_point=0)
+    frame._bookmarks = {"Quick 7": 11}
+    frame._focus_is_in_document_surface = lambda: True  # type: ignore[method-assign]
+    frame._handle_quill_key_mode_event = lambda _event: False  # type: ignore[method-assign]
+
+    event = _CharHookEvent(ord("7"), ctrl=True, alt=True, shift=True)
+    frame._on_char_hook(event)
+
+    assert frame.editor.GetInsertionPoint() == 11
+    assert frame._status_message == "Jumped to quick bookmark 7"
+
+
+def test_bare_digit_key_does_not_trigger_quick_bookmark() -> None:
+    # A plain digit keystroke (typing "3" into the document) must not be
+    # captured by the quick-bookmark interception.
+    frame = _build_frame("alpha\n", insertion_point=0)
+    frame._bookmarks = {}
+    frame._focus_is_in_document_surface = lambda: True  # type: ignore[method-assign]
+    frame._handle_quill_key_mode_event = lambda _event: False  # type: ignore[method-assign]
+
+    event = _CharHookEvent(ord("3"), ctrl=False, alt=False, shift=False)
+    frame._on_char_hook(event)
+
+    assert frame._bookmarks == {}
+    assert event.skipped is True
+
+
+def test_extract_and_reveal_portable_update_success(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Regression: a downloaded portable .zip previously left the user with
+    # only "Open folder"/"Close" and no in-app way to extract it. This
+    # verifies the new handler actually extracts and reveals the result.
+    from quill.core.updates import GitHubRelease
+
+    frame = MainFrame.__new__(MainFrame)
+    frame._status_message = "Ready"
+    frame._notifications: list[tuple[str, str]] = []
+    frame._announcements: list[str] = []
+    frame._set_status = lambda msg: setattr(frame, "_status_message", msg)  # type: ignore[method-assign]
+    frame._set_status_quiet = lambda msg: setattr(frame, "_status_message", msg)  # type: ignore[method-assign]
+    frame._record_notification = (  # type: ignore[method-assign]
+        lambda msg, category="info": frame._notifications.append((msg, category))
+    )
+    frame._announce = lambda msg, **_kw: frame._announcements.append(msg)  # type: ignore[method-assign]
+
+    revealed: list[Path] = []
+    frame._reveal_in_folder = lambda target: revealed.append(target)  # type: ignore[method-assign]
+
+    extract_calls: list[tuple[Path, Path]] = []
+
+    def fake_extract(zip_path, dest_dir):
+        extract_calls.append((Path(zip_path), Path(dest_dir)))
+
+    monkeypatch.setattr("quill.core.updates.extract_portable_update", fake_extract)
+
+    release = GitHubRelease(
+        version="0.9.0 Beta 3",
+        download_url="https://example.invalid/x.zip",
+        published_at="",
+        notes="",
+        prerelease=True,
+    )
+    target = Path("C:/fake/updates/Quill-Portable-v0.9.0-beta.3.zip")
+
+    frame._extract_and_reveal_portable_update(release, target)
+
+    assert extract_calls == [(target, target.parent / "Quill-Portable-0.9.0 Beta 3")]
+    assert revealed == [target.parent / "Quill-Portable-0.9.0 Beta 3"]
+    assert any("extracted" in msg.lower() for msg in frame._announcements)
+    assert frame._status_message == "Extracted update 0.9.0 Beta 3"
+
+
+def test_extract_and_reveal_portable_update_failure_is_reported(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from quill.core.updates import GitHubRelease
+
+    frame = MainFrame.__new__(MainFrame)
+    frame._status_message = "Ready"
+    frame._notifications: list[tuple[str, str]] = []
+    frame._set_status = lambda msg: setattr(frame, "_status_message", msg)  # type: ignore[method-assign]
+    frame._set_status_quiet = lambda msg: setattr(frame, "_status_message", msg)  # type: ignore[method-assign]
+    frame._record_notification = (  # type: ignore[method-assign]
+        lambda msg, category="info": frame._notifications.append((msg, category))
+    )
+    reveal_called = []
+    frame._reveal_in_folder = lambda target: reveal_called.append(target)  # type: ignore[method-assign]
+
+    def fake_extract(zip_path, dest_dir):
+        raise ValueError("boom")
+
+    monkeypatch.setattr("quill.core.updates.extract_portable_update", fake_extract)
+
+    release = GitHubRelease(
+        version="0.9.0 Beta 3",
+        download_url="https://example.invalid/x.zip",
+        published_at="",
+        notes="",
+        prerelease=True,
+    )
+    target = Path("C:/fake/updates/Quill-Portable-v0.9.0-beta.3.zip")
+
+    frame._extract_and_reveal_portable_update(release, target)
+
+    assert reveal_called == []
+    assert frame._status_message == "Update extraction failed"
+    assert any("failed" in msg.lower() for msg, _cat in frame._notifications)
+
+
+def test_offer_post_download_actions_offers_extract_for_zip_not_install() -> None:
+    # Source-contract check (real wx.Dialog construction needs a live wx.App,
+    # which this headless suite doesn't run): a .zip target must be treated
+    # as extractable, never as a runnable installer, and vice versa.
+    src = Path(main_frame_module.__file__).read_text(encoding="utf-8")
+    assert 'extractable = target.suffix.lower() == ".zip"' in src
+    assert '"Extract now"' in src
+    assert "_extract_and_reveal_portable_update(release, target)" in src
+    # The old behavior (zip treated as non-runnable, non-extractable, only
+    # ever "Open folder"/"Close") must not have silently regressed back.
+    assert 'runnable = target.suffix.lower() in {".exe", ".msi"}' in src

@@ -685,9 +685,14 @@ class QuillinsMenuMixin:
             except Exception:
                 pass
 
-        # Reload contributions so menus and commands reflect new state
+        # Reload contributions so menus and commands reflect new state (#974:
+        # _register_quillin_contributions only rebuilds the internal registry --
+        # the already-built menu bar needs an explicit rebuild too, or
+        # contributed items like the Insert > Date and Time submenu's entries
+        # stay silently absent for the rest of the session).
         try:
             self._register_quillin_contributions()
+            self._build_menu()
         except Exception:
             pass
 
@@ -831,6 +836,7 @@ class QuillinsMenuMixin:
                 return
             set_enabled(item.id, True)
             self._register_quillin_contributions()
+            self._build_menu()
             self._announce(f"Enabled {item.id}.")
             refresh_details()
 
@@ -840,11 +846,13 @@ class QuillinsMenuMixin:
                 return
             set_enabled(item.id, False)
             self._register_quillin_contributions()
+            self._build_menu()
             self._announce(f"Disabled {item.id}.")
             refresh_details()
 
         def on_reload(_event: object) -> None:
             self._register_quillin_contributions()
+            self._build_menu()
             self._announce("Reloaded Quillins from disk.")
 
         def on_remove(_event: object) -> None:
@@ -878,6 +886,7 @@ class QuillinsMenuMixin:
             if approved:
                 remove_extension(item.id)
                 self._register_quillin_contributions()
+                self._build_menu()
                 self._announce(f"Removed {item.id}.")
 
         def on_install(_event: object) -> None:
@@ -896,6 +905,7 @@ class QuillinsMenuMixin:
             try:
                 ext_id = install_extension(Path(src_path))
                 self._register_quillin_contributions()
+                self._build_menu()
                 installed[:] = list(self._installed_quillins())
                 labels = [self._quillin_list_label(item) for item in installed] or [
                     "(no Quillins installed)"
@@ -1104,7 +1114,7 @@ class QuillinsMenuMixin:
                 lines.append(f"Signature: invalid ({sig.error or 'does not match publisher key'}).")
             else:
                 lines.append("Signature: unsigned. This Quillin is not publisher-attested.")
-        except (OSError, ValueError) as exc:
+        except (OSError, ValueError, ImportError) as exc:
             lines.append(f"Signature: check failed ({exc}).")
 
         if item.errors:
@@ -1115,17 +1125,11 @@ class QuillinsMenuMixin:
 
     def _read_clipboard_text(self) -> str:
         wx = self._wx
-        text = ""
-        clipboard = getattr(wx, "TheClipboard", None)
-        if clipboard is None or not clipboard.Open():
-            return text
-        try:
-            data = wx.TextDataObject()
-            if clipboard.GetData(data):
-                text = str(data.GetText())
-        finally:
-            clipboard.Close()
-        return text
+        if getattr(wx, "TheClipboard", None) is None:
+            return ""
+        from quill.ui.clipboard_retry import read_clipboard_text
+
+        return read_clipboard_text(wx)
 
     def _write_clipboard_text(self, text: str) -> None:
         wx = self._wx

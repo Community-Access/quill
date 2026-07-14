@@ -3,7 +3,7 @@
 The legacy export path runs Markdown through Pandoc, whose docx writer silently
 drops the per-run font family, point size, color, highlight and per-paragraph
 alignment that QUILL's hidden-codes feature
-(``docs/planning/rich-text-formatting-hidden-codes-design.md``) materializes. This module
+(``the QUILL PRD hidden-codes appendix``) materializes. This module
 consumes the shared :class:`~quill.io.rtf_model.RichDocument` and writes those
 attributes onto real Word runs and paragraphs, so a styled QUILL document opens in
 Word with its formatting intact and its structure screen-reader navigable.
@@ -198,8 +198,39 @@ def write_docx(document: Document, target: Path) -> Path:
 
     The markup is converted to the shared :class:`RichDocument` first, so headings,
     bullets, emphasis, and all hidden-codes attributes (font, size, color,
-    highlight, alignment) are carried onto Word runs and paragraphs.
+    highlight, alignment) are carried onto Word runs and paragraphs. When the
+    document has a Header/Footer Builder spec (#892), it is written as real
+    Word header/footer parts with a live PAGE field.
     """
     rich = markdown_to_rich(document.text)
-    rich_to_docx(rich).save(str(target))
+    built = rich_to_docx(rich)
+    _maybe_apply_header_footer(built, document, target)
+    built.save(str(target))
     return target
+
+
+def _maybe_apply_header_footer(built: Any, document: Document, target: Path) -> None:
+    """Apply the document's saved Header/Footer spec to the built docx, if any.
+
+    Best-effort by contract: the header/footer is presentation, and its export
+    must never be the reason a save fails.
+    """
+    try:
+        import datetime
+
+        from quill.core.header_footer_store import HeaderFooterStore, key_for
+        from quill.io.header_footer_export import docx_apply_header_footer, spec_has_content
+
+        spec = HeaderFooterStore.load().get(key_for(document.path or target))
+        if not spec_has_content(spec) or spec is None:
+            return
+        name = Path(target).name
+        docx_apply_header_footer(
+            built,
+            spec,
+            title=name.rsplit(".", 1)[0] if "." in name else name,
+            filename=name,
+            date=datetime.date.today().isoformat(),
+        )
+    except Exception:  # noqa: BLE001 - never fail the save over a header
+        return

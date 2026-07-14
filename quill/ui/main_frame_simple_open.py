@@ -91,18 +91,20 @@ class SimpleOpenMixin:
         self._last_file_dir = str(result.path.parent)
         return result.path
 
-    def _prompt_native_open_dialog(self) -> Path | None:
+    def _prompt_native_open_dialog(self, initial_dir: str | None = None) -> Path | None:
         """Show the standard ``wx.FileDialog`` and return the chosen path.
 
         This is the original dialog body that used to live inline in
         ``MainFrame.open_file``. It is kept here so the simple-dialog
-        path can call it as a fallback.
+        path can call it as a fallback. ``initial_dir`` overrides the usual
+        last-used-folder default -- used by "Open from Favorite Folder" to
+        seed the dialog at a favorite instead.
         """
         wx = self._wx
         with wx.FileDialog(
             self.frame,
             "Open text file",
-            defaultDir=self._file_dialog_default_dir(),
+            defaultDir=initial_dir if initial_dir is not None else self._file_dialog_default_dir(),
             wildcard=(
                 "Supported files"
                 " (*.txt;*.md;*.html;*.htm;*.xhtml;*.json;*.yaml;*.yml;"

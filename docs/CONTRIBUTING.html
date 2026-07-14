@@ -324,6 +324,14 @@ per-action opt-in with visible progress and outcome.</li>
 <li>Run QUILL locally:
 <ul>
 <li><code>python -m quill</code></li>
+<li>Or use a run-from-source launcher, which syncs dependencies and
+opens Quill in one step: <code>run-from-source.bat</code> (Windows),
+<code>run-from-source.sh</code> (any shell), and
+<code>run-from-source.command</code> (macOS — double-click in Finder,
+which runs <code>.command</code> files in Terminal the way
+<code>.sh</code> files will not; #923). On macOS the first run may be
+blocked by Gatekeeper quarantine; right-click and choose
+<strong>Open</strong> once to trust it.</li>
 </ul></li>
 </ol>
 <h2 id="making-changes">Making changes</h2>
@@ -417,9 +425,10 @@ Attribution</h2>
 practices from the accessibility community:</p>
 <ul>
 <li><p><strong>AccessibleApps</strong> — Christopher Toth and
-contributors (https://github.com/accessibleapps/) contribute several
-libraries that are essential to Quill’s accessibility and cross-platform
-reliability:</p>
+contributors (<a
+href="https://github.com/accessibleapps/">https://github.com/accessibleapps/</a>)
+contribute several libraries that are essential to Quill's accessibility
+and cross-platform reliability:</p>
 <ul>
 <li><code>app_updater</code> (MIT) — cross-platform incremental update
 delivery and automatic installer bootstrapper. Vendored at
@@ -437,14 +446,15 @@ dialogs, clipboard, and hotkeys.</li>
 </ul>
 <p>Full license text is reproduced in
 <code>docs/legal/THIRD_PARTY_NOTICES.md</code>.</p></li>
-<li><p><strong>liblouis 3.38.0</strong>
-(https://github.com/liblouis/liblouis, LGPL-2.1-or-later) — open-source
-braille translation and back-translation library that powers the QUILL
-Braille Pack. Provides UEB Grade 1 and Grade 2, Standard American
-English, and dozens of international language tables through its
-<code>lou_translate</code> runtime. The Braille Pack is an optional
-installer component; liblouis is only present when it is selected. Full
-license text is shipped alongside the pack as <code>COPYING</code> and
+<li><p><strong>liblouis 3.38.0</strong> (<a
+href="https://github.com/liblouis/liblouis">https://github.com/liblouis/liblouis</a>,
+LGPL-2.1-or-later) — open-source braille translation and
+back-translation library that powers the QUILL Braille Pack. Provides
+UEB Grade 1 and Grade 2, Standard American English, and dozens of
+international language tables through its <code>lou_translate</code>
+runtime. The Braille Pack is an optional installer component; liblouis
+is only present when it is selected. Full license text is shipped
+alongside the pack as <code>COPYING</code> and
 <code>COPYING.LESSER</code>.</p></li>
 <li><p><strong>Prism</strong> (NVIDIA) — modern screen-reader backend
 for announcements and accessibility bridging.</p></li>
@@ -491,18 +501,16 @@ shell-interpolated.</li>
 <p>The following people have contributed code, tests, accessibility
 feedback, or documentation to QUILL. Thank you.</p>
 <ul>
-<li>Taylor Arndt (<a href="https://github.com/taylorarndt"><span
-class="citation" data-cites="taylorarndt">@taylorarndt</span></a>)</li>
-<li>Michael Doise (<a href="https://github.com/mikedoise"><span
-class="citation" data-cites="mikedoise">@mikedoise</span></a>)</li>
-<li>Doug Langley (<a href="https://github.com/douglangley"><span
-class="citation" data-cites="douglangley">@douglangley</span></a>)</li>
-<li>Becky K (<a href="https://github.com/BeckyK102125"><span
-class="citation"
-data-cites="BeckyK102125">@BeckyK102125</span></a>)</li>
-<li>Kelly Ford (<a href="https://github.com/kellylford"><span
-class="citation" data-cites="kellylford">@kellylford</span></a>) —
-Vision Prompt Library (#195, #248): 12 IDT-evaluated image description
+<li>Taylor Arndt (<a
+href="https://github.com/taylorarndt">@taylorarndt</a>)</li>
+<li>Michael Doise (<a
+href="https://github.com/mikedoise">@mikedoise</a>)</li>
+<li>Doug Langley (<a
+href="https://github.com/douglangley">@douglangley</a>)</li>
+<li>Becky K (<a
+href="https://github.com/BeckyK102125">@BeckyK102125</a>)</li>
+<li>Kelly Ford (<a href="https://github.com/kellylford">@kellylford</a>)
+— Vision Prompt Library (#195, #248): 12 IDT-evaluated image description
 styles, pre-describe picker, retry-in-dialog, VisionPromptManagerDialog,
 and AI Hub integration; HEIC/HEIF image support (#164, #165). Kelly is
 also the author of the <a
@@ -529,20 +537,24 @@ Copilot Chat viewer).</li>
 (<code>.github/workflows/windows-release.yml</code>)</li>
 </ol>
 <p>Release notes are prepared in a release notes file with the version
-as a part of its naming convention (‘release0.7.0.md’). The file is then
+as a part of its naming convention ('release0.7.0.md'). The file is then
 converted to epub and html file formats for distribution by Pandoc.
 <code>CHANGELOG.md</code> carries the same content in abbreviated form.
 All three files should be updated and committed before tagging.</p>
-<p>Versioning follows semantic intent for user-visible behavior: -
-<strong>Patch</strong>: bug fixes and low-risk changes -
-<strong>Minor</strong>: additive features and workflow improvements -
-<strong>Major</strong>: breaking changes or large platform shifts</p>
+<p>Versioning follows semantic intent for user-visible behavior:</p>
+<ul>
+<li><strong>Patch</strong>: bug fixes and low-risk changes</li>
+<li><strong>Minor</strong>: additive features and workflow
+improvements</li>
+<li><strong>Major</strong>: breaking changes or large platform
+shifts</li>
+</ul>
 <p><code>main</code> is branch-protected with required checks and
 pull-request reviews. Admin bypass remains enabled for emergency direct
 commits; these must be followed by a post-merge explanation and
 follow-up remediation if needed.</p>
 <h2 id="license">License</h2>
 <p>By contributing, you agree that your contributions are licensed under
-the repository’s MIT license.</p>
+the repository's MIT license.</p>
 </body>
 </html>

@@ -1,3 +1,17 @@
+"""Windows HTML/RTF email-clipboard payload builder -- DEAD CODE (tech debt).
+
+This module builds an HTML/RTF clipboard payload via the Windows CF_HTML
+format (ctypes + win32 clipboard APIs). It currently has ZERO callers anywhere
+in the tree and is not wired into any menu or command. It is intentionally
+retained as a marker for the email-clipboard feature (#900 sends/copies as
+email via a different path today): if this is ever revived, it needs a
+``quill/platform/macos/clipboard.py`` counterpart using ``NSPasteboard``
+instead of CF_HTML, which degrades to plain text on macOS today (see macOS
+review finding #52). Flagged here rather than deleted so the Windows-only
+assumption is explicit and a future contributor does not assume it works
+cross-platform. Tracked in ``docs/planning/review.md`` (#12).
+"""
+
 from __future__ import annotations
 
 import ctypes

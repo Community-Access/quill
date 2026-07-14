@@ -25,6 +25,7 @@ they behave normally the rest of the time.
 from __future__ import annotations
 
 import logging
+import sys
 import time
 from pathlib import Path
 from typing import Any
@@ -622,7 +623,12 @@ def _build_feedback() -> dict:
         FeedbackEvent.MIC_UNAVAILABLE: (
             "",
             "The microphone could not be opened. Check your input device and "
-            "Windows microphone permissions.",
+            + (
+                "Windows microphone permissions."
+                if sys.platform.startswith("win")
+                else "microphone permissions (System Settings > Privacy & "
+                "Security > Microphone on macOS)."
+            ),
             "Microphone unavailable",
         ),
         FeedbackEvent.BUSY: ("", "The previous dictation is still being transcribed.", ""),

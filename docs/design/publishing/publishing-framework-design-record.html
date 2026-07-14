@@ -176,13 +176,10 @@
   </style>
 </head>
 <body>
-<header id="title-block-header">
-<h1 class="title">publishing-framework-design-record</h1>
-</header>
 <h1
-id="publishing-providers-framework-consolidated-design-record">Publishing
+id="publishing-providers-framework--consolidated-design-record">Publishing
 Providers Framework — Consolidated Design Record</h1>
-<p>The dated design and checkpoint notes for QUILL’s provider-aware
+<p>The dated design and checkpoint notes for QUILL's provider-aware
 publishing feature, merged into one chronological record (2026-07-05).
 Each section below is a formerly standalone document, preserved verbatim
 with its headings demoted one level; the original files are in git
@@ -205,10 +202,10 @@ href="#publishing-providers-framework-current-plan-state-2026-06-19-through-2026
 current plan state (2026-06-19 through 2026-06-21)</a></li>
 <li><a
 href="#publishing-profile-restriction-writer-and-above--scoping-plan-2026-06-22">Profile
-restriction, “writer and above” (2026-06-22)</a></li>
+restriction, "writer and above" (2026-06-22)</a></li>
 </ul>
 <hr />
-<h2 id="publishing-remote-integration-planning-2026-06-10">Publishing /
+<h2 id="publishing--remote-integration-planning-2026-06-10">Publishing /
 Remote Integration Planning (2026-06-10)</h2>
 <p>Timestamp: <code>2026-06-10 17:24:40 -04:00</code></p>
 <p>Purpose:</p>
@@ -262,7 +259,7 @@ than when the publishing plan was first drafted.</p>
 Publishing And Remote Sites Truly Overlap</h3>
 <p>These parts overlap enough that future alignment is worth
 planning:</p>
-<h4 id="saved-remote-destination-pattern">1. Saved Remote Destination
+<h4 id="1-saved-remote-destination-pattern">1. Saved Remote Destination
 Pattern</h4>
 <p>Both systems need:</p>
 <ul>
@@ -278,7 +275,7 @@ Pattern</h4>
 remote destination</li>
 <li>they do not need to stay totally unrelated forever</li>
 </ul>
-<h4 id="credential-persistence-strategy">2. Credential Persistence
+<h4 id="2-credential-persistence-strategy">2. Credential Persistence
 Strategy</h4>
 <p>Both systems already use the same broad trust model:</p>
 <ul>
@@ -292,7 +289,7 @@ Strategy</h4>
 naming, and lifecycle expectations</li>
 <li>this is a strong candidate for shared infrastructure</li>
 </ul>
-<h4 id="file-menu-placement-and-dialog-rhythm">3. File Menu Placement
+<h4 id="3-file-menu-placement-and-dialog-rhythm">3. File Menu Placement
 And Dialog Rhythm</h4>
 <p>Both systems live under <code>File</code> and follow a similar
 high-level rhythm:</p>
@@ -309,7 +306,7 @@ model without changing the underlying publishing semantics</li>
 <h3 id="where-publishing-and-remote-sites-should-stay-separate">Where
 Publishing And Remote Sites Should Stay Separate</h3>
 <p>This is the important part.</p>
-<h4 id="publishing-is-not-file-transfer">1. Publishing Is Not File
+<h4 id="1-publishing-is-not-file-transfer">1. Publishing Is Not File
 Transfer</h4>
 <p>Remote Sites is fundamentally about files and paths:</p>
 <ul>
@@ -334,7 +331,7 @@ transport”</li>
 <li>a WordPress post is not analogous to an SFTP path in the user’s
 mental model or in the code’s behavior</li>
 </ul>
-<h4 id="publishing-needs-content-aware-metadata">2. Publishing Needs
+<h4 id="2-publishing-needs-content-aware-metadata">2. Publishing Needs
 Content-Aware Metadata</h4>
 <p>Publishing already depends on content-specific truth:</p>
 <ul>
@@ -353,7 +350,7 @@ representation metadata</li>
 <li>collapsing this into generic remote-site metadata would likely make
 the design less honest and harder to maintain</li>
 </ul>
-<h4 id="publishing-uses-provider-logic-not-just-transport-logic">3.
+<h4 id="3-publishing-uses-provider-logic-not-just-transport-logic">3.
 Publishing Uses Provider Logic, Not Just Transport Logic</h4>
 <p>Remote Sites is transport-oriented. Publishing is
 provider-oriented.</p>
@@ -488,7 +485,7 @@ actually worth it before we touch the implementation.</p>
 <hr />
 <h2 id="publishing-follow-up-phases-2026-06-19">Publishing Follow-Up
 Phases (2026-06-19)</h2>
-<h3 id="phase-order">2026-06-19 Phase Order</h3>
+<h3 id="2026-06-19-phase-order">2026-06-19 Phase Order</h3>
 <p>The publishing framework readiness checkpoint is complete. The next
 work moves into follow-up phases. These phases should be developed
 deliberately, with local commits and validation after each slice.</p>
@@ -528,7 +525,7 @@ review</li>
 without shell-specific WordPress assumptions</li>
 <li>the provider registry gate catches missing metadata/client pieces
 before exposure</li>
-<li>existing publishing workflows behave the same from the user’s
+<li>existing publishing workflows behave the same from the user's
 perspective</li>
 </ul>
 <p>Non-goals:</p>
@@ -639,7 +636,7 @@ storage</li>
 </ul>
 <h3 id="current-recommendation">Current Recommendation</h3>
 <h2
-id="start-with-phase-1-slice-a-define-the-bundled-provider-adapter-contract-in-docs-and-tests-then-implement-only-the-smallest-adapter-seam-needed-to-prove-wordpress-can-be-package-shaped-without-changing-user-visible-publishing-behavior.">Start
+id="start-with-phase-1-slice-a-define-the-bundled-provider-adapter-contract-in-docs-and-tests-then-implement-only-the-smallest-adapter-seam-needed-to-prove-wordpress-can-be-package-shaped-without-changing-user-visible-publishing-behavior">Start
 with Phase 1 slice A: define the bundled-provider adapter contract in
 docs and tests, then implement only the smallest adapter seam needed to
 prove WordPress can be package-shaped without changing user-visible
@@ -698,7 +695,7 @@ full unit suite with workspace-local temporary state.</p>
 <h3 id="phase-1-contract-finalized---2026-06-20">Phase 1 Contract
 Finalized - 2026-06-20</h3>
 <h2
-id="the-closeout-audit-accepts-this-bundled-adapter-contract-as-the-completed-phase-1-foundation.-later-phases-may-extend-execution-and-loading-policy-only-in-separate-reviewed-slices-they-must-not-silently-weaken-identity-validation-host-owned-secret-handling-explicit-network-action-or-validation-before-exposure.">The
+id="the-closeout-audit-accepts-this-bundled-adapter-contract-as-the-completed-phase-1-foundation-later-phases-may-extend-execution-and-loading-policy-only-in-separate-reviewed-slices-they-must-not-silently-weaken-identity-validation-host-owned-secret-handling-explicit-network-action-or-validation-before-exposure">The
 closeout audit accepts this bundled-adapter contract as the completed
 Phase 1 foundation. Later phases may extend execution and loading policy
 only in separate reviewed slices; they must not silently weaken identity
@@ -808,7 +805,7 @@ surface). Cross-session linkage persistence (a durable local registry so
 compare/update still works after closing and reopening a locally-saved
 publishing document) was explicitly deferred —
 <code>source_metadata</code> does not survive save/reopen today, and
-building that registry is a separable, larger concern than this phase’s
+building that registry is a separable, larger concern than this phase's
 actual scope required.</p>
 <p>Validation: focused battery <code>86 passed</code>; Ruff and the
 provider registry gate passed; full unit suite
@@ -819,12 +816,12 @@ behavior.</p>
 <h3
 id="quillin-worker-execution-boundaries-complete---2026-06-21">Quillin
 Worker Execution Boundaries Complete - 2026-06-21</h3>
-<p>Scoped narrowly after confirming there’s no untrusted provider yet to
+<p>Scoped narrowly after confirming there's no untrusted provider yet to
 validate a real subprocess worker boundary against. Implemented:
 cooperative cancellation
 (<code>is_cancelled</code>/<code>PublishingOperationCancelled</code>)
 threaded through <code>browse_publishing_content</code> and the
-WordPress client’s <code>browse_content</code>; a new
+WordPress client's <code>browse_content</code>; a new
 <code>publishing_worker.py</code> dispatch module bridging to
 <code>quill.stability.task_manager</code>;
 <code>BrowsePublishingContentDialog</code> now runs its load through the
@@ -839,7 +836,7 @@ the provider registry gate passed; full unit suite
 pre-existing baseline exactly.</p>
 <p>Next roadmap phase: live third-party provider loading.</p>
 <h3
-id="live-third-party-provider-loading-contract-shipped-roadmap-closed---2026-06-21">Live
+id="live-third-party-provider-loading--contract-shipped-roadmap-closed---2026-06-21">Live
 Third-Party Provider Loading — Contract Shipped, Roadmap Closed -
 2026-06-21</h3>
 <p>Found this phase was really a product security policy question, not
@@ -857,30 +854,30 @@ the provider registry gate passed (confirming zero registry impact);
 full unit suite <code>4100 passed, 66 failed, 14 skipped</code> matching
 the pre-existing baseline exactly.</p>
 <h2
-id="all-four-roadmap-phases-authorized-by-the-2026-06-20-phase-1-closeout-are-now-addressed.-two-decisions-remain-explicitly-open-for-the-userproduct-not-engineering-defaults-the-deferred-cross-session-publishing-linkage-registry-from-the-compare-phase-and-whetherwhen-to-loosen-sec-8-for-real-third-party-execution.">All
+id="all-four-roadmap-phases-authorized-by-the-2026-06-20-phase-1-closeout-are-now-addressed-two-decisions-remain-explicitly-open-for-the-userproduct-not-engineering-defaults-the-deferred-cross-session-publishing-linkage-registry-from-the-compare-phase-and-whetherwhen-to-loosen-sec-8-for-real-third-party-execution">All
 four roadmap phases authorized by the 2026-06-20 Phase 1 closeout are
 now addressed. Two decisions remain explicitly open for the
 user/product, not engineering defaults: the deferred cross-session
 publishing-linkage registry (from the compare phase), and whether/when
 to loosen SEC-8 for real third-party execution.</h2>
 <h2
-id="publishing-profile-restriction-writer-and-above-scoping-plan-2026-06-22">Publishing
-Profile Restriction (“Writer and Above”) — Scoping Plan
+id="publishing-profile-restriction-writer-and-above--scoping-plan-2026-06-22">Publishing
+Profile Restriction ("Writer and Above") — Scoping Plan
 (2026-06-22)</h2>
 <h3 id="status">Status</h3>
 <p><strong>Implemented 2026-06-22</strong>, same day as the scoping. The
-two open questions in “Open questions / flagged assumptions” below were
+two open questions in "Open questions / flagged assumptions" below were
 resolved before coding: soft restriction (Recommended option chosen) and
 <code>FEATURE_STATE_ON</code> (Recommended option chosen) for the
 included profiles. The third open question (timing) was resolved by the
 user asking to begin coding immediately — landed now, while still inert
-behind <code>future.publishing</code>’s
+behind <code>future.publishing</code>'s
 <code>locked_off=True</code>.</p>
-<p>Implementation: <code>quill/core/features.py</code>’s
+<p>Implementation: <code>quill/core/features.py</code>'s
 <code>PROFILE_DEFINITIONS</code> now match the table below exactly
-(<code>author_or_student</code>’s previously-absent key was added, not
+(<code>author_or_student</code>'s previously-absent key was added, not
 left as an implicit default).
-<code>quill/core/feature_catalog.py</code>’s
+<code>quill/core/feature_catalog.py</code>'s
 <code>future.publishing</code> description was extended to state the
 restriction. No UI/menu/palette code changed, confirmed unnecessary as
 predicted. Two new tests added to
@@ -892,7 +889,7 @@ predicted. Two new tests added to
 budget for <code>features.py</code> bumped 727-&gt;738. Full suite,
 scoped mypy, ruff, provider-registry gate, and a smoke launch all clean
 — see
-<code>codex-notes/logs/publishing-providers-framework-current-work-log-2026-06-19.md</code>’s
+<code>codex-notes/logs/publishing-providers-framework-current-work-log-2026-06-19.md</code>'s
 matching 2026-06-22 entry for full validation numbers.</p>
 <p>The rest of this document is preserved as written during scoping, for
 the historical record of what was decided and why.</p>
@@ -902,43 +899,43 @@ cited plans and work logs remain available in git history (last present
 at the <code>chore/root-docs-new-homes</code> merge, PR #824).</p>
 <h3 id="context">Context</h3>
 <p>The user was told (by someone above them in the project) that the
-publishing feature must only be available in “writer and above”
+publishing feature must only be available in "writer and above"
 profiles. This is a separate, additive requirement from the existing
 <code>future.publishing</code> <code>locked_off=True</code> review-gate
 lock added 2026-06-22 (see
-<code>codex-notes/logs/publishing-providers-framework-current-work-log-2026-06-19.md</code>’s
-“Locked publishing off behind the existing feature flag” entry) to keep
-publishing out of the public release until this branch’s PR is
+<code>codex-notes/logs/publishing-providers-framework-current-work-log-2026-06-19.md</code>'s
+"Locked publishing off behind the existing feature flag" entry) to keep
+publishing out of the public release until this branch's PR is
 reviewed.</p>
 <p>The two are independent and stack:</p>
 <ul>
 <li><strong>The <code>locked_off</code> lock</strong> is the master kill
-switch. While it’s <code>True</code>,
+switch. While it's <code>True</code>,
 <code>FeatureManager.state_for("future.publishing")</code> returns
 <code>FEATURE_STATE_OFF</code> unconditionally, for every profile, with
 no exceptions — it is checked before any profile is ever consulted.</li>
-<li><strong>This profile restriction</strong> describes the feature’s
+<li><strong>This profile restriction</strong> describes the feature's
 <em>intended configuration once that lock is eventually lifted</em> —
-which profiles should see/use publishing by default once it’s actually
+which profiles should see/use publishing by default once it's actually
 live. It has zero user-visible effect today and will continue to have
 zero effect for as long as <code>locked_off=True</code> remains in
 place.</li>
 </ul>
-<p>Do not confuse “configuring the profile states correctly” with
-“lifting the review-gate lock.” They are two separate decisions; this
+<p>Do not confuse "configuring the profile states correctly" with
+"lifting the review-gate lock." They are two separate decisions; this
 plan only scopes the first.</p>
 <h3 id="decided-scope">Decided scope</h3>
-<p>QUILL’s 10 feature profiles (<code>quill/core/features.py</code>,
+<p>QUILL's 10 feature profiles (<code>quill/core/features.py</code>,
 <code>PROFILE_DEFINITIONS</code>) have <strong>no existing tier or
-rank</strong> — they’re independent personas (Essential, Casual Writer,
+rank</strong> — they're independent personas (Essential, Casual Writer,
 Author or Student, Reader and Student, Office and Admin, Developer and
 Power Text, Low Vision, Braille and Screen Reader Power User,
 Accessibility Professional, Full Quill), not a capability ladder.
-“Writer and above” therefore has no formal, pre-existing meaning in this
+"Writer and above" therefore has no formal, pre-existing meaning in this
 codebase. Confirmed directly with the user (offered three concrete
 readings; they chose the second):</p>
 <blockquote>
-<p><strong>Writer + “serious writing” profiles</strong>: Writer, Author
+<p><strong>Writer + "serious writing" profiles</strong>: Writer, Author
 or Student, Developer and Power Text, and Full Quill get publishing
 access. Reader and Student, Office and Admin, Low Vision, Braille and
 Screen Reader Power User, and Accessibility Professional are treated as
@@ -946,12 +943,6 @@ different use cases, not a writing-capability tier, and do not get it.
 Essential — the baseline/default profile — does not get it either.</p>
 </blockquote>
 <table>
-<colgroup>
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-</colgroup>
 <thead>
 <tr>
 <th>Profile (id)</th>
@@ -1023,7 +1014,7 @@ Essential — the baseline/default profile — does not get it either.</p>
 </tr>
 </tbody>
 </table>
-<h3 id="current-state-vs.-target-state">Current state vs. target
+<h3 id="current-state-vs-target-state">Current state vs. target
 state</h3>
 <p>Read directly from <code>quill/core/features.py</code> (lines as of
 this writing):</p>
@@ -1039,19 +1030,19 @@ either <code>FEATURE_STATE_ON</code> (the 3 included profiles:
 <code>essential</code>, <code>reader_and_student</code>,
 <code>office_and_admin</code>, <code>low_vision</code>,
 <code>braille_screen_reader_power_user</code>,
-<code>accessibility_professional</code> — that’s 6, not 5; see the table
+<code>accessibility_professional</code> — that's 6, not 5; see the table
 above for the authoritative list).</li>
-<li><code>author_or_student</code>’s <code>states</code> dict (lines
+<li><code>author_or_student</code>'s <code>states</code> dict (lines
 116-134) has <strong>no</strong> <code>"future.publishing"</code> key at
 all. Today, ignoring the lock, that silently falls back to the default
-<code>FEATURE_STATE_ON</code> via <code>state_for()</code>’s
+<code>FEATURE_STATE_ON</code> via <code>state_for()</code>'s
 <code>self.active_profile.states.get(feature_id, FEATURE_STATE_ON)</code>
 — which happens to already match the target state, but as an
 unintentional gap, not a deliberate choice. The implementation should
 add the key explicitly (<code>FEATURE_STATE_ON</code>) so the intent is
 documented in the data rather than relying on an accidental
 default.</li>
-<li><code>full_quill</code>’s <code>states</code> dict is
+<li><code>full_quill</code>'s <code>states</code> dict is
 <code>{feature_id: FEATURE_STATE_ON for feature_id in FEATURE_DEFINITIONS}</code>
 — a comprehension over every registered feature. It already evaluates to
 <code>ON</code> for <code>future.publishing</code> and needs no
@@ -1077,7 +1068,7 @@ FeatureManager.state_for (features.py:436-446):
     if definition.locked_off: return OFF          # &lt;- short-circuits today
     if feature_id in self.overrides: return override
     return self.active_profile.states.get(feature_id, ON)   # &lt;- profile-aware</code></pre>
-<p>The same chain backs <code>quill/ui/palette.py</code>’s
+<p>The same chain backs <code>quill/ui/palette.py</code>'s
 <code>is_visible()</code> (Command Palette / Go to Anything filtering,
 via <code>COMMAND_FEATURE_MAP</code>). Once <code>locked_off</code> is
 lifted, both surfaces will automatically respect whichever profile is
@@ -1085,7 +1076,7 @@ active — <strong>no changes are needed in
 <code>main_frame_menu.py</code>, <code>quill/ui/palette.py</code>, or
 <code>quill/core/feature_command_map.py</code></strong> for the profile
 restriction itself. The only source-of-truth file is
-<code>quill/core/features.py</code>’s
+<code>quill/core/features.py</code>'s
 <code>PROFILE_DEFINITIONS</code>.</p>
 <h3
 id="implementation-checklist-for-whenever-this-is-actually-built">Implementation
@@ -1113,14 +1104,14 @@ absent)</li>
 <li><code>PROFILE_FULL_QUILL</code> — no change (comprehension already
 yields <code>ON</code>)</li>
 </ul></li>
-<li>Update <code>future.publishing</code>’s <code>description</code> in
+<li>Update <code>future.publishing</code>'s <code>description</code> in
 <code>quill/core/feature_catalog.py</code> to also state the profile
-restriction once it’s actually live (today’s description only mentions
-the review-gate lock — e.g. append something like “Once enabled,
+restriction once it's actually live (today's description only mentions
+the review-gate lock — e.g. append something like "Once enabled,
 available by default in the Casual Writer, Author or Student, Developer
 and Power Text, and Full Quill profiles; off by default elsewhere, but
 any user can still turn it on individually via Manage Individual
-Features.”).</li>
+Features.").</li>
 <li>No changes to <code>main_frame_menu.py</code>,
 <code>palette.py</code>, <code>feature_command_map.py</code>, or any
 dialog/menu surface (see above).</li>
@@ -1136,13 +1127,13 @@ equals the target state in the table above. Natural home:
 <code>tests/unit/core/test_features.py</code> or a new test in
 <code>tests/unit/core/test_publishing_framework.py</code>.</li>
 <li><strong>Lock/profile interaction regression test</strong> (important
-— prevents a future session from mistaking “the profile data says ON”
-for “the feature is actually reachable”): with the profile states set as
+— prevents a future session from mistaking "the profile data says ON"
+for "the feature is actually reachable"): with the profile states set as
 above and <code>locked_off</code> still <code>True</code>, assert
 <code>FeatureManager(active_profile_id=...).state_for("future.publishing")</code>
 is <code>FEATURE_STATE_OFF</code> for <strong>every</strong> profile,
 including the 3 that are configured <code>ON</code>. This documents the
-lock’s precedence explicitly rather than leaving it implicit.</li>
+lock's precedence explicitly rather than leaving it implicit.</li>
 <li><strong>Once the lock is separately lifted</strong> (a later,
 distinct change — not part of this profile-restriction work):
 <ul>
@@ -1152,45 +1143,44 @@ is <code>True</code>; same for <code>PROFILE_AUTHOR_STUDENT</code>,
 <code>PROFILE_FULL_QUILL</code>.</li>
 <li><code>FeatureManager(active_profile_id=PROFILE_ESSENTIAL).is_enabled("future.publishing")</code>
 is <code>False</code>; same for the other 5 excluded profiles.</li>
-<li><code>open_individual_feature_toggles</code>’s feature list still
+<li><code>open_individual_feature_toggles</code>'s feature list still
 includes <code>future.publishing</code> (proves the restriction is a
 soft per-profile default, not a hard lock — see below) once
 <code>locked_off</code> no longer excludes it from that screen.</li>
 </ul></li>
 </ul>
 <h3
-id="open-questions-flagged-assumptions-confirm-before-implementing">Open
+id="open-questions--flagged-assumptions-confirm-before-implementing">Open
 questions / flagged assumptions (confirm before implementing)</h3>
 <p>These are genuine product decisions, not engineering defaults —
 flagged explicitly rather than silently assumed:</p>
 <ol type="1">
-<li><strong>Soft vs. hard restriction.</strong> Every profile-scoped
+<li><strong>Soft vs. hard restriction.</strong> Every profile-scoped
 feature in this catalog today (<code>future.ai</code>,
 <code>future.character_inspector</code>, <code>future.cleanup</code>,
 and publishing itself) uses a <em>soft</em> default: the profile sets
-what’s on by default, but <code>open_individual_feature_toggles</code>
+what's on by default, but <code>open_individual_feature_toggles</code>
 lets any user override any non-locked feature regardless of profile.
 There is no existing mechanism in this codebase for a <em>hard</em>,
 unoverridable per-profile restriction — building one would be new
 infrastructure, not a data change. <strong>This plan assumes
-soft</strong> (matching every existing precedent). If “only available in
-writer and above” was meant literally — i.e., an Essential-profile user
+soft</strong> (matching every existing precedent). If "only available in
+writer and above" was meant literally — i.e., an Essential-profile user
 must never be able to turn it on even manually — that requires a
 different, larger design and should be raised explicitly before
 implementing.</li>
-<li><strong><code>FEATURE_STATE_ON</code>
-vs. <code>FEATURE_STATE_QUIET</code> for the 3 included
-profiles.</strong> This plan recommends <code>ON</code> (fully
-available, not gated behind a separate “show quiet/future features”
-toggle) since the instruction was “available,” not “discoverable for
-advanced users only.” <code>QUIET</code> would mean even Writer-profile
-users wouldn’t see it by default without first enabling that separate
-toggle.</li>
-<li><strong>Timing.</strong> This plan doesn’t decide <em>when</em> to
+<li><strong><code>FEATURE_STATE_ON</code> vs.
+<code>FEATURE_STATE_QUIET</code> for the 3 included profiles.</strong>
+This plan recommends <code>ON</code> (fully available, not gated behind
+a separate "show quiet/future features" toggle) since the instruction
+was "available," not "discoverable for advanced users only."
+<code>QUIET</code> would mean even Writer-profile users wouldn't see it
+by default without first enabling that separate toggle.</li>
+<li><strong>Timing.</strong> This plan doesn't decide <em>when</em> to
 make the <code>features.py</code> edit — it could land now (harmless and
-inert while <code>locked_off=True</code> stays in place) so it’s ready
+inert while <code>locked_off=True</code> stays in place) so it's ready
 the instant the review-gate lock is lifted, or it could be deferred
-until the lock-lifting decision is made. That’s a separate “when”
+until the lock-lifting decision is made. That's a separate "when"
 question for the user, not an engineering call.</li>
 </ol>
 <h3 id="relationship-to-the-rest-of-the-roadmap">Relationship to the

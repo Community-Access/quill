@@ -3,8 +3,12 @@ from __future__ import annotations
 import sys
 from dataclasses import dataclass
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from quill.core.shell_verbs import ShellVerb, default_shell_verbs, verb_actions
+
+if TYPE_CHECKING:  # noqa: I001 - deferred to avoid a circular import at runtime
+    from quill.platform.shell_integration import ShellIntegrationStatus
 
 try:  # pragma: no cover - Windows-only module
     import winreg
@@ -228,11 +232,16 @@ def build_shell_integration_plan(command: str | None = None) -> list[RegistryEnt
     return entries
 
 
-def install_shell_integration(command: str | None = None) -> None:
+def install_shell_integration(command: str | None = None) -> ShellIntegrationStatus:
     if winreg is None:  # pragma: no cover - non-Windows fallback
         raise RuntimeError("Windows registry access is unavailable")
     for entry in build_shell_integration_plan(command):
         _write_entry(entry)
+    from quill.platform.shell_integration import ShellIntegrationStatus  # noqa: I001 - deferred to avoid a circular import (neutral re-exports this module)
+
+    return ShellIntegrationStatus(
+        True, "Installed per-user Open-with associations and shell verbs for Quill."
+    )
 
 
 def remove_shell_integration() -> None:
@@ -292,9 +301,45 @@ def _write_entry(entry: RegistryEntry) -> None:
     key = _create_key(winreg.HKEY_CURRENT_USER, entry.path)
     try:
         for value in entry.values:
-            winreg.SetValueEx(key, value.name, 0, value.kind, value.value)
+            winreg.SetValueEx(
+                key, value.name, 0, value.kind, _coerce_registry_value(value.kind, value.value)
+            )
     finally:
         winreg.CloseKey(key)
+
+
+def _coerce_registry_value(kind: int, value: object) -> object:
+    """Coerce a Python value to the type ``winreg.SetValueEx`` accepts for *kind*.
+
+    Python 3.13's ``winreg`` is strict: a ``str`` passed for a binary registry
+    kind (``REG_NONE`` / ``REG_BINARY``) raises ``TypeError: Objects of type
+    'str' can not be used as binary registry values`` -- the crash in #921, hit
+    by the ``OpenWithProgids`` entry which writes an empty ``REG_NONE`` value
+    with the progid as the value *name*. Older Pythons silently accepted the
+    str, so the bug only surfaced on the 3.13 embedded runtime. Map each kind
+    to the type ``winreg`` requires: bytes for binary kinds, str for string
+    kinds, int for integer kinds. A value already of the right type is passed
+    through unchanged.
+    """
+    assert winreg is not None
+    if kind in (winreg.REG_SZ, winreg.REG_EXPAND_SZ, winreg.REG_MULTI_SZ):
+        if isinstance(value, str):
+            return value
+        if isinstance(value, bytes):
+            return value.decode("utf-8")
+        return str(value)
+    if kind in (winreg.REG_DWORD, winreg.REG_DWORD_BIG_ENDIAN, winreg.REG_QWORD):
+        return int(value)  # type: ignore[arg-type]
+    # Binary kinds: REG_NONE, REG_BINARY, REG_LINK -> bytes (the only type
+    # winreg accepts for them). An empty str (the OpenWithProgids case) and
+    # None both become b"".
+    if isinstance(value, bytes):
+        return value
+    if value is None:
+        return b""
+    if isinstance(value, str):
+        return value.encode("utf-8")
+    return bytes(value)  # type: ignore[arg-type]
 
 
 def _create_key(root: object, path: str):

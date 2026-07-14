@@ -117,7 +117,20 @@ _ACTIVE_LANGUAGE = _DEFAULT_LANGUAGE
 
 
 def managed_spell_dir() -> Path:
-    """The ENCHANT_CONFIG_DIR root holding downloaded dictionaries."""
+    """The ENCHANT_CONFIG_DIR root holding Hunspell dictionaries.
+
+    Prefers the Offline Edition's bundled dictionaries under
+    ``{app}/dictionaries`` (when QUILL_APP_ROOT is set and a ``hunspell/``
+    subdir of translated dictionaries is staged there), so the bundled
+    languages are discoverable by both ``installed_languages`` and enchant on
+    an air-gapped machine. Falls back to the user-writable app-data dir, where
+    on-demand downloads land on a slim install.
+    """
+    app_root = os.environ.get("QUILL_APP_ROOT", "").strip()
+    if app_root:
+        bundled = Path(app_root) / "dictionaries"
+        if (bundled / "hunspell").is_dir():
+            return bundled
     return app_data_dir() / "spell"
 
 
@@ -432,6 +445,34 @@ def list_misspellings(text: str, dictionary: set[str]) -> list[Misspelling]:
             misspellings.append(Misspelling(word=token, start=match.start(), end=match.end()))
     _MISSPELLINGS_CACHE[cache_key] = misspellings
     return list(misspellings)
+
+
+def rank_misspellings_by_frequency(misspellings: list[Misspelling]) -> list[Misspelling]:
+    """Reorder *misspellings* by how often each word occurs, most frequent first.
+
+    Kurzweil-1000-style "ranked spelling" (community feature request): instead
+    of reviewing errors in document order, review the word that recurs the
+    most first -- a single OCR misread or a repeated typo like "teh" for "the"
+    is usually the fastest way to clear the bulk of a list, since fixing one
+    entry via "Add to Dictionary" or a mental correction resolves every
+    occurrence at once.
+
+    Case-insensitive grouping (``Teh``/``teh`` count together), ties broken by
+    first-occurrence position so the ranking is stable and reproducible. Pure
+    reordering -- does not deduplicate; every occurrence is still present in
+    the result, just grouped and sorted by its word's total count.
+    """
+    counts: dict[str, int] = {}
+    first_seen: dict[str, int] = {}
+    for item in misspellings:
+        key = item.word.lower()
+        counts[key] = counts.get(key, 0) + 1
+        if key not in first_seen:
+            first_seen[key] = item.start
+    return sorted(
+        misspellings,
+        key=lambda item: (-counts[item.word.lower()], first_seen[item.word.lower()], item.start),
+    )
 
 
 def next_misspelling(text: str, cursor: int, dictionary: set[str]) -> Misspelling | None:

@@ -330,12 +330,19 @@ def _sanitize_log_text(text: str) -> str:
 
 
 def _safe_import_version() -> str:
+    # #967/#968 triage lesson: report the channel-annotated display version
+    # ("0.9.0 Beta 2"), not the bare number every beta shares.
     try:
-        from quill import __version__
+        from quill.build_info import get_short_version
 
-        return __version__
+        return str(get_short_version())
     except Exception:  # noqa: BLE001
-        return "unknown"
+        try:
+            from quill import __version__
+
+            return __version__
+        except Exception:  # noqa: BLE001
+            return "unknown"
 
 
 def _safe_glow_engine_summary() -> str:

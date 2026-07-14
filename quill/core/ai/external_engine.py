@@ -31,6 +31,7 @@ import json
 import shlex
 import shutil
 import subprocess
+import sys
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -45,6 +46,42 @@ _CONFIG_FILE = "external-engines.json"
 # Used by _resolve_which to fall back to the QUILL-managed path when the
 # executable is not on the system PATH.
 _MANAGED_RUNTIME_BASENAMES: frozenset[str] = frozenset({"node", "node.exe"})
+
+# Well-known macOS install locations a Finder-launched .app bundle misses: it
+# gets a minimal default PATH and never sources the user's login shell profile,
+# so a Homebrew/MacPorts install (or an nvm-managed Node) can be on disk yet
+# invisible to shutil.which(). Checked only after PATH itself comes up empty.
+_MACOS_FALLBACK_DIRS: tuple[str, ...] = (
+    "/usr/local/bin",
+    "/opt/homebrew/bin",
+    "/opt/local/bin",  # MacPorts
+)
+
+
+def _macos_engine_fallback(name: str) -> str | None:
+    """Resolve *name* against macOS well-known dirs PATH misses (#48).
+
+    Covers Homebrew/MacPorts bin dirs and, for Node, the per-version bin under
+    ``~/.nvm/versions/node`` (the highest installed version wins). Returns the
+    executable path or None when nothing is on disk.
+    """
+    base = Path(name).name
+    for directory in _MACOS_FALLBACK_DIRS:
+        candidate = Path(directory) / base
+        if candidate.is_file():
+            return str(candidate)
+    if base.lower() in {"node", "node.exe"}:
+        nvm_root = Path.home() / ".nvm" / "versions" / "node"
+        if nvm_root.is_dir():
+            # nvm keeps one dir per installed version (e.g. v20.10.0); pick the
+            # highest by reverse-sorted name so a stale lower version is skipped.
+            versions = sorted((p for p in nvm_root.iterdir() if p.is_dir()), reverse=True)
+            for entry in versions:
+                candidate = entry / "bin" / "node"
+                if candidate.is_file():
+                    return str(candidate)
+    return None
+
 
 # Canonical basenames the external-engine boundary is willing to launch.
 # Anything else is rejected by ``configure_engine`` and ``probe_engine`` as
@@ -74,15 +111,22 @@ Runner = Callable[[list[str], str, float], "tuple[int, str, str]"]
 
 
 def _resolve_which(name: str) -> str | None:
-    """Like shutil.which, but also checks the QUILL-managed Node.js path.
+    """Like shutil.which, but also checks macOS well-known dirs and the
+    QUILL-managed Node.js path.
 
     Used as the default ``which`` argument in :func:`probe_engine` and
     :func:`configure_engine`. Tests that inject their own ``which`` function
-    bypass this entirely, so injected fakes remain authoritative.
+    bypass this entirely, so injected fakes remain authoritative. On macOS a
+    Finder-launched app gets a minimal PATH, so Homebrew/nvm installs are also
+    checked against well-known dirs (#48).
     """
     found = shutil.which(name)
     if found is not None:
         return found
+    if sys.platform == "darwin":
+        fallback = _macos_engine_fallback(name)
+        if fallback is not None:
+            return fallback
     if Path(name).name.lower() in _MANAGED_RUNTIME_BASENAMES:
         try:
             from quill.core.node_install import node_executable_path

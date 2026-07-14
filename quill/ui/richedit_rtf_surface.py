@@ -1,16 +1,20 @@
-"""Native Microsoft Rich Edit surface for the experimental "richedit_rtf" option.
+"""QuillRichEdit — QUILL's one editor surface on Windows.
 
-Selected on the Experimental tab (``experimental_editor_surface = "richedit_rtf"``).
-Backed by the *same* native Windows Rich Edit control QUILL already ships as its
-default (``RICHEDIT50W`` from msftedit.dll, a ``wx.TextCtrl`` with ``TE_RICH2``).
-The whole ``EditorSurface`` contract (value / caret / selection / undo / events)
-comes for free and unchanged from that proven control.
+Promoted from the Experimental tab in 0.9.0-beta3 after live JAWS + braille
+testing confirmed the braille fix (#616/#813): every document tab is built by
+:func:`create_richedit_rtf`, honoring the two Braille-tab checkboxes
+(``braille_editor_system_edit_fix`` -> ``SES_EMULATESYSEDIT``;
+``braille_editor_hide_border`` -> a borderless frame, applied by the caller).
+Backed by the *same* native Windows Rich Edit control QUILL always shipped as
+its default (``RICHEDIT50W`` from msftedit.dll, a ``wx.TextCtrl`` with
+``TE_RICH2``). The whole ``EditorSurface`` contract (value / caret / selection /
+undo / events) comes for free and unchanged from that proven control.
 
 **Phase 1 adds real RTF load/save via the Rich Edit Text Object Model (TOM).**
 The first attempt drove ``EM_STREAMIN`` / ``EM_STREAMOUT`` with a ``ctypes``
 ``EDITSTREAM`` callback, but on-device testing found that hard-crashes msftedit
 (the control access-violates the instant it invokes a Python callback -- see the
-§8 post-mortem in ``docs/planning/editor-surface-experiments.md``). The TOM path
+post-mortem in ``docs/engineering/editor-surface-history.md``). The TOM path
 avoids a Python callback entirely: ``EM_GETOLEINTERFACE`` yields the control's
 ``IRichEditOle``; we ``QueryInterface`` to ``ITextDocument`` (via ``comtypes`` +
 the tom type library) and call ``ITextDocument::Open`` / ``::Save`` with the
@@ -57,7 +61,50 @@ _SES_EMULATESYSEDIT = 0x00000001
 
 # TOM formatting (Phase 2): ITextFont bool values + ITextPara alignment (tom.h).
 _TOM_TOGGLE = -9999998
+_TOM_TRUE = -9999999
+_TOM_FALSE = 0
 _TOM_ALIGNMENT = {"left": 0, "center": 1, "right": 2, "justify": 3}
+_TOM_ALIGNMENT_NAMES = {value: name for name, value in _TOM_ALIGNMENT.items()}
+# tomParagraph unit for expanding the selection to whole paragraphs (tom.h).
+_TOM_UNIT_PARAGRAPH = 4
+
+#: Rich-mode heading presentation: point size + bold per level, chosen to track
+#: Word's Heading 1-6 ladder closely enough that a saved RTF reads as headings
+#: in Word while staying legible in the editor. Body text is 11 pt.
+HEADING_POINT_SIZES: dict[int, float] = {1: 20.0, 2: 16.0, 3: 14.0, 4: 12.0, 5: 11.0, 6: 11.0}
+BODY_POINT_SIZE = 11.0
+
+#: Named colors accepted by set_color/set_highlight, mirroring the hidden-codes
+#: vocabulary (quill/io/docx_writer.py keeps the same table for export parity).
+_COLOR_NAMES: dict[str, tuple[int, int, int]] = {
+    "red": (255, 0, 0),
+    "green": (0, 128, 0),
+    "blue": (0, 0, 255),
+    "black": (0, 0, 0),
+    "white": (255, 255, 255),
+    "yellow": (255, 255, 0),
+    "orange": (255, 165, 0),
+    "purple": (128, 0, 128),
+    "gray": (128, 128, 128),
+    "grey": (128, 128, 128),
+}
+
+
+def _color_to_colorref(color: str) -> int:
+    """Convert ``#rrggbb`` or a named color to a Win32 COLORREF (0x00BBGGRR)."""
+    value = str(color).strip().lower()
+    if value.startswith("#") and len(value) == 7:
+        try:
+            red = int(value[1:3], 16)
+            green = int(value[3:5], 16)
+            blue = int(value[5:7], 16)
+        except ValueError as exc:
+            raise RichEditRtfError(f"Unknown color: {color!r}") from exc
+    elif value in _COLOR_NAMES:
+        red, green, blue = _COLOR_NAMES[value]
+    else:
+        raise RichEditRtfError(f"Unknown color: {color!r}")
+    return red | (green << 8) | (blue << 16)
 
 
 class RichEditRtfError(RuntimeError):
@@ -115,6 +162,9 @@ def _get_text_document(hwnd: int) -> Any:  # pragma: no cover - needs a live HWN
         if not ptr.value:
             raise RichEditRtfError("EM_GETOLEINTERFACE returned no interface.")
         if _tom_module is None:
+            from quill.platform.windows.comtypes_setup import ensure_comtypes_gen_dir_redirected
+
+            ensure_comtypes_gen_dir_redirected()
             _tom_module = comtypes.client.GetModule(_TOM_TYPELIB)
         unknown = ctypes.cast(ptr.value, ctypes.POINTER(comtypes.IUnknown))
         return unknown.QueryInterface(_tom_module.ITextDocument)
@@ -313,6 +363,97 @@ class QuillRichEdit:
             raise
         except Exception as exc:  # noqa: BLE001
             raise RichEditRtfError(f"Could not set alignment: {exc}") from exc
+
+    def set_color(self, color: str) -> None:
+        """Set the text color of the selection (``#rrggbb`` or a named color)."""
+        self._apply_font("ForeColor", _color_to_colorref(color))
+
+    def set_highlight(self, color: str) -> None:
+        """Set the highlight (background) color of the selection."""
+        self._apply_font("BackColor", _color_to_colorref(color))
+
+    def set_heading(self, level: int) -> None:
+        """Style the paragraph(s) under the selection as a Heading 1-6.
+
+        Rich-mode headings are presentational on the native control: the
+        Word-tracking point-size ladder plus bold, applied to whole paragraphs
+        (the selection is expanded through ``tomParagraph`` so the caret
+        anywhere in a line headings the whole line). ``level`` 0 returns the
+        paragraph to body text. Saved RTF then reads as sized/bold headings in
+        Word; heading *navigation* in rich mode reads the same ladder back
+        through :meth:`caret_format_description`.
+        """
+        try:
+            level = int(level)
+        except (TypeError, ValueError) as exc:
+            raise RichEditRtfError(f"Unknown heading level: {level!r}") from exc
+        if not 0 <= level <= 6:
+            raise RichEditRtfError(f"Heading level out of range: {level}")
+        try:
+            selection = self._selection()
+            span = selection.Duplicate
+            span.Expand(_TOM_UNIT_PARAGRAPH)
+            font = span.Font
+            if level == 0:
+                font.Size = BODY_POINT_SIZE
+                font.Bold = _TOM_FALSE
+            else:
+                font.Size = HEADING_POINT_SIZES[level]
+                font.Bold = _TOM_TRUE
+        except RichEditRtfError:
+            raise
+        except Exception as exc:  # noqa: BLE001
+            raise RichEditRtfError(f"Could not apply heading {level}: {exc}") from exc
+
+    def caret_format_description(self) -> str:
+        """A spoken-friendly description of the formatting at the caret.
+
+        Read live from the TOM (``ITextFont``/``ITextPara``), so Describe
+        Formatting in rich mode answers from the real control instead of
+        parsing markup: "Arial, 14 point, bold, centered". Raises
+        :class:`RichEditRtfError` when the TOM is unreachable.
+        """
+        try:
+            selection = self._selection()
+            font = selection.Font
+            parts: list[str] = []
+            name = str(getattr(font, "Name", "") or "").strip()
+            if name:
+                parts.append(name)
+            size = float(getattr(font, "Size", 0) or 0)
+            if size > 0:
+                point = f"{size:g} point"
+                parts.append(point)
+                heading = next(
+                    (
+                        lvl
+                        for lvl, pts in HEADING_POINT_SIZES.items()
+                        if lvl <= 4 and abs(size - pts) < 0.25
+                    ),
+                    None,
+                )
+                if heading is not None and int(getattr(font, "Bold", 0)) != 0 and heading != 5:
+                    parts.append(f"heading {heading}")
+            if int(getattr(font, "Bold", 0)) != 0:
+                parts.append("bold")
+            if int(getattr(font, "Italic", 0)) != 0:
+                parts.append("italic")
+            if int(getattr(font, "Underline", 0)) != 0:
+                parts.append("underline")
+            alignment_phrases = {
+                "center": "centered",
+                "right": "right aligned",
+                "justify": "justified",
+            }
+            alignment = _TOM_ALIGNMENT_NAMES.get(int(selection.Para.Alignment))
+            phrase = alignment_phrases.get(alignment or "")
+            if phrase:
+                parts.append(phrase)
+            return ", ".join(parts) if parts else "plain text"
+        except RichEditRtfError:
+            raise
+        except Exception as exc:  # noqa: BLE001
+            raise RichEditRtfError(f"Could not read caret formatting: {exc}") from exc
 
     # -- reporting ---------------------------------------------------------- #
 

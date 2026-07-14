@@ -77,6 +77,16 @@ def _build_power_tools_registrar() -> FirstPartyRegistrar:
         label="&Table of Contents",
         separator_before=True,
     )
+    # Insert Image (#899): mandatory alt text (or an explicit decorative
+    # flag) at the one insertion path built specifically for it.
+    add(
+        id="power.insert_image",
+        title="Insert Image",
+        top_level="Insert",
+        group="insert",
+        label="&Image...",
+        separator_before=False,
+    )
 
     # Edit menu ----------------------------------------------------------
     add(
@@ -153,6 +163,24 @@ def _build_power_tools_registrar() -> FirstPartyRegistrar:
         label="Dele&te Current File...",
         separator_before=False,
     )
+    # Send / Copy as Email (#900): the selection, or the whole document when
+    # nothing is selected, rendered per the content_handoff_format setting.
+    add(
+        id="power.send_as_email",
+        title="Send as Email",
+        top_level="File",
+        group="file_ops",
+        label="Sen&d as Email...",
+        separator_before=True,
+    )
+    add(
+        id="power.copy_as_email_body",
+        title="Copy as Email Body",
+        top_level="File",
+        group="file_ops",
+        label="Copy as E&mail Body",
+        separator_before=False,
+    )
 
     # Format > Line operations ------------------------------------------
     add(
@@ -217,6 +245,24 @@ def _build_power_tools_registrar() -> FirstPartyRegistrar:
         top_level="Format",
         group="format_line",
         label="Delete to Document En&d",
+        separator_before=False,
+    )
+    # AutoOutline (#894): literal-text heading numbering, driven by the
+    # auto_outline_style setting (numeric or legal).
+    add(
+        id="power.apply_auto_outline_numbering",
+        title="Update Outline Numbering",
+        top_level="Format",
+        group="format_line",
+        label="&Update Outline Numbering",
+        separator_before=True,
+    )
+    add(
+        id="power.remove_auto_outline_numbering",
+        title="Remove Outline Numbering",
+        top_level="Format",
+        group="format_line",
+        label="Re&move Outline Numbering",
         separator_before=False,
     )
 
@@ -565,6 +611,27 @@ def _build_power_tools_registrar() -> FirstPartyRegistrar:
         separator_before=False,
     )
 
+    # Edit > Clip Library (#895) -- a rolling history beneath Copy Tray's
+    # curated 12 slots, sharing the same "copy_tray" menu group/section since
+    # it's the natural neighbor. keep_selection_in_clip_library /
+    # open_clip_library live in main_frame_clip_library.py's ClipLibraryMixin.
+    add(
+        id="edit.keep_selection_in_clip_library",
+        title="Keep Selection in Clip Library",
+        top_level="Edit",
+        group="copy_tray",
+        label="&Keep Selection in Clip Library",
+        separator_before=True,
+    )
+    add(
+        id="edit.open_clip_library",
+        title="Open Clip Library",
+        top_level="Edit",
+        group="copy_tray",
+        label="Open Clip &Library...",
+        separator_before=False,
+    )
+
     # Tools > Advanced (the cohesive remainder) --------------------------
     add(
         id="power.run_current_file",
@@ -632,6 +699,14 @@ def _build_power_tools_registrar() -> FirstPartyRegistrar:
         group="power_tools",
         label="Describe &Character at Cursor",
         separator_before=True,
+    )
+    add(
+        id="power.describe_image_at_cursor",
+        title="Describe Image at Cursor",
+        top_level="Tools",
+        group="power_tools",
+        label="Describe &Image at Cursor",
+        separator_before=False,
     )
     return registrar
 

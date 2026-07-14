@@ -64,6 +64,19 @@ def run_subprocess_safely(
             arg_list,
             cwd=cwd,
             text=True,
+            # #954: without an explicit encoding, subprocess.run decodes
+            # stdout/stderr using the system's preferred locale encoding --
+            # on Windows that is often a legacy code page (e.g. CP1252), not
+            # UTF-8. Bundled tools like Pandoc always emit UTF-8 regardless of
+            # the host locale, so a mismatched default decode could fail
+            # inside the reader thread and silently leave stdout as None
+            # (surfacing as "Pandoc succeeded but produced an empty
+            # document," #954) rather than raising anywhere visible. UTF-8 is
+            # forced here for every caller, and "replace" guarantees a
+            # visible mojibake fallback instead of a silent empty result if a
+            # tool ever emits genuinely non-UTF-8 bytes.
+            encoding="utf-8",
+            errors="replace",
             capture_output=True,
             timeout=timeout_seconds,
             check=False,

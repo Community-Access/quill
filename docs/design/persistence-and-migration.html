@@ -176,22 +176,19 @@
   </style>
 </head>
 <body>
-<header id="title-block-header">
-<h1 class="title">persistence-and-migration</h1>
-</header>
 <h1 id="persistence-and-migration-contract">Persistence and migration
 contract</h1>
-<p>How QUILL stores user state so that upgrades “just work” release to
+<p>How QUILL stores user state so that upgrades "just work" release to
 release: customizations are preserved, new and changed defaults arrive
 automatically, and a bad migration is always recoverable. This is the
 design contract every persisted store follows; read it before adding a
-new store or changing an existing one’s on-disk shape.</p>
+new store or changing an existing one's on-disk shape.</p>
 <h2 id="the-three-rules">The three rules</h2>
 <ol type="1">
 <li><strong>Defaults live in code.</strong> The default value of every
 setting, keybinding, and feature flag is defined in the code, never
-baked into the user’s file.</li>
-<li><strong>Disk stores only the delta.</strong> A user’s file contains
+baked into the user's file.</li>
+<li><strong>Disk stores only the delta.</strong> A user's file contains
 <em>only</em> the fields they changed from the default, plus a
 schema/epoch version stamp.</li>
 <li><strong>Load migrates and protects.</strong> On load, a file that
@@ -202,24 +199,18 @@ shape exactly once.</li>
 upgrades safe:</p>
 <ul>
 <li><strong>New setting added in a release</strong> -&gt; it is absent
-from old files, so every user picks up its default automatically. (“New
-settings migrate in as we add features.”)</li>
+from old files, so every user picks up its default automatically. ("New
+settings migrate in as we add features.")</li>
 <li><strong>Default value changed</strong> -&gt; users who never
 overrode that field have no entry for it, so they get the new default.
 (A full snapshot would pin every field to its value at save time, so a
 changed default would never reach an existing user. That was a real bug;
-see “History” below.)</li>
+see "History" below.)</li>
 <li><strong>User customization</strong> -&gt; it is the only thing
 written, so it survives upgrades verbatim.</li>
 </ul>
 <h2 id="the-stores">The stores</h2>
 <table>
-<colgroup>
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-</colgroup>
 <thead>
 <tr>
 <th>Store</th>
@@ -251,7 +242,7 @@ written, so it survives upgrades verbatim.</li>
 </tr>
 </tbody>
 </table>
-<p>All three keep only the user’s overrides. New stores must do the
+<p>All three keep only the user's overrides. New stores must do the
 same.</p>
 <h2 id="shared-building-blocks">Shared building blocks</h2>
 <ul>
@@ -280,7 +271,7 @@ the current version?).</li>
 <li>In the loader, call
 <code>versioned_store.load_with_migration(path, store_name="...", parse=..., serialize=..., is_legacy=..., default=...)</code>.</li>
 </ol>
-<p>That’s it: forward-compatible defaults, one-time legacy conversion,
+<p>That's it: forward-compatible defaults, one-time legacy conversion,
 and a pre-migration backup all come for free.</p>
 <h2 id="recipe-change-a-default">Recipe: change a default</h2>
 <p>Just change it in code. Every user who has not overridden that field
@@ -288,7 +279,7 @@ gets the new value on the next launch. No migration entry is needed.</p>
 <h2 id="recipe-force-a-change-onto-users-who-did-override-it">Recipe:
 force a change onto users who DID override it</h2>
 <p>Some default changes matter enough to push even to users who already
-customized the field – the canonical case is restoring
+customized the field -- the canonical case is restoring
 <strong>Find</strong> to <code>Ctrl+F</code>. Use a <strong>recommended
 update</strong> (<code>quill/core/recommended_updates.py</code>):</p>
 <ul>
@@ -312,10 +303,10 @@ be force-set once the same way. Both are applied at startup by
 settings and keymap load, share the
 <code>apply_recommended_keymap_updates</code> opt-out, and record
 applied ids in <code>settings.applied_recommended_updates</code>.</p>
-<h2 id="recipe-rename-retype-split-a-field-schema-bump">Recipe: rename /
-retype / split a field (schema bump)</h2>
+<h2 id="recipe-rename--retype--split-a-field-schema-bump">Recipe: rename
+/ retype / split a field (schema bump)</h2>
 <p>When a change cannot be expressed as a default change (a field is
-renamed, retyped, or split), bump the store’s version and transform the
+renamed, retyped, or split), bump the store's version and transform the
 old shape inside <code>parse</code> (or a dedicated ordered migration
 step). Because <code>is_legacy</code> now reports the old file as
 legacy, it is backed up before the rewrite automatically.</p>
@@ -325,12 +316,12 @@ legacy, it is backed up before the rewrite automatically.</p>
 recovery data are never touched by migration; only the small config
 files are rewritten, and always after a backup.</li>
 <li><strong>Corruption tolerant.</strong> A bad value in one field falls
-back to that field’s default without discarding the rest (settings
+back to that field's default without discarding the rest (settings
 validate field-by-field). A whole file that is <em>unparseable</em> is
 <strong>quarantined</strong> before reset: the loader catches the decode
 error, copies the original to
 <code>migration-backups/&lt;name&gt;-corrupt-*</code>, and returns
-defaults – so a corrupt config never crashes startup and is always
+defaults -- so a corrupt config never crashes startup and is always
 recoverable (<code>migration_backup.backup_corrupt_file</code>, used by
 <code>load_keymap</code> and
 <code>versioned_store.load_with_migration</code>).</li>
@@ -353,7 +344,7 @@ a new persisted store cannot be added without consciously tagging it
 <code>marker</code>, or <code>needs-versioning</code>. The
 <code>needs-versioning</code> tag is the tracked backlog of real config
 stores that should still adopt the contract; <strong>today it is
-empty</strong> – every config store carries a
+empty</strong> -- every config store carries a
 <code>schema_version</code> (dict stores stamp the key; bare-list / map
 / raw-dict stores wrap in a <code>{"schema_version", ...}</code>
 envelope with back-compatible reads). Run
@@ -365,14 +356,14 @@ still load), exactly like <code>features.json</code>. The stamp is what
 makes a <em>future</em> shape change expressible.</p>
 <p>Underpinning all of this, <code>storage.read_json</code> is
 <strong>corruption-tolerant</strong>: a present-but-unparseable file
-returns the caller’s default (and logs) instead of raising, so one bad
-config file can never crash a load path – and the critical stores
+returns the caller's default (and logs) instead of raising, so one bad
+config file can never crash a load path -- and the critical stores
 (settings, keymap) additionally quarantine the bad file first.</p>
 <h2 id="installer-interaction">Installer interaction</h2>
 <p>The Windows installer does a clean payload replace (wipes the
 first-party <code>quill</code> package before laying down the new one)
 to prevent version-skew import crashes, but it does <strong>not</strong>
-delete user config – the migration contract above is what keeps config
+delete user config -- the migration contract above is what keeps config
 safe across releases. See
 <code>scripts/build_windows_distribution.py</code> (the
 <code>[InstallDelete]</code> section).</p>
@@ -380,7 +371,7 @@ safe across releases. See
 <ul>
 <li><code>schema_version</code> 1 (settings): nested
 <code>{schema_version, groups}</code> <strong>full snapshot</strong> of
-every field – pinned changed defaults, so they never reached existing
+every field -- pinned changed defaults, so they never reached existing
 users.</li>
 <li><code>schema_version</code> 2 (settings): nested <code>groups</code>
 hold only the <strong>delta</strong> from <code>Settings()</code>

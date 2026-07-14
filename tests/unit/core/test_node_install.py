@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import io
+import ssl
 import zipfile
 from pathlib import Path
 
@@ -36,6 +37,25 @@ def _make_node_zip(include_node_exe: bool = True) -> bytes:
 def _fake_shasums(filename: str = "node-v20.0.0-win-x64.zip") -> str:
     return (
         f"aabbcc  {filename}\nddeeff  node-v20.0.0-win-x64.tar.gz\n001122  node-v20.0.0-x64.msi\n"
+    )
+
+
+def _patch_ssl_context_for_fake_platform(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Prevent ssl.create_default_context() from touching the real OS cert store.
+
+    These tests fake sys.platform = "win32" to exercise node_install's Windows
+    URL-building logic without a real Windows machine. But sys is a process-wide
+    singleton, so the patch is also visible to the stdlib ssl module's own
+    internal platform check inside create_default_context() -> load_default_certs()
+    -> _load_windows_store_certs(). On a REAL macOS/Linux interpreter, ssl.py
+    never imported the Windows-only _ssl.enum_certificates name at startup, so
+    that code path dies with NameError -- not a QUILL bug, a side effect of
+    faking sys.platform reaching real stdlib SSL code. urlopen is already faked
+    in every test here, so the context's actual certs are never used; a plain
+    unloaded SSLContext is a sufficient stand-in.
+    """
+    monkeypatch.setattr(
+        node_mod.ssl, "create_default_context", lambda: ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
     )
 
 
@@ -185,6 +205,7 @@ def test_install_node_runtime_downloads_and_extracts(
 ) -> None:
     monkeypatch.setattr(node_mod.sys, "platform", "win32")
     monkeypatch.delenv("QUILL_SAFE_MODE", raising=False)
+    _patch_ssl_context_for_fake_platform(monkeypatch)
 
     shasums_payload = _fake_shasums("node-v20.9.0-win-x64.zip").encode()
     node_zip_payload = _make_node_zip()
@@ -218,6 +239,7 @@ def test_install_node_runtime_propagates_network_error(
 ) -> None:
     monkeypatch.setattr(node_mod.sys, "platform", "win32")
     monkeypatch.delenv("QUILL_SAFE_MODE", raising=False)
+    _patch_ssl_context_for_fake_platform(monkeypatch)
     monkeypatch.setattr(
         node_mod.urllib.request,
         "urlopen",
@@ -234,6 +256,7 @@ def test_install_node_runtime_rejects_http_zip_url(
     """_download_node_zip refuses HTTP (non-HTTPS) URLs even if somehow resolved."""
     monkeypatch.setattr(node_mod.sys, "platform", "win32")
     monkeypatch.delenv("QUILL_SAFE_MODE", raising=False)
+    _patch_ssl_context_for_fake_platform(monkeypatch)
 
     http_shasums = "aabb  node-v20.0.0-win-x64.zip\n"
     http_base_url = "http://insecure.example.com/dist/latest-v20.x"

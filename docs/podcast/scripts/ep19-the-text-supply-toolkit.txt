@@ -1,0 +1,155 @@
+[JESSICA]
+The QUILL Cast, episode nineteen. I'm Jessica. Today we step sideways out of the formats arc for one episode and meet the four tools that bring words to your cursor instead of making you fetch them by hand. The Copy Tray, snippets, abbreviations, and macros. Every homework assignment from here on out gets measurably faster once these four are in your hands.
+
+[LIAM]
+I'm Liam. Quick recap of episode eighteen, the markdown and structure deep-dive. Write hash space before your titles, and a dozen features light up. The Outline Navigator, jump-by-heading navigation, the section-move commands, the Heading Organizer, the live preview, all read the same hash-prefix line you typed. Markdown is the substrate, and a single habit pays compound interest. Today we add the supply line that makes that workflow move faster.
+
+[JESSICA]
+And the philosophy is this. Your attention is the scarce resource. Every one of these four tools converts a repeated, attention-eating sequence into a single intention. The Copy Tray means you stop shuttling between documents. Snippets mean you stop typing boilerplate. Abbreviations mean you stop typing the things you type most. Macros mean you stop performing the same multi-step ritual. Five saved operations an hour is hundreds a week, but the deeper win is staying in flow.
+
+[LIAM]
+The what is a deliberate order. Tool one is the Copy Tray, because if you only adopt one of these four, this is the one with the biggest immediate payoff. Tool two is snippets, the most powerful and most complex. Tool three is abbreviations, snippets' automatic little siblings. Tool four is macros, which compose with everything else. Copy Tray first, because it works the moment you have content. Macros last, because they are about recording what you already do.
+
+[PAUSE]
+
+[LIAM]
+Tool one, the Copy Tray. The code is in quill core copy tray, the class is CopyTray, and the constant is SLOT_COUNT equals twelve. Twelve slots, each holding its own text, persistent across sessions, stored as copy tray dot json in your QUILL application data, written atomically so a crash during save can never leave you with a half-written tray, the same safety guarantee. Twelve is on purpose. One slot is a clipboard. Twelve slots is a working set.
+
+[JESSICA]
+The way you write into a slot is the QUILL key plus a number. Copy a phrase, press the QUILL key and a number, one through nine, and the selection lands in that slot. Ten, eleven, and twelve use the shifted number row, so QUILL key and shift zero, shift minus, shift equals. The QUILL key is control shift grave, and the default keymap file confirms every binding. The way you read out of a slot uses a different prefix. Paste from tray one through nine is control shift one through control shift nine, no QUILL key. Pasting is frequent and one-handed, so the chord is left hand plus a number, not a two-handed QUILL prefix. Copy in with the QUILL prefix, paste out without.
+
+[LIAM]
+But the chords are not the only way in. The full Copy Tray dialog, command edit dot open copy tray, default key QUILL key then X, is a real window with a slot list on the left, a label field at the top right, and a fully editable content area below the label. You open the tray, see all twelve slots at a glance with their first sixty characters of preview, click into a slot, read or edit, save, close.
+
+[JESSICA]
+The labels are not decorative. Each slot has a short label that rides into the menu and the screen reader announcement. The Copy Tray submenu on the Edit menu lists every non-empty slot as a numbered item with the label and a fifty-character preview, so when you are about to paste slot seven and slot seven is your client signature block, the menu announces Copy Tray, seven, Client signature block. Your screen reader says the label, not just the number.
+
+[LIAM]
+One tray feature most people miss: pinning. The tray has twelve slots, but the first-empty helper respects pins. The function first empty slot walks the list and returns the first slot that is both not pinned and empty, so if you treat three slots as permanent working buffers, client signature, return address, project boilerplate, you pin them, and the rest become a true rolling pool. The search command, edit dot search tray slots, walks all twelve and returns any whose text or label contains your query. And copy to next empty slot, edit dot copy to next slot, finds the first empty unpinned slot and writes your selection without you picking a number. If you adopt the Copy Tray and nothing else from this episode, that single command will change how you move text between documents.
+
+[JESSICA]
+Do this now beat, and we mean literally now. Pause the audio. Open QUILL. Open any document with at least two paragraphs. Select a sentence in paragraph one. Press the QUILL key then shift one. That writes the sentence into tray slot one. Select a sentence in paragraph two. Press the QUILL key then shift two. Open the Copy Tray with QUILL key then X and confirm both slots hold text. Place your cursor anywhere, press control shift one to paste slot one, then control shift two to paste slot two, with appropriate text between. You have just harvested from two locations and assembled new prose without flipping back and forth. Resume when you have done at least one harvest-and-paste cycle. You have to feel the difference between a one-slot clipboard and a twelve-slot supply line.
+
+[PAUSE]
+
+[LIAM]
+Tool two, snippets. The code is in quill core snippets, the data class is Snippet, the storage is snippets dot snippets dot json under a snippets subdirectory of your QUILL application data, with the same atomic-write guarantee. A snippet has five fields you can edit, name, trigger, body, description, and an optional tags list, plus two fields the manager maintains, enabled and source. The source field can be user, starter pack, or quillin.
+
+[JESSICA]
+The body is where the real power lives. The body is text with five kinds of placeholders, and the placeholder engine is what makes snippets different from plain paste. Kind one is cursor, dollar sign curly brace cursor close curly brace, which marks where your caret lands after insertion. Kind two is date, dollar sign curly brace date close curly brace, which stamps today as Y Y Y Y dash M M dash D D. Kind three is time, dollar sign curly brace time close curly brace, which stamps the current time as H H colon M M. Date and time evaluate at insert time. Kind four is input, dollar sign curly brace input colon name close curly brace, which pops a dialog labeled Value for name. Kind five is choice, dollar sign curly brace choice colon option one pipe option two pipe option three close curly brace. The engine also accepts the word name as an alias for input.
+
+[LIAM]
+And one useful safety net. If you put a placeholder in your body that QUILL does not recognize, no leading kind, no colon, just a bare word in the braces, the code treats it as an input prompt with that word as the name. A typo or a hand-rolled placeholder still works. The engine just asks. The error path is explicit. If you write dollar sign curly brace input colon close curly brace with no name after the colon, the renderer raises a ValueError with a message that names the placeholder and shows the right shape, and the status line surfaces that message. Honest failure beats silent failure.
+
+[JESSICA]
+The smart trigger, and this is the part most people miss. Snippets are not just a deliberate chord. They are also an automatic expansion. The code is in main frame, the function is expand snippet trigger if match. You are typing in a document, you type your snippet trigger, which by convention starts with a semicolon, then you press a delimiter. The delimiters are space, tab, period, comma, semicolon, colon, exclamation mark, question mark, closing parenthesis, closing bracket, closing curly brace. At the moment you press any of those, the editor looks back at the token, finds the matching snippet, and expands it inline. You did not press a chord, you did not open a menu, you just typed. Type semicolon journal, press a space, the daily journal header lands. Type semicolon meeting, press a colon, the meeting notes scaffold expands. The setting is snippet trigger expansion in your settings, and it is on by default.
+
+[LIAM]
+The deliberate path is still there. The command is format dot insert snippet, default key QUILL key then S, menu path Insert, then Insert Snippet. That path opens a chooser, you pick, you confirm, and it inserts the same way, with the same prompt-and-fill flow, the same cursor marker, the same date stamp. Two doors, one room. Use the chord when you know the trigger, use the menu when you do not.
+
+[PAUSE]
+
+[JESSICA]
+The starter packs, because they are a free lunch and most people never open the box. There are three of them. The daily writing pack has a journal header triggered by semicolon journal and a meeting notes template triggered by semicolon meeting. The developer flow pack has a bug report template triggered by semicolon bug and a conventional commit message helper triggered by semicolon commit. The support and accessibility pack has a screen reader Q A checklist triggered by semicolon S R Q A. Five snippets total. You install them from Insert, Manage Snippets, then Install starter snippet packs. The snippets merge into your library by id, which means a re-install is a no-op. The merge code uses setdefault, and we verified it.
+
+[LIAM]
+The snippet manager dialog, Insert, Manage Snippets, opens a single choice dialog with six actions: Create snippet, Edit snippet, Delete snippet, Import snippet library, Export snippet library, Install starter snippet packs. Export saves your user-authored snippets to a JSON file. Import reads a JSON file and merges it into your library using the same id-based setdefault logic. The import dialog also says no snippets found in selected file if the file is empty or malformed.
+
+[JESSICA]
+The snippet gallery, and here is a real piece of drift to call out. The code also exposes a separate dialog, Insert, Snippet Gallery, which shows the read-only snippets that Quillins, the bundled extensions, contribute. The gallery dialog is wired in main frame, the title is literally Snippet Gallery, and if a Quillin you have installed did not contribute any gallery snippets, the command is a no-op. The gallery exists, and you will hear more about it in episode twenty.
+
+[LIAM]
+And one honest correction while we are calling things out. The brief for this episode said the abbreviation manager is at QUILL key then shift S. That is not right. QUILL key then shift S is the snippet manager, format dot manage snippets. The abbreviation manager is at QUILL key then shift A, format dot manage abbreviations. The two are siblings, both under the Format menu, both with the same chord shape, just different second keys.
+
+[PAUSE]
+
+[LIAM]
+Tool three, abbreviations. The code is in quill core abbreviations, the data class is Abbreviation, the library is AbbreviationLibrary, the storage is abbreviations dot json in the same atomic-write style. An abbreviation has four editable fields, abbreviation, expansion, case sensitive, enabled, and a description. The difference between an abbreviation and a snippet is the trigger surface. A snippet requires a delimiter character to fire and starts with a semicolon. An abbreviation fires on whatever the last whitespace-delimited token is, with no prefix, no special character, no chord. The trigger character set is the same one the snippet trigger uses, from a frozenset in the code.
+
+[JESSICA]
+The behavior: you type a word, press a space, and the word is replaced by the expansion as soon as you press that space. Type B T W, press space, the words by the way land. Press a period, same thing. The lookup in find by trigger sorts candidates by length, longest first, so a longer abbreviation wins over a shorter prefix match. We verified the sort. The built-in library ships with fifteen common shorthands listed in underscore BUILTINS: A F A I K, A F A I C T, A S A P, A T M, B T W, F W I W, I M O, I M H O, I R L, O M W, T B H, T B C, T B D, T T Y L, W R T. Fifteen shorthands, all enabled by default, all case-insensitive. If any fires in a context you did not want, the disable method in the library is the right tool, and the abbreviation manager has the checkbox.
+
+[LIAM]
+The expansion can also contain three special tokens. Dollar sign curly brace clipboard close curly brace pastes the current system clipboard at that point. Dollar sign curly brace date close curly brace stamps today as a long-form date, month name, day number, year number. Dollar sign curly brace time close curly brace stamps the current time as hour, minute, A M or P M. The cursor token, dollar sign curly brace cursor close curly brace, marks where your caret lands after expansion. So an abbreviation expansion can be a multi-line block with a date stamp and a clipboard embed and a cursor marker, which is a lot of capability for something that fires on a single keystroke.
+
+[JESSICA]
+The snippet-versus-abbreviation rule, because the brief asked us to draw the line. Use abbreviations for the tiny things you type constantly and want expanded without thinking. Your own name, your address, your email sign-off, the company boilerplate, the legal disclaimer you paste into every contract. Anything you can hold in your head as a single token. Use snippets for structures where you want intention and placeholders. A meeting notes template, a bug report, a journal entry, a standup update. Anything with fields to fill in or sections to walk through. The automatic path is for reflexes, the deliberate path is for structures. If you find yourself using a snippet the same way ten times a day, it is a candidate to be promoted to an abbreviation instead.
+
+[LIAM]
+The toggle command, format dot toggle abbreviation expansion, lets you turn automatic expansion off for a session. The setting is also exposed in Tools, Writing, as a checkbox. If you have a document full of code or technical terms where the abbreviation engine would fire on the wrong things, turn it off, write the document, turn it back on. The expansion function, format dot expand abbreviation, also exists as a deliberate verb, an escape hatch for the moments when automatic expansion gets in your way.
+
+[PAUSE]
+
+[JESSICA]
+Tool four, macros. The code is in quill core macros, the data class is Macro, the manager is MacroManager, the storage is macros dot json in your QUILL application data directory. A macro has two fields, a name and an ordered list of steps, where each step is a command id. That is the entire shape. No parameters, no conditions, no loops. The verb is the unit, not the keystroke, which means a macro that records QUILL key then S, the insert snippet chord, will play that chord back regardless of which physical keys the user later rebinds to that command. The macro is portable across rebinds.
+
+[JESSICA]
+The recording path is on the menu, and here is the second honest correction. The original draft of this script said Tools, Macros, Start Recording. The actual menu path is Tools, Advanced, Macros, Start Recording. The Macros submenu lives under Advanced, alongside the power-tool utilities, the developer console, and the document intake commands. If you remember Tools, Macros, you will not find it. The submenu has four items: Start Recording, Stop Recording, Play Last Macro, and Manage Macros. The default keymap has no binding for any of them.
+
+[LIAM]
+The recording flow is simple. Pick Tools, Advanced, Macros, Start Recording. A dialog appears asking for a name, defaulted to My Macro. Type a name, click OK, the status line says Recording macro and the name, and from that moment on, every command you fire through the menu, the palette, or a chord is appended to the macro as a command id, in order. The exclusion list in the code, the frozenset called underscore MACRO CONTROL COMMANDS, is the list of commands that do not get recorded, for recursion safety. When you are done, pick Stop Recording. The status line says Saved macro and the name with the step count. The macro is persisted to disk through write json atomic.
+
+[JESSICA]
+To play back, pick Play Last Macro, which plays the most recently recorded or played macro, or open the macro manager with Manage Macros, pick a macro from the list, click Play. The playback runs each command id through the command registry in order. The play back path is wrapped in a try finally, and the playing back flag is set to true during playback, so any command fired during playback is not re-recorded. A macro cannot record itself.
+
+[JESSICA]
+The classic use case is the cleanup ritual. You always strip trailing whitespace, fix double spaces, and title case the headings on documents from one particular colleague. Record it once. Tools, Advanced, Macros, Start Recording, name it Clean from Colleague. Run the three commands. Stop Recording. From now on, the ritual is a single menu click. Macros compose with everything we have already built. A macro can invoke search and replace, the regex tools from episode eleven, the heading commands from episode eighteen, the formatting verbs from episode sixteen, all of them, because every verb in QUILL is a command id, and every command id is recordable.
+
+[LIAM]
+Macros also pair beautifully with abbreviations. You can record a macro that fires the Expand Abbreviation verb in a loop across a range, or that walks a list of common misspellings and applies the dictionary suggestion, or that calls Insert Snippet for every selected line. The combine-with-everything property is what makes macros feel like a power tool rather than a feature. They are not for one specific job. They are for any job that turns out to be the same job twice.
+
+[JESSICA]
+And one important honesty about the macro verb. The macro does not capture the document, the selection, or the cursor. It captures the verb. When you play the macro back, the verbs run against the current document, with the current selection, at the current cursor position. If you recorded a macro in document A with a selection on line 12, and you play it back in document B, the macro runs the same commands on whatever B has at its current cursor position. The macro is portable across documents but position-blind. Set up your cursor and selection before you play back.
+
+[JESSICA]
+The shared philosophy, name it and you will use them more. Your attention is the scarce resource. Every one of these tools converts a repeated, attention-eating sequence into a single intention. The Copy Tray converts a research-then-write shuttle run into a supply line. Snippets convert a boilerplate typing ritual into a chord. Abbreviations convert a constant reflex into an automatic expansion. Macros convert a multi-step cleanup into a one-click verb. The compounding is real, but the deeper win is staying in flow. Every time you start to repeat yourself, one of these four is the right answer.
+
+[PAUSE]
+
+[JESSICA]
+A code-verified walkthrough, because the brief asked for it. Open any document. Select a sentence, press the QUILL key then shift one. The status line says slot one written. Open the Copy Tray, QUILL key then X. Type a label in the label field, Client signature, click Save Changes. Close the tray. Open the Edit menu, find the Copy Tray submenu, and listen. The first item is one, Client signature, followed by the first fifty characters of the sentence. Your screen reader announces the label, not the number.
+
+[LIAM]
+Now snippets. Insert, Manage Snippets, Create snippet. Name it Test, trigger semicolon test, body hello world dollar sign curly brace cursor close curly brace. Save. Click into any document. Type a semicolon, then the word test, then press a space. The expansion fires on the space delimiter, hello world lands, your caret is at the end. Now create another snippet with a date. Body, today is dollar sign curly brace date close curly brace, dollar sign curly brace cursor close curly brace. Trigger semicolon today. Type semicolon today, press a period. The expansion fires, today is Y Y Y Y dash M M dash D D, period, your caret between the period and the close. That is the smart trigger, and it is the one you will use most.
+
+[JESSICA]
+Now abbreviations. Open the abbreviation manager with QUILL key then shift A. Add an abbreviation, your own initials as the trigger, your full name as the expansion, enabled. Save. In any document, type your initials, press a space. Your full name replaces the initials, the caret lands after the last character. Now macros. Tools, Advanced, Macros, Start Recording, name it Test cleanup. Run a few harmless commands, undo, redo, change case to title case on a word, sort lines ascending. Stop recording. Pick Play Last Macro. The same commands fire, in order, on the current selection. The status line says Played macro Test cleanup with four steps.
+
+[PAUSE]
+
+[LIAM]
+Honest corrections, because the brief asked us to call out drift. Correction one, the menu path for macros is Tools, Advanced, Macros, not Tools, Macros. The Macros submenu sits under the Advanced menu, alongside the developer console and the document intake commands.
+
+[JESSICA]
+Correction two, the abbreviation manager is at QUILL key then shift A, not at QUILL key then shift S. Correction three, the Copy Tray has twelve slots, not nine, and slots ten, eleven, and twelve are reached by QUILL key then shift zero, shift minus, and shift equals. The original draft said twelve, which is correct, but several older docs said nine. We are keeping the twelve truth on the record.
+
+[LIAM]
+Correction four, the snippet gallery is a separate dialog from the snippet manager. Insert, Manage Snippets is for your own library. Insert, Snippet Gallery is for Quillin-contributed entries. The gallery is read-only. If a Quillin you use daily has no gallery snippets, that is a feature request worth filing. Correction five, the smart trigger is on by default and it expands any snippet whose trigger starts with a semicolon the moment you press a delimiter character. If you do not want a particular snippet to fire automatically, rename the trigger so it does not start with a semicolon, or disable the snippet in the manager.
+
+[PAUSE]
+
+[JESSICA]
+Do this now beat for the second half. Pause the audio. Open QUILL. Pick a sentence, copy it with control C, then press the QUILL key then shift one. Open the Copy Tray with QUILL key then X, set the label of slot one to something you will recognize, save. Now open Insert, Manage Snippets, Create snippet, name it test, trigger semicolon test, body that same sentence you copied, dollar sign curly brace cursor close curly brace, save. Type semicolon test, press a space. Watch the snippet expand inline. Open the abbreviation manager, add an abbreviation with your own initials and your full name as the expansion, save. Type your initials, press a space. Watch the expansion fire automatically. Pick Tools, Advanced, Macros, Start Recording, name it round trip, run the snippet insertion and the abbreviation expansion, stop recording, play it back. Resume when you have done at least one of each. The rest of this episode assumes you have used all four tools.
+
+[LIAM]
+The strategy, in one breath. Set up the Copy Tray first, because it works the moment you have content. Add five abbreviations you will use every day. Build three to five snippets you will use this week. Record one macro of a ritual you actually perform. The four tools are not a feature checklist. They are a habit stack, and the habit is to ask, before you repeat yourself, whether one of these four is the right answer. Nine times out of ten, it is.
+
+[PAUSE]
+
+[JESSICA]
+Homework, four steps, designed to be done in thirty minutes with QUILL open. One: open three documents, harvest from each into two tray slots, write a paragraph pasting from all six. Set labels on the slots you will reuse. Confirm that the Edit, Copy Tray submenu announces the labels. Two: open the abbreviation manager, add your own full name, your email, your phone, your standard sign-off. Type each one, press a space, watch the expansion fire. Three: open Insert, Manage Snippets, install the daily writing starter pack. Create one new snippet of your own with at least two different placeholder kinds. Type the trigger, press a delimiter, watch the smart trigger fire. Four: pick Tools, Advanced, Macros, Start Recording, record a macro of any two-step cleanup you actually do, stop recording, play it back twice. The menu path is the lesson. The Tools, Advanced, Macros path is the real one.
+
+[LIAM]
+Setup for next episode. Next episode, episode twenty, is the snippet gallery and prompts, the two inventory tools that sit behind the everyday AI arc. We will go deeper on the snippet library, the placeholder grammar, the starter packs, and the gallery that Quillins contribute. Then we cross the bridge to the AI side, the prompt library, the dot p q p pack format, and the Promote continuum that turns a one-line prompt into a multi-step skill, and a multi-step skill into an autonomous agent. The brief for episode nineteen asked us to set that up.
+
+[JESSICA]
+The arc ahead, in the larger frame. Episode twenty is snippets and prompts. Episode twenty-one is rich formatting and the hidden-codes system, the font dialog, Reveal Codes, and Illuminations. Episode twenty-two is the export family, Word, EPUB, PDF, and friends. This is episode nineteen of fifty-four, with thirty-five to go.
+
+[LIAM]
+A frame for the rest of the formats arc. The arc is three to four episodes long, and the destination is a document you can hand to anyone, in any format, with the structure preserved. The text-supply toolkit is the supply line. Markdown is the substrate. The export family is the delivery.
+
+[JESSICA]
+That's the close. I'm Jessica.
+
+[LIAM]
+I'm Liam. Let the text come to you.

@@ -19,6 +19,9 @@ _MACOS_FALLBACK_DIRS: tuple[str, ...] = (
     "/opt/local/bin",  # MacPorts
 )
 
+# Where a standard macOS install puts the LibreOffice launcher (never on PATH).
+_MACOS_LIBREOFFICE_APP_DIR = "/Applications/LibreOffice.app/Contents/MacOS"
+
 
 @dataclass(frozen=True, slots=True)
 class ExternalToolDefinition:
@@ -64,7 +67,7 @@ TOOL_DEFINITIONS: tuple[ExternalToolDefinition, ...] = (
             "Open Markdown, HTML, and plain-text conversion results as Quill tabs",
             "Prepare documents for downstream GLOW text workflows",
         ),
-        bundled_subpath=r"pandoc\pandoc.exe",
+        bundled_subpath="pandoc/pandoc.exe",
         executable_names=("pandoc.exe", "pandoc"),
         website_url="https://pandoc.org/",
         install_command="winget install --id JohnMacFarlane.Pandoc -e",
@@ -80,7 +83,7 @@ TOOL_DEFINITIONS: tuple[ExternalToolDefinition, ...] = (
             "Improve compatibility for older office formats",
             "Provide a stronger conversion fallback path for difficult documents",
         ),
-        bundled_subpath=r"libreoffice\program\soffice.exe",
+        bundled_subpath="libreoffice/program/soffice.exe",
         executable_names=("soffice.exe", "soffice", "libreoffice"),
         website_url="https://www.libreoffice.org/",
         install_command="winget install --id TheDocumentFoundation.LibreOffice -e",
@@ -97,7 +100,7 @@ TOOL_DEFINITIONS: tuple[ExternalToolDefinition, ...] = (
             "Spot structural HTML issues without a browser dependency",
             "Support future cleanup and repair previews inside Quill",
         ),
-        bundled_subpath=r"tidy-html5\tidy.exe",
+        bundled_subpath="tidy-html5/tidy.exe",
         executable_names=("tidy.exe", "tidy"),
         website_url="https://www.html-tidy.org/",
         install_command="winget install --id HTACG.tidy -e",
@@ -115,7 +118,7 @@ TOOL_DEFINITIONS: tuple[ExternalToolDefinition, ...] = (
             "Support future Markdown validation and cleanup workflows",
             "Flag authoring issues before Markdown leaves Quill",
         ),
-        bundled_subpath=r"pymarkdownlnt\pymarkdownlnt.exe",
+        bundled_subpath="pymarkdownlnt/pymarkdownlnt.exe",
         executable_names=("pymarkdown.exe", "pymarkdownlnt.exe", "pymarkdown"),
         website_url="https://pymarkdown.readthedocs.io/",
         install_command="pip install pymarkdownlnt",
@@ -223,6 +226,26 @@ def _macos_path_fallback(executable_name: str) -> str | None:
         candidate = Path(directory) / executable_name
         if candidate.is_file():
             return str(candidate)
+    return None
+
+
+def libreoffice_executable() -> str | None:
+    """Resolve the LibreOffice ``soffice`` launcher, including the standard
+    macOS ``.app`` install that is neither on PATH nor in the Homebrew dirs.
+
+    A standard macOS install puts ``soffice`` at
+    ``/Applications/LibreOffice.app/Contents/MacOS/soffice`` -- never on PATH --
+    so the bare ``"soffice"`` argv used to fail on every standard Mac (#41).
+    Returns the executable path, or None when LibreOffice is not installed.
+    """
+    found = shutil.which("soffice")
+    if found:
+        return found
+    if sys.platform == "darwin":
+        for directory in (_MACOS_LIBREOFFICE_APP_DIR, *_MACOS_FALLBACK_DIRS):
+            candidate = Path(directory) / "soffice"
+            if candidate.is_file():
+                return str(candidate)
     return None
 
 

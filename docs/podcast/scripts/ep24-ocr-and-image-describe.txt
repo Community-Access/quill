@@ -1,0 +1,135 @@
+[LIAM]
+The QUILL Cast, episode twenty-four. I'm Liam. Today, the family of features that turns an image of words into actual words, and that turns a picture into a description you can read. OCR, optical character recognition, and AI image description.
+
+[JESSICA]
+I'm Jessica, and the timing is perfect. Last episode, the Listening Companion, took audio and turned it into a document. This episode takes the other half of the world's locked content, the words that exist only as pixels, and gives them back to you as text. Same philosophy: free first, local first, consent first, and never silent about what just happened.
+
+[LIAM]
+A short tour first, because the surface is wider than most listeners expect. Five doors in the Tools menu, all of them in Tools, Reading and Dictation. OCR Image. OCR Clipboard Image. OCR Screen Capture. Describe Image. And the heavier workflow, Import slash Convert Document, which is the one that handles whole PDFs, Word docs, PowerPoints, the lot, and offers OCR as its second tier when the first tier comes back empty. Plus two settings doors we'll come back to: OCR Service Settings, and OCR and Conversion Services, which is the plain-language page that describes every tier like a human being.
+
+[JESSICA]
+And a setup note for the back row. The OCR tool is one of the few features that may need a one-time install. We covered that in episode twenty-three, so we won't repeat the whole flow. Short version: if QUILL tells you the OCR engine isn't available, the menu Tools, Reading and Dictation, OCR and Document Conversion, Install Local OCR Engine, walks you through it. It checks a pinned fingerprint, it shows you the installer visibly, and it never silently installs software.
+
+[LIAM]
+Now a code-verified honesty moment, and we'd rather you hear it from us than be surprised later. Episode twenty-three described the OCR engine by a specific name, Tesseract, and that is genuinely the name of the engine that powers PDF and document OCR inside the Import slash Convert Document flow. But the engine that powers the lighter-weight OCR Image, OCR Clipboard, and OCR Screen Capture flows is a different beast. The code path runs through the native Windows runtime, Windows.Media.Ocr, via the winrt Python packages. Fully offline, zero-install on most Windows machines, no extra download required for the image flow. So both names are real, and both are correct for their door. The lesson, as always: verify the engine behind the door you're opening, because the guarantees differ slightly. Free and local for both, but the install step is in a different place.
+
+[JESSICA]
+The menu paths matter too, and we want to be precise. Every OCR door and the image description door sit under Tools, Reading and Dictation, not under File, Import, Import slash Convert Document, which is its own submenu further down the same Reading and Dictation cascade. The Import slash Convert Document action is the one that handles whole files end to end; the four image doors are the ones that handle a single image at a time. They are siblings, not nested. Episode twenty-three's wording suggested the OCR door lived under File, Import, which is the document flow, not the image flow. Both flows exist; the path you take depends on whether your input is a file, a clipboard, a screen, or a whole document to rescue.
+
+[LIAM]
+And another code note worth hearing out loud. The OCR and image describe code does not live in the speech module. We checked. The actual implementation sits in main frame image, a separate mixin module that handles image source picking, OCR, and AI image description, and the speech module's only OCR mention is the on-demand PDF OCR support download, which is a different feature for handling image-only PDFs. So when you hear us talk about the OCR engine, the file you're picturing is the image mixin, not the speech module. The naming is a quirk of the codebase, not a feature in itself.
+
+[PAUSE]
+
+[LIAM]
+And now, before the workflow, the interactive beat. Pause the audio, do this now, then come back. Step one: open a document in QUILL, any document will do, or just have QUILL running on an empty tab. Step two: click anywhere in the document so the cursor has a home. Step three: take a screenshot of anything visible on your screen right now, your desktop, a webpage, an error message, a photo you have open. You can use Print Screen, or the Snipping Tool, or any method you like. Step four: paste that screenshot into an image viewer, or just keep it on the clipboard. That's it, you now have something the next segment can work on. Press play when you're ready.
+
+[PAUSE]
+
+[LIAM]
+Welcome back. Let's start with the door that needs no setup, OCR Clipboard Image. Tools, Reading and Dictation, OCR Clipboard Image. No dialog, no file picker, no engine choice. QUILL reads the clipboard, finds the image, writes it to a temporary PNG via the Windows capture helper, and hands it to the recognition pipeline. If the clipboard has no image, QUILL tells you in plain language, there is no image on the clipboard, copy an image first, then try again, and bails out cleanly. If something else goes wrong, a screen-capture permission issue, a malformed image, the error message is human and the status line reflects what happened.
+
+[JESSICA]
+Same shape for OCR Screen Capture. Tools, Reading and Dictation, OCR Screen Capture. A small single-choice dialog asks one question, capture which area for OCR, with two options: The whole screen, and The active window. The active window is preselected because it's usually what you actually want. Pick one, OK, QUILL captures, recognizes, and routes the result to the review surface. The same review surface every OCR door uses.
+
+[LIAM]
+And OCR Image for when the file is already saved. Tools, Reading and Dictation, OCR Image. A file dialog with the standard image filter, PNG, JPEG, TIFF, BMP, and a wildcard fallback for anything else. Pick a file, OK, and QUILL asks for consent before doing the work. The prompt is a real question, not a notice, and the default is no. Run OCR on this image locally with the built-in Windows engine, yes or no. If you say no, the status line simply says OCR cancelled, no error, no nag. The consent gate is there for a reason: even though the recognition is local and free, you are about to spend a few seconds of CPU on a file you may not have intended to run. QUILL checks once, in plain language, and proceeds.
+
+[JESSICA]
+All three flows converge on the same next step, and this is where QUILL's house style is on full display. The OCR Review dialog. A modal surface, properly region-tracked, screen-reader friendly, with three buttons: Insert, Copy, Discard. The review text is a plain rendering of the recognized output. If the engine reported per-line confidence, lines under sixty percent are flagged inline with a leading marker so you can find them by search or by ear. The header tells you the engine, the language if you supplied one, and how many lines need review.
+
+[LIAM]
+Insert writes the text at the cursor position and moves the cursor to the end of the inserted text. Copy sends the same text to the clipboard, with a status-line confirmation naming the engine. Discard closes the dialog and says, OCR discarded, in the status line. The editor keeps focus, your document is untouched, and you decide what goes in.
+
+[PAUSE]
+
+[JESSICA]
+A side door that matters. Tools, Reading and Dictation, OCR and Document Conversion, Review Last OCR Result. If you closed the review dialog, or you want to revisit the most recent recognized text, this opens the same review surface against the cached result. Insert, Copy, Discard work identically. Useful when you cancelled by accident, or when you Copied earlier and now want to Insert.
+
+[LIAM]
+And now the file-OCR distinction we flagged earlier, because the architecture is worth knowing. The image flow we just walked through uses the native Windows engine, the winrt Windows.Media.Ocr runtime. It's there on most Windows installs, the package is the Microsoft pywinrt winrt namespace, and recognition runs in process. The document flow inside Import slash Convert Document uses a different tier, the MarkItDown and Tesseract pair, which is what handles whole PDFs and Office files. The result type is the same, the OcrResult dataclass carries text, engine, executable, language, and per-line confidence, and the same review surface reads it. But the engine is different, the install story is different, and the cost characteristics are different. Pick the right door for the right job.
+
+[JESSICA]
+And here's the part where the image flow gets a small piece of extra power, and it is genuinely optional. There's a shell verb called OCR with Quill (structured Markdown). When you right-click an image file in Windows Explorer and choose that verb, QUILL runs OCR and then, if you have a connected assistant, reflows the recognized text into structured Markdown in the same worker thread. No silent switch: if there's no assistant configured, or the assistant can't transform right now, the plain OCR text is used and the status line tells you exactly that, OCR text inserted, structuring skipped, plus the reason. The structured pass is a refinement, never a requirement.
+
+[PAUSE]
+
+[LIAM]
+Now the second half of the episode, the door that uses AI on purpose. Tools, Reading and Dictation, Describe Image. This is the only one of the five that needs AI configured, and it is the only one that ever sends anything over the network, which is why we put it second. If AI is off, the door says so, AI is turned off, turn it on from Tools, AI Assistant, then connect a vision-capable model. If AI is on but no provider is connected, the door says that too, and points you at the AI Model and Connection settings.
+
+[JESSICA]
+With AI connected, the flow is the same pick-an-image pattern, but with an extra layer. Choose the image to use, a single-choice dialog with four options: Image file, Clipboard image, Capture the screen, Capture active window. Pick one, and QUILL hands you a concrete image path, a real PNG, ready to be sent to the model. The capture options use the same Windows capture helper as the OCR flow, so the failure modes are the same and the error messages are the same.
+
+[LIAM]
+Before the description runs, you may see a style picker. This is opt-in, settings-controlled. If vision prompt picker is enabled, QUILL shows you a list of enabled description styles, twelve built-in prompt styles plus any custom ones you've added. The styles are radically different and intentionally so. Narrative walks you through the scene from left to right. Detailed produces a structured breakdown by Subject, Setting, Colors, Composition, Details. Concise keeps it to two or three sentences. Artistic focuses on light, color, and mood. Technical reads the image as a photographer would. Colorful insists on precise color names. Simple is exactly one sentence. Accessibility, and this is the one we'll come back to, is built for a blind reader: plain language, left to right, transcribe any text verbatim. There are more, but the point is the menu is a real menu, not a checkbox.
+
+[JESSICA]
+Pick a style, OK, and the description runs in a worker thread. The progress dialog is the same modal pattern, the editor stays responsive, the description arrives. The review surface is the same OCR Review dialog, but the buttons now include a fourth option that doesn't exist in the plain OCR flow: Try a different prompt. Press it, and the style picker reappears, defaulting to the style you just used. Pick another, the description re-runs, the same image, a different lens. The first successful description is cached as a fallback, so if a later style returns an error, you don't lose what you already had.
+
+[LIAM]
+Insert puts the description at the cursor and announces, image description inserted. Copy sends the description to the clipboard. Discard closes the dialog with a status-line note. And the style you used last is remembered in the settings, so the next time you open Describe Image, the picker pre-selects it.
+
+[JESSICA]
+Two honesty moments before we move on. First, the description is AI-generated, which means it is a model reading an image, not the image itself. The accessibility style is a strong default for a screen-reader audience, but it is still a model's interpretation, and for anything safety-critical, a medical image, a financial document, a legal exhibit, the right answer is OCR for the text and a human for the meaning. The OCR review surface tells you per-line confidence because the engine knows what it doesn't know. Treat the description the same way: useful, often excellent, never a substitute for the source.
+
+[LIAM]
+Second, image formats. The vision path supports PNG, JPEG, GIF, WebP, BMP, and TIFF by extension. HEIC and HEIF, the iPhone default, need the pillow-heif package installed. If it isn't, the description fails with a clear message: HEIC images require the pillow-heif package. Install it with pip install pillow-heif. The image is read from disk, base64-encoded, and sent as a single multimodal chat turn. The code path uses the same secured POST and retry path as text chat, so the request gets the same timeout, the same backoff, the same error taxonomy. Nothing special-cased, nothing less safe.
+
+[PAUSE]
+
+[JESSICA]
+Now the settings surface, because this is where the real customization lives. AI Model and Connection is the obvious one: which provider, which model, whether the model is vision-capable. The describe flow checks the provider and refuses politely if the model on file isn't a vision model, with a message that tells you where to go to fix it.
+
+[LIAM]
+Two settings live under AI, and they matter for this episode specifically. Vision prompt picker enabled, a boolean. Turn it on if you want the style picker to appear before every describe. Turn it off if you find the picker annoying and just want the accessibility style every time. Vision default prompt style, an id, the style the picker pre-selects on the first run. And Vision disabled builtin styles, a list of style ids you never want to see, the menu for when a built-in is genuinely not useful to you.
+
+[JESSICA]
+And the custom prompt story, because this is the lever most listeners will want to pull. The Manage Image Prompts dialog is the front door to the prompt library. Add a custom prompt, give it a title, write the prompt text, save. Your custom prompts appear in the style picker alongside the built-ins, in their own section, sorted by title. Disable a built-in by id from settings, and it disappears from the picker. Override a built-in's text from the same dialog, and your version is sent instead. The original built-in text is never edited in place; overrides are layered on top, so the shipped prompts remain the canonical record of what each style is meant to do.
+
+[LIAM]
+That layering is the design point. Built-ins are immutable, but they are not untouchable. If the accessibility built-in is almost what you want but says the wrong thing about chart text, override it, name it the same thing, change the line. The picker still shows it under its original name, the model still receives your text, and the rest of the built-ins are unaffected.
+
+[PAUSE]
+
+[JESSICA]
+Putting it all together, the workflow for the person who lives in this. Morning, an email has a screenshot of an error message. Copy the image. Tools, Reading and Dictation, OCR Clipboard Image. The review dialog appears. Press Insert, the text lands in the document, you fix the typo, you reply. Twenty seconds, no upload, no new tab.
+
+[LIAM]
+Afternoon, a PDF contract arrives from a client. Import slash Convert Document, pick the file, the first tier comes back mostly empty, QUILL escalates, you say yes to local OCR, the second tier runs, the contract text is editable in a new tab, you fix the typo, you save. No upload, no cloud, no second tool.
+
+[JESSICA]
+Evening, you're writing a story and you want to describe a photograph you have on disk. Describe Image, pick the file, the style picker appears, choose Narrative or Accessibility, the model returns a paragraph, Insert, edit, done. One image, one model call, one piece of prose in your document.
+
+[LIAM]
+And the long tail, the people this was actually built for. Students photographing whiteboards and handouts. Anyone with a stack of scanned paperwork. Lawyers, doctors, social workers, anyone whose documents are confidential and who cannot use a cloud OCR service, even a free one, even a private one, because the policy says so. Screen-reader users, who get to read what was once locked inside an image. Writers with visual research material. Anyone who has ever said, I just need the words.
+
+[PAUSE]
+
+[JESSICA]
+A moment on screen-reader use specifically, because this is the audience the review surface was designed for. The OCR review dialog is region-tracked, so when it opens, the screen reader's cursor enters it cleanly, and when it closes, the focus returns to the editor. The review text is a single TextCtrl, so a screen reader can read it linearly with the standard reading commands, arrow down, read to end, the works. The Insert, Copy, and Discard buttons are tab-reachable in order, with Insert as the affirmative and Discard as the escape. The confidence flag in the review text, the inline marker, is a search target. Find the next flag, hear the line, decide whether to trust it, move on. That last bit is the part most other OCR tools never give you: the engine's doubt, surfaced.
+
+[LIAM]
+And the describe flow has a parallel accessibility story. The style picker is a single-choice dialog, again tab-reachable, with the current style preselected. The review dialog adds a fourth button, Try a different prompt, but the Insert, Copy, and Discard triple still appears in the same order, and the dialog is still region-tracked. If you use a screen reader and you find a description that isn't quite right, the retry button is one tab away, and the picker remembers your last style so you don't have to re-explain your preference every time.
+
+[JESSICA]
+Craft notes, because they always pay off. One, when the review surface flags a line as low confidence, trust the flag. The engine is telling you the truth. Two, for handwriting, the native Windows engine is honest about its limits, dense cursive often falls under the threshold, and the review surface will tell you. Three, for typed print, the confidence is high and the result is usually final. Four, for screen capture, the active window option is almost always what you want; full screen capture includes every toolbar and notification, and the OCR will dutifully try to read all of them. Five, for image description, the accessibility style is a strong default; the Narrative style is best when you're using the description as the seed of your own writing. Six, OCR Image works on the same file types as the describe flow, plus a few more, and the difference is recognition versus interpretation, choose the door that matches the question you're asking.
+
+[PAUSE]
+
+[LIAM]
+Homework. Step one: take any image on your machine, a photo, a scan, a screenshot, and run Tools, Reading and Dictation, OCR Image on it. Read the review surface. Note any lines flagged as low confidence. Insert or Copy the text. Step two: copy any image to your clipboard and run OCR Clipboard Image. Notice how the flow skips the file picker. Step three: with a vision-capable AI model connected, run Describe Image on a photograph. Try two different prompt styles, compare the descriptions, notice how the lens changes the result. Step four: open AI Model and Connection, look at the settings for the prompt picker and the default style, change one, and run Describe Image again. Watch the picker change.
+
+[JESSICA]
+Next episode, episode twenty-five, we switch gears. After the AI features of the last few episodes, you may have noticed a small phrase, set up AI. Next episode is the setup episode. The wizard, the free paths, the privacy architecture, and the rule that every AI action in QUILL is previewed before it touches your document. Bring questions; bring skepticism; bring the model you'd actually want to use.
+
+[LIAM]
+For a fifty-four-episode series, this is the spot where the listening shifts from documents to intelligence. We have done the rescue, the describe, the transcribe. The next one is the foundation underneath all of it. Set up AI is the doorway; the rest of part five is the building behind it.
+
+[LIAM]
+I'm Liam.
+
+[JESSICA]
+I'm Jessica. Pictures in, words out, always with consent.
+
+[JESSICA]
+The QUILL Cast is a production of the QUILL project. Episode twenty-four of fifty-four. Thanks for listening.

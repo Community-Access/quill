@@ -30,9 +30,10 @@ import base64
 import sys
 from dataclasses import dataclass
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-from nacl import signing as nacl_signing
-from nacl.exceptions import BadSignatureError
+if TYPE_CHECKING:
+    from nacl import signing as nacl_signing
 
 SIGNATURE_SUFFIX = ".minisig"
 KEY_ID = "ca-pubkey-2026"
@@ -87,6 +88,8 @@ def load_publisher_public_key() -> nacl_signing.VerifyKey:
 
 
 def load_publisher_public_key_from(path: Path) -> nacl_signing.VerifyKey:
+    from nacl import signing as nacl_signing
+
     raw = base64.b64decode(path.read_text(encoding="utf-8").strip())
     if len(raw) != 32:
         raise ValueError(f"Public key in {path} is not 32 bytes (got {len(raw)}).")
@@ -148,7 +151,15 @@ def verify_artifact(
     public_key: nacl_signing.VerifyKey | None = None,
     sidecar: Path | None = None,
 ) -> SignatureStatus:
-    """Verify a sidecar signature. Fail-closed: never raises."""
+    """Verify a sidecar signature. Fail-closed: never raises.
+
+    PyNaCl is bundled as a runtime dependency (the [ui] extra, mirrored in
+    requirements.txt) so every shipping build can verify publisher-signed
+    Quillins in the Quillins Manager. A missing/broken ``nacl`` is still
+    treated as any other verification failure and reported as "PyNaCl is not
+    installed" rather than crashing (#919) -- defense in depth that now
+    almost never triggers, kept so a corrupted install degrades gracefully.
+    """
     sidecar_path_resolved = sidecar if sidecar is not None else sidecar_path(artifact_path)
     if not sidecar_path_resolved.exists():
         return SignatureStatus(False, False, None, "no sidecar .minisig")
@@ -156,6 +167,10 @@ def verify_artifact(
         sig, kid = read_minisig(sidecar_path_resolved)
     except (OSError, ValueError) as exc:
         return SignatureStatus(True, False, None, f"unreadable sidecar: {exc}")
+    try:
+        from nacl.exceptions import BadSignatureError
+    except ModuleNotFoundError:
+        return SignatureStatus(True, False, kid, "PyNaCl is not installed")
     if public_key is None:
         try:
             public_key = load_publisher_public_key()
@@ -186,19 +201,21 @@ def signature_status(artifact_path: Path, sidecar: Path | None = None) -> Signat
     if env_path and Path(env_path).exists():
         try:
             vk = load_publisher_public_key_from(Path(env_path))
-        except ValueError as exc:
+        except (ValueError, ModuleNotFoundError) as exc:
             return SignatureStatus(True, False, None, f"public key unavailable: {exc}")
         return verify_artifact(artifact_path, public_key=vk, sidecar=sidecar)
     if PUBLIC_KEY_B64:
         try:
             vk = load_publisher_public_key_from_value(PUBLIC_KEY_B64)
-        except ValueError as exc:
+        except (ValueError, ModuleNotFoundError) as exc:
             return SignatureStatus(True, False, None, f"public key unavailable: {exc}")
         return verify_artifact(artifact_path, public_key=vk, sidecar=sidecar)
     return verify_artifact(artifact_path, public_key=None, sidecar=sidecar)
 
 
 def load_publisher_public_key_from_value(b64: str) -> nacl_signing.VerifyKey:
+    from nacl import signing as nacl_signing
+
     raw = base64.b64decode(b64.strip())
     if len(raw) != 32:
         raise ValueError(f"Public key must be 32 bytes (got {len(raw)}).")
@@ -211,6 +228,8 @@ def _secret_key_to_b64(sk: nacl_signing.SigningKey) -> str:
 
 
 def _b64_to_secret_key(b64: str) -> nacl_signing.SigningKey:
+    from nacl import signing as nacl_signing
+
     raw = base64.b64decode(b64.strip())
     if len(raw) != 64:
         raise ValueError(f"Secret key must be 64 bytes (32 seed + 32 pub), got {len(raw)}.")
@@ -222,6 +241,8 @@ def _load_secret_key(path: Path) -> nacl_signing.SigningKey:
 
 
 def _cmd_keygen(args: argparse.Namespace) -> int:
+    from nacl import signing as nacl_signing
+
     pub_path = Path(args.pub) if args.pub else Path("quill-pub.key")
     priv_path = Path(args.priv) if args.priv else Path("quill-priv.key")
     sk = nacl_signing.SigningKey.generate()

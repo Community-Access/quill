@@ -142,6 +142,20 @@ def total_ram_gb() -> float:
         stat.dwLength = ctypes.sizeof(_MEMORYSTATUSEX)
         ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(stat))
         return float(stat.ullTotalPhys) / (1024**3)
+    if sys.platform == "darwin":
+        # macOS: query total physical memory via sysctl. Falling through to the
+        # flat 8.0 default fed every Mac wrong Whisper model recommendations
+        # regardless of actual RAM.
+        from quill.stability.safe_subprocess import run_subprocess_safely
+
+        try:
+            result = run_subprocess_safely(["sysctl", "-n", "hw.memsize"], timeout_seconds=5.0)
+            bytes_total = int(result.stdout.strip())
+            return float(bytes_total) / (1024**3)
+        except (subprocess.TimeoutExpired, OSError, ValueError):
+            pass
+    # Unknown platform: fall back to a conservative 8.0 GB estimate rather than
+    # guessing, so model recommendations stay on the small side.
     return 8.0
 
 

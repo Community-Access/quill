@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>signing</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1 id="quill-artifact-signing">QUILL artifact signing</h1>
+<p>QUILL artifacts (Quillins, AI agents, verbosity packs, sound packs,
+keyboard packs, skill packs, pronunciation dictionaries) are distributed
+through the Quillin Hub with a detached Ed25519 signature in
+minisign-shaped text format. This is the workflow every publisher and
+every Hub operator needs.</p>
+<h2 id="threat-model">Threat model</h2>
+<p>The signature is a <em>provenance</em> attestation, not a
+code-signing system. What it does cover:</p>
+<ul>
+<li><strong>Tampered Hub download</strong> -- the sidecar verification
+fails.</li>
+<li><strong>MITM on the storefront</strong> -- the sidecar verification
+fails.</li>
+<li><strong>Unsigned submission to the Hub</strong> -- the Submission
+Forge rejects it before the validator runs.</li>
+</ul>
+<p>What it does <em>not</em> cover:</p>
+<ul>
+<li><strong>Author identity</strong> -- there is no PKI chain. The key
+id (<code>ca-pubkey-2026</code>) only tells you the artifact was signed
+with the Community-Access publisher key, not who the author is.</li>
+<li><strong>Download privacy</strong> -- no anonymity layer.</li>
+<li><strong>Executable code</strong> -- Quillins (which carry Python)
+are additionally scanned by Bandit and the SecurityWatchdog, but the
+operating-system code-signing runbook for QUILL itself is documented
+separately (see
+<code>docs/release/quill-macos-signing-notarization-runbook.md</code>).</li>
+</ul>
+<h2 id="key-files">Key files</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>quill-pub.key</code> (and
+<code>quillin-hub/quill-pub.key</code>)</td>
+<td>32-byte Ed25519 public key, base64-encoded. Bundled in the repo so
+the Hub and the desktop app can verify without a network call.</td>
+</tr>
+<tr>
+<td><code>~/.config/quill/quill-priv.key</code> (or wherever you keep
+secrets)</td>
+<td>32-byte seed + 32-byte public key, base64-encoded. The private key.
+<strong>Never committed.</strong></td>
+</tr>
+<tr>
+<td><code>&lt;artifact&gt;.minisig</code></td>
+<td>Per-artifact detached signature. Sits next to the artifact in the
+same directory.</td>
+</tr>
+</tbody>
+</table>
+<p>The private key is held only by the Community-Access publisher. The
+Hub does not have it; it cannot mint new signatures.</p>
+<h2 id="sidecar-format">Sidecar format</h2>
+<p>Each <code>.minisig</code> is plain text in the standard minisign
+format -- three lines, all UTF-8:</p>
+<pre><code>untrusted comment: quill artifact signature
+key id: ca-pubkey-2026
+sig: &lt;base64-encoded 64-byte Ed25519 signature&gt;</code></pre>
+<p>The <code>key id:</code> line is informational (verification is over
+the public key bytes, not the id string). The <code>sig:</code> line is
+the raw 64-byte Ed25519 signature of the artifact bytes,
+base64-encoded.</p>
+<h2 id="cli">CLI</h2>
+<p><code>quill.tools.signing</code> is a CLI subcommand, not just a
+Python module.</p>
+<h3 id="generate-a-new-keypair-publisher-onboarding">Generate a new
+keypair (publisher onboarding)</h3>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> quill.tools.signing keygen <span class="at">--secret-key</span> quill-priv.key</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># prints the matching public key in base64 to stdout</span></span></code></pre></div>
+<p>Store the secret key in a password manager or a hardware token. Add
+the public key to <code>quill-pub.key</code> (and
+<code>quillin-hub/quill-pub.key</code> if you ship both copies).</p>
+<h3 id="sign-an-artifact">Sign an artifact</h3>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> quill.tools.signing sign path/to/manifest.json</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># writes path/to/manifest.json.minisig</span></span></code></pre></div>
+<p>The CLI prompts for the secret key path (or take it from
+<code>QUILL_PRIV_KEY_PATH</code>); the public key is read from
+<code>quill-pub.key</code>. Exit status 0 on success, non-zero on any
+failure (missing key, bad sidecar, I/O error).</p>
+<h3 id="verify-a-sidecar">Verify a sidecar</h3>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> quill.tools.signing verify path/to/manifest.json</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># exit 0 = verified, 2 = not signed / invalid, 1 = I/O error</span></span></code></pre></div>
+<p>CI uses this exit code to gate artifact publication.</p>
+<h3 id="override-the-public-key-deploy--tests">Override the public key
+(deploy + tests)</h3>
+<p><code>SIGNING_PUBLIC_KEY_PATH</code> env var overrides the bundled
+key file. The Hub deployment uses this to point at the rotated key
+without rebuilding the container image. The smoke test uses it to inject
+a throwaway test keypair.</p>
+<h2 id="submission-forge-flow">Submission Forge flow</h2>
+<p>A user uploads a new artifact at <code>/forge/submit</code>:</p>
+<ol type="1">
+<li>The artifact is saved to a per-request upload directory.</li>
+<li>The optional <code>signature</code> field (the <code>.minisig</code>
+sidecar) is saved next to the artifact in the same directory.</li>
+<li><code>audit_submission</code> calls
+<code>signature_status(artifact, sidecar=...)</code>.</li>
+<li>If <code>verified=False</code>, the report is <code>FAIL</code> and
+the submission does not become an artifact. The forge report shows
+whether the signature is missing, invalid, or unverified.</li>
+<li>If <code>verified=True</code>, the validator runs (and for Quillins,
+Bandit + the SecurityWatchdog).</li>
+</ol>
+<p>Zipped Quillins are an edge case: the sidecar is over the
+<em>zip</em> bytes, not the extracted files. The route passes the saved
+zip path as <code>sign_target</code> so the linter verifies the original
+archive.</p>
+<h2 id="verifying-a-downloaded-artifact">Verifying a downloaded
+artifact</h2>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> quill.tools.signing <span class="im">import</span> signature_status</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>status <span class="op">=</span> signature_status(Path(<span class="st">&quot;journal-stamp.zip&quot;</span>))</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> status.verified:</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;OK, signed by </span><span class="sc">{</span>status<span class="sc">.</span>signer_key_id<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f&quot;REFUSE: </span><span class="sc">{</span>status<span class="sc">.</span>error<span class="sc">}</span><span class="ss">&quot;</span>)</span></code></pre></div>
+<p>The desktop app surfaces the same status in the Quillin Manager
+dialog (<code>Tools &gt; Quillins &gt; Manage...</code>) and the in-app
+<code>Submit to Quillin Hub...</code> pre-flight check.</p>
+<h2 id="rotation">Rotation</h2>
+<p>To rotate the publisher key:</p>
+<ol type="1">
+<li>Generate the new keypair (above).</li>
+<li>Replace the contents of <code>quill-pub.key</code> and
+<code>quillin-hub/quill-pub.key</code> with the new public key.</li>
+<li>Sign all existing artifacts with the new key; the old sidecars
+become unverifiable.</li>
+<li>Bump the <code>KEY_ID</code> constant in
+<code>quill/tools/signing.py</code> (e.g. to
+<code>ca-pubkey-2026b</code>) and re-sign.</li>
+<li>Cut a new release; the Hub's <code>SIGNING_PUBLIC_KEY_PATH</code>
+env var should be updated at deploy time so the in-process Hub uses the
+new key without rebuilding.</li>
+</ol>
+<h2 id="threat-model-walkthrough">Threat-model walkthrough</h2>
+<ul>
+<li>I download <code>journal-stamp.zip</code> from the Hub. The sidecar
+is <code>journal-stamp.zip.minisig</code>. <code>signature_status</code>
+returns verified and <code>signer_key_id == "ca-pubkey-2026"</code>. The
+Quillin is what the publisher signed.</li>
+<li>Someone MITMs the download and replaces the zip with a tampered
+copy. The sidecar no longer matches. <code>signature_status</code>
+returns <code>signature does not match</code>. The Quillin Manager
+dialog shows "Invalid" and refuses to load.</li>
+<li>I write a Quillin and want to submit it. I sign it with the
+publisher key, upload both files to the Hub, and the Forge accepts.</li>
+<li>I forget to sign. The Forge rejects with "Unsigned -- every
+submission must carry a sidecar signed by
+<code>ca-pubkey-2026</code>".</li>
+</ul>
+</body>
+</html>

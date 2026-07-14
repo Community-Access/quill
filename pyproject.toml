@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling>=1.30.1"]
+requires = ["hatchling>=1.31.0"]
 build-backend = "hatchling.build"
 
 [project]
@@ -23,6 +23,12 @@ classifiers = [
 dependencies = [
     "regex>=2026.6.28",
     "defusedxml>=0.7.1",
+    # Podcast RSS/Atom feed parsing (Tools > Media > Podcasts). Real-world feeds
+    # are too messy (malformed XML, mixed RSS/Atom/iTunes/Podcasting-2.0
+    # namespaces) for a hand-rolled ElementTree walk to handle reliably; this is
+    # the standard Python choice. Pure Python, no C extension, tiny -- a normal
+    # dependency, not an on-demand optional component like Pandoc/speech engines.
+    "feedparser>=6.0.11",
     # Runtime deps of the vendored autoupdate library (quill/_vendor/autoupdate).
     "requests>=2.34.2",
     "platform_utils>=1.6.2",
@@ -38,16 +44,6 @@ dependencies = [
     # Faster Whisper extra ([fasterwhisper]) is installed. Keep the floor in sync
     # with that extra.
     "huggingface_hub>=1.22.0",
-    # Free-first document import pipeline (quill/io/docconvert.py Tier 1 +
-    # quill/io/pdf.py). These are advertised in-product as the built-in "free
-    # local converter" and PDF text extractor, so they must be present on EVERY
-    # install -- not tucked in an optional extra the shipping build never pulls.
-    # (Regression #909: they used to live only in the [pages] extra / nowhere,
-    # so a clean install had no PDF/Office text extractor at all.) MarkItDown is
-    # Tier 1 for Office + PDF; pdfplumber/pypdf are the PDF text floor.
-    "markitdown[docx,pptx,xlsx,xls,pdf]>=0.1.6",
-    "pdfplumber>=0.11.9",
-    "pypdf>=6.11.0",
 ]
 
 [project.optional-dependencies]
@@ -77,8 +73,24 @@ ui = [
     "pillow-heif>=1.4.0",
     # HTML-to-text converter for intelligent paste cleaning (AccessibleApps, MIT).
     "html_to_text>=1.0.0",
+    # Ed25519 / minisign-shaped Quillin signature verification (PyNaCl). Bundled
+    # at runtime so every shipping build can verify publisher-signed Quillins
+    # in the Quillins Manager -- the signature check was previously dev/CI-only
+    # (the [signing]/[dev] extras), which meant real users always saw "PyNaCl is
+    # not installed" and could never verify a Quillin (#919 follow-up). The
+    # graceful missing-nacl path in quill.tools.signing stays as defense in
+    # depth; it just almost never triggers now.
+    "PyNaCl>=1.6.2",
 ]
 spellcheck = ["pyenchant>=3.3.0"]
+# macOS native rich text (One Editor, Every Format, Phase 6): PyObjC lets
+# QuillMacRichText drive the editor's NSTextView (RTF via NSAttributedString).
+# The shipped Mac .app BUNDLES this (the [macos] build extra installs the full
+# pyobjc and scripts/setup_macos.py lists objc/AppKit/Foundation in the py2app
+# includes, since the imports are lazy and the tracer misses them) — nothing
+# for end users to install. This extra covers source/pip installs on a Mac.
+# The code path still degrades to converted rich if the bridge is ever absent.
+mac = ["pyobjc-framework-Cocoa>=10.3; sys_platform == 'darwin'"]
 # Direct GitHub issue submission for Report a Bug (#210): feedback_hub provides
 # the accessible FeedbackDialog driven by quill/core/schemas/feedback.json and
 # files the issue via the GitHub API. Ships in every build (this is the only
@@ -125,9 +137,10 @@ mp3 = ["mutagen>=1.48.1"]
 signing = ["PyNaCl>=1.6.2"]
 # Native Word (.docx) export with full formatting fidelity (font family, point
 # size, color, highlight, paragraph alignment) for the hidden-codes feature
-# (docs/planning/rich-text-formatting-hidden-codes-design.md). Optional: when absent,
+# (QUILL PRD hidden-codes appendix), and — since One Editor, Every Format —
+# the docx rich reader (quill/io/docx_reader.py). Optional: when absent,
 # write_docx_document falls back to the Pandoc path (which drops those run/
-# paragraph attributes), so docx export still works without this extra.
+# paragraph attributes) and .docx opens read-extract instead of rich.
 docx = ["python-docx>=1.1.0"]
 # Premium cloud TTS via the official ElevenLabs SDK (roadmap §4.1, audio export).
 # Optional: the ElevenLabs AI Voice provider is inert unless this is installed and
@@ -169,10 +182,21 @@ kokoro = [
     # ONNX voice path importing a missing 'babel'. Keep in sync with [dev].
     "Babel>=2.18.0",
 ]
-# MarkItDown moved to base dependencies (#909 — it is the built-in free import
-# converter, not an optional extra). This extra now carries only keynote-parser
-# (Apple Keynote .key import), which remains genuinely optional/macOS-oriented.
 pages = ["keynote-parser>=1.14.4.0"]
+# Free-first PDF/Office text extraction (quill/io/docconvert.py Tier 1 +
+# quill/io/pdf.py): MarkItDown for Office + PDF, pdfplumber/pypdf as the PDF
+# text floor. Was briefly a base dependency (#909 fixed a build that shipped
+# with neither this extra nor a base dependency, so a clean install had no
+# PDF/Office text extractor at all). Downloadable on demand via Help > Download
+# Optional Components (quill/core/pdf_ocr_install.py), which keeps the
+# minimal-install footprint small while still fixing #909's actual complaint --
+# every install can get PDF/Office extraction in one click, it just is not
+# forced on installs that never touch it.
+pdf-ocr = [
+    "markitdown[docx,pptx,xlsx,xls,pdf]>=0.1.6",
+    "pdfplumber>=0.11.9",
+    "pypdf>=6.11.0",
+]
 # GLOW document accessibility engine (audit / fix / convert for docx, pptx,
 # xlsx, pdf, epub, md). quill-glow-core is the thin, stable service contract
 # Quill imports; its [glow] extra pulls in the acb-large-print backend. The
@@ -195,8 +219,8 @@ math = ["latex2mathml>=3.81.0"]
 # pyobjc powers the macOS platform layer; apple-fm-sdk is the Foundation Models
 # backend used by Ask Quill on macOS.
 macos = [
-    "py2app>=0.28.10",
-    "setuptools<83",
+    "py2app>=0.28.10; sys_platform == 'darwin'",
+    "setuptools<83; sys_platform == 'darwin'",
     "pyobjc>=12.2.1; sys_platform == 'darwin'",
     "apple-fm-sdk>=0.2.1; sys_platform == 'darwin'",
 ]
@@ -258,6 +282,7 @@ packages = ["quill"]
 "quill/data/th_en_US_v2.dat" = "quill/data/th_en_US_v2.dat"
 "quill/data/th_en_US_LICENSE.txt" = "quill/data/th_en_US_LICENSE.txt"
 "quill/data/th_en_US_WordNet_LICENSE.txt" = "quill/data/th_en_US_WordNet_LICENSE.txt"
+"quill/data/emoji_catalog.json" = "quill/data/emoji_catalog.json"
 "quill/core/schemas/extension.json" = "quill/core/schemas/extension.json"
 "quill/core/schemas/sound_pack.json" = "quill/core/schemas/sound_pack.json"
 "quill/core/schemas/agent.json" = "quill/core/schemas/agent.json"
@@ -316,6 +341,9 @@ extend-exclude = [
     # lived here was retired once its learnings shipped (roadmap §5, §7). Not
     # first-party; excluded from lint/format.
     "docs/planning/source",
+    # One-off dispatch helper that drove the podcast episode reorg. Not
+    # first-party app code; long literal brief strings are intentional.
+    "docs/podcast/dispatch_main.py",
 ]
 
 [tool.ruff.format]
@@ -357,6 +385,7 @@ exclude = ["quill/ui/"]
 [[tool.mypy.overrides]]
 module = [
     "defusedxml.*",
+    "feedparser",
     "regex",
     "enchant",
     "keynote_parser.*",

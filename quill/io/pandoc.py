@@ -147,6 +147,18 @@ def convert_document_with_pandoc(
         details = completed.stderr.strip() or completed.stdout.strip() or str(completed.returncode)
         raise PandocConversionError(details)
 
+    # #954: a successful returncode with no stdout is not a valid empty
+    # document -- it means the subprocess's stdout capture failed silently
+    # (the historical cause was a locale-encoding mismatch on the reader
+    # thread, now fixed in run_subprocess_safely, but this guard stays as a
+    # second line of defense). Silently returning text=None here surfaced to
+    # the user as "Pandoc succeeded but produced an empty document."
+    if completed.stdout is None:
+        raise PandocConversionError(
+            "Pandoc reported success but produced no output. This usually means its "
+            "output could not be decoded; please report this as a bug."
+        )
+
     if progress is not None:
         try:
             progress("done", 1, 1)

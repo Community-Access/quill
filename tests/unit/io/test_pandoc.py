@@ -59,6 +59,28 @@ def test_convert_document_rejects_binary_output_kind(tmp_path: Path) -> None:
         convert_document_with_pandoc(source, "docx", tool_status=tool_status, from_format="docx")
 
 
+def test_convert_document_with_pandoc_raises_on_none_stdout(monkeypatch, tmp_path: Path) -> None:
+    # Regression for #954: a returncode-0 CompletedProcess with stdout=None
+    # (the symptom of a locale-encoding decode failure in the subprocess
+    # reader thread) must raise, not silently return an "empty document."
+    source = tmp_path / "sample.docx"
+    source.write_text("placeholder", encoding="utf-8")
+    tool_status = type("Status", (), {"installed": True, "path": "C:/Tools/pandoc.exe"})()
+
+    class Completed:
+        returncode = 0
+        stdout = None
+        stderr = ""
+
+    monkeypatch.setattr(
+        "quill.io.pandoc.run_subprocess_safely",
+        lambda *args, **kwargs: Completed(),
+    )
+
+    with pytest.raises(PandocConversionError, match="no output"):
+        convert_document_with_pandoc(source, "markdown", tool_status=tool_status)
+
+
 def test_convert_document_with_pandoc_raises_on_error(monkeypatch, tmp_path: Path) -> None:
     source = tmp_path / "sample.docx"
     source.write_text("placeholder", encoding="utf-8")

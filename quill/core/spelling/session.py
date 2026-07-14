@@ -12,6 +12,7 @@ from pathlib import Path
 from quill.core.spellcheck import (
     Misspelling,
     add_word_to_scope,
+    rank_misspellings_by_frequency,
     suggest_words,
 )
 from quill.core.spelling.context_builder import build_context
@@ -53,11 +54,19 @@ class ReviewSession:
         dictionary: set[str],
         scope_start: int = 0,
         scope_end: int | None = None,
+        ranked: bool = False,
     ) -> None:
         self._text = text
         self._dictionary = dictionary
         self._scope_start = scope_start
         self._scope_end = scope_end if scope_end is not None else len(text)
+        # Kurzweil-1000-style ranked spelling (community feature request):
+        # the guided review walks issues most-frequent-word-first instead of
+        # document order. Re-applied on every _rescan(), which runs after
+        # every action -- so as Change All clears the current top offender,
+        # the next most-frequent word naturally rises to the front instead of
+        # the ranking going stale mid-session.
+        self._ranked = ranked
         self._session_ignores: set[str] = set()
         self._ignored_once_positions: set[int] = set()
         self._counters = ReviewCounters()
@@ -316,6 +325,9 @@ class ReviewSession:
 
         If *advance_past* is given, the first issue must start strictly after
         that position (used after Change to skip the replacement location).
+        In ranked mode, "next" has no positional meaning -- the freshly
+        re-ranked list's top entry is always shown next, which naturally
+        surfaces the next-most-frequent word once the current one is cleared.
         """
         from quill.core.spellcheck import list_misspellings as _lm
 
@@ -326,7 +338,12 @@ class ReviewSession:
             and m.word.lower() not in self._session_ignores
             and m.start not in self._ignored_once_positions
         ]
+        if self._ranked:
+            self._issues = rank_misspellings_by_frequency(self._issues)
         if advance_past is not None:
+            if self._ranked:
+                self._current_idx = 0 if self._issues else len(self._issues)
+                return
             # Find the index of the first issue strictly after advance_past.
             for i, m in enumerate(self._issues):
                 if m.start > advance_past:

@@ -51,8 +51,6 @@ class Settings:
     browse_mode_followon_custom_ms: int = 4000
     csv_open_mode: str = "prompt"
     word_open_mode: str = "prompt"
-    editor_surface: str = "plain"
-    save_as_surface_sync: str = "prompt"
     # Conversion engine preferences for Word documents. "auto" keeps QUILL's
     # default chains: MarkItDown-first when opening a .docx, the native
     # python-docx writer first when saving one. The explicit choices trade
@@ -60,6 +58,9 @@ class Settings:
     docx_read_engine: str = "auto"
     docx_write_engine: str = "auto"
     plain_text_link_style: str = "text_url"
+    content_handoff_format: str = "text"
+    auto_outline_style: str = "numeric"
+    clip_library_autocapture: bool = False
     indent_with_tabs: bool = False
     indent_size: int = 4
     # On by default so signed safety advisories (the remote feature kill
@@ -140,6 +141,11 @@ class Settings:
     read_aloud_espeak_executable: str = ""
     read_aloud_espeak_voice: str = "en"
     read_aloud_espeak_rate: int = 175
+    # macOS system voice for Read Aloud (#21/#75): the say CLI voice id. Blank
+    # uses the system default voice. The say CLI ships with macOS, so no
+    # executable path field is needed (unlike espeak/piper/dectalk).
+    read_aloud_macos_voice: str = ""
+    read_aloud_macos_rate: int = 175
     # ElevenLabs premium cloud voice for Read Aloud (opt-in, per-session consent,
     # billed to the user's ElevenLabs quota). Blank ids use the module defaults.
     read_aloud_elevenlabs_voice: str = ""
@@ -199,37 +205,25 @@ class Settings:
     # dialog instead of re-speaking. The dedicated Echo key works regardless; this
     # only governs the double-press shortcut. See quill/core/spoken_echo.py.
     spoken_echo_on_double_press: bool = True
-    # Braille leading-cell experiment. The editor defaults to a Windows RichEdit
-    # for accessible value reporting (#616). "editor_control_kind" lets a braille
-    # user switch the native control: "rich2" (RichEdit 3.0, default), "rich"
-    # (RichEdit 2.0), or "plain" (a Notepad-style EDIT control). Takes effect for
-    # documents opened after the change.
-    editor_control_kind: str = "rich2"
-    # Experimental (testing) overrides — see the Experimental settings tab. Changing
-    # either takes effect on the next QUILL restart.
-    #   experimental_editor_surface: which control backs the editor, overriding
-    #   editor_control_kind for testing. "default" follows editor_control_kind;
-    #   otherwise "rich2" (RichEdit 3.0), "rich" (RichEdit 2.0), "plain" (Notepad-style
-    #   EDIT control), or "rtf" (a wx.RichTextCtrl rich-text surface, experimental).
-    experimental_editor_surface: str = "default"
-    #   editor_hide_border: draw the editor control with no border for a cleaner,
-    #   Notepad-like frame. Off keeps the platform default border.
-    editor_hide_border: bool = False
-    #   experimental_richedit_emulate_sysedit: the QuillRichEdit braille lever.
-    #   When on (and the QuillRichEdit surface is selected), the native Rich Edit
-    #   is put in SES_EMULATESYSEDIT mode to A/B whether emulating a classic EDIT
-    #   control fixes the JAWS cell-2 offset (#616) and selection dots 7-8 (#813).
-    #   Gated by experimental_acknowledged; needs JAWS + a braille display to judge.
-    experimental_richedit_emulate_sysedit: bool = False
+    # The braille editor fix (Preferences > Braille). QUILL's one editor surface
+    # on Windows is QuillRichEdit — the native Rich Edit (RICHEDIT50W) plus the
+    # TOM wrapper. Live JAWS + braille testing (2026-07) confirmed the fix for
+    # the two long-standing braille bugs: text starting in cell 2 (#616) and
+    # selection dots 7-8 not shown (#813). Both halves default ON; each is a
+    # plain checkbox on the Braille tab. Windows only; restart to apply
+    # everywhere.
+    #   braille_editor_system_edit_fix: apply SES_EMULATESYSEDIT to the editor so
+    #   braille displays show text from cell 1 and mark selections with dots 7-8.
+    braille_editor_system_edit_fix: bool = True
+    #   braille_editor_hide_border: draw the editor with no border. The visible
+    #   border itself pushes braille output out of cell 1, so a hidden border is
+    #   part of the fix, not cosmetics. Unchecking warns that cell alignment
+    #   will break.
+    braille_editor_hide_border: bool = True
     #   experimental_acknowledged: the master Experimental switch — the user has
     #   opted in to experimental features as a group. Every experimental option
     #   below is ignored (and its controls disabled) until this is True.
     experimental_acknowledged: bool = False
-    #   experimental_editor_surfaces_enabled: the secondary gate for the two
-    #   editor-surface options above; carries the "features may degrade based on
-    #   the control selected" acknowledgement. Both gates must be on before a
-    #   non-default surface or border override is applied.
-    experimental_editor_surfaces_enabled: bool = False
     #   glow_experimental_enabled: opt-in for the GLOW accessibility review and
     #   repair suite (Tools > GLOW). Gated by experimental_acknowledged; off by
     #   default while GLOW matures; takes effect on settings apply (menu rebuild).
@@ -308,6 +302,7 @@ class Settings:
     watch_folder_enabled: bool = False
     watch_folder_path: str = ""
     startup_folder: str = ""
+    git_sync_last_folder: str = ""  # last folder used with Sync Folder with GitHub
     vault_root: str = ""  # active Accessible Vault folder ("" = no vault open)
     vault_templates_folder: str = ""  # vault-relative Templates folder ("" = "Templates")
     vault_daily_pattern: str = ""  # daily-note path pattern ("" = "Journal/{{date:YYYY-MM-DD}}.md")
@@ -457,6 +452,9 @@ class Settings:
     setup_wizard_wants_automation: bool = False
     # UPGRADE: True once we have shown the post-upgrade braille-pack install prompt.
     upgrade_prompt_braille_pack: bool = False
+    # UPGRADE: True once we have shown the post-upgrade Kokoro-ONNX package prompt
+    # (models present on disk but the kokoro_onnx package not importable).
+    upgrade_prompt_kokoro_onnx: bool = False
     # QDC: Developer Console settings.
     console_enabled: bool = True
     console_python_timeout: int = 30
@@ -466,6 +464,11 @@ class Settings:
     sound_pack_path: str = ""  # empty = bundled Ink pack
     sound_volume: int = 80  # 0-100; passed to sound_lib Output.set_volume()
     sound_events_disabled: str = ""  # comma-separated SoundEvent IDs to silence
+    # Speak "Generating preview, please wait" when a voice preview's synthesis
+    # is still running after the ~400ms cue delay (paired with the
+    # voice_preview_generating earcon, configured independently via the
+    # Sound Events dialog).
+    voice_preview_announce_generating: bool = True
     # Indent tone overlay: "" = off, else one of pentatonic/whole_tone/diatonic/chromatic.
     # When set, moving the caret across indent levels plays a pitched tone per level.
     indent_tone_scale: str = ""
@@ -602,11 +605,6 @@ class Settings:
         word_open_mode = str(data.get("word_open_mode", "prompt")).strip().lower()
         if word_open_mode not in {"prompt", "text", "structured"}:
             word_open_mode = "prompt"
-        # core.rich_text_lens is locked_off; always "plain" regardless of stored value.
-        editor_surface = "plain"
-        save_as_surface_sync = str(data.get("save_as_surface_sync", "prompt")).strip().lower()
-        if save_as_surface_sync not in {"prompt", "always", "never"}:
-            save_as_surface_sync = "prompt"
         docx_read_engine = str(data.get("docx_read_engine", "auto")).strip().lower()
         if docx_read_engine not in {"auto", "markitdown", "pandoc"}:
             docx_read_engine = "auto"
@@ -616,6 +614,13 @@ class Settings:
         plain_text_link_style = str(data.get("plain_text_link_style", "text_url")).strip().lower()
         if plain_text_link_style not in {"text", "text_url", "url", "markdown"}:
             plain_text_link_style = "text_url"
+        content_handoff_format = str(data.get("content_handoff_format", "text")).strip().lower()
+        if content_handoff_format not in {"text", "markdown", "html"}:
+            content_handoff_format = "text"
+        auto_outline_style = str(data.get("auto_outline_style", "numeric")).strip().lower()
+        if auto_outline_style not in {"numeric", "legal"}:
+            auto_outline_style = "numeric"
+        clip_library_autocapture = bool(data.get("clip_library_autocapture", False))
         indent_with_tabs = bool(data.get("indent_with_tabs", False))
         try:
             indent_size = int(data.get("indent_size", 4))
@@ -678,6 +683,7 @@ class Settings:
             "piper",
             "kokoro",
             "espeak",
+            "macos",
             "elevenlabs",
         }
         if read_aloud_engine not in _valid_engines:
@@ -730,6 +736,12 @@ class Settings:
             read_aloud_espeak_rate = 80
         if read_aloud_espeak_rate > 450:
             read_aloud_espeak_rate = 450
+        read_aloud_macos_voice = str(data.get("read_aloud_macos_voice", "")).strip()
+        read_aloud_macos_rate = int(data.get("read_aloud_macos_rate", 175))
+        if read_aloud_macos_rate < 80:
+            read_aloud_macos_rate = 80
+        if read_aloud_macos_rate > 450:
+            read_aloud_macos_rate = 450
         ai_tts_provider = str(data.get("ai_tts_provider", "openai")).strip().lower()
         if ai_tts_provider not in {"openai", "gemini", "elevenlabs"}:
             ai_tts_provider = "openai"
@@ -781,35 +793,15 @@ class Settings:
         idle_unload_minutes = _clamp_int(data.get("idle_unload_minutes", 10), 10, 0, 240)
         announce_indent_depth = bool(data.get("announce_indent_depth", True))
         spoken_echo_on_double_press = bool(data.get("spoken_echo_on_double_press", True))
-        editor_control_kind = str(data.get("editor_control_kind", "")).strip().lower()
-        if editor_control_kind not in {"rich2", "rich", "plain"}:
-            # Back-compat: the earlier editor_use_legacy_richedit bool -> "rich".
-            editor_control_kind = (
-                "rich" if bool(data.get("editor_use_legacy_richedit", False)) else "rich2"
-            )
-        experimental_editor_surface = (
-            str(data.get("experimental_editor_surface", "default")).strip().lower()
-        )
-        allowed_surfaces = {
-            "default",
-            "rich2",
-            "rich",
-            "plain",
-            "rtf",
-            "win32",
-            "stc",
-            "richedit_rtf",
-        }
-        if experimental_editor_surface not in allowed_surfaces:
-            experimental_editor_surface = "default"
-        editor_hide_border = bool(data.get("editor_hide_border", False))
+        # The retired surface-experiment keys (editor_control_kind,
+        # experimental_editor_surface, editor_hide_border,
+        # experimental_richedit_emulate_sysedit,
+        # experimental_editor_surfaces_enabled) are deliberately NOT read here:
+        # the delta store drops unknown keys on load, so every upgrader lands on
+        # the promoted default — QuillRichEdit with the braille fix on.
+        braille_editor_system_edit_fix = bool(data.get("braille_editor_system_edit_fix", True))
+        braille_editor_hide_border = bool(data.get("braille_editor_hide_border", True))
         experimental_acknowledged = bool(data.get("experimental_acknowledged", False))
-        experimental_editor_surfaces_enabled = bool(
-            data.get("experimental_editor_surfaces_enabled", False)
-        )
-        experimental_richedit_emulate_sysedit = bool(
-            data.get("experimental_richedit_emulate_sysedit", False)
-        )
         glow_experimental_enabled = bool(data.get("glow_experimental_enabled", False))
         publishing_experimental_enabled = bool(data.get("publishing_experimental_enabled", False))
         table_studio_experimental_enabled = bool(
@@ -865,6 +857,7 @@ class Settings:
         watch_folder_enabled = bool(data.get("watch_folder_enabled", False))
         watch_folder_path = str(data.get("watch_folder_path", "")).strip()
         startup_folder = str(data.get("startup_folder", "")).strip()
+        git_sync_last_folder = str(data.get("git_sync_last_folder", "")).strip()
         vault_root = str(data.get("vault_root", "")).strip()
         vault_templates_folder = str(data.get("vault_templates_folder", "")).strip()
         vault_daily_pattern = str(data.get("vault_daily_pattern", "")).strip()
@@ -1056,6 +1049,7 @@ class Settings:
         setup_wizard_wants_braille = bool(data.get("setup_wizard_wants_braille", False))
         setup_wizard_wants_automation = bool(data.get("setup_wizard_wants_automation", False))
         upgrade_prompt_braille_pack = bool(data.get("upgrade_prompt_braille_pack", False))
+        upgrade_prompt_kokoro_onnx = bool(data.get("upgrade_prompt_kokoro_onnx", False))
         console_enabled = bool(data.get("console_enabled", True))
         auto_ask_crash_submit = bool(data.get("auto_ask_crash_submit", True))
         try:
@@ -1078,6 +1072,9 @@ class Settings:
             sound_volume = 80
         sound_volume = max(0, min(100, sound_volume))
         sound_events_disabled = str(data.get("sound_events_disabled", ""))
+        voice_preview_announce_generating = bool(
+            data.get("voice_preview_announce_generating", True)
+        )
         indent_tone_scale = str(data.get("indent_tone_scale", ""))
         if indent_tone_scale not in ("", "pentatonic", "whole_tone", "diatonic", "chromatic"):
             indent_tone_scale = ""
@@ -1244,11 +1241,12 @@ class Settings:
             browse_mode_followon_custom_ms=browse_mode_followon_custom_ms,
             csv_open_mode=csv_open_mode,
             word_open_mode=word_open_mode,
-            editor_surface=editor_surface,
-            save_as_surface_sync=save_as_surface_sync,
             docx_read_engine=docx_read_engine,
             docx_write_engine=docx_write_engine,
             plain_text_link_style=plain_text_link_style,
+            content_handoff_format=content_handoff_format,
+            auto_outline_style=auto_outline_style,
+            clip_library_autocapture=clip_library_autocapture,
             indent_with_tabs=indent_with_tabs,
             indent_size=indent_size,
             auto_check_updates=auto_check_updates,
@@ -1299,6 +1297,8 @@ class Settings:
             read_aloud_espeak_executable=read_aloud_espeak_executable,
             read_aloud_espeak_voice=read_aloud_espeak_voice,
             read_aloud_espeak_rate=read_aloud_espeak_rate,
+            read_aloud_macos_voice=read_aloud_macos_voice,
+            read_aloud_macos_rate=read_aloud_macos_rate,
             read_aloud_elevenlabs_voice=read_aloud_elevenlabs_voice,
             read_aloud_elevenlabs_model=read_aloud_elevenlabs_model,
             ai_tts_provider=ai_tts_provider,
@@ -1325,12 +1325,9 @@ class Settings:
             idle_unload_minutes=idle_unload_minutes,
             announce_indent_depth=announce_indent_depth,
             spoken_echo_on_double_press=spoken_echo_on_double_press,
-            editor_control_kind=editor_control_kind,
-            experimental_editor_surface=experimental_editor_surface,
-            editor_hide_border=editor_hide_border,
-            experimental_richedit_emulate_sysedit=experimental_richedit_emulate_sysedit,
+            braille_editor_system_edit_fix=braille_editor_system_edit_fix,
+            braille_editor_hide_border=braille_editor_hide_border,
             experimental_acknowledged=experimental_acknowledged,
-            experimental_editor_surfaces_enabled=experimental_editor_surfaces_enabled,
             glow_experimental_enabled=glow_experimental_enabled,
             publishing_experimental_enabled=publishing_experimental_enabled,
             table_studio_experimental_enabled=table_studio_experimental_enabled,
@@ -1366,6 +1363,7 @@ class Settings:
             watch_folder_enabled=watch_folder_enabled,
             watch_folder_path=watch_folder_path,
             startup_folder=startup_folder,
+            git_sync_last_folder=git_sync_last_folder,
             vault_root=vault_root,
             vault_templates_folder=vault_templates_folder,
             vault_daily_pattern=vault_daily_pattern,
@@ -1458,6 +1456,7 @@ class Settings:
             setup_wizard_wants_braille=setup_wizard_wants_braille,
             setup_wizard_wants_automation=setup_wizard_wants_automation,
             upgrade_prompt_braille_pack=upgrade_prompt_braille_pack,
+            upgrade_prompt_kokoro_onnx=upgrade_prompt_kokoro_onnx,
             console_enabled=console_enabled,
             auto_ask_crash_submit=auto_ask_crash_submit,
             console_python_timeout=console_python_timeout,
@@ -1466,6 +1465,7 @@ class Settings:
             sound_pack_path=sound_pack_path,
             sound_volume=sound_volume,
             sound_events_disabled=sound_events_disabled,
+            voice_preview_announce_generating=voice_preview_announce_generating,
             indent_tone_scale=indent_tone_scale,
             abbreviation_backspace_behavior=abbreviation_backspace_behavior,
             braille_cells_per_line=braille_cells_per_line,

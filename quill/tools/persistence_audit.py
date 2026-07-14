@@ -89,6 +89,8 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # incremental-rebuild fingerprints are regenerable.
     "core/publish/destinations.py::save_destinations": "content",
     "core/publish/feed_folder.py::save_feed_config": "content",
+    "core/radio/favorites.py::save_favorites": "content",
+    "core/podcasts/subscriptions.py::save_library": "content",
     "core/speech/listening_positions.py::save_position_ms": "cache",
     "core/speech/synth_cache.py::save_cache": "cache",
     "core/palette.py::save_palette_usage": "cache",
@@ -127,12 +129,25 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/ai/sessions.py::save_session": "content",
     "core/ai/style.py::save_style": "content",
     "core/bookmarks.py::save": "content",
+    "core/clip_library.py::_save": "content",
     "core/copy_tray.py::_save": "content",
+    "core/favorite_folders.py::save": "content",
+    "core/header_footer_store.py::save": "content",
+    # GitHub Items pinned repos + favorites (GHManage parity): local bookmarks
+    # keyed by owner/repo and URL — user content, tolerant loader (unknown
+    # fields ignored, corrupt file degrades to empty).
+    "core/github/saved_items.py::save": "content",
+    # Emoji picker recently-used + favorites: same shape and same tolerance as
+    # saved_items.py above (a corrupt file degrades to empty, unknown fields
+    # ignored) -- losing this list is mildly annoying, not data loss, and it
+    # never affects the emoji catalog itself (a separate, read-only file).
+    "core/emoji_usage.py::save": "content",
     "core/inline_notes.py::save": "content",
     "core/macros.py::save": "content",
     "core/notebook_store.py::save_notebook": "content",
     "core/story/storage.py::save_project": "content",
     "core/prompt_library.py::_save": "content",
+    "core/work_persona.py::_save": "content",
     # Restore points: content-addressed document snapshots + a per-document
     # index carrying schema_version 1; entries are additive/self-describing and
     # corrupt indexes degrade to empty (tests/unit/core/test_restore_points.py).

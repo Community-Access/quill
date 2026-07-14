@@ -49,12 +49,19 @@ PROVIDER_ID = "whispercpp"
 
 # Narrow security allowlist for the whisper.cpp CLI basename (with/without the
 # Windows .exe suffix). QUILL never runs an arbitrary executable for speech.
+#
+# Note: the bare ``whisper`` / ``whisper.exe`` name is deliberately EXCLUDED. It
+# belongs to the openai-whisper PyPI package CLI (``pip install openai-whisper``),
+# which is a *different* program with an incompatible flag dialect (--model /
+# --output_format / --output_dir, not whisper.cpp's -m / -f / -oj / -of).
+# Accepting it made QUILL find ``whisper.EXE`` on PATH when a user had the
+# Python package installed but not whisper.cpp, then feed it whisper.cpp flags
+# that its argparse rejected with exit code 2 ("Transcription failed (code 2)",
+# issue #931). whisper.cpp ships as ``whisper-cli`` (newer) or ``main`` (older).
 _ALLOWED_BASENAMES = frozenset({
     "whisper-cli",
-    "whisper",
     "main",
     "whisper-cli.exe",
-    "whisper.exe",
     "main.exe",
 })
 
@@ -174,23 +181,59 @@ def resolve_whisper_executable(configured_path: str | None = None) -> str | None
         "whisper-cli",
         "main.exe",
         "main",
-        "whisper.exe",
-        "whisper",
     )
     for directory in engine_search_dirs():
         for name in bundled_names:
             probe = directory / name
             if probe.is_file() and probe.name.lower() in _ALLOWED_BASENAMES:
                 return str(probe)
-    for name in ("whisper-cli", "whisper", "main"):
+    for name in ("whisper-cli", "main"):
         found = shutil.which(name)
         if found and Path(found).name.lower() in _ALLOWED_BASENAMES:
             return found
     return None
 
 
-def _model_path(model_id: str) -> Path:
+def _downloaded_model_path(model_id: str) -> Path:
+    """Where a user-downloaded copy of *model_id* lives (the app-data dir).
+
+    Write/remove operations always target this path specifically -- never the
+    bundled copy below, which :func:`download_model`/:func:`remove_model` must
+    never overwrite or delete (it is shipped with the app, not user data).
+    """
     return models.models_root() / PROVIDER_ID / f"ggml-{model_id}.bin"
+
+
+def _bundled_whisper_model_path(model_id: str) -> Path | None:
+    """A bundled GGML model shipped with the app, if present for *model_id*.
+
+    The Offline Edition build stages the default model (see
+    ``_stage_whisper_model`` in ``scripts/build_windows_distribution.py``)
+    under ``{app}/speech-models-bundled/whispercpp/``, mirroring
+    ``quill.core.read_aloud._bundled_kokoro_model_dir`` -- so whisper.cpp, the
+    default/required offline engine, transcribes with zero network access and
+    no download step, not even the smallest "tiny" model. Returns None when no
+    bundled copy of this specific model exists (the common case: regular
+    installer, portable, and source runs never stage one).
+    """
+    app_root = os.environ.get("QUILL_APP_ROOT", "").strip()
+    if not app_root:
+        return None
+    candidate = Path(app_root) / "speech-models-bundled" / PROVIDER_ID / f"ggml-{model_id}.bin"
+    return candidate if candidate.is_file() else None
+
+
+def _model_path(model_id: str) -> Path:
+    """Where to *read* model_id's GGML file from for transcription: a
+    user-downloaded copy if present, else the bundled copy shipped with the
+    app, else the (download target) data dir path. Never use this for
+    writes/removal -- see :func:`_downloaded_model_path`.
+    """
+    downloaded = _downloaded_model_path(model_id)
+    if downloaded.is_file():
+        return downloaded
+    bundled = _bundled_whisper_model_path(model_id)
+    return bundled if bundled is not None else downloaded
 
 
 # --------------------------------------------------------------------------- #
@@ -236,7 +279,32 @@ class WhisperCppProvider:
         return list(catalog.WHISPER_CPP_MODELS)
 
     def list_installed_models(self) -> list[InstalledSpeechModel]:
-        return [m for m in models.load_installed_models() if m.provider_id == PROVIDER_ID]
+        recorded = [m for m in models.load_installed_models() if m.provider_id == PROVIDER_ID]
+        # A bundled model (Offline Edition) has no download-time record in the
+        # JSON store -- it shipped with the app, nothing was ever "downloaded".
+        # Synthesize a matching entry so Manage Speech Models shows it as
+        # installed too, same as a real download would, without ever writing
+        # it to the store (a synthesized entry disappears the moment the
+        # bundled file does; a real download's record does not).
+        recorded_ids = {m.id for m in recorded}
+        for info in catalog.WHISPER_CPP_MODELS:
+            if info.id in recorded_ids:
+                continue
+            bundled = _bundled_whisper_model_path(info.id)
+            if bundled is None:
+                continue
+            recorded.append(
+                InstalledSpeechModel(
+                    id=info.id,
+                    display_name=info.display_name,
+                    path=bundled,
+                    size_mb=info.approximate_size_mb,
+                    provider_id=PROVIDER_ID,
+                    sha256=info.sha256,
+                    installed_at="",
+                )
+            )
+        return recorded
 
     def estimate_model_size(self, model_id: str) -> SizeEstimate:
         info = catalog.model_by_id(model_id)
@@ -253,7 +321,7 @@ class WhisperCppProvider:
         info = catalog.model_by_id(model_id)
         if info is None or not info.download_url:
             raise SpeechError(f"No download is available for the '{model_id}' model.")
-        target = _model_path(model_id)
+        target = _downloaded_model_path(model_id)
         target.parent.mkdir(parents=True, exist_ok=True)
         _download_to_file(info, target, progress)
         installed = InstalledSpeechModel(
@@ -269,7 +337,12 @@ class WhisperCppProvider:
         return installed
 
     def remove_model(self, model_id: str) -> None:
-        target = _model_path(model_id)
+        # Only the user-downloaded copy is ever removable -- never the bundled
+        # copy shipped with the Offline Edition (see _downloaded_model_path).
+        # If only a bundled copy exists, this is a safe no-op: the model stays
+        # available (list_installed_models still reports it via the bundled
+        # fallback), matching how Kokoro's Remove never touches its bundled copy.
+        target = _downloaded_model_path(model_id)
         if target.exists():
             target.unlink()
         models.remove_installed_model(model_id, PROVIDER_ID)

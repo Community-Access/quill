@@ -221,3 +221,49 @@ def test_case_match_title():
 
 def test_case_match_lower():
     assert _case_match("teh", "the") == "the"
+
+
+# ------------------------------------------------------------------
+# Ranked spelling mode (Alt+Shift+F7, community feature request)
+# ------------------------------------------------------------------
+
+
+def test_ranked_session_starts_on_most_frequent_word():
+    # "teh" occurs 3 times, "wrold" once -- ranked mode should present a
+    # "teh" occurrence first even though "wrold" comes first in the text.
+    text = "wrold teh cat teh sat teh mat"
+    s = ReviewSession(text=text, dictionary=SMALL_DICT, ranked=True)
+    issue = s.current()
+    assert issue is not None
+    assert issue.word == "teh"
+
+
+def test_unranked_session_stays_in_document_order():
+    text = "wrold teh cat teh sat teh mat"
+    s = ReviewSession(text=text, dictionary=SMALL_DICT, ranked=False)
+    issue = s.current()
+    assert issue is not None
+    assert issue.word == "wrold"
+
+
+def test_ranked_session_change_all_surfaces_next_most_frequent():
+    # After Change All clears every "teh", "wrold" (the only one left)
+    # should become current -- the ranking re-evaluates after each action.
+    text = "wrold teh cat teh sat teh mat"
+    s = ReviewSession(text=text, dictionary=SMALL_DICT, ranked=True)
+    s.apply_change_all("the")
+    issue = s.current()
+    assert issue is not None
+    assert issue.word == "wrold"
+
+
+def test_ranked_session_ignore_once_moves_to_next_occurrence_of_same_word():
+    text = "teh cat teh sat teh mat wrold"
+    s = ReviewSession(text=text, dictionary=SMALL_DICT, ranked=True)
+    first = s.current()
+    assert first is not None and first.word == "teh"
+    s.apply_ignore_once()
+    second = s.current()
+    # Still "teh" -- two occurrences remain, still the most frequent word.
+    assert second is not None
+    assert second.word == "teh"

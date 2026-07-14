@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>THIRD_PARTY_NOTICES</title>
   <style>
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -180,8 +184,8 @@ source directories.</p>
 <h2 id="autoupdate">autoupdate</h2>
 <ul>
 <li><strong>Source:</strong> quill/_vendor/autoupdate/</li>
-<li><strong>Upstream:</strong>
-https://github.com/accessibleapps/app_updater</li>
+<li><strong>Upstream:</strong> <a
+href="https://github.com/accessibleapps/app_updater">https://github.com/accessibleapps/app_updater</a></li>
 <li><strong>Author:</strong> Christopher Toth</li>
 <li><strong>License:</strong> MIT</li>
 </ul>
@@ -209,8 +213,8 @@ SOFTWARE.</code></pre>
 <ul>
 <li><strong>Source:</strong> installed as <code>html_to_text</code>
 package dependency</li>
-<li><strong>Upstream:</strong>
-https://github.com/accessibleapps/html_to_text</li>
+<li><strong>Upstream:</strong> <a
+href="https://github.com/accessibleapps/html_to_text">https://github.com/accessibleapps/html_to_text</a></li>
 <li><strong>Author:</strong> AccessibleApps contributors (Christopher
 Toth and community)</li>
 <li><strong>License:</strong> MIT</li>
@@ -239,18 +243,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.</code></pre>
 <hr />
-<h2 id="words_alpha.txt">words_alpha.txt</h2>
+<h2 id="words_alphatxt">words_alpha.txt</h2>
 <ul>
 <li><strong>Source:</strong> quill/data/words_alpha.txt</li>
-<li><strong>Upstream:</strong>
-https://github.com/dwyl/english-words</li>
+<li><strong>Upstream:</strong> <a
+href="https://github.com/dwyl/english-words">https://github.com/dwyl/english-words</a></li>
 <li><strong>License:</strong> Unlicense (public domain)</li>
 </ul>
 <hr />
 <h2 id="thesaurus-data-th_en_us_v2">thesaurus data (th_en_US_v2)</h2>
 <ul>
 <li><strong>Source:</strong> quill/data/th_en_US_v2.dat</li>
-<li><strong>Upstream:</strong> https://mythes.sourceforge.net/</li>
+<li><strong>Upstream:</strong> <a
+href="https://mythes.sourceforge.net/">https://mythes.sourceforge.net/</a></li>
 <li><strong>License:</strong> LGPL 2.1 — see
 quill/data/th_en_US_LICENSE.txt</li>
 </ul>
@@ -262,7 +267,8 @@ quill/data/th_en_US_WordNet_LICENSE.txt.</p>
 <ul>
 <li><strong>Source:</strong> installed as the optional
 <code>quill[mp3]</code> dependency (not vendored)</li>
-<li><strong>Upstream:</strong> https://github.com/quodlibet/mutagen</li>
+<li><strong>Upstream:</strong> <a
+href="https://github.com/quodlibet/mutagen">https://github.com/quodlibet/mutagen</a></li>
 <li><strong>License:</strong> GPL-2.0-or-later</li>
 <li><strong>Used for:</strong> Reading and writing ID3v2 audio tags and
 <strong>CHAP/CTOC chapter frames</strong> on MP3 output in the batch
@@ -275,17 +281,18 @@ when MP3 chapter output is requested.</li>
 credit)</h2>
 <ul>
 <li><strong>Upstream:</strong> ChapterForge, a sibling Blind Information
-Technology Solutions (BITS) project — https://chapterforge.app</li>
+Technology Solutions (BITS) project — <a
+href="https://chapterforge.app">https://chapterforge.app</a></li>
 <li><strong>License:</strong> MIT</li>
 <li><strong>Used for:</strong> Design/approach reference only (no code
-is vendored). QUILL’s MP3 ID3 CHAP/CTOC chapter writer
-(<code>quill/core/speech/chapters.py</code>) follows ChapterForge’s
+is vendored). QUILL's MP3 ID3 CHAP/CTOC chapter writer
+(<code>quill/core/speech/chapters.py</code>) follows ChapterForge's
 <code>core.Chapter</code> / <code>compute_chapters</code> /
 <code>write_tags_and_chapters</code> approach (with two deliberate
 fixes: contiguous gap chapters, and preserving existing ID3 tags), and
 the <strong>Build Audiobook from Folder</strong> feature
-(<code>quill/core/speech/audiobook.py</code>) follows ChapterForge’s
-“folder of audio → one chaptered master” design. Auphonic, RSS-feed,
+(<code>quill/core/speech/audiobook.py</code>) follows ChapterForge's
+"folder of audio → one chaptered master" design. Auphonic, RSS-feed,
 SFTP-publish, and metadata-lookup surfaces are intentionally not
 ported.</li>
 </ul>

@@ -1,0 +1,161 @@
+[LIAM]
+The QUILL Cast, episode forty. I'm Liam. Part six begins today, the Accessible Vault, the linked knowledge system built into QUILL, rebuilt from the ground up to be usable by ear.
+
+[JESSICA]
+I'm Jessica. The part-six banner is Organization, and the vault is the cornerstone of that whole section, because almost every other organization feature in QUILL is either a vault feature or a vault-friendly view over the same notes. Story Studio, the manuscript organizer we will meet in a few episodes, is a collection view over a vault. Even the GLOW accessibility audit scans a folder, the same shape as a vault. So what you learn today is a foundation, not a single tool.
+
+[LIAM]
+Quick recap of episode thirty-nine, because it sets up the trust frame. Last episode was agents, autonomy you can read before it happens. We walked through the plan-first design, the Accessibility Tune-Up demo, the three layers of control, plan review, per-change preview, single-step undo, and we left you with homework about partial consent on a real document.
+
+[JESSICA]
+And the standing reassurance carried over from that episode, because it carries into this one too. The QUILL rule is nothing changes silently. Vault operations that touch files, like the fearless rename we will get to in a few minutes, present a confirmation that names the exact scope before anything moves. Same posture, different feature.
+
+[LIAM]
+So the vault asks the sharper question. What is a knowledge graph, actually? It is a set of relationships between notes. Relationships do not need pixels. What links here is a question with a spoken answer, and so is what does this note link to, and so is how do I move through the web by ear. The vault is a knowledge graph rebuilt for screen readers, and built on plain files so you are never locked in.
+
+[JESSICA]
+Linked note-taking, the personal-knowledge movement, the idea that notes should connect into a web rather than sit in a flat pile. The famous tools for it are gorgeous. Their signature feature is literally a picture, a graph view, floating dots and lines. That is decoration, if you cannot see it.
+
+[LIAM]
+Let's start with the foundations, because they are humble on purpose. A vault is a folder of Markdown files on your disk. That is it. Tools, Vault, Open Vault, point at a folder, QUILL walks it, parses every note, builds an index in memory, and announces: vault Notes, forty notes, one hundred twelve links. The index is a small cache you can delete without losing a word. No database. No proprietary format. Plain files, the same ones any text editor can open.
+[JESSICA]
+The file types it accepts are documented in the core, in quill core vault vault.py, and they are the three plain-text formats writers already use: dot md, dot markdown, and dot txt. Anything else in the folder, including the dot quill cache folder that QUILL uses, is skipped, so you can drop images and PDFs alongside your notes and the indexer ignores them. The scan is case- and whitespace-insensitive on note names, which lets you call the same note "Project Atlas" in one file and "project atlas" in another and still have the link resolve.
+
+[LIAM]
+Verified against code. Look at the open vault handler in quill ui main frame vault.py. It picks a folder with a directory dialog, persists that path in settings, calls scan vault to build the in-memory model, calls build resolver and build index on top, and announces the count. The line that says "vault Notes, forty notes, one hundred twelve links" is the exact string the listener would hear. The numbers come straight from the in-memory index, not from any disk file you have to trust.
+
+[JESSICA]
+The folder becomes a vault, and from that moment every save in a file under that folder is incrementally re-indexed. That is Phase 0, background incremental indexing, and the on-save hook in the same file, _vault on document saved, calls apply note change to re-parse just the saved note rather than re-scanning the whole folder. So your backlinks, your neighborhood, your search results, your tag counts, all reflect the save immediately, even on a vault with thousands of notes.
+
+[LIAM]
+Now the heart of the whole system, wikilinks. Links are typed, double square brackets around a note's title, right in your text. Cursor on a wikilink, Follow Wikilink from the Tools menu, and you are in the target note. The codec itself is in quill core vault links.py, and the docstring is a beautiful summary of what counts as a link.
+
+[JESSICA]
+It is. Five shapes. Double brackets around a note title. Double brackets with a pipe, for an alias, the display text shown in place of the target. Double brackets with a hash, for a heading within the target. Double brackets with a caret-hash, for a specific block, which uses a block id you can mark anywhere on a line. And double brackets with just the hash and an anchor, with an empty target, for a link to a heading in the same note. There is a sixth shape, the embed form with a leading exclamation mark, and that is Phase 5, next episode, not today.
+
+[LIAM]
+A defensive detail worth naming, because the team thought about it. Code samples that mention double brackets are not mistaken for real links. Inline code spans and fenced code blocks are masked out by the parser. If you write a tutorial that includes an example like the double brackets Note Name double brackets, that example is text, not a wikilink, and the indexer leaves it alone. Same for YAML front matter. The note parser blanks the front-matter region out before it scans for headings, tags, block ids, or links, so a key called "tags" with a hash sign inside it does not get misread as a tag.
+
+[JESSICA]
+Which means a link that points at a heading moves you to the heading. The offset precision comes from the index, which records the character offset of every heading and every block id, so follow wikilink opens the destination at the right line, not at the top. The Follow Wikilink command in the UI is implemented in main frame vault.py's follow wikilink. It reads the wikilink at the caret, resolves it, opens the destination. If the link is to a heading, it lands on the heading line.
+
+[LIAM]
+Three edge cases that the system handles honestly, and that you should know about. First, a link to a note that does not exist offers to create it. The offer is a real yes-no dialog, not a silent create, and the new file is named after the link's target with the characters that are illegal in Windows file names stripped. Second, a name that matches several notes, ambiguous, is never guessed. The code in resolve.py is explicit about this, ambiguous carries no path or offset, the UI must pick a candidate, so a caller can never "resolve" by silently taking the first match. The listener gets a spoken chooser. Third, same-note anchors like double brackets hash Section double brackets are not graph edges. They are navigation, but they don't show up in your backlinks, because a backlink is a relationship between two notes, and a same-note anchor is a relationship between a note and itself.
+
+[JESSICA]
+And then there is completion, so titles do not have to live in your memory. Type a half-finished double brackets, and then trigger Complete Link or Tag at Cursor from the Tools menu, or the keyboard binding. A focused, filterable, spoken list opens with the matching note titles. The list is announced, you type to filter, you press enter, and the title lands in the link, brackets closed if needed. It is the screen-reader answer to the floating autocomplete window used by the visual tools.
+
+[PAUSE]
+
+[LIAM]
+Now the crown jewel, and the part Jessica called her favorite. Stand in any note that lives inside your vault. Run Show Backlinks.
+
+[JESSICA]
+And QUILL answers. "Five notes link here." Then it reads each one, in stable order, with the actual sentence the link lives in. Press enter on one, and you land in the source at the mention. That, friends, is the graph view, spoken. The first time it surprises you with a connection you had forgotten making, you will understand why this is my favorite episode in the whole series.
+
+[LIAM]
+The data structure is in quill core vault index.py. The function is backlinks, and it returns a tuple of Backlink records, each with a source path, the context line, and a character offset. The UI's show backlinks handler wraps that tuple in a list whose rows are titled with the source note's title and the line of text, so a screen reader announces "Backlinks to Bravo. Three items. Item one of three. Alpha. See Bravo for more." Enter on that row opens alpha dot md at the line that contains the wikilink to Bravo.
+
+[JESSICA]
+And the line shown in the row is the actual line in the source file, stripped of the newline, just the way you wrote it. The line-context comes from a tiny helper at the bottom of the index module called underscore line at. It walks the file text to find the surrounding newlines, so the snippet is always the real sentence around the link, not a synthetic summary. That is what makes the backlinks read naturally when you scan them.
+
+[LIAM]
+Two more graph tools that belong to the same family. Note Neighborhood, the command in the menu, and Unlinked Mentions. Neighborhood lists everything one hop away in both directions, outgoing links and incoming links, your position in the web, audible. Unlinked Mentions is the listener's favorite, it scans the whole vault for plain-text occurrences of the current note's name that are not yet links, and lists each one with its sentence. Press enter on a mention, and you land in the source. A keystroke later, you can turn that mention into a link.
+
+[JESSICA]
+The unlinked-mentions matcher is careful. It matches whole-word and case-insensitive, so "concatenate" does not match a note called Cat. It skips occurrences already inside a link, and it skips anything inside a code span or a fenced code block, because a name inside a code sample is not a "link this mention" prospect. The candidates are the note's title and any aliases declared in the front matter. So if you have a note called "The Atlantic" and an alias "Atlantic", both are searched for across the vault, both surfaced as unlinked mentions when found.
+
+[PAUSE]
+
+[LIAM]
+Before we go further, the do-this-now beat. We are going to build a tiny vault together. Take a moment, pause the audio if you want, and do this. Make a new empty folder somewhere you can find it, call it vault-test. Inside that folder, create three Markdown files. File one: alpha dot md, with the content hash A and the word body, then a line that says See Bravo for more. File two: bravo dot md, with the content hash Bravo, and a short body. File three: charlie dot md, with the content hash Charlie, and a line that says I mention Bravo without a link. That's it. Three notes, one real link, one unlinked mention. Now in QUILL, Tools, Vault, Open Vault, point at vault-test. The status line will say "vault test: three notes, one link." Stand on Bravo, run Show Backlinks. You should hear "one note links here, Alpha, see Bravo for more." Then stand on Bravo, run Unlinked Mentions. You should hear "one unlinked mention, Charlie, I mention Bravo without a link." Press enter on Charlie, land in the file. Then turn that mention into a link. Pause now if you want to actually do this. Come back when you can hear those two announcements.
+
+[JESSICA]
+The reason we want you to do this now, before we keep going, is the same reason we did the do-this-now beat in the style-profile episode. The features we are about to describe are easiest to remember if your ears have already heard them. The audible shape of a backlinks result, "Alpha. See Bravo for more," is a sentence you will recognize on the second encounter. Without that, the next twenty minutes are abstract. With it, they are a tour of features you have already used.
+[LIAM]
+Let's talk about getting around a growing vault, because that is where the productivity lives. Three commands, in the order you will use them. Go to Note, a filter-as-you-type switcher. Three letters and enter, and you are in the right note. Search Vault, full text across every note, with regex and whole-word supported, and results open at their exact line. And Rename Note, the fearless one, which updates the file, the heading, and every inbound link across the vault in a single, summarized, confirmable step.
+
+[JESSICA]
+Go to Note, internally quick switch note, runs the function quick switch matches from quill core vault search.py. It is a forgiving fuzzy filter. The fuzzy score rewards contiguous runs and an early first match, so typing "int" ranks "Introduction" well above "Print Layout". An empty query returns every note ordered by title, so the empty state is a full browse list, not an empty list, which is the more useful default. The list is announced, you type, the list filters, you press enter, and you jump. It is a real command-palette for your vault.
+
+[LIAM]
+Search Vault is the power tool. It walks every note, runs a case-insensitive match against the title and every line, ranks title-hits above body-hits, sorts within each tier by path and then by line number, and returns an ordered list. Each row in the result is a snippet, a short, match-centered excerpt with ellipses when trimmed. The screen reader reads "Alpha, line seven, see Bravo for more." Enter on that row, and the file opens at line seven. The two checkboxes on the dialog are Regex and Whole word, and they compose, so you can do a regex search limited to whole-word matches, and the empty-query case returns no hits rather than every line of every note.
+
+[JESSICA]
+Rename Note, internally rename current note, is the feature I want to walk through with care, because it is the one that touches other files. The refactor module, quill core vault refactor.py, has the whole thing. plan note rename scans every note in the vault for inbound wikilinks whose target matches the old title, case- and space-insensitive, and produces a per-note list of offset-precise replacements. The replacements preserve the alias, the heading, and the block portions of each link, so a link like double brackets Note Name hash Section pipe See Here double brackets is rewritten to use the new title but keep the hash Section and the pipe See Here. Links that reached the note by alias or filename are left alone, they still resolve and there is no reason to touch them.
+
+[LIAM]
+The summary you see is honest, because the code computes it before it asks. rename link count returns total-links-updated and notes-touched, and the dialog says "Rename 'Old' to 'New' and update twelve links in four notes?" Yes, no, with a real keyboard contract. Only on yes do the edits apply. And the edits apply last-first within each file, so earlier offsets stay valid, and the file is read once, the replacements applied, and the file written. The on-disk note being renamed is also retitled, the leading hash Old Title heading is rewritten to hash New Title if the note is titled by its H1. If the note is titled by its filename or its front matter, there is no leading H1 to rewrite, and the file is left as is.
+
+[JESSICA]
+Two safety nets worth knowing. First, the unsaved-changes check. If the editor has unsaved changes to the note you are about to rename, the command saves first, so the on-disk file matches the editor before the rename touches it. Without that, a rename could miss a recent edit. Second, the re-index. After a successful rename, the vault is set to None and re-loaded, so the in-memory index reflects the new file and title before any further command runs. The same incremental indexing that runs on a regular save runs on a rename.
+
+[PAUSE]
+
+[LIAM]
+Seed workflows, three starters, because the listener who asked the question last week wanted to know how people actually use this. Research, one note per source, and one note per topic, and links in both directions. From a topic note, Show Backlinks answers "which sources discuss this?" instantly. From a source note, the outgoing links answer "which topics did I tag this as relevant to?" The web reads itself.
+
+[JESSICA]
+Fiction. A note per character, a note per place, a note per scene if you like. From a character's note, Show Backlinks lists every scene that mentions them. From a place's note, Show Neighborhood shows what links there and what links from there. The graph of a novel, audible. Some of our writers do this with thousands of notes, and the search-in-results feature, where you limit the next search to a set of paths, becomes the way to ask "in the scenes where Mira appears, where is the sword mentioned?"
+[LIAM]
+Work. One note per project, one note per person, and meetings as notes that link to both. Six months later, you open the person note, and Show Backlinks tells you every meeting they were in. You open the project note, and the same command tells you every meeting that touched the project. The back-of-the-vault view of your own work, browsable by ear in under a second.
+[JESSICA]
+Starting advice, sincerely. Start smaller than feels sensible. Ten notes with honest links beat a grand taxonomy you will never finish. The web grows by use, and a link you actually wrote is more valuable than a category you avoided writing.
+
+[PAUSE]
+
+[LIAM]
+Honest corrections and clarifications, because we promised in the opening of the series that we would call out drift between docs and code. Three of them. First, the listener who read a draft of an earlier version of this episode asked whether the cache folder is hidden from search. It is, and the rule is in vault.py. The scanner skips any path whose parts include a dot directory, so the dot quill cache folder is invisible to the indexer, and any future caches we add that live under a dot directory get the same treatment for free.
+[JESSICA]
+Second, an earlier draft of this episode said ambiguous links were rare. They are not rare, they are the normal case in a serious vault, and the design treats them as normal. The docstring in resolve.py is explicit. An ambiguous name returns a Link Target with an empty path and the full candidate list, and the UI's choose ambiguous handler in main frame vault.py shows a single-choice dialog. The contract is that the UI must pick a candidate, so a caller can never resolve by silently taking the first match. If you ever see an ambiguous link that opened a "wrong" note, that is a UI bug, and we want to hear about it.
+
+[LIAM]
+Third, an older draft said the rename would update the file extension. It does not, and that is correct. The on-disk extension stays dot md, and the file name uses only the safe-stripped title. The visible title can include characters that are illegal in file names, the file name cannot. The Rename dialog lets you type the new title freely, and the file is saved under the sanitized form. That distinction matters if you ever script against the vault, and we want it on the record.
+
+[JESSICA]
+Fourth, a clarification about the "graph view" comparison. Other tools have a literal graph view, a picture, a force-directed layout of nodes and edges. The QUILL vault does not have a graph view, and that is a deliberate choice. The data is a graph, the relations are first-class, the traversal tools are first-class, and the audible rendering is a graph view by ear. A picture would be a decoration on top of data the user can already navigate. We may add a visualization later, but the canonical interface is the spoken traversal, and the spoken traversal is the product.
+
+[PAUSE]
+
+[LIAM]
+The failure modes worth knowing, because every feature has them and our rule is honesty. Backlinks on a note outside the vault: you get "save this note inside the vault to see its backlinks." Backlinks on a note with no inbound links: you get "no backlinks, no other note links here yet," which is information, not an error, and the status line is the right place for it.
+
+[JESSICA]
+Unlinked Mentions on a note that is not in the vault: same status-line treatment. Search Vault with an empty query: the dialog stays open, the list is empty, the status line is silent, because an empty result on an empty query is not a failure. Rename Note when the new name is the same as the old name: the command returns early with "rename cancelled," not a silent no-op. Rename Note when the new file already exists: same shape, "a note named X already exists," and the rename aborts. Every one of these is a real exit, not a crash, and the user can recover without restarting.
+[LIAM]
+And the on-disk safety story, because vaults are files and files can be backed up. The dot quill cache is recreatable. The notes themselves are plain Markdown. The only file in the vault that the indexer writes is the cache, and you can delete the dot quill folder at any time, and the next open-vault will rebuild it. So your backup strategy is straightforward, back up the notes, ignore the cache.
+
+[JESSICA]
+The integration story, briefly. The accessibility audit we will meet in a later episode, GLOW, can be pointed at a vault folder. The transcription tool from episode thirty-two produces text you might keep in a vault. The AI library from episode thirty-six has skills that read and write notes in a vault. The accessibility tune-up agent from last episode operates on a document, and a vault note is a document. The listening companion from episode thirty-two can summarize a folder of transcripts and write a new note in the vault. The braille production path from a later episode reads a note and produces a braille file. Almost every other feature in the second half of this course has a vault-shaped integration.
+
+[LIAM]
+And the other half of the integration story. Vault notes open in the same editor, with the same key bindings, with the same read-aloud, with the same spell-walk, with the same agent approval flow, with the same publish-as-HTML. There is no "vault mode" that strips features. The vault is notes, the editor is the editor, and the whole product is on top.
+
+[PAUSE]
+
+[LIAM]
+Quick code-verified recap, the exact mechanics, in case anyone is taking notes. Open vault scans the folder, returns a Vault dataclass, builds a Resolver, builds a Link Index, and announces. Follow Wikilink reads the link at the caret, resolves it, and opens the target. If the target is ambiguous, the chooser dialog runs. If the target does not exist, the offer-to-create dialog runs. Backlinks is a tuple of Backlink records, sorted by source path and offset. Neighborhood is forward plus reverse, displayed as a single list with arrow glyphs that the screen reader reads as "right arrow title" and "left arrow title." Unlinked Mentions is a tuple of Mention records, matched whole-word case-insensitive across the vault, skipping existing links and code regions. Complete Link or Tag at Cursor uses the active trigger from autocomplete.py to find the partial, and wikilink candidates to build the list. Search Vault is a tiered list, title-hits first, with regex and whole-word flags, opening at the matching line. Go to Note is a fuzzy filter over titles and aliases, an empty query shows everything, ordered by score then title then path. Rename Note plans edits per file, summarizes, asks, applies, retitles the H1, and re-indexes. Every claim on the list above was read out of the code for this recording.
+
+[JESSICA]
+And the meta-claim, the one that matters for accessibility. Every one of those commands is operable from the keyboard, every one announces its result through the screen reader, every one is reachable from the Tools menu and the command palette, and every one survives a re-bind through the keymap. The vault is not a separate, second-class surface. It is a first-class feature, and the accessibility work went into the design, not on top.
+
+[PAUSE]
+
+[LIAM]
+Now homework, four steps, in order, the same shape we have used since episode one. Step one. Build the three-note vault we walked through earlier, the alpha, bravo, charlie example, and run Show Backlinks and Unlinked Mentions on Bravo. Listen to the audible shape. If the announcements do not match the lines in this episode, the build has drifted and we want to hear about it. Step two. Add a fourth note, delta, that links to Bravo and Charlie, and a fifth, echo, that links to all four. Run Note Neighborhood on Bravo. Listen to the right-arrow and left-arrow items. That is your graph by ear.
+[JESSICA]
+Step three. Add a sixth note, foxtrot, that contains the word Bravo as plain text, not a link. Run Unlinked Mentions on Bravo, jump to foxtrot, and convert the mention into a link. Save. Run Unlinked Mentions again. The list should now be empty for that pair. Step four. Pick any note that lives outside a vault, make a new folder, copy three notes into it, open it as a vault, and run Search Vault for a phrase you know appears in one of them. Verify that the result opens at the matching line. That is the end-to-end loop.
+
+[LIAM]
+Next episode, forty-one, vault power, the second vault episode. Tags, templates, daily notes, embeds, publishing your vault as a website, and syncing it over your own Git remote. The same foundations, more on top.
+
+[JESSICA]
+I'm Jessica.
+
+[LIAM]
+I'm Liam. Go link something.
+
+[JESSICA]
+The QUILL Cast is a fifty-four-episode audio course on QUILL. This was episode forty, the first half of the Accessible Vault. The next fifteen episodes, from forty-one through fifty-four, complete part six, then parts seven and eight, then the finale. Until then, link your notes and listen to your web.
+[LIAM]
+And if a link surprises you, that is the feature working.

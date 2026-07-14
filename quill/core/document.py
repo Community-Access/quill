@@ -52,6 +52,18 @@ class Document:
         self.modified = True
         self._revision += 1
 
+    def mark_content_changed(self) -> None:
+        """Record a content change that is not visible in the plain text.
+
+        Rich mode (One Editor, Every Format): applying bold via the TOM
+        changes the *document* without changing ``text``, so ``set_text``
+        would no-op — yet autosave keys on ``revision`` and the title bar on
+        ``modified``. This is the sanctioned bump for those formatting-only
+        edits.
+        """
+        self.modified = True
+        self._revision += 1
+
     def mark_saved(self, path: Path | None = None) -> None:
         if path is not None:
             self.path = path

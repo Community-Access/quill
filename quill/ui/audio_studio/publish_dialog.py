@@ -27,6 +27,7 @@ from pathlib import Path
 import wx
 
 from quill.core.i18n import _
+from quill.core.platform_nouns import credential_store_name
 from quill.core.publish.destinations import (
     DestinationStore,
     SftpDestination,
@@ -107,9 +108,9 @@ class PublishDialog(wx.Dialog):
                 self,
                 label=_(
                     "Upload over SFTP: the book and its companion files go to the"
-                    " chosen destination. The password is kept in the Windows"
-                    " Credential Manager, never in QUILL's settings."
-                ),
+                    " chosen destination. The password is kept in the {store},"
+                    " never in QUILL's settings."
+                ).format(store=credential_store_name()),
             ),
             0,
             wx.LEFT | wx.TOP,

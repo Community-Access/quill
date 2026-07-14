@@ -225,8 +225,9 @@ def convert_born_digital(
         text = run(path)
     except ImportError as exc:
         raise DocConvertError(
-            "The free local converter (MarkItDown) is not installed. "
-            "Install QUILL's 'pages' extra to enable born-digital conversion."
+            "The free local converter (MarkItDown) is not installed. Open "
+            'Help > Download Optional Components and download "PDF and '
+            'Office text extraction" to enable born-digital conversion.'
         ) from exc
     except ValueError:
         # MarkItDown raises on empty output; for PDFs that usually means a

@@ -336,7 +336,7 @@ def _render_table(header: str, rows: list[str]) -> str:
     return "".join(parts)
 
 
-# Hidden-codes vocabulary (docs/planning/rich-text-formatting-hidden-codes-design.md):
+# Hidden-codes vocabulary (the QUILL PRD hidden-codes appendix):
 # inline run spans ``[text]{font-family="Arial" ...}`` and paragraph alignment
 # fenced divs ``::: {align="center"}`` ... ``:::``. These render to styled HTML in
 # both the live preview and HTML export (which both flow through this renderer).

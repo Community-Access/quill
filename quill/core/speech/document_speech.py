@@ -36,7 +36,7 @@ from quill.core.speech.translate_sections import Translator, translate_sections
 
 # Engine ids accepted by :func:`make_synthesizer`. These mirror the
 # ``read_aloud_engine`` setting and the batch options' per-engine blocks.
-SUPPORTED_ENGINES = ("sapi5", "kokoro", "piper", "dectalk", "espeak")
+SUPPORTED_ENGINES = ("sapi5", "kokoro", "piper", "dectalk", "espeak", "macos")
 # Multilingual cloud TTS providers (the premium tier for translated export). Each
 # voice can speak any language, so these are the natural fit for a translated
 # document; they require a configured API key and ffmpeg (to conform the provider's
@@ -142,6 +142,15 @@ def make_synthesizer(spec: SynthesisSpec) -> Synthesizer:
             )
 
         return _espeak
+
+    if engine == "macos":
+        if not read_aloud.macos_say_available():
+            raise DocumentSpeechError("macOS system speech (the say command) is not available.")
+
+        def _macos(text: str, out: Path) -> None:
+            read_aloud.synthesize_with_macos(text, out, voice=spec.voice, rate=spec.rate)
+
+        return _macos
 
     if engine in CLOUD_ENGINES:
         return _make_cloud_synthesizer(engine, spec)
