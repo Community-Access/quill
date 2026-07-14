@@ -247,6 +247,40 @@ An inconclusive exit no longer produces the **“Quill detected an unclean exit�
 
 The autosave snapshot is never removed or altered by this decision. It remains on disk either way. The only change is whether QUILL asks you to recover after an exit for which the log contains no evidence of a crash.
 
+### Crash-recovery reports now show their own evidence
+
+A follow-up report showed the gap in that fix from the reporter's side: filing a crash-recovery report from the dialog bundled only the last few thousand characters of the log, while the check above scans a much larger window near the end of the file. A genuine error early in that window could justify the recovery offer without ever appearing in what got filed, leaving a report that looked unexplained even when the underlying decision was correct.
+
+Filed crash-recovery reports now include the actual log lines that triggered the offer, wherever they fall in the scanned window, so a report is self-explanatory instead of a mystery to whoever triages it.
+
+### macOS VoiceOver now hears what a control is for, not just its value
+
+A community accessibility audit found that many QUILL dialogs relied on a Windows-only convention: a visible label sitting next to a control, with nothing else connecting the two. Windows screen readers infer the connection from that layout; VoiceOver does not; it needs an explicit accessible name, and without one it announces a bare value — a number with no unit, an empty edit field with no hint what belongs there.
+
+Two related patterns caused this. Plain fields and lists in a number of hand-built dialogs never received a name at all. Separately, every `SpinCtrl`/`SpinCtrlDouble` — the numeric steppers used throughout Preferences and elsewhere — is a composite control on macOS: naming the stepper itself doesn't reach the inner text field VoiceOver actually focuses, so even a named spinner could still read as a bare number.
+
+Both patterns are fixed with one small shared helper that names a control and, for spinners, its inner field too. The fix was swept across every affected dialog identified by the audit — Preferences, Watch Folder profiles, the Export/Import and GitHub dialogs, Quick Nav, the Heading Organizer, List Manager, the Regular Expression Helper, and dozens more — so a VoiceOver user hears what each control is, not just what it currently holds.
+
+### A live crash report traced a UnicodeEncodeError to autosave
+
+Autosave was writing each snapshot using the source document's own encoding rather than UTF-8. A document read as Braille Ready Format defaults to an ASCII encoding; the moment its in-memory text picked up a character outside that range — in the reported case, a U+2004 space introduced through abbreviation expansion — the write crashed outright.
+
+Recovery always reads a snapshot back as UTF-8, regardless of what encoding the source document itself uses, so the writer now always writes UTF-8 too. A defensive try/except around the autosave call also means a future write failure, whatever the cause, interrupts a snapshot rather than the editing session.
+
+### Radio and Podcasts could crash QUILL on every single launch
+
+The Radio and Podcast player controllers were built before `self.frame` existed inside `MainFrame.__init__`, so parenting either controller on the not-yet-created frame raised `AttributeError` immediately. Both now initialize right after the frame itself is created.
+
+### The Braille Translation Pack now appears the moment it finishes downloading
+
+Downloading the pack correctly installed it, but the Tools > Braille menu didn't know to look again — the Translation submenu only exists once the pack is present, and refreshing menu-item state isn't the same as rebuilding the menu's structure. This is the same root cause as #974, the Quillin menu-contributions bug earlier in this release: a structural menu change needs a structural rebuild, not a state refresh. The direct "Download Braille Translation Pack..." menu item also now opens the Download Optional Components hub instead of running the download on its own and dropping you back into the editor when it finishes — matching the guided flow "Set Up Braille" already used.
+
+### Back-translating a large BRF file failed instantly, with no clear reason why
+
+A community member reported back-translation appearing to do nothing at all on a real hymnal-sized BRF file. The cause: the whole document's text was packed into a single command-line argument to the liblouis worker subprocess, and Windows caps a process's total command-line length at roughly 32,000 characters — so a file of any real size failed to even launch the worker. Reproduced live on a ~450 KB file.
+
+The request now travels over the worker's standard input instead, which carries no such limit. A translation failure now also opens a visible dialog, not just a spoken announcement that was easy to miss entirely if you weren't listening for it at that exact moment.
+
 ### Insert > Date and Time's submenu now actually opens
 
 Jayson Smith reported it precisely: open the Insert menu, arrow up to **Date and Time**, press Right Arrow to open the submenu, and land in the **Format** menu instead.
@@ -768,7 +802,9 @@ Every one of these dialogs shares the same single player, which is what makes "l
 
 Radio volume is QUILL's own — a slider right in the station browser, separate entirely from your Windows system volume and separate from your screen reader's own speech volume, so you can set the music quietly under your speech without touching either of those.
 
-Two things worth naming plainly. First, `docs/planning/radio.md` compares QUILL's approach against FastPlay and ACB Link, the two existing accessible radio players this feature learned from, and explains a deliberate scope decision: TuneIn and iHeartRadio (both undocumented, reverse-engineered commercial APIs with no public terms) and YouTube audio are not in QUILL and are not planned — RadioBrowser alone covers the real need without that risk. Second, stream recording and scheduled recording are real, planned next steps, tracked in that same planning document, not something this beta silently promises and doesn't deliver. Podcasts, described next, ship in this same release.
+**Recording a station, live or scheduled.** Once FFmpeg is installed — the same on-demand optional component the Audio Studio already uses for compressed exports, so nothing new to learn — **Record Now** captures whatever station is currently playing straight to a file, reachable from Tools > Media > Internet Radio, the status bar's Radio cell, or the tray. **Schedule Recording...** queues a recording for later: once, every day, or every week at a chosen time, firing as long as QUILL is running (there's no background service and no catch-up if QUILL wasn't open when the time came — the scope is deliberately "while QUILL is open," not a full OS-level scheduled task). **Recording Settings...** covers format (MP3, OGG, FLAC, or WAV), bitrate, destination folder, a filename pattern with `{station}`/`{date}`/`{time}` tokens, and a maximum-length safety cap so a recording you forgot about can't quietly fill your disk. Stopping a recording — whether you press Stop or it reaches its cap — asks FFmpeg to finish cleanly rather than killing it outright, the same graceful shutdown pressing "q" gives it at a terminal, so the file's container closes properly.
+
+Two things worth naming plainly. First, a deliberate scope decision, learned from studying FastPlay and ACB Link, the two existing accessible radio players this feature drew on: TuneIn and iHeartRadio (both undocumented, reverse-engineered commercial APIs with no public terms) and YouTube audio are not in QUILL and are not planned — RadioBrowser alone covers the real need without that risk. Second, recording is genuinely new this release, not something promised earlier and now delivered late — it shipped alongside everything else described here. Podcasts, described next, ship in this same release.
 
 ---
 
@@ -784,11 +820,25 @@ Two things worth naming plainly. First, `docs/planning/radio.md` compares QUILL'
 
 **Playback that behaves like Radio's.** The Podcasts dialog drives the same kind of single, app-owned player Radio uses: closing the dialog never stops an episode that's playing, and starting a different episode always replaces whatever was playing rather than layering two streams — QUILL never plays two things at once. Your position within an episode is saved automatically, so returning to a podcast — even much later — resumes exactly where you stopped, and that position is stored the same way QUILL Sync already carries your settings between machines, so the sync story here is "already works" rather than "planned." A **Speed** control in the dialog sets playback rate per podcast from 0.75x to 2.0x, remembered the next time you open that show — read faster through a familiar host's cadence, or slow down a dense interview, independently per show.
 
-**Rich context menus, everywhere you'd expect one.** Right-click (or open the context menu from the keyboard) on an episode for Play/Pause, Stop, Download, Pause/Resume Download, Remove Downloaded Copy, Mark as Played/Unplayed, and Copy Episode Link — every action reachable without leaving the list. Right-click a show in the folder tree for Refresh Feed, Pause/Resume This Podcast's Downloads, and Unsubscribe; right-click a folder for New Folder. Unsubscribing also works with the plain Delete key on a selected show — downloaded files are kept on disk unless you separately remove them.
+**Rich context menus, everywhere you'd expect one.** Right-click (or open the context menu from the keyboard) on an episode for Play/Pause, Stop, Download, Pause/Resume Download, Remove Downloaded Copy, Mark as Played/Unplayed, Copy Episode Link, View Show Notes..., and Send Show Notes to Editor — every action reachable without leaving the list. Right-click a show in the folder tree for Refresh Feed, Pause/Resume This Podcast's Downloads, and Unsubscribe; right-click a folder for New Folder. Unsubscribing also works with the plain Delete key on a selected show, and now asks (or, per your **Podcast Settings...**, always does or never does) whether to delete that show's downloaded files along with it.
+
+**Podcast Settings...** is the one place for global defaults every newly subscribed show starts with — playback mode, retention, speed, download location — plus the delete-on-unsubscribe policy above. Any individual podcast can still override these from its own context menu; these are only the starting point.
+
+**Chapters, sorting, and knowing what's left to hear.** When an episode carries Podcasting 2.0 chapter data, a **Chapters...** button opens a jumpable list of chapter markers — select one and jump straight to it, whether or not that episode is already playing. **Next Chapter** and **Previous Chapter** are Command Palette commands that work from anywhere while a chaptered episode is playing. **Sort episodes** (newest/oldest, title, duration, unplayed-first) and **Sort shows** (title, most-unheard-first, recently-updated-first) sit right above their respective lists; every folder and show in the tree also shows its own unheard-episode count in parentheses, so you can see at a glance where you're behind.
+
+**Show notes, read your way.** **View Show Notes...** shows an episode's description either as accessible plain text — HTML stripped out, real paragraph line breaks (so a screen reader's line-by-line navigation moves by line, not word by word through one giant wrapped line), links rendered as `link text (https://...)` — or as rich formatted text with images removed, so opening show notes can never quietly trigger a network fetch QUILL didn't audit. **Send Show Notes to Editor**, on the same context menu, opens the plain-text version as a brand-new QUILL document.
 
 **Everywhere Radio already lives, Podcasts lives too.** A **Podcasts** status bar cell appears the first time you play something, mirroring Radio's cell exactly: click or press Enter to play/pause, open its context menu for Stop and Pause/Resume All Downloads. The system tray's right-click menu gets the same controls for when QUILL is minimized. **Ctrl+Shift+Grave**, then **8**, toggles play/pause; then **7** stops — both remappable QUILL Key chords, and deliberately adjacent to Radio's own N/0/9 chords rather than colliding with them.
 
-No video podcasts, ever — audio only, matching every other playback surface in QUILL. This release is Phase 1 of the plan in `docs/planning/podcasts.md`: chapter navigation and transcript viewing/export (the feed already parses Podcasting 2.0 chapter and transcript URLs as forward schema for this), a separate Inbox view, a cross-show Play Queue, local (imported-file) podcasts, and rich sorting/filtering are the real, planned next phases — tracked in that same document, not silently promised here.
+No video podcasts, ever — audio only, matching every other playback surface in QUILL. This release covers most of Phase 1 and 2 of the plan in `docs/planning/podcasts.md`: transcript viewing/export, a separate Inbox view, a cross-show Play Queue, and local (imported-file) podcasts are the real, planned next phases — tracked in that same document, not silently promised here.
+
+---
+
+### A shared Sleep Timer, and starting with Windows
+
+**Tools > Media > Sleep Timer...** lives one level up from both Internet Radio and Podcasts, because it genuinely covers both: pick a preset (15, 30, 45, 60, or 90 minutes) or type a custom duration, and whichever of the two is currently playing fades gently down to silence over the last 20 seconds rather than cutting off mid-sentence, then stops. Your volume is restored to what it was before the fade the moment playback stops, so pressing play again later isn't a quiet surprise. **Cancel Sleep Timer** is available from the same dialog or the Command Palette. Radio and Podcasts are independent players — starting one has never stopped the other — so the timer checks both and fades/stops whichever is actually active.
+
+**Start QUILL when Windows starts**, a new checkbox in **Preferences > General** right next to the existing **Enable background mode**, registers a per-user Windows startup entry — the same mechanism most everyday Windows apps use, needing no elevation and no installer changes. Checking it also turns background mode on automatically: launching silently at login with no tray icon to bring the window back would be a dead end, so the two are kept in sync.
 
 ---
 

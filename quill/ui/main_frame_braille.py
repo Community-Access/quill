@@ -125,7 +125,12 @@ class BrailleCommandsMixin:
                 )
                 self.frame.Bind(
                     wx.EVT_MENU,
-                    lambda _e: self.download_braille_pack(),
+                    # Route through the Optional Components hub (preselected on the
+                    # braille row) rather than calling download_braille_pack()
+                    # directly: the hub's Download button reopens itself via
+                    # on_done afterward, so the user stays in a guided flow
+                    # instead of being dropped back into the editor.
+                    lambda _e: self.open_optional_components(preselect="braille"),
                     id=self._id_braille_get_pack,
                 )
 
@@ -772,10 +777,20 @@ class BrailleCommandsMixin:
                 else worker.forward_translate(source, table=table)
             )
         except worker.WorkerError as exc:
-            self._say(f"Translation failed: {exc}")
+            # A spoken-only failure (_say alone) is easy to miss entirely --
+            # a real dialog makes a specific failure (e.g. liblouis missing,
+            # or a launch failure) impossible to mistake for "nothing
+            # happened" when nothing was actually heard.
+            message = f"Translation failed: {exc}"
+            self._say(message)
+            style = self._wx.ICON_ERROR | self._wx.OK
+            self._show_message_box(message, "Braille Translation", style)
             return
         if not result:
-            self._say("Translation failed: the worker returned an empty result.")
+            message = "Translation failed: the worker returned an empty result."
+            self._say(message)
+            style = self._wx.ICON_ERROR | self._wx.OK
+            self._show_message_box(message, "Braille Translation", style)
             return
         from quill.core.document import Document
 

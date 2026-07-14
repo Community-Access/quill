@@ -55,3 +55,27 @@ def test_latest_autosave_returns_most_recent(
 def test_autosave_rejects_invalid_session_id() -> None:
     with pytest.raises(ValueError):
         autosave_document(Document(text="x"), "not-a-uuid")
+
+
+def test_autosave_document_survives_narrow_encoding_with_wide_characters(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Regression: a BRF (or any ascii-encoded) document that gains a
+    character outside its declared encoding must not crash autosave.
+
+    A live crash report showed a UnicodeEncodeError ('ascii' codec can't
+    encode U+2004 THREE-PER-EM SPACE) from this exact path -- the document's
+    ``encoding`` was "ascii" (the BRF-read default) but the in-memory text
+    had picked up a wide character via abbreviation expansion. The snapshot
+    is a recovery-only artifact, always read back as UTF-8 by
+    ``recovery.read_recovery_snapshot`` regardless of the source document's
+    encoding, so it must always be *written* as UTF-8 too.
+    """
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    session_id = str(uuid4())
+    text_with_wide_char = "before after"
+    document = Document(text=text_with_wide_char, encoding="ascii")
+
+    snapshot = autosave_document(document, session_id)
+
+    assert snapshot.read_text(encoding="utf-8") == text_with_wide_char

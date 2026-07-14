@@ -163,6 +163,15 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("tray", "notification area", "menu bar", "minimize"),
     ),
     SettingSpec(
+        "launch_at_windows_startup",
+        "Start QUILL when Windows starts",
+        "general",
+        "bool",
+        "Launch QUILL automatically at login (Windows only). Turns on background "
+        "mode too, so there is always a way back into the window.",
+        keywords=("startup", "login", "autostart", "boot", "windows"),
+    ),
+    SettingSpec(
         "show_tab_control",
         "Show tab control",
         "general",

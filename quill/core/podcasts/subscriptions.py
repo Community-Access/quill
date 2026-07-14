@@ -4,9 +4,9 @@ One atomic-JSON store, the standard QUILL settings-surface pattern (see
 ``core/publish/destinations.py``). The episode catalog is durable, not an
 ephemeral re-fetch: :func:`merge_episodes` adds new episodes and refreshes
 metadata for ones already known, but never drops an episode just because a
-feed refresh no longer lists it -- see ``docs/planning/podcasts.md`` §8 for
-why (an old episode can scroll off a feed's live listing while you still have
-it downloaded, or care about its played state). wx-free, strict-typed.
+feed refresh no longer lists it -- an old episode can scroll off a feed's
+live listing while you still have it downloaded, or care about its played
+state. wx-free, strict-typed.
 """
 
 from __future__ import annotations
@@ -53,7 +53,7 @@ class PodcastLibrary:
 
     def add_show(self, show: PodcastShow) -> bool:
         """Add *show*; returns False without changes if its feed URL is
-        already subscribed (duplicate detection, podcasts.md §2)."""
+        already subscribed (duplicate detection)."""
         if show.feed_url and self.find_show_by_feed_url(show.feed_url) is not None:
             return False
         self.shows.append(show)
