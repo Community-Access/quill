@@ -34839,6 +34839,60 @@ some text, press <code>Ctrl+Shift+Grave, Shift+5</code>. "Copied to slot
 5." Everything happened through voice, at typing speed, with standard
 modifier+number chords.</p>
 <hr />
+<h2
+id="sticky-notes-capture-browse-and-the-keys-that-work-everywhere">Sticky
+Notes: capture, browse, and the keys that work everywhere</h2>
+<p>Sticky notes are QUILL's quickest capture surface: <strong>Tools &gt;
+New Sticky Note...</strong> (or its system-wide hotkey) opens a small
+title-and-body editor from anywhere, and <strong>Tools &gt; Sticky
+Notes...</strong> manages the whole collection.</p>
+<h3 id="the-sticky-notes-browser">The Sticky Notes Browser</h3>
+<p><strong>Tools &gt; Sticky Notes Browser...</strong> is the fast way
+back to a note you wrote last week. It opens with focus in a
+<strong>search field</strong> — type anything and the list below filters
+live, matching titles and bodies case-insensitively, newest note first.
+Press <strong>Down</strong> to move into the results and arrow through
+them; press <strong>Tab</strong> to reach a <strong>read-only multi-line
+preview</strong> of the selected note, so you can read the whole thing
+without opening it. <strong>Edit</strong> (or Enter on a note, or
+double-click) opens the full editor; <strong>Close</strong> (or Escape)
+dismisses. Every control announces itself by name.</p>
+<p>Assign the browser a global hotkey (next section) and it opens from
+anywhere in Windows — QUILL restores its own window first, so the
+browser always appears even when QUILL was minimized to the tray.</p>
+<h3 id="global-hotkeys-tools--global-hotkeys">Global Hotkeys (Tools &gt;
+Global Hotkeys...)</h3>
+<p>Global hotkeys let a key combination work
+<strong>system-wide</strong> — in your browser, your mail client,
+anywhere — without switching to QUILL first. Open <strong>Tools &gt;
+Global Hotkeys...</strong>, arrow to a command, press
+<strong>Assign...</strong>, then press the combination you want. It must
+include <strong>Ctrl or Alt</strong> (a bare key would swallow normal
+typing everywhere). <strong>Clear</strong> removes an assignment;
+assigning a key that another QUILL command already holds moves it
+cleanly; and if another <em>application</em> owns the key, Windows
+refuses it — QUILL tells you which binding failed and it simply stays
+inactive until you pick something else.</p>
+<p><strong>What can go global is deliberately limited.</strong> Only
+these commands can be bound, and the list is enforced in code:</p>
+<ul>
+<li>Radio: Play/Pause, Stop, Mute/Unmute, Volume Up, Volume Down</li>
+<li>Podcasts: Play/Pause, Stop</li>
+<li>New Sticky Note</li>
+<li>Sticky Notes Browser</li>
+<li>Post to Mastodon — this opens the compose window; nothing is ever
+sent by the hotkey itself</li>
+</ul>
+<p>Nothing that edits a document, deletes anything, or acts invisibly
+can ever be a global hotkey, no matter what a settings file says.
+Commands that open a window restore QUILL first; media commands act
+right where you are; and every press speaks its result ("Radio paused",
+"Note saved") so you always know what happened even when QUILL isn't
+visible. Your existing system-wide sticky-note hotkey keeps working
+exactly as it always has unless you reassign it here. Global hotkeys are
+Windows-only — macOS offers no equivalent mechanism — but every one of
+these commands remains available from the menus and the command palette
+on every platform.</p>
 <h2 id="future-directions-double-tap-and-beyond">Future Directions:
 Double-Tap and Beyond</h2>
 <p>The user asked whether pressing a key twice quickly could trigger an
