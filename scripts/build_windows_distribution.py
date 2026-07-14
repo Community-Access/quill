@@ -205,7 +205,12 @@ MP3_WHEELHOUSE_REQUIREMENTS = ("mutagen>=1.48.1",)
 # package tree into an engine-pack (activated on sys.path), so bundling it just
 # bloated the installer. Keeping it out trims the installer substantially and lets
 # babel arrive with the on-demand install (#881). See the guided-installer spec.
-DEFAULT_BUNDLED_DEPENDENCY_GROUPS = ("ui", "spellcheck", "ocr", "speech", "feedback")
+# "github" bundles PyGithub so File > Open > GitHub Repository... works in the
+# shipped app. The menu item is always shown, so without PyGithub in the bundle
+# it raises GitHubDependencyError ("pip install quill[github]") -- advice a user
+# of the packaged app cannot act on. Keep it optional for library installs but
+# ship it in the built distribution.
+DEFAULT_BUNDLED_DEPENDENCY_GROUPS = ("ui", "spellcheck", "ocr", "speech", "feedback", "github")
 
 # Pinned rcedit release (electron/rcedit). Build-tool only -- never copied into
 # the portable bundle or the installer payload. Used to stamp the bundled
