@@ -74,14 +74,38 @@ This is entirely separate from your Windows system volume and from your
 screen reader's own speech volume — turn the music down (or mute it)
 without ever touching how loud your screen reader talks.
 
+## 6. Record a station, live or scheduled
+
+Recording needs ffmpeg installed (**Tools > Download Optional Components**
+if `Tools > Media` doesn't show a Record item at all — it's hidden outright
+rather than shown disabled when the component is missing).
+
+- **Record right now**: with a station playing, your QUILL Key then **6**
+  (or **Tools > Media > Internet Radio > Record Now**) starts recording it
+  to a file; the same chord (now labeled Stop Recording) ends it cleanly.
+- **Recording Settings...** sets the format (mp3/ogg/flac/wav), bitrate,
+  destination folder, filename pattern, and an optional maximum duration.
+- **Schedule Recording...** queues a one-time, daily, or weekly recording —
+  station, start time, and duration — that fires automatically while QUILL
+  is open. It does not wake your computer or run if QUILL is closed at the
+  scheduled time.
+
+## 7. Sleep timer
+
+**Tools > Media > Sleep Timer...** stops whatever's playing — Radio or a
+podcast episode — after a preset or custom number of minutes, fading the
+volume down gently over the last moments rather than cutting off abruptly,
+then restoring your normal volume once playback stops. Open the same dialog
+again to cancel a running timer.
+
 ## What's not here
 
 TuneIn and iHeartRadio aren't supported — both are undocumented,
 reverse-engineered commercial APIs with no public terms, and RadioBrowser
 covers the same need without that risk. YouTube audio isn't supported
-either. Stream recording and scheduled recording are real, planned
-follow-ups — see `docs/planning/radio.md` if you're curious. Podcasts are a
-separate, already-shipped feature — see [Tutorial 10](10-podcasts.md).
+either. A read-only ACB Media events/meetings calendar is a real, planned
+follow-up — see `docs/planning/roadmap.md` §1.7 if you're curious. Podcasts
+are a separate, already-shipped feature — see [Tutorial 10](10-podcasts.md).
 
 ## The shape of it
 

@@ -319,6 +319,9 @@ SFTP, HTTPS, WebDAV, S3)</a></li>
 </ul></li>
 <li><a href="#internet-radio">Internet Radio</a></li>
 <li><a href="#podcasts">Podcasts</a></li>
+<li><a href="#sleep-timer">Sleep Timer</a></li>
+<li><a href="#starting-quill-automatically">Starting QUILL
+automatically</a></li>
 <li><a href="#braille-mode-brf-brl-pef-ueb">Braille Mode (BRF, BRL, PEF,
 UEB)</a></li>
 <li><a href="#help-learning-and-daily-confidence">Help, Learning, and
@@ -30694,15 +30697,36 @@ slider and a <strong>Mute</strong> button. This volume is entirely
 separate from your Windows system volume and from your screen reader's
 own speech volume — turning radio down (or muting it) never touches
 either of those.</p>
+<h3 id="recording-a-station">Recording a station</h3>
+<p>Recording needs the <strong>FFmpeg</strong> optional component — the
+same one the Audio Studio uses for compressed audio exports. If it isn't
+installed yet, the recording commands are simply not there; install it
+from <strong>Help &gt; Download Optional Components</strong> (the
+"Audio: export, playback &amp; chapters" entry) and they appear.</p>
+<ul>
+<li><strong>Record Now</strong> (Tools &gt; Media &gt; Internet Radio,
+the Radio status bar cell's context menu, or the tray) starts recording
+whatever station is currently playing. Choosing it again, or
+<strong>Stop Recording</strong>, ends the recording.</li>
+<li><strong>Schedule Recording...</strong> queues a recording for later
+without you needing QUILL open right at that moment to press Record —
+just QUILL running somewhere. Choose <strong>Once</strong> (a specific
+date and time), <strong>Daily</strong>, or <strong>Weekly</strong> (a
+chosen day of the week), a station name and stream URL, and how many
+minutes to record. There is no catch-up: if QUILL isn't running when the
+scheduled time arrives, that occurrence is simply missed.</li>
+<li><strong>Recording Settings...</strong> sets the format (MP3, OGG,
+FLAC, or WAV), bitrate, destination folder, a filename pattern using
+<code>{station}</code>, <code>{date}</code>, and <code>{time}</code>
+placeholders, and a maximum recording length that acts as a safety cap
+even if you forget a recording is running.</li>
+</ul>
 <h3 id="whats-not-in-internet-radio">What's not in Internet Radio</h3>
 <p>TuneIn and iHeartRadio are not supported — both are undocumented,
 reverse-engineered commercial APIs with no public terms, and
 RadioBrowser covers the same need without that risk. YouTube audio is
-not supported either. Stream recording or scheduled recording is planned
-as follow-up work, not part of this release — see
-<code>docs/planning/radio.md</code> if you're curious about the roadmap.
-Podcasts, described next, are a separate feature that ships alongside
-Internet Radio.</p>
+not supported either. Podcasts, described next, are a separate feature
+that ships alongside Internet Radio.</p>
 <h2 id="podcasts">Podcasts</h2>
 <p><strong>Tools &gt; Media &gt; Podcasts...</strong> is QUILL's podcast
 client: subscribe to shows, organize them into folders, download
@@ -30741,9 +30765,17 @@ show, its episodes, and any downloads in your library, but stops
 fetching or downloading anything new until you resume it), and
 <strong>Unsubscribe</strong>.</li>
 <li><strong>Unsubscribe</strong> also works with the
-<strong>Delete</strong> key on a selected show. Downloaded episode files
-are kept on disk unless you separately remove them.</li>
+<strong>Delete</strong> key on a selected show. What happens to that
+show's downloaded files depends on <strong>Podcast Settings...</strong>
+(below): ask each time, always delete them, or never delete them.</li>
 </ul>
+<h3 id="podcast-settings">Podcast Settings</h3>
+<p>The <strong>Podcast Settings...</strong> button opens the global
+defaults every newly subscribed show starts with: default playback mode
+(download or stream), default retention, default speed, a default
+download location, and the delete-on-unsubscribe policy used above. Any
+individual podcast can still override any of these from its own context
+menu — these are only where a new subscription begins.</p>
 <h3 id="downloading-episodes">Downloading episodes</h3>
 <p>Select an episode and press <strong>Download</strong>, or use its
 context menu. Downloads run on their own dedicated background thread, so
@@ -30779,6 +30811,36 @@ data folder.</p>
 <p>A <strong>Speed</strong> control on the Podcasts dialog's player row
 sets playback rate for the selected podcast, from 0.75x to 2.0x,
 remembered the next time you open that show.</p>
+<h3 id="chapters">Chapters</h3>
+<p>If an episode carries Podcasting 2.0 chapter data, its
+<strong>Chapters...</strong> button is enabled. Press it to see a list
+of chapter markers by name and timestamp; select one and press
+<strong>Jump To Chapter</strong> to go straight there — this works
+whether or not that episode is already playing. <strong>Podcasts: Next
+Chapter</strong> and <strong>Podcasts: Previous Chapter</strong>, in the
+Command Palette, jump between chapter boundaries in whatever episode is
+currently playing, from anywhere in QUILL.</p>
+<h3 id="sorting-and-finding-whats-unheard">Sorting and finding what's
+unheard</h3>
+<p><strong>Sort episodes</strong>, above the episode list, offers newest
+first, oldest first, title A-Z, longest first, shortest first, or
+unplayed first. <strong>Sort shows</strong>, above the folder tree,
+offers title A-Z, most unheard first, or recently updated first. Every
+folder and show name in the tree also shows its own unheard-episode
+count in parentheses, so you can see where you're behind without opening
+each show.</p>
+<h3 id="show-notes">Show notes</h3>
+<p>An episode's right-click context menu includes <strong>View Show
+Notes...</strong>, which opens its description either as <strong>Plain
+text</strong> (HTML stripped out, real paragraph line breaks so a screen
+reader's line-by-line navigation moves by line rather than word-by-word
+through one wrapped line, and links written as
+<code>link text (https://...)</code>) or as <strong>Rich text</strong>
+(formatted, with any images removed so opening show notes can never
+trigger a network image fetch QUILL didn't audit). <strong>Send to
+Editor</strong>, in the same dialog, or <strong>Send Show Notes to
+Editor</strong> on the episode's context menu, opens the plain-text
+version as a new QUILL document.</p>
 <h3 id="controlling-playback-without-opening-a-dialog-1">Controlling
 playback without opening a dialog</h3>
 <ul>
@@ -30798,17 +30860,42 @@ Like every QUILL Key chord, these are remappable in <strong>Preferences
 <h3 id="rich-context-menus">Rich context menus</h3>
 <p>Right-click an episode (or open its context menu from the keyboard)
 for: Play/Pause, Stop, Download, Pause/Resume Download, Remove
-Downloaded Copy, Mark as Played/Unplayed, and Copy Episode Link.
-Right-click a show in the tree for: Refresh Feed, Pause/Resume This
-Podcast's Downloads, and Unsubscribe. Right-click a folder for: New
-Folder.</p>
+Downloaded Copy, Mark as Played/Unplayed, Copy Episode Link, View Show
+Notes..., and Send Show Notes to Editor. Right-click a show in the tree
+for: Refresh Feed, Pause/Resume This Podcast's Downloads, and
+Unsubscribe. Right-click a folder for: New Folder.</p>
 <h3 id="whats-not-in-podcasts-yet">What's not in Podcasts yet</h3>
 <p>No video podcasts — QUILL plays audio only, on every platform.
-Chapter navigation and transcript viewing/export (the feed already reads
-Podcasting 2.0 chapter and transcript URLs, ready for this), a separate
-Inbox view, a cross-show Play Queue, local (imported-file) podcasts, and
-rich sorting/filtering are planned next — see
+Transcript viewing/export (the feed already reads Podcasting 2.0
+transcript URLs, ready for this), a separate Inbox view, a cross-show
+Play Queue, and local (imported-file) podcasts are planned next — see
 <code>docs/planning/podcasts.md</code> for the full phased plan.</p>
+<h2 id="sleep-timer">Sleep Timer</h2>
+<p><strong>Tools &gt; Media &gt; Sleep Timer...</strong> covers both
+Internet Radio and Podcasts from one place, since it isn't specific to
+either. Choose a preset (15, 30, 45, 60, or 90 minutes) or type a custom
+number of minutes, then press <strong>Start</strong>. Over the final 20
+seconds, whichever of Radio or Podcasts is currently playing fades
+gently down rather than cutting off abruptly, then stops; your volume is
+set back to what it was before the fade started, so pressing play again
+later isn't unexpectedly quiet. Open the dialog again while a timer is
+running to see how much time is left, or press <strong>Cancel Sleep
+Timer</strong> (also in the Command Palette as <strong>Media: Cancel
+Sleep Timer</strong>) to stop the countdown early. Since Radio and
+Podcasts are independent players, the timer fades and stops whichever of
+the two is actually active.</p>
+<h2 id="starting-quill-automatically">Starting QUILL automatically</h2>
+<p><strong>Preferences &gt; General</strong> has a <strong>Start QUILL
+when Windows starts</strong> checkbox, right next to <strong>Enable
+background mode</strong>. Checking it registers QUILL to launch the next
+time you log into Windows — no elevation prompt, and nothing an
+installer or antivirus tool would flag as unusual, since it uses the
+same per-user startup mechanism most everyday Windows apps use. Checking
+it also turns on <strong>Enable background mode</strong> automatically:
+a QUILL that launches silently at login needs a tray icon to bring the
+window back from, so the two travel together. Unchecking <strong>Start
+QUILL when Windows starts</strong> removes the entry cleanly;
+<strong>Enable background mode</strong> stays as you left it.</p>
 <h2 id="braille-mode-brf-brl-pef-ueb">Braille Mode (BRF, BRL, PEF,
 UEB)</h2>
 <p>QUILL opens and edits formatted braille text files —

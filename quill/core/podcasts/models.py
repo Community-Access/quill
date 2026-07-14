@@ -1,12 +1,13 @@
 """The Podcasts data model: folders, shows, episodes, and settings.
 
-Full shape from ``docs/planning/podcasts.md`` §1. Phase 1 (this pass) wires up
-folders/shows/episodes/settings/OPML/downloads; a few fields exist now purely
-as forward schema for later phases so the on-disk shape never needs a
-migration (``is_favorite`` for §10's Favorites view, ``route_to_inbox`` /
-``inbox_default_folder_id`` for §9's Inbox, ``position_ms`` for §8's resume
-sync) -- each is a plain default-off field nothing reads or writes yet, not a
-half-built UI. wx-free, strict-typed.
+Folders, shows, episodes, and settings for the shipped feature (PRD
+§5.84g); a few fields exist now purely as forward schema for later phases
+(see ``docs/planning/podcasts.md``) so the on-disk shape never needs a
+migration later: ``is_favorite`` for the planned Favorites virtual view,
+``route_to_inbox`` / ``inbox_default_folder_id`` for the planned Inbox.
+``position_ms`` (resume sync) is already wired up and in active use. The
+still-forward-only fields are plain default-off values nothing reads or
+writes yet, not a half-built UI. wx-free, strict-typed.
 """
 
 from __future__ import annotations
@@ -34,6 +35,7 @@ class PodcastSettings:
     retention_count: int = 5
     speed: float = 1.0
     download_root: str = ""  # "" = default (<data_dir>/podcasts)
+    delete_files_on_remove: str = "ask"  # "ask" | "always" | "never" -- on Unsubscribe
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -42,16 +44,21 @@ class PodcastSettings:
             "retention_count": self.retention_count,
             "speed": self.speed,
             "download_root": self.download_root,
+            "delete_files_on_remove": self.delete_files_on_remove,
         }
 
     @classmethod
     def from_dict(cls, data: dict[str, object]) -> PodcastSettings:
+        delete_policy = str(data.get("delete_files_on_remove", "ask"))
         return cls(
             playback_mode=str(data.get("playback_mode", "download")),
             retention=str(data.get("retention", "keep_all")),
             retention_count=_coerce_int(data.get("retention_count"), 5),
             speed=_coerce_float(data.get("speed"), 1.0),
             download_root=str(data.get("download_root", "")),
+            delete_files_on_remove=delete_policy
+            if delete_policy in ("ask", "always", "never")
+            else "ask",
         )
 
 
