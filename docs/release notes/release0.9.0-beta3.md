@@ -703,6 +703,10 @@ Some features change an architecture. Others remove one interruption, one unnece
 
 These accessibility-first additions came from real workflows and direct requests. They are small enough to feel natural and powerful enough to become habits.
 
+### Unlock codes: staged features, switched on with a signed code
+
+Some QUILL capabilities ship locked until they are ready for everyone, then roll out gradually — to early testers, partners, or pilots. **Help > Redeem Unlock Code...** is how one gets switched on: paste a code (it starts with `QUILL-`), and QUILL verifies its digital signature entirely on your machine — no network call, no account, nothing transmitted — then announces exactly which feature was unlocked. Codes persist across restarts and re-verify on every launch; an expired or tampered code stops working and says why. If you never receive a code, nothing changes for you: every standard feature works without one.
+
 ### The Clipboard Collector now reaches beyond QUILL
 
 Dean Martineau asked for the behavior familiar from EdSharp: turn on the collector, copy from anywhere, and let every captured item flow into the active document.

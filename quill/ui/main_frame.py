@@ -471,6 +471,7 @@ from quill.ui.main_frame_speech import SpeechCommandsMixin
 from quill.ui.main_frame_ssh import SshEditingMixin
 from quill.ui.main_frame_statusbar import StatusBarMixin, _StatusBarCell
 from quill.ui.main_frame_story_studio import StoryStudioMixin
+from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 from quill.ui.main_frame_vault import VaultMixin
 from quill.ui.main_frame_verbosity import VerbosityCommandsMixin
 from quill.ui.main_frame_watch_profile import WatchProfileDialogMixin
@@ -858,6 +859,7 @@ class MainFrame(
     LineCommandsMixin,
     ListStudioMixin,
     StoryStudioMixin,
+    UnlockCodesMixin,
     VaultMixin,
     GitSyncMixin,
     LocalGitMixin,
@@ -3884,6 +3886,7 @@ class MainFrame(
         self._register_emoji_picker_commands()
         self._register_radio_commands()
         self._register_podcasts_commands()
+        self._register_unlock_code_commands()
         self._register_media_sleep_timer_commands()
 
     def _apply_accelerators(self) -> None:

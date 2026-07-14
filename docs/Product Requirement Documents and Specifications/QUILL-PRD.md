@@ -4321,6 +4321,33 @@ existing pattern).
 
 ---
 
+### 5.84z Signed offline unlock codes (Help > Redeem Unlock Code...)
+
+**Goal.** Enable a locked feature (`FeatureDefinition.locked_off`) for a
+specific user — early testers, partners, staged rollouts — without a build,
+a server, or an account. A code is a signed capability, not a serial number.
+
+**Model (`quill/core/unlock_codes.py`, wx-free).** A code is
+`QUILL-<base32(payload || Ed25519 signature)>` where the payload is
+`feature_id|expiry` (expiry optional, ISO date). Verification uses a bundled
+Ed25519 public key (PyNaCl, the optional `[signing]` extra) entirely
+offline; `quill/tools/mint_unlock_code.py` mints codes with the private key,
+which never ships. Redeemed codes persist in an atomic JSON store
+(`UnlockCodeStore`), and `unlocked_feature_ids()` re-verifies every stored
+code on each read — a tampered or expired stored code silently stops
+unlocking, it is never trusted from disk.
+
+**Feature-gate integration.** `FeatureManager.unlocked_feature_ids` is
+populated from the store at load and refreshed after a successful
+redemption; `state_for` treats an unlocked id as ON where `locked_off`
+would otherwise force OFF. This is the single sanctioned path past a lock.
+
+**UI.** **Help > Redeem Unlock Code...** (`help.redeem_unlock_code`, also in
+the command palette) opens a one-field dialog; the result announcement names
+the unlocked feature (from `FEATURE_DEFINITIONS`) or speaks the specific
+rejection reason. Absent PyNaCl, redemption reports the missing extra rather
+than failing silently.
+
 ### 5.85 Portable API key store
 
 By default QUILL stores AI provider keys in the Windows Credential Manager, which ties them to the current Windows user account. Portable mode offers an alternative: a DPAPI-encrypted file (`keys.enc`) in the QUILL data directory, activated by the presence of a `data/` folder next to `quill.exe` in the portable bundle.

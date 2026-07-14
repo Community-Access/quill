@@ -7839,8 +7839,11 @@ Quill includes several layers of help because confidence does not come from memo
 - **Open Keyboard Reference** when you want exact current bindings.
 - **What Can I Do Here?** when you need immediate, contextual guidance.
 - **Why Don't I See a Feature?** when a command seems to have disappeared.
+- **Redeem Unlock Code...** when you have been given a QUILL unlock code.
 
-That last command matters more than it first appears. It turns feature visibility from a mystery into an explanation.
+That "Why Don't I See a Feature?" command matters more than it first appears. It turns feature visibility from a mystery into an explanation.
+
+**Redeem Unlock Code... (Help menu).** Some QUILL capabilities ship locked until they are ready for general use, and are switched on selectively — for early testers, partners, or staged rollouts — with a signed unlock code. If you have one, choose **Help > Redeem Unlock Code...**, paste or type the code (it starts with `QUILL-`), and press OK. The code is verified by digital signature entirely on your machine — no network call, nothing sent anywhere — and QUILL announces exactly what was unlocked. Redeemed codes persist across restarts; a mistyped or expired code is rejected with a spoken reason. If you don't have a code, nothing here affects you: every standard feature is available without one.
 
 ### Context-Sensitive Help (F1)
 
