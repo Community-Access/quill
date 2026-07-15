@@ -2302,6 +2302,12 @@ class MenuBuilderMixin:
                 id_radio_manage_favorites,
                 self._menu_label(_("Manage Fa&vorites..."), "radio.manage_favorites"),
             )
+            id_radio_play_last = wx.NewIdRef()
+            media_menu.Append(
+                id_radio_play_last,
+                self._menu_label(_("Play &Last Station"), "radio.play_last"),
+            )
+            self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_play_last(), id=id_radio_play_last)
             media_menu.AppendSeparator()
             media_menu.Append(
                 id_radio_play_pause, self._menu_label(_("&Play/Pause"), "radio.play_pause")

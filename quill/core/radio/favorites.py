@@ -33,12 +33,23 @@ class FavoriteStation:
     #: True for a station the user typed in themselves (not from RadioBrowser
     #: search) -- shown as "Custom" in the browser so its provenance is clear.
     custom: bool = False
+    #: A user-chosen display name overriding the (often noisy) directory
+    #: name in lists, menus, and announcements; "" keeps the station's own.
+    custom_name: str = ""
+    #: Remembered per-station volume (stations are mastered wildly
+    #: differently); -1 means "no preference recorded yet".
+    volume_percent: int = -1
 
     @property
     def key(self) -> str:
         """A stable identity for de-duplication: RadioBrowser uuid when known,
         else the stream URL itself (custom stations have no uuid)."""
         return self.station.station_uuid or self.station.stream_url
+
+    @property
+    def display_label(self) -> str:
+        """What lists, menus, and announcements call this favorite."""
+        return self.custom_name or self.station.display_name
 
 
 @dataclass(slots=True)
@@ -117,6 +128,23 @@ class RadioFavoritesStore:
         favorite.folder = folder.strip()
         return True
 
+    def rename(self, key: str, custom_name: str) -> bool:
+        """Give the favorite a user-chosen display name ("" restores the
+        station's own directory name)."""
+        favorite = self.find(key)
+        if favorite is None:
+            return False
+        favorite.custom_name = custom_name.strip()
+        return True
+
+    def set_volume(self, key: str, volume_percent: int) -> bool:
+        """Remember the preferred volume for this station (0-100)."""
+        favorite = self.find(key)
+        if favorite is None:
+            return False
+        favorite.volume_percent = max(0, min(100, int(volume_percent)))
+        return True
+
     def folder_names(self) -> list[str]:
         """Non-empty folder names in first-appearance (display) order."""
         seen: list[str] = []
@@ -173,6 +201,7 @@ class RadioFavoritesStore:
             station = favorite.station
             haystack = " ".join((
                 station.name,
+                favorite.custom_name,
                 station.country,
                 getattr(station, "language", ""),
                 " ".join(station.tags),
@@ -206,11 +235,15 @@ def load_favorites(data_dir: Path) -> RadioFavoritesStore:
         station = RadioStation.from_dict(station_data)
         if station is None:
             continue
+        volume_raw = entry.get("volume_percent", -1)
+        volume = int(volume_raw) if isinstance(volume_raw, (int, float)) else -1
         store.favorites.append(
             FavoriteStation(
                 station=station,
                 folder=str(entry.get("folder", "")),
                 custom=bool(entry.get("custom", False)),
+                custom_name=str(entry.get("custom_name", "")),
+                volume_percent=volume if 0 <= volume <= 100 else -1,
             )
         )
     return store
@@ -228,6 +261,8 @@ def save_favorites(data_dir: Path, store: RadioFavoritesStore) -> None:
                     "station": favorite.station.to_dict(),
                     "folder": favorite.folder,
                     "custom": favorite.custom,
+                    "custom_name": favorite.custom_name,
+                    "volume_percent": favorite.volume_percent,
                 }
                 for favorite in store.favorites
             ]

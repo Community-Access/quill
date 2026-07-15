@@ -169,3 +169,33 @@ def test_nested_folder_delete_moves_all_descendants_to_top_level() -> None:
     assert store.delete_folder("News") == 2
     assert store.folder_names() == []
     assert len(store.favorites) == 3
+
+
+def test_rename_and_display_label() -> None:
+    store = _store_abc()
+    assert store.rename("uuid-a", "My Morning Mix") is True
+    favorite = store.find("uuid-a")
+    assert favorite is not None
+    assert favorite.display_label == "My Morning Mix"
+    assert store.rename("uuid-a", "") is True
+    assert favorite.display_label == favorite.station.display_name
+    # Custom names are searchable.
+    store.rename("uuid-a", "Sunrise Sounds")
+    assert [f.key for f in store.search("sunrise")] == ["uuid-a"]
+
+
+def test_per_station_volume_clamps_and_round_trips(tmp_path: Path) -> None:
+    store = _store_abc()
+    assert store.set_volume("uuid-a", 140) is True
+    favorite = store.find("uuid-a")
+    assert favorite is not None and favorite.volume_percent == 100
+    store.set_volume("uuid-a", 35)
+    store.rename("uuid-a", "Named")
+    save_favorites(tmp_path, store)
+    loaded = load_favorites(tmp_path).find("uuid-a")
+    assert loaded is not None
+    assert loaded.volume_percent == 35
+    assert loaded.custom_name == "Named"
+    # Legacy entries without the new keys read as defaults.
+    bare = load_favorites(tmp_path).find("https://b.example.com")
+    assert bare is not None and bare.volume_percent == -1 and bare.custom_name == ""

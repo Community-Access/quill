@@ -516,6 +516,7 @@
   "quill_key_selection_actions",
   "quote_lines",
   "radio_mute_toggle",
+  "radio_play_last",
   "radio_record_toggle",
   "radio_stop",
   "radio_toggle_play_pause",

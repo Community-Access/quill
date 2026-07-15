@@ -38,6 +38,7 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         self._ensure_tray_icon(self._build_radio_tray_menu, tooltip=_TITLE)
         self._refresh_statusbar()
         self.frame.Bind(wx.EVT_CLOSE, self._on_radio_app_close)
+        self._maybe_resume_last_station()
 
     # -- main panel -------------------------------------------------------------
     #
@@ -122,9 +123,9 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         if index < 0 or index >= len(favorites):
             self._announce("No station selected. Add favorites from Browse Stations.")
             return
-        station = favorites[index].station
-        self._radio_controller.play_station(station)
-        self._announce(f"Playing {station.display_name}")
+        favorite = favorites[index]
+        self._radio_controller.play_station(favorite.station)
+        self._announce(f"Playing {favorite.display_label}")
 
     def _reload_favorites_list(self) -> None:
         favorites = self._radio_favorites.favorites
@@ -132,7 +133,7 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         # Foldered stations speak their folder inline; the full tree lives in
         # Station > Manage Favorites...
         self._favorites_list.Set([
-            f.station.display_name + (f" -- in {f.folder}" if f.folder else "") for f in favorites
+            f.display_label + (f" -- in {f.folder}" if f.folder else "") for f in favorites
         ])
         if favorites:
             self._favorites_list.SetSelection(selected if 0 <= selected < len(favorites) else 0)
@@ -154,8 +155,18 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._radio_open_link_finder(), id=find_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_manage_radio_favorites(), id=manage_id)
         station_menu.AppendSeparator()
+        play_last_id = wx.NewIdRef()
+        station_menu.Append(play_last_id, "Play &Last Station\tCtrl+L")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_play_last(), id=play_last_id)
+        self._append_radio_recent_submenu(station_menu)
         self._append_radio_favorites_submenu(station_menu)
         self._append_acb_media_submenu(station_menu)
+        self._resume_menu_item_id = wx.NewIdRef()
+        station_menu.AppendCheckItem(self._resume_menu_item_id, "Resume Last Station on Lau&nch")
+        station_menu.Check(self._resume_menu_item_id, self._radio_history.resume_on_launch)
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self._toggle_resume_on_launch(), id=self._resume_menu_item_id
+        )
         station_menu.AppendSeparator()
         tray_id, exit_id = wx.NewIdRef(), wx.NewIdRef()
         station_menu.Append(tray_id, "Send to &Tray\tCtrl+W")
@@ -243,6 +254,8 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             add_id,
             find_id,
             manage_id,
+            play_last_id,
+            self._resume_menu_item_id,
             tray_id,
             exit_id,
             self._now_playing_item_id,
@@ -264,6 +277,30 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
     def _send_to_tray(self) -> None:
         self.frame.Hide()
         self._announce("Quill Radio is still running in the system tray.")
+
+    def _toggle_resume_on_launch(self) -> None:
+        from quill.core.paths import app_data_dir
+        from quill.core.radio import history as radio_history
+
+        history = self._radio_history
+        history.resume_on_launch = not history.resume_on_launch
+        radio_history.save_history(app_data_dir(), history)
+        menu_bar = self.frame.GetMenuBar()
+        if menu_bar is not None:
+            menu_bar.Check(int(self._resume_menu_item_id), history.resume_on_launch)
+        self._announce(
+            "Quill Radio will pick up where you left off at launch."
+            if history.resume_on_launch
+            else "Resume on launch turned off."
+        )
+
+    def _maybe_resume_last_station(self) -> None:
+        """Radio as an appliance: launch, and your station is already on."""
+        if not self._radio_history.resume_on_launch:
+            return
+        station = self._radio_history.last_station
+        if station is not None:
+            self._radio_controller.play_station(station)
 
     def _show_about(self) -> None:
         self._show_message_box(
