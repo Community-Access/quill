@@ -15,6 +15,7 @@ import wx
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.dialog_contract import set_accessible_name
 from quill.ui.main_frame_adp import AdpMixin
+from quill.ui.main_frame_media_sleep_timer import MediaSleepTimerMixin
 from quill.ui.main_frame_podcasts import PodcastsMixin
 from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 
@@ -23,13 +24,17 @@ _VERSION = "1.0.0"
 _REPO = "Community-Access/quill-cast"
 
 
-class PodcastsAppFrame(AppShellFrame, PodcastsMixin, AdpMixin, UnlockCodesMixin):
+class PodcastsAppFrame(
+    AppShellFrame, PodcastsMixin, MediaSleepTimerMixin, AdpMixin, UnlockCodesMixin
+):
     def __init__(self, *, safe_mode: bool = False) -> None:
         self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(460, 360))
         self._init_podcasts()
+        self._init_media_sleep_timer()
         self._build_menu_bar()
         self._build_main_panel()
         self._register_podcasts_commands()
+        self._register_media_sleep_timer_commands()
         self._register_adp_commands()
         self._register_unlock_code_commands()
         self._ensure_tray_icon(self._build_podcast_tray_menu, tooltip=_TITLE)
@@ -150,6 +155,10 @@ class PodcastsAppFrame(AppShellFrame, PodcastsMixin, AdpMixin, UnlockCodesMixin)
         episode_menu.Append(prev_id, "P&revious Chapter")
         note_id = wx.NewIdRef()
         episode_menu.Append(note_id, "Add Episode &Note...")
+        episode_menu.AppendSeparator()
+        sleep_id = wx.NewIdRef()
+        episode_menu.Append(sleep_id, "Sleep &Timer...")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_sleep_timer_dialog(), id=sleep_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_toggle_play_pause(), id=play_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_stop(), id=stop_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_next_chapter(), id=next_id)
@@ -213,6 +222,7 @@ class PodcastsAppFrame(AppShellFrame, PodcastsMixin, AdpMixin, UnlockCodesMixin)
             next_id,
             prev_id,
             note_id,
+            sleep_id,
             pause_all_id,
             resume_all_id,
             redeem_id,

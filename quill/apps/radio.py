@@ -15,6 +15,7 @@ import wx
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.dialog_contract import set_accessible_name
 from quill.ui.main_frame_adp import AdpMixin
+from quill.ui.main_frame_media_sleep_timer import MediaSleepTimerMixin
 from quill.ui.main_frame_radio import RadioMixin
 from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 
@@ -23,13 +24,15 @@ _VERSION = "1.0.0"
 _REPO = "Community-Access/quill-radio"
 
 
-class RadioAppFrame(AppShellFrame, RadioMixin, AdpMixin, UnlockCodesMixin):
+class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, UnlockCodesMixin):
     def __init__(self, *, safe_mode: bool = False) -> None:
         self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(460, 360))
         self._init_radio()
+        self._init_media_sleep_timer()
         self._build_menu_bar()
         self._build_main_panel()
         self._register_radio_commands()
+        self._register_media_sleep_timer_commands()
         self._register_adp_commands()
         self._register_unlock_code_commands()
         self._ensure_tray_icon(self._build_radio_tray_menu, tooltip=_TITLE)
@@ -168,12 +171,16 @@ class RadioAppFrame(AppShellFrame, RadioMixin, AdpMixin, UnlockCodesMixin):
         playback_menu.Append(mute_id, "&Mute/Unmute\tCtrl+M")
         playback_menu.Append(vol_up_id, "Volume &Up\tCtrl+Up")
         playback_menu.Append(vol_down_id, "Volume &Down\tCtrl+Down")
+        playback_menu.AppendSeparator()
+        sleep_id = wx.NewIdRef()
+        playback_menu.Append(sleep_id, "Sleep &Timer...")
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._on_play_stop_button(), id=self._play_menu_item_id
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_mute_toggle(), id=mute_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_volume_up(), id=vol_up_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_volume_down(), id=vol_down_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_sleep_timer_dialog(), id=sleep_id)
         menu_bar.Append(playback_menu, "&Playback")
 
         record_menu = wx.Menu()
@@ -229,6 +236,7 @@ class RadioAppFrame(AppShellFrame, RadioMixin, AdpMixin, UnlockCodesMixin):
             mute_id,
             vol_up_id,
             vol_down_id,
+            sleep_id,
             record_id,
             schedule_id,
             settings_id,
