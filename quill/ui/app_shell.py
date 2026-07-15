@@ -398,16 +398,27 @@ class AppShellFrame:
 
         return not (Path(sys.executable).resolve().parent / "unins000.exe").is_file()
 
-    def check_for_app_updates(self, *, repo_slug: str, current_version: str) -> None:
+    def check_for_app_updates(
+        self, *, repo_slug: str, current_version: str, silent_no_update: bool = False
+    ) -> None:
         """The same in-app experience QUILL gives: check this app's own GitHub
         releases, download the installer in-app with spoken progress
         milestones, then offer Install now / Open folder. Only QUILL's extras
         (signed manifest feed, portable zip swaps, version skipping) stay in
-        QUILL itself."""
+        QUILL itself.
+
+        ``silent_no_update`` is for the automatic startup check (mirrors
+        MainFrame's ``check_for_updates(silent_no_update=True)``): the
+        "Checking..."/"up to date"/error paths stay quiet -- a launch is not
+        the place to announce nothing happened -- but a genuine available
+        update still shows the same interactive prompt either way, since
+        these small apps have no notification-center equivalent to defer to.
+        """
         from quill.core.updates import fetch_releases, is_newer_version
 
         api_url = f"https://api.github.com/repos/{repo_slug}/releases"
-        self._announce("Checking for updates")
+        if not silent_no_update:
+            self._announce("Checking for updates")
         prefer_portable = self._running_portable_build()
 
         def _fetch(**_kw: object) -> object:
@@ -419,7 +430,8 @@ class AppShellFrame:
                 stable = [r for r in releases if not r.prerelease]
                 newest = stable[0] if stable else None
                 if newest is None or not is_newer_version(current_version, newest.version):
-                    self._announce(f"You are up to date ({current_version}).")
+                    if not silent_no_update:
+                        self._announce(f"You are up to date ({current_version}).")
                     return
                 title = self.frame.GetTitle()
                 answer = self._show_message_box(
@@ -434,6 +446,8 @@ class AppShellFrame:
             wx.CallAfter(_show)
 
         def _failed(_name: str, error: BaseException) -> None:
+            if silent_no_update:
+                return
             wx.CallAfter(
                 self._show_message_box,
                 f"Could not check for updates: {error}",
@@ -444,6 +458,26 @@ class AppShellFrame:
         self._task_manager.submit(
             "app-update-check", _fetch, on_success=_report, on_failure=_failed
         )
+
+    def _app_update_check_due(self, last_check: str, *, interval_hours: int = 24) -> bool:
+        """True when enough time has passed since the last update check.
+
+        Mirrors ``MainFrame._update_check_due``: throttles only the silent
+        startup check so a companion app doesn't hit the network on every
+        single launch. Manual checks (Help > Check for Updates) always run.
+        """
+        from datetime import UTC, datetime, timedelta
+
+        last = last_check.strip()
+        if not last:
+            return True
+        try:
+            previous = datetime.fromisoformat(last)
+        except ValueError:
+            return True
+        if previous.tzinfo is None:
+            previous = previous.replace(tzinfo=UTC)
+        return datetime.now(UTC) - previous >= timedelta(hours=interval_hours)
 
     def _download_app_update(self, release: object) -> None:
         """Download the release asset off-thread to <app data>/updates with
