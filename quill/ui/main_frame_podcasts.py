@@ -204,7 +204,9 @@ class PodcastsMixin:
         parts = [t for t in (radio_text, text) if t and "stopped" not in t.lower()]
         tooltip = "Quill - " + " | ".join(parts) if parts else "Quill"
         try:
-            icon = wx.ArtProvider.GetIcon(wx.ART_INFORMATION, wx.ART_OTHER, (16, 16))
+            icon = getattr(self, "_app_icon", None) or wx.ArtProvider.GetIcon(
+                wx.ART_INFORMATION, wx.ART_OTHER, (16, 16)
+            )
             tray_icon.SetIcon(icon, tooltip)
         except Exception:  # noqa: BLE001 - tray tooltip refresh must never crash
             pass

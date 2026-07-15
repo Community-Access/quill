@@ -46,6 +46,9 @@ class AppShellFrame:
         self._wx = wx
         self._safe_mode = safe_mode
         self.frame = wx.Frame(None, title=title, size=size)
+        self._app_icon = self._load_app_icon()
+        if self._app_icon is not None:
+            self.frame.SetIcon(self._app_icon)
         self.frame.CreateStatusBar()
         self.settings = load_settings()
         self.keymap = dict(DEFAULT_KEYMAP) if safe_mode else load_keymap()
@@ -92,6 +95,19 @@ class AppShellFrame:
 
     def _refresh_statusbar(self) -> None:
         """Subclasses override to compose their app's own status text."""
+
+    def _load_app_icon(self) -> object | None:
+        """The frozen exe's own embedded icon (PyInstaller stamps it into
+        QuillRadio.exe / QUILLCast.exe), used for the title bar, Alt+Tab,
+        and the tray. None in a dev run or off Windows -- callers fall back
+        to the stock art."""
+        if not getattr(sys, "frozen", False) or not sys.platform.startswith("win"):
+            return None
+        try:
+            icon = wx.Icon(wx.IconLocation(sys.executable, 0))
+            return icon if icon.IsOk() else None
+        except Exception:  # noqa: BLE001 - a bad icon must never block startup
+            return None
 
     def _keep_menu_ids(self, *refs: object) -> None:
         """Pin wx.NewIdRef objects for the frame's lifetime.
@@ -144,7 +160,7 @@ class AppShellFrame:
         if sys.platform == "darwin":
             return
         taskbar_icon = wx.adv.TaskBarIcon()
-        icon = wx.ArtProvider.GetIcon(wx.ART_INFORMATION, wx.ART_OTHER, (16, 16))
+        icon = self._app_icon or wx.ArtProvider.GetIcon(wx.ART_INFORMATION, wx.ART_OTHER, (16, 16))
         taskbar_icon.SetIcon(icon, tooltip)
         taskbar_icon.Bind(wx.adv.EVT_TASKBAR_LEFT_DCLICK, lambda _e: self._restore_from_tray())
         taskbar_icon.Bind(

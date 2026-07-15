@@ -126,7 +126,11 @@ class FavoritesManagerDialog:
             "Place the marked station directly below the selected one, joining its folder",
         )
         self._rename_btn = self._button(
-            row2, "Re&name Folder...", self._on_rename_folder, "Rename the selected folder (F2)"
+            row2,
+            "Re&name...",
+            self._on_rename,
+            "Rename the selected station or folder (F2); a blank station name "
+            "restores the directory's own",
         )
         self._delete_folder_btn = self._button(
             row2,
@@ -183,7 +187,7 @@ class FavoritesManagerDialog:
             # spoken as part of the label, so results are one arrow-key apart.
             matches = self._store.search(query)
             for favorite in matches:
-                label = favorite.station.display_name
+                label = favorite.display_label
                 if favorite.folder:
                     label += f" -- in {favorite.folder}"
                 item = tree.AppendItem(root, label)
@@ -211,7 +215,7 @@ class FavoritesManagerDialog:
                 folder_item(path)
             for favorite in self._store.favorites:
                 parent = folder_item(favorite.folder)
-                item = tree.AppendItem(parent, favorite.station.display_name)
+                item = tree.AppendItem(parent, favorite.display_label)
                 tree.SetItemData(item, ("station", favorite.key))
                 if favorite.key == keep_key:
                     select_item = item
@@ -257,7 +261,7 @@ class FavoritesManagerDialog:
         marked = self._marked_key is not None
         self._above_btn.Enable(is_station and marked)
         self._below_btn.Enable(is_station and marked)
-        self._rename_btn.Enable(is_folder)
+        self._rename_btn.Enable(is_station or is_folder)
         self._delete_folder_btn.Enable(is_folder)
 
     # -- actions ----------------------------------------------------------------
@@ -271,14 +275,14 @@ class FavoritesManagerDialog:
         if favorite is None:
             return
         self._controller.play_station(favorite.station)
-        self._announce(f"Playing {favorite.station.display_name}")
+        self._announce(f"Playing {favorite.display_label}")
 
     def _on_remove(self) -> None:
         wx = self._wx
         favorite = self._selected_favorite()
         if favorite is None:
             return
-        name = favorite.station.display_name
+        name = favorite.display_label
         answer = wx.MessageBox(  # MSGBOX-OK: parented confirmation inside a managed dialog
             f"Remove {name} from your favorites?",
             "Remove Favorite",
@@ -310,8 +314,7 @@ class FavoritesManagerDialog:
         self._marked_key = favorite.key
         self._on_selection_changed()
         self._announce(
-            f"Marked {favorite.station.display_name}. Select a destination, then "
-            "Move Above or Move Below."
+            f"Marked {favorite.display_label}. Select a destination, then Move Above or Move Below."
         )
 
     def _on_move_marked(self, before: bool) -> None:
@@ -327,7 +330,7 @@ class FavoritesManagerDialog:
         self._changed(keep_key=marked)
         where = "above" if before else "below"
         suffix = f", in {moved.folder}" if moved is not None and moved.folder else ""
-        self._announce(f"Moved {where} {target.station.display_name}{suffix}")
+        self._announce(f"Moved {where} {target.display_label}{suffix}")
 
     def _on_move_to_folder(self) -> None:
         wx = self._wx
@@ -339,7 +342,7 @@ class FavoritesManagerDialog:
             self.dialog,
             "Where should this station live? Choose a folder, the top level, "
             "or create a new folder (use / to nest, like News/Morning).",
-            f"Move {favorite.station.display_name} to Folder",
+            f"Move {favorite.display_label} to Folder",
             choices,
         )
         try:
@@ -366,7 +369,42 @@ class FavoritesManagerDialog:
         self._store.set_folder(favorite.key, folder)
         self._changed(keep_key=favorite.key)
         destination = folder or "the top level"
-        self._announce(f"Filed {favorite.station.display_name} under {destination}")
+        self._announce(f"Filed {favorite.display_label} under {destination}")
+
+    def _on_rename(self) -> None:
+        """Rename whatever is selected: a station gets a custom display name,
+        a folder renames in place (carrying its subfolders along)."""
+        selected = self._selected()
+        if selected is None:
+            return
+        if selected[0] == "station":
+            self._on_rename_station()
+        else:
+            self._on_rename_folder()
+
+    def _on_rename_station(self) -> None:
+        wx = self._wx
+        favorite = self._selected_favorite()
+        if favorite is None:
+            return
+        entry = wx.TextEntryDialog(
+            self.dialog,
+            f"Your name for this station (leave blank to use {favorite.station.display_name}):",
+            "Rename Station",
+            value=favorite.custom_name,
+        )
+        try:
+            if entry.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
+                return
+            name = entry.GetValue().strip()
+        finally:
+            entry.Destroy()
+        self._store.rename(favorite.key, name)
+        self._changed(keep_key=favorite.key)
+        if name:
+            self._announce(f"Station renamed to {name}")
+        else:
+            self._announce(f"Station name restored to {favorite.display_label}")
 
     def _on_rename_folder(self) -> None:
         wx = self._wx
@@ -423,7 +461,7 @@ class FavoritesManagerDialog:
                 self._on_delete_folder()
             return
         if code == wx.WXK_F2:
-            self._on_rename_folder()
+            self._on_rename()
             return
         event.Skip()
 
@@ -437,6 +475,7 @@ class FavoritesManagerDialog:
         if selected[0] == "station":
             entries = [
                 ("&Play", self._on_play),
+                ("Rena&me Station...\tF2", self._on_rename_station),
                 ("&Remove...\tDelete", self._on_remove),
                 ("Move &Up", lambda: self._on_move(-1)),
                 ("Move &Down", lambda: self._on_move(1)),

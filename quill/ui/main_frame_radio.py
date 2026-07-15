@@ -15,6 +15,7 @@ from pathlib import Path
 
 from quill.core.paths import app_data_dir
 from quill.core.radio import favorites as radio_favorites
+from quill.core.radio import history as radio_history
 from quill.core.radio import radio_browser
 from quill.core.radio.models import RadioStation
 from quill.core.radio.recording import (
@@ -50,6 +51,8 @@ class RadioMixin:
         # only call this (and _init_podcasts) after the frame is constructed,
         # or startup dies with AttributeError('frame').
         self._radio_favorites = radio_favorites.load_favorites(app_data_dir())
+        self._radio_history = radio_history.load_history(app_data_dir())
+        self._radio_history_key = ""
         self._radio_ever_played = False
         self._radio_controller = RadioPlayerController(
             self.frame,
@@ -172,6 +175,7 @@ class RadioMixin:
     def _on_radio_state_changed(self, state: RadioPlaybackState) -> None:
         from quill.core.settings import save_settings
 
+        self._radio_track_history_and_volume(state)
         if state.station is not None and not self._radio_ever_played:
             self._radio_ever_played = True
             hidden = list(getattr(self.settings, "status_bar_hidden", []))
@@ -182,6 +186,62 @@ class RadioMixin:
         self._refresh_statusbar()
         self._refresh_radio_tray_tooltip()
 
+    def _radio_track_history_and_volume(self, state: RadioPlaybackState) -> None:
+        """Two memories, updated on every playback state change: the
+        recently-played history (a newly started station moves to its front)
+        and the per-station volume (a favorite remembers the volume you set
+        while it plays, and gets it back the next time it starts)."""
+        station = state.station
+        if station is None:
+            self._radio_history_key = ""
+            return
+        key = station.station_uuid or station.stream_url
+        favorite = self._radio_favorites.find(key)
+        if key != self._radio_history_key:
+            # A different station just started.
+            self._radio_history_key = key
+            self._radio_history.record(station)
+            radio_history.save_history(app_data_dir(), self._radio_history)
+            if favorite is not None and favorite.volume_percent >= 0:
+                controller = self._radio_controller
+                if state.volume_percent != favorite.volume_percent:
+                    controller.set_volume(favorite.volume_percent)
+            return
+        if (
+            favorite is not None
+            and not state.muted
+            and state.volume_percent != favorite.volume_percent
+        ):
+            self._radio_favorites.set_volume(key, state.volume_percent)
+            self._save_radio_favorites()
+
+    def radio_play_last(self) -> None:
+        """Play whatever was on last -- radio as an appliance."""
+        station = self._radio_history.last_station
+        if station is None:
+            self._announce("Nothing in the radio history yet. Play a station first.")
+            return
+        self._radio_controller.play_station(station)
+        self._announce(f"Playing {station.display_name}")
+
+    def _append_radio_recent_submenu(self, menu: object) -> None:
+        """A Recently Played submenu: the last stations, newest first."""
+        wx = self._wx
+        stations = list(self._radio_history.stations)
+        if not stations:
+            return
+        sub = wx.Menu()
+        for station in stations:
+            item_id = wx.NewIdRef()
+            sub.Append(item_id, station.display_name)
+            sub.Bind(
+                wx.EVT_MENU,
+                lambda _e, s=station: self._radio_controller.play_station(s),
+                id=item_id,
+            )
+            self._retain_radio_menu_ids(item_id)
+        menu.AppendSubMenu(sub, "Recently &Played")
+
     def _refresh_radio_tray_tooltip(self) -> None:
         tray_icon = getattr(self, "_tray_icon", None)
         if tray_icon is None:
@@ -191,7 +251,9 @@ class RadioMixin:
         text = controller.state.status_text if controller is not None else ""
         tooltip = f"Quill - {text}" if text and "stopped" not in text.lower() else "Quill"
         try:
-            icon = wx.ArtProvider.GetIcon(wx.ART_INFORMATION, wx.ART_OTHER, (16, 16))
+            icon = getattr(self, "_app_icon", None) or wx.ArtProvider.GetIcon(
+                wx.ART_INFORMATION, wx.ART_OTHER, (16, 16)
+            )
             tray_icon.SetIcon(icon, tooltip)
         except Exception:  # noqa: BLE001 - tray tooltip refresh must never crash
             pass
@@ -218,6 +280,7 @@ class RadioMixin:
         menu.Bind(wx.EVT_MENU, lambda _e: self.radio_stop(), id=stop_id)
         menu.Bind(wx.EVT_MENU, lambda _e: self.radio_mute_toggle(), id=mute_id)
         self._append_radio_favorites_submenu(menu)
+        self._append_radio_recent_submenu(menu)
         menu.AppendSeparator()
         recorder = getattr(self, "_radio_recorder", None)
         record_id, schedule_id, rec_settings_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
@@ -296,7 +359,7 @@ class RadioMixin:
         for favorite in favorites.favorites:
             station = favorite.station
             item_id = wx.NewIdRef()
-            folder_menu(favorite.folder).Append(item_id, station.display_name)
+            folder_menu(favorite.folder).Append(item_id, favorite.display_label)
             sub.Bind(
                 wx.EVT_MENU,
                 lambda _e, s=station: self._radio_controller.play_station(s),
@@ -463,6 +526,11 @@ class RadioMixin:
                 "radio.manage_favorites",
                 "Internet Radio: Manage Favorites...",
                 self.open_manage_radio_favorites,
+            ),
+            (
+                "radio.play_last",
+                "Internet Radio: Play Last Station",
+                self.radio_play_last,
             ),
             (
                 "radio.record_toggle",
