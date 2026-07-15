@@ -20,7 +20,7 @@ from quill.ui.main_frame_radio import RadioMixin
 from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 
 _TITLE = "Quill Radio"
-_VERSION = "1.0.0"
+_VERSION = "1.0.1"
 _REPO = "Community-Access/quill-radio"
 
 
