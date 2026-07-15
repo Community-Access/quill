@@ -268,11 +268,11 @@ def _pick_asset(assets: list, *, prefer_portable: bool | None = None) -> str:
     return ""
 
 
-def _release_from_json(data: dict) -> GitHubRelease:
+def _release_from_json(data: dict, *, prefer_portable: bool | None = None) -> GitHubRelease:
     # Pick the platform installer asset; fall back to the release page when the
     # release has no real installer (e.g. only provenance/checksum artifacts).
     raw_assets = data.get("assets") or []
-    download_url = _pick_asset(raw_assets)
+    download_url = _pick_asset(raw_assets, prefer_portable=prefer_portable)
     # A release with zero real assets (nothing but provenance/checksums, or
     # nothing at all) is treated as usable — the html_url fallback below is
     # the best we can offer. A release with real assets none of which match
@@ -308,8 +308,20 @@ def _has_any_real_asset(assets: list) -> bool:
     return False
 
 
-def fetch_releases(api_url: str | None = None, timeout: int = 10) -> list[GitHubRelease]:
-    """All non-draft GitHub releases (newest-first as GitHub returns them)."""
+def fetch_releases(
+    api_url: str | None = None,
+    timeout: int = 10,
+    *,
+    prefer_portable: bool | None = None,
+) -> list[GitHubRelease]:
+    """All non-draft GitHub releases (newest-first as GitHub returns them).
+
+    ``prefer_portable`` overrides QUILL's own portable detection when picking
+    each release's download asset -- the standalone companion apps detect
+    their flavor themselves (an Inno-installed copy vs an extracted portable
+    folder) and pass it here, so an installed Quill Radio is offered the
+    Setup .exe and a portable one its portable .zip.
+    """
     api_url = api_url or resolve_releases_api_url()
     request = Request(
         api_url,
@@ -320,7 +332,11 @@ def fetch_releases(api_url: str | None = None, timeout: int = 10) -> list[GitHub
     raw = json.loads(payload)
     if not isinstance(raw, list):
         raise ValueError("GitHub releases payload must be a JSON array")
-    return [_release_from_json(r) for r in raw if isinstance(r, dict) and not r.get("draft")]
+    return [
+        _release_from_json(r, prefer_portable=prefer_portable)
+        for r in raw
+        if isinstance(r, dict) and not r.get("draft")
+    ]
 
 
 def select_latest(

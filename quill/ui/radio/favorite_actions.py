@@ -163,3 +163,52 @@ def delete_folder_prompt(
     moved = store.delete_folder(folder_path)
     announce(f"Folder {folder_path} deleted; {moved} station(s) moved to the top level.")
     return True
+
+
+def create_folder_prompt(
+    parent: object,
+    store: RadioFavoritesStore,
+    *,
+    announce: Callable[[str], None],
+    initial_parent: str = "",
+) -> bool:
+    """New Folder...: pick where it lives, then name it.
+
+    The folder exists immediately (before any station is filed into it) and
+    shows up in every tree and picker. Nesting works two ways: choose a
+    parent folder in the location list, or type / in the name.
+    """
+    import wx
+
+    existing = store.folder_names()
+    choices = [TOP_LEVEL_CHOICE, *existing]
+    picker = wx.SingleChoiceDialog(
+        parent,
+        "Where should the new folder live?",
+        "New Folder -- Location",
+        choices,
+    )
+    try:
+        if initial_parent and initial_parent in existing:
+            picker.SetSelection(existing.index(initial_parent) + 1)
+        if picker.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
+            return False
+        location = picker.GetStringSelection()
+    finally:
+        picker.Destroy()
+    parent_path = "" if location == TOP_LEVEL_CHOICE else location
+    entry = wx.TextEntryDialog(parent, "Folder name:", "New Folder")
+    try:
+        if entry.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
+            return False
+        name = entry.GetValue().strip().strip("/")
+    finally:
+        entry.Destroy()
+    if not name:
+        return False
+    path = f"{parent_path}/{name}" if parent_path else name
+    if not store.add_folder(path):
+        announce(f"A folder named {path} already exists.")
+        return False
+    announce(f"Created folder {path}. File stations into it with Move to Folder.")
+    return True
