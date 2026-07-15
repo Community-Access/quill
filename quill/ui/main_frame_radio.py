@@ -427,7 +427,12 @@ class RadioMixin:
         self._announce(f"Playing {station.display_name}")
 
     def _append_radio_recent_submenu(self, menu: object) -> None:
-        """A Recently Played submenu: the last stations, newest first."""
+        """A Recently Played submenu: the last stations, newest first.
+
+        Replaying a station never adds a second row -- the store moves the
+        existing entry to the front (de-duplicated by uuid/stream URL). When
+        a recent station is also a favorite, it speaks the favorite's own
+        display name so the two menus never read like different stations."""
         wx = self._wx
         stations = list(self._radio_history.stations)
         if not stations:
@@ -435,7 +440,9 @@ class RadioMixin:
         sub = wx.Menu()
         for station in stations:
             item_id = wx.NewIdRef()
-            sub.Append(item_id, station.display_name)
+            favorite = self._radio_favorites.find(station.station_uuid or station.stream_url)
+            label = favorite.display_label if favorite is not None else station.display_name
+            sub.Append(item_id, label)
             sub.Bind(
                 wx.EVT_MENU,
                 lambda _e, s=station: self._radio_controller.play_station(s),
@@ -451,7 +458,11 @@ class RadioMixin:
         wx = self._wx
         controller = getattr(self, "_radio_controller", None)
         text = controller.state.status_text if controller is not None else ""
-        tooltip = f"Quill - {text}" if text and "stopped" not in text.lower() else "Quill"
+        # The tray icon's tooltip is also its accessible name: brand it with
+        # the hosting app's own title ("Quill Radio" standalone, "Quill"
+        # embedded) so tray navigation never reads the wrong product.
+        app_name = self.frame.GetTitle() or "Quill"
+        tooltip = f"{app_name} - {text}" if text and "stopped" not in text.lower() else app_name
         try:
             icon = getattr(self, "_app_icon", None) or wx.ArtProvider.GetIcon(
                 wx.ART_INFORMATION, wx.ART_OTHER, (16, 16)
@@ -472,14 +483,37 @@ class RadioMixin:
             text += " (recording)"
         return text
 
+    def radio_play_stop_toggle(self) -> None:
+        """One transport action for menus rebuilt per popup: Stop while
+        connecting/playing, resume when paused, replay the current station
+        when stopped (live streams have no meaningful pause)."""
+        from quill.ui.radio.player_controller import RadioPlayerState
+
+        controller = getattr(self, "_radio_controller", None)
+        if controller is None:
+            return
+        state = controller.state.state
+        if state in (RadioPlayerState.PLAYING, RadioPlayerState.CONNECTING):
+            self.radio_stop()
+        else:
+            self.radio_toggle_play_pause()
+
     def _build_radio_status_bar_menu(self, menu: object) -> None:
+        from quill.ui.radio.player_controller import RadioPlayerState
+
         wx = self._wx
-        play_id, stop_id, mute_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
-        menu.Append(play_id, "Play/Pause")
-        menu.Append(stop_id, "Stop")
+        play_id, mute_id = wx.NewIdRef(), wx.NewIdRef()
+        controller = getattr(self, "_radio_controller", None)
+        playing = controller is not None and controller.state.state in (
+            RadioPlayerState.PLAYING,
+            RadioPlayerState.CONNECTING,
+        )
+        # One transport item (this menu is rebuilt on every popup, so the
+        # label is always current): Stop while playing, Play otherwise --
+        # the same single-button rule as the main panel and Playback menu.
+        menu.Append(play_id, "Stop" if playing else "Play")
         menu.Append(mute_id, "Mute/Unmute")
-        menu.Bind(wx.EVT_MENU, lambda _e: self.radio_toggle_play_pause(), id=play_id)
-        menu.Bind(wx.EVT_MENU, lambda _e: self.radio_stop(), id=stop_id)
+        menu.Bind(wx.EVT_MENU, lambda _e: self.radio_play_stop_toggle(), id=play_id)
         menu.Bind(wx.EVT_MENU, lambda _e: self.radio_mute_toggle(), id=mute_id)
         self._append_radio_favorites_submenu(menu)
         self._append_radio_recent_submenu(menu)
@@ -497,10 +531,10 @@ class RadioMixin:
         menu.Bind(wx.EVT_MENU, lambda _e: self._radio_open_recording_settings(), id=rec_settings_id)
         menu.AppendSeparator()
         browse_id = wx.NewIdRef()
-        menu.Append(browse_id, "Open Internet Radio...")
+        menu.Append(browse_id, "Browse Stations...")
         menu.Bind(wx.EVT_MENU, lambda _e: self.open_internet_radio(), id=browse_id)
         self._retain_radio_menu_ids(
-            play_id, stop_id, mute_id, record_id, schedule_id, rec_settings_id, browse_id
+            play_id, mute_id, record_id, schedule_id, rec_settings_id, browse_id
         )
 
     def _retain_radio_menu_ids(self, *refs: object) -> None:

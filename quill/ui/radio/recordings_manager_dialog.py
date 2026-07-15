@@ -185,11 +185,26 @@ class RecordingsManagerDialog:
             return self._entries[index]
         return None
 
+    def _is_entry_playing(self, entry: RecordingEntry | None) -> bool:
+        from quill.ui.radio.player_controller import RadioPlayerState
+
+        if entry is None or entry.path is None:
+            return False
+        state = self._controller.state
+        return (
+            state.station is not None
+            and state.station.stream_url == str(entry.path)
+            and state.state in (RadioPlayerState.PLAYING, RadioPlayerState.CONNECTING)
+        )
+
     def _on_selection_changed(self) -> None:
         entry = self._selected()
         is_file = entry is not None and entry.path is not None
         is_done = is_file and entry is not None and entry.status == STATUS_RECORDED
+        playing = self._is_entry_playing(entry)
         self._play_btn.Enable(bool(is_done))
+        self._play_btn.SetLabel("&Stop" if playing else "&Play")
+        self._play_btn.SetName("Stop this recording" if playing else "Play this recording")
         self._open_btn.Enable(bool(is_file))
         self._remove_btn.Enable(bool(is_done))
         self._stop_btn.Enable(bool(getattr(self._recorder, "is_recording", False)))
@@ -203,9 +218,15 @@ class RecordingsManagerDialog:
         if entry.status == STATUS_RECORDING:
             self._announce("Still recording; stop it first to play it.")
             return
-        station = RadioStation(name=entry.name, stream_url=str(entry.path))
-        self._controller.play_station(station)
-        self._announce(f"Playing recording {entry.name}")
+        # One button, honest label: while this recording plays it reads Stop.
+        if self._is_entry_playing(entry):
+            self._controller.stop()
+            self._announce("Playback stopped")
+        else:
+            station = RadioStation(name=entry.name, stream_url=str(entry.path))
+            self._controller.play_station(station)
+            self._announce(f"Playing recording {entry.name}")
+        self._on_selection_changed()
 
     def _on_stop_recording(self) -> None:
         if not bool(getattr(self._recorder, "is_recording", False)):

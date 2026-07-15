@@ -202,7 +202,10 @@ class PodcastsMixin:
         radio_controller = getattr(self, "_radio_controller", None)
         radio_text = radio_controller.state.status_text if radio_controller is not None else ""
         parts = [t for t in (radio_text, text) if t and "stopped" not in t.lower()]
-        tooltip = "Quill - " + " | ".join(parts) if parts else "Quill"
+        # The tooltip is the tray icon's accessible name: brand it with the
+        # hosting app's own title ("QUILL Cast" standalone, "Quill" embedded).
+        app_name = self.frame.GetTitle() or "Quill"
+        tooltip = f"{app_name} - " + " | ".join(parts) if parts else app_name
         try:
             icon = getattr(self, "_app_icon", None) or wx.ArtProvider.GetIcon(
                 wx.ART_INFORMATION, wx.ART_OTHER, (16, 16)
@@ -226,11 +229,24 @@ class PodcastsMixin:
         return text
 
     def _build_podcast_status_bar_menu(self, menu: object) -> None:
+        from quill.ui.podcasts.player_controller import PodcastPlayerState
+
         wx = self._wx
         play_id, stop_id = wx.NewIdRef(), wx.NewIdRef()
         pause_all_id, resume_all_id = wx.NewIdRef(), wx.NewIdRef()
         open_id = wx.NewIdRef()
-        menu.Append(play_id, "Play/Pause")
+        # Episodes, unlike live streams, pause meaningfully (position kept),
+        # so Pause/Resume and Stop both stay -- but the transport label is
+        # state-aware since this menu is rebuilt on every popup.
+        controller = getattr(self, "_podcast_controller", None)
+        state = controller.state.state if controller is not None else None
+        if state is PodcastPlayerState.PLAYING:
+            transport_label = "Pause"
+        elif state is PodcastPlayerState.PAUSED:
+            transport_label = "Resume"
+        else:
+            transport_label = "Play"
+        menu.Append(play_id, transport_label)
         menu.Append(stop_id, "Stop")
         menu.Bind(wx.EVT_MENU, lambda _e: self.podcast_toggle_play_pause(), id=play_id)
         menu.Bind(wx.EVT_MENU, lambda _e: self.podcast_stop(), id=stop_id)
