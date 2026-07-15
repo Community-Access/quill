@@ -121,8 +121,12 @@ class VaultMixin:
         Defensive passthrough: only transforms Markdown for a note inside the open vault;
         any other document — or any failure — returns the text unchanged, so the preview
         of non-vault files is exactly as before.
+
+        Loads the configured vault on demand (``_ensure_vault`` caches): after an app
+        restart the vault root is remembered but nothing has scanned it yet, and the
+        preview must still resolve links without requiring some other vault command first.
         """
-        if kind != "markdown" or getattr(self, "_vault", None) is None:
+        if kind != "markdown" or self._ensure_vault() is None:
             return text
         rel = relative_note_path(self._vault_root_path(), doc_path)
         if rel is None or rel not in self._vault.notes:
@@ -511,8 +515,16 @@ class VaultMixin:
             self._set_status("Open a vault first (Tools > Vault > Open Vault)")
             return None
         link = link_at_offset(self.editor.GetValue(), self.editor.GetInsertionPoint())
-        if link is None or not link.embed:
+        if link is None:
             self._set_status("No embed (![[...]]) at the cursor")
+            return None
+        if not link.embed:
+            # The caret is on a plain [[link]]. Saying "no embed" here reads as a
+            # bug (user report); name the distinction and how to make it an embed.
+            self._set_status(
+                f"That is a link, not an embed. To embed the note, add an exclamation "
+                f"mark before it: ![[{link.target}]]"
+            )
             return None
         source = relative_note_path(self._vault_root_path(), self._document_path()) or ""
         target = resolve_link(self._vault, self._vault_resolver, link, source)

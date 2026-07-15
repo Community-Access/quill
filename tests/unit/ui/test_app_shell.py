@@ -93,3 +93,31 @@ def test_top_level_adp_menu_is_none_while_locked():
     shell.features = _Features(set())
     shell._feature_locks = _Locks(set())
     assert shell._build_adp_menu() is None
+
+
+class _TaskManagerLikeQuills:
+    """Calls the submitted func exactly the way QuillTaskManager.wrapped does:
+    with cancellation_token / operation_id / progress_callback keyword args.
+    The 1.0.0 standalone apps crashed here ("_fetch() got an unexpected
+    keyword argument 'cancellation_token'") because the closures took no args."""
+
+    def submit(self, _name, func, **_options):
+        return func(
+            cancellation_token=object(),
+            operation_id="test-op",
+            progress_callback=lambda *_a, **_k: None,
+        )
+
+
+def test_update_check_fetch_accepts_task_manager_kwargs(monkeypatch):
+    import quill.core.updates as updates
+
+    calls: list[str] = []
+    monkeypatch.setattr(updates, "fetch_releases", lambda url, **_kw: calls.append(url) or [])
+    shell = _bare_shell()
+    shell._announce = lambda _msg: None
+    shell._running_portable_build = lambda: False
+    shell._task_manager = _TaskManagerLikeQuills()
+    # Must not raise TypeError when the task manager injects its kwargs.
+    shell.check_for_app_updates(repo_slug="Community-Access/quill-radio", current_version="1.0.0")
+    assert calls == ["https://api.github.com/repos/Community-Access/quill-radio/releases"]

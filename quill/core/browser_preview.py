@@ -344,6 +344,21 @@ _SPAN_CODE_RE = re.compile(r"\[([^\]]+)\]\{([^}]*)\}")
 _FENCE_OPEN_CODE_RE = re.compile(r"^:::+\s*\{([^}]*)\}\s*$")
 _FENCE_CLOSE_CODE_RE = re.compile(r"^:::+\s*$")
 _PAGEBREAK_CODE_RE = re.compile(r"^:::+\s*pagebreak\s*$", re.IGNORECASE)
+
+# Vault-resolved markup (quill.core.vault.render) is injected BEFORE this
+# renderer runs -- resolve_for_preview, the site export, and publish all emit
+# exactly these shapes, with attribute values and display text already
+# HTML-escaped by the vault layer. They must pass through the escaping below
+# verbatim; anything looser (a generic raw-HTML passthrough) would defeat the
+# escape-everything safety of this renderer.
+_VAULT_LINK_RE = re.compile(
+    r'<a class="vault-link" href="[^"]*">[^<]*</a>'
+    r'|<span class="vault-link-broken" title="[^"]*">[^<]*</span>'
+)
+# Embed boundaries arrive as HTML comments, which a browser would silently
+# swallow; the vault contract promises an *announced* boundary, so they render
+# as visible emphasized text a screen reader actually reads.
+_VAULT_EMBED_BOUNDARY_RE = re.compile(r"<!-- embedded from (.*?) -->|<!-- end embed -->")
 # Markdown thematic break: a line of 3+ of the same -, *, or _ (spaces allowed,
 # up to 3 leading spaces, CommonMark style). Renders to <hr>. A separator row
 # inside a GFM table contains "|" and is handled by the table path instead.
@@ -558,6 +573,23 @@ def _render_inline(text: str) -> str:
         return f"\x00{len(placeholders) - 1}\x00"
 
     text = _SPAN_CODE_RE.sub(_stash_span, text)
+
+    def _stash_vault_link(match: re.Match[str]) -> str:
+        placeholders.append(match.group(0))
+        return f"\x00{len(placeholders) - 1}\x00"
+
+    def _stash_embed_boundary(match: re.Match[str]) -> str:
+        title = match.group(1)
+        if title is None:
+            placeholders.append('<em class="vault-embed-boundary">End of embed.</em>')
+        else:
+            placeholders.append(
+                f'<em class="vault-embed-boundary">Embedded from {html.escape(title)}:</em>'
+            )
+        return f"\x00{len(placeholders) - 1}\x00"
+
+    text = _VAULT_LINK_RE.sub(_stash_vault_link, text)
+    text = _VAULT_EMBED_BOUNDARY_RE.sub(_stash_embed_boundary, text)
     escaped = html.escape(text)
     escaped = re.sub(r"`([^`]+)`", lambda m: f"<code>{m.group(1)}</code>", escaped)
     escaped = re.sub(
