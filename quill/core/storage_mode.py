@@ -26,7 +26,12 @@ def _has_portable_evidence(anchor: Path) -> bool:
     """
     if not anchor.is_dir():
         return False
-    has_exe = (anchor / "quill.exe").is_file()
+    # quill.exe = the QUILL portable bundle; QuillRadio.exe / QUILLCast.exe =
+    # the standalone companion apps' portable folders (same rule: the app's
+    # own exe at the anchor root plus a deliberate sibling data/ folder).
+    has_exe = any(
+        (anchor / name).is_file() for name in ("quill.exe", "QuillRadio.exe", "QUILLCast.exe")
+    )
     has_data = (anchor / "data").is_dir()
     if has_exe and has_data:
         return True

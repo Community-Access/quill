@@ -199,3 +199,18 @@ def test_per_station_volume_clamps_and_round_trips(tmp_path: Path) -> None:
     # Legacy entries without the new keys read as defaults.
     bare = load_favorites(tmp_path).find("https://b.example.com")
     assert bare is not None and bare.volume_percent == -1 and bare.custom_name == ""
+
+
+def test_explicit_folders_exist_without_stations_and_round_trip(tmp_path: Path) -> None:
+    store = _store_abc()
+    assert store.add_folder("News/Morning") is True
+    assert store.add_folder("News/Morning") is False  # duplicate
+    assert "News/Morning" in store.folder_names()
+    save_favorites(tmp_path, store)
+    loaded = load_favorites(tmp_path)
+    assert "News/Morning" in loaded.folder_names()
+    # Rename and delete carry the explicit registry along.
+    loaded.rename_folder("News", "World")
+    assert "World/Morning" in loaded.folder_names()
+    loaded.delete_folder("World")
+    assert loaded.folder_names() == []

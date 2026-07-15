@@ -204,12 +204,14 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
                 ("Rena&me...\tF2", self._on_tree_rename),
                 ("Move to F&older...", self._on_tree_move_to_folder),
                 ("&Remove...\tDelete", self._on_tree_remove),
+                ("New F&older...\tCtrl+Shift+E", self._on_new_folder),
                 ("Manage Fa&vorites...", self.open_manage_radio_favorites),
             ]
         else:
             entries = [
                 ("Rena&me Folder...\tF2", self._on_tree_rename),
                 ("&Delete Folder...", self._on_tree_remove),
+                ("New F&older...\tCtrl+Shift+E", self._on_new_folder),
                 ("Manage Fa&vorites...", self.open_manage_radio_favorites),
             ]
         id_refs = []
@@ -273,6 +275,20 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
                 self._reload_favorites_tree()
         elif favorite_actions.delete_folder_prompt(
             self.frame, self._radio_favorites, selected[1], announce=self._announce
+        ):
+            self._save_radio_favorites()
+            self._reload_favorites_tree()
+
+    def _on_new_folder(self) -> None:
+        from quill.ui.radio import favorite_actions
+
+        selected = self._selected_tree_data()
+        initial_parent = selected[1] if selected is not None and selected[0] == "folder" else ""
+        if favorite_actions.create_folder_prompt(
+            self.frame,
+            self._radio_favorites,
+            announce=self._announce,
+            initial_parent=initial_parent,
         ):
             self._save_radio_favorites()
             self._reload_favorites_tree()
@@ -375,6 +391,9 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         station_menu.Append(find_id, "Find &Streams from a Website...")
         manage_id = wx.NewIdRef()
         station_menu.Append(manage_id, "&Manage Favorites...")
+        new_folder_id = wx.NewIdRef()
+        station_menu.Append(new_folder_id, "New F&older...\tCtrl+Shift+E")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._on_new_folder(), id=new_folder_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_internet_radio(), id=browse_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._radio_open_add_custom(None), id=add_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._radio_open_link_finder(), id=find_id)
@@ -485,6 +504,9 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.report_app_bug(source_app="Quill Radio"), id=bug_id
         )
+        ffmpeg_id = wx.NewIdRef()
+        help_menu.Append(ffmpeg_id, "&Get FFmpeg...")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.download_ffmpeg_component(), id=ffmpeg_id)
         help_menu.Append(redeem_id, "Redeem &Unlock Code...")
         help_menu.Append(updates_id, "Check for Up&dates...")
         help_menu.AppendSeparator()
@@ -505,6 +527,7 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             add_id,
             find_id,
             manage_id,
+            new_folder_id,
             play_last_id,
             self._resume_menu_item_id,
             tray_id,
@@ -525,9 +548,17 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             settings_id,
             palette_id,
             bug_id,
+            ffmpeg_id,
             redeem_id,
             updates_id,
             about_id,
+        )
+
+    def _radio_no_ffmpeg_message(self) -> str:
+        return (
+            "Recording needs FFmpeg, which normally ships inside Quill Radio. "
+            "It looks like it's missing -- choose Help > Get FFmpeg... to "
+            "download the official build, then try again."
         )
 
     def _send_to_tray(self) -> None:

@@ -42,6 +42,7 @@ class ScheduleRecordingDialog:
         default_stream_url: str = "",
         on_add: Callable[[RecordingScheduleEntry], None],
         on_remove: Callable[[str], bool],
+        favorites: object | None = None,
         announce_cb: Callable[[str], None] | None = None,
     ) -> None:
         import wx
@@ -50,6 +51,7 @@ class ScheduleRecordingDialog:
         self._entries = list(entries)
         self._on_add = on_add
         self._on_remove = on_remove
+        self._favorites = favorites
         self._announce = announce_cb or (lambda _m: None)
 
         self.dialog = wx.Dialog(
@@ -60,17 +62,48 @@ class ScheduleRecordingDialog:
 
         root.Add(wx.StaticText(self.dialog, label="&Scheduled recordings"), 0, wx.LEFT | wx.TOP, 10)
         self._list = wx.ListBox(self.dialog)
-        self._list.SetName("Scheduled recordings; select one and press Remove to delete it")
+        self._list.SetName(
+            "Scheduled recordings; Delete removes the selected one, Shift+F10 for actions"
+        )
         root.Add(self._list, 1, wx.EXPAND | wx.ALL, 10)
 
-        remove_btn = wx.Button(self.dialog, label="&Remove Selected")
-        root.Add(remove_btn, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+        self._remove_btn = wx.Button(self.dialog, label="&Remove")
+        self._remove_btn.SetName("Remove the selected schedule")
+        self._remove_btn.Enable(False)
+        root.Add(self._remove_btn, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         root.Add(wx.StaticLine(self.dialog), 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
         root.Add(wx.StaticText(self.dialog, label="Add a new schedule"), 0, wx.ALL, 10)
 
         grid = wx.FlexGridSizer(cols=2, gap=(6, 8))
         grid.AddGrowableCol(1, 1)
+
+        # Pick a favorite instead of typing: choosing one fills the name and
+        # URL below (both stay editable for one-off streams).
+        favorite_entries = list(getattr(self._favorites, "favorites", []) or [])
+        if favorite_entries:
+            grid.Add(
+                wx.StaticText(self.dialog, label="&Favorite station:"),
+                0,
+                wx.ALIGN_CENTER_VERTICAL,
+            )
+            labels = ["(type the details below)"] + [f.display_label for f in favorite_entries]
+            self._favorite_choice = wx.Choice(self.dialog, choices=labels)
+            self._favorite_choice.SetName(
+                "Pick a favorite to record; it fills the station name and stream URL for you"
+            )
+            self._favorite_choice.SetSelection(0)
+            self._favorite_entries = favorite_entries
+
+            def _on_pick(_event: object) -> None:
+                index = self._favorite_choice.GetSelection() - 1
+                if 0 <= index < len(self._favorite_entries):
+                    favorite = self._favorite_entries[index]
+                    self._name_ctrl.SetValue(favorite.display_label)
+                    self._url_ctrl.SetValue(favorite.station.stream_url)
+
+            self._favorite_choice.Bind(wx.EVT_CHOICE, _on_pick)
+            grid.Add(self._favorite_choice, 1, wx.EXPAND)
 
         grid.Add(wx.StaticText(self.dialog, label="Station &name:"), 0, wx.ALIGN_CENTER_VERTICAL)
         self._name_ctrl = wx.TextCtrl(self.dialog, value=default_station_name)
@@ -135,9 +168,45 @@ class ScheduleRecordingDialog:
 
         self.dialog.SetSizer(root)
 
-        remove_btn.Bind(wx.EVT_BUTTON, self._on_remove_click)
+        self._remove_btn.Bind(wx.EVT_BUTTON, self._on_remove_click)
         add_btn.Bind(wx.EVT_BUTTON, self._on_add_click)
+        self._list.Bind(wx.EVT_LISTBOX, lambda _e: self._refresh_remove_button())
+        self._list.Bind(wx.EVT_KEY_DOWN, self._on_list_key)
+        self._list.Bind(wx.EVT_CONTEXT_MENU, self._on_list_context_menu)
         self._refresh_list()
+
+    def _refresh_remove_button(self) -> None:
+        """The Remove button names its target and dims when there is none."""
+        index = self._list.GetSelection()
+        if 0 <= index < len(self._entries):
+            name = self._entries[index].station_name
+            self._remove_btn.SetLabel(f"&Remove {name}")
+            self._remove_btn.SetName(f"Remove the {name} schedule")
+            self._remove_btn.Enable(True)
+        else:
+            self._remove_btn.SetLabel("&Remove")
+            self._remove_btn.SetName("Remove the selected schedule")
+            self._remove_btn.Enable(False)
+
+    def _on_list_key(self, event: object) -> None:
+        wx = self._wx
+        if event.GetKeyCode() in (wx.WXK_DELETE, wx.WXK_NUMPAD_DELETE):
+            self._on_remove_click(None)
+            return
+        event.Skip()
+
+    def _on_list_context_menu(self, _event: object) -> None:
+        wx = self._wx
+        index = self._list.GetSelection()
+        if not (0 <= index < len(self._entries)):
+            return
+        menu = wx.Menu()
+        delete_id = wx.NewIdRef()
+        menu.Append(delete_id, f"&Delete {self._entries[index].station_name}\tDelete")
+        menu.Bind(wx.EVT_MENU, lambda _e: self._on_remove_click(None), id=delete_id)
+        self._context_menu_id_refs = [delete_id]  # pinned while the popup can fire
+        self._list.PopupMenu(menu)
+        menu.Destroy()
 
     def show(self) -> None:
         self.dialog.CentreOnParent()
@@ -153,6 +222,9 @@ class ScheduleRecordingDialog:
         self._list.Clear()
         for entry in self._entries:
             self._list.Append(_entry_summary(entry), entry.id)
+        if self._entries:
+            self._list.SetSelection(0)
+        self._refresh_remove_button()
 
     def _on_remove_click(self, _event: object) -> None:
         index = self._list.GetSelection()

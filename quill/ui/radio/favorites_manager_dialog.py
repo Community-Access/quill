@@ -125,6 +125,12 @@ class FavoritesManagerDialog:
             lambda: self._on_move_marked(False),
             "Place the marked station directly below the selected one, joining its folder",
         )
+        self._new_folder_btn = self._button(
+            row2,
+            "New Fol&der...",
+            self._on_new_folder,
+            "Create a folder (Ctrl+Shift+E); you choose where it lives",
+        )
         self._rename_btn = self._button(
             row2,
             "Re&name...",
@@ -431,7 +437,20 @@ class FavoritesManagerDialog:
         if code == wx.WXK_F2:
             self._on_rename()
             return
+        if code == ord("E") and event.ControlDown() and event.ShiftDown():
+            self._on_new_folder()
+            return
         event.Skip()
+
+    def _on_new_folder(self) -> None:
+        from quill.ui.radio.favorite_actions import create_folder_prompt
+
+        selected = self._selected()
+        initial_parent = selected[1] if selected is not None and selected[0] == "folder" else ""
+        if create_folder_prompt(
+            self.dialog, self._store, announce=self._announce, initial_parent=initial_parent
+        ):
+            self._changed()
 
     def _on_context_menu(self, _event: Any) -> None:
         wx = self._wx

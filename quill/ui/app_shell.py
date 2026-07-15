@@ -238,6 +238,57 @@ class AppShellFrame:
                 pass
         self._media_key_ids = []
 
+    # -- ffmpeg safety net (Help > Get FFmpeg...) --------------------------------
+
+    def download_ffmpeg_component(self) -> None:
+        """Recovery path for a missing ffmpeg: the installer and portable zip
+        both bundle it, but if it ever goes missing this fetches QUILL's
+        verified official build into the shared %APPDATA%\\Quill\\tools\\ffmpeg
+        that every app searches. Announced milestones, no dialog to babysit."""
+        from quill.core.speech.ffmpeg import ffmpeg_available
+        from quill.core.speech.ffmpeg_install import (
+            FFmpegInstallError,
+            ffmpeg_install_supported,
+            install_ffmpeg,
+        )
+
+        if self._safe_mode:
+            self._announce("Downloading components is disabled in Safe Mode.")
+            return
+        if ffmpeg_available():
+            self._announce("FFmpeg is already installed and working.")
+            return
+        if not ffmpeg_install_supported():
+            self._announce("Automatic FFmpeg download is Windows-only.")
+            return
+        self._announce("Downloading FFmpeg (about 90 megabytes)...")
+        last_milestone = {"value": -1}
+
+        def _progress(fraction: float, _message: str) -> None:
+            percent = int(max(0.0, min(1.0, fraction)) * 100)
+            milestone = percent - (percent % 25)
+            if milestone > last_milestone["value"] and milestone in (25, 50, 75):
+                last_milestone["value"] = milestone
+                wx.CallAfter(self._announce, f"FFmpeg download {milestone} percent")
+
+        def _install() -> object:
+            return install_ffmpeg(_progress)
+
+        def _done(_name: str, _result: object) -> None:
+            wx.CallAfter(self._announce, "FFmpeg is installed. Recording is ready to use.")
+
+        def _failed(_name: str, error: BaseException) -> None:
+            message = (
+                str(error)
+                if isinstance(error, FFmpegInstallError)
+                else f"FFmpeg could not be downloaded: {error}"
+            )
+            wx.CallAfter(self._show_message_box, message, "Get FFmpeg", wx.ICON_ERROR | wx.OK)
+
+        self._task_manager.submit(
+            "app-ffmpeg-install", _install, on_success=_done, on_failure=_failed
+        )
+
     # -- report a bug ------------------------------------------------------------
 
     def report_app_bug(self, *, source_app: str) -> None:
@@ -330,6 +381,16 @@ class AppShellFrame:
 
     # -- per-app update check (Help > Check for Updates...) ------------------
 
+    def _running_portable_build(self) -> bool:
+        """True when this frozen app is the extracted portable folder rather
+        than an Inno-installed copy (which always has unins000.exe beside the
+        exe). Dev runs report False and get the installer path, harmlessly."""
+        if not getattr(sys, "frozen", False):
+            return False
+        from pathlib import Path
+
+        return not (Path(sys.executable).resolve().parent / "unins000.exe").is_file()
+
     def check_for_app_updates(self, *, repo_slug: str, current_version: str) -> None:
         """The same in-app experience QUILL gives: check this app's own GitHub
         releases, download the installer in-app with spoken progress
@@ -340,9 +401,10 @@ class AppShellFrame:
 
         api_url = f"https://api.github.com/repos/{repo_slug}/releases"
         self._announce("Checking for updates")
+        prefer_portable = self._running_portable_build()
 
         def _fetch() -> object:
-            return fetch_releases(api_url)
+            return fetch_releases(api_url, prefer_portable=prefer_portable)
 
         def _report(_name: str, releases: object) -> None:
             def _show() -> None:
@@ -432,9 +494,15 @@ class AppShellFrame:
 
         self._announce(f"Update {release.version} downloaded")
         runnable = str(target).lower().endswith((".exe", ".msi")) and sys.platform.startswith("win")
-        action_line = (
-            "Select 'Install now' to close this app and run the installer, or " if runnable else ""
-        )
+        if runnable:
+            action_line = "Select 'Install now' to close this app and run the installer, or "
+        elif str(target).lower().endswith(".zip"):
+            action_line = (
+                "This is the portable version: close this app, extract the zip "
+                "over (or beside) your current folder, and start it again. "
+            )
+        else:
+            action_line = ""
         dialog = wx.Dialog(
             self.frame, title="Update downloaded", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )

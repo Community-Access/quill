@@ -132,10 +132,18 @@ class RadioMixin:
             self._announce(f"Scheduled recording started: {station_name}")
         self._refresh_statusbar()
 
+    def _radio_no_ffmpeg_message(self) -> str:
+        """Where to get ffmpeg, phrased for the hosting app: QUILL points at
+        its components hub; the standalone apps override this to point at
+        their own Help > Get FFmpeg... item."""
+        return _NO_FFMPEG_MESSAGE
+
     def radio_record_toggle(self) -> None:
         if not ffmpeg_available():
             self._show_message_box(
-                _NO_FFMPEG_MESSAGE, "Internet Radio", self._wx.ICON_INFORMATION | self._wx.OK
+                self._radio_no_ffmpeg_message(),
+                "Internet Radio",
+                self._wx.ICON_INFORMATION | self._wx.OK,
             )
             return
         if self._radio_recorder.is_recording:
@@ -181,6 +189,7 @@ class RadioMixin:
             default_stream_url=station.stream_url if station is not None else "",
             on_add=self._radio_scheduler.add,
             on_remove=self._radio_scheduler.remove,
+            favorites=self._radio_favorites,
             announce_cb=self._announce,
         )
         dialog.show()
@@ -384,7 +393,9 @@ class RadioMixin:
 
         if not ffmpeg_available():
             self._show_message_box(
-                _NO_FFMPEG_MESSAGE, "Internet Radio", self._wx.ICON_INFORMATION | self._wx.OK
+                self._radio_no_ffmpeg_message(),
+                "Internet Radio",
+                self._wx.ICON_INFORMATION | self._wx.OK,
             )
             return
         if self._radio_recorder.is_recording:

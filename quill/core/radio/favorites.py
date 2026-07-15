@@ -57,6 +57,10 @@ class RadioFavoritesStore:
     """All saved favorites, in display order."""
 
     favorites: list[FavoriteStation] = field(default_factory=list)
+    #: Explicitly created folders (New Folder...), so a folder can exist and
+    #: show in the tree before any station is filed into it. Entry folders
+    #: (paths carried by favorites) are merged in by :meth:`folder_names`.
+    folders: list[str] = field(default_factory=list)
 
     def find(self, key: str) -> FavoriteStation | None:
         for favorite in self.favorites:
@@ -145,9 +149,21 @@ class RadioFavoritesStore:
         favorite.volume_percent = max(0, min(100, int(volume_percent)))
         return True
 
+    def add_folder(self, path: str) -> bool:
+        """Register a folder explicitly (it may hold no stations yet)."""
+        cleaned = path.strip().strip("/")
+        if not cleaned or cleaned in self.folder_names():
+            return False
+        self.folders.append(cleaned)
+        return True
+
     def folder_names(self) -> list[str]:
-        """Non-empty folder names in first-appearance (display) order."""
+        """Every folder path in display order: explicitly created folders
+        first, then folders implied by the favorites that live in them."""
         seen: list[str] = []
+        for path in self.folders:
+            if path and path not in seen:
+                seen.append(path)
         for favorite in self.favorites:
             if favorite.folder and favorite.folder not in seen:
                 seen.append(favorite.folder)
@@ -172,6 +188,12 @@ class RadioFavoritesStore:
             elif favorite.folder.startswith(prefix):
                 favorite.folder = new + "/" + favorite.folder[len(prefix) :]
                 count += 1
+        self.folders = [
+            new
+            if path == old
+            else (new + "/" + path[len(prefix) :] if path.startswith(prefix) else path)
+            for path in self.folders
+        ]
         return count
 
     def delete_folder(self, name: str) -> int:
@@ -184,6 +206,9 @@ class RadioFavoritesStore:
             if favorite.folder == name or favorite.folder.startswith(prefix):
                 favorite.folder = ""
                 count += 1
+        self.folders = [
+            path for path in self.folders if path != name and not path.startswith(prefix)
+        ]
         return count
 
     def search(self, query: str) -> list[FavoriteStation]:
@@ -226,6 +251,11 @@ def load_favorites(data_dir: Path) -> RadioFavoritesStore:
         return RadioFavoritesStore()
     entries = raw.get("favorites") if isinstance(raw, dict) else None
     store = RadioFavoritesStore()
+    if isinstance(raw, dict):
+        raw_folders = raw.get("folders")
+        for path in raw_folders if isinstance(raw_folders, list) else []:
+            if isinstance(path, str) and path.strip():
+                store.folders.append(path.strip().strip("/"))
     for entry in entries if isinstance(entries, list) else []:
         if not isinstance(entry, dict):
             continue
@@ -256,6 +286,7 @@ def save_favorites(data_dir: Path, store: RadioFavoritesStore) -> None:
     write_json_atomic(
         _store_path(data_dir),
         {
+            "folders": list(store.folders),
             "favorites": [
                 {
                     "station": favorite.station.to_dict(),
@@ -265,6 +296,6 @@ def save_favorites(data_dir: Path, store: RadioFavoritesStore) -> None:
                     "volume_percent": favorite.volume_percent,
                 }
                 for favorite in store.favorites
-            ]
+            ],
         },
     )
