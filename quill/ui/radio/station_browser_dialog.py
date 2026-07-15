@@ -91,7 +91,9 @@ class StationBrowserDialog:
         search_col = wx.BoxSizer(wx.VERTICAL)
         self._search_btn = wx.Button(self.dialog, label="&Search")
         self._search_btn.SetName("Search RadioBrowser for stations matching these fields")
-        search_col.Add(self._search_btn, 0, wx.ALIGN_CENTER_VERTICAL)
+        # No alignment flag: vertical alignment flags assert-fail inside a
+        # vertical sizer (wx 4.2+), which killed the dialog before it opened.
+        search_col.Add(self._search_btn, 0)
         search_box.Add(search_col, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 6)
         root.Add(search_box, 0, wx.EXPAND | wx.ALL, 10)
 

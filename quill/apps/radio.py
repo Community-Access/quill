@@ -186,18 +186,15 @@ class RadioAppFrame(AppShellFrame, RadioMixin, AdpMixin, UnlockCodesMixin):
             menu_bar.Append(adp_menu, "A&udio Description Project")
 
         help_menu = wx.Menu()
-        open_quill_id, redeem_id, updates_id, about_id = (
-            wx.NewIdRef(),
+        redeem_id, updates_id, about_id = (
             wx.NewIdRef(),
             wx.NewIdRef(),
             wx.NewIdRef(),
         )
-        help_menu.Append(open_quill_id, "&Open in Quill")
         help_menu.Append(redeem_id, "Redeem &Unlock Code...")
         help_menu.Append(updates_id, "Check for Up&dates...")
         help_menu.AppendSeparator()
         help_menu.Append(about_id, "&About Quill Radio")
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_in_quill(), id=open_quill_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_redeem_unlock_code_dialog(), id=redeem_id)
         self.frame.Bind(
             wx.EVT_MENU,
