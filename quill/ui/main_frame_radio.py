@@ -427,7 +427,12 @@ class RadioMixin:
         self._announce(f"Playing {station.display_name}")
 
     def _append_radio_recent_submenu(self, menu: object) -> None:
-        """A Recently Played submenu: the last stations, newest first."""
+        """A Recently Played submenu: the last stations, newest first.
+
+        Replaying a station never adds a second row -- the store moves the
+        existing entry to the front (de-duplicated by uuid/stream URL). When
+        a recent station is also a favorite, it speaks the favorite's own
+        display name so the two menus never read like different stations."""
         wx = self._wx
         stations = list(self._radio_history.stations)
         if not stations:
@@ -435,7 +440,9 @@ class RadioMixin:
         sub = wx.Menu()
         for station in stations:
             item_id = wx.NewIdRef()
-            sub.Append(item_id, station.display_name)
+            favorite = self._radio_favorites.find(station.station_uuid or station.stream_url)
+            label = favorite.display_label if favorite is not None else station.display_name
+            sub.Append(item_id, label)
             sub.Bind(
                 wx.EVT_MENU,
                 lambda _e, s=station: self._radio_controller.play_station(s),
