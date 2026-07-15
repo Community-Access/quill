@@ -101,15 +101,17 @@ class RadioAppFrame(AppShellFrame, RadioMixin, AdpMixin, UnlockCodesMixin):
     def _refresh_play_stop_button(self) -> None:
         from quill.ui.radio.player_controller import RadioPlayerState
 
-        button = getattr(self, "_play_stop_btn", None)
-        if button is None:
-            return
         state = self._radio_controller.state.state
         stopping = state in (RadioPlayerState.PLAYING, RadioPlayerState.CONNECTING)
         label = "&Stop" if stopping else "&Play"
-        if button.GetLabel() != label:
+        button = getattr(self, "_play_stop_btn", None)
+        if button is not None and button.GetLabel() != label:
             button.SetLabel(label)
             set_accessible_name(button, "Stop" if stopping else "Play")
+        menu_bar = self.frame.GetMenuBar()
+        item_id = getattr(self, "_play_menu_item_id", None)
+        if menu_bar is not None and item_id is not None:
+            menu_bar.SetLabel(int(item_id), f"{label}\tCtrl+P")
 
     def _play_selected_favorite(self) -> None:
         index = self._favorites_list.GetSelection()
@@ -150,15 +152,18 @@ class RadioAppFrame(AppShellFrame, RadioMixin, AdpMixin, UnlockCodesMixin):
         playback_menu.Append(self._now_playing_item_id, "Radio: stopped")
         playback_menu.Enable(self._now_playing_item_id, False)
         playback_menu.AppendSeparator()
-        play_id, stop_id, mute_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
-        vol_up_id, vol_down_id = wx.NewIdRef(), wx.NewIdRef()
-        playback_menu.Append(play_id, "&Play/Pause\tCtrl+P")
-        playback_menu.Append(stop_id, "&Stop")
-        playback_menu.Append(mute_id, "&Mute/Unmute")
-        playback_menu.Append(vol_up_id, "Volume &Up")
-        playback_menu.Append(vol_down_id, "Volume &Down")
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_toggle_play_pause(), id=play_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_stop(), id=stop_id)
+        # One transport item mirroring the main panel's single button: it
+        # reads Play when idle and Stop while connecting/playing -- no
+        # separate, ambiguous Play/Pause + Stop pair.
+        self._play_menu_item_id = wx.NewIdRef()
+        playback_menu.Append(self._play_menu_item_id, "&Play\tCtrl+P")
+        mute_id, vol_up_id, vol_down_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
+        playback_menu.Append(mute_id, "&Mute/Unmute\tCtrl+M")
+        playback_menu.Append(vol_up_id, "Volume &Up\tCtrl+Up")
+        playback_menu.Append(vol_down_id, "Volume &Down\tCtrl+Down")
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self._on_play_stop_button(), id=self._play_menu_item_id
+        )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_mute_toggle(), id=mute_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_volume_up(), id=vol_up_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_volume_down(), id=vol_down_id)
