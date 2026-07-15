@@ -664,20 +664,30 @@ class SpeechCommandsMixin:
         threading.Thread(target=_run, daemon=True).start()  # GATE-40-OK: install worker.
 
     def download_audio_extras(self, *, on_done: Callable[[bool], None] | None = None) -> None:
-        """Install the mpv playback engine and MP3 chapter-marker support together
-        (about 46 MB combined) -- one download instead of two separate prompts,
-        since both are optional Audio Studio/MP3-export extras. mpv is pinned +
+        """Install the whole audio pack in one go: the mpv playback engine, MP3
+        chapter-marker support, and FFmpeg (export/recording converter). One
+        download instead of three separate prompts. mpv is pinned +
         SHA-256-verified via quill.core.release_assets; MP3 support (mutagen) is a
-        pip install. Only what is actually missing is fetched. Runs on a worker
+        pip install; FFmpeg is the official Gyan essentials build fetched over
+        verified HTTPS. Only what is actually missing is fetched. Runs on a worker
         thread behind one combined progress dialog, blocked in Safe Mode."""
         import threading
 
-        from quill.core.optional_components import _libmpv_installed, _mp3_installed
+        from quill.core.optional_components import (
+            _ffmpeg_installed,
+            _libmpv_installed,
+            _mp3_installed,
+        )
         from quill.core.speech.engine_install import (
             EngineInstallError,
             activate_engine_packs,
             install_mp3_support,
             mp3_install_supported,
+        )
+        from quill.core.speech.ffmpeg_install import (
+            FFmpegInstallError,
+            ffmpeg_install_supported,
+            install_ffmpeg,
         )
         from quill.ui.ai_transcribe_dialog import AIProgressDialog
 
@@ -687,23 +697,31 @@ class SpeechCommandsMixin:
             return
         need_libmpv = not _libmpv_installed()
         need_mp3 = not _mp3_installed() and mp3_install_supported()
-        if not need_libmpv and not need_mp3:
+        need_ffmpeg = not _ffmpeg_installed() and ffmpeg_install_supported()
+        if not need_libmpv and not need_mp3 and not need_ffmpeg:
             self._show_message_box(
-                "Audio playback and MP3 chapter-marker support are already installed.",
-                "Audio Playback & MP3 Chapter Markers",
+                "Audio playback, MP3 chapter-marker support, and FFmpeg are already installed.",
+                "Audio: Export, Playback & Chapters",
                 wx.ICON_INFORMATION | wx.OK,
             )
             if on_done is not None:
                 on_done(True)
             return
+        size_hint = "about 136 MB total" if need_ffmpeg else "about 46 MB total"
+        ffmpeg_line = (
+            " FFmpeg powers compressed audio export (MP3, M4A/M4B, OGG, Opus, "
+            "FLAC) and Internet Radio recording."
+            if need_ffmpeg
+            else ""
+        )
         if (
             self._show_message_box(
-                "Download the mpv playback engine and MP3 chapter-marker support "
-                "(about 46 MB total)? mpv upgrades the Audio Studio player to "
-                "gapless audio with exact seeking; MP3 chapter markers add a "
-                "jumpable chapter list to MP3 audiobook exports. Both are "
-                "optional -- QUILL works without them.",
-                "Download Audio Playback & MP3 Chapter Markers",
+                f"Download the audio pack ({size_hint})? mpv upgrades the Audio "
+                "Studio player to gapless audio with exact seeking; MP3 chapter "
+                "markers add a jumpable chapter list to MP3 audiobook exports."
+                f"{ffmpeg_line} Everything is optional -- QUILL works without it. "
+                "Pieces already installed are skipped.",
+                "Download Audio: Export, Playback & Chapters",
                 wx.ICON_QUESTION | wx.YES_NO,
             )
             != wx.YES
@@ -718,19 +736,21 @@ class SpeechCommandsMixin:
             status_fn=self._set_status,
         )
         progress.show()
-        self._announce("Downloading audio playback and MP3 chapter-marker support.")
+        self._announce("Downloading the audio pack.")
         last_percent = {"value": -1}
 
-        # Both steps report their own 0.0-1.0 fraction; map each into its share
+        # Each step reports its own 0.0-1.0 fraction; map each into its share
         # of one combined bar so the user sees a single, continuous download
-        # rather than two separate ones.
-        span = 0.5 if (need_libmpv and need_mp3) else 1.0
+        # rather than two or three separate ones. FFmpeg's share is weighted
+        # heavier because it is by far the largest piece (~90 of ~136 MB).
+        steps = float(int(need_libmpv) + int(need_mp3)) + (2.0 if need_ffmpeg else 0.0)
+        span = 1.0 / max(steps, 1.0)
 
-        def _combined_progress(base: float) -> Callable[[float, str], None]:
+        def _combined_progress(base: float, width: float = 1.0) -> Callable[[float, str], None]:
             def _p(fraction: float, message: str) -> None:
                 if cancel.is_set():
                     raise RuntimeError("Download cancelled.")
-                percent = int((base + span * max(0.0, min(1.0, fraction))) * 100)
+                percent = int((base + width * span * max(0.0, min(1.0, fraction))) * 100)
                 if percent == last_percent["value"]:
                     return
                 last_percent["value"] = percent
@@ -739,6 +759,7 @@ class SpeechCommandsMixin:
             return _p
 
         def _run() -> None:
+            base = 0.0
             try:
                 if need_libmpv:
                     from quill.core.release_assets import fetch_component
@@ -747,12 +768,16 @@ class SpeechCommandsMixin:
                     fetch_component(
                         "libmpv",
                         engine_packs_dir() / "mpv",
-                        progress=_combined_progress(0.0),
+                        progress=_combined_progress(base),
                         label="Downloading the mpv player engine...",
                     )
+                    base += span
                 if need_mp3:
-                    install_mp3_support(_combined_progress(span if need_libmpv else 0.0))
+                    install_mp3_support(_combined_progress(base))
                     activate_engine_packs()
+                    base += span
+                if need_ffmpeg:
+                    install_ffmpeg(_combined_progress(base, width=2.0))
             except Exception as exc:  # noqa: BLE001 - surface a clean message
                 wx.CallAfter(progress.close)
                 if cancel.is_set():
@@ -761,19 +786,20 @@ class SpeechCommandsMixin:
                 else:
                     wx.CallAfter(self._set_status, f"Could not finish the download: {exc}")
                     detail = str(exc)
-                    if not isinstance(exc, EngineInstallError):
+                    if not isinstance(exc, EngineInstallError | FFmpegInstallError):
                         detail = f"Unexpected error: {exc}"
                     wx.CallAfter(
                         self._offer_component_bug_report,
                         "audio_extras",
-                        "Audio playback & MP3 chapter markers download failed.",
+                        "Audio pack download failed.",
                         detail,
                     )
                 return
 
             def _done() -> None:
                 progress.switch_to_ok(
-                    "Audio playback and MP3 chapter-marker support are installed.",
+                    "The audio pack is installed: playback, MP3 chapter markers, "
+                    "and FFmpeg export/recording support.",
                     on_ok=(lambda: on_done(True)) if on_done else self.open_optional_components,
                 )
 
