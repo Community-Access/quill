@@ -88,8 +88,8 @@ def branch_platform(test: ast.expr) -> tuple[str | None, str | None]:
     # leave it untagged rather than over-claim.
     if isinstance(test, ast.BoolOp) and isinstance(test.op, ast.And):
         for operand in test.values:
-            body_pl, _ = _platform_compare(operand)
-            if body_pl == DARWIN:
+            classified_operand = _platform_compare(operand)
+            if classified_operand is not None and classified_operand[0] == DARWIN:
                 return (DARWIN, None)
     return (None, None)
 

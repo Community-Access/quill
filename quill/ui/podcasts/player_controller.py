@@ -87,6 +87,8 @@ class PodcastPlayerController:
         self._resume_ms = 0
         self._pending_rate = 1.0
         self._volume_percent = 100
+        self._muted = False
+        self._pre_mute_volume = 100
         #: Live playback gain (Phase 4): scales what the engine hears without
         #: touching volume_percent, which the sleep timer restores -- boosting
         #: must never make "restore the volume" restore a boosted number.
@@ -163,8 +165,25 @@ class PodcastPlayerController:
             self._engine.set_rate(rate)
 
     def set_volume(self, percent: int) -> None:
+        self._muted = False
         self._volume_percent = max(0, min(100, percent))
         self._apply_engine_volume()
+
+    def toggle_mute(self) -> None:
+        """Mirrors ``RadioPlayerController.toggle_mute``: silence without
+        losing the level, restored exactly on the next toggle."""
+        if self._muted:
+            self._muted = False
+            self._volume_percent = self._pre_mute_volume
+        else:
+            self._pre_mute_volume = self._volume_percent
+            self._muted = True
+            self._volume_percent = 0
+        self._apply_engine_volume()
+
+    @property
+    def muted(self) -> bool:
+        return self._muted
 
     def set_volume_boost(self, factor: float) -> None:
         """Live playback gain (0.5x - 3.0x, clamped) for quiet audio; scales

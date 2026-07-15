@@ -77,6 +77,9 @@ class DownloadItem:
     #: ISO timestamps for the Status page's task rows ("" until reached).
     started_at: str = ""
     finished_at: str = ""
+    #: How many reconnect attempts this item has used after a dropped
+    #: connection (0 = still on the first, uninterrupted attempt).
+    reconnect_attempts: int = 0
     _pause_event: threading.Event = field(default_factory=threading.Event, repr=False)
     _cancel_event: threading.Event = field(default_factory=threading.Event, repr=False)
 
@@ -136,10 +139,20 @@ class PodcastDownloadQueue:
         max_concurrent: int = _MAX_CONCURRENT,
         on_status_changed: Callable[[DownloadItem], None] | None = None,
         on_completed: Callable[[DownloadItem], None] | None = None,
+        on_reconnect: Callable[[DownloadItem, int, int], None] | None = None,
+        reconnect_enabled: bool = True,
+        reconnect_max_attempts: int = 5,
+        reconnect_wait_seconds: float = 10.0,
     ) -> None:
         self._max_concurrent = max(1, max_concurrent)
         self._on_status_changed = on_status_changed or (lambda _item: None)
         self._on_completed = on_completed or (lambda _item: None)
+        #: (item, attempt, max_attempts) -- announced so a listening user
+        #: knows a drop was noticed and is being handled, not just stuck.
+        self._on_reconnect = on_reconnect or (lambda _item, _attempt, _max: None)
+        self._reconnect_enabled = reconnect_enabled
+        self._reconnect_max_attempts = max(0, reconnect_max_attempts)
+        self._reconnect_wait_seconds = max(1.0, reconnect_wait_seconds)
         self._items: dict[str, DownloadItem] = {}
         self._order: list[str] = []
         self._lock = threading.Lock()
@@ -151,6 +164,15 @@ class PodcastDownloadQueue:
             target=self._run, name="quill-podcast-downloads", daemon=True
         )
         self._worker.start()
+
+    def set_reconnect_settings(
+        self, *, enabled: bool, max_attempts: int, wait_seconds: float
+    ) -> None:
+        """Live-update from Podcast Settings -- takes effect on the next
+        drop, no restart needed."""
+        self._reconnect_enabled = enabled
+        self._reconnect_max_attempts = max(0, max_attempts)
+        self._reconnect_wait_seconds = max(1.0, wait_seconds)
 
     # -- public API -----------------------------------------------------
 
@@ -271,24 +293,49 @@ class PodcastDownloadQueue:
                 name=f"quill-podcast-dl-{item.item_id}",
             ).start()
 
+    def _maybe_reconnect(self, item: DownloadItem) -> bool:
+        """After a dropped connection: wait and report True if this item
+        should retry (the partial file stays on disk -- the next
+        ``_fetch_chunked`` call resumes via Range); False to give up."""
+        if not self._reconnect_enabled or item._cancel_event.is_set():
+            return False
+        attempt = item.reconnect_attempts + 1
+        if attempt > self._reconnect_max_attempts:
+            return False
+        item.reconnect_attempts = attempt
+        item.status = "downloading"  # still active, not a hard failure, while retrying
+        self._on_status_changed(item)
+        self._on_reconnect(item, attempt, self._reconnect_max_attempts)
+        # Interruptible wait: a cancel during the pause must not block shutdown.
+        item._cancel_event.wait(self._reconnect_wait_seconds)
+        return not item._cancel_event.is_set()
+
     def _run_one(self, item: DownloadItem) -> None:
         def progress(written: int, total: int) -> None:
             item.bytes_downloaded = written
             item.total_bytes = total
             self._on_status_changed(item)
 
-        try:
-            result = _fetch_chunked(
-                item.url,
-                item.destination,
-                pause_event=item._pause_event,
-                cancel_event=item._cancel_event,
-                on_progress=progress,
-            )
-        except DownloadError as error:
-            result = "failed"
-            item.error_message = str(error)
-            _log.warning("Podcast download failed for %s: %s", item.item_id, error)
+        result: DownloadStatus = "failed"
+        while True:
+            try:
+                result = _fetch_chunked(
+                    item.url,
+                    item.destination,
+                    pause_event=item._pause_event,
+                    cancel_event=item._cancel_event,
+                    on_progress=progress,
+                )
+                break
+            except DownloadError as error:
+                item.error_message = str(error)
+                _log.warning("Podcast download failed for %s: %s", item.item_id, error)
+                if not self._maybe_reconnect(item):
+                    result = "cancelled" if item._cancel_event.is_set() else "failed"
+                    break
+                # Partial bytes stay on disk; the retried _fetch_chunked call
+                # resumes via Range, same as a manual Resume would.
+                continue
         item.status = result
         item.finished_at = _now_iso()
         with self._lock:

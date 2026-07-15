@@ -277,3 +277,109 @@ def test_active_count_reflects_downloading_items(tmp_path: Path) -> None:
         assert queue.active_count() == 0
     finally:
         queue.shutdown()
+
+
+# -- reconnect on a dropped connection ---------------------------------------
+
+
+def test_reconnect_retries_and_completes_after_a_dropped_connection(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    calls = {"n": 0}
+
+    def flaky_urlopen(*_a: object, **_k: object) -> _FakeResponse:
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise download_queue.urllib.error.URLError("connection dropped")
+        return _FakeResponse([b"hello world"], content_length=11)
+
+    monkeypatch.setattr(download_queue.urllib.request, "urlopen", flaky_urlopen)
+    completed = threading.Event()
+    reconnects: list[tuple[int, int]] = []
+    queue = PodcastDownloadQueue(
+        on_completed=lambda _item: completed.set(),
+        on_reconnect=lambda _item, attempt, max_attempts: reconnects.append((
+            attempt,
+            max_attempts,
+        )),
+        reconnect_wait_seconds=0.05,
+    )
+    try:
+        dest = tmp_path / "ep.mp3"
+        queue.enqueue(
+            "item1", show_id="s1", episode_guid="g1", url="https://x/e.mp3", destination=dest
+        )
+        assert completed.wait(timeout=5)
+        item = queue.get("item1")
+        assert item is not None
+        assert item.status == "completed"
+        assert item.reconnect_attempts == 1
+        assert reconnects == [(1, 5)]
+        assert calls["n"] == 2
+    finally:
+        queue.shutdown()
+
+
+def test_reconnect_disabled_fails_immediately_on_a_dropped_connection(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def always_fails(*_a: object, **_k: object) -> _FakeResponse:
+        raise download_queue.urllib.error.URLError("connection dropped")
+
+    monkeypatch.setattr(download_queue.urllib.request, "urlopen", always_fails)
+    failed = threading.Event()
+    queue = PodcastDownloadQueue(
+        on_status_changed=lambda item: failed.set() if item.status == "failed" else None,
+        reconnect_enabled=False,
+        reconnect_wait_seconds=0.05,
+    )
+    try:
+        dest = tmp_path / "ep.mp3"
+        queue.enqueue(
+            "item1", show_id="s1", episode_guid="g1", url="https://x/e.mp3", destination=dest
+        )
+        assert failed.wait(timeout=5)
+        item = queue.get("item1")
+        assert item is not None
+        assert item.status == "failed"
+        assert item.reconnect_attempts == 0
+    finally:
+        queue.shutdown()
+
+
+def test_reconnect_gives_up_after_max_attempts(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def always_fails(*_a: object, **_k: object) -> _FakeResponse:
+        raise download_queue.urllib.error.URLError("connection dropped")
+
+    monkeypatch.setattr(download_queue.urllib.request, "urlopen", always_fails)
+    failed = threading.Event()
+    queue = PodcastDownloadQueue(
+        on_status_changed=lambda item: failed.set() if item.status == "failed" else None,
+        reconnect_max_attempts=2,
+        reconnect_wait_seconds=0.02,
+    )
+    try:
+        dest = tmp_path / "ep.mp3"
+        queue.enqueue(
+            "item1", show_id="s1", episode_guid="g1", url="https://x/e.mp3", destination=dest
+        )
+        assert failed.wait(timeout=5)
+        item = queue.get("item1")
+        assert item is not None
+        assert item.status == "failed"
+        assert item.reconnect_attempts == 2
+    finally:
+        queue.shutdown()
+
+
+def test_set_reconnect_settings_updates_live() -> None:
+    queue = PodcastDownloadQueue(reconnect_enabled=True, reconnect_max_attempts=5)
+    try:
+        queue.set_reconnect_settings(enabled=False, max_attempts=1, wait_seconds=2.0)
+        assert queue._reconnect_enabled is False
+        assert queue._reconnect_max_attempts == 1
+        assert queue._reconnect_wait_seconds == 2.0
+    finally:
+        queue.shutdown()

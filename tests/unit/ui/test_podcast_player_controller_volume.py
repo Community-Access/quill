@@ -95,3 +95,23 @@ def test_set_volume_boost_clamps_to_valid_range() -> None:
     assert fake.volume_calls[-1] == 100  # 50 * 3.0 clamped to 100
     controller.set_volume_boost(0.1)  # below the 0.5 floor
     assert fake.volume_calls[-1] == 25  # 50 * 0.5
+
+
+def test_toggle_mute_silences_then_restores_the_level() -> None:
+    controller, fake = _make_controller()
+    controller.set_volume(70)
+    controller.toggle_mute()
+    assert controller.muted is True
+    assert fake.volume_calls[-1] == 0
+    controller.toggle_mute()
+    assert controller.muted is False
+    assert fake.volume_calls[-1] == 70
+
+
+def test_set_volume_while_muted_clears_mute() -> None:
+    controller, fake = _make_controller()
+    controller.set_volume(70)
+    controller.toggle_mute()
+    controller.set_volume(30)
+    assert controller.muted is False
+    assert fake.volume_calls[-1] == 30

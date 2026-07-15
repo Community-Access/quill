@@ -71,6 +71,11 @@ class PodcastSettings:
     #: ffmpeg passes, applied to a finished download. Off by default.
     auto_trim_silence: bool = False
     normalize_loudness: bool = False
+    #: If the connection drops mid-download: retry automatically instead of
+    #: landing in a hard "failed" state (mirrors RadioRecordingSettings).
+    reconnect_enabled: bool = True
+    reconnect_max_attempts: int = 5
+    reconnect_wait_seconds: int = 10
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -83,6 +88,9 @@ class PodcastSettings:
             "always_sync_full_catalog": self.always_sync_full_catalog,
             "auto_trim_silence": self.auto_trim_silence,
             "normalize_loudness": self.normalize_loudness,
+            "reconnect_enabled": self.reconnect_enabled,
+            "reconnect_max_attempts": self.reconnect_max_attempts,
+            "reconnect_wait_seconds": self.reconnect_wait_seconds,
         }
 
     @classmethod
@@ -100,6 +108,9 @@ class PodcastSettings:
             always_sync_full_catalog=bool(data.get("always_sync_full_catalog", False)),
             auto_trim_silence=bool(data.get("auto_trim_silence", False)),
             normalize_loudness=bool(data.get("normalize_loudness", False)),
+            reconnect_enabled=bool(data.get("reconnect_enabled", True)),
+            reconnect_max_attempts=max(0, _coerce_int(data.get("reconnect_max_attempts"), 5)),
+            reconnect_wait_seconds=max(1, _coerce_int(data.get("reconnect_wait_seconds"), 10)),
         )
 
 
