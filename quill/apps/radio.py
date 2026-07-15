@@ -502,7 +502,9 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         bug_id = wx.NewIdRef()
         help_menu.Append(bug_id, "Report a &Bug...")
         self.frame.Bind(
-            wx.EVT_MENU, lambda _e: self.report_app_bug(source_app="Quill Radio"), id=bug_id
+            wx.EVT_MENU,
+            lambda _e: self.report_app_bug(source_app="Quill Radio", app_version=_VERSION),
+            id=bug_id,
         )
         ffmpeg_id = wx.NewIdRef()
         help_menu.Append(ffmpeg_id, "&Get FFmpeg...")
