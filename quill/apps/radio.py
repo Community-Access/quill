@@ -192,13 +192,16 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
 
         record_menu = wx.Menu()
         record_id, schedule_id, settings_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
+        recordings_id = wx.NewIdRef()
         record_menu.Append(record_id, "&Record Now / Stop Recording")
         record_menu.Append(schedule_id, "&Schedule Recording...")
+        record_menu.Append(recordings_id, "Recordin&gs...")
         record_menu.Append(settings_id, "Recording &Settings...")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_record_toggle(), id=record_id)
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._radio_open_schedule_recording(), id=schedule_id
         )
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_radio_recordings(), id=recordings_id)
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._radio_open_recording_settings(), id=settings_id
         )
@@ -250,6 +253,7 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             sleep_id,
             record_id,
             schedule_id,
+            recordings_id,
             settings_id,
             palette_id,
             redeem_id,

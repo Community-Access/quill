@@ -96,6 +96,41 @@ class RecordingSettingsDialog:
 
         root.Add(grid, 0, wx.EXPAND | wx.ALL, 10)
 
+        reconnect_box = wx.StaticBoxSizer(wx.VERTICAL, self.dialog, "If the connection drops")
+        self._reconnect_check = wx.CheckBox(
+            self.dialog, label="&Reconnect and keep recording automatically"
+        )
+        self._reconnect_check.SetName(
+            "When the internet hiccups mid-recording, ride it out and resume "
+            "into a continuation part file instead of losing the rest of the show"
+        )
+        self._reconnect_check.SetValue(settings.reconnect_enabled)
+        reconnect_box.Add(self._reconnect_check, 0, wx.ALL, 6)
+        reconnect_grid = wx.FlexGridSizer(cols=2, gap=(6, 8))
+        reconnect_grid.Add(
+            wx.StaticText(self.dialog, label="Reconnect &attempts:"), 0, wx.ALIGN_CENTER_VERTICAL
+        )
+        self._reconnect_attempts_ctrl = wx.SpinCtrl(self.dialog, min=1, max=99)
+        self._reconnect_attempts_ctrl.SetValue(max(1, settings.reconnect_max_attempts))
+        self._reconnect_attempts_ctrl.SetName(
+            "How many times to try reconnecting before giving up on the recording"
+        )
+        reconnect_grid.Add(self._reconnect_attempts_ctrl, 0)
+        reconnect_grid.Add(
+            wx.StaticText(self.dialog, label="Seconds &between attempts:"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL,
+        )
+        self._reconnect_wait_ctrl = wx.SpinCtrl(self.dialog, min=1, max=600)
+        self._reconnect_wait_ctrl.SetValue(max(1, settings.reconnect_wait_seconds))
+        self._reconnect_wait_ctrl.SetName(
+            "How long to wait before each reconnect attempt; also how long "
+            "ffmpeg itself rides out short gaps"
+        )
+        reconnect_grid.Add(self._reconnect_wait_ctrl, 0)
+        reconnect_box.Add(reconnect_grid, 0, wx.LEFT | wx.BOTTOM, 6)
+        root.Add(reconnect_box, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+
         hint = wx.StaticText(
             self.dialog,
             label=(
@@ -161,5 +196,8 @@ class RecordingSettingsDialog:
             destination_root=self._destination_ctrl.GetValue().strip(),
             filename_pattern=pattern,
             max_duration_minutes=self._max_duration_ctrl.GetValue(),
+            reconnect_enabled=self._reconnect_check.GetValue(),
+            reconnect_max_attempts=self._reconnect_attempts_ctrl.GetValue(),
+            reconnect_wait_seconds=self._reconnect_wait_ctrl.GetValue(),
         )
         self.dialog.EndModal(self._wx.ID_OK)

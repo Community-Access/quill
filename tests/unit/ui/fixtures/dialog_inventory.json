@@ -443,6 +443,8 @@
   "quill/ui/radio/link_finder_dialog.py::LinkFinderDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/radio/recording_settings_dialog.py::RecordingSettingsDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/radio/recording_settings_dialog.py::RecordingSettingsDialog._on_browse::wx.DirDialog": "native",
+  "quill/ui/radio/recordings_manager_dialog.py::RecordingsManagerDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/radio/recordings_manager_dialog.py::RecordingsManagerDialog._on_remove::wx.MessageBox": "native",
   "quill/ui/radio/schedule_recording_dialog.py::ScheduleRecordingDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/radio/station_browser_dialog.py::StationBrowserDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/remote_sites_dialog.py::RemoteSitesDialog::subclass:wx.Dialog": "hardened_custom",

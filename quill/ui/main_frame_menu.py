@@ -2324,6 +2324,7 @@ class MenuBuilderMixin:
                 id_radio_record = wx.NewIdRef()
                 id_radio_schedule = wx.NewIdRef()
                 id_radio_rec_settings = wx.NewIdRef()
+                id_radio_recordings = wx.NewIdRef()
                 media_menu.Append(
                     id_radio_record,
                     self._menu_label(_("&Record Now / Stop Recording"), "radio.record_toggle"),
@@ -2335,6 +2336,10 @@ class MenuBuilderMixin:
                 media_menu.Append(
                     id_radio_rec_settings,
                     self._menu_label(_("Recording &Settings..."), "radio.recording_settings"),
+                )
+                media_menu.Append(
+                    id_radio_recordings,
+                    self._menu_label(_("Recordin&gs..."), "radio.recordings"),
                 )
                 self.frame.Bind(
                     wx.EVT_MENU, lambda _e: self.radio_record_toggle(), id=id_radio_record
@@ -2348,6 +2353,11 @@ class MenuBuilderMixin:
                     wx.EVT_MENU,
                     lambda _e: self._radio_open_recording_settings(),
                     id=id_radio_rec_settings,
+                )
+                self.frame.Bind(
+                    wx.EVT_MENU,
+                    lambda _e: self.open_radio_recordings(),
+                    id=id_radio_recordings,
                 )
             self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_internet_radio(), id=id_radio_browse)
             self.frame.Bind(

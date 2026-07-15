@@ -62,6 +62,13 @@ class RecordingSettings:
     destination_root: str = ""  # "" = default (<data_dir>/radio_recordings)
     filename_pattern: str = _DEFAULT_FILENAME_PATTERN  # tokens: {station} {date} {time}
     max_duration_minutes: int = _DEFAULT_MAX_DURATION_MINUTES  # safety cap on every recording
+    # Auto-reconnect: when the internet hiccups mid-recording, ffmpeg first
+    # rides out short gaps itself (reconnect flags below); if the process
+    # still dies, the recorder waits and starts a continuation file, up to
+    # this many attempts. All three knobs live in Recording Settings.
+    reconnect_enabled: bool = True
+    reconnect_max_attempts: int = 5
+    reconnect_wait_seconds: int = 10
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -70,6 +77,9 @@ class RecordingSettings:
             "destination_root": self.destination_root,
             "filename_pattern": self.filename_pattern,
             "max_duration_minutes": self.max_duration_minutes,
+            "reconnect_enabled": self.reconnect_enabled,
+            "reconnect_max_attempts": self.reconnect_max_attempts,
+            "reconnect_wait_seconds": self.reconnect_wait_seconds,
         }
 
     @classmethod
@@ -83,6 +93,9 @@ class RecordingSettings:
             max_duration_minutes=_coerce_int(
                 data.get("max_duration_minutes"), _DEFAULT_MAX_DURATION_MINUTES
             ),
+            reconnect_enabled=bool(data.get("reconnect_enabled", True)),
+            reconnect_max_attempts=max(0, _coerce_int(data.get("reconnect_max_attempts"), 5)),
+            reconnect_wait_seconds=max(1, _coerce_int(data.get("reconnect_wait_seconds"), 10)),
         )
 
 
@@ -127,25 +140,35 @@ def build_record_command(
     format: str,
     bitrate_kbps: int,
     duration_seconds: int,
+    reconnect_delay_max: int = 0,
 ) -> list[str]:
     """Build the ffmpeg argv that records *stream_url* to *out_path*.
 
     Pure and unit-tested. ``-t`` caps every recording at ``duration_seconds``
     even if :meth:`RadioRecorder.stop` is never called, so a forgotten
-    recording cannot grow unbounded.
+    recording cannot grow unbounded. A positive ``reconnect_delay_max`` turns
+    on ffmpeg's own HTTP reconnect handling (first line of defense against a
+    dropped connection; the recorder's process-level retry is the second),
+    valid only for http(s) inputs.
     """
     codec = _CODECS.get(format, "libmp3lame")
-    args = [
-        ffmpeg,
-        "-hide_banner",
-        "-loglevel",
-        "error",
+    args = [ffmpeg, "-hide_banner", "-loglevel", "error"]
+    if reconnect_delay_max > 0 and stream_url.lower().startswith(("http://", "https://")):
+        args.extend([
+            "-reconnect",
+            "1",
+            "-reconnect_streamed",
+            "1",
+            "-reconnect_delay_max",
+            str(reconnect_delay_max),
+        ])
+    args.extend([
         "-i",
         stream_url,
         "-vn",
         "-c:a",
         codec,
-    ]
+    ])
     if format in ("mp3", "ogg"):
         args.extend(["-b:a", f"{max(32, bitrate_kbps)}k"])
     args.extend(["-t", str(max(1, duration_seconds)), "-y", str(out_path)])
@@ -163,13 +186,25 @@ class RadioRecorder:
     """
 
     def __init__(
-        self, *, on_state_changed: Callable[[bool, Path | None], None] | None = None
+        self,
+        *,
+        on_state_changed: Callable[[bool, Path | None], None] | None = None,
+        on_reconnect: Callable[[int, int], None] | None = None,
     ) -> None:
         self._on_state_changed = on_state_changed or (lambda _recording, _dest: None)
+        #: (attempt, max_attempts) -- fired on a background thread each time a
+        #: dropped recording is about to be resumed into a continuation file.
+        self._on_reconnect = on_reconnect or (lambda _attempt, _maximum: None)
         self._lock = threading.Lock()
         self._process: subprocess.Popen[bytes] | None = None
         self._destination: Path | None = None
         self._station_name: str = ""
+        self._user_stopped = False
+        self._reconnect_attempt = 0
+        #: (station_name, stream_url, settings, duration_minutes) of the
+        #: active recording, kept so a reconnect can restart with the same
+        #: shape into a continuation file.
+        self._active_params: tuple[str, str, RecordingSettings, int] | None = None
 
     @property
     def is_recording(self) -> bool:
@@ -193,6 +228,7 @@ class RadioRecorder:
         stream_url: str,
         settings: RecordingSettings,
         duration_minutes: int | None = None,
+        _continuation_part: int = 0,
     ) -> Path:
         """Start recording *stream_url*; raises :class:`RecordingError` if
         ffmpeg is unavailable or a recording is already in progress."""
@@ -209,6 +245,8 @@ class RadioRecorder:
             filename = build_filename(
                 settings.filename_pattern, station=station_name, when=datetime.now()
             )
+            if _continuation_part > 0:
+                filename = f"{filename} (part {_continuation_part + 1})"
             destination = dest_root / f"{filename}.{settings.format}"
             minutes = (
                 duration_minutes if duration_minutes is not None else settings.max_duration_minutes
@@ -220,6 +258,9 @@ class RadioRecorder:
                 format=settings.format,
                 bitrate_kbps=settings.bitrate_kbps,
                 duration_seconds=max(60, minutes * 60),
+                reconnect_delay_max=(
+                    settings.reconnect_wait_seconds if settings.reconnect_enabled else 0
+                ),
             )
             extra_kwargs: dict = {}
             if os.name == "nt":
@@ -238,6 +279,10 @@ class RadioRecorder:
             self._process = process
             self._destination = destination
             self._station_name = station_name
+            self._user_stopped = False
+            if _continuation_part == 0:
+                self._reconnect_attempt = 0
+            self._active_params = (station_name, stream_url, settings, minutes)
         self._on_state_changed(True, destination)
         threading.Thread(
             target=self._monitor, args=(process,), daemon=True, name="quill-radio-record-monitor"
@@ -249,18 +294,64 @@ class RadioRecorder:
         with self._lock:
             if self._process is process:
                 dest = self._destination
+                params = self._active_params
+                failed = bool(process.returncode) and not self._user_stopped
                 self._process = None
                 self._destination = None
                 self._station_name = ""
             else:
-                dest = None
+                dest, params, failed = None, None, False
         if dest is not None:
             self._on_state_changed(False, dest)
+        if failed and params is not None:
+            self._maybe_reconnect(params)
+
+    def _maybe_reconnect(self, params: tuple[str, str, RecordingSettings, int]) -> None:
+        """A recording died without being asked to stop: wait, then resume
+        into a continuation file, up to the configured attempt budget."""
+        station_name, stream_url, settings, minutes = params
+        if not settings.reconnect_enabled:
+            return
+        with self._lock:
+            self._reconnect_attempt += 1
+            attempt = self._reconnect_attempt
+        if attempt > max(0, settings.reconnect_max_attempts):
+            logger.warning(
+                "Radio recording of %s gave up after %d reconnect attempt(s).",
+                station_name,
+                attempt - 1,
+            )
+            return
+        self._on_reconnect(attempt, settings.reconnect_max_attempts)
+        logger.info(
+            "Radio recording of %s dropped; reconnect attempt %d/%d in %ds.",
+            station_name,
+            attempt,
+            settings.reconnect_max_attempts,
+            settings.reconnect_wait_seconds,
+        )
+        stop_signal = threading.Event()
+        stop_signal.wait(max(1, settings.reconnect_wait_seconds))
+        with self._lock:
+            if self._user_stopped or (self._process is not None and self._process.poll() is None):
+                return
+        try:
+            self.start(
+                station_name=station_name,
+                stream_url=stream_url,
+                settings=settings,
+                duration_minutes=minutes,
+                _continuation_part=attempt,
+            )
+        except RecordingError as error:
+            logger.warning("Reconnect attempt %d could not start: %s", attempt, error)
+            self._maybe_reconnect(params)
 
     def stop(self) -> None:
         """Ask the current recording to finish cleanly; a no-op if idle."""
         with self._lock:
             process = self._process
+            self._user_stopped = True
         if process is None or process.poll() is not None:
             return
         try:

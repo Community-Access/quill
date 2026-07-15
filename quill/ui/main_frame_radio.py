@@ -58,7 +58,10 @@ class RadioMixin:
             before_play=self._stop_podcast_before_radio,
         )
         self._radio_recording_settings = load_recording_settings(app_data_dir())
-        self._radio_recorder = RadioRecorder(on_state_changed=self._on_radio_recording_changed)
+        self._radio_recorder = RadioRecorder(
+            on_state_changed=self._on_radio_recording_changed,
+            on_reconnect=self._on_radio_recording_reconnect,
+        )
         self._radio_scheduler = RecordingScheduler(
             data_dir=app_data_dir(),
             recorder=self._radio_recorder,
@@ -94,6 +97,13 @@ class RadioMixin:
         self._refresh_radio_tray_tooltip()
         if not is_recording and destination is not None:
             self._announce(f"Recording saved: {destination.name}")
+
+    def _on_radio_recording_reconnect(self, attempt: int, maximum: int) -> None:
+        self._wx.CallAfter(
+            self._announce,
+            f"Recording lost its stream; reconnecting, attempt {attempt} of {maximum}. "
+            "The recording continues in a new part file.",
+        )
 
     def _on_radio_scheduled_recording_fired(self, entry: object, error: str) -> None:
         self._wx.CallAfter(self._apply_radio_scheduled_recording_fired, entry, error)
@@ -364,6 +374,21 @@ class RadioMixin:
         dlg.show()
         self._refresh_statusbar()
 
+    def open_radio_recordings(self) -> None:
+        """Recordings...: made, in-progress (live status), and scheduled."""
+        from quill.ui.radio.recordings_manager_dialog import RecordingsManagerDialog
+
+        dlg = RecordingsManagerDialog(
+            self.frame,
+            recorder=self._radio_recorder,
+            settings=self._radio_recording_settings,
+            scheduler=self._radio_scheduler,
+            controller=self._radio_controller,
+            announce_cb=self._announce,
+        )
+        dlg.show()
+        self._refresh_statusbar()
+
     def open_internet_radio(self) -> None:
         if self._safe_mode:
             self._show_message_box(
@@ -453,6 +478,11 @@ class RadioMixin:
                 "radio.recording_settings",
                 "Internet Radio: Recording Settings...",
                 self._radio_open_recording_settings,
+            ),
+            (
+                "radio.recordings",
+                "Internet Radio: Recordings...",
+                self.open_radio_recordings,
             ),
         ):
             self.commands.try_register(
