@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Quill Radio - prd</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Quill Radio - prd</h1>
+</header>
+<h1 id="quill-radio----product-requirements">Quill Radio -- Product
+Requirements</h1>
+<p>Version 1.0</p>
+<h2 id="1-product-statement">1. Product statement</h2>
+<p>Quill Radio is QUILL's internet radio, shipped as its own small
+Windows app for people who want the radio on without loading a full
+writing environment. It is screen-reader-first, keyboard-complete, and
+deliberately small -- and by 1.0 it is a complete radio product:
+organization, recording resilience, timers, and appliance-grade
+startup.</p>
+<h2 id="2-architecture-requirement-not-a-fork">2. Architecture
+requirement: not a fork</h2>
+<ul>
+<li>R-1. All feature code lives in the upstream <code>quill</code>
+package (<code>quill.apps.radio</code>, <code>RadioMixin</code>,
+<code>AppShellFrame</code>, <code>quill/core/radio/*</code>,
+<code>quill/ui/radio/*</code>). This repository contains only the
+product wrapper (entry point, icon, installer, docs). Nothing here
+reimplements a feature.</li>
+<li>R-2. The app stays in sync with QUILL by construction: the wrapper
+depends on <code>quill</code> from the upstream repository, and the
+one-file build pulls the entire package. Divergence is only permitted
+for content that exists because QUILL is not in the picture.</li>
+<li>R-3. Data is shared, not copied: favorites (folders, custom names,
+per-station volumes), recently-played history, recordings, schedules,
+the wake-up timer, and settings live in the same
+<code>%APPDATA%\Quill</code> store QUILL uses.</li>
+<li>R-4. Keystrokes are the app's own (menu accelerators), kept separate
+from QUILL's keymap so nothing collides with editor shortcuts.</li>
+</ul>
+<h2 id="3-scope-all-reused-from-upstream-all-shipped-in-10">3. Scope
+(all reused from upstream; all shipped in 1.0)</h2>
+<p><strong>Listening</strong></p>
+<ul>
+<li>Station browser over the RadioBrowser directory (search, tag/country
+filters, test-play, favorite); bundled ACB Media directory; custom
+stream URLs; website stream finder with a Test/Stop Test toggle.</li>
+<li>One transport control (Play becomes Stop), mute, volume with
+per-station memory, single-player rule (starting any stream silences
+sibling media, radio or podcast, in every app).</li>
+<li>Recently Played (capped, de-duplicated), Play Last Station, optional
+resume-on-launch.</li>
+<li>What's Playing: ICY track titles on demand and optional
+announce-on-change (off by default).</li>
+<li>Stream fallback: a directory station whose stream errors is
+re-fetched by uuid and retried once, self-healing the saved
+favorite.</li>
+</ul>
+<p><strong>Organization</strong></p>
+<ul>
+<li>Favorites Manager: nested path-based folders, live rich search, Move
+Up/Down, Mark-and-Move (Move Above/Below adopting the destination
+folder), station rename (custom display names used everywhere), folder
+rename carrying descendants, folder delete that returns stations to the
+top level.</li>
+</ul>
+<p><strong>Recording</strong></p>
+<ul>
+<li>Record now; Record Station (a different station than the one
+playing, for N minutes); scheduled recordings (once/daily/weekly).</li>
+<li>Recordings list: live status (Recording with growing size / Recorded
+/ Scheduled), Play, Stop Recording, Open in Folder, Remove, 2-second
+auto-refresh.</li>
+<li>Auto-reconnect: ffmpeg HTTP reconnect flags plus process-level retry
+into numbered part files; enabled/attempts/spacing configurable; user
+stops and duration-cap finishes never retry.</li>
+<li>Settings: format (mp3/ogg/flac/wav), bitrate, destination, filename
+pattern with tokens, max-duration safety cap.</li>
+</ul>
+<p><strong>Timers</strong></p>
+<ul>
+<li>Sleep timer (shared radio/podcasts fade-and-restore).</li>
+<li>Wake-up timer: once or daily at HH:MM; fires only within a 5-minute
+window (never retro-fires); "once" disables itself; requires the app
+running (tray counts); honest about that in the UI.</li>
+</ul>
+<p><strong>Shell</strong></p>
+<ul>
+<li>System tray with full controls and the app's own icon; Send to Tray
+(Ctrl+W) and Exit; hardware media keys (play/pause, stop) system-wide
+while running, never stolen from an app that already owns them, released
+on exit.</li>
+<li>Command Palette scoped to the app's registry; Redeem Unlock Code
+(shared store); in-app update check that downloads the installer with
+spoken progress and offers Install now; About.</li>
+<li>Unlock-gated Audio Description Project menu when
+<code>future.adp_assistant</code> is unlocked.</li>
+</ul>
+<p>Out of scope by decision: QUILL's editor, AI, speech transcription,
+braille, and TTS stacks (not installed); a custom update engine beyond
+download-and-run.</p>
+<h2 id="4-accessibility-requirements">4. Accessibility requirements</h2>
+<ul>
+<li>A-1. Every interactive element has an accessible name; upstream
+inventory gates audit the shared surfaces.</li>
+<li>A-2. Focus lands on the favorites list at launch; focus dead zones
+are defects.</li>
+<li>A-3. All dialogs route through the shared dialog contract (modal
+ids, focus placement, region announcements) and are registered in the
+dialog inventory.</li>
+<li>A-4. Every action announces its outcome; silent state changes are
+defects. Track-title announcements are opt-in so ambient chatter never
+surprises anyone.</li>
+<li>A-5. Full keyboard operation including manager reordering and the
+tray menu; Delete/F2/Enter conventions consistent across lists.</li>
+</ul>
+<h2 id="5-packaging-requirements">5. Packaging requirements</h2>
+<ul>
+<li>P-1. PyInstaller one-file exe with the app's own icon; Inno Setup
+installer with its own AppId installing to {autopf}\Quill Radio,
+per-user by default.</li>
+<li>P-2. Everything bundled, nothing downloaded at install or runtime:
+the exe carries the whole quill package and data; ffmpeg (essentials
+build) installs to {app}\tools\ffmpeg, found via the wrapper exporting
+QUILL_APP_ROOT.</li>
+<li>P-3. Uninstall never deletes <code>%APPDATA%\Quill</code> -- QUILL
+or QUILL Cast may still use it.</li>
+<li>P-4. Release artifacts:
+<code>Quill-Radio-Setup-&lt;version&gt;.exe</code>, tagged
+<code>v&lt;version&gt;</code>, which Help &gt; Check for Updates
+compares against and downloads.</li>
+</ul>
+<h2 id="6-network-requirements">6. Network requirements</h2>
+<ul>
+<li>N-1. Exactly four outbound surfaces, each inventoried in QUILL's
+network-egress audit: RadioBrowser
+(search/tags/countries/click-votes/byuuid fallback), the user-typed page
+for Find Streams, the playing stream itself for ICY titles, and this
+repository's GitHub releases for the update check. No telemetry of any
+kind.</li>
+<li>N-2. Safe Mode disables the radio's network surfaces along with the
+feature.</li>
+</ul>
+<h2 id="7-non-goals">7. Non-goals</h2>
+<p>macOS/Linux standalone builds (upstream QUILL covers macOS; the tray
+pattern does not exist there), auto-updating in place, telemetry.</p>
+</body>
+</html>

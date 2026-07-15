@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Quill Radio - userguide</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Quill Radio - userguide</h1>
+</header>
+<h1 id="quill-radio-user-guide">Quill Radio User Guide</h1>
+<p>Version 1.0</p>
+<p>Quill Radio is internet radio the way a screen reader user would
+design it: a small window whose favorites tree has focus the instant it
+opens, menus that say everything they do, spoken feedback for every
+action, and a tray icon so the music keeps playing while you work. It
+runs the exact same radio code as QUILL itself and shares its data, so
+nothing you set up here is ever stranded.</p>
+<h2 id="installing">Installing</h2>
+<p>Two flavors, both fully bundled (ffmpeg included, nothing ever
+downloads):</p>
+<ul>
+<li><strong>The installer</strong>
+(<code>Quill-Radio-Setup-1.0.0.exe</code>) -- its own folder, Start Menu
+entry, uninstaller. Your data lives in the shared Quill store in your
+Windows profile.</li>
+<li><strong>The portable zip</strong>
+(<code>Quill-Radio-Portable-1.0.0.zip</code>) -- extract anywhere, even
+a USB stick, and run <code>QuillRadio\QuillRadio.exe</code>. Its
+<code>data</code> folder keeps your favorites, history, and settings
+inside the app folder, so the whole radio travels with you.</li>
+</ul>
+<p>Windows SmartScreen may warn on first run because this release is not
+code-signed; choose "More info" then "Run anyway". The build is exactly
+what this repository's source produces.</p>
+<h2 id="getting-started">Getting started</h2>
+<p>Launch Quill Radio from the Start Menu (or the portable folder's
+<code>QuillRadio.exe</code>). The window opens with keyboard focus on
+your <strong>Favorite stations</strong> tree.</p>
+<ul>
+<li>No favorites yet? Press Alt+S for the Station menu, then
+<strong>Browse Stations...</strong> to search thousands of stations by
+name, genre, country, or language, listen before you commit, and add the
+keepers to your favorites. The <strong>ACB Media</strong> submenu is
+also right there -- the whole ACB stream directory, playable without any
+setup.</li>
+<li>With favorites: arrow to a station and press <strong>Enter</strong>.
+That is the whole loop.</li>
+<li>Want the radio on the moment the app opens? Check <strong>Station
+&gt; Resume Last Station on Launch</strong> once, and Quill Radio
+becomes an appliance: launch it, and your station is already
+playing.</li>
+</ul>
+<p>Everything Quill Radio announces goes through the same announcement
+engine QUILL uses, so it speaks through your screen reader (JAWS, NVDA,
+Narrator) without stealing focus.</p>
+<h2 id="the-main-window">The main window</h2>
+<p>Tab order: the now-playing line, the favorites tree, then four
+buttons.</p>
+<ul>
+<li><strong>Now playing</strong> (read-only text): what is on right now;
+also mirrored in the status bar and the Playback menu.</li>
+<li><strong>Favorite stations</strong> (tree): the same nested folder
+structure you build in the Favorites Manager, right on the main page.
+Enter plays a station, Delete removes it (with confirmation), F2 renames
+a station or folder, and Shift+F10 opens the full context menu --
+Play/Stop, Rename, Move to Folder, Remove, New Folder, and Manage
+Favorites. Your custom names are used everywhere.</li>
+<li>Buttons: <strong>Play</strong> (it becomes <strong>Stop</strong>
+while connecting or playing -- one transport control, never a dead
+button), <strong>Add to Favorites</strong> (it becomes <strong>Remove
+from Favorites</strong> when the playing station is already saved --
+perfect for keeping something you found in ACB Media or Recently
+Played), <strong>Record</strong>, <strong>Browse
+Stations...</strong></li>
+</ul>
+<h2 id="menus">Menus</h2>
+<h3 id="station-alts">Station (Alt+S)</h3>
+<ul>
+<li><strong>Browse Stations...</strong> -- the full station browser:
+search RadioBrowser's live directory, filter by tag or country,
+test-play, favorite.</li>
+<li><strong>Add Custom Station...</strong> -- paste any stream URL and
+name it yourself.</li>
+<li><strong>Find Streams from a Website...</strong> -- give it a website
+address; it scans that one page for stream links, with a Test button
+that toggles to Stop Test while a candidate plays.</li>
+<li><strong>Manage Favorites...</strong> -- the favorites, made
+organizable. See "The Favorites Manager" below.</li>
+<li><strong>New Folder...</strong> (Ctrl+Shift+E) -- create a folder
+right where you want it: pick the location (top level or inside any
+existing folder), then name it. The folder exists immediately, ready for
+Move to Folder.</li>
+<li><strong>Play Last Station</strong> (Ctrl+L) -- resume whatever you
+last had on, one keystroke, no navigation.</li>
+<li><strong>Recently Played</strong> (submenu) -- your last fifteen
+stations, newest first, playable inline.</li>
+<li><strong>Favorite Stations</strong> (submenu) -- every favorite,
+nested by your folders, playable inline.</li>
+<li><strong>ACB Media</strong> (submenu) -- ACB's whole stream
+directory, playable inline.</li>
+<li><strong>Resume Last Station on Launch</strong> (check item) -- the
+appliance switch.</li>
+<li><strong>Send to Tray</strong> (Ctrl+W) -- hide the window; playback
+continues from the notification area.</li>
+<li><strong>Exit</strong> -- quit Quill Radio.</li>
+</ul>
+<h3 id="playback-altp">Playback (Alt+P)</h3>
+<ul>
+<li>A live (disabled) now-playing line at the top, so the menu itself
+tells you what is on.</li>
+<li><strong>Play / Stop</strong> (Ctrl+P) -- one transport item that
+reads Play when idle and Stop while connecting or playing, exactly like
+the panel button.</li>
+<li><strong>Mute/Unmute</strong> (Ctrl+M), <strong>Volume Up</strong>
+(Ctrl+Up), <strong>Volume Down</strong> (Ctrl+Down). Each favorite
+remembers the volume you set while it plays and gets it back the next
+time it starts -- stations are mastered wildly differently, and you
+should only have to fix that once per station.</li>
+<li><strong>What's Playing?</strong> (Ctrl+T) -- speaks the current
+track or show title straight from the stream's own metadata.</li>
+<li><strong>Announce Track Titles</strong> (check item) -- when on,
+title changes are announced as they happen. Off by default.</li>
+<li><strong>Sleep Timer...</strong> -- fade out and stop after a set
+time, restoring your volume.</li>
+<li><strong>Wake-Up Timer...</strong> -- the sleep timer's twin: pick a
+favorite, a time, once or every day, and the station starts playing by
+itself. Quill Radio must be running (the tray counts).</li>
+</ul>
+<h3 id="record-altr">Record (Alt+R)</h3>
+<ul>
+<li><strong>Record Now / Stop Recording</strong> -- capture the station
+you are listening to.</li>
+<li><strong>Record Station...</strong> -- record a <em>different</em>
+station for a set number of minutes while you listen to something else
+(or to nothing). The recorder is its own process; it never needed the
+player.</li>
+<li><strong>Schedule Recording...</strong> -- record a show later, once,
+daily, or weekly, even from the tray. Pick a favorite from the list and
+its name and stream fill in for you (both stay editable for one-off
+streams); the Remove button names the schedule it will delete and dims
+when none is selected, and the Delete key and a context menu work on the
+list.</li>
+<li><strong>Recordings...</strong> -- everything you have recorded,
+live. See "The Recordings list" below.</li>
+<li><strong>Recording Settings...</strong> -- format (MP3, OGG, FLAC,
+WAV), bitrate, destination folder, filename pattern, a maximum-length
+safety cap, and the <strong>If the connection drops</strong> section:
+reconnect on/off, how many attempts, and how many seconds between
+them.</li>
+</ul>
+<h3 id="help-alth">Help (Alt+H)</h3>
+<ul>
+<li><strong>Command Palette...</strong> (Ctrl+Shift+P) -- every Quill
+Radio command in one searchable list.</li>
+<li><strong>Redeem Unlock Code...</strong> -- enter a signed code for a
+pre-release capability. Verified entirely on your machine; nothing is
+transmitted; one code counts for QUILL, Quill Radio, and QUILL Cast
+together.</li>
+<li><strong>Check for Updates...</strong> -- compares your version with
+the newest release, downloads the right artifact for your flavor
+directly (the installer for an installed copy, the portable zip for a
+portable one) with spoken progress, then offers Install now or Open
+folder.</li>
+<li><strong>Get FFmpeg...</strong> -- a safety net: FFmpeg ships inside
+Quill Radio, but if it ever goes missing this downloads the official
+build so recording works again.</li>
+<li><strong>Report a Bug...</strong> -- files an issue directly from the
+app (no GitHub account needed), stamped "Quill Radio" with this app's
+own version so we know exactly what you were running; falls back to the
+online support form if anything goes wrong.</li>
+<li><strong>About Quill Radio</strong> -- version, sync statement,
+project address.</li>
+</ul>
+<h2 id="the-favorites-manager">The Favorites Manager</h2>
+<p>Station &gt; Manage Favorites... is a full organizer,
+keyboard-first:</p>
+<ul>
+<li><strong>Search favorites</strong> filters live across names
+(including your custom names), countries, languages, tags, and folder
+names; results flatten into one arrow-key list with each station's
+folder spoken in its label.</li>
+<li><strong>Folders of any depth.</strong> Create one with <strong>New
+Folder...</strong> (Ctrl+Shift+E) -- pick its location, name it, and it
+exists immediately, even before a station lives in it. Or just file a
+station under "News/Morning" and the path springs into being. Rename a
+folder (F2) and its subfolders come along; delete one and its stations
+simply step out to the top level -- nothing is ever deleted with a
+folder.</li>
+<li><strong>Reordering.</strong> Move Up / Move Down within a folder;
+for long hops, <strong>Mark for Move</strong>, select the destination,
+then <strong>Move Above</strong> or <strong>Move Below</strong> -- the
+moved station joins the destination's folder.</li>
+<li><strong>Rename</strong> (F2 on a station) gives it your own display
+name everywhere; blank restores the directory's name.</li>
+<li>Enter plays (the Play button reads Stop while that station is on),
+Delete removes (with confirmation), Shift+F10 opens every action on the
+selected item. The main-page tree offers the same actions, so the
+Manager is for the heavy lifting, not a required stop.</li>
+</ul>
+<h2 id="the-recordings-list">The Recordings list</h2>
+<p>Record &gt; Recordings... shows the whole recording life cycle in one
+place, refreshing live:</p>
+<ul>
+<li>The recording being written right now -- status
+<strong>Recording</strong>, its size growing as you watch.</li>
+<li>Every finished file, newest first -- status
+<strong>Recorded</strong>, with size and date.</li>
+<li>Upcoming scheduled recordings -- status <strong>Scheduled</strong>,
+with their times.</li>
+</ul>
+<p>Actions: <strong>Play</strong> (through the app's own player; it
+reads <strong>Stop</strong> while that recording is playing),
+<strong>Stop Recording</strong>, <strong>Open in Folder</strong>,
+<strong>Remove</strong> (Delete key, with confirmation),
+<strong>Refresh</strong>. If the internet hiccups during a recording,
+ffmpeg first rides it out; if the connection truly dies, Quill Radio
+waits and resumes into a numbered part file, announcing each attempt --
+tune or disable this in Recording Settings.</p>
+<h2 id="hardware-media-keys">Hardware media keys</h2>
+<p>If your keyboard has media keys, Play/Pause and Stop control Quill
+Radio system-wide while it runs -- even from the tray. Keys another app
+already owns are left alone.</p>
+<h2 id="the-system-tray">The system tray</h2>
+<p>Closing the window keeps Quill Radio available in the notification
+area with its own icon, announced by name. Right-click (or
+keyboard-invoke) the tray icon for: Show, the live now-playing line, a
+single <strong>Play/Stop</strong> item whose label is always current,
+Mute/Unmute, your <strong>Favorite Stations</strong> (nested by folder)
+and <strong>Recently Played</strong> submenus, Record Now/Stop
+Recording, Schedule Recording, Recording Settings, Browse Stations, and
+Exit. Double-click brings the window back.</p>
+<h2 id="sharing-data-with-quill">Sharing data with QUILL</h2>
+<p>Quill Radio reads and writes the same data store as QUILL and QUILL
+Cast (<code>%APPDATA%\Quill</code>): favorites (folders, custom names,
+and per-station volumes included), history, recordings, schedules,
+timers, and settings. A station you favorite here is a favorite in
+QUILL's radio; the wake-up timer you set in QUILL fires here.
+Uninstalling Quill Radio never deletes that shared data.</p>
+<h2 id="dependencies-honestly-stated">Dependencies, honestly stated</h2>
+<ul>
+<li><strong>Playback</strong> uses the Windows Media Player engine built
+into Windows -- nothing to install.</li>
+<li><strong>Recording</strong> (and the auto-trim/normalize passes) use
+<strong>ffmpeg</strong>, which the installer bundles at
+<code>tools\ffmpeg</code> inside the install folder. Nothing downloads
+at runtime.</li>
+<li><strong>Station search</strong> talks to the community
+<strong>RadioBrowser</strong> directory; <strong>Find Streams</strong>
+fetches only the one page you type; <strong>What's Playing</strong>
+reads metadata from the stream you are already playing. No other network
+calls exist, and every one of them is inventoried in QUILL's
+network-egress audit.</li>
+<li>The <strong>ACB Media</strong> directory is bundled -- no network
+needed to browse it.</li>
+</ul>
+<h2 id="keyboard-reference">Keyboard reference</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Key</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Play / Stop</td>
+<td>Ctrl+P</td>
+</tr>
+<tr>
+<td>Play Last Station</td>
+<td>Ctrl+L</td>
+</tr>
+<tr>
+<td>Mute / Unmute</td>
+<td>Ctrl+M</td>
+</tr>
+<tr>
+<td>Volume up / down</td>
+<td>Ctrl+Up / Ctrl+Down</td>
+</tr>
+<tr>
+<td>What's Playing?</td>
+<td>Ctrl+T</td>
+</tr>
+<tr>
+<td>Send to tray</td>
+<td>Ctrl+W</td>
+</tr>
+<tr>
+<td>New Folder</td>
+<td>Ctrl+Shift+E</td>
+</tr>
+<tr>
+<td>Command Palette</td>
+<td>Ctrl+Shift+P</td>
+</tr>
+<tr>
+<td>Play selected favorite</td>
+<td>Enter (in the list)</td>
+</tr>
+<tr>
+<td>Rename (manager)</td>
+<td>F2</td>
+</tr>
+<tr>
+<td>Remove (manager / recordings)</td>
+<td>Delete</td>
+</tr>
+<tr>
+<td>Station menu</td>
+<td>Alt+S</td>
+</tr>
+<tr>
+<td>Playback menu</td>
+<td>Alt+P</td>
+</tr>
+<tr>
+<td>Record menu</td>
+<td>Alt+R</td>
+</tr>
+<tr>
+<td>Help menu</td>
+<td>Alt+H</td>
+</tr>
+</tbody>
+</table>
+<p>These keys belong to Quill Radio's own menus and are kept separate
+from QUILL's keymap, so nothing here collides with editor shortcuts.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<ul>
+<li><strong>A station will not play.</strong> Streams move. If the
+station came from the directory, Quill Radio automatically fetches its
+current address and retries once; if it still fails, search for it again
+in Browse Stations, or re-add it as a custom station.</li>
+<li><strong>No sound but the app says playing.</strong> Check Mute
+(Ctrl+M), the per-station volume (Ctrl+Up), and the Windows volume mixer
+entry for Quill Radio.</li>
+<li><strong>A recording stopped early.</strong> Check Record &gt;
+Recordings... -- a dropped connection continues into "(part 2)" files
+when reconnect is on. The maximum-length cap in Recording Settings also
+ends recordings deliberately.</li>
+<li><strong>The wake-up timer did not fire.</strong> Quill Radio (or
+QUILL) must be running at the set time -- the tray counts, a closed app
+does not. It also never retro-fires: opening the app hours after the set
+time stays silent until the next occurrence.</li>
+<li><strong>The tray icon is gone.</strong> Check the taskbar overflow
+area, or set Quill Radio to "always show" in Windows taskbar
+settings.</li>
+</ul>
+</body>
+</html>

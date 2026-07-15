@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Quill Radio - release-notes-1.0</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Quill Radio - release-notes-1.0</h1>
+</header>
+<h1 id="quill-radio-10----release-notes">Quill Radio 1.0 -- Release
+Notes</h1>
+<p>The radio, on its own -- and finished. Quill Radio takes the internet
+radio QUILL users already know, gives it a window, a menu bar, a tray
+icon, and its own icon, and then goes further than the embedded radio
+ever has. Everything below also landed in QUILL itself: the two share
+one codebase and one data store, so features arrive everywhere at
+once.</p>
+<h2 id="highlights">Highlights</h2>
+<ul>
+<li><strong>Your folders, on the front page.</strong> The main window is
+your favorites tree -- the same nested folders you build in the manager,
+with a full context menu (Play/Stop, Rename, Move to Folder, Remove, New
+Folder) one Shift+F10 away. Create folders exactly where you want them
+with <strong>New Folder</strong> (Ctrl+Shift+E); they exist immediately,
+stations or not. An <strong>Add to Favorites</strong> button keeps
+whatever is playing, and flips to Remove when it's already saved.</li>
+<li><strong>Favorites first, radio as an appliance.</strong> The app
+opens with your favorites focused; Enter plays. <strong>Play Last
+Station</strong> (Ctrl+L) resumes whatever you had on, and
+<strong>Resume Last Station on Launch</strong> makes launching the app
+all you ever do. A <strong>Recently Played</strong> menu keeps your last
+fifteen stations one keystroke deep.</li>
+<li><strong>A real Favorites Manager.</strong> Folders of any depth
+(News/Morning style), live search across names, countries, tags, and
+folders, Move Up/Down, and Mark-and-Move for long hops. Rename any
+station to what <em>you</em> call it; rename folders with F2; deleting a
+folder walks its stations safely back to the top level -- never out of
+your collection.</li>
+<li><strong>What's Playing.</strong> Ctrl+T speaks the current track or
+show title straight from the stream's metadata; an optional check item
+announces titles as they change.</li>
+<li><strong>Recording, grown up.</strong> Record what you're hearing,
+record a <em>different</em> station while you listen to something else,
+or schedule shows once, daily, or weekly -- picking straight from your
+favorites, no typing. The new <strong>Recordings</strong> list shows
+everything -- recording now (size growing live), recorded, and scheduled
+-- with Play (Stop while it plays), Stop Recording, Open in Folder, and
+Remove. And recordings now <strong>survive dropped connections</strong>:
+ffmpeg rides out short gaps, and a true drop resumes into a numbered
+part file, with attempts and spacing yours to tune.</li>
+<li><strong>Wake up with the radio.</strong> The sleep timer got its
+twin: pick a favorite, a time, once or every day. (The app must be
+running -- the tray counts.)</li>
+<li><strong>Never double-plays.</strong> Starting any stream silences
+whatever else was playing, radio or podcast, in every app.</li>
+<li><strong>Per-station volume memory.</strong> Every favorite remembers
+the volume you gave it.</li>
+<li><strong>Hardware media keys</strong> control the app system-wide,
+even from the tray.</li>
+<li><strong>The Command Palette</strong> (Ctrl+Shift+P), scoped to
+exactly this app's commands.</li>
+<li><strong>One data store.</strong> Favorites (folders, names,
+volumes), history, recordings, timers, settings -- shared with QUILL and
+QUILL Cast. Set it up once, have it everywhere.</li>
+<li><strong>Two flavors, everything bundled.</strong> A system installer
+and a truly portable zip whose <code>data</code> folder keeps your whole
+radio on the stick. ffmpeg included, its own app icon, no downloads ever
+-- and if ffmpeg somehow goes missing, <strong>Help &gt; Get
+FFmpeg...</strong> restores it from the official source. In-app
+<strong>Check for Updates</strong> knows which flavor you run and
+downloads the matching artifact with spoken progress, offering Install
+now.</li>
+<li><strong>Report a Bug, built in.</strong> Files an issue straight
+from the Help menu, no GitHub account needed, stamped with Quill Radio's
+own version.</li>
+<li><strong>Spoken feedback everywhere</strong>, through JAWS, NVDA, or
+Narrator, without stealing focus.</li>
+</ul>
+<h2 id="known-notes-for-this-release">Known notes for this release</h2>
+<ul>
+<li>Releases are not yet code-signed: Windows SmartScreen may warn on
+first run. Choose More info, then Run anyway. Signing is planned.</li>
+</ul>
+<h2 id="what-quill-radio-deliberately-is-not">What Quill Radio
+deliberately is not</h2>
+<p>It is not QUILL minus some menus -- it is the radio, period. The
+editor, AI, transcription, braille, and speech-synthesis stacks are not
+installed at all.</p>
+<h2 id="not-a-fork----a-guarantee">Not a fork -- a guarantee</h2>
+<p>Quill Radio runs the exact same radio feature code as QUILL, from the
+same upstream package. Fixes land once and reach QUILL, Quill Radio, and
+QUILL Cast together. This repository carries only the wrapper, the
+installer, the icon, and these docs.</p>
+<h2 id="dependencies">Dependencies</h2>
+<p>Playback uses Windows' built-in media engine; recording uses the
+bundled ffmpeg; station search uses the community RadioBrowser
+directory; the ACB Media directory is bundled. Every network call the
+app can make is inventoried in QUILL's public network-egress audit.</p>
+<h2 id="requirements">Requirements</h2>
+<p>Windows 10 or 11, x64 (or ARM64 under emulation). No Python
+installation required.</p>
+</body>
+</html>
