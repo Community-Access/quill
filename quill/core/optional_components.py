@@ -231,9 +231,10 @@ def _candidate_removable_path(component_id: str) -> Path | None:
 
             return vosk_pack_dir()
         if component_id == "audio_extras":
-            # Only mpv has a managed directory to remove; mutagen (the mp3
-            # half) is a pip-installed package with no separate removal path,
-            # matching its pre-merge behavior.
+            # mpv is the pack's primary managed directory; remove_component
+            # special-cases the pack to also delete the managed ffmpeg copy.
+            # mutagen (the mp3 piece) is a pip-installed package with no
+            # separate removal path, matching its pre-merge behavior.
             from quill.core.speech.engine_install import engine_packs_dir
 
             return engine_packs_dir() / "mpv"
@@ -334,6 +335,31 @@ def remove_component(component_id: str) -> bool:
                     removed_any = True
             except OSError:
                 continue
+        return removed_any
+    # The audio pack spans two managed directories (mpv + the downloaded
+    # ffmpeg); remove both, and clear the ffmpeg resolver cache so a removed
+    # binary is not reported as still installed.
+    if component_id == "audio_extras":
+        removed_any = False
+        try:
+            if path.is_dir():
+                shutil.rmtree(path)
+                removed_any = True
+        except OSError:
+            pass
+        try:
+            from quill.core.speech.ffmpeg_install import managed_ffmpeg_dir
+
+            ffmpeg_dir = managed_ffmpeg_dir()
+            if ffmpeg_dir.is_dir():
+                shutil.rmtree(ffmpeg_dir)
+                removed_any = True
+            from quill.core.speech.ffmpeg import find_ffmpeg, find_ffprobe
+
+            find_ffmpeg.cache_clear()
+            find_ffprobe.cache_clear()
+        except OSError:
+            pass
         return removed_any
     try:
         if path.is_dir():
@@ -747,10 +773,16 @@ def _gh_installed() -> bool:
 
 
 def _audio_extras_installed() -> bool:
-    """Both halves of the bundled audio-extras download: mpv playback and MP3
-    chapter markers. Reports installed only once both are present, since the
-    hub now offers them as a single download."""
-    return _libmpv_installed() and _mp3_installed()
+    """The whole audio pack: mpv playback, MP3 chapter markers, and FFmpeg.
+    Reports installed only once every piece is present, since the hub offers
+    them as a single download. FFmpeg counts only where QUILL can download it
+    (Windows); elsewhere it is the system's to provide and must not hold the
+    pack's status at 'available' forever."""
+    if not (_libmpv_installed() and _mp3_installed()):
+        return False
+    from quill.core.speech.ffmpeg_install import ffmpeg_install_supported
+
+    return _ffmpeg_installed() or not ffmpeg_install_supported()
 
 
 def gather_optional_components() -> list[OptionalComponent]:
@@ -858,14 +890,14 @@ def gather_optional_components() -> list[OptionalComponent]:
             "Radio streams to a file (Record Now and Schedule Recording); the mpv "
             "engine adds gapless playback, exact seeking, and instant chapter jumps "
             "in the Audio Studio player; MP3 chapter markers embed a jumpable "
-            "chapter list in MP3 audiobook exports. Each piece is fetched only when "
-            "you first use its feature, so nothing large downloads until it is "
-            "needed. WAV export, and Internet Radio/Podcasts playback and "
-            "subscribing, all work without any of them -- only recording needs "
-            "FFmpeg.",
+            "chapter list in MP3 audiobook exports. Download installs all of it in "
+            "one go (pieces already installed are skipped); each piece is also "
+            "fetched on its own the first time a feature needs it. WAV export, and "
+            "Internet Radio/Podcasts playback and subscribing, all work without "
+            "any of them -- only recording needs FFmpeg.",
             TOOL,
             _safe(_audio_extras_installed),
-            "~46 MB (+ FFmpeg ~90 MB when first exporting compressed audio)",
+            "~136 MB (mpv + MP3 support ~46 MB, FFmpeg ~90 MB)",
             note="FFmpeg (GPL/LGPL, official build), the mpv playback library (GPL; "
             "the download carries its licenses and a source offer), and mutagen "
             "(GPL-2.0+); fetched on demand from their official sources and QUILL's "
