@@ -1,4 +1,5 @@
 {
+  "quill/apps/podcasts.py::PodcastsAppFrame._new_library_folder::wx.TextEntryDialog": "native",
   "quill/devtools/console_window.py::ConsoleWindow._save_transcript::wx.FileDialog": "native",
   "quill/ui/abbreviation_manager_dialog.py::AbbreviationManagerDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/abbreviation_manager_dialog.py::AbbreviationManagerDialog._on_delete::wx.MessageDialog": "native",

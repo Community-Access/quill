@@ -214,6 +214,42 @@ class RadioMixin:
         browse_id = wx.NewIdRef()
         menu.Append(browse_id, "Open Internet Radio...")
         menu.Bind(wx.EVT_MENU, lambda _e: self.open_internet_radio(), id=browse_id)
+        self._retain_radio_menu_ids(
+            play_id, stop_id, mute_id, record_id, schedule_id, rec_settings_id, browse_id
+        )
+
+    def _retain_radio_menu_ids(self, *refs: object) -> None:
+        """Keep popup/submenu wx.NewIdRef objects alive while their menu can
+        still fire. A dropped ref unreserves the id, and the next NewIdRef
+        anywhere (another popup, an app-shell menu) can receive the same id --
+        cross-wiring EVT_MENU bindings. Refs accumulate per host; rebuilt
+        popups simply extend the list, which is bounded in practice."""
+        refs_list = getattr(self, "_radio_menu_id_refs", None)
+        if refs_list is None:
+            refs_list = []
+            self._radio_menu_id_refs = refs_list
+        refs_list.extend(refs)
+
+    def _append_acb_media_submenu(self, menu: object) -> None:
+        """An ACB Media submenu: every stream in the built-in directory,
+        playable inline -- no dialog hunt. Local data, no network."""
+        from quill.core.radio import acb_media
+
+        wx = self._wx
+        stations = acb_media.acb_media_stations()
+        if not stations:
+            return
+        sub = wx.Menu()
+        for station in stations:
+            item_id = wx.NewIdRef()
+            sub.Append(item_id, station.display_name)
+            sub.Bind(
+                wx.EVT_MENU,
+                lambda _e, s=station: self._radio_controller.play_station(s),
+                id=item_id,
+            )
+            self._retain_radio_menu_ids(item_id)
+        menu.AppendSubMenu(sub, "ACB &Media")
 
     def _append_radio_favorites_submenu(self, menu: object) -> None:
         wx = self._wx
@@ -230,6 +266,7 @@ class RadioMixin:
                 lambda _e, s=station: self._radio_controller.play_station(s),
                 id=item_id,
             )
+            self._retain_radio_menu_ids(item_id)
         menu.AppendSubMenu(sub, "Favorite Stations")
 
     # -- system tray ----------------------------------------------------------
@@ -242,6 +279,7 @@ class RadioMixin:
             now_playing_id, controller.state.status_text if controller else "Radio: stopped"
         )
         menu.Enable(now_playing_id, False)
+        self._retain_radio_menu_ids(now_playing_id)
         self._build_radio_status_bar_menu(menu)
 
     # -- commands ---------------------------------------------------------

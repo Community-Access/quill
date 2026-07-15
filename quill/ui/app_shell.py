@@ -57,6 +57,7 @@ class AppShellFrame:
         # in the companion apps too, and a safety advisory locks it everywhere.
         self.features = FeatureManager.load(persistent=not safe_mode)
         self._feature_locks = load_feature_locks()
+        self._menu_id_refs: list[object] = []
         self._announcement_engine = AnnouncementEngine(self.settings.announcement_backend)
         self._tray_icon: wx.adv.TaskBarIcon | None = None
         self._status_message = ""
@@ -91,6 +92,17 @@ class AppShellFrame:
 
     def _refresh_statusbar(self) -> None:
         """Subclasses override to compose their app's own status text."""
+
+    def _keep_menu_ids(self, *refs: object) -> None:
+        """Pin wx.NewIdRef objects for the frame's lifetime.
+
+        A NewIdRef reserves its id only while the Python reference lives; menu
+        builders that let their id refs go out of scope hand the same numeric
+        id to whatever allocates one next (a tray popup, a favorites submenu
+        entry), and that item's wxEVT_MENU then also matches the original
+        frame binding -- the 'About opens at random' bug. Every menu builder
+        passes its id refs here."""
+        self._menu_id_refs.extend(refs)
 
     def _feature_enabled(self, feature_id: str) -> bool:
         locks = getattr(self, "_feature_locks", None)

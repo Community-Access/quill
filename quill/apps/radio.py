@@ -15,6 +15,7 @@ import wx
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.dialog_contract import set_accessible_name
 from quill.ui.main_frame_adp import AdpMixin
+from quill.ui.main_frame_media_sleep_timer import MediaSleepTimerMixin
 from quill.ui.main_frame_radio import RadioMixin
 from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 
@@ -23,13 +24,15 @@ _VERSION = "1.0.0"
 _REPO = "Community-Access/quill-radio"
 
 
-class RadioAppFrame(AppShellFrame, RadioMixin, AdpMixin, UnlockCodesMixin):
+class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, UnlockCodesMixin):
     def __init__(self, *, safe_mode: bool = False) -> None:
         self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(460, 360))
         self._init_radio()
+        self._init_media_sleep_timer()
         self._build_menu_bar()
         self._build_main_panel()
         self._register_radio_commands()
+        self._register_media_sleep_timer_commands()
         self._register_adp_commands()
         self._register_unlock_code_commands()
         self._ensure_tray_icon(self._build_radio_tray_menu, tooltip=_TITLE)
@@ -101,15 +104,17 @@ class RadioAppFrame(AppShellFrame, RadioMixin, AdpMixin, UnlockCodesMixin):
     def _refresh_play_stop_button(self) -> None:
         from quill.ui.radio.player_controller import RadioPlayerState
 
-        button = getattr(self, "_play_stop_btn", None)
-        if button is None:
-            return
         state = self._radio_controller.state.state
         stopping = state in (RadioPlayerState.PLAYING, RadioPlayerState.CONNECTING)
         label = "&Stop" if stopping else "&Play"
-        if button.GetLabel() != label:
+        button = getattr(self, "_play_stop_btn", None)
+        if button is not None and button.GetLabel() != label:
             button.SetLabel(label)
             set_accessible_name(button, "Stop" if stopping else "Play")
+        menu_bar = self.frame.GetMenuBar()
+        item_id = getattr(self, "_play_menu_item_id", None)
+        if menu_bar is not None and item_id is not None:
+            menu_bar.SetLabel(int(item_id), f"{label}\tCtrl+P")
 
     def _play_selected_favorite(self) -> None:
         index = self._favorites_list.GetSelection()
@@ -143,6 +148,13 @@ class RadioAppFrame(AppShellFrame, RadioMixin, AdpMixin, UnlockCodesMixin):
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._radio_open_link_finder(), id=find_id)
         station_menu.AppendSeparator()
         self._append_radio_favorites_submenu(station_menu)
+        self._append_acb_media_submenu(station_menu)
+        station_menu.AppendSeparator()
+        tray_id, exit_id = wx.NewIdRef(), wx.NewIdRef()
+        station_menu.Append(tray_id, "Send to &Tray\tCtrl+W")
+        station_menu.Append(exit_id, "E&xit")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._send_to_tray(), id=tray_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.frame.Close(), id=exit_id)
         menu_bar.Append(station_menu, "&Station")
 
         playback_menu = wx.Menu()
@@ -150,18 +162,25 @@ class RadioAppFrame(AppShellFrame, RadioMixin, AdpMixin, UnlockCodesMixin):
         playback_menu.Append(self._now_playing_item_id, "Radio: stopped")
         playback_menu.Enable(self._now_playing_item_id, False)
         playback_menu.AppendSeparator()
-        play_id, stop_id, mute_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
-        vol_up_id, vol_down_id = wx.NewIdRef(), wx.NewIdRef()
-        playback_menu.Append(play_id, "&Play/Pause\tCtrl+P")
-        playback_menu.Append(stop_id, "&Stop")
-        playback_menu.Append(mute_id, "&Mute/Unmute")
-        playback_menu.Append(vol_up_id, "Volume &Up")
-        playback_menu.Append(vol_down_id, "Volume &Down")
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_toggle_play_pause(), id=play_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_stop(), id=stop_id)
+        # One transport item mirroring the main panel's single button: it
+        # reads Play when idle and Stop while connecting/playing -- no
+        # separate, ambiguous Play/Pause + Stop pair.
+        self._play_menu_item_id = wx.NewIdRef()
+        playback_menu.Append(self._play_menu_item_id, "&Play\tCtrl+P")
+        mute_id, vol_up_id, vol_down_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
+        playback_menu.Append(mute_id, "&Mute/Unmute\tCtrl+M")
+        playback_menu.Append(vol_up_id, "Volume &Up\tCtrl+Up")
+        playback_menu.Append(vol_down_id, "Volume &Down\tCtrl+Down")
+        playback_menu.AppendSeparator()
+        sleep_id = wx.NewIdRef()
+        playback_menu.Append(sleep_id, "Sleep &Timer...")
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self._on_play_stop_button(), id=self._play_menu_item_id
+        )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_mute_toggle(), id=mute_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_volume_up(), id=vol_up_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_volume_down(), id=vol_down_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_sleep_timer_dialog(), id=sleep_id)
         menu_bar.Append(playback_menu, "&Playback")
 
         record_menu = wx.Menu()
@@ -186,18 +205,15 @@ class RadioAppFrame(AppShellFrame, RadioMixin, AdpMixin, UnlockCodesMixin):
             menu_bar.Append(adp_menu, "A&udio Description Project")
 
         help_menu = wx.Menu()
-        open_quill_id, redeem_id, updates_id, about_id = (
-            wx.NewIdRef(),
+        redeem_id, updates_id, about_id = (
             wx.NewIdRef(),
             wx.NewIdRef(),
             wx.NewIdRef(),
         )
-        help_menu.Append(open_quill_id, "&Open in Quill")
         help_menu.Append(redeem_id, "Redeem &Unlock Code...")
         help_menu.Append(updates_id, "Check for Up&dates...")
         help_menu.AppendSeparator()
         help_menu.Append(about_id, "&About Quill Radio")
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_in_quill(), id=open_quill_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_redeem_unlock_code_dialog(), id=redeem_id)
         self.frame.Bind(
             wx.EVT_MENU,
@@ -208,6 +224,30 @@ class RadioAppFrame(AppShellFrame, RadioMixin, AdpMixin, UnlockCodesMixin):
         menu_bar.Append(help_menu, "&Help")
 
         self.frame.SetMenuBar(menu_bar)
+        # Pin every menu id for the frame's lifetime (see _keep_menu_ids).
+        self._keep_menu_ids(
+            browse_id,
+            add_id,
+            find_id,
+            tray_id,
+            exit_id,
+            self._now_playing_item_id,
+            self._play_menu_item_id,
+            mute_id,
+            vol_up_id,
+            vol_down_id,
+            sleep_id,
+            record_id,
+            schedule_id,
+            settings_id,
+            redeem_id,
+            updates_id,
+            about_id,
+        )
+
+    def _send_to_tray(self) -> None:
+        self.frame.Hide()
+        self._announce("Quill Radio is still running in the system tray.")
 
     def _show_about(self) -> None:
         self._show_message_box(
