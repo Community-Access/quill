@@ -465,6 +465,10 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             id=self._announce_titles_item_id,
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_sleep_timer_dialog(), id=sleep_id)
+        playback_menu.AppendSeparator()
+        enhance_id = wx.NewIdRef()
+        playback_menu.Append(enhance_id, "Sound &Enhancements...")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_sound_enhancements(), id=enhance_id)
         menu_bar.Append(playback_menu, "&Playback")
 
         record_menu = wx.Menu()
@@ -550,6 +554,7 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             self._announce_titles_item_id,
             sleep_id,
             wake_id,
+            enhance_id,
             record_id,
             record_station_id,
             schedule_id,

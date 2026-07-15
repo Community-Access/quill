@@ -69,6 +69,11 @@ class RadioMixin:
             on_state_changed=self._on_radio_state_changed,
             on_register_click=self._radio_register_click,
             before_play=self._stop_podcast_before_radio,
+            on_enhance_error=self._on_radio_enhance_error,
+        )
+        self._radio_controller.set_enhancement(
+            self._radio_history.eq_preset,
+            compressor_enabled=self._radio_history.compressor_enabled,
         )
         self._radio_recording_settings = load_recording_settings(app_data_dir())
         self._radio_recorder = RadioRecorder(
@@ -665,7 +670,38 @@ class RadioMixin:
         controller.volume_down()
         self._announce(f"Radio volume {controller.state.volume_percent}")
 
+    def _on_radio_enhance_error(self, message: str) -> None:
+        """Sound Enhancements couldn't start (ffmpeg missing, relay failed);
+        playback still proceeds unenhanced, so this is an announcement, not a
+        blocking dialog."""
+        self._announce(f"Sound Enhancements: {message} Playing without it.")
+
     # -- dialogs ------------------------------------------------------------
+
+    def open_sound_enhancements(self) -> None:
+        """Playback > Sound Enhancements...: an EQ preset + a compressor."""
+        from quill.core.radio import history as radio_history
+        from quill.ui.radio.sound_enhance_dialog import SoundEnhanceDialog
+
+        history = self._radio_history
+        dialog = SoundEnhanceDialog(
+            self.frame,
+            eq_preset=history.eq_preset,
+            compressor_enabled=history.compressor_enabled,
+            announce_cb=self._announce,
+        )
+        result = dialog.show()
+        if result is None:
+            return
+        history.eq_preset, history.compressor_enabled = result
+        radio_history.save_history(app_data_dir(), history)
+        self._radio_controller.set_enhancement(
+            history.eq_preset, compressor_enabled=history.compressor_enabled
+        )
+        self._announce(
+            f"Sound Enhancements: {history.eq_preset}"
+            + (", Even Out Volume on" if history.compressor_enabled else "")
+        )
 
     def open_manage_radio_favorites(self) -> None:
         """Manage Favorites...: search, play, remove, reorder, nested folders.
@@ -788,6 +824,11 @@ class RadioMixin:
                 "radio.toggle_title_announcements",
                 "Internet Radio: Announce Track Titles On/Off",
                 self.radio_toggle_title_announcements,
+            ),
+            (
+                "radio.sound_enhancements",
+                "Internet Radio: Sound Enhancements...",
+                self.open_sound_enhancements,
             ),
             (
                 "radio.record_toggle",
