@@ -90,6 +90,7 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/publish/destinations.py::save_destinations": "content",
     "core/publish/feed_folder.py::save_feed_config": "content",
     "core/radio/favorites.py::save_favorites": "content",
+    "core/radio/history.py::save_history": "content",
     "core/radio/recording.py::save_recording_settings": "content",
     "core/radio/recording_schedule.py::save_schedule": "content",
     "core/podcasts/subscriptions.py::save_library": "content",
