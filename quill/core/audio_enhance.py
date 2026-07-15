@@ -1,23 +1,31 @@
-"""Sound Enhancements: optional EQ presets + a compressor for live radio.
+"""Sound Enhancements: optional EQ presets + a compressor for radio and
+podcast playback.
 
-Live radio always plays through :class:`~quill.ui.radio.player_controller.
-RadioPlayerController`'s ``WxMediaEngine`` (WMP backend), which can only open
-a URL -- it has no filter graph of its own. Rather than adding a second,
-heavier audio backend (e.g. BASS_FX) purely to get an equalizer and a
-compressor, this reuses the ffmpeg dependency radio recording already
-requires (``quill.core.speech.ffmpeg``): ffmpeg reads the live stream,
+Both players' engines (Radio's ``WxMediaEngine``, Podcasts' mpv-preferred
+``AudioEngine``) can only open a URL -- neither has a filter graph of its
+own. Rather than adding a second, heavier audio backend (e.g. BASS_FX)
+purely to get an equalizer and a compressor, this reuses the ffmpeg
+dependency radio recording already requires (``quill.core.speech.ffmpeg``):
+ffmpeg reads the source (a live stream or a podcast episode file/URL),
 applies the filter graph, and re-encodes to MP3 on its stdout; a small
 loopback-only HTTP relay (:class:`EnhanceRelay`) hands those bytes to
 whichever client connects, so the existing engine can just load a
-``http://127.0.0.1:<port>/...`` URL instead of the station's own URL. When no
+``http://127.0.0.1:<port>/...`` URL instead of the source's own URL. When no
 enhancement is active, playback never touches this module at all -- the
-engine loads the station's stream URL directly, exactly as before.
+engine loads the source URL directly, exactly as before.
 
 Deliberately not BASS/BASS_FX: BASS requires a paid license for anything but
 a non-revenue app, which is a determination this module sidesteps entirely
 by building on ffmpeg, a dependency QUILL already has cleared (see
 ``quill/core/speech/ffmpeg.py``'s licensing note -- QUILL never bundles or
 redistributes it, only launches a copy already on the system).
+
+Radio is an infinite live stream (no seek, no duration); podcast episodes
+are bounded, so their controller additionally uses ``start_seconds`` (an
+ffmpeg ``-ss`` restart is how "seek while enhanced" works -- there is no way
+to seek within an already-running relay, only start a new one at a new
+offset) and :func:`probe_source_duration_ms` (the relay's own output has no
+upfront length for the engine to compute a scrub bar from).
 
 wx-free, strict-typed.
 """
@@ -88,23 +96,67 @@ def build_filter_graph(eq_preset: str, *, compressor_enabled: bool) -> str:
 
 
 def build_relay_command(
-    ffmpeg: str, stream_url: str, *, eq_preset: str, compressor_enabled: bool
+    ffmpeg: str,
+    stream_url: str,
+    *,
+    eq_preset: str,
+    compressor_enabled: bool,
+    start_seconds: float = 0.0,
 ) -> list[str]:
     """Build the ffmpeg argv that filters *stream_url* and writes MP3 to stdout.
 
     Pure and unit-tested. Mirrors ``recording.py``'s ``build_record_command``:
     the same HTTP reconnect flags, so a network hiccup is ridden out here
-    exactly as it is during a recording.
+    exactly as it is during a recording. A positive ``start_seconds`` adds an
+    input ``-ss`` (fast, before ``-i``) -- how "seek while enhanced" works
+    for a bounded source (a podcast episode): there is no way to seek within
+    an already-running relay, only start a new one at a new offset.
     """
     args = [ffmpeg, "-hide_banner", "-loglevel", "error"]
     if stream_url.lower().startswith(("http://", "https://")):
         args.extend(["-reconnect", "1", "-reconnect_streamed", "1", "-reconnect_delay_max", "10"])
+    if start_seconds > 0:
+        args.extend(["-ss", f"{start_seconds:.3f}"])
     args.extend(["-i", stream_url, "-vn"])
     filter_graph = build_filter_graph(eq_preset, compressor_enabled=compressor_enabled)
     if filter_graph:
         args.extend(["-af", filter_graph])
     args.extend(["-c:a", "libmp3lame", "-b:a", "192k", "-f", "mp3", "pipe:1"])
     return args
+
+
+def probe_source_duration_ms(source: str, *, timeout_seconds: float = 15.0) -> int:
+    """Best-effort total duration of *source* (a local path or a URL) via
+    ffprobe; ``0`` if unknown. Used to report a real duration/scrub-bar
+    length for a bounded source (a podcast episode) while Sound
+    Enhancements relays it through a live filter -- the relay's own MP3
+    output has no upfront length for the engine to compute a duration from.
+    Not used by radio, which has no duration to report either way.
+    """
+    from quill.core.speech.ffmpeg import find_ffprobe
+    from quill.stability.safe_subprocess import run_subprocess_safely
+
+    ffprobe = find_ffprobe()
+    if ffprobe is None:
+        return 0
+    args = [
+        ffprobe,
+        "-v",
+        "error",
+        "-show_entries",
+        "format=duration",
+        "-of",
+        "default=noprint_wrappers=1:nokey=1",
+        source,
+    ]
+    try:
+        completed = run_subprocess_safely(args, timeout_seconds=timeout_seconds)
+    except OSError:
+        return 0
+    try:
+        return int(round(float((completed.stdout or "").strip()) * 1000))
+    except (TypeError, ValueError):
+        return 0
 
 
 class _RelayHTTPServer(http.server.ThreadingHTTPServer):
@@ -170,9 +222,18 @@ class EnhanceRelay:
         with self._lock:
             return self._process is not None
 
-    def start(self, stream_url: str, *, eq_preset: str, compressor_enabled: bool) -> str:
+    def start(
+        self,
+        stream_url: str,
+        *,
+        eq_preset: str,
+        compressor_enabled: bool,
+        start_seconds: float = 0.0,
+    ) -> str:
         """Start relaying *stream_url* through the filter graph; returns the
-        local URL to hand to the player engine instead of *stream_url*.
+        local URL to hand to the player engine instead of *stream_url*. A
+        positive ``start_seconds`` begins the relay partway through a
+        bounded source (see :func:`build_relay_command`).
 
         Raises :class:`EnhanceError` if ffmpeg is unavailable or the relay
         could not be started. Stops any previous relay first.
@@ -182,12 +243,16 @@ class EnhanceRelay:
         if ffmpeg is None:
             raise EnhanceError(f"ffmpeg is not installed. {INSTALL_HINT}")
         args = build_relay_command(
-            ffmpeg, stream_url, eq_preset=eq_preset, compressor_enabled=compressor_enabled
+            ffmpeg,
+            stream_url,
+            eq_preset=eq_preset,
+            compressor_enabled=compressor_enabled,
+            start_seconds=start_seconds,
         )
         extra_kwargs: dict = {}
         if os.name == "nt":
             extra_kwargs["creationflags"] = subprocess.CREATE_NO_WINDOW
-        logger.info("Starting radio Sound Enhancements relay: %s", format_args_for_log(args))
+        logger.info("Starting Sound Enhancements relay: %s", format_args_for_log(args))
         try:
             process = subprocess.Popen(
                 args,

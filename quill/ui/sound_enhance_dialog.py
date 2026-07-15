@@ -1,20 +1,19 @@
 """Playback > Sound Enhancements... -- an EQ preset plus a compressor.
 
-Deliberately not raw dB sliders per band: one named preset (Flat / Bass
-Boost / Voice Clarity / Podcast) in a combo box, plus a single "Even Out
-Volume" checkbox for the compressor. Both apply through
-``RadioPlayerController.set_enhancement`` (see ``core/radio/audio_enhance.py``
-for why -- ffmpeg relay, no new audio backend). Turning anything on
-reconnects the current station through the filtered relay; turning
-everything off reconnects straight to the stream again -- live radio has no
-playback position to lose, so this is the whole cost of switching.
+Shared by Radio and Podcasts (both standalone apps and MainFrame). Deliberately
+not raw dB sliders per band: one named preset (Flat / Bass Boost / Voice
+Clarity / Podcast) in a combo box, plus a single "Even Out Volume" checkbox
+for the compressor. Both apply through the host player controller's
+``set_enhancement`` (see ``core/audio_enhance.py`` for why -- ffmpeg relay,
+no new audio backend). Turning anything on reconnects what's currently
+playing through the filtered relay.
 """
 
 from __future__ import annotations
 
 from collections.abc import Callable
 
-from quill.core.radio.audio_enhance import DEFAULT_EQ_PRESET, EQ_PRESETS
+from quill.core.audio_enhance import DEFAULT_EQ_PRESET, EQ_PRESETS
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 
 _PRESET_NAMES = tuple(EQ_PRESETS)
@@ -29,6 +28,7 @@ class SoundEnhanceDialog:
         *,
         eq_preset: str,
         compressor_enabled: bool,
+        subject: str = "station",
         announce_cb: Callable[[str], None] | None = None,
     ) -> None:
         import wx
@@ -43,7 +43,7 @@ class SoundEnhanceDialog:
         intro = wx.StaticText(
             self.dialog,
             label=(
-                "Optional processing applied to whatever station is playing. "
+                f"Optional processing applied to whatever {subject} is playing. "
                 "Needs FFmpeg (Help > Get FFmpeg...)."
             ),
         )

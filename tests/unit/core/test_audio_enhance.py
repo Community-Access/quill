@@ -1,6 +1,6 @@
-"""Tests for radio Sound Enhancements: filter-graph/command building (pure),
-the relay's start/stop lifecycle (fake ffmpeg process, no real subprocess),
-and the local HTTP relay's byte-streaming + single-consumer behavior (a real
+"""Tests for Sound Enhancements: filter-graph/command building (pure), the
+relay's start/stop lifecycle (fake ffmpeg process, no real subprocess), and
+the local HTTP relay's byte-streaming + single-consumer behavior (a real
 loopback socket, but a fake byte source instead of real ffmpeg)."""
 
 from __future__ import annotations
@@ -14,8 +14,8 @@ import urllib.request
 
 import pytest
 
-import quill.core.radio.audio_enhance as audio_enhance
-from quill.core.radio.audio_enhance import (
+import quill.core.audio_enhance as audio_enhance
+from quill.core.audio_enhance import (
     EnhanceError,
     EnhanceRelay,
     _RelayHTTPHandler,
@@ -91,6 +91,46 @@ def test_build_relay_command_includes_af_flag_when_engaged() -> None:
     )
     assert "-af" in args
     assert args[-3:] == ["-f", "mp3", "pipe:1"]
+
+
+def test_build_relay_command_omits_ss_flag_by_default() -> None:
+    args = build_relay_command("ffmpeg", "episode.mp3", eq_preset="Flat", compressor_enabled=False)
+    assert "-ss" not in args
+
+
+def test_build_relay_command_adds_ss_flag_before_input_when_seeking() -> None:
+    args = build_relay_command(
+        "ffmpeg",
+        "episode.mp3",
+        eq_preset="Flat",
+        compressor_enabled=False,
+        start_seconds=42.5,
+    )
+    ss_index = args.index("-ss")
+    assert args[ss_index + 1] == "42.500"
+    assert args.index("-i") > ss_index  # -ss must precede -i for fast input seeking
+
+
+def test_probe_source_duration_ms_returns_zero_when_ffprobe_missing(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import quill.core.speech.ffmpeg as speech_ffmpeg
+
+    monkeypatch.setattr(speech_ffmpeg, "find_ffprobe", lambda: None)
+    assert audio_enhance.probe_source_duration_ms("episode.mp3") == 0
+
+
+def test_probe_source_duration_ms_parses_ffprobe_stdout(monkeypatch: pytest.MonkeyPatch) -> None:
+    import quill.core.speech.ffmpeg as speech_ffmpeg
+    import quill.stability.safe_subprocess as safe_subprocess
+
+    monkeypatch.setattr(speech_ffmpeg, "find_ffprobe", lambda: "ffprobe")
+
+    class _Completed:
+        stdout = "123.456\n"
+
+    monkeypatch.setattr(safe_subprocess, "run_subprocess_safely", lambda *a, **k: _Completed())
+    assert audio_enhance.probe_source_duration_ms("episode.mp3") == 123456
 
 
 # -- EnhanceRelay lifecycle (fake ffmpeg process) ----------------------------

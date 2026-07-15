@@ -61,3 +61,26 @@ def test_check_updates_on_startup_missing_from_file_defaults_on(tmp_path: Path) 
     loaded = load_history(tmp_path)
     assert loaded.check_updates_on_startup is True
     assert loaded.last_update_check == ""
+
+
+def test_sound_enhancements_default_off() -> None:
+    history = PodcastHistory()
+    assert history.eq_preset == "Flat"
+    assert history.compressor_enabled is False
+
+
+def test_sound_enhancements_round_trip(tmp_path: Path) -> None:
+    history = PodcastHistory(eq_preset="Voice Clarity", compressor_enabled=True)
+    save_history(tmp_path, history)
+    loaded = load_history(tmp_path)
+    assert loaded.eq_preset == "Voice Clarity"
+    assert loaded.compressor_enabled is True
+
+
+def test_sound_enhancements_missing_from_file_default_off(tmp_path: Path) -> None:
+    (tmp_path / "podcast_history.json").write_text(
+        '{"resume_on_launch": true, "episodes": []}', encoding="utf-8"
+    )
+    loaded = load_history(tmp_path)
+    assert loaded.eq_preset == "Flat"
+    assert loaded.compressor_enabled is False

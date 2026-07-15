@@ -34,7 +34,7 @@ from enum import Enum, auto
 
 import wx
 
-from quill.core.radio.audio_enhance import (
+from quill.core.audio_enhance import (
     DEFAULT_EQ_PRESET,
     EnhanceError,
     EnhanceRelay,

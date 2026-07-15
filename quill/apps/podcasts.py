@@ -591,6 +591,12 @@ class PodcastsAppFrame(
         sleep_id = wx.NewIdRef()
         episode_menu.Append(sleep_id, "Sleep &Timer...")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_sleep_timer_dialog(), id=sleep_id)
+        episode_menu.AppendSeparator()
+        enhance_id = wx.NewIdRef()
+        episode_menu.Append(enhance_id, "Sound &Enhancements...")
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.open_podcast_sound_enhancements(), id=enhance_id
+        )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_toggle_play_pause(), id=play_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_stop(), id=stop_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_mute_toggle(), id=mute_id)
@@ -674,6 +680,7 @@ class PodcastsAppFrame(
             note_id,
             queue_id,
             sleep_id,
+            enhance_id,
             pause_all_id,
             resume_all_id,
             palette_id,

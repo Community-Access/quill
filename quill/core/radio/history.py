@@ -12,7 +12,7 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from quill.core.radio.audio_enhance import DEFAULT_EQ_PRESET
+from quill.core.audio_enhance import DEFAULT_EQ_PRESET
 from quill.core.radio.models import RadioStation
 
 _FILE_NAME = "radio_history.json"

@@ -13,6 +13,16 @@ enclosure URL reports a real ``Content-Length``/duration), so this uses
 Audio Studio's normal ``create_engine()`` (mpv-preferred, wx.media
 fallback) rather than being restricted to the wx.media-only backend Radio
 needs for its infinite live streams.
+
+Sound Enhancements (EQ preset + compressor, see ``core/audio_enhance.py``)
+reuses the same ffmpeg relay Radio uses, with one extra wrinkle: episodes
+support seeking and a duration/scrub bar, which a live one-way relay has
+neither of natively. Seeking while enhanced restarts the relay with an
+ffmpeg ``-ss`` offset (:meth:`seek` falls through to a fresh
+:meth:`play_episode`-shaped reload rather than the engine's own instant
+seek); the reported duration comes from an independent ``ffprobe`` call
+(:func:`~quill.core.audio_enhance.probe_source_duration_ms`) rather than the
+engine, since the relay's own MP3 output never declares one.
 """
 
 from __future__ import annotations
@@ -24,6 +34,13 @@ from enum import Enum, auto
 
 import wx
 
+from quill.core.audio_enhance import (
+    DEFAULT_EQ_PRESET,
+    EnhanceError,
+    EnhanceRelay,
+    is_enhancement_active,
+    probe_source_duration_ms,
+)
 from quill.ui.audio_studio.audio_engine import AudioEngine, create_engine
 
 _log = logging.getLogger(__name__)
@@ -71,6 +88,7 @@ class PodcastPlayerController:
         on_episode_finished: Callable[[str, str], None] | None = None,
         on_position_checkpoint: Callable[[str, str, int], None] | None = None,
         before_play: Callable[[], None] | None = None,
+        on_enhance_error: Callable[[str], None] | None = None,
     ) -> None:
         self._on_state_changed = on_state_changed
         #: Runs before every play_episode: the host stops sibling media (the
@@ -84,8 +102,13 @@ class PodcastPlayerController:
         #: finish; that is on_episode_finished's job). The fix for a real gap:
         #: episode.position_ms was read to resume but never written.
         self._on_position_checkpoint = on_position_checkpoint
+        #: Told about a Sound Enhancements failure (ffmpeg missing, relay
+        #: could not start) so the host can announce it; playback still
+        #: proceeds unenhanced rather than failing outright.
+        self._on_enhance_error = on_enhance_error
         self._resume_ms = 0
         self._pending_rate = 1.0
+        self._pending_play_after_load = True
         self._volume_percent = 100
         self._muted = False
         self._pre_mute_volume = 100
@@ -93,6 +116,20 @@ class PodcastPlayerController:
         #: touching volume_percent, which the sleep timer restores -- boosting
         #: must never make "restore the volume" restore a boosted number.
         self._volume_boost = 1.0
+        #: Sound Enhancements (EQ preset + compressor): off by default, so
+        #: normal playback never spawns the ffmpeg relay. See set_enhancement.
+        self._enhance_relay = EnhanceRelay()
+        self._eq_preset = DEFAULT_EQ_PRESET
+        self._compressor_enabled = False
+        #: The raw (unfiltered) source of whatever is loaded, so a seek or an
+        #: enhancement change can restart the relay from the same episode.
+        self._enhanced_source = ""
+        #: The engine's own position is relative to wherever the current
+        #: relay was started (an ffmpeg -ss offset), not the episode start.
+        self._enhanced_offset_ms = 0
+        #: Probed independently via ffprobe -- the relay's own MP3 output
+        #: never declares a duration for the engine to compute one from.
+        self._enhanced_duration_ms = 0
         self._engine: AudioEngine | None = create_engine(
             parent,
             on_loaded=self._on_loaded,
@@ -127,14 +164,63 @@ class PodcastPlayerController:
             except Exception:  # noqa: BLE001 - a sibling-stop must never block play
                 pass
         self._checkpoint_current()
-        self._resume_ms = max(0, int(resume_ms))
         self._pending_rate = rate if rate > 0 else 1.0
+        self._pending_play_after_load = True
         self._state.show_id = show_id
         self._state.episode_guid = episode_guid
         self._state.title = title
         self._set_state(PodcastPlayerState.LOADING)
-        if self._engine is None or not self._engine.load(source):
+        self._enhanced_source = source
+        self._enhanced_duration_ms = probe_source_duration_ms(source) if self._is_enhanced() else 0
+        self._start_load(source, start_ms=max(0, int(resume_ms)))
+
+    def _start_load(self, source: str, *, start_ms: int) -> None:
+        self._resume_ms = start_ms
+        url = self._resolve_playback_url(source, start_ms=start_ms)
+        if self._engine is None or not self._engine.load(url):
             self._set_state(PodcastPlayerState.ERROR, message="That episode could not be opened.")
+
+    def _is_enhanced(self) -> bool:
+        return is_enhancement_active(self._eq_preset, compressor_enabled=self._compressor_enabled)
+
+    def _resolve_playback_url(self, source: str, *, start_ms: int) -> str:
+        """The URL the engine should load: *source* itself, or a local relay
+        URL when Sound Enhancements is active (started at *start_ms*, since
+        a relay can only be resumed by restarting it at a new ffmpeg -ss
+        offset -- there is no way to seek within one already running)."""
+        self._enhance_relay.stop()
+        self._enhanced_offset_ms = 0
+        if not self._is_enhanced():
+            return source
+        try:
+            url = self._enhance_relay.start(
+                source,
+                eq_preset=self._eq_preset,
+                compressor_enabled=self._compressor_enabled,
+                start_seconds=start_ms / 1000.0,
+            )
+            self._enhanced_offset_ms = start_ms
+            return url
+        except EnhanceError as error:
+            if self._on_enhance_error is not None:
+                self._on_enhance_error(str(error))
+            return source
+
+    def set_enhancement(self, eq_preset: str, *, compressor_enabled: bool) -> None:
+        """Change the EQ preset / compressor and, if an episode is loaded,
+        reload it (through the new relay state, or straight from the source
+        if turned off) at the position it was just at."""
+        current_position = self.position_ms()
+        was_playing = self._state.state is PodcastPlayerState.PLAYING
+        source = self._enhanced_source
+        self._eq_preset = eq_preset
+        self._compressor_enabled = compressor_enabled
+        if not source or self._state.show_id is None:
+            return
+        self._enhanced_duration_ms = probe_source_duration_ms(source) if self._is_enhanced() else 0
+        self._pending_play_after_load = was_playing
+        self._set_state(PodcastPlayerState.LOADING)
+        self._start_load(source, start_ms=current_position)
 
     def toggle_play_pause(self) -> None:
         if self._engine is None:
@@ -151,14 +237,26 @@ class PodcastPlayerController:
         self._checkpoint_current()
         if self._engine is not None:
             self._engine.close()
+        self._enhance_relay.stop()
         self._state.show_id = None
         self._state.episode_guid = None
         self._state.title = ""
+        self._enhanced_source = ""
+        self._enhanced_duration_ms = 0
         self._set_state(PodcastPlayerState.STOPPED)
 
     def seek(self, ms: int) -> None:
-        if self._engine is not None:
+        if self._engine is None:
+            return
+        if not self._is_enhanced():
             self._engine.seek(ms)
+            return
+        # Enhanced: there is no seeking within an already-running relay, so
+        # scrubbing restarts it at the new offset -- an async reload (fires
+        # _on_loaded), not the engine's normal instant seek.
+        self._pending_play_after_load = self._state.state is PodcastPlayerState.PLAYING
+        self._set_state(PodcastPlayerState.LOADING)
+        self._start_load(self._enhanced_source, start_ms=max(0, ms))
 
     def set_rate(self, rate: float) -> None:
         if self._engine is not None:
@@ -202,9 +300,15 @@ class PodcastPlayerController:
         return self._volume_percent
 
     def position_ms(self) -> int:
-        return self._engine.position_ms() if self._engine is not None else 0
+        if self._engine is None:
+            return 0
+        if self._is_enhanced():
+            return self._enhanced_offset_ms + self._engine.position_ms()
+        return self._engine.position_ms()
 
     def length_ms(self) -> int:
+        if self._is_enhanced() and self._enhanced_duration_ms:
+            return self._enhanced_duration_ms
         return self._engine.length_ms() if self._engine is not None else 0
 
     def is_playing(self) -> bool:
@@ -218,6 +322,10 @@ class PodcastPlayerController:
                 self._engine.close()
         except Exception:  # noqa: BLE001 - never block app close
             _log.exception("podcast engine close failed during shutdown")
+        try:
+            self._enhance_relay.shutdown()
+        except Exception:  # noqa: BLE001 - never block app close
+            _log.exception("podcast enhancement relay shutdown failed")
 
     def _checkpoint_current(self) -> None:
         """Report the current episode's position to the checkpoint callback
@@ -227,20 +335,32 @@ class PodcastPlayerController:
         show_id, episode_guid = self._state.show_id, self._state.episode_guid
         if not show_id or not episode_guid or self._engine is None:
             return
-        self._on_position_checkpoint(show_id, episode_guid, self._engine.position_ms())
+        self._on_position_checkpoint(show_id, episode_guid, self.position_ms())
 
     # -- engine callbacks -------------------------------------------------
 
     def _on_loaded(self, _length_ms: int) -> None:
         if self._engine is None:
             return
-        if self._resume_ms:
-            self._engine.seek(self._resume_ms, resume=True)
-        else:
+        if self._is_enhanced():
+            # The relay already started at the right offset via ffmpeg -ss;
+            # nothing to seek, just play or pause per the caller's intent.
+            self._engine.play() if self._pending_play_after_load else self._engine.pause()
+        elif self._resume_ms:
+            # resume=<intent>, not hardcoded True: a seek/enhancement-toggle
+            # reload while paused must land back on PAUSED, not force play.
+            self._engine.seek(self._resume_ms, resume=self._pending_play_after_load)
+        elif self._pending_play_after_load:
             self._engine.play()
-        self._engine.set_rate(self._pending_rate)
+        else:
+            self._engine.pause()
         self._resume_ms = 0
-        self._set_state(PodcastPlayerState.PLAYING)
+        self._engine.set_rate(self._pending_rate)
+        self._set_state(
+            PodcastPlayerState.PLAYING
+            if self._pending_play_after_load
+            else PodcastPlayerState.PAUSED
+        )
 
     def _on_finished(self) -> None:
         show_id, episode_guid = self._state.show_id, self._state.episode_guid

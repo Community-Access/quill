@@ -681,7 +681,7 @@ class RadioMixin:
     def open_sound_enhancements(self) -> None:
         """Playback > Sound Enhancements...: an EQ preset + a compressor."""
         from quill.core.radio import history as radio_history
-        from quill.ui.radio.sound_enhance_dialog import SoundEnhanceDialog
+        from quill.ui.sound_enhance_dialog import SoundEnhanceDialog
 
         history = self._radio_history
         dialog = SoundEnhanceDialog(

@@ -680,23 +680,25 @@ _REVIEWED_EGRESS: dict[str, str] = {
 # Codespaces-enabled repository, or real Copilot CLI access.
 
 # ---------------------------------------------------------------------------
-# ffmpeg subprocess egress (Radio Sound Enhancements relay) — manually documented
+# ffmpeg subprocess egress (Sound Enhancements relay: Radio + Podcasts) — manually documented
 # ---------------------------------------------------------------------------
-# quill/core/radio/audio_enhance.py::EnhanceRelay.start
-#   Spawns `ffmpeg -i <stream_url> -af <filters> ... pipe:1` in a subprocess
-#   (build_relay_command) so the station's live stream is filtered (EQ
-#   preset / compressor) before playback, exactly like radio recording's
+# quill/core/audio_enhance.py::EnhanceRelay.start
+#   Spawns `ffmpeg -i <source> -af <filters> ... pipe:1` in a subprocess
+#   (build_relay_command) so the source (a live radio stream or a podcast
+#   episode) is filtered (EQ preset / compressor) before playback, exactly
+#   like radio recording's
 #   existing ffmpeg subprocess (core/radio/recording.py, already documented
 #   in module_size_budgets.json, not a new pattern). Not an urlopen in quill/
-#   source, so the AST scanner above cannot see it. The stream URL is never
-#   attacker-controlled shell text -- it's the station the user already
-#   chose to play, passed as one argv element (never through a shell).
-#   Reached only when the user turns on Playback > Sound Enhancements...
-#   (off, and this relay never starts, by default). ffmpeg's own bytes never
-#   leave the machine either: they're written to a 127.0.0.1-only loopback
-#   HTTP server (_RelayHTTPServer) that the existing wx.media engine reads
-#   from instead of the station's own URL -- no new remote surface, just a
-#   local relay in front of a fetch the engine would otherwise make itself.
+#   source, so the AST scanner above cannot see it. The source is never
+#   attacker-controlled shell text -- it's the station or episode the user
+#   already chose to play, passed as one argv element (never through a
+#   shell). Reached only when the user turns on Playback > Sound
+#   Enhancements... (off, and this relay never starts, by default). ffmpeg's
+#   own bytes never leave the machine either: they're written to a
+#   127.0.0.1-only loopback HTTP server (_RelayHTTPServer) that the existing
+#   player engine reads from instead of the source's own URL -- no new
+#   remote surface, just a local relay in front of a fetch the engine would
+#   otherwise make itself.
 
 
 def _enclosing_function_name(tree: ast.AST, target: ast.AST) -> str:
