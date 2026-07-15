@@ -302,6 +302,7 @@ class StationBrowserDialog:
             self._play_btn.Enable(True)
             self._favorite_btn.Enable(True)
             self._update_favorite_button_label(station)
+            self._refresh_play_button()
 
     def _update_favorite_button_label(self, station: RadioStation) -> None:
         if self._favorites.contains(station):
@@ -318,12 +319,34 @@ class StationBrowserDialog:
     def _on_activate(self, _event: object) -> None:
         self._on_play(_event)
 
+    def _is_station_playing(self, station: RadioStation) -> bool:
+        from quill.ui.radio.player_controller import RadioPlayerState
+
+        state = self._controller.state
+        return (
+            state.station is not None
+            and state.station.stream_url == station.stream_url
+            and state.state in (RadioPlayerState.PLAYING, RadioPlayerState.CONNECTING)
+        )
+
+    def _refresh_play_button(self) -> None:
+        station = self._selected_station()
+        stopping = station is not None and self._is_station_playing(station)
+        self._play_btn.SetLabel("&Stop" if stopping else "&Play")
+        self._play_btn.SetName("Stop this station" if stopping else "Play the selected station")
+
     def _on_play(self, _event: object) -> None:
         station = self._selected_station()
         if station is None:
             return
-        self._controller.play_station(station)
-        self._announce(f"Playing {station.name}")
+        # One button, honest label: it stops the station it started.
+        if self._is_station_playing(station):
+            self._controller.stop()
+            self._announce("Radio stopped")
+        else:
+            self._controller.play_station(station)
+            self._announce(f"Playing {station.name}")
+        self._refresh_play_button()
 
     def _on_volume_slider(self, _event: object) -> None:
         self._controller.set_volume(self._volume_slider.GetValue())

@@ -198,6 +198,11 @@ class PodcastsAppFrame(
         )
         help_menu.Append(palette_id, "Command &Palette...\tCtrl+Shift+P")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_command_palette(), id=palette_id)
+        bug_id = wx.NewIdRef()
+        help_menu.Append(bug_id, "Report a &Bug...")
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.report_app_bug(source_app="QUILL Cast"), id=bug_id
+        )
         help_menu.Append(redeem_id, "Redeem &Unlock Code...")
         help_menu.Append(updates_id, "Check for Up&dates...")
         help_menu.AppendSeparator()
@@ -235,6 +240,7 @@ class PodcastsAppFrame(
             pause_all_id,
             resume_all_id,
             palette_id,
+            bug_id,
             redeem_id,
             updates_id,
             about_id,

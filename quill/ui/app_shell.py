@@ -238,6 +238,83 @@ class AppShellFrame:
                 pass
         self._media_key_ids = []
 
+    # -- report a bug ------------------------------------------------------------
+
+    def report_app_bug(self, *, source_app: str) -> None:
+        """Report a Bug, same shape as QUILL's: the in-app feedback-hub form
+        when a GitHub token is available, else the online support form
+        (opened in the browser and copied to the clipboard) -- a missing or
+        failing token never leaves the user with no path."""
+        from quill.core.feedback_token import github_token_present
+
+        if not github_token_present():
+            self._report_app_bug_online(
+                source_app,
+                "Direct bug reporting isn't set up in this build. You can still "
+                "file the report on the online support form.",
+            )
+            return
+        try:
+            from pathlib import Path
+
+            from feedback_hub import load_schema
+            from feedback_hub.wx_dialog import FeedbackDialog
+
+            from quill import __version__
+            from quill.core.feedback_token import effective_github_token
+
+            schema_path = Path(__file__).parent.parent / "core" / "schemas" / "feedback.json"
+            dialog = FeedbackDialog(
+                self.frame,
+                schema=load_schema(schema_path),
+                app_version=__version__ or "0.0.0",
+                github_token=effective_github_token(),
+            )
+            result = self._show_modal_dialog(dialog, "Report an Issue")
+            dialog.Destroy()
+            if result == wx.ID_OK:
+                self._announce("Thanks -- your report was submitted.")
+        except Exception:  # noqa: BLE001 - never strand the user without a path
+            import logging
+
+            logging.getLogger(__name__).warning("feedback_hub bug report failed", exc_info=True)
+            self._report_app_bug_online(
+                source_app,
+                "The issue form could not be submitted. You can file the report "
+                "on the online support form instead.",
+            )
+
+    def _report_app_bug_online(self, source_app: str, reason: str) -> None:
+        import webbrowser
+
+        from quill import __version__
+        from quill.core.diagnostics import build_support_issue_url, collect_environment_info
+
+        issue_url = build_support_issue_url(
+            {"summary": f"Bug report: {source_app}", "body": ""},
+            source_app=source_app,
+            version=__version__ or "0.0.0",
+            platform_label=str(collect_environment_info()["platform"]),
+        )
+        opened = False
+        try:
+            opened = bool(webbrowser.open(issue_url))
+        except Exception:  # noqa: BLE001 - a browser failure falls back to the clipboard
+            opened = False
+        if wx.TheClipboard.Open():
+            try:
+                wx.TheClipboard.SetData(wx.TextDataObject(issue_url))
+            finally:
+                wx.TheClipboard.Close()
+        tail = (
+            "Your browser is opening it now; the link is also on your clipboard."
+            if opened
+            else "The link is on your clipboard -- paste it into your browser."
+        )
+        message = f"{reason}\n\n{tail}"
+        self._announce(message)
+        self._show_message_box(message, "Report a Bug", wx.OK | wx.ICON_INFORMATION)
+
     # -- command palette -------------------------------------------------------
 
     def open_command_palette(self) -> None:

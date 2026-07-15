@@ -74,6 +74,14 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         set_accessible_name(self._play_stop_btn, "Play")
         self._play_stop_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_play_stop_button())
         buttons.Add(self._play_stop_btn, 0, wx.RIGHT, 6)
+        # Favorite toggle for whatever is on right now: Add while listening
+        # to something new (from ACB Media, Recently Played, a test...),
+        # Remove when the playing station is already saved.
+        self._favorite_toggle_btn = wx.Button(panel, label="Add to Fa&vorites")
+        set_accessible_name(self._favorite_toggle_btn, "Add the playing station to favorites")
+        self._favorite_toggle_btn.Enable(False)
+        self._favorite_toggle_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_favorite_toggle())
+        buttons.Add(self._favorite_toggle_btn, 0, wx.RIGHT, 6)
         for label, handler in (
             ("&Record", lambda _e: self.radio_record_toggle()),
             ("&Browse Stations...", lambda _e: self.open_internet_radio()),
@@ -120,6 +128,46 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         item_id = getattr(self, "_play_menu_item_id", None)
         if menu_bar is not None and item_id is not None:
             menu_bar.SetLabel(int(item_id), f"{label}\tCtrl+P")
+        self._refresh_favorite_toggle()
+
+    def _refresh_favorite_toggle(self) -> None:
+        button = getattr(self, "_favorite_toggle_btn", None)
+        if button is None:
+            return
+        station = self._radio_controller.state.station
+        if station is None:
+            button.Enable(False)
+            if button.GetLabel() != "Add to Fa&vorites":
+                button.SetLabel("Add to Fa&vorites")
+                set_accessible_name(button, "Add the playing station to favorites")
+            return
+        button.Enable(True)
+        saved = self._radio_favorites.contains(station)
+        label = "Remove from Fa&vorites" if saved else "Add to Fa&vorites"
+        if button.GetLabel() != label:
+            button.SetLabel(label)
+            set_accessible_name(
+                button,
+                "Remove the playing station from favorites"
+                if saved
+                else "Add the playing station to favorites",
+            )
+
+    def _on_favorite_toggle(self) -> None:
+        station = self._radio_controller.state.station
+        if station is None:
+            self._announce("Nothing is playing to favorite.")
+            return
+        key = station.station_uuid or station.stream_url
+        if self._radio_favorites.contains(station):
+            self._radio_favorites.remove(key)
+            self._announce(f"Removed {station.display_name} from favorites")
+        else:
+            self._radio_favorites.add(station)
+            self._announce(f"Added {station.display_name} to favorites")
+        self._save_radio_favorites()
+        self._reload_favorites_list()
+        self._refresh_favorite_toggle()
 
     def _play_selected_favorite(self) -> None:
         index = self._favorites_list.GetSelection()
@@ -259,6 +307,11 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         )
         help_menu.Append(palette_id, "Command &Palette...\tCtrl+Shift+P")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_command_palette(), id=palette_id)
+        bug_id = wx.NewIdRef()
+        help_menu.Append(bug_id, "Report a &Bug...")
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.report_app_bug(source_app="Quill Radio"), id=bug_id
+        )
         help_menu.Append(redeem_id, "Redeem &Unlock Code...")
         help_menu.Append(updates_id, "Check for Up&dates...")
         help_menu.AppendSeparator()
@@ -298,6 +351,7 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             recordings_id,
             settings_id,
             palette_id,
+            bug_id,
             redeem_id,
             updates_id,
             about_id,

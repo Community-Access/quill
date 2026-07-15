@@ -254,6 +254,9 @@ class FavoritesManagerDialog:
         selected = self._selected()
         is_station = selected is not None and selected[0] == "station"
         is_folder = selected is not None and selected[0] == "folder"
+        playing = is_station and self._is_favorite_playing(self._selected_favorite())
+        self._play_btn.SetLabel("&Stop" if playing else "&Play")
+        self._play_btn.SetName("Stop this station" if playing else "Play the selected station")
         for button in (self._play_btn, self._remove_btn, self._up_btn, self._down_btn):
             button.Enable(is_station)
         self._folder_btn.Enable(is_station)
@@ -270,12 +273,30 @@ class FavoritesManagerDialog:
         self._on_changed()
         self._refresh_tree(keep_key)
 
+    def _is_favorite_playing(self, favorite: FavoriteStation | None) -> bool:
+        from quill.ui.radio.player_controller import RadioPlayerState
+
+        if favorite is None:
+            return False
+        state = self._controller.state
+        return (
+            state.station is not None
+            and state.station.stream_url == favorite.station.stream_url
+            and state.state in (RadioPlayerState.PLAYING, RadioPlayerState.CONNECTING)
+        )
+
     def _on_play(self) -> None:
         favorite = self._selected_favorite()
         if favorite is None:
             return
-        self._controller.play_station(favorite.station)
-        self._announce(f"Playing {favorite.display_label}")
+        # One button, honest label: while this station plays it reads Stop.
+        if self._is_favorite_playing(favorite):
+            self._controller.stop()
+            self._announce("Radio stopped")
+        else:
+            self._controller.play_station(favorite.station)
+            self._announce(f"Playing {favorite.display_label}")
+        self._on_selection_changed()
 
     def _on_remove(self) -> None:
         wx = self._wx
