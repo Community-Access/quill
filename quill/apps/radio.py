@@ -36,6 +36,10 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         self._register_adp_commands()
         self._register_unlock_code_commands()
         self._ensure_tray_icon(self._build_radio_tray_menu, tooltip=_TITLE)
+        self._register_media_keys({
+            "play_pause": self._on_play_stop_button,
+            "stop": self.radio_stop,
+        })
         self._refresh_statusbar()
         self.frame.Bind(wx.EVT_CLOSE, self._on_radio_app_close)
         self._maybe_resume_last_station()
@@ -190,14 +194,30 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         playback_menu.Append(vol_up_id, "Volume &Up\tCtrl+Up")
         playback_menu.Append(vol_down_id, "Volume &Down\tCtrl+Down")
         playback_menu.AppendSeparator()
+        whats_playing_id = wx.NewIdRef()
+        playback_menu.Append(whats_playing_id, "&What's Playing?\tCtrl+T")
+        self._announce_titles_item_id = wx.NewIdRef()
+        playback_menu.AppendCheckItem(self._announce_titles_item_id, "Announce Trac&k Titles")
+        playback_menu.Check(
+            self._announce_titles_item_id, self._radio_history.announce_track_titles
+        )
         sleep_id = wx.NewIdRef()
         playback_menu.Append(sleep_id, "Sleep &Timer...")
+        wake_id = wx.NewIdRef()
+        playback_menu.Append(wake_id, "Wake-U&p Timer...")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_wake_timer_dialog(), id=wake_id)
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._on_play_stop_button(), id=self._play_menu_item_id
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_mute_toggle(), id=mute_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_volume_up(), id=vol_up_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_volume_down(), id=vol_down_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_whats_playing(), id=whats_playing_id)
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.radio_toggle_title_announcements(),
+            id=self._announce_titles_item_id,
+        )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_sleep_timer_dialog(), id=sleep_id)
         menu_bar.Append(playback_menu, "&Playback")
 
@@ -205,10 +225,15 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         record_id, schedule_id, settings_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
         recordings_id = wx.NewIdRef()
         record_menu.Append(record_id, "&Record Now / Stop Recording")
+        record_station_id = wx.NewIdRef()
+        record_menu.Append(record_station_id, "Record Statio&n...")
         record_menu.Append(schedule_id, "&Schedule Recording...")
         record_menu.Append(recordings_id, "Recordin&gs...")
         record_menu.Append(settings_id, "Recording &Settings...")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_record_toggle(), id=record_id)
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.open_record_station_dialog(), id=record_station_id
+        )
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._radio_open_schedule_recording(), id=schedule_id
         )
@@ -263,8 +288,12 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             mute_id,
             vol_up_id,
             vol_down_id,
+            whats_playing_id,
+            self._announce_titles_item_id,
             sleep_id,
+            wake_id,
             record_id,
+            record_station_id,
             schedule_id,
             recordings_id,
             settings_id,
@@ -343,6 +372,7 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             except Exception:  # noqa: BLE001 - shutdown must never block exit
                 pass
         self._task_manager.shutdown(wait=False)
+        self._unregister_media_keys()
         self._remove_tray_icon()
         event.Skip()
 

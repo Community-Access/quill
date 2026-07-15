@@ -196,6 +196,48 @@ class AppShellFrame:
         self._tray_icon.PopupMenu(menu)
         menu.Destroy()
 
+    # -- hardware media keys ---------------------------------------------------
+
+    _MEDIA_KEY_CODES = {
+        "play_pause": 0xB3,  # VK_MEDIA_PLAY_PAUSE
+        "stop": 0xB2,  # VK_MEDIA_STOP
+        "next": 0xB0,  # VK_MEDIA_NEXT_TRACK
+        "previous": 0xB1,  # VK_MEDIA_PREV_TRACK
+    }
+
+    def _register_media_keys(self, handlers: dict[str, Callable[[], None]]) -> None:
+        """Keyboard media keys drive this app even from the tray (Windows).
+
+        RegisterHotKey is system-wide, so while the app runs it owns the
+        media keys it registers -- exactly the appliance behavior asked for.
+        Keys are released automatically when the frame is destroyed; a key
+        another app already grabbed simply stays theirs (registration fails
+        quietly rather than fighting over it)."""
+        if not sys.platform.startswith("win"):
+            return
+        self._media_key_ids: list[int] = []
+        base = 0x7A00  # arbitrary app-local hotkey-id space
+        for offset, (action, handler) in enumerate(sorted(handlers.items())):
+            keycode = self._MEDIA_KEY_CODES.get(action)
+            if keycode is None:
+                continue
+            hotkey_id = base + offset
+            try:
+                if not self.frame.RegisterHotKey(hotkey_id, 0, keycode):
+                    continue
+            except Exception:  # noqa: BLE001 - a denied key must never block startup
+                continue
+            self.frame.Bind(wx.EVT_HOTKEY, lambda _e, h=handler: h(), id=hotkey_id)
+            self._media_key_ids.append(hotkey_id)
+
+    def _unregister_media_keys(self) -> None:
+        for hotkey_id in getattr(self, "_media_key_ids", []):
+            try:
+                self.frame.UnregisterHotKey(hotkey_id)
+            except Exception:  # noqa: BLE001 - shutdown must never block
+                pass
+        self._media_key_ids = []
+
     # -- command palette -------------------------------------------------------
 
     def open_command_palette(self) -> None:

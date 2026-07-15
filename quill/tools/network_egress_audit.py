@@ -178,6 +178,13 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "User explicitly installs the optional DECTALK voice runtime; download "
         "runs with a verified TLS context and visible progress."
     ),
+    "core/radio/icy.py::read_stream_title": (
+        "What's Playing / announce-track-titles: one short side connection to "
+        "the SAME stream URL the user is already playing (no third party), "
+        "reading only the first ICY metadata block. Runs off-thread on a "
+        "playback-driven cadence or the explicit What's Playing command; "
+        "callers are blocked in Safe Mode with the rest of Internet Radio."
+    ),
     "core/updates.py::fetch_update_manifest": (
         "Update check; gated by the user's update-check setting and shown in the "
         "update UI. Verified TLS."
