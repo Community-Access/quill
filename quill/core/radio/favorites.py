@@ -2,11 +2,11 @@
 custom links) persisted as atomic JSON, the standard QUILL settings-surface
 pattern (see ``core/publish/destinations.py`` for the sibling example).
 
-Every favorite carries an optional ``folder`` name. Radio itself only ever
-uses the default (unfoldered) list today. Podcasts (`quill/core/podcasts/`)
-shipped its own atomic-JSON store (`subscriptions.py`) with a real nested
-folder tree rather than reusing this shape -- a show's folder placement
-needed arbitrary nesting, which this flat `folder` field doesn't support.
+Every favorite carries a ``folder`` path ("" = top level; "News/Morning"
+nests Morning inside News), giving the Favorites Manager arbitrary-depth
+folders on the same flat field every existing favorites file already has.
+Podcasts (`quill/core/podcasts/`) keeps its own id-based folder tree in
+`subscriptions.py`; stations don't need ids, so paths stay simpler here.
 wx-free, strict-typed.
 """
 
@@ -26,7 +26,9 @@ class FavoriteStation:
     """A saved station plus the metadata favorites need beyond the model."""
 
     station: RadioStation
-    #: "" is the default (unfoldered) list; reserved for future organization.
+    #: "" is the top level. Folders nest by path: "News/Morning" is the
+    #: Morning folder inside News -- arbitrary depth on the same flat field
+    #: every existing favorites file already has, so old data loads as-is.
     folder: str = ""
     #: True for a station the user typed in themselves (not from RadioBrowser
     #: search) -- shown as "Custom" in the browser so its provenance is clear.
@@ -66,18 +68,120 @@ class RadioFavoritesStore:
         return len(self.favorites) != before
 
     def move(self, key: str, *, delta: int) -> bool:
-        """Shift the favorite identified by *key* up (-1) or down (+1)."""
+        """Shift the favorite identified by *key* up (-1) or down (+1),
+        staying inside its own folder group: the swap partner is the nearest
+        favorite in that direction with the same ``folder`` value, so display
+        order inside a folder changes without tearing the entry out of it."""
         index = next((i for i, f in enumerate(self.favorites) if f.key == key), -1)
-        if index < 0:
+        if index < 0 or delta == 0:
             return False
-        target = index + delta
-        if target < 0 or target >= len(self.favorites):
+        step = 1 if delta > 0 else -1
+        folder = self.favorites[index].folder
+        target = index + step
+        while 0 <= target < len(self.favorites):
+            if self.favorites[target].folder == folder:
+                self.favorites[index], self.favorites[target] = (
+                    self.favorites[target],
+                    self.favorites[index],
+                )
+                return True
+            target += step
+        return False
+
+    def move_relative_to(self, key: str, target_key: str, *, before: bool) -> bool:
+        """Place *key* directly above (*before*) or below the target favorite.
+
+        The moved entry adopts the target's folder, so Move Above/Move Below
+        across a folder boundary also files the station there -- the same
+        semantics as reordering into a podcast Play Queue position.
+        """
+        if key == target_key:
             return False
-        self.favorites[index], self.favorites[target] = (
-            self.favorites[target],
-            self.favorites[index],
-        )
+        source = next((i for i, f in enumerate(self.favorites) if f.key == key), -1)
+        if source < 0:
+            return False
+        entry = self.favorites.pop(source)
+        target = next((i for i, f in enumerate(self.favorites) if f.key == target_key), -1)
+        if target < 0:
+            self.favorites.insert(source, entry)
+            return False
+        entry.folder = self.favorites[target].folder
+        self.favorites.insert(target if before else target + 1, entry)
         return True
+
+    def set_folder(self, key: str, folder: str) -> bool:
+        """File the favorite under *folder* ("" returns it to the top level)."""
+        favorite = self.find(key)
+        if favorite is None:
+            return False
+        favorite.folder = folder.strip()
+        return True
+
+    def folder_names(self) -> list[str]:
+        """Non-empty folder names in first-appearance (display) order."""
+        seen: list[str] = []
+        for favorite in self.favorites:
+            if favorite.folder and favorite.folder not in seen:
+                seen.append(favorite.folder)
+        return seen
+
+    def rename_folder(self, old: str, new: str) -> int:
+        """Rename a folder everywhere it appears; returns entries touched.
+
+        Folders nest by path ("News/Morning" is Morning inside News), so the
+        rename also carries every descendant folder along by rewriting the
+        path prefix.
+        """
+        new = new.strip().strip("/")
+        if not old or not new or old == new:
+            return 0
+        prefix = old + "/"
+        count = 0
+        for favorite in self.favorites:
+            if favorite.folder == old:
+                favorite.folder = new
+                count += 1
+            elif favorite.folder.startswith(prefix):
+                favorite.folder = new + "/" + favorite.folder[len(prefix) :]
+                count += 1
+        return count
+
+    def delete_folder(self, name: str) -> int:
+        """Dissolve a folder and everything nested inside it: the stations
+        move to the top level of the list (they are never deleted with the
+        folder); returns entries touched."""
+        prefix = name + "/"
+        count = 0
+        for favorite in self.favorites:
+            if favorite.folder == name or favorite.folder.startswith(prefix):
+                favorite.folder = ""
+                count += 1
+        return count
+
+    def search(self, query: str) -> list[FavoriteStation]:
+        """Favorites matching *query*, case-insensitive, in display order.
+
+        Matches the station name, country, language, tags, folder name, and
+        homepage -- rich enough to find one stream among hundreds. An empty
+        query returns everything.
+        """
+        needle = query.strip().lower()
+        if not needle:
+            return list(self.favorites)
+        out: list[FavoriteStation] = []
+        for favorite in self.favorites:
+            station = favorite.station
+            haystack = " ".join((
+                station.name,
+                station.country,
+                getattr(station, "language", ""),
+                " ".join(station.tags),
+                favorite.folder,
+                getattr(station, "homepage", ""),
+            )).lower()
+            if needle in haystack:
+                out.append(favorite)
+        return out
 
 
 def _store_path(data_dir: Path) -> Path:

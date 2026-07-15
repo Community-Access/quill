@@ -55,6 +55,7 @@ class RadioMixin:
             self.frame,
             on_state_changed=self._on_radio_state_changed,
             on_register_click=self._radio_register_click,
+            before_play=self._stop_podcast_before_radio,
         )
         self._radio_recording_settings = load_recording_settings(app_data_dir())
         self._radio_recorder = RadioRecorder(on_state_changed=self._on_radio_recording_changed)
@@ -64,6 +65,15 @@ class RadioMixin:
             recording_settings=self._radio_recording_settings,
             on_fired=self._on_radio_scheduled_recording_fired,
         )
+
+    def _stop_podcast_before_radio(self) -> None:
+        """Never double-play: starting a radio stream silences a playing
+        podcast episode first (position is checkpointed by its stop path).
+        Works in MainFrame (both players live) and is a no-op in standalone
+        Quill Radio, which has no podcast controller."""
+        podcast = getattr(self, "_podcast_controller", None)
+        if podcast is not None:
+            podcast.stop()
 
     def _radio_register_click(self, station_uuid: str) -> None:
         try:
@@ -257,10 +267,26 @@ class RadioMixin:
         if favorites is None or not favorites.favorites:
             return
         sub = wx.Menu()
+        # Mirror the Favorites Manager's nested folders: each folder path
+        # ("News/Morning") becomes a nested submenu, stations appended to
+        # their folder's menu in store order.
+        folder_menus: dict[str, object] = {"": sub}
+
+        def folder_menu(path: str) -> object:
+            existing = folder_menus.get(path)
+            if existing is not None:
+                return existing
+            parent_path, _, name = path.rpartition("/")
+            parent = folder_menu(parent_path)
+            child = wx.Menu()
+            parent.AppendSubMenu(child, name)
+            folder_menus[path] = child
+            return child
+
         for favorite in favorites.favorites:
             station = favorite.station
             item_id = wx.NewIdRef()
-            sub.Append(item_id, station.display_name)
+            folder_menu(favorite.folder).Append(item_id, station.display_name)
             sub.Bind(
                 wx.EVT_MENU,
                 lambda _e, s=station: self._radio_controller.play_station(s),
@@ -320,6 +346,23 @@ class RadioMixin:
         self._announce(f"Radio volume {controller.state.volume_percent}")
 
     # -- dialogs ------------------------------------------------------------
+
+    def open_manage_radio_favorites(self) -> None:
+        """Manage Favorites...: search, play, remove, reorder, nested folders.
+
+        Shared verbatim by embedded QUILL and standalone Quill Radio; every
+        change persists immediately through the same store both read."""
+        from quill.ui.radio.favorites_manager_dialog import FavoritesManagerDialog
+
+        dlg = FavoritesManagerDialog(
+            self.frame,
+            favorites=self._radio_favorites,
+            controller=self._radio_controller,
+            announce_cb=self._announce,
+            on_changed=self._save_radio_favorites,
+        )
+        dlg.show()
+        self._refresh_statusbar()
 
     def open_internet_radio(self) -> None:
         if self._safe_mode:
@@ -390,6 +433,11 @@ class RadioMixin:
                 "radio.find_streams",
                 "Internet Radio: Find Streams from a Website...",
                 self._radio_open_link_finder,
+            ),
+            (
+                "radio.manage_favorites",
+                "Internet Radio: Manage Favorites...",
+                self.open_manage_radio_favorites,
             ),
             (
                 "radio.record_toggle",

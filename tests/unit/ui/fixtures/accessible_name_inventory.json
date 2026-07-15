@@ -480,6 +480,8 @@
   "quill/ui/quillin_wizard.py::open_quillin_wizard::wx.TextCtrl#8": "modal-hook",
   "quill/ui/quillin_wizard.py::open_quillin_wizard::wx.TextCtrl#9": "named",
   "quill/ui/radio/add_station_dialog.py::AddStationDialog.__init__._field::wx.TextCtrl": "named",
+  "quill/ui/radio/favorites_manager_dialog.py::FavoritesManagerDialog.__init__::wx.TextCtrl": "named",
+  "quill/ui/radio/favorites_manager_dialog.py::FavoritesManagerDialog.__init__::wx.TreeCtrl": "named",
   "quill/ui/radio/link_finder_dialog.py::LinkFinderDialog.__init__::wx.ListCtrl": "named",
   "quill/ui/radio/link_finder_dialog.py::LinkFinderDialog.__init__::wx.TextCtrl": "named",
   "quill/ui/radio/recording_settings_dialog.py::RecordingSettingsDialog.__init__::wx.Choice": "named",

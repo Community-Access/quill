@@ -68,3 +68,104 @@ def test_save_and_load_round_trip(tmp_path: Path) -> None:
     assert reloaded.contains(_STATION_A)
     assert reloaded.find("https://b.example.com").folder == "Sleep"
     assert reloaded.find("https://b.example.com").custom is True
+
+
+_STATION_C = RadioStation(
+    name="C jazz",
+    stream_url="https://c.example.com",
+    station_uuid="uuid-c",
+    country="Canada",
+    tags=("jazz",),
+)
+
+
+def _store_abc() -> RadioFavoritesStore:
+    store = RadioFavoritesStore()
+    store.add(_STATION_A)
+    store.add(_STATION_B, custom=True)
+    store.add(_STATION_C)
+    return store
+
+
+def test_move_swaps_within_the_same_folder_only() -> None:
+    store = _store_abc()
+    store.set_folder("uuid-a", "News")
+    store.set_folder("uuid-c", "News")
+    # B sits between A and C but is unfoldered; A moves down past it to C.
+    assert store.move("uuid-a", delta=1) is True
+    assert [f.key for f in store.favorites] == [
+        "uuid-c",
+        "https://b.example.com",
+        "uuid-a",
+    ]
+    # The lone unfoldered favorite has no same-folder partner below.
+    assert store.move("https://b.example.com", delta=1) is False
+
+
+def test_move_relative_to_adopts_target_folder() -> None:
+    store = _store_abc()
+    store.set_folder("uuid-c", "Music")
+    assert store.move_relative_to("uuid-a", "uuid-c", before=False) is True
+    moved = store.find("uuid-a")
+    assert moved is not None and moved.folder == "Music"
+    keys = [f.key for f in store.favorites]
+    assert keys.index("uuid-a") == keys.index("uuid-c") + 1
+
+
+def test_move_relative_to_missing_target_restores_order() -> None:
+    store = _store_abc()
+    before = [f.key for f in store.favorites]
+    assert store.move_relative_to("uuid-a", "no-such-key", before=True) is False
+    assert [f.key for f in store.favorites] == before
+
+
+def test_folder_lifecycle_rename_and_delete() -> None:
+    store = _store_abc()
+    store.set_folder("uuid-a", "News")
+    store.set_folder("uuid-c", "News")
+    assert store.folder_names() == ["News"]
+    assert store.rename_folder("News", "World News") == 2
+    assert store.folder_names() == ["World News"]
+    # Deleting a folder never deletes its stations.
+    assert store.delete_folder("World News") == 2
+    assert store.folder_names() == []
+    assert len(store.favorites) == 3
+
+
+def test_search_matches_name_country_tags_and_folder() -> None:
+    store = _store_abc()
+    store.set_folder("uuid-a", "Morning Shows")
+    assert [f.key for f in store.search("jazz")] == ["uuid-c"]
+    assert [f.key for f in store.search("canada")] == ["uuid-c"]
+    assert [f.key for f in store.search("morning")] == ["uuid-a"]
+    assert len(store.search("")) == 3
+
+
+def test_folder_round_trips_through_save_and_load(tmp_path: Path) -> None:
+    store = _store_abc()
+    store.set_folder("uuid-a", "News")
+    save_favorites(tmp_path, store)
+    loaded = load_favorites(tmp_path)
+    reloaded = loaded.find("uuid-a")
+    assert reloaded is not None and reloaded.folder == "News"
+    assert [f.key for f in loaded.favorites] == [f.key for f in store.favorites]
+
+
+def test_nested_folder_rename_carries_descendants() -> None:
+    store = _store_abc()
+    store.set_folder("uuid-a", "News/Morning")
+    store.set_folder("uuid-c", "News")
+    assert store.rename_folder("News", "World") == 2
+    a = store.find("uuid-a")
+    c = store.find("uuid-c")
+    assert a is not None and a.folder == "World/Morning"
+    assert c is not None and c.folder == "World"
+
+
+def test_nested_folder_delete_moves_all_descendants_to_top_level() -> None:
+    store = _store_abc()
+    store.set_folder("uuid-a", "News/Morning/Early")
+    store.set_folder("uuid-c", "News")
+    assert store.delete_folder("News") == 2
+    assert store.folder_names() == []
+    assert len(store.favorites) == 3

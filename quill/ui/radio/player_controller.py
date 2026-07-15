@@ -85,11 +85,15 @@ class RadioPlayerController:
         *,
         on_state_changed: Callable[[RadioPlaybackState], None] | None = None,
         on_register_click: Callable[[str], None] | None = None,
+        before_play: Callable[[], None] | None = None,
     ) -> None:
         self._on_state_changed = on_state_changed
         #: Best-effort RadioBrowser click-vote hook; injected so this module
         #: never has to know about Safe Mode or the network layer itself.
         self._on_register_click = on_register_click
+        #: Runs before every play_station: the host stops sibling media (the
+        #: podcast player) here so two streams never play over each other.
+        self._before_play = before_play
         self._engine = WxMediaEngine(
             parent,
             on_loaded=self._on_loaded,
@@ -106,7 +110,17 @@ class RadioPlayerController:
         return self._state
 
     def play_station(self, station: RadioStation) -> None:
-        """Start (or switch to) playing *station*."""
+        """Start (or switch to) playing *station*.
+
+        Replaces whatever this controller was playing; the ``before_play``
+        hook additionally silences sibling media (the podcast player) so two
+        streams never play over each other.
+        """
+        if self._before_play is not None:
+            try:
+                self._before_play()
+            except Exception:  # noqa: BLE001 - a sibling-stop must never block play
+                pass
         self._state.station = station
         self._set_state(RadioPlayerState.CONNECTING, message="")
         if not self._engine.load(station.stream_url):
