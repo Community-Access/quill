@@ -271,7 +271,9 @@ class AppShellFrame:
                 last_milestone["value"] = milestone
                 wx.CallAfter(self._announce, f"FFmpeg download {milestone} percent")
 
-        def _install() -> object:
+        def _install(**_kw: object) -> object:
+            # QuillTaskManager always passes cancellation_token/operation_id/
+            # progress_callback; absorb them (same idiom as MainFrame's tasks).
             return install_ffmpeg(_progress)
 
         def _done(_name: str, _result: object) -> None:
@@ -408,7 +410,8 @@ class AppShellFrame:
         self._announce("Checking for updates")
         prefer_portable = self._running_portable_build()
 
-        def _fetch() -> object:
+        def _fetch(**_kw: object) -> object:
+            # Absorb the task manager's injected kwargs (cancellation_token, ...).
             return fetch_releases(api_url, prefer_portable=prefer_portable)
 
         def _report(_name: str, releases: object) -> None:
@@ -474,7 +477,8 @@ class AppShellFrame:
                 last_milestone["value"] = milestone
                 wx.CallAfter(self._announce, f"Update download {milestone} percent")
 
-        def _download() -> None:
+        def _download(**_kw: object) -> None:
+            # Absorb the task manager's injected kwargs (cancellation_token, ...).
             download_release_asset(url, target, progress=_progress)
 
         def _downloaded(_name: str, _result: object) -> None:
