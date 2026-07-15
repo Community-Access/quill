@@ -627,11 +627,22 @@ def test_gather_includes_audio_extras() -> None:
     assert oc.manage_target("audio_extras") is None  # a tool, not a models/voices route
 
 
-def test_audio_extras_installed_only_when_both_halves_present(monkeypatch) -> None:
+def test_audio_extras_installed_only_when_every_piece_present(monkeypatch) -> None:
+    import quill.core.speech.ffmpeg_install as ffmpeg_install
+
     monkeypatch.setattr(oc, "_libmpv_installed", lambda: True)
     monkeypatch.setattr(oc, "_mp3_installed", lambda: False)
+    monkeypatch.setattr(oc, "_ffmpeg_installed", lambda: True)
+    monkeypatch.setattr(ffmpeg_install, "ffmpeg_install_supported", lambda: True)
     assert oc._audio_extras_installed() is False
     monkeypatch.setattr(oc, "_mp3_installed", lambda: True)
+    assert oc._audio_extras_installed() is True
+    # FFmpeg gates the pack only where QUILL can download it (Windows)...
+    monkeypatch.setattr(oc, "_ffmpeg_installed", lambda: False)
+    assert oc._audio_extras_installed() is False
+    # ...elsewhere the system provides ffmpeg and must not pin the row at
+    # 'available to download' forever.
+    monkeypatch.setattr(ffmpeg_install, "ffmpeg_install_supported", lambda: False)
     assert oc._audio_extras_installed() is True
 
 
