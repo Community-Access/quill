@@ -184,11 +184,14 @@ class PodcastsAppFrame(
             menu_bar.Append(adp_menu, "A&udio Description Project")
 
         help_menu = wx.Menu()
-        redeem_id, updates_id, about_id = (
+        palette_id, redeem_id, updates_id, about_id = (
+            wx.NewIdRef(),
             wx.NewIdRef(),
             wx.NewIdRef(),
             wx.NewIdRef(),
         )
+        help_menu.Append(palette_id, "Command &Palette...\tCtrl+Shift+P")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_command_palette(), id=palette_id)
         help_menu.Append(redeem_id, "Redeem &Unlock Code...")
         help_menu.Append(updates_id, "Check for Up&dates...")
         help_menu.AppendSeparator()
@@ -225,6 +228,7 @@ class PodcastsAppFrame(
             sleep_id,
             pause_all_id,
             resume_all_id,
+            palette_id,
             redeem_id,
             updates_id,
             about_id,
