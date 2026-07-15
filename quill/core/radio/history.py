@@ -24,6 +24,10 @@ class RadioHistory:
 
     stations: list[RadioStation] = field(default_factory=list)
     resume_on_launch: bool = False
+    #: Speak "Now playing: ..." when the stream's track title changes.
+    #: Off by default -- in QUILL it would interrupt writing; turning it on
+    #: is one check item on the radio menus.
+    announce_track_titles: bool = False
 
     def record(self, station: RadioStation) -> None:
         """Note that *station* just played; it moves to the front."""
@@ -50,6 +54,7 @@ def load_history(data_dir: Path) -> RadioHistory:
     history = RadioHistory()
     if isinstance(raw, dict):
         history.resume_on_launch = bool(raw.get("resume_on_launch", False))
+        history.announce_track_titles = bool(raw.get("announce_track_titles", False))
         entries = raw.get("stations")
         for entry in entries if isinstance(entries, list) else []:
             if not isinstance(entry, dict):
@@ -69,6 +74,7 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
         _store_path(data_dir),
         {
             "resume_on_launch": history.resume_on_launch,
+            "announce_track_titles": history.announce_track_titles,
             "stations": [station.to_dict() for station in history.stations],
         },
     )

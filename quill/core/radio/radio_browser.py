@@ -189,6 +189,20 @@ def search_stations(
     return stations_from_json(_http_json(path))
 
 
+def lookup_station(station_uuid: str, *, safe_mode: bool = False) -> RadioStation | None:
+    """Fresh directory data for one station -- the stream-fallback path.
+
+    Streams move; RadioBrowser usually knows the current URL before a saved
+    favorite does. Returns None when the uuid is unknown (or blank)."""
+    refuse_in_safe_mode(safe_mode)
+    uuid = station_uuid.strip()
+    if not uuid:
+        return None
+    path = f"/json/stations/byuuid?{urllib.parse.urlencode({'uuids': uuid})}"
+    stations = stations_from_json(_http_json(path))
+    return stations[0] if stations else None
+
+
 def _names_from_json(data: object) -> list[str]:
     if not isinstance(data, list):
         return []

@@ -38,6 +38,12 @@ class PodcastsAppFrame(
         self._register_adp_commands()
         self._register_unlock_code_commands()
         self._ensure_tray_icon(self._build_podcast_tray_menu, tooltip=_TITLE)
+        self._register_media_keys({
+            "play_pause": self.podcast_toggle_play_pause,
+            "stop": self.podcast_stop,
+            "next": self.podcast_next_chapter,
+            "previous": self.podcast_previous_chapter,
+        })
         self._refresh_statusbar()
         self.frame.Bind(wx.EVT_CLOSE, self._on_cast_app_close)
 
@@ -307,6 +313,7 @@ class PodcastsAppFrame(
             except Exception:  # noqa: BLE001 - shutdown must never block exit
                 pass
         self._task_manager.shutdown(wait=False)
+        self._unregister_media_keys()
         self._remove_tray_icon()
         event.Skip()
 

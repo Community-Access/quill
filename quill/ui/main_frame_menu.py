@@ -2308,6 +2308,25 @@ class MenuBuilderMixin:
                 self._menu_label(_("Play &Last Station"), "radio.play_last"),
             )
             self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_play_last(), id=id_radio_play_last)
+            id_radio_whats_playing = wx.NewIdRef()
+            media_menu.Append(
+                id_radio_whats_playing,
+                self._menu_label(_("&What's Playing?"), "radio.whats_playing"),
+            )
+            self.frame.Bind(
+                wx.EVT_MENU, lambda _e: self.radio_whats_playing(), id=id_radio_whats_playing
+            )
+            id_radio_announce_titles = wx.NewIdRef()
+            media_menu.AppendCheckItem(
+                id_radio_announce_titles,
+                self._menu_label(_("Announce Trac&k Titles"), "radio.toggle_title_announcements"),
+            )
+            media_menu.Check(id_radio_announce_titles, self._radio_history.announce_track_titles)
+            self.frame.Bind(
+                wx.EVT_MENU,
+                lambda _e: self.radio_toggle_title_announcements(),
+                id=id_radio_announce_titles,
+            )
             media_menu.AppendSeparator()
             media_menu.Append(
                 id_radio_play_pause, self._menu_label(_("&Play/Pause"), "radio.play_pause")
@@ -2346,6 +2365,26 @@ class MenuBuilderMixin:
                 media_menu.Append(
                     id_radio_recordings,
                     self._menu_label(_("Recordin&gs..."), "radio.recordings"),
+                )
+                id_radio_record_station = wx.NewIdRef()
+                media_menu.Append(
+                    id_radio_record_station,
+                    self._menu_label(_("Record Statio&n..."), "radio.record_station"),
+                )
+                self.frame.Bind(
+                    wx.EVT_MENU,
+                    lambda _e: self.open_record_station_dialog(),
+                    id=id_radio_record_station,
+                )
+                id_radio_wake_timer = wx.NewIdRef()
+                media_menu.Append(
+                    id_radio_wake_timer,
+                    self._menu_label(_("Wake-Up Time&r..."), "radio.wake_timer"),
+                )
+                self.frame.Bind(
+                    wx.EVT_MENU,
+                    lambda _e: self.open_wake_timer_dialog(),
+                    id=id_radio_wake_timer,
                 )
                 self.frame.Bind(
                     wx.EVT_MENU, lambda _e: self.radio_record_toggle(), id=id_radio_record

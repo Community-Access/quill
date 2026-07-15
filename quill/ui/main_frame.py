@@ -6389,6 +6389,9 @@ class MainFrame(
         radio_scheduler = getattr(self, "_radio_scheduler", None)
         if radio_scheduler is not None:
             _safely("radio recording scheduler", radio_scheduler.shutdown)
+        radio_wake = getattr(self, "_radio_wake_watcher", None)
+        if radio_wake is not None:
+            _safely("radio wake-up timer", radio_wake.shutdown)
         podcast_controller = getattr(self, "_podcast_controller", None)
         if podcast_controller is not None:
             _safely("podcast player", podcast_controller.shutdown)
