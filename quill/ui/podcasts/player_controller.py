@@ -70,8 +70,12 @@ class PodcastPlayerController:
         on_state_changed: Callable[[PodcastPlaybackState], None] | None = None,
         on_episode_finished: Callable[[str, str], None] | None = None,
         on_position_checkpoint: Callable[[str, str, int], None] | None = None,
+        before_play: Callable[[], None] | None = None,
     ) -> None:
         self._on_state_changed = on_state_changed
+        #: Runs before every play_episode: the host stops sibling media (the
+        #: radio player) here so two streams never play over each other.
+        self._before_play = before_play
         #: (show_id, episode_guid) -- fired when an episode plays to the end,
         #: so the caller can mark it played / apply delete-after-play.
         self._on_episode_finished = on_episode_finished
@@ -112,7 +116,14 @@ class PodcastPlayerController:
         rate: float = 1.0,
     ) -> None:
         """Start (or switch to) playing one episode; replaces whatever this
-        controller was already playing, so only one thing ever plays."""
+        controller was already playing, so only one thing ever plays. The
+        ``before_play`` hook additionally silences sibling media (the radio
+        player)."""
+        if self._before_play is not None:
+            try:
+                self._before_play()
+            except Exception:  # noqa: BLE001 - a sibling-stop must never block play
+                pass
         self._checkpoint_current()
         self._resume_ms = max(0, int(resume_ms))
         self._pending_rate = rate if rate > 0 else 1.0

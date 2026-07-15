@@ -189,3 +189,62 @@ def test_stop_is_a_noop_when_not_recording() -> None:
     recorder = RadioRecorder()
     recorder.stop()  # no raise
     assert recorder.is_recording is False
+
+
+def test_reconnect_flags_only_for_http_and_when_enabled() -> None:
+    from quill.core.radio.recording import build_record_command
+
+    with_flags = build_record_command(
+        "ffmpeg",
+        "https://stream.example.com/live",
+        Path("out.mp3"),
+        format="mp3",
+        bitrate_kbps=192,
+        duration_seconds=60,
+        reconnect_delay_max=10,
+    )
+    assert "-reconnect" in with_flags
+    assert with_flags[with_flags.index("-reconnect_delay_max") + 1] == "10"
+
+    disabled = build_record_command(
+        "ffmpeg",
+        "https://stream.example.com/live",
+        Path("out.mp3"),
+        format="mp3",
+        bitrate_kbps=192,
+        duration_seconds=60,
+        reconnect_delay_max=0,
+    )
+    assert "-reconnect" not in disabled
+
+    local_file = build_record_command(
+        "ffmpeg",
+        "C:/audio/local.mp3",
+        Path("out.mp3"),
+        format="mp3",
+        bitrate_kbps=192,
+        duration_seconds=60,
+        reconnect_delay_max=10,
+    )
+    assert "-reconnect" not in local_file
+
+
+def test_reconnect_settings_round_trip_and_clamps() -> None:
+    from quill.core.radio.recording import RecordingSettings
+
+    settings = RecordingSettings(
+        reconnect_enabled=False, reconnect_max_attempts=7, reconnect_wait_seconds=30
+    )
+    loaded = RecordingSettings.from_dict(settings.to_dict())
+    assert loaded.reconnect_enabled is False
+    assert loaded.reconnect_max_attempts == 7
+    assert loaded.reconnect_wait_seconds == 30
+    # Old settings files without the keys read as sensible defaults.
+    legacy = RecordingSettings.from_dict({"format": "mp3"})
+    assert legacy.reconnect_enabled is True
+    assert legacy.reconnect_max_attempts == 5
+    assert legacy.reconnect_wait_seconds == 10
+    # Nonsense clamps rather than exploding.
+    weird = RecordingSettings.from_dict({"reconnect_max_attempts": -3, "reconnect_wait_seconds": 0})
+    assert weird.reconnect_max_attempts == 0
+    assert weird.reconnect_wait_seconds == 1

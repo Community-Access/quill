@@ -45,6 +45,7 @@ class PodcastsMixin:
             on_state_changed=self._on_podcast_state_changed,
             on_episode_finished=self._on_podcast_episode_finished,
             on_position_checkpoint=self._on_podcast_position_checkpoint,
+            before_play=self._stop_radio_before_podcast,
         )
         self._podcast_download_queue = PodcastDownloadQueue(
             on_status_changed=self._on_podcast_download_status_changed,
@@ -60,6 +61,14 @@ class PodcastsMixin:
 
     # -- controller callbacks (fire on the UI thread already, per PlayerPanel's
     # / audio engine's own contract of UI-thread callbacks) -----------------
+
+    def _stop_radio_before_podcast(self) -> None:
+        """Never double-play: starting an episode silences a playing radio
+        stream first. Works in MainFrame (both players live) and is a no-op
+        in standalone QUILL Cast, which has no radio controller."""
+        radio = getattr(self, "_radio_controller", None)
+        if radio is not None:
+            radio.stop()
 
     def _on_podcast_state_changed(self, state: PodcastPlaybackState) -> None:
         self._maybe_surface_podcast_status_cell(bool(state.title))

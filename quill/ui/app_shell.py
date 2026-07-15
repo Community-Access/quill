@@ -180,6 +180,19 @@ class AppShellFrame:
         self._tray_icon.PopupMenu(menu)
         menu.Destroy()
 
+    # -- command palette -------------------------------------------------------
+
+    def open_command_palette(self) -> None:
+        """The same Command Palette QUILL has, naturally scoped: a companion
+        app's registry holds only its own commands (radio/podcasts, media,
+        ADP, unlock codes), so the palette lists exactly this app's features."""
+        from quill.ui.palette import CommandPaletteDialog
+
+        dialog = CommandPaletteDialog(
+            self.frame, self.commands, self.features, announce_fn=self._announce
+        )
+        dialog.show_modal_and_run()
+
     # -- per-app update check (Help > Check for Updates...) ------------------
 
     def check_for_app_updates(self, *, repo_slug: str, current_version: str) -> None:

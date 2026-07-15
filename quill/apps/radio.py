@@ -129,7 +129,11 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
     def _reload_favorites_list(self) -> None:
         favorites = self._radio_favorites.favorites
         selected = self._favorites_list.GetSelection()
-        self._favorites_list.Set([f.station.display_name for f in favorites])
+        # Foldered stations speak their folder inline; the full tree lives in
+        # Station > Manage Favorites...
+        self._favorites_list.Set([
+            f.station.display_name + (f" -- in {f.folder}" if f.folder else "") for f in favorites
+        ])
         if favorites:
             self._favorites_list.SetSelection(selected if 0 <= selected < len(favorites) else 0)
 
@@ -143,9 +147,12 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         station_menu.Append(browse_id, "&Browse Stations...")
         station_menu.Append(add_id, "&Add Custom Station...")
         station_menu.Append(find_id, "Find &Streams from a Website...")
+        manage_id = wx.NewIdRef()
+        station_menu.Append(manage_id, "&Manage Favorites...")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_internet_radio(), id=browse_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._radio_open_add_custom(None), id=add_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._radio_open_link_finder(), id=find_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_manage_radio_favorites(), id=manage_id)
         station_menu.AppendSeparator()
         self._append_radio_favorites_submenu(station_menu)
         self._append_acb_media_submenu(station_menu)
@@ -185,13 +192,16 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
 
         record_menu = wx.Menu()
         record_id, schedule_id, settings_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
+        recordings_id = wx.NewIdRef()
         record_menu.Append(record_id, "&Record Now / Stop Recording")
         record_menu.Append(schedule_id, "&Schedule Recording...")
+        record_menu.Append(recordings_id, "Recordin&gs...")
         record_menu.Append(settings_id, "Recording &Settings...")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_record_toggle(), id=record_id)
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._radio_open_schedule_recording(), id=schedule_id
         )
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_radio_recordings(), id=recordings_id)
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._radio_open_recording_settings(), id=settings_id
         )
@@ -205,11 +215,14 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             menu_bar.Append(adp_menu, "A&udio Description Project")
 
         help_menu = wx.Menu()
-        redeem_id, updates_id, about_id = (
+        palette_id, redeem_id, updates_id, about_id = (
+            wx.NewIdRef(),
             wx.NewIdRef(),
             wx.NewIdRef(),
             wx.NewIdRef(),
         )
+        help_menu.Append(palette_id, "Command &Palette...\tCtrl+Shift+P")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_command_palette(), id=palette_id)
         help_menu.Append(redeem_id, "Redeem &Unlock Code...")
         help_menu.Append(updates_id, "Check for Up&dates...")
         help_menu.AppendSeparator()
@@ -229,6 +242,7 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             browse_id,
             add_id,
             find_id,
+            manage_id,
             tray_id,
             exit_id,
             self._now_playing_item_id,
@@ -239,7 +253,9 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             sleep_id,
             record_id,
             schedule_id,
+            recordings_id,
             settings_id,
+            palette_id,
             redeem_id,
             updates_id,
             about_id,
