@@ -108,20 +108,29 @@ class PodcastsAppFrame(AppShellFrame, PodcastsMixin, AdpMixin, UnlockCodesMixin)
         subs_menu.Append(add_id, "&Add Podcast...")
         subs_menu.Append(import_id, "&Import OPML...")
         subs_menu.Append(export_id, "&Export OPML...")
+        folder_id = wx.NewIdRef()
+        subs_menu.Append(folder_id, "New &Folder...")
         local_id, watched_id, acb_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
         subs_menu.Append(local_id, "Add &Local Podcast...")
         subs_menu.Append(watched_id, "Scan &Watched Folders")
         subs_menu.Append(acb_id, "Subscribe to ACB Media &Podcasts")
         subs_menu.AppendSeparator()
         subs_menu.Append(settings_id, "Podcast &Settings...")
+        subs_menu.AppendSeparator()
+        tray_id, exit_id = wx.NewIdRef(), wx.NewIdRef()
+        subs_menu.Append(tray_id, "Send to &Tray\tCtrl+W")
+        subs_menu.Append(exit_id, "E&xit")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_podcast_manager(), id=manager_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._podcast_open_add_dialog(), id=add_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._podcast_open_import_opml(), id=import_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._podcast_export_opml(), id=export_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._podcast_open_settings(), id=settings_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._new_library_folder(), id=folder_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.add_local_podcast(), id=local_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.scan_watched_podcast_folders(), id=watched_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.subscribe_acb_media_podcasts(), id=acb_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._send_to_tray(), id=tray_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.frame.Close(), id=exit_id)
         menu_bar.Append(subs_menu, "&Subscriptions")
 
         episode_menu = wx.Menu()
@@ -166,18 +175,15 @@ class PodcastsAppFrame(AppShellFrame, PodcastsMixin, AdpMixin, UnlockCodesMixin)
             menu_bar.Append(adp_menu, "A&udio Description Project")
 
         help_menu = wx.Menu()
-        open_quill_id, redeem_id, updates_id, about_id = (
-            wx.NewIdRef(),
+        redeem_id, updates_id, about_id = (
             wx.NewIdRef(),
             wx.NewIdRef(),
             wx.NewIdRef(),
         )
-        help_menu.Append(open_quill_id, "&Open in Quill")
         help_menu.Append(redeem_id, "Redeem &Unlock Code...")
         help_menu.Append(updates_id, "Check for Up&dates...")
         help_menu.AppendSeparator()
         help_menu.Append(about_id, "&About QUILL Cast")
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_in_quill(), id=open_quill_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_redeem_unlock_code_dialog(), id=redeem_id)
         self.frame.Bind(
             wx.EVT_MENU,
@@ -188,6 +194,51 @@ class PodcastsAppFrame(AppShellFrame, PodcastsMixin, AdpMixin, UnlockCodesMixin)
         menu_bar.Append(help_menu, "&Help")
 
         self.frame.SetMenuBar(menu_bar)
+        # Pin every menu id for the frame's lifetime (see _keep_menu_ids).
+        self._keep_menu_ids(
+            manager_id,
+            add_id,
+            import_id,
+            export_id,
+            settings_id,
+            folder_id,
+            local_id,
+            watched_id,
+            acb_id,
+            tray_id,
+            exit_id,
+            self._now_playing_item_id,
+            play_id,
+            stop_id,
+            next_id,
+            prev_id,
+            note_id,
+            pause_all_id,
+            resume_all_id,
+            redeem_id,
+            updates_id,
+            about_id,
+        )
+
+    def _new_library_folder(self) -> None:
+        """Create a top-level library folder without opening the Manager --
+        the same store the Manager's own New Folder button writes to."""
+        dialog = wx.TextEntryDialog(self.frame, "Folder name:", "New Folder")
+        try:
+            if dialog.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
+                return
+            name = dialog.GetValue().strip()
+        finally:
+            dialog.Destroy()
+        if not name:
+            return
+        self._podcast_library.add_folder(name, parent_folder_id=None)
+        self._save_podcast_library()
+        self._announce(f"Created folder {name}. Organize shows into it from the Podcast Manager.")
+
+    def _send_to_tray(self) -> None:
+        self.frame.Hide()
+        self._announce("QUILL Cast is still running in the system tray.")
 
     def _show_about(self) -> None:
         self._show_message_box(

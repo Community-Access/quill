@@ -145,6 +145,13 @@ class RadioAppFrame(AppShellFrame, RadioMixin, AdpMixin, UnlockCodesMixin):
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._radio_open_link_finder(), id=find_id)
         station_menu.AppendSeparator()
         self._append_radio_favorites_submenu(station_menu)
+        self._append_acb_media_submenu(station_menu)
+        station_menu.AppendSeparator()
+        tray_id, exit_id = wx.NewIdRef(), wx.NewIdRef()
+        station_menu.Append(tray_id, "Send to &Tray\tCtrl+W")
+        station_menu.Append(exit_id, "E&xit")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._send_to_tray(), id=tray_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.frame.Close(), id=exit_id)
         menu_bar.Append(station_menu, "&Station")
 
         playback_menu = wx.Menu()
@@ -210,6 +217,29 @@ class RadioAppFrame(AppShellFrame, RadioMixin, AdpMixin, UnlockCodesMixin):
         menu_bar.Append(help_menu, "&Help")
 
         self.frame.SetMenuBar(menu_bar)
+        # Pin every menu id for the frame's lifetime (see _keep_menu_ids).
+        self._keep_menu_ids(
+            browse_id,
+            add_id,
+            find_id,
+            tray_id,
+            exit_id,
+            self._now_playing_item_id,
+            self._play_menu_item_id,
+            mute_id,
+            vol_up_id,
+            vol_down_id,
+            record_id,
+            schedule_id,
+            settings_id,
+            redeem_id,
+            updates_id,
+            about_id,
+        )
+
+    def _send_to_tray(self) -> None:
+        self.frame.Hide()
+        self._announce("Quill Radio is still running in the system tray.")
 
     def _show_about(self) -> None:
         self._show_message_box(

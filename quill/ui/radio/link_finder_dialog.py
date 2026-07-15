@@ -42,6 +42,7 @@ class LinkFinderDialog:
         self._candidates: list[PageStreamCandidate] = []
         self._page_title = ""
         self._favicon_url = ""
+        self._testing = False
 
         self.dialog = wx.Dialog(
             parent,
@@ -174,21 +175,37 @@ class LinkFinderDialog:
 
     def _on_result_selected(self, _event: object) -> None:
         has_selection = self._selected_candidate() is not None
-        self._test_btn.Enable(has_selection)
+        self._test_btn.Enable(has_selection or self._testing)
         self._use_btn.Enable(has_selection)
 
     def _on_result_deselected(self, _event: object) -> None:
-        self._test_btn.Enable(False)
+        # Never strand a playing test behind a disabled button: while testing,
+        # the button is the Stop control and must stay reachable.
+        self._test_btn.Enable(self._testing)
         self._use_btn.Enable(False)
 
     def _on_test(self, _event: object) -> None:
+        # Toggle: while a test plays, the same button reads Stop and stops it.
+        if self._testing:
+            self._controller.stop()
+            self._set_testing(False)
+            self._announce("Test stopped")
+            return
         candidate = self._selected_candidate()
         if candidate is None:
             return
         name = candidate.label or self._page_title or candidate.url
         station = RadioStation(name=name, stream_url=candidate.url)
         self._controller.play_station(station)
+        self._set_testing(True)
         self._announce(f"Testing {station.name}")
+
+    def _set_testing(self, testing: bool) -> None:
+        self._testing = testing
+        self._test_btn.SetLabel("S&top Test" if testing else "&Test")
+        self._test_btn.SetName(
+            "Stop the test playback" if testing else "Play the selected candidate link now"
+        )
 
     def _on_use(self, _event: object) -> None:
         candidate = self._selected_candidate()
