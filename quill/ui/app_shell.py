@@ -291,16 +291,22 @@ class AppShellFrame:
 
     # -- report a bug ------------------------------------------------------------
 
-    def report_app_bug(self, *, source_app: str) -> None:
+    def report_app_bug(self, *, source_app: str, app_version: str = "") -> None:
         """Report a Bug, same shape as QUILL's: the in-app feedback-hub form
         when a GitHub token is available, else the online support form
         (opened in the browser and copied to the clipboard) -- a missing or
-        failing token never leaves the user with no path."""
+        failing token never leaves the user with no path.
+
+        Reports carry THIS app's identity and version ("Quill Radio 1.0.0"),
+        not the underlying quill package version, so triage always knows
+        which product the user was actually running."""
         from quill.core.feedback_token import github_token_present
 
+        version = f"{source_app} {app_version}" if app_version else source_app
         if not github_token_present():
             self._report_app_bug_online(
                 source_app,
+                app_version,
                 "Direct bug reporting isn't set up in this build. You can still "
                 "file the report on the online support form.",
             )
@@ -311,14 +317,13 @@ class AppShellFrame:
             from feedback_hub import load_schema
             from feedback_hub.wx_dialog import FeedbackDialog
 
-            from quill import __version__
             from quill.core.feedback_token import effective_github_token
 
             schema_path = Path(__file__).parent.parent / "core" / "schemas" / "feedback.json"
             dialog = FeedbackDialog(
                 self.frame,
                 schema=load_schema(schema_path),
-                app_version=__version__ or "0.0.0",
+                app_version=version,
                 github_token=effective_github_token(),
             )
             result = self._show_modal_dialog(dialog, "Report an Issue")
@@ -331,20 +336,20 @@ class AppShellFrame:
             logging.getLogger(__name__).warning("feedback_hub bug report failed", exc_info=True)
             self._report_app_bug_online(
                 source_app,
+                app_version,
                 "The issue form could not be submitted. You can file the report "
                 "on the online support form instead.",
             )
 
-    def _report_app_bug_online(self, source_app: str, reason: str) -> None:
+    def _report_app_bug_online(self, source_app: str, app_version: str, reason: str) -> None:
         import webbrowser
 
-        from quill import __version__
         from quill.core.diagnostics import build_support_issue_url, collect_environment_info
 
         issue_url = build_support_issue_url(
             {"summary": f"Bug report: {source_app}", "body": ""},
             source_app=source_app,
-            version=__version__ or "0.0.0",
+            version=app_version or "0.0.0",
             platform_label=str(collect_environment_info()["platform"]),
         )
         opened = False

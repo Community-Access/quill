@@ -201,7 +201,9 @@ class PodcastsAppFrame(
         bug_id = wx.NewIdRef()
         help_menu.Append(bug_id, "Report a &Bug...")
         self.frame.Bind(
-            wx.EVT_MENU, lambda _e: self.report_app_bug(source_app="QUILL Cast"), id=bug_id
+            wx.EVT_MENU,
+            lambda _e: self.report_app_bug(source_app="QUILL Cast", app_version=_VERSION),
+            id=bug_id,
         )
         help_menu.Append(redeem_id, "Redeem &Unlock Code...")
         help_menu.Append(updates_id, "Check for Up&dates...")
