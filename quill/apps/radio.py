@@ -61,11 +61,20 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
 
         favorites_label = wx.StaticText(panel, label="&Favorite stations:")
         root.Add(favorites_label, 0, wx.LEFT | wx.RIGHT, 8)
-        self._favorites_list = wx.ListBox(panel)
-        set_accessible_name(self._favorites_list, "Favorite stations")
-        root.Add(self._favorites_list, 1, wx.EXPAND | wx.ALL, 8)
-        self._favorites_list.Bind(wx.EVT_LISTBOX_DCLICK, lambda _e: self._play_selected_favorite())
-        self._favorites_list.Bind(wx.EVT_KEY_DOWN, self._on_favorites_key)
+        # The same nested folder tree the Favorites Manager shows -- the
+        # structure you build is right on the main page, not behind a dialog.
+        self._favorites_tree = wx.TreeCtrl(
+            panel, style=wx.TR_HAS_BUTTONS | wx.TR_LINES_AT_ROOT | wx.TR_HIDE_ROOT
+        )
+        set_accessible_name(
+            self._favorites_tree,
+            "Favorite stations, organized in your folders; Enter plays, Delete "
+            "removes, F2 renames, Shift+F10 opens all actions",
+        )
+        root.Add(self._favorites_tree, 1, wx.EXPAND | wx.ALL, 8)
+        self._favorites_tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self._on_favorites_activated)
+        self._favorites_tree.Bind(wx.EVT_TREE_ITEM_MENU, self._on_favorites_context_menu)
+        self._favorites_tree.Bind(wx.EVT_KEY_DOWN, self._on_favorites_key)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         # One transport button, not two: it reads Play when idle and Stop
@@ -94,14 +103,191 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
 
         panel.SetSizer(root)
         self._main_panel = panel
-        self._reload_favorites_list()
-        self._favorites_list.SetFocus()
+        self._reload_favorites_tree()
+        self._favorites_tree.SetFocus()
 
-    def _on_favorites_key(self, event: wx.KeyEvent) -> None:
-        if event.GetKeyCode() in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
+    # -- favorites tree ---------------------------------------------------------
+
+    def _reload_favorites_tree(self, keep_key: str | None = None) -> None:
+        tree = self._favorites_tree
+        if keep_key is None:
+            selected = self._selected_tree_data()
+            if selected is not None and selected[0] == "station":
+                keep_key = selected[1]
+        tree.DeleteAllItems()
+        root = tree.AddRoot("Favorites")
+        folder_items: dict[str, wx.TreeItemId] = {}
+        select_item = None
+
+        def folder_item(path: str) -> wx.TreeItemId:
+            if not path:
+                return root
+            existing = folder_items.get(path)
+            if existing is not None:
+                return existing
+            parent_path, _, name = path.rpartition("/")
+            item = tree.AppendItem(folder_item(parent_path), name)
+            tree.SetItemData(item, ("folder", path))
+            folder_items[path] = item
+            return item
+
+        store = self._radio_favorites
+        for path in store.folder_names():
+            folder_item(path)
+        for favorite in store.favorites:
+            item = tree.AppendItem(folder_item(favorite.folder), favorite.display_label)
+            tree.SetItemData(item, ("station", favorite.key))
+            if favorite.key == keep_key:
+                select_item = item
+        tree.ExpandAll()
+        first, _cookie = tree.GetFirstChild(root)
+        if select_item is not None:
+            tree.SelectItem(select_item)
+        elif first.IsOk():
+            tree.SelectItem(first)
+
+    def _selected_tree_data(self) -> tuple[str, str] | None:
+        tree = getattr(self, "_favorites_tree", None)
+        if tree is None:
+            return None
+        item = tree.GetSelection()
+        if not item.IsOk():
+            return None
+        data = tree.GetItemData(item)
+        return data if isinstance(data, tuple) and len(data) == 2 else None
+
+    def _selected_favorite(self):
+        selected = self._selected_tree_data()
+        if selected is None or selected[0] != "station":
+            return None
+        return self._radio_favorites.find(selected[1])
+
+    def _on_favorites_activated(self, event: wx.CommandEvent) -> None:
+        selected = self._selected_tree_data()
+        if selected is not None and selected[0] == "station":
             self._play_selected_favorite()
             return
+        event.Skip()  # a folder: let the tree toggle it
+
+    def _on_favorites_key(self, event: wx.KeyEvent) -> None:
+        code = event.GetKeyCode()
+        if code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
+            self._on_favorites_activated(event)
+            return
+        if code in (wx.WXK_DELETE, wx.WXK_NUMPAD_DELETE):
+            self._on_tree_remove()
+            return
+        if code == wx.WXK_F2:
+            self._on_tree_rename()
+            return
         event.Skip()
+
+    def _on_favorites_context_menu(self, _event: object) -> None:
+        from quill.ui.radio.player_controller import RadioPlayerState
+
+        selected = self._selected_tree_data()
+        if selected is None:
+            return
+        menu = wx.Menu()
+        entries: list[tuple[str, object]] = []
+        if selected[0] == "station":
+            favorite = self._selected_favorite()
+            playing = (
+                favorite is not None
+                and self._radio_controller.state.station is not None
+                and self._radio_controller.state.station.stream_url == favorite.station.stream_url
+                and self._radio_controller.state.state
+                in (RadioPlayerState.PLAYING, RadioPlayerState.CONNECTING)
+            )
+            entries = [
+                ("&Stop" if playing else "&Play", self._on_play_stop_context),
+                ("Rena&me...\tF2", self._on_tree_rename),
+                ("Move to F&older...", self._on_tree_move_to_folder),
+                ("&Remove...\tDelete", self._on_tree_remove),
+                ("Manage Fa&vorites...", self.open_manage_radio_favorites),
+            ]
+        else:
+            entries = [
+                ("Rena&me Folder...\tF2", self._on_tree_rename),
+                ("&Delete Folder...", self._on_tree_remove),
+                ("Manage Fa&vorites...", self.open_manage_radio_favorites),
+            ]
+        id_refs = []
+        for label, handler in entries:
+            item_id = wx.NewIdRef()
+            id_refs.append(item_id)
+            menu.Append(item_id, label)
+            menu.Bind(wx.EVT_MENU, lambda _e, h=handler: h(), id=item_id)
+        self._keep_menu_ids(*id_refs)
+        self._favorites_tree.PopupMenu(menu)
+        menu.Destroy()
+
+    def _on_play_stop_context(self) -> None:
+        from quill.ui.radio.player_controller import RadioPlayerState
+
+        favorite = self._selected_favorite()
+        if favorite is None:
+            return
+        state = self._radio_controller.state
+        if (
+            state.station is not None
+            and state.station.stream_url == favorite.station.stream_url
+            and state.state in (RadioPlayerState.PLAYING, RadioPlayerState.CONNECTING)
+        ):
+            self.radio_stop()
+        else:
+            self._radio_controller.play_station(favorite.station)
+            self._announce(f"Playing {favorite.display_label}")
+
+    def _on_tree_rename(self) -> None:
+        from quill.ui.radio import favorite_actions
+
+        selected = self._selected_tree_data()
+        if selected is None:
+            return
+        if selected[0] == "station":
+            favorite = self._selected_favorite()
+            if favorite is not None and favorite_actions.rename_favorite(
+                self.frame, self._radio_favorites, favorite, announce=self._announce
+            ):
+                self._save_radio_favorites()
+                self._reload_favorites_tree(keep_key=favorite.key)
+        elif favorite_actions.rename_folder_prompt(
+            self.frame, self._radio_favorites, selected[1], announce=self._announce
+        ):
+            self._save_radio_favorites()
+            self._reload_favorites_tree()
+
+    def _on_tree_remove(self) -> None:
+        from quill.ui.radio import favorite_actions
+
+        selected = self._selected_tree_data()
+        if selected is None:
+            return
+        if selected[0] == "station":
+            favorite = self._selected_favorite()
+            if favorite is not None and favorite_actions.remove_favorite(
+                self.frame, self._radio_favorites, favorite, announce=self._announce
+            ):
+                self._save_radio_favorites()
+                self._reload_favorites_tree()
+        elif favorite_actions.delete_folder_prompt(
+            self.frame, self._radio_favorites, selected[1], announce=self._announce
+        ):
+            self._save_radio_favorites()
+            self._reload_favorites_tree()
+
+    def _on_tree_move_to_folder(self) -> None:
+        from quill.ui.radio import favorite_actions
+
+        favorite = self._selected_favorite()
+        if favorite is None:
+            return
+        if favorite_actions.move_favorite_to_folder(
+            self.frame, self._radio_favorites, favorite, announce=self._announce
+        ):
+            self._save_radio_favorites()
+            self._reload_favorites_tree(keep_key=favorite.key)
 
     def _on_play_stop_button(self) -> None:
         from quill.ui.radio.player_controller import RadioPlayerState
@@ -166,29 +352,16 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             self._radio_favorites.add(station)
             self._announce(f"Added {station.display_name} to favorites")
         self._save_radio_favorites()
-        self._reload_favorites_list()
+        self._reload_favorites_tree()
         self._refresh_favorite_toggle()
 
     def _play_selected_favorite(self) -> None:
-        index = self._favorites_list.GetSelection()
-        favorites = self._radio_favorites.favorites
-        if index < 0 or index >= len(favorites):
+        favorite = self._selected_favorite()
+        if favorite is None:
             self._announce("No station selected. Add favorites from Browse Stations.")
             return
-        favorite = favorites[index]
         self._radio_controller.play_station(favorite.station)
         self._announce(f"Playing {favorite.display_label}")
-
-    def _reload_favorites_list(self) -> None:
-        favorites = self._radio_favorites.favorites
-        selected = self._favorites_list.GetSelection()
-        # Foldered stations speak their folder inline; the full tree lives in
-        # Station > Manage Favorites...
-        self._favorites_list.Set([
-            f.display_label + (f" -- in {f.folder}" if f.folder else "") for f in favorites
-        ])
-        if favorites:
-            self._favorites_list.SetSelection(selected if 0 <= selected < len(favorites) else 0)
 
     # -- menu bar -------------------------------------------------------------
 
@@ -408,8 +581,15 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         if now_playing is not None:
             now_playing.SetLabel(text)
         self._refresh_play_stop_button()
-        if getattr(self, "_favorites_list", None) is not None:
-            self._reload_favorites_list()
+
+    def _save_radio_favorites(self) -> None:
+        # Every favorites mutation -- the toggle button, tree actions, the
+        # Favorites Manager -- funnels through this save; refreshing here
+        # keeps the main-page tree true without rebuilding it on every
+        # unrelated status change.
+        super()._save_radio_favorites()
+        if getattr(self, "_favorites_tree", None) is not None:
+            self._reload_favorites_tree()
 
     # -- lifecycle --------------------------------------------------------------
 

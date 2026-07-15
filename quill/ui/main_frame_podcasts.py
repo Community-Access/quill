@@ -202,7 +202,10 @@ class PodcastsMixin:
         radio_controller = getattr(self, "_radio_controller", None)
         radio_text = radio_controller.state.status_text if radio_controller is not None else ""
         parts = [t for t in (radio_text, text) if t and "stopped" not in t.lower()]
-        tooltip = "Quill - " + " | ".join(parts) if parts else "Quill"
+        # The tooltip is the tray icon's accessible name: brand it with the
+        # hosting app's own title ("QUILL Cast" standalone, "Quill" embedded).
+        app_name = self.frame.GetTitle() or "Quill"
+        tooltip = f"{app_name} - " + " | ".join(parts) if parts else app_name
         try:
             icon = getattr(self, "_app_icon", None) or wx.ArtProvider.GetIcon(
                 wx.ART_INFORMATION, wx.ART_OTHER, (16, 16)

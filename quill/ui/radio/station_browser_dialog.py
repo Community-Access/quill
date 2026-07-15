@@ -178,6 +178,7 @@ class StationBrowserDialog:
         self._category_list.Bind(wx.EVT_LISTBOX, self._on_category_selected)
         self._results.Bind(wx.EVT_LIST_ITEM_SELECTED, self._on_result_selected)
         self._results.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self._on_activate)
+        self._results.Bind(wx.EVT_CONTEXT_MENU, self._on_results_context_menu)
         self._play_btn.Bind(wx.EVT_BUTTON, self._on_play)
         self._favorite_btn.Bind(wx.EVT_BUTTON, self._on_toggle_favorite)
         add_custom_btn.Bind(wx.EVT_BUTTON, self._on_add_custom)
@@ -318,6 +319,34 @@ class StationBrowserDialog:
 
     def _on_activate(self, _event: object) -> None:
         self._on_play(_event)
+
+    def _on_results_context_menu(self, _event: object) -> None:
+        """Shift+F10 / right-click on a result: every action for the
+        highlighted station, mirroring the main page's favorites tree."""
+        import wx
+
+        station = self._selected_station()
+        if station is None:
+            return
+        playing = self._is_station_playing(station)
+        saved = self._favorites.contains(station)
+        entries = [
+            ("&Stop" if playing else "&Play", lambda: self._on_play(None)),
+            (
+                "Remove from &Favorites" if saved else "Add to &Favorites",
+                lambda: self._on_toggle_favorite(None),
+            ),
+        ]
+        menu = wx.Menu()
+        id_refs = []
+        for label, handler in entries:
+            item_id = wx.NewIdRef()
+            id_refs.append(item_id)
+            menu.Append(item_id, label)
+            menu.Bind(wx.EVT_MENU, lambda _e, h=handler: h(), id=item_id)
+        self._context_menu_id_refs = id_refs  # pinned while the popup can fire
+        self._results.PopupMenu(menu)
+        menu.Destroy()
 
     def _is_station_playing(self, station: RadioStation) -> bool:
         from quill.ui.radio.player_controller import RadioPlayerState

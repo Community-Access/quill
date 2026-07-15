@@ -458,7 +458,11 @@ class RadioMixin:
         wx = self._wx
         controller = getattr(self, "_radio_controller", None)
         text = controller.state.status_text if controller is not None else ""
-        tooltip = f"Quill - {text}" if text and "stopped" not in text.lower() else "Quill"
+        # The tray icon's tooltip is also its accessible name: brand it with
+        # the hosting app's own title ("Quill Radio" standalone, "Quill"
+        # embedded) so tray navigation never reads the wrong product.
+        app_name = self.frame.GetTitle() or "Quill"
+        tooltip = f"{app_name} - {text}" if text and "stopped" not in text.lower() else app_name
         try:
             icon = getattr(self, "_app_icon", None) or wx.ArtProvider.GetIcon(
                 wx.ART_INFORMATION, wx.ART_OTHER, (16, 16)

@@ -299,24 +299,16 @@ class FavoritesManagerDialog:
         self._on_selection_changed()
 
     def _on_remove(self) -> None:
-        wx = self._wx
+        from quill.ui.radio.favorite_actions import remove_favorite
+
         favorite = self._selected_favorite()
         if favorite is None:
             return
-        name = favorite.display_label
-        answer = wx.MessageBox(  # MSGBOX-OK: parented confirmation inside a managed dialog
-            f"Remove {name} from your favorites?",
-            "Remove Favorite",
-            wx.ICON_QUESTION | wx.YES_NO,
-            self.dialog,
-        )
-        if answer != wx.YES:
-            return
-        if self._marked_key == favorite.key:
-            self._marked_key = None
-        self._store.remove(favorite.key)
-        self._changed()
-        self._announce(f"Removed {name} from favorites")
+        key = favorite.key
+        if remove_favorite(self.dialog, self._store, favorite, announce=self._announce):
+            if self._marked_key == key:
+                self._marked_key = None
+            self._changed()
 
     def _on_move(self, delta: int) -> None:
         favorite = self._selected_favorite()
@@ -354,43 +346,13 @@ class FavoritesManagerDialog:
         self._announce(f"Moved {where} {target.display_label}{suffix}")
 
     def _on_move_to_folder(self) -> None:
-        wx = self._wx
+        from quill.ui.radio.favorite_actions import move_favorite_to_folder
+
         favorite = self._selected_favorite()
         if favorite is None:
             return
-        choices = [_TOP_LEVEL_CHOICE, *self._store.folder_names(), _NEW_FOLDER_CHOICE]
-        picker = wx.SingleChoiceDialog(
-            self.dialog,
-            "Where should this station live? Choose a folder, the top level, "
-            "or create a new folder (use / to nest, like News/Morning).",
-            f"Move {favorite.display_label} to Folder",
-            choices,
-        )
-        try:
-            if picker.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
-                return
-            choice = picker.GetStringSelection()
-        finally:
-            picker.Destroy()
-        if choice == _NEW_FOLDER_CHOICE:
-            entry = wx.TextEntryDialog(
-                self.dialog,
-                "New folder path (use / to nest, like News/Morning):",
-                "New Folder",
-            )
-            try:
-                if entry.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
-                    return
-                choice = entry.GetValue().strip().strip("/")
-            finally:
-                entry.Destroy()
-            if not choice:
-                return
-        folder = "" if choice == _TOP_LEVEL_CHOICE else choice
-        self._store.set_folder(favorite.key, folder)
-        self._changed(keep_key=favorite.key)
-        destination = folder or "the top level"
-        self._announce(f"Filed {favorite.display_label} under {destination}")
+        if move_favorite_to_folder(self.dialog, self._store, favorite, announce=self._announce):
+            self._changed(keep_key=favorite.key)
 
     def _on_rename(self) -> None:
         """Rename whatever is selected: a station gets a custom display name,
@@ -404,28 +366,13 @@ class FavoritesManagerDialog:
             self._on_rename_folder()
 
     def _on_rename_station(self) -> None:
-        wx = self._wx
+        from quill.ui.radio.favorite_actions import rename_favorite
+
         favorite = self._selected_favorite()
         if favorite is None:
             return
-        entry = wx.TextEntryDialog(
-            self.dialog,
-            f"Your name for this station (leave blank to use {favorite.station.display_name}):",
-            "Rename Station",
-            value=favorite.custom_name,
-        )
-        try:
-            if entry.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
-                return
-            name = entry.GetValue().strip()
-        finally:
-            entry.Destroy()
-        self._store.rename(favorite.key, name)
-        self._changed(keep_key=favorite.key)
-        if name:
-            self._announce(f"Station renamed to {name}")
-        else:
-            self._announce(f"Station name restored to {favorite.display_label}")
+        if rename_favorite(self.dialog, self._store, favorite, announce=self._announce):
+            self._changed(keep_key=favorite.key)
 
     def _on_rename_folder(self) -> None:
         wx = self._wx
