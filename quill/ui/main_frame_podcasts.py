@@ -229,11 +229,24 @@ class PodcastsMixin:
         return text
 
     def _build_podcast_status_bar_menu(self, menu: object) -> None:
+        from quill.ui.podcasts.player_controller import PodcastPlayerState
+
         wx = self._wx
         play_id, stop_id = wx.NewIdRef(), wx.NewIdRef()
         pause_all_id, resume_all_id = wx.NewIdRef(), wx.NewIdRef()
         open_id = wx.NewIdRef()
-        menu.Append(play_id, "Play/Pause")
+        # Episodes, unlike live streams, pause meaningfully (position kept),
+        # so Pause/Resume and Stop both stay -- but the transport label is
+        # state-aware since this menu is rebuilt on every popup.
+        controller = getattr(self, "_podcast_controller", None)
+        state = controller.state.state if controller is not None else None
+        if state is PodcastPlayerState.PLAYING:
+            transport_label = "Pause"
+        elif state is PodcastPlayerState.PAUSED:
+            transport_label = "Resume"
+        else:
+            transport_label = "Play"
+        menu.Append(play_id, transport_label)
         menu.Append(stop_id, "Stop")
         menu.Bind(wx.EVT_MENU, lambda _e: self.podcast_toggle_play_pause(), id=play_id)
         menu.Bind(wx.EVT_MENU, lambda _e: self.podcast_stop(), id=stop_id)
