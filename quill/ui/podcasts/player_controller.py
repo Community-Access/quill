@@ -116,11 +116,13 @@ class PodcastPlayerController:
         #: touching volume_percent, which the sleep timer restores -- boosting
         #: must never make "restore the volume" restore a boosted number.
         self._volume_boost = 1.0
-        #: Sound Enhancements (EQ preset + compressor): off by default, so
-        #: normal playback never spawns the ffmpeg relay. See set_enhancement.
+        #: Sound Enhancements (EQ preset + compressor + Smart Speed): off by
+        #: default, so normal playback never spawns the ffmpeg relay. See
+        #: set_enhancement.
         self._enhance_relay = EnhanceRelay()
         self._eq_preset = DEFAULT_EQ_PRESET
         self._compressor_enabled = False
+        self._smart_speed_enabled = False
         #: The raw (unfiltered) source of whatever is loaded, so a seek or an
         #: enhancement change can restart the relay from the same episode.
         self._enhanced_source = ""
@@ -181,7 +183,11 @@ class PodcastPlayerController:
             self._set_state(PodcastPlayerState.ERROR, message="That episode could not be opened.")
 
     def _is_enhanced(self) -> bool:
-        return is_enhancement_active(self._eq_preset, compressor_enabled=self._compressor_enabled)
+        return is_enhancement_active(
+            self._eq_preset,
+            compressor_enabled=self._compressor_enabled,
+            smart_speed_enabled=self._smart_speed_enabled,
+        )
 
     def _resolve_playback_url(self, source: str, *, start_ms: int) -> str:
         """The URL the engine should load: *source* itself, or a local relay
@@ -197,6 +203,7 @@ class PodcastPlayerController:
                 source,
                 eq_preset=self._eq_preset,
                 compressor_enabled=self._compressor_enabled,
+                smart_speed_enabled=self._smart_speed_enabled,
                 start_seconds=start_ms / 1000.0,
             )
             self._enhanced_offset_ms = start_ms
@@ -206,15 +213,19 @@ class PodcastPlayerController:
                 self._on_enhance_error(str(error))
             return source
 
-    def set_enhancement(self, eq_preset: str, *, compressor_enabled: bool) -> None:
-        """Change the EQ preset / compressor and, if an episode is loaded,
-        reload it (through the new relay state, or straight from the source
-        if turned off) at the position it was just at."""
+    def set_enhancement(
+        self, eq_preset: str, *, compressor_enabled: bool, smart_speed_enabled: bool = False
+    ) -> None:
+        """Change the EQ preset / compressor / Smart Speed and, if an
+        episode is loaded, reload it (through the new relay state, or
+        straight from the source if turned off) at the position it was just
+        at."""
         current_position = self.position_ms()
         was_playing = self._state.state is PodcastPlayerState.PLAYING
         source = self._enhanced_source
         self._eq_preset = eq_preset
         self._compressor_enabled = compressor_enabled
+        self._smart_speed_enabled = smart_speed_enabled
         if not source or self._state.show_id is None:
             return
         self._enhanced_duration_ms = probe_source_duration_ms(source) if self._is_enhanced() else 0

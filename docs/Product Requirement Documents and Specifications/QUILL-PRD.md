@@ -4018,6 +4018,10 @@ RadioBrowser's own documented recipe, rather than hammering one hardcoded
 host. `core/radio/acb_media.py` bundles the American Council of the Blind's
 ten Live365 stations as a static, always-available category (no network call
 needed to see it) — researched from BITS's own `acb_link_desktop` project.
+`core/radio/soma_fm.py` blends in [SomaFM](https://somafm.com), a second
+free, keyless, curated directory, into the same Browse Stations results —
+chosen over Shoutcast (revocable Developer-ID-gated API) and Live365
+(partner-only distribution), neither of which offers an open public search.
 `core/radio/link_finder.py` fetches one user-typed page and parses it
 (`html.parser`, no embedded browser) for stream-shaped links, for stations
 not in RadioBrowser's directory.
@@ -4078,12 +4082,27 @@ Record Now/Schedule Recording/Recording Settings items are hidden outright
 (not merely disabled) when `ffmpeg_available()` is false — closing a
 gap from the original Phase 1 ship where recording did not yet exist to gate.
 
+**Sound Enhancements (`quill/core/audio_enhance.py`, shared with Podcasts
+§5.84g).** An equalizer preset (Flat/Bass Boost/Voice Clarity/Podcast) and a
+compressor, applied live via an ffmpeg filter graph relayed to the existing
+playback engine over a loopback-only local HTTP server — not a new audio
+backend (BASS/BASS_FX, FastPlay's approach, needs a paid commercial license
+for a non-revenue app; ffmpeg is a dependency Radio's recorder already
+requires and QUILL never bundles or redistributes). Off by default; the
+engine loads the station's own URL directly until the user opts in, so
+normal playback never spawns the relay. `RecordingSettings.
+apply_sound_enhancements` (off by default) optionally threads the same
+filter graph into `build_record_command`, so a recording can capture the
+filtered audio instead of an unfiltered archival copy, for every recording
+method (Record Now, Record Station, and scheduled recordings).
+
 **Non-goals (deliberate).** TuneIn, iHeartRadio, YouTube audio (any form) —
 `requirements.txt` already excludes `yt-dlp`/`youtube-transcript-api` to keep
 the installed surface small, and this feature does not reopen that call. A
-DSP effects rack (reverb/EQ/tempo-pitch/spatial audio, FastPlay's largest
-single investment) — a media-player feature, not a writing-tool-with-audio
-feature. A full embedded interactive browser for the website link finder —
+full DSP effects rack in FastPlay's sense — reverb, tempo/pitch/rate,
+spatial audio, center-channel/vocal cancellation — remains out of scope
+(Sound Enhancements, above, is a small, purpose-built EQ preset and
+compressor, not a general effects rack). A full embedded interactive browser for the website link finder —
 QUILL has no general-purpose accessible WebView for arbitrary-site
 navigation, and `core/browser_reader.py` already shows a house preference for
 the user's real browser over an embedded one on accessibility-sensitive
@@ -4334,6 +4353,32 @@ decomposition note) and ``play_queue_dialog.py``; standalone QUILL Cast
 - **Status page rows (P4-12, ``status_report.py``).** Podcast library
   summary rows and download-task rows (with started/finished timestamps)
   for the Help Status page.
+
+#### Phase 5 (shipped): Sound Enhancements + Smart Speed
+
+Shares Radio's ``core/audio_enhance.py`` (§5.84f) rather than duplicating
+it, with the one real wrinkle Radio doesn't have: episodes support seeking
+and a duration/scrub bar, which a live one-way ffmpeg relay has neither of
+natively. Full parity was built, not a degraded no-seek mode.
+
+- **EQ preset + compressor.** Same as Radio: an equalizer preset plus a
+  compressor, applied live via the shared relay. Off by default.
+- **Smart Speed (podcasts only).** A ``silenceremove`` filter trims silence
+  anywhere in the audio (not just leading/trailing), for the gaps between
+  sentences a spoken-word episode is full of -- reversible and live, not the
+  one-time, permanent leading/trailing trim ``audio_processing.py`` (P4-10)
+  already does to a saved download. Not exposed for Radio: a live stream has
+  no fixed content to trim ahead of time, and "silence" in music is often
+  intentional.
+- **Seek while enhanced (``player_controller.py``).** There is no way to
+  seek within an already-running relay, so scrubbing restarts it with an
+  ffmpeg ``-ss`` offset -- an async reload, not the engine's normal instant
+  seek. ``_pending_play_after_load`` carries play/pause intent through that
+  reload so scrubbing or toggling enhancement mid-episode never forces a
+  paused episode to resume.
+- **Duration (``probe_source_duration_ms``).** The relay's own MP3 output
+  never declares a length for the engine to compute a scrub bar from, so
+  duration comes from an independent ``ffprobe`` call instead.
 
 ---
 

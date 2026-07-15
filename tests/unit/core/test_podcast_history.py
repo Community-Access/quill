@@ -84,3 +84,22 @@ def test_sound_enhancements_missing_from_file_default_off(tmp_path: Path) -> Non
     loaded = load_history(tmp_path)
     assert loaded.eq_preset == "Flat"
     assert loaded.compressor_enabled is False
+
+
+def test_smart_speed_default_off() -> None:
+    assert PodcastHistory().smart_speed_enabled is False
+
+
+def test_smart_speed_round_trip(tmp_path: Path) -> None:
+    history = PodcastHistory(smart_speed_enabled=True)
+    save_history(tmp_path, history)
+    loaded = load_history(tmp_path)
+    assert loaded.smart_speed_enabled is True
+
+
+def test_smart_speed_missing_from_file_default_off(tmp_path: Path) -> None:
+    (tmp_path / "podcast_history.json").write_text(
+        '{"resume_on_launch": true, "episodes": []}', encoding="utf-8"
+    )
+    loaded = load_history(tmp_path)
+    assert loaded.smart_speed_enabled is False

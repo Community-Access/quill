@@ -64,6 +64,32 @@ def test_is_enhancement_active_true_for_any_preset_or_compressor() -> None:
     assert is_enhancement_active("Flat", compressor_enabled=True) is True
 
 
+def test_is_enhancement_active_true_for_smart_speed_alone() -> None:
+    assert is_enhancement_active("Flat", compressor_enabled=False, smart_speed_enabled=True) is True
+
+
+def test_smart_speed_alone_builds_only_the_silenceremove_filter() -> None:
+    graph = build_filter_graph("Flat", compressor_enabled=False, smart_speed_enabled=True)
+    assert graph.startswith("silenceremove=")
+    assert "equalizer" not in graph
+    assert "acompressor" not in graph
+
+
+def test_smart_speed_appended_after_eq_and_compressor() -> None:
+    graph = build_filter_graph("Podcast", compressor_enabled=True, smart_speed_enabled=True)
+    parts = graph.split(",")
+    assert "equalizer" in parts[0]
+    assert parts[-2].startswith("acompressor=")
+    assert parts[-1].startswith("silenceremove=")
+
+
+def test_radio_never_engages_smart_speed_by_default() -> None:
+    # Radio callers never pass smart_speed_enabled -- confirm the default is off.
+    assert build_filter_graph("Bass Boost", compressor_enabled=True) == build_filter_graph(
+        "Bass Boost", compressor_enabled=True, smart_speed_enabled=False
+    )
+
+
 def test_build_relay_command_adds_reconnect_flags_for_http() -> None:
     args = build_relay_command(
         "ffmpeg", "https://example.com/stream", eq_preset="Flat", compressor_enabled=False
@@ -109,6 +135,18 @@ def test_build_relay_command_adds_ss_flag_before_input_when_seeking() -> None:
     ss_index = args.index("-ss")
     assert args[ss_index + 1] == "42.500"
     assert args.index("-i") > ss_index  # -ss must precede -i for fast input seeking
+
+
+def test_build_relay_command_includes_af_flag_for_smart_speed_alone() -> None:
+    args = build_relay_command(
+        "ffmpeg",
+        "episode.mp3",
+        eq_preset="Flat",
+        compressor_enabled=False,
+        smart_speed_enabled=True,
+    )
+    af_index = args.index("-af")
+    assert args[af_index + 1].startswith("silenceremove=")
 
 
 def test_probe_source_duration_ms_returns_zero_when_ffprobe_missing(
@@ -191,6 +229,24 @@ def test_start_returns_local_loopback_url_and_marks_active(monkeypatch: pytest.M
     finally:
         relay.stop()
     assert relay.is_active is False
+
+
+def test_start_accepts_smart_speed(monkeypatch: pytest.MonkeyPatch) -> None:
+    captured: list[list[str]] = []
+
+    def _fake_popen(args: list[str], **_kw: object) -> _FakeProcess:
+        captured.append(args)
+        return _FakeProcess()
+
+    monkeypatch.setattr(audio_enhance.subprocess, "Popen", _fake_popen)
+    relay = EnhanceRelay()
+    try:
+        relay.start(
+            "episode.mp3", eq_preset="Flat", compressor_enabled=False, smart_speed_enabled=True
+        )
+    finally:
+        relay.stop()
+    assert "silenceremove=" in "".join(captured[0])
 
 
 def test_stop_terminates_the_process(monkeypatch: pytest.MonkeyPatch) -> None:

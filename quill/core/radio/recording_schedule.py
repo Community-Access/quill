@@ -178,11 +178,17 @@ class RecordingScheduler:
         recorder: RadioRecorder,
         recording_settings: RecordingSettings,
         on_fired: Callable[[RecordingScheduleEntry, str], None] | None = None,
+        filter_graph_provider: Callable[[], str] | None = None,
     ) -> None:
         self._data_dir = data_dir
         self._recorder = recorder
         self._recording_settings = recording_settings
         self._on_fired = on_fired or (lambda _entry, _error: None)
+        #: Called at fire time for the current Sound Enhancements filter
+        #: graph (""  if apply_sound_enhancements is off) -- injected so this
+        #: wx-free module never has to know about audio_enhance.py or the
+        #: live RadioHistory state that owns the current EQ preset/compressor.
+        self._filter_graph_provider = filter_graph_provider or (lambda: "")
         self.entries: list[RecordingScheduleEntry] = load_schedule(data_dir)
         self._stop_event = threading.Event()
         self._thread = threading.Thread(target=self._run, daemon=True, name="quill-radio-scheduler")
@@ -218,6 +224,7 @@ class RecordingScheduler:
                 stream_url=entry.stream_url,
                 settings=self._recording_settings,
                 duration_minutes=entry.duration_minutes,
+                filter_graph=self._filter_graph_provider(),
             )
         except RecordingError as exc:
             error = str(exc)

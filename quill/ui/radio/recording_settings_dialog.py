@@ -131,6 +131,16 @@ class RecordingSettingsDialog:
         reconnect_box.Add(reconnect_grid, 0, wx.LEFT | wx.BOTTOM, 6)
         root.Add(reconnect_box, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
+        self._apply_enhancements_check = wx.CheckBox(
+            self.dialog, label="Apply Sound Enhancements to &recordings"
+        )
+        self._apply_enhancements_check.SetName(
+            "Record the EQ preset and compressor from Playback > Sound Enhancements "
+            "instead of an unfiltered archival copy"
+        )
+        self._apply_enhancements_check.SetValue(settings.apply_sound_enhancements)
+        root.Add(self._apply_enhancements_check, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+
         hint = wx.StaticText(
             self.dialog,
             label=(
@@ -199,5 +209,6 @@ class RecordingSettingsDialog:
             reconnect_enabled=self._reconnect_check.GetValue(),
             reconnect_max_attempts=self._reconnect_attempts_ctrl.GetValue(),
             reconnect_wait_seconds=self._reconnect_wait_ctrl.GetValue(),
+            apply_sound_enhancements=self._apply_enhancements_check.GetValue(),
         )
         self.dialog.EndModal(self._wx.ID_OK)

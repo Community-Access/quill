@@ -69,6 +69,13 @@ class RecordingSettings:
     reconnect_enabled: bool = True
     reconnect_max_attempts: int = 5
     reconnect_wait_seconds: int = 10
+    #: Off by default -- preserves today's behavior (an unfiltered archival
+    #: copy) even for a listener with Sound Enhancements on. When true, a new
+    #: recording is filtered through the *current* EQ preset/compressor
+    #: (Playback > Sound Enhancements) the same way live playback is, via
+    #: build_record_command's filter_graph parameter -- this module itself
+    #: stays decoupled from audio_enhance.py; the caller computes the graph.
+    apply_sound_enhancements: bool = False
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -80,6 +87,7 @@ class RecordingSettings:
             "reconnect_enabled": self.reconnect_enabled,
             "reconnect_max_attempts": self.reconnect_max_attempts,
             "reconnect_wait_seconds": self.reconnect_wait_seconds,
+            "apply_sound_enhancements": self.apply_sound_enhancements,
         }
 
     @classmethod
@@ -96,6 +104,7 @@ class RecordingSettings:
             reconnect_enabled=bool(data.get("reconnect_enabled", True)),
             reconnect_max_attempts=max(0, _coerce_int(data.get("reconnect_max_attempts"), 5)),
             reconnect_wait_seconds=max(1, _coerce_int(data.get("reconnect_wait_seconds"), 10)),
+            apply_sound_enhancements=bool(data.get("apply_sound_enhancements", False)),
         )
 
 
@@ -141,6 +150,7 @@ def build_record_command(
     bitrate_kbps: int,
     duration_seconds: int,
     reconnect_delay_max: int = 0,
+    filter_graph: str = "",
 ) -> list[str]:
     """Build the ffmpeg argv that records *stream_url* to *out_path*.
 
@@ -149,7 +159,10 @@ def build_record_command(
     recording cannot grow unbounded. A positive ``reconnect_delay_max`` turns
     on ffmpeg's own HTTP reconnect handling (first line of defense against a
     dropped connection; the recorder's process-level retry is the second),
-    valid only for http(s) inputs.
+    valid only for http(s) inputs. A non-empty ``filter_graph`` (built by
+    ``core.audio_enhance.build_filter_graph``, this module stays decoupled
+    from that one) records the *filtered* audio -- Sound Enhancements applied
+    to the archival copy, not just live playback.
     """
     codec = _CODECS.get(format, "libmp3lame")
     args = [ffmpeg, "-hide_banner", "-loglevel", "error"]
@@ -162,10 +175,10 @@ def build_record_command(
             "-reconnect_delay_max",
             str(reconnect_delay_max),
         ])
+    args.extend(["-i", stream_url, "-vn"])
+    if filter_graph:
+        args.extend(["-af", filter_graph])
     args.extend([
-        "-i",
-        stream_url,
-        "-vn",
         "-c:a",
         codec,
     ])
@@ -201,10 +214,11 @@ class RadioRecorder:
         self._station_name: str = ""
         self._user_stopped = False
         self._reconnect_attempt = 0
-        #: (station_name, stream_url, settings, duration_minutes) of the
-        #: active recording, kept so a reconnect can restart with the same
-        #: shape into a continuation file.
-        self._active_params: tuple[str, str, RecordingSettings, int] | None = None
+        #: (station_name, stream_url, settings, duration_minutes, filter_graph)
+        #: of the active recording, kept so a reconnect can restart with the
+        #: same shape (including any Sound Enhancements filter) into a
+        #: continuation file.
+        self._active_params: tuple[str, str, RecordingSettings, int, str] | None = None
 
     @property
     def is_recording(self) -> bool:
@@ -228,10 +242,13 @@ class RadioRecorder:
         stream_url: str,
         settings: RecordingSettings,
         duration_minutes: int | None = None,
+        filter_graph: str = "",
         _continuation_part: int = 0,
     ) -> Path:
         """Start recording *stream_url*; raises :class:`RecordingError` if
-        ffmpeg is unavailable or a recording is already in progress."""
+        ffmpeg is unavailable or a recording is already in progress. A
+        non-empty ``filter_graph`` records the Sound-Enhancements-filtered
+        audio instead of a raw archival copy (see ``build_record_command``)."""
         with self._lock:
             if self._process is not None and self._process.poll() is None:
                 raise RecordingError("A recording is already in progress.")
@@ -261,6 +278,7 @@ class RadioRecorder:
                 reconnect_delay_max=(
                     settings.reconnect_wait_seconds if settings.reconnect_enabled else 0
                 ),
+                filter_graph=filter_graph,
             )
             extra_kwargs: dict = {}
             if os.name == "nt":
@@ -282,7 +300,7 @@ class RadioRecorder:
             self._user_stopped = False
             if _continuation_part == 0:
                 self._reconnect_attempt = 0
-            self._active_params = (station_name, stream_url, settings, minutes)
+            self._active_params = (station_name, stream_url, settings, minutes, filter_graph)
         self._on_state_changed(True, destination)
         threading.Thread(
             target=self._monitor, args=(process,), daemon=True, name="quill-radio-record-monitor"
@@ -306,10 +324,10 @@ class RadioRecorder:
         if failed and params is not None:
             self._maybe_reconnect(params)
 
-    def _maybe_reconnect(self, params: tuple[str, str, RecordingSettings, int]) -> None:
+    def _maybe_reconnect(self, params: tuple[str, str, RecordingSettings, int, str]) -> None:
         """A recording died without being asked to stop: wait, then resume
         into a continuation file, up to the configured attempt budget."""
-        station_name, stream_url, settings, minutes = params
+        station_name, stream_url, settings, minutes, filter_graph = params
         if not settings.reconnect_enabled:
             return
         with self._lock:
@@ -341,6 +359,7 @@ class RadioRecorder:
                 stream_url=stream_url,
                 settings=settings,
                 duration_minutes=minutes,
+                filter_graph=filter_graph,
                 _continuation_part=attempt,
             )
         except RecordingError as error:

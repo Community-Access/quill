@@ -62,6 +62,14 @@ _EQ_BAND_FREQUENCIES = (100, 1000, 8000)
 # internet radio stream without audibly pumping.
 _COMPRESSOR_FILTER = "acompressor=threshold=-18dB:ratio=3:attack=20:release=250:makeup=2"
 
+# Smart Speed (podcasts only -- see build_filter_graph): trims silence longer
+# than stop_duration below stop_threshold anywhere in the audio
+# (stop_periods=-1), not just leading/trailing -- the gaps between sentences
+# a spoken-word episode is full of. Deliberately not exposed for radio: a
+# live stream has no fixed content to trim ahead of time, and "silence" in
+# music is often intentional.
+_SMART_SPEED_FILTER = "silenceremove=stop_periods=-1:stop_duration=0.5:stop_threshold=-40dB"
+
 _RELAY_READ_CHUNK = 4096
 
 
@@ -71,15 +79,23 @@ class EnhanceError(CodedError):
     code = "QUILL-RADIO-ENHANCE-FAILED"
 
 
-def is_enhancement_active(eq_preset: str, *, compressor_enabled: bool) -> bool:
-    """True when *eq_preset*/*compressor_enabled* would change the audio at all."""
-    return EQ_PRESETS.get(eq_preset, EQ_PRESETS[DEFAULT_EQ_PRESET]) != (0.0, 0.0, 0.0) or (
-        compressor_enabled
+def is_enhancement_active(
+    eq_preset: str, *, compressor_enabled: bool, smart_speed_enabled: bool = False
+) -> bool:
+    """True when these settings would change the audio at all."""
+    return (
+        EQ_PRESETS.get(eq_preset, EQ_PRESETS[DEFAULT_EQ_PRESET]) != (0.0, 0.0, 0.0)
+        or compressor_enabled
+        or smart_speed_enabled
     )
 
 
-def build_filter_graph(eq_preset: str, *, compressor_enabled: bool) -> str:
-    """Build the ffmpeg ``-af`` filter graph for *eq_preset* + the compressor.
+def build_filter_graph(
+    eq_preset: str, *, compressor_enabled: bool, smart_speed_enabled: bool = False
+) -> str:
+    """Build the ffmpeg ``-af`` filter graph for *eq_preset* + the compressor
+    + Smart Speed (silence trimming, podcasts only -- radio callers never
+    pass ``smart_speed_enabled=True``).
 
     Pure and unit-tested. Returns ``""`` when nothing is engaged (a caller
     should treat that as "play the stream directly, no relay needed").
@@ -92,6 +108,8 @@ def build_filter_graph(eq_preset: str, *, compressor_enabled: bool) -> str:
     ]
     if compressor_enabled:
         filters.append(_COMPRESSOR_FILTER)
+    if smart_speed_enabled:
+        filters.append(_SMART_SPEED_FILTER)
     return ",".join(filters)
 
 
@@ -101,6 +119,7 @@ def build_relay_command(
     *,
     eq_preset: str,
     compressor_enabled: bool,
+    smart_speed_enabled: bool = False,
     start_seconds: float = 0.0,
 ) -> list[str]:
     """Build the ffmpeg argv that filters *stream_url* and writes MP3 to stdout.
@@ -118,7 +137,9 @@ def build_relay_command(
     if start_seconds > 0:
         args.extend(["-ss", f"{start_seconds:.3f}"])
     args.extend(["-i", stream_url, "-vn"])
-    filter_graph = build_filter_graph(eq_preset, compressor_enabled=compressor_enabled)
+    filter_graph = build_filter_graph(
+        eq_preset, compressor_enabled=compressor_enabled, smart_speed_enabled=smart_speed_enabled
+    )
     if filter_graph:
         args.extend(["-af", filter_graph])
     args.extend(["-c:a", "libmp3lame", "-b:a", "192k", "-f", "mp3", "pipe:1"])
@@ -228,6 +249,7 @@ class EnhanceRelay:
         *,
         eq_preset: str,
         compressor_enabled: bool,
+        smart_speed_enabled: bool = False,
         start_seconds: float = 0.0,
     ) -> str:
         """Start relaying *stream_url* through the filter graph; returns the
@@ -247,6 +269,7 @@ class EnhanceRelay:
             stream_url,
             eq_preset=eq_preset,
             compressor_enabled=compressor_enabled,
+            smart_speed_enabled=smart_speed_enabled,
             start_seconds=start_seconds,
         )
         extra_kwargs: dict = {}

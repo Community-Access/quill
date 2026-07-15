@@ -71,14 +71,26 @@ class _FakeEngine:
 
 class _FakeRelay:
     def __init__(self) -> None:
-        self.started_with: list[tuple[str, str, bool, float]] = []
+        self.started_with: list[tuple[str, str, bool, bool, float]] = []
         self.stop_count = 0
         self._active = False
 
     def start(
-        self, source: str, *, eq_preset: str, compressor_enabled: bool, start_seconds: float = 0.0
+        self,
+        source: str,
+        *,
+        eq_preset: str,
+        compressor_enabled: bool,
+        smart_speed_enabled: bool = False,
+        start_seconds: float = 0.0,
     ) -> str:
-        self.started_with.append((source, eq_preset, compressor_enabled, start_seconds))
+        self.started_with.append((
+            source,
+            eq_preset,
+            compressor_enabled,
+            smart_speed_enabled,
+            start_seconds,
+        ))
         self._active = True
         return "http://127.0.0.1:9999/enhanced.mp3"
 
@@ -132,7 +144,9 @@ def test_enhanced_playback_loads_the_relay_url(monkeypatch: pytest.MonkeyPatch) 
     controller.set_enhancement("Bass Boost", compressor_enabled=False)
     _play(controller, fake_engine)
     assert fake_engine.loaded_sources == ["http://127.0.0.1:9999/enhanced.mp3"]
-    assert fake_relay.started_with == [("https://example.com/ep.mp3", "Bass Boost", False, 0.0)]
+    assert fake_relay.started_with == [
+        ("https://example.com/ep.mp3", "Bass Boost", False, False, 0.0)
+    ]
 
 
 def test_enhanced_playback_reports_probed_duration(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -173,6 +187,7 @@ def test_seek_while_enhanced_restarts_the_relay_at_the_new_offset(
     assert fake_relay.started_with[-1] == (
         "https://example.com/ep.mp3",
         "Voice Clarity",
+        False,
         False,
         20.0,
     )
@@ -224,3 +239,11 @@ def test_set_enhancement_before_anything_plays_is_remembered_not_applied_yet(
     controller.set_enhancement("Podcast", compressor_enabled=True)
     assert fake_relay.started_with == []  # nothing loaded yet, nothing to reload
     assert controller._is_enhanced() is True  # noqa: SLF001 - white-box preference check
+
+
+def test_smart_speed_alone_activates_enhancement(monkeypatch: pytest.MonkeyPatch) -> None:
+    controller, fake_engine, fake_relay = _make_controller(monkeypatch)
+    controller.set_enhancement("Flat", compressor_enabled=False, smart_speed_enabled=True)
+    _play(controller, fake_engine)
+    assert fake_engine.loaded_sources == ["http://127.0.0.1:9999/enhanced.mp3"]
+    assert fake_relay.started_with == [("https://example.com/ep.mp3", "Flat", False, True, 0.0)]

@@ -85,6 +85,7 @@ class RadioMixin:
             recorder=self._radio_recorder,
             recording_settings=self._radio_recording_settings,
             on_fired=self._on_radio_scheduled_recording_fired,
+            filter_graph_provider=self._radio_recording_filter_graph,
         )
         self._radio_wake_watcher = wake_timer.WakeUpWatcher(
             app_data_dir(), on_wake=self._on_radio_wake_up
@@ -165,12 +166,23 @@ class RadioMixin:
                 station_name=station.name,
                 stream_url=station.stream_url,
                 settings=self._radio_recording_settings,
+                filter_graph=self._radio_recording_filter_graph(),
             )
         except RecordingError as error:
             self._announce(str(error))
             return
         self._announce(f"Recording {station.name}")
         self._refresh_statusbar()
+
+    def _radio_recording_filter_graph(self) -> str:
+        """The current Sound Enhancements filter graph, or "" if Recording
+        Settings' "Apply Sound Enhancements to recordings" is off."""
+        if not self._radio_recording_settings.apply_sound_enhancements:
+            return ""
+        from quill.core.audio_enhance import build_filter_graph
+
+        history = self._radio_history
+        return build_filter_graph(history.eq_preset, compressor_enabled=history.compressor_enabled)
 
     def _radio_open_recording_settings(self) -> None:
         dialog = RecordingSettingsDialog(
@@ -426,6 +438,7 @@ class RadioMixin:
                 stream_url=station.stream_url,
                 settings=self._radio_recording_settings,
                 duration_minutes=minutes,
+                filter_graph=self._radio_recording_filter_graph(),
             )
         except RecordingError as error:
             self._announce(str(error))
@@ -693,7 +706,7 @@ class RadioMixin:
         result = dialog.show()
         if result is None:
             return
-        history.eq_preset, history.compressor_enabled = result
+        history.eq_preset, history.compressor_enabled, _smart_speed_not_applicable = result
         radio_history.save_history(app_data_dir(), history)
         self._radio_controller.set_enhancement(
             history.eq_preset, compressor_enabled=history.compressor_enabled

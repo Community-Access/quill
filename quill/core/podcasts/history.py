@@ -71,6 +71,10 @@ class PodcastHistory:
     #: unless the user opts in.
     eq_preset: str = DEFAULT_EQ_PRESET
     compressor_enabled: bool = False
+    #: Smart Speed: trims silence between words/sentences during playback
+    #: (podcasts only -- radio has no fixed content to trim ahead of time).
+    #: Off by default.
+    smart_speed_enabled: bool = False
 
     def record(
         self, show_id: str, episode_guid: str, *, show_title: str, episode_title: str
@@ -112,6 +116,7 @@ def load_history(data_dir: Path) -> PodcastHistory:
         history.last_update_check = str(raw.get("last_update_check", ""))
         history.eq_preset = str(raw.get("eq_preset") or DEFAULT_EQ_PRESET)
         history.compressor_enabled = bool(raw.get("compressor_enabled", False))
+        history.smart_speed_enabled = bool(raw.get("smart_speed_enabled", False))
         entries = raw.get("episodes")
         for entry in entries if isinstance(entries, list) else []:
             played = PlayedEpisode.from_dict(entry)
@@ -133,6 +138,7 @@ def save_history(data_dir: Path, history: PodcastHistory) -> None:
             "last_update_check": history.last_update_check,
             "eq_preset": history.eq_preset,
             "compressor_enabled": history.compressor_enabled,
+            "smart_speed_enabled": history.smart_speed_enabled,
             "episodes": [e.to_dict() for e in history.episodes],
         },
     )

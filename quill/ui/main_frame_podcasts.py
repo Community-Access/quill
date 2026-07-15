@@ -57,6 +57,7 @@ class PodcastsMixin:
         self._podcast_controller.set_enhancement(
             self._podcast_history.eq_preset,
             compressor_enabled=self._podcast_history.compressor_enabled,
+            smart_speed_enabled=self._podcast_history.smart_speed_enabled,
         )
         settings = self._podcast_library.settings
         self._podcast_download_queue = PodcastDownloadQueue(
@@ -413,7 +414,8 @@ class PodcastsMixin:
         self._announce(f"Sound Enhancements: {message} Playing without it.")
 
     def open_podcast_sound_enhancements(self) -> None:
-        """Playback > Sound Enhancements...: an EQ preset + a compressor."""
+        """Playback > Sound Enhancements...: an EQ preset + a compressor +
+        Smart Speed."""
         from quill.core.podcasts import history as podcast_history
         from quill.ui.sound_enhance_dialog import SoundEnhanceDialog
 
@@ -423,19 +425,24 @@ class PodcastsMixin:
             eq_preset=history.eq_preset,
             compressor_enabled=history.compressor_enabled,
             subject="episode",
+            show_smart_speed=True,
+            smart_speed_enabled=history.smart_speed_enabled,
             announce_cb=self._announce,
         )
         result = dialog.show()
         if result is None:
             return
-        history.eq_preset, history.compressor_enabled = result
+        history.eq_preset, history.compressor_enabled, history.smart_speed_enabled = result
         podcast_history.save_history(app_data_dir(), history)
         self._podcast_controller.set_enhancement(
-            history.eq_preset, compressor_enabled=history.compressor_enabled
+            history.eq_preset,
+            compressor_enabled=history.compressor_enabled,
+            smart_speed_enabled=history.smart_speed_enabled,
         )
         self._announce(
             f"Sound Enhancements: {history.eq_preset}"
             + (", Even Out Volume on" if history.compressor_enabled else "")
+            + (", Smart Speed on" if history.smart_speed_enabled else "")
         )
 
     def podcast_next_chapter(self) -> None:
