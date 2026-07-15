@@ -185,12 +185,6 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "playback-driven cadence or the explicit What's Playing command; "
         "callers are blocked in Safe Mode with the rest of Internet Radio."
     ),
-    "core/radio/radio_browser.py::lookup_station": (
-        "Stream fallback: when a saved favorite's stream errors, re-fetch that "
-        "one station by uuid from RadioBrowser (the directory the user already "
-        "searched) and retry its current URL once. Same mirror/TLS path as "
-        "every other RadioBrowser call; Safe Mode refused."
-    ),
     "core/updates.py::fetch_update_manifest": (
         "Update check; gated by the user's update-check setting and shown in the "
         "update UI. Verified TLS."
