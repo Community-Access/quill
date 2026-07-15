@@ -16,7 +16,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
-from quill.core.radio import acb_media, radio_browser
+from quill.core.radio import acb_media, radio_browser, soma_fm
 from quill.core.radio.favorites import RadioFavoritesStore
 from quill.core.radio.models import RadioStation
 from quill.ui.dialog_contract import apply_modal_ids
@@ -65,7 +65,7 @@ class StationBrowserDialog:
         self.dialog.SetSize((820, 600))
         root = wx.BoxSizer(wx.VERTICAL)
 
-        search_box = wx.StaticBoxSizer(wx.HORIZONTAL, self.dialog, "Search RadioBrowser")
+        search_box = wx.StaticBoxSizer(wx.HORIZONTAL, self.dialog, "Search Stations")
         search_grid = wx.FlexGridSizer(cols=2, gap=(6, 4))
         search_grid.AddGrowableCol(1, 1)
 
@@ -77,7 +77,7 @@ class StationBrowserDialog:
             return ctrl
 
         self._name_ctrl = _labeled_field(
-            "Station &name:", accessible_name="Station name to search for on RadioBrowser"
+            "Station &name:", accessible_name="Station name to search for"
         )
         self._tag_ctrl = _labeled_field(
             "&Tag/genre (optional):",
@@ -90,7 +90,7 @@ class StationBrowserDialog:
         search_box.Add(search_grid, 1, wx.EXPAND | wx.ALL, 6)
         search_col = wx.BoxSizer(wx.VERTICAL)
         self._search_btn = wx.Button(self.dialog, label="&Search")
-        self._search_btn.SetName("Search RadioBrowser for stations matching these fields")
+        self._search_btn.SetName("Search for stations matching these fields")
         # No alignment flag: vertical alignment flags assert-fail inside a
         # vertical sizer (wx 4.2+), which killed the dialog before it opened.
         search_col.Add(self._search_btn, 0)
@@ -271,13 +271,25 @@ class StationBrowserDialog:
         if self._safe_mode:
             self._status.SetLabel("Internet Radio search is disabled in Safe Mode.")
             return
-        self._status.SetLabel("Searching RadioBrowser...")
+        self._status.SetLabel("Searching stations...")
         self._search_btn.Enable(False)
 
         def _do_search(**_kwargs: Any) -> list[RadioStation]:
-            return radio_browser.search_stations(
+            stations = radio_browser.search_stations(
                 name, tag=tag, country=country, safe_mode=self._safe_mode
             )
+            # Blended in, not a separate category: SomaFM has no country data
+            # of its own, so a country-only search skips it rather than
+            # returning irrelevant results. A SomaFM hiccup never fails the
+            # whole search -- RadioBrowser's results still come back.
+            if name or tag:
+                try:
+                    stations = stations + soma_fm.search_stations(
+                        name or tag, safe_mode=self._safe_mode
+                    )
+                except soma_fm.SomaFmError:
+                    pass
+            return stations
 
         self._task_manager.submit(
             "radio-search",
