@@ -20,7 +20,7 @@ from quill.ui.main_frame_podcasts import PodcastsMixin
 from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 
 _TITLE = "QUILL Cast"
-_VERSION = "1.0.0"
+_VERSION = "1.0.1"
 _REPO = "Community-Access/quill-cast"
 
 
@@ -47,6 +47,9 @@ class PodcastsAppFrame(
         self._refresh_statusbar()
         self.frame.Bind(wx.EVT_CLOSE, self._on_cast_app_close)
         self._maybe_resume_last_episode()
+        # Deferred (CallAfter), not inline: this touches the network, and a
+        # launch is not the place to do that before the window is even up.
+        wx.CallAfter(self._maybe_check_updates_on_startup)
 
     # -- main panel -------------------------------------------------------------
     #
@@ -438,6 +441,39 @@ class PodcastsAppFrame(
             else "Resume on launch turned off."
         )
 
+    def _open_preferences(self) -> None:
+        from quill.core.paths import app_data_dir
+        from quill.core.podcasts import history as podcast_history
+        from quill.ui.app_preferences_dialog import PreferenceCheckbox, PreferencesDialog
+
+        history = self._podcast_history
+        dialog = PreferencesDialog(
+            self.frame,
+            app_title=_TITLE,
+            checkboxes=[
+                PreferenceCheckbox(
+                    "Resume Last Episode on &Launch",
+                    "Resume Last Episode on Launch",
+                    history.resume_on_launch,
+                ),
+                PreferenceCheckbox(
+                    "&Check for updates automatically on launch",
+                    "Check for updates automatically on launch",
+                    history.check_updates_on_startup,
+                ),
+            ],
+            announce_cb=self._announce,
+        )
+        result = dialog.show()
+        if result is None:
+            return
+        history.resume_on_launch, history.check_updates_on_startup = result
+        podcast_history.save_history(app_data_dir(), history)
+        menu_bar = self.frame.GetMenuBar()
+        if menu_bar is not None:
+            menu_bar.Check(int(self._resume_menu_item_id), history.resume_on_launch)
+        self._announce("Preferences saved")
+
     def _maybe_resume_last_episode(self) -> None:
         """Podcasts as an appliance: launch, and your last episode is ready."""
         if not self._podcast_history.resume_on_launch:
@@ -458,6 +494,23 @@ class PodcastsAppFrame(
             resume_ms=episode.position_ms,
             rate=speed,
         )
+
+    def _maybe_check_updates_on_startup(self) -> None:
+        """Silent, throttled update check -- quiet unless a genuine update
+        exists. Preferences (Ctrl+,) turns this off."""
+        from datetime import UTC, datetime
+
+        from quill.core.paths import app_data_dir
+        from quill.core.podcasts import history as podcast_history
+
+        history = self._podcast_history
+        if not history.check_updates_on_startup:
+            return
+        if not self._app_update_check_due(history.last_update_check):
+            return
+        history.last_update_check = datetime.now(UTC).isoformat()
+        podcast_history.save_history(app_data_dir(), history)
+        self.check_for_app_updates(repo_slug=_REPO, current_version=_VERSION, silent_no_update=True)
 
     # -- menu bar -------------------------------------------------------------
 
@@ -491,6 +544,9 @@ class PodcastsAppFrame(
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._toggle_resume_on_launch(), id=self._resume_menu_item_id
         )
+        prefs_id = wx.NewIdRef()
+        subs_menu.Append(prefs_id, "&Preferences...\tCtrl+,")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_preferences(), id=prefs_id)
         subs_menu.AppendSeparator()
         tray_id, exit_id = wx.NewIdRef(), wx.NewIdRef()
         subs_menu.Append(tray_id, "Send to &Tray\tCtrl+W")
@@ -602,6 +658,7 @@ class PodcastsAppFrame(
             export_id,
             settings_id,
             self._resume_menu_item_id,
+            prefs_id,
             folder_id,
             local_id,
             watched_id,

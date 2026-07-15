@@ -20,7 +20,7 @@ from quill.ui.main_frame_radio import RadioMixin
 from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 
 _TITLE = "Quill Radio"
-_VERSION = "1.0.1"
+_VERSION = "1.0.2"
 _REPO = "Community-Access/quill-radio"
 
 
@@ -43,6 +43,9 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         self._refresh_statusbar()
         self.frame.Bind(wx.EVT_CLOSE, self._on_radio_app_close)
         self._maybe_resume_last_station()
+        # Deferred (CallAfter), not inline: this touches the network, and a
+        # launch is not the place to do that before the window is even up.
+        wx.CallAfter(self._maybe_check_updates_on_startup)
 
     # -- main panel -------------------------------------------------------------
     #
@@ -411,6 +414,9 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._toggle_resume_on_launch(), id=self._resume_menu_item_id
         )
+        prefs_id = wx.NewIdRef()
+        station_menu.Append(prefs_id, "&Preferences...\tCtrl+,")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_preferences(), id=prefs_id)
         station_menu.AppendSeparator()
         tray_id, exit_id = wx.NewIdRef(), wx.NewIdRef()
         station_menu.Append(tray_id, "Send to &Tray\tCtrl+W")
@@ -532,6 +538,7 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             new_folder_id,
             play_last_id,
             self._resume_menu_item_id,
+            prefs_id,
             tray_id,
             exit_id,
             self._now_playing_item_id,
@@ -583,6 +590,39 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
             else "Resume on launch turned off."
         )
 
+    def _open_preferences(self) -> None:
+        from quill.core.paths import app_data_dir
+        from quill.core.radio import history as radio_history
+        from quill.ui.app_preferences_dialog import PreferenceCheckbox, PreferencesDialog
+
+        history = self._radio_history
+        dialog = PreferencesDialog(
+            self.frame,
+            app_title=_TITLE,
+            checkboxes=[
+                PreferenceCheckbox(
+                    "Resume Last Station on &Launch",
+                    "Resume Last Station on Launch",
+                    history.resume_on_launch,
+                ),
+                PreferenceCheckbox(
+                    "&Check for updates automatically on launch",
+                    "Check for updates automatically on launch",
+                    history.check_updates_on_startup,
+                ),
+            ],
+            announce_cb=self._announce,
+        )
+        result = dialog.show()
+        if result is None:
+            return
+        history.resume_on_launch, history.check_updates_on_startup = result
+        radio_history.save_history(app_data_dir(), history)
+        menu_bar = self.frame.GetMenuBar()
+        if menu_bar is not None:
+            menu_bar.Check(int(self._resume_menu_item_id), history.resume_on_launch)
+        self._announce("Preferences saved")
+
     def _maybe_resume_last_station(self) -> None:
         """Radio as an appliance: launch, and your station is already on."""
         if not self._radio_history.resume_on_launch:
@@ -590,6 +630,23 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         station = self._radio_history.last_station
         if station is not None:
             self._radio_controller.play_station(station)
+
+    def _maybe_check_updates_on_startup(self) -> None:
+        """Silent, throttled update check -- quiet unless a genuine update
+        exists. Preferences (Ctrl+,) turns this off."""
+        from datetime import UTC, datetime
+
+        from quill.core.paths import app_data_dir
+        from quill.core.radio import history as radio_history
+
+        history = self._radio_history
+        if not history.check_updates_on_startup:
+            return
+        if not self._app_update_check_due(history.last_update_check):
+            return
+        history.last_update_check = datetime.now(UTC).isoformat()
+        radio_history.save_history(app_data_dir(), history)
+        self.check_for_app_updates(repo_slug=_REPO, current_version=_VERSION, silent_no_update=True)
 
     def _show_about(self) -> None:
         self._show_message_box(

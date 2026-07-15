@@ -44,3 +44,24 @@ def test_corrupt_file_reads_empty(tmp_path: Path) -> None:
     (tmp_path / "radio_history.json").write_text("nope", encoding="utf-8")
     history = load_history(tmp_path)
     assert history.stations == [] and history.resume_on_launch is False
+
+
+def test_check_updates_on_startup_defaults_on() -> None:
+    assert RadioHistory().check_updates_on_startup is True
+
+
+def test_check_updates_on_startup_round_trips(tmp_path: Path) -> None:
+    history = RadioHistory(check_updates_on_startup=False, last_update_check="2026-07-16T00:00:00")
+    save_history(tmp_path, history)
+    loaded = load_history(tmp_path)
+    assert loaded.check_updates_on_startup is False
+    assert loaded.last_update_check == "2026-07-16T00:00:00"
+
+
+def test_check_updates_on_startup_missing_from_file_defaults_on(tmp_path: Path) -> None:
+    (tmp_path / "radio_history.json").write_text(
+        '{"resume_on_launch": true, "stations": []}', encoding="utf-8"
+    )
+    loaded = load_history(tmp_path)
+    assert loaded.check_updates_on_startup is True
+    assert loaded.last_update_check == ""

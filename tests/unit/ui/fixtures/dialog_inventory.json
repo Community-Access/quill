@@ -39,6 +39,7 @@
   "quill/ui/ai_transcribe_dialog.py::AITranscriptionResultDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/ai_translation_dialog.py::AITranslationDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/ai_translation_dialog.py::AITranslationDialog._on_lt_help::wx.MessageBox": "native",
+  "quill/ui/app_preferences_dialog.py::PreferencesDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/app_shell.py::AppShellFrame._offer_app_update_install::wx.Dialog": "hardened_custom",
   "quill/ui/app_shell.py::AppShellFrame._show_message_box::wx.MessageBox": "native",
   "quill/ui/assistant_panel.py::AskQuillChatDialog.__init__::wx.Dialog": "hardened_custom",

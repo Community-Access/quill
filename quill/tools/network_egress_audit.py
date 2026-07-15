@@ -193,7 +193,12 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "Update check against GitHub Releases; same update setting and UI."
     ),
     "core/updates.py::fetch_releases": (
-        "Fetches release notes for an update the user is already reviewing."
+        "Fetches release notes for an update the user is already reviewing (Help > "
+        "Check for Updates) or, for the standalone companion apps (Quill Radio, "
+        "QUILL Cast), a throttled once-a-day automatic startup check gated by each "
+        "app's own 'check for updates automatically on launch' Preferences toggle "
+        "(on by default, one checkbox away from off) -- silent unless a genuine "
+        "update is found, per AppShellFrame.check_for_app_updates(silent_no_update=)."
     ),
     "core/updates.py::download_release_asset": (
         "User chooses to download an offered update; verified TLS, visible progress."

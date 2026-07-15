@@ -28,6 +28,14 @@ class RadioHistory:
     #: Off by default -- in QUILL it would interrupt writing; turning it on
     #: is one check item on the radio menus.
     announce_track_titles: bool = False
+    #: Silently check GitHub releases for a newer Quill Radio on launch (the
+    #: same check Help > Check for Updates runs, just quiet unless a genuine
+    #: update is found); on by default, one checkbox in Preferences (Ctrl+,)
+    #: turns it off.
+    check_updates_on_startup: bool = True
+    #: ISO timestamp of the last update check (manual or automatic), so the
+    #: startup check only hits the network once a day, not on every launch.
+    last_update_check: str = ""
 
     def record(self, station: RadioStation) -> None:
         """Note that *station* just played; it moves to the front."""
@@ -55,6 +63,8 @@ def load_history(data_dir: Path) -> RadioHistory:
     if isinstance(raw, dict):
         history.resume_on_launch = bool(raw.get("resume_on_launch", False))
         history.announce_track_titles = bool(raw.get("announce_track_titles", False))
+        history.check_updates_on_startup = bool(raw.get("check_updates_on_startup", True))
+        history.last_update_check = str(raw.get("last_update_check", ""))
         entries = raw.get("stations")
         for entry in entries if isinstance(entries, list) else []:
             if not isinstance(entry, dict):
@@ -75,6 +85,8 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
         {
             "resume_on_launch": history.resume_on_launch,
             "announce_track_titles": history.announce_track_titles,
+            "check_updates_on_startup": history.check_updates_on_startup,
+            "last_update_check": history.last_update_check,
             "stations": [station.to_dict() for station in history.stations],
         },
     )

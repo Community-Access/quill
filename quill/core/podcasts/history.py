@@ -55,6 +55,14 @@ class PodcastHistory:
 
     episodes: list[PlayedEpisode] = field(default_factory=list)
     resume_on_launch: bool = False
+    #: Silently check GitHub releases for a newer QUILL Cast on launch (the
+    #: same check Help > Check for Updates runs, just quiet unless a genuine
+    #: update is found); on by default, one checkbox in Preferences (Ctrl+,)
+    #: turns it off.
+    check_updates_on_startup: bool = True
+    #: ISO timestamp of the last update check (manual or automatic), so the
+    #: startup check only hits the network once a day, not on every launch.
+    last_update_check: str = ""
 
     def record(
         self, show_id: str, episode_guid: str, *, show_title: str, episode_title: str
@@ -92,6 +100,8 @@ def load_history(data_dir: Path) -> PodcastHistory:
     history = PodcastHistory()
     if isinstance(raw, dict):
         history.resume_on_launch = bool(raw.get("resume_on_launch", False))
+        history.check_updates_on_startup = bool(raw.get("check_updates_on_startup", True))
+        history.last_update_check = str(raw.get("last_update_check", ""))
         entries = raw.get("episodes")
         for entry in entries if isinstance(entries, list) else []:
             played = PlayedEpisode.from_dict(entry)
@@ -109,6 +119,8 @@ def save_history(data_dir: Path, history: PodcastHistory) -> None:
         _store_path(data_dir),
         {
             "resume_on_launch": history.resume_on_launch,
+            "check_updates_on_startup": history.check_updates_on_startup,
+            "last_update_check": history.last_update_check,
             "episodes": [e.to_dict() for e in history.episodes],
         },
     )
