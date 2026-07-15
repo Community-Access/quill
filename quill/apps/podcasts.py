@@ -46,14 +46,16 @@ class PodcastsAppFrame(
         })
         self._refresh_statusbar()
         self.frame.Bind(wx.EVT_CLOSE, self._on_cast_app_close)
+        self._maybe_resume_last_episode()
 
     # -- main panel -------------------------------------------------------------
     #
     # A bare frame with only a menu bar leaves keyboard focus with nowhere to
     # land: Tab does nothing and a screen reader reads an empty client area.
     # The main panel gives the app a real, named, tabbable surface -- the
-    # subscribed-shows list takes focus on launch, and Enter on a show opens
-    # the full Podcast Manager (where all episode-level work happens).
+    # same pinned views (Favorites, New Episodes, Continue Listening, Inbox)
+    # and library folders the Podcast Manager shows, right on the main page,
+    # matching Quill Radio's favorites tree (#1043).
 
     def _build_main_panel(self) -> None:
         panel = wx.Panel(self.frame, style=wx.TAB_TRAVERSAL)
@@ -63,20 +65,42 @@ class PodcastsAppFrame(
         set_accessible_name(self._now_playing_text, "Now playing")
         root.Add(self._now_playing_text, 0, wx.EXPAND | wx.ALL, 8)
 
-        shows_label = wx.StaticText(panel, label="&Subscribed shows:")
-        root.Add(shows_label, 0, wx.LEFT | wx.RIGHT, 8)
-        self._shows_list = wx.ListBox(panel)
-        set_accessible_name(self._shows_list, "Subscribed shows")
-        root.Add(self._shows_list, 1, wx.EXPAND | wx.ALL, 8)
-        self._shows_list.Bind(wx.EVT_LISTBOX_DCLICK, lambda _e: self.open_podcast_manager())
-        self._shows_list.Bind(wx.EVT_KEY_DOWN, self._on_shows_key)
+        library_label = wx.StaticText(panel, label="&Library:")
+        root.Add(library_label, 0, wx.LEFT | wx.RIGHT, 8)
+        self._shows_tree = wx.TreeCtrl(
+            panel, style=wx.TR_HAS_BUTTONS | wx.TR_LINES_AT_ROOT | wx.TR_HIDE_ROOT
+        )
+        set_accessible_name(
+            self._shows_tree,
+            "Your podcast library: pinned views and folders; Enter on a show "
+            "plays its next episode, Shift+F10 opens all actions",
+        )
+        root.Add(self._shows_tree, 1, wx.EXPAND | wx.ALL, 8)
+        self._shows_tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self._on_library_activated)
+        self._shows_tree.Bind(wx.EVT_TREE_ITEM_MENU, self._on_library_context_menu)
+        self._shows_tree.Bind(wx.EVT_KEY_DOWN, self._on_library_key)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
+        # One transport button, not two static ones: it tracks Play, Pause,
+        # and Resume so it is never dead in a given state.
+        self._play_pause_btn = wx.Button(panel, label="&Play")
+        set_accessible_name(self._play_pause_btn, "Play")
+        self._play_pause_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_transport_button())
+        buttons.Add(self._play_pause_btn, 0, wx.RIGHT, 6)
+        self._stop_btn = wx.Button(panel, label="&Stop")
+        set_accessible_name(self._stop_btn, "Stop")
+        self._stop_btn.Bind(wx.EVT_BUTTON, lambda _e: self.podcast_stop())
+        buttons.Add(self._stop_btn, 0, wx.RIGHT, 6)
+        # Favorite toggle for whatever show is playing right now, same
+        # pattern as Quill Radio's main-page toggle.
+        self._favorite_toggle_btn = wx.Button(panel, label="Add to Fa&vorites")
+        set_accessible_name(self._favorite_toggle_btn, "Add the playing show to favorites")
+        self._favorite_toggle_btn.Enable(False)
+        self._favorite_toggle_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_favorite_toggle())
+        buttons.Add(self._favorite_toggle_btn, 0, wx.RIGHT, 6)
         for label, handler in (
             ("Open &Manager...", lambda _e: self.open_podcast_manager()),
             ("&Add Podcast...", lambda _e: self._podcast_open_add_dialog()),
-            ("&Play/Pause", lambda _e: self.podcast_toggle_play_pause()),
-            ("&Stop", lambda _e: self.podcast_stop()),
         ):
             button = wx.Button(panel, label=label)
             set_accessible_name(button, label)
@@ -86,21 +110,354 @@ class PodcastsAppFrame(
 
         panel.SetSizer(root)
         self._main_panel = panel
-        self._reload_shows_list()
-        self._shows_list.SetFocus()
+        self._reload_library_tree()
+        self._refresh_transport_controls()
+        self._shows_tree.SetFocus()
 
-    def _on_shows_key(self, event: wx.KeyEvent) -> None:
-        if event.GetKeyCode() in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
+    # -- library tree (pinned views + folders + shows) ---------------------
+
+    def _reload_library_tree(self, *, keep_key: tuple[str, str] | None = None) -> None:
+        from quill.core.podcasts.sorting import sort_shows, unheard_count
+        from quill.core.podcasts.virtual_views import (
+            VIRTUAL_VIEWS,
+            favorite_shows,
+            virtual_view_pairs,
+        )
+
+        tree = self._shows_tree
+        if keep_key is None:
+            keep_key = self._selected_tree_data()
+        tree.DeleteAllItems()
+        root = tree.AddRoot("Library")
+        select_item = None
+
+        def tag(item: object, key: tuple[str, str]) -> None:
+            nonlocal select_item
+            tree.SetItemData(item, key)
+            if key == keep_key:
+                select_item = item
+
+        fav_count = len(favorite_shows(self._podcast_library))
+        fav_item = tree.AppendItem(root, f"Favorites ({fav_count})" if fav_count else "Favorites")
+        tag(fav_item, ("view", "favorites"))
+        for view_id, label in VIRTUAL_VIEWS:
+            count = len(virtual_view_pairs(self._podcast_library, view_id))
+            item = tree.AppendItem(root, f"{label} ({count})" if count else label)
+            tag(item, ("view", view_id))
+
+        folder_items: dict[str | None, object] = {None: root}
+
+        def folder_item(folder_id: str | None) -> object:
+            if folder_id in folder_items:
+                return folder_items[folder_id]
+            folder = self._podcast_library.find_folder(folder_id)
+            if folder is None:
+                return root
+            item = tree.AppendItem(folder_item(folder.parent_folder_id), folder.name)
+            tag(item, ("folder", folder_id or ""))
+            folder_items[folder_id] = item
+            return item
+
+        for folder in self._podcast_library.folders:
+            folder_item(folder.id)
+        for show in sort_shows(self._podcast_library.shows, "title_az"):
+            count = unheard_count(show)
+            label = f"{show.title} ({count})" if count else show.title
+            item = tree.AppendItem(folder_item(show.folder_id), label)
+            tag(item, ("show", show.id))
+
+        tree.ExpandAll()
+        first, _cookie = tree.GetFirstChild(root)
+        if select_item is not None:
+            tree.SelectItem(select_item)
+        elif first.IsOk():
+            tree.SelectItem(first)
+
+    def _selected_tree_data(self) -> tuple[str, str] | None:
+        tree = getattr(self, "_shows_tree", None)
+        if tree is None:
+            return None
+        item = tree.GetSelection()
+        if not item.IsOk():
+            return None
+        data = tree.GetItemData(item)
+        return data if isinstance(data, tuple) and len(data) == 2 else None
+
+    def _selected_show(self):
+        selected = self._selected_tree_data()
+        if selected is None or selected[0] != "show":
+            return None
+        return self._podcast_library.find_show(selected[1])
+
+    def _on_library_activated(self, event: wx.TreeEvent) -> None:
+        selected = self._selected_tree_data()
+        if selected is None:
+            event.Skip()
+            return
+        kind, key = selected
+        if kind == "show":
+            self._play_show_next_episode(key)
+            return
+        if kind == "view":
             self.open_podcast_manager()
+            label = key.replace("_", " ").title() if key != "favorites" else "Favorites"
+            self._announce(f"Opened Podcast Manager. Select {label} there.")
+            return
+        event.Skip()  # a folder: let the tree toggle it
+
+    def _on_library_key(self, event: wx.KeyEvent) -> None:
+        code = event.GetKeyCode()
+        if code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
+            self._on_library_activated(event)
+            return
+        if code in (wx.WXK_DELETE, wx.WXK_NUMPAD_DELETE):
+            self._on_library_remove()
             return
         event.Skip()
 
-    def _reload_shows_list(self) -> None:
-        shows = self._podcast_library.shows
-        selected = self._shows_list.GetSelection()
-        self._shows_list.Set([show.title or show.feed_url for show in shows])
-        if shows:
-            self._shows_list.SetSelection(selected if 0 <= selected < len(shows) else 0)
+    def _on_library_context_menu(self, _event: object) -> None:
+        selected = self._selected_tree_data()
+        if selected is None:
+            return
+        kind, key = selected
+        entries: list[tuple[str, object]] = []
+        if kind == "show":
+            show = self._podcast_library.find_show(key)
+            if show is None:
+                return
+            playing = self._podcast_controller.state.show_id == show.id and (
+                self._podcast_controller.state.state.name not in ("STOPPED", "ERROR")
+            )
+            fav_label = "Remove from Fa&vorites" if show.is_favorite else "Add to Fa&vorites"
+            entries = [
+                ("&Stop" if playing else "&Play Next Episode", self._on_library_play_stop_context),
+                (fav_label, self._on_library_favorite_toggle_context),
+                ("&Move to Folder...", self._on_library_move_to_folder),
+                ("&Unsubscribe...\tDelete", self._on_library_remove),
+                ("New F&older...", self._on_library_new_folder),
+                ("Open &Manager...", lambda: self.open_podcast_manager()),
+            ]
+        elif kind == "folder":
+            entries = [
+                ("Rena&me Folder...", self._on_library_rename_folder),
+                ("&Delete Folder...\tDelete", self._on_library_remove),
+                ("New F&older...", self._on_library_new_folder),
+                ("Open &Manager...", lambda: self.open_podcast_manager()),
+            ]
+        else:
+            entries = [("Open &Manager...", lambda: self.open_podcast_manager())]
+        menu = wx.Menu()
+        id_refs = []
+        for label, handler in entries:
+            item_id = wx.NewIdRef()
+            id_refs.append(item_id)
+            menu.Append(item_id, label)
+            menu.Bind(wx.EVT_MENU, lambda _e, h=handler: h(), id=item_id)
+        self._keep_menu_ids(*id_refs)
+        self._shows_tree.PopupMenu(menu)
+        menu.Destroy()
+
+    def _on_library_play_stop_context(self) -> None:
+        show = self._selected_show()
+        if show is None:
+            return
+        state = self._podcast_controller.state
+        if state.show_id == show.id and state.state.name not in ("STOPPED", "ERROR"):
+            self.podcast_stop()
+        else:
+            self._play_show_next_episode(show.id)
+
+    def _on_library_favorite_toggle_context(self) -> None:
+        from quill.ui.podcasts.show_actions import toggle_favorite
+
+        show = self._selected_show()
+        if show is None:
+            return
+        toggle_favorite(self._podcast_library, show, announce=self._announce)
+        self._save_podcast_library()
+        self._refresh_transport_controls()
+
+    def _on_library_move_to_folder(self) -> None:
+        from quill.ui.podcasts.show_actions import move_show_to_folder
+
+        show = self._selected_show()
+        if show is None:
+            return
+        if move_show_to_folder(self.frame, self._podcast_library, show, announce=self._announce):
+            self._save_podcast_library()
+
+    def _on_library_rename_folder(self) -> None:
+        from quill.ui.podcasts.show_actions import rename_folder_prompt
+
+        selected = self._selected_tree_data()
+        if selected is None or selected[0] != "folder":
+            return
+        if rename_folder_prompt(
+            self.frame, self._podcast_library, selected[1], announce=self._announce
+        ):
+            self._save_podcast_library()
+
+    def _on_library_new_folder(self) -> None:
+        from quill.ui.podcasts.show_actions import create_folder_prompt
+
+        selected = self._selected_tree_data()
+        initial_parent = selected[1] if selected is not None and selected[0] == "folder" else None
+        if create_folder_prompt(
+            self.frame,
+            self._podcast_library,
+            announce=self._announce,
+            initial_parent_id=initial_parent,
+        ):
+            self._save_podcast_library()
+
+    def _on_library_remove(self) -> None:
+        from quill.ui.podcasts.show_actions import delete_folder_prompt, unsubscribe_show_prompt
+
+        selected = self._selected_tree_data()
+        if selected is None:
+            return
+        kind, key = selected
+        if kind == "show":
+            show = self._podcast_library.find_show(key)
+            if show is not None and unsubscribe_show_prompt(
+                self.frame, self._podcast_library, show, announce=self._announce
+            ):
+                self._save_podcast_library()
+        elif kind == "folder":
+            if delete_folder_prompt(
+                self.frame, self._podcast_library, key, announce=self._announce
+            ):
+                self._save_podcast_library()
+
+    def _play_show_next_episode(self, show_id: str) -> None:
+        from quill.core.podcasts.sorting import sort_episodes
+
+        show = self._podcast_library.find_show(show_id)
+        if show is None:
+            return
+        ordered = sort_episodes(show.episodes, "unplayed_first")
+        if not ordered:
+            self._announce(f"{show.title} has no episodes yet.")
+            return
+        episode = ordered[0]
+        played_note = ""
+        if episode.played:
+            played_note = " (no unplayed episodes; playing the most recent)"
+        speed = self._podcast_library.effective_settings(show).speed
+        self._podcast_controller.play_episode(
+            show_id=show.id,
+            episode_guid=episode.guid,
+            title=episode.title,
+            source=episode.downloaded_path or episode.audio_url,
+            resume_ms=episode.position_ms,
+            rate=speed,
+        )
+        self._announce(f"Playing {episode.title} from {show.title}{played_note}")
+
+    # -- transport & favorite controls --------------------------------------
+
+    def _on_transport_button(self) -> None:
+        from quill.ui.podcasts.player_controller import PodcastPlayerState
+
+        state = self._podcast_controller.state.state
+        if state in (PodcastPlayerState.STOPPED, PodcastPlayerState.ERROR):
+            selected = self._selected_tree_data()
+            if selected is not None and selected[0] == "show":
+                self._play_show_next_episode(selected[1])
+            else:
+                self._announce("Select a show in your library first.")
+            return
+        self.podcast_toggle_play_pause()
+
+    def _refresh_transport_controls(self) -> None:
+        from quill.ui.podcasts.player_controller import PodcastPlayerState
+
+        state = self._podcast_controller.state.state
+        label = {
+            PodcastPlayerState.PLAYING: "&Pause",
+            PodcastPlayerState.LOADING: "&Pause",
+            PodcastPlayerState.PAUSED: "&Resume",
+        }.get(state, "&Play")
+        button = getattr(self, "_play_pause_btn", None)
+        if button is not None and button.GetLabel() != label:
+            button.SetLabel(label)
+            set_accessible_name(button, label.replace("&", ""))
+        stop_btn = getattr(self, "_stop_btn", None)
+        if stop_btn is not None:
+            stop_btn.Enable(state != PodcastPlayerState.STOPPED)
+        self._refresh_favorite_toggle()
+
+    def _refresh_favorite_toggle(self) -> None:
+        button = getattr(self, "_favorite_toggle_btn", None)
+        if button is None:
+            return
+        show_id = self._podcast_controller.state.show_id
+        show = self._podcast_library.find_show(show_id) if show_id else None
+        if show is None:
+            button.Enable(False)
+            if button.GetLabel() != "Add to Fa&vorites":
+                button.SetLabel("Add to Fa&vorites")
+                set_accessible_name(button, "Add the playing show to favorites")
+            return
+        button.Enable(True)
+        label = "Remove from Fa&vorites" if show.is_favorite else "Add to Fa&vorites"
+        if button.GetLabel() != label:
+            button.SetLabel(label)
+            set_accessible_name(
+                button,
+                "Remove the playing show from favorites"
+                if show.is_favorite
+                else "Add the playing show to favorites",
+            )
+
+    def _on_favorite_toggle(self) -> None:
+        from quill.ui.podcasts.show_actions import toggle_favorite
+
+        show_id = self._podcast_controller.state.show_id
+        show = self._podcast_library.find_show(show_id) if show_id else None
+        if show is None:
+            self._announce("Nothing is playing to favorite.")
+            return
+        toggle_favorite(self._podcast_library, show, announce=self._announce)
+        self._save_podcast_library()
+        self._refresh_favorite_toggle()
+
+    def _toggle_resume_on_launch(self) -> None:
+        from quill.core.paths import app_data_dir
+        from quill.core.podcasts import history as podcast_history
+
+        history = self._podcast_history
+        history.resume_on_launch = not history.resume_on_launch
+        podcast_history.save_history(app_data_dir(), history)
+        menu_bar = self.frame.GetMenuBar()
+        if menu_bar is not None:
+            menu_bar.Check(int(self._resume_menu_item_id), history.resume_on_launch)
+        self._announce(
+            "QUILL Cast will pick up where you left off at launch."
+            if history.resume_on_launch
+            else "Resume on launch turned off."
+        )
+
+    def _maybe_resume_last_episode(self) -> None:
+        """Podcasts as an appliance: launch, and your last episode is ready."""
+        if not self._podcast_history.resume_on_launch:
+            return
+        last = self._podcast_history.last_played
+        if last is None:
+            return
+        show = self._podcast_library.find_show(last.show_id)
+        episode = show.find_episode(last.episode_guid) if show is not None else None
+        if show is None or episode is None:
+            return
+        speed = self._podcast_library.effective_settings(show).speed
+        self._podcast_controller.play_episode(
+            show_id=show.id,
+            episode_guid=episode.guid,
+            title=episode.title,
+            source=episode.downloaded_path or episode.audio_url,
+            resume_ms=episode.position_ms,
+            rate=speed,
+        )
 
     # -- menu bar -------------------------------------------------------------
 
@@ -127,6 +484,13 @@ class PodcastsAppFrame(
         subs_menu.Append(acb_id, "Subscribe to ACB Media &Podcasts")
         subs_menu.AppendSeparator()
         subs_menu.Append(settings_id, "Podcast &Settings...")
+        subs_menu.AppendSeparator()
+        self._resume_menu_item_id = wx.NewIdRef()
+        subs_menu.AppendCheckItem(self._resume_menu_item_id, "Resume Last Episode on Lau&nch")
+        subs_menu.Check(self._resume_menu_item_id, self._podcast_history.resume_on_launch)
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self._toggle_resume_on_launch(), id=self._resume_menu_item_id
+        )
         subs_menu.AppendSeparator()
         tray_id, exit_id = wx.NewIdRef(), wx.NewIdRef()
         subs_menu.Append(tray_id, "Send to &Tray\tCtrl+W")
@@ -157,19 +521,27 @@ class PodcastsAppFrame(
         )
         episode_menu.Append(play_id, "&Play/Pause\tCtrl+P")
         episode_menu.Append(stop_id, "&Stop")
+        mute_id = wx.NewIdRef()
+        episode_menu.Append(mute_id, "&Mute/Unmute")
         episode_menu.Append(next_id, "&Next Chapter")
         episode_menu.Append(prev_id, "P&revious Chapter")
         note_id = wx.NewIdRef()
         episode_menu.Append(note_id, "Add Episode &Note...")
+        queue_id = wx.NewIdRef()
+        episode_menu.Append(queue_id, "Play &Queue...")
+        episode_menu.AppendSeparator()
+        self._append_podcast_recent_submenu(episode_menu)
         episode_menu.AppendSeparator()
         sleep_id = wx.NewIdRef()
         episode_menu.Append(sleep_id, "Sleep &Timer...")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_sleep_timer_dialog(), id=sleep_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_toggle_play_pause(), id=play_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_stop(), id=stop_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_mute_toggle(), id=mute_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_next_chapter(), id=next_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_previous_chapter(), id=prev_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.add_podcast_note(), id=note_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_play_queue(), id=queue_id)
         menu_bar.Append(episode_menu, "&Episode")
 
         downloads_menu = wx.Menu()
@@ -205,6 +577,9 @@ class PodcastsAppFrame(
             lambda _e: self.report_app_bug(source_app="QUILL Cast", app_version=_VERSION),
             id=bug_id,
         )
+        ffmpeg_id = wx.NewIdRef()
+        help_menu.Append(ffmpeg_id, "&Get FFmpeg...")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.download_ffmpeg_component(), id=ffmpeg_id)
         help_menu.Append(redeem_id, "Redeem &Unlock Code...")
         help_menu.Append(updates_id, "Check for Up&dates...")
         help_menu.AppendSeparator()
@@ -226,6 +601,7 @@ class PodcastsAppFrame(
             import_id,
             export_id,
             settings_id,
+            self._resume_menu_item_id,
             folder_id,
             local_id,
             watched_id,
@@ -235,14 +611,17 @@ class PodcastsAppFrame(
             self._now_playing_item_id,
             play_id,
             stop_id,
+            mute_id,
             next_id,
             prev_id,
             note_id,
+            queue_id,
             sleep_id,
             pause_all_id,
             resume_all_id,
             palette_id,
             bug_id,
+            ffmpeg_id,
             redeem_id,
             updates_id,
             about_id,
@@ -300,8 +679,16 @@ class PodcastsAppFrame(
         now_playing = getattr(self, "_now_playing_text", None)
         if now_playing is not None:
             now_playing.SetLabel(text)
-        if getattr(self, "_shows_list", None) is not None:
-            self._reload_shows_list()
+        if getattr(self, "_play_pause_btn", None) is not None:
+            self._refresh_transport_controls()
+
+    def _save_podcast_library(self) -> None:
+        # Every library mutation -- folder/favorite actions, the Manager --
+        # funnels through this save; refreshing here keeps the main-page
+        # tree true without rebuilding it on every unrelated status change.
+        super()._save_podcast_library()
+        if getattr(self, "_shows_tree", None) is not None:
+            self._reload_library_tree()
 
     # -- lifecycle --------------------------------------------------------------
 

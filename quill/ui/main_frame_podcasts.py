@@ -13,9 +13,11 @@ from __future__ import annotations
 from pathlib import Path
 
 from quill.core.paths import app_data_dir
+from quill.core.podcasts import history as podcast_history
 from quill.core.podcasts import opml as opml_module
 from quill.core.podcasts import retention
 from quill.core.podcasts.download_queue import DownloadItem, PodcastDownloadQueue
+from quill.core.podcasts.models import PodcastEpisode, PodcastShow
 from quill.core.podcasts.subscriptions import (
     PodcastLibrary,
     load_library,
@@ -40,6 +42,10 @@ class PodcastsMixin:
         self._podcast_ever_active = False
         self._podcast_current_chapters: list = []
         self._podcast_chapters_key: tuple[str, str] | None = None
+        self._podcast_history: podcast_history.PodcastHistory = podcast_history.load_history(
+            app_data_dir()
+        )
+        self._podcast_history_key: tuple[str, str] = ("", "")
         self._podcast_controller = PodcastPlayerController(
             self.frame,
             on_state_changed=self._on_podcast_state_changed,
@@ -47,17 +53,36 @@ class PodcastsMixin:
             on_position_checkpoint=self._on_podcast_position_checkpoint,
             before_play=self._stop_radio_before_podcast,
         )
+        settings = self._podcast_library.settings
         self._podcast_download_queue = PodcastDownloadQueue(
             on_status_changed=self._on_podcast_download_status_changed,
             on_completed=self._on_podcast_download_completed,
+            on_reconnect=self._on_podcast_download_reconnect,
+            reconnect_enabled=settings.reconnect_enabled,
+            reconnect_max_attempts=settings.reconnect_max_attempts,
+            reconnect_wait_seconds=settings.reconnect_wait_seconds,
         )
 
     def _podcast_download_root(self) -> Path:
         override = self._podcast_library.settings.download_root
         return Path(override) if override else app_data_dir() / "podcasts"
 
+    def _on_podcast_download_reconnect(
+        self, item: DownloadItem, attempt: int, max_attempts: int
+    ) -> None:
+        self._wx.CallAfter(
+            self._announce,
+            f"Download connection dropped; reconnecting (attempt {attempt} of {max_attempts})...",
+        )
+
     def _save_podcast_library(self) -> None:
         save_library(app_data_dir(), self._podcast_library)
+        settings = self._podcast_library.settings
+        self._podcast_download_queue.set_reconnect_settings(
+            enabled=settings.reconnect_enabled,
+            max_attempts=settings.reconnect_max_attempts,
+            wait_seconds=settings.reconnect_wait_seconds,
+        )
 
     # -- controller callbacks (fire on the UI thread already, per PlayerPanel's
     # / audio engine's own contract of UI-thread callbacks) -----------------
@@ -72,9 +97,29 @@ class PodcastsMixin:
 
     def _on_podcast_state_changed(self, state: PodcastPlaybackState) -> None:
         self._maybe_surface_podcast_status_cell(bool(state.title))
+        self._podcast_track_history(state)
         self._refresh_statusbar()
         self._refresh_podcast_tray_tooltip()
         self._maybe_reload_podcast_chapters(state)
+
+    def _podcast_track_history(self, state: PodcastPlaybackState) -> None:
+        """Recently-played log, updated whenever a different episode starts
+        (mirrors ``_radio_track_history_and_volume``'s dedupe-by-key shape)."""
+        if not state.show_id or not state.episode_guid:
+            self._podcast_history_key = ("", "")
+            return
+        key = (state.show_id, state.episode_guid)
+        if key == self._podcast_history_key:
+            return
+        self._podcast_history_key = key
+        show = self._podcast_library.find_show(state.show_id)
+        self._podcast_history.record(
+            state.show_id,
+            state.episode_guid,
+            show_title=show.title if show is not None else "",
+            episode_title=state.title,
+        )
+        podcast_history.save_history(app_data_dir(), self._podcast_history)
 
     def _maybe_reload_podcast_chapters(self, state: PodcastPlaybackState) -> None:
         if not state.show_id or not state.episode_guid:
@@ -228,6 +273,75 @@ class PodcastsMixin:
                 text += f" ({active} downloading)"
         return text
 
+    def _retain_podcast_menu_ids(self, *refs: object) -> None:
+        """Keep popup/submenu wx.NewIdRef objects alive while their menu can
+        still fire -- same rationale as ``_retain_radio_menu_ids``: a dropped
+        ref unreserves the id and the next NewIdRef anywhere can receive the
+        same id, cross-wiring EVT_MENU bindings."""
+        refs_list = getattr(self, "_podcast_menu_id_refs", None)
+        if refs_list is None:
+            refs_list = []
+            self._podcast_menu_id_refs = refs_list
+        refs_list.extend(refs)
+
+    def _append_podcast_recent_submenu(self, menu: object) -> None:
+        """A Recently Played submenu: the last episodes, newest first."""
+        wx = self._wx
+        played = list(self._podcast_history.episodes)
+        if not played:
+            return
+        sub = wx.Menu()
+        for entry in played:
+            item_id = wx.NewIdRef()
+            label = f"{entry.episode_title} ({entry.show_title})"
+            sub.Append(item_id, label)
+            sub.Bind(
+                wx.EVT_MENU,
+                lambda _e, e=entry: self._play_recent_podcast_entry(e),
+                id=item_id,
+            )
+            self._retain_podcast_menu_ids(item_id)
+        menu.AppendSubMenu(sub, "Recently &Played")
+
+    def _play_recent_podcast_entry(self, entry: podcast_history.PlayedEpisode) -> None:
+        show = self._podcast_library.find_show(entry.show_id)
+        episode = show.find_episode(entry.episode_guid) if show is not None else None
+        if show is None or episode is None:
+            self._announce("That episode is no longer available.")
+            return
+        speed = self._podcast_library.effective_settings(show).speed
+        self._podcast_controller.play_episode(
+            show_id=show.id,
+            episode_guid=episode.guid,
+            title=episode.title,
+            source=episode.downloaded_path or episode.audio_url,
+            resume_ms=episode.position_ms,
+            rate=speed,
+        )
+
+    def _open_play_queue(self) -> None:
+        from quill.ui.podcasts.play_queue_dialog import PlayQueueDialog
+
+        dialog = PlayQueueDialog(
+            self.frame,
+            library=self._podcast_library,
+            announce_cb=self._announce,
+            on_library_changed=self._save_podcast_library,
+            on_play=self._play_queue_pair,
+        )
+        dialog.show()
+
+    def _play_queue_pair(self, show: PodcastShow, episode: PodcastEpisode) -> None:
+        speed = self._podcast_library.effective_settings(show).speed
+        self._podcast_controller.play_episode(
+            show_id=show.id,
+            episode_guid=episode.guid,
+            title=episode.title,
+            source=episode.downloaded_path or episode.audio_url,
+            resume_ms=episode.position_ms,
+            rate=speed,
+        )
+
     def _build_podcast_status_bar_menu(self, menu: object) -> None:
         from quill.ui.podcasts.player_controller import PodcastPlayerState
 
@@ -282,6 +396,10 @@ class PodcastsMixin:
     def podcast_stop(self) -> None:
         self._podcast_controller.stop()
         self._announce("Podcasts stopped")
+
+    def podcast_mute_toggle(self) -> None:
+        self._podcast_controller.toggle_mute()
+        self._announce("Podcasts muted" if self._podcast_controller.muted else "Podcasts unmuted")
 
     def podcast_next_chapter(self) -> None:
         from quill.core.podcasts.chapters import next_chapter
@@ -644,6 +762,8 @@ class PodcastsMixin:
             ("podcasts.export_opml", "Podcasts: Export OPML...", self._podcast_export_opml),
             ("podcasts.play_pause", "Podcasts: Play/Pause", self.podcast_toggle_play_pause),
             ("podcasts.stop", "Podcasts: Stop", self.podcast_stop),
+            ("podcasts.mute", "Podcasts: Mute/Unmute", self.podcast_mute_toggle),
+            ("podcasts.open_queue", "Podcasts: Play Queue...", self._open_play_queue),
             (
                 "podcasts.pause_all_downloads",
                 "Podcasts: Pause All Downloads",

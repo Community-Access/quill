@@ -1,5 +1,5 @@
 {
-  "quill/apps/podcasts.py::PodcastsAppFrame._build_main_panel::wx.ListBox": "named",
+  "quill/apps/podcasts.py::PodcastsAppFrame._build_main_panel::wx.TreeCtrl": "named",
   "quill/apps/radio.py::RadioAppFrame._build_main_panel::wx.TreeCtrl": "named",
   "quill/devtools/console_window.py::ConsoleWindow._build::wx.Choice": "named",
   "quill/devtools/console_window.py::ConsoleWindow._build::wx.TextCtrl": "named",
@@ -424,6 +424,8 @@
   "quill/ui/podcasts/podcast_settings_dialog.py::PodcastSettingsDialog.__init__::wx.Choice#3": "named",
   "quill/ui/podcasts/podcast_settings_dialog.py::PodcastSettingsDialog.__init__::wx.Choice#4": "named",
   "quill/ui/podcasts/podcast_settings_dialog.py::PodcastSettingsDialog.__init__::wx.SpinCtrl": "named",
+  "quill/ui/podcasts/podcast_settings_dialog.py::PodcastSettingsDialog.__init__::wx.SpinCtrl#2": "named",
+  "quill/ui/podcasts/podcast_settings_dialog.py::PodcastSettingsDialog.__init__::wx.SpinCtrl#3": "named",
   "quill/ui/podcasts/podcast_settings_dialog.py::PodcastSettingsDialog.__init__::wx.TextCtrl": "named",
   "quill/ui/podcasts/search_everywhere_dialog.py::SearchEverywhereDialog.__init__::wx.ListBox": "named",
   "quill/ui/podcasts/search_everywhere_dialog.py::SearchEverywhereDialog.__init__::wx.TextCtrl": "named",
