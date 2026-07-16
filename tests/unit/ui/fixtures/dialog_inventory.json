@@ -418,6 +418,8 @@
   "quill/ui/podcasts/show_actions.py::delete_folder_prompt::wx.MessageBox": "native",
   "quill/ui/podcasts/show_actions.py::move_show_to_folder::wx.SingleChoiceDialog": "native",
   "quill/ui/podcasts/show_actions.py::move_show_to_folder::wx.TextEntryDialog": "native",
+  "quill/ui/podcasts/show_actions.py::remove_all_episodes_prompt::wx.MessageBox": "native",
+  "quill/ui/podcasts/show_actions.py::remove_all_episodes_prompt::wx.MessageBox#2": "native",
   "quill/ui/podcasts/show_actions.py::rename_folder_prompt::wx.TextEntryDialog": "native",
   "quill/ui/podcasts/show_actions.py::unsubscribe_show_prompt::wx.MessageBox": "native",
   "quill/ui/podcasts/show_actions.py::unsubscribe_show_prompt::wx.MessageBox#2": "native",
