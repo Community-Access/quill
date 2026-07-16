@@ -11,17 +11,17 @@ from __future__ import annotations
 import threading
 from dataclasses import dataclass
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from quill.core.paths import app_data_dir
 from quill.core.ssh.client import SftpConnection, SshDependencyError, connect
 from quill.core.ssh.sites import AUTH_PASSWORD, SiteConfig
 from quill.core.ssh.transfer import editor_to_remote, remote_to_editor
-from quill.ui.ssh_dialogs import (
-    ConnectionRequest,
-    QuickConnectDialog,
-    RemoteBrowserDialog,
-    SiteManagerDialog,
-)
+
+if TYPE_CHECKING:  # The SSH dialog module is imported lazily at open time
+    # (only reachable through user-invoked SSH menu items); keep it and its
+    # transitive UI cost off the cold-start path.
+    from quill.ui.ssh_dialogs import ConnectionRequest
 
 
 @dataclass(slots=True)
@@ -50,11 +50,15 @@ class SshEditingMixin:
 
     # ------------------------------------------------------------- entry points
     def open_ssh_quick_connect(self) -> None:
+        from quill.ui.ssh_dialogs import QuickConnectDialog
+
         request = QuickConnectDialog(self.frame).show()
         if request is not None:
             self._ssh_connect_and_browse(request)
 
     def open_ssh_site_manager(self) -> None:
+        from quill.ui.ssh_dialogs import SiteManagerDialog
+
         site = SiteManagerDialog(self.frame).show()
         if site is None:
             return
@@ -72,6 +76,8 @@ class SshEditingMixin:
                 if self._show_modal_dialog(dialog, "SSH Password") != wx.ID_OK:
                     return None
                 password = dialog.GetValue()
+        from quill.ui.ssh_dialogs import ConnectionRequest
+
         return ConnectionRequest(
             host=site.host,
             port=site.port,
@@ -119,6 +125,8 @@ class SshEditingMixin:
         connections, _bindings = self._ssh_state()
         connections.append(connection)
         self._set_status(f"Connected to {request.host}")
+        from quill.ui.ssh_dialogs import RemoteBrowserDialog
+
         remote_path = RemoteBrowserDialog(
             self.frame,
             list_dir=connection.service.list_dir,

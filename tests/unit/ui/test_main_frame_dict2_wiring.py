@@ -31,8 +31,8 @@ def test_dict2_lookup_dialog_method_exists() -> None:
     source = main_frame_path.read_text(encoding="utf-8")
 
     assert "def show_lookup_dialog(self, word: str)" in source
-    # The method queries the lexical service.
-    assert "self._lexical_service.lookup(" in source
+    # The method queries the lexical service (built lazily on first use).
+    assert "self._get_lexical_service().lookup(" in source
     # The method renders the lookup result.
     assert "render_lookup(result)" in source
     # The method builds selectable items.

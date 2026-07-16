@@ -18,11 +18,6 @@ is the glue that enforces the same gates every other GitHub entry point uses:
 
 from __future__ import annotations
 
-from quill.core.github.items_provider import (
-    GitHubItemsError,
-    GitHubItemsProvider,
-    refuse_in_safe_mode,
-)
 from quill.core.github.token_store import load_github_token
 
 
@@ -31,6 +26,14 @@ class GitHubItemsMixin:
 
     def open_github_items_viewer(self) -> None:
         """File > Open Remote > GitHub Items..."""
+        # items_provider pulls the GitHub request stack (urllib); it is only
+        # needed when the viewer is opened, so keep it off the cold-start path.
+        from quill.core.github.items_provider import (
+            GitHubItemsError,
+            GitHubItemsProvider,
+            refuse_in_safe_mode,
+        )
+
         # Safe Mode disables all GitHub network services, including this one.
         try:
             refuse_in_safe_mode(self._safe_mode)

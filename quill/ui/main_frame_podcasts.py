@@ -11,6 +11,7 @@ playback, chapters, sorting, and show notes.
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from quill.core.paths import app_data_dir
 from quill.core.podcasts import history as podcast_history
@@ -24,9 +25,11 @@ from quill.core.podcasts.subscriptions import (
     merge_episodes,
     save_library,
 )
-from quill.ui.podcasts.add_podcast_dialog import AddPodcastDialog
-from quill.ui.podcasts.manager_dialog import PodcastManagerDialog
 from quill.ui.podcasts.player_controller import PodcastPlaybackState, PodcastPlayerController
+
+if TYPE_CHECKING:  # Dialog classes are imported lazily at open time (they pull
+    # feedparser via feed_reader); keep them out of the cold-start path.
+    from quill.ui.podcasts.manager_dialog import PodcastManagerDialog
 
 _SAFE_MODE_MESSAGE = "Podcasts are disabled in Safe Mode. Restart QUILL normally to use them."
 
@@ -632,6 +635,8 @@ class PodcastsMixin:
                 _SAFE_MODE_MESSAGE, "Podcasts", self._wx.ICON_INFORMATION | self._wx.OK
             )
             return
+        from quill.ui.podcasts.manager_dialog import PodcastManagerDialog
+
         dialog = PodcastManagerDialog(
             self.frame,
             library=self._podcast_library,
@@ -673,6 +678,8 @@ class PodcastsMixin:
         self._announce("Podcast settings saved")
 
     def _podcast_open_add_dialog(self) -> None:
+        from quill.ui.podcasts.add_podcast_dialog import AddPodcastDialog
+
         dialog = AddPodcastDialog(
             self.frame,
             library=self._podcast_library,
