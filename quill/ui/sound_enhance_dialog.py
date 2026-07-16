@@ -53,6 +53,26 @@ class SoundEnhanceDialog:
         self._announce = announce_cb or (lambda _m: None)
         self._show_smart_speed = show_smart_speed
         self._result: tuple[float, float, float, bool, bool] | None = None
+        # wx.Window.SetName() is inert for MSAA/UIA on Windows (see
+        # quill.ui.accessible_names) -- screen readers there normally infer a
+        # name from the adjacent wx.StaticText instead, but that inference
+        # does not cover wx.Slider/Trackbar, so the band sliders read with no
+        # name at all. SetAccessible() with a GetName override is the same
+        # fix already used for table_studio_accessible.ListGridAccessible.
+        try:
+            _acc_ok = wx.ACC_OK
+
+            class _SliderAccessible(wx.Accessible):  # type: ignore[misc]
+                def __init__(self, window: object, name: str) -> None:
+                    super().__init__(window)
+                    self._name = name
+
+                def GetName(self, child_id: int) -> tuple[int, str]:
+                    return _acc_ok, self._name
+
+            self._slider_accessible_cls: type | None = _SliderAccessible
+        except Exception:
+            self._slider_accessible_cls = None
 
         self.dialog = wx.Dialog(parent, title="Sound Enhancements")
         root = wx.BoxSizer(wx.VERTICAL)
@@ -123,6 +143,11 @@ class SoundEnhanceDialog:
             style=wx.SL_HORIZONTAL | wx.SL_LABELS,
         )
         slider.SetName(f"{text}, decibels, {int(EQ_BAND_MIN_DB)} to {int(EQ_BAND_MAX_DB)}")
+        if self._slider_accessible_cls is not None:
+            try:
+                slider.SetAccessible(self._slider_accessible_cls(slider, slider.GetName()))
+            except Exception:
+                pass
         row.Add(slider, 1, wx.EXPAND | wx.LEFT, 8)
         root.Add(row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
         return slider
