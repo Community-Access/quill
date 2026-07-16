@@ -37,7 +37,7 @@ def test_commands_registered_for_palette() -> None:
 
 
 def test_file_menu_has_ssh_items_and_bindings() -> None:
-    menu = _read("quill/ui/main_frame_menu.py")
+    menu = _read("quill/ui/main_frame_menu.py") + _read("quill/ui/main_frame_menu_bindings.py")
     assert "Open over SS&H" in menu
     assert "self._bind_ssh_file_menu()" in menu
     ssh = _read("quill/ui/main_frame_ssh.py")
