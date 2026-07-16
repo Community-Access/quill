@@ -124,7 +124,10 @@ def test_common_dict_kwargs_supplies_every_speech_setup_dialog_required_arg() ->
 def test_open_speech_hub_callers_use_named_tab_constants() -> None:
     src = _read_main_frame_source()
     assert "self.open_speech_hub(TAB_SPEECH_OFFLINE)" in src
-    speech_setup_src = (
-        Path(__file__).resolve().parents[3] / "quill" / "ui" / "main_frame_speech.py"
-    ).read_text(encoding="utf-8")
+    # SpeechCommandsMixin was split into main_frame_speech{,_downloads,_voice}.py
+    # (CQ-1); scan all three for the tab-constant call sites.
+    ui = Path(__file__).resolve().parents[3] / "quill" / "ui"
+    speech_setup_src = "\n".join(
+        p.read_text(encoding="utf-8") for p in sorted(ui.glob("main_frame_speech*.py"))
+    )
     assert "self.open_speech_hub(TAB_DICTATION_OFFLINE)" in speech_setup_src

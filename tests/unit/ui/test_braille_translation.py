@@ -185,7 +185,9 @@ def test_download_braille_pack_rebuilds_menu_on_success() -> None:
     the Translation submenu stayed absent until the next restart even though
     the pack was correctly installed on disk.
     """
-    source = Path(main_frame_speech_module.__file__).read_text(encoding="utf-8")
+    # download_braille_pack moved to the SpeechDownloadsMixin module (CQ-1).
+    downloads = Path(main_frame_speech_module.__file__).with_name("main_frame_speech_downloads.py")
+    source = downloads.read_text(encoding="utf-8")
     method = source[source.index("def download_braille_pack") :]
     method = method[: method.index("\n    def download_mathcat")]
     finished = method[method.index("def _finished") :][:600]

@@ -9,6 +9,14 @@ _ROOT = Path(__file__).resolve().parents[3]
 
 
 def _src(rel: str) -> str:
+    # SpeechCommandsMixin was split into
+    # main_frame_speech{,_downloads,_voice}.py (CQ-1); scan all three so voice
+    # handler pins survive wherever they landed.
+    if rel == "quill/ui/main_frame_speech.py":
+        ui = _ROOT / "quill" / "ui"
+        return chr(10).join(
+            p.read_text(encoding="utf-8") for p in sorted(ui.glob("main_frame_speech*.py"))
+        )
     return (_ROOT / rel).read_text(encoding="utf-8")
 
 
