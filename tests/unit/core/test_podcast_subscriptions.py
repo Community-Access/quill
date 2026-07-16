@@ -146,5 +146,3 @@ def test_save_and_load_round_trip(tmp_path: Path) -> None:
     assert reloaded_c.folder_id == folder.id
     assert len(reloaded.folders) == 1
     assert reloaded.folders[0].name == "News"
-
-

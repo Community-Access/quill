@@ -154,7 +154,9 @@ def test_sort_pairs_flat_is_one_chronological_stream() -> None:
 
 def test_sort_pairs_grouped_respects_the_library_default_sort_mode() -> None:
     show = _show("s1", title="Only Show")
-    library = PodcastLibrary(shows=[show], settings=PodcastSettings(episode_sort_mode="date_oldest"))
+    library = PodcastLibrary(
+        shows=[show], settings=PodcastSettings(episode_sort_mode="date_oldest")
+    )
     pairs = [
         (show, _episode("new", title="New", published=_NEW)),
         (show, _episode("old", title="Old", published=_OLD)),
