@@ -20,7 +20,7 @@ from quill.ui.main_frame_podcasts import PodcastsMixin
 from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 
 _TITLE = "QUILL Cast"
-_VERSION = "1.0.1"
+_VERSION = "1.0.2"
 _REPO = "Community-Access/quill-cast"
 
 

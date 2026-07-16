@@ -8682,6 +8682,24 @@ natively. Full parity was built, not a degraded no-seek mode.
   never declares a length for the engine to compute a scrub bar from, so
   duration comes from an independent ``ffprobe`` call instead.
 
+#### Phase 6 (shipped): Download All Episodes / Remove All Episodes
+
+Two new show-level context-menu actions, implemented once in
+``quill/ui/podcasts/show_actions.py`` and called from both surfaces that act
+on a subscribed show (the Podcast Manager dialog and QUILL Cast&#39;s own
+library tree) rather than duplicating the logic a third time.
+
+- **Download All Episodes.** Queues every not-yet-downloaded,
+  not-already-queued episode of a show -- purely additive, no confirmation,
+  matching the existing single-episode Download action&#39;s own behavior.
+- **Remove All Episodes.** A two-step confirm mirroring Unsubscribe&#39;s shape:
+  confirm the removal, then -- only if any episode has a downloaded file --
+  a follow-up asking whether to also delete those files. The show stays
+  subscribed (unlike Unsubscribe); a future feed refresh can repopulate its
+  episode list from the feed itself. Cancels any in-flight/queued download
+  for a removed episode first, so nothing is left running against a guid
+  about to disappear.
+
 ---
 
 ### 5.84h Shared media Sleep Timer, and start-at-Windows-login
