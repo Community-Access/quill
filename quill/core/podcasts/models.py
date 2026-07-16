@@ -14,6 +14,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from quill.core.audio_enhance import clamp_eq_gain
+
 
 @dataclass(slots=True)
 class PodcastFolder:
@@ -96,6 +98,17 @@ class PodcastSettings:
     #: apply_show_override), so "oldest-first to clear a backlog" can
     #: differ per podcast while everything else stays on the shared default.
     episode_sort_mode: str = "date_newest"
+    #: Sound Enhancements (Playback menu): three adjustable EQ bands (dB,
+    #: see audio_enhance.EQ_BAND_MIN_DB/MAX_DB), the compressor ("Even Out
+    #: Volume"), and Smart Speed (silence trimming). All default to off,
+    #: and all are per-show overridable the same way speed is -- one
+    #: podcast can sound different from another without touching the
+    #: shared default.
+    eq_bass_db: float = 0.0
+    eq_mid_db: float = 0.0
+    eq_treble_db: float = 0.0
+    compressor_enabled: bool = False
+    smart_speed_enabled: bool = False
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -113,6 +126,11 @@ class PodcastSettings:
             "reconnect_wait_seconds": self.reconnect_wait_seconds,
             "episode_list_view_mode": self.episode_list_view_mode,
             "episode_sort_mode": self.episode_sort_mode,
+            "eq_bass_db": self.eq_bass_db,
+            "eq_mid_db": self.eq_mid_db,
+            "eq_treble_db": self.eq_treble_db,
+            "compressor_enabled": self.compressor_enabled,
+            "smart_speed_enabled": self.smart_speed_enabled,
         }
 
     @classmethod
@@ -139,6 +157,11 @@ class PodcastSettings:
             if view_mode in ("flat", "grouped", "folders")
             else "grouped",
             episode_sort_mode=sort_mode,
+            eq_bass_db=clamp_eq_gain(_coerce_float(data.get("eq_bass_db"), 0.0)),
+            eq_mid_db=clamp_eq_gain(_coerce_float(data.get("eq_mid_db"), 0.0)),
+            eq_treble_db=clamp_eq_gain(_coerce_float(data.get("eq_treble_db"), 0.0)),
+            compressor_enabled=bool(data.get("compressor_enabled", False)),
+            smart_speed_enabled=bool(data.get("smart_speed_enabled", False)),
         )
 
 

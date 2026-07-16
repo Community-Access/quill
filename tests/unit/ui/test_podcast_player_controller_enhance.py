@@ -14,6 +14,12 @@ import wx
 import quill.ui.podcasts.player_controller as player_controller
 from quill.ui.podcasts.player_controller import PodcastPlayerController
 
+# (bass_db, mid_db, treble_db) shorthand for the old named presets.
+BASS_BOOST = (7.0, 0.0, 1.0)
+VOICE_CLARITY = (-3.0, 4.0, 2.0)
+PODCAST = (-4.0, 3.0, 0.0)
+FLAT = (0.0, 0.0, 0.0)
+
 
 @pytest.fixture(scope="module", autouse=True)
 def wx_app():
@@ -71,7 +77,7 @@ class _FakeEngine:
 
 class _FakeRelay:
     def __init__(self) -> None:
-        self.started_with: list[tuple[str, str, bool, bool, float]] = []
+        self.started_with: list[tuple[str, float, float, float, bool, bool, float]] = []
         self.stop_count = 0
         self._active = False
 
@@ -79,14 +85,18 @@ class _FakeRelay:
         self,
         source: str,
         *,
-        eq_preset: str,
+        bass_db: float,
+        mid_db: float,
+        treble_db: float,
         compressor_enabled: bool,
         smart_speed_enabled: bool = False,
         start_seconds: float = 0.0,
     ) -> str:
         self.started_with.append((
             source,
-            eq_preset,
+            bass_db,
+            mid_db,
+            treble_db,
             compressor_enabled,
             smart_speed_enabled,
             start_seconds,
@@ -132,6 +142,23 @@ def _play(controller: PodcastPlayerController, fake_engine: _FakeEngine, **kwarg
     controller._on_loaded(0)
 
 
+def _set_enhancement(
+    controller: PodcastPlayerController,
+    bands: tuple[float, float, float],
+    *,
+    compressor_enabled: bool,
+    smart_speed_enabled: bool = False,
+) -> None:
+    bass_db, mid_db, treble_db = bands
+    controller.set_enhancement(
+        bass_db=bass_db,
+        mid_db=mid_db,
+        treble_db=treble_db,
+        compressor_enabled=compressor_enabled,
+        smart_speed_enabled=smart_speed_enabled,
+    )
+
+
 def test_unenhanced_playback_loads_the_raw_source(monkeypatch: pytest.MonkeyPatch) -> None:
     controller, fake_engine, fake_relay = _make_controller(monkeypatch)
     _play(controller, fake_engine)
@@ -141,17 +168,17 @@ def test_unenhanced_playback_loads_the_raw_source(monkeypatch: pytest.MonkeyPatc
 
 def test_enhanced_playback_loads_the_relay_url(monkeypatch: pytest.MonkeyPatch) -> None:
     controller, fake_engine, fake_relay = _make_controller(monkeypatch)
-    controller.set_enhancement("Bass Boost", compressor_enabled=False)
+    _set_enhancement(controller, BASS_BOOST, compressor_enabled=False)
     _play(controller, fake_engine)
     assert fake_engine.loaded_sources == ["http://127.0.0.1:9999/enhanced.mp3"]
     assert fake_relay.started_with == [
-        ("https://example.com/ep.mp3", "Bass Boost", False, False, 0.0)
+        ("https://example.com/ep.mp3", *BASS_BOOST, False, False, 0.0)
     ]
 
 
 def test_enhanced_playback_reports_probed_duration(monkeypatch: pytest.MonkeyPatch) -> None:
     controller, fake_engine, _fake_relay = _make_controller(monkeypatch, probed_duration_ms=45_000)
-    controller.set_enhancement("Podcast", compressor_enabled=True)
+    _set_enhancement(controller, PODCAST, compressor_enabled=True)
     _play(controller, fake_engine)
     assert controller.length_ms() == 45_000
 
@@ -180,13 +207,13 @@ def test_seek_while_enhanced_restarts_the_relay_at_the_new_offset(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     controller, fake_engine, fake_relay = _make_controller(monkeypatch)
-    controller.set_enhancement("Voice Clarity", compressor_enabled=False)
+    _set_enhancement(controller, VOICE_CLARITY, compressor_enabled=False)
     _play(controller, fake_engine)
     controller.seek(20_000)
     controller._on_loaded(0)  # simulate the reload's async completion
     assert fake_relay.started_with[-1] == (
         "https://example.com/ep.mp3",
-        "Voice Clarity",
+        *VOICE_CLARITY,
         False,
         False,
         20.0,
@@ -198,7 +225,7 @@ def test_seek_while_enhanced_and_paused_reloads_still_paused(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     controller, fake_engine, _fake_relay = _make_controller(monkeypatch)
-    controller.set_enhancement("Voice Clarity", compressor_enabled=False)
+    _set_enhancement(controller, VOICE_CLARITY, compressor_enabled=False)
     _play(controller, fake_engine)
     controller.toggle_play_pause()  # -> paused
     assert fake_engine.paused is True
@@ -212,10 +239,10 @@ def test_turning_enhancement_off_mid_episode_preserves_position_and_play_state(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     controller, fake_engine, fake_relay = _make_controller(monkeypatch)
-    controller.set_enhancement("Bass Boost", compressor_enabled=False)
+    _set_enhancement(controller, BASS_BOOST, compressor_enabled=False)
     _play(controller, fake_engine)
     fake_engine._position = 15_000  # the relay-relative engine position
-    controller.set_enhancement("Flat", compressor_enabled=False)
+    _set_enhancement(controller, FLAT, compressor_enabled=False)
     controller._on_loaded(0)
     # Went from enhanced (offset 0, engine pos 15_000 -> 15_000) to unenhanced:
     # the reload must resume-seek to that same absolute position.
@@ -226,7 +253,7 @@ def test_turning_enhancement_off_mid_episode_preserves_position_and_play_state(
 
 def test_stop_stops_the_relay(monkeypatch: pytest.MonkeyPatch) -> None:
     controller, fake_engine, fake_relay = _make_controller(monkeypatch)
-    controller.set_enhancement("Bass Boost", compressor_enabled=False)
+    _set_enhancement(controller, BASS_BOOST, compressor_enabled=False)
     _play(controller, fake_engine)
     controller.stop()
     assert fake_relay.is_active is False
@@ -236,14 +263,35 @@ def test_set_enhancement_before_anything_plays_is_remembered_not_applied_yet(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     controller, _fake_engine, fake_relay = _make_controller(monkeypatch)
-    controller.set_enhancement("Podcast", compressor_enabled=True)
+    _set_enhancement(controller, PODCAST, compressor_enabled=True)
     assert fake_relay.started_with == []  # nothing loaded yet, nothing to reload
     assert controller._is_enhanced() is True  # noqa: SLF001 - white-box preference check
 
 
 def test_smart_speed_alone_activates_enhancement(monkeypatch: pytest.MonkeyPatch) -> None:
     controller, fake_engine, fake_relay = _make_controller(monkeypatch)
-    controller.set_enhancement("Flat", compressor_enabled=False, smart_speed_enabled=True)
+    _set_enhancement(controller, FLAT, compressor_enabled=False, smart_speed_enabled=True)
     _play(controller, fake_engine)
     assert fake_engine.loaded_sources == ["http://127.0.0.1:9999/enhanced.mp3"]
-    assert fake_relay.started_with == [("https://example.com/ep.mp3", "Flat", False, True, 0.0)]
+    assert fake_relay.started_with == [("https://example.com/ep.mp3", *FLAT, False, True, 0.0)]
+
+
+def test_play_episode_enhancement_kwargs_apply_per_show(monkeypatch: pytest.MonkeyPatch) -> None:
+    """play_episode's own bass_db/mid_db/treble_db kwargs (resolved by the
+    caller from PodcastLibrary.effective_settings) take effect without a
+    separate set_enhancement call -- this is what makes different podcasts
+    sound different from each other."""
+    controller, fake_engine, fake_relay = _make_controller(monkeypatch)
+    controller.play_episode(
+        show_id="show-1",
+        episode_guid="ep-1",
+        title="Title",
+        source="https://example.com/ep.mp3",
+        bass_db=PODCAST[0],
+        mid_db=PODCAST[1],
+        treble_db=PODCAST[2],
+        compressor_enabled=True,
+    )
+    controller._on_loaded(0)
+    assert fake_engine.loaded_sources == ["http://127.0.0.1:9999/enhanced.mp3"]
+    assert fake_relay.started_with == [("https://example.com/ep.mp3", *PODCAST, True, False, 0.0)]

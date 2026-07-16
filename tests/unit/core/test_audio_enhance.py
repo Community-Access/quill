@@ -27,56 +27,62 @@ from quill.core.audio_enhance import (
 
 # -- pure filter-graph / command building ------------------------------------
 
-
-def test_flat_preset_no_compressor_builds_empty_graph() -> None:
-    assert build_filter_graph("Flat", compressor_enabled=False) == ""
-
-
-def test_unknown_preset_falls_back_to_flat() -> None:
-    assert build_filter_graph("Nonsense", compressor_enabled=False) == ""
+FLAT = (0.0, 0.0, 0.0)
+BASS_BOOST = (7.0, 0.0, 1.0)
+VOICE_CLARITY = (-3.0, 4.0, 2.0)
+PODCAST = (-4.0, 3.0, 0.0)
 
 
-def test_bass_boost_preset_includes_only_nonzero_bands() -> None:
-    graph = build_filter_graph("Bass Boost", compressor_enabled=False)
+def test_flat_bands_no_compressor_builds_empty_graph() -> None:
+    assert build_filter_graph(*FLAT, compressor_enabled=False) == ""
+
+
+def test_bands_clamped_to_supported_range() -> None:
+    graph = build_filter_graph(50.0, 0.0, 0.0, compressor_enabled=False)
+    assert "g=12.0" in graph
+
+
+def test_bass_boost_bands_include_only_nonzero_bands() -> None:
+    graph = build_filter_graph(*BASS_BOOST, compressor_enabled=False)
     assert "f=100" in graph
     assert "g=7.0" in graph
     assert "f=1000" not in graph  # mid gain is 0 for Bass Boost
 
 
-def test_compressor_alone_on_flat_preset() -> None:
-    graph = build_filter_graph("Flat", compressor_enabled=True)
+def test_compressor_alone_on_flat_bands() -> None:
+    graph = build_filter_graph(*FLAT, compressor_enabled=True)
     assert graph.startswith("acompressor=")
 
 
 def test_compressor_appended_after_eq_bands() -> None:
-    graph = build_filter_graph("Voice Clarity", compressor_enabled=True)
+    graph = build_filter_graph(*VOICE_CLARITY, compressor_enabled=True)
     bands, _, compressor = graph.rpartition(",")
     assert "equalizer" in bands
     assert compressor.startswith("acompressor=")
 
 
 def test_is_enhancement_active_false_for_flat_no_compressor() -> None:
-    assert is_enhancement_active("Flat", compressor_enabled=False) is False
+    assert is_enhancement_active(*FLAT, compressor_enabled=False) is False
 
 
-def test_is_enhancement_active_true_for_any_preset_or_compressor() -> None:
-    assert is_enhancement_active("Bass Boost", compressor_enabled=False) is True
-    assert is_enhancement_active("Flat", compressor_enabled=True) is True
+def test_is_enhancement_active_true_for_any_band_or_compressor() -> None:
+    assert is_enhancement_active(*BASS_BOOST, compressor_enabled=False) is True
+    assert is_enhancement_active(*FLAT, compressor_enabled=True) is True
 
 
 def test_is_enhancement_active_true_for_smart_speed_alone() -> None:
-    assert is_enhancement_active("Flat", compressor_enabled=False, smart_speed_enabled=True) is True
+    assert is_enhancement_active(*FLAT, compressor_enabled=False, smart_speed_enabled=True) is True
 
 
 def test_smart_speed_alone_builds_only_the_silenceremove_filter() -> None:
-    graph = build_filter_graph("Flat", compressor_enabled=False, smart_speed_enabled=True)
+    graph = build_filter_graph(*FLAT, compressor_enabled=False, smart_speed_enabled=True)
     assert graph.startswith("silenceremove=")
     assert "equalizer" not in graph
     assert "acompressor" not in graph
 
 
 def test_smart_speed_appended_after_eq_and_compressor() -> None:
-    graph = build_filter_graph("Podcast", compressor_enabled=True, smart_speed_enabled=True)
+    graph = build_filter_graph(*PODCAST, compressor_enabled=True, smart_speed_enabled=True)
     parts = graph.split(",")
     assert "equalizer" in parts[0]
     assert parts[-2].startswith("acompressor=")
@@ -85,42 +91,42 @@ def test_smart_speed_appended_after_eq_and_compressor() -> None:
 
 def test_radio_never_engages_smart_speed_by_default() -> None:
     # Radio callers never pass smart_speed_enabled -- confirm the default is off.
-    assert build_filter_graph("Bass Boost", compressor_enabled=True) == build_filter_graph(
-        "Bass Boost", compressor_enabled=True, smart_speed_enabled=False
+    assert build_filter_graph(*BASS_BOOST, compressor_enabled=True) == build_filter_graph(
+        *BASS_BOOST, compressor_enabled=True, smart_speed_enabled=False
     )
 
 
 def test_build_relay_command_adds_reconnect_flags_for_http() -> None:
     args = build_relay_command(
-        "ffmpeg", "https://example.com/stream", eq_preset="Flat", compressor_enabled=False
+        "ffmpeg", "https://example.com/stream", **_bands(FLAT), compressor_enabled=False
     )
     assert "-reconnect" in args
 
 
 def test_build_relay_command_skips_reconnect_flags_for_local_file() -> None:
     args = build_relay_command(
-        "ffmpeg", "C:/music/episode.mp3", eq_preset="Flat", compressor_enabled=False
+        "ffmpeg", "C:/music/episode.mp3", **_bands(FLAT), compressor_enabled=False
     )
     assert "-reconnect" not in args
 
 
 def test_build_relay_command_omits_af_flag_when_nothing_engaged() -> None:
     args = build_relay_command(
-        "ffmpeg", "https://example.com/stream", eq_preset="Flat", compressor_enabled=False
+        "ffmpeg", "https://example.com/stream", **_bands(FLAT), compressor_enabled=False
     )
     assert "-af" not in args
 
 
 def test_build_relay_command_includes_af_flag_when_engaged() -> None:
     args = build_relay_command(
-        "ffmpeg", "https://example.com/stream", eq_preset="Podcast", compressor_enabled=True
+        "ffmpeg", "https://example.com/stream", **_bands(PODCAST), compressor_enabled=True
     )
     assert "-af" in args
     assert args[-3:] == ["-f", "mp3", "pipe:1"]
 
 
 def test_build_relay_command_omits_ss_flag_by_default() -> None:
-    args = build_relay_command("ffmpeg", "episode.mp3", eq_preset="Flat", compressor_enabled=False)
+    args = build_relay_command("ffmpeg", "episode.mp3", **_bands(FLAT), compressor_enabled=False)
     assert "-ss" not in args
 
 
@@ -128,7 +134,7 @@ def test_build_relay_command_adds_ss_flag_before_input_when_seeking() -> None:
     args = build_relay_command(
         "ffmpeg",
         "episode.mp3",
-        eq_preset="Flat",
+        **_bands(FLAT),
         compressor_enabled=False,
         start_seconds=42.5,
     )
@@ -141,12 +147,17 @@ def test_build_relay_command_includes_af_flag_for_smart_speed_alone() -> None:
     args = build_relay_command(
         "ffmpeg",
         "episode.mp3",
-        eq_preset="Flat",
+        **_bands(FLAT),
         compressor_enabled=False,
         smart_speed_enabled=True,
     )
     af_index = args.index("-af")
     assert args[af_index + 1].startswith("silenceremove=")
+
+
+def _bands(values: tuple[float, float, float]) -> dict[str, float]:
+    bass, mid, treble = values
+    return {"bass_db": bass, "mid_db": mid, "treble_db": treble}
 
 
 def test_probe_source_duration_ms_returns_zero_when_ffprobe_missing(
@@ -214,7 +225,7 @@ def test_start_raises_when_ffmpeg_missing(monkeypatch: pytest.MonkeyPatch) -> No
     monkeypatch.setattr(audio_enhance, "find_ffmpeg", lambda: None)
     relay = EnhanceRelay()
     with pytest.raises(EnhanceError):
-        relay.start("https://example.com/stream", eq_preset="Flat", compressor_enabled=True)
+        relay.start("https://example.com/stream", **_bands(FLAT), compressor_enabled=True)
 
 
 def test_start_returns_local_loopback_url_and_marks_active(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -222,7 +233,7 @@ def test_start_returns_local_loopback_url_and_marks_active(monkeypatch: pytest.M
     relay = EnhanceRelay()
     try:
         url = relay.start(
-            "https://example.com/stream", eq_preset="Bass Boost", compressor_enabled=False
+            "https://example.com/stream", **_bands(BASS_BOOST), compressor_enabled=False
         )
         assert url.startswith("http://127.0.0.1:")
         assert relay.is_active is True
@@ -242,7 +253,7 @@ def test_start_accepts_smart_speed(monkeypatch: pytest.MonkeyPatch) -> None:
     relay = EnhanceRelay()
     try:
         relay.start(
-            "episode.mp3", eq_preset="Flat", compressor_enabled=False, smart_speed_enabled=True
+            "episode.mp3", **_bands(FLAT), compressor_enabled=False, smart_speed_enabled=True
         )
     finally:
         relay.stop()
@@ -253,7 +264,7 @@ def test_stop_terminates_the_process(monkeypatch: pytest.MonkeyPatch) -> None:
     process = _FakeProcess()
     monkeypatch.setattr(audio_enhance.subprocess, "Popen", lambda *a, **k: process)
     relay = EnhanceRelay()
-    relay.start("https://example.com/stream", eq_preset="Flat", compressor_enabled=True)
+    relay.start("https://example.com/stream", **_bands(FLAT), compressor_enabled=True)
     relay.stop()
     assert process.terminated is True
 
@@ -267,9 +278,9 @@ def test_start_stops_any_previous_relay_first(monkeypatch: pytest.MonkeyPatch) -
     monkeypatch.setattr(audio_enhance.subprocess, "Popen", lambda *a, **k: processes.pop(0))
     relay = EnhanceRelay()
     try:
-        relay.start("https://example.com/a", eq_preset="Flat", compressor_enabled=True)
+        relay.start("https://example.com/a", **_bands(FLAT), compressor_enabled=True)
         first_process = relay._process  # noqa: SLF001 - white-box lifecycle check
-        relay.start("https://example.com/b", eq_preset="Flat", compressor_enabled=True)
+        relay.start("https://example.com/b", **_bands(FLAT), compressor_enabled=True)
         assert first_process is not None and first_process.terminated is True
     finally:
         relay.stop()

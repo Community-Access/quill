@@ -372,14 +372,19 @@ class PodcastsAppFrame(
         played_note = ""
         if episode.played:
             played_note = " (no unplayed episodes; playing the most recent)"
-        speed = self._podcast_library.effective_settings(show).speed
+        settings = self._podcast_library.effective_settings(show)
         self._podcast_controller.play_episode(
             show_id=show.id,
             episode_guid=episode.guid,
             title=episode.title,
             source=episode.downloaded_path or episode.audio_url,
             resume_ms=episode.position_ms,
-            rate=speed,
+            rate=settings.speed,
+            bass_db=settings.eq_bass_db,
+            mid_db=settings.eq_mid_db,
+            treble_db=settings.eq_treble_db,
+            compressor_enabled=settings.compressor_enabled,
+            smart_speed_enabled=settings.smart_speed_enabled,
         )
         self._announce(f"Playing {episode.title} from {show.title}{played_note}")
 
@@ -493,7 +498,8 @@ class PodcastsAppFrame(
         result = dialog.show()
         if result is None:
             return
-        history.resume_on_launch, history.check_updates_on_startup = result
+        checkbox_values, _choice_indices = result
+        history.resume_on_launch, history.check_updates_on_startup = checkbox_values
         podcast_history.save_history(app_data_dir(), history)
         menu_bar = self.frame.GetMenuBar()
         if menu_bar is not None:
@@ -511,14 +517,19 @@ class PodcastsAppFrame(
         episode = show.find_episode(last.episode_guid) if show is not None else None
         if show is None or episode is None:
             return
-        speed = self._podcast_library.effective_settings(show).speed
+        settings = self._podcast_library.effective_settings(show)
         self._podcast_controller.play_episode(
             show_id=show.id,
             episode_guid=episode.guid,
             title=episode.title,
             source=episode.downloaded_path or episode.audio_url,
             resume_ms=episode.position_ms,
-            rate=speed,
+            rate=settings.speed,
+            bass_db=settings.eq_bass_db,
+            mid_db=settings.eq_mid_db,
+            treble_db=settings.eq_treble_db,
+            compressor_enabled=settings.compressor_enabled,
+            smart_speed_enabled=settings.smart_speed_enabled,
         )
 
     def _maybe_check_updates_on_startup(self) -> None:

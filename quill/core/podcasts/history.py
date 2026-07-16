@@ -14,8 +14,6 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from quill.core.audio_enhance import DEFAULT_EQ_PRESET
-
 _FILE_NAME = "podcast_history.json"
 _MAX_ENTRIES = 15
 
@@ -65,16 +63,6 @@ class PodcastHistory:
     #: ISO timestamp of the last update check (manual or automatic), so the
     #: startup check only hits the network once a day, not on every launch.
     last_update_check: str = ""
-    #: Sound Enhancements (Playback menu): an EQ preset name from
-    #: ``audio_enhance.EQ_PRESETS`` and whether the compressor is on. Both
-    #: default to off/Flat -- normal playback never touches the ffmpeg relay
-    #: unless the user opts in.
-    eq_preset: str = DEFAULT_EQ_PRESET
-    compressor_enabled: bool = False
-    #: Smart Speed: trims silence between words/sentences during playback
-    #: (podcasts only -- radio has no fixed content to trim ahead of time).
-    #: Off by default.
-    smart_speed_enabled: bool = False
 
     def record(
         self, show_id: str, episode_guid: str, *, show_title: str, episode_title: str
@@ -114,9 +102,6 @@ def load_history(data_dir: Path) -> PodcastHistory:
         history.resume_on_launch = bool(raw.get("resume_on_launch", False))
         history.check_updates_on_startup = bool(raw.get("check_updates_on_startup", True))
         history.last_update_check = str(raw.get("last_update_check", ""))
-        history.eq_preset = str(raw.get("eq_preset") or DEFAULT_EQ_PRESET)
-        history.compressor_enabled = bool(raw.get("compressor_enabled", False))
-        history.smart_speed_enabled = bool(raw.get("smart_speed_enabled", False))
         entries = raw.get("episodes")
         for entry in entries if isinstance(entries, list) else []:
             played = PlayedEpisode.from_dict(entry)
@@ -136,9 +121,6 @@ def save_history(data_dir: Path, history: PodcastHistory) -> None:
             "resume_on_launch": history.resume_on_launch,
             "check_updates_on_startup": history.check_updates_on_startup,
             "last_update_check": history.last_update_check,
-            "eq_preset": history.eq_preset,
-            "compressor_enabled": history.compressor_enabled,
-            "smart_speed_enabled": history.smart_speed_enabled,
             "episodes": [e.to_dict() for e in history.episodes],
         },
     )

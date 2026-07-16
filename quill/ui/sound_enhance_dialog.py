@@ -1,12 +1,16 @@
-"""Playback > Sound Enhancements... -- an EQ preset, a compressor, and
-(podcasts only) Smart Speed.
+"""Playback > Sound Enhancements... -- a three-band EQ (Bass/Mid/Treble
+sliders), a compressor, and (podcasts only) Smart Speed.
 
-Shared by Radio and Podcasts (both standalone apps and MainFrame). Deliberately
-not raw dB sliders per band: one named preset (Flat / Bass Boost / Voice
-Clarity / Podcast) in a combo box, plus a single "Even Out Volume" checkbox
-for the compressor. All apply through the host player controller's
+Shared by Radio and Podcasts (both standalone apps and MainFrame). Sliders,
+not a single named preset: the Quick Preset combo box is a shortcut that sets
+all three sliders at once (Flat / Bass Boost / Voice Clarity / Podcast, from
+``core/audio_enhance.EQ_PRESETS``) -- moving any slider away from a preset's
+exact values flips the combo to "Custom", which is a status readout, not a
+selectable target of its own. All apply through the host player controller's
 ``set_enhancement`` (see ``core/audio_enhance.py`` for why -- ffmpeg relay,
-no new audio backend). Turning anything on reconnects what's currently
+no new audio backend, no live per-drag-tick preview: the relay can only be
+restarted, not tweaked in place, so changes take effect on Apply, not on
+every slider movement). Turning anything on reconnects what's currently
 playing through the filtered relay. Smart Speed (silence trimming) only
 makes sense for bounded, spoken-word content -- ``show_smart_speed`` gates
 whether that checkbox exists at all (Radio never passes it; a hidden-but-
@@ -18,22 +22,25 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
-from quill.core.audio_enhance import DEFAULT_EQ_PRESET, EQ_PRESETS
+from quill.core.audio_enhance import EQ_BAND_MAX_DB, EQ_BAND_MIN_DB, EQ_PRESETS
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 
-_PRESET_NAMES = tuple(EQ_PRESETS)
+_PRESET_NAMES = ("Custom", *EQ_PRESETS)
 
 
 class SoundEnhanceDialog:
-    """Returns ``(eq_preset, compressor_enabled, smart_speed_enabled)``, or
-    ``None`` on Cancel. ``smart_speed_enabled`` is always ``False`` when
-    ``show_smart_speed`` is ``False`` (there is no control to read it from)."""
+    """Returns ``(bass_db, mid_db, treble_db, compressor_enabled,
+    smart_speed_enabled)``, or ``None`` on Cancel. ``smart_speed_enabled`` is
+    always ``False`` when ``show_smart_speed`` is ``False`` (there is no
+    control to read it from)."""
 
     def __init__(
         self,
         parent: object,
         *,
-        eq_preset: str,
+        bass_db: float,
+        mid_db: float,
+        treble_db: float,
         compressor_enabled: bool,
         subject: str = "station",
         show_smart_speed: bool = False,
@@ -45,7 +52,7 @@ class SoundEnhanceDialog:
         self._wx = wx
         self._announce = announce_cb or (lambda _m: None)
         self._show_smart_speed = show_smart_speed
-        self._result: tuple[str, bool, bool] | None = None
+        self._result: tuple[float, float, float, bool, bool] | None = None
 
         self.dialog = wx.Dialog(parent, title="Sound Enhancements")
         root = wx.BoxSizer(wx.VERTICAL)
@@ -62,15 +69,19 @@ class SoundEnhanceDialog:
 
         grid = wx.FlexGridSizer(cols=2, gap=(6, 8))
         grid.AddGrowableCol(1, 1)
-        grid.Add(
-            wx.StaticText(self.dialog, label="&Equalizer preset:"), 0, wx.ALIGN_CENTER_VERTICAL
-        )
+        grid.Add(wx.StaticText(self.dialog, label="&Quick preset:"), 0, wx.ALIGN_CENTER_VERTICAL)
         self._preset_choice = wx.Choice(self.dialog, choices=list(_PRESET_NAMES))
-        self._preset_choice.SetName("Equalizer preset")
-        preset = eq_preset if eq_preset in _PRESET_NAMES else DEFAULT_EQ_PRESET
-        self._preset_choice.SetSelection(_PRESET_NAMES.index(preset))
+        self._preset_choice.SetName("Quick preset -- sets all three sliders at once")
         grid.Add(self._preset_choice, 1, wx.EXPAND)
         root.Add(grid, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+
+        self._bass_slider = self._add_band_slider(root, "&Bass", bass_db)
+        self._mid_slider = self._add_band_slider(root, "&Mid", mid_db)
+        self._treble_slider = self._add_band_slider(root, "&Treble", treble_db)
+        self._sync_preset_choice()
+        self._preset_choice.Bind(wx.EVT_CHOICE, self._on_preset_choice)
+        for slider in (self._bass_slider, self._mid_slider, self._treble_slider):
+            slider.Bind(wx.EVT_SLIDER, self._on_slider_changed)
 
         self._compressor_check = wx.CheckBox(self.dialog, label="&Even Out Volume")
         self._compressor_check.SetName(
@@ -99,7 +110,53 @@ class SoundEnhanceDialog:
 
         ok_btn.Bind(wx.EVT_BUTTON, self._on_apply)
 
-    def show(self) -> tuple[str, bool, bool] | None:
+    def _add_band_slider(self, root: object, label: str, value_db: float):
+        wx = self._wx
+        row = wx.BoxSizer(wx.HORIZONTAL)
+        text = label.replace("&", "")
+        row.Add(wx.StaticText(self.dialog, label=f"{label}:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        slider = wx.Slider(
+            self.dialog,
+            value=round(max(EQ_BAND_MIN_DB, min(EQ_BAND_MAX_DB, value_db))),
+            minValue=int(EQ_BAND_MIN_DB),
+            maxValue=int(EQ_BAND_MAX_DB),
+            style=wx.SL_HORIZONTAL | wx.SL_LABELS,
+        )
+        slider.SetName(f"{text}, decibels, {int(EQ_BAND_MIN_DB)} to {int(EQ_BAND_MAX_DB)}")
+        row.Add(slider, 1, wx.EXPAND | wx.LEFT, 8)
+        root.Add(row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+        return slider
+
+    def _current_band_values(self) -> tuple[float, float, float]:
+        return (
+            float(self._bass_slider.GetValue()),
+            float(self._mid_slider.GetValue()),
+            float(self._treble_slider.GetValue()),
+        )
+
+    def _sync_preset_choice(self) -> None:
+        values = self._current_band_values()
+        for name, preset_values in EQ_PRESETS.items():
+            if preset_values == values:
+                self._preset_choice.SetSelection(_PRESET_NAMES.index(name))
+                return
+        self._preset_choice.SetSelection(0)  # "Custom"
+
+    def _on_slider_changed(self, _event: object) -> None:
+        self._sync_preset_choice()
+
+    def _on_preset_choice(self, _event: object) -> None:
+        index = self._preset_choice.GetSelection()
+        if index <= 0 or index >= len(_PRESET_NAMES):
+            return  # "Custom" is a status readout, not a settable target
+        name = _PRESET_NAMES[index]
+        bass, mid, treble = EQ_PRESETS[name]
+        self._bass_slider.SetValue(round(bass))
+        self._mid_slider.SetValue(round(mid))
+        self._treble_slider.SetValue(round(treble))
+        self._announce(f"{name}: Bass {bass:+.0f}, Mid {mid:+.0f}, Treble {treble:+.0f}")
+
+    def show(self) -> tuple[float, float, float, bool, bool] | None:
         wx = self._wx
         self.dialog.CentreOnParent()
         apply_modal_ids(
@@ -116,8 +173,7 @@ class SoundEnhanceDialog:
             self.dialog.Destroy()
 
     def _on_apply(self, _event: object) -> None:
-        index = self._preset_choice.GetSelection()
-        preset = _PRESET_NAMES[index] if 0 <= index < len(_PRESET_NAMES) else DEFAULT_EQ_PRESET
+        bass, mid, treble = self._current_band_values()
         smart_speed = self._smart_speed_check.GetValue() if self._smart_speed_check else False
-        self._result = (preset, self._compressor_check.GetValue(), smart_speed)
+        self._result = (bass, mid, treble, self._compressor_check.GetValue(), smart_speed)
         self.dialog.EndModal(self._wx.ID_OK)

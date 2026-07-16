@@ -332,7 +332,7 @@ class ManagerPhase4Mixin:
         dialog.show()
 
     def _play_pair(self, show: PodcastShow, episode: PodcastEpisode) -> None:
-        speed = self._library.effective_settings(show).speed
+        settings = self._library.effective_settings(show)
         source = episode.downloaded_path or episode.audio_url
         self._controller.play_episode(
             show_id=show.id,
@@ -340,7 +340,12 @@ class ManagerPhase4Mixin:
             title=episode.title,
             source=source,
             resume_ms=episode.position_ms,
-            rate=speed,
+            rate=settings.speed,
+            bass_db=settings.eq_bass_db,
+            mid_db=settings.eq_mid_db,
+            treble_db=settings.eq_treble_db,
+            compressor_enabled=settings.compressor_enabled,
+            smart_speed_enabled=settings.smart_speed_enabled,
         )
 
     # -- context-menu additions -----------------------------------------------

@@ -54,12 +54,14 @@ class PodcastsMixin:
             before_play=self._stop_radio_before_podcast,
             on_enhance_error=self._on_podcast_enhance_error,
         )
-        self._podcast_controller.set_enhancement(
-            self._podcast_history.eq_preset,
-            compressor_enabled=self._podcast_history.compressor_enabled,
-            smart_speed_enabled=self._podcast_history.smart_speed_enabled,
-        )
         settings = self._podcast_library.settings
+        self._podcast_controller.set_enhancement(
+            bass_db=settings.eq_bass_db,
+            mid_db=settings.eq_mid_db,
+            treble_db=settings.eq_treble_db,
+            compressor_enabled=settings.compressor_enabled,
+            smart_speed_enabled=settings.smart_speed_enabled,
+        )
         self._podcast_download_queue = PodcastDownloadQueue(
             on_status_changed=self._on_podcast_download_status_changed,
             on_completed=self._on_podcast_download_completed,
@@ -205,14 +207,19 @@ class PodcastsMixin:
             return
         next_show, next_episode = resolved
         self._save_podcast_library()
-        speed = self._podcast_library.effective_settings(next_show).speed
+        settings = self._podcast_library.effective_settings(next_show)
         self._podcast_controller.play_episode(
             show_id=next_show.id,
             episode_guid=next_episode.guid,
             title=next_episode.title,
             source=next_episode.downloaded_path or next_episode.audio_url,
             resume_ms=next_episode.position_ms,
-            rate=speed,
+            rate=settings.speed,
+            bass_db=settings.eq_bass_db,
+            mid_db=settings.eq_mid_db,
+            treble_db=settings.eq_treble_db,
+            compressor_enabled=settings.compressor_enabled,
+            smart_speed_enabled=settings.smart_speed_enabled,
         )
         self._announce(f"Up next from the queue: {next_episode.title}")
 
@@ -315,14 +322,19 @@ class PodcastsMixin:
         if show is None or episode is None:
             self._announce("That episode is no longer available.")
             return
-        speed = self._podcast_library.effective_settings(show).speed
+        settings = self._podcast_library.effective_settings(show)
         self._podcast_controller.play_episode(
             show_id=show.id,
             episode_guid=episode.guid,
             title=episode.title,
             source=episode.downloaded_path or episode.audio_url,
             resume_ms=episode.position_ms,
-            rate=speed,
+            rate=settings.speed,
+            bass_db=settings.eq_bass_db,
+            mid_db=settings.eq_mid_db,
+            treble_db=settings.eq_treble_db,
+            compressor_enabled=settings.compressor_enabled,
+            smart_speed_enabled=settings.smart_speed_enabled,
         )
 
     def _open_play_queue(self) -> None:
@@ -338,14 +350,19 @@ class PodcastsMixin:
         dialog.show()
 
     def _play_queue_pair(self, show: PodcastShow, episode: PodcastEpisode) -> None:
-        speed = self._podcast_library.effective_settings(show).speed
+        settings = self._podcast_library.effective_settings(show)
         self._podcast_controller.play_episode(
             show_id=show.id,
             episode_guid=episode.guid,
             title=episode.title,
             source=episode.downloaded_path or episode.audio_url,
             resume_ms=episode.position_ms,
-            rate=speed,
+            rate=settings.speed,
+            bass_db=settings.eq_bass_db,
+            mid_db=settings.eq_mid_db,
+            treble_db=settings.eq_treble_db,
+            compressor_enabled=settings.compressor_enabled,
+            smart_speed_enabled=settings.smart_speed_enabled,
         )
 
     def _build_podcast_status_bar_menu(self, menu: object) -> None:
@@ -413,36 +430,73 @@ class PodcastsMixin:
         blocking dialog."""
         self._announce(f"Sound Enhancements: {message} Playing without it.")
 
+    def _podcast_enhance_context_show(self) -> PodcastShow | None:
+        """The show Sound Enhancements edits right now: whatever episode is
+        currently loaded, or None to edit the shared default (every show
+        without its own override follows it) -- mirrors
+        PodcastManagerDialog._sort_context_show."""
+        show_id = self._podcast_controller.state.show_id
+        return self._podcast_library.find_show(show_id) if show_id else None
+
     def open_podcast_sound_enhancements(self) -> None:
-        """Playback > Sound Enhancements...: an EQ preset + a compressor +
-        Smart Speed."""
-        from quill.core.podcasts import history as podcast_history
+        """Playback > Sound Enhancements...: three EQ bands + a compressor +
+        Smart Speed. Edits the currently-playing show's own override if one
+        is loaded, otherwise the shared default -- see
+        PodcastLibrary.apply_show_override."""
         from quill.ui.sound_enhance_dialog import SoundEnhanceDialog
 
-        history = self._podcast_history
+        show = self._podcast_enhance_context_show()
+        settings = (
+            self._podcast_library.effective_settings(show)
+            if show
+            else self._podcast_library.settings
+        )
         dialog = SoundEnhanceDialog(
             self.frame,
-            eq_preset=history.eq_preset,
-            compressor_enabled=history.compressor_enabled,
-            subject="episode",
+            bass_db=settings.eq_bass_db,
+            mid_db=settings.eq_mid_db,
+            treble_db=settings.eq_treble_db,
+            compressor_enabled=settings.compressor_enabled,
+            subject=show.title if show else "episode",
             show_smart_speed=True,
-            smart_speed_enabled=history.smart_speed_enabled,
+            smart_speed_enabled=settings.smart_speed_enabled,
             announce_cb=self._announce,
         )
         result = dialog.show()
         if result is None:
             return
-        history.eq_preset, history.compressor_enabled, history.smart_speed_enabled = result
-        podcast_history.save_history(app_data_dir(), history)
+        bass_db, mid_db, treble_db, compressor_enabled, smart_speed_enabled = result
+        if show is not None:
+            self._podcast_library.apply_show_override(
+                show,
+                eq_bass_db=bass_db,
+                eq_mid_db=mid_db,
+                eq_treble_db=treble_db,
+                compressor_enabled=compressor_enabled,
+                smart_speed_enabled=smart_speed_enabled,
+            )
+            self._save_podcast_library()
+            target = show.title
+        else:
+            self._podcast_library.settings.eq_bass_db = bass_db
+            self._podcast_library.settings.eq_mid_db = mid_db
+            self._podcast_library.settings.eq_treble_db = treble_db
+            self._podcast_library.settings.compressor_enabled = compressor_enabled
+            self._podcast_library.settings.smart_speed_enabled = smart_speed_enabled
+            self._save_podcast_library()
+            target = "the shared default"
         self._podcast_controller.set_enhancement(
-            history.eq_preset,
-            compressor_enabled=history.compressor_enabled,
-            smart_speed_enabled=history.smart_speed_enabled,
+            bass_db=bass_db,
+            mid_db=mid_db,
+            treble_db=treble_db,
+            compressor_enabled=compressor_enabled,
+            smart_speed_enabled=smart_speed_enabled,
         )
         self._announce(
-            f"Sound Enhancements: {history.eq_preset}"
-            + (", Even Out Volume on" if history.compressor_enabled else "")
-            + (", Smart Speed on" if history.smart_speed_enabled else "")
+            f"Sound Enhancements for {target}: Bass {bass_db:+.0f}, Mid {mid_db:+.0f}, "
+            f"Treble {treble_db:+.0f}"
+            + (", Even Out Volume on" if compressor_enabled else "")
+            + (", Smart Speed on" if smart_speed_enabled else "")
         )
 
     def podcast_next_chapter(self) -> None:

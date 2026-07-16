@@ -35,7 +35,6 @@ from enum import Enum, auto
 import wx
 
 from quill.core.audio_enhance import (
-    DEFAULT_EQ_PRESET,
     EnhanceError,
     EnhanceRelay,
     is_enhancement_active,
@@ -116,11 +115,13 @@ class PodcastPlayerController:
         #: touching volume_percent, which the sleep timer restores -- boosting
         #: must never make "restore the volume" restore a boosted number.
         self._volume_boost = 1.0
-        #: Sound Enhancements (EQ preset + compressor + Smart Speed): off by
+        #: Sound Enhancements (3-band EQ + compressor + Smart Speed): off by
         #: default, so normal playback never spawns the ffmpeg relay. See
         #: set_enhancement.
         self._enhance_relay = EnhanceRelay()
-        self._eq_preset = DEFAULT_EQ_PRESET
+        self._eq_bass_db = 0.0
+        self._eq_mid_db = 0.0
+        self._eq_treble_db = 0.0
         self._compressor_enabled = False
         self._smart_speed_enabled = False
         #: The raw (unfiltered) source of whatever is loaded, so a seek or an
@@ -155,17 +156,36 @@ class PodcastPlayerController:
         source: str,
         resume_ms: int = 0,
         rate: float = 1.0,
+        bass_db: float | None = None,
+        mid_db: float | None = None,
+        treble_db: float | None = None,
+        compressor_enabled: bool | None = None,
+        smart_speed_enabled: bool | None = None,
     ) -> None:
         """Start (or switch to) playing one episode; replaces whatever this
         controller was already playing, so only one thing ever plays. The
         ``before_play`` hook additionally silences sibling media (the radio
-        player)."""
+        player). The enhancement kwargs are optional and, when given
+        (callers resolve them from ``PodcastLibrary.effective_settings``),
+        make this show's own Sound Enhancements take effect for this
+        episode -- omitted, playback keeps whatever ``set_enhancement`` last
+        applied."""
         if self._before_play is not None:
             try:
                 self._before_play()
             except Exception:  # noqa: BLE001 - a sibling-stop must never block play
                 pass
         self._checkpoint_current()
+        if bass_db is not None:
+            self._eq_bass_db = bass_db
+        if mid_db is not None:
+            self._eq_mid_db = mid_db
+        if treble_db is not None:
+            self._eq_treble_db = treble_db
+        if compressor_enabled is not None:
+            self._compressor_enabled = compressor_enabled
+        if smart_speed_enabled is not None:
+            self._smart_speed_enabled = smart_speed_enabled
         self._pending_rate = rate if rate > 0 else 1.0
         self._pending_play_after_load = True
         self._state.show_id = show_id
@@ -184,7 +204,9 @@ class PodcastPlayerController:
 
     def _is_enhanced(self) -> bool:
         return is_enhancement_active(
-            self._eq_preset,
+            self._eq_bass_db,
+            self._eq_mid_db,
+            self._eq_treble_db,
             compressor_enabled=self._compressor_enabled,
             smart_speed_enabled=self._smart_speed_enabled,
         )
@@ -201,7 +223,9 @@ class PodcastPlayerController:
         try:
             url = self._enhance_relay.start(
                 source,
-                eq_preset=self._eq_preset,
+                bass_db=self._eq_bass_db,
+                mid_db=self._eq_mid_db,
+                treble_db=self._eq_treble_db,
                 compressor_enabled=self._compressor_enabled,
                 smart_speed_enabled=self._smart_speed_enabled,
                 start_seconds=start_ms / 1000.0,
@@ -214,16 +238,24 @@ class PodcastPlayerController:
             return source
 
     def set_enhancement(
-        self, eq_preset: str, *, compressor_enabled: bool, smart_speed_enabled: bool = False
+        self,
+        *,
+        bass_db: float,
+        mid_db: float,
+        treble_db: float,
+        compressor_enabled: bool,
+        smart_speed_enabled: bool = False,
     ) -> None:
-        """Change the EQ preset / compressor / Smart Speed and, if an
+        """Change the 3-band EQ / compressor / Smart Speed and, if an
         episode is loaded, reload it (through the new relay state, or
         straight from the source if turned off) at the position it was just
         at."""
         current_position = self.position_ms()
         was_playing = self._state.state is PodcastPlayerState.PLAYING
         source = self._enhanced_source
-        self._eq_preset = eq_preset
+        self._eq_bass_db = bass_db
+        self._eq_mid_db = mid_db
+        self._eq_treble_db = treble_db
         self._compressor_enabled = compressor_enabled
         self._smart_speed_enabled = smart_speed_enabled
         if not source or self._state.show_id is None:

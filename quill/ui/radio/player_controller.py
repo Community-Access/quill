@@ -35,7 +35,6 @@ from enum import Enum, auto
 import wx
 
 from quill.core.audio_enhance import (
-    DEFAULT_EQ_PRESET,
     EnhanceError,
     EnhanceRelay,
     is_enhancement_active,
@@ -111,10 +110,12 @@ class RadioPlayerController:
             on_finished=self._on_finished,
             on_error=self._on_error,
         )
-        #: Sound Enhancements (EQ preset + compressor): off by default, so
+        #: Sound Enhancements (3-band EQ + compressor): off by default, so
         #: normal playback never spawns the ffmpeg relay. See set_enhancement.
         self._enhance_relay = EnhanceRelay()
-        self._eq_preset = DEFAULT_EQ_PRESET
+        self._eq_bass_db = 0.0
+        self._eq_mid_db = 0.0
+        self._eq_treble_db = 0.0
         self._compressor_enabled = False
         self._pre_mute_volume = 100
         self._state = RadioPlaybackState(
@@ -147,12 +148,19 @@ class RadioPlayerController:
         """The URL the engine should load: the station's own URL, or a local
         relay URL when Sound Enhancements (EQ/compressor) is active."""
         self._enhance_relay.stop()
-        if not is_enhancement_active(self._eq_preset, compressor_enabled=self._compressor_enabled):
+        if not is_enhancement_active(
+            self._eq_bass_db,
+            self._eq_mid_db,
+            self._eq_treble_db,
+            compressor_enabled=self._compressor_enabled,
+        ):
             return station.stream_url
         try:
             return self._enhance_relay.start(
                 station.stream_url,
-                eq_preset=self._eq_preset,
+                bass_db=self._eq_bass_db,
+                mid_db=self._eq_mid_db,
+                treble_db=self._eq_treble_db,
                 compressor_enabled=self._compressor_enabled,
             )
         except EnhanceError as error:
@@ -160,11 +168,15 @@ class RadioPlayerController:
                 self._on_enhance_error(str(error))
             return station.stream_url
 
-    def set_enhancement(self, eq_preset: str, *, compressor_enabled: bool) -> None:
-        """Change the EQ preset / compressor and, if something is playing,
+    def set_enhancement(
+        self, *, bass_db: float, mid_db: float, treble_db: float, compressor_enabled: bool
+    ) -> None:
+        """Change the 3-band EQ / compressor and, if something is playing,
         reconnect through the new setting. Live radio has no position to
         lose, so a reconnect is the whole cost of switching."""
-        self._eq_preset = eq_preset
+        self._eq_bass_db = bass_db
+        self._eq_mid_db = mid_db
+        self._eq_treble_db = treble_db
         self._compressor_enabled = compressor_enabled
         station = self._state.station
         if station is not None and self._state.state in (

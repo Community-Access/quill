@@ -72,7 +72,9 @@ class RadioMixin:
             on_enhance_error=self._on_radio_enhance_error,
         )
         self._radio_controller.set_enhancement(
-            self._radio_history.eq_preset,
+            bass_db=self._radio_history.eq_bass_db,
+            mid_db=self._radio_history.eq_mid_db,
+            treble_db=self._radio_history.eq_treble_db,
             compressor_enabled=self._radio_history.compressor_enabled,
         )
         self._radio_recording_settings = load_recording_settings(app_data_dir())
@@ -182,7 +184,12 @@ class RadioMixin:
         from quill.core.audio_enhance import build_filter_graph
 
         history = self._radio_history
-        return build_filter_graph(history.eq_preset, compressor_enabled=history.compressor_enabled)
+        return build_filter_graph(
+            history.eq_bass_db,
+            history.eq_mid_db,
+            history.eq_treble_db,
+            compressor_enabled=history.compressor_enabled,
+        )
 
     def _radio_open_recording_settings(self) -> None:
         dialog = RecordingSettingsDialog(
@@ -692,28 +699,37 @@ class RadioMixin:
     # -- dialogs ------------------------------------------------------------
 
     def open_sound_enhancements(self) -> None:
-        """Playback > Sound Enhancements...: an EQ preset + a compressor."""
+        """Playback > Sound Enhancements...: a three-band EQ + a compressor."""
         from quill.core.radio import history as radio_history
         from quill.ui.sound_enhance_dialog import SoundEnhanceDialog
 
         history = self._radio_history
         dialog = SoundEnhanceDialog(
             self.frame,
-            eq_preset=history.eq_preset,
+            bass_db=history.eq_bass_db,
+            mid_db=history.eq_mid_db,
+            treble_db=history.eq_treble_db,
             compressor_enabled=history.compressor_enabled,
             announce_cb=self._announce,
         )
         result = dialog.show()
         if result is None:
             return
-        history.eq_preset, history.compressor_enabled, _smart_speed_not_applicable = result
+        bass_db, mid_db, treble_db, compressor_enabled, _smart_speed_not_applicable = result
+        history.eq_bass_db = bass_db
+        history.eq_mid_db = mid_db
+        history.eq_treble_db = treble_db
+        history.compressor_enabled = compressor_enabled
         radio_history.save_history(app_data_dir(), history)
         self._radio_controller.set_enhancement(
-            history.eq_preset, compressor_enabled=history.compressor_enabled
+            bass_db=bass_db,
+            mid_db=mid_db,
+            treble_db=treble_db,
+            compressor_enabled=compressor_enabled,
         )
         self._announce(
-            f"Sound Enhancements: {history.eq_preset}"
-            + (", Even Out Volume on" if history.compressor_enabled else "")
+            f"Sound Enhancements: Bass {bass_db:+.0f}, Mid {mid_db:+.0f}, Treble {treble_db:+.0f}"
+            + (", Even Out Volume on" if compressor_enabled else "")
         )
 
     def open_manage_radio_favorites(self) -> None:
