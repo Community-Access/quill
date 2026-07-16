@@ -412,6 +412,7 @@
   "quill/ui/podcasts/manager_dialog.py::PodcastManagerDialog.__init__::wx.Choice": "named",
   "quill/ui/podcasts/manager_dialog.py::PodcastManagerDialog.__init__::wx.Choice#2": "named",
   "quill/ui/podcasts/manager_dialog.py::PodcastManagerDialog.__init__::wx.Choice#3": "named",
+  "quill/ui/podcasts/manager_dialog.py::PodcastManagerDialog.__init__::wx.Choice#4": "named",
   "quill/ui/podcasts/manager_dialog.py::PodcastManagerDialog.__init__::wx.ListCtrl": "named",
   "quill/ui/podcasts/manager_dialog.py::PodcastManagerDialog.__init__::wx.TreeCtrl": "named",
   "quill/ui/podcasts/manager_phase4.py::ManagerPhase4Mixin._build_phase4_row::wx.Choice": "named",

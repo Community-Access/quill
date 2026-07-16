@@ -97,9 +97,6 @@ class ManagerPhase4Mixin:
     def _apply_show_filter(self, shows: list[PodcastShow]) -> list[PodcastShow]:
         return filter_shows(shows, self._selected_show_filter())
 
-    def _selected_group_by_show(self) -> bool:
-        check = getattr(self, "_group_by_show_check", None)
-        return check.GetValue() if check is not None else self._library.episode_list_group_by_show
 
     def _on_boost_choice(self, _event: object) -> None:
         index = max(0, self._boost_choice.GetSelection())
@@ -116,6 +113,10 @@ class ManagerPhase4Mixin:
         pinned views sit above every folder."""
         self._tree_item_virtual: dict[int, str] = {}
         self._tree_item_inbox_folder: dict[int, str] = {}
+        #: Folders view mode only: synthetic per-podcast child nodes under a
+        #: pinned view, auto-generated at every refresh (never persisted,
+        #: never manually edited) -- key -> (view_id, show_id).
+        self._tree_item_virtual_show: dict[int, tuple[str, str]] = {}
         for view_id, label in _PINNED_VIEWS:
             count = len(self._virtual_pairs(view_id))
             text = f"{label} ({count})" if count else label
@@ -124,6 +125,24 @@ class ManagerPhase4Mixin:
             self._tree_item_virtual[key] = view_id
             if view_id == "inbox":
                 self._add_inbox_folder_children(item, None)
+            if self._library.settings.episode_list_view_mode == "folders":
+                self._add_virtual_view_show_children(item, view_id)
+
+    def _add_virtual_view_show_children(self, parent_item: object, view_id: str) -> None:
+        """Folders view mode: one child node per podcast that has at least
+        one episode in this pinned view, sorted by title."""
+        pairs = self._virtual_pairs(view_id)
+        shows_by_id: dict[str, PodcastShow] = {}
+        counts: dict[str, int] = {}
+        for show, _episode in pairs:
+            shows_by_id[show.id] = show
+            counts[show.id] = counts.get(show.id, 0) + 1
+        for show_id in sorted(shows_by_id, key=lambda sid: shows_by_id[sid].title.casefold()):
+            show = shows_by_id[show_id]
+            label = f"{show.title} ({counts[show_id]})"
+            item = self._tree.AppendItem(parent_item, label)
+            key = item.GetID() if hasattr(item, "GetID") else id(item)
+            self._tree_item_virtual_show[key] = (view_id, show_id)
 
     def _add_inbox_folder_children(self, parent_item: object, parent_id: str | None) -> None:
         from quill.core.podcasts.inbox import inbox_pairs_in_folder
@@ -153,6 +172,20 @@ class ManagerPhase4Mixin:
         key = item.GetID() if hasattr(item, "GetID") else id(item)
         return getattr(self, "_tree_item_inbox_folder", {}).get(key)
 
+    def _selected_virtual_show(self) -> PodcastShow | None:
+        """The podcast behind the selected per-show Folders node, or None
+        when the selection isn't one of those (a plain virtual view, an
+        Inbox folder, a library folder/show, or nothing selected)."""
+        item = self._tree.GetSelection()
+        if not item.IsOk():
+            return None
+        key = item.GetID() if hasattr(item, "GetID") else id(item)
+        entry = getattr(self, "_tree_item_virtual_show", {}).get(key)
+        if entry is None:
+            return None
+        _view_id, show_id = entry
+        return self._library.find_show(show_id)
+
     def _virtual_pairs(self, view_id: str) -> list[tuple[PodcastShow, PodcastEpisode]]:
         if view_id == "favorites":
             return [
@@ -170,18 +203,16 @@ class ManagerPhase4Mixin:
         Inbox folders); titles carry the show name so rows stay unambiguous
         when several shows interleave.
 
-        Sorted and optionally grouped by show via the same "Sort episodes"
-        control and the "Group by Show" checkbox a single show's list uses
-        (see sort_pairs) -- one set of controls, always visible, that now
-        actually takes effect here too instead of leaving cross-show views
-        in raw feed-fetch order.
+        Sorted and grouped per the library's "View cross-show lists as"
+        setting (flat / grouped / folders) and each show's own effective
+        sort mode (see sort_pairs) -- the Sort dropdown now actually takes
+        effect here too, instead of leaving cross-show views in raw
+        feed-fetch order.
         """
         from quill.core.podcasts.sorting import sort_pairs
 
         pairs = sort_pairs(
-            pairs,
-            group_by_show=self._selected_group_by_show(),
-            episode_sort_mode=self._selected_episode_sort_mode(),
+            self._library, pairs, view_mode=self._library.settings.episode_list_view_mode
         )
         self._episodes.DeleteAllItems()
         self._current_show = None
@@ -201,7 +232,8 @@ class ManagerPhase4Mixin:
             self._episodes.Focus(0)
 
     def _maybe_fill_virtual_selection(self) -> bool:
-        """Handle tree selection landing on a pinned view or an Inbox folder;
+        """Handle tree selection landing on a pinned view, an Inbox folder,
+        or (Folders view mode) a per-podcast node inside a pinned view;
         True when handled (the caller skips its normal show fill)."""
         view_id = self._selected_virtual_view()
         if view_id is not None:
@@ -219,6 +251,18 @@ class ManagerPhase4Mixin:
                 inbox_pairs_in_folder(self._library, inbox_folder_id),
                 view_label=folder.name if folder else "Inbox folder",
             )
+            return True
+        virtual_show = self._selected_virtual_show()
+        if virtual_show is not None:
+            item = self._tree.GetSelection()
+            key = item.GetID() if hasattr(item, "GetID") else id(item)
+            view_id = self._tree_item_virtual_show[key][0]
+            pairs = [
+                (show, episode)
+                for show, episode in self._virtual_pairs(view_id)
+                if show.id == virtual_show.id
+            ]
+            self._fill_episodes_from_pairs(pairs, view_label=virtual_show.title)
             return True
         return False
 

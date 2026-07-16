@@ -8,9 +8,12 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from email.utils import parsedate_to_datetime
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from quill.core.podcasts.models import PodcastEpisode, PodcastShow
+
+if TYPE_CHECKING:
+    from quill.core.podcasts.subscriptions import PodcastLibrary
 
 EPISODE_SORT_MODES = (
     "date_newest",
@@ -61,30 +64,41 @@ def sort_episodes(episodes: list[PodcastEpisode], mode: str) -> list[PodcastEpis
 
 
 def sort_pairs(
+    library: PodcastLibrary,
     pairs: list[tuple[PodcastShow, PodcastEpisode]],
     *,
-    group_by_show: bool,
-    episode_sort_mode: str,
+    view_mode: str,
 ) -> list[tuple[PodcastShow, PodcastEpisode]]:
-    """Sort cross-show ``(show, episode)`` pairs for a virtual view (Inbox,
-    New Episodes, Continue Listening, Favorites) or an Inbox folder.
+    """Sort/group cross-show ``(show, episode)`` pairs for a virtual view
+    (Inbox, New Episodes, Continue Listening, Favorites) or an Inbox folder,
+    per *view_mode* (``PodcastSettings.episode_list_view_mode``):
 
-    When *group_by_show* is true, pairs are grouped contiguously by show
-    (shows ordered by title), with each show's own episodes sorted by
-    *episode_sort_mode* internally -- read one podcast's backlog at a time,
-    oldest-to-newest or newest-to-oldest. When false, every pair is sorted
-    by *episode_sort_mode* as one flat stream across all shows, ignoring
-    which show each episode came from -- a single chronological feed.
-
-    Relies on Python's stable sort: sorting by the episode key first, then
-    by show title, preserves each group's internal episode order from the
-    first pass.
+    - ``"flat"``: one stream across every show, sorted by the library's
+      global ``episode_sort_mode`` only. Per-show sort overrides do not
+      apply here -- there is no single well-defined order once different
+      shows compare by different keys.
+    - ``"grouped"``/``"folders"``: pairs grouped contiguously by show (shows
+      ordered by title); each show's own episodes sorted by *that show's*
+      effective sort mode (its own override, or the library default) --
+      read one podcast's backlog at a time, oldest-to-newest or
+      newest-to-oldest, independently per podcast. ``"folders"`` presents
+      this same grouping as real tree nodes instead of a flat list (see
+      manager_phase4.py); the grouping/sorting itself is identical.
     """
-    key, reverse = _episode_sort_key(episode_sort_mode)
-    by_episode = sorted(pairs, key=lambda pair: key(pair[1]), reverse=reverse)
-    if not group_by_show:
-        return by_episode
-    return sorted(by_episode, key=lambda pair: pair[0].title.casefold())
+    if view_mode == "flat":
+        key, reverse = _episode_sort_key(library.settings.episode_sort_mode)
+        return sorted(pairs, key=lambda pair: key(pair[1]), reverse=reverse)
+    by_show: dict[str, list[tuple[PodcastShow, PodcastEpisode]]] = {}
+    show_by_id: dict[str, PodcastShow] = {}
+    for show, episode in pairs:
+        by_show.setdefault(show.id, []).append((show, episode))
+        show_by_id[show.id] = show
+    result: list[tuple[PodcastShow, PodcastEpisode]] = []
+    for show_id in sorted(by_show, key=lambda sid: show_by_id[sid].title.casefold()):
+        show = show_by_id[show_id]
+        key, reverse = _episode_sort_key(library.effective_settings(show).episode_sort_mode)
+        result.extend(sorted(by_show[show_id], key=lambda pair: key(pair[1]), reverse=reverse))
+    return result
 
 
 def _most_recent_episode_timestamp(show: PodcastShow) -> float:

@@ -11,6 +11,7 @@ state. wx-free, strict-typed.
 
 from __future__ import annotations
 
+import dataclasses
 import json
 import uuid
 from dataclasses import dataclass, field
@@ -48,11 +49,6 @@ class PodcastLibrary:
     #: Manual Inbox filings: inbox_key(show, episode) -> folder id ("" =
     #: explicitly unfiled at the Inbox top level).
     inbox_assignments: dict[str, str] = field(default_factory=dict)
-    #: Cross-show episode list display (virtual views and Inbox folders):
-    #: contiguous per-show grouping (True, matches the de-facto order these
-    #: views already iterated in) vs. one flat chronological/other-mode
-    #: stream across every show (False). See podcasts.sorting.sort_pairs.
-    episode_list_group_by_show: bool = True
 
     def queue_episode(self, show_id: str, episode_guid: str) -> bool:
         """Append an episode to the Play Queue (False when already queued).
@@ -161,6 +157,22 @@ class PodcastLibrary:
         merge yet), so this is currently just "show's or global's"."""
         return show.settings if show.settings is not None else self.settings
 
+    def apply_show_override(self, show: PodcastShow, **updates: object) -> PodcastSettings:
+        """Set field(s) on *show*'s own settings override, cloning from
+        whatever is currently effective for it (its own override if it
+        already has one, else the library default) so any other override
+        this show already carries survives -- never resets sibling fields
+        to the class defaults. The one correct way to write a per-show
+        override; every settings field works this way (speed, sort order,
+        etc.), not just the field being changed right now."""
+        base = self.effective_settings(show)
+        # dataclasses.replace's overload can't verify heterogeneous **kwargs
+        # against each field's own type; the caller passing a genuine
+        # PodcastSettings field name/value is on them, same as **kwargs
+        # anywhere else in the codebase that fans out into a typed callee.
+        show.settings = dataclasses.replace(base, **updates)  # type: ignore[arg-type]
+        return show.settings
+
 
 def merge_episodes(show: PodcastShow, fetched: list[PodcastEpisode]) -> int:
     """Merge freshly-fetched episodes into *show* in place; returns the
@@ -268,7 +280,6 @@ def load_library(data_dir: Path) -> PodcastLibrary:
         queue=queue,
         inbox_folders=inbox_folders,
         inbox_assignments=inbox_assignments,
-        episode_list_group_by_show=bool(raw.get("episode_list_group_by_show", True)),
     )
 
 
@@ -291,6 +302,5 @@ def save_library(data_dir: Path, library: PodcastLibrary) -> None:
                 for f in library.inbox_folders
             ],
             "inbox_assignments": dict(library.inbox_assignments),
-            "episode_list_group_by_show": library.episode_list_group_by_show,
         },
     )

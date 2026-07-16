@@ -4398,7 +4398,7 @@ library tree) rather than duplicating the logic a third time.
   for a removed episode first, so nothing is left running against a guid
   about to disappear.
 
-#### Phase 7 (shipped): Inbox grouping + sort for every cross-show view
+#### Phase 7 (shipped): Inbox grouping + per-podcast sort for every cross-show view
 
 The Inbox (and every other cross-show virtual view -- New Episodes,
 Continue Listening, Favorites) previously rendered ``(show, episode)``
@@ -4406,23 +4406,42 @@ pairs in raw feed-fetch order, with the Podcast Manager's existing "Sort
 episodes" control silently doing nothing outside a single show's own
 episode list. Root-caused from a direct user question about whether Inbox
 episodes were grouped by show or interleaved, and whether that order could
-be controlled.
+be controlled; the first shipped design (a single "Group by Show" checkbox)
+was corrected mid-review into the fuller shape below once it became clear
+"folder" meant a real tree, and "resettable per podcast" meant a genuine
+per-show override, not a global-only toggle.
 
-- **``core/podcasts/sorting.py::sort_pairs``** (pure, unit-tested). A new
-  ``PodcastLibrary.episode_list_group_by_show`` (persisted, default
-  ``True``) chooses between two shapes: grouped (pairs sorted contiguously
-  by show, shows ordered by title, each show's own episodes sorted by the
-  existing sort mode -- read one podcast's backlog at a time) or flat (every
-  pair sorted by the sort mode as one chronological/other-mode stream
-  across every show, ignoring which show each episode came from). Relies on
-  Python's stable sort: sort by episode key first, then by show title, so
-  the first pass's per-show order survives the second.
-- **UI (``manager_dialog.py``, ``manager_phase4.py``).** A new "Group by
-  Show" checkbox sits next to the pre-existing "Sort episodes" control;
-  both now apply to ``_fill_episodes_from_pairs`` (every virtual view and
-  Inbox folder), not just a single show's list. Default ``True`` matches
-  the pre-existing de-facto per-show iteration order, so nothing visibly
-  changes until the checkbox is touched.
+- **``PodcastSettings.episode_list_view_mode``** (global only -- a single
+  show has no "grouped vs flat" shape of its own): ``"flat"`` (one stream
+  sorted by the library's global sort mode across every show), ``"grouped"``
+  (the pre-existing look -- pairs grouped contiguously by show, shows
+  ordered by title), or ``"folders"`` (the same per-show grouping, presented
+  as real expandable tree nodes instead of a flat list). Default
+  ``"grouped"`` matches the pre-existing de-facto order.
+- **``PodcastSettings.episode_sort_mode``**, per-show overridable the same
+  way ``speed`` already was. **``core/podcasts/sorting.py::sort_pairs``**
+  (pure, unit-tested): in ``"flat"`` mode every pair sorts by the one global
+  mode (per-show overrides don't apply -- there's no single well-defined
+  order once different shows compare by different keys); in
+  ``"grouped"``/``"folders"`` mode each show's own group sorts by *that
+  show's* effective mode, so one podcast can read oldest-first while
+  another reads newest-first.
+- **``PodcastLibrary.apply_show_override``**, the one correct way to write
+  any per-show settings override: clones the currently effective settings
+  (the show's own override if it has one, else the global default) via
+  ``dataclasses.replace``, so setting one field never resets sibling
+  overrides to class defaults. Also fixed ``_on_speed_choice``, which
+  predates this and hand-cloned only 5 of the (now) 14 ``PodcastSettings``
+  fields -- setting a show's playback speed silently wiped any other
+  override that show already had.
+- **UI (``manager_dialog.py``, ``manager_phase4.py``).** A "View cross-show
+  lists as" combo box (Flat list / Grouped in list / Folders per podcast)
+  and a context-aware "Sort episodes" control: it reads and writes the
+  selected podcast's own override when a single show (or its Folders tree
+  node) is selected, or the shared global default otherwise.
+  ``_add_virtual_view_show_children`` builds the Folders mode's per-podcast
+  tree nodes fresh on every ``refresh_tree()`` -- auto-generated, never
+  persisted, distinct from the existing manual freeform Inbox folder tree.
 
 ---
 

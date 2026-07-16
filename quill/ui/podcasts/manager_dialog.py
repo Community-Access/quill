@@ -20,7 +20,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 from quill.core.podcasts.download_queue import DownloadItem, PodcastDownloadQueue
-from quill.core.podcasts.models import PodcastEpisode, PodcastSettings, PodcastShow
+from quill.core.podcasts.models import PodcastEpisode, PodcastShow
 from quill.core.podcasts.sorting import (
     EPISODE_SORT_MODES,
     SHOW_SORT_MODES,
@@ -43,6 +43,8 @@ _EPISODE_SORT_LABELS = (
     "Unplayed first",
 )
 _SHOW_SORT_LABELS = ("Title A-Z", "Most unheard first", "Recently updated first")
+_VIEW_MODE_LABELS = ("Flat list", "Grouped in list", "Folders per podcast")
+_VIEW_MODE_MODES = ("flat", "grouped", "folders")
 
 
 def _slug(text: str) -> str:
@@ -171,18 +173,32 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
             4,
         )
         self._episode_sort_choice = wx.Choice(self.dialog, choices=list(_EPISODE_SORT_LABELS))
-        self._episode_sort_choice.SetName("How episodes are ordered in the list below")
+        self._episode_sort_choice.SetName(
+            "How episodes are ordered -- for the selected podcast, or the "
+            "shared default when no single podcast is selected"
+        )
         self._episode_sort_choice.SetSelection(0)
         episode_sort_row.Add(self._episode_sort_choice, 1, wx.EXPAND)
         episode_col.Add(episode_sort_row, 0, wx.EXPAND | wx.BOTTOM, 4)
-        self._group_by_show_check = wx.CheckBox(self.dialog, label="&Group by Show")
-        self._group_by_show_check.SetName(
-            "Group by Show -- in a cross-show list like the Inbox or New "
-            "Episodes, keep each show's episodes together instead of one "
-            "chronological stream across every show"
+        view_mode_row = wx.BoxSizer(wx.HORIZONTAL)
+        view_mode_row.Add(
+            wx.StaticText(self.dialog, label="&View cross-show lists as:"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
+            4,
         )
-        self._group_by_show_check.SetValue(self._library.episode_list_group_by_show)
-        episode_col.Add(self._group_by_show_check, 0, wx.BOTTOM, 4)
+        self._view_mode_choice = wx.Choice(self.dialog, choices=list(_VIEW_MODE_LABELS))
+        self._view_mode_choice.SetName(
+            "How the Inbox, New Episodes, Continue Listening, and Favorites "
+            "present episodes from more than one show at once"
+        )
+        self._view_mode_choice.SetSelection(
+            _VIEW_MODE_MODES.index(self._library.settings.episode_list_view_mode)
+            if self._library.settings.episode_list_view_mode in _VIEW_MODE_MODES
+            else 1
+        )
+        view_mode_row.Add(self._view_mode_choice, 1, wx.EXPAND)
+        episode_col.Add(view_mode_row, 0, wx.EXPAND | wx.BOTTOM, 4)
         self._episodes = wx.ListCtrl(self.dialog, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
         self._episodes.SetName("Episodes of the selected show; arrow through for details")
         self._episodes.InsertColumn(0, "Title", width=280)
@@ -278,8 +294,8 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
         self._stop_btn.Bind(wx.EVT_BUTTON, self._on_stop)
         self._speed_choice.Bind(wx.EVT_CHOICE, self._on_speed_choice)
         self._show_sort_choice.Bind(wx.EVT_CHOICE, lambda _e: self.refresh_tree())
-        self._episode_sort_choice.Bind(wx.EVT_CHOICE, lambda _e: self._refresh_episode_list())
-        self._group_by_show_check.Bind(wx.EVT_CHECKBOX, self._on_group_by_show_toggled)
+        self._episode_sort_choice.Bind(wx.EVT_CHOICE, self._on_episode_sort_choice)
+        self._view_mode_choice.Bind(wx.EVT_CHOICE, self._on_view_mode_choice)
 
         self.refresh_tree()
         self._update_now_playing()
@@ -313,17 +329,58 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
         index = self._episode_sort_choice.GetSelection()
         return EPISODE_SORT_MODES[index] if index >= 0 else "date_newest"
 
-    def _refresh_episode_list(self) -> None:
-        """Re-fill whatever's currently shown -- a virtual view / Inbox
-        folder, or a single show -- after the sort mode or Group by Show
-        changes."""
-        if not self._maybe_fill_virtual_selection():
-            self._fill_episodes(self._current_show)
+    def _sort_context_show(self) -> PodcastShow | None:
+        """The show whose sort order the Sort dropdown edits right now --
+        the selected single show, or the selected per-podcast Folders node
+        inside a virtual view; None means the dropdown edits the shared
+        default instead (every show without its own override follows it)."""
+        if self._current_show is not None:
+            return self._current_show
+        return self._selected_virtual_show()
 
-    def _on_group_by_show_toggled(self, _event: object) -> None:
-        self._library.episode_list_group_by_show = self._group_by_show_check.GetValue()
+    def _sync_episode_sort_choice(self) -> None:
+        show = self._sort_context_show()
+        mode = (
+            self._library.effective_settings(show).episode_sort_mode
+            if show is not None
+            else self._library.settings.episode_sort_mode
+        )
+        index = EPISODE_SORT_MODES.index(mode) if mode in EPISODE_SORT_MODES else 0
+        self._episode_sort_choice.SetSelection(index)
+
+    def _on_episode_sort_choice(self, _event: object) -> None:
+        mode = self._selected_episode_sort_mode()
+        label = self._episode_sort_choice.GetStringSelection()
+        show = self._sort_context_show()
+        if show is not None:
+            self._library.apply_show_override(show, episode_sort_mode=mode)
+            self._announce(f"Sort order for {show.title} set to {label}")
+        else:
+            self._library.settings.episode_sort_mode = mode
+            self._announce(f"Sort order set to {label} (the shared default)")
         self._on_library_changed()
         self._refresh_episode_list()
+
+    def _on_view_mode_choice(self, _event: object) -> None:
+        index = self._view_mode_choice.GetSelection()
+        mode = _VIEW_MODE_MODES[index] if index >= 0 else "grouped"
+        self._library.settings.episode_list_view_mode = mode
+        self._on_library_changed()
+        label = self._view_mode_choice.GetStringSelection()
+        self._announce(f"Cross-show lists now shown as {label}")
+        # "Folders" adds/removes per-podcast tree nodes; every mode still
+        # needs the episode list (and, if the selection landed on a show
+        # node that no longer exists, the sort choice) refreshed.
+        self.refresh_tree()
+        self._refresh_episode_list()
+
+    def _refresh_episode_list(self) -> None:
+        """Re-fill whatever's currently shown -- a virtual view / Inbox
+        folder / per-podcast Folders node, or a single show -- after the
+        sort mode or view mode changes."""
+        if not self._maybe_fill_virtual_selection():
+            self._fill_episodes(self._current_show)
+        self._sync_episode_sort_choice()
 
     def _unheard_count_for_folder(self, folder_id: str) -> int:
         total = sum(1 for e in _shows_episodes(self._library, folder_id) if not e.played)
@@ -389,12 +446,14 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
 
     def _on_tree_selection(self, _event: object) -> None:
         if self._maybe_fill_virtual_selection():
+            self._sync_episode_sort_choice()
             return
         show_id = self._selected_show_id()
         show = self._library.find_show(show_id) if show_id else None
         self._current_show = show
         self._fill_episodes(show)
         self._sync_speed_choice()
+        self._sync_episode_sort_choice()
 
     def _sync_speed_choice(self) -> None:
         if self._current_show is None:
@@ -411,14 +470,7 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
         if show is None:
             return
         speed = float(self._speed_choice.GetStringSelection().rstrip("x"))
-        base = self._library.effective_settings(show)
-        show.settings = PodcastSettings(
-            playback_mode=base.playback_mode,
-            retention=base.retention,
-            retention_count=base.retention_count,
-            speed=speed,
-            download_root=base.download_root,
-        )
+        self._library.apply_show_override(show, speed=speed)
         self._on_library_changed()
         if self._controller.state.show_id == show.id:
             self._controller.set_rate(speed)

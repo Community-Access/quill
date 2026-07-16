@@ -44,6 +44,28 @@ def test_settings_from_dict_coerces_junk_numeric_fields() -> None:
     assert settings.speed == 1.0
 
 
+def test_settings_episode_list_view_mode_and_sort_mode_defaults() -> None:
+    settings = PodcastSettings.from_dict({})
+    assert settings.episode_list_view_mode == "grouped"
+    assert settings.episode_sort_mode == "date_newest"
+
+
+def test_settings_episode_list_view_mode_round_trips() -> None:
+    for mode in ("flat", "grouped", "folders"):
+        settings = PodcastSettings(episode_list_view_mode=mode)
+        assert PodcastSettings.from_dict(settings.to_dict()).episode_list_view_mode == mode
+
+
+def test_settings_episode_list_view_mode_rejects_unknown_value() -> None:
+    settings = PodcastSettings.from_dict({"episode_list_view_mode": "bogus"})
+    assert settings.episode_list_view_mode == "grouped"
+
+
+def test_settings_episode_sort_mode_round_trips() -> None:
+    settings = PodcastSettings(episode_sort_mode="date_oldest")
+    assert PodcastSettings.from_dict(settings.to_dict()).episode_sort_mode == "date_oldest"
+
+
 def test_episode_from_dict_requires_guid_title_and_audio_url() -> None:
     assert PodcastEpisode.from_dict({"title": "X", "audio_url": "https://x"}) is None
     assert PodcastEpisode.from_dict({"guid": "g", "audio_url": "https://x"}) is None
