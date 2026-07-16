@@ -390,6 +390,8 @@ class PodcastsAppFrame(
             treble_db=settings.eq_treble_db,
             compressor_enabled=settings.compressor_enabled,
             smart_speed_enabled=settings.smart_speed_enabled,
+            auto_skip_intro_ms=settings.auto_skip_intro_seconds * 1000,
+            auto_skip_outro_ms=settings.auto_skip_outro_seconds * 1000,
         )
         self._announce(f"Playing {episode.title} from {show.title}{played_note}")
 
@@ -544,6 +546,8 @@ class PodcastsAppFrame(
             treble_db=settings.eq_treble_db,
             compressor_enabled=settings.compressor_enabled,
             smart_speed_enabled=settings.smart_speed_enabled,
+            auto_skip_intro_ms=settings.auto_skip_intro_seconds * 1000,
+            auto_skip_outro_ms=settings.auto_skip_outro_seconds * 1000,
         )
 
     def _maybe_check_updates_on_startup(self) -> None:
@@ -632,6 +636,9 @@ class PodcastsAppFrame(
         episode_menu.Append(mute_id, "&Mute/Unmute")
         episode_menu.Append(next_id, "&Next Chapter")
         episode_menu.Append(prev_id, "P&revious Chapter")
+        skip_fwd_id, skip_back_id = wx.NewIdRef(), wx.NewIdRef()
+        episode_menu.Append(skip_fwd_id, "Skip &Forward")
+        episode_menu.Append(skip_back_id, "Skip &Back")
         note_id = wx.NewIdRef()
         episode_menu.Append(note_id, "Add Episode &Note...")
         queue_id = wx.NewIdRef()
@@ -648,11 +655,18 @@ class PodcastsAppFrame(
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.open_podcast_sound_enhancements(), id=enhance_id
         )
+        skip_settings_id = wx.NewIdRef()
+        episode_menu.Append(skip_settings_id, "S&kip Settings...")
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.open_podcast_skip_settings(), id=skip_settings_id
+        )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_toggle_play_pause(), id=play_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_stop(), id=stop_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_mute_toggle(), id=mute_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_next_chapter(), id=next_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_previous_chapter(), id=prev_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_skip_forward(), id=skip_fwd_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_skip_back(), id=skip_back_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.add_podcast_note(), id=note_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_play_queue(), id=queue_id)
         menu_bar.Append(episode_menu, "&Episode")
@@ -739,10 +753,13 @@ class PodcastsAppFrame(
             mute_id,
             next_id,
             prev_id,
+            skip_fwd_id,
+            skip_back_id,
             note_id,
             queue_id,
             sleep_id,
             enhance_id,
+            skip_settings_id,
             pause_all_id,
             resume_all_id,
             palette_id,

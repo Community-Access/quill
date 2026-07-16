@@ -177,6 +177,8 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "podcasts.play_pause": "Ctrl+Shift+Grave, 8",  # Podcasts
     "podcasts.stop": "Ctrl+Shift+Grave, 7",  # Podcasts
     "radio.record_toggle": "Ctrl+Shift+Grave, 6",  # Internet Radio (Record Now / Stop Recording)
+    "podcasts.skip_forward": "Ctrl+Shift+Grave, 5",  # Podcasts
+    "podcasts.skip_back": "Ctrl+Shift+Grave, 4",  # Podcasts
     # Locked Dictation (offline Whisper). All remappable; the
     # these are matched in the editor key handlers rather than the accelerator
     # table (no menu accelerators) so Escape can be consumed only while recording.

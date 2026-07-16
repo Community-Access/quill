@@ -109,6 +109,20 @@ class PodcastSettings:
     eq_treble_db: float = 0.0
     compressor_enabled: bool = False
     smart_speed_enabled: bool = False
+    #: Skip Forward/Back (Episode menu): how far each command jumps.
+    #: Per-show overridable the same way speed is.
+    skip_forward_seconds: int = 30
+    skip_back_seconds: int = 15
+    #: Auto-skip (per-show only -- a global default would be a strange
+    #: "skip N seconds of every podcast" behavior nobody wants): 0 = off.
+    #: auto_skip_intro_seconds jumps forward once when an episode starts
+    #: fresh (never on resume, so a checkpointed position is never lost
+    #: under it). auto_skip_outro_seconds ends playback that many seconds
+    #: before the episode's own end, checked by a position poll -- treated
+    #: exactly like the episode finishing naturally (auto-advance,
+    #: delete-after-play, etc. all still fire).
+    auto_skip_intro_seconds: int = 0
+    auto_skip_outro_seconds: int = 0
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -131,6 +145,10 @@ class PodcastSettings:
             "eq_treble_db": self.eq_treble_db,
             "compressor_enabled": self.compressor_enabled,
             "smart_speed_enabled": self.smart_speed_enabled,
+            "skip_forward_seconds": self.skip_forward_seconds,
+            "skip_back_seconds": self.skip_back_seconds,
+            "auto_skip_intro_seconds": self.auto_skip_intro_seconds,
+            "auto_skip_outro_seconds": self.auto_skip_outro_seconds,
         }
 
     @classmethod
@@ -162,6 +180,10 @@ class PodcastSettings:
             eq_treble_db=clamp_eq_gain(_coerce_float(data.get("eq_treble_db"), 0.0)),
             compressor_enabled=bool(data.get("compressor_enabled", False)),
             smart_speed_enabled=bool(data.get("smart_speed_enabled", False)),
+            skip_forward_seconds=max(1, _coerce_int(data.get("skip_forward_seconds"), 30)),
+            skip_back_seconds=max(1, _coerce_int(data.get("skip_back_seconds"), 15)),
+            auto_skip_intro_seconds=max(0, _coerce_int(data.get("auto_skip_intro_seconds"), 0)),
+            auto_skip_outro_seconds=max(0, _coerce_int(data.get("auto_skip_outro_seconds"), 0)),
         )
 
 

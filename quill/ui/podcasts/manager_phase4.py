@@ -346,6 +346,8 @@ class ManagerPhase4Mixin:
             treble_db=settings.eq_treble_db,
             compressor_enabled=settings.compressor_enabled,
             smart_speed_enabled=settings.smart_speed_enabled,
+            auto_skip_intro_ms=settings.auto_skip_intro_seconds * 1000,
+            auto_skip_outro_ms=settings.auto_skip_outro_seconds * 1000,
         )
 
     # -- context-menu additions -----------------------------------------------
