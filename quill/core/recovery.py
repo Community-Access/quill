@@ -30,6 +30,15 @@ class RecoveryOffer:
     # How many times the user has dismissed this recovery offer without restoring.
     # The UI shows adaptive messaging when this reaches 3 (M-28 / §8.2).
     dismissal_count: int = 0
+    # #1045/#1046: the log excerpt that justified this offer, captured once
+    # here (while it is guaranteed still within the scan window) rather than
+    # re-scanned later when a "Send Bug Report" click is finally made -- by
+    # then the current session's own routine logging may have grown
+    # quill.log enough to push the original evidence out of that window,
+    # making a correctly-justified offer look like an unexplained false
+    # positive in the filed report. None when the offer fired because the
+    # log was missing/unreadable (inconclusive, not evidence of anything).
+    error_evidence: str | None = None
 
 
 # Two layers of synchronization protect the read-modify-write of
@@ -194,6 +203,7 @@ def begin_session(session_id: str) -> list[RecoveryOffer]:
                             snapshot=latest,
                             cursor_position=cursor_position,
                             dismissal_count=dismissal_count,
+                            error_evidence=find_error_evidence(app_data_dir() / "logs"),
                         )
                     )
             state["last_session_id"] = session_id

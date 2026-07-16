@@ -177,6 +177,53 @@ def test_begin_session_still_offers_when_log_has_a_traceback(
     assert offers[0].session_id == previous
 
 
+def test_begin_session_captures_error_evidence_on_the_offer(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # #1045/#1046: the crash-recovery dialog's "Send Bug Report" button used
+    # to call find_error_evidence() fresh, re-scanning whatever quill.log
+    # looks like at click time -- which can be long after begin_session()'s
+    # own gating check, once the new session's own routine logging has grown
+    # the file enough to push the original evidence out of the scan window.
+    # Capture the evidence once, at offer time (when it is guaranteed to
+    # still be in-window), and carry it on the offer itself.
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    previous = str(uuid4())
+    current = str(uuid4())
+    session_root = tmp_path / "autosave" / previous
+    session_root.mkdir(parents=True)
+    (session_root / "doc.snap").write_text("recovered text", encoding="utf-8")
+    logs_dir = tmp_path / "logs"
+    logs_dir.mkdir(parents=True)
+    (logs_dir / "quill.log").write_text(
+        "2026-07-10 10:22:41 ERROR quill.ui.main_frame: Unhandled exception\n"
+        "Traceback (most recent call last):\n"
+        '  File "main_frame.py", line 42, in on_click\n'
+        "ValueError: boom\n",
+        encoding="utf-8",
+    )
+    begin_session(previous)
+    offers = begin_session(current)
+    assert len(offers) == 1
+    assert offers[0].error_evidence is not None
+    assert "ValueError: boom" in offers[0].error_evidence
+
+
+def test_begin_session_offer_has_no_evidence_when_log_is_missing(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    previous = str(uuid4())
+    current = str(uuid4())
+    session_root = tmp_path / "autosave" / previous
+    session_root.mkdir(parents=True)
+    (session_root / "doc.snap").write_text("recovered text", encoding="utf-8")
+    begin_session(previous)
+    offers = begin_session(current)
+    assert len(offers) == 1
+    assert offers[0].error_evidence is None
+
+
 def test_begin_session_still_offers_when_log_is_missing(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:

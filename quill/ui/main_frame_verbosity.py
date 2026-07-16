@@ -138,7 +138,7 @@ class VerbosityCommandsMixin:
         dialog.SetSizer(sizer)
         from quill.ui.dialog_contract import apply_modal_ids
 
-        apply_modal_ids(dialog)
+        apply_modal_ids(dialog, cancel_id=wx.ID_CLOSE)
         close.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_CLOSE))
         try:
             self._show_modal_dialog(dialog, "Verbosity Preferences")

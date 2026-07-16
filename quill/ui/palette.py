@@ -31,6 +31,7 @@ class CommandPaletteDialog:
         command_registry: CommandRegistry,
         feature_manager: FeatureManager | None = None,
         announce_fn: Callable[[str], None] | None = None,
+        on_help: Callable[[], None] | None = None,
     ) -> None:
         import wx
 
@@ -38,6 +39,7 @@ class CommandPaletteDialog:
         self._registry = command_registry
         self._features = feature_manager
         self._announce_fn = announce_fn
+        self._on_help = on_help
         # Show only commands whose feature is visible in the current profile.
         # Commands for OFF features are omitted entirely; the palette should
         # reflect the user's chosen experience, not the full catalogue.
@@ -127,6 +129,9 @@ class CommandPaletteDialog:
             # nothing to activate; close it explicitly so Escape is not a
             # keyboard trap (WCAG 2.1.2, #124).
             self.dialog.EndModal(wx.ID_CANCEL)
+            return
+        if key_code == getattr(wx, "WXK_F1", 340) and self._on_help is not None:
+            self._on_help()
             return
         if key_code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
             self._on_accept(event)

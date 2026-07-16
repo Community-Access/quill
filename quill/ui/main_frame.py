@@ -6579,7 +6579,6 @@ class MainFrame(
         wx = self._wx
         from quill.core.feedback_token import effective_github_token
         from quill.core.issue_submit import build_log_summary, submit_crash_issue
-        from quill.core.recovery import find_error_evidence
 
         with wx.MessageDialog(
             self.frame,
@@ -6606,7 +6605,15 @@ class MainFrame(
         # justified this offer, since the offer decision scans a much larger
         # window (recovery._LOG_TAIL_SCAN_BYTES). Include that evidence
         # explicitly so the filed report is self-explanatory.
-        evidence = find_error_evidence(logs_path)
+        #
+        # #1045/#1046: use the evidence begin_session() already captured on
+        # the offer, not a fresh find_error_evidence(logs_path) scan here --
+        # by the time this button is clicked (possibly long after launch),
+        # the current session's own routine logging can have grown
+        # quill.log enough to push the original evidence out of the scan
+        # window, so a fresh scan would find nothing even though the offer
+        # was correctly justified.
+        evidence = getattr(offer, "error_evidence", None)
         evidence_section = (
             f"Error evidence that triggered this offer:\n{evidence}\n\n" if evidence else ""
         )
@@ -10984,7 +10991,11 @@ class MainFrame(
         from quill.ui.palette import CommandPaletteDialog
 
         dialog = CommandPaletteDialog(
-            self.frame, self.commands, self.features, announce_fn=self._announce
+            self.frame,
+            self.commands,
+            self.features,
+            announce_fn=self._announce,
+            on_help=self.show_help_on_control,
         )
         dialog.show_modal_and_run()
         command_id = dialog.last_run_command_id()
@@ -11212,6 +11223,9 @@ class MainFrame(
             # (or the default Close button) as usual.
             def _on_char_hook(event: object) -> None:
                 key = event.GetKeyCode()
+                if key == wx.WXK_F1:
+                    self.show_help_on_control()
+                    return
                 if key not in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
                     event.Skip()
                     return
