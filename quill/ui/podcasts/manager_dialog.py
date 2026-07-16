@@ -175,6 +175,14 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
         self._episode_sort_choice.SetSelection(0)
         episode_sort_row.Add(self._episode_sort_choice, 1, wx.EXPAND)
         episode_col.Add(episode_sort_row, 0, wx.EXPAND | wx.BOTTOM, 4)
+        self._group_by_show_check = wx.CheckBox(self.dialog, label="&Group by Show")
+        self._group_by_show_check.SetName(
+            "Group by Show -- in a cross-show list like the Inbox or New "
+            "Episodes, keep each show's episodes together instead of one "
+            "chronological stream across every show"
+        )
+        self._group_by_show_check.SetValue(self._library.episode_list_group_by_show)
+        episode_col.Add(self._group_by_show_check, 0, wx.BOTTOM, 4)
         self._episodes = wx.ListCtrl(self.dialog, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
         self._episodes.SetName("Episodes of the selected show; arrow through for details")
         self._episodes.InsertColumn(0, "Title", width=280)
@@ -270,9 +278,8 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
         self._stop_btn.Bind(wx.EVT_BUTTON, self._on_stop)
         self._speed_choice.Bind(wx.EVT_CHOICE, self._on_speed_choice)
         self._show_sort_choice.Bind(wx.EVT_CHOICE, lambda _e: self.refresh_tree())
-        self._episode_sort_choice.Bind(
-            wx.EVT_CHOICE, lambda _e: self._fill_episodes(self._current_show)
-        )
+        self._episode_sort_choice.Bind(wx.EVT_CHOICE, lambda _e: self._refresh_episode_list())
+        self._group_by_show_check.Bind(wx.EVT_CHECKBOX, self._on_group_by_show_toggled)
 
         self.refresh_tree()
         self._update_now_playing()
@@ -305,6 +312,18 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
     def _selected_episode_sort_mode(self) -> str:
         index = self._episode_sort_choice.GetSelection()
         return EPISODE_SORT_MODES[index] if index >= 0 else "date_newest"
+
+    def _refresh_episode_list(self) -> None:
+        """Re-fill whatever's currently shown -- a virtual view / Inbox
+        folder, or a single show -- after the sort mode or Group by Show
+        changes."""
+        if not self._maybe_fill_virtual_selection():
+            self._fill_episodes(self._current_show)
+
+    def _on_group_by_show_toggled(self, _event: object) -> None:
+        self._library.episode_list_group_by_show = self._group_by_show_check.GetValue()
+        self._on_library_changed()
+        self._refresh_episode_list()
 
     def _unheard_count_for_folder(self, folder_id: str) -> int:
         total = sum(1 for e in _shows_episodes(self._library, folder_id) if not e.played)

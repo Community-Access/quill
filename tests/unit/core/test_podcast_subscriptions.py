@@ -124,3 +124,17 @@ def test_save_and_load_round_trip(tmp_path: Path) -> None:
     assert reloaded_c.folder_id == folder.id
     assert len(reloaded.folders) == 1
     assert reloaded.folders[0].name == "News"
+
+
+def test_episode_list_group_by_show_defaults_on_and_round_trips(tmp_path: Path) -> None:
+    assert PodcastLibrary().episode_list_group_by_show is True
+
+    library = PodcastLibrary(episode_list_group_by_show=False)
+    save_library(tmp_path, library)
+    reloaded = load_library(tmp_path)
+    assert reloaded.episode_list_group_by_show is False
+
+
+def test_episode_list_group_by_show_missing_from_file_defaults_on(tmp_path: Path) -> None:
+    (tmp_path / "podcasts_library.json").write_text("{}", encoding="utf-8")
+    assert load_library(tmp_path).episode_list_group_by_show is True

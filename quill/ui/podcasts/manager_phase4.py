@@ -97,6 +97,10 @@ class ManagerPhase4Mixin:
     def _apply_show_filter(self, shows: list[PodcastShow]) -> list[PodcastShow]:
         return filter_shows(shows, self._selected_show_filter())
 
+    def _selected_group_by_show(self) -> bool:
+        check = getattr(self, "_group_by_show_check", None)
+        return check.GetValue() if check is not None else self._library.episode_list_group_by_show
+
     def _on_boost_choice(self, _event: object) -> None:
         index = max(0, self._boost_choice.GetSelection())
         factor = _BOOST_FACTORS[index]
@@ -164,7 +168,21 @@ class ManagerPhase4Mixin:
     ) -> None:
         """Fill the episode list from cross-show pairs (virtual views and
         Inbox folders); titles carry the show name so rows stay unambiguous
-        when several shows interleave."""
+        when several shows interleave.
+
+        Sorted and optionally grouped by show via the same "Sort episodes"
+        control and the "Group by Show" checkbox a single show's list uses
+        (see sort_pairs) -- one set of controls, always visible, that now
+        actually takes effect here too instead of leaving cross-show views
+        in raw feed-fetch order.
+        """
+        from quill.core.podcasts.sorting import sort_pairs
+
+        pairs = sort_pairs(
+            pairs,
+            group_by_show=self._selected_group_by_show(),
+            episode_sort_mode=self._selected_episode_sort_mode(),
+        )
         self._episodes.DeleteAllItems()
         self._current_show = None
         self._current_episodes = [episode for _show, episode in pairs]

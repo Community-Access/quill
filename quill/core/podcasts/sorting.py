@@ -6,7 +6,9 @@ directly on whatever list it already has in hand. wx-free, strict-typed.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from email.utils import parsedate_to_datetime
+from typing import Any
 
 from quill.core.podcasts.models import PodcastEpisode, PodcastShow
 
@@ -33,21 +35,56 @@ def _parse_published(published: str) -> float:
         return 0.0
 
 
+def _episode_sort_key(mode: str) -> tuple[Callable[[PodcastEpisode], Any], bool]:
+    """(key function, reverse) for *mode* -- shared by :func:`sort_episodes`
+    and :func:`sort_pairs` so a cross-show view sorts identically to a
+    single show's own episode list."""
+    if mode == "date_oldest":
+        return (lambda e: _parse_published(e.published), False)
+    if mode == "title_az":
+        return (lambda e: e.title.casefold(), False)
+    if mode == "duration_longest":
+        return (lambda e: e.duration_seconds, True)
+    if mode == "duration_shortest":
+        return (lambda e: e.duration_seconds, False)
+    if mode == "unplayed_first":
+        return (lambda e: (e.played, -_parse_published(e.published)), False)
+    # "date_newest" and any unrecognized mode.
+    return (lambda e: _parse_published(e.published), True)
+
+
 def sort_episodes(episodes: list[PodcastEpisode], mode: str) -> list[PodcastEpisode]:
     """Return a new list of *episodes* sorted by *mode* (unknown modes fall
     back to ``date_newest``)."""
-    if mode == "date_oldest":
-        return sorted(episodes, key=lambda e: _parse_published(e.published))
-    if mode == "title_az":
-        return sorted(episodes, key=lambda e: e.title.casefold())
-    if mode == "duration_longest":
-        return sorted(episodes, key=lambda e: e.duration_seconds, reverse=True)
-    if mode == "duration_shortest":
-        return sorted(episodes, key=lambda e: e.duration_seconds)
-    if mode == "unplayed_first":
-        return sorted(episodes, key=lambda e: (e.played, -_parse_published(e.published)))
-    # "date_newest" and any unrecognized mode.
-    return sorted(episodes, key=lambda e: _parse_published(e.published), reverse=True)
+    key, reverse = _episode_sort_key(mode)
+    return sorted(episodes, key=key, reverse=reverse)
+
+
+def sort_pairs(
+    pairs: list[tuple[PodcastShow, PodcastEpisode]],
+    *,
+    group_by_show: bool,
+    episode_sort_mode: str,
+) -> list[tuple[PodcastShow, PodcastEpisode]]:
+    """Sort cross-show ``(show, episode)`` pairs for a virtual view (Inbox,
+    New Episodes, Continue Listening, Favorites) or an Inbox folder.
+
+    When *group_by_show* is true, pairs are grouped contiguously by show
+    (shows ordered by title), with each show's own episodes sorted by
+    *episode_sort_mode* internally -- read one podcast's backlog at a time,
+    oldest-to-newest or newest-to-oldest. When false, every pair is sorted
+    by *episode_sort_mode* as one flat stream across all shows, ignoring
+    which show each episode came from -- a single chronological feed.
+
+    Relies on Python's stable sort: sorting by the episode key first, then
+    by show title, preserves each group's internal episode order from the
+    first pass.
+    """
+    key, reverse = _episode_sort_key(episode_sort_mode)
+    by_episode = sorted(pairs, key=lambda pair: key(pair[1]), reverse=reverse)
+    if not group_by_show:
+        return by_episode
+    return sorted(by_episode, key=lambda pair: pair[0].title.casefold())
 
 
 def _most_recent_episode_timestamp(show: PodcastShow) -> float:

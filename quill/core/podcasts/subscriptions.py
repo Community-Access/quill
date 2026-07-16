@@ -48,6 +48,11 @@ class PodcastLibrary:
     #: Manual Inbox filings: inbox_key(show, episode) -> folder id ("" =
     #: explicitly unfiled at the Inbox top level).
     inbox_assignments: dict[str, str] = field(default_factory=dict)
+    #: Cross-show episode list display (virtual views and Inbox folders):
+    #: contiguous per-show grouping (True, matches the de-facto order these
+    #: views already iterated in) vs. one flat chronological/other-mode
+    #: stream across every show (False). See podcasts.sorting.sort_pairs.
+    episode_list_group_by_show: bool = True
 
     def queue_episode(self, show_id: str, episode_guid: str) -> bool:
         """Append an episode to the Play Queue (False when already queued).
@@ -263,6 +268,7 @@ def load_library(data_dir: Path) -> PodcastLibrary:
         queue=queue,
         inbox_folders=inbox_folders,
         inbox_assignments=inbox_assignments,
+        episode_list_group_by_show=bool(raw.get("episode_list_group_by_show", True)),
     )
 
 
@@ -285,5 +291,6 @@ def save_library(data_dir: Path, library: PodcastLibrary) -> None:
                 for f in library.inbox_folders
             ],
             "inbox_assignments": dict(library.inbox_assignments),
+            "episode_list_group_by_show": library.episode_list_group_by_show,
         },
     )

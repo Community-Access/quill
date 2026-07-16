@@ -4398,6 +4398,32 @@ library tree) rather than duplicating the logic a third time.
   for a removed episode first, so nothing is left running against a guid
   about to disappear.
 
+#### Phase 7 (shipped): Inbox grouping + sort for every cross-show view
+
+The Inbox (and every other cross-show virtual view -- New Episodes,
+Continue Listening, Favorites) previously rendered ``(show, episode)``
+pairs in raw feed-fetch order, with the Podcast Manager's existing "Sort
+episodes" control silently doing nothing outside a single show's own
+episode list. Root-caused from a direct user question about whether Inbox
+episodes were grouped by show or interleaved, and whether that order could
+be controlled.
+
+- **``core/podcasts/sorting.py::sort_pairs``** (pure, unit-tested). A new
+  ``PodcastLibrary.episode_list_group_by_show`` (persisted, default
+  ``True``) chooses between two shapes: grouped (pairs sorted contiguously
+  by show, shows ordered by title, each show's own episodes sorted by the
+  existing sort mode -- read one podcast's backlog at a time) or flat (every
+  pair sorted by the sort mode as one chronological/other-mode stream
+  across every show, ignoring which show each episode came from). Relies on
+  Python's stable sort: sort by episode key first, then by show title, so
+  the first pass's per-show order survives the second.
+- **UI (``manager_dialog.py``, ``manager_phase4.py``).** A new "Group by
+  Show" checkbox sits next to the pre-existing "Sort episodes" control;
+  both now apply to ``_fill_episodes_from_pairs`` (every virtual view and
+  Inbox folder), not just a single show's list. Default ``True`` matches
+  the pre-existing de-facto per-show iteration order, so nothing visibly
+  changes until the checkbox is touched.
+
 ---
 
 ### 5.84h Shared media Sleep Timer, and start-at-Windows-login
