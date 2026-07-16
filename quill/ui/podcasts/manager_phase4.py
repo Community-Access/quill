@@ -97,7 +97,6 @@ class ManagerPhase4Mixin:
     def _apply_show_filter(self, shows: list[PodcastShow]) -> list[PodcastShow]:
         return filter_shows(shows, self._selected_show_filter())
 
-
     def _on_boost_choice(self, _event: object) -> None:
         index = max(0, self._boost_choice.GetSelection())
         factor = _BOOST_FACTORS[index]
