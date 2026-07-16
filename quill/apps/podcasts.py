@@ -236,6 +236,8 @@ class PodcastsAppFrame(
                 ("&Stop" if playing else "&Play Next Episode", self._on_library_play_stop_context),
                 (fav_label, self._on_library_favorite_toggle_context),
                 ("&Move to Folder...", self._on_library_move_to_folder),
+                ("Download &All Episodes", self._on_library_download_all_episodes),
+                ("&Remove All Episodes...", self._on_library_remove_all_episodes),
                 ("&Unsubscribe...\tDelete", self._on_library_remove),
                 ("New F&older...", self._on_library_new_folder),
                 ("Open &Manager...", lambda: self.open_podcast_manager()),
@@ -279,6 +281,30 @@ class PodcastsAppFrame(
         toggle_favorite(self._podcast_library, show, announce=self._announce)
         self._save_podcast_library()
         self._refresh_transport_controls()
+
+    def _on_library_download_all_episodes(self) -> None:
+        from quill.ui.podcasts.show_actions import download_all_episodes
+
+        show = self._selected_show()
+        if show is None:
+            return
+        download_all_episodes(
+            self._podcast_download_queue,
+            self._podcast_download_root(),
+            show,
+            announce=self._announce,
+        )
+
+    def _on_library_remove_all_episodes(self) -> None:
+        from quill.ui.podcasts.show_actions import remove_all_episodes_prompt
+
+        show = self._selected_show()
+        if show is None:
+            return
+        if remove_all_episodes_prompt(
+            self.frame, self._podcast_download_queue, show, announce=self._announce
+        ):
+            self._save_podcast_library()
 
     def _on_library_move_to_folder(self) -> None:
         from quill.ui.podcasts.show_actions import move_show_to_folder

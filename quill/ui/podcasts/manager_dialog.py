@@ -621,6 +621,16 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
             menu.Bind(wx.EVT_MENU, lambda _e, s=show: self._on_rename_show(s), rename_show_item)
 
             menu.AppendSeparator()
+            download_all_item = menu.Append(wx.ID_ANY, "Download &All Episodes")
+            menu.Bind(
+                wx.EVT_MENU, lambda _e, s=show: self._on_download_all_episodes(s), download_all_item
+            )
+            remove_all_item = menu.Append(wx.ID_ANY, "&Remove All Episodes...")
+            menu.Bind(
+                wx.EVT_MENU, lambda _e, s=show: self._on_remove_all_episodes(s), remove_all_item
+            )
+
+            menu.AppendSeparator()
             unsubscribe_item = menu.Append(wx.ID_ANY, "&Unsubscribe")
             menu.Bind(wx.EVT_MENU, self._on_unsubscribe, unsubscribe_item)
         else:
@@ -937,6 +947,26 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
         self._on_library_changed()
         self._announce(f"Removed downloaded copy of {episode.title}")
         self._refresh_selected_episode_row()
+
+    def _on_download_all_episodes(self, show: PodcastShow) -> None:
+        from quill.ui.podcasts.show_actions import download_all_episodes
+
+        queued = download_all_episodes(
+            self._download_queue, self._download_root, show, announce=self._announce
+        )
+        if queued and show is self._current_show:
+            self._fill_episodes(show)
+
+    def _on_remove_all_episodes(self, show: PodcastShow) -> None:
+        from quill.ui.podcasts.show_actions import remove_all_episodes_prompt
+
+        removed = remove_all_episodes_prompt(
+            self.dialog, self._download_queue, show, announce=self._announce
+        )
+        if removed:
+            self._on_library_changed()
+            if show is self._current_show:
+                self._fill_episodes(show)
 
     def on_download_status_changed(self, item: DownloadItem) -> None:
         """Called (off the UI thread) by the mixin's queue callback."""
