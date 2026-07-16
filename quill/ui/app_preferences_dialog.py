@@ -22,9 +22,23 @@ class PreferenceCheckbox:
     value: bool
 
 
+@dataclass(slots=True)
+class PreferenceChoice:
+    """One labeled combo box row: for a small closed set of options a
+    checkbox can't represent (e.g. Radio's "When closing the window").
+    ``name`` is the row's own label (no mnemonic collision with the
+    checkboxes since it labels a Choice, not a button); ``help_text`` is the
+    fuller accessible description set via ``SetName``."""
+
+    name: str
+    help_text: str
+    options: list[str]
+    selected_index: int
+
+
 class PreferencesDialog:
-    """Returns the updated bool values (same order as the input specs), or
-    ``None`` on Cancel."""
+    """Returns ``(checkbox_values, choice_indices)`` -- each a list in the
+    same order as the input specs -- or ``None`` on Cancel."""
 
     def __init__(
         self,
@@ -32,19 +46,36 @@ class PreferencesDialog:
         *,
         app_title: str,
         checkboxes: list[PreferenceCheckbox],
+        choices: list[PreferenceChoice] | None = None,
         announce_cb: Callable[[str], None] | None = None,
     ) -> None:
         import wx
 
         self._wx = wx
         self._announce = announce_cb or (lambda _m: None)
-        self._result: list[bool] | None = None
+        self._result: tuple[list[bool], list[int]] | None = None
         self._checks: list[wx.CheckBox] = []
+        self._choice_controls: list[wx.Choice] = []
 
         self.dialog = wx.Dialog(
             parent, title=f"{app_title} Preferences", style=wx.DEFAULT_DIALOG_STYLE
         )
         root = wx.BoxSizer(wx.VERTICAL)
+
+        for spec in choices or []:
+            row = wx.BoxSizer(wx.HORIZONTAL)
+            row.Add(
+                wx.StaticText(self.dialog, label=spec.name),
+                0,
+                wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
+                6,
+            )
+            choice = wx.Choice(self.dialog, choices=list(spec.options))
+            choice.SetName(spec.help_text)
+            choice.SetSelection(spec.selected_index)
+            row.Add(choice, 1, wx.EXPAND)
+            root.Add(row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8)
+            self._choice_controls.append(choice)
 
         for spec in checkboxes:
             check = wx.CheckBox(self.dialog, label=spec.name)
@@ -66,10 +97,13 @@ class PreferencesDialog:
         save_btn.Bind(wx.EVT_BUTTON, self._on_save)
 
     def _on_save(self, _event: object) -> None:
-        self._result = [check.GetValue() for check in self._checks]
+        self._result = (
+            [check.GetValue() for check in self._checks],
+            [choice.GetSelection() for choice in self._choice_controls],
+        )
         self.dialog.EndModal(self._wx.ID_OK)
 
-    def show(self) -> list[bool] | None:
+    def show(self) -> tuple[list[bool], list[int]] | None:
         from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 
         self.dialog.CentreOnParent()

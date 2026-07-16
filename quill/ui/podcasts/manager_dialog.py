@@ -851,13 +851,19 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
         source = episode.downloaded_path or episode.audio_url
         if not source:
             return
+        settings = self._library.effective_settings(show)
         self._controller.play_episode(
             show_id=show.id,
             episode_guid=episode.guid,
             title=episode.title,
             source=source,
             resume_ms=resume_ms,
-            rate=self._library.effective_settings(show).speed,
+            rate=settings.speed,
+            bass_db=settings.eq_bass_db,
+            mid_db=settings.eq_mid_db,
+            treble_db=settings.eq_treble_db,
+            compressor_enabled=settings.compressor_enabled,
+            smart_speed_enabled=settings.smart_speed_enabled,
         )
         self._update_now_playing()
         self._announce(f"Playing {episode.title}")

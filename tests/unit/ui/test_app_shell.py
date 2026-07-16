@@ -166,7 +166,10 @@ def test_silent_update_check_says_nothing_when_up_to_date(monkeypatch):
     assert announced == []
 
 
-def test_manual_update_check_still_announces_up_to_date(monkeypatch):
+def test_manual_update_check_shows_dialog_when_up_to_date(monkeypatch):
+    """A manual check (Help > Check for Updates) that finds nothing newer
+    must show a real dialog, not just a spoken announcement that's easy to
+    miss over other app noise."""
     import quill.core.updates as updates
     import quill.ui.app_shell as app_shell_module
 
@@ -174,13 +177,15 @@ def test_manual_update_check_still_announces_up_to_date(monkeypatch):
     release = type("R", (), {"prerelease": False, "version": "1.0.0"})()
     monkeypatch.setattr(updates, "fetch_releases", lambda url, **_kw: [release])
     announced: list[str] = []
+    boxes: list[str] = []
     shell = _bare_shell()
     shell._announce = announced.append
+    shell._show_message_box = lambda *a, **k: boxes.append(a[0])
     shell._running_portable_build = lambda: False
     shell._task_manager = _TaskManagerRoutingCallbacks()
     shell.check_for_app_updates(repo_slug="Community-Access/quill-radio", current_version="1.0.0")
     assert "Checking for updates" in announced
-    assert any("up to date" in msg for msg in announced)
+    assert len(boxes) == 1 and "up to date" in boxes[0]
 
 
 def test_silent_update_check_failure_shows_no_dialog(monkeypatch):
@@ -249,3 +254,52 @@ def test_app_update_check_due_true_after_interval():
 def test_app_update_check_due_true_on_unparseable_timestamp():
     shell = _bare_shell()
     assert shell._app_update_check_due("not-a-date") is True
+
+
+def test_open_app_document_opens_html_candidate_directly(tmp_path, monkeypatch):
+    import webbrowser
+
+    html = tmp_path / "userguide.html"
+    html.write_text("<html><body>hi</body></html>", encoding="utf-8")
+    opened: list[str] = []
+    monkeypatch.setattr(webbrowser, "open", lambda uri: opened.append(uri) or True)
+    shell = _bare_shell()
+    shell._announce = lambda _msg: None
+    shell.open_app_document([html], title="Test Guide", cache_name="app-docs-test")
+    assert opened == [html.as_uri()]
+
+
+def test_open_app_document_renders_markdown_candidate(tmp_path, monkeypatch):
+    import webbrowser
+
+    import quill.core.paths as paths_module
+
+    md = tmp_path / "release-notes-1.0.md"
+    md.write_text("# Release Notes\n\nSomething shipped.", encoding="utf-8")
+    monkeypatch.setattr(paths_module, "app_data_dir", lambda: tmp_path / "appdata")
+    opened: list[str] = []
+    monkeypatch.setattr(webbrowser, "open", lambda uri: opened.append(uri) or True)
+    shell = _bare_shell()
+    shell._announce = lambda _msg: None
+    shell.open_app_document([md], title="Test Notes", cache_name="app-docs-test")
+    assert len(opened) == 1
+    cached = tmp_path / "appdata" / "app-docs-test" / "release-notes-1.0.html"
+    assert cached.is_file()
+    assert opened == [cached.as_uri()]
+
+
+def test_open_app_document_missing_announces_not_found(tmp_path):
+    announced: list[str] = []
+    shell = _bare_shell()
+    shell._announce = announced.append
+    shell.open_app_document([tmp_path / "nope.html"], title="Ghost Doc", cache_name="app-docs-test")
+    assert announced == ["Ghost Doc was not found in this build."]
+
+
+def test_doc_candidates_prefers_html_over_markdown():
+    shell = _bare_shell()
+    candidates = shell._doc_candidates("quill-radio", "userguide")
+    # Dev-mode candidates only (the test process is never frozen): html
+    # before md, from the sibling repo -- see _doc_candidates' docstring.
+    assert candidates[0].name == "userguide.html"
+    assert candidates[1].name == "userguide.md"

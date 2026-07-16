@@ -69,15 +69,17 @@ def test_check_updates_on_startup_missing_from_file_defaults_on(tmp_path: Path) 
 
 def test_sound_enhancements_default_off() -> None:
     history = RadioHistory()
-    assert history.eq_preset == "Flat"
+    assert (history.eq_bass_db, history.eq_mid_db, history.eq_treble_db) == (0.0, 0.0, 0.0)
     assert history.compressor_enabled is False
 
 
 def test_sound_enhancements_round_trip(tmp_path: Path) -> None:
-    history = RadioHistory(eq_preset="Podcast", compressor_enabled=True)
+    history = RadioHistory(
+        eq_bass_db=-4.0, eq_mid_db=3.0, eq_treble_db=0.0, compressor_enabled=True
+    )
     save_history(tmp_path, history)
     loaded = load_history(tmp_path)
-    assert loaded.eq_preset == "Podcast"
+    assert (loaded.eq_bass_db, loaded.eq_mid_db, loaded.eq_treble_db) == (-4.0, 3.0, 0.0)
     assert loaded.compressor_enabled is True
 
 
@@ -86,5 +88,45 @@ def test_sound_enhancements_missing_from_file_default_off(tmp_path: Path) -> Non
         '{"resume_on_launch": true, "stations": []}', encoding="utf-8"
     )
     loaded = load_history(tmp_path)
-    assert loaded.eq_preset == "Flat"
+    assert (loaded.eq_bass_db, loaded.eq_mid_db, loaded.eq_treble_db) == (0.0, 0.0, 0.0)
     assert loaded.compressor_enabled is False
+
+
+def test_sound_enhancements_migrates_old_preset_field(tmp_path: Path) -> None:
+    (tmp_path / "radio_history.json").write_text(
+        '{"resume_on_launch": false, "stations": [], "eq_preset": "Bass Boost"}',
+        encoding="utf-8",
+    )
+    loaded = load_history(tmp_path)
+    assert (loaded.eq_bass_db, loaded.eq_mid_db, loaded.eq_treble_db) == (7.0, 0.0, 1.0)
+
+
+def test_close_action_defaults_to_ask() -> None:
+    assert RadioHistory().close_action == "ask"
+
+
+def test_close_action_round_trips(tmp_path: Path) -> None:
+    history = RadioHistory(close_action="minimize")
+    save_history(tmp_path, history)
+    loaded = load_history(tmp_path)
+    assert loaded.close_action == "minimize"
+
+
+def test_close_action_rejects_unknown_value(tmp_path: Path) -> None:
+    (tmp_path / "radio_history.json").write_text(
+        '{"resume_on_launch": false, "stations": [], "close_action": "bogus"}',
+        encoding="utf-8",
+    )
+    loaded = load_history(tmp_path)
+    assert loaded.close_action == "ask"
+
+
+def test_announce_dialog_transitions_defaults_off() -> None:
+    assert RadioHistory().announce_dialog_transitions is False
+
+
+def test_announce_dialog_transitions_round_trips(tmp_path: Path) -> None:
+    history = RadioHistory(announce_dialog_transitions=True)
+    save_history(tmp_path, history)
+    loaded = load_history(tmp_path)
+    assert loaded.announce_dialog_transitions is True

@@ -47,16 +47,28 @@ from quill.stability.redaction import format_args_for_log
 logger = logging.getLogger(__name__)
 
 #: (bass gain, mid gain, treble gain) in dB, centered at 100 Hz / 1 kHz / 8 kHz.
-#: Named presets rather than raw sliders -- kept small and screen-reader
-#: friendly (one combo box, not three unlabeled dB sliders per band).
+#: Quick-select shortcuts for the three adjustable band sliders below --
+#: picking one just sets the three gains to these values; the bands stay
+#: freely adjustable afterward (a preset is a starting point, not a locked
+#: mode).
 EQ_PRESETS: dict[str, tuple[float, float, float]] = {
     "Flat": (0.0, 0.0, 0.0),
     "Bass Boost": (7.0, 0.0, 1.0),
     "Voice Clarity": (-3.0, 4.0, 2.0),
     "Podcast": (-4.0, 3.0, 0.0),
 }
-DEFAULT_EQ_PRESET = "Flat"
 _EQ_BAND_FREQUENCIES = (100, 1000, 8000)
+#: Slider range for each band, in dB. wx.Slider is integer-only, so gains
+#: are whole dB steps -- plenty of resolution for a 3-band EQ (real mixing
+#: consoles rarely offer finer than 1 dB per notch either).
+EQ_BAND_MIN_DB = -12.0
+EQ_BAND_MAX_DB = 12.0
+
+
+def clamp_eq_gain(value: float) -> float:
+    """Clamp a single band's gain to the slider's supported range."""
+    return max(EQ_BAND_MIN_DB, min(EQ_BAND_MAX_DB, value))
+
 
 # threshold/ratio/attack/release/makeup tuned to even out a typical low-bitrate
 # internet radio stream without audibly pumping.
@@ -80,27 +92,34 @@ class EnhanceError(CodedError):
 
 
 def is_enhancement_active(
-    eq_preset: str, *, compressor_enabled: bool, smart_speed_enabled: bool = False
+    bass_db: float,
+    mid_db: float,
+    treble_db: float,
+    *,
+    compressor_enabled: bool,
+    smart_speed_enabled: bool = False,
 ) -> bool:
     """True when these settings would change the audio at all."""
-    return (
-        EQ_PRESETS.get(eq_preset, EQ_PRESETS[DEFAULT_EQ_PRESET]) != (0.0, 0.0, 0.0)
-        or compressor_enabled
-        or smart_speed_enabled
-    )
+    return bool(bass_db or mid_db or treble_db) or compressor_enabled or smart_speed_enabled
 
 
 def build_filter_graph(
-    eq_preset: str, *, compressor_enabled: bool, smart_speed_enabled: bool = False
+    bass_db: float,
+    mid_db: float,
+    treble_db: float,
+    *,
+    compressor_enabled: bool,
+    smart_speed_enabled: bool = False,
 ) -> str:
-    """Build the ffmpeg ``-af`` filter graph for *eq_preset* + the compressor
-    + Smart Speed (silence trimming, podcasts only -- radio callers never
-    pass ``smart_speed_enabled=True``).
+    """Build the ffmpeg ``-af`` filter graph for the three-band equalizer
+    (Bass/Mid/Treble, in dB, each clamped to ``EQ_BAND_MIN_DB``..
+    ``EQ_BAND_MAX_DB``) + the compressor + Smart Speed (silence trimming,
+    podcasts only -- radio callers never pass ``smart_speed_enabled=True``).
 
     Pure and unit-tested. Returns ``""`` when nothing is engaged (a caller
     should treat that as "play the stream directly, no relay needed").
     """
-    gains = EQ_PRESETS.get(eq_preset, EQ_PRESETS[DEFAULT_EQ_PRESET])
+    gains = (clamp_eq_gain(bass_db), clamp_eq_gain(mid_db), clamp_eq_gain(treble_db))
     filters = [
         f"equalizer=f={freq}:t=q:w=1:g={gain}"
         for freq, gain in zip(_EQ_BAND_FREQUENCIES, gains, strict=True)
@@ -117,7 +136,9 @@ def build_relay_command(
     ffmpeg: str,
     stream_url: str,
     *,
-    eq_preset: str,
+    bass_db: float,
+    mid_db: float,
+    treble_db: float,
     compressor_enabled: bool,
     smart_speed_enabled: bool = False,
     start_seconds: float = 0.0,
@@ -138,7 +159,11 @@ def build_relay_command(
         args.extend(["-ss", f"{start_seconds:.3f}"])
     args.extend(["-i", stream_url, "-vn"])
     filter_graph = build_filter_graph(
-        eq_preset, compressor_enabled=compressor_enabled, smart_speed_enabled=smart_speed_enabled
+        bass_db,
+        mid_db,
+        treble_db,
+        compressor_enabled=compressor_enabled,
+        smart_speed_enabled=smart_speed_enabled,
     )
     if filter_graph:
         args.extend(["-af", filter_graph])
@@ -247,7 +272,9 @@ class EnhanceRelay:
         self,
         stream_url: str,
         *,
-        eq_preset: str,
+        bass_db: float = 0.0,
+        mid_db: float = 0.0,
+        treble_db: float = 0.0,
         compressor_enabled: bool,
         smart_speed_enabled: bool = False,
         start_seconds: float = 0.0,
@@ -267,7 +294,9 @@ class EnhanceRelay:
         args = build_relay_command(
             ffmpeg,
             stream_url,
-            eq_preset=eq_preset,
+            bass_db=bass_db,
+            mid_db=mid_db,
+            treble_db=treble_db,
             compressor_enabled=compressor_enabled,
             smart_speed_enabled=smart_speed_enabled,
             start_seconds=start_seconds,

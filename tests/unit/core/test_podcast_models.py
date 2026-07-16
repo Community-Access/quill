@@ -66,6 +66,31 @@ def test_settings_episode_sort_mode_round_trips() -> None:
     assert PodcastSettings.from_dict(settings.to_dict()).episode_sort_mode == "date_oldest"
 
 
+def test_settings_sound_enhancements_default_off() -> None:
+    settings = PodcastSettings.from_dict({})
+    assert (settings.eq_bass_db, settings.eq_mid_db, settings.eq_treble_db) == (0.0, 0.0, 0.0)
+    assert settings.compressor_enabled is False
+    assert settings.smart_speed_enabled is False
+
+
+def test_settings_sound_enhancements_round_trip() -> None:
+    original = PodcastSettings(
+        eq_bass_db=-4.0,
+        eq_mid_db=3.0,
+        eq_treble_db=0.0,
+        compressor_enabled=True,
+        smart_speed_enabled=True,
+    )
+    restored = PodcastSettings.from_dict(original.to_dict())
+    assert restored == original
+
+
+def test_settings_sound_enhancements_clamped_on_load() -> None:
+    settings = PodcastSettings.from_dict({"eq_bass_db": 50.0, "eq_treble_db": -50.0})
+    assert settings.eq_bass_db == 12.0
+    assert settings.eq_treble_db == -12.0
+
+
 def test_episode_from_dict_requires_guid_title_and_audio_url() -> None:
     assert PodcastEpisode.from_dict({"title": "X", "audio_url": "https://x"}) is None
     assert PodcastEpisode.from_dict({"guid": "g", "audio_url": "https://x"}) is None

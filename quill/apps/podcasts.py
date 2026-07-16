@@ -20,7 +20,7 @@ from quill.ui.main_frame_podcasts import PodcastsMixin
 from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 
 _TITLE = "QUILL Cast"
-_VERSION = "1.0.3"
+_VERSION = "1.0.4"
 _REPO = "Community-Access/quill-cast"
 
 
@@ -30,6 +30,11 @@ class PodcastsAppFrame(
     def __init__(self, *, safe_mode: bool = False) -> None:
         self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(460, 360))
         self._init_podcasts()
+        from quill.ui.dialog_contract import set_transition_announcement_policy
+
+        set_transition_announcement_policy(
+            lambda: self._podcast_history.announce_dialog_transitions
+        )
         self._init_media_sleep_timer()
         self._build_menu_bar()
         self._build_main_panel()
@@ -372,14 +377,19 @@ class PodcastsAppFrame(
         played_note = ""
         if episode.played:
             played_note = " (no unplayed episodes; playing the most recent)"
-        speed = self._podcast_library.effective_settings(show).speed
+        settings = self._podcast_library.effective_settings(show)
         self._podcast_controller.play_episode(
             show_id=show.id,
             episode_guid=episode.guid,
             title=episode.title,
             source=episode.downloaded_path or episode.audio_url,
             resume_ms=episode.position_ms,
-            rate=speed,
+            rate=settings.speed,
+            bass_db=settings.eq_bass_db,
+            mid_db=settings.eq_mid_db,
+            treble_db=settings.eq_treble_db,
+            compressor_enabled=settings.compressor_enabled,
+            smart_speed_enabled=settings.smart_speed_enabled,
         )
         self._announce(f"Playing {episode.title} from {show.title}{played_note}")
 
@@ -487,13 +497,23 @@ class PodcastsAppFrame(
                     "Check for updates automatically on launch",
                     history.check_updates_on_startup,
                 ),
+                PreferenceCheckbox(
+                    "&Announce dialog transitions (more spoken detail)",
+                    "Announce dialog transitions -- off by default to reduce alert noise",
+                    history.announce_dialog_transitions,
+                ),
             ],
             announce_cb=self._announce,
         )
         result = dialog.show()
         if result is None:
             return
-        history.resume_on_launch, history.check_updates_on_startup = result
+        checkbox_values, _choice_indices = result
+        (
+            history.resume_on_launch,
+            history.check_updates_on_startup,
+            history.announce_dialog_transitions,
+        ) = checkbox_values
         podcast_history.save_history(app_data_dir(), history)
         menu_bar = self.frame.GetMenuBar()
         if menu_bar is not None:
@@ -511,14 +531,19 @@ class PodcastsAppFrame(
         episode = show.find_episode(last.episode_guid) if show is not None else None
         if show is None or episode is None:
             return
-        speed = self._podcast_library.effective_settings(show).speed
+        settings = self._podcast_library.effective_settings(show)
         self._podcast_controller.play_episode(
             show_id=show.id,
             episode_guid=episode.guid,
             title=episode.title,
             source=episode.downloaded_path or episode.audio_url,
             resume_ms=episode.position_ms,
-            rate=speed,
+            rate=settings.speed,
+            bass_db=settings.eq_bass_db,
+            mid_db=settings.eq_mid_db,
+            treble_db=settings.eq_treble_db,
+            compressor_enabled=settings.compressor_enabled,
+            smart_speed_enabled=settings.smart_speed_enabled,
         )
 
     def _maybe_check_updates_on_startup(self) -> None:
@@ -668,6 +693,17 @@ class PodcastsAppFrame(
         ffmpeg_id = wx.NewIdRef()
         help_menu.Append(ffmpeg_id, "&Get FFmpeg...")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.download_ffmpeg_component(), id=ffmpeg_id)
+        help_menu.AppendSeparator()
+        guide_id, notes_id, prd_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
+        help_menu.Append(guide_id, "&User Guide")
+        help_menu.Append(notes_id, "&Release Notes")
+        help_menu.Append(prd_id, "&Product Requirements...")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_podcasts_doc("userguide"), id=guide_id)
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self._open_podcasts_doc("release-notes-1.0"), id=notes_id
+        )
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_podcasts_doc("prd"), id=prd_id)
+        help_menu.AppendSeparator()
         help_menu.Append(redeem_id, "Redeem &Unlock Code...")
         help_menu.Append(updates_id, "Check for Up&dates...")
         help_menu.AppendSeparator()
@@ -712,9 +748,24 @@ class PodcastsAppFrame(
             palette_id,
             bug_id,
             ffmpeg_id,
+            guide_id,
+            notes_id,
+            prd_id,
             redeem_id,
             updates_id,
             about_id,
+        )
+
+    def _open_podcasts_doc(self, stem: str) -> None:
+        titles = {
+            "userguide": "QUILL Cast User Guide",
+            "release-notes-1.0": "QUILL Cast Release Notes",
+            "prd": "QUILL Cast Product Requirements",
+        }
+        self.open_app_document(
+            self._doc_candidates("quill-cast", stem),
+            title=titles.get(stem, stem),
+            cache_name="app-docs",
         )
 
     def _new_library_folder(self) -> None:

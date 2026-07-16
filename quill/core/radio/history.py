@@ -12,11 +12,24 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from quill.core.audio_enhance import DEFAULT_EQ_PRESET
+from quill.core.audio_enhance import EQ_PRESETS
 from quill.core.radio.models import RadioStation
 
 _FILE_NAME = "radio_history.json"
 _MAX_ENTRIES = 15
+
+
+def _coerce_float(value: object, default: float) -> float:
+    if isinstance(value, bool):
+        return default
+    if isinstance(value, (int, float)):
+        return float(value)
+    if isinstance(value, str):
+        try:
+            return float(value) if value.strip() else default
+        except ValueError:
+            return default
+    return default
 
 
 @dataclass(slots=True)
@@ -37,12 +50,26 @@ class RadioHistory:
     #: ISO timestamp of the last update check (manual or automatic), so the
     #: startup check only hits the network once a day, not on every launch.
     last_update_check: str = ""
-    #: Sound Enhancements (Playback menu): an EQ preset name from
-    #: ``audio_enhance.EQ_PRESETS`` and whether the compressor is on. Both
-    #: default to off/Flat -- normal playback never touches the ffmpeg relay
-    #: unless the user opts in.
-    eq_preset: str = DEFAULT_EQ_PRESET
+    #: Sound Enhancements (Playback menu): three adjustable EQ bands (dB,
+    #: see audio_enhance.EQ_BAND_MIN_DB/MAX_DB) and whether the compressor
+    #: is on. All default to off -- normal playback never touches the
+    #: ffmpeg relay unless the user opts in.
+    eq_bass_db: float = 0.0
+    eq_mid_db: float = 0.0
+    eq_treble_db: float = 0.0
     compressor_enabled: bool = False
+    #: What closing the window (titlebar X, Alt+F4, Station > Exit) does:
+    #: "ask" shows a one-time-per-session-until-answered Exit/Minimize to
+    #: Tray dialog (its "Don't ask me again" checkbox writes this field);
+    #: "exit"/"minimize" skip straight to that action. Preferences (Ctrl+,)
+    #: can always set it back to "ask".
+    close_action: str = "ask"
+    #: Speak "Entered/Exited X dialog" around every modal dialog. Off by
+    #: default, matching QUILL's own Settings.announce_dialog_transitions --
+    #: the standalone apps previously never wired this policy at all, so
+    #: dialog_contract.show_modal_dialog's "no policy set" fallback always
+    #: spoke it, unlike full QUILL where it is opt-in.
+    announce_dialog_transitions: bool = False
 
     def record(self, station: RadioStation) -> None:
         """Note that *station* just played; it moves to the front."""
@@ -72,8 +99,21 @@ def load_history(data_dir: Path) -> RadioHistory:
         history.announce_track_titles = bool(raw.get("announce_track_titles", False))
         history.check_updates_on_startup = bool(raw.get("check_updates_on_startup", True))
         history.last_update_check = str(raw.get("last_update_check", ""))
-        history.eq_preset = str(raw.get("eq_preset") or DEFAULT_EQ_PRESET)
+        if "eq_bass_db" in raw or "eq_mid_db" in raw or "eq_treble_db" in raw:
+            history.eq_bass_db = _coerce_float(raw.get("eq_bass_db"), 0.0)
+            history.eq_mid_db = _coerce_float(raw.get("eq_mid_db"), 0.0)
+            history.eq_treble_db = _coerce_float(raw.get("eq_treble_db"), 0.0)
+        elif isinstance(raw.get("eq_preset"), str):
+            # One-time migration: a file saved before the three-band sliders
+            # only remembered a preset name.
+            bass, mid, treble = EQ_PRESETS.get(str(raw["eq_preset"]), (0.0, 0.0, 0.0))
+            history.eq_bass_db, history.eq_mid_db, history.eq_treble_db = bass, mid, treble
         history.compressor_enabled = bool(raw.get("compressor_enabled", False))
+        close_action = str(raw.get("close_action", "ask"))
+        history.close_action = (
+            close_action if close_action in ("ask", "exit", "minimize") else "ask"
+        )
+        history.announce_dialog_transitions = bool(raw.get("announce_dialog_transitions", False))
         entries = raw.get("stations")
         for entry in entries if isinstance(entries, list) else []:
             if not isinstance(entry, dict):
@@ -96,8 +136,12 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "announce_track_titles": history.announce_track_titles,
             "check_updates_on_startup": history.check_updates_on_startup,
             "last_update_check": history.last_update_check,
-            "eq_preset": history.eq_preset,
+            "eq_bass_db": history.eq_bass_db,
+            "eq_mid_db": history.eq_mid_db,
+            "eq_treble_db": history.eq_treble_db,
             "compressor_enabled": history.compressor_enabled,
+            "close_action": history.close_action,
+            "announce_dialog_transitions": history.announce_dialog_transitions,
             "stations": [station.to_dict() for station in history.stations],
         },
     )
