@@ -24,7 +24,13 @@ def _slice_function(source: str, fn_sig: str, stop_sig: str = "\n    def ") -> s
 
 
 def _main_frame_source() -> str:
-    return Path("quill/ui/main_frame.py").read_text(encoding="utf-8")
+    # The preferences dialogs live in the PreferencesMixin module (extracted
+    # from main_frame.py, CQ-1); scan both homes.
+    return (
+        Path("quill/ui/main_frame.py").read_text(encoding="utf-8")
+        + "\n"
+        + Path("quill/ui/main_frame_preferences.py").read_text(encoding="utf-8")
+    )
 
 
 # ---------------------------------------------------------------------------

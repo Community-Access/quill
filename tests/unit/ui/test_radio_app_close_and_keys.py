@@ -137,7 +137,7 @@ def test_f2_still_renames_alongside_the_new_volume_handling() -> None:
 class _FakeCloseConfirmDialog:
     """Records construction args; ``show()`` returns whatever the test wants."""
 
-    instances: list["_FakeCloseConfirmDialog"] = []
+    instances: list[_FakeCloseConfirmDialog] = []
 
     def __init__(self, parent: object, *, recording_active: bool, announce_cb: Any) -> None:
         self.parent = parent
@@ -163,9 +163,7 @@ def _close_frame(
     )
     monkeypatch.setattr(paths_module, "app_data_dir", lambda: "FAKE_APP_DATA_DIR")
     saved: list[tuple[object, object]] = []
-    monkeypatch.setattr(
-        radio_history_module, "save_history", lambda d, h: saved.append((d, h))
-    )
+    monkeypatch.setattr(radio_history_module, "save_history", lambda d, h: saved.append((d, h)))
 
     calls: list[str] = []
     frame = RadioAppFrame.__new__(RadioAppFrame)

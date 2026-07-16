@@ -15,7 +15,9 @@ from pathlib import Path
 
 
 def _open_preferences_source() -> str:
-    source = Path("quill/ui/main_frame.py").read_text(encoding="utf-8")
+    # open_preferences lives in the PreferencesMixin module (extracted from
+    # main_frame.py, CQ-1).
+    source = Path("quill/ui/main_frame_preferences.py").read_text(encoding="utf-8")
     start = source.index("def open_preferences(self)")
     end = source.index("\n    def ", start + 1)
     return source[start:end]
@@ -82,7 +84,12 @@ def test_preferences_runs_chosen_handler_after_the_hub_closes() -> None:
 
 
 def test_general_settings_search_box_removed() -> None:
-    source = Path("quill/ui/main_frame.py").read_text(encoding="utf-8")
+    # The Settings dialog lives in main_frame_preferences.py now; check both
+    # homes so the retired search box cannot quietly come back in either.
+    source = "\n".join(
+        Path(f"quill/ui/{name}").read_text(encoding="utf-8")
+        for name in ("main_frame.py", "main_frame_preferences.py")
+    )
     # The "no search button here" requirement: the Settings notebook must no
     # longer build a search box or its enter-to-jump handler.
     assert "Search settings" not in source

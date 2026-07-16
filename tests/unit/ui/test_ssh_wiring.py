@@ -31,7 +31,7 @@ def test_save_uploads_back_over_ssh() -> None:
 
 
 def test_commands_registered_for_palette() -> None:
-    source = _read("quill/ui/main_frame.py")
+    source = _read("quill/ui/main_frame_commands.py")
     assert '"file.ssh_quick_connect"' in source
     assert '"file.ssh_site_manager"' in source
 

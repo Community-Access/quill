@@ -772,9 +772,10 @@ class RadioMixin:
                 self._radio_favorites.clear_enhancement_override(favorite.key)
                 self._save_radio_favorites()
                 state = self._radio_controller.state
-                if state.station is not None and (
-                    state.station.station_uuid or state.station.stream_url
-                ) == favorite.key:
+                if (
+                    state.station is not None
+                    and (state.station.station_uuid or state.station.stream_url) == favorite.key
+                ):
                     self._radio_controller.set_enhancement(
                         bass_db=history.eq_bass_db,
                         mid_db=history.eq_mid_db,

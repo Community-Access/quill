@@ -33,7 +33,7 @@ def _src(rel: str) -> str:
 
 
 def test_command_registered_in_build_commands() -> None:
-    src = _src("quill/ui/main_frame.py")
+    src = _src("quill/ui/main_frame_commands.py")
     assert '"file.open_github_items"' in src
     assert "self.open_github_items_viewer" in src
 

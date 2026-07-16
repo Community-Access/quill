@@ -10,7 +10,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-SOURCE = (Path(__file__).resolve().parents[3] / "quill" / "ui" / "main_frame.py").read_text(
+# _prompt_search lives in the SearchCommandsMixin module (extracted from
+# main_frame.py, CQ-1).
+SOURCE = (Path(__file__).resolve().parents[3] / "quill" / "ui" / "main_frame_search.py").read_text(
     encoding="utf-8"
 )
 

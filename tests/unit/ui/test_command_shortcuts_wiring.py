@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-_SOURCE = Path("quill/ui/main_frame.py").read_text(encoding="utf-8")
+# Command registration and the accelerator/menu-id map live in the
+# CommandRegistryMixin module (extracted from main_frame.py, CQ-1).
+_SOURCE = Path("quill/ui/main_frame_commands.py").read_text(encoding="utf-8")
 
 
 def test_ai_compare_and_dark_mode_commands_use_registered_keybindings() -> None:

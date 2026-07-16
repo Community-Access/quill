@@ -13,7 +13,7 @@ def _src(rel: str) -> str:
 
 
 def test_command_registered() -> None:
-    src = _src("quill/ui/main_frame.py")
+    src = _src("quill/ui/main_frame_commands.py")
     assert '"tools.voice_command"' in src
     assert "self.voice_command_toggle" in src
 
@@ -49,7 +49,7 @@ def test_legacy_dictation_scanner_is_retired() -> None:
 def test_command_uses_voice_feature() -> None:
     # tools.voice_command stays behind core.voice_commands so profiles and
     # Safe Mode can hide it; the runtime gate is voice_commands_available.
-    src = _src("quill/ui/main_frame.py")
+    src = _src("quill/ui/main_frame_commands.py")
     idx = src.index('"tools.voice_command"')
     block = src[idx : idx + 600]
     assert 'feature_id="core.voice_commands"' in block

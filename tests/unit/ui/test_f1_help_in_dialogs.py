@@ -8,7 +8,6 @@ needs its own explicit F1 handling wired to show_help_on_control.
 
 from __future__ import annotations
 
-from types import SimpleNamespace
 from typing import Any
 
 import pytest

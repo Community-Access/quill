@@ -10,9 +10,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-SOURCE = (Path(__file__).resolve().parents[3] / "quill" / "ui" / "main_frame.py").read_text(
-    encoding="utf-8"
-)
+# The registry-driven Settings dialog lives in the PreferencesMixin module
+# (extracted from main_frame.py, CQ-1).
+SOURCE = (
+    Path(__file__).resolve().parents[3] / "quill" / "ui" / "main_frame_preferences.py"
+).read_text(encoding="utf-8")
 
 
 def test_no_standalone_external_engine_dialog() -> None:

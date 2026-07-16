@@ -160,6 +160,8 @@ def test_ocr3_commands_are_wired_in_main_frame() -> None:
     main_frame = (
         (_ui / "main_frame.py").read_text(encoding="utf-8")
         + "\n"
+        + (_ui / "main_frame_commands.py").read_text(encoding="utf-8")
+        + "\n"
         + (_ui / "main_frame_menu.py").read_text(encoding="utf-8")
     )
 

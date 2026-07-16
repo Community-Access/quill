@@ -387,7 +387,11 @@ _UI = Path(__file__).resolve().parents[3] / "quill" / "ui"
 
 
 def test_switcher_entry_points_share_one_handler() -> None:
-    main_frame = (_UI / "main_frame.py").read_text(encoding="utf-8")
+    main_frame = (
+        (_UI / "main_frame.py").read_text(encoding="utf-8")
+        + "\n"
+        + (_UI / "main_frame_commands.py").read_text(encoding="utf-8")
+    )
     menu = (_UI / "main_frame_menu.py").read_text(encoding="utf-8")
     statusbar = (_UI / "main_frame_statusbar.py").read_text(encoding="utf-8")
     # Command palette / keyboard chord registration.

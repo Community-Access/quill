@@ -2,11 +2,14 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+from urllib.error import URLError
 
 import pytest
 
 import quill.core.updates as updates_module
 import quill.ui.main_frame as main_frame_module
+import quill.ui.main_frame_spellcheck as frame_spellcheck_module
+import quill.ui.main_frame_updates as frame_updates_module
 from quill.core.document import Document
 from quill.core.notifications import Notification
 from quill.core.updates import GitHubRelease, UpdateManifest
@@ -238,20 +241,20 @@ def test_dictionary_status_uses_friendly_not_created_wording(monkeypatch) -> Non
     frame._show_message_box = lambda message, *_args: captured.setdefault("message", message)
 
     monkeypatch.setattr(
-        main_frame_module,
+        frame_spellcheck_module,
         "load_scope_dictionary",
         lambda *_args, **_kwargs: set(),
     )
     monkeypatch.setattr(
-        main_frame_module,
+        frame_spellcheck_module,
         "app_data_dir",
         lambda: Path(r"C:\Users\tester\AppData\Roaming\Quill"),
     )
     backend = type("Backend", (), {"name": "enchant", "detail": "en_US (hunspell)"})()
-    monkeypatch.setattr(main_frame_module, "spellcheck_backend_info", lambda: backend)
-    monkeypatch.setattr(main_frame_module.thesaurus_engine, "is_available", lambda: True)
+    monkeypatch.setattr(frame_spellcheck_module, "spellcheck_backend_info", lambda: backend)
+    monkeypatch.setattr(frame_spellcheck_module.thesaurus_engine, "is_available", lambda: True)
     monkeypatch.setattr(
-        main_frame_module.thesaurus_engine,
+        frame_spellcheck_module.thesaurus_engine,
         "data_path",
         lambda: Path(r"C:\quill\python\Lib\site-packages\quill\data\th_en_US_v2.dat"),
     )
@@ -354,7 +357,7 @@ def test_skip_update_version_records_choice(monkeypatch) -> None:
     frame = _build_frame()
     frame.settings.skipped_update_version = ""
     frame._announce = lambda *_args, **_kwargs: None
-    monkeypatch.setattr(main_frame_module, "save_settings", lambda _settings: None)
+    monkeypatch.setattr(frame_updates_module, "save_settings", lambda _settings: None)
 
     frame._skip_update_version("0.2.0")
 
@@ -372,11 +375,11 @@ def test_check_for_updates_silent_honors_skipped_version(monkeypatch) -> None:
     # version regardless of when this test runs.
     frame.settings.skipped_update_version = "9.9.9"
     frame.settings.last_update_check = ""
-    monkeypatch.setattr(main_frame_module, "save_settings", lambda _settings: None)
+    monkeypatch.setattr(frame_updates_module, "save_settings", lambda _settings: None)
     monkeypatch.setattr(
         updates_module,
         "fetch_update_manifest",
-        lambda *_a, **_k: (_ for _ in ()).throw(main_frame_module.URLError("offline")),
+        lambda *_a, **_k: (_ for _ in ()).throw(URLError("offline")),
     )
     release = GitHubRelease(
         version="9.9.9",
@@ -405,11 +408,11 @@ def test_check_for_updates_offers_self_heal_when_tokenless(monkeypatch) -> None:
     frame.settings.beta_updates = False
     frame.settings.skipped_update_version = ""
     frame.settings.last_update_check = ""
-    monkeypatch.setattr(main_frame_module, "save_settings", lambda _settings: None)
+    monkeypatch.setattr(frame_updates_module, "save_settings", lambda _settings: None)
     monkeypatch.setattr(
         updates_module,
         "fetch_update_manifest",
-        lambda *_a, **_k: (_ for _ in ()).throw(main_frame_module.URLError("offline")),
+        lambda *_a, **_k: (_ for _ in ()).throw(URLError("offline")),
     )
     release = GitHubRelease(
         version="0.9.0",
@@ -448,11 +451,11 @@ def test_check_for_updates_silent_self_heal_does_not_auto_download(monkeypatch) 
     frame.settings.beta_updates = False
     frame.settings.skipped_update_version = ""
     frame.settings.last_update_check = ""
-    monkeypatch.setattr(main_frame_module, "save_settings", lambda _settings: None)
+    monkeypatch.setattr(frame_updates_module, "save_settings", lambda _settings: None)
     monkeypatch.setattr(
         updates_module,
         "fetch_update_manifest",
-        lambda *_a, **_k: (_ for _ in ()).throw(main_frame_module.URLError("offline")),
+        lambda *_a, **_k: (_ for _ in ()).throw(URLError("offline")),
     )
     release = GitHubRelease(
         version="0.9.0",

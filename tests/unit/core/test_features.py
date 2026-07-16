@@ -368,7 +368,13 @@ def test_every_feature_id_referenced_in_main_frame_is_defined() -> None:
 
     from quill.core.features import FEATURE_DEFINITIONS
 
-    source = Path("quill/ui/main_frame.py").read_text(encoding="utf-8")
+    # Command registration (the feature_id wiring) lives in
+    # main_frame_commands.py (extracted from main_frame.py, CQ-1).
+    source = (
+        Path("quill/ui/main_frame.py").read_text(encoding="utf-8")
+        + "\n"
+        + Path("quill/ui/main_frame_commands.py").read_text(encoding="utf-8")
+    )
     referenced = set(re.findall(r'feature_id="([^"]+)"', source))
 
     assert referenced, "expected main_frame to wire feature ids to commands"

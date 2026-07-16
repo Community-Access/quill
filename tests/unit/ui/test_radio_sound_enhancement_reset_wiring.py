@@ -20,7 +20,7 @@ from quill.ui.radio.player_controller import RadioPlayerState
 
 
 class _FakeSoundEnhanceDialog:
-    instances: list["_FakeSoundEnhanceDialog"] = []
+    instances: list[_FakeSoundEnhanceDialog] = []
 
     def __init__(self, parent: object, **kwargs: Any) -> None:
         self.kwargs = kwargs
@@ -32,9 +32,7 @@ class _FakeSoundEnhanceDialog:
 
 def _frame(monkeypatch: pytest.MonkeyPatch, *, playing: RadioStation | None) -> Any:
     _FakeSoundEnhanceDialog.instances = []
-    monkeypatch.setattr(
-        sound_enhance_dialog_module, "SoundEnhanceDialog", _FakeSoundEnhanceDialog
-    )
+    monkeypatch.setattr(sound_enhance_dialog_module, "SoundEnhanceDialog", _FakeSoundEnhanceDialog)
     monkeypatch.setattr(main_frame_radio_module, "app_data_dir", lambda: "FAKE_DIR")
 
     saved: list[str] = []
@@ -57,7 +55,9 @@ def _frame(monkeypatch: pytest.MonkeyPatch, *, playing: RadioStation | None) -> 
 
 
 def _station(key_suffix: str = "1") -> RadioStation:
-    return RadioStation(name=f"Station {key_suffix}", stream_url=f"https://example.com/{key_suffix}")
+    return RadioStation(
+        name=f"Station {key_suffix}", stream_url=f"https://example.com/{key_suffix}"
+    )
 
 
 def test_no_on_reset_when_favorite_has_no_override(monkeypatch: pytest.MonkeyPatch) -> None:
