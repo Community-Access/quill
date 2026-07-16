@@ -192,6 +192,20 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         if code == wx.WXK_F2:
             self._on_tree_rename()
             return
+        # The tree wants arrow keys for its own navigation (Win32 grants a
+        # focused TreeCtrl first claim on WM_KEYDOWN for Up/Down), so the
+        # Playback menu's Ctrl+Up/Ctrl+Down accelerator never reaches the
+        # frame while focus is here -- the tree just moves its selection
+        # cursor instead. Handle the volume chord directly, same as Enter/
+        # Delete/F2 above, so it works from the tree (the default focus on
+        # launch) and not only when focus happens to be elsewhere.
+        if event.ControlDown() and not event.ShiftDown() and not event.AltDown():
+            if code == wx.WXK_UP:
+                self.radio_volume_up()
+                return
+            if code == wx.WXK_DOWN:
+                self.radio_volume_down()
+                return
         event.Skip()
 
     def _on_favorites_context_menu(self, _event: object) -> None:
@@ -751,22 +765,53 @@ class RadioAppFrame(AppShellFrame, RadioMixin, MediaSleepTimerMixin, AdpMixin, U
         from quill.core.paths import app_data_dir
         from quill.core.radio import history as radio_history
 
+        # Alt+F4 / titlebar X / Exit all raise EVT_CLOSE, and a keyboard or
+        # screen-reader user who hears nothing right away tends to press
+        # Alt+F4 again. wx's modal loop still pumps events while the first
+        # RadioCloseConfirmDialog.ShowModal() is running, so that second
+        # close event used to re-enter this method and open a *second*
+        # confirm dialog on top of the first -- which corrupted the Windows
+        # modal stack so badly that both dialogs stayed invisible and the
+        # whole app stopped responding to Alt+F4, Exit, everything. Ignore a
+        # close event that arrives while one is already being confirmed.
+        if getattr(self, "_closing_in_progress", False):
+            event.Veto()
+            return
         history = self._radio_history
         action = history.close_action
         if action == "ask":
-            from quill.ui.radio.close_confirm_dialog import RadioCloseConfirmDialog
+            from quill.ui.radio.player_controller import RadioPlayerState
 
             recording_active = bool(getattr(self._radio_recorder, "is_recording", False))
-            result = RadioCloseConfirmDialog(
-                self.frame, recording_active=recording_active, announce_cb=self._announce
-            ).show()
-            if result is None:
-                event.Veto()
-                return
-            action, dont_ask_again = result
-            if dont_ask_again:
-                history.close_action = action
-                radio_history.save_history(app_data_dir(), history)
+            playback_active = self._radio_controller.state.state in (
+                RadioPlayerState.PLAYING,
+                RadioPlayerState.CONNECTING,
+            )
+            # "Ask every time" exists to protect an in-progress recording (and,
+            # secondarily, to offer Minimize to Tray) from a silent Alt+F4 --
+            # not to interrupt an idle app with a prompt. Nothing playing or
+            # recording means there's nothing the dialog is protecting, so
+            # close the same as if action were "exit"; this doesn't persist
+            # (no dialog was shown, so no choice was made to remember).
+            if not recording_active and not playback_active:
+                action = "exit"
+            else:
+                from quill.ui.radio.close_confirm_dialog import RadioCloseConfirmDialog
+
+                self._closing_in_progress = True
+                try:
+                    result = RadioCloseConfirmDialog(
+                        self.frame, recording_active=recording_active, announce_cb=self._announce
+                    ).show()
+                finally:
+                    self._closing_in_progress = False
+                if result is None:
+                    event.Veto()
+                    return
+                action, dont_ask_again = result
+                if dont_ask_again:
+                    history.close_action = action
+                    radio_history.save_history(app_data_dir(), history)
         if action == "minimize":
             event.Veto()
             self._send_to_tray()
