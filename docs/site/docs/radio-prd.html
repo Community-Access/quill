@@ -287,13 +287,15 @@ tray menu; Delete/F2/Enter conventions consistent across lists.</li>
 </ul>
 <h2 id="5-packaging-requirements">5. Packaging requirements</h2>
 <ul>
-<li>P-1. PyInstaller one-file exe with the app's own icon; Inno Setup
+<li>P-1. PyInstaller onedir build with the app's own icon; Inno Setup
 installer with its own AppId installing to {autopf}\Quill Radio,
 per-user by default.</li>
 <li>P-2. Everything bundled, nothing downloaded at install or runtime:
-the exe carries the whole quill package and data; ffmpeg (essentials
-build) installs to {app}\tools\ffmpeg, found via the wrapper exporting
-QUILL_APP_ROOT.</li>
+the onedir build carries the whole quill package and data; ffmpeg
+installs to {app}\tools\ffmpeg, found via the wrapper exporting
+QUILL_APP_ROOT. A portable zip ships the same onedir build plus a
+<code>data\</code> folder that switches storage to travel with the
+app.</li>
 <li>P-3. Uninstall never deletes <code>%APPDATA%\Quill</code> -- QUILL
 or QUILL Cast may still use it.</li>
 <li>P-4. Release artifacts:
@@ -303,17 +305,50 @@ compares against and downloads.</li>
 </ul>
 <h2 id="6-network-requirements">6. Network requirements</h2>
 <ul>
-<li>N-1. Exactly four outbound surfaces, each inventoried in QUILL's
-network-egress audit: RadioBrowser
-(search/tags/countries/click-votes/byuuid fallback), the user-typed page
-for Find Streams, the playing stream itself for ICY titles, and this
-repository's GitHub releases for the update check. No telemetry of any
-kind.</li>
+<li>N-1. Every outbound surface is inventoried in QUILL's network-egress
+audit: RadioBrowser and SomaFM (search/tags/countries/click-votes/byuuid
+fallback), the user-typed page for Find Streams, the playing stream
+itself for ICY titles, and this repository's GitHub releases for the
+update check. No telemetry of any kind. (Sound Enhancements' local
+relay, §8, is loopback-only and never reaches the network itself -- it
+filters the same stream this section already covers.)</li>
 <li>N-2. Safe Mode disables the radio's network surfaces along with the
 feature.</li>
 </ul>
 <h2 id="7-non-goals">7. Non-goals</h2>
 <p>macOS/Linux standalone builds (upstream QUILL covers macOS; the tray
-pattern does not exist there), auto-updating in place, telemetry.</p>
+pattern does not exist there), auto-updating in place, telemetry. A full
+DSP effects rack (reverb, tempo/pitch, spatial audio) -- Sound
+Enhancements (§8) is a small, purpose-built three-band EQ and
+compressor, not a general effects rack.</p>
+<h2 id="8-since-10">8. Since 1.0</h2>
+<ul>
+<li><strong>Sound Enhancements</strong> (Playback &gt; Sound
+Enhancements...): a three-band equalizer (Bass/Mid/Treble sliders, -12
+to +12 dB) and a compressor, applied live via an ffmpeg filter graph
+relayed to the playback engine over a loopback-only local HTTP server.
+Off by default. A "Quick preset" shortcut sets all three sliders at
+once. Remembered per favorite station (a whole-record override on
+<code>FavoriteStation</code>, mirroring QUILL Cast's per-podcast
+override) as well as a shared default in <code>RadioHistory</code>;
+<code>RadioPlayerController</code> resolves which applies via an
+injected callback at the top of every <code>play_station</code>.
+Recording Settings' "Apply Sound Enhancements to recordings" (off by
+default) optionally records the filtered audio too.</li>
+<li><strong>SomaFM</strong>, a second free, keyless station directory,
+blended into Browse Stations search alongside RadioBrowser.</li>
+<li><strong>Exit/Minimize to Tray confirmation</strong>: closing the
+window asks Exit, Minimize to Tray, or Cancel (with a one-time "Don't
+ask me again"), instead of always exiting immediately and silently
+stopping an in-progress recording. Adjustable in Preferences.</li>
+<li><strong>Quieter dialogs and a real "up to date" answer</strong>:
+dialog-transition announcements are now off by default (Preferences),
+and a manual Check for Updates that finds nothing newer shows a dialog
+instead of only announcing it.</li>
+<li><strong>In-app documentation</strong>: Help &gt; User Guide /
+Release Notes / Product Requirements open the bundled docs in your
+browser.</li>
+</ul>
+<p>See <code>CHANGELOG.md</code> for the full, versioned history.</p>
 </body>
 </html>

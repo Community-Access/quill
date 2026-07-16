@@ -272,9 +272,18 @@ nested by your folders, playable inline.</li>
 directory, playable inline.</li>
 <li><strong>Resume Last Station on Launch</strong> (check item) -- the
 appliance switch.</li>
+<li><strong>Preferences...</strong> (Ctrl+,) -- Resume Last Station on
+Launch, automatic Check for Updates, Announce dialog transitions (off by
+default -- turn on for more spoken detail around every dialog), and When
+closing the window (Ask every time / Exit / Minimize to Tray), all in
+one small dialog. Every setting takes effect the moment you save.</li>
 <li><strong>Send to Tray</strong> (Ctrl+W) -- hide the window; playback
 continues from the notification area.</li>
-<li><strong>Exit</strong> -- quit Quill Radio.</li>
+<li><strong>Exit</strong> -- quit Quill Radio. Closing the window this
+way, from the titlebar X, or with Alt+F4 all ask first (unless you've
+told it not to, or set a fixed answer in Preferences): Exit, Minimize to
+Tray, or Cancel, with a "Don't ask me again" checkbox. Recording in
+progress is called out in the message, since exiting stops it.</li>
 </ul>
 <h3 id="playback-altp">Playback (Alt+P)</h3>
 <ul>
@@ -297,6 +306,20 @@ time, restoring your volume.</li>
 <li><strong>Wake-Up Timer...</strong> -- the sleep timer's twin: pick a
 favorite, a time, once or every day, and the station starts playing by
 itself. Quill Radio must be running (the tray counts).</li>
+<li><strong>Sound Enhancements...</strong> -- a three-band equalizer
+(Bass, Mid, Treble sliders, -12 to +12 dB each, freely adjustable) plus
+a compressor ("Even Out Volume", boosts quiet passages and tames loud
+ones). A "Quick preset" combo box (Flat, Bass Boost, Voice Clarity,
+Podcast) sets all three sliders at once as a starting point -- move any
+slider afterward and it becomes Custom. Off by default; turning anything
+on filters the currently playing station live through FFmpeg (needs Help
+&gt; Get FFmpeg...) and reconnects on Apply -- there is no playback
+position to lose on a live stream, so that reconnect is instant. If
+FFmpeg is missing, playback continues unfiltered and Quill Radio tells
+you why. <strong>Remembered per station</strong>: open it while a
+favorite is playing to set that station's own sound; with nothing
+playing (or a non-favorite on), you're setting the shared default every
+other station follows.</li>
 </ul>
 <h3 id="record-altr">Record (Alt+R)</h3>
 <ul>
@@ -316,9 +339,13 @@ list.</li>
 live. See "The Recordings list" below.</li>
 <li><strong>Recording Settings...</strong> -- format (MP3, OGG, FLAC,
 WAV), bitrate, destination folder, filename pattern, a maximum-length
-safety cap, and the <strong>If the connection drops</strong> section:
-reconnect on/off, how many attempts, and how many seconds between
-them.</li>
+safety cap, the <strong>If the connection drops</strong> section
+(reconnect on/off, how many attempts, and how many seconds between
+them), and <strong>Apply Sound Enhancements to recordings</strong> --
+off by default, so recordings stay an unfiltered archival copy even with
+Sound Enhancements on for live listening; turn it on to record the
+filtered (EQ/compressor) audio instead, for every recording method
+(Record Now, Record Station, and scheduled recordings alike).</li>
 </ul>
 <h3 id="help-alth">Help (Alt+H)</h3>
 <ul>
@@ -332,10 +359,18 @@ together.</li>
 the newest release, downloads the right artifact for your flavor
 directly (the installer for an installed copy, the portable zip for a
 portable one) with spoken progress, then offers Install now or Open
-folder.</li>
+folder. Already up to date shows a dialog too, not just a spoken
+announcement. Quill Radio also runs this check quietly once a day when
+it launches -- silent unless it actually finds something, and Station
+&gt; Preferences (Ctrl+,) turns it off if you'd rather check manually
+only.</li>
 <li><strong>Get FFmpeg...</strong> -- a safety net: FFmpeg ships inside
 Quill Radio, but if it ever goes missing this downloads the official
 build so recording works again.</li>
+<li><strong>User Guide</strong> / <strong>Release Notes</strong> /
+<strong>Product Requirements...</strong> -- this guide, the version
+history, and the product requirements document, each opened right in
+your browser.</li>
 <li><strong>Report a Bug...</strong> -- files an issue directly from the
 app (no GitHub account needed), stamped "Quill Radio" with this app's
 own version so we know exactly what you were running; falls back to the
@@ -412,16 +447,21 @@ Uninstalling Quill Radio never deletes that shared data.</p>
 <ul>
 <li><strong>Playback</strong> uses the Windows Media Player engine built
 into Windows -- nothing to install.</li>
-<li><strong>Recording</strong> (and the auto-trim/normalize passes) use
-<strong>ffmpeg</strong>, which the installer bundles at
-<code>tools\ffmpeg</code> inside the install folder. Nothing downloads
-at runtime.</li>
+<li><strong>Recording</strong>, <strong>Sound Enhancements</strong>, and
+(when "Apply Sound Enhancements to recordings" is on) recording's own
+filtering all use <strong>ffmpeg</strong>, which the installer bundles
+at <code>tools\ffmpeg</code> inside the install folder. Nothing
+downloads at runtime. Sound Enhancements plays through a small local
+relay (ffmpeg filters the stream, a loopback-only web server on your own
+machine hands the filtered audio to the player) -- nothing about it is
+reachable off your computer.</li>
 <li><strong>Station search</strong> talks to the community
-<strong>RadioBrowser</strong> directory; <strong>Find Streams</strong>
-fetches only the one page you type; <strong>What's Playing</strong>
-reads metadata from the stream you are already playing. No other network
-calls exist, and every one of them is inventoried in QUILL's
-network-egress audit.</li>
+<strong>RadioBrowser</strong> directory and the free, keyless
+<strong>SomaFM</strong> directory, blended into one results list;
+<strong>Find Streams</strong> fetches only the one page you type;
+<strong>What's Playing</strong> reads metadata from the stream you are
+already playing. No other network calls exist, and every one of them is
+inventoried in QUILL's network-egress audit.</li>
 <li>The <strong>ACB Media</strong> directory is bundled -- no network
 needed to browse it.</li>
 </ul>
@@ -457,6 +497,10 @@ needed to browse it.</li>
 <tr>
 <td>Send to tray</td>
 <td>Ctrl+W</td>
+</tr>
+<tr>
+<td>Preferences</td>
+<td>Ctrl+,</td>
 </tr>
 <tr>
 <td>New Folder</td>

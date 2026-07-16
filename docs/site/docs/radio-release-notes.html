@@ -187,6 +187,80 @@ icon, and its own icon, and then goes further than the embedded radio
 ever has. Everything below also landed in QUILL itself: the two share
 one codebase and one data store, so features arrive everywhere at
 once.</p>
+<h2 id="whats-new-in-102">What's new in 1.0.2</h2>
+<ul>
+<li><strong>Volume keys, fixed.</strong> Ctrl+Up/Ctrl+Down did nothing
+from the Favorites tree, which has focus by default when the app
+launches -- the tree's own arrow-key handling was silently swallowing
+the shortcut before it ever reached Volume Up/Down. Fixed.</li>
+<li><strong>Volume that actually stays put.</strong> Starting a stream
+-- or just pausing and resuming one -- could silently reset the volume
+to 100, even overwriting a favorite station's own remembered volume in
+the process. A favorite now reliably comes back at the volume you left
+it, and if you set a volume before playing something with no memory of
+its own yet, it stays exactly where you put it.</li>
+<li><strong>Sound Enhancements' EQ sliders now announce a real
+accessible name to screen readers.</strong></li>
+<li><strong>Reset Sound Enhancements back to default.</strong> A "Reset
+to Default" button in Sound Enhancements clears a station's own
+EQ/compressor override, so it goes back to following the shared default.
+Preferences (Ctrl+,) gained "Reset All Stations' Sound Enhancements..."
+to clear every station's override at once, with a confirmation
+first.</li>
+<li><strong>A real three-band equalizer.</strong> Sound Enhancements'
+single preset choice became Bass, Mid, and Treble sliders (-12 to +12 dB
+each), freely adjustable. The old presets (Flat, Bass Boost, Voice
+Clarity, Podcast) are still there as a "Quick preset" shortcut -- pick
+one to set all three sliders at once, then keep tuning from there.</li>
+<li><strong>Sound Enhancements, remembered per station.</strong> Open
+Sound Enhancements while a favorite station is playing and it now
+remembers that station's own EQ and compressor separately from the
+shared default -- a jazz station and a talk station no longer have to
+sound the same. With nothing playing (or a non-favorite station on),
+you're adjusting the shared default every other station still
+follows.</li>
+<li><strong>Exit or Minimize to Tray -- your choice.</strong> When
+something is playing or recording, closing asks: Exit, Minimize to Tray,
+or Cancel, with a "Don't ask me again" checkbox that remembers your
+answer. Preferences (Ctrl+,) gained a matching "When closing the window"
+setting so you can always change your mind later.</li>
+<li><strong>A real dialog when you're already up to date.</strong> Help
+&gt; Check for Updates used to only announce "up to date" -- easy to
+miss. It now shows a proper dialog, the same as a genuine update
+does.</li>
+<li><strong>Quieter by default.</strong> Preferences (Ctrl+,) gained
+"Announce dialog transitions" (off by default) -- previously every
+dialog spoke "Entered/Exited" cues with no way to turn it off.</li>
+<li><strong>Documentation, right in the Help menu.</strong> User Guide,
+Release Notes, and Product Requirements now open directly from Help,
+rendered in your browser.</li>
+<li><strong>Sound Enhancements.</strong> Playback &gt; Sound
+Enhancements... adds an equalizer preset (Flat, Bass Boost, Voice
+Clarity, Podcast) and a compressor ("Even Out Volume", boosts quiet
+passages and tames loud ones) to whatever station is playing, applied
+live through the ffmpeg Quill Radio already uses for recording. Off by
+default, and turning either one on reconnects instantly -- live radio
+has no position to lose. <strong>Recording Settings...</strong> gained a
+matching "Apply Sound Enhancements to recordings" checkbox (off by
+default) if you'd rather your recordings capture the filtered audio
+too.</li>
+<li><strong>A second station directory.</strong> Browse Stations search
+now also checks SomaFM, a free, curated internet-radio directory,
+blended right into the same results as RadioBrowser -- more stations to
+find, no extra step.</li>
+<li><strong>Automatic Check for Updates.</strong> Quill Radio quietly
+checks for a newer version once a day when it launches -- silent unless
+a real update is found, at which point you get the same "download it
+now?" prompt Help &gt; Check for Updates always gave you. Throttled so
+it never hits the network on every single launch.</li>
+<li><strong>Preferences...</strong> (Ctrl+,) is a new, small dialog
+gathering the app's startup behavior in one place: Resume Last Station
+on Launch and the new automatic update check, each its own checkbox.
+Turning either off takes effect immediately.</li>
+<li><strong>Dialog buttons that match Windows convention.</strong>
+Recording Settings, the Wake-Up Timer, and Add Station now say "OK"
+instead of "Save," like a standard Windows dialog.</li>
+</ul>
 <h2 id="highlights">Highlights</h2>
 <ul>
 <li><strong>Your folders, on the front page.</strong> The main window is
@@ -264,10 +338,11 @@ same upstream package. Fixes land once and reach QUILL, Quill Radio, and
 QUILL Cast together. This repository carries only the wrapper, the
 installer, the icon, and these docs.</p>
 <h2 id="dependencies">Dependencies</h2>
-<p>Playback uses Windows' built-in media engine; recording uses the
-bundled ffmpeg; station search uses the community RadioBrowser
-directory; the ACB Media directory is bundled. Every network call the
-app can make is inventoried in QUILL's public network-egress audit.</p>
+<p>Playback uses Windows' built-in media engine; recording and Sound
+Enhancements use the bundled ffmpeg; station search uses the community
+RadioBrowser and SomaFM directories; the ACB Media directory is bundled.
+Every network call the app can make is inventoried in QUILL's public
+network-egress audit.</p>
 <h2 id="requirements">Requirements</h2>
 <p>Windows 10 or 11, x64 (or ARM64 under emulation). No Python
 installation required.</p>
