@@ -132,7 +132,7 @@ def test_reset_all_announces_the_count() -> None:
 
 
 class _FakePreferencesDialog:
-    instances: list["_FakePreferencesDialog"] = []
+    instances: list[_FakePreferencesDialog] = []
 
     def __init__(self, parent: object, **kwargs: Any) -> None:
         self.kwargs = kwargs

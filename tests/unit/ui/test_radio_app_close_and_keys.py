@@ -137,7 +137,7 @@ def test_f2_still_renames_alongside_the_new_volume_handling() -> None:
 class _FakeCloseConfirmDialog:
     """Records construction args; ``show()`` returns whatever the test wants."""
 
-    instances: list["_FakeCloseConfirmDialog"] = []
+    instances: list[_FakeCloseConfirmDialog] = []
 
     def __init__(self, parent: object, *, recording_active: bool, announce_cb: Any) -> None:
         self.parent = parent

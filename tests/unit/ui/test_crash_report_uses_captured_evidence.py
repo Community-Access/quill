@@ -62,7 +62,9 @@ def test_send_crash_report_files_the_offers_captured_evidence(
     offer = RecoveryOffer(
         session_id="prior-session",
         snapshot=tmp_path / "doc.snap",
-        error_evidence="Traceback (most recent call last):\nValueError: this is the captured evidence",
+        error_evidence=(
+            "Traceback (most recent call last):\nValueError: this is the captured evidence"
+        ),
     )
 
     MainFrame._send_crash_report(frame, offer, logs_dir)

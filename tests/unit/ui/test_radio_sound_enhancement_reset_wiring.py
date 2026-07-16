@@ -20,7 +20,7 @@ from quill.ui.radio.player_controller import RadioPlayerState
 
 
 class _FakeSoundEnhanceDialog:
-    instances: list["_FakeSoundEnhanceDialog"] = []
+    instances: list[_FakeSoundEnhanceDialog] = []
 
     def __init__(self, parent: object, **kwargs: Any) -> None:
         self.kwargs = kwargs

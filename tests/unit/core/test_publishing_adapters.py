@@ -160,6 +160,11 @@ def test_third_party_adapter_rejects_id_mismatch() -> None:
 
 
 def test_third_party_adapter_rejects_id_conflicting_with_bundled_provider() -> None:
+    # Hermetic: the conflict check compares against the bundled registry, which
+    # at runtime is always populated by the startup bootstrap before any
+    # third-party load. Run the (idempotent) bootstrap here so this test does
+    # not depend on an earlier test having registered wordpress.
+    bootstrap_bundled_publishing_providers()
     values = _third_party_values(
         provider_id="wordpress",
         definition=_definition("wordpress"),
