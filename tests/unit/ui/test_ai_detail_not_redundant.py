@@ -12,7 +12,9 @@ from pathlib import Path
 
 
 def _menu_source() -> str:
-    return Path("quill/ui/main_frame_menu.py").read_text(encoding="utf-8")
+    return Path("quill/ui/main_frame_menu.py").read_text(encoding="utf-8") + Path(
+        "quill/ui/main_frame_menu_bindings.py"
+    ).read_text(encoding="utf-8")
 
 
 def test_ai_detail_refreshes_status_instead_of_opening_connection() -> None:

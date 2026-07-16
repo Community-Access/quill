@@ -21,7 +21,9 @@ _SOURCE = (
     + "\n"
     + (_ROOT / "quill" / "ui" / "main_frame_commands.py").read_text(encoding="utf-8")
 )
-_MENU_SOURCE = (_ROOT / "quill" / "ui" / "main_frame_menu.py").read_text(encoding="utf-8")
+_MENU_SOURCE = (_ROOT / "quill" / "ui" / "main_frame_menu.py").read_text(encoding="utf-8") + (
+    _ROOT / "quill" / "ui" / "main_frame_menu_bindings.py"
+).read_text(encoding="utf-8")
 
 
 def _point(saved_at: datetime, words: int = 2341, source: str = "save") -> RestorePoint:
